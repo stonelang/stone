@@ -11,7 +11,10 @@
 
 using namespace stone;
 
-static int Parse(CompilableItem &compilable, bool check) {
+
+
+
+int stone::Parse(CompilableItem &compilable, bool check) {
 
   stone::ParseSyntaxFile(compilable.GetSyntaxFile(),
                          compilable.GetCompiler().GetSyntax(),
@@ -22,15 +25,15 @@ static int Parse(CompilableItem &compilable, bool check) {
   }
   return ret::ok;
 }
-static int Parse(CompilableItem &compilable) {
-  return Parse(compilable, false);
+int stone::Parse(CompilableItem &compilable) {
+  return stone::Parse(compilable, false);
 }
-static int Check(CompilableItem &compilable) { return Parse(compilable, true); }
+int stone::Check(CompilableItem &compilable) { return Parse(compilable, true); }
 
-static int EmitIR(CompilableItem &compilable) {
+int stone::EmitIR(CompilableItem &compilable) {
 
   /// Should be in EmitIR Scope
-  if (!Check(compilable)) {
+  if (!stone::Check(compilable)) {
     return ret::err;
   }
   /// Should be in Parse scope
@@ -50,7 +53,7 @@ static int EmitIR(CompilableItem &compilable) {
   return ret::ok;
 }
 
-static int EmitObject(CompilableItem &compilable) {
+int stone::EmitObject(CompilableItem &compilable) {
 
   if (!compilable.GetCompiler().GetMode().CanOutput()) {
     return ret::err;
@@ -61,7 +64,7 @@ static int EmitObject(CompilableItem &compilable) {
     return ret::err;
   }
   /// Should be in EmitIR Scope
-  if (!EmitIR(compilable)) {
+  if (!stone::EmitIR(compilable)) {
     return ret::err;
   }
 
@@ -75,21 +78,21 @@ static int EmitObject(CompilableItem &compilable) {
 
   return ret::ok;
 }
-static int EmitAssembly(CompilableItem &compilable) { return ret::ok; }
-static int EmitLibrary(CompilableItem &compilable) { return ret::ok; }
-static int EmitModule(CompilableItem &compilable) { return ret::ok; }
-static int EmitBitCode(CompilableItem &compilable) { return ret::ok; }
+int stone::EmitAssembly(CompilableItem &compilable) { return ret::ok; }
+int stone::EmitLibrary(CompilableItem &compilable) { return ret::ok; }
+int stone::EmitModule(CompilableItem &compilable) { return ret::ok; }
+int stone::EmitBitCode(CompilableItem &compilable) { return ret::ok; }
 
 static int ExecuteCompilable(CompilableItem &compilable) {
   switch (compilable.GetCompiler().GetMode().GetType()) {
   case ModeType::Parse:
-    return Parse(compilable);
+    return stone::Parse(compilable);
   case ModeType::Check:
-    return Check(compilable);
+    return stone::Check(compilable);
   case ModeType::EmitModule:
-    return EmitModule(compilable);
+    return stone::EmitModule(compilable);
   default:
-    return EmitObject(compilable);
+    return stone::EmitObject(compilable);
   }
 }
 static syn::SyntaxFile *BuildSyntaxFileForMainModule(SyntaxFile::Kind kind,
