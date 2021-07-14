@@ -10,14 +10,14 @@
 using namespace stone;
 using namespace stone::syn;
 
-Parser::Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+Parser::Parser(SyntaxFile &sf, Syntax &syntax, bool check,
                ParserPipeline *pipeline)
     : Parser(sf, syntax, check,
              std::unique_ptr<Lexer>(
                  new Lexer(sf.GetSrcID(), syntax.GetTreeContext().GetSrcMgr(),
                            syntax.GetTreeContext().GetBasic()))) {}
 
-Parser::Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+Parser::Parser(SyntaxFile &sf, Syntax &syntax, bool check,
                std::unique_ptr<Lexer> lx, ParserPipeline *pipeline)
     : sf(sf), syntax(syntax), check(check), lexer(lx.release()), curDC(&sf),
       pipeline(pipeline) {

@@ -15,7 +15,7 @@ class CheckerPipeline;
 
 namespace syn {
 class Syntax;
-class SourceModuleFile;
+class SyntaxFile;
 } // namespace syn
 namespace sema {
 class Checker;
@@ -33,13 +33,13 @@ class Checker final {
   friend CheckerStats;
 
   Syntax &syntax;
-  syn::SourceModuleFile &sf;
+  syn::SyntaxFile &sf;
   std::unique_ptr<CheckerStats> stats;
   CheckerPipeline *pipeline;
 
 public:
   /// TODO: Pass in Syntax so that you can create the Nodes
-  Checker(syn::SourceModuleFile &sf, Syntax &syntax,
+  Checker(syn::SyntaxFile &sf, Syntax &syntax,
           CheckerPipeline *pipeline = nullptr);
 
 public:

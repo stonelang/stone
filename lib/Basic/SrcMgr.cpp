@@ -650,26 +650,26 @@ const llvm::MemoryBuffer *SrcMgr::getMemoryBufferForFile(const SrcFile *File,
   return IR->getBuffer(de, *this, SrcLoc(), Invalid);
 }
 
-void SrcMgr::overrideFileContents(const SrcFile *SourceModuleFile,
+void SrcMgr::overrideFileContents(const SrcFile *SyntaxFile,
                                   llvm::MemoryBuffer *Buffer, bool DoNotFree) {
-  const src::ContentCache *IR = getOrCreateContentCache(SourceModuleFile);
+  const src::ContentCache *IR = getOrCreateContentCache(SyntaxFile);
   assert(IR && "getOrCreateContentCache() cannot return NULL");
 
   const_cast<src::ContentCache *>(IR)->replaceBuffer(Buffer, DoNotFree);
   const_cast<src::ContentCache *>(IR)->BufferOverridden = true;
 
-  getOverriddenFilesInfo().OverriddenFilesWithBuffer.insert(SourceModuleFile);
+  getOverriddenFilesInfo().OverriddenFilesWithBuffer.insert(SyntaxFile);
 }
 
-void SrcMgr::overrideFileContents(const SrcFile *SourceModuleFile,
+void SrcMgr::overrideFileContents(const SrcFile *SyntaxFile,
                                   const SrcFile *NewFile) {
-  assert(SourceModuleFile->getSize() == NewFile->getSize() &&
+  assert(SyntaxFile->getSize() == NewFile->getSize() &&
          "Different sizes, use the FileMgr to create a virtual file with "
          "the correct size");
-  assert(FileInfos.count(SourceModuleFile) == 0 &&
+  assert(FileInfos.count(SyntaxFile) == 0 &&
          "This function should be called at the initialization stage, before "
          "any parsing occurs.");
-  getOverriddenFilesInfo().OverriddenFiles[SourceModuleFile] = NewFile;
+  getOverriddenFilesInfo().OverriddenFiles[SyntaxFile] = NewFile;
 }
 
 void SrcMgr::disableFileContentsOverride(const SrcFile *File) {
@@ -1574,12 +1574,12 @@ static Optional<llvm::sys::fs::UniqueID> getActualFileUID(const SrcFile *File) {
 ///
 /// If the source file is included multiple times, the source location will
 /// be based upon an arbitrary inclusion.
-SrcLoc SrcMgr::translateFileLineCol(const SrcFile *SourceModuleFile,
-                                    unsigned Line, unsigned Col) const {
-  assert(SourceModuleFile && "Null source file!");
+SrcLoc SrcMgr::translateFileLineCol(const SrcFile *SyntaxFile, unsigned Line,
+                                    unsigned Col) const {
+  assert(SyntaxFile && "Null source file!");
   assert(Line && Col && "Line and column should start from 1!");
 
-  SrcID FirstFID = translateFile(SourceModuleFile);
+  SrcID FirstFID = translateFile(SyntaxFile);
   return translateLineCol(FirstFID, Line, Col);
 }
 
@@ -1587,16 +1587,16 @@ SrcLoc SrcMgr::translateFileLineCol(const SrcFile *SourceModuleFile,
 ///
 /// If the source file is included multiple times, the SrcID will be the
 /// first inclusion.
-SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
-  assert(SourceModuleFile && "Null source file!");
+SrcID SrcMgr::translateFile(const SrcFile *SyntaxFile) const {
+  assert(SyntaxFile && "Null source file!");
 
   // Find the first file ID that corresponds to the given file.
   SrcID FirstFID;
 
   // First, check the main file ID, since it is common to look for a
   // location in the main file.
-  Optional<llvm::sys::fs::UniqueID> SourceModuleFileUID;
-  Optional<StringRef> SourceModuleFileName;
+  Optional<llvm::sys::fs::UniqueID> SyntaxFileUID;
+  Optional<StringRef> SyntaxFileName;
   if (MainSrcID.isValid()) {
     bool Invalid = false;
     const SLocEntry &MainSLoc = getSLocEntry(MainSrcID, &Invalid);
@@ -1608,23 +1608,21 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
           MainSLoc.getFile().getContentCache();
       if (!MainContentCache || !MainContentCache->OrigEntry) {
         // Can't do anything
-      } else if (MainContentCache->OrigEntry == SourceModuleFile) {
+      } else if (MainContentCache->OrigEntry == SyntaxFile) {
         FirstFID = MainSrcID;
       } else {
         // Fall back: check whether we have the same base name and inode
         // as the main file.
         const SrcFile *MainFile = MainContentCache->OrigEntry;
-        SourceModuleFileName =
-            llvm::sys::path::filename(SourceModuleFile->getName());
-        if (*SourceModuleFileName ==
-            llvm::sys::path::filename(MainFile->getName())) {
-          SourceModuleFileUID = getActualFileUID(SourceModuleFile);
-          if (SourceModuleFileUID) {
+        SyntaxFileName = llvm::sys::path::filename(SyntaxFile->getName());
+        if (*SyntaxFileName == llvm::sys::path::filename(MainFile->getName())) {
+          SyntaxFileUID = getActualFileUID(SyntaxFile);
+          if (SyntaxFileUID) {
             if (Optional<llvm::sys::fs::UniqueID> MainFileUID =
                     getActualFileUID(MainFile)) {
-              if (*SourceModuleFileUID == *MainFileUID) {
+              if (*SyntaxFileUID == *MainFileUID) {
                 FirstFID = MainSrcID;
-                SourceModuleFile = MainFile;
+                SyntaxFile = MainFile;
               }
             }
           }
@@ -1643,7 +1641,7 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
         return SrcID();
 
       if (SLoc.isFile() && SLoc.getFile().getContentCache() &&
-          SLoc.getFile().getContentCache()->OrigEntry == SourceModuleFile) {
+          SLoc.getFile().getContentCache()->OrigEntry == SyntaxFile) {
         FirstFID = SrcID::get(I);
         break;
       }
@@ -1653,7 +1651,7 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
       for (unsigned I = 0, N = loaded_sloc_entry_size(); I != N; ++I) {
         const SLocEntry &SLoc = getLoadedSLocEntry(I);
         if (SLoc.isFile() && SLoc.getFile().getContentCache() &&
-            SLoc.getFile().getContentCache()->OrigEntry == SourceModuleFile) {
+            SLoc.getFile().getContentCache()->OrigEntry == SyntaxFile) {
           FirstFID = SrcID::get(-int(I) - 2);
           break;
         }
@@ -1665,11 +1663,9 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
   // each of the files in case the files have changed since we originally
   // parsed the file.
   if (FirstFID.isInvalid() &&
-      (SourceModuleFileName ||
-       (SourceModuleFileName =
-            llvm::sys::path::filename(SourceModuleFile->getName()))) &&
-      (SourceModuleFileUID ||
-       (SourceModuleFileUID = getActualFileUID(SourceModuleFile)))) {
+      (SyntaxFileName ||
+       (SyntaxFileName = llvm::sys::path::filename(SyntaxFile->getName()))) &&
+      (SyntaxFileUID || (SyntaxFileUID = getActualFileUID(SyntaxFile)))) {
     bool Invalid = false;
     for (unsigned I = 0, N = local_sloc_entry_size(); I != N; ++I) {
       SrcID ISrcID;
@@ -1682,13 +1678,13 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
         const ContentCache *FileContentCache = SLoc.getFile().getContentCache();
         const SrcFile *Entry =
             FileContentCache ? FileContentCache->OrigEntry : nullptr;
-        if (Entry && *SourceModuleFileName ==
-                         llvm::sys::path::filename(Entry->getName())) {
+        if (Entry &&
+            *SyntaxFileName == llvm::sys::path::filename(Entry->getName())) {
           if (Optional<llvm::sys::fs::UniqueID> EntryUID =
                   getActualFileUID(Entry)) {
-            if (*SourceModuleFileUID == *EntryUID) {
+            if (*SyntaxFileUID == *EntryUID) {
               FirstFID = SrcID::get(I);
-              SourceModuleFile = Entry;
+              SyntaxFile = Entry;
               break;
             }
           }
@@ -1697,7 +1693,7 @@ SrcID SrcMgr::translateFile(const SrcFile *SourceModuleFile) const {
     }
   }
 
-  (void)SourceModuleFile;
+  (void)SyntaxFile;
   return FirstFID;
 }
 

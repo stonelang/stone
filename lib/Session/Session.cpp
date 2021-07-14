@@ -180,7 +180,7 @@ CreateOutputFile(llvm::StringRef outputPath, bool binary,
 }
 // TODO: May move to session
 void Session::BuildInputs(const DerivedArgList &args, file::Files &inputs) {
-  llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenSourceModuleFiles;
+  llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenSyntaxFiles;
   for (Arg *arg : args) {
     if (arg->getOption().getKind() == Option::InputClass) {
       auto input = arg->getValue();
@@ -197,11 +197,10 @@ void Session::BuildInputs(const DerivedArgList &args, file::Files &inputs) {
         }
         if (fileType == file::Type::Stone) {
           auto baseName = llvm::sys::path::filename(input);
-          if (!seenSourceModuleFiles.insert({baseName, input}).second) {
+          if (!seenSyntaxFiles.insert({baseName, input}).second) {
             Out() << "de.D(SourceLoc(),"
                   << "diag::error_two_files_same_name,"
-                  << "basename, seenSourceModuleFiles[basename], argValue);"
-                  << '\n';
+                  << "basename, seenSyntaxFiles[basename], argValue);" << '\n';
             Out() << " de.D(SourceLoc(), "
                   << "diag::note_explain_two_files_"
                      "same_name);"

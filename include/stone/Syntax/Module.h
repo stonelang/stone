@@ -42,7 +42,7 @@ public:
                      unsigned alignment = AlignOfModuleFile());
 };
 
-class SourceModuleFile final : public ModuleFile {
+class SyntaxFile final : public ModuleFile {
 private:
   friend TreeContext;
   // llvm::NullablePtr<TreeScope> scope = nullptr;
@@ -54,15 +54,15 @@ public:
   enum class Kind { None, Library };
 
 public:
-  SourceModuleFile::Kind kind = Kind::None;
+  SyntaxFile::Kind kind = Kind::None;
 
   // TODO: You may want const list
   UnsafeList<Decl> decls;
 
 public:
-  SourceModuleFile(SourceModuleFile::Kind kind, syn::Module &owner,
-                   const SrcID srcID, bool isPrimary = false);
-  ~SourceModuleFile();
+  SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner, const SrcID srcID,
+             bool isPrimary = false);
+  ~SyntaxFile();
 
 public:
   bool IsPrimary() { return isPrimary; }
@@ -71,16 +71,15 @@ public:
   void AddDecl(Decl *decl) { decls.Add(decl); }
 
 public:
-  static syn::SourceModuleFile *Create(SourceModuleFile::Kind kind,
-                                       Module &owner, TreeContext &tc,
-                                       bool isPrimary = false);
+  static syn::SyntaxFile *Create(SyntaxFile::Kind kind, Module &owner,
+                                 TreeContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFile::Kind::Source;
   }
 };
 
-class BuiltinModuleFile final : public ModuleFile {
+class BuiltinFile final : public ModuleFile {
 public:
 };
 
@@ -103,7 +102,7 @@ public:
   }
   void AddFile(ModuleFile &file);
 
-  SourceModuleFile &GetMainSourceModuleFile() const;
+  SyntaxFile &GetMainSyntaxFile() const;
 
   ModuleFile &GetMainFile(ModuleFile::Kind kind) const;
 

@@ -28,7 +28,7 @@ bool Parser::IsTopDeclStart(const Token &tok) {
 // fun F0() -> void {}
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
-// This call parses one at a time and adds it to the SourceModuleFile
+// This call parses one at a time and adds it to the SyntaxFile
 bool Parser::ParseTopDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
 
   assert(IsTopDeclStart(tok) && "Invalid start of top-declaration");

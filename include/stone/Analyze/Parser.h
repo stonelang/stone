@@ -38,7 +38,7 @@ class Parser final {
   friend PairDelimiterBalancer;
 
   Syntax &syntax;
-  SourceModuleFile &sf;
+  SyntaxFile &sf;
   ParserPipeline *pipeline;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
@@ -79,10 +79,10 @@ private:
   mutable Identifier *moduleIdentifier;
 
 public:
-  Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+  Parser(SyntaxFile &sf, Syntax &syntax, bool check,
          ParserPipeline *pipeline = nullptr);
 
-  Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+  Parser(SyntaxFile &sf, Syntax &syntax, bool check,
          std::unique_ptr<Lexer> lexer, ParserPipeline *pipeline = nullptr);
 
   ~Parser();

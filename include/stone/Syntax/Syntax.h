@@ -21,7 +21,7 @@ class IfStmt;
 class MatchStmt;
 class Expr;
 class Syntax;
-class SourceModuleFile;
+class SyntaxFile;
 
 class Syntax final {
   // Verifier verifier;

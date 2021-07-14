@@ -1,19 +1,13 @@
 #ifndef STONE_BASIC_SRCFILE_H
 #define STONE_BASIC_SRCFILE_H
 
+#include "llvm/ADT/StringRef.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/VirtualFileSystem.h"
+
 #include <ctime>
 #include <map>
 #include <string>
-
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/IntrusiveRefCntPtr.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringMap.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/Support/Allocator.h"
-#include "llvm/Support/ErrorOr.h"
-#include "llvm/Support/FileSystem.h"
-#include "llvm/Support/VirtualFileSystem.h"
 
 namespace stone {
 
@@ -24,7 +18,7 @@ class SrcDir {
   llvm::StringRef Name; // Name of the directory.
 
 public:
-  StringRef getName() const { return Name; }
+  llvm::StringRef getName() const { return Name; }
 };
 
 /// Cached information about one file (either on disk

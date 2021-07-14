@@ -7,12 +7,12 @@
 using namespace stone::syn;
 using namespace stone::sema;
 
-void stone::CheckSourceModuleFile(SourceModuleFile &sf, Syntax &syntax,
-                                  CheckerPipeline *pipeline) {
+void stone::CheckSyntaxFile(SyntaxFile &sf, Syntax &syntax,
+                            CheckerPipeline *pipeline) {
   // Checker checker(su, pipeline);
 }
 
-void stone::CheckWholeModule(SourceModuleFile &sf, Syntax &syntax,
-                             CheckerPipeline *pipeline) {
+void stone::CheckModule(SyntaxFile &sf, Syntax &syntax,
+                        CheckerPipeline *pipeline) {
   // Checker checker
 }

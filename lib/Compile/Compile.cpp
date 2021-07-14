@@ -30,10 +30,9 @@ public:
     compilables.Add(std::move(compilable));
   }
 
-  syn::SourceModuleFile *
-  BuildSourceModuleFileForMainModule(SourceModuleFile::Kind kind,
-                                     syn::Module &owner, SrcID srcID,
-                                     bool isPrimary);
+  syn::SyntaxFile *BuildSyntaxFileForMainModule(SyntaxFile::Kind kind,
+                                                syn::Module &owner, SrcID srcID,
+                                                bool isPrimary);
 
   // TODO: May consider building all compilables first
   void BuildCompilables();
@@ -54,9 +53,9 @@ public:
 
 int LangImplementation::Parse(CompilableItem &compilable, bool check) {
 
-  stone::ParseSourceModuleFile(compilable.GetSourceModuleFile(),
-                               compilable.GetCompiler().GetSyntax(),
-                               compilable.GetCompiler().GetPipelineEngine());
+  stone::ParseSyntaxFile(compilable.GetSyntaxFile(),
+                         compilable.GetCompiler().GetSyntax(),
+                         compilable.GetCompiler().GetPipelineEngine());
 
   if (compilable.GetCompiler().HasError()) {
     return ret::err;
@@ -143,14 +142,13 @@ int LangImplementation::ExecuteCompilable(CompilableItem &compilable) {
     return EmitObject(compilable);
   }
 }
-syn::SourceModuleFile *LangImplementation::BuildSourceModuleFileForMainModule(
-    SourceModuleFile::Kind kind, syn::Module &owner, SrcID srcID,
-    bool isPrimary) {
+syn::SyntaxFile *LangImplementation::BuildSyntaxFileForMainModule(
+    SyntaxFile::Kind kind, syn::Module &owner, SrcID srcID, bool isPrimary) {
 
-  auto *sourceModuleFile = new (compiler.GetTreeContext())
-      SourceModuleFile(kind, owner, srcID, isPrimary);
+  auto *syntaxFile =
+      new (compiler.GetTreeContext()) SyntaxFile(kind, owner, srcID, isPrimary);
 
-  return sourceModuleFile;
+  return syntaxFile;
 }
 
 std::unique_ptr<CompilableItem>
@@ -165,10 +163,10 @@ LangImplementation::BuildCompilable(Compiler &compiler, file::File &input) {
   auto srcID = compiler.GetSrcMgr().CreateSrcID(std::move(*fileBuffer));
   compiler.GetSrcMgr().SetMainSrcID(srcID);
 
-  auto sf = BuildSourceModuleFileForMainModule(
-      SourceModuleFile::Kind::Library, *compiler.GetMainModule(), srcID, false);
+  auto sf = BuildSyntaxFileForMainModule(
+      SyntaxFile::Kind::Library, *compiler.GetMainModule(), srcID, false);
 
-  assert(sf && "Could not create SourceModuleFile");
+  assert(sf && "Could not create SyntaxFile");
 
   std::unique_ptr<CompilableItem> compilable(
       new CompilableItem(CompilableFile(input, false), compiler, *sf));

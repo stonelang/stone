@@ -37,26 +37,24 @@ void Module::AddFile(ModuleFile &file) {
   // assert(!(isa<LoadedFile>(newFile) &&
   //         cast<LoadedFile>(newFile).hadLoadError()));
   // Require Main and REPL files to be the first file added.
-  assert(
-      files.empty() || !isa<SourceModuleFile>(file) ||
-      cast<SourceModuleFile>(file).kind == SourceModuleFile::Kind::Library
-      /*||cast<SourceModuleFile>(unit).Kind == SourceModuleFile::Kind::SIL*/);
+  assert(files.empty() || !isa<SyntaxFile>(file) ||
+         cast<SyntaxFile>(file).kind == SyntaxFile::Kind::Library
+         /*||cast<SyntaxFile>(unit).Kind == SyntaxFile::Kind::SIL*/);
   files.push_back(&file);
   // ClearLookupCache();
 }
 
 bool Module::Walk(Walker &waker) {}
 
-SourceModuleFile::SourceModuleFile(SourceModuleFile::Kind kind,
-                                   syn::Module &owner, const SrcID srcID,
-                                   bool isPrimary)
+SyntaxFile::SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner,
+                       const SrcID srcID, bool isPrimary)
     : ModuleFile(ModuleFile::Kind::Source, owner), kind(kind), srcID(srcID),
       isPrimary(isPrimary) {}
 
-syn::SourceModuleFile *
-syn::SourceModuleFile::Create(SourceModuleFile::Kind kind, syn::Module &owner,
-                              TreeContext &tc, bool isPrimary) {
+syn::SyntaxFile *syn::SyntaxFile::Create(SyntaxFile::Kind kind,
+                                         syn::Module &owner, TreeContext &tc,
+                                         bool isPrimary) {
   return nullptr;
 }
 
-SourceModuleFile::~SourceModuleFile() {}
+SyntaxFile::~SyntaxFile() {}

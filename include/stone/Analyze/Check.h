@@ -8,16 +8,17 @@ class CheckerPipeline;
 
 namespace syn {
 class Syntax;
-class SourceModuleFile;
+class SyntaxFile;
+
 } // namespace syn
 
 /// Perform type checking
-void CheckSourceModuleFile(syn::SourceModuleFile &sf, syn::Syntax &syntax,
-                           CheckerPipeline *pipeline = nullptr);
+void CheckSyntaxFile(syn::SyntaxFile &sf, syn::Syntax &syntax,
+                     CheckerPipeline *pipeline = nullptr);
 
 /// Perform type checking
-void CheckWholeModule(syn::SourceModuleFile &sf, syn::Syntax &syntax,
-                      CheckerPipeline *pipeline = nullptr);
+void CheckModule(syn::SyntaxFile &sf, syn::Syntax &syntax,
+                 CheckerPipeline *pipeline = nullptr);
 
 } // namespace stone
 #endif

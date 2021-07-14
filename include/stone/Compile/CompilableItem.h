@@ -12,7 +12,7 @@ namespace stone {
 class Compiler;
 
 namespace syn {
-class SourceModuleFile;
+class SyntaxFile;
 }
 
 class CompilingScope final {
@@ -34,7 +34,7 @@ public:
 class CompilableItem final {
 
   Compiler &compiler;
-  syn::SourceModuleFile &sf;
+  syn::SyntaxFile &sf;
   const CompilableFile &input;
   OutputFile *output = nullptr;
 
@@ -50,14 +50,14 @@ public:
 
 public:
   CompilableItem(const CompilableFile &input, Compiler &compiler,
-                 syn::SourceModuleFile &sf)
+                 syn::SyntaxFile &sf)
       : input(input), compiler(compiler), sf(sf) {}
   ~CompilableItem() {}
 
 public:
   // TODO: We may want to remove this
-  // void SetSourceModuleFile(syn::SourceModuleFile *s) { sf = s; }
-  syn::SourceModuleFile &GetSourceModuleFile() { return sf; }
+  // void SetSyntaxFile(syn::SyntaxFile *s) { sf = s; }
+  syn::SyntaxFile &GetSyntaxFile() { return sf; }
 
   const CompilableFile &GetCompilableFile() const { return input; }
 
