@@ -127,7 +127,7 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
 
   ConsumeTok();
 
-  auto funDecl = syntax.CreateFunDecl(nullptr, SrcLoc());
+  auto funDecl = syntax.MakeFunDecl(SrcLoc(), nullptr);
   funDecl->SetAccessLevel(accessLevel);
 
   // funDecl->SetTemplate...

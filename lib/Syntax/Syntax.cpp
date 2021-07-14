@@ -30,7 +30,10 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-Module *Syntax::CreateModuleDecl(Identifier &name, bool isMainModule) {
+Identifier &Syntax::MakeIdentifier(llvm::StringRef name) {
+  return GetTreeContext().GetIdentifier(name);
+}
+Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
 
   // TODO:
   void *moduleDeclPtr =
@@ -40,10 +43,18 @@ Module *Syntax::CreateModuleDecl(Identifier &name, bool isMainModule) {
   return moduleDecl;
 }
 
-FunDecl *Syntax::CreateFunDecl(DeclContext *dc, SrcLoc loc) {
+FunDecl *Syntax::MakeFunDecl(SrcLoc loc, DeclContext *dc) {
   size_t size =
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  void *funDeclPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
-  return ::new (funDeclPtr) FunDecl(loc, GetTreeContext(), dc);
+  void *declPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
+  return ::new (declPtr) FunDecl(loc, GetTreeContext(), dc);
+}
+
+StructDecl *Syntax::MakeStructDecl(SrcLoc loc, DeclContext *dc) {
+  size_t size = sizeof(StructDecl);
+
+  void *declPtr = Syntax::AllocateDeclMem<StructDecl>(GetTreeContext(), size);
+  // return ::new (declPtr) StructDecl(loc, GetTreeContext(), dc);
+  return nullptr;
 }

@@ -146,8 +146,7 @@ public:
 
   */
 protected:
-  Decl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
-      : ty(ty), loc(loc), dc(dc) {}
+  Decl(Decl::Type ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
 };
 
 class DeclContext {

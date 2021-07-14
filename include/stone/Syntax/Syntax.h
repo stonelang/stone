@@ -43,17 +43,17 @@ public:
   TreeContext &GetTreeContext() { return tc; }
 
 public:
-  Module *CreateModuleDecl(Identifier &name, bool isMainModule);
+  Module *MakeModuleDecl(Identifier &name, bool isMainModule);
 
 public:
   void VerifyDecl(Decl *d);
 
 public:
-  FunDecl *CreateFunDecl(DeclContext *dc, SrcLoc loc);
+  FunDecl *MakeFunDecl(SrcLoc loc, DeclContext *dc);
   void VerifyFunDecl(Decl *d);
 
 public:
-  StructDecl *CreateStructDecl();
+  StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
   void VerifyStructDecl(Decl *d);
 
 public:
@@ -61,8 +61,8 @@ public:
   Basic &GetBasic() { return tc.GetBasic(); }
 
 public:
-  static Identifier MakeIdentifier();
-  static DeclName MakeDeclName();
+  Identifier &MakeIdentifier(llvm::StringRef name);
+  DeclName MakeDeclName();
 
 public:
   /// \param extraSpace The amount of extra space to allocate after the object
