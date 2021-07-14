@@ -31,9 +31,9 @@ class Token final {
   unsigned commentLength;
 
   /// text - The actual string covered by the token in the source buffer.
-  StringRef text;
+  llvm::StringRef text;
 
-  StringRef TrimComment() const {
+  llvm::StringRef TrimComment() const {
     assert(HasComment() && "Has no comment to trim.");
     StringRef rawStr(text.begin() - commentLength, commentLength);
     return rawStr.trim();
@@ -151,8 +151,10 @@ public:
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
+
   /// Count of extending escaping '#'.
   unsigned GetCustomDelimiterLen() const { return customDelimiterLen; }
+
   /// Set characteristics of string literal token.
   void setStringLiteral(bool isMultilineString, unsigned customDelimiterLen) {
     assert(ty == tk::Type::string_literal);
@@ -198,8 +200,6 @@ public:
     }
     return text;
   }
-
-
   /// Set the token to the specified ty and source range.
   void SetToken(tk::Type K, StringRef T, unsigned commentLength = 0) {
     ty = K;

@@ -67,7 +67,8 @@ private:
 // public:
 //   bool IsValid() const { return loc.isValid(); }
 
-//   /// An explicit bool operator so one can check if a SourceLoc is valid in an
+//   /// An explicit bool operator so one can check if a SourceLoc is valid in
+//   an
 //   /// if statement:
 //   ///
 //   /// if (auto x = getSourceLoc()) { ... }
@@ -79,7 +80,8 @@ private:
 //   /// Return a source location advanced a specified number of bytes.
 //   SrcLoc GetAdvancedLoc(int byteOffset) const {
 //     assert(IsValid() && "Can't advance an invalid location");
-//     return SrcLoc(llvm::SMLoc::getFromPointer(loc.getPointer() + byteOffset));
+//     return SrcLoc(llvm::SMLoc::getFromPointer(loc.getPointer() +
+//     byteOffset));
 //   }
 
 //   SrcLoc GetAdvancedLocOrInvalid(int byteOffset) const {
@@ -143,7 +145,7 @@ private:
     return L;
   }
 
-  //TODO: Remove
+  // TODO: Remove
   static SrcLoc getMacroLoc(unsigned ID) {
     assert((ID & MacroIDBit) == 0 && "Ran out of source locations!");
     SrcLoc L;
@@ -185,7 +187,7 @@ public:
   /// should not be inspected directly.
   void *getPtrEncoding() const {
     // Double cast to avoid a warning "cast to pointer from integer of
-    //different
+    // different
     // size".
     return (void *)(uintptr_t)getRawEncoding();
   }
@@ -203,8 +205,7 @@ public:
   }
 
   static bool isPairOfFileLocations(SrcLoc Start, SrcLoc End) {
-    return Start.isValid() && Start.isSrcID() && End.isValid() &&
-    End.isSrcID();
+    return Start.isValid() && Start.isSrcID() && End.isValid() && End.isSrcID();
   }
 
   void print(raw_ostream &OS, const SrcMgr &SM) const;

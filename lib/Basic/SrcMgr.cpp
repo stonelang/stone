@@ -2247,6 +2247,7 @@ SrcMgrForFile::SrcMgrForFile(StringRef FileName, StringRef Content) {
   // in `Environment` so that `fileMgr` can out-live this function scope.
   fileMgr = llvm::make_unique<FileMgr>(FileSystemOptions(), InMemoryFileSystem);
 
+  // TODO:
   /*
     // This is passed to `SM` as reference, so the pointer has to be referenced
     // by `Environment` due to the same reason above.
