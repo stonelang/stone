@@ -43,7 +43,8 @@ public:
           CheckerPipeline *pipeline = nullptr);
 
 public:
-  void CheckDecl();
+  void CheckDecl(Decl *d);
+  void CheckFunDecl();
 
 public:
   void CheckStmt();

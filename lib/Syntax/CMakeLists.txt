@@ -20,6 +20,7 @@ set(stone_syn_sources
 	Template.cpp
 	TreeContext.cpp
 	Type.cpp
+	VerifyDecl.cpp
 	Visitor.cpp
 	Walker.cpp
 	Watcher.cpp

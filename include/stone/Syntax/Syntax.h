@@ -45,10 +45,15 @@ public:
   Module *CreateModuleDecl(Identifier &name, bool isMainModule);
 
 public:
+  void VerifyDecl(Decl *d);
+
+public:
   FunDecl *CreateFunDecl();
+  void VerifyFunDecl(Decl *d);
 
 public:
   StructDecl *CreateStructDecl();
+  void VerifyStructDecl(Decl *d);
 
 public:
   bool HasError() { return tc.GetBasic().HasError(); }

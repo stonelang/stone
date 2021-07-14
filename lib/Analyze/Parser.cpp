@@ -10,15 +10,16 @@
 using namespace stone;
 using namespace stone::syn;
 
-Parser::Parser(SourceModuleFile &sf, Syntax &syntax, ParserPipeline *pipeline)
-    : Parser(sf, syntax,
+Parser::Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+               ParserPipeline *pipeline)
+    : Parser(sf, syntax, check,
              std::unique_ptr<Lexer>(
                  new Lexer(sf.GetSrcID(), syntax.GetTreeContext().GetSrcMgr(),
                            syntax.GetTreeContext().GetBasic()))) {}
 
-Parser::Parser(SourceModuleFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
-               ParserPipeline *pipeline)
-    : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
+Parser::Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+               std::unique_ptr<Lexer> lx, ParserPipeline *pipeline)
+    : sf(sf), syntax(syntax), check(check), lexer(lx.release()), curDC(&sf),
       pipeline(pipeline) {
 
   stats.reset(new ParserStats(*this, GetBasic()));

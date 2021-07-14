@@ -11,6 +11,6 @@ class Syntax;
 class SourceModuleFile;
 } // namespace syn
 void ParseSourceModuleFile(syn::SourceModuleFile &sf, syn::Syntax &syntax,
-                           PipelineEngine *pe = nullptr);
+                           bool check, PipelineEngine *pe = nullptr);
 } // namespace stone
 #endif

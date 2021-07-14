@@ -26,8 +26,11 @@ ModuleFile::ModuleFile(ModuleFile::Kind kind, Module &owner)
 
 Module::Module(Identifier &name, TreeContext &tc)
     : DeclContext(DeclContext::Type::Decl, Decl::Type::Module),
-      TypeDecl(Decl::Type::Module, nullptr /*TODO: pass DeclContext*/, SrcLoc(),
-               &name) {}
+      TypeDecl(Decl::Type::Module, nullptr /*TODO: pass DeclContext*/,
+               SrcLoc()) {
+
+  // TODO: SetDeclName(name);
+}
 
 void Module::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.

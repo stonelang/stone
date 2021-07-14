@@ -71,17 +71,19 @@ class Parser final {
 
   DeclContext *curDC;
 
+  bool check = false;
+
 private:
   // Identifiers
   mutable Identifier *importIdentifier;
   mutable Identifier *moduleIdentifier;
 
 public:
-  Parser(SourceModuleFile &sf, Syntax &syntax,
+  Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
          ParserPipeline *pipeline = nullptr);
 
-  Parser(SourceModuleFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
-         ParserPipeline *pipeline = nullptr);
+  Parser(SourceModuleFile &sf, Syntax &syntax, bool check,
+         std::unique_ptr<Lexer> lexer, ParserPipeline *pipeline = nullptr);
 
   ~Parser();
 

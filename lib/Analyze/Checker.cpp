@@ -13,13 +13,5 @@ Checker::Checker(SourceModuleFile &sf, Syntax &syntax,
   stats.reset(new CheckerStats(*this, syntax.GetTreeContext().GetBasic()));
   syntax.GetTreeContext().GetBasic().GetStatEngine().Register(stats.get());
 }
-// Decl
-void Checker::CheckDecl() {}
-
-// Stmt
-void Checker::CheckStmt() {}
-
-// Expr
-void Checker::CheckExpr() {}
 
 void CheckerStats::Print() {}

@@ -9,12 +9,12 @@
 using namespace stone::syn;
 
 void stone::ParseSourceModuleFile(SourceModuleFile &sf, Syntax &syntax,
-                                  PipelineEngine *pe) {
+                                  bool check, PipelineEngine *pe) {
 
   ParserPipeline *pp = nullptr;
   LexerPipeline *lp = nullptr;
 
-  Parser parser(sf, syntax);
+  Parser parser(sf, syntax, check);
 
   if (pe) {
     if (pe->Get(PipelineType::Parse)) {

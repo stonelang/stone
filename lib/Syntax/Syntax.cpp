@@ -32,8 +32,9 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 
 Module *Syntax::CreateModuleDecl(Identifier &name, bool isMainModule) {
 
-  //TODO: 
-  void *moduleDeclPtr = Syntax::AllocateDeclMem<Module>(GetTreeContext(), sizeof(Module));
+  // TODO:
+  void *moduleDeclPtr =
+      Syntax::AllocateDeclMem<Module>(GetTreeContext(), sizeof(Module));
 
   auto moduleDecl = new (GetTreeContext()) syn::Module(name, GetTreeContext());
   return moduleDecl;

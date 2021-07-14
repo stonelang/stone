@@ -64,6 +64,7 @@ private:
   friend DeclStats;
 
   Decl::Type ty;
+  // The Decl location
   SrcLoc loc;
   DeclContext *dc;
 
@@ -130,6 +131,7 @@ public:
 
 public:
   Decl::Type GetType() { return ty; }
+  SrcLoc GetLoc() { return loc; }
 
   TreeContext &GetTreeContext() const LLVM_READONLY;
 
@@ -145,8 +147,6 @@ public:
   */
 protected:
   Decl(Decl::Type ty, DeclContext *dc, SrcLoc loc) : ty(ty), dc(dc), loc(loc) {}
-
-public:
 };
 
 class DeclContext {
@@ -253,10 +253,11 @@ class NamedDecl : public Decl {
   /// identifier but may also be a special ty of name (C++
   /// constructor, etc.)
   DeclName name;
+  SrcLoc nameLoc;
 
 protected:
-  NamedDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc, DeclName name)
-      : Decl(ty, dc, loc), name(name) {}
+  NamedDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
+      : Decl(ty, dc, loc), name(nullptr) {}
 
 public:
   /// Get the identifier that names this declaration, if there is one.
@@ -274,11 +275,9 @@ public:
     // TODO: assert(name.IsIdentifier() && "Name is not a simple identifier");
     return GetIdentifier() ? GetIdentifier()->GetName() : "";
   }
-
-public:
   void SetDeclName(DeclName name) { this->name = name; }
-  // DeclName loc
-  void SetLoc(SrcLoc loc) {}
+  void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
+  SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
 class TypeDecl : public NamedDecl {
@@ -294,39 +293,49 @@ class TypeDecl : public NamedDecl {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc, Identifier *name,
+  TypeDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc,
            SrcLoc startLocation = SrcLoc())
-      : NamedDecl(ty, dc, loc, name), startLoc(startLocation) {}
+      : NamedDecl(ty, dc, loc), startLoc(startLocation) {}
 };
 
 // TODO: May use this instead of using NamedDecl
 class ValueDecl : public NamedDecl {
+  QualType qTy;
+
 public:
+  ValueDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
+      : NamedDecl(ty, dc, loc) {}
+
+public:
+  void SetQualType(QualType qTy) { this->qTy = qTy; }
+  QualType GetQualType() { return qTy; }
 };
 
-class LabelDecl : public NamedDecl {
-public:
-};
+// class LabelDecl : public NamedDecl {
+// public:
+// };
 
-class SpaceDecl : public NamedDecl {
-public:
-  SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-      : NamedDecl(Decl::Type::Space, dc, loc, name) {}
-};
+// class SpaceDecl : public NamedDecl {
+// public:
+//   SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
+//       : NamedDecl(Decl::Type::Space, dc, loc, name) {}
+// };
 
 class DeclaratorDecl : public ValueDecl {
 public:
+  DeclaratorDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
+      : ValueDecl(ty, dc, loc) {}
 };
 
 // This is really your function prototye
 class FunctionDecl : public DeclaratorDecl,
                      public DeclContext /*, syn::Redeclarable<FunctionDecl> */ {
 
+  StorageType sTy;
   AccessLevel accessLevel;
 
 public:
-  FunctionDecl(Decl::Type ty, TreeContext &tc, DeclContext *dc,
-               const DeclName &dn, SrcLoc dnLoc, StorageType st);
+  FunctionDecl(Decl::Type ty, TreeContext &tc, DeclContext *dc, SrcLoc loc);
 
 public:
   /// BraceStmt
@@ -338,6 +347,9 @@ public:
   }
   AccessLevel GetAccessLevel() { return accessLevel; }
 
+  void SetStorageType(StorageType sTy) { this->sTy = sTy; }
+  StorageType GetStorageType() { return sTy; }
+
 public:
 };
 
@@ -346,9 +358,8 @@ class FunDecl : public FunctionDecl {
 
   // TODO: You should aonly pass TreeContext and DeclContext
 public:
-  FunDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc, const DeclName &dn,
-          SrcLoc dnLoc, StorageType st)
-      : FunctionDecl(Decl::Type::Fun, tc, dc, dn, dnLoc, st) {}
+  FunDecl(TreeContext &tc, DeclContext *dc, SrcLoc loc)
+      : FunctionDecl(Decl::Type::Fun, tc, dc, loc) {}
 
 public:
   bool IsMain() const;
@@ -356,50 +367,48 @@ public:
   /// True if the function is a defer body.
   bool IsDeferBody() const;
 
-  void SetFunLoc(SrcLoc loc) {}
-
   // SrcLoc GetStaticLoc() const { return staticLoc; }
   // SrcLoc GetFunLoc() const { return funcLoc; }
 };
 
 // Member functions: fun Particle::Fire() -> bool ...
-class MethodDecl : public FunctionDecl {
-public:
-  MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
-             const DeclName &dn, SrcLoc dnLoc, StorageType st)
-      : FunctionDecl(Decl::Type::Fun, tc, dc, dn, dnLoc, st) {}
+// class MethodDecl : public FunctionDecl {
+// public:
+//   MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
+//              const DeclName &dn, SrcLoc dnLoc, StorageType st)
+//       : FunctionDecl(Decl::Type::Fun, tc, dc, dn, dnLoc, st) {}
 
-public:
-  bool IsStatic() const;
-  bool IsInstance() const { return !IsStatic(); }
-};
+// public:
+//   bool IsStatic() const;
+//   bool IsInstance() const { return !IsStatic(); }
+// };
 
-class NominalTypeDecl : public TypeDecl, public DeclContext {
+// class NominalTypeDecl : public TypeDecl, public DeclContext {
 
-public:
-};
+// public:
+// };
 
-class StructDecl final : public NominalTypeDecl {
-public:
-};
+// class StructDecl final : public NominalTypeDecl {
+// public:
+// };
 
-class EnumDecl final : public NominalTypeDecl {
-public:
-};
+// class EnumDecl final : public NominalTypeDecl {
+// public:
+// };
 
-class BlockDecl : public Decl, public DeclContext {};
+// class BlockDecl : public Decl, public DeclContext {};
 
-class ConstructorInitializer final {
-public:
-};
+// class ConstructorInitializer final {
+// public:
+// };
 
-class ConstructorDecl : public MethodDecl {
-public:
-};
+// class ConstructorDecl : public MethodDecl {
+// public:
+// };
 
-class DestructorDecl : public MethodDecl {
-public:
-};
+// class DestructorDecl : public MethodDecl {
+// public:
+// };
 
 } // namespace syn
 } // namespace stone
