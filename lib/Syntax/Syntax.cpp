@@ -35,26 +35,24 @@ Identifier &Syntax::MakeIdentifier(llvm::StringRef name) {
 }
 Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
 
-  // TODO:
-  void *moduleDeclPtr =
+  auto declPtr =
       Syntax::AllocateDeclMem<Module>(GetTreeContext(), sizeof(Module));
 
-  auto moduleDecl = new (GetTreeContext()) syn::Module(name, GetTreeContext());
-  return moduleDecl;
+  return ::new (declPtr) syn::Module(name, GetTreeContext());
 }
 
 FunDecl *Syntax::MakeFunDecl(SrcLoc loc, DeclContext *dc) {
   size_t size =
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  void *declPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
+  auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
   return ::new (declPtr) FunDecl(loc, GetTreeContext(), dc);
 }
 
 StructDecl *Syntax::MakeStructDecl(SrcLoc loc, DeclContext *dc) {
   size_t size = sizeof(StructDecl);
 
-  void *declPtr = Syntax::AllocateDeclMem<StructDecl>(GetTreeContext(), size);
+  auto declPtr = Syntax::AllocateDeclMem<StructDecl>(GetTreeContext(), size);
   // return ::new (declPtr) StructDecl(loc, GetTreeContext(), dc);
   return nullptr;
 }
