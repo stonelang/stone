@@ -146,7 +146,8 @@ public:
 
   */
 protected:
-  Decl(Decl::Type ty, DeclContext *dc, SrcLoc loc) : ty(ty), dc(dc), loc(loc) {}
+  Decl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
+      : ty(ty), loc(loc), dc(dc) {}
 };
 
 class DeclContext {
@@ -256,8 +257,8 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
-      : Decl(ty, dc, loc), name(nullptr) {}
+  NamedDecl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
+      : Decl(ty, loc, dc), name(nullptr) {}
 
 public:
   /// Get the identifier that names this declaration, if there is one.
@@ -296,8 +297,8 @@ class TypeDecl : public NamedDecl {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
-      : NamedDecl(ty, dc, loc) {}
+  TypeDecl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
+      : NamedDecl(ty, loc, dc) {}
 
 public:
   void SetIdentifier(Identifier *identifier) { SetDeclName(identifier); }
@@ -308,8 +309,8 @@ class ValueDecl : public NamedDecl {
   QualType qTy;
 
 public:
-  ValueDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
-      : NamedDecl(ty, dc, loc) {}
+  ValueDecl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
+      : NamedDecl(ty, loc, dc) {}
 
 public:
   void SetQualType(QualType qTy) { this->qTy = qTy; }
@@ -328,8 +329,8 @@ public:
 
 class DeclaratorDecl : public ValueDecl {
 public:
-  DeclaratorDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
-      : ValueDecl(ty, dc, loc) {}
+  DeclaratorDecl(Decl::Type ty, SrcLoc loc, DeclContext *dc)
+      : ValueDecl(ty, loc, dc) {}
 };
 
 class AccessControl {
@@ -350,7 +351,7 @@ class FunctionDecl
   StorageType storageTy;
 
 public:
-  FunctionDecl(Decl::Type ty, TreeContext &tc, DeclContext *dc, SrcLoc loc);
+  FunctionDecl(Decl::Type ty, SrcLoc loc, TreeContext &tc, DeclContext *dc);
 
 public:
   /// BraceStmt
@@ -370,8 +371,8 @@ class FunDecl : public FunctionDecl {
 
   // TODO: You should aonly pass TreeContext and DeclContext
 public:
-  FunDecl(TreeContext &tc, DeclContext *dc, SrcLoc loc)
-      : FunctionDecl(Decl::Type::Fun, tc, dc, loc) {}
+  FunDecl(SrcLoc loc, TreeContext &tc, DeclContext *dc)
+      : FunctionDecl(Decl::Type::Fun, loc, tc, dc) {}
 
 public:
   bool IsMain() const;

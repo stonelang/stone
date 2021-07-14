@@ -26,8 +26,7 @@ ModuleFile::ModuleFile(ModuleFile::Kind kind, Module &owner)
 
 Module::Module(Identifier &name, TreeContext &tc)
     : DeclContext(DeclContext::Type::Decl, Decl::Type::Module),
-      TypeDecl(Decl::Type::Module, nullptr /*TODO: pass DeclContext*/,
-               SrcLoc()) {
+      TypeDecl(Decl::Type::Module, SrcLoc(), nullptr /*TODO: pass DeclContext*/) {
 
   // TODO: SetDeclName(name);
 }

@@ -45,5 +45,5 @@ FunDecl *Syntax::CreateFunDecl(DeclContext *dc, SrcLoc loc) {
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   void *funDeclPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
-  return ::new (funDeclPtr) FunDecl(GetTreeContext(), dc, loc);
+  return ::new (funDeclPtr) FunDecl(loc, GetTreeContext(), dc);
 }

@@ -45,8 +45,7 @@ void *syn::Module::operator new(std::size_t bytes, const TreeContext &tc,
   return tc.Allocate(bytes, alignment);
 }
 
-FunctionDecl::FunctionDecl(Decl::Type ty, TreeContext &tc, DeclContext *dc,
-                           SrcLoc loc)
-    : DeclaratorDecl(ty, dc, loc), DeclContext(DeclContext::Type::Decl, ty) {}
+FunctionDecl::FunctionDecl(Decl::Type ty, SrcLoc loc, TreeContext &tc, DeclContext *dc)
+    : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContext::Type::Decl, ty) {}
 
 void DeclStats::Print() {}
