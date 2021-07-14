@@ -2,7 +2,6 @@
 #include "stone/Analyze/Check.h"
 #include "stone/Analyze/Parse.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"
@@ -132,14 +131,15 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   return compilable;
 }
 
-std::unique_ptr<CompilableItem> stone::CompileInputFile(Compiler &compiler,
-                                                        file::File &input) {
+int stone::CompileInputFile(Compiler &compiler, file::File &input) {
   auto compilable = BuildCompilable(compiler, input);
   if (!compilable) {
-    return nullptr;
+    return ret::err;
   }
   if (!ExecuteCompilable(*compilable.get())) {
-    return nullptr;
+    return ret::err;
   }
-  return compilable;
+  compiler.GetCompilerContext().AddCompilable(std::move(compilable));
+
+  return ret::ok;
 }

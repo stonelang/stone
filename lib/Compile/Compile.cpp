@@ -17,11 +17,10 @@ int Compiler::Run(Compiler &compiler) {
     printf("No input files.\n"); // TODO: Use Diagnostics
     return ret::err;
   }
-  SafeList<CompilableItem> compilables;
-
   for (auto &input : compiler.GetInputFiles()) {
-    auto compilable = stone::CompileInputFile(compiler, input);
-    compilables.Add(std::move(compilable));
+    if (!stone::CompileInputFile(compiler, input)) {
+      ret::err;
+    }
   }
   return ret::ok;
 }

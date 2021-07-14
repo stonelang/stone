@@ -1,6 +1,9 @@
 #ifndef STONE_COMPILE_COMPILERCONTEXT_H
 #define STONE_COMPILE_COMPILERCONTEXT_H
 
+#include "stone/Basic/List.h"
+#include "stone/Compile/CompilableItem.h"
+
 namespace llvm {
 class Module;
 } // namespace llvm
@@ -9,12 +12,14 @@ namespace stone {
 
 class CompilerContext final {
   Compiler &compiler;
-
   // TODO: prevScope,
   // CompilingScope scope;
 
   // InputFile inputFile
   llvm::Module *llvmModule = nullptr;
+
+public:
+  SafeList<CompilableItem> compilables;
 
 private:
   CompilerContext(const CompilerContext &) = delete;
@@ -34,6 +39,11 @@ public:
   llvm::Module *GetLLVMModule() {
     assert(llvmModule && "No LLVM Module");
     return llvmModule;
+  }
+
+public:
+  void AddCompilable(std::unique_ptr<CompilableItem> compilable) {
+    compilables.Add(std::move(compilable));
   }
 };
 

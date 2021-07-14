@@ -8,8 +8,7 @@
 
 namespace stone {
 class Compiler;
-std::unique_ptr<CompilableItem> CompileInputFile(Compiler &compiler,
-                                                 file::File &input);
+int CompileInputFile(Compiler &compiler, file::File &input);
 
 } // namespace stone
 #endif
