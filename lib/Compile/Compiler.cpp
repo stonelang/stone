@@ -47,6 +47,7 @@ syn::Module *Compiler::GetMainModule() const {
   if (mainModule) {
     return mainModule;
   }
+
   Identifier &moduleName = tc->GetIdentifier(GetModuleName());
   mainModule = syntax->MakeModuleDecl(moduleName, true);
   return mainModule;

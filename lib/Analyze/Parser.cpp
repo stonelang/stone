@@ -35,6 +35,7 @@ void Parser::Init() {
   ConsumeTok();
 }
 
+// TODO:
 syn::Scope *Parser::GetCurScope() const { return nullptr; }
 Parser::~Parser() {}
 

@@ -504,29 +504,29 @@ void Lexer::Lex() {
   case -2:
     // Diagnose(curPtr-1, diag::lex_utf16_bom_marker);
     curPtr = bufferEnd;
-    return CreateToken(tk::Type::unk, tokStart);
+    return MakeTok(tk::Type::unk, tokStart);
 
   case '{':
-    return CreateToken(tk::Type::l_brace, tokStart);
+    return MakeTok(tk::Type::l_brace, tokStart);
   case '[':
-    return CreateToken(tk::Type::l_square, tokStart);
+    return MakeTok(tk::Type::l_square, tokStart);
   case '(':
-    return CreateToken(tk::Type::l_paren, tokStart);
+    return MakeTok(tk::Type::l_paren, tokStart);
   case '}':
-    return CreateToken(tk::Type::r_brace, tokStart);
+    return MakeTok(tk::Type::r_brace, tokStart);
   case ']':
-    return CreateToken(tk::Type::r_square, tokStart);
+    return MakeTok(tk::Type::r_square, tokStart);
   case ')':
-    return CreateToken(tk::Type::r_paren, tokStart);
+    return MakeTok(tk::Type::r_paren, tokStart);
 
   case ',':
-    return CreateToken(tk::Type::comma, tokStart);
+    return MakeTok(tk::Type::comma, tokStart);
   case ';':
-    return CreateToken(tk::Type::semi, tokStart);
+    return MakeTok(tk::Type::semi, tokStart);
   case ':':
-    return CreateToken(tk::Type::colon, tokStart);
+    return MakeTok(tk::Type::colon, tokStart);
   case '\\':
-    return CreateToken(tk::Type::backslash, tokStart);
+    return MakeTok(tk::Type::backslash, tokStart);
 
     // case '<':
     // case '>':
@@ -559,7 +559,7 @@ void Lexer::LexIdentifier() {
 
   auto kind = GetKindOfIdentifier(StringRef(tokStart, curPtr - tokStart));
 
-  return CreateToken(kind, tokStart);
+  return MakeTok(kind, tokStart);
 }
 
 /// This is either an identifier or a keyword.
@@ -691,7 +691,7 @@ Lexer::NullCharType Lexer::GetNullCharType(const char *data) const {
 
 void Lexer::Diagnose() {}
 
-void Lexer::CreateToken(tk::Type ty, const char *tokenStart) {
+void Lexer::MakeTok(tk::Type ty, const char *tokenStart) {
   assert(curPtr >= bufferStart && curPtr <= bufferEnd &&
          "Cannot create token -- the current pointer is out of range!");
   // When we are lexing a subrange from the middle of a file buffer, we will

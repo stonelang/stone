@@ -125,10 +125,10 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
   assert(tok.GetType() == tk::Type::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 
-  ConsumeTok();
-
-  auto funDecl = syntax.MakeFunDecl(SrcLoc(), nullptr);
+  auto funDecl = syntax.MakeFunDecl(tok.GetLoc(), nullptr);
   funDecl->SetAccessLevel(accessLevel);
+
+  ConsumeTok();
 
   // funDecl->SetTemplate...
 

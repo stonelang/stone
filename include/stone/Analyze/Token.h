@@ -165,7 +165,7 @@ public:
 
   /// GetLoc - Return a source location identifier for the specified
   /// offset in the current file.
-  SrcLoc GetLoc() const { return SrcLoc::getFromPtrEncoding(text.begin()); }
+  SrcLoc GetLoc() const { return SrcLoc::GetFromPtr(text.begin()); }
 
   // CharSrcRange GetRange() const {
   //       return CharSourceRange(GetLoc(), GetLength());
@@ -187,9 +187,10 @@ public:
   }
 */
 
-  StringRef GetRawText() const { return text; }
+  StringRef GetText() const { return text; }
+  void SetText(StringRef T) { text = T; }
 
-  StringRef GetText() const {
+  StringRef GetTextWithNoBackticks() const {
     if (escapedIdentifier) {
       // Strip off the backticks on either side.
       assert(text.front() == '`' && text.back() == '`');
@@ -198,7 +199,6 @@ public:
     return text;
   }
 
-  void SetText(StringRef T) { text = T; }
 
   /// Set the token to the specified ty and source range.
   void SetToken(tk::Type K, StringRef T, unsigned commentLength = 0) {

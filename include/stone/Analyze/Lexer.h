@@ -124,7 +124,7 @@ private:
   void LexChar();
 
   void Diagnose();
-  void CreateToken(tk::Type ty, const char *tokenStart);
+  void MakeTok(tk::Type ty, const char *tokenStart);
 
   tk::Type GetKindOfIdentifier(StringRef tokStr);
 

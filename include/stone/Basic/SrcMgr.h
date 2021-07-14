@@ -1172,6 +1172,7 @@ public:
       return SrcLoc();
 
     unsigned GlobalOffset = Entry.getOffset() + Offset;
+
     return Entry.isFile() ? SrcLoc::getFileLoc(GlobalOffset)
                           : SrcLoc::getMacroLoc(GlobalOffset);
   }

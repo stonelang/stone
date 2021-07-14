@@ -138,6 +138,7 @@ public:
   void SetInputType(file::Type ty) { compilerOpts.inputType = ty; }
   file::Type GetInputKind() const { return compilerOpts.inputType; }
 
+  // TODO:
   void SetModuleName(llvm::StringRef name) { compilerOpts.moduleName = name; }
   const llvm::StringRef GetModuleName() const {
     return compilerOpts.moduleName;
