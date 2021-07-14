@@ -109,6 +109,7 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
 
   // ConsumeTok();
 }
+
 void Parser::ParseFunctionBody(FunDecl *funDecl) {
 
   assert(funDecl && "Null FunDecl");
