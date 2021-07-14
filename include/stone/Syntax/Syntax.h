@@ -24,6 +24,7 @@ class Syntax;
 class SourceModuleFile;
 
 class Syntax final {
+  //Verifier verifier;
   TreeContext &tc;
 
 public:
@@ -36,6 +37,9 @@ public:
 public:
   Syntax(TreeContext &tc);
   ~Syntax();
+
+public:
+  //Verifier &GetVerifier() { return verifier; }
   TreeContext &GetTreeContext() { return tc; }
 
 public:
@@ -48,7 +52,7 @@ public:
   void VerifyDecl(Decl *d);
 
 public:
-  FunDecl *CreateFunDecl();
+  FunDecl *CreateFunDecl(DeclContext *dc, SrcLoc loc);
   void VerifyFunDecl(Decl *d);
 
 public:
@@ -58,6 +62,9 @@ public:
 public:
   bool HasError() { return tc.GetBasic().HasError(); }
   Basic &GetBasic() { return tc.GetBasic(); }
+
+public:
+  static DeclName MakeDeclName();
 
 public:
   /// \param extraSpace The amount of extra space to allocate after the object

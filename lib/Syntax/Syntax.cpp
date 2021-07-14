@@ -40,9 +40,10 @@ Module *Syntax::CreateModuleDecl(Identifier &name, bool isMainModule) {
   return moduleDecl;
 }
 
-FunDecl *Syntax::CreateFunDecl() {
+FunDecl *Syntax::CreateFunDecl(DeclContext *dc, SrcLoc loc) {
   size_t size =
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   void *funDeclPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
+  return ::new (funDeclPtr) FunDecl(GetTreeContext(), dc, loc);
 }

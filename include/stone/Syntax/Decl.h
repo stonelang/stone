@@ -271,11 +271,13 @@ public:
   ///
   /// This requires that the declaration have a name and that it be a simple
   /// identifier.
-  llvm::StringRef GetName() const {
+  llvm::StringRef GetNameText() const {
     // TODO: assert(name.IsIdentifier() && "Name is not a simple identifier");
     return GetIdentifier() ? GetIdentifier()->GetName() : "";
   }
   void SetDeclName(DeclName name) { this->name = name; }
+  DeclName GetDeclName() { return name; }
+
   void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
@@ -287,15 +289,18 @@ class TypeDecl : public NamedDecl {
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclType, and
   /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
-  // mutable const Type *TypeForDecl = nullptr;
+
+  // mutable const Type *typeForDecl = nullptr;
 
   /// The start of the source range for this declaration.
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc,
-           SrcLoc startLocation = SrcLoc())
-      : NamedDecl(ty, dc, loc), startLoc(startLocation) {}
+  TypeDecl(Decl::Type ty, DeclContext *dc, SrcLoc loc)
+      : NamedDecl(ty, dc, loc) {}
+
+public:
+  void SetIdentifier(Identifier *identifier) { SetDeclName(identifier); }
 };
 
 // TODO: May use this instead of using NamedDecl
@@ -331,7 +336,7 @@ public:
 class FunctionDecl : public DeclaratorDecl,
                      public DeclContext /*, syn::Redeclarable<FunctionDecl> */ {
 
-  StorageType sTy;
+  StorageType storageTy;
   AccessLevel accessLevel;
 
 public:
@@ -347,8 +352,10 @@ public:
   }
   AccessLevel GetAccessLevel() { return accessLevel; }
 
-  void SetStorageType(StorageType sTy) { this->sTy = sTy; }
-  StorageType GetStorageType() { return sTy; }
+  void SetStorageType(StorageType storageTy) { this->storageTy = storageTy; }
+  StorageType GetStorageType() { return storageTy; }
+
+  // void SetReturnType(TypeDecl* tyDecl);
 
 public:
 };
@@ -366,6 +373,9 @@ public:
 
   /// True if the function is a defer body.
   bool IsDeferBody() const;
+
+public:
+  // void SetReturnType(TypeDecl* returnTy);
 
   // SrcLoc GetStaticLoc() const { return staticLoc; }
   // SrcLoc GetFunLoc() const { return funcLoc; }

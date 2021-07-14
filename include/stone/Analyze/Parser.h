@@ -149,6 +149,11 @@ public:
   // Function
   SyntaxResult<Decl *> ParseFunDecl(ParsingDeclSpecifier &pds,
                                     AccessLevel accessLevel);
+  // Function
+private:
+  void ParseFunctionSignature(FunDecl *funDecl);
+  void ParseFunctionArguments(FunDecl *funDecl);
+  void ParseFunctionBody(FunDecl *funDecl);
 
 public:
   // Struct

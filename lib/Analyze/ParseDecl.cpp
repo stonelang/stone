@@ -32,6 +32,7 @@ bool Parser::IsTopDeclStart(const Token &tok) {
 bool Parser::ParseTopDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
 
   assert(IsTopDeclStart(tok) && "Invalid start of top-declaration");
+
   ParseDecl();
   return true;
 }
@@ -93,20 +94,31 @@ syn::DeclGroupPtrTy Parser::ParseDecl(ParsingDeclSpecifier &pds,
   return nullptr;
 }
 
-static void ParseFunctionPrototype(FunDecl *funDecl) {
+void Parser::ParseFunctionSignature(FunDecl *funDecl) {
 
   assert(funDecl && "Null FunDecl");
+  // funDecl->SetDeclName(name);
 
   // Get Identifier
   // funDecl->SetIdentifier();
 
+  ParseFunctionArguments(funDecl);
+
+  // Parse the return type
+  // funDecl->SetReturnType();
+
   // ConsumeTok();
 }
-static void ParseFunctionBody(FunDecl *funDecl) {
+void Parser::ParseFunctionBody(FunDecl *funDecl) {
 
+  assert(funDecl && "Null FunDecl");
   // assert(tok.Is(tk::Type::l_brace) && "Require left brace.");
 }
+void Parser::ParseFunctionArguments(FunDecl *funDecl) {
 
+  assert(funDecl && "Null FunDecl");
+  // assert(tok.Is(tk::Type::l_brace) && "Require left brace.");
+}
 SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
                                           AccessLevel accessLevel) {
 
@@ -115,14 +127,15 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
 
   ConsumeTok();
 
-  auto funDecl = syntax.CreateFunDecl();
+  auto funDecl = syntax.CreateFunDecl(nullptr, SrcLoc());
   funDecl->SetAccessLevel(accessLevel);
+
   // funDecl->SetTemplate...
 
-  ParseFunctionPrototype(funDecl);
+  ParseFunctionSignature(funDecl);
   ParseFunctionBody(funDecl);
 
-  syntax.VerifyDecl(funDecl);
+  // syntax.VerifyDecl(funDecl);
 
   if (check) {
   }
