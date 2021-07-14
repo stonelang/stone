@@ -332,12 +332,22 @@ public:
       : ValueDecl(ty, dc, loc) {}
 };
 
+class AccessControl {
+  // This also belongs to struct
+  AccessLevel level;
+
+public:
+  void SetAccessLevel(AccessLevel level) { this->level = level; }
+  AccessLevel GetAccessLevel() { return level; }
+};
+
 // This is really your function prototye
-class FunctionDecl : public DeclaratorDecl,
-                     public DeclContext /*, syn::Redeclarable<FunctionDecl> */ {
+class FunctionDecl
+    : public DeclaratorDecl,
+      public DeclContext,
+      public AccessControl /*, syn::Redeclarable<FunctionDecl> */ {
 
   StorageType storageTy;
-  AccessLevel accessLevel;
 
 public:
   FunctionDecl(Decl::Type ty, TreeContext &tc, DeclContext *dc, SrcLoc loc);
@@ -346,11 +356,6 @@ public:
   /// BraceStmt
   Stmt *GetBody();
   // void SetBody(Stmt body) {}
-
-  void SetAccessLevel(AccessLevel accessLevel) {
-    this->accessLevel = accessLevel;
-  }
-  AccessLevel GetAccessLevel() { return accessLevel; }
 
   void SetStorageType(StorageType storageTy) { this->storageTy = storageTy; }
   StorageType GetStorageType() { return storageTy; }
@@ -393,14 +398,16 @@ public:
 //   bool IsInstance() const { return !IsStatic(); }
 // };
 
-// class NominalTypeDecl : public TypeDecl, public DeclContext {
+class NominalTypeDecl : public TypeDecl,
+                        public DeclContext,
+                        public AccessControl {
 
-// public:
-// };
+public:
+};
 
-// class StructDecl final : public NominalTypeDecl {
-// public:
-// };
+class StructDecl final : public NominalTypeDecl {
+public:
+};
 
 // class EnumDecl final : public NominalTypeDecl {
 // public:

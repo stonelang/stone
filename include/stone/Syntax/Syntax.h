@@ -24,7 +24,7 @@ class Syntax;
 class SourceModuleFile;
 
 class Syntax final {
-  //Verifier verifier;
+  // Verifier verifier;
   TreeContext &tc;
 
 public:
@@ -39,11 +39,8 @@ public:
   ~Syntax();
 
 public:
-  //Verifier &GetVerifier() { return verifier; }
+  // Verifier &GetVerifier() { return verifier; }
   TreeContext &GetTreeContext() { return tc; }
-
-public:
-  static void MakeIdentifier();
 
 public:
   Module *CreateModuleDecl(Identifier &name, bool isMainModule);
@@ -64,6 +61,7 @@ public:
   Basic &GetBasic() { return tc.GetBasic(); }
 
 public:
+  static Identifier MakeIdentifier();
   static DeclName MakeDeclName();
 
 public:
