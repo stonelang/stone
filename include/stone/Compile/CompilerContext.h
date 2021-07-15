@@ -19,7 +19,7 @@ class CompilerContext final {
   llvm::Module *llvmModule = nullptr;
 
 public:
-  SafeList<CompilableItem> compilables;
+  SafeList<CompilableItem> cis;
 
 private:
   CompilerContext(const CompilerContext &) = delete;
@@ -42,8 +42,8 @@ public:
   }
 
 public:
-  void AddCompilable(std::unique_ptr<CompilableItem> compilable) {
-    compilables.Add(std::move(compilable));
+  void AddCompilable(std::unique_ptr<CompilableItem> ci) {
+    cis.Add(std::move(ci));
   }
 };
 

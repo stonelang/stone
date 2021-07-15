@@ -10,26 +10,23 @@
 
 using namespace stone;
 
-int mode::Parse(CompilableItem &compilable, bool check) {
+int mode::Parse(CompilableItem &ci, bool check) {
 
-  stone::ParseSyntaxFile(compilable.GetSyntaxFile(),
-                         compilable.GetCompiler().GetSyntax(),
-                         compilable.GetCompiler().GetPipelineEngine());
+  stone::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
+                         ci.GetCompiler().GetPipelineEngine());
 
-  if (compilable.GetCompiler().HasError()) {
+  if (ci.GetCompiler().HasError()) {
     return ret::err;
   }
   return ret::ok;
 }
-int mode::Parse(CompilableItem &compilable) {
-  return mode::Parse(compilable, false);
-}
-int mode::Check(CompilableItem &compilable) { return Parse(compilable, true); }
+int mode::Parse(CompilableItem &ci) { return mode::Parse(ci, false); }
+int mode::Check(CompilableItem &ci) { return Parse(ci, true); }
 
-int mode::EmitIR(CompilableItem &compilable) {
+int mode::EmitIR(CompilableItem &ci) {
 
   /// Should be in EmitIR Scope
-  if (!mode::Check(compilable)) {
+  if (!mode::Check(ci)) {
     return ret::err;
   }
   /// Should be in Parse scope
@@ -37,44 +34,42 @@ int mode::EmitIR(CompilableItem &compilable) {
   // CompilingScopeType::Parsing) {
   //}
   // If we are here, then parse should have already been called.
-  auto llvmModule = stone::GenIR(compilable.GetCompiler().GetMainModule(),
-                                 compilable.GetCompiler(),
-                                 compilable.GetCompiler().compilerOpts.genOpts,
-                                 compilable.GetOutputFile());
+  auto llvmModule =
+      stone::GenIR(ci.GetCompiler().GetMainModule(), ci.GetCompiler(),
+                   ci.GetCompiler().compilerOpts.genOpts, ci.GetOutputFile());
 
-  if (compilable.GetCompiler().HasError()) {
+  if (ci.GetCompiler().HasError()) {
     return ret::err;
   }
-  compilable.GetCompiler().GetCompilerContext().SetLLVMModule(llvmModule);
+  ci.GetCompiler().GetCompilerContext().SetLLVMModule(llvmModule);
   return ret::ok;
 }
 
-int mode::EmitObject(CompilableItem &compilable) {
+int mode::EmitObject(CompilableItem &ci) {
 
-  if (!compilable.GetCompiler().GetMode().CanOutput()) {
+  if (!ci.GetCompiler().GetMode().CanOutput()) {
     return ret::err;
   }
-  compilable.CreateOutputFile();
+  ci.CreateOutputFile();
 
-  if (!compilable.GetOutputFile()) {
+  if (!ci.GetOutputFile()) {
     return ret::err;
   }
   /// Should be in EmitIR Scope
-  if (!mode::EmitIR(compilable)) {
+  if (!mode::EmitIR(ci)) {
     return ret::err;
   }
 
-  if (!stone::GenObject(
-          compilable.GetCompiler().GetCompilerContext().GetLLVMModule(),
-          compilable.GetCompiler().GetCompilerOptions().genOpts,
-          compilable.GetCompiler().GetTreeContext(),
-          compilable.GetOutputFile())) {
+  if (!stone::GenObject(ci.GetCompiler().GetCompilerContext().GetLLVMModule(),
+                        ci.GetCompiler().GetCompilerOptions().genOpts,
+                        ci.GetCompiler().GetTreeContext(),
+                        ci.GetOutputFile())) {
     return ret::err;
   }
 
   return ret::ok;
 }
-int mode::EmitAssembly(CompilableItem &compilable) { return ret::ok; }
-int mode::EmitLibrary(CompilableItem &compilable) { return ret::ok; }
-int mode::EmitModule(CompilableItem &compilable) { return ret::ok; }
-int mode::EmitBitCode(CompilableItem &compilable) { return ret::ok; }
+int mode::EmitAssembly(CompilableItem &ci) { return ret::ok; }
+int mode::EmitLibrary(CompilableItem &ci) { return ret::ok; }
+int mode::EmitModule(CompilableItem &ci) { return ret::ok; }
+int mode::EmitBitCode(CompilableItem &ci) { return ret::ok; }

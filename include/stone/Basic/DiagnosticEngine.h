@@ -355,9 +355,9 @@ private:
   /// Sticky flag set to \c true when an error is emitted.
   bool errorOccurred;
 
-  /// Sticky flag set to \c true when an "uncompilable error" occurs.
+  /// Sticky flag set to \c true when an "unci error" occurs.
   /// I.e. an error that was not upgraded from a warning by -Werror.
-  bool uncompilableErrorOccurred;
+  bool unciErrorOccurred;
 
   /// Sticky flag set to \c true when a fatal error is emitted.
   bool fatalErrorOccurred;

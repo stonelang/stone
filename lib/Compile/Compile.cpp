@@ -26,37 +26,37 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
 
   assert(sf && "Could not create SyntaxFile");
 
-  std::unique_ptr<CompilableItem> compilable(
+  std::unique_ptr<CompilableItem> ci(
       new CompilableItem(CompilableFile(input, false), compiler, *sf));
 
   // TODO: May want to do tis later
-  if (compilable->CanOutput()) {
-    compilable->CreateOutputFile();
+  if (ci->CanOutput()) {
+    ci->CreateOutputFile();
   }
-  return compilable;
+  return ci;
 }
 
-int mode::Execute(CompilableItem &compilable) {
-  switch (compilable.GetCompiler().GetMode().GetType()) {
+int mode::Execute(CompilableItem &ci) {
+  switch (ci.GetCompiler().GetMode().GetType()) {
   case ModeType::Parse:
-    return mode::Parse(compilable);
+    return mode::Parse(ci);
   case ModeType::Check:
-    return mode::Check(compilable);
+    return mode::Check(ci);
   case ModeType::EmitModule:
-    return mode::EmitModule(compilable);
+    return mode::EmitModule(ci);
   default:
-    return mode::EmitObject(compilable);
+    return mode::EmitObject(ci);
   }
 }
 int stone::Compile(Compiler &compiler, file::File &input) {
-  auto compilable = BuildCompilable(compiler, input);
-  if (!compilable) {
+  auto ci = BuildCompilable(compiler, input);
+  if (!ci) {
     return ret::err;
   }
-  if (!mode::Execute(*compilable.get())) {
+  if (!mode::Execute(*ci.get())) {
     return ret::err;
   }
-  compiler.GetCompilerContext().AddCompilable(std::move(compilable));
+  compiler.GetCompilerContext().AddCompilable(std::move(ci));
 
   return ret::ok;
 }

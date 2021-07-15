@@ -118,9 +118,44 @@ private:
 /// It is important that this type remains small. It is currently 32 bits wide.
 class SrcLoc {
   friend class SrcMgr;
-  unsigned ID = 0;
+  friend class SrcRange;
+  friend class CharSrcRange;
 
+  unsigned ID = 0;
   enum : unsigned { MacroIDBit = 1U << 31 };
+
+  llvm::SMLoc locValue;
+
+public:
+  SrcLoc() {}
+  SrcLoc(llvm::SMLoc locValue) : locValue(locValue) {}
+
+public:
+  bool IsValid() const { return locValue.isValid(); }
+
+  explicit operator bool() const { return IsValid(); }
+
+  //bool operator==(const SrcLoc &rhs) const { return rhs.locValue == locValue; }
+  //bool operator!=(const SrcLoc &rhs) const { return !operator==(rhs); }
+
+  /// Return a source location advanced a specified number of bytes.
+  SrcLoc GetAdvancedLoc(int byteOffset) const {
+    assert(IsValid() && "Can't advance an invalid location");
+    return SrcLoc(
+        llvm::SMLoc::getFromPointer(locValue.getPointer() + byteOffset));
+  }
+
+  SrcLoc GetAdvancedLocOrInvalid(int byteOffset) const {
+    if (IsValid())
+      return GetAdvancedLoc(byteOffset);
+    return SrcLoc();
+  }
+  const void *GetOpaquePointerValue() const { return locValue.getPointer(); }
+
+public:
+  static SrcLoc GetFromPtr(const char *ptr) {
+    return SrcLoc(llvm::SMLoc::getFromPointer(ptr));
+  }
 
 public:
   bool isSrcID() const { return (ID & MacroIDBit) == 0; }
@@ -196,12 +231,6 @@ public:
   /// into a real SrcLoc.
   static SrcLoc getFromPtrEncoding(const void *encoding) {
     return getFromRawEncoding((unsigned)(uintptr_t)encoding);
-  }
-
-  static SrcLoc GetFromPtr(const char *ptr) {
-    SrcLoc loc;
-    loc.ID = (unsigned)(uintptr_t)ptr;
-    return loc;
   }
 
   static bool isPairOfFileLocations(SrcLoc Start, SrcLoc End) {

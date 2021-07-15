@@ -6,7 +6,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsTopDeclStart(const Token &tok) {
+bool Parser::IsStartOfTopDecl(const Token &tok) {
   switch (tok.GetType()) {
   case tk::Type::kw_interface:
   case tk::Type::kw_fun:
@@ -31,7 +31,7 @@ bool Parser::IsTopDeclStart(const Token &tok) {
 // This call parses one at a time and adds it to the SyntaxFile
 bool Parser::ParseTopDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
 
-  assert(IsTopDeclStart(tok) && "Invalid start of top-declaration");
+  assert(IsStartOfTopDecl(tok) && "Invalid top-declaration");
 
   ParseDecl();
   return true;

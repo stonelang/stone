@@ -62,7 +62,7 @@ class Compiler final : public Session {
   ConstList<CompilableFile> inputs;
 
   // TODO: Make unsafe and use Compiler to create them
-  SafeList<CompilableItem> compilables;
+  SafeList<CompilableItem> cis;
 
   /// If the output doesn't support seeking (terminal, pipe). we switch
   /// the stream to a buffer_ostream. These are the buffer and the original
