@@ -6,15 +6,15 @@
 namespace stone {
 namespace mode {
 
-static int Parse(CompilableItem &compilable, bool check);
-static int Parse(CompilableItem &compilable);
-static int Check(CompilableItem &compilable);
-static int EmitIR(CompilableItem &compilable);
-static int EmitObject(CompilableItem &compilable);
-static int EmitAssembly(CompilableItem &compilable);
-static int EmitLibrary(CompilableItem &compilable);
-static int EmitModule(CompilableItem &compilable);
-static int EmitBitCode(CompilableItem &compilable);
+int Parse(CompilableItem &compilable, bool check);
+int Parse(CompilableItem &compilable);
+int Check(CompilableItem &compilable);
+int EmitIR(CompilableItem &compilable);
+int EmitObject(CompilableItem &compilable);
+int EmitAssembly(CompilableItem &compilable);
+int EmitLibrary(CompilableItem &compilable);
+int EmitModule(CompilableItem &compilable);
+int EmitBitCode(CompilableItem &compilable);
 
 } // namespace mode
 } // namespace stone
