@@ -516,7 +516,7 @@ llvm::MemoryBuffer *SrcMgr::getFakeBufferForRecovery() const {
 /// fake content cache.
 const src::ContentCache *SrcMgr::getFakeContentCacheForRecovery() const {
   if (!FakeContentCacheForRecovery) {
-    FakeContentCacheForRecovery = llvm::make_unique<src::ContentCache>();
+    FakeContentCacheForRecovery = std::make_unique<src::ContentCache>();
     FakeContentCacheForRecovery->replaceBuffer(getFakeBufferForRecovery(),
                                                /*DoNotFree=*/true);
   }
@@ -1914,7 +1914,7 @@ SrcLoc SrcMgr::getMacroArgExpandedLocation(SrcLoc Loc) const {
 
   std::unique_ptr<MacroArgsMap> &MacroArgsCache = MacroArgsCacheMap[FID];
   if (!MacroArgsCache) {
-    MacroArgsCache = llvm::make_unique<MacroArgsMap>();
+    MacroArgsCache = std::make_unique<MacroArgsMap>();
     computeMacroArgsCache(*MacroArgsCache, FID);
   }
 
@@ -2241,19 +2241,19 @@ SrcMgrForFile::SrcMgrForFile(StringRef FileName, StringRef Content) {
                                        /*RequiresNullTerminator=*/false));
   // This is passed to `SM` as reference, so the pointer has to be referenced
   // in `Environment` so that `fileMgr` can out-live this function scope.
-  fileMgr = llvm::make_unique<FileMgr>(FileSystemOptions(), InMemoryFileSystem);
+  fileMgr = std::make_unique<FileMgr>(FileSystemOptions(), InMemoryFileSystem);
 
   // TODO:
   /*
     // This is passed to `SM` as reference, so the pointer has to be referenced
     // by `Environment` due to the same reason above.
-    DiagnosticEngine = llvm::make_unique<DiagnosticEngine>(
+    DiagnosticEngine = std::make_unique<DiagnosticEngine>(
         IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs),
         new DiagnosticOptions);
   */
 
   /*
-    SourceMgr = llvm::make_unique<SrcMgr>(*Diagnostics, *fileMgr);
+    SourceMgr = std::make_unique<SrcMgr>(*Diagnostics, *fileMgr);
 
     SrcID ID = SourceMgr->CreateSrcID(fileMgr->getFile(FileName),
                                         SrcLoc(), stone::src::C_User);

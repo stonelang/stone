@@ -1,4 +1,5 @@
 #include "stone/Basic/Basic.h"
+#include "llvm/Support/Host.h"
 
 using namespace stone;
 

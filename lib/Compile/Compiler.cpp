@@ -118,7 +118,7 @@ int Compiler::Run() {
 // }
 
 // std::unique_ptr<raw_pwrite_stream> Compiler::CreateNullOutputFile() {
-//   return llvm::make_unique<llvm::raw_null_ostream>();
+//   return std::make_unique<llvm::raw_null_ostream>();
 // }
 
 std::unique_ptr<raw_pwrite_stream>
@@ -165,13 +165,13 @@ std::unique_ptr<llvm::raw_pwrite_stream> Compiler::CreateOutputFile(
   std::string TempFile;
 
   if (!OutputPath.empty()) {
-    OutFile = OutputPath;
+    OutFile = std::string(OutputPath.str());
   } else if (InFile == "-") {
     OutFile = "-";
   } else if (!Extension.empty()) {
     SmallString<128> Path(InFile);
     llvm::sys::path::replace_extension(Path, Extension);
-    OutFile = Path.str();
+    OutFile = std::string(Path.str());
   } else {
     OutFile = "-";
   }
@@ -226,7 +226,7 @@ std::unique_ptr<llvm::raw_pwrite_stream> Compiler::CreateOutputFile(
 
     if (!EC) {
       OS.reset(new llvm::raw_fd_ostream(fd, /*shouldClose=*/true));
-      OSFile = TempFile = TempPath.str();
+      OSFile = TempFile = std::string(TempPath.str());
     }
     // If we failed to create the temporary, fallback to writing to the file
     // directly. This handles the corner case where we cannot write to the
@@ -254,7 +254,7 @@ std::unique_ptr<llvm::raw_pwrite_stream> Compiler::CreateOutputFile(
   if (!Binary || OS->supportsSeeking())
     return std::move(OS);
 
-  auto B = llvm::make_unique<llvm::buffer_ostream>(*OS);
+  auto B = std::make_unique<llvm::buffer_ostream>(*OS);
   assert(!nonSeekStream);
   nonSeekStream = std::move(OS);
   return std::move(B);

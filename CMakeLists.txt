@@ -25,7 +25,7 @@ include_directories(BEFORE
 )
 
 set_stone_version()
-message(STATUS "Stone Compiler Version: ${STONE_VERSION}")
+message(STATUS "Stone version: ${STONE_VERSION}")
 
 # Install the path for the lib files 
 install_stone()

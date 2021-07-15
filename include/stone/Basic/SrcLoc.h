@@ -132,7 +132,6 @@ public:
 
 public:
   bool IsValid() const { return locValue.isValid(); }
-
   explicit operator bool() const { return IsValid(); }
 
   //bool operator==(const SrcLoc &rhs) const { return rhs.locValue == locValue; }

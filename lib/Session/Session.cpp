@@ -28,7 +28,7 @@ void Session::CreateTimer() {
 }
 std::unique_ptr<llvm::opt::InputArgList>
 Session::ParseArgList(llvm::ArrayRef<const char *> args) {
-  auto argList = llvm::make_unique<llvm::opt::InputArgList>(
+  auto argList = std::make_unique<llvm::opt::InputArgList>(
       sessionOpts.GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
                                       includedFlagsBitmask,
                                       excludedFlagsBitmask));
@@ -55,7 +55,7 @@ Session::ParseArgList(llvm::ArrayRef<const char *> args) {
 }
 std::unique_ptr<llvm::opt::DerivedArgList>
 Session::TranslateArgList(const llvm::opt::InputArgList &args) {
-  auto dArgList = llvm::make_unique<llvm::opt::DerivedArgList>(args);
+  auto dArgList = std::make_unique<llvm::opt::DerivedArgList>(args);
 
   for (Arg *arg : args) {
     dArgList->append(arg);

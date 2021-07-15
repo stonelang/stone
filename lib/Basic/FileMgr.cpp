@@ -101,7 +101,7 @@ void FileMgr::addAncestorsAsVirtualDirs(StringRef Path) {
     return;
 
   // Add the virtual directory to the cache.
-  auto UDE = llvm::make_unique<SrcDir>();
+  auto UDE = std::make_unique<SrcDir>();
   UDE->Name = NamedDirEnt.first();
   NamedDirEnt.second = UDE.get();
   VirtualDirectoryEntries.push_back(std::move(UDE));
@@ -324,7 +324,7 @@ const SrcFile *FileMgr::getVirtualFile(StringRef Filename, off_t Size,
     UFE->IsNamedPipe = Status.getType() == llvm::sys::fs::file_type::fifo_file;
     fillRealPathName(UFE, Status.getName());
   } else {
-    VirtualFileEntries.push_back(llvm::make_unique<SrcFile>());
+    VirtualFileEntries.push_back(std::make_unique<SrcFile>());
     UFE = VirtualFileEntries.back().get();
     NamedFileEnt.second = UFE;
   }
@@ -371,7 +371,7 @@ void FileMgr::fillRealPathName(SrcFile *UFE, llvm::StringRef FileName) {
   // misleading. We need to clean up the interface here.
   makeAbsolutePath(AbsPath);
   llvm::sys::path::remove_dots(AbsPath, /*remove_dot_dot=*/true);
-  UFE->RealPathName = AbsPath.str();
+  UFE->RealPathName = std::string(AbsPath.str());
 }
 
 llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>

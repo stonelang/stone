@@ -100,7 +100,7 @@ void DriverInternal::BuildCompileJobs(Driver &driver) {
   auto tool = driver.GetToolChain().PickTool(JobType::Compile);
   assert(tool && "Could not find a tool for CompileJob.");
 
-  auto cmdOutput = llvm::make_unique<CmdOutput>("todo", fileMap);
+  auto cmdOutput = std::make_unique<CmdOutput>("todo", fileMap);
 
   for (auto &input : driver.GetInputFiles()) {
     if (input.GetType() == Type::Stone) {
@@ -225,7 +225,7 @@ void DriverStats::Print() {
   }
 }
 
-Driver::Driver(llvm::StringRef stoneExecutable, std::string driverName)
+Driver::Driver(llvm::StringRef stoneExecutable, llvm::StringRef driverName)
     : Session(driverOpts), stoneExecutablePath(stoneExecutablePath),
       driverName(driverName),
       /*sysRoot(DEFAULT_SYSROOT),*/
@@ -238,7 +238,7 @@ Driver::Driver(llvm::StringRef stoneExecutable, std::string driverName)
 std::unique_ptr<driver::TaskQueue>
 DriverInternal::BuildTaskQueue(Driver &driver) {
   // TODO:
-  return llvm::make_unique<driver::UnixTaskQueue>(driver);
+  return std::make_unique<driver::UnixTaskQueue>(driver);
 }
 
 void Driver::Init() {}
@@ -270,22 +270,22 @@ void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
     toolChain =
-        llvm::make_unique<DarwinToolChain>(*this, target, targetVariant);
+        std::make_unique<DarwinToolChain>(*this, target, targetVariant);
     toolChain->Build();
     break;
   }
     /*
         case llvm::Triple::Linux:
-          toolChain = llvm::make_unique<stone::Linux>(*this, target);
+          toolChain = std::make_unique<stone::Linux>(*this, target);
           break;
         case llvm::Triple::FreeBSD:
-          toolChain = llvm::make_unique<stone::FreeBSD>(*this, target);
+          toolChain = std::make_unique<stone::FreeBSD>(*this, target);
           break;
         case llvm::Triple::OpenBSD:
-          toolChain = llvm::make_unique<stone::OpenBSD>(*this, target);
+          toolChain = std::make_unique<stone::OpenBSD>(*this, target);
           break;
         case llvm::Triple::Win32:
-          toolChain = llvm::make_unique<stone::Win>(*this, target);
+          toolChain = std::make_unique<stone::Win>(*this, target);
           break;
     */
   default:
@@ -346,7 +346,7 @@ void Driver::BuildCompilation(const llvm::opt::InputArgList &argList) {
       translatedArgs->hasArg(opts::PrintDriverLifecycle);
   driverOpts.printStats = translatedArgs->hasArg(opts::PrintStats);
 
-  compilation = llvm::make_unique<Compilation>(*this);
+  compilation = std::make_unique<Compilation>(*this);
 
   BuildJobs();
 

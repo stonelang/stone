@@ -14,13 +14,13 @@ bool DarwinToolChain::BuildAssembleTool() { return true; }
 bool DarwinToolChain::BuildLLDLinkTool() { return true; }
 bool DarwinToolChain::BuildLDLinkTool() { return true; }
 bool DarwinToolChain::BuildGCCTool() {
-  // gccTool = llvm::make_unique<GCCTool>("test", "test", *this);
+  // gccTool = std::make_unique<GCCTool>("test", "test", *this);
   return true;
 }
 
 bool DarwinToolChain::BuildStoneTool() {
   // Get the path for the tool on your the respective system
-  stoneTool = llvm::make_unique<StoneTool>("stone", "test", *this);
+  stoneTool = std::make_unique<StoneTool>("stone", "test", *this);
   return true;
 }
 

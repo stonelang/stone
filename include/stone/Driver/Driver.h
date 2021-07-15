@@ -196,7 +196,7 @@ private:
   void ComputeCmdOutput();
 
 public:
-  Driver(llvm::StringRef executablePath, std::string driverName);
+  Driver(llvm::StringRef executablePath, llvm::StringRef driverName);
 
   void Init() override;
   /// Parse the given list of strings into an InputArgList.

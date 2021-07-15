@@ -86,14 +86,14 @@ Job *LinkTool::CreateJob(Compilation &compilation,
   Job *result = nullptr;
   // Depend on the mode-type -- if you want to emit ir
   if (linkType == LinkType::DynamicLibrary) {
-    auto job = llvm::make_unique<DynamicLinkJob>(
+    auto job = std::make_unique<DynamicLinkJob>(
         compilation, compilation.GetDriver().GetOutputProfile().RequiresLTO(),
         compilation.GetDriver().GetOutputProfile().linkType);
     result = job.get();
     jobs.Add(std::move(job));
 
   } else {
-    auto job = llvm::make_unique<StaticLinkJob>(
+    auto job = std::make_unique<StaticLinkJob>(
         compilation, compilation.GetDriver().GetOutputProfile().RequiresLTO(),
         compilation.GetDriver().GetOutputProfile().linkType);
     result = job.get();
@@ -109,14 +109,14 @@ Job *LinkTool::CreateJob(Compilation &compilation,
   Job *result = nullptr;
   // Depend on the mode-type -- if you want to emit ir
   if (linkType == LinkType::DynamicLibrary) {
-    auto job = llvm::make_unique<DynamicLinkJob>(
+    auto job = std::make_unique<DynamicLinkJob>(
         compilation, compilation.GetDriver().GetOutputProfile().RequiresLTO(),
         compilation.GetDriver().GetOutputProfile().linkType);
     result = job.get();
     jobs.Add(std::move(job));
 
   } else {
-    auto job = llvm::make_unique<StaticLinkJob>(
+    auto job = std::make_unique<StaticLinkJob>(
         compilation, compilation.GetDriver().GetOutputProfile().RequiresLTO(),
         compilation.GetDriver().GetOutputProfile().linkType);
     result = job.get();

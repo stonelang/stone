@@ -2,7 +2,9 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Driver/Run.h"
 #include "stone/Session/ExecutablePath.h"
+
 #include "llvm/ADT/Triple.h"
+#include "llvm/Support/Host.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/InitLLVM.h"

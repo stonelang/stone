@@ -19,7 +19,7 @@ StoneTool::StoneTool(llvm::StringRef fullName, llvm::StringRef shortName,
 Job *StoneTool::CreateJob(Compilation &compilation,
                           std::unique_ptr<CmdOutput> cmdOutput,
                           const OutputProfile &outputProfile) {
-  auto job = llvm::make_unique<CompileJob>(compilation);
+  auto job = std::make_unique<CompileJob>(compilation);
   Job *result = job.get();
   jobs.Add(std::move(job));
   return result;
@@ -30,7 +30,7 @@ Job *StoneTool::CreateJob(Compilation &compilation,
                           std::unique_ptr<CmdOutput> cmdOutput,
                           const OutputProfile &outputProfile) {
 
-  auto job = llvm::make_unique<CompileJob>(compilation);
+  auto job = std::make_unique<CompileJob>(compilation);
   Job *result = job.get();
   jobs.Add(std::move(job));
   return result;
