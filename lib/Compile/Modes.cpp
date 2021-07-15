@@ -1,10 +1,10 @@
 #include "stone/Compile/Modes.h"
+#include "stone/Analyze/Check.h"
+#include "stone/Analyze/Parse.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/Check.h"
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"
-#include "stone/Compile/Parse.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Syntax/Module.h"
 
@@ -13,7 +13,7 @@ using namespace stone;
 int mode::Parse(CompilableItem &ci, bool check) {
 
   syn::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
-                       ci.GetCompiler().GetPipelineEngine());
+                         ci.GetCompiler().GetPipelineEngine());
 
   if (ci.GetCompiler().HasError()) {
     return ret::err;

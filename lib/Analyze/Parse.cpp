@@ -1,8 +1,8 @@
-#include "stone/Compile/Parse.h"
+#include "stone/Analyze/Parse.h"
+#include "stone/Analyze/LexerPipeline.h"
+#include "stone/Analyze/Parser.h"
+#include "stone/Analyze/ParserPipeline.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/LexerPipeline.h"
-#include "stone/Compile/Parser.h"
-#include "stone/Compile/ParserPipeline.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
@@ -10,7 +10,7 @@ using namespace stone;
 using namespace stone::syn;
 
 void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, bool check,
-                          PipelineEngine *pe) {
+                            PipelineEngine *pe) {
 
   ParserPipeline *pp = nullptr;
   LexerPipeline *lp = nullptr;

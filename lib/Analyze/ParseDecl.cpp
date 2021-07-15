@@ -1,6 +1,6 @@
+#include "stone/Analyze/Parser.h"
+#include "stone/Analyze/ParserRAII.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/Parser.h"
-#include "stone/Compile/ParserRAII.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;

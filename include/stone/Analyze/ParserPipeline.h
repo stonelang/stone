@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_PARSERPIPELINE_H
-#define STONE_COMPILE_PARSERPIPELINE_H
+#ifndef STONE_ANALYZE_PARSERPIPELINE_H
+#define STONE_ANALYZE_PARSERPIPELINE_H
 
 #include "stone/Basic/PipelineEngine.h"
 #include "stone/Syntax/Decl.h"

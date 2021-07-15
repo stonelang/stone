@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_CHECKER_H
-#define STONE_COMPILE_CHECKER_H
+#ifndef STONE_ANALYZE_CHECKER_H
+#define STONE_ANALYZE_CHECKER_H
 
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/Stats.h"
@@ -11,6 +11,7 @@
 using namespace stone::syn;
 
 namespace stone {
+class CheckerPipeline;
 
 namespace syn {
 class Syntax;
@@ -18,7 +19,6 @@ class SyntaxFile;
 } // namespace syn
 namespace sema {
 class Checker;
-class CheckerPipeline;
 
 class CheckerStats final : public Stats {
   const Checker &checker;

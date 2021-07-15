@@ -1,4 +1,4 @@
-#include "stone/Compile/Parser.h"
+#include "stone/Analyze/Parser.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxResult.h"
 
