@@ -2,7 +2,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/CompileInputFile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
@@ -18,7 +17,7 @@ int Compiler::Run(Compiler &compiler) {
     return ret::err;
   }
   for (auto &input : compiler.GetInputFiles()) {
-    if (!stone::CompileInputFile(compiler, input)) {
+    if (!stone::Compile(compiler, input)) {
       ret::err;
     }
   }

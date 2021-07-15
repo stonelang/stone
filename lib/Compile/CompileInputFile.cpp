@@ -1,9 +1,9 @@
-#include "stone/Compile/CompileInputFile.h"
 #include "stone/Analyze/Check.h"
 #include "stone/Analyze/Parse.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Compile/CompilableItem.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/Modes.h"
 #include "stone/Gen/Gen.h"
@@ -131,7 +131,7 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   return compilable;
 }
 
-int stone::CompileInputFile(Compiler &compiler, file::File &input) {
+int stone::Compile(Compiler &compiler, file::File &input) {
   auto compilable = BuildCompilable(compiler, input);
   if (!compilable) {
     return ret::err;
