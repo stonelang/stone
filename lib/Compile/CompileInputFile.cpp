@@ -94,17 +94,6 @@ static int ExecuteCompilable(CompilableItem &compilable) {
     return mode::EmitObject(compilable);
   }
 }
-static syn::SyntaxFile *BuildSyntaxFileForMainModule(SyntaxFile::Kind kind,
-                                                     Compiler &compiler,
-                                                     SrcID srcID,
-                                                     bool isPrimary) {
-
-  auto *syntaxFile = new (compiler.GetTreeContext())
-      SyntaxFile(kind, *compiler.GetMainModule(), srcID, isPrimary);
-
-  return syntaxFile;
-}
-
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
 
@@ -116,8 +105,9 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   auto srcID = compiler.GetSrcMgr().CreateSrcID(std::move(*fileBuffer));
   compiler.GetSrcMgr().SetMainSrcID(srcID);
 
-  auto sf = BuildSyntaxFileForMainModule(SyntaxFile::Kind::Library, compiler,
-                                         srcID, false);
+  auto sf =
+      SyntaxFile::Make(SyntaxFile::Kind::Library, *compiler.GetMainModule(),
+                       compiler.GetTreeContext(), srcID);
 
   assert(sf && "Could not create SyntaxFile");
 

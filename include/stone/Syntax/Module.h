@@ -71,8 +71,9 @@ public:
   void AddDecl(Decl *decl) { decls.Add(decl); }
 
 public:
-  static syn::SyntaxFile *Create(SyntaxFile::Kind kind, Module &owner,
-                                 TreeContext &tc, bool isPrimary = false);
+  static syn::SyntaxFile *Make(SyntaxFile::Kind kind, Module &owner,
+                               TreeContext &tc, SrcID srcID,
+                               bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFile::Kind::Source;

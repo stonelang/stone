@@ -51,10 +51,12 @@ SyntaxFile::SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner,
     : ModuleFile(ModuleFile::Kind::Source, owner), kind(kind), srcID(srcID),
       isPrimary(isPrimary) {}
 
-syn::SyntaxFile *syn::SyntaxFile::Create(SyntaxFile::Kind kind,
-                                         syn::Module &owner, TreeContext &tc,
-                                         bool isPrimary) {
-  return nullptr;
+syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFile::Kind kind,
+                                       syn::Module &owner, TreeContext &tc,
+                                       SrcID srcID, bool isPrimary) {
+
+  auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);
+  return syntaxFile;
 }
 
 SyntaxFile::~SyntaxFile() {}
