@@ -1,8 +1,8 @@
 #ifndef STONE_ANALYZE_PARSERRAII_H
 #define STONE_ANALYZE_PARSERRAII_H
 
-#include "stone/Analyze/DeclSpecifier.h"
-#include "stone/Analyze/Parser.h"
+#include "stone/Compile/DeclSpecifier.h"
+#include "stone/Compile/Parser.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

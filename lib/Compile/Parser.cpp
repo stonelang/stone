@@ -1,9 +1,9 @@
-#include "stone/Analyze/Parser.h"
-#include "stone/Analyze/CheckerPipeline.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Compile/Parser.h"
+#include "stone/Compile/CheckerPipeline.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/Syntax.h"
 

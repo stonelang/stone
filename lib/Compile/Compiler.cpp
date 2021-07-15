@@ -1,5 +1,5 @@
-#include "stone/Compile/Compiler.h"
 #include "stone/Basic/Ret.h"
+#include "stone/Compile/Compiler.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/Support/BuryPointer.h"
