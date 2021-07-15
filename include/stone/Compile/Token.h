@@ -1,5 +1,5 @@
-#ifndef STONE_ANALYZE_TOKEN_H
-#define STONE_ANALYZE_TOKEN_H
+#ifndef STONE_COMPILE_TOKEN_H
+#define STONE_COMPILE_TOKEN_H
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"

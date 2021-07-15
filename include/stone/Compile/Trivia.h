@@ -1,5 +1,5 @@
-#ifndef STONE_ANALYZE_TRIVIA_H
-#define STONE_ANALYZE_TRIVIA_H
+#ifndef STONE_COMPILE_TRIVIA_H
+#define STONE_COMPILE_TRIVIA_H
 
 #include "stone/Basic/LLVM.h"
 #include "llvm/ADT/ArrayRef.h"

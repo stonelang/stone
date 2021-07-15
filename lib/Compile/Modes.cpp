@@ -1,6 +1,6 @@
+#include "stone/Compile/Modes.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/Modes.h"
 #include "stone/Compile/Check.h"
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"

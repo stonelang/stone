@@ -1,7 +1,7 @@
+#include "stone/Compile/Compile.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/Modes.h"
 #include "stone/Session/ExecutablePath.h"

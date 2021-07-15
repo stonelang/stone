@@ -1,5 +1,5 @@
-#include "stone/Basic/Ret.h"
 #include "stone/Compile/Parse.h"
+#include "stone/Basic/Ret.h"
 #include "stone/Compile/LexerPipeline.h"
 #include "stone/Compile/Parser.h"
 #include "stone/Compile/ParserPipeline.h"

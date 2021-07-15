@@ -1,5 +1,5 @@
-#include "stone/Basic/Ret.h"
 #include "stone/Compile/Check.h"
+#include "stone/Basic/Ret.h"
 #include "stone/Compile/Checker.h"
 #include "stone/Compile/CheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"

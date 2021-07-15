@@ -54,53 +54,6 @@ private:
   int getOpaqueValue() const { return ID; }
 };
 
-// class SrcLoc {
-//   friend class SrcMgr;
-//   friend class SrcRange;
-//   friend class CharSrcRange;
-//   llvm::SMLoc loc;
-
-// public:
-//   SrcLoc() {}
-//   explicit SrcLoc(llvm::SMLoc loc) : loc(loc) {}
-
-// public:
-//   bool IsValid() const { return loc.isValid(); }
-
-//   /// An explicit bool operator so one can check if a SourceLoc is valid in
-//   an
-//   /// if statement:
-//   ///
-//   /// if (auto x = getSourceLoc()) { ... }
-//   explicit operator bool() const { return IsValid(); }
-
-//   bool operator==(const SrcLoc &rhs) const { return rhs.loc == loc; }
-//   bool operator!=(const SrcLoc &rhs) const { return !operator==(rhs); }
-
-//   /// Return a source location advanced a specified number of bytes.
-//   SrcLoc GetAdvancedLoc(int byteOffset) const {
-//     assert(IsValid() && "Can't advance an invalid location");
-//     return SrcLoc(llvm::SMLoc::getFromPointer(loc.getPointer() +
-//     byteOffset));
-//   }
-
-//   SrcLoc GetAdvancedLocOrInvalid(int byteOffset) const {
-//     if (IsValid())
-//       return GetAdvancedLoc(byteOffset);
-//     return SrcLoc();
-//   }
-//   const void *GetOpaquePointerValue() const { return loc.getPointer(); }
-//   /// Print out the SourceLoc.  If this location is in the same buffer
-//   /// as specified by \c LastBufferID, then we don't print the filename.  If
-//   /// not, we do print the filename, and then update \c LastBufferID with the
-//   /// BufferID printed.
-//   void Print(raw_ostream &os, const SrcMgr &sm);
-//   void Print(raw_ostream &OS, const SrcMgr &sm) const {
-//     unsigned tmp = ~0U;
-//     // TODO: print(os, sm, tmp);
-//   }
-// };
-
 /// Encodes a location in the source. The SrcMgr can decode this
 /// to get at the full include stack, line and column information.
 ///
@@ -150,6 +103,12 @@ public:
     return SrcLoc();
   }
   const void *GetOpaquePointerValue() const { return locValue.getPointer(); }
+
+  void Print(raw_ostream &os, const SrcMgr &sm);
+  void Print(raw_ostream &OS, const SrcMgr &sm) const {
+    unsigned tmp = ~0U;
+    // TODO: print(os, sm, tmp);
+  }
 
 public:
   static SrcLoc GetFromPtr(const char *ptr) {
