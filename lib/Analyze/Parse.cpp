@@ -10,7 +10,7 @@ using namespace stone;
 using namespace stone::syn;
 
 void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, bool check,
-                            PipelineEngine *pe) {
+                          PipelineEngine *pe) {
 
   ParserPipeline *pp = nullptr;
   LexerPipeline *lp = nullptr;

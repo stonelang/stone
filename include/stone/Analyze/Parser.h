@@ -266,7 +266,6 @@ public:
     return prevTokLoc;
   }
 
-  SrcLoc ConsumeTokIf();
   /// Consume the token and update OnToken from CompilerPipeline
   SrcLoc ConsumeTok(bool onTok = true);
   SrcLoc ConsumeTok(tk::Type ty) {

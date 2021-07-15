@@ -32,7 +32,7 @@ void Parser::Init() {
   // Create the translation unit scope.  Install it as the current scope.
   // assert(GetCurScope() == nullptr && "A scope is already active?");
   // Prime the Lexer
-  ConsumeTok();
+  // ConsumeTok();
 }
 
 // TODO:

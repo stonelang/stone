@@ -34,6 +34,7 @@ bool Parser::ParseTopDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
   assert(IsStartOfTopDecl(tok) && "Invalid top-declaration");
 
   ParseDecl();
+
   return true;
 }
 
@@ -126,10 +127,11 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
   assert(tok.GetType() == tk::Type::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 
+  // TODO:
   auto funDecl = syntax.MakeFunDecl(tok.GetLoc(), nullptr);
   funDecl->SetAccessLevel(accessLevel);
 
-  ConsumeTok();
+  ConsumeTok(tk::Type::kw_fun);
 
   // funDecl->SetTemplate...
 

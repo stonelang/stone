@@ -10,6 +10,7 @@ set(stone_syn_sources
 	Decl.cpp
 	DeclContext.cpp
 	DeclGroup.cpp
+	DeclName.cpp
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp

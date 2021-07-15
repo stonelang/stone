@@ -167,7 +167,7 @@ public:
 
   /// GetLoc - Return a source location identifier for the specified
   /// offset in the current file.
-  SrcLoc GetLoc() const { return SrcLoc::GetFromPtr(text.begin()); }
+  SrcLoc GetLoc() const { return SrcLoc::getFromPtrEncoding(text.begin()); }
 
   // CharSrcRange GetRange() const {
   //       return CharSourceRange(GetLoc(), GetLength());
