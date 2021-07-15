@@ -13,7 +13,6 @@ set(stone_compile_sources
 	Compile.cpp
 	Compiler.cpp
 	Modes.cpp
-	Optimize.cpp
 	Serialize.cpp
 	
 	LINK_LIBS

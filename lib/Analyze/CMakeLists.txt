@@ -22,8 +22,7 @@ set(stone_analyze_sources
 	ParseStmt.cpp
 
 	LINK_LIBS
-	StoneGen
-	StoneSession
+	StoneSyntax
 
 	DEPENDS
 	StoneOptions
