@@ -12,7 +12,7 @@ using namespace stone;
 
 int mode::Parse(CompilableItem &ci, bool check) {
 
-  stone::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
+  syn::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
                          ci.GetCompiler().GetPipelineEngine());
 
   if (ci.GetCompiler().HasError()) {

@@ -12,6 +12,7 @@ class SyntaxFile;
 
 } // namespace syn
 
+namespace sema {
 /// Perform type checking
 void CheckSyntaxFile(syn::SyntaxFile &sf, syn::Syntax &syntax,
                      CheckerPipeline *pipeline = nullptr);
@@ -19,6 +20,7 @@ void CheckSyntaxFile(syn::SyntaxFile &sf, syn::Syntax &syntax,
 /// Perform type checking
 void CheckModule(syn::SyntaxFile &sf, syn::Syntax &syntax,
                  CheckerPipeline *pipeline = nullptr);
+} // namespace sema
 
 } // namespace stone
 #endif

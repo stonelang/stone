@@ -6,9 +6,10 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
+using namespace stone;
 using namespace stone::syn;
 
-void stone::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, bool check,
+void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, bool check,
                             PipelineEngine *pe) {
 
   ParserPipeline *pp = nullptr;

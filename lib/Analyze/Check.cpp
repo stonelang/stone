@@ -4,15 +4,15 @@
 #include "stone/Basic/Ret.h"
 #include "stone/Syntax/Syntax.h"
 
+using namespace stone;
 using namespace stone::syn;
-using namespace stone::sema;
 
-void stone::CheckSyntaxFile(SyntaxFile &sf, Syntax &syntax,
-                            CheckerPipeline *pipeline) {
+void sema::CheckSyntaxFile(SyntaxFile &sf, Syntax &syntax,
+                           CheckerPipeline *pipeline) {
   // Checker checker(su, pipeline);
 }
 
-void stone::CheckModule(SyntaxFile &sf, Syntax &syntax,
-                        CheckerPipeline *pipeline) {
+void sema::CheckModule(SyntaxFile &sf, Syntax &syntax,
+                       CheckerPipeline *pipeline) {
   // Checker checker
 }

@@ -9,8 +9,9 @@ class PipelineEngine;
 namespace syn {
 class Syntax;
 class SyntaxFile;
-} // namespace syn
 void ParseSyntaxFile(syn::SyntaxFile &sf, syn::Syntax &syntax, bool check,
                      PipelineEngine *pe = nullptr);
+
+} // namespace syn
 } // namespace stone
 #endif
