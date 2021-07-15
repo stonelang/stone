@@ -269,8 +269,7 @@ void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
     if (const llvm::opt::Arg *A = argList.getLastArg(opts::TargetVariant)) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
-    toolChain =
-        std::make_unique<DarwinToolChain>(*this, target, targetVariant);
+    toolChain = std::make_unique<DarwinToolChain>(*this, target, targetVariant);
     toolChain->Build();
     break;
   }

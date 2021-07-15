@@ -134,8 +134,8 @@ public:
   bool IsValid() const { return locValue.isValid(); }
   explicit operator bool() const { return IsValid(); }
 
-  //bool operator==(const SrcLoc &rhs) const { return rhs.locValue == locValue; }
-  //bool operator!=(const SrcLoc &rhs) const { return !operator==(rhs); }
+  // bool operator==(const SrcLoc &rhs) const { return rhs.locValue == locValue;
+  // } bool operator!=(const SrcLoc &rhs) const { return !operator==(rhs); }
 
   /// Return a source location advanced a specified number of bytes.
   SrcLoc GetAdvancedLoc(int byteOffset) const {

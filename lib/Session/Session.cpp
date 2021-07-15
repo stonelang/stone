@@ -28,10 +28,10 @@ void Session::CreateTimer() {
 }
 std::unique_ptr<llvm::opt::InputArgList>
 Session::ParseArgList(llvm::ArrayRef<const char *> args) {
-  auto argList = std::make_unique<llvm::opt::InputArgList>(
-      sessionOpts.GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
-                                      includedFlagsBitmask,
-                                      excludedFlagsBitmask));
+  auto argList =
+      std::make_unique<llvm::opt::InputArgList>(sessionOpts.GetOpts().ParseArgs(
+          args, missingArgIndex, missingArgCount, includedFlagsBitmask,
+          excludedFlagsBitmask));
 
   assert(argList && "No input argument list.");
 

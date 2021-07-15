@@ -4,9 +4,9 @@
 #include "stone/Session/ExecutablePath.h"
 
 #include "llvm/ADT/Triple.h"
-#include "llvm/Support/Host.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
 #include "llvm/Support/InitLLVM.h"
 #include "llvm/Support/Process.h"
 #include "llvm/Support/Program.h"
