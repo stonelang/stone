@@ -82,18 +82,8 @@ int mode::EmitLibrary(CompilableItem &compilable) { return ret::ok; }
 int mode::EmitModule(CompilableItem &compilable) { return ret::ok; }
 int mode::EmitBitCode(CompilableItem &compilable) { return ret::ok; }
 
-static int ExecuteCompilable(CompilableItem &compilable) {
-  switch (compilable.GetCompiler().GetMode().GetType()) {
-  case ModeType::Parse:
-    return mode::Parse(compilable);
-  case ModeType::Check:
-    return mode::Check(compilable);
-  case ModeType::EmitModule:
-    return mode::EmitModule(compilable);
-  default:
-    return mode::EmitObject(compilable);
-  }
-}
+
+
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
 
@@ -121,12 +111,24 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   return compilable;
 }
 
+static int ExecuteMode(CompilableItem &compilable) {
+  switch (compilable.GetCompiler().GetMode().GetType()) {
+  case ModeType::Parse:
+    return mode::Parse(compilable);
+  case ModeType::Check:
+    return mode::Check(compilable);
+  case ModeType::EmitModule:
+    return mode::EmitModule(compilable);
+  default:
+    return mode::EmitObject(compilable);
+  }
+}
 int stone::Compile(Compiler &compiler, file::File &input) {
   auto compilable = BuildCompilable(compiler, input);
   if (!compilable) {
     return ret::err;
   }
-  if (!ExecuteCompilable(*compilable.get())) {
+  if (!ExecuteMode(*compilable.get())) {
     return ret::err;
   }
   compiler.GetCompilerContext().AddCompilable(std::move(compilable));

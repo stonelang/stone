@@ -5,8 +5,9 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
-
+#include "stone/Compile/Modes.h"
 using namespace stone;
+
 
 int Compiler::Run(Compiler &compiler) {
 
