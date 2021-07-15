@@ -8,6 +8,7 @@
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
+
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
 
@@ -35,7 +36,7 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   return compilable;
 }
 
-static int ExecuteMode(CompilableItem &compilable) {
+int mode::Execute(CompilableItem &compilable) {
   switch (compilable.GetCompiler().GetMode().GetType()) {
   case ModeType::Parse:
     return mode::Parse(compilable);
@@ -52,7 +53,7 @@ int stone::Compile(Compiler &compiler, file::File &input) {
   if (!compilable) {
     return ret::err;
   }
-  if (!ExecuteMode(*compilable.get())) {
+  if (!mode::Execute(*compilable.get())) {
     return ret::err;
   }
   compiler.GetCompilerContext().AddCompilable(std::move(compilable));

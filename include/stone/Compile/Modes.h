@@ -5,7 +5,7 @@
 
 namespace stone {
 namespace mode {
-
+int Execute(CompilableItem &compilable);
 int Parse(CompilableItem &compilable, bool check);
 int Parse(CompilableItem &compilable);
 int Check(CompilableItem &compilable);
