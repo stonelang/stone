@@ -9,6 +9,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
+namespace sema {
 
 class CheckerPipeline : public Pipeline {
 
@@ -21,6 +22,8 @@ public:
 public:
   virtual void OnDeclChecked(const syn::Decl *decl) = 0;
 };
+
+} // namespace sema
 
 } // namespace stone
 #endif

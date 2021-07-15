@@ -1,5 +1,6 @@
 #include "stone/Basic/SrcMgr.h"
 #include "gtest/gtest.h"
+#include "stone/Basic/Basic.h"
 
 using namespace stone;
 

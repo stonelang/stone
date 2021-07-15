@@ -11,7 +11,6 @@
 using namespace stone::syn;
 
 namespace stone {
-class CheckerPipeline;
 
 namespace syn {
 class Syntax;
@@ -19,6 +18,7 @@ class SyntaxFile;
 } // namespace syn
 namespace sema {
 class Checker;
+class CheckerPipeline;
 
 class CheckerStats final : public Stats {
   const Checker &checker;

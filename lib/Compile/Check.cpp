@@ -8,11 +8,11 @@ using namespace stone;
 using namespace stone::syn;
 
 void sema::CheckSyntaxFile(SyntaxFile &sf, Syntax &syntax,
-                           CheckerPipeline *pipeline) {
+                           sema::CheckerPipeline *pipeline) {
   // Checker checker(su, pipeline);
 }
 
 void sema::CheckModule(SyntaxFile &sf, Syntax &syntax,
-                       CheckerPipeline *pipeline) {
+                       sema::CheckerPipeline *pipeline) {
   // Checker checker
 }
