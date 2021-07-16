@@ -8,10 +8,13 @@
 
 NOTE(note_opening_brace,none,
      "to match this opening '{'", ())
+
 NOTE(note_opening_bracket,none,
      "to match this opening '['", ())
+
 NOTE(note_opening_paren,none,
      "to match this opening '('", ())
+
 NOTE(note_opening_angle,none,
      "to match this opening '<'", ())
 
@@ -19,14 +22,60 @@ NOTE(note_opening_angle,none,
 ERROR(err_extra_rbrace,none,
       "extraneous '}' at top level", ())
 
-
-
 //==============================================================================
 // MARK: Lexing 
 //==============================================================================
 
 WARN(warn_null_character,none,
         "null character embedded in middle of file", ())
+
+ERROR(err_utf16_bom_marker,none,
+      "input files must be encoded as UTF-8 instead of UTF-16", ())
+
+ERROR(err_unprintable_ascii_character,none,
+      "unprintable ASCII character found in source file", ())
+
+ERROR(err_invalid_utf8,none,
+      "invalid UTF-8 found in source file", ())
+
+ERROR(err_single_quote_string,none,
+      "single-quoted string literal found, use '\"'", ())
+
+ERROR(err_invalid_curly_quote,none,
+      "unicode curly quote found, replace with '\"'", ())
+
+NOTE(note_confusable_character,none,
+      "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
+      (StringRef, StringRef, StringRef, StringRef))
+
+WARN(warn_non_breaking_space,none,
+        "non-breaking space (U+00A0) used instead of regular space", ())
+
+ERROR(err_unterminated_block_comment,none,
+      "unterminated '/*' comment", ())
+
+NOTE(note_comment_start,none,
+     "comment started here", ())
+
+
+ERROR(err_unterminated_string,none,
+      "unterminated string literal", ())
+
+ERROR(err_invalid_escape,none,
+       "invalid escape sequence in literal", ())
+
+ERROR(err_invalid_u_escape,none,
+      "\\u{...} escape sequence expects between 1 and 8 hex digits", ())
+
+ERROR(err_invalid_u_escape_rbrace,none,
+      "expected '}' in \\u{...} escape sequence", ())
+
+ERROR(err_invalid_escape_delimiter,none,
+      "too many '#' characters in delimited escape", ())
+
+ERROR(err_invalid_closing_delimiter,none,
+      "too many '#' characters in closing delimiter", ())
+
 
 //==============================================================================
 // MARK: Parsing

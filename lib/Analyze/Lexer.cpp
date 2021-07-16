@@ -388,6 +388,27 @@ static bool IsValidTokStart(const signed char ch) {
   }
 }
 
+static bool SkipToEndOfSlashStarComment(const char *&curPtr,
+                                        const char *bufferEnd,
+                                        const char *codeCompletionPtr,
+                                        Basic &basic) {
+
+  return false;
+}
+
+static void DiagnoseEmbeddedNull(Basic &basic, const char *locPtr) {
+
+  assert(locPtr && "invalid source location");
+  assert(*locPtr == '\0' && "not an embedded null");
+
+  SrcLoc nullStartLoc = SrcLoc::GetFromPtr(locPtr);
+  SrcLoc nullEndLoc = SrcLoc::GetFromPtr(locPtr + 1);
+
+  basic.GetDiagEngine().Diagnose(nullStartLoc, diag::warn_null_character);
+
+  // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
+}
+
 Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
              LexerPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {

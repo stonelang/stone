@@ -138,7 +138,7 @@ public:
   DeclContext *GetCurDeclContext() { return curDC; }
 
 public:
-  bool IsStartOfTopDecl(const Token &tok);
+  bool IsTopDeclStart(const Token &tok);
   bool ParseTopDecl(DeclGroupPtrTy &result, bool isFirstDecl = false);
   syn::DeclGroupPtrTy ParseDecl(ParsingDeclSpecifier *pds = nullptr);
 
