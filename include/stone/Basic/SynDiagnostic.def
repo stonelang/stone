@@ -76,6 +76,12 @@ ERROR(err_invalid_escape_delimiter,none,
 ERROR(err_invalid_closing_delimiter,none,
       "too many '#' characters in closing delimiter", ())
 
+ERROR(err_invalid_unicode_scalar,none,
+      "invalid unicode scalar", ())
+      
+ERROR(err_unicode_escape_braces,none,
+      "expected hexadecimal code in braces after unicode escape", ())
+
 
 //==============================================================================
 // MARK: Parsing

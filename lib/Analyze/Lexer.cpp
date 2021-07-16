@@ -7,6 +7,47 @@
 using namespace stone;
 using namespace stone::syn;
 
+
+static bool EncodeToUTF8(unsigned CharValue,
+                         SmallVectorImpl<char> &Result) {
+  // Number of bits in the value, ignoring leading zeros.
+  unsigned NumBits = 32-llvm::countLeadingZeros(CharValue);
+
+  // Handle the leading byte, based on the number of bits in the value.
+  unsigned NumTrailingBytes;
+  if (NumBits <= 5+6) {
+    // Encoding is 0x110aaaaa 10bbbbbb
+    Result.push_back(char(0xC0 | (CharValue >> 6)));
+    NumTrailingBytes = 1;
+  } else if (NumBits <= 4+6+6) {
+    // Encoding is 0x1110aaaa 10bbbbbb 10cccccc
+    Result.push_back(char(0xE0 | (CharValue >> (6+6))));
+    NumTrailingBytes = 2;
+
+    // UTF-16 surrogate pair values are not valid code points.
+    if (CharValue >= 0xD800 && CharValue <= 0xDFFF)
+      return true;
+    // U+FDD0...U+FDEF are also reserved
+    if (CharValue >= 0xFDD0 && CharValue <= 0xFDEF)
+      return true;
+  } else if (NumBits <= 3+6+6+6) {
+    // Encoding is 0x11110aaa 10bbbbbb 10cccccc 10dddddd
+    Result.push_back(char(0xF0 | (CharValue >> (6+6+6))));
+    NumTrailingBytes = 3;
+    // Reject over-large code points.  These cannot be encoded as UTF-16
+    // surrogate pairs, so UTF-32 doesn't allow them.
+    if (CharValue > 0x10FFFF)
+      return true;
+  } else {
+    return true;  // UTF8 can encode these, but they aren't valid code points.
+  }
+  
+  // Emit all of the trailing bytes.
+  while (NumTrailingBytes--)
+    Result.push_back(char(0x80 | (0x3F & (CharValue >> (NumTrailingBytes*6)))));
+  return false;
+}
+
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
 static unsigned CLO8(unsigned char C) {
   return llvm::countLeadingOnes(uint32_t(C) << 24);
@@ -406,9 +447,8 @@ static void DiagnoseEmbeddedNull(const char *locPtr, Basic *basic) {
 
   if (basic) {
     basic->GetDiagEngine().Diagnose(nullStartLoc, diag::warn_null_character);
+    // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
   }
-
-  // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
 }
 
 /// Advance \p CurPtr to the end of line or the end of file. Returns \c true
@@ -453,6 +493,93 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
   }
 }
 
+/// DiagnoseZeroWidthMatchAndAdvance - Error invisible characters in delimiters.
+/// An invisible character in the middle of a delimiter can be used to extend
+/// the literal beyond what it would appear creating potential security bugs.
+static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
+                                             Basic *basic) {
+  // TODO: Detect, diagnose and skip over zero-width characters if required.
+  // See https://bugs.swift.org/browse/SR-8678 for possible implementation.
+  return *curPtr == target && curPtr++;
+}
+
+/// Extracts/detects any custom delimiter on
+/// opening a string literal, advances CurPtr if a delimiter is found and
+/// returns a non-zero delimiter length. CurPtr[-1] must be '#' when called.
+static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Basic *basic) {
+
+  assert(curPtr[-1] == '#');
+  const char *tmpPtr = curPtr;
+  unsigned customDelimiterLen = 1;
+
+  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, basic)) {
+    customDelimiterLen++;
+  }
+  if (DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, basic)) {
+    curPtr = tmpPtr;
+    return customDelimiterLen;
+  }
+  return 0;
+}
+/// delimiterMatches - Does custom delimiter ('#' characters surrounding quotes)
+/// match the number of '#' characters after '\' inside the string? This allows
+/// interpolation inside a "raw" string. Normal/cooked string processing is
+/// the degenerate case of there being no '#' characters surrounding the quotes.
+/// If delimiter matches, advances byte pointer passed in and returns true.
+/// Also used to detect the final delimiter of a string when IsClosing == true.
+static bool DelimiterMatches(unsigned customDelimiterLen, const char *&bytesPtr,
+                             Basic *basic, bool isClosing = false) {
+  if (!customDelimiterLen) {
+    return true;
+  }
+  const char *tmpPtr = bytesPtr;
+  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, basic)) {
+  }
+  if (tmpPtr - bytesPtr < customDelimiterLen) {
+    return false;
+  }
+  bytesPtr += customDelimiterLen;
+  if (basic && (tmpPtr > bytesPtr)) {
+
+    // TODO:
+    // Diag<> message = IsClosing ? diag::lex_invalid_closing_delimiter
+    //                            : diag::lex_invalid_escape_delimiter;
+    // Diags->diagnose(Lexer::getSourceLoc(BytesPtr), message)
+    //     .fixItRemoveChars(Lexer::getSourceLoc(BytesPtr),
+    //                       Lexer::getSourceLoc(TmpPtr));
+  }
+  return true;
+}
+
+/// AdvanceIfMultilineDelimiter - Centralized check for multiline delimiter.
+static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
+                                        const char *&curPtr, Basic *basic,
+                                        bool isOpening = false) {
+
+  // Test for single-line string literals that resemble multiline delimiter.
+  const char *tmpPtr = curPtr + 1;
+  if (isOpening && customDelimiterLen) {
+    while (*tmpPtr != '\r' && *tmpPtr != '\n') {
+      if (*tmpPtr == '"') {
+        if (DelimiterMatches(customDelimiterLen, ++tmpPtr, nullptr)) {
+          return false;
+        }
+        continue;
+      }
+      ++tmpPtr;
+    }
+  }
+
+  tmpPtr = curPtr;
+  if (*(tmpPtr - 1) == '"' &&
+      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, basic) &&
+      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, basic)) {
+    curPtr = tmpPtr;
+    return true;
+  }
+
+  return false;
+}
 Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
              LexerPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
@@ -709,6 +836,7 @@ void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
       } else {
         trivia.AppendOrSquash(TriviaKind::CarriageReturn, 1);
       }
+      break;
     case ' ':
       trivia.AppendOrSquash(TriviaKind::Space, 1);
       break;
@@ -784,7 +912,142 @@ void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
   }
 }
 
-void Lexer::LexChar() {}
+unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostics,
+                    bool isMultilineString, unsigned customDelimiterLen) {
+
+  const char *charStart = curPtr;
+  switch (*curPtr++) {
+  default: { // Normal characters are part of the string.
+    // Normal characters are part of the string.
+    // If this is a "high" UTF-8 character, validate it.
+    if ((signed char)(curPtr[-1]) >= 0) {
+      if (isPrintable(curPtr[-1]) == 0)
+        if (!(isMultilineString && (curPtr[-1] == '\t')))
+          if (emitDiagnostics) {
+            Diagnose(charStart, diag::err_unprintable_ascii_character);
+          }
+      return curPtr[-1];
+    }
+    --curPtr;
+    unsigned charValue = ValidateUTF8CharAndAdvance(curPtr, bufferEnd);
+    if (charValue != ~0U){
+      return charValue;
+    }
+    if (emitDiagnostics) {
+      Diagnose(charStart, diag::err_invalid_utf8);
+    }
+    return ~1U;
+  }
+  case '"':
+  case '\'':
+    if (curPtr[-1] == stopQuote) {
+      // Mutliline and custom escaping are only enabled for " quote.
+      if (LLVM_UNLIKELY(stopQuote != '"'))
+        return ~0U;
+      if (!isMultilineString && !customDelimiterLen)
+        return ~0U;
+
+      Basic *localBasic = emitDiagnostics ? basic : nullptr;
+
+      auto tmpPtr = curPtr;
+
+      if (isMultilineString &&
+          !AdvanceIfMultilineDelimiter(customDelimiterLen, tmpPtr, localBasic))
+        return '"';
+
+      if (customDelimiterLen &&
+          !DelimiterMatches(customDelimiterLen, tmpPtr, localBasic, /*IsClosing=*/true))
+        return '"';
+      curPtr = tmpPtr;
+      return ~0U;
+    }
+    // Otherwise, this is just a character.
+    return curPtr[-1];
+
+  case 0:
+    assert(curPtr - 1 != bufferEnd && "Caller must handle EOF");
+    if (emitDiagnostics) {
+      Diagnose(curPtr - 1, diag::warn_null_character);
+    }
+    return curPtr[-1];
+  case '\n': // String literals cannot have \n or \r in them.
+  case '\r':
+    assert(isMultilineString && "Caller must handle newlines in non-multiline");
+    return curPtr[-1];
+  case '\\': // Escapes.
+    if (!DelimiterMatches(customDelimiterLen, curPtr,
+                          bmitDiagnostics ? basic : nullptr))
+      return '\\';
+    break;
+  }
+
+  unsigned charValue = 0;
+  // Escape processing.  We already ate the "\".
+  switch (*curPtr) {
+  case ' ':
+  case '\t':
+  case '\n':
+  case '\r':
+    if (isMultilineString && MaybeConsumeNewlineEscape(curPtr, 0))
+      return '\n';
+    LLVM_FALLTHROUGH;
+  default: // Invalid escape.
+    if (emitDiagnostics) {
+      Diagnose(curPtr, diag::err_invalid_escape);
+    }
+
+    // If this looks like a plausible escape character, recover as though this
+    // is an invalid escape.
+    if (isAlphanumeric(*curPtr))
+      ++curPtr;
+    return ~1U;
+
+  // Simple single-character escapes.
+  case '0':
+    ++curPtr;
+    return '\0';
+  case 'n':
+    ++curPtr;
+    return '\n';
+  case 'r':
+    ++curPtr;
+    return '\r';
+  case 't':
+    ++curPtr;
+    return '\t';
+  case '"':
+    ++curPtr;
+    return '"';
+  case '\'':
+    ++curPtr;
+    return '\'';
+  case '\\':
+    ++curPtr;
+    return '\\';
+
+  case 'u': { //  \u HEX HEX HEX HEX
+    ++curPtr;
+    if (*curPtr != '{') {
+      if (emitDiagnostics)
+        Diagnose(curPtr - 1, diag::err_unicode_escape_braces);
+      return ~1U;
+    }
+
+    charValue = LexUnicodeEscape(curPtr, emitDiagnostics ? this : nullptr);
+    if (charValue == ~1U)
+      return ~1U;
+    break;
+  }
+  }
+  // Check to see if the encoding is valid.
+  llvm::SmallString<64> tempString;
+  if (charValue >= 0x80 && EncodeToUTF8(charValue, tempString)) {
+    if (emitDiagnostics)
+      Diagnose(charStart, diag::err_invalid_unicode_scalar);
+    return ~1U;
+  }
+  return charValue;
+}
 
 void Lexer::LexNumber() {}
 

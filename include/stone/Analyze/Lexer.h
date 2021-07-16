@@ -121,7 +121,8 @@ private:
   void LexNumber();
   void LexHexNumber();
   void LexStrLiteral();
-  void LexChar();
+  unsigned LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostics,
+               bool isMultilineString, unsigned customDelimiterLen);
   unsigned LexUnicodeEscape(const char *&curPtr, Basic *basic);
 
   void Diagnose();
@@ -141,6 +142,15 @@ public:
   Token &Peek() { return nextToken; }
   SrcID GetSrcID() { return srcID; }
   NullCharType GetNullCharType(const char *data) const;
+
+public:
+  template <typename... DiagArgTypes, typename... ArgTypes>
+  LiveDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
+                          ArgTypes &&...Args) {
+
+    basic.GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(locPtr), DiagID,
+                                   std::forward<ArgTypes>(Args)...);
+  }
 
 private:
   void SkipToEndOfLine(bool eatNewline);
