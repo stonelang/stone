@@ -1,11 +1,13 @@
 #ifndef STONE_BASIC_DIAGNOSTICENGINE_H
 #define STONE_BASIC_DIAGNOSTICENGINE_H
 
+#include "stone/Basic/Diagnosable.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticPrinter.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/TokenType.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -80,34 +82,46 @@ enum class DiagnosticArgumentType {
   /// unsigned
   UInt,
 
+  TokenType,
+
   /// custom argument
   Custom,
 };
 
-/*
-template <typename T> class CustomDianosticValue {
-  T v;
-public:
-  CustomDiagnosticValue(T v) : v(v) {}
-public:
-  T GetValue() { return v; }
-};
-*/
-
 class DiagnosticArgument {
   DiagnosticArgumentType ty;
 
+  union {
+    int intVal;
+    unsigned unsignedVal;
+    tk::Type tkVal;
+    llvm::StringRef llvmStringRefVal;
+    const char *cStringVal;
+    std::string stdStringRefVal;
+    Diagnosable *diagnosableVal = nullptr;
+  };
+
 public:
-  DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
+  DiagnosticArgument(std::string argVal)
+      : ty(DiagnosticArgumentType::STDStr), stdStringRefVal(argVal) {}
+
+  DiagnosticArgument(llvm::StringRef argVal)
+      : ty(DiagnosticArgumentType::LLVMStr), llvmStringRefVal(argVal) {}
+
+  DiagnosticArgument(Diagnosable *argVal)
+      : ty(DiagnosticArgumentType::Custom), diagnosableVal(argVal) {}
+
+  DiagnosticArgument(tk::Type argVal)
+      : ty(DiagnosticArgumentType::TokenType), tkVal(argVal) {}
+
+  DiagnosticArgument(const char *argVal)
+      : ty(DiagnosticArgumentType::CStr), cStringVal(argVal) {}
+
+public:
+  Diagnosable *GetAsDiagnosable() { return diagnosableVal; }
 
 public:
   DiagnosticArgumentType GetType() { return ty; }
-};
-
-class CustomDiagnosticArgument : public DiagnosticArgument {
-public:
-  CustomDiagnosticArgument()
-      : DiagnosticArgument(DiagnosticArgumentType::Custom) {}
 };
 
 class FixHint final {
@@ -266,6 +280,9 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
 
+  // TODO: Not too sure
+  friend class Diagnosable;
+
   /// The
   unsigned int diagnosticSeen = 0;
 
@@ -350,7 +367,7 @@ private:
   /// while emitting another diagnostic.
   unsigned delayedDiagID;
 
-  // This SUCKS
+  //  SUCKS
   struct DelayedDiagArgument {
     /// First string argument for the delayed diagnostic.
     std::string one;
@@ -473,6 +490,9 @@ public:
   inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
   inline LiveDiagnostic Issue(unsigned DiagID);
   void Issue(const StoredDiagnostic &storedDiagnostic);
+
+  // inline LiveDiagnostic Issue(const Diagnosable *custom, DiagID diagID,
+  //                              llvm::ArrayRef<DiagnosticArgument> args);
 
   /// Determine whethere there is already a diagnostic in flight.
   bool IsLive() const {

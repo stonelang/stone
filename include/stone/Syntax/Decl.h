@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_DECL_H
 
 #include "stone/Basic/AddressSpace.h"
+
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"
@@ -49,7 +50,9 @@ public:
   void Print() override;
 };
 
-class alignas(8) Decl : public syn::Node {
+enum { DeclAlignment = 8 };
+
+class alignas(DeclAlignment) Decl : public syn::Node {
 public:
   enum Type {
     None,
@@ -149,7 +152,7 @@ protected:
   Decl(Decl::Type ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
 };
 
-class DeclContext {
+class DeclContext : public Diagnosable {
 
 public:
   enum class Type : unsigned {

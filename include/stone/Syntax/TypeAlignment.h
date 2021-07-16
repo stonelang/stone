@@ -7,6 +7,7 @@ namespace stone {
 class Decl;
 class Expr;
 class Stmt;
+class Diagnosable;
 class TreeContext;
 class DeclContext;
 

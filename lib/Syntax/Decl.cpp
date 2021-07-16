@@ -7,6 +7,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/Target.h"
+#include "stone/Syntax/DeclDiagnosable.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
@@ -50,3 +51,5 @@ FunctionDecl::FunctionDecl(Decl::Type ty, SrcLoc loc, TreeContext &tc,
     : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContext::Type::Decl, ty) {}
 
 void DeclStats::Print() {}
+
+void DeclDiagnosable::Diagnose(DiagnosticEngine &de) {}

@@ -1,16 +1,10 @@
 #ifndef LLVM_CLANG_BASIC_IDENTIFIERTABLE_H
 #define LLVM_CLANG_BASIC_IDENTIFIERTABLE_H
 
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <string>
-#include <utility>
-
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/Stats.h"
 #include "stone/Basic/TokenType.h"
+
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringMap.h"
@@ -18,6 +12,13 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include "llvm/Support/type_traits.h"
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <utility>
 
 namespace stone {
 class LangOptions;

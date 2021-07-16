@@ -1,4 +1,5 @@
 #include "stone/Basic/Basic.h"
+#include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/DiagnosticEngine.h"
 
 #include "gtest/gtest.h"
@@ -15,5 +16,6 @@ public:
 TEST_F(DiagTest, ErrorTest) {
 
   basic.GetDiagOptions().useColor = true;
-  basic.GetDiagEngine().Issue(SrcLoc(), 1) << "test";
+  basic.GetDiagEngine().Issue(SrcLoc(), diag::compile_error_no_compile_args)
+      << "test";
 }
