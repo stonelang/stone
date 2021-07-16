@@ -46,7 +46,6 @@
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/SrcLoc.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"

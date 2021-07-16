@@ -1,7 +1,6 @@
 #ifndef STONE_SESSION_SESSION_H
 #define STONE_SESSION_SESSION_H
 
-
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/File.h"
 #include "stone/Basic/FileMgr.h"
@@ -9,7 +8,6 @@
 #include "stone/Basic/Stats.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/SessionOptions.h"
-
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -37,7 +35,6 @@
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/VirtualFileSystem.h"
-
 
 #include <cassert>
 #include <list>

@@ -431,6 +431,19 @@ public:
   inline LiveDiagnostic Issue(unsigned DiagID);
   void Issue(const StoredDiagnostic &storedDiagnostic);
 
+  // inline LiveDiagnostic Issue(SrcLoc loc, DiagID diagID);
+
+  template <typename... ArgTypes>
+  LiveDiagnostic
+  Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args);
+
+  template <typename... ArgTypes>
+  LiveDiagnostic
+  Diagnose(const ComplexDiagnosticArgument *complexArgument,
+           Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args);
+
   // inline LiveDiagnostic Issue(const Diagnosable *custom, DiagID diagID,
   //                              llvm::ArrayRef<DiagnosticArgument> args);
 
@@ -567,6 +580,22 @@ public:
     return *this;
   }
 };
+
+template <typename... ArgTypes>
+LiveDiagnostic DiagnosticEngine::Diagnose(
+    SrcLoc loc, Diag<ArgTypes...> id,
+    typename detail::PassArgument<ArgTypes>::type... args) {
+
+  return LiveDiagnostic(this);
+}
+
+template <typename... ArgTypes>
+LiveDiagnostic DiagnosticEngine::Diagnose(
+    const ComplexDiagnosticArgument *complexArgument, Diag<ArgTypes...> id,
+    typename detail::PassArgument<ArgTypes>::type... args) {
+
+  return LiveDiagnostic(this);
+}
 
 inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
   assert(curDiagID == std::numeric_limits<unsigned>::max() &&

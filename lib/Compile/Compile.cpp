@@ -1,4 +1,5 @@
 #include "stone/Compile/Compile.h"
+#include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
@@ -65,8 +66,7 @@ int Compiler::Run(Compiler &compiler) {
 
   assert(compiler.GetMode().IsCompilable() && "Invalid compile mode.");
   if (compiler.GetInputFiles().empty()) {
-    compiler.Error(0);
-    printf("No input files.\n"); // TODO: Use Diagnostics
+    compiler.GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_input_files);
     return ret::err;
   }
   for (auto &input : compiler.GetInputFiles()) {

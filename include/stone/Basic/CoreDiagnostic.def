@@ -4,5 +4,7 @@
 ERROR(invalid_diagnostic,none,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
+ERROR(err_no_input_files, none, "no input files", ())
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

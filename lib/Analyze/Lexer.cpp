@@ -2,6 +2,7 @@
 #include "stone/Analyze/LexerPipeline.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SynDiagnostic.h"
 
 using namespace stone;
 using namespace stone::syn;

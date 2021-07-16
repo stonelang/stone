@@ -16,6 +16,7 @@ set(stone_gen_sources
 	Gen.cpp
 	Native.cpp
 	Optimize.cpp
+	
 	LINK_LIBS
 	StoneSyntax
 )

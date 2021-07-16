@@ -44,20 +44,18 @@ class SrcMgrNew {
     int LineOffset;
   };
   std::map<const char *, VirtualFile> VirtualFiles;
-  mutable std::pair<const char *, const VirtualFile*> CachedVFile = {nullptr, nullptr};
+  mutable std::pair<const char *, const VirtualFile *> CachedVFile = {nullptr,
+                                                                      nullptr};
 
   Optional<unsigned> findBufferContainingLocInternal(SourceLoc Loc) const;
+
 public:
   SourceManager(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS =
                     llvm::vfs::getRealFileSystem())
-    : FileSystem(FS) {}
+      : FileSystem(FS) {}
 
-  llvm::SourceMgr &getLLVMSourceMgr() {
-    return LLVMSourceMgr;
-  }
-  const llvm::SourceMgr &getLLVMSourceMgr() const {
-    return LLVMSourceMgr;
-  }
+  llvm::SourceMgr &getLLVMSourceMgr() { return LLVMSourceMgr; }
+  const llvm::SourceMgr &getLLVMSourceMgr() const { return LLVMSourceMgr; }
 
   void setFileSystem(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS) {
     FileSystem = FS;
@@ -74,17 +72,11 @@ public:
     CodeCompletionOffset = Offset;
   }
 
-  bool hasCodeCompletionBuffer() const {
-    return CodeCompletionBufferID != 0U;
-  }
+  bool hasCodeCompletionBuffer() const { return CodeCompletionBufferID != 0U; }
 
-  unsigned getCodeCompletionBufferID() const {
-    return CodeCompletionBufferID;
-  }
+  unsigned getCodeCompletionBufferID() const { return CodeCompletionBufferID; }
 
-  unsigned getCodeCompletionOffset() const {
-    return CodeCompletionOffset;
-  }
+  unsigned getCodeCompletionOffset() const { return CodeCompletionOffset; }
 
   SourceLoc getCodeCompletionLoc() const;
 
@@ -122,7 +114,8 @@ public:
   /// this routine always returns a valid buffer ID.
   unsigned findBufferContainingLoc(SourceLoc Loc) const;
 
-  /// Whether the source location is pointing to any buffer owned by the SourceManager.
+  /// Whether the source location is pointing to any buffer owned by the
+  /// SourceManager.
   bool isOwning(SourceLoc Loc) const;
 
   /// Adds a memory buffer to the SourceManager, taking ownership of it.
@@ -212,8 +205,8 @@ public:
     int LineOffset = getLineOffset(Loc);
     int l, c;
     std::tie(l, c) = LLVMSourceMgr.getLineAndColumn(Loc.Value, BufferID);
-    assert(LineOffset+l > 0 && "bogus line offset");
-    return { LineOffset + l, c };
+    assert(LineOffset + l > 0 && "bogus line offset");
+    return {LineOffset + l, c};
   }
 
   /// Returns the real line and column for a source location.
@@ -241,7 +234,8 @@ public:
   void verifyAllBuffers() const;
 
   /// Translate line and column pair to the offset.
-  /// If the column number is the maximum unsinged int, return the offset of the end of the line.
+  /// If the column number is the maximum unsinged int, return the offset of the
+  /// end of the line.
   llvm::Optional<unsigned> resolveFromLineCol(unsigned BufferId, unsigned Line,
                                               unsigned Col) const;
 
@@ -250,17 +244,21 @@ public:
                                                      unsigned Line) const;
 
   /// Get the length of the line
-  llvm::Optional<unsigned> getLineLength(unsigned BufferId, unsigned Line) const;
+  llvm::Optional<unsigned> getLineLength(unsigned BufferId,
+                                         unsigned Line) const;
 
-  SourceLoc getLocForLineCol(unsigned BufferId, unsigned Line, unsigned Col) const {
+  SourceLoc getLocForLineCol(unsigned BufferId, unsigned Line,
+                             unsigned Col) const {
     auto Offset = resolveFromLineCol(BufferId, Line, Col);
-    return Offset.hasValue() ? getLocForOffset(BufferId, Offset.getValue()) :
-                               SourceLoc();
+    return Offset.hasValue() ? getLocForOffset(BufferId, Offset.getValue())
+                             : SourceLoc();
   }
 
   std::string getLineString(unsigned BufferID, unsigned LineNumber);
 
-  SourceLoc getLocFromExternalSource(StringRef Path, unsigned Line, unsigned Col);
+  SourceLoc getLocFromExternalSource(StringRef Path, unsigned Line,
+                                     unsigned Col);
+
 private:
   const VirtualFile *getVirtualFile(SourceLoc Loc) const;
   unsigned getExternalSourceBufferId(StringRef Path);

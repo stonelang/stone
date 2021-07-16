@@ -15,7 +15,6 @@
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
 
-
 #include <algorithm>
 #include <memory>
 #include <sys/stat.h>

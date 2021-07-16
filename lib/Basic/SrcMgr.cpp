@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcMgrInternals.h"
 
@@ -36,7 +35,6 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
-
 
 using namespace stone;
 using namespace stone::src;

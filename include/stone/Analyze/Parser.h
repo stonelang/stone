@@ -284,6 +284,9 @@ public:
   void ExitScope();
 
   syn::Scope *GetCurScope() const;
+
+private:
+  void Diagnose();
 };
 
 } // namespace syn

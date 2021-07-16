@@ -15,7 +15,6 @@
 namespace llvm {
 
 template <typename T> struct DenseMapInfo;
-
 } // namespace llvm
 
 namespace stone {
