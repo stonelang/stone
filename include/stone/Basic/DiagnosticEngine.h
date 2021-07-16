@@ -340,17 +340,6 @@ public:
   bool HasError();
   void Print();
 
-  /// Issue the message to the client.
-  ///
-  /// This actually returns an instance of LiveDiagnostic which emits the
-  /// diagnostics (through @c ProcessDiag) when it is destroyed.
-  ///
-  /// \param DiagID A member of the @c diag::kind enum.
-  /// \param Loc Represents the source location associated with the diagnostic,
-  /// which can be an invalid location if no position information is available.
-  inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
-  inline LiveDiagnostic Issue(unsigned diagID);
-
 private:
   /// Sticky flag set to \c true when an error is emitted.
   bool errorOccurred;
@@ -433,6 +422,24 @@ public:
   unsigned GetCurrentDiagID() const { return curDiagID; }
 
   SrcLoc GetCurrentDiagLoc() const { return curDiagLoc; }
+
+public:
+  /// Issue the message to the client.
+  ///
+  /// This actually returns an instance of DiagnosticBuilder which emits the
+  /// diagnostics (through @c ProcessDiag) when it is destroyed.
+  ///
+  /// \param DiagID A member of the @c diag::kind enum.
+  /// \param Loc Represents the source location associated with the diagnostic,
+  /// which can be an invalid location if no position information is available.
+  inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
+  inline LiveDiagnostic Issue(unsigned DiagID);
+  void Issue(const StoredDiagnostic &storedDiagnostic);
+
+  /// Determine whethere there is already a diagnostic in flight.
+  bool IsLive() const {
+    return curDiagID != std::numeric_limits<unsigned>::max();
+  }
 };
 
 /// RAII class that determines when any errors have occurred
@@ -491,8 +498,8 @@ class LiveDiagnostic final {
   explicit LiveDiagnostic(DiagnosticEngine *de) : de(de), isActive(true) {
     assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
 
-    // de->diagnosticRanges.clear();
-    // de->diagnosticFixHints.clear();
+    // de->ranges.clear();
+    // de->fixHints.clear();
   }
 
 public:
@@ -504,11 +511,12 @@ public:
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  inline LiveDiagnostic Diagnose(const SrcLoc loc, const unsigned diagnosticID,
-                                 const unsigned msgID);
+  // inline LiveDiagnostic Diagnose(const SrcLoc loc, const unsigned
+  // diagnosticID,
+  //                                const unsigned msgID);
 
-  inline LiveDiagnostic Diagnose(const unsigned diagnosticID,
-                                 const unsigned msgID);
+  // inline LiveDiagnostic Diagnose(const unsigned diagnosticID,
+  //                                const unsigned msgID);
 
 protected:
   void FlushCounts() {}
@@ -546,6 +554,22 @@ public:
   /// Emits the diagnostic.
   ~LiveDiagnostic() { Emit(); }
 };
+
+inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
+  assert(curDiagID == std::numeric_limits<unsigned>::max() &&
+         "Multiple diagnostics in flight at once!");
+
+  // CurDiagLoc = Loc;
+  // CurDiagID = DiagID;
+  // FlagValue.clear();
+  return LiveDiagnostic(this);
+}
+// const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
+//                                     llvm::Error &&E);
+
+inline LiveDiagnostic DiagnosticEngine::Issue(unsigned diagID) {
+  return Issue(SrcLoc(), diagID);
+}
 
 /*
 /// Register a value for the flag in the current diagnostic. This

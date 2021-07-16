@@ -68,7 +68,8 @@ DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
 
 DiagnosticEngine::~DiagnosticEngine() {}
 
-// TODO
+void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
+
 bool DiagnosticEngine::HasError() { return false; }
 
 void DiagnosticEngine::SetListener(DiagnosticListener *listerner) {}
