@@ -5,18 +5,22 @@
 
 // LEXER
 
-WARNING(warn_nul_character,none,
-        "nul character embedded in middle of file", ())
+WARNING(lex_warn_null_character,none,
+        "null character embedded in middle of file", ())
 
 // PARSER  
-NOTE(note_opening_brace,none,
+NOTE(parser_note_opening_brace,none,
      "to match this opening '{'", ())
-NOTE(note_opening_bracket,none,
+NOTE(parser_note_opening_bracket,none,
      "to match this opening '['", ())
-NOTE(note_opening_paren,none,
+NOTE(parser_note_opening_paren,none,
      "to match this opening '('", ())
-NOTE(note_opening_angle,none,
+NOTE(parser_note_opening_angle,none,
      "to match this opening '<'", ())
+
+
+// PARSER
+
 
 // CHECKER 
 

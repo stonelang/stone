@@ -7,8 +7,4 @@ class DiagTest : public ::testing::Test {
 public:
 };
 
-TEST_F(DiagTest, PerformErrorTest) {
-
-}
-
-
+TEST_F(DiagTest, ErrorTest) {}

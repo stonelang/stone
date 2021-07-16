@@ -1,6 +1,6 @@
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 
@@ -31,7 +31,6 @@ TEST_F(SrcMgrTest, GetColNumber) {
                        "int y;";
 
   auto memBuffer = llvm::MemoryBuffer::getMemBuffer(Source);
-
   auto MainSrcID = sm.CreateSrcID(std::move(memBuffer));
   sm.SetMainSrcID(MainSrcID);
 

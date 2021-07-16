@@ -1,4 +1,5 @@
 #include "stone/Analyze/Lexer.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
@@ -6,8 +7,7 @@
 #include "gtest/gtest.h"
 
 using namespace stone;
-using namespace stone::syn; 
-
+using namespace stone::syn;
 
 class LexerTest : public ::testing::Test {
 protected:
@@ -17,7 +17,7 @@ protected:
   LangOptions langOpts;
   FileMgr fm;
   SrcMgr sm;
-	Context ctx; 
+  Basic basic;
 
 protected:
   LexerTest() : de(diagOpts, &sm), fm(fmOpts), sm(de, fm) {}
@@ -29,7 +29,7 @@ protected:
     auto srcID = sm.CreateSrcID(std::move(memBuffer));
 
     sm.SetMainSrcID(srcID);
-    auto lexer = std::make_unique<Lexer>(mainSrcID, sm, basic);
+    auto lexer = std::make_unique<Lexer>(srcID, sm, basic);
     return lexer;
   }
   std::vector<syn::Token> Lex(llvm::StringRef srcBuffer) {
@@ -37,7 +37,7 @@ protected:
     auto lexer = CreateLexer(srcBuffer);
     std::vector<syn::Token> tokens;
     while (true) {
-			syn::Token token;
+      syn::Token token;
       lexer->Lex(token);
       tokens.push_back(token);
       break;

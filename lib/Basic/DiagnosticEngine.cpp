@@ -6,7 +6,7 @@ using namespace stone;
 namespace {
 enum class LocalOptions {
   /// No options.
-  None,
+  none,
 
   /// The location of this diagnostic points to the beginning of the first
   /// token that the parser considers invalid.  If this token is located at the
