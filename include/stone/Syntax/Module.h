@@ -3,6 +3,7 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
+#include "stone/Basic/Printable.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
@@ -42,7 +43,7 @@ public:
                      unsigned alignment = AlignOfModuleFile());
 };
 
-class SyntaxFile final : public ModuleFile {
+class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
   friend TreeContext;
   // llvm::NullablePtr<TreeScope> scope = nullptr;
@@ -69,6 +70,9 @@ public:
   SrcID GetSrcID() { return srcID; }
 
   void AddDecl(Decl *decl) { decls.Add(decl); }
+
+  // void Print(llvm::raw_ostream &os,
+  //            const PrintingPolicy &policy) const override;
 
 public:
   static syn::SyntaxFile *Make(SyntaxFile::Kind kind, Module &owner,

@@ -427,6 +427,38 @@ public:
 // public:
 // };
 
+// TODO: Maybe Enum, Struct, ... can be replaced with Member
+enum class UseDeclType : uint8_t {
+  /// use STD.IO;
+  Module = 0,
+
+  //// use STD.Time.Month;
+  Enum,
+
+  /// use STD.IO.OutputStream;
+  Struct,
+
+  /// use STD.IO.Stream;
+  Interface,
+
+  /// fun Main() -> int { use STD.Math.Min;  auto min = Min<AnyType>(first,
+  /// second); }
+  Fun,
+
+  // use Stream = STD.IO.Stream;
+  Alias,
+};
+
+class UseDeclBase : public NamedDecl {
+public:
+};
+class UseDecl : public UseDeclBase {
+  SrcLoc useLoc;
+
+public:
+  // Module *mod = nullptr;
+};
+
 } // namespace syn
 } // namespace stone
 #endif
