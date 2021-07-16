@@ -391,12 +391,12 @@ static bool IsValidTokStart(const signed char ch) {
 static bool SkipToEndOfSlashStarComment(const char *&curPtr,
                                         const char *bufferEnd,
                                         const char *codeCompletionPtr,
-                                        Basic &basic) {
+                                        Basic *basic) {
 
   return false;
 }
 
-static void DiagnoseEmbeddedNull(Basic &basic, const char *locPtr) {
+static void DiagnoseEmbeddedNull(const char *locPtr, Basic *basic) {
 
   assert(locPtr && "invalid source location");
   assert(*locPtr == '\0' && "not an embedded null");
@@ -404,9 +404,53 @@ static void DiagnoseEmbeddedNull(Basic &basic, const char *locPtr) {
   SrcLoc nullStartLoc = SrcLoc::GetFromPtr(locPtr);
   SrcLoc nullEndLoc = SrcLoc::GetFromPtr(locPtr + 1);
 
-  basic.GetDiagEngine().Diagnose(nullStartLoc, diag::warn_null_character);
+  if (basic) {
+    basic->GetDiagEngine().Diagnose(nullStartLoc, diag::warn_null_character);
+  }
 
   // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
+}
+
+/// Advance \p CurPtr to the end of line or the end of file. Returns \c true
+/// if it stopped at the end of line, \c false if it stopped at the end of file.
+static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
+                               const char *codeCompletionPtr = nullptr,
+                               Basic *basic = nullptr) {
+  while (1) {
+    switch (*curPtr++) {
+    case '\n':
+    case '\r':
+      --curPtr;
+      return true; // If we found the end of the line, return.
+    default:
+      // If this is a "high" UTF-8 character, validate it.
+      if ((signed char)(curPtr[-1]) < 0) {
+        --curPtr;
+        const char *charStart = curPtr;
+        if (ValidateUTF8CharAndAdvance(curPtr, bufferEnd) == ~0U)
+
+          // TODO; May not always want to call this
+          if (basic) {
+            basic->GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(charStart),
+                                            diag::err_invalid_utf8);
+          }
+      }
+      break; // Otherwise, eat other characters.
+    case 0:
+
+      if ((curPtr - 1) != bufferEnd) {
+        if (basic && (curPtr - 1) != codeCompletionPtr) {
+          // If this is a random null character in the middle of a buffer,
+          // skip it as whitespace.
+          DiagnoseEmbeddedNull(curPtr - 1, basic);
+        }
+        continue;
+      }
+      // Otherwise, the last line of the file does not have a newline.
+      --curPtr;
+      return false;
+    }
+  }
 }
 
 Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
@@ -567,6 +611,54 @@ void Lexer::Lex() {
   }
   }
 }
+
+void Lexer::SkipToEndOfLine(bool eatNewline) {
+  bool isEOL = AdvanceToEndOfLine(curPtr, bufferEnd, codeCompletionPtr, &basic);
+  if (eatNewline && isEOL) {
+    ++curPtr;
+    nextToken.SetAtStartOfLine(true);
+  }
+}
+void Lexer::SkipSlashSlashComment(bool eatNewline) {
+  assert(curPtr[-1] == '/' && curPtr[0] == '/' && "Not a // comment");
+  SkipToEndOfLine(eatNewline);
+}
+
+unsigned Lexer::LexUnicodeEscape(const char *&CurPtr, Basic *basic) {
+
+  assert(curPtr[0] == '{' && "Invalid unicode escape");
+  ++curPtr;
+
+  const char *digitStart = CurPtr;
+  unsigned numDigits = 0;
+
+  assert(true && "isHexDigit(...) is not implemented");
+
+  //  for (; isHexDigit(CurPtr[0]); ++NumDigits)
+  //   ++curPtr;
+
+  if (curPtr[0] != '}') {
+    if (basic) {
+      basic->GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(curPtr),
+                                      diag::err_invalid_u_escape_rbrace);
+    }
+    return ~1U;
+  }
+  ++curPtr;
+
+  if (numDigits < 1 || numDigits > 8) {
+    if (basic) {
+      basic->GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(curPtr),
+                                      diag::err_invalid_u_escape);
+    }
+    return ~1U;
+  }
+
+  unsigned charValue = 0;
+  StringRef(digitStart, numDigits).getAsInteger(16, charValue);
+  return charValue;
+}
+
 void Lexer::LexIdentifier() {
   const char *tokStart = curPtr - 1;
   curPtr = tokStart;

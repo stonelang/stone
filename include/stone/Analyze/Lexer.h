@@ -43,7 +43,7 @@ class Lexer final {
   const SrcID srcID;
   SrcMgr &sm;
 
-  const Basic &basic;
+  Basic &basic;
   std::unique_ptr<LexerStats> stats;
 
   /// Pointer to the first character of the buffer, even in a lexer that
@@ -122,6 +122,7 @@ private:
   void LexHexNumber();
   void LexStrLiteral();
   void LexChar();
+  unsigned LexUnicodeEscape(const char *&curPtr, Basic *basic);
 
   void Diagnose();
   void MakeTok(tk::Type ty, const char *tokenStart);
@@ -134,14 +135,16 @@ private:
 public:
   void Lex(Token &result);
   void Lex(Token &result, Trivia &leading, Trivia &trailing);
-  Token &Peek() { return nextToken; }
-
-  SrcID GetSrcID() { return srcID; }
-
   /// Returns it should be tokenize.
   bool LexAlien(bool emitDiagnosticsIfToken);
 
+  Token &Peek() { return nextToken; }
+  SrcID GetSrcID() { return srcID; }
   NullCharType GetNullCharType(const char *data) const;
+
+private:
+  void SkipToEndOfLine(bool eatNewline);
+  void SkipSlashSlashComment(bool eatNewline);
 };
 } // namespace syn
 } // namespace stone
