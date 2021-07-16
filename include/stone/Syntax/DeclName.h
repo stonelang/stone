@@ -57,6 +57,7 @@ public:
 public:
   void Print(llvm::raw_ostream &os,
              const PrintingPolicy &policy) const override;
+
   void Dump() const override;
 
 public:

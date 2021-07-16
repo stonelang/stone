@@ -63,6 +63,7 @@ public:
 public:
   SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner, const SrcID srcID,
              bool isPrimary = false);
+
   ~SyntaxFile();
 
 public:
@@ -71,8 +72,8 @@ public:
 
   void AddDecl(Decl *decl) { decls.Add(decl); }
 
-  // void Print(llvm::raw_ostream &os,
-  //            const PrintingPolicy &policy) const override;
+  // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
+  // override;
 
 public:
   static syn::SyntaxFile *Make(SyntaxFile::Kind kind, Module &owner,

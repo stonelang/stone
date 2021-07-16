@@ -29,11 +29,11 @@
 
 namespace stone {
 
+class SrcMgr;
 class DiagnosticEngine;
 class LiveDiagnostic;
 class DiagnosticListener;
 class LangOptions;
-class SrcMgr;
 class StoredDiagnostic;
 
 /// Enumeration describing all of possible diagnostics.
@@ -62,7 +62,7 @@ namespace detail {
 template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
-enum class DiagnosticArgumentKind {
+enum class DiagnosticArgumentType {
   /// std::string
   STDStr,
 
@@ -93,19 +93,19 @@ public:
 */
 
 class DiagnosticArgument {
-  DiagnosticArgumentKind kind;
+  DiagnosticArgumentType ty;
 
 public:
-  DiagnosticArgument(DiagnosticArgumentKind kind) : kind(kind) {}
+  DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
 
 public:
-  DiagnosticArgumentKind GetKind() { return kind; }
+  DiagnosticArgumentType GetType() { return ty; }
 };
 
 class CustomDiagnosticArgument : public DiagnosticArgument {
 public:
   CustomDiagnosticArgument()
-      : DiagnosticArgument(DiagnosticArgumentKind::Custom) {}
+      : DiagnosticArgument(DiagnosticArgumentType::Custom) {}
 };
 
 class FixHint final {
@@ -256,7 +256,7 @@ private:
 /// SrcMgr.
 class DiagnosticEngine final {
 
-  friend class InFlightDiagnostic;
+  friend class liveDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
 
@@ -449,20 +449,20 @@ class DiagnosticErrorTrap {
   unsigned numUnrecoverableErrors;
 
 public:
-  explicit DiagnosticErrorTrap(DiagnosticEngine &de) : de(de) { reset(); }
+  explicit DiagnosticErrorTrap(DiagnosticEngine &de) : de(de) { Reset(); }
 
   /// Determine whether any errors have occurred since this
   /// object instance was created.
-  bool hasErrorOccurred() const { return de.trapNumErrorsOccurred > numErrors; }
+  bool HasErrorOccurred() const { return de.trapNumErrorsOccurred > numErrors; }
 
   /// Determine whether any unrecoverable errors have occurred since this
   /// object instance was created.
-  bool hasUnrecoverableErrorOccurred() const {
+  bool HasUnrecoverableErrorOccurred() const {
     return de.trapNumUnrecoverableErrorsOccurred > numUnrecoverableErrors;
   }
 
   /// Set to initial state of "no errors occurred".
-  void reset() {
+  void Reset() {
     numErrors = de.trapNumErrorsOccurred;
     numUnrecoverableErrors = de.trapNumUnrecoverableErrorsOccurred;
   }
@@ -540,7 +540,7 @@ protected:
 public:
   /// Copy constructor.  When copied, this "takes" the diagnostic info from the
   /// input and neuters it.
-  LiveDiagnostic(const LiveDiagnostic &inflight) {}
+  LiveDiagnostic(const LiveDiagnostic &live) {}
   LiveDiagnostic &operator=(const LiveDiagnostic &) = delete;
 
   /// Emits the diagnostic.
@@ -552,30 +552,30 @@ public:
 /// value will be shown as the suffix "=value" after the flag name. It is
 /// useful in cases where the diagnostic flag accepts values (e.g.,
 /// -Rpass or -Wframe-larger-than).
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &inflight,
+inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
                                            const AddFlagValue V) {
-  inflight.AddFlagValue(V.Val);
-  return inflight;
+  live.AddFlagValue(V.Val);
+  return live;
 }
 */
 
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &inflight,
+inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
                                         llvm::StringRef data) {
-  // inflight.AddString(data);
-  return inflight;
+  // live.AddString(data);
+  return live;
 }
 
 /*
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &inflight,
+inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
                                            const char *Str) {
-  inflight.AddTaggedVal(reinterpret_cast<intptr_t>(Str),
-                  DiagnosticArgumentKind::CStr);
-  return inflight;
+  live.AddTaggedVal(reinterpret_cast<intptr_t>(Str),
+                  DiagnosticArgumentType::CStr);
+  return live;
 }
 
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &inflight,
-int data) { inflight.AddTaggedVal(data, DiagnosticArgumentKind::SInt); return
-inflight;
+inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
+int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
+live;
 }
 */
 

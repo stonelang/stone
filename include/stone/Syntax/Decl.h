@@ -433,7 +433,7 @@ enum class UseDeclType : uint8_t {
   Module = 0,
 
   //// use STD.Time.Month;
-  Enum,
+  EnumMember,
 
   /// use STD.IO.OutputStream;
   Struct,
