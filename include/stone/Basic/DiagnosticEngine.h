@@ -589,14 +589,15 @@ inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
   return live;
 }
 
-/*
+
 inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-                                           const char *Str) {
-  live.AddTaggedVal(reinterpret_cast<intptr_t>(Str),
-                  DiagnosticArgumentType::CStr);
+                                           const char *data) {
+
+  //live.AddTaggedVal(reinterpret_cast<intptr_t>(data),
+  //                DiagnosticArgumentType::CStr);
   return live;
 }
-
+/*
 inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
 int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
 live;
