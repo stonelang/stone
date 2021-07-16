@@ -14,7 +14,9 @@ class Type;
 
 class TypeLoc {};
 
-class Type {};
+class Type {
+public:
+};
 
 class QualType {
 

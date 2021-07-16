@@ -65,16 +65,15 @@ public:
   std::string GetVal() const { return val; }
 };
 
-
 struct CStrDiagnosticArgument final : public DiagnosticArgument {
-  const char* val;
+  const char *val;
 
 public:
-  CStrDiagnosticArgument(const char* val)
+  CStrDiagnosticArgument(const char *val)
       : DiagnosticArgument(DiagnosticArgumentType::CStr), val(val) {}
 
 public:
-  const char* GetVal() const { return val; }
+  const char *GetVal() const { return val; }
 };
 
 struct SIntDiagnosticArgument final : public DiagnosticArgument {
@@ -120,7 +119,7 @@ public:
   const void *GetVal() const { return val; }
 
 public:
-  virtual void Diagnose(DiagnosticEngine &de) {}
+  virtual void Diagnose(DiagnosticEngine &de) const {}
 };
 
 } // namespace stone

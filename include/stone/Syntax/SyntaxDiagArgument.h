@@ -17,7 +17,7 @@ public:
       : ComplexDiagnosticArgument(val) {}
 
 public:
-  void Diagnose(DiagnosticEngine &de) override;
+  void Diagnose(DiagnosticEngine &de) const override;
 };
 
 struct DeclContextDiagnosticArgument final : public ComplexDiagnosticArgument {
@@ -26,7 +26,7 @@ public:
       : ComplexDiagnosticArgument(val) {}
 
 public:
-  void Diagnose(DiagnosticEngine &de) override;
+  void Diagnose(DiagnosticEngine &de) const override;
 };
 
 struct IdentifierDiagnosticArgument final : public ComplexDiagnosticArgument {
@@ -35,9 +35,17 @@ public:
       : ComplexDiagnosticArgument(val) {}
 
 public:
-  void Diagnose(DiagnosticEngine &de) override;
+  void Diagnose(DiagnosticEngine &de) const override;
 };
 
+struct TypeDiagnosticArgument final : public ComplexDiagnosticArgument {
+public:
+  TypeDiagnosticArgument(const syn::Type *val)
+      : ComplexDiagnosticArgument(val) {}
+
+public:
+  void Diagnose(DiagnosticEngine &de) const override;
+};
 } // namespace stone
 
 #endif

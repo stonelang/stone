@@ -134,7 +134,7 @@ public:
 
 public:
   Decl::Type GetType() { return ty; }
-  SrcLoc GetLoc() { return loc; }
+  SrcLoc GetLoc() const { return loc; }
 
   TreeContext &GetTreeContext() const LLVM_READONLY;
 
