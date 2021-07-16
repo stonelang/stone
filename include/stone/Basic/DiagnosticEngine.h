@@ -1,6 +1,12 @@
 #ifndef STONE_BASIC_DIAGNOSTICENGINE_H
 #define STONE_BASIC_DIAGNOSTICENGINE_H
 
+#include "stone/Basic/DiagnosticListener.h"
+#include "stone/Basic/DiagnosticPrinter.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/SrcLoc.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -9,12 +15,6 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/Error.h"
-
-#include "stone/Basic/DiagnosticListener.h"
-#include "stone/Basic/DiagnosticPrinter.h"
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/List.h"
-#include "stone/Basic/SrcLoc.h"
 
 #include <cassert>
 #include <cstdint>
@@ -38,9 +38,11 @@ class StoredDiagnostic;
 
 /// Enumeration describing all of possible diagnostics.
 ///
-/// Each of the diagnostics described in Diagnostics.def has an entry in
+/// Each of the diagnostics described in DiagnosticEngine.def has an entry in
 /// this enumeration type that uniquely identifies it.
 enum class DiagID : uint32_t;
+
+enum class FixHintID : uint32_t;
 
 /// Describes a diagnostic along with its argument types.
 ///
@@ -248,15 +250,19 @@ private:
   };
 };
 
+struct FlagValueInfo {
+  llvm::StringRef data;
+  explicit FlagValueInfo(StringRef data) : data(data) {}
+};
 /// Concrete class used by the front-end to report problems and issues.
 ///
 /// This massages the diagnostics (e.g. handling things like "report warnings
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final {
+class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
 
-  friend class liveDiagnostic;
+  friend class LiveDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
 
@@ -276,7 +282,10 @@ class DiagnosticEngine final {
   /// emitting diagnostics.
   // llvm::SmallVector<CustomDiagnosticArgument *, 2> customArguments;
 
+  // TODO: Remove
   const DiagnosticOptions &diagOpts;
+
+  // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
 
   SrcMgr *sm = nullptr;
 
@@ -289,6 +298,7 @@ private:
   /// diagnostic in flight.
   unsigned curDiagID;
 
+  // TODO: DiagID curDiagID;
 private:
   // Treat fatal errors like errors.
   bool fatalsAsError = false;
@@ -327,6 +337,32 @@ private:
 
   /// The location at which the current diagnostic state was established.
   SrcLoc curDiagnosticStateLoc;
+
+  /// Optional flag value.
+  ///
+  /// Some flags accept values, for instance: -Wframe-larger-than=<value> and
+  /// -Rpass=<value>. The content of this string is emitted after the flag name
+  /// and '='.
+  std::string flagValue;
+
+  /// ID of the "delayed" diagnostic, which is a (typically
+  /// fatal) diagnostic that had to be delayed because it was found
+  /// while emitting another diagnostic.
+  unsigned delayedDiagID;
+
+  // This SUCKS
+  struct DelayedDiagArgument {
+    /// First string argument for the delayed diagnostic.
+    std::string one;
+
+    /// Second string argument for the delayed diagnostic.
+    std::string two;
+
+    /// Third string argument for the delayed diagnostic.
+    std::string three;
+  };
+
+  DelayedDiagArgument delayedDiagArgument;
 
 public:
   explicit DiagnosticEngine(const DiagnosticOptions &diagOpts,
@@ -423,10 +459,12 @@ public:
 
   SrcLoc GetCurrentDiagLoc() const { return curDiagLoc; }
 
+  llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
+
 public:
   /// Issue the message to the client.
   ///
-  /// This actually returns an instance of DiagnosticBuilder which emits the
+  /// This actually returns an instance of LiveDiagnostic which emits the
   /// diagnostics (through @c ProcessDiag) when it is destroyed.
   ///
   /// \param DiagID A member of the @c diag::kind enum.
@@ -475,7 +513,11 @@ public:
   }
 };
 
-class LiveDiagnostic final {
+class StreamingDiagnostic {
+public:
+};
+
+class LiveDiagnostic final : public StreamingDiagnostic {
   friend class DiagnosticEngine;
   // friend class PartialDiagnostic;
 
@@ -511,12 +553,15 @@ public:
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  // inline LiveDiagnostic Diagnose(const SrcLoc loc, const unsigned
-  // diagnosticID,
+  // inline LiveDiagnostic Emit(const SrcLoc loc, const unsigned diagnosticID,
   //                                const unsigned msgID);
 
-  // inline LiveDiagnostic Diagnose(const unsigned diagnosticID,
-  //                                const unsigned msgID);
+  // inline LiveDiagnostic Emit(const unsigned diagnosticID, const unsigned
+  // msgID);
+
+  void AddFlagValue(llvm::StringRef data) const {
+    de->flagValue = std::string(data);
+  }
 
 protected:
   void FlushCounts() {}
@@ -553,6 +598,14 @@ public:
 
   /// Emits the diagnostic.
   ~LiveDiagnostic() { Emit(); }
+
+public:
+  template <typename T> const LiveDiagnostic &operator<<(const T &v) const {
+    assert(IsActive() && "Clients must not add to cleared diagnostic!");
+    const StreamingDiagnostic &sd = *this;
+    sd << v;
+    return *this;
+  }
 };
 
 inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
@@ -589,11 +642,10 @@ inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
   return live;
 }
 
-
 inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-                                           const char *data) {
+                                        const char *data) {
 
-  //live.AddTaggedVal(reinterpret_cast<intptr_t>(data),
+  // live.AddTaggedVal(reinterpret_cast<intptr_t>(data),
   //                DiagnosticArgumentType::CStr);
   return live;
 }
@@ -603,6 +655,18 @@ int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
 live;
 }
 */
+
+class StoredDiagnostic {
+  // unsigned diagIdentifier;
+  // diag::Level level;
+  // FullSourceLoc loc;
+  // std::string message;
+  // std::vector<CharSrcRange> ranges;
+  // std::vector<FixHint> hints;
+
+public:
+  StoredDiagnostic() = default;
+};
 
 } // namespace stone
 #endif

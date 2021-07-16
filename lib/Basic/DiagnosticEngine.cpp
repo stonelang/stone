@@ -62,6 +62,25 @@ static_assert((sizeof(LocalDiagnostics) / sizeof(LocalDiagnostic)) ==
                   LocalDiagID::Last,
               "array size mismatch");
 
+static constexpr const char *const DiagnosticStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature) Text,
+#include "stone/Basic/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const DebugDiagnosticStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature) Text " [" #ID "]",
+#include "stone/Basic/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const FixItStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature)
+#define FIXIT(ID, Text, Signature) Text,
+#include "stone/Basic/DiagnosticEngine.def"
+    "<not a fix-it>",
+};
+
 DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
                                    SrcMgr *sm)
     : diagOpts(diagOpts), sm(sm) {}
@@ -69,6 +88,15 @@ DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
 DiagnosticEngine::~DiagnosticEngine() {}
 
 void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
+
+llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
+                                                bool printDiagnosticName) {
+  // TODO: Localization
+  if (printDiagnosticName) {
+    return DebugDiagnosticStrings[(unsigned)diagID];
+  }
+  return DiagnosticStrings[(unsigned)diagID];
+}
 
 bool DiagnosticEngine::HasError() { return false; }
 

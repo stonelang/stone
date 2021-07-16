@@ -435,17 +435,18 @@ enum class UseDeclType : uint8_t {
   //// use STD.Time.Month;
   EnumMember,
 
-  /// use STD.IO.OutputStream;
+  /// use Lang.IO.OutputStream;
   Struct,
 
-  /// use STD.IO.Stream;
+  /// use Lang.IO.Stream;
   Interface,
 
-  /// fun Main() -> int { use STD.Math.Min;  auto min = Min<AnyType>(first,
+  /// fun Main() -> int { use Lang.Math.Min;  auto min = Min<AnyType>(first,
   /// second); }
   Fun,
 
-  // use Stream = STD.IO.Stream;
+  // use Stream = Lang.IO.Stream;
+  // use Min = Lang.Main.Min(first, second);  // TODO: Think
   Alias,
 };
 

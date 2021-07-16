@@ -12,8 +12,8 @@ public:
 public:
 };
 
-TEST_F(DiagTest, ErrorTest) { 
-	
-	basic.GetDiagOptions().useColor = true; 
-	basic.GetDiagEngine().Issue(SrcLoc(), 1) << "test"; 
+TEST_F(DiagTest, ErrorTest) {
+
+  basic.GetDiagOptions().useColor = true;
+  basic.GetDiagEngine().Issue(SrcLoc(), 1) << "test";
 }
