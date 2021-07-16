@@ -21,26 +21,22 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Basic/FileMgr.h"
+
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgrInternals.h"
-#include "llvm/ADT/DenseMap.h"
+
 #include "llvm/ADT/None.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSwitch.h"
-#include "llvm/Support/Allocator.h"
+
 #include "llvm/Support/Capacity.h"
-#include "llvm/Support/Compiler.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/MathExtras.h"
-#include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
+
 
 using namespace stone;
 using namespace stone::src;

@@ -45,6 +45,8 @@
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/SrcLoc.h"
+
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -273,6 +275,7 @@ public:
     return X;
   }
 
+  // TODO: GetUseLoc() ?
   SrcLoc getIncludeLoc() const {
     return SrcLoc::getFromRawEncoding(IncludeLoc);
   }

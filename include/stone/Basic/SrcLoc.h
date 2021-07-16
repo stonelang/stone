@@ -121,7 +121,7 @@ class SrcLoc {
   friend class SrcRange;
   friend class CharSrcRange;
 
-  unsigned ID = 0;
+  unsigned locID = 0;
   enum : unsigned { MacroIDBit = 1U << 31 };
 
   llvm::SMLoc locValue;
@@ -157,25 +157,25 @@ public:
   }
 
 public:
-  bool isSrcID() const { return (ID & MacroIDBit) == 0; }
-  bool isMacroID() const { return (ID & MacroIDBit) != 0; }
+  bool isSrcID() const { return (locID & MacroIDBit) == 0; }
+  bool isMacroID() const { return (locID & MacroIDBit) != 0; }
 
   /// Return true if this is a valid SrcLoc object.
   ///
   /// Invalid SrcLocs are often used when activities have no corresponding
   /// location in the source (e.g. a diagnostic is required for a command line
   /// option).
-  bool isValid() const { return ID != 0; }
-  bool isInvalid() const { return ID == 0; }
+  bool isValid() const { return locID != 0; }
+  bool isInvalid() const { return locID == 0; }
 
 private:
   /// Return the offset into the manager's global input view.
-  unsigned getOffset() const { return ID & ~MacroIDBit; }
+  unsigned getOffset() const { return locID & ~MacroIDBit; }
 
   static SrcLoc getFileLoc(unsigned ID) {
     assert((ID & MacroIDBit) == 0 && "Ran out of source locations!");
     SrcLoc L;
-    L.ID = ID;
+    L.locID = ID;
     return L;
   }
 
@@ -183,7 +183,7 @@ private:
   static SrcLoc getMacroLoc(unsigned ID) {
     assert((ID & MacroIDBit) == 0 && "Ran out of source locations!");
     SrcLoc L;
-    L.ID = MacroIDBit | ID;
+    L.locID = MacroIDBit | ID;
     return L;
   }
 
@@ -193,7 +193,7 @@ public:
   SrcLoc getLocWithOffset(int offset) const {
     assert(((getOffset() + offset) & MacroIDBit) == 0 && "offset overflow");
     SrcLoc sl;
-    sl.ID = ID + offset;
+    sl.locID = locID + offset;
     return sl;
   }
 
@@ -202,7 +202,7 @@ public:
   ///
   /// This should only be passed to SrcLoc::getFromRawEncoding, it
   /// should not be inspected directly.
-  unsigned getRawEncoding() const { return ID; }
+  unsigned getRawEncoding() const { return locID; }
 
   /// Turn a raw encoding of a SrcLoc object into
   /// a real SrcLoc.
@@ -210,7 +210,7 @@ public:
   /// \see getRawEncoding.
   static SrcLoc getFromRawEncoding(unsigned encoding) {
     SrcLoc sl;
-    sl.ID = encoding;
+    sl.locID = encoding;
     return sl;
   }
 

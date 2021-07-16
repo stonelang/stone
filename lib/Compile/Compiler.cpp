@@ -1,6 +1,5 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Syntax/Module.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -15,6 +14,7 @@
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
+
 
 #include <algorithm>
 #include <memory>
