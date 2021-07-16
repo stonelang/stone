@@ -43,7 +43,7 @@ class StoredDiagnostic;
 /// this enumeration type that uniquely identifies it.
 enum class DiagID : uint32_t;
 
-enum class FixHintID : uint32_t;
+enum class FixID : uint32_t;
 
 /// Describes a diagnostic along with its argument types.
 ///

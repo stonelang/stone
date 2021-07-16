@@ -2,27 +2,45 @@
 #include "DefineDiagnostic.h"
 
 
+//==============================================================================
+// MARK: Lexing and Parsing
+//==============================================================================
 
-// LEXER
-
-WARNING(lex_warn_null_character,none,
-        "null character embedded in middle of file", ())
-
-// PARSER  
-NOTE(parser_note_opening_brace,none,
+NOTE(note_opening_brace,none,
      "to match this opening '{'", ())
-NOTE(parser_note_opening_bracket,none,
+NOTE(note_opening_bracket,none,
      "to match this opening '['", ())
-NOTE(parser_note_opening_paren,none,
+NOTE(note_opening_paren,none,
      "to match this opening '('", ())
-NOTE(parser_note_opening_angle,none,
+NOTE(note_opening_angle,none,
      "to match this opening '<'", ())
 
 
-// PARSER
+ERROR(err_extra_rbrace,none,
+      "extraneous '}' at top level", ())
 
 
-// CHECKER 
+
+//==============================================================================
+// MARK: Lexing 
+//==============================================================================
+
+WARN(warn_null_character,none,
+        "null character embedded in middle of file", ())
+
+//==============================================================================
+// MARK: Parsing
+//==============================================================================
+
+NOTE(note_prev_decl_def,none,
+     "previous definition of %0 is here", (ComplexDiagnosticArgument))
+
+
+
+//==============================================================================
+// MARK: Checking
+//==============================================================================
+
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

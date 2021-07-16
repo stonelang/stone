@@ -49,7 +49,7 @@ enum LocalDiagID : uint32_t {
 static const constexpr LocalDiagnostic LocalDiagnostics[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
   LocalDiagnostic(diag::Severity::Error, LocalOptions::Options),
-#define WARNING(ID, Options, Text, Signature)                                  \
+#define WARN(ID, Options, Text, Signature)                                     \
   LocalDiagnostic(diag::Severity::Warn, LocalOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
   LocalDiagnostic(diag::Severity::Note, LocalOptions::Options),
@@ -76,7 +76,7 @@ static constexpr const char *const DebugDiagnosticStrings[] = {
 
 static constexpr const char *const FixItStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
-#define FIXIT(ID, Text, Signature) Text,
+#define FIX(ID, Text, Signature) Text,
 #include "stone/Basic/DiagnosticEngine.def"
     "<not a fix-it>",
 };

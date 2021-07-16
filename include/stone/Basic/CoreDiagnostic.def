@@ -6,5 +6,6 @@ ERROR(invalid_diagnostic,none,
 
 ERROR(err_no_input_files, none, "no input files", ())
 
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

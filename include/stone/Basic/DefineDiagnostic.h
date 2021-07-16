@@ -1,8 +1,8 @@
 // Define macros
 #ifdef DEFINE_DIAGNOSTIC_MACROS
 
-#if !(defined(DIAG) || (defined(ERROR) && defined(WARNING) && defined(NOTE) && \
-                        defined(REMARK)))
+#if !(defined(DIAG) ||                                                         \
+      (defined(ERROR) && defined(WARN) && defined(NOTE) && defined(REMARK)))
 #error Must define either DIAG or the set {ERROR,WARNING,NOTE,REMARK}
 #endif
 
@@ -11,9 +11,9 @@
   DIAG(ERROR, ID, Options, Text, Signature)
 #endif
 
-#ifndef WARNING
-#define WARNING(ID, Options, Text, Signature)                                  \
-  DIAG(WARNING, ID, Options, Text, Signature)
+#ifndef WARN
+#define WARN(ID, Options, Text, Signature)                                     \
+  DIAG(WARN, ID, Options, Text, Signature)
 #endif
 
 #ifndef NOTE
@@ -26,8 +26,8 @@
   DIAG(REMARK, ID, Options, Text, Signature)
 #endif
 
-#ifndef FIXIT
-#define FIXIT(ID, Text, Signature)
+#ifndef FIX
+#define FIX(ID, Text, Signature)
 #endif
 
 #undef DEFINE_DIAGNOSTIC_MACROS
@@ -44,9 +44,9 @@
 
 #undef REMARK
 #undef NOTE
-#undef WARNING
+#undef WARN
 #undef ERROR
-#undef FIXIT
+#undef FIX
 
 #endif
 
