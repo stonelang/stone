@@ -1,13 +1,12 @@
 #ifndef STONE_BASIC_DIAGNOSTICENGINE_H
 #define STONE_BASIC_DIAGNOSTICENGINE_H
 
-#include "stone/Basic/Diagnosable.h"
+#include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticPrinter.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/TokenType.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -65,64 +64,6 @@ namespace detail {
 /// need to specialize this class template to pass by reference.
 template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
-
-enum class DiagnosticArgumentType {
-  /// std::string
-  STDStr,
-
-  /// const char *
-  CStr,
-
-  /// llvm::StringRef
-  LLVMStr,
-
-  /// int
-  SInt,
-
-  /// unsigned
-  UInt,
-
-  TokenType,
-
-  /// custom argument
-  Custom,
-};
-
-class DiagnosticArgument {
-  DiagnosticArgumentType ty;
-
-  union {
-    int intVal;
-    unsigned unsignedVal;
-    tk::Type tkVal;
-    llvm::StringRef llvmStringRefVal;
-    const char *cStringVal;
-    std::string stdStringRefVal;
-    Diagnosable *diagnosableVal = nullptr;
-  };
-
-public:
-  DiagnosticArgument(std::string argVal)
-      : ty(DiagnosticArgumentType::STDStr), stdStringRefVal(argVal) {}
-
-  DiagnosticArgument(llvm::StringRef argVal)
-      : ty(DiagnosticArgumentType::LLVMStr), llvmStringRefVal(argVal) {}
-
-  DiagnosticArgument(Diagnosable *argVal)
-      : ty(DiagnosticArgumentType::Custom), diagnosableVal(argVal) {}
-
-  DiagnosticArgument(tk::Type argVal)
-      : ty(DiagnosticArgumentType::TokenType), tkVal(argVal) {}
-
-  DiagnosticArgument(const char *argVal)
-      : ty(DiagnosticArgumentType::CStr), cStringVal(argVal) {}
-
-public:
-  Diagnosable *GetAsDiagnosable() { return diagnosableVal; }
-
-public:
-  DiagnosticArgumentType GetType() { return ty; }
-};
 
 class FixHint final {
 public:
@@ -281,8 +222,7 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   friend class PartialDiagnostic;
 
   // TODO: Not too sure
-  friend class Diagnosable;
-
+  friend struct ComplexDiagnosticArgument;
   /// The
   unsigned int diagnosticSeen = 0;
 

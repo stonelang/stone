@@ -17,7 +17,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenType.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/IdentifierDiagnosable.h"
+#include "stone/Syntax/SyntaxDiagArgument.h"
 //#include "stone/Syntax/OperatorKinds.h"
 //#include "stone/Syntax/Specifiers.h"
 
@@ -78,10 +78,6 @@ void IdentifierTable::AddKeywords(const LangOptions &LangOpts) {
   AddKeyword(llvm::StringRef(#NAME), tk::Type::kw_##NAME, FLAG, langOpts,      \
              *this);
 #include "stone/Basic/TokenType.def"
-}
-
-void IdentifierDiagnosable::Diagnose(DiagnosticEngine &de) {
-  de.Issue(SrcLoc(), 1) << "test";
 }
 
 //===----------------------------------------------------------------------===//

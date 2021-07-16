@@ -1,96 +1,77 @@
-#include <cassert>
-#include <cstdint>
-#include <limits>
-#include <list>
-#include <map>
-#include <memory>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/IntrusiveRefCntPtr.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/iterator_range.h"
-#include "llvm/Support/Compiler.h"
-#include "llvm/Support/Error.h"
+enum class DiagnosticArgumentType {
+  /// std::string
+  STDStr,
 
-#include "stone/Basic/List.h"
-#include "stone/Basic/SrcLoc.h"
+  /// const char *
+  CStr,
 
-class DiagnosticEngine;
+  /// llvm::StringRef
+  LLVMStr,
 
-struct DiagnosticEntry {};
+  /// int
+  SInt,
 
-class Diagnostic {
-  friend DiagnosticEngine;
-  const char *name = nullptr;
-  const char *path = nullptr;
+  /// unsigned
+  UInt,
 
-protected:
-  unsigned diagID = 0;
-  unsigned firstID = 0;
-  unsigned lastID = 0;
-  unsigned maxID = 0;
+  TokenType,
 
-  llvm::DenseMap<unsigned, DiagnosticEntry> entries;
+  /// custom argument
+  Complex,
 
-public:
-  Diagnostic(const char *name, const char *path) : name(name), path(path) {}
-
-public:
-  const char *GetName() { return name; }
-  const char *GetPath() { return path; }
-
-  unsigned GetFirstID() { return firstID; }
-  unsigned GetMaxID() { return maxID; }
-  unsigned GetLastID() { return lastID; }
-
-public:
-  virtual void Init() = 0;
 };
 
-class DriverDiagnostic : public Diagnostic {
+class DiagnosticEngine {};
+class Decl {};
+
+class DiagnosticArgument {
+  DiagnosticArgumentType ty;
+
 public:
-  DriverDiagnostic() : Diagnostic("DriverDiagnostic", "DriverDiagnostic.def") {
-    maxID = 200;
+  DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
+
+public:
+  DiagnosticArgumentType GetType() { return ty; }
+};
+
+template <typename T>
+class ComplexDiagnosticArgument : public DiagnosticArgument {
+  const T *val;
+
+public:
+  ComplexDiagnosticArgument(const T *val)
+      : DiagnosticArgument(DiagnosticArgumentType::Complex), val(val) {}
+
+  T *GetVal() const { return val; }
+
+public:
+  virtual void Diagnose(DiagnosticEngine &de) {}
+};
+
+class DeclDiagnosticArgument : public ComplexDiagnosticArgument<Decl> {
+public:
+  DeclDiagnosticArgument(const Decl *val) : ComplexDiagnosticArgument(val) {}
+
+public:
+  void Diagnose(DiagnosticEngine &de) override {}
+};
+
+void F0(DiagnosticArgument *argument) {
+
+  if (argument->GetType() == DiagnosticArgumentType::Complex) {
+
+    ComplexDiagnosticArgument *complex = (ComplexDiagnosticArgument *)argument;
   }
-  void Init() override {}
-};
-
-class DiagnosticEngine final {
-
-  /// The maximum diagnostic messages per diagnostic
-  // unsigned int maxDiagnosticMessages = 1000;
-  llvm::SmallVector<std::pair<unsigned, Diagnostic *>, 5> diags;
-
-public:
-  void AddDiagnostic(Diagnostic *diag) {
-    assert(diag && "Null diagnostic.");
-    assert(diag->GetMaxID() > 0 && "MaxID must be greater than 0.");
-
-    if (diags.size() == 0) {
-      diag->firstID = 0;
-      diag->lastID = diag->maxID;
-    } else {
-      // Get the last one from the entries
-      // diag->firstID = last->lastID + 1;
-      diag->lastID = diag->firstID + diag->lastID;
-    }
-  }
-
-  void Issue(unsigned diagid, unsigned msgid) {}
-};
-
+}
 int main() {
 
-  std::unique_ptr<DriverDiagnostic> driverDiagnostic(new DriverDiagnostic());
+  Decl *d = new Decl();
+  DeclDiagnosticArgument arg(d);
 
-  DiagnosticEngine engine;
-  engine.AddDiagnostic(driverDiagnostic.get());
+  delete d;
+
+  F0(&arg);
 
   return 0;
 }
