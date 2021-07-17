@@ -91,7 +91,7 @@ bool LexerInternal::EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Resu
 }
 
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
-static unsigned LexerInternal::CLO8(unsigned char C) {
+static unsigned CLO8(unsigned char C) {
   return llvm::countLeadingOnes(uint32_t(C) << 24);
 }
 
