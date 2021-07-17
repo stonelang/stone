@@ -134,7 +134,9 @@ public:
     return CreateReplacement(CharSrcRange::getTokenRange(removeRange), code);
   }
 };
+struct DiagnosticFormatOptions final {
 
+};
 struct DiagnosticStorage {
   /// The maximum number of arguments we can hold. We
   /// currently only support up to 10 arguments (%0-%9).
@@ -174,7 +176,7 @@ struct DiagnosticStorage {
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
 
   // Avoid copying the fix-it text more than necessary.
-  void AddFixIt(FixHint &&fix) { hints.push_back(std::move(fix)); }
+  void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
 
   void AddChildDiagnostic(Diagnostic &&D);
 
@@ -255,6 +257,7 @@ struct FlagValueInfo {
   llvm::StringRef data;
   explicit FlagValueInfo(StringRef data) : data(data) {}
 };
+
 /// Concrete class used by the front-end to report problems and issues.
 ///
 /// This massages the diagnostics (e.g. handling things like "report warnings
@@ -266,22 +269,18 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   friend class LiveDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
-
-  // TODO: Not too sure
   friend struct ComplexDiagnosticArgument;
+
+
   /// The
   unsigned int diagnosticSeen = 0;
-
-  // TODO: This may have to be on the dagnostics
-  /// If valid, provides a hint with some code to insert, remove,
-  /// or modify at a particular position.
-  llvm::SmallVector<FixHint, 8> fixHints;
 
   /// The diagnostic listeners(s) that will be responsible for actually
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticListener *, 2> listeners;
 
-  DiagnosticListener *curListener = nullptr;
+  /// The currently diagnostic, if there is one.
+  //llvm::Optional<Diagnostic> curDiagnostic;
 
   // TODO: Remove
   const DiagnosticOptions &diagOpts;
@@ -726,12 +725,14 @@ live;
 // A single Diagnostic
 class Diagnostic {
 
-  DiagID diagID;
+  const DiagID diagID;
   const DiagnosticEngine *de;
 
 public:
-  explicit Diagnostic(DiagID diagID, const DiagnosticEngine *de)
+  explicit Diagnostic(const DiagID diagID, const DiagnosticEngine *de)
       : diagID(diagID), de(de) {}
+  public: 
+
 
   // CStrDiagnosticArgument GetCStrDiagnosticArgument() {}
 

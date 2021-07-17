@@ -1,9 +1,10 @@
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/TextDiagnosticListener.h"
-#include "stone/Basic/Diagnostic.h"
 
 using stone::Diagnostic;
-using stone::TextBufferingDiagnosticListener;
 using stone::TextDiagnosticListener;
+using stone::TextBufferingDiagnosticListener;
+
 
 TextBufferingDiagnosticListener::TextBufferingDiagnosticListener() {}
 

@@ -2,7 +2,9 @@
 #define STONE_BASIC_DIAGNOSTIC_H
 
 namespace stone {
-class Diagnostic {
+
+//TODO: 
+class Diagnostic final {
 public:
 };
 
