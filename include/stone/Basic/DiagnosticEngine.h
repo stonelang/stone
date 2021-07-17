@@ -838,14 +838,14 @@ public:
   /// formal arguments into the %0 slots.
   ///
   /// The result is appended onto the \p OutStr array.
-  void Format(llvm::SmallVectorImpl<char> &outStr,
-              const DiagnosticFormatOptions &fmtOptions) const;
+  virtual void Format(llvm::SmallVectorImpl<char> &outStr,
+                      const DiagnosticFormatOptions &fmtOptions) const;
 
   /// Format the given format-string into the output buffer using the
   /// arguments stored in this diagnostic.
-  void Format(const char *diagStr, const char *diagEnd,
-              llvm::SmallVectorImpl<char> &outStr,
-              const DiagnosticFormatOptions &fmtOptions) const;
+  virtual void Format(const char *diagStr, const char *diagEnd,
+                      llvm::SmallVectorImpl<char> &outStr,
+                      const DiagnosticFormatOptions &fmtOptions) const;
 };
 class StoredDiagnostic {
   // unsigned diagIdentifier;

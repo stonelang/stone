@@ -11,8 +11,8 @@ namespace stone {
 class DiagnosticEngine;
 
 enum class DiagnosticArgumentType {
-  /// No argument 
-  None, 
+  /// No argument
+  None,
   /// std::string
   STDStr,
 
@@ -119,9 +119,6 @@ public:
       : DiagnosticArgument(DiagnosticArgumentType::Complex) {}
 
   const void *GetVal() const { return val; }
-
-public:
-  virtual void Diagnose(DiagnosticEngine &de) const {}
 };
 
 } // namespace stone

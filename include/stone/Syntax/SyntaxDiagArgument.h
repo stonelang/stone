@@ -2,8 +2,11 @@
 #define STONE_SYNTAX_SYNTAXDIAGARGUMENT_H
 
 #include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
+
+using stone::Diagnostic;
 
 #include <assert.h>
 
@@ -11,41 +14,54 @@ namespace stone {
 
 class DiagnosticEngine;
 
-struct DeclDiagnosticArgument final : public ComplexDiagnosticArgument {
+enum class SyntaxDiagnosticArgumentType { Decl, DeclContext, Type, Identifier };
+
+struct SyntaxDiagnosticArgument : public ComplexDiagnosticArgument {
+  SyntaxDiagnosticArgumentType synTy;
+
+public:
+  SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType synType,
+                           const void *val)
+      : ComplexDiagnosticArgument(val), synTy(synTy) {}
+};
+
+struct DeclDiagnosticArgument final : public SyntaxDiagnosticArgument {
 public:
   DeclDiagnosticArgument(const syn::Decl *val)
-      : ComplexDiagnosticArgument(val) {}
-
-public:
-  void Diagnose(DiagnosticEngine &de) const override;
+      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Decl, val) {}
 };
 
-struct DeclContextDiagnosticArgument final : public ComplexDiagnosticArgument {
+struct DeclContextDiagnosticArgument final : public SyntaxDiagnosticArgument {
 public:
   DeclContextDiagnosticArgument(const syn::DeclContext *val)
-      : ComplexDiagnosticArgument(val) {}
-
-public:
-  void Diagnose(DiagnosticEngine &de) const override;
+      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::DeclContext,
+                                 val) {}
 };
 
-struct IdentifierDiagnosticArgument final : public ComplexDiagnosticArgument {
+struct IdentifierDiagnosticArgument final : public SyntaxDiagnosticArgument {
 public:
   IdentifierDiagnosticArgument(const syn::Identifier *val)
-      : ComplexDiagnosticArgument(val) {}
-
-public:
-  void Diagnose(DiagnosticEngine &de) const override;
+      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Identifier,
+                                 val) {}
 };
 
-struct TypeDiagnosticArgument final : public ComplexDiagnosticArgument {
+struct TypeDiagnosticArgument final : public SyntaxDiagnosticArgument {
 public:
   TypeDiagnosticArgument(const syn::Type *val)
-      : ComplexDiagnosticArgument(val) {}
+      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Type, val) {}
+};
+
+class SyntaxDiagnostic final : public Diagnostic {
 
 public:
-  void Diagnose(DiagnosticEngine &de) const override;
+  void Format(llvm::SmallVectorImpl<char> &outStr,
+              const DiagnosticFormatOptions &fmtOptions) const override;
+
+  void Format(const char *diagStr, const char *diagEnd,
+              llvm::SmallVectorImpl<char> &outStr,
+              const DiagnosticFormatOptions &fmtOptions) const override;
 };
+
 } // namespace stone
 
 #endif
