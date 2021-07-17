@@ -134,9 +134,7 @@ public:
     return CreateReplacement(CharSrcRange::getTokenRange(removeRange), code);
   }
 };
-struct DiagnosticFormatOptions final {
-
-};
+struct DiagnosticFormatOptions final {};
 struct DiagnosticStorage {
   /// The maximum number of arguments we can hold. We
   /// currently only support up to 10 arguments (%0-%9).
@@ -269,8 +267,7 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   friend class LiveDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
-  friend struct ComplexDiagnosticArgument;
-
+  friend struct DiagnosticArgument;
 
   /// The
   unsigned int diagnosticSeen = 0;
@@ -280,7 +277,7 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   llvm::SmallVector<DiagnosticListener *, 2> listeners;
 
   /// The currently diagnostic, if there is one.
-  //llvm::Optional<Diagnostic> curDiagnostic;
+  // llvm::Optional<Diagnostic> curDiagnostic;
 
   // TODO: Remove
   const DiagnosticOptions &diagOpts;
@@ -731,8 +728,9 @@ class Diagnostic {
 public:
   explicit Diagnostic(const DiagID diagID, const DiagnosticEngine *de)
       : diagID(diagID), de(de) {}
-  public: 
 
+public:
+  DiagnosticArgumentType GetType();
 
   // CStrDiagnosticArgument GetCStrDiagnosticArgument() {}
 
@@ -840,12 +838,14 @@ public:
   /// formal arguments into the %0 slots.
   ///
   /// The result is appended onto the \p OutStr array.
-  void Format(llvm::SmallVectorImpl<char> &outStr) const;
+  void Format(llvm::SmallVectorImpl<char> &outStr,
+              const DiagnosticFormatOptions &fmtOptions) const;
 
   /// Format the given format-string into the output buffer using the
   /// arguments stored in this diagnostic.
   void Format(const char *diagStr, const char *diagEnd,
-              llvm::SmallVectorImpl<char> &outStr) const;
+              llvm::SmallVectorImpl<char> &outStr,
+              const DiagnosticFormatOptions &fmtOptions) const;
 };
 class StoredDiagnostic {
   // unsigned diagIdentifier;

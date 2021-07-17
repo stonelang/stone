@@ -3,10 +3,9 @@
 
 namespace stone {
 
-//TODO: 
+// TODO:
 class Diagnostic final {
 public:
-	
 };
 
 } // namespace stone

@@ -11,6 +11,8 @@ namespace stone {
 class DiagnosticEngine;
 
 enum class DiagnosticArgumentType {
+  /// No argument 
+  None, 
   /// std::string
   STDStr,
 
