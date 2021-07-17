@@ -122,13 +122,13 @@ private:
   void LexHexNumber();
   void LexStrLiteral();
   unsigned LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostics,
-               bool isMultilineString, unsigned customDelimiterLen);
+                   bool isMultilineString, unsigned customDelimiterLen);
   unsigned LexUnicodeEscape(const char *&curPtr, Basic *basic);
 
   void Diagnose();
   void MakeTok(tk::Type ty, const char *tokenStart);
 
-  tk::Type GetKindOfIdentifier(StringRef tokStr);
+  tk::Type GetIdentifierType(llvm::StringRef tokStr);
 
   void GoBack() { --curPtr; }
   void GoForward() { ++curPtr; }

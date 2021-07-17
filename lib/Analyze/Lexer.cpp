@@ -7,21 +7,19 @@
 using namespace stone;
 using namespace stone::syn;
 
-
-static bool EncodeToUTF8(unsigned CharValue,
-                         SmallVectorImpl<char> &Result) {
+static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
   // Number of bits in the value, ignoring leading zeros.
-  unsigned NumBits = 32-llvm::countLeadingZeros(CharValue);
+  unsigned NumBits = 32 - llvm::countLeadingZeros(CharValue);
 
   // Handle the leading byte, based on the number of bits in the value.
   unsigned NumTrailingBytes;
-  if (NumBits <= 5+6) {
+  if (NumBits <= 5 + 6) {
     // Encoding is 0x110aaaaa 10bbbbbb
     Result.push_back(char(0xC0 | (CharValue >> 6)));
     NumTrailingBytes = 1;
-  } else if (NumBits <= 4+6+6) {
+  } else if (NumBits <= 4 + 6 + 6) {
     // Encoding is 0x1110aaaa 10bbbbbb 10cccccc
-    Result.push_back(char(0xE0 | (CharValue >> (6+6))));
+    Result.push_back(char(0xE0 | (CharValue >> (6 + 6))));
     NumTrailingBytes = 2;
 
     // UTF-16 surrogate pair values are not valid code points.
@@ -30,21 +28,22 @@ static bool EncodeToUTF8(unsigned CharValue,
     // U+FDD0...U+FDEF are also reserved
     if (CharValue >= 0xFDD0 && CharValue <= 0xFDEF)
       return true;
-  } else if (NumBits <= 3+6+6+6) {
+  } else if (NumBits <= 3 + 6 + 6 + 6) {
     // Encoding is 0x11110aaa 10bbbbbb 10cccccc 10dddddd
-    Result.push_back(char(0xF0 | (CharValue >> (6+6+6))));
+    Result.push_back(char(0xF0 | (CharValue >> (6 + 6 + 6))));
     NumTrailingBytes = 3;
     // Reject over-large code points.  These cannot be encoded as UTF-16
     // surrogate pairs, so UTF-32 doesn't allow them.
     if (CharValue > 0x10FFFF)
       return true;
   } else {
-    return true;  // UTF8 can encode these, but they aren't valid code points.
+    return true; // UTF8 can encode these, but they aren't valid code points.
   }
-  
+
   // Emit all of the trailing bytes.
   while (NumTrailingBytes--)
-    Result.push_back(char(0x80 | (0x3F & (CharValue >> (NumTrailingBytes*6)))));
+    Result.push_back(
+        char(0x80 | (0x3F & (CharValue >> (NumTrailingBytes * 6)))));
   return false;
 }
 
@@ -580,6 +579,30 @@ static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
 
   return false;
 }
+
+/// MaybeConsumeNewlineEscape - Check for valid elided newline escape and
+/// move pointer passed in to the character after the end of the line.
+static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
+  const char *tmpPtr = curPtr + offset;
+  while (true) {
+    switch (*tmpPtr++) {
+    case ' ':
+    case '\t':
+      continue;
+    case '\r':
+      if (*tmpPtr == '\n')
+        ++tmpPtr;
+      LLVM_FALLTHROUGH;
+    case '\n':
+      curPtr = tmpPtr;
+      return true;
+    case 0:
+    default:
+      return false;
+    }
+  }
+}
+
 Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
              LexerPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
@@ -798,13 +821,13 @@ void Lexer::LexIdentifier() {
   while (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd))
     ;
 
-  auto kind = GetKindOfIdentifier(StringRef(tokStart, curPtr - tokStart));
+  auto identifierTy = GetIdentifierType(StringRef(tokStart, curPtr - tokStart));
 
-  return MakeTok(kind, tokStart);
+  return MakeTok(identifierTy, tokStart);
 }
 
 /// This is either an identifier or a keyword.
-tk::Type Lexer::GetKindOfIdentifier(StringRef tokStr) {
+tk::Type Lexer::GetIdentifierType(llvm::StringRef tokStr) {
 #define KEYWORD(kw, S)                                                         \
   if (tokStr == #kw)                                                           \
     return tk::Type::kw_##kw;
@@ -912,8 +935,9 @@ void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
   }
 }
 
-unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostics,
-                    bool isMultilineString, unsigned customDelimiterLen) {
+unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
+                        bool emitDiagnostics, bool isMultilineString,
+                        unsigned customDelimiterLen) {
 
   const char *charStart = curPtr;
   switch (*curPtr++) {
@@ -930,7 +954,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostic
     }
     --curPtr;
     unsigned charValue = ValidateUTF8CharAndAdvance(curPtr, bufferEnd);
-    if (charValue != ~0U){
+    if (charValue != ~0U) {
       return charValue;
     }
     if (emitDiagnostics) {
@@ -942,22 +966,26 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostic
   case '\'':
     if (curPtr[-1] == stopQuote) {
       // Mutliline and custom escaping are only enabled for " quote.
-      if (LLVM_UNLIKELY(stopQuote != '"'))
+      if (LLVM_UNLIKELY(stopQuote != '"')) {
         return ~0U;
-      if (!isMultilineString && !customDelimiterLen)
+      }
+      if (!isMultilineString && !customDelimiterLen) {
         return ~0U;
-
-      Basic *localBasic = emitDiagnostics ? basic : nullptr;
+      }
 
       auto tmpPtr = curPtr;
-
       if (isMultilineString &&
-          !AdvanceIfMultilineDelimiter(customDelimiterLen, tmpPtr, localBasic))
+          !AdvanceIfMultilineDelimiter(customDelimiterLen, tmpPtr,
+                                       emitDiagnostics ? &basic : nullptr)) {
         return '"';
+      }
 
       if (customDelimiterLen &&
-          !DelimiterMatches(customDelimiterLen, tmpPtr, localBasic, /*IsClosing=*/true))
+          !DelimiterMatches(customDelimiterLen, tmpPtr,
+                            emitDiagnostics ? &basic : nullptr,
+                            /*IsClosing=*/true)) {
         return '"';
+      }
       curPtr = tmpPtr;
       return ~0U;
     }
@@ -976,7 +1004,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostic
     return curPtr[-1];
   case '\\': // Escapes.
     if (!DelimiterMatches(customDelimiterLen, curPtr,
-                          bmitDiagnostics ? basic : nullptr))
+                          emitDiagnostics ? &basic : nullptr))
       return '\\';
     break;
   }
@@ -1033,7 +1061,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostic
       return ~1U;
     }
 
-    charValue = LexUnicodeEscape(curPtr, emitDiagnostics ? this : nullptr);
+    charValue = LexUnicodeEscape(curPtr, emitDiagnostics ? &basic : nullptr);
     if (charValue == ~1U)
       return ~1U;
     break;
