@@ -15,6 +15,7 @@ enum class Level {
   Error = 5,
   Panic = 6
 };
+
 }
 /// Options for controlling diagnostics.
 class DiagnosticOptions

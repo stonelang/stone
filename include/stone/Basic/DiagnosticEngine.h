@@ -171,7 +171,12 @@ struct DiagnosticStorage {
   /// The diagnostic arguments
   llvm::SmallVector<DiagnosticArgument *, 2> args;
 
-  bool IsValid() {}
+  void AddRange(CharSrcRange range) { ranges.push_back(range); }
+
+  // Avoid copying the fix-it text more than necessary.
+  void AddFixIt(FixHint &&fix) { hints.push_back(std::move(fix)); }
+
+  void AddChildDiagnostic(Diagnostic &&D);
 
   DiagnosticStorage() = default;
 };
