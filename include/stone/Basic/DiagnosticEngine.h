@@ -440,6 +440,11 @@ public:
 
   template <typename... ArgTypes>
   LiveDiagnostic
+  Diagnose(Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args);
+
+  template <typename... ArgTypes>
+  LiveDiagnostic
   Diagnose(const ComplexDiagnosticArgument *complexArgument,
            Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
@@ -587,6 +592,13 @@ LiveDiagnostic DiagnosticEngine::Diagnose(
     typename detail::PassArgument<ArgTypes>::type... args) {
 
   return LiveDiagnostic(this);
+}
+
+template <typename... ArgTypes>
+LiveDiagnostic DiagnosticEngine::Diagnose(
+    Diag<ArgTypes...> id,
+    typename detail::PassArgument<ArgTypes>::type... args) {
+  return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
 }
 
 template <typename... ArgTypes>

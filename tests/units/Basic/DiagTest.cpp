@@ -16,6 +16,5 @@ public:
 TEST_F(DiagTest, ErrorTest) {
 
   basic.GetDiagOptions().useColor = true;
-  basic.GetDiagEngine().Issue(SrcLoc(), diag::compile_error_no_compile_args)
-      << "test";
+  basic.GetDiagEngine().Diagnose(diag::err_no_compile_args) << "test";
 }

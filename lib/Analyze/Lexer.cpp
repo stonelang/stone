@@ -7,50 +7,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-struct LexerInternal final {
-
-  static unsigned CLO8(unsigned char C);
-  static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result);
-  static bool IsValidIdentifierContinuationCodePoint(uint32_t c);
-  static bool IsStartOfUTF8Char(unsigned char C);
-
-  static bool AdvanceIfValidStartOfIdentifier(char const *&ptr,
-                                              char const *end);
-  static bool AdvanceIfValidContinuationOfIdentifier(char const *&ptr,
-                                                     char const *end);
-  static bool IsLeftBound(const char *tokBegin, const char *bufferBegin);
-  static bool IsRightBound(const char *tokEnd, bool isLeftBound,
-                           const char *codeCompletionPtr);
-
-  static bool IsNewLine(const signed char ch);
-
-  static bool IsWhiteSpace(const signed char ch);
-  static bool IsOperator(const signed char ch);
-
-  static bool IsNumber(const signed char ch);
-  static bool IsIdentifier(const signed char ch);
-  static bool IsValidTokStart(const signed char ch);
-  static void DiagnoseEmbeddedNull(const char *locPtr, Basic *basic);
-  static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
-                                 const char *codeCompletionPtr = nullptr,
-                                 Basic *basic = nullptr);
-  static bool SkipToEndOfSlashStarComment(const char *&curPtr,
-                                          const char *bufferEnd,
-                                          const char *codeCompletionPtr,
-                                          Basic *basic);
-  static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
-                                               Basic *basic);
-  static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Basic *basic);
-  static bool DelimiterMatches(unsigned customDelimiterLen,
-                               const char *&bytesPtr, Basic *basic,
-                               bool isClosing = false);
-  static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
-                                          const char *&curPtr, Basic *basic,
-                                          bool isOpening = false);
-  static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset);
-};
-
-bool LexerInternal::EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
+static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
   // Number of bits in the value, ignoring leading zeros.
   unsigned NumBits = 32 - llvm::countLeadingZeros(CharValue);
 
@@ -1186,7 +1143,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
   }
   // Check to see if the encoding is valid.
   llvm::SmallString<64> tempString;
-  if (charValue >= 0x80 && LexerInternal::EncodeToUTF8(charValue, tempString)) {
+  if (charValue >= 0x80 && EncodeToUTF8(charValue, tempString)) {
     if (emitDiagnostics)
       Diagnose(charStart, diag::err_invalid_unicode_scalar);
     return ~1U;
