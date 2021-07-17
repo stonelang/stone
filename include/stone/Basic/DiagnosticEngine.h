@@ -274,6 +274,8 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticListener *, 2> listeners;
 
+  DiagnosticListener *curListener = nullptr;
+
   /// The diagnostic listeners(s) that will be responsible for actually
   /// emitting diagnostics.
   // llvm::SmallVector<CustomDiagnosticArgument *, 2> customArguments;
@@ -362,6 +364,7 @@ private:
 
 public:
   explicit DiagnosticEngine(const DiagnosticOptions &diagOpts,
+                            DiagnosticListener *listener = nullptr,
                             SrcMgr *sm = nullptr);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
@@ -427,7 +430,7 @@ public:
   /// DiagMapping on the stack.
   bool PopMappings(SrcLoc loc);
 
-  void SetListener(DiagnosticListener *listener);
+  void SetCurrentListener(DiagnosticListener *listener);
 
   // void AddArgument(DiagnosticArgument *argument);
 

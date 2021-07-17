@@ -51,6 +51,8 @@ public:
 
   // Cap of # errors emitted, 0 -> no limit.
   unsigned errorLimit = 0;
+
+  bool ownsListener = false;
 };
 
 } // namespace stone

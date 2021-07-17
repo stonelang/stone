@@ -82,8 +82,8 @@ static constexpr const char *const FixItStrings[] = {
 };
 
 DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
-                                   SrcMgr *sm)
-    : diagOpts(diagOpts), sm(sm) {}
+                                   DiagnosticListener *listener, SrcMgr *sm)
+    : diagOpts(diagOpts), curListener(listener), sm(sm) {}
 
 DiagnosticEngine::~DiagnosticEngine() {}
 
@@ -100,6 +100,6 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
 
 bool DiagnosticEngine::HasError() { return false; }
 
-void DiagnosticEngine::SetListener(DiagnosticListener *listerner) {}
+void DiagnosticEngine::SetCurrentListener(DiagnosticListener *listerner) {}
 
 void DiagnosticEngine::Print() {}
