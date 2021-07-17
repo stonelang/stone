@@ -6,6 +6,7 @@ namespace stone {
 //TODO: 
 class Diagnostic final {
 public:
+	
 };
 
 } // namespace stone
