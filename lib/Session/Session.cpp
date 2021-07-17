@@ -1,12 +1,13 @@
 #include "stone/Session/Session.h"
+#include "stone/Basic/CompileDiagnostic.h"
 
 #include "llvm/Support/FileSystem.h"
 
 using namespace stone;
 using namespace llvm::opt;
 
-Session::Session(SessionOptions &sessionOpts)
-    : sessionOpts(sessionOpts), mode(ModeType::None),
+Session::Session(SessionOptions &sessionOpts, SessionType ty)
+    : sessionOpts(sessionOpts), ty(ty), mode(ModeType::None),
       vfs(llvm::vfs::getRealFileSystem()), strSaver(bumpAlloc) {
 
   // TODO: -print-stats
@@ -79,7 +80,11 @@ void Session::ComputeMode(const llvm::opt::DerivedArgList &args) {
   const llvm::opt::Arg *const modeArg = args.getLastArg(opts::ModeGroup);
 
   if (!modeArg) {
-    mode.SetType(GetDefaultModeType());
+    if (ty == SessionType::Compiler) {
+      GetDiagEngine().Diagnose(diag::err_no_compile_mode);
+    } else {
+      mode.SetType(GetDefaultModeType());
+    }
   } else {
     // TODO: may have to claim
     switch (modeArg->getOption().getID()) {
@@ -108,7 +113,7 @@ void Session::ComputeMode(const llvm::opt::DerivedArgList &args) {
       mode.SetType(ModeType::EmitModule);
       break;
     default:
-      Error(0); // TODO: No mode entered
+
       break;
     }
     if (mode.IsValid()) {
@@ -211,8 +216,6 @@ void Session::BuildInputs(const DerivedArgList &args, file::Files &inputs) {
     }
   }
 }
-/// Session Utils
-file::File Session::Utils::CreateFile(llvm::StringRef name) {}
-file::File Session::Utils::CreateFile(llvm::opt::Arg &arg) {}
 
+void Session::CreateDiagnostics() {}
 void Session::PrintVersion() {}

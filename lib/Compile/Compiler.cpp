@@ -27,8 +27,8 @@ using namespace stone::opts;
 using namespace stone::syn;
 
 Compiler::Compiler(PipelineEngine *pe)
-    : Session(compilerOpts), pe(pe), sm(GetDiagEngine(), GetFileMgr()),
-      cc(*this) {
+    : Session(compilerOpts, SessionType::Compiler), pe(pe),
+      sm(GetDiagEngine(), GetFileMgr()), cc(*this) {
 
   tc.reset(new TreeContext(*this, compilerOpts.spOpts, sm));
   syntax.reset(new Syntax(*tc.get()));

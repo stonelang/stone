@@ -6,8 +6,8 @@ TextDiagnosticEmitter::TextDiagnosticEmitter() {}
 
 TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
-void TextDiagnosticEmitter::EmitDiagnosticLevel() {}
+void TextDiagnosticEmitter::EmitLevel() {}
 
-void TextDiagnosticEmitter::EmitDiagnosticMessage() {}
+void TextDiagnosticEmitter::EmitMessage() {}
 
-void TextDiagnosticEmitter::EmitDiagnosticLoc() {}
+void TextDiagnosticEmitter::EmitLoc() {}

@@ -1,77 +1,79 @@
+#include <assert.h>
 
-enum class DiagnosticArgumentType {
-  /// std::string
-  STDStr,
+// enum class DiagnosticArgumentType {
+//   /// std::string
+//   STDStr,
 
-  /// const char *
-  CStr,
+//   /// const char *
+//   CStr,
 
-  /// llvm::StringRef
-  LLVMStr,
+//   /// llvm::StringRef
+//   LLVMStr,
 
-  /// int
-  SInt,
+//   /// int
+//   SInt,
 
-  /// unsigned
-  UInt,
+//   /// unsigned
+//   UInt,
 
-  TokenType,
+//   TokenType,
 
-  /// custom argument
-  Complex,
+//   /// custom argument
+//   Complex,
 
-};
+// };
 
-class DiagnosticEngine {};
-class Decl {};
+// class DiagnosticEngine {};
+// class Decl {};
 
-class DiagnosticArgument {
-  DiagnosticArgumentType ty;
+// class DiagnosticArgument {
+//   DiagnosticArgumentType ty;
 
-public:
-  DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
+// public:
+//   DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
 
-public:
-  DiagnosticArgumentType GetType() { return ty; }
-};
+// public:
+//   DiagnosticArgumentType GetType() { return ty; }
+// };
 
-template <typename T>
-class ComplexDiagnosticArgument : public DiagnosticArgument {
-  const T *val;
+// template <typename T>
+// class ComplexDiagnosticArgument : public DiagnosticArgument {
+//   const T *val;
 
-public:
-  ComplexDiagnosticArgument(const T *val)
-      : DiagnosticArgument(DiagnosticArgumentType::Complex), val(val) {}
+// public:
+//   ComplexDiagnosticArgument(const T *val)
+//       : DiagnosticArgument(DiagnosticArgumentType::Complex), val(val) {}
 
-  T *GetVal() const { return val; }
+//   T *GetVal() const { return val; }
 
-public:
-  virtual void Diagnose(DiagnosticEngine &de) {}
-};
+// public:
+//   virtual void Diagnose(DiagnosticEngine &de) {}
+// };
 
-class DeclDiagnosticArgument : public ComplexDiagnosticArgument<Decl> {
-public:
-  DeclDiagnosticArgument(const Decl *val) : ComplexDiagnosticArgument(val) {}
+// class DeclDiagnosticArgument : public ComplexDiagnosticArgument<Decl> {
+// public:
+//   DeclDiagnosticArgument(const Decl *val) : ComplexDiagnosticArgument(val) {}
 
-public:
-  void Diagnose(DiagnosticEngine &de) override {}
-};
+// public:
+//   void Diagnose(DiagnosticEngine &de) override {}
+// };
 
-void F0(DiagnosticArgument *argument) {
+// void F0(DiagnosticArgument *argument) {
 
-  if (argument->GetType() == DiagnosticArgumentType::Complex) {
+//   if (argument->GetType() == DiagnosticArgumentType::Complex) {
 
-    ComplexDiagnosticArgument *complex = (ComplexDiagnosticArgument *)argument;
-  }
-}
+//     ComplexDiagnosticArgument *complex = (ComplexDiagnosticArgument
+//     *)argument;
+//   }
+// }
 int main() {
 
-  Decl *d = new Decl();
-  DeclDiagnosticArgument arg(d);
+  // Decl *d = new Decl();
+  // DeclDiagnosticArgument arg(d);
 
-  delete d;
+  // delete d;
 
-  F0(&arg);
+  // F0(&arg);
 
   return 0;
 }

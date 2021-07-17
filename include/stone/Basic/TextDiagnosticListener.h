@@ -27,6 +27,9 @@ public:
 
 public:
   void Listen(diag::Level, const Diagnostic &diagnostic) override;
+
+public:
+  void SetEmitter(std::unique_ptr<DiagnosticEmitter> emitter);
 };
 } // namespace stone
 

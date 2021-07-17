@@ -4,5 +4,7 @@
 ERROR(err_no_compile_args, none,
       "no arguments provided to '-compile'", ())
 
+ERROR(err_no_compile_mode, none, "no compile mode", ())
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

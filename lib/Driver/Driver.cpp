@@ -226,8 +226,8 @@ void DriverStats::Print() {
 }
 
 Driver::Driver(llvm::StringRef stoneExecutable, llvm::StringRef driverName)
-    : Session(driverOpts), stoneExecutablePath(stoneExecutablePath),
-      driverName(driverName),
+    : Session(driverOpts, SessionType::Driver),
+      stoneExecutablePath(stoneExecutablePath), driverName(driverName),
       /*sysRoot(DEFAULT_SYSROOT),*/
       driverTitle("Compiler driver"), checkInputFilesExist(true) {
 

@@ -7,13 +7,14 @@ using stone::TextDiagnosticListener;
 
 TextBufferingDiagnosticListener::TextBufferingDiagnosticListener() {}
 
-void TextBufferingDiagnosticListener::Listen(diag::Level,
+void TextBufferingDiagnosticListener::Listen(diag::Level level,
                                              const Diagnostic &diagnostic) {}
 
 TextDiagnosticListener::TextDiagnosticListener() {}
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
-void TextDiagnosticListener::Listen(diag::Level, const Diagnostic &diagnostic) {
-  emitter->EmitDiagnosticMessage();
+void TextDiagnosticListener::Listen(diag::Level level,
+                                    const Diagnostic &diagnostic) {
+  emitter->EmitMessage();
 }

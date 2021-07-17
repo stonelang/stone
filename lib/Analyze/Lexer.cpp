@@ -856,7 +856,7 @@ unsigned Lexer::LexUnicodeEscape(const char *&CurPtr, Basic *basic) {
   const char *digitStart = CurPtr;
   unsigned numDigits = 0;
 
-  assert(true && "isHexDigit(...) is not implemented");
+  assert(false && "isHexDigit(...) is not implemented");
 
   //  for (; isHexDigit(CurPtr[0]); ++NumDigits)
   //   ++curPtr;

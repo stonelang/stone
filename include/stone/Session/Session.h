@@ -59,6 +59,7 @@ enum class SessionType { Compiler, Driver };
 class Session : public Basic {
   /// The mode id for this session
   SessionOptions &sessionOpts;
+  SessionType ty;
   llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> vfs;
 
 protected:
@@ -91,7 +92,7 @@ public:
   std::unique_ptr<llvm::Timer> timer;
 
 public:
-  Session(SessionOptions &opts);
+  Session(SessionOptions &opts, SessionType ty);
   virtual ~Session();
 
 protected:
@@ -199,12 +200,7 @@ protected:
   void BuildInputs(const llvm::opt::DerivedArgList &args, file::Files &inputs);
 
 public:
-  /// Session Utils
-  struct Utils {
-    static file::File CreateFile(llvm::StringRef name);
-    static file::File CreateFile(llvm::opt::Arg &arg);
-    static bool FileExits(llvm::StringRef name);
-  };
+  virtual void CreateDiagnostics();
 
 protected:
   void CreateTimer();

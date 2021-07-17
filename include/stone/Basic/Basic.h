@@ -66,6 +66,9 @@ public:
 
   void Remark(unsigned diagID);
   void Remark(SrcLoc loc, unsigned diagID);
+
+protected:
+  // virtual void CreateDiagnostics();
 };
 
 } // namespace stone

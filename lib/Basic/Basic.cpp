@@ -9,7 +9,7 @@ Basic::Basic()
 
 Basic::~Basic() {}
 
-void Basic::Panic() {}
+void Basic::Panic() { assert(false && "Compiler cannot continue"); }
 
 void Basic::Error(unsigned diagID) { Error(SrcLoc(), diagID); }
 void Basic::Error(SrcLoc loc, unsigned diagID) {}
