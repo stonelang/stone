@@ -135,16 +135,13 @@ public:
   }
 };
 
-struct DiagnosticHistory {
-
-  enum {
-    /// The maximum number of arguments we can hold. We
-    /// currently only support up to 10 arguments (%0-%9).
-    ///
-    /// A single diagnostic with more than that almost certainly has to
-    /// be simplified anyway.
-    maxArguments = 10
-  };
+struct DiagnosticStorage {
+  /// The maximum number of arguments we can hold. We
+  /// currently only support up to 10 arguments (%0-%9).
+  ///
+  /// A single diagnostic with more than that almost certainly has to
+  /// be simplified anyway.
+  unsigned maxArguments = 10;
 
   /// The number of entries in Arguments.
   unsigned char numDiagArgs = 0;
@@ -165,13 +162,16 @@ struct DiagnosticHistory {
   // std::string DiagArgumentsStr[MaxArguments];
 
   /// The list of ranges added to this diagnostic.
-  llvm::SmallVector<CharSrcRange, 8> diagRanges;
+  llvm::SmallVector<CharSrcRange, 8> ranges;
 
   /// If valid, provides a hint with some code to insert, remove, or
   /// modify at a particular position.
-  llvm::SmallVector<FixHint, 6> fixHints;
+  llvm::SmallVector<FixHint, 6> hints;
 
-  DiagnosticHistory() = default;
+  /// The diagnostic arguments
+  llvm::SmallVector<DiagnosticArgument *, 2> args;
+
+  DiagnosticStorage() = default;
 };
 
 class DiagnosticMapping {
