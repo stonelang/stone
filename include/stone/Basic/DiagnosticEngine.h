@@ -171,6 +171,8 @@ struct DiagnosticStorage {
   /// The diagnostic arguments
   llvm::SmallVector<DiagnosticArgument *, 2> args;
 
+  bool IsValid() {}
+
   DiagnosticStorage() = default;
 };
 
@@ -276,10 +278,6 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
 
   DiagnosticListener *curListener = nullptr;
 
-  /// The diagnostic listeners(s) that will be responsible for actually
-  /// emitting diagnostics.
-  // llvm::SmallVector<CustomDiagnosticArgument *, 2> customArguments;
-
   // TODO: Remove
   const DiagnosticOptions &diagOpts;
 
@@ -364,7 +362,6 @@ private:
 
 public:
   explicit DiagnosticEngine(const DiagnosticOptions &diagOpts,
-                            DiagnosticListener *listener = nullptr,
                             SrcMgr *sm = nullptr);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
@@ -459,6 +456,28 @@ public:
   SrcLoc GetCurrentDiagLoc() const { return curDiagLoc; }
 
   llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
+
+  /// Add an additional DiagnosticListener to receive diagnostics.
+  void AddListener(DiagnosticListener &listener) {
+    listeners.push_back(&listener);
+  }
+  /// Remove a specific DiagnosticListener.
+  void RemoveListener(DiagnosticListener &listener) {
+    listeners.erase(std::remove(listeners.begin(), listeners.end(), &listener));
+  }
+
+  /// Remove and return all \c DiagnosticListener.
+  std::vector<DiagnosticListener *> TakeListeners() {
+    auto result =
+        std::vector<DiagnosticListener *>(listeners.begin(), listeners.end());
+    listeners.clear();
+    return result;
+  }
+
+  /// Return all \c DiagnosticListener.
+  llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
+    return listeners;
+  }
 
 public:
   /// Issue the message to the client.
@@ -699,6 +718,129 @@ live;
 }
 */
 
+// A single Diagnostic
+class Diagnostic {
+
+  DiagID diagID;
+  const DiagnosticEngine *de;
+
+public:
+  explicit Diagnostic(DiagID diagID, const DiagnosticEngine *de)
+      : diagID(diagID), de(de) {}
+
+  // CStrDiagnosticArgument GetCStrDiagnosticArgument() {}
+
+  // const DiagnosticsEngine *getDiags() const { return DiagObj; }
+  // unsigned getID() const { return DiagObj->CurDiagID; }
+  // const SourceLocation &getLocation() const { return DiagObj->CurDiagLoc; }
+  // bool hasSourceManager() const { return DiagObj->hasSourceManager(); }
+  // SourceManager &getSourceManager() const { return
+  // DiagObj->getSourceManager();}
+
+  // unsigned getNumArgs() const { return DiagObj->DiagStorage.NumDiagArgs; }
+
+  // /// Return the kind of the specified index.
+  // ///
+  // /// Based on the kind of argument, the accessors below can be used to get
+  // /// the value.
+  // ///
+  // /// \pre Idx < getNumArgs()
+  // DiagnosticsEngine::ArgumentKind getArgKind(unsigned Idx) const {
+  //   assert(Idx < getNumArgs() && "Argument index out of range!");
+  //   return (DiagnosticsEngine::ArgumentKind)
+  //       DiagObj->DiagStorage.DiagArgumentsKind[Idx];
+  // }
+
+  // /// Return the provided argument string specified by \p Idx.
+  // /// \pre getArgKind(Idx) == DiagnosticsEngine::ak_std_string
+  // const std::string &getArgStdStr(unsigned Idx) const {
+  //   assert(getArgKind(Idx) == DiagnosticsEngine::ak_std_string &&
+  //          "invalid argument accessor!");
+  //   return DiagObj->DiagStorage.DiagArgumentsStr[Idx];
+  // }
+
+  // /// Return the specified C string argument.
+  // /// \pre getArgKind(Idx) == DiagnosticsEngine::ak_c_string
+  // const char *getArgCStr(unsigned Idx) const {
+  //   assert(getArgKind(Idx) == DiagnosticsEngine::ak_c_string &&
+  //          "invalid argument accessor!");
+  //   return reinterpret_cast<const char *>(
+  //       DiagObj->DiagStorage.DiagArgumentsVal[Idx]);
+  // }
+
+  // /// Return the specified signed integer argument.
+  // /// \pre getArgKind(Idx) == DiagnosticsEngine::ak_sint
+  // int getArgSInt(unsigned Idx) const {
+  //   assert(getArgKind(Idx) == DiagnosticsEngine::ak_sint &&
+  //          "invalid argument accessor!");
+  //   return (int)DiagObj->DiagStorage.DiagArgumentsVal[Idx];
+  // }
+
+  // /// Return the specified unsigned integer argument.
+  // /// \pre getArgKind(Idx) == DiagnosticsEngine::ak_uint
+  // unsigned getArgUInt(unsigned Idx) const {
+  //   assert(getArgKind(Idx) == DiagnosticsEngine::ak_uint &&
+  //          "invalid argument accessor!");
+  //   return (unsigned)DiagObj->DiagStorage.DiagArgumentsVal[Idx];
+  // }
+
+  // /// Return the specified IdentifierInfo argument.
+  // /// \pre getArgKind(Idx) == DiagnosticsEngine::ak_identifierinfo
+  // const IdentifierInfo *getArgIdentifier(unsigned Idx) const {
+  //   assert(getArgKind(Idx) == DiagnosticsEngine::ak_identifierinfo &&
+  //          "invalid argument accessor!");
+  //   return reinterpret_cast<IdentifierInfo *>(
+  //       DiagObj->DiagStorage.DiagArgumentsVal[Idx]);
+  // }
+
+  // /// Return the specified non-string argument in an opaque form.
+  // /// \pre getArgKind(Idx) != DiagnosticsEngine::ak_std_string
+  // intptr_t getRawArg(unsigned Idx) const {
+  //   assert(getArgKind(Idx) != DiagnosticsEngine::ak_std_string &&
+  //          "invalid argument accessor!");
+  //   return DiagObj->DiagStorage.DiagArgumentsVal[Idx];
+  // }
+
+  // /// Return the number of source ranges associated with this diagnostic.
+  // unsigned getNumRanges() const {
+  //   return DiagObj->DiagStorage.DiagRanges.size();
+  // }
+
+  // /// \pre Idx < getNumRanges()
+  // const CharSourceRange &getRange(unsigned Idx) const {
+  //   assert(Idx < getNumRanges() && "Invalid diagnostic range index!");
+  //   return DiagObj->DiagStorage.DiagRanges[Idx];
+  // }
+
+  // /// Return an array reference for this diagnostic's ranges.
+  // ArrayRef<CharSourceRange> getRanges() const {
+  //   return DiagObj->DiagStorage.DiagRanges;
+  // }
+
+  // unsigned getNumFixItHints() const {
+  //   return DiagObj->DiagStorage.FixItHints.size();
+  // }
+
+  // const FixItHint &getFixItHint(unsigned Idx) const {
+  //   assert(Idx < getNumFixItHints() && "Invalid index!");
+  //   return DiagObj->DiagStorage.FixItHints[Idx];
+  // }
+
+  // ArrayRef<FixItHint> getFixItHints() const {
+  //   return DiagObj->DiagStorage.FixItHints;
+  // }
+
+  /// Format this diagnostic into a string, substituting the
+  /// formal arguments into the %0 slots.
+  ///
+  /// The result is appended onto the \p OutStr array.
+  void Format(llvm::SmallVectorImpl<char> &outStr) const;
+
+  /// Format the given format-string into the output buffer using the
+  /// arguments stored in this diagnostic.
+  void Format(const char *diagStr, const char *diagEnd,
+              llvm::SmallVectorImpl<char> &outStr) const;
+};
 class StoredDiagnostic {
   // unsigned diagIdentifier;
   // diag::Level level;

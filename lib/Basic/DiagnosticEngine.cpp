@@ -82,8 +82,8 @@ static constexpr const char *const FixItStrings[] = {
 };
 
 DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
-                                   DiagnosticListener *listener, SrcMgr *sm)
-    : diagOpts(diagOpts), curListener(listener), sm(sm) {}
+                                   SrcMgr *sm)
+    : diagOpts(diagOpts), sm(sm) {}
 
 DiagnosticEngine::~DiagnosticEngine() {}
 
