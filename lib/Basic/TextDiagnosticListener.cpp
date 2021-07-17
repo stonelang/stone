@@ -3,4 +3,5 @@
 using stone::TextDiagnosticListener;
 
 TextDiagnosticListener::TextDiagnosticListener() {}
+
 TextDiagnosticListener::~TextDiagnosticListener() {}

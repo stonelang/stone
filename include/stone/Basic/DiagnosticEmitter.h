@@ -4,6 +4,7 @@
 namespace stone {
 class DiagnosticEmitter {
 public:
+  virtual void Emit(); 
 };
 } // namespace stone
 #endif
