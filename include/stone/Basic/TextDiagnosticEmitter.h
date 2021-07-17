@@ -9,6 +9,11 @@ public:
 public:
   TextDiagnosticEmitter();
   ~TextDiagnosticEmitter();
+
+public:
+  void EmitDiagnosticLevel() override;
+  void EmitDiagnosticMessage() override;
+  void EmitDiagnosticLoc() override;
 };
 } // namespace stone
 #endif

@@ -13,6 +13,7 @@ set(stone_basic_sources
 	Clock.cpp
 	DarwinDirWatcher.cpp
 	DiagIDList.cpp
+	Diagnostic.cpp
 	DiagnosticEngine.cpp
 	DiagnosticListener.cpp
 	DirScanner.cpp

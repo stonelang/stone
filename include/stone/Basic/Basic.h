@@ -5,6 +5,7 @@
 #include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
+#include "stone/Basic/Host.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Stats.h"
 
@@ -20,6 +21,7 @@ protected:
   StatEngine se;
   ColorOutputStream cos;
   FileMgr fm;
+  Host host;
   FileSystemOptions fsOpts;
   /// Default target triple.
   std::string targetTriple;
@@ -42,6 +44,9 @@ public:
 
   DiagnosticOptions &GetDiagOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
+
+  Host &GetHost() { return host; }
+  const Host &GetHost() const { return host; }
 
   FileMgr &GetFileMgr() { return fm; }
   std::string GetTarget() { return targetTriple; }

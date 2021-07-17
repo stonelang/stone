@@ -4,7 +4,9 @@
 namespace stone {
 class DiagnosticEmitter {
 public:
-  virtual void Emit(); 
+  virtual void EmitDiagnosticLevel();
+  virtual void EmitDiagnosticMessage();
+  virtual void EmitDiagnosticLoc();
 };
 } // namespace stone
 #endif

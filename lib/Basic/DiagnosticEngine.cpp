@@ -22,16 +22,16 @@ enum class LocalOptions {
 
 struct LocalDiagnostic {
 
-  diag::Severity severity : 2;
+  diag::Level severity : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
 
-  constexpr LocalDiagnostic(diag::Severity severity, bool firstBadToken,
+  constexpr LocalDiagnostic(diag::Level severity, bool firstBadToken,
                             bool fatal)
 
       : severity(severity), pointsToFirstBadToken(firstBadToken),
         isFatal(fatal) {}
-  constexpr LocalDiagnostic(diag::Severity severity, LocalOptions opts)
+  constexpr LocalDiagnostic(diag::Level severity, LocalOptions opts)
       : LocalDiagnostic(severity, opts == LocalOptions::PointsToFirstBadToken,
                         opts == LocalOptions::Fatal) {}
 };
@@ -48,13 +48,13 @@ enum LocalDiagID : uint32_t {
 // TODO: categorization
 static const constexpr LocalDiagnostic LocalDiagnostics[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
-  LocalDiagnostic(diag::Severity::Error, LocalOptions::Options),
+  LocalDiagnostic(diag::Level::Error, LocalOptions::Options),
 #define WARN(ID, Options, Text, Signature)                                     \
-  LocalDiagnostic(diag::Severity::Warn, LocalOptions::Options),
+  LocalDiagnostic(diag::Level::Warn, LocalOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
-  LocalDiagnostic(diag::Severity::Note, LocalOptions::Options),
+  LocalDiagnostic(diag::Level::Note, LocalOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
-  LocalDiagnostic(dia::Severity::Remark, LocalOptions::Options),
+  LocalDiagnostic(dia::Level::Remark, LocalOptions::Options),
 #include "stone/Basic/DiagnosticEngine.def"
 };
 

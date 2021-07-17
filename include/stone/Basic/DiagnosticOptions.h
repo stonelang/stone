@@ -6,7 +6,7 @@
 namespace stone {
 namespace diag {
 
-enum class Severity {
+enum class Level {
   None = 0,
   Ignore = 1,
   Note = 2,
@@ -29,7 +29,7 @@ public:
   // diagnostics.
   FormattingStyle formattingStyle = FormattingStyle::LLVM;
 
-  diag::Severity diagnosticSeverity = diag::Severity::None;
+  diag::Level diagnosticLevel = diag::Level::None;
 
   /// TODO: This is a copy of what is in DiagnosticEngine -- may live here.
   // Treat fatal errors like errors.

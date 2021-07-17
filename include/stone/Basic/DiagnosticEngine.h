@@ -134,6 +134,46 @@ public:
     return CreateReplacement(CharSrcRange::getTokenRange(removeRange), code);
   }
 };
+
+struct DiagnosticHistory {
+
+  enum {
+    /// The maximum number of arguments we can hold. We
+    /// currently only support up to 10 arguments (%0-%9).
+    ///
+    /// A single diagnostic with more than that almost certainly has to
+    /// be simplified anyway.
+    maxArguments = 10
+  };
+
+  /// The number of entries in Arguments.
+  unsigned char numDiagArgs = 0;
+
+  /// Specifies for each argument whether it is in DiagArgumentsStr
+  /// or in DiagArguments.
+  // unsigned char DiagArgumentsKind[MaxArguments];
+
+  /// The values for the various substitution positions.
+  ///
+  /// This is used when the argument is not an std::string. The specific value
+  /// is mangled into an intptr_t and the interpretation depends on exactly
+  /// what sort of argument kind it is.
+  // intptr_t DiagArgumentsVal[MaxArguments];
+
+  /// The values for the various substitution positions that have
+  /// string arguments.
+  // std::string DiagArgumentsStr[MaxArguments];
+
+  /// The list of ranges added to this diagnostic.
+  llvm::SmallVector<CharSrcRange, 8> diagRanges;
+
+  /// If valid, provides a hint with some code to insert, remove, or
+  /// modify at a particular position.
+  llvm::SmallVector<FixHint, 6> fixHints;
+
+  DiagnosticHistory() = default;
+};
+
 class DiagnosticMapping {
 public:
 };
@@ -160,7 +200,7 @@ public:
   unsigned suppressSystemWarnings : 1;
 
   // Map extensions to warnings or errors?
-  diag::Severity extBehavior = diag::Severity::Ignore;
+  diag::Level extBehavior = diag::Level::Ignore;
 
   DiagnosticState()
       : ignoreAllWarnings(false), enableAllWarnings(false),
@@ -355,7 +395,7 @@ private:
   ///
   /// This is used to emit continuation diagnostics with the same level as the
   /// diagnostic that they follow.
-  diag::Severity lastSeverity;
+  diag::Level lastLevel;
 
   /// Number of warnings reported
   unsigned numWarnings;
