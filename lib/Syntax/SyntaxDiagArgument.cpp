@@ -1,7 +1,20 @@
 #include "stone/Syntax/SyntaxDiagArgument.h"
 #include "stone/Basic/DiagnosticEngine.h"
 
-using namespace stone;
+using stone::SyntaxDiagnostic;
+
+void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
+                              const DiagnosticFormatOptions &fmtOptions) const {
+
+}
+
+/// Format the given format-string into the output buffer using the
+/// arguments stored in this diagnostic.
+void SyntaxDiagnostic::Format(const char *diagStr, const char *diagEnd,
+                              llvm::SmallVectorImpl<char> &outStr,
+                              const DiagnosticFormatOptions &fmtOptions) const {
+
+}
 
 // void DeclDiagnosticArgument::Diagnose(DiagnosticEngine &de) const {
 
