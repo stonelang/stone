@@ -30,10 +30,9 @@ class TimerGroup;
 using namespace stone::syn;
 
 namespace stone {
-
+class PipelineEngine;
 class Compiler;
 class CompilerContext;
-class PipelineEngine;
 
 class CompilerStats final : public Stats {
   Compiler &compiler;

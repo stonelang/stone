@@ -13,7 +13,7 @@ enum class Severity {
   Remark = 3,
   Warn = 4,
   Error = 5,
-  Fatal = 6
+  Panic = 6
 };
 }
 /// Options for controlling diagnostics.

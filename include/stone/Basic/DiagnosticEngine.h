@@ -3,7 +3,6 @@
 
 #include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/DiagnosticListener.h"
-#include "stone/Basic/DiagnosticPrinter.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/SrcLoc.h"

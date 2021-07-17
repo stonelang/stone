@@ -285,6 +285,7 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
+class AnyDecl : public NamedDecl {};
 class TypeDecl : public NamedDecl {
 
   friend class TreeContext;

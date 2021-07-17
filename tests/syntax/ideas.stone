@@ -80,3 +80,8 @@ space Physics.QM {
 		free a;
 	}
 
+
+	fun Do(const any* ptr) {
+
+	}
+

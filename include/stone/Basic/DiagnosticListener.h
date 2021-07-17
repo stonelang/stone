@@ -26,8 +26,8 @@ public:
   virtual void Finish() {}
 
   /// Indicates whether the diagnostics handled by this
-  /// DiagnosticConsumer should be included in the number of diagnostics
-  /// reported by DiagnosticsEngine.
+  /// DiagnosticListener should be included in the number of diagnostics
+  /// reported by DiagnosticEngine.
   ///
   /// The default implementation returns true.
   virtual bool IncludeInDiagnosticCounts() const;

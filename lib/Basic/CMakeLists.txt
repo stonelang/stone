@@ -25,6 +25,7 @@ set(stone_basic_sources
 	SrcLoc.cpp
 	SrcMgr.cpp
 	Stats.cpp
+	TextDiagnosticEmitter.cpp
 	TextDiagnosticListener.cpp
 	TokenType.cpp
 	UnixDirWatcher.cpp
