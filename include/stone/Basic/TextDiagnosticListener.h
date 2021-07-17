@@ -2,6 +2,9 @@
 #define STONE_BASIC_TEXTDIAGNOSTICLISTENER_H
 
 #include "stone/Basic/DiagnosticListener.h"
+#include "stone/Basic/TextDiagnosticEmitter.h"
+
+#include <memory>
 
 namespace stone {
 class Diagnostic;
@@ -15,6 +18,9 @@ public:
 };
 
 class TextDiagnosticListener final : public DiagnosticListener {
+
+  std::unique_ptr<TextDiagnosticEmitter> emitter;
+
 public:
   TextDiagnosticListener();
   ~TextDiagnosticListener();
