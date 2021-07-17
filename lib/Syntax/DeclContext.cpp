@@ -4,7 +4,6 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/Target.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

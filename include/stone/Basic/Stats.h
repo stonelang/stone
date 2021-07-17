@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+// TODO:  Similar implementation to that of DiagnosticEngine
 namespace stone {
 class Basic;
 class StatsPrinter {};
