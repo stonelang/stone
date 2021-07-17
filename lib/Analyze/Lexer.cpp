@@ -7,7 +7,50 @@
 using namespace stone;
 using namespace stone::syn;
 
-static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
+struct LexerInternal final {
+
+  static unsigned CLO8(unsigned char C);
+  static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result);
+  static bool IsValidIdentifierContinuationCodePoint(uint32_t c);
+  static bool IsStartOfUTF8Char(unsigned char C);
+
+  static bool AdvanceIfValidStartOfIdentifier(char const *&ptr,
+                                              char const *end);
+  static bool AdvanceIfValidContinuationOfIdentifier(char const *&ptr,
+                                                     char const *end);
+  static bool IsLeftBound(const char *tokBegin, const char *bufferBegin);
+  static bool IsRightBound(const char *tokEnd, bool isLeftBound,
+                           const char *codeCompletionPtr);
+
+  static bool IsNewLine(const signed char ch);
+
+  static bool IsWhiteSpace(const signed char ch);
+  static bool IsOperator(const signed char ch);
+
+  static bool IsNumber(const signed char ch);
+  static bool IsIdentifier(const signed char ch);
+  static bool IsValidTokStart(const signed char ch);
+  static void DiagnoseEmbeddedNull(const char *locPtr, Basic *basic);
+  static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
+                                 const char *codeCompletionPtr = nullptr,
+                                 Basic *basic = nullptr);
+  static bool SkipToEndOfSlashStarComment(const char *&curPtr,
+                                          const char *bufferEnd,
+                                          const char *codeCompletionPtr,
+                                          Basic *basic);
+  static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
+                                               Basic *basic);
+  static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Basic *basic);
+  static bool DelimiterMatches(unsigned customDelimiterLen,
+                               const char *&bytesPtr, Basic *basic,
+                               bool isClosing = false);
+  static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
+                                          const char *&curPtr, Basic *basic,
+                                          bool isOpening = false);
+  static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset);
+};
+
+bool LexerInternal::EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
   // Number of bits in the value, ignoring leading zeros.
   unsigned NumBits = 32 - llvm::countLeadingZeros(CharValue);
 
@@ -48,7 +91,7 @@ static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
 }
 
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
-static unsigned CLO8(unsigned char C) {
+static unsigned LexerInternal::CLO8(unsigned char C) {
   return llvm::countLeadingOnes(uint32_t(C) << 24);
 }
 
@@ -428,14 +471,6 @@ static bool IsValidTokStart(const signed char ch) {
   }
 }
 
-static bool SkipToEndOfSlashStarComment(const char *&curPtr,
-                                        const char *bufferEnd,
-                                        const char *codeCompletionPtr,
-                                        Basic *basic) {
-
-  return false;
-}
-
 static void DiagnoseEmbeddedNull(const char *locPtr, Basic *basic) {
 
   assert(locPtr && "invalid source location");
@@ -488,6 +523,88 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
       // Otherwise, the last line of the file does not have a newline.
       --curPtr;
       return false;
+    }
+  }
+}
+static bool SkipToEndOfSlashStarComment(const char *&curPtr,
+                                        const char *bufferEnd,
+                                        const char *codeCompletionPtr,
+                                        Basic *basic) {
+
+  const char *startPtr = curPtr - 1;
+  assert(curPtr[-1] == '/' && curPtr[0] == '*' && "Not a /* comment");
+  // Make sure to advance over the * so that we don't incorrectly handle /*/ as
+  // the beginning and end of the comment.
+  ++curPtr;
+
+  // /**/ comments can be nested, keep track of how deep we've gone.
+  unsigned depth = 1;
+  bool isMultiline = false;
+
+  while (1) {
+    switch (*curPtr++) {
+    case '*':
+      // Check for a '*/'
+      if (*curPtr == '/') {
+        ++curPtr;
+        if (--depth == 0)
+          return isMultiline;
+      }
+      break;
+    case '/':
+      // Check for a '/*'
+      if (*curPtr == '*') {
+        ++curPtr;
+        ++depth;
+      }
+      break;
+
+    case '\n':
+    case '\r':
+      isMultiline = true;
+      break;
+
+    default:
+      // If this is a "high" UTF-8 character, validate it.
+      if (basic && (signed char)(curPtr[-1]) < 0) {
+        --curPtr;
+        const char *charStart = curPtr;
+        if (ValidateUTF8CharAndAdvance(curPtr, bufferEnd) == ~0U) {
+          basic->GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(charStart),
+                                          diag::err_invalid_utf8);
+        }
+      }
+      break; // Otherwise, eat other characters.
+    case 0:
+      if (curPtr - 1 != bufferEnd) {
+        if (basic && curPtr - 1 != codeCompletionPtr) {
+          // If this is a random nul character in the middle of a buffer, skip
+          // it as whitespace.
+          DiagnoseEmbeddedNull(curPtr - 1, basic);
+        }
+        continue;
+      }
+      // Otherwise, we have an unterminated /* comment.
+      --curPtr;
+
+      if (basic) {
+        // Count how many levels deep we are.
+        llvm::SmallString<8> terminator("*/");
+        while (--depth != 0) {
+          terminator += "*/";
+        }
+
+        const char *endOfLine = (curPtr[-1] == '\n') ? (curPtr - 1) : curPtr;
+
+        // TODO:
+        // Diags->diagnose(Lexer::getSourceLoc(endOfLine),
+        //                diag::lex_unterminated_block_comment)
+        //     .fixItInsert(Lexer::getSourceLoc(endOfLine), Terminator);
+
+        basic->GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(startPtr),
+                                        diag::note_comment_start);
+      }
+      return isMultiline;
     }
   }
 }
@@ -1069,7 +1186,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
   }
   // Check to see if the encoding is valid.
   llvm::SmallString<64> tempString;
-  if (charValue >= 0x80 && EncodeToUTF8(charValue, tempString)) {
+  if (charValue >= 0x80 && LexerInternal::EncodeToUTF8(charValue, tempString)) {
     if (emitDiagnostics)
       Diagnose(charStart, diag::err_invalid_unicode_scalar);
     return ~1U;
