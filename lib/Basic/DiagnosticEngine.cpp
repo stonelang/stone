@@ -101,8 +101,7 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
   return DiagnosticStrings[(unsigned)diagID];
 }
 
+void DiagnosticEngine::FlushCurrentDiagnostic() {}
 bool DiagnosticEngine::HasError() { return false; }
-
-void DiagnosticEngine::SetCurrentListener(DiagnosticListener *listerner) {}
 
 void DiagnosticEngine::Print() {}
