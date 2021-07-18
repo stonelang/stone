@@ -54,8 +54,8 @@ namespace detail {
 template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
-class FixHint final {
-public:
+
+struct CodeFix final {
   /// Code that should be replaced to correct the error. Empty for an
   /// insertion hint.
   CharSrcRange removeRange;
@@ -72,15 +72,17 @@ public:
 
   /// Empty code modification hint, indicating that no code
   /// modification is known.
-  FixHint() = default;
+  CodeFix() = default;
 
   bool IsNull() const { return !removeRange.isValid(); }
+};
+struct CodeFixer final {
 
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  static FixHint CreateInsertion(SrcLoc insertionLoc, StringRef code,
+  static CodeFix Insert(SrcLoc insertionLoc, StringRef code,
                                  bool beforePreviousInsertions = false) {
-    FixHint fix;
+    CodeFix fix;
     fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
     fix.codeToInsert = std::string(code);
     fix.beforePreviousInsertions = beforePreviousInsertions;
@@ -89,10 +91,10 @@ public:
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
-  static FixHint
-  CreateInsertionFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
+  static CodeFix
+  InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
                            bool beforePreviousInsertions = false) {
-    FixHint fix;
+    CodeFix fix;
     fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
     fix.insertFromRange = fromRange;
     fix.beforePreviousInsertions = beforePreviousInsertions;
@@ -101,27 +103,27 @@ public:
 
   /// Create a code modification hint that removes the given
   /// source range.
-  static FixHint CreateRemoval(CharSrcRange removeRange) {
-    FixHint fix;
+  static CodeFix Remove(CharSrcRange removeRange) {
+    CodeFix fix;
     fix.removeRange = removeRange;
     return fix;
   }
-  static FixHint CreateRemoval(SrcRange removeRange) {
-    return CreateRemoval(CharSrcRange::getTokenRange(removeRange));
+  static CodeFix Remove(SrcRange removeRange) {
+    return Remove(CharSrcRange::getTokenRange(removeRange));
   }
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
-  static FixHint CreateReplacement(CharSrcRange removeRange,
+  static CodeFix Replace(CharSrcRange removeRange,
                                    llvm::StringRef code) {
-    FixHint fix;
+    CodeFix fix;
     fix.removeRange = removeRange;
     fix.codeToInsert = std::string(code);
     return fix;
   }
 
-  static FixHint CreateReplacement(SrcRange removeRange, llvm::StringRef code) {
-    return CreateReplacement(CharSrcRange::getTokenRange(removeRange), code);
+  static CodeFix Replace(SrcRange removeRange, llvm::StringRef code) {
+    return Replace(CharSrcRange::getTokenRange(removeRange), code);
   }
 };
 struct DiagnosticFormatOptions final {};
@@ -132,7 +134,7 @@ class DiagnosticContext final {
   Diagnostic *owner = nullptr;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
-  llvm::SmallVector<FixHint, 2> hints;
+  llvm::SmallVector<CodeFix, 2> fixes;
 
 public:
   template <typename... ArgTypes>
@@ -152,16 +154,16 @@ public:
   DiagID GetDiagID() { return diagID; }
   llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
-  llvm::ArrayRef<FixHint> GetFixHints() const { return hints; }
+  llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
 
 public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
-  void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
+  void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
 
   void Flush() {
     ranges.clear();
-    hints.clear();
+    fixes.clear();
   }
 };
 class Diagnostic {

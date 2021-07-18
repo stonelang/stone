@@ -47,7 +47,7 @@ struct DiagnosticStorage {
 
   /// If valid, provides a hint with some code to insert, remove, or
   /// modify at a particular position.
-  llvm::SmallVector<FixHint, 6> hints;
+  llvm::SmallVector<CodeFix, 6> fixes;
 
   /// The diagnostic arguments
   llvm::SmallVector<DiagnosticArgument *, 2> args;
@@ -55,7 +55,7 @@ struct DiagnosticStorage {
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
 
   // Avoid copying the fix-it text more than necessary.
-  void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
+  //void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
 
   void AddChildDiagnostic(Diagnostic &&D);
 
@@ -421,7 +421,7 @@ public:
     //assert(!de && "Null DiagnosticEngine");
   }
 
-  void AddFixHint(const FixHint &Hint) const {
+  void AddFix(const CodeFix &fix) const {
     // if (Hint.IsNull())
     //   return;
     // de->GetCurrentDiagnostic().GetDiagContext().hints.push_back(hint);
@@ -610,9 +610,9 @@ inline LiveDiagnostic DiagnosticEngine::Diagnose(
 // }
 
 inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
-                                             llvm::ArrayRef<FixHint> hints) {
-  for (const FixHint &hint : hints) {
-    // live.AddFixHint(Hint);
+                                             llvm::ArrayRef<CodeFix> fixes) {
+  for (const CodeFix &fix : fixes) {
+    // live.AddHint(hint);
   }
   return live;
 }
