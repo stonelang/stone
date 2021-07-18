@@ -1,9 +1,11 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/SynDiagnostic.h"
 #include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Syntax/SyntaxDiagArgument.h"
 
-#include <memory>
+using stone::DeclDiagnosticArgument;
 
 #include "gtest/gtest.h"
 
@@ -23,9 +25,15 @@ TEST_F(DiagTest, BasicTest) {
   TextDiagnosticListener textListener;
   basic.GetDiagEngine().AddListener(textListener);
 
-  basic.GetDiagEngine().Diagnose(diag::err_no_compile_args)
-      << "test with no 'SrcLoc'";
+  // basic.GetDiagEngine().Diagnose(diag::err_no_compile_args)
+  //     << "test with no 'SrcLoc'";
 
-  basic.GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_compile_args)
-      << "test with blank 'SrcLoc'";
+  // basic.GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_compile_args)
+  //     << "test with blank 'SrcLoc'";
+
+  basic.GetDiagEngine()
+      .Diagnose(SrcLoc(), diag::note_prev_decl_def,
+                DeclDiagnosticArgument(nullptr))
+      .GetFixer()
+      .Replace(SrcLoc(), llvm::StringRef()); 
 }
