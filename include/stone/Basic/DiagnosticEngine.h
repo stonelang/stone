@@ -55,7 +55,7 @@ struct DiagnosticStorage {
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
 
   // Avoid copying the fix-it text more than necessary.
-  //void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
+  // void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
 
   void AddChildDiagnostic(Diagnostic &&D);
 
@@ -416,9 +416,8 @@ public:
 public:
   void AddArgument(const DiagnosticArgument &arg) {}
 
-
   void AddRange(const CharSrcRange &range) const {
-    //assert(!de && "Null DiagnosticEngine");
+    // assert(!de && "Null DiagnosticEngine");
   }
 
   void AddFix(const CodeFix &fix) const {
@@ -469,10 +468,7 @@ public:
   // inline LiveDiagnostic Emit(const unsigned diagnosticID, const unsigned
   // msgID);
 
-  // TODO: Remove
-  void AddFlagValue(llvm::StringRef data) const {
-    de->flagValue = std::string(data);
-  }
+  CodeFixer &GetFixer();
 
 protected:
   void FlushCounts() {}

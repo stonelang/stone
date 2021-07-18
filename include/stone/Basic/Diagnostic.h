@@ -54,7 +54,6 @@ namespace detail {
 template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
-
 struct CodeFix final {
   /// Code that should be replaced to correct the error. Empty for an
   /// insertion hint.
@@ -76,55 +75,31 @@ struct CodeFix final {
 
   bool IsNull() const { return !removeRange.isValid(); }
 };
-struct CodeFixer final {
-
+class CodeFixer final {
+public:
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  static CodeFix Insert(SrcLoc insertionLoc, StringRef code,
-                                 bool beforePreviousInsertions = false) {
-    CodeFix fix;
-    fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
-    fix.codeToInsert = std::string(code);
-    fix.beforePreviousInsertions = beforePreviousInsertions;
-    return fix;
-  }
+  CodeFix Insert(SrcLoc insertionLoc, StringRef code,
+                 bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
-  static CodeFix
-  InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
-                           bool beforePreviousInsertions = false) {
-    CodeFix fix;
-    fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
-    fix.insertFromRange = fromRange;
-    fix.beforePreviousInsertions = beforePreviousInsertions;
-    return fix;
-  }
+  CodeFix InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
+                          bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that removes the given
   /// source range.
-  static CodeFix Remove(CharSrcRange removeRange) {
-    CodeFix fix;
-    fix.removeRange = removeRange;
-    return fix;
-  }
-  static CodeFix Remove(SrcRange removeRange) {
-    return Remove(CharSrcRange::getTokenRange(removeRange));
-  }
+  CodeFix Remove(CharSrcRange removeRange);
+
+  CodeFix Remove(SrcRange removeRange);
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
-  static CodeFix Replace(CharSrcRange removeRange,
-                                   llvm::StringRef code) {
-    CodeFix fix;
-    fix.removeRange = removeRange;
-    fix.codeToInsert = std::string(code);
-    return fix;
-  }
+  CodeFix Replace(CharSrcRange removeRange, llvm::StringRef code);
 
-  static CodeFix Replace(SrcRange removeRange, llvm::StringRef code) {
-    return Replace(CharSrcRange::getTokenRange(removeRange), code);
-  }
+  CodeFix Replace(SrcRange removeRange, llvm::StringRef code);
+
+  CodeFixer() = default;
 };
 struct DiagnosticFormatOptions final {};
 
