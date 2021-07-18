@@ -34,35 +34,43 @@ void Diagnostic::Format(const char *diagStr, const char *diagEnd,
                         llvm::SmallVectorImpl<char> &outStr,
                         const DiagnosticFormatOptions &fmtOptions) const {}
 
+CodeFix::CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
+                 llvm::StringRef code, bool beforePreviousInsertions)
+    : removeRange(removeRange), insertFromRange(insertFromRange), code(code),
+      beforePreviousInsertions(beforePreviousInsertions) {}
+
 /// Create a code modification hint that inserts the given
 /// code string at a specific location.
-LiveDiagnostic CodeFixer::Insert(SrcLoc insertionLoc, StringRef code,
-                                 bool beforePreviousInsertions) {
-  CodeFix fix;
-  fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
-  fix.codeToInsert = std::string(code);
-  fix.beforePreviousInsertions = beforePreviousInsertions;
+LiveDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
+                                        llvm::StringRef code,
+                                        bool beforePreviousInsertions) {
+
+  de->GetCurrentDiagnostic().GetProfile().AddFix(
+      CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
+              CharSrcRange(), code, beforePreviousInsertions));
 
   return LiveDiagnostic(de);
 }
 
 /// Create a code modification hint that inserts the given
 /// code from \p FromRange at a specific location.
-LiveDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
-                                   bool beforePreviousInsertions) {
-  CodeFix fix;
-  fix.removeRange = CharSrcRange::getCharRange(insertionLoc, insertionLoc);
-  fix.insertFromRange = fromRange;
-  fix.beforePreviousInsertions = beforePreviousInsertions;
-  
-  return LiveDiagnostic(de);;
+LiveDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
+                                          CharSrcRange fromRange,
+                                          bool beforePreviousInsertions) {
+
+  de->GetCurrentDiagnostic().GetProfile().AddFix(
+      CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
+              llvm::StringRef(), beforePreviousInsertions));
+
+  return LiveDiagnostic(de);
 }
 /// Create a code modification hint that removes the given
 /// source range.
 LiveDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
-  CodeFix fix;
-  fix.removeRange = removeRange;
-  return LiveDiagnostic(de);;
+
+  de->GetCurrentDiagnostic().GetProfile().AddFix(CodeFix(CharSrcRange(), removeRange,
+                                                 llvm::StringRef()));
+  return LiveDiagnostic(de);
 }
 LiveDiagnostic CodeFixer::Remove(SrcRange removeRange) {
   return Remove(CharSrcRange::getTokenRange(removeRange));
@@ -70,13 +78,19 @@ LiveDiagnostic CodeFixer::Remove(SrcRange removeRange) {
 
 /// Create a code modification hint that replaces the given
 /// source range with the given code string.
-LiveDiagnostic CodeFixer::Replace(CharSrcRange removeRange, llvm::StringRef code) {
-  CodeFix fix;
-  fix.removeRange = removeRange;
-  fix.codeToInsert = std::string(code);
-  return LiveDiagnostic(de);;
+LiveDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
+                                  llvm::StringRef code) {
+
+  de->GetCurrentDiagnostic().GetProfile().AddFix(CodeFix(CharSrcRange(), removeRange, code));
+  return LiveDiagnostic(de);
 }
 
 LiveDiagnostic CodeFixer::Replace(SrcRange removeRange, llvm::StringRef code) {
   return Replace(CharSrcRange::getTokenRange(removeRange), code);
 }
+
+LiveDiagnostic CodeFixer::Highlight(SrcRange range) {}
+
+/// Add a character-based range to the currently-active diagnostic.
+LiveDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {}
+

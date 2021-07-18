@@ -57,7 +57,7 @@ namespace detail {
 template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
-struct CodeFix final {
+class CodeFix final {
   /// Code that should be replaced to correct the error. Empty for an
   /// insertion hint.
   CharSrcRange removeRange;
@@ -68,13 +68,19 @@ struct CodeFix final {
 
   /// The actual code to insert at the insertion location, as a
   /// string.
-  std::string codeToInsert;
+  llvm::StringRef code;
 
   bool beforePreviousInsertions = false;
 
-  /// Empty code modification hint, indicating that no code
-  /// modification is known.
-  CodeFix() = default;
+public:
+  CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
+          llvm::StringRef code, bool beforePreviousInsertions = false);
+
+public:
+  CharSrcRange GetRemoveRange() const { return removeRange; }
+  CharSrcRange GetInsertFromRange() const { return removeRange; }
+  llvm::StringRef GetCode() const { return code; }
+  bool IsBeforePreviousInsertions() { return beforePreviousInsertions; }
 
   bool IsNull() const { return !removeRange.isValid(); }
 };
@@ -87,34 +93,34 @@ public:
 public:
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  LiveDiagnostic Insert(SrcLoc insertionLoc, StringRef code,
-                        bool beforePreviousInsertions = false);
-
-  LiveDiagnostic HighlightChars(SrcLoc startLoc, SrcLoc endLoc);
+  LiveDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
+                               bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
   LiveDiagnostic InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
-                          bool beforePreviousInsertions = false);
+                                 bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that removes the given
   /// source range.
   LiveDiagnostic Remove(CharSrcRange removeRange);
-
   LiveDiagnostic Remove(SrcRange removeRange);
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
   LiveDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
-
   LiveDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
 
-  CodeFixer() = default;
+  /// Add a token-based range to the currently-active diagnostic.
+  LiveDiagnostic Highlight(SrcRange range);
+
+  /// Add a character-based range to the currently-active diagnostic.
+  LiveDiagnostic HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
 };
 struct DiagnosticFormatOptions final {};
 
 /// Pass the D
-class DiagnosticContext final {
+class DiagnosticProfile final {
   DiagID diagID;
   Diagnostic *owner = nullptr;
   llvm::SmallVector<DiagnosticArgument, 3> args;
@@ -123,7 +129,7 @@ class DiagnosticContext final {
 
 public:
   template <typename... ArgTypes>
-  DiagnosticContext(Diag<ArgTypes...> d,
+  DiagnosticProfile(Diag<ArgTypes...> d,
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
@@ -132,7 +138,7 @@ public:
   }
 
 public:
-  DiagnosticContext(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
+  DiagnosticProfile(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
       : diagID(diagID), args(arguments.begin(), arguments.end()) {}
 
 public:
@@ -152,20 +158,21 @@ public:
   }
 };
 class Diagnostic {
-  SrcLoc loc;
-  mutable DiagnosticContext diagContext;
+
   friend class DiagnosticEngine;
   friend class LiveDiagnostic;
 
+  SrcLoc loc;
+  mutable DiagnosticProfile profile;
+
 public:
-  explicit Diagnostic(DiagnosticContext diagContext)
-      : diagContext(diagContext) {}
+  explicit Diagnostic(DiagnosticProfile profile) : profile(profile) {}
 
 public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  DiagnosticContext &GetDiagContext() { return diagContext; }
+  DiagnosticProfile &GetProfile() { return profile; }
 
   /// The result is appended onto the \p OutStr array.
   virtual void Format(llvm::SmallVectorImpl<char> &outStr,

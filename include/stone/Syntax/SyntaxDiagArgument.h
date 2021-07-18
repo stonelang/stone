@@ -53,8 +53,7 @@ public:
 
 class SyntaxDiagnostic final : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(DiagnosticContext diagContext)
-      : Diagnostic(diagContext) {}
+  explicit SyntaxDiagnostic(DiagnosticProfile profile) : Diagnostic(profile) {}
 
 public:
   void Format(llvm::SmallVectorImpl<char> &outStr,

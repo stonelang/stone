@@ -368,7 +368,7 @@ public:
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
   bool IsInflight() {
-    return (unsigned)curDiagnostic->GetDiagContext().GetDiagID() !=
+    return (unsigned)curDiagnostic->GetProfile().GetDiagID() !=
            std::numeric_limits<unsigned>::max();
   }
 };
@@ -423,7 +423,7 @@ public:
   void AddFix(const CodeFix &fix) const {
     // if (Hint.IsNull())
     //   return;
-    // de->GetCurrentDiagnostic().GetDiagContext().hints.push_back(hint);
+    // de->GetCurrentDiagnostic().GetProfile().hints.push_back(hint);
   }
   DiagnosticEngine *GetDiagEngine() { return de; }
 };
@@ -454,7 +454,7 @@ public:
       : StreamingDiagnostic(de), fixer(de), isActive(true) {
 
     assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
-    de->GetCurrentDiagnostic().GetDiagContext().Flush();
+    de->GetCurrentDiagnostic().GetProfile().Flush();
   }
 
 public:
@@ -586,7 +586,7 @@ inline LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
 inline LiveDiagnostic
 DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
                            llvm::ArrayRef<DiagnosticArgument> args) {
-  return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
+  return Diagnose(loc, Diagnostic(DiagnosticProfile(diagID, args)));
 }
 
 template <typename... ArgTypes>
