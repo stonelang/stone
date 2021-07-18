@@ -694,8 +694,13 @@ inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
 // live;
 // }
 
-class DiagnosticContext {
+/// Pass the D
+class DiagnosticContext final {
+
+  const DiagID diagID;
+  const DiagnosticEngine *de;
   llvm::SmallVector<DiagnosticArgument, 3> args;
+
 public:
   template <typename... ArgTypes>
   DiagnosticContext(Diag<ArgTypes...> d,
@@ -705,28 +710,15 @@ public:
     auto diagArgs = {std::move(vArgs)...};
     args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
   }
+  // DiagID GetDiagID() { return diagID; }
 };
-// A single Diagnostic
 class Diagnostic {
-
-  const DiagID diagID;
   SrcLoc loc;
-  const DiagnosticEngine *de;
-
-  llvm::SmallVector<DiagnosticArgument, 3> args;
+  DiagnosticContext diagContext;
 
 public:
-  template <typename... ArgTypes>
-  Diagnostic(Diag<ArgTypes...> d,
-             typename detail::PassArgument<ArgTypes>::type... vArgs)
-      : diagID(d.diagID) {
-
-    auto diagArgs = {std::move(vArgs)...};
-    args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
-  }
-
-  // explicit Diagnostic(const DiagID diagID, const DiagnosticEngine *de)
-  //     : diagID(diagID), de(de) {}
+  explicit Diagnostic(DiagnosticContext diagContext)
+      : diagContext(diagContext) {}
 
 public:
   DiagnosticArgumentType GetType();

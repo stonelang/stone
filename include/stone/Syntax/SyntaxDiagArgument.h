@@ -53,8 +53,8 @@ public:
 
 class SyntaxDiagnostic final : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(const DiagID diagID, const DiagnosticEngine *de)
-      : Diagnostic(diagID, de) {}
+  explicit SyntaxDiagnostic(DiagnosticContext diagContext)
+      : Diagnostic(diagContext) {}
 
 public:
   void Format(llvm::SmallVectorImpl<char> &outStr,
