@@ -3,13 +3,11 @@
 
 namespace stone {
 
-class  TargetOptions final {
+class TargetOptions final {
 public:
-
 };
 class Target {
 public:
-
 };
 
 class Host final {

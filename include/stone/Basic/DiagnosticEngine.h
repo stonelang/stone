@@ -52,7 +52,7 @@ enum class FixID : uint32_t;
 /// (for other information about the diagnostic).
 template <typename... argTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
-  DiagID ID;
+  DiagID diagID;
 };
 
 namespace detail {
@@ -489,11 +489,16 @@ public:
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
-  inline LiveDiagnostic Issue(unsigned DiagID);
-  void Issue(const StoredDiagnostic &storedDiagnostic);
+  // inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
+  // inline LiveDiagnostic Issue(unsigned DiagID);
+  // void Issue(const StoredDiagnostic &storedDiagnostic);
 
   // inline LiveDiagnostic Issue(SrcLoc loc, DiagID diagID);
+
+  LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                          llvm::ArrayRef<DiagnosticArgument> args);
+
+  LiveDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
   template <typename... ArgTypes>
   LiveDiagnostic
@@ -503,12 +508,6 @@ public:
   template <typename... ArgTypes>
   LiveDiagnostic
   Diagnose(Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args);
-
-  template <typename... ArgTypes>
-  LiveDiagnostic
-  Diagnose(const ComplexDiagnosticArgument *complexArgument,
-           Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
   // inline LiveDiagnostic Issue(const Diagnosable *custom, DiagID diagID,
@@ -648,44 +647,21 @@ public:
   }
 };
 
-template <typename... ArgTypes>
-LiveDiagnostic DiagnosticEngine::Diagnose(
-    SrcLoc loc, Diag<ArgTypes...> id,
-    typename detail::PassArgument<ArgTypes>::type... args) {
+// inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
+//   assert(curDiagID == std::numeric_limits<unsigned>::max() &&
+//          "Multiple diagnostics in flight at once!");
 
-  return LiveDiagnostic(this);
-}
-
-template <typename... ArgTypes>
-LiveDiagnostic DiagnosticEngine::Diagnose(
-    Diag<ArgTypes...> id,
-    typename detail::PassArgument<ArgTypes>::type... args) {
-  return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
-}
-
-template <typename... ArgTypes>
-LiveDiagnostic DiagnosticEngine::Diagnose(
-    const ComplexDiagnosticArgument *complexArgument, Diag<ArgTypes...> id,
-    typename detail::PassArgument<ArgTypes>::type... args) {
-
-  return LiveDiagnostic(this);
-}
-
-inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
-  assert(curDiagID == std::numeric_limits<unsigned>::max() &&
-         "Multiple diagnostics in flight at once!");
-
-  // CurDiagLoc = Loc;
-  // CurDiagID = DiagID;
-  // FlagValue.clear();
-  return LiveDiagnostic(this);
-}
+//   // CurDiagLoc = Loc;
+//   // CurDiagID = DiagID;
+//   // FlagValue.clear();
+//   return LiveDiagnostic(this);
+// }
 // const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
 //                                     llvm::Error &&E);
 
-inline LiveDiagnostic DiagnosticEngine::Issue(unsigned diagID) {
-  return Issue(SrcLoc(), diagID);
-}
+// inline LiveDiagnostic DiagnosticEngine::Issue(unsigned diagID) {
+//   return Issue(SrcLoc(), diagID);
+// }
 
 /*
 /// Register a value for the flag in the current diagnostic. This
@@ -712,25 +688,51 @@ inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
   //                DiagnosticArgumentType::CStr);
   return live;
 }
-/*
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
-live;
-}
-*/
 
+// inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
+// int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
+// live;
+// }
+
+class DiagnosticContext {
+  llvm::SmallVector<DiagnosticArgument, 3> args;
+public:
+  template <typename... ArgTypes>
+  DiagnosticContext(Diag<ArgTypes...> d,
+                    typename detail::PassArgument<ArgTypes>::type... vArgs)
+      : diagID(d.diagID) {
+
+    auto diagArgs = {std::move(vArgs)...};
+    args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
+  }
+};
 // A single Diagnostic
 class Diagnostic {
 
   const DiagID diagID;
+  SrcLoc loc;
   const DiagnosticEngine *de;
 
+  llvm::SmallVector<DiagnosticArgument, 3> args;
+
 public:
-  explicit Diagnostic(const DiagID diagID, const DiagnosticEngine *de)
-      : diagID(diagID), de(de) {}
+  template <typename... ArgTypes>
+  Diagnostic(Diag<ArgTypes...> d,
+             typename detail::PassArgument<ArgTypes>::type... vArgs)
+      : diagID(d.diagID) {
+
+    auto diagArgs = {std::move(vArgs)...};
+    args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
+  }
+
+  // explicit Diagnostic(const DiagID diagID, const DiagnosticEngine *de)
+  //     : diagID(diagID), de(de) {}
 
 public:
   DiagnosticArgumentType GetType();
+
+  void SetLoc(SrcLoc sl) { loc = sl; }
+  SrcLoc GetLoc() { return loc; }
 
   // CStrDiagnosticArgument GetCStrDiagnosticArgument() {}
 
@@ -858,6 +860,38 @@ class StoredDiagnostic {
 public:
   StoredDiagnostic() = default;
 };
+
+// LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
+//                                           const Diagnostic &diagnostic) {
+//   // TODO:
+//   // assert(!curDiagnostic && "Already have an active diagnostic");
+//   // curDiagnostic = diagnostic;
+//   // curDiagnostic->SetLoc(Loc);
+
+//   return LiveDiagnostic(this);
+// }
+
+// LiveDiagnostic
+// DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
+//                            llvm::ArrayRef<DiagnosticArgument> args) {
+
+//   return Diagnose(loc, Diagnostic(diagID, args));
+// }
+
+template <typename... ArgTypes>
+LiveDiagnostic DiagnosticEngine::Diagnose(
+    SrcLoc loc, Diag<ArgTypes...> id,
+    typename detail::PassArgument<ArgTypes>::type... args) {
+
+  return LiveDiagnostic(this);
+}
+
+template <typename... ArgTypes>
+LiveDiagnostic DiagnosticEngine::Diagnose(
+    Diag<ArgTypes...> id,
+    typename detail::PassArgument<ArgTypes>::type... args) {
+  return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
+}
 
 } // namespace stone
 #endif

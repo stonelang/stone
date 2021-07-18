@@ -87,7 +87,7 @@ DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
 
 DiagnosticEngine::~DiagnosticEngine() {}
 
-void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
+// void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
 
 llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
                                                 bool printDiagnosticName) {
