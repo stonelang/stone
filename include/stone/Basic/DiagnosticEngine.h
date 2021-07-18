@@ -165,16 +165,6 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   SrcMgr *sm;
 
 private:
-  // TODO: Remove -- you can get from curDiagnostic;
-  /// The location of the current diagnostic that is in flight.
-  SrcLoc curDiagLoc;
-  /// The ID of the current diagnostic that is in flight.
-  ///
-  /// This is set to std::numeric_limits<unsigned>::max() when there is no
-  /// diagnostic in flight.
-  unsigned curDiagID;
-
-private:
   // Which overload candidates to show.
   // OverloadsShown ShowOverloads = Ovl_All;
 
@@ -316,10 +306,6 @@ public:
   /// \param Force Emit the diagnostic regardless of suppression settings.
   bool EmitCurrentDiagnostic(bool force = false);
 
-  // TODO: Remove -- you can get from curDiagnostic
-  unsigned GetCurrentDiagID() const { return curDiagID; }
-  SrcLoc GetCurrentDiagLoc() const { return curDiagLoc; }
-
   llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
 
   /// Add an additional DiagnosticListener to receive diagnostics.
@@ -377,9 +363,11 @@ public:
   // inline LiveDiagnostic Issue(const Diagnosable *custom, DiagID diagID,
   //                              llvm::ArrayRef<DiagnosticArgument> args);
 
-  /// Determine whethere there is already a diagnostic in flight.
-  bool IsLive() const {
-    return curDiagID != std::numeric_limits<unsigned>::max();
+  /// Determine whethere there is already a diagnostic in flight -- there is a
+  /// better way.
+  bool IsInflight() {
+    return (unsigned)curDiagnostic->GetDiagContext().GetDiagID() !=
+           std::numeric_limits<unsigned>::max();
   }
 };
 

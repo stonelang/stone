@@ -160,8 +160,7 @@ public:
 };
 class Diagnostic {
   SrcLoc loc;
-  DiagnosticContext diagContext;
-
+  mutable DiagnosticContext diagContext;
   friend class DiagnosticEngine;
   friend class LiveDiagnostic;
 
