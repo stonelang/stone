@@ -5,6 +5,7 @@
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
+#include "stone/Basic/Printable.h"
 
 namespace stone {
 
@@ -142,7 +143,8 @@ struct FlagValueInfo {
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
+class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine>,
+                               public Printable {
 
   friend class LiveDiagnostic;
   friend class DiagnosticErrorTrap;
@@ -220,7 +222,9 @@ public:
 
 public:
   bool HasError();
-  void Print();
+
+  void Print(llvm::raw_ostream &os,
+             const PrintingPolicy &policy) const override;
 
 private:
   /// Sticky flag set to \c true when an error is emitted.
@@ -360,9 +364,6 @@ public:
   Diagnose(Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
-  // inline LiveDiagnostic Issue(const Diagnosable *custom, DiagID diagID,
-  //                              llvm::ArrayRef<DiagnosticArgument> args);
-
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
   bool IsInflight() {
@@ -450,6 +451,7 @@ public:
   // inline LiveDiagnostic Emit(const unsigned diagnosticID, const unsigned
   // msgID);
 
+  // TODO: Remove
   void AddFlagValue(llvm::StringRef data) const {
     de->flagValue = std::string(data);
   }
@@ -563,14 +565,12 @@ inline LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
   assert(!curDiagnostic && "Already have an active diagnostic");
   curDiagnostic = diagnostic;
   curDiagnostic->SetLoc(loc);
-
   return LiveDiagnostic(this);
 }
 
 inline LiveDiagnostic
 DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
                            llvm::ArrayRef<DiagnosticArgument> args) {
-
   return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
 }
 
@@ -578,7 +578,6 @@ template <typename... ArgTypes>
 inline LiveDiagnostic DiagnosticEngine::Diagnose(
     SrcLoc loc, Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
-
   return LiveDiagnostic(this);
 }
 
