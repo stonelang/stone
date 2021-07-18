@@ -25,7 +25,7 @@
 #include <vector>
 
 namespace stone {
-
+class Diagnostic;
 /// Enumeration describing all of possible diagnostics.
 ///
 /// Each of the diagnostics described in DiagnosticEngine.def has an entry in
@@ -129,6 +129,7 @@ struct DiagnosticFormatOptions final {};
 /// Pass the D
 class DiagnosticContext final {
   DiagID diagID;
+  Diagnostic *owner = nullptr;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<FixHint, 2> hints;
@@ -157,6 +158,11 @@ public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
   void AddFixHint(FixHint &&fix) { hints.push_back(std::move(fix)); }
+
+  void Flush() {
+    ranges.clear();
+    hints.clear();
+  }
 };
 class Diagnostic {
   SrcLoc loc;

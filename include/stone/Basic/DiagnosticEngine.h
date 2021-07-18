@@ -407,14 +407,31 @@ public:
 };
 
 class StreamingDiagnostic {
+protected:
+  mutable DiagnosticEngine *de = nullptr;
+
 public:
+  StreamingDiagnostic(DiagnosticEngine *de) : de(de) {}
+
+public:
+  void AddArgument(const DiagnosticArgument &arg) {}
+
+
+  void AddRange(const CharSrcRange &range) const {
+    //assert(!de && "Null DiagnosticEngine");
+  }
+
+  void AddFixHint(const FixHint &Hint) const {
+    // if (Hint.IsNull())
+    //   return;
+    // de->GetCurrentDiagnostic().GetDiagContext().hints.push_back(hint);
+  }
 };
 
 class LiveDiagnostic final : public StreamingDiagnostic {
   friend class DiagnosticEngine;
   // friend class PartialDiagnostic;
 
-  mutable DiagnosticEngine *de = nullptr;
   mutable unsigned numArgs = 0;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -430,11 +447,11 @@ class LiveDiagnostic final : public StreamingDiagnostic {
 
   LiveDiagnostic() = default;
 
-  explicit LiveDiagnostic(DiagnosticEngine *de) : de(de), isActive(true) {
-    assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
+  explicit LiveDiagnostic(DiagnosticEngine *de)
+      : StreamingDiagnostic(de), isActive(true) {
 
-    // de->ranges.clear();
-    // de->fixHints.clear();
+    assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
+    de->GetCurrentDiagnostic().GetDiagContext().Flush();
   }
 
 public:
@@ -485,9 +502,6 @@ protected:
   }
 
 public:
-  /// Copy constructor.  When copied, this "takes" the diagnostic info from the
-  /// input and neuters it.
-  LiveDiagnostic(const LiveDiagnostic &live) {}
   LiveDiagnostic &operator=(const LiveDiagnostic &) = delete;
 
   /// Emits the diagnostic.
@@ -587,6 +601,26 @@ inline LiveDiagnostic DiagnosticEngine::Diagnose(
     Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
   return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
+}
+
+// inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
+//                                              llvm::StringRef S) {
+//   live.AddString(S);
+//   return live;
+// }
+
+inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
+                                             llvm::ArrayRef<FixHint> hints) {
+  for (const FixHint &hint : hints) {
+    // live.AddFixHint(Hint);
+  }
+  return live;
+}
+
+inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
+                                             const DiagnosticArgument &arg) {
+
+  return live;
 }
 
 } // namespace stone

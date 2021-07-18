@@ -285,6 +285,14 @@ public:
 
   syn::Scope *GetCurScope() const;
 
+public:
+  LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID);
+  LiveDiagnostic Diagnose(const Token &tok, DiagID diagID);
+
+  // LiveDiagnostic Diagnose(unsigned DiagID) {
+  //   return Diag(tok, diagID);
+  // }
+
 private:
   void Diagnose();
 };
