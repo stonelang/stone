@@ -26,6 +26,9 @@
 
 namespace stone {
 class Diagnostic;
+class LiveDiagnostic;
+class DiagnoticEngine;
+
 /// Enumeration describing all of possible diagnostics.
 ///
 /// Each of the diagnostics described in DiagnosticEngine.def has an entry in
@@ -76,28 +79,35 @@ struct CodeFix final {
   bool IsNull() const { return !removeRange.isValid(); }
 };
 class CodeFixer final {
+  DiagnosticEngine *de;
+
+public:
+  CodeFixer(DiagnosticEngine *de) : de(de) {}
+
 public:
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  CodeFix Insert(SrcLoc insertionLoc, StringRef code,
-                 bool beforePreviousInsertions = false);
+  LiveDiagnostic Insert(SrcLoc insertionLoc, StringRef code,
+                        bool beforePreviousInsertions = false);
+
+  LiveDiagnostic HighlightChars(SrcLoc startLoc, SrcLoc endLoc);
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
-  CodeFix InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
+  LiveDiagnostic InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
                           bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that removes the given
   /// source range.
-  CodeFix Remove(CharSrcRange removeRange);
+  LiveDiagnostic Remove(CharSrcRange removeRange);
 
-  CodeFix Remove(SrcRange removeRange);
+  LiveDiagnostic Remove(SrcRange removeRange);
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
-  CodeFix Replace(CharSrcRange removeRange, llvm::StringRef code);
+  LiveDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
 
-  CodeFix Replace(SrcRange removeRange, llvm::StringRef code);
+  LiveDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
 
   CodeFixer() = default;
 };

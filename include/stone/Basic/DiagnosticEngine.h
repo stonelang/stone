@@ -425,12 +425,15 @@ public:
     //   return;
     // de->GetCurrentDiagnostic().GetDiagContext().hints.push_back(hint);
   }
+  DiagnosticEngine *GetDiagEngine() { return de; }
 };
 
 class LiveDiagnostic final : public StreamingDiagnostic {
   friend class DiagnosticEngine;
+  friend class CodeFixer;
   // friend class PartialDiagnostic;
 
+  CodeFixer fixer;
   mutable unsigned numArgs = 0;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -446,8 +449,9 @@ class LiveDiagnostic final : public StreamingDiagnostic {
 
   LiveDiagnostic() = default;
 
-  explicit LiveDiagnostic(DiagnosticEngine *de)
-      : StreamingDiagnostic(de), isActive(true) {
+public:
+  LiveDiagnostic(DiagnosticEngine *de)
+      : StreamingDiagnostic(de), fixer(de), isActive(true) {
 
     assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
     de->GetCurrentDiagnostic().GetDiagContext().Flush();
@@ -468,7 +472,7 @@ public:
   // inline LiveDiagnostic Emit(const unsigned diagnosticID, const unsigned
   // msgID);
 
-  CodeFixer &GetFixer();
+  CodeFixer &GetFixer() { return fixer; }
 
 protected:
   void FlushCounts() {}
