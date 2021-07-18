@@ -128,7 +128,8 @@ void Session::Finish() {
   PrintDiagnostics();
   PrintStatistics();
 }
-void Session::PrintDiagnostics() { GetDiagEngine().Print(); }
+void Session::PrintDiagnostics() { /*GetDiagEngine(basic.OS()).Print();*/
+}
 
 void Session::PrintStatistics() {
   if (sessionOpts.printStats) {
@@ -217,5 +218,5 @@ void Session::BuildInputs(const DerivedArgList &args, file::Files &inputs) {
   }
 }
 
-void Session::CreateDiagnostics() {}
+void Session::InitDiagnostics() { GetDiagEngine().AddListener(textListener); }
 void Session::PrintVersion() {}

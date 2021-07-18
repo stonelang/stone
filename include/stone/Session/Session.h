@@ -6,6 +6,7 @@
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Stats.h"
+#include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/SessionOptions.h"
 
@@ -61,6 +62,8 @@ class Session : public Basic {
   SessionOptions &sessionOpts;
   SessionType ty;
   llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> vfs;
+
+  TextDiagnosticListener textListener;
 
 protected:
   Mode mode;
@@ -200,7 +203,7 @@ protected:
   void BuildInputs(const llvm::opt::DerivedArgList &args, file::Files &inputs);
 
 public:
-  virtual void CreateDiagnostics();
+  virtual void InitDiagnostics();
 
 protected:
   void CreateTimer();

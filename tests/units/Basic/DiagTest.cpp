@@ -20,7 +20,6 @@ TEST_F(DiagTest, BasicTest) {
 
   basic.GetDiagOptions().useColor = true;
 
-
   TextDiagnosticListener textListener;
   basic.GetDiagEngine().AddListener(textListener);
 

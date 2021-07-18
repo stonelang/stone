@@ -161,7 +161,8 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine>,
   /// The currently diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
 
-  // TODO: llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
+  // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
+
   DiagnosticOptions &diagOpts;
 
   SrcMgr *sm;
@@ -223,8 +224,8 @@ public:
 public:
   bool HasError();
 
-  void Print(llvm::raw_ostream &os,
-             const PrintingPolicy &policy) const override;
+  void Print(ColorOutputStream &os,
+             const PrintingPolicy *policy) const override;
 
 private:
   /// Sticky flag set to \c true when an error is emitted.

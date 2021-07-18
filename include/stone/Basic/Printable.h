@@ -1,6 +1,7 @@
 #ifndef STONE_BASIC_PRINTABLE_H
 #define STONE_BASIC_PRINTABLE_H
 
+#include "stone/Basic/Color.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
@@ -14,8 +15,8 @@ public:
   virtual ~Printable() {}
 
 public:
-  virtual void Print(llvm::raw_ostream &os,
-                     const PrintingPolicy &policy) const = 0;
+  virtual void Print(ColorOutputStream &os,
+                     const PrintingPolicy *policy = nullptr) const = 0;
 };
 
 } // namespace stone

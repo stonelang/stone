@@ -55,8 +55,8 @@ public:
   DeclNameType GetDeclNameType() { return ty; }
 
 public:
-  void Print(llvm::raw_ostream &os,
-             const PrintingPolicy &policy) const override;
+  void Print(ColorOutputStream &os,
+             const PrintingPolicy *policy = nullptr) const override;
 
   void Dump() const override;
 
