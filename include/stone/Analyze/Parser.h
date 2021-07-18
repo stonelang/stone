@@ -286,10 +286,10 @@ public:
   syn::Scope *GetCurScope() const;
 
 public:
-  LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID);
-  LiveDiagnostic Diagnose(const Token &tok, DiagID diagID);
+  InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID);
+  InflightDiagnostic Diagnose(const Token &tok, DiagID diagID);
 
-  // LiveDiagnostic Diagnose(unsigned DiagID) {
+  // InflightDiagnostic Diagnose(unsigned DiagID) {
   //   return Diag(tok, diagID);
   // }
 

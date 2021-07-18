@@ -9,7 +9,7 @@
 #include "stone/Syntax/Type.h"
 
 namespace stone {
-class LiveDiagnostic;
+class InflightDiagnostic;
 
 namespace syn {
 class Decl;

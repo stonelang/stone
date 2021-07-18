@@ -26,7 +26,7 @@
 
 namespace stone {
 class Diagnostic;
-class LiveDiagnostic;
+class InflightDiagnostic;
 class DiagnoticEngine;
 
 /// Enumeration describing all of possible diagnostics.
@@ -93,29 +93,30 @@ public:
 public:
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  LiveDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
-                               bool beforePreviousInsertions = false);
+  InflightDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
+                                   bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
-  LiveDiagnostic InsertFromRange(SrcLoc insertionLoc, CharSrcRange fromRange,
-                                 bool beforePreviousInsertions = false);
+  InflightDiagnostic InsertFromRange(SrcLoc insertionLoc,
+                                     CharSrcRange fromRange,
+                                     bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that removes the given
   /// source range.
-  LiveDiagnostic Remove(CharSrcRange removeRange);
-  LiveDiagnostic Remove(SrcRange removeRange);
+  InflightDiagnostic Remove(CharSrcRange removeRange);
+  InflightDiagnostic Remove(SrcRange removeRange);
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
-  LiveDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
-  LiveDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
+  InflightDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
+  InflightDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
 
   /// Add a token-based range to the currently-active diagnostic.
-  LiveDiagnostic Highlight(SrcRange range);
+  InflightDiagnostic Highlight(SrcRange range);
 
   /// Add a character-based range to the currently-active diagnostic.
-  LiveDiagnostic HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
+  InflightDiagnostic HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
 };
 struct DiagnosticFormatOptions final {};
 
@@ -160,7 +161,7 @@ public:
 class Diagnostic {
 
   friend class DiagnosticEngine;
-  friend class LiveDiagnostic;
+  friend class InflightDiagnostic;
 
   SrcLoc loc;
   mutable DiagnosticProfile profile;

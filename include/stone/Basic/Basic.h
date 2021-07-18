@@ -12,7 +12,7 @@
 namespace stone {
 
 class Basic {
-  class LiveDiagnostic;
+  class InflightDiagnostic;
 
 protected:
   LangOptions langOpts;
@@ -55,7 +55,7 @@ public:
 
   void Panic();
 
-  /* TODO: LiveDiagnostic*/ void Error(unsigned diagID);
+  /* TODO: InflightDiagnostic*/ void Error(unsigned diagID);
   void Error(SrcLoc loc, unsigned diagID);
 
   void Warn(unsigned diagID);

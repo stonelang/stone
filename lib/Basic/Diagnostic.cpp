@@ -4,7 +4,7 @@ using stone::CodeFix;
 using stone::CodeFixer;
 using stone::Diagnostic;
 using stone::DiagnosticEngine;
-using stone::LiveDiagnostic;
+using stone::InflightDiagnostic;
 
 void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                         const DiagnosticFormatOptions &fmtOptions) const {
@@ -41,56 +41,57 @@ CodeFix::CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
 
 /// Create a code modification hint that inserts the given
 /// code string at a specific location.
-LiveDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
-                                        llvm::StringRef code,
-                                        bool beforePreviousInsertions) {
+InflightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
+                                            llvm::StringRef code,
+                                            bool beforePreviousInsertions) {
 
   de->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
               CharSrcRange(), code, beforePreviousInsertions));
 
-  return LiveDiagnostic(de);
+  return InflightDiagnostic(de);
 }
 
 /// Create a code modification hint that inserts the given
 /// code from \p FromRange at a specific location.
-LiveDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
-                                          CharSrcRange fromRange,
-                                          bool beforePreviousInsertions) {
+InflightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
+                                              CharSrcRange fromRange,
+                                              bool beforePreviousInsertions) {
 
   de->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
               llvm::StringRef(), beforePreviousInsertions));
 
-  return LiveDiagnostic(de);
+  return InflightDiagnostic(de);
 }
 /// Create a code modification hint that removes the given
 /// source range.
-LiveDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
+InflightDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(CodeFix(CharSrcRange(), removeRange,
-                                                 llvm::StringRef()));
-  return LiveDiagnostic(de);
+  de->GetCurrentDiagnostic().GetProfile().AddFix(
+      CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
+  return InflightDiagnostic(de);
 }
-LiveDiagnostic CodeFixer::Remove(SrcRange removeRange) {
+InflightDiagnostic CodeFixer::Remove(SrcRange removeRange) {
   return Remove(CharSrcRange::getTokenRange(removeRange));
 }
 
 /// Create a code modification hint that replaces the given
 /// source range with the given code string.
-LiveDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
-                                  llvm::StringRef code) {
+InflightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
+                                      llvm::StringRef code) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(CodeFix(CharSrcRange(), removeRange, code));
-  return LiveDiagnostic(de);
+  de->GetCurrentDiagnostic().GetProfile().AddFix(
+      CodeFix(CharSrcRange(), removeRange, code));
+  return InflightDiagnostic(de);
 }
 
-LiveDiagnostic CodeFixer::Replace(SrcRange removeRange, llvm::StringRef code) {
+InflightDiagnostic CodeFixer::Replace(SrcRange removeRange,
+                                      llvm::StringRef code) {
   return Replace(CharSrcRange::getTokenRange(removeRange), code);
 }
 
-LiveDiagnostic CodeFixer::Highlight(SrcRange range) {}
+InflightDiagnostic CodeFixer::Highlight(SrcRange range) {}
 
 /// Add a character-based range to the currently-active diagnostic.
-LiveDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {}
-
+InflightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {}

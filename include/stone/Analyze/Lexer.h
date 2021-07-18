@@ -145,8 +145,8 @@ public:
 
 public:
   template <typename... DiagArgTypes, typename... ArgTypes>
-  LiveDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
-                          ArgTypes &&...Args) {
+  InflightDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
+                              ArgTypes &&...Args) {
 
     basic.GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(locPtr), DiagID,
                                    std::forward<ArgTypes>(Args)...);

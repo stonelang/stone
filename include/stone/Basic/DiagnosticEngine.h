@@ -11,7 +11,7 @@ namespace stone {
 
 class SrcMgr;
 class DiagnosticEngine;
-class LiveDiagnostic;
+class InflightDiagnostic;
 class DiagnosticListener;
 class LangOptions;
 class StoredDiagnostic;
@@ -146,7 +146,7 @@ struct FlagValueInfo {
 class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine>,
                                public Printable {
 
-  friend class LiveDiagnostic;
+  friend class InflightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
   friend struct DiagnosticArgument;
@@ -338,30 +338,30 @@ public:
 public:
   /// Issue the message to the client.
   ///
-  /// This actually returns an instance of LiveDiagnostic which emits the
+  /// This actually returns an instance of InflightDiagnostic which emits the
   /// diagnostics (through @c ProcessDiag) when it is destroyed.
   ///
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  // inline LiveDiagnostic Issue(SrcLoc loc, unsigned diagID);
-  // inline LiveDiagnostic Issue(unsigned DiagID);
+  // inline InflightDiagnostic Issue(SrcLoc loc, unsigned diagID);
+  // inline InflightDiagnostic Issue(unsigned DiagID);
   // void Issue(const StoredDiagnostic &storedDiagnostic);
 
-  // inline LiveDiagnostic Issue(SrcLoc loc, DiagID diagID);
+  // inline InflightDiagnostic Issue(SrcLoc loc, DiagID diagID);
 
-  inline LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                                 llvm::ArrayRef<DiagnosticArgument> args);
+  inline InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                                     llvm::ArrayRef<DiagnosticArgument> args);
 
-  inline LiveDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
+  inline InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
   template <typename... ArgTypes>
-  inline LiveDiagnostic
+  inline InflightDiagnostic
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
   template <typename... ArgTypes>
-  inline LiveDiagnostic
+  inline InflightDiagnostic
   Diagnose(Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
@@ -406,34 +406,14 @@ public:
   }
 };
 
-class StreamingDiagnostic {
-protected:
-  mutable DiagnosticEngine *de = nullptr;
-
-public:
-  StreamingDiagnostic(DiagnosticEngine *de) : de(de) {}
-
-public:
-  void AddArgument(const DiagnosticArgument &arg) {}
-
-  void AddRange(const CharSrcRange &range) const {
-    // assert(!de && "Null DiagnosticEngine");
-  }
-
-  void AddFix(const CodeFix &fix) const {
-    // if (Hint.IsNull())
-    //   return;
-    // de->GetCurrentDiagnostic().GetProfile().hints.push_back(hint);
-  }
-  DiagnosticEngine *GetDiagEngine() { return de; }
-};
-
-class LiveDiagnostic final : public StreamingDiagnostic {
+class InflightDiagnostic final {
   friend class DiagnosticEngine;
   friend class CodeFixer;
-  // friend class PartialDiagnostic;
+  friend class PartialDiagnostic;
 
+  DiagnosticEngine *de;
   CodeFixer fixer;
+
   mutable unsigned numArgs = 0;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -447,32 +427,34 @@ class LiveDiagnostic final : public StreamingDiagnostic {
   /// call to ForceEmit.
   mutable bool isForceEmit = false;
 
-  LiveDiagnostic() = default;
+  InflightDiagnostic() = default;
 
 public:
-  LiveDiagnostic(DiagnosticEngine *de)
-      : StreamingDiagnostic(de), fixer(de), isActive(true) {
+  InflightDiagnostic(DiagnosticEngine *de) : de(de), fixer(de), isActive(true) {
 
-    assert(de && "LiveDiagnostic requires a valid DiagnosticEngine!");
+    assert(de && "InflightDiagnostic requires a valid DiagnosticEngine!");
     de->GetCurrentDiagnostic().GetProfile().Flush();
   }
 
 public:
   /// Issue the message to the client.
   ///
-  /// This actually returns an instance of LiveDiagnostic which emits the
+  /// This actually returns an instance of InflightDiagnostic which emits the
   /// diagnostics (through @c ProcessDiag) when it is destroyed.
   ///
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  // inline LiveDiagnostic Emit(const SrcLoc loc, const unsigned diagnosticID,
+  // inline InflightDiagnostic Emit(const SrcLoc loc, const unsigned
+  // diagnosticID,
   //                                const unsigned msgID);
 
-  // inline LiveDiagnostic Emit(const unsigned diagnosticID, const unsigned
+  // inline InflightDiagnostic Emit(const unsigned diagnosticID, const unsigned
   // msgID);
 
   CodeFixer &GetFixer() { return fixer; }
+
+  DiagnosticEngine *GetDiagEngine() { return de; }
 
 protected:
   void FlushCounts() {}
@@ -485,7 +467,7 @@ protected:
 
   bool Emit() {
     // If this diagnostic is inactive, then its soul was stolen by the copy ctor
-    // (or by a subclass, as in SemaLiveDiagnostic).
+    // (or by a subclass, as in SemaInflightDiagnostic).
     if (!IsActive())
       return false;
 
@@ -502,66 +484,11 @@ protected:
   }
 
 public:
-  LiveDiagnostic &operator=(const LiveDiagnostic &) = delete;
+  InflightDiagnostic &operator=(const InflightDiagnostic &) = delete;
 
   /// Emits the diagnostic.
-  ~LiveDiagnostic() { Emit(); }
-
-public:
-  template <typename T> const LiveDiagnostic &operator<<(const T &v) const {
-    assert(IsActive() && "Clients must not add to cleared diagnostic!");
-    const StreamingDiagnostic &sd = *this;
-    sd << v;
-    return *this;
-  }
+  ~InflightDiagnostic() { Emit(); }
 };
-
-// inline LiveDiagnostic DiagnosticEngine::Issue(SrcLoc loc, unsigned diagID) {
-//   assert(curDiagID == std::numeric_limits<unsigned>::max() &&
-//          "Multiple diagnostics in flight at once!");
-
-//   // CurDiagLoc = Loc;
-//   // CurDiagID = DiagID;
-//   // FlagValue.clear();
-//   return LiveDiagnostic(this);
-// }
-// const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
-//                                     llvm::Error &&E);
-
-// inline LiveDiagnostic DiagnosticEngine::Issue(unsigned diagID) {
-//   return Issue(SrcLoc(), diagID);
-// }
-
-/*
-/// Register a value for the flag in the current diagnostic. This
-/// value will be shown as the suffix "=value" after the flag name. It is
-/// useful in cases where the diagnostic flag accepts values (e.g.,
-/// -Rpass or -Wframe-larger-than).
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-                                           const AddFlagValue V) {
-  live.AddFlagValue(V.Val);
-  return live;
-}
-*/
-
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-                                        llvm::StringRef data) {
-  // live.AddString(data);
-  return live;
-}
-
-inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-                                        const char *data) {
-
-  // live.AddTaggedVal(reinterpret_cast<intptr_t>(data),
-  //                DiagnosticArgumentType::CStr);
-  return live;
-}
-
-// inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
-// int data) { live.AddTaggedVal(data, DiagnosticArgumentType::SInt); return
-// live;
-// }
 
 class StoredDiagnostic {
   // unsigned diagIdentifier;
@@ -575,52 +502,32 @@ public:
   StoredDiagnostic() = default;
 };
 
-inline LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
-                                                 const Diagnostic &diagnostic) {
+inline InflightDiagnostic
+DiagnosticEngine::Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
   assert(!curDiagnostic && "Already have an active diagnostic");
   curDiagnostic = diagnostic;
   curDiagnostic->SetLoc(loc);
-  return LiveDiagnostic(this);
+  return InflightDiagnostic(this);
 }
 
-inline LiveDiagnostic
+inline InflightDiagnostic
 DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
                            llvm::ArrayRef<DiagnosticArgument> args) {
   return Diagnose(loc, Diagnostic(DiagnosticProfile(diagID, args)));
 }
 
 template <typename... ArgTypes>
-inline LiveDiagnostic DiagnosticEngine::Diagnose(
+inline InflightDiagnostic DiagnosticEngine::Diagnose(
     SrcLoc loc, Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
-  return LiveDiagnostic(this);
+  return InflightDiagnostic(this);
 }
 
 template <typename... ArgTypes>
-inline LiveDiagnostic DiagnosticEngine::Diagnose(
+inline InflightDiagnostic DiagnosticEngine::Diagnose(
     Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
   return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
-}
-
-// inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
-//                                              llvm::StringRef S) {
-//   live.AddString(S);
-//   return live;
-// }
-
-inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
-                                             llvm::ArrayRef<CodeFix> fixes) {
-  for (const CodeFix &fix : fixes) {
-    // live.AddHint(hint);
-  }
-  return live;
-}
-
-inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &live,
-                                             const DiagnosticArgument &arg) {
-
-  return live;
 }
 
 } // namespace stone

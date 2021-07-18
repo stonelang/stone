@@ -4,7 +4,7 @@
 using namespace stone;
 
 using stone::DiagnosticEngine;
-using stone::LiveDiagnostic;
+using stone::InflightDiagnostic;
 
 namespace {
 enum class LocalOptions {
