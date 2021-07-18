@@ -14,6 +14,7 @@ set(stone_basic_sources
 	DarwinDirWatcher.cpp
 	DiagIDList.cpp
 	Diagnostic.cpp
+	DiagnosticEmitter.cpp
 	DiagnosticEngine.cpp
 	DiagnosticListener.cpp
 	DirScanner.cpp

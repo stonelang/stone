@@ -9,14 +9,6 @@
 namespace stone {
 class Diagnostic;
 
-class TextBufferingDiagnosticListener final : public DiagnosticListener {
-public:
-  TextBufferingDiagnosticListener();
-
-public:
-  void Listen(diag::Level, const Diagnostic &diagnostic) override;
-};
-
 class TextDiagnosticListener final : public DiagnosticListener {
 
   std::unique_ptr<TextDiagnosticEmitter> emitter;
