@@ -3,6 +3,9 @@
 
 using namespace stone;
 
+using stone::DiagnosticEngine;
+using stone::LiveDiagnostic;
+
 namespace {
 enum class LocalOptions {
   /// No options.

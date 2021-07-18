@@ -495,18 +495,18 @@ public:
 
   // inline LiveDiagnostic Issue(SrcLoc loc, DiagID diagID);
 
-  LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                          llvm::ArrayRef<DiagnosticArgument> args);
+  inline LiveDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                                 llvm::ArrayRef<DiagnosticArgument> args);
 
-  LiveDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
+  inline LiveDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
   template <typename... ArgTypes>
-  LiveDiagnostic
+  inline LiveDiagnostic
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
   template <typename... ArgTypes>
-  LiveDiagnostic
+  inline LiveDiagnostic
   Diagnose(Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
@@ -697,10 +697,11 @@ inline const LiveDiagnostic &operator<<(const LiveDiagnostic &live,
 /// Pass the D
 class DiagnosticContext final {
 
-  const DiagID diagID;
-  const DiagnosticEngine *de;
+  DiagID diagID;
+  DiagnosticEngine *de;
   llvm::SmallVector<DiagnosticArgument, 3> args;
-
+  llvm::SmallVector<CharSrcRange, 2> ranges;
+  llvm::SmallVector<FixHint, 2> hints;
 public:
   template <typename... ArgTypes>
   DiagnosticContext(Diag<ArgTypes...> d,
@@ -710,7 +711,15 @@ public:
     auto diagArgs = {std::move(vArgs)...};
     args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
   }
-  // DiagID GetDiagID() { return diagID; }
+public:
+  DiagnosticContext(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
+      : diagID(diagID), args(arguments.begin(), arguments.end()) {}
+
+public:
+  DiagID GetDiagID() { return diagID; }
+  llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return args; }
+  llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
+  llvm::ArrayRef<FixHint> GetFixHints() const { return hints; }
 };
 class Diagnostic {
   SrcLoc loc;
@@ -719,12 +728,11 @@ class Diagnostic {
 public:
   explicit Diagnostic(DiagnosticContext diagContext)
       : diagContext(diagContext) {}
-
 public:
-  DiagnosticArgumentType GetType();
-
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
+
+  DiagnosticContext &GetDiagContext() { return diagContext; }
 
   // CStrDiagnosticArgument GetCStrDiagnosticArgument() {}
 
@@ -853,25 +861,25 @@ public:
   StoredDiagnostic() = default;
 };
 
-// LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
-//                                           const Diagnostic &diagnostic) {
-//   // TODO:
-//   // assert(!curDiagnostic && "Already have an active diagnostic");
-//   // curDiagnostic = diagnostic;
-//   // curDiagnostic->SetLoc(Loc);
+inline LiveDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
+                                                 const Diagnostic &diagnostic) {
+  // TODO:
+  // assert(!curDiagnostic && "Already have an active diagnostic");
+  // curDiagnostic = diagnostic;
+  // curDiagnostic->SetLoc(Loc);
 
-//   return LiveDiagnostic(this);
-// }
+  return LiveDiagnostic(this);
+}
 
-// LiveDiagnostic
-// DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
-//                            llvm::ArrayRef<DiagnosticArgument> args) {
+inline LiveDiagnostic
+DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
+                           llvm::ArrayRef<DiagnosticArgument> args) {
 
-//   return Diagnose(loc, Diagnostic(diagID, args));
-// }
+  return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
+}
 
 template <typename... ArgTypes>
-LiveDiagnostic DiagnosticEngine::Diagnose(
+inline LiveDiagnostic DiagnosticEngine::Diagnose(
     SrcLoc loc, Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
 
@@ -879,7 +887,7 @@ LiveDiagnostic DiagnosticEngine::Diagnose(
 }
 
 template <typename... ArgTypes>
-LiveDiagnostic DiagnosticEngine::Diagnose(
+inline LiveDiagnostic DiagnosticEngine::Diagnose(
     Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
   return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
