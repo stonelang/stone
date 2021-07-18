@@ -159,14 +159,13 @@ class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine> {
   /// The currently diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
 
-  // TODO: Remove
-  const DiagnosticOptions &diagOpts;
+  // TODO: llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
+  DiagnosticOptions &diagOpts;
 
-  // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
-
-  SrcMgr *sm = nullptr;
+  SrcMgr *sm;
 
 private:
+  // TODO: Remove -- you can get from curDiagnostic;
   /// The location of the current diagnostic that is in flight.
   SrcLoc curDiagLoc;
   /// The ID of the current diagnostic that is in flight.
@@ -175,28 +174,9 @@ private:
   /// diagnostic in flight.
   unsigned curDiagID;
 
-  // TODO: DiagID curDiagID;
 private:
-  // Treat fatal errors like errors.
-  bool fatalsAsError = false;
-
-  // Suppress all diagnostics.
-  bool suppressAllDiagnostics = false;
-
-  // Elide common types of templates.
-  bool elideType = true;
-
-  // Print a tree when comparing templates.
-  bool printTemplateTree = false;
-
-  // Color printing is enabled.
-  bool showColors = false;
-
   // Which overload candidates to show.
   // OverloadsShown ShowOverloads = Ovl_All;
-
-  // Cap of # errors emitted, 0 -> no limit.
-  unsigned errorLimit = 0;
 
   // Cap on depth of template backtrace stack, 0 -> no limit.
   // unsigned TemplateBacktraceLimit = 0;
@@ -242,8 +222,7 @@ private:
   DelayedDiagArgument delayedDiagArgument;
 
 public:
-  explicit DiagnosticEngine(const DiagnosticOptions &diagOpts,
-                            SrcMgr *sm = nullptr);
+  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
@@ -302,6 +281,10 @@ public:
   /// Flush the active diagnostic.
   void FlushCurrentDiagnostic();
 
+  void FlushListeners() {
+    for (auto listener : listeners)
+      listener->Flush();
+  }
   /// Copies the current DiagMappings and pushes the new copy
   /// onto the top of the stack.
   void PushMappings(SrcLoc loc);
@@ -317,7 +300,7 @@ public:
   /// emit before giving up.
   ///
   /// Zero disables the limit.
-  void SetErrorLimit(unsigned limit) { errorLimit = limit; }
+  void SetErrorLimit(unsigned limit) { diagOpts.errorLimit = limit; }
 
   /// When set to true, any unmapped warnings are ignored.
   ///

@@ -18,12 +18,14 @@ public:
   unsigned GetNumErrors() const { return numErrors; }
   unsigned GetNumWarnings() const { return numWarnings; }
 
-  /// Clear all warnings and errors.
+  /// Clear all warnings and errors -- relplace with Flush()
   virtual void Clear() { numWarnings = numErrors = 0; }
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
   virtual void Finish() {}
+
+  virtual void Flush() {}
 
   /// Indicates whether the diagnostics handled by this
   /// DiagnosticListener should be included in the number of diagnostics

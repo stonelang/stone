@@ -84,8 +84,7 @@ static constexpr const char *const FixItStrings[] = {
     "<not a fix-it>",
 };
 
-DiagnosticEngine::DiagnosticEngine(const DiagnosticOptions &diagOpts,
-                                   SrcMgr *sm)
+DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm)
     : diagOpts(diagOpts), sm(sm) {}
 
 DiagnosticEngine::~DiagnosticEngine() {}
