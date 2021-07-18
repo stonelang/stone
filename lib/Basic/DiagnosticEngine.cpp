@@ -103,4 +103,7 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
 void DiagnosticEngine::FlushCurrentDiagnostic() {}
 bool DiagnosticEngine::HasError() { return false; }
 
-void DiagnosticEngine::Print() {}
+void DiagnosticEngine::Print(llvm::raw_ostream &os,
+             const PrintingPolicy &policy) const {
+
+}
