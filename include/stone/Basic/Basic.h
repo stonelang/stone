@@ -10,10 +10,7 @@
 #include "stone/Basic/Stats.h"
 
 namespace stone {
-
 class Basic {
-  class InFlightDiagnostic;
-
 protected:
   LangOptions langOpts;
   DiagnosticOptions diagOpts;
@@ -55,36 +52,26 @@ public:
 
   void Panic();
 
-  /* TODO: InFlightDiagnostic*/ void Error(unsigned diagID);
-  void Error(SrcLoc loc, unsigned diagID);
-
-  void Warn(unsigned diagID);
-  void Warn(SrcLoc loc, unsigned diagID);
-
-  void Note(unsigned diagID);
-  void Note(SrcLoc loc, unsigned diagID);
-
-  void Remark(unsigned diagID);
-  void Remark(SrcLoc loc, unsigned diagID);
-
 public:
-  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
+  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
+    return de.Diagnose(loc, diagnostic);
+  }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                              llvm::ArrayRef<DiagnosticArgument> args);
+                              llvm::ArrayRef<DiagnosticArgument> args) {
+    return de.Diagnose(loc, diagID, args);
+  }
 
+  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID) {
+    return de.Diagnose(loc, diagID);
+  }
   template <typename... ArgTypes>
   InFlightDiagnostic
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args);
+           typename detail::PassArgument<ArgTypes>::type... args) {
 
-  template <typename... ArgTypes>
-  InFlightDiagnostic
-  Diagnose(Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args);
-
-protected:
-  // virtual void CreateDiagnostics();
+    return de.Diagnose(loc, id, std::forward<ArgTypes>(args)...);
+  }
 };
 
 } // namespace stone

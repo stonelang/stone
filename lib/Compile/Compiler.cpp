@@ -1,4 +1,5 @@
 #include "stone/Compile/Compiler.h"
+#include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Ret.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -46,7 +47,6 @@ syn::Module *Compiler::GetMainModule() const {
   if (mainModule) {
     return mainModule;
   }
-
   Identifier &moduleName = tc->GetIdentifier(GetModuleName());
   mainModule = syntax->MakeModuleDecl(moduleName, true);
   return mainModule;
@@ -135,10 +135,8 @@ Compiler::CreateOutputFile(llvm::StringRef OutputPath, bool Binary,
       UseTemporary, CreateMissingDirectories, &OutputPathName, &TempPathName);
 
   if (!OS) {
-    Error(0);
-    // getDiagnostics().Report(diag::err_fe_unable_to_open_output) << OutputPath
-    //                                                            <<
-    //                                                            EC.message();
+    Diagnose(SrcLoc(), diag::err_unable_to_open_output, OutputPath,
+             EC.message());
     return nullptr;
   }
 

@@ -15,6 +15,10 @@
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
+
+class LangVersion final {
+public:
+};
 class LangOptions final {
 public:
   /// This represents the statistics generated due to a session

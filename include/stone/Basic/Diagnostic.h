@@ -124,6 +124,8 @@ struct DiagnosticFormatOptions final {};
 /// Pass the D
 class DiagnosticContext {
   DiagID diagID;
+  SrcLoc loc;
+  diag::Level level = diag::Level::None;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
@@ -153,6 +155,12 @@ public:
   // Avoid copying the fix-it text more than necessary.
   void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
 
+  void SetLoc(SrcLoc sl) { loc = sl; }
+  SrcLoc GetLoc() { return loc; }
+
+  void SetLevel(diag::Level l) { level = l; }
+  diag::Level GetLevel() { return level; }
+
   void Flush() {
     ranges.clear();
     fixes.clear();
@@ -160,21 +168,12 @@ public:
 };
 class Diagnostic {
 protected:
-  SrcLoc loc;
-  diag::Level level = diag::Level::None;
   mutable DiagnosticContext context;
 
 public:
   explicit Diagnostic(DiagnosticContext context) : context(context) {}
 
 public:
-  // TODO: Move to context
-  void SetLoc(SrcLoc sl) { loc = sl; }
-  SrcLoc GetLoc() { return loc; }
-
-  /// TODO: Move to context
-  void SetLevel(diag::Level l) { level = l; }
-  diag::Level GetLevel() { return level; }
   DiagnosticContext &GetContext() { return context; }
 
   // TODO: UB

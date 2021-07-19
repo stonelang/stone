@@ -67,7 +67,6 @@ public:
 };
 
 class DiagnosticState {
-  llvm::DenseMap<unsigned, DiagnosticMapping> diagMapping;
 
 public:
   // "Global" configuration state that can actually vary between modules.
@@ -94,26 +93,6 @@ public:
       : ignoreAllWarnings(false), enableAllWarnings(false),
         warningsAsErrors(false), errorsAsFatal(false),
         suppressSystemWarnings(false) {}
-
-  using iterator = llvm::DenseMap<unsigned, DiagnosticMapping>::iterator;
-  using const_iterator =
-      llvm::DenseMap<unsigned, DiagnosticMapping>::const_iterator;
-
-  /*
-      void SetMapping(diag::kind Diag, DiagnosticMapping Info) {
-        DiagMap[Diag] = Info;
-      }
-
-      DiagnosticMapping PickMapping(diag::kind Diag) const {
-        return DiagMap.lookup(Diag);
-      }
-
-      DiagnosticMapping &GetOrAddMapping(diag::kind Diag);
-
-      const_iterator begin() const { return DiagMap.begin(); }
-      const_iterator end() const { return DiagMap.end(); }
-
-  */
 };
 
 class DiagnosticStateMap {
@@ -289,6 +268,8 @@ class DiagnosticEngine final : public Printable {
   /// Number of errors reported
   unsigned numErrors;
 
+  LangVersion version;
+
 public:
   explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
 
@@ -391,7 +372,7 @@ public:
   InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
-    curDiagnostic->SetLoc(loc);
+    curDiagnostic->GetContext().SetLoc(loc);
     return InFlightDiagnostic(this);
   }
 

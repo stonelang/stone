@@ -15,7 +15,8 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
 
   auto fileBuffer = compiler.GetFileMgr().getBufferForFile(input.GetName());
   if (!fileBuffer) {
-    compiler.Error(0);
+    compiler.Diagnose(SrcLoc(), diag::err_unable_to_open_filebuffer,
+                      input.GetName());
     return nullptr;
   }
   auto srcID = compiler.GetSrcMgr().CreateSrcID(std::move(*fileBuffer));
