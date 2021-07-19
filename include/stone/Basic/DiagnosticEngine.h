@@ -336,6 +336,7 @@ public:
   /// \param Force Emit the diagnostic regardless of suppression settings.
   bool EmitCurrentDiagnostic(bool force = false);
 
+  /// Get the actual string in the ".def" for the diagnostic
   llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
 
   /// Add an additional DiagnosticListener to receive diagnostics.
@@ -361,6 +362,10 @@ public:
   }
 
 public:
+  /// Generate EmissionDiagnostic for a Diagnostic to be passed to listeners.
+  llvm::Optional<EmissionDiagnostic>
+  GetEmissionDiagnosticForDiagnostic(const Diagnostic &diagnostic);
+
   // Send \c diag to all diagnostic consumers.
   void EmitDiagnostic(const Diagnostic &diag);
 

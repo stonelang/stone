@@ -13,7 +13,6 @@ namespace stone {
 /// Each of the diagnostics described in DiagnosticEngine.def has an entry in
 /// this enumeration type that uniquely identifies it.
 enum class DiagID : uint32_t;
-
 enum class FixID : uint32_t;
 
 /// Describes a diagnostic along with its argument types.

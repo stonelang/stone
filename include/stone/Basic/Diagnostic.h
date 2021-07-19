@@ -118,7 +118,8 @@ public:
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
-    // auto diagArgs = { diag::Argument(), std::move<ArgTypes>(vArgs)...};
+    // args(std::forward<ArgTypes>(vArgs)...);
+    // auto diagArgs = {diag::Argument(), std::move<ArgTypes>(vArgs)...};
   }
 
 public:
@@ -178,6 +179,28 @@ public:
   virtual void Format(const char *diagStr, const char *diagEnd,
                       llvm::SmallVectorImpl<char> &outStr,
                       const DiagnosticFormatOptions &fmtOptions) const;
+};
+
+class EmissionDiagnostic final {
+
+  llvm::StringRef category;
+  llvm::StringRef formatMessage;
+  const Diagnostic &diagnostic;
+
+public:
+  EmissionDiagnostic(const Diagnostic &diagnostic,
+                     llvm::StringRef formatMessage, llvm::StringRef categor)
+      : diagnostic(diagnostic), formatMessage(formatMessage),
+        category(category) {}
+
+public:
+  llvm::StringRef GetCategory() { return category; }
+  llvm::StringRef GetFormatMessage() { return formatMessage; }
+  const Diagnostic &GetDiagnostic() const { return diagnostic; }
+
+public:
+  // TODO: Think about
+  void Format();
 };
 
 } // namespace stone

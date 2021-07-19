@@ -7,7 +7,7 @@ ERROR(invalid_diagnostic,none,
 ERROR(err_no_input_files, none, "no input files", ())
 
 
-ERROR(err_unknown_arg, none, "unknown argument:", (StringRef))
+ERROR(err_unknown_arg, none, "unknown argument:", (diag::LLVMStrArgument))
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS

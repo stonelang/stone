@@ -18,7 +18,7 @@ public:
   ~TextDiagnosticListener();
 
 public:
-  void Listen(diag::Level, const Diagnostic &diagnostic) override;
+  void Listen(diag::Level, const EmissionDiagnostic &diagnostic) override;
 
 public:
   void SetEmitter(std::unique_ptr<DiagnosticEmitter> emitter);

@@ -135,8 +135,9 @@ Compiler::CreateOutputFile(llvm::StringRef OutputPath, bool Binary,
       UseTemporary, CreateMissingDirectories, &OutputPathName, &TempPathName);
 
   if (!OS) {
-    Diagnose(SrcLoc(), diag::err_unable_to_open_output, OutputPath,
-             EC.message());
+    Diagnose(SrcLoc(), diag::err_unable_to_open_output,
+             diag::LLVMStrArgument(OutputPath),
+             diag::LLVMStrArgument(EC.message()));
     return nullptr;
   }
 

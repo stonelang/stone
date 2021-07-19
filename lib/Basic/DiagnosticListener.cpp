@@ -7,4 +7,4 @@ DiagnosticListener::~DiagnosticListener() {}
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
 void DiagnosticListener::Listen(diag::Level level,
-                                const Diagnostic &diagnostic) {}
+                                const EmissionDiagnostic &diagnostic) {}
