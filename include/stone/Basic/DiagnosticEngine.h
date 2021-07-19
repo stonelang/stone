@@ -407,13 +407,13 @@ public:
 };
 
 class InflightDiagnostic final {
-  friend class DiagnosticEngine;
   friend class CodeFixer;
+  friend class DiagnosticEngine;
   friend class PartialDiagnostic;
 
-  DiagnosticEngine *de;
   CodeFixer fixer;
-
+  DiagnosticEngine *de;
+  
   mutable unsigned numArgs = 0;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -430,7 +430,8 @@ class InflightDiagnostic final {
   InflightDiagnostic() = default;
 
 public:
-  InflightDiagnostic(DiagnosticEngine *de) : de(de), fixer(de), isActive(true) {
+  InflightDiagnostic(DiagnosticEngine *de)
+      : de(de), fixer(this), isActive(true) {
 
     assert(de && "InflightDiagnostic requires a valid DiagnosticEngine!");
     de->GetCurrentDiagnostic().GetProfile().Flush();
@@ -453,8 +454,8 @@ public:
   // msgID);
 
   CodeFixer &GetFixer() { return fixer; }
-
   DiagnosticEngine *GetDiagEngine() { return de; }
+  Diagnostic& GetCurrentDiagnostic() { return de->GetCurrentDiagnostic(); }
 
 protected:
   void FlushCounts() {}

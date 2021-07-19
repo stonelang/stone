@@ -85,10 +85,10 @@ public:
   bool IsNull() const { return !removeRange.isValid(); }
 };
 class CodeFixer final {
-  DiagnosticEngine *de;
+  InflightDiagnostic *inflightDiag = nullptr;
 
 public:
-  CodeFixer(DiagnosticEngine *de) : de(de) {}
+  CodeFixer(InflightDiagnostic *inflightDiag) : inflightDiag(inflightDiag) {}
 
 public:
   /// Create a code modification hint that inserts the given

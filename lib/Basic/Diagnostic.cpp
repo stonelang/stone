@@ -45,11 +45,14 @@ InflightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
                                             llvm::StringRef code,
                                             bool beforePreviousInsertions) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
+
+  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
               CharSrcRange(), code, beforePreviousInsertions));
 
-  return InflightDiagnostic(de);
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
 }
 
 /// Create a code modification hint that inserts the given
@@ -58,19 +61,26 @@ InflightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
                                               CharSrcRange fromRange,
                                               bool beforePreviousInsertions) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
+
+  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
               llvm::StringRef(), beforePreviousInsertions));
 
-  return InflightDiagnostic(de);
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
 }
 /// Create a code modification hint that removes the given
 /// source range.
 InflightDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
+
+  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
-  return InflightDiagnostic(de);
+
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
 }
 InflightDiagnostic CodeFixer::Remove(SrcRange removeRange) {
   return Remove(CharSrcRange::getTokenRange(removeRange));
@@ -81,9 +91,13 @@ InflightDiagnostic CodeFixer::Remove(SrcRange removeRange) {
 InflightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
                                       llvm::StringRef code) {
 
-  de->GetCurrentDiagnostic().GetProfile().AddFix(
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
+
+  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange(), removeRange, code));
-  return InflightDiagnostic(de);
+
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
 }
 
 InflightDiagnostic CodeFixer::Replace(SrcRange removeRange,
@@ -91,7 +105,17 @@ InflightDiagnostic CodeFixer::Replace(SrcRange removeRange,
   return Replace(CharSrcRange::getTokenRange(removeRange), code);
 }
 
-InflightDiagnostic CodeFixer::Highlight(SrcRange range) {}
+InflightDiagnostic CodeFixer::Highlight(SrcRange range) {
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
 
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+}
 /// Add a character-based range to the currently-active diagnostic.
-InflightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {}
+InflightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {
+
+  assert(inflightDiag &&
+         "CodeFixer can only be invoked by an InflightDiagnostic");
+
+  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+}
