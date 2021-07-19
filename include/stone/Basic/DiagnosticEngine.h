@@ -391,7 +391,7 @@ public:
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args) {
 
-    return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
+    return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args...))));
   }
 
   /// Determine whethere there is already a diagnostic in flight -- there is a
