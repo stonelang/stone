@@ -210,6 +210,7 @@ protected:
     return false;
   }
 };
+
 /// Concrete class used by the front-end to report problems and issues.
 ///
 /// This massages the diagnostics (e.g. handling things like "report warnings
@@ -230,7 +231,7 @@ class DiagnosticEngine final : public Printable {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticListener *, 2> listeners;
 
-  /// The currently diagnostic, if there is one.
+  /// The current diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
 
   // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
@@ -239,7 +240,6 @@ class DiagnosticEngine final : public Printable {
 
   SrcMgr *sm;
 
-private:
   // Which overload candidates to show.
   // OverloadsShown ShowOverloads = Ovl_All;
 
@@ -255,20 +255,10 @@ private:
   /// The location at which the current diagnostic state was established.
   SrcLoc curDiagnosticStateLoc;
 
-public:
-  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
+  /// All diagnostics that are no longer active but have not yet
+  /// been emitted due to an open transaction.
+  llvm::SmallVector<Diagnostic, 4> pendingDiagnostics;
 
-  DiagnosticEngine(const DiagnosticEngine &) = delete;
-  DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
-  ~DiagnosticEngine();
-
-public:
-  bool HasError();
-
-  void Print(ColorOutputStream &os,
-             const PrintingPolicy *policy) const override;
-
-private:
   /// Sticky flag set to \c true when an error is emitted.
   bool errorOccurred;
 
@@ -298,6 +288,19 @@ private:
 
   /// Number of errors reported
   unsigned numErrors;
+
+public:
+  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
+
+  DiagnosticEngine(const DiagnosticEngine &) = delete;
+  DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
+  ~DiagnosticEngine();
+
+public:
+  bool HasError();
+
+  void Print(ColorOutputStream &os,
+             const PrintingPolicy *policy) const override;
 
 private:
   /// Grab the most-recently-added state point.
@@ -377,14 +380,14 @@ public:
   }
 
 public:
-  InFlightDiagnostic Diagnose(DiagID diagID) = delete;
-  InFlightDiagnostic Diagnose(DiagID diagID,
-                              llvm::ArrayRef<DiagnosticArgument> args) = delete;
-  template <typename... ArgTypes>
-  InFlightDiagnostic
-  Diagnose(Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args) = delete;
+  // Send \c diag to all diagnostic consumers.
+  void EmitDiagnostic(const Diagnostic &diag);
 
+  /// Send all tentative diagnostics to all diagnostic consumers and
+  /// delete them.
+  void EmitPendingDiagnostics();
+
+public:
   InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
@@ -411,7 +414,7 @@ public:
 
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
-  bool IsInflight() {
+  bool HasInflightDiagnostic() {
     return (unsigned)curDiagnostic->GetContext().GetDiagID() !=
            std::numeric_limits<unsigned>::max();
   }
@@ -450,7 +453,7 @@ public:
   }
 };
 
-class StoredDiagnostic {
+class SavedDiagnostic final {
   // unsigned diagIdentifier;
   // diag::Level level;
   // FullSourceLoc loc;
@@ -459,7 +462,7 @@ class StoredDiagnostic {
   // std::vector<FixHint> hints;
 
 public:
-  StoredDiagnostic() = default;
+  SavedDiagnostic() = default;
 };
 
 } // namespace stone

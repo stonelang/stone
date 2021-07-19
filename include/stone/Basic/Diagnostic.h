@@ -168,14 +168,17 @@ public:
   explicit Diagnostic(DiagnosticContext context) : context(context) {}
 
 public:
+  // TODO: Move to context
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  /// TODO: move to context
+  /// TODO: Move to context
   void SetLevel(diag::Level l) { level = l; }
   diag::Level GetLevel() { return level; }
-
   DiagnosticContext &GetContext() { return context; }
+
+  // TODO: UB
+  void AddChild(Diagnostic &&diagnostic);
 
 public:
   template <typename... otherArgTypes>
@@ -183,6 +186,7 @@ public:
     return context.GetDiagID() == other.GetContext().GetDiagID();
   }
 
+public:
   /// The result is appended onto the \p OutStr array.
   virtual void Format(llvm::SmallVectorImpl<char> &outStr,
                       const DiagnosticFormatOptions &fmtOptions) const;
