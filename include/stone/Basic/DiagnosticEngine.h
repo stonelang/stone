@@ -244,13 +244,8 @@ private:
   // OverloadsShown ShowOverloads = Ovl_All;
 
   // Cap on depth of template backtrace stack, 0 -> no limit.
-  // unsigned TemplateBacktraceLimit = 0;
+  unsigned templateBacktraceLimit = 0;
 
-  // Cap on depth of constexpr evaluation backtrace stack, 0 -> no limit.
-  // unsigned ConstexprBacktraceLimit = 0;
-  //
-  //
-  //
   /// The initial diagnostic state.
   DiagnosticState *firstDiagnosticState;
 
@@ -259,32 +254,6 @@ private:
 
   /// The location at which the current diagnostic state was established.
   SrcLoc curDiagnosticStateLoc;
-
-  /// Optional flag value.
-  ///
-  /// Some flags accept values, for instance: -Wframe-larger-than=<value> and
-  /// -Rpass=<value>. The content of this string is emitted after the flag name
-  /// and '='.
-  std::string flagValue;
-
-  /// ID of the "delayed" diagnostic, which is a (typically
-  /// fatal) diagnostic that had to be delayed because it was found
-  /// while emitting another diagnostic.
-  unsigned delayedDiagID;
-
-  //  SUCKS
-  struct DelayedDiagArgument {
-    /// First string argument for the delayed diagnostic.
-    std::string one;
-
-    /// Second string argument for the delayed diagnostic.
-    std::string two;
-
-    /// Third string argument for the delayed diagnostic.
-    std::string three;
-  };
-
-  DelayedDiagArgument delayedDiagArgument;
 
 public:
   explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
@@ -408,20 +377,6 @@ public:
   }
 
 public:
-  /// Issue the message to the client.
-  ///
-  /// This actually returns an instance of InFlightDiagnostic which emits the
-  /// diagnostics (through @c ProcessDiag) when it is destroyed.
-  ///
-  /// \param DiagID A member of the @c diag::kind enum.
-  /// \param Loc Represents the source location associated with the diagnostic,
-  /// which can be an invalid location if no position information is available.
-  // inline InFlightDiagnostic Issue(SrcLoc loc, unsigned diagID);
-  // inline InFlightDiagnostic Issue(unsigned DiagID);
-  // void Issue(const StoredDiagnostic &storedDiagnostic);
-
-  // inline InFlightDiagnostic Issue(SrcLoc loc, DiagID diagID);
-
   InFlightDiagnostic Diagnose(DiagID diagID) = delete;
   InFlightDiagnostic Diagnose(DiagID diagID,
                               llvm::ArrayRef<DiagnosticArgument> args) = delete;
@@ -439,11 +394,11 @@ public:
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
                               llvm::ArrayRef<DiagnosticArgument> args) {
-    return Diagnose(loc, Diagnostic(DiagnosticProfile(diagID, args)));
+    return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID) {
-    return Diagnose(loc, Diagnostic(DiagnosticProfile(
+    return Diagnose(loc, Diagnostic(DiagnosticContext(
                              diagID, llvm::ArrayRef<DiagnosticArgument>())));
   }
 
@@ -457,7 +412,7 @@ public:
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
   bool IsInflight() {
-    return (unsigned)curDiagnostic->GetProfile().GetDiagID() !=
+    return (unsigned)curDiagnostic->GetContext().GetDiagID() !=
            std::numeric_limits<unsigned>::max();
   }
 };

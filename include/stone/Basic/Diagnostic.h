@@ -93,24 +93,23 @@ public:
   CodeFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
 
 public:
-  /// Create a code modification hint that inserts the given
-  /// code string at a specific location.
+  /// Create a code fix that inserts the given code string at a specific
+  /// location.
   InFlightDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
                                    bool beforePreviousInsertions = false);
 
-  /// Create a code modification hint that inserts the given
+  /// Create a code fixthat inserts the given
   /// code from \p FromRange at a specific location.
   InFlightDiagnostic InsertFromRange(SrcLoc insertionLoc,
                                      CharSrcRange fromRange,
                                      bool beforePreviousInsertions = false);
 
-  /// Create a code modification hint that removes the given
-  /// source range.
-  InFlightDiagnostic Remove(CharSrcRange removeRange);
-  InFlightDiagnostic Remove(SrcRange removeRange);
+  /// Create a code fix that removes the given source range.
+  InFlightDiagnostic RemoveRange(CharSrcRange removeRange);
+  InFlightDiagnostic RemoveRange(SrcRange removeRange);
 
-  /// Create a code modification hint that replaces the given
-  /// source range with the given code string.
+  /// Create a code fix that replaces the given source range with the given code
+  /// string.
   InFlightDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
   InFlightDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
 
@@ -123,7 +122,7 @@ public:
 struct DiagnosticFormatOptions final {};
 
 /// Pass the D
-class DiagnosticProfile final {
+class DiagnosticContext {
   DiagID diagID;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
@@ -131,7 +130,7 @@ class DiagnosticProfile final {
 
 public:
   template <typename... ArgTypes>
-  DiagnosticProfile(Diag<ArgTypes...> d,
+  DiagnosticContext(Diag<ArgTypes...> d,
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
@@ -140,7 +139,7 @@ public:
   }
 
 public:
-  DiagnosticProfile(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
+  DiagnosticContext(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
       : diagID(diagID), args(arguments.begin(), arguments.end()) {}
 
 public:
@@ -163,18 +162,26 @@ class Diagnostic {
 protected:
   SrcLoc loc;
   diag::Level level = diag::Level::None;
-  mutable DiagnosticProfile profile;
+  mutable DiagnosticContext context;
 
 public:
-  explicit Diagnostic(DiagnosticProfile profile) : profile(profile) {}
+  explicit Diagnostic(DiagnosticContext context) : context(context) {}
 
 public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
+  /// TODO: move to context
   void SetLevel(diag::Level l) { level = l; }
   diag::Level GetLevel() { return level; }
-  DiagnosticProfile &GetProfile() { return profile; }
+
+  DiagnosticContext &GetContext() { return context; }
+
+public:
+  template <typename... otherArgTypes>
+  bool IsEqual(Diag<otherArgTypes...> other) const {
+    return context.GetDiagID() == other.GetContext().GetDiagID();
+  }
 
   /// The result is appended onto the \p OutStr array.
   virtual void Format(llvm::SmallVectorImpl<char> &outStr,

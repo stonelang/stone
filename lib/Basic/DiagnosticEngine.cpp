@@ -107,5 +107,5 @@ void DiagnosticEngine::Print(ColorOutputStream &os,
                              const PrintingPolicy *policy) const {}
 
 void InFlightDiagnostic::Flush() {
-  de->GetCurrentDiagnostic().GetProfile().Flush();
+  de->GetCurrentDiagnostic().GetContext().Flush();
 }
