@@ -66,6 +66,15 @@
 //     *)argument;
 //   }
 // }
+
+class DiagnosticArgument {
+public:
+  DiagnosticArgument(int i) i {}
+};
+template <typename... argTypes>
+struct DiagnosticWithArgument<DiagnosticArgument(argTypes...)> {
+  typedef Diag<argTypes...> type;
+};
 int main() {
 
   // Decl *d = new Decl();

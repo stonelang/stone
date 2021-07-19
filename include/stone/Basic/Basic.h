@@ -58,7 +58,7 @@ public:
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                              llvm::ArrayRef<DiagnosticArgument> args) {
+                              llvm::ArrayRef<diag::Argument> args) {
     return de.Diagnose(loc, diagID, args);
   }
 

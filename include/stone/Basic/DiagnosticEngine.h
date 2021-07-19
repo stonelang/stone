@@ -50,7 +50,7 @@ struct DiagnosticStorage {
   llvm::SmallVector<CodeFix, 6> fixes;
 
   /// The diagnostic arguments
-  llvm::SmallVector<DiagnosticArgument *, 2> args;
+  llvm::SmallVector<diag::Argument *, 2> args;
 
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
 
@@ -201,7 +201,7 @@ class DiagnosticEngine final : public Printable {
   friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
-  friend struct DiagnosticArgument;
+  friend struct diag::Argument;
 
   /// The
   unsigned int diagnosticSeen = 0;
@@ -377,13 +377,13 @@ public:
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                              llvm::ArrayRef<DiagnosticArgument> args) {
+                              llvm::ArrayRef<diag::Argument> args) {
     return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID) {
     return Diagnose(loc, Diagnostic(DiagnosticContext(
-                             diagID, llvm::ArrayRef<DiagnosticArgument>())));
+                             diagID, llvm::ArrayRef<diag::Argument>())));
   }
 
   template <typename... ArgTypes>
@@ -391,7 +391,7 @@ public:
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args) {
 
-    return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args...))));
+    return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
   }
 
   /// Determine whethere there is already a diagnostic in flight -- there is a
@@ -401,6 +401,26 @@ public:
            std::numeric_limits<unsigned>::max();
   }
 };
+
+//NOTE: This may be the better way to do this. 
+inline InFlightDiagnostic &operator<<(InFlightDiagnostic &inFlightDiagnostic,
+                                      diag::Argument &&argument) {
+  inFlightDiagnostic.GetDiagEngine()
+      ->GetCurrentDiagnostic()
+      .GetContext()
+      .AddArgument(std::move(argument));
+
+  return inFlightDiagnostic;
+}
+// inline InFlightDiagnostic &operator<<(InFlightDiagnostic &inFlightDiagnostic,
+//                                       CodeFix &&fix) {
+//   inFlightDiagnostic.GetDiagEngine()
+//       ->GetCurrentDiagnostic()
+//       .GetContext()
+//       .AddFix(std::move(fix));
+
+//   return inFlightDiagnostic;
+// }
 
 /// RAII class that determines when any errors have occurred
 /// between the time the instance was created and the time it was

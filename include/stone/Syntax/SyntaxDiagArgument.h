@@ -14,43 +14,42 @@ namespace stone {
 
 class DiagnosticEngine;
 
-enum class SyntaxDiagnosticArgumentType { Decl, DeclContext, Type, Identifier };
+namespace diag {
+enum class SyntaxArgumentType { Decl, DeclContext, Type, Identifier };
 
-struct SyntaxDiagnosticArgument : public ComplexDiagnosticArgument {
-  SyntaxDiagnosticArgumentType synTy;
+struct SyntaxArgument : public ComplexArgument {
+  SyntaxArgumentType synTy;
 
 public:
-  SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType synType,
-                           const void *val)
-      : ComplexDiagnosticArgument(val), synTy(synTy) {}
+  SyntaxArgument(SyntaxArgumentType synType, const void *val)
+      : ComplexArgument(val), synTy(synTy) {}
 };
 
-struct DeclDiagnosticArgument final : public SyntaxDiagnosticArgument {
+struct DeclArgument final : public SyntaxArgument {
 public:
-  DeclDiagnosticArgument(const syn::Decl *val)
-      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Decl, val) {}
+  DeclArgument(const syn::Decl *val)
+      : SyntaxArgument(SyntaxArgumentType::Decl, val) {}
 };
 
-struct DeclContextDiagnosticArgument final : public SyntaxDiagnosticArgument {
+struct DeclContextArgument final : public SyntaxArgument {
 public:
-  DeclContextDiagnosticArgument(const syn::DeclContext *val)
-      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::DeclContext,
-                                 val) {}
+  DeclContextArgument(const syn::DeclContext *val)
+      : SyntaxArgument(SyntaxArgumentType::DeclContext, val) {}
 };
 
-struct IdentifierDiagnosticArgument final : public SyntaxDiagnosticArgument {
+struct IdentifierArgument final : public SyntaxArgument {
 public:
-  IdentifierDiagnosticArgument(const syn::Identifier *val)
-      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Identifier,
-                                 val) {}
+  IdentifierArgument(const syn::Identifier *val)
+      : SyntaxArgument(SyntaxArgumentType::Identifier, val) {}
 };
 
-struct TypeDiagnosticArgument final : public SyntaxDiagnosticArgument {
+struct TypeArgument final : public SyntaxArgument {
 public:
-  TypeDiagnosticArgument(const syn::Type *val)
-      : SyntaxDiagnosticArgument(SyntaxDiagnosticArgumentType::Type, val) {}
+  TypeArgument(const syn::Type *val)
+      : SyntaxArgument(SyntaxArgumentType::Type, val) {}
 };
 
+} // namespace diag
 class SyntaxDiagnostic final : public Diagnostic {
 public:
   explicit SyntaxDiagnostic(DiagnosticContext context) : Diagnostic(context) {}

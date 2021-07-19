@@ -126,7 +126,7 @@ class DiagnosticContext {
   DiagID diagID;
   SrcLoc loc;
   diag::Level level = diag::Level::None;
-  llvm::SmallVector<DiagnosticArgument, 3> args;
+  llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
 
@@ -136,17 +136,16 @@ public:
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
-    auto diagArgs = {std::move(vArgs)...};
-    args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
+    // auto diagArgs = { DiagnosticArgument(), std::move<ArgTypes>(vArgs)...};
   }
 
 public:
-  DiagnosticContext(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> arguments)
+  DiagnosticContext(DiagID diagID, llvm::ArrayRef<diag::Argument> arguments)
       : diagID(diagID), args(arguments.begin(), arguments.end()) {}
 
 public:
   DiagID GetDiagID() { return diagID; }
-  llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return args; }
+  llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
 
@@ -154,6 +153,8 @@ public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
   void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
+
+  void AddArgument(diag::Argument &&arg) { args.push_back(std::move(arg)); }
 
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }

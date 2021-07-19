@@ -7,10 +7,9 @@
 #include <assert.h>
 
 namespace stone {
-
 class DiagnosticEngine;
-
-enum class DiagnosticArgumentType {
+namespace diag {
+enum class ArgumentType {
   /// No argument
   None,
   /// std::string
@@ -35,92 +34,91 @@ enum class DiagnosticArgumentType {
 
 };
 
-struct DiagnosticArgument {
-  DiagnosticArgumentType ty;
-
+struct Argument {
+  ArgumentType ty;
+  friend class DiagnosticContext;
+  Argument() {}
+  int place; 
 public:
-  DiagnosticArgument(DiagnosticArgumentType ty) : ty(ty) {}
-
+  Argument(ArgumentType ty) : ty(ty) {}
 public:
-  DiagnosticArgumentType GetType() { return ty; }
+  ArgumentType GetType() { return ty; }
+  int GetPlace() { return place; }
 };
 
-struct STDStrDiagnosticArgument final : public DiagnosticArgument {
+struct STDStrArgument final : public Argument {
   const std::string val;
 
 public:
-  STDStrDiagnosticArgument(const std::string val)
-      : DiagnosticArgument(DiagnosticArgumentType::STDStr), val(val) {}
+  STDStrArgument(const std::string val)
+      : Argument(ArgumentType::STDStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
 };
 
-struct LLVMStrDiagnosticArgument final : public DiagnosticArgument {
+struct LLVMStrArgument final : public Argument {
   const std::string val;
 
 public:
-  LLVMStrDiagnosticArgument(const llvm::StringRef val)
-      : DiagnosticArgument(DiagnosticArgumentType::LLVMStr), val(val) {}
+  LLVMStrArgument(const llvm::StringRef val)
+      : Argument(ArgumentType::LLVMStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
 };
 
-struct CStrDiagnosticArgument final : public DiagnosticArgument {
+struct CStrArgument final : public Argument {
   const char *val;
 
 public:
-  CStrDiagnosticArgument(const char *val)
-      : DiagnosticArgument(DiagnosticArgumentType::CStr), val(val) {}
+  CStrArgument(const char *val) : Argument(ArgumentType::CStr), val(val) {}
 
 public:
   const char *GetVal() const { return val; }
 };
 
-struct SIntDiagnosticArgument final : public DiagnosticArgument {
+struct SIntArgument final : public Argument {
   const int val;
 
 public:
-  SIntDiagnosticArgument(const int val)
-      : DiagnosticArgument(DiagnosticArgumentType::SInt), val(val) {}
+  SIntArgument(const int val) : Argument(ArgumentType::SInt), val(val) {}
 
 public:
   int GetVal() const { return val; }
 };
 
-struct UIntDiagnosticArgument final : public DiagnosticArgument {
+struct UIntArgument final : public Argument {
   unsigned val;
 
 public:
-  UIntDiagnosticArgument(const unsigned val)
-      : DiagnosticArgument(DiagnosticArgumentType::UInt), val(val) {}
+  UIntArgument(const unsigned val) : Argument(ArgumentType::UInt), val(val) {}
 
 public:
   unsigned GetVal() const { return val; }
 };
 
-struct TokenTypeDiagnosticArgument final : public DiagnosticArgument {
+struct TokenTypeArgument final : public Argument {
   tk::Type val;
 
 public:
-  TokenTypeDiagnosticArgument(const tk::Type val)
-      : DiagnosticArgument(DiagnosticArgumentType::TokenType), val(val) {}
+  TokenTypeArgument(const tk::Type val)
+      : Argument(ArgumentType::TokenType), val(val) {}
 
 public:
   tk::Type GetVal() const { return val; }
 };
 
-struct ComplexDiagnosticArgument : public DiagnosticArgument {
+struct ComplexArgument : public Argument {
   const void *val;
 
 public:
-  ComplexDiagnosticArgument(const void *val)
-      : DiagnosticArgument(DiagnosticArgumentType::Complex) {}
+  ComplexArgument(const void *val) : Argument(ArgumentType::Complex) {}
 
   const void *GetVal() const { return val; }
 };
 
+} // namespace diag
 } // namespace stone
 
 #endif
