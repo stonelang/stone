@@ -142,9 +142,7 @@ class InFlightDiagnostic final {
   friend class PartialDiagnostic;
 
   CodeFixer fixer;
-  DiagnosticEngine *de;
-
-  mutable unsigned numArgs = 0;
+  DiagnosticEngine *de = nullptr;
 
   /// Status variable indicating if this diagnostic is still active.
   ///
@@ -158,7 +156,6 @@ class InFlightDiagnostic final {
   mutable bool isForceEmit = false;
 
   InFlightDiagnostic() = default;
-
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;

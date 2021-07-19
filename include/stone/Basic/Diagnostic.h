@@ -2,6 +2,7 @@
 #define STONE_BASIC_DIAGNOSTIC_H
 
 #include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -124,7 +125,6 @@ struct DiagnosticFormatOptions final {};
 /// Pass the D
 class DiagnosticProfile final {
   DiagID diagID;
-  Diagnostic *owner = nullptr;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
@@ -160,11 +160,9 @@ public:
   }
 };
 class Diagnostic {
-
-  friend class DiagnosticEngine;
-  friend class InFlightDiagnostic;
-
+protected:
   SrcLoc loc;
+  diag::Level level = diag::Level::None;
   mutable DiagnosticProfile profile;
 
 public:
@@ -174,6 +172,8 @@ public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
+  void SetLevel(diag::Level l) { level = l; }
+  diag::Level GetLevel() { return level; }
   DiagnosticProfile &GetProfile() { return profile; }
 
   /// The result is appended onto the \p OutStr array.
