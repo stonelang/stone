@@ -9,7 +9,8 @@ Basic::Basic()
 
 Basic::~Basic() {}
 
-// InflightDiagnostic Basic::Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
+// InflightDiagnostic Basic::Diagnose(SrcLoc loc, const Diagnostic &diagnostic)
+// {
 //   return GetDiagEngine().Diagnose(loc, diagnostic);
 // }
 

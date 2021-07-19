@@ -70,18 +70,18 @@ public:
 public:
   InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
+  InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                              llvm::ArrayRef<DiagnosticArgument> args);
+
+  template <typename... ArgTypes>
   InflightDiagnostic
-  Diagnose(SrcLoc loc, DiagID diagID, llvm::ArrayRef<DiagnosticArgument> args);
+  Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args);
 
   template <typename... ArgTypes>
-  InflightDiagnostic Diagnose(
-      SrcLoc loc, Diag<ArgTypes...> id,
-      typename detail::PassArgument<ArgTypes>::type... args);
-
-  template <typename... ArgTypes>
-  InflightDiagnostic Diagnose(
-      Diag<ArgTypes...> id,
-      typename detail::PassArgument<ArgTypes>::type... args);
+  InflightDiagnostic
+  Diagnose(Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args);
 
 protected:
   // virtual void CreateDiagnostics();

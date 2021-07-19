@@ -350,10 +350,15 @@ public:
 
   // inline InflightDiagnostic Issue(SrcLoc loc, DiagID diagID);
 
+  inline InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
+
+  inline InflightDiagnostic Diagnose(DiagID diagID) = delete;
+  inline InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID);
+
+  inline InflightDiagnostic
+  Diagnose(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> args) = delete;
   inline InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
                                      llvm::ArrayRef<DiagnosticArgument> args);
-
-  inline InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
   template <typename... ArgTypes>
   inline InflightDiagnostic
@@ -363,7 +368,7 @@ public:
   template <typename... ArgTypes>
   inline InflightDiagnostic
   Diagnose(Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args);
+           typename detail::PassArgument<ArgTypes>::type... args) = delete;
 
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
@@ -511,6 +516,12 @@ DiagnosticEngine::Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
   return InflightDiagnostic(this);
 }
 
+inline InflightDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
+                                                     DiagID diagID) {
+  return Diagnose(loc, Diagnostic(DiagnosticProfile(
+                           diagID, llvm::ArrayRef<DiagnosticArgument>())));
+}
+
 inline InflightDiagnostic
 DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
                            llvm::ArrayRef<DiagnosticArgument> args) {
@@ -522,13 +533,6 @@ inline InflightDiagnostic DiagnosticEngine::Diagnose(
     SrcLoc loc, Diag<ArgTypes...> id,
     typename detail::PassArgument<ArgTypes>::type... args) {
   return InflightDiagnostic(this);
-}
-
-template <typename... ArgTypes>
-inline InflightDiagnostic DiagnosticEngine::Diagnose(
-    Diag<ArgTypes...> id,
-    typename detail::PassArgument<ArgTypes>::type... args) {
-  return Diagnose(SrcLoc(), id, std::forward<ArgTypes>(args)...);
 }
 
 } // namespace stone

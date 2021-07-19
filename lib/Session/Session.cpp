@@ -81,7 +81,7 @@ void Session::ComputeMode(const llvm::opt::DerivedArgList &args) {
 
   if (!modeArg) {
     if (ty == SessionType::Compiler) {
-      GetDiagEngine().Diagnose(diag::err_no_compile_mode);
+      GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_compile_mode);
     } else {
       mode.SetType(GetDefaultModeType());
     }
