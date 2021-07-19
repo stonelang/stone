@@ -402,7 +402,7 @@ public:
   }
 };
 
-//NOTE: This may be the better way to do this. 
+// NOTE: This may be the better way to do this.
 inline InFlightDiagnostic &operator<<(InFlightDiagnostic &inFlightDiagnostic,
                                       diag::Argument &&argument) {
   inFlightDiagnostic.GetDiagEngine()

@@ -30,25 +30,6 @@ class Diagnostic;
 class InFlightDiagnostic;
 class DiagnoticEngine;
 
-/// Enumeration describing all of possible diagnostics.
-///
-/// Each of the diagnostics described in DiagnosticEngine.def has an entry in
-/// this enumeration type that uniquely identifies it.
-enum class DiagID : uint32_t;
-
-enum class FixID : uint32_t;
-
-/// Describes a diagnostic along with its argument types.
-///
-/// The diagnostics header introduces instances of this type for each
-/// diagnostic, which provide both the set of argument types (used to
-/// check/convert the arguments at each call site) and the diagnostic ID
-/// (for other information about the diagnostic).
-template <typename... argTypes> struct Diag {
-  /// The diagnostic ID corresponding to this diagnostic.
-  DiagID diagID;
-};
-
 namespace detail {
 /// Describes how to pass a diagnostic argument of the given type.
 ///
@@ -123,6 +104,7 @@ struct DiagnosticFormatOptions final {};
 
 /// Pass the D
 class DiagnosticContext {
+  // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
   SrcLoc loc;
   diag::Level level = diag::Level::None;
@@ -136,7 +118,7 @@ public:
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
-    // auto diagArgs = { DiagnosticArgument(), std::move<ArgTypes>(vArgs)...};
+    // auto diagArgs = { diag::Argument(), std::move<ArgTypes>(vArgs)...};
   }
 
 public:

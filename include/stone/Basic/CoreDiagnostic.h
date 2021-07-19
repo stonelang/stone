@@ -1,7 +1,7 @@
 #ifndef STONE_COREDIAGNOSTIC_H
 #define STONE_COREDIAGNOSTIC_H
 
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
 
 namespace stone {
