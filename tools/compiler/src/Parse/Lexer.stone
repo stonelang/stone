@@ -1,5 +1,5 @@
 
-space Stone.Analysis {
+space Stone.Syntax {
 	
 	public struct Lexer {
 	}

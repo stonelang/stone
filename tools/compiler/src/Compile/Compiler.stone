@@ -2,9 +2,9 @@ use Stone.Session;
 use Stone.Syntax;
 use Stone.Basic; 
 
-space Stone.Frontend {
+space Stone {
 
-	public struct Compiler : Session {
+	public struct Compiler : SessionInterface {
 		///
 		private Basic* basic = null;
 		///

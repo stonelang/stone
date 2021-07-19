@@ -1,0 +1,16 @@
+
+space Stone.Diagnostics {
+
+  public struct DiagnosticEngine {
+		private ref DiagnostiOptions diagOpts;
+		private Diagnostic* curDiagnostic = null;  
+  }
+  public default DiagnosticEngine::DiagnosticEngine(ref DiagnosticOptions diagOpts) {
+    this.diagOpts = diagOpts;
+  }
+	public DiagnosticEngine()::~DiagnosticEngine() {
+  }
+	public fun DiagnosticEngine::Diagnose(SrcLoc loc, DiagnosticID diagID) -> InFlightDiagnostic {}
+
+	public fun DiagnosticEngine::GetOptions()-> ref DiagnostiOptions { return diagOpts; }
+}

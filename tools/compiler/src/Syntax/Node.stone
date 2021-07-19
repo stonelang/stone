@@ -6,7 +6,7 @@ space Stone.Syntax {
 		Stmt, 
 		Expr 
 	}
-	public any<T> interface Node {
+	public template<T> interface Node : Walkable<Node> {
 		fun GetType() -> NodeType; 
 	}	
 }

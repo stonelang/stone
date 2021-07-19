@@ -1,0 +1,11 @@
+
+space Stone.Diagnostics {
+
+	public struct InFlightDiagnostic {
+  }
+
+	public fun InFlightDiagnostic::Flush() -> void {
+	}
+}
+
+

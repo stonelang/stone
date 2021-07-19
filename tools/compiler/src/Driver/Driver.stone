@@ -2,8 +2,9 @@ use Stone.Session;
 
 space Stone.Compilation {
 
-	public struct Driver : Session {
+	public struct Driver : SessionInterface { 
 	}
+
 	public Driver::Driver() {
 	}
 	public Driver::~Driver(){

@@ -1,7 +1,7 @@
 use Stone.Basic; 
 
 
-space Stone.Analysis {
+space Stone.Syntax {
 	
 	public struct Parser {
 		private Lexer* lexer = null;

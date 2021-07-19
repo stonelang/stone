@@ -1,5 +1,4 @@
 
-use Stone.Source; 
 
 space Stone.Syntax {
 
@@ -9,6 +8,8 @@ space Stone.Syntax {
 	public Decl::Decl() {
 	}
 	public Decl::~Decl() {
+	}
+	public fun Decl::Walk() -> void {
 	}
 	public fun Decl::GetType() -> DeclType {
 		return declType;
