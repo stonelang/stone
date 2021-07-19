@@ -9,6 +9,32 @@ Basic::Basic()
 
 Basic::~Basic() {}
 
+// InflightDiagnostic Basic::Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
+//   return GetDiagEngine().Diagnose(loc, diagnostic);
+// }
+
+// InflightDiagnostic Basic::Diagnose(SrcLoc loc, DiagID diagID,
+//                                    llvm::ArrayRef<DiagnosticArgument> args) {
+//   return GetDiagEngine().Diagnose(loc, diagID, args);
+// }
+
+// template <typename... ArgTypes>
+// InflightDiagnostic Basic::Diagnose(
+//     SrcLoc loc, Diag<ArgTypes...> id,
+//     typename detail::PassArgument<ArgTypes>::type... args) {
+
+//   return GetDiagEngine().Diagnose(loc, id, std::forward<ArgTypes>(args)...);
+// }
+
+// template <typename... ArgTypes>
+// InflightDiagnostic
+// Basic::Diagnose(Diag<ArgTypes...> id,
+//                 typename detail::PassArgument<ArgTypes>::type... args) {
+
+//   return GetDiagEngine().Diagnose(SrcLoc(), id,
+//                                   std::forward<ArgTypes>(args)...);
+// }
+
 void Basic::Panic() { assert(false && "Compiler cannot continue"); }
 
 void Basic::Error(unsigned diagID) { Error(SrcLoc(), diagID); }

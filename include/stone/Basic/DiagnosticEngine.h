@@ -413,7 +413,7 @@ class InflightDiagnostic final {
 
   CodeFixer fixer;
   DiagnosticEngine *de;
-  
+
   mutable unsigned numArgs = 0;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -455,7 +455,7 @@ public:
 
   CodeFixer &GetFixer() { return fixer; }
   DiagnosticEngine *GetDiagEngine() { return de; }
-  Diagnostic& GetCurrentDiagnostic() { return de->GetCurrentDiagnostic(); }
+  Diagnostic &GetCurrentDiagnostic() { return de->GetCurrentDiagnostic(); }
 
 protected:
   void FlushCounts() {}
