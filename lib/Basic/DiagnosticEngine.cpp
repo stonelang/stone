@@ -4,7 +4,7 @@
 using namespace stone;
 
 using stone::DiagnosticEngine;
-using stone::InflightDiagnostic;
+using stone::InFlightDiagnostic;
 
 namespace {
 enum class LocalOptions {
@@ -105,3 +105,7 @@ bool DiagnosticEngine::HasError() { return false; }
 
 void DiagnosticEngine::Print(ColorOutputStream &os,
                              const PrintingPolicy *policy) const {}
+
+void InFlightDiagnostic::Flush() {
+  de->GetCurrentDiagnostic().GetProfile().Flush();
+}

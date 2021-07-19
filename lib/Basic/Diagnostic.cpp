@@ -4,7 +4,7 @@ using stone::CodeFix;
 using stone::CodeFixer;
 using stone::Diagnostic;
 using stone::DiagnosticEngine;
-using stone::InflightDiagnostic;
+using stone::InFlightDiagnostic;
 
 void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                         const DiagnosticFormatOptions &fmtOptions) const {
@@ -41,81 +41,64 @@ CodeFix::CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
 
 /// Create a code modification hint that inserts the given
 /// code string at a specific location.
-InflightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
+InFlightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
                                             llvm::StringRef code,
                                             bool beforePreviousInsertions) {
 
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
-
-  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
+  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
               CharSrcRange(), code, beforePreviousInsertions));
 
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }
 
 /// Create a code modification hint that inserts the given
 /// code from \p FromRange at a specific location.
-InflightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
+InFlightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
                                               CharSrcRange fromRange,
                                               bool beforePreviousInsertions) {
 
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
-
-  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
+  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
               llvm::StringRef(), beforePreviousInsertions));
 
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }
 /// Create a code modification hint that removes the given
 /// source range.
-InflightDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
+InFlightDiagnostic CodeFixer::Remove(CharSrcRange removeRange) {
 
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
-
-  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
+  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
 
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }
-InflightDiagnostic CodeFixer::Remove(SrcRange removeRange) {
+InFlightDiagnostic CodeFixer::Remove(SrcRange removeRange) {
   return Remove(CharSrcRange::getTokenRange(removeRange));
 }
 
 /// Create a code modification hint that replaces the given
 /// source range with the given code string.
-InflightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
+InFlightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
                                       llvm::StringRef code) {
 
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
-
-  inflightDiag->GetCurrentDiagnostic().GetProfile().AddFix(
+  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetProfile().AddFix(
       CodeFix(CharSrcRange(), removeRange, code));
 
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }
 
-InflightDiagnostic CodeFixer::Replace(SrcRange removeRange,
+InFlightDiagnostic CodeFixer::Replace(SrcRange removeRange,
                                       llvm::StringRef code) {
   return Replace(CharSrcRange::getTokenRange(removeRange), code);
 }
 
-InflightDiagnostic CodeFixer::Highlight(SrcRange range) {
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
+InFlightDiagnostic CodeFixer::Highlight(SrcRange range) {
 
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }
 /// Add a character-based range to the currently-active diagnostic.
-InflightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {
+InFlightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {
 
-  assert(inflightDiag &&
-         "CodeFixer can only be invoked by an InflightDiagnostic");
-
-  return InflightDiagnostic(inflightDiag->GetDiagEngine());
+  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
 }

@@ -9,18 +9,18 @@ Basic::Basic()
 
 Basic::~Basic() {}
 
-// InflightDiagnostic Basic::Diagnose(SrcLoc loc, const Diagnostic &diagnostic)
+// InFlightDiagnostic Basic::Diagnose(SrcLoc loc, const Diagnostic &diagnostic)
 // {
 //   return GetDiagEngine().Diagnose(loc, diagnostic);
 // }
 
-// InflightDiagnostic Basic::Diagnose(SrcLoc loc, DiagID diagID,
+// InFlightDiagnostic Basic::Diagnose(SrcLoc loc, DiagID diagID,
 //                                    llvm::ArrayRef<DiagnosticArgument> args) {
 //   return GetDiagEngine().Diagnose(loc, diagID, args);
 // }
 
 // template <typename... ArgTypes>
-// InflightDiagnostic Basic::Diagnose(
+// InFlightDiagnostic Basic::Diagnose(
 //     SrcLoc loc, Diag<ArgTypes...> id,
 //     typename detail::PassArgument<ArgTypes>::type... args) {
 
@@ -28,7 +28,7 @@ Basic::~Basic() {}
 // }
 
 // template <typename... ArgTypes>
-// InflightDiagnostic
+// InFlightDiagnostic
 // Basic::Diagnose(Diag<ArgTypes...> id,
 //                 typename detail::PassArgument<ArgTypes>::type... args) {
 

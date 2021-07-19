@@ -145,7 +145,7 @@ public:
 
 public:
   template <typename... DiagArgTypes, typename... ArgTypes>
-  InflightDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
+  InFlightDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
                               ArgTypes &&...Args) {
 
     basic.GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(locPtr), DiagID,

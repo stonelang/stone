@@ -26,7 +26,7 @@
 
 namespace stone {
 class Diagnostic;
-class InflightDiagnostic;
+class InFlightDiagnostic;
 class DiagnoticEngine;
 
 /// Enumeration describing all of possible diagnostics.
@@ -85,38 +85,39 @@ public:
   bool IsNull() const { return !removeRange.isValid(); }
 };
 class CodeFixer final {
-  InflightDiagnostic *inflightDiag = nullptr;
+  friend class InFlightDiagnostic;
+  InFlightDiagnostic &inFlightDiag;
 
 public:
-  CodeFixer(InflightDiagnostic *inflightDiag) : inflightDiag(inflightDiag) {}
+  CodeFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
 
 public:
   /// Create a code modification hint that inserts the given
   /// code string at a specific location.
-  InflightDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
+  InFlightDiagnostic InsertFromLoc(SrcLoc insertionLoc, StringRef code,
                                    bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that inserts the given
   /// code from \p FromRange at a specific location.
-  InflightDiagnostic InsertFromRange(SrcLoc insertionLoc,
+  InFlightDiagnostic InsertFromRange(SrcLoc insertionLoc,
                                      CharSrcRange fromRange,
                                      bool beforePreviousInsertions = false);
 
   /// Create a code modification hint that removes the given
   /// source range.
-  InflightDiagnostic Remove(CharSrcRange removeRange);
-  InflightDiagnostic Remove(SrcRange removeRange);
+  InFlightDiagnostic Remove(CharSrcRange removeRange);
+  InFlightDiagnostic Remove(SrcRange removeRange);
 
   /// Create a code modification hint that replaces the given
   /// source range with the given code string.
-  InflightDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
-  InflightDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
+  InFlightDiagnostic Replace(CharSrcRange removeRange, llvm::StringRef code);
+  InFlightDiagnostic Replace(SrcRange removeRange, llvm::StringRef code);
 
   /// Add a token-based range to the currently-active diagnostic.
-  InflightDiagnostic Highlight(SrcRange range);
+  InFlightDiagnostic Highlight(SrcRange range);
 
   /// Add a character-based range to the currently-active diagnostic.
-  InflightDiagnostic HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
+  InFlightDiagnostic HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
 };
 struct DiagnosticFormatOptions final {};
 
@@ -161,7 +162,7 @@ public:
 class Diagnostic {
 
   friend class DiagnosticEngine;
-  friend class InflightDiagnostic;
+  friend class InFlightDiagnostic;
 
   SrcLoc loc;
   mutable DiagnosticProfile profile;

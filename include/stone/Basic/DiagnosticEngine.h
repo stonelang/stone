@@ -11,7 +11,7 @@ namespace stone {
 
 class SrcMgr;
 class DiagnosticEngine;
-class InflightDiagnostic;
+class InFlightDiagnostic;
 class DiagnosticListener;
 class LangOptions;
 class StoredDiagnostic;
@@ -136,17 +136,92 @@ struct FlagValueInfo {
   llvm::StringRef data;
   explicit FlagValueInfo(StringRef data) : data(data) {}
 };
+class InFlightDiagnostic final {
+  friend class CodeFixer;
+  friend class DiagnosticEngine;
+  friend class PartialDiagnostic;
 
+  CodeFixer fixer;
+  DiagnosticEngine *de;
+
+  mutable unsigned numArgs = 0;
+
+  /// Status variable indicating if this diagnostic is still active.
+  ///
+  // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj == 0)),
+  // but LLVM is not currently smart enough to eliminate the null check that
+  // Emit() would end up with if we used that as our status variable.
+  mutable bool isActive = false;
+
+  /// Flag indicating that this diagnostic is being emitted via a
+  /// call to ForceEmit.
+  mutable bool isForceEmit = false;
+
+  InFlightDiagnostic() = default;
+
+  InFlightDiagnostic(const InFlightDiagnostic &) = delete;
+  InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
+  InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
+
+public:
+  InFlightDiagnostic(DiagnosticEngine *de)
+      : de(de), fixer(*this), isActive(true) {
+
+    assert(de && "InFlightDiagnostic requires a valid DiagnosticEngine!");
+    Flush();
+  }
+
+  /// Transfer an in-flight diagnostic to a new object, which is
+  /// typically used when returning in-flight diagnostics.
+  InFlightDiagnostic(InFlightDiagnostic &&other)
+      : de(other.de), fixer(*this), isActive(other.isActive) {
+    other.isActive = false;
+  }
+  /// Emits the diagnostic.
+  ~InFlightDiagnostic() { Emit(); }
+
+public:
+  CodeFixer &GetFixer() { return fixer; }
+  DiagnosticEngine *GetDiagEngine() { return de; }
+
+protected:
+  void FlushCounts() {}
+
+  void Flush();
+
+  /// Clear out the current diagnostic.
+  void Clear() const {}
+
+  /// Determine whether this diagnostic is still active.
+  bool IsActive() const { return isActive; }
+
+  bool Emit() {
+    // If this diagnostic is inactive, then its soul was stolen by the copy ctor
+    // (or by a subclass, as in SemaInFlightDiagnostic).
+    if (!IsActive())
+      return false;
+
+    // When emitting diagnostics, we set the final argument count into
+    // the DiagnosticEngine object.
+    FlushCounts();
+    // Process the diagnostic.
+    // bool result = de->EmitCurrentDiagnostic(IsForceEmit);
+
+    // This diagnostic is dead.
+    Clear();
+    // return Result;
+    return false;
+  }
+};
 /// Concrete class used by the front-end to report problems and issues.
 ///
 /// This massages the diagnostics (e.g. handling things like "report warnings
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public llvm::RefCountedBase<DiagnosticEngine>,
-                               public Printable {
+class DiagnosticEngine final : public Printable {
 
-  friend class InflightDiagnostic;
+  friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class PartialDiagnostic;
   friend struct DiagnosticArgument;
@@ -338,37 +413,49 @@ public:
 public:
   /// Issue the message to the client.
   ///
-  /// This actually returns an instance of InflightDiagnostic which emits the
+  /// This actually returns an instance of InFlightDiagnostic which emits the
   /// diagnostics (through @c ProcessDiag) when it is destroyed.
   ///
   /// \param DiagID A member of the @c diag::kind enum.
   /// \param Loc Represents the source location associated with the diagnostic,
   /// which can be an invalid location if no position information is available.
-  // inline InflightDiagnostic Issue(SrcLoc loc, unsigned diagID);
-  // inline InflightDiagnostic Issue(unsigned DiagID);
+  // inline InFlightDiagnostic Issue(SrcLoc loc, unsigned diagID);
+  // inline InFlightDiagnostic Issue(unsigned DiagID);
   // void Issue(const StoredDiagnostic &storedDiagnostic);
 
-  // inline InflightDiagnostic Issue(SrcLoc loc, DiagID diagID);
+  // inline InFlightDiagnostic Issue(SrcLoc loc, DiagID diagID);
 
-  inline InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
-
-  inline InflightDiagnostic Diagnose(DiagID diagID) = delete;
-  inline InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID);
-
-  inline InflightDiagnostic
-  Diagnose(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> args) = delete;
-  inline InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                                     llvm::ArrayRef<DiagnosticArgument> args);
-
+  InFlightDiagnostic Diagnose(DiagID diagID) = delete;
+  InFlightDiagnostic Diagnose(DiagID diagID,
+                              llvm::ArrayRef<DiagnosticArgument> args) = delete;
   template <typename... ArgTypes>
-  inline InflightDiagnostic
-  Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
-           typename detail::PassArgument<ArgTypes>::type... args);
-
-  template <typename... ArgTypes>
-  inline InflightDiagnostic
+  InFlightDiagnostic
   Diagnose(Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args) = delete;
+
+  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
+    assert(!curDiagnostic && "Already have an active diagnostic");
+    curDiagnostic = diagnostic;
+    curDiagnostic->SetLoc(loc);
+    return InFlightDiagnostic(this);
+  }
+
+  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                              llvm::ArrayRef<DiagnosticArgument> args) {
+    return Diagnose(loc, Diagnostic(DiagnosticProfile(diagID, args)));
+  }
+
+  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID) {
+    return Diagnose(loc, Diagnostic(DiagnosticProfile(
+                             diagID, llvm::ArrayRef<DiagnosticArgument>())));
+  }
+
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args) {
+    return InFlightDiagnostic(this);
+  }
 
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
@@ -411,91 +498,6 @@ public:
   }
 };
 
-class InflightDiagnostic final {
-  friend class CodeFixer;
-  friend class DiagnosticEngine;
-  friend class PartialDiagnostic;
-
-  CodeFixer fixer;
-  DiagnosticEngine *de;
-
-  mutable unsigned numArgs = 0;
-
-  /// Status variable indicating if this diagnostic is still active.
-  ///
-  // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj == 0)),
-  // but LLVM is not currently smart enough to eliminate the null check that
-  // Emit() would end up with if we used that as our status variable.
-  mutable bool isActive = false;
-
-  /// Flag indicating that this diagnostic is being emitted via a
-  /// call to ForceEmit.
-  mutable bool isForceEmit = false;
-
-  InflightDiagnostic() = default;
-
-public:
-  InflightDiagnostic(DiagnosticEngine *de)
-      : de(de), fixer(this), isActive(true) {
-
-    assert(de && "InflightDiagnostic requires a valid DiagnosticEngine!");
-    de->GetCurrentDiagnostic().GetProfile().Flush();
-  }
-
-public:
-  /// Issue the message to the client.
-  ///
-  /// This actually returns an instance of InflightDiagnostic which emits the
-  /// diagnostics (through @c ProcessDiag) when it is destroyed.
-  ///
-  /// \param DiagID A member of the @c diag::kind enum.
-  /// \param Loc Represents the source location associated with the diagnostic,
-  /// which can be an invalid location if no position information is available.
-  // inline InflightDiagnostic Emit(const SrcLoc loc, const unsigned
-  // diagnosticID,
-  //                                const unsigned msgID);
-
-  // inline InflightDiagnostic Emit(const unsigned diagnosticID, const unsigned
-  // msgID);
-
-  CodeFixer &GetFixer() { return fixer; }
-  DiagnosticEngine *GetDiagEngine() { return de; }
-  Diagnostic &GetCurrentDiagnostic() { return de->GetCurrentDiagnostic(); }
-
-protected:
-  void FlushCounts() {}
-
-  /// Clear out the current diagnostic.
-  void Clear() const {}
-
-  /// Determine whether this diagnostic is still active.
-  bool IsActive() const { return isActive; }
-
-  bool Emit() {
-    // If this diagnostic is inactive, then its soul was stolen by the copy ctor
-    // (or by a subclass, as in SemaInflightDiagnostic).
-    if (!IsActive())
-      return false;
-
-    // When emitting diagnostics, we set the final argument count into
-    // the DiagnosticEngine object.
-    FlushCounts();
-    // Process the diagnostic.
-    // bool result = de->EmitCurrentDiagnostic(IsForceEmit);
-
-    // This diagnostic is dead.
-    Clear();
-    // return Result;
-    return false;
-  }
-
-public:
-  InflightDiagnostic &operator=(const InflightDiagnostic &) = delete;
-
-  /// Emits the diagnostic.
-  ~InflightDiagnostic() { Emit(); }
-};
-
 class StoredDiagnostic {
   // unsigned diagIdentifier;
   // diag::Level level;
@@ -507,33 +509,6 @@ class StoredDiagnostic {
 public:
   StoredDiagnostic() = default;
 };
-
-inline InflightDiagnostic
-DiagnosticEngine::Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
-  assert(!curDiagnostic && "Already have an active diagnostic");
-  curDiagnostic = diagnostic;
-  curDiagnostic->SetLoc(loc);
-  return InflightDiagnostic(this);
-}
-
-inline InflightDiagnostic DiagnosticEngine::Diagnose(SrcLoc loc,
-                                                     DiagID diagID) {
-  return Diagnose(loc, Diagnostic(DiagnosticProfile(
-                           diagID, llvm::ArrayRef<DiagnosticArgument>())));
-}
-
-inline InflightDiagnostic
-DiagnosticEngine::Diagnose(SrcLoc loc, DiagID diagID,
-                           llvm::ArrayRef<DiagnosticArgument> args) {
-  return Diagnose(loc, Diagnostic(DiagnosticProfile(diagID, args)));
-}
-
-template <typename... ArgTypes>
-inline InflightDiagnostic DiagnosticEngine::Diagnose(
-    SrcLoc loc, Diag<ArgTypes...> id,
-    typename detail::PassArgument<ArgTypes>::type... args) {
-  return InflightDiagnostic(this);
-}
 
 } // namespace stone
 #endif

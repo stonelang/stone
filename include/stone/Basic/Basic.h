@@ -12,7 +12,7 @@
 namespace stone {
 
 class Basic {
-  class InflightDiagnostic;
+  class InFlightDiagnostic;
 
 protected:
   LangOptions langOpts;
@@ -55,7 +55,7 @@ public:
 
   void Panic();
 
-  /* TODO: InflightDiagnostic*/ void Error(unsigned diagID);
+  /* TODO: InFlightDiagnostic*/ void Error(unsigned diagID);
   void Error(SrcLoc loc, unsigned diagID);
 
   void Warn(unsigned diagID);
@@ -68,18 +68,18 @@ public:
   void Remark(SrcLoc loc, unsigned diagID);
 
 public:
-  InflightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
+  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic);
 
-  InflightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
                               llvm::ArrayRef<DiagnosticArgument> args);
 
   template <typename... ArgTypes>
-  InflightDiagnostic
+  InFlightDiagnostic
   Diagnose(SrcLoc loc, Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
   template <typename... ArgTypes>
-  InflightDiagnostic
+  InFlightDiagnostic
   Diagnose(Diag<ArgTypes...> id,
            typename detail::PassArgument<ArgTypes>::type... args);
 
