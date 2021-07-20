@@ -190,7 +190,7 @@ class EmissionDiagnostic final {
 
 public:
   EmissionDiagnostic(const Diagnostic &diagnostic,
-                     llvm::StringRef formatMessage, llvm::StringRef categor)
+                     llvm::StringRef formatMessage, llvm::StringRef category)
       : diagnostic(diagnostic), formatMessage(formatMessage),
         category(category) {}
 

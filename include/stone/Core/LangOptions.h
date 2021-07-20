@@ -43,6 +43,8 @@ public:
   /// macOS processes. A value of 'None' means no zippering will be
   /// performed.
   llvm::Optional<llvm::Triple> targetVariant;
+
+  LangVersion langVersion; 
 };
 
 } // namespace stone

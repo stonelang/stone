@@ -1,6 +1,8 @@
 #ifndef STONE_CORE_DIAGNOSTICEMITTER_H
 #define STONE_CORE_DIAGNOSTICEMITTER_H
 
+#include <assert.h>
+
 namespace stone {
 class DiagnosticListener;
 class DiagnosticEmitter {
@@ -18,7 +20,7 @@ public:
 
 public:
   DiagnosticListener *GetListener() { 
-    assert(listener && "A 'DiagnosticEmitter' must be associated with a 'DiagnosticListener'")
+    assert(listener && "A 'DiagnosticEmitter' must be associated with a 'DiagnosticListener'");
     return listener; 
   }
 };

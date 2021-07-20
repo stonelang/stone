@@ -1,0 +1,7 @@
+
+
+space STD {
+
+	struct Object {
+	}
+}
