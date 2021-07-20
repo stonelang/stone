@@ -7,8 +7,7 @@
 #include <memory>
 
 namespace stone {
-class Diagnostic;
-
+class EmissionDiagnostic;
 class TextDiagnosticListener : public DiagnosticListener {
 
   std::unique_ptr<TextDiagnosticEmitter> emitter;

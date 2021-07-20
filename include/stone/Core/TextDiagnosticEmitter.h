@@ -4,10 +4,10 @@
 #include "stone/Core/DiagnosticEmitter.h"
 namespace stone {
 
+class TextDiagnosticListener;
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
 public:
-public:
-  TextDiagnosticEmitter();
+  TextDiagnosticEmitter(TextDiagnosticListener *listener);
   ~TextDiagnosticEmitter();
 
 public:
