@@ -50,7 +50,7 @@ enum class ArgumentType {
   TokenType,
 
   /// custom argument
-  Complex,
+  Custom,
 
 };
 
@@ -157,7 +157,7 @@ struct SyntaxArgument : public Argument {
 public:
   SyntaxArgument() = delete;
   explicit SyntaxArgument(SyntaxArgumentType ty, const void *val)
-      : Argument(ArgumentType::Complex), ty(ty) {}
+      : Argument(ArgumentType::Custom), ty(ty) {}
 
   const void *GetVal() const { return val; }
   SyntaxArgumentType GetSyntaxArgumentType() { return ty; }

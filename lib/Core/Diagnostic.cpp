@@ -21,7 +21,7 @@ void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
     break;
   case diag::ArgumentType::TokenType:
     break;
-  case diag::ArgumentType::Complex:
+  case diag::ArgumentType::Custom:
     // Ignore and handle elswhere
     break;
   default:
