@@ -1,5 +1,5 @@
 #include "stone/Syntax/SyntaxDiagArgument.h"
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Core/DiagnosticEngine.h"
 
 using stone::SyntaxDiagnostic;
 

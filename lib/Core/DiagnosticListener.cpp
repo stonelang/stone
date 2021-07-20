@@ -1,0 +1,10 @@
+#include "stone/Core/DiagnosticListener.h"
+
+using stone::DiagnosticListener;
+
+DiagnosticListener::~DiagnosticListener() {}
+
+bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
+
+void DiagnosticListener::Listen(diag::Level level,
+                                const EmissionDiagnostic &diagnostic) {}

@@ -8,7 +8,7 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Compiler.h"
 
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Core/DiagnosticEngine.h"
 #include "stone/Syntax/TreeContext.h"
 
 using namespace stone;

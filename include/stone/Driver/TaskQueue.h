@@ -5,9 +5,9 @@
 #include <memory>
 #include <queue>
 
-#include "stone/Basic/Basic.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Core/Basic.h"
+#include "stone/Core/LLVM.h"
+#include "stone/Core/Stats.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"

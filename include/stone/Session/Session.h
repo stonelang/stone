@@ -1,12 +1,12 @@
 #ifndef STONE_SESSION_SESSION_H
 #define STONE_SESSION_SESSION_H
 
-#include "stone/Basic/Basic.h"
-#include "stone/Basic/File.h"
-#include "stone/Basic/FileMgr.h"
-#include "stone/Basic/List.h"
-#include "stone/Basic/Stats.h"
-#include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Core/Basic.h"
+#include "stone/Core/File.h"
+#include "stone/Core/FileMgr.h"
+#include "stone/Core/List.h"
+#include "stone/Core/Stats.h"
+#include "stone/Core/TextDiagnosticListener.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/SessionOptions.h"
 

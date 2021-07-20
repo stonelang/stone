@@ -14,9 +14,21 @@ set(stone_compile_sources
 	Compiler.cpp
 	Modes.cpp
 	Serialize.cpp
+
+	Check.cpp
+	CheckDecl.cpp
+	Checker.cpp
+	CheckExpr.cpp
+	CheckStmt.cpp
+	Lexer.cpp
+	Parse.cpp
+	ParseDecl.cpp
+	Parser.cpp
+	ParseExpr.cpp
+	ParseStmt.cpp
+
 	
 	LINK_LIBS
-	StoneAnalyze
 	StoneGen
 	StoneSession
 

@@ -13,7 +13,7 @@
 #ifndef STONE_SYNTAX_OWNERSHIP_H
 #define STONE_SYNTAX_OWNERSHIP_H
 
-#include "stone/Basic/LLVM.h"
+#include "stone/Core/LLVM.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"

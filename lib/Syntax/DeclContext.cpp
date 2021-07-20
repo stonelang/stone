@@ -1,9 +1,9 @@
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Syntax.h"
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/SrcLoc.h"
+#include "stone/Core/LLVM.h"
+#include "stone/Core/LangOptions.h"
+#include "stone/Core/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

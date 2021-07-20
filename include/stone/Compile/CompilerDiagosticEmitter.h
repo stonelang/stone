@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILERDIAGNOSTICEMITTER_H
 #define STONE_COMPILE_COMPILERDIAGNOSTICEMITTER_H
 
-#include "stone/Basic/TextDiagnosticEmitter.h"
+#include "stone/Core/TextDiagnosticEmitter.h"
 namespace stone {
 
 class CompilerDiagnosticEmitter final : public TextDiagnosticEmitter {

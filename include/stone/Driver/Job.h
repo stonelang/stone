@@ -8,8 +8,8 @@
 #include "llvm/Support/StringSaver.h"
 #include "llvm/Support/Timer.h"
 
-#include "stone/Basic/List.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Core/List.h"
+#include "stone/Core/Stats.h"
 #include "stone/Driver/CmdOutput.h"
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/JobOptions.h"

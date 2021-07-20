@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILE_H
 #define STONE_COMPILE_COMPILE_H
 
-#include "stone/Basic/File.h"
+#include "stone/Core/File.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_BACKEND_H
 #define STONE_GEN_BACKEND_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/OutputFile.h"
+#include "stone/Core/LLVM.h"
+#include "stone/Core/OutputFile.h"
 
 #include "stone/Syntax/TreeContext.h"
 #include "llvm/Target/TargetMachine.h"

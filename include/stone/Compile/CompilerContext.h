@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_COMPILERCONTEXT_H
 #define STONE_COMPILE_COMPILERCONTEXT_H
 
-#include "stone/Basic/List.h"
 #include "stone/Compile/CompilableItem.h"
+#include "stone/Core/List.h"
 
 namespace llvm {
 class Module;
