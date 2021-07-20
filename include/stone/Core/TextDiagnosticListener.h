@@ -9,7 +9,7 @@
 namespace stone {
 class Diagnostic;
 
-class TextDiagnosticListener final : public DiagnosticListener {
+class TextDiagnosticListener : public DiagnosticListener {
 
   std::unique_ptr<TextDiagnosticEmitter> emitter;
 
@@ -18,7 +18,7 @@ public:
   ~TextDiagnosticListener();
 
 public:
-  void Listen(diag::Level, const EmissionDiagnostic &diagnostic) override;
+  void Listen(diag::Level level, const EmissionDiagnostic &diagnostic) override;
 
 public:
   void SetEmitter(std::unique_ptr<DiagnosticEmitter> emitter);
