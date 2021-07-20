@@ -118,8 +118,9 @@ public:
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
 
-    // args(std::forward<ArgTypes>(vArgs)...);
-    // auto diagArgs = {diag::Argument(), std::move<ArgTypes>(vArgs)...};
+    diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
+
+    args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
   }
 
 public:

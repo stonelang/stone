@@ -67,14 +67,33 @@
 //   }
 // }
 
-class DiagnosticArgument {
+struct DiagArg {
 public:
-  DiagnosticArgument(int i) i {}
 };
-template <typename... argTypes>
-struct DiagnosticWithArgument<DiagnosticArgument(argTypes...)> {
-  typedef Diag<argTypes...> type;
+enum class DiagID : uint32_t;
+
+// template <typename... argTypes> struct Diag {
+//   /// The diagnostic ID corresponding to this diagnostic.
+//   DiagID diagID;
+// };
+
+// template <typename T> struct DiagWithArguments;
+
+// template <typename... argTypes> struct DiagWithArguments<void(argTypes...)> {
+//   typedef Diag<argTypes...> type;
+// };
+
+template <typename... argTypes> struct Diag {
+  /// The diagnostic ID corresponding to this diagnostic.
+  DiagID diagID;
 };
+
+template <typename T> struct DiagWithArguments;
+
+struct DiagWithArguments {
+  typedef Diag<DiagArg...> type;
+};
+
 int main() {
 
   // Decl *d = new Decl();

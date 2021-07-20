@@ -331,10 +331,6 @@ public:
   // bool GetIgnoreAllWarnings() const {
   //  return GetCurDiagState()->IgnoreAllWarnings;
   // }
-  /// Emit the current diagnostic and clear the diagnostic state.
-  ///
-  /// \param Force Emit the diagnostic regardless of suppression settings.
-  bool EmitCurrentDiagnostic(bool force = false);
 
   /// Get the actual string in the ".def" for the diagnostic
   llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
@@ -366,12 +362,17 @@ public:
   llvm::Optional<EmissionDiagnostic>
   GetEmissionDiagnosticForDiagnostic(const Diagnostic &diagnostic);
 
-  // Send \c diag to all diagnostic consumers.
+  // Send \c diag to all diagnostic listeners.
   void EmitDiagnostic(const Diagnostic &diag);
 
   /// Send all tentative diagnostics to all diagnostic consumers and
   /// delete them.
   void EmitPendingDiagnostics();
+
+  /// Emit the current diagnostic and clear the diagnostic state.
+  ///
+  /// \param Force Emit the diagnostic regardless of suppression settings.
+  bool EmitCurrentDiagnostic(bool force = false);
 
 public:
   InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {

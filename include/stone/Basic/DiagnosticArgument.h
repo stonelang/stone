@@ -137,8 +137,8 @@ public:
 
   const void *GetVal() const { return val; }
 };
-
 } // namespace diag
+
 } // namespace stone
 
 #endif
