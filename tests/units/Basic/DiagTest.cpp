@@ -33,6 +33,6 @@ TEST_F(DiagTest, BasicTest) {
 
   basic.GetDiagEngine()
       .Diagnose(SrcLoc(), diag::note_prev_decl_def, diag::DeclArgument(nullptr))
-      .GetFixer()
+      .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 }

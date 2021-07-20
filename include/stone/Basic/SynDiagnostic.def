@@ -90,7 +90,9 @@ ERROR(err_unicode_escape_braces,none,
 NOTE(note_prev_decl_def,none,
      "previous definition of %0 is here", (diag::ComplexArgument))
 
-
+ERROR(err_case_stmt_without_body,none,
+      "%select{'case'|'default'}0 label in a 'match' should have at least one "
+      "executable statement", (diag::BoolArgument))
 
 //==============================================================================
 // MARK: Checking

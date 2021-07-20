@@ -94,6 +94,17 @@ struct DiagWithArguments {
   typedef Diag<DiagArg...> type;
 };
 
+struct Argument {};
+template <typename T> struct InFlightArgument : public Argument {
+  explicit InFlightArgument(const T val) : val(val) {}
+} struct DeclArgument : public InFlightArgument {
+}
+
+ComplexArgumentType {
+  Syntax
+}
+struct ComplexArgument : public Argument {};
+
 int main() {
 
   // Decl *d = new Decl();

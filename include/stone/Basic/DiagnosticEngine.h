@@ -157,7 +157,7 @@ public:
   ~InFlightDiagnostic() { Emit(); }
 
 public:
-  CodeFixer &GetFixer() { return fixer; }
+  CodeFixer &WithFix() { return fixer; }
   DiagnosticEngine *GetDiagEngine() { return de; }
 
 protected:

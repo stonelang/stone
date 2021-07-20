@@ -148,17 +148,20 @@ public:
   tk::Type GetVal() const { return val; }
 };
 
-// TODO: Think about -- it may be better to have ComplexArgumentType { Decl,
-// Type, ...}
-// here since they are not the actual types.
+enum class ComplexArgumentType { None, Syntax };
 struct ComplexArgument : public Argument {
   const void *val;
+  ComplexArgumentType ty;
 
 public:
   ComplexArgument() = delete;
-  explicit ComplexArgument(const void *val) : Argument(ArgumentType::Complex) {}
+  explicit ComplexArgument(ComplexArgumentType ty, const void *val)
+      : Argument(ArgumentType::Complex), ty(ty) {}
+
   const void *GetVal() const { return val; }
+  ComplexArgumentType GetComplexArgumentType() { return ty; }
 };
+
 } // namespace diag
 
 } // namespace stone
