@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_CHECKERPIPELINE_H
 #define STONE_COMPILE_CHECKERPIPELINE_H
 
-#include "stone/Core/PipelineEngine.h"
+#include "stone/Utils/PipelineEngine.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Stmt.h"

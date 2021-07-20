@@ -3,9 +3,9 @@
 
 #include "stone/Compile/Token.h"
 #include "stone/Compile/Trivia.h"
-#include "stone/Core/Basic.h"
-#include "stone/Core/DiagnosticEngine.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Utils/Basic.h"
+#include "stone/Utils/DiagnosticEngine.h"
+#include "stone/Utils/SrcLoc.h"
 
 namespace stone {
 

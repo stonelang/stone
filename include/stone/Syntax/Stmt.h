@@ -20,8 +20,8 @@
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/VersionTuple.h"
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Utils/LLVM.h"
+#include "stone/Utils/SrcLoc.h"
 #include "stone/Syntax/Node.h"
 #include "stone/Syntax/StmtBits.h"
 

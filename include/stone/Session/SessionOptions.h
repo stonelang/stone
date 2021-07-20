@@ -1,9 +1,9 @@
 #ifndef STONE_SESSION_SESSIONOPTIONS_H
 #define STONE_SESSION_SESSIONOPTIONS_H
 
-#include "stone/Core/File.h"
-#include "stone/Core/FileSystemOptions.h"
-#include "stone/Core/LangOptions.h"
+#include "stone/Utils/File.h"
+#include "stone/Utils/FileSystemOptions.h"
+#include "stone/Utils/LangOptions.h"
 #include "stone/Session/ModeType.h"
 
 namespace llvm {

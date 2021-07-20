@@ -2,7 +2,7 @@
 #define STONE_COMPILE_LEXERPIPELINE_H
 
 #include "stone/Compile/Token.h"
-#include "stone/Core/PipelineEngine.h"
+#include "stone/Utils/PipelineEngine.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

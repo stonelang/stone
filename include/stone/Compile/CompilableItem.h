@@ -2,7 +2,7 @@
 #define STONE_COMPILE_COMPILABLEITEM_H
 
 #include "stone/Compile/CompilableFile.h"
-#include "stone/Core/OutputFile.h"
+#include "stone/Utils/OutputFile.h"
 
 namespace llvm {
 class Module;

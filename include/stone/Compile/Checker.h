@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_CHECKER_H
 #define STONE_COMPILE_CHECKER_H
 
-#include "stone/Core/Basic.h"
-#include "stone/Core/Stats.h"
+#include "stone/Utils/Basic.h"
+#include "stone/Utils/Stats.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/TreeContext.h"
 

@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_GENERATOR_H
 #define STONE_GEN_GENERATOR_H
 
-#include "stone/Core/LLVM.h"
+#include "stone/Utils/LLVM.h"
 #include "stone/Syntax/Module.h"
 
 namespace llvm {

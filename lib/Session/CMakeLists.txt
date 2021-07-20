@@ -10,7 +10,7 @@ set(stone_session_sources
 	SessionOptions.cpp
 
 	LINK_LIBS 
-	StoneCore
+	StoneUtils
 )
 add_stone_library(StoneSession
 	${stone_session_sources}

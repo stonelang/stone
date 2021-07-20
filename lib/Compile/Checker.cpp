@@ -1,6 +1,6 @@
 #include "stone/Compile/Checker.h"
 #include "stone/Compile/CheckerPipeline.h"
-#include "stone/Core/Ret.h"
+#include "stone/Utils/Ret.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;

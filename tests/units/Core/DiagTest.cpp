@@ -1,8 +1,8 @@
-#include "stone/Core/Basic.h"
-#include "stone/Core/CompileDiagnostic.h"
-#include "stone/Core/DiagnosticEngine.h"
-#include "stone/Core/SynDiagnostic.h"
-#include "stone/Core/TextDiagnosticListener.h"
+#include "stone/Utils/Basic.h"
+#include "stone/Utils/CompileDiagnostic.h"
+#include "stone/Utils/DiagnosticEngine.h"
+#include "stone/Utils/SynDiagnostic.h"
+#include "stone/Utils/TextDiagnosticListener.h"
 #include "stone/Syntax/SyntaxDiagArgument.h"
 
 using stone::diag::DeclArgument;

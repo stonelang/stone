@@ -1,8 +1,8 @@
 #include "stone/Compile/Lexer.h"
 #include "stone/Compile/LexerPipeline.h"
-#include "stone/Core/Char.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/SynDiagnostic.h"
+#include "stone/Utils/Char.h"
+#include "stone/Utils/SrcMgr.h"
+#include "stone/Utils/SynDiagnostic.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -905,7 +905,7 @@ tk::Type Lexer::GetIdentifierType(llvm::StringRef tokStr) {
 #define KEYWORD(kw, S)                                                         \
   if (tokStr == #kw)                                                           \
     return tk::Type::kw_##kw;
-#include "stone/Core/TokenType.def"
+#include "stone/Utils/TokenType.def"
   return tk::Type::identifier;
 }
 void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {

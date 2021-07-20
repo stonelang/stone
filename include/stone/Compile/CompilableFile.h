@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILABLEFILE_H
 #define STONE_COMPILE_COMPILABLEFILE_H
 
-#include "stone/Core/File.h"
+#include "stone/Utils/File.h"
 #include "llvm/Support/MemoryBuffer.h"
 
 namespace stone {

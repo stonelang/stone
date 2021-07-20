@@ -12,10 +12,10 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include "stone/Core/Basic.h"
-#include "stone/Core/Char.h"
-#include "stone/Core/LangOptions.h"
-#include "stone/Core/TokenType.h"
+#include "stone/Utils/Basic.h"
+#include "stone/Utils/Char.h"
+#include "stone/Utils/LangOptions.h"
+#include "stone/Utils/TokenType.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/SyntaxDiagArgument.h"
 //#include "stone/Syntax/OperatorKinds.h"
@@ -45,7 +45,7 @@ bool Identifier::IsKeyword(const LangOptions &langOpts) const {
 #define KEYWORD(NAME, FLAG)                                                    \
   case tk::Type::kw_##NAME:                                                    \
     return GetKeywordStatus(langOpts, FLAG) == KeywordStatus::On;
-#include "stone/Core/TokenType.def"
+#include "stone/Utils/TokenType.def"
   default:
     return false;
   }
@@ -77,7 +77,7 @@ void IdentifierTable::AddKeywords(const LangOptions &LangOpts) {
 #define KEYWORD(NAME, FLAG)                                                    \
   AddKeyword(llvm::StringRef(#NAME), tk::Type::kw_##NAME, FLAG, langOpts,      \
              *this);
-#include "stone/Core/TokenType.def"
+#include "stone/Utils/TokenType.def"
 }
 
 //===----------------------------------------------------------------------===//

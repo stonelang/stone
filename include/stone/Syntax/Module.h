@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_MODULE_H
 #define STONE_SYNTAX_MODULE_H
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/List.h"
-#include "stone/Core/Printable.h"
+#include "stone/Utils/LLVM.h"
+#include "stone/Utils/List.h"
+#include "stone/Utils/Printable.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"

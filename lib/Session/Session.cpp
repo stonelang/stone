@@ -1,5 +1,5 @@
 #include "stone/Session/Session.h"
-#include "stone/Core/CompileDiagnostic.h"
+#include "stone/Utils/CompileDiagnostic.h"
 
 #include "llvm/Support/FileSystem.h"
 

@@ -3,8 +3,8 @@
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/Parse.h"
-#include "stone/Core/Defer.h"
-#include "stone/Core/Ret.h"
+#include "stone/Utils/Defer.h"
+#include "stone/Utils/Ret.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Syntax/Module.h"
 

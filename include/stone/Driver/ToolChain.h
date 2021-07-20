@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "stone/Core/File.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/Mem.h"
+#include "stone/Utils/File.h"
+#include "stone/Utils/LLVM.h"
+#include "stone/Utils/Mem.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/LinkType.h"
 #include "stone/Session/Mode.h"

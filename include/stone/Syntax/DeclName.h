@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_DECLNAME_H
 #define STONE_SYNTAX_DECLNAME_H
 
-#include "stone/Core/Dumpable.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/Printable.h"
+#include "stone/Utils/Dumpable.h"
+#include "stone/Utils/LLVM.h"
+#include "stone/Utils/Printable.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Type.h"
 #include "llvm/ADT/FoldingSet.h"

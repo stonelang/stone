@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_DECL_H
 #define STONE_SYNTAX_DECL_H
 
-#include "stone/Core/AddressSpace.h"
+#include "stone/Utils/AddressSpace.h"
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Utils/LLVM.h"
+#include "stone/Utils/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"

@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SPECIFIER_H
 #define STONE_SYNTAX_SPECIFIER_H
 
-#include "stone/Core/LLVM.h"
+#include "stone/Utils/LLVM.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/TreeContext.h"

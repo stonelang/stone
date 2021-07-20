@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_TREECONTEXT_H
 #define STONE_SYNTAX_TREECONTEXT_H
 
-#include "stone/Core/Basic.h"
-#include "stone/Core/LangOptions.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/Stats.h"
+#include "stone/Utils/Basic.h"
+#include "stone/Utils/LangOptions.h"
+#include "stone/Utils/SrcMgr.h"
+#include "stone/Utils/Stats.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
