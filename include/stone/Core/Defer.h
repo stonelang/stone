@@ -1,5 +1,5 @@
-#ifndef STONE_DEFER_H
-#define STONE_DEFER_H
+#ifndef STONE_CORE_DEFER_H
+#define STONE_CORE_DEFER_H
 
 #include "llvm/ADT/ScopeExit.h"
 
@@ -28,4 +28,4 @@ auto operator+(DeferTask, F &&fn)
   auto DEFER_MACRO_CONCAT(defer_func, __COUNTER__) =                           \
       ::stone::detail::DeferTask() + [&]()
 
-#endif // STONE_BASIC_DEFER_H
+#endif // STONE_CORE_DEFER_H

@@ -1,5 +1,5 @@
-#ifndef STONE_COREDIAGNOSTIC_H
-#define STONE_COREDIAGNOSTIC_H
+#ifndef STONE_CORE_CODEGEN_EDIAGNOSTIC_H
+#define STONE_CORE_CODEGEN_DIAGNOSTIC_H
 
 #include "stone/Core/CoreDiagnostic.h"
 

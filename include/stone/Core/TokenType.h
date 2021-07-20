@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_TOKENTYPE_H
-#define STONE_BASIC_TOKENTYPE_H
+#ifndef STONE_CORE_TOKENTYPE_H
+#define STONE_CORE_TOKENTYPE_H
 
 #include "stone/Core/LLVM.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_COLORPRINTER_H
-#define STONE_COLORPRINTER_H
+#ifndef STONE_CORE_COLOR_H
+#define STONE_CORE_COLOR_H
 
 #include "llvm/Support/raw_ostream.h"
 
@@ -47,4 +47,4 @@ public:
 
 } // namespace stone
 
-#endif // SWIFT_BASIC_COLORUTILS_H
+#endif // SWIFT_CORE_COLORUTILS_H

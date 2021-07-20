@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_LIST_H
-#define STONE_BASIC_LIST_H
+#ifndef STONE_CORE_LIST_H
+#define STONE_CORE_LIST_H
 
 #include <memory>
 #include <string>

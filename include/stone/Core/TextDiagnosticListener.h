@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_TEXTDIAGNOSTICLISTENER_H
-#define STONE_BASIC_TEXTDIAGNOSTICLISTENER_H
+#ifndef STONE_CORE_TEXTDIAGNOSTICLISTENER_H
+#define STONE_CORE_TEXTDIAGNOSTICLISTENER_H
 
 #include "stone/Core/DiagnosticListener.h"
 #include "stone/Core/TextDiagnosticEmitter.h"

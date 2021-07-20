@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DIRSCANNER_H
-#define STONE_BASIC_DIRSCANNER_H
+#ifndef STONE_CORE_DIRSCANNER_H
+#define STONE_CORE_DIRSCANNER_H
 
 #include <functional>
 #include <memory>

@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_BUMPTABLE_H
-#define STONE_BASIC_BUMPTABLE_H
+#ifndef STONE_CORE_BUMPTABLE_H
+#define STONE_CORE_BUMPTABLE_H
 
 #include <cassert>
 #include <cstddef>

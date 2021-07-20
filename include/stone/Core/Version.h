@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_VERSION_H
-#define STONE_BASIC_VERSION_H
+#ifndef STONE_CORE_VERSION_H
+#define STONE_CORE_VERSION_H
 #include <string>
 
 namespace stone {

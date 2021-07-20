@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_FILE_H
-#define STONE_BASIC_FILE_H
+#ifndef STONE_CORE_FILE_H
+#define STONE_CORE_FILE_H
 
 #include <functional>
 #include <stdio.h>

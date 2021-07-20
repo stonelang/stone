@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_SRCFILE_H
-#define STONE_BASIC_SRCFILE_H
+#ifndef STONE_CORE_SRCFILE_H
+#define STONE_CORE_SRCFILE_H
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/FileSystem.h"

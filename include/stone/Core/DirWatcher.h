@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DIRWATCHER_H
-#define STONE_BASIC_DIRWATCHER_H
+#ifndef STONE_CORE_DIRWATCHER_H
+#define STONE_CORE_DIRWATCHER_H
 
 #include <functional>
 #include <memory>

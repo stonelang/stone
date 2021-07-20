@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_FMT_H
-#define STONE_BASIC_FMT_H
+#ifndef STONE_CORE_FMT_H
+#define STONE_CORE_FMT_H
 
 #include <stdio.h>
 

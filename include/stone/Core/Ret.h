@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_RET_H
-#define STONE_BASIC_RET_H
+#ifndef STONE_CORE_RET_H
+#define STONE_CORE_RET_H
 
 namespace stone {
 namespace ret {

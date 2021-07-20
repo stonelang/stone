@@ -277,4 +277,4 @@ public:
 
 } // end namespace swift
 
-#endif // SWIFT_BASIC_SOURCEMANAGER_H
+#endif // SWIFT_CORE_SOURCEMANAGER_H

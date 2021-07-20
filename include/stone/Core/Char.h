@@ -1,5 +1,5 @@
-#ifndef STONE_CHAR_H
-#define STONE_CHAR_H
+#ifndef STONE_CORE_CHAR_H
+#define STONE_CORE_CHAR_H
 
 #include "stone/Core/LLVM.h"
 #include "llvm/ADT/StringRef.h"

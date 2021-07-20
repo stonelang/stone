@@ -1,5 +1,5 @@
-#ifndef STONE_ANALYZE_CHECKERPIPELINE_H
-#define STONE_ANALYZE_CHECKERPIPELINE_H
+#ifndef STONE_COMPILE_CHECKERPIPELINE_H
+#define STONE_COMPILE_CHECKERPIPELINE_H
 
 #include "stone/Core/PipelineEngine.h"
 #include "stone/Syntax/Decl.h"

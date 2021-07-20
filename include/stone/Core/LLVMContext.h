@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_LLVMCTX_H
-#define STONE_BASIC_LLVMCTX_H
+#ifndef STONE_CORE_LLVMCTX_H
+#define STONE_CORE_LLVMCTX_H
 
 #include "llvm/IR/LLVMContext.h"
 

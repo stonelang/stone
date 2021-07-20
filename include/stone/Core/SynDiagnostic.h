@@ -1,5 +1,5 @@
-#ifndef STONE_SYNDIAGNOSTIC_H
-#define STONE_SYNDIAGNOSTIC_H
+#ifndef STONE_CORE_SYNDIAGNOSTIC_H
+#define STONE_CORE_SYNDIAGNOSTIC_H
 
 #include "stone/Core/CoreDiagnostic.h"
 

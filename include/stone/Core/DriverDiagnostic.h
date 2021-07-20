@@ -1,5 +1,5 @@
-#ifndef STONE_DRIVERDIAGNOSTIC_H
-#define STONE_DRIVERDIAGNOSTIC_H
+#ifndef STONE_CORE_DRIVERDIAGNOSTIC_H
+#define STONE_CPRE_DRIVERDIAGNOSTIC_H
 
 #include "stone/Core/CoreDiagnostic.h"
 

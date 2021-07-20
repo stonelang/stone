@@ -1,5 +1,5 @@
-#ifndef STONE_SYSTEM_MEMORY_H
-#define STONE_SYSTEM_MEMORY_H
+#ifndef STONE_CORE_MEMORY_H
+#define STONE_CORE_MEMORY_H
 
 #include <cassert>
 #if defined(_WIN32)

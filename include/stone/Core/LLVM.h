@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_LLVM_H
-#define STONE_BASIC_LLVM_H
+#ifndef STONE_CORE_LLVM_H
+#define STONE_CORE_LLVM_H
 
 // Do not proliferate #includes here, require clients to #include their
 // dependencies.

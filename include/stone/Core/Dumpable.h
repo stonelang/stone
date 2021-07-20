@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DUMPABLE_H
-#define STONE_BASIC_DUMPABLE_H
+#ifndef STONE_CORE_DUMPABLE_H
+#define STONE_CORE_DUMPABLE_H
 
 namespace stone {
 class Dumpable {

@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_HOST_H
-#define STONE_BASIC_HOST_H
+#ifndef STONE_CORE_HOST_H
+#define STONE_CORE_HOST_H
 
 namespace stone {
 

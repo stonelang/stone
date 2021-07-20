@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DIAGNOSTICARGUMENT_H
-#define STONE_BASIC_DIAGNOSTICARGUMENT_H
+#ifndef STONE_CORE_DIAGNOSTICARGUMENT_H
+#define STONE_CORE_DIAGNOSTICARGUMENT_H
 
 #include "stone/Core/TokenType.h"
 #include "llvm/ADT/StringRef.h"

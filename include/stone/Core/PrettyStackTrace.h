@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_PRETTYSTACKTRACE_H
-#define STONE_BASIC_PRETTYSTACKTRACE_H
+#ifndef STONE_CORE_PRETTYSTACKTRACE_H
+#define STONE_CORE_PRETTYSTACKTRACE_H
 
 #include "stone/Core/SrcLoc.h"
 #include "llvm/Support/PrettyStackTrace.h"

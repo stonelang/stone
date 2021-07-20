@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_ADDRESSPACE_H
-#define STONE_BASIC_ADDRESSPACE_H
+#ifndef STONE_CORE_ADDRESSPACE_H
+#define STONE_CORE_ADDRESSPACE_H
 
 namespace stone {
 class AddressSpace {};

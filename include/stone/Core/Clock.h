@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_CLOCK_H
-#define STONE_BASIC_CLOCK_H
+#ifndef STONE_CORE_CLOCK_H
+#define STONE_CORE_CLOCK_H
 
 #include <iostream>
 

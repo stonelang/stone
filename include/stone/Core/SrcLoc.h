@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_SRCLOC_H
-#define STONE_BASIC_SRCLOC_H
+#ifndef STONE_CORE_SRCLOC_H
+#define STONE_CORE_SRCLOC_H
 
 #include "stone/Core/LLVM.h"
 
@@ -520,4 +520,4 @@ template <> struct PointerLikeTypeTraits<stone::SrcLoc> {
 
 } // namespace llvm
 
-#endif // LLVM_CLANG_BASIC_SOURCELOCATION_H
+#endif // LLVM_CLANG_CORE_SOURCELOCATION_H

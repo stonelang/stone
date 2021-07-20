@@ -31,8 +31,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef STONE_BASIC_SOURCEMANAGER_H
-#define STONE_BASIC_SOURCEMANAGER_H
+#ifndef STONE_CORE_SOURCEMANAGER_H
+#define STONE_CORE_SOURCEMANAGER_H
 
 #include <cassert>
 #include <cstddef>
@@ -1838,4 +1838,4 @@ private:
 
 } // namespace stone
 
-#endif // LLVM_CLANG_BASIC_SOURCEMANAGER_H
+#endif // LLVM_CLANG_CORE_SOURCEMANAGER_H

@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_FILEMANAGER_H
-#define STONE_BASIC_FILEMANAGER_H
+#ifndef STONE_CORE_FILEMANAGER_H
+#define STONE_CORE_FILEMANAGER_H
 
 #include <ctime>
 #include <map>
@@ -205,4 +205,4 @@ public:
 
 } // end namespace stone
 
-#endif // LLVM_CLANG_BASIC_FILEMANAGER_H
+#endif // LLVM_CLANG_CORE_FILEMANAGER_H

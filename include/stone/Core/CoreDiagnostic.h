@@ -1,5 +1,5 @@
-#ifndef STONE_COREDIAGNOSTIC_H
-#define STONE_COREDIAGNOSTIC_H
+#ifndef STONE_CORE_COREDIAGNOSTIC_H
+#define STONE_CORE_COREDIAGNOSTIC_H
 
 #include "stone/Core/DiagnosticArgument.h"
 #include "stone/Core/LLVM.h"

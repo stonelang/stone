@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_OUTPUTFILE_H
-#define STONE_COMPILE_OUTPUTFILE_H
+#ifndef STONE_CORE_OUTPUTFILE_H
+#define STONE_CORE_OUTPUTFILE_H
 
 #include "stone/Core/File.h"
 #include "llvm/Support/FileSystem.h"

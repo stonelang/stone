@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_PRINTABLE_H
-#define STONE_BASIC_PRINTABLE_H
+#ifndef STONE_CORE_PRINTABLE_H
+#define STONE_CORE_PRINTABLE_H
 
 #include "stone/Core/Color.h"
 #include "llvm/Support/raw_ostream.h"

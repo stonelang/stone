@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DROPABLE_H
-#define STONE_BASIC_DROPABLE_H
+#ifndef STONE_CORE_DROPABLE_H
+#define STONE_CORE_DROPABLE_H
 
 namespace stone {
 class Dropable {

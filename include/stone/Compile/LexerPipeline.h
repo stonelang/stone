@@ -1,5 +1,5 @@
-#ifndef STONE_ANALYZE_LEXERPIPELINE_H
-#define STONE_ANALYZE_LEXERPIPELINE_H
+#ifndef STONE_COMPILE_LEXERPIPELINE_H
+#define STONE_COMPILE_LEXERPIPELINE_H
 
 #include "stone/Compile/Token.h"
 #include "stone/Core/PipelineEngine.h"
