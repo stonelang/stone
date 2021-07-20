@@ -1,5 +1,7 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/TextDiagnosticEmitter.h"
+
 #include "stone/Basic/Ret.h"
 
 #include "llvm/Support/BuryPointer.h"
