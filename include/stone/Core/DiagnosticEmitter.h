@@ -17,7 +17,10 @@ public:
   virtual void EmitLoc();
 
 public:
-  DiagnosticListener *GetListener() { return listener; }
+  DiagnosticListener *GetListener() { 
+    assert(listener && "A 'DiagnosticEmitter' must be associated with a 'DiagnosticListener'")
+    return listener; 
+  }
 };
 } // namespace stone
 #endif

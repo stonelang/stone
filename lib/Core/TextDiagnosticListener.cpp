@@ -16,5 +16,4 @@ void TextDiagnosticListener::Listen(diag::Level level,
   emitter.reset(new TextDiagnosticEmitter(this));
 
   emitter->EmitMessage();
-  
 }
