@@ -3,14 +3,14 @@ set(LLVM_LINK_COMPONENTS
   Support
 )
 
-add_stone_unittest(StoneBasicUnitTests
+add_stone_unittest(StoneCoreUnitTests
 	BuiltinTest.cpp
   DiagTest.cpp
 	FileMgrTest.cpp
 	SrcMgrTest.cpp
 )
-target_link_libraries(StoneBasicUnitTests
+target_link_libraries(StoneCoreUnitTests
   PRIVATE
-	StoneBasic
+	StoneCore
 )
 

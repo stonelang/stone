@@ -19,8 +19,7 @@ set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/try/*.cpp
 )
 set(stone_tests_files
-	${STONE_SOURCE_DIR}/tests/units/Analyze/*.cpp 
-	${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Core/*.cpp 
 	${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
 )
 find_program(CLANG_FORMAT clang-format)
