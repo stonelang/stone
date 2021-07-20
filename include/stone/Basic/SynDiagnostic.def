@@ -88,7 +88,7 @@ ERROR(err_unicode_escape_braces,none,
 //==============================================================================
 
 NOTE(note_prev_decl_def,none,
-     "previous definition of %0 is here", (diag::ComplexArgument))
+     "previous definition of %0 is here", (diag::SyntaxArgument))
 
 ERROR(err_case_stmt_without_body,none,
       "%select{'case'|'default'}0 label in a 'match' should have at least one "

@@ -15,20 +15,6 @@ namespace stone {
 class DiagnosticEngine;
 
 namespace diag {
-enum class SyntaxArgumentType { Decl, DeclContext, Type, Identifier };
-
-// TODO: Hmmm...I mal only need SyntaxArgument(SyntaxArgType ty, const void*
-// val)
-//  Example call: diag::SyntaxArg(SyntaxArgType::Decl, theDecl);
-struct SyntaxArgument : public ComplexArgument {
-  SyntaxArgumentType synTy;
-
-public:
-  SyntaxArgument() = delete;
-  explicit SyntaxArgument(SyntaxArgumentType synTy, const void *val)
-      : ComplexArgument(ComplexArgumentType::Syntax, val), synTy(synTy) {}
-  SyntaxArgumentType GetSyntaxArgumentType() { return synTy; }
-};
 
 struct DeclArgument final : public SyntaxArgument {
 

@@ -148,18 +148,19 @@ public:
   tk::Type GetVal() const { return val; }
 };
 
-enum class ComplexArgumentType { None, Syntax };
-struct ComplexArgument : public Argument {
+enum class SyntaxArgumentType { None, Decl, DeclContext, Type, Identifier };
+
+struct SyntaxArgument : public Argument {
   const void *val;
-  ComplexArgumentType ty;
+  SyntaxArgumentType ty = SyntaxArgumentType::None;
 
 public:
-  ComplexArgument() = delete;
-  explicit ComplexArgument(ComplexArgumentType ty, const void *val)
+  SyntaxArgument() = delete;
+  explicit SyntaxArgument(SyntaxArgumentType ty, const void *val)
       : Argument(ArgumentType::Complex), ty(ty) {}
 
   const void *GetVal() const { return val; }
-  ComplexArgumentType GetComplexArgumentType() { return ty; }
+  SyntaxArgumentType GetSyntaxArgumentType() { return ty; }
 };
 
 } // namespace diag
