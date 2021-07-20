@@ -17,35 +17,42 @@ class DiagnosticEngine;
 namespace diag {
 enum class SyntaxArgumentType { Decl, DeclContext, Type, Identifier };
 
+// TODO: Hmmm...I mal only need SyntaxArg(SyntaxArgType ty, const void* val)
+//  Example call: diag::SyntaxArg(SyntaxArgType::Decl, theDecl);
 struct SyntaxArgument : public ComplexArgument {
   SyntaxArgumentType synTy;
 
 public:
-  SyntaxArgument(SyntaxArgumentType synType, const void *val)
+  SyntaxArgument() = delete;
+  explicit SyntaxArgument(SyntaxArgumentType synTy, const void *val)
       : ComplexArgument(val), synTy(synTy) {}
+  SyntaxArgumentType GetSyntaxArgumentType() { return synTy; }
 };
 
 struct DeclArgument final : public SyntaxArgument {
-public:
-  DeclArgument(const syn::Decl *val)
+
+  DeclArgument() = delete;
+  explicit DeclArgument(const syn::Decl *val)
       : SyntaxArgument(SyntaxArgumentType::Decl, val) {}
 };
 
 struct DeclContextArgument final : public SyntaxArgument {
-public:
-  DeclContextArgument(const syn::DeclContext *val)
+
+  DeclContextArgument() = delete;
+  explicit DeclContextArgument(const syn::DeclContext *val)
       : SyntaxArgument(SyntaxArgumentType::DeclContext, val) {}
 };
 
 struct IdentifierArgument final : public SyntaxArgument {
-public:
-  IdentifierArgument(const syn::Identifier *val)
+
+  IdentifierArgument() = delete;
+  explicit IdentifierArgument(const syn::Identifier *val)
       : SyntaxArgument(SyntaxArgumentType::Identifier, val) {}
 };
 
 struct TypeArgument final : public SyntaxArgument {
-public:
-  TypeArgument(const syn::Type *val)
+  TypeArgument() = delete;
+  explicit TypeArgument(const syn::Type *val)
       : SyntaxArgument(SyntaxArgumentType::Type, val) {}
 };
 

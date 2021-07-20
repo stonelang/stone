@@ -30,6 +30,8 @@ namespace diag {
 enum class ArgumentType {
   /// No argument
   None,
+
+  Bool,
   /// std::string
   STDStr,
 
@@ -52,25 +54,35 @@ enum class ArgumentType {
 
 };
 
-struct Argument {
+enum { ArgumentAlignment = 8 };
+
+struct alignas(ArgumentAlignment) Argument {
+private:
   ArgumentType ty;
-  friend class DiagnosticContext;
-  Argument() {}
-  int place;
 
 public:
-  Argument(ArgumentType ty) : ty(ty) {}
-
-public:
+  Argument() = delete;
+  explicit Argument(ArgumentType ty) : ty(ty) {}
   ArgumentType GetType() { return ty; }
-  int GetPlace() { return place; }
+};
+
+struct BoolArgument final : public Argument {
+private:
+  const bool val;
+
+public:
+  BoolArgument() = delete;
+  explicit BoolArgument(bool val) : Argument(ArgumentType::Bool), val(val) {}
 };
 
 struct STDStrArgument final : public Argument {
+private:
   const std::string val;
 
 public:
-  STDStrArgument(const std::string val)
+  STDStrArgument() = delete;
+
+  explicit STDStrArgument(const std::string val)
       : Argument(ArgumentType::STDStr), val(val) {}
 
 public:
@@ -78,10 +90,14 @@ public:
 };
 
 struct LLVMStrArgument final : public Argument {
+
+private:
   const std::string val;
 
 public:
-  LLVMStrArgument(const llvm::StringRef val)
+  LLVMStrArgument() = delete;
+
+  explicit LLVMStrArgument(const llvm::StringRef val)
       : Argument(ArgumentType::LLVMStr), val(val) {}
 
 public:
@@ -92,9 +108,10 @@ struct CStrArgument final : public Argument {
   const char *val;
 
 public:
-  CStrArgument(const char *val) : Argument(ArgumentType::CStr), val(val) {}
+  CStrArgument() = delete;
 
-public:
+  explicit CStrArgument(const char *val)
+      : Argument(ArgumentType::CStr), val(val) {}
   const char *GetVal() const { return val; }
 };
 
@@ -102,9 +119,11 @@ struct SIntArgument final : public Argument {
   const int val;
 
 public:
-  SIntArgument(const int val) : Argument(ArgumentType::SInt), val(val) {}
+  SIntArgument() = delete;
 
-public:
+  explicit SIntArgument(const int val)
+      : Argument(ArgumentType::SInt), val(val) {}
+
   int GetVal() const { return val; }
 };
 
@@ -112,9 +131,9 @@ struct UIntArgument final : public Argument {
   unsigned val;
 
 public:
-  UIntArgument(const unsigned val) : Argument(ArgumentType::UInt), val(val) {}
-
-public:
+  UIntArgument() = delete;
+  explicit UIntArgument(const unsigned val)
+      : Argument(ArgumentType::UInt), val(val) {}
   unsigned GetVal() const { return val; }
 };
 
@@ -122,19 +141,22 @@ struct TokenTypeArgument final : public Argument {
   tk::Type val;
 
 public:
-  TokenTypeArgument(const tk::Type val)
-      : Argument(ArgumentType::TokenType), val(val) {}
+  TokenTypeArgument() = delete;
 
-public:
+  explicit TokenTypeArgument(const tk::Type val)
+      : Argument(ArgumentType::TokenType), val(val) {}
   tk::Type GetVal() const { return val; }
 };
 
+// TODO: Think about -- it may be better to have ComplexArgumentType { Decl,
+// Type, ...}
+// here since they are not the actual types.
 struct ComplexArgument : public Argument {
   const void *val;
 
 public:
-  ComplexArgument(const void *val) : Argument(ArgumentType::Complex) {}
-
+  ComplexArgument() = delete;
+  explicit ComplexArgument(const void *val) : Argument(ArgumentType::Complex) {}
   const void *GetVal() const { return val; }
 };
 } // namespace diag

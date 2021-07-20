@@ -5,7 +5,7 @@
 #include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Syntax/SyntaxDiagArgument.h"
 
-using stone::DeclDiagnosticArgument;
+using stone::diag::DeclArgument;
 
 #include "gtest/gtest.h"
 
@@ -32,8 +32,7 @@ TEST_F(DiagTest, BasicTest) {
   //     << "test with blank 'SrcLoc'";
 
   basic.GetDiagEngine()
-      .Diagnose(SrcLoc(), diag::note_prev_decl_def,
-                DeclDiagnosticArgument(nullptr))
+      .Diagnose(SrcLoc(), diag::note_prev_decl_def, diag::DeclArgument(nullptr))
       .GetFixer()
       .Replace(SrcLoc(), llvm::StringRef());
 }
