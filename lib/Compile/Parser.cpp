@@ -6,6 +6,7 @@
 #include "stone/Compile/CheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
 
 using namespace stone;
 using namespace stone::syn;
