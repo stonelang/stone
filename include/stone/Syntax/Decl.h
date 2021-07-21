@@ -8,8 +8,8 @@
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/ArrayRef.h"

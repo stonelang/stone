@@ -9,6 +9,6 @@ public:
   LexerCache();
   ~LexerCache();
 };
-}
-}
+} // namespace syn
+} // namespace stone
 #endif

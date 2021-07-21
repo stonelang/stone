@@ -22,8 +22,8 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/StmtBits.h"
+#include "stone/Syntax/SyntaxNode.h"
 
 namespace stone {
 class SrcMgr;

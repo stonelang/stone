@@ -62,14 +62,14 @@
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
 #include "llvm/Transforms/Instrumentation/MemorySanitizer.h"
 //#include "llvm/Transforms/Instrumentation/SanitizerCoverage.h"
-#include "llvm/Transforms/Utils/CanonicalizeAliases.h"
-#include "llvm/Transforms/Utils/EntryExitInstrumenter.h"
-#include "llvm/Transforms/Utils/NameAnonGlobals.h"
-#include "llvm/Transforms/Utils/SymbolRewriter.h"
 #include "llvm/Transforms/Instrumentation/ThreadSanitizer.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/Transforms/Utils.h"
+#include "llvm/Transforms/Utils/CanonicalizeAliases.h"
+#include "llvm/Transforms/Utils/EntryExitInstrumenter.h"
+#include "llvm/Transforms/Utils/NameAnonGlobals.h"
+#include "llvm/Transforms/Utils/SymbolRewriter.h"
 // TODO: #include "llvm/Transforms/Basic/UniqueInternalLinkageNames.h"
 
 #include <memory>

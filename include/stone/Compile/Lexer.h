@@ -4,21 +4,19 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Compile/LexerCache.h"
 #include "stone/Compile/Token.h"
 #include "stone/Compile/Trivia.h"
-#include "stone/Compile/LexerCache.h"
 
 namespace stone {
 
 class SrcID;
 class SrcMgr;
 class Token;
-class LangOptions;
 class LexerPipeline;
 
 namespace syn {
 class Token;
-
 enum class TriviaRetentionMode {
   Without,
   With,
@@ -45,8 +43,8 @@ class Lexer final {
   SrcMgr &sm;
 
   Basic &basic;
-  LexerCache cache; 
-  
+  LexerCache cache;
+
   std::unique_ptr<LexerStats> stats;
 
   /// Pointer to the first character of the buffer, even in a lexer that

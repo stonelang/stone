@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Stats.h"
 #include "stone/Compile/Lexer.h"
+#include "stone/Compile/SyntaxScopeCache.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
@@ -20,7 +21,7 @@ namespace syn {
 
 class Syntax;
 class Parser;
-class Scope;
+class SyntaxScope;
 class PairDelimiterBalancer;
 class ParsingDeclSpecifier;
 
@@ -39,6 +40,7 @@ class Parser final {
 
   Syntax &syntax;
   SyntaxFile &sf;
+  SyntaxScopeCache syntaxScopeCache;
   ParserPipeline *pipeline;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
@@ -64,7 +66,7 @@ class Parser final {
   /// ScopeCache - cache scopes to reduce malloc traffic.
   enum { scopeCacheSize = 16 };
   unsigned numCachedScopes;
-  Scope *scopeCache[scopeCacheSize];
+  SyntaxScope *scopeCache[scopeCacheSize];
 
   /// We may consider performing type-checking during parsing
   // std::unique_ptr<Checker> checker;
@@ -283,7 +285,7 @@ public:
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
 
-  syn::Scope *GetCurScope() const;
+  SyntaxScope *GetCurScope() const;
 
 public:
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID);

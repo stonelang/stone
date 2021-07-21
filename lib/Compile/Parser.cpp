@@ -4,8 +4,8 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CheckerPipeline.h"
-#include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxScope.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -35,9 +35,12 @@ void Parser::Init() {
   // ConsumeTok();
 }
 
-// TODO:
-syn::Scope *Parser::GetCurScope() const { return nullptr; }
 Parser::~Parser() {}
+
+SyntaxScope *Parser::GetCurScope() const {
+  assert(false && "Not implemented");
+  return nullptr;
+}
 
 bool Parser::HasError() { return GetBasic().HasError(); }
 Basic &Parser::GetBasic() { return syntax.GetTreeContext().GetBasic(); }
