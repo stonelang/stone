@@ -15,10 +15,10 @@ set(stone_syn_sources
 	Identifier.cpp
 	Module.cpp
 	Stmt.cpp
-	Scope.cpp
 	Syntax.cpp
 	SyntaxBuilder.cpp
 	SyntaxDiagArgument.cpp
+	SyntaxScope.cpp
 	Template.cpp
 	TreeContext.cpp
 	Type.cpp

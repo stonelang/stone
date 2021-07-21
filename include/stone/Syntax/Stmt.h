@@ -22,7 +22,7 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/Node.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/StmtBits.h"
 
 namespace stone {
@@ -37,7 +37,7 @@ class StringLiteral;
 
 class TreeContext;
 
-class Stmt : public syn::Node {
+class Stmt : public SyntaxNode {
 public:
   enum Type {};
 

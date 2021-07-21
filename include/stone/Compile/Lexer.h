@@ -6,6 +6,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/Token.h"
 #include "stone/Compile/Trivia.h"
+#include "stone/Compile/LexerCache.h"
 
 namespace stone {
 
@@ -44,6 +45,8 @@ class Lexer final {
   SrcMgr &sm;
 
   Basic &basic;
+  LexerCache cache; 
+  
   std::unique_ptr<LexerStats> stats;
 
   /// Pointer to the first character of the buffer, even in a lexer that

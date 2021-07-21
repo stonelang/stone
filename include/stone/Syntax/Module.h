@@ -6,7 +6,7 @@
 #include "stone/Basic/Printable.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/Scope.h"
+#include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/TreeContext.h"
 #include "stone/Syntax/Walker.h"
 #include "llvm/ADT/SmallVector.h"
@@ -46,7 +46,7 @@ public:
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
   friend TreeContext;
-  // llvm::NullablePtr<TreeScope> scope = nullptr;
+  // llvm::NullablePtr<SyntaxScope> scope = nullptr;
   bool isPrimary;
 
   const SrcID srcID;

@@ -1,9 +1,9 @@
-#ifndef STONE_SYNTAX_SCOPE_H
-#define STONE_SYNTAX_SCOPE_H
+#ifndef STONE_SYNTAX_SYNTAXSCOPE_H
+#define STONE_SYNTAX_SYNTAXSCOPE_H
 
 namespace stone {
 namespace syn {
-class Scope final {
+class SyntaxScope final {
 public:
   enum Bits {
     /// This indicates that the scope corresponds to a function, which
@@ -60,6 +60,8 @@ public:
     /// scope.
     Interface = 0x800000,
   };
+  SyntaxScope();
+  ~SyntaxScope();
 };
 } // namespace syn
 } // namespace stone

@@ -21,6 +21,7 @@ set(stone_compile_sources
 	CheckExpr.cpp
 	CheckStmt.cpp
 	Lexer.cpp
+	LexerCache.cpp
 	Parse.cpp
 	ParseDecl.cpp
 	Parser.cpp

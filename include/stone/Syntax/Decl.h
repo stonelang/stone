@@ -8,7 +8,7 @@
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/Node.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Type.h"
 
@@ -52,7 +52,7 @@ public:
 
 enum { DeclAlignment = 8 };
 
-class alignas(DeclAlignment) Decl : public syn::Node {
+class alignas(DeclAlignment) Decl : public SyntaxNode {
 public:
   enum Type {
     None,
@@ -437,20 +437,20 @@ enum class UseDeclType : uint8_t {
   Module = 0,
 
   //// use STD.Time.Month;
-  EnumMember,
+  Enum,
 
-  /// use Lang.IO.OutputStream;
+  /// use STD.IO.OutputStream;
   Struct,
 
-  /// use Lang.IO.Stream;
+  /// use STD.IO.Stream;
   Interface,
 
-  /// fun Main() -> int { use Lang.Math.Min;  auto min = Min<AnyType>(first,
+  /// fun Main() -> int { use STD.Math.Min;  auto min = Min<AnyType>(first,
   /// second); }
   Fun,
 
-  // use Stream = Lang.IO.Stream;
-  // use Min = Lang.Main.Min(first, second);  // TODO: Think
+  // use Stream = STD.IO.Stream;
+  // use Min = STD.Main.Min(first, second);  // TODO: Think
   Alias,
 };
 

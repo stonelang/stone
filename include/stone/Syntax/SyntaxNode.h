@@ -4,7 +4,7 @@
 namespace stone {
 namespace syn {
 
-class Node {
+class SyntaxNode {
 public:
 };
 

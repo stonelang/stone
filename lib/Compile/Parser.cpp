@@ -4,7 +4,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CheckerPipeline.h"
-#include "stone/Syntax/Scope.h"
+#include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
