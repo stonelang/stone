@@ -17,8 +17,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenType.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/SyntaxDiagArgument.h"
-//#include "stone/Syntax/OperatorKinds.h"
+//#include "stone/Syntax/OperatorKind.h"
 //#include "stone/Syntax/Specifiers.h"
 
 using namespace stone;

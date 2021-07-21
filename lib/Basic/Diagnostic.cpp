@@ -25,7 +25,7 @@ void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
     // Ignore and handle elswhere
     break;
   default:
-    // Should not get here 
+    // Should not get here
     break;
   }
 }

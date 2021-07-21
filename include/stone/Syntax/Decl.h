@@ -54,8 +54,8 @@ public:
 
 enum { DeclAlignment = 8 };
 
-class alignas(DeclAlignment) Decl : public SyntaxNode,
-                                    /*public diag::SyntaxDiagnosticArgument*/ {
+class alignas(DeclAlignment) Decl : public SyntaxNode
+/*public diag::SyntaxDiagnosticArgument*/ {
 
   friend DeclStats;
 

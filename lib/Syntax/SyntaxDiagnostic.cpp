@@ -1,4 +1,4 @@
-#include "stone/Syntax/SyntaxDiagArgument.h"
+#include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Basic/DiagnosticEngine.h"
 
 using stone::SyntaxDiagnostic;
@@ -6,6 +6,14 @@ using stone::SyntaxDiagnostic;
 void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                               const DiagnosticFormatOptions &fmtOptions) const {
 
+  diag::SyntaxArgumentKind kind = diag::SyntaxArgumentKind::None;
+  switch (kind) {
+  case diag::SyntaxArgumentKind::Decl:
+    break;
+  default:
+    // Should not get here
+    break;
+  }
 }
 
 /// Format the given format-string into the output buffer using the

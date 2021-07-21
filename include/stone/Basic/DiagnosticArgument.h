@@ -115,7 +115,7 @@ public:
   const char *GetVal() const { return val; }
 };
 
-struct SIntArgument final : public DiagnosticArgument {
+struct SIntArgument final : public Argument {
   const int val;
 
 public:
