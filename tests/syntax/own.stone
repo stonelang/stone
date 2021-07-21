@@ -1,7 +1,11 @@
 
 public struct S0 {
+	public own S1* s1 = null; 
 }
 
+S0::S0(own S1* s) {
+	s1(move s); 
+}
 fun F0(own S0* s) -> void {
 	
 	S0 s0(move s); 

@@ -21,12 +21,12 @@ void *ModuleFile::operator new(size_t bytes, TreeContext &tc,
 }
 
 ModuleFile::ModuleFile(ModuleFile::Kind kind, Module &owner)
-    : DeclContext(DeclContext::Type::File, Decl::Type::None, &owner),
+    : DeclContext(DeclContext::Type::File, DeclType::None, &owner),
       kind(kind) {}
 
 Module::Module(Identifier &name, TreeContext &tc)
-    : DeclContext(DeclContext::Type::Decl, Decl::Type::Module),
-      TypeDecl(Decl::Type::Module, SrcLoc(),
+    : DeclContext(DeclContext::Type::Decl, DeclType::Module),
+      TypeDecl(DeclType::Module, SrcLoc(),
                nullptr /*TODO: pass DeclContext*/) {
 
   // TODO: SetDeclName(name);

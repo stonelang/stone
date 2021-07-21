@@ -21,7 +21,7 @@ space Physics.QM {
 
 	public LinearAccelerator::~LinearAccelerator() {
 		if(detector) {
-			free detector;
+			delete detector;
 		}
 	}	
 	public fun LinearAcellerator::Fire(const Particle* p) -> bool {
@@ -35,8 +35,8 @@ space Physics.QM {
 		auto a = new LinearAcceleartor(); 
 		a.Fire(a);
 
-		free p; 
-		free a;
+		delete p; 
+		delete a;
 	}
 
 }

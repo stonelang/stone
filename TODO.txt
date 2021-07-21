@@ -7,3 +7,5 @@ compile(1): {sample.stone} -> object
 link: {compile(0),compile(1)} -> image 
 
 3. Implement LinkType 
+
+4. Foreign 

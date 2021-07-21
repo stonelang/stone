@@ -18,7 +18,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-DeclContext::DeclContext(DeclContext::Type dcTy, Decl::Type dTy,
+DeclContext::DeclContext(DeclContext::Type dcTy, DeclType dTy,
                          DeclContext *parent)
     : dcTy(dcTy), dTy(dTy), parent(parent) {
   // declContextBits.DeclType = ty;

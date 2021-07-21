@@ -1,7 +1,10 @@
 " Vim syntax file
-" Language:     Stone
-" Maintainer:   
-" For bugs, patches and license go to https://github.com/stonelang/stone/stone.vim
+" Language:     Rust
+" Maintainer:   Patrick Walton <pcwalton@mozilla.com>
+" Maintainer:   Ben Blum <bblum@cs.cmu.edu>
+" Maintainer:   Chris Morgan <me@chrismorgan.info>
+" Last Change:  Feb 24, 2016
+" For bugs, patches and license go to https://github.com/stone-lang/stone.vim
 
 if version < 600
 	syntax clear
@@ -23,15 +26,15 @@ syn keyword   stoneOperator    as
 syn match     stoneAssert      "\<assert\(\w\)*!" contained
 syn match     stonePanic       "\<panic\(\w\)*!" contained
 syn keyword   stoneKeyword     break 
-syn keyword   stoneKeyword     continue new property free self space module import with
+syn keyword   stoneKeyword     continue new property free delete self space module import with
 syn keyword   stoneKeyword     extern nextgroup=stoneExternCrate,stoneObsoleteExternMod skipwhite skipempty
 syn keyword   stoneKeyword     fun nextgroup=stoneFunctionName skipwhite skipempty
 syn keyword   stoneKeyword     prop nextgroup=stonePropType skipwhite skipempty
 
 syn keyword   stoneKeyword     in is this private protected public pin safe 
-syn keyword		stoneKeyword		 auto any  final free  
+syn keyword		stoneKeyword		 auto result any template final free  
 syn keyword   stoneKeyword     public  nextgroup=stonePubScope skipwhite skipempty
-syn keyword   stoneKeyword     return void object using  null 
+syn keyword   stoneKeyword     return void object using  null Init Drop 
 syn keyword   stoneSuper       super
 syn keyword   stoneKeyword     where safe pint own stone get mutable inline case default
 syn keyword   stoneKeyword     use nextgroup=stoneModPath skipwhite skipempty
@@ -147,7 +150,7 @@ syn region    stoneAttribute   start="#!\?\[" end="\]" contains=stoneString,ston
 syn region    stoneDerive      start="derive(" end=")" contained contains=stoneDeriveInterface
 " This list comes from src/libsyntax/ext/deriving/mod.rs
 " Some are deprecated (Encodable, Decodable) or to be removed after a new snapshot (Show).
-syn keyword   stoneDeriveInterface contained Clone Hash  Encodable DecodableDebug Default Send Sync Copy
+syn keyword   stoneDeriveInterface contained Clone Hash RustcEncodable RustcDecodable Encodable Decodable PartialEq Eq PartialOrd Ord Rand Show Debug Default FromPrimitive Send Sync Copy
 
 " Number literals
 syn match     stoneDecNumber   display "\<[0-9][0-9_]*\%([iu]\%(size\|8\|16\|32\|64\|128\)\)\="
