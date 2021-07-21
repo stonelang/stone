@@ -9,22 +9,23 @@ using stone::InFlightDiagnostic;
 void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                         const DiagnosticFormatOptions &fmtOptions) const {
 
-  diag::ArgumentType argTy = diag::ArgumentType::None;
-  switch (argTy) {
-  case diag::ArgumentType::STDStr:
+  diag::ArgumentKind kind = diag::ArgumentKind::None;
+  switch (kind) {
+  case diag::ArgumentKind::STDStr:
     break;
-  case diag::ArgumentType::LLVMStr:
+  case diag::ArgumentKind::LLVMStr:
     break;
-  case diag::ArgumentType::SInt:
+  case diag::ArgumentKind::SInt:
     break;
-  case diag::ArgumentType::UInt:
+  case diag::ArgumentKind::UInt:
     break;
-  case diag::ArgumentType::TokenType:
+  case diag::ArgumentKind::TokenType:
     break;
-  case diag::ArgumentType::Custom:
+  case diag::ArgumentKind::Syntax:
     // Ignore and handle elswhere
     break;
   default:
+    // Should not get here 
     break;
   }
 }

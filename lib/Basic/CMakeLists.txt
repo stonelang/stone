@@ -15,6 +15,7 @@ set(stone_utils_sources
 	DiagIDList.cpp
 	Diagnostic.cpp
 	DiagnosticEmitter.cpp
+	DiagnosticFormatter.cpp
 	DiagnosticEngine.cpp
 	DiagnosticListener.cpp
 	DirScanner.cpp
@@ -30,6 +31,7 @@ set(stone_utils_sources
 	SrcMgr.cpp
 	Stats.cpp
 	TextDiagnosticEmitter.cpp
+	TextDiagnosticFormatter.cpp
 	TextDiagnosticListener.cpp
 	TokenType.cpp
 	UnixDirWatcher.cpp

@@ -27,7 +27,7 @@ template <typename... argTypes> struct Diag {
 };
 
 namespace diag {
-enum class ArgumentType {
+enum class ArgumentKind {
   /// No argument
   None,
 
@@ -50,7 +50,7 @@ enum class ArgumentType {
   TokenType,
 
   /// custom argument
-  Custom,
+  Syntax,
 
 };
 
@@ -58,12 +58,12 @@ enum { ArgumentAlignment = 8 };
 
 struct alignas(ArgumentAlignment) Argument {
 private:
-  ArgumentType ty;
+  ArgumentKind kind = ArgumentKind::None;
 
 public:
   Argument() = delete;
-  explicit Argument(ArgumentType ty) : ty(ty) {}
-  ArgumentType GetType() { return ty; }
+  explicit Argument(ArgumentKind kind) : kind(kind) {}
+  ArgumentKind GetKind() { return kind; }
 };
 
 struct BoolArgument final : public Argument {
@@ -72,7 +72,7 @@ private:
 
 public:
   BoolArgument() = delete;
-  explicit BoolArgument(bool val) : Argument(ArgumentType::Bool), val(val) {}
+  explicit BoolArgument(bool val) : Argument(ArgumentKind::Bool), val(val) {}
 };
 
 struct STDStrArgument final : public Argument {
@@ -83,7 +83,7 @@ public:
   STDStrArgument() = delete;
 
   explicit STDStrArgument(const std::string val)
-      : Argument(ArgumentType::STDStr), val(val) {}
+      : Argument(ArgumentKind::STDStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
@@ -98,7 +98,7 @@ public:
   LLVMStrArgument() = delete;
 
   explicit LLVMStrArgument(const llvm::StringRef val)
-      : Argument(ArgumentType::LLVMStr), val(val) {}
+      : Argument(ArgumentKind::LLVMStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
@@ -111,18 +111,18 @@ public:
   CStrArgument() = delete;
 
   explicit CStrArgument(const char *val)
-      : Argument(ArgumentType::CStr), val(val) {}
+      : Argument(ArgumentKind::CStr), val(val) {}
   const char *GetVal() const { return val; }
 };
 
-struct SIntArgument final : public Argument {
+struct SIntArgument final : public DiagnosticArgument {
   const int val;
 
 public:
   SIntArgument() = delete;
 
   explicit SIntArgument(const int val)
-      : Argument(ArgumentType::SInt), val(val) {}
+      : Argument(ArgumentKind::SInt), val(val) {}
 
   int GetVal() const { return val; }
 };
@@ -133,7 +133,7 @@ struct UIntArgument final : public Argument {
 public:
   UIntArgument() = delete;
   explicit UIntArgument(const unsigned val)
-      : Argument(ArgumentType::UInt), val(val) {}
+      : Argument(ArgumentKind::UInt), val(val) {}
   unsigned GetVal() const { return val; }
 };
 
@@ -144,23 +144,20 @@ public:
   TokenTypeArgument() = delete;
 
   explicit TokenTypeArgument(const tk::Type val)
-      : Argument(ArgumentType::TokenType), val(val) {}
+      : Argument(ArgumentKind::TokenType), val(val) {}
   tk::Type GetVal() const { return val; }
 };
 
-enum class SyntaxArgumentType { None, Decl, DeclContext, Type, Identifier };
+enum class SyntaxArgumentKind { None, Decl, DeclContext, Type, Identifier };
 
 struct SyntaxArgument : public Argument {
-  const void *val;
-  SyntaxArgumentType ty = SyntaxArgumentType::None;
+  SyntaxArgumentKind kind = SyntaxArgumentKind::None;
 
 public:
   SyntaxArgument() = delete;
-  explicit SyntaxArgument(SyntaxArgumentType ty, const void *val)
-      : Argument(ArgumentType::Custom), ty(ty) {}
-
-  const void *GetVal() const { return val; }
-  SyntaxArgumentType GetSyntaxArgumentType() { return ty; }
+  explicit SyntaxArgument(SyntaxArgumentKind kind)
+      : Argument(ArgumentKind::Syntax), kind(kind) {}
+  SyntaxArgumentKind GetSyntaxArgumentKind() { return kind; }
 };
 
 } // namespace diag

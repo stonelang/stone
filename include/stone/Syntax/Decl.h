@@ -3,6 +3,7 @@
 
 #include "stone/Basic/AddressSpace.h"
 
+#include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"
@@ -53,7 +54,8 @@ public:
 
 enum { DeclAlignment = 8 };
 
-class alignas(DeclAlignment) Decl : public SyntaxNode {
+class alignas(DeclAlignment) Decl : public SyntaxNode,
+                                    /*public diag::SyntaxDiagnosticArgument*/ {
 
   friend DeclStats;
 
