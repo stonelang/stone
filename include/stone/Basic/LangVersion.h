@@ -1,6 +1,8 @@
 #ifndef STONE_BASIC_VERSION_H
 #define STONE_BASIC_VERSION_H
-#include <string>
+
+
+#include "llvm/ADT/StringRef.h"
 
 namespace stone {
 class LangVersion {
