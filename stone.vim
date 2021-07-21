@@ -14,7 +14,7 @@ endif
 
 " Syntax definitions {{{1
 " Basic keywords {{{2
-syn keyword   stoneConditional match if else switch
+syn keyword   stoneConditional match if else
 syn keyword   stoneRepeat for loop while do
 syn keyword   stoneTypedef type nextgroup=stoneIdentifier skipwhite skipempty
 syn keyword   stoneStructure struct enum interface nextgroup=stoneIdentifier skipwhite skipempty
@@ -26,7 +26,7 @@ syn keyword   stoneOperator    as
 syn match     stoneAssert      "\<assert\(\w\)*!" contained
 syn match     stonePanic       "\<panic\(\w\)*!" contained
 syn keyword   stoneKeyword     break 
-syn keyword   stoneKeyword     continue new property free delete self space module import with
+syn keyword   stoneKeyword     continue new property delete import  with
 syn keyword   stoneKeyword     extern nextgroup=stoneExternCrate,stoneObsoleteExternMod skipwhite skipempty
 syn keyword   stoneKeyword     fun nextgroup=stoneFunctionName skipwhite skipempty
 syn keyword   stoneKeyword     prop nextgroup=stonePropType skipwhite skipempty
@@ -36,10 +36,10 @@ syn keyword		stoneKeyword		 auto result any template final free
 syn keyword   stoneKeyword     public  nextgroup=stonePubScope skipwhite skipempty
 syn keyword   stoneKeyword     return void object using  null Init Drop 
 syn keyword   stoneSuper       super
-syn keyword   stoneKeyword     where safe pint own stone get mutable inline case default
+syn keyword   stoneKeyword     where safe own stone get mutable inline case default
 syn keyword   stoneKeyword     use nextgroup=stoneModPath skipwhite skipempty
 " FIXME: Scoped impl's name is also fallen in this category
-syn keyword   stoneKeyword     mod trait nextgroup=stoneIdentifier skipwhite skipempty
+syn keyword   stoneKeyword     module space nextgroup=stoneIdentifier skipwhite skipempty
 syn keyword   stoneStorage     move ref static const 
 syn match stoneDefault /\<default\ze\_s\+\(impl\|fn\|type\|const\)\>/
 
