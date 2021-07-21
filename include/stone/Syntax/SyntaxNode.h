@@ -4,9 +4,9 @@
 namespace stone {
 namespace syn {
 
-enum class SyntaxKind { Decl, Smt, Expr };
+enum class SyntaxNodeKind { Decl, Smt, Expr };
 class SyntaxNode {
-  SyntaxKind kind;
+  SyntaxNodeKind kind;
 
 public:
 };

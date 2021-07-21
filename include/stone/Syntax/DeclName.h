@@ -27,7 +27,7 @@ class DeclNameLoc {
 public:
 };
 
-enum class DeclNameType {
+enum class DeclNameKind : uint8_t {
   None,
   Identifier,
   Constructor,
@@ -39,7 +39,7 @@ enum class DeclNameType {
 class DeclName : public Dumpable, public Printable {
 
   friend class NamedDecl;
-  DeclNameType ty;
+  DeclNameKind ty;
 
 public:
   /// Construct a declaration name from an Identifier *.
@@ -52,7 +52,7 @@ public:
   bool IsIdentifier() const { return false; }
   // TODO:
   Identifier *GetAsIdentifier() const {}
-  DeclNameType GetDeclNameType() { return ty; }
+  DeclNameKind GetDeclNameKind() { return ty; }
 
 public:
   void Print(ColorOutputStream &os,
@@ -141,7 +141,7 @@ public:
   ///   * DeclName::ConstructorName,
   ///   * DeclName::DestructorName or
   ///   * DeclName::ConversionFunctionName
-  DeclName GetSpecialName(DeclNameType declNameTy, CanQualType canQualTy);
+  DeclName GetSpecialName(DeclNameKind declNameTy, CanQualType canQualTy);
 
   /// Get the name of the overloadable C++ operator corresponding to Op.
   // DeclName getCXXOperatorName(OverloadedOperatorKind Op) {
