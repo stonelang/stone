@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "stone/Utils/Mem.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"

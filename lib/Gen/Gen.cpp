@@ -1,5 +1,5 @@
 #include "stone/Gen/Gen.h"
-#include "stone/Utils/Ret.h"
+#include "stone/Basic/Ret.h"
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Gen/CodeGenerator.h"
 #include "stone/Gen/Native.h"
@@ -62,15 +62,15 @@
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
 #include "llvm/Transforms/Instrumentation/MemorySanitizer.h"
 //#include "llvm/Transforms/Instrumentation/SanitizerCoverage.h"
-#include "llvm/Transforms/Instrumentation/ThreadSanitizer.h"
-#include "llvm/Transforms/Scalar.h"
-#include "llvm/Transforms/Scalar/GVN.h"
-#include "llvm/Transforms/Utils.h"
 #include "llvm/Transforms/Utils/CanonicalizeAliases.h"
 #include "llvm/Transforms/Utils/EntryExitInstrumenter.h"
 #include "llvm/Transforms/Utils/NameAnonGlobals.h"
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
-// TODO: #include "llvm/Transforms/Utils/UniqueInternalLinkageNames.h"
+#include "llvm/Transforms/Instrumentation/ThreadSanitizer.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
+// TODO: #include "llvm/Transforms/Basic/UniqueInternalLinkageNames.h"
 
 #include <memory>
 

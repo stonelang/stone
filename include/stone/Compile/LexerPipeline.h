@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_LEXERPIPELINE_H
 #define STONE_COMPILE_LEXERPIPELINE_H
 
+#include "stone/Basic/PipelineEngine.h"
 #include "stone/Compile/Token.h"
-#include "stone/Utils/PipelineEngine.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

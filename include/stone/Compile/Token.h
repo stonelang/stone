@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_TOKEN_H
 #define STONE_COMPILE_TOKEN_H
 
-#include "stone/Utils/LLVM.h"
-#include "stone/Utils/SrcLoc.h"
-#include "stone/Utils/TokenType.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/TokenType.h"
 
 #include "llvm/ADT/StringRef.h"
 
@@ -120,7 +120,7 @@ public:
 #define KEYWORD(X, S)                                                          \
   case tk::Type::kw_##X:                                                       \
     return true;
-#include "stone/Utils/TokenType.def"
+#include "stone/Basic/TokenType.def"
     default:
       return false;
     }
@@ -143,7 +143,7 @@ public:
 #define PUNCTUATOR(Name, Str)                                                  \
   case tk::Type::Name:                                                         \
     return true;
-#include "stone/Utils/TokenType.def"
+#include "stone/Basic/TokenType.def"
     default:
       return false;
     }

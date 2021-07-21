@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_PARSER_H
 #define STONE_COMPILE_PARSER_H
 
+#include "stone/Basic/Stats.h"
 #include "stone/Compile/Lexer.h"
-#include "stone/Utils/Stats.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"

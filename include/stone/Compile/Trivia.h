@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_TRIVIA_H
 #define STONE_COMPILE_TRIVIA_H
 
-#include "stone/Utils/LLVM.h"
+#include "stone/Basic/LLVM.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 

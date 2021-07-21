@@ -1,5 +1,5 @@
 set(stone_include_files
-	${STONE_SOURCE_DIR}/include/stone/Utils/*.h
+	${STONE_SOURCE_DIR}/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
 	${STONE_SOURCE_DIR}/include/stone/Gen/*.h
@@ -7,7 +7,7 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/include/stone/Syntax/*.h
 )
 set(stone_lib_files
-	${STONE_SOURCE_DIR}/lib/Core/*.cpp
+	${STONE_SOURCE_DIR}/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/lib/Gen/*.cpp
@@ -19,7 +19,7 @@ set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/try/*.cpp
 )
 set(stone_tests_files
-	${STONE_SOURCE_DIR}/tests/units/Utils/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
 	${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
 )
 find_program(CLANG_FORMAT clang-format)

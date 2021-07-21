@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_SYNTAXDIAGARGUMENT_H
 #define STONE_SYNTAX_SYNTAXDIAGARGUMENT_H
 
-#include "stone/Utils/DiagnosticArgument.h"
-#include "stone/Utils/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 

@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Utils/Clock.h"
-#include "stone/Utils/LLVM.h"
-#include "stone/Utils/Stats.h"
+#include "stone/Basic/Clock.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/Stats.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/TaskQueue.h"
 #include "llvm/ADT/ArrayRef.h"

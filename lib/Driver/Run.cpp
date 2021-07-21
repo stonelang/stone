@@ -5,9 +5,9 @@
 #include <set>
 #include <system_error>
 
-#include "stone/Utils/Defer.h"
-#include "stone/Utils/LLVM.h"
-#include "stone/Utils/Ret.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/Ret.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Session/ExecutablePath.h"
 

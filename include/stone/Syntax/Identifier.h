@@ -1,9 +1,9 @@
-#ifndef LLVM_CLANG_UTILS_IDENTIFIERTABLE_H
-#define LLVM_CLANG_UTILS_IDENTIFIERTABLE_H
+#ifndef LLVM_CLANG_BASIC_IDENTIFIERTABLE_H
+#define LLVM_CLANG_BASIC_IDENTIFIERTABLE_H
 
-#include "stone/Utils/LLVM.h"
-#include "stone/Utils/Stats.h"
-#include "stone/Utils/TokenType.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/Stats.h"
+#include "stone/Basic/TokenType.h"
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"

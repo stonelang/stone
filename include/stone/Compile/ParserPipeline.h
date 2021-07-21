@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_PARSERPIPELINE_H
 #define STONE_COMPILE_PARSERPIPELINE_H
 
-#include "stone/Utils/PipelineEngine.h"
+#include "stone/Basic/PipelineEngine.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Stmt.h"
