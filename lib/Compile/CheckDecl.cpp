@@ -6,7 +6,7 @@ void Checker::CheckDecl(Decl *d) {
 
   // TODO: Null check
   switch (d->GetType()) {
-  case DeclType::Fun:
+  case DeclKind::Fun:
     CheckFunDecl();
     break;
   default:

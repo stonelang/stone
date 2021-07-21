@@ -24,7 +24,7 @@ class FunctionDecl;
 class DeclContextBits final {
   friend class DeclContext;
   /// DeclKind - This indicates which class this is.
-  uint64_t DeclType : 7;
+  uint64_t DeclKind : 7;
 
   /// Whether this declaration context also has some external
   /// storage that contains additional declarations that are lexically

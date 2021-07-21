@@ -11,7 +11,7 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
-#include "stone/Syntax/DeclType.h"
+#include "stone/Syntax/DeclKind.h"
 
 
 #include "llvm/ADT/ArrayRef.h"
@@ -58,7 +58,7 @@ class alignas(DeclAlignment) Decl : public SyntaxNode {
   
   friend DeclStats;
 
-  DeclType ty;
+  DeclKind ty;
   // The Decl location
   SrcLoc loc;
   DeclContext *dc;
@@ -125,7 +125,7 @@ public:
   // unsigned used : 1;
 
 public:
-  DeclType GetType() { return ty; }
+  DeclKind GetType() { return ty; }
   SrcLoc GetLoc() const { return loc; }
 
   TreeContext &GetTreeContext() const LLVM_READONLY;
@@ -141,7 +141,7 @@ public:
 
   */
 protected:
-  Decl(DeclType ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
+  Decl(DeclKind ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
 };
 
 class DeclContext {
@@ -154,7 +154,7 @@ public:
   };
 
 private:
-  DeclType dTy;
+  DeclKind dTy;
   DeclContext::Type dcTy;
 
   DeclContext *parent;
@@ -222,11 +222,11 @@ protected:
                                                   bool fieldsAlreadyLoaded);
 
 public:
-  DeclContext(DeclContext::Type dcTy, DeclType dTy,
+  DeclContext(DeclContext::Type dcTy, DeclKind dTy,
               DeclContext *parent = nullptr);
 
 public:
-  DeclType GetDeclType() { return dTy; }
+  DeclKind GetDeclKind() { return dTy; }
   DeclContext::Type GetDeclContextType() { return dcTy; }
   DeclContext *GetParent() { return parent; }
 
@@ -251,7 +251,7 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(DeclType ty, SrcLoc loc, DeclContext *dc)
+  NamedDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
       : Decl(ty, loc, dc), name(nullptr) {}
 
 public:
@@ -283,7 +283,7 @@ class TypeDecl : public NamedDecl {
   friend class TreeContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
-  /// ASTContext::getTypedefType, ASTContext::getTagDeclType, and
+  /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
   /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
 
   // mutable const Type *typeForDecl = nullptr;
@@ -292,7 +292,7 @@ class TypeDecl : public NamedDecl {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclType ty, SrcLoc loc, DeclContext *dc)
+  TypeDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
       : NamedDecl(ty, loc, dc) {}
 
 public:
@@ -304,7 +304,7 @@ class ValueDecl : public NamedDecl {
   QualType qTy;
 
 public:
-  ValueDecl(DeclType ty, SrcLoc loc, DeclContext *dc)
+  ValueDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
       : NamedDecl(ty, loc, dc) {}
 
 public:
@@ -319,12 +319,12 @@ public:
 // class SpaceDecl : public NamedDecl {
 // public:
 //   SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-//       : NamedDecl(DeclType::Space, dc, loc, name) {}
+//       : NamedDecl(DeclKind::Space, dc, loc, name) {}
 // };
 
 class DeclaratorDecl : public ValueDecl {
 public:
-  DeclaratorDecl(DeclType ty, SrcLoc loc, DeclContext *dc)
+  DeclaratorDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
       : ValueDecl(ty, loc, dc) {}
 };
 
@@ -346,7 +346,7 @@ class FunctionDecl
   StorageType storageTy;
 
 public:
-  FunctionDecl(DeclType ty, SrcLoc loc, TreeContext &tc, DeclContext *dc);
+  FunctionDecl(DeclKind ty, SrcLoc loc, TreeContext &tc, DeclContext *dc);
 
 public:
   /// BraceStmt
@@ -367,7 +367,7 @@ class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass TreeContext and DeclContext
 public:
   FunDecl(SrcLoc loc, TreeContext &tc, DeclContext *dc)
-      : FunctionDecl(DeclType::Fun, loc, tc, dc) {}
+      : FunctionDecl(DeclKind::Fun, loc, tc, dc) {}
 
 public:
   bool IsMain() const;
@@ -387,7 +387,7 @@ public:
 // public:
 //   MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
 //              const DeclName &dn, SrcLoc dnLoc, StorageType st)
-//       : FunctionDecl(DeclType::Fun, tc, dc, dn, dnLoc, st) {}
+//       : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 
 // public:
 //   bool IsStatic() const;
@@ -424,7 +424,7 @@ public:
 // };
 
 // TODO: Maybe Enum, Struct, ... can be replaced with Member
-enum class UseDeclType : uint8_t {
+enum class UseDeclKind : uint8_t {
   /// use STD.IO;
   Module = 0,
 
