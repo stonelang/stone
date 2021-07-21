@@ -42,7 +42,7 @@ void Module::AddFile(ModuleFile &file) {
   // ClearLookupCache();
 }
 
-bool Module::Walk(Walker &waker) {}
+bool Module::Walk(SyntaxWalker &waker) {}
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
                        const SrcID srcID, bool isPrimary)

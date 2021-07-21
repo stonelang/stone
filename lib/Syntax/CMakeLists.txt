@@ -19,16 +19,14 @@ set(stone_syn_sources
 	SyntaxBuilder.cpp
 	SyntaxDiagnostic.cpp
 	SyntaxScope.cpp
+	SyntaxVisitor.cpp
+	SyntaxWalker.cpp
 	Template.cpp
 	TreeContext.cpp
 	Type.cpp
 	VerifyDecl.cpp
-	Visitor.cpp
-	Walker.cpp
-	Watcher.cpp
 	Witness.cpp
 	
-
 	LINK_LIBS
 	StoneBasic
 )

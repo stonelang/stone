@@ -8,7 +8,7 @@
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/TreeContext.h"
-#include "stone/Syntax/Walker.h"
+#include "stone/Syntax/SyntaxWalker.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -87,7 +87,7 @@ class BuiltinFile final : public ModuleFile {
 public:
 };
 
-class Module final : public DeclContext, public TypeDecl, public Walkable {
+class Module final : public DeclContext, public TypeDecl, public WalkableSyntax {
 
 public:
   Module(Identifier &name, TreeContext &tc);
@@ -117,7 +117,7 @@ public:
   /// \returns true if this module is the "builtin" module.
   bool IsBuiltin() const;
 
-  bool Walk(Walker &waker) override;
+  bool Walk(SyntaxWalker &waker) override;
 
 private:
   // Make placement new and vanilla new/delete illegal for Modules.
