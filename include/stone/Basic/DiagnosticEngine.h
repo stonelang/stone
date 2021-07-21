@@ -4,6 +4,7 @@
 #include "stone/Basic/Diagnostic.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/LangVersion.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Printable.h"
 
@@ -14,6 +15,7 @@ class DiagnosticEngine;
 class InFlightDiagnostic;
 class DiagnosticListener;
 class LangOptions;
+class LangVersion; 
 class StoredDiagnostic;
 
 struct DiagnosticStorage {

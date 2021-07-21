@@ -23,6 +23,7 @@ set(stone_utils_sources
 	FileMgr.cpp
 	FileSystemStatCache.cpp
 	Fmt.cpp
+	LangVersion.cpp
 	LLVMContext.cpp
 	PipelineEngine.cpp
 	SrcLoc.cpp
@@ -32,7 +33,6 @@ set(stone_utils_sources
 	TextDiagnosticListener.cpp
 	TokenType.cpp
 	UnixDirWatcher.cpp
-	Version.cpp
 	WinDirWatcher.cpp
 )
 add_stone_library(StoneBasic
