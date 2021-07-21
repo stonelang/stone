@@ -1,6 +1,6 @@
 
 space STD.Math {
-	public fun Cos(f64 x) -> f64 {
+	public fun Cos(float64 x) -> float64 {
 		return 0;
 	}
 }

@@ -1,6 +1,6 @@
 
 space STD.Math {
-	public fun Sin(f64 x) -> f64 {
+	public fun Sin(float64 x) -> float64 {
 		return 0;
 	}
 }

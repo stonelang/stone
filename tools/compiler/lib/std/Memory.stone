@@ -1,0 +1,10 @@
+
+
+space STD.Memory {
+	
+	public fun Free(void* ptr) -> void {
+
+	}
+	public fun Make(uint64 ) -> void* {
+	}
+}

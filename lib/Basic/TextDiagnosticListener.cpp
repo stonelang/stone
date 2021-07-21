@@ -4,7 +4,9 @@
 using stone::Diagnostic;
 using stone::TextDiagnosticListener;
 
-TextDiagnosticListener::TextDiagnosticListener() {}
+TextDiagnosticListener::TextDiagnosticListener() {
+    emitter.reset(new TextDiagnosticEmitter(this));
+}
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
@@ -13,7 +15,7 @@ void TextDiagnosticListener::Listen(diag::Level level,
 
   DiagnosticListener::Listen(level, diagnostic);
 
-  emitter.reset(new TextDiagnosticEmitter(this));
+  
 
   emitter->EmitMessage();
 }

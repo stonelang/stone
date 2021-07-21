@@ -1,0 +1,8 @@
+
+
+space STD.Foreign.C {
+
+	public struct CPointer {
+	}
+
+}

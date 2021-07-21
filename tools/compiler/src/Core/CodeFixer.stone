@@ -11,7 +11,7 @@ space Stone.Diagnostics {
 	CodeFixer::CodeFixer(ref InFlightDiagnostic inFlightDiag){
 		this.inFlightDiag = inFlightDiag;
 	}
-  public fun CodeFixer::InsertFromLoc(SourceLocation insertionLoc, string code,
+  public fun CodeFixer::InsertFromLoc(SrcLoc insertionLoc, string code,
 		                                 bool beforePreviousInsertions) -> InFlightDiagnostic {
 		
 	}  

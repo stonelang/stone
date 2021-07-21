@@ -1,6 +1,6 @@
 
 
 space STD.Math {
-	public fun Tan(f64 x) -> f64 {
+	public fun Tan(float64 x) -> float64 {
 	}
 }
