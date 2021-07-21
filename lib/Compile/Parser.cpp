@@ -3,10 +3,10 @@
 #include "stone/Basic/Ret.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/Compile/CheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
-#include "stone/Basic/SyntaxDiagnostic.h"
 
 using namespace stone;
 using namespace stone::syn;

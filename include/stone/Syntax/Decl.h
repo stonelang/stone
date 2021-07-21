@@ -54,12 +54,11 @@ public:
 
 enum { DeclAlignment = 8 };
 
-class alignas(DeclAlignment) Decl : public SyntaxNode
-/*public diag::SyntaxDiagnosticArgument*/ {
+class alignas(DeclAlignment) Decl : public SyntaxNode {
 
   friend DeclStats;
 
-  DeclKind ty;
+  DeclKind kind;
   // The Decl location
   SrcLoc loc;
   DeclContext *dc;
@@ -126,7 +125,7 @@ public:
   // unsigned used : 1;
 
 public:
-  DeclKind GetType() { return ty; }
+  DeclKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
   TreeContext &GetTreeContext() const LLVM_READONLY;
@@ -142,7 +141,8 @@ public:
 
   */
 protected:
-  Decl(DeclKind ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
+  Decl(DeclKind kind, SrcLoc loc, DeclContext *dc)
+      : kind(kind), loc(loc), dc(dc) {}
 };
 
 enum class DeclContextKind : uint8_t {
@@ -249,8 +249,8 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
-      : Decl(ty, loc, dc), name(nullptr) {}
+  NamedDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
+      : Decl(kind, loc, dc), name(nullptr) {}
 
 public:
   /// Get the identifier that names this declaration, if there is one.
@@ -290,7 +290,8 @@ class TypeDecl : public NamedDecl {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclKind ty, SrcLoc loc, DeclContext *dc) : NamedDecl(ty, loc, dc) {}
+  TypeDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
+      : NamedDecl(kind, loc, dc) {}
 
 public:
   void SetIdentifier(Identifier *identifier) { SetDeclName(identifier); }
@@ -321,8 +322,8 @@ public:
 
 class DeclaratorDecl : public ValueDecl {
 public:
-  DeclaratorDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
-      : ValueDecl(ty, loc, dc) {}
+  DeclaratorDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
+      : ValueDecl(kind, loc, dc) {}
 };
 
 class AccessControl {
@@ -343,7 +344,7 @@ class FunctionDecl
   StorageType storageTy;
 
 public:
-  FunctionDecl(DeclKind ty, SrcLoc loc, TreeContext &tc, DeclContext *dc);
+  FunctionDecl(DeclKind kind, SrcLoc loc, TreeContext &tc, DeclContext *dc);
 
 public:
   /// BraceStmt
@@ -372,24 +373,36 @@ public:
   /// True if the function is a defer body.
   bool IsDeferBody() const;
 
+  bool IsStatic() const;
+
 public:
   // void SetReturnType(TypeDecl* returnTy);
 
   // SrcLoc GetStaticLoc() const { return staticLoc; }
   // SrcLoc GetFunLoc() const { return funcLoc; }
+
+  static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Fun; }
+  static bool classof(const FunctionDecl *d) {
+    return classof(static_cast<const Decl *>(d));
+  }
+  static bool classof(const DeclContext *dc) {
+    if (auto d = dc->GetAsDecl())
+      return classof(d);
+    return false;
+  }
 };
 
 // Member functions: fun Particle::Fire() -> bool ...
-// class MethodDecl : public FunctionDecl {
-// public:
-//   MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
-//              const DeclName &dn, SrcLoc dnLoc, StorageType st)
-//       : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
+class MethodDecl : public FunctionDecl {
+public:
+  // MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
+  //            const DeclName &dn, SrcLoc dnLoc, StorageType st)
+  //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 
-// public:
-//   bool IsStatic() const;
-//   bool IsInstance() const { return !IsStatic(); }
-// };
+public:
+  bool IsStatic() const;
+  bool IsInstance() const { return !IsStatic(); }
+};
 
 class NominalTypeDecl : public TypeDecl,
                         public DeclContext,
@@ -402,23 +415,27 @@ class StructDecl final : public NominalTypeDecl {
 public:
 };
 
-// class EnumDecl final : public NominalTypeDecl {
-// public:
-// };
+class InterfaceDecl final : public NominalTypeDecl {
+public:
+};
 
-// class BlockDecl : public Decl, public DeclContext {};
+class EnumDecl final : public NominalTypeDecl {
+public:
+};
 
-// class ConstructorInitializer final {
-// public:
-// };
+class BlockDecl : public Decl, public DeclContext {};
 
-// class ConstructorDecl : public MethodDecl {
-// public:
-// };
+class ConstructorInitializer final {
+public:
+};
 
-// class DestructorDecl : public MethodDecl {
-// public:
-// };
+class ConstructorDecl : public MethodDecl {
+public:
+};
+
+class DestructorDecl : public MethodDecl {
+public:
+};
 
 // TODO: Maybe Enum, Struct, ... can be replaced with Member
 enum class UseDeclKind : uint8_t {

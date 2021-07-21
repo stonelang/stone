@@ -5,7 +5,7 @@ using namespace stone::sema;
 void Checker::CheckDecl(Decl *d) {
 
   // TODO: Null check
-  switch (d->GetType()) {
+  switch (d->GetKind()) {
   case DeclKind::Fun:
     CheckFunDecl();
     break;
