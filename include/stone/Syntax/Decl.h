@@ -6,13 +6,12 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"
+#include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
-#include "stone/Syntax/DeclKind.h"
-
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -55,7 +54,7 @@ public:
 enum { DeclAlignment = 8 };
 
 class alignas(DeclAlignment) Decl : public SyntaxNode {
-  
+
   friend DeclStats;
 
   DeclKind ty;
@@ -144,18 +143,15 @@ protected:
   Decl(DeclKind ty, SrcLoc loc, DeclContext *dc) : ty(ty), loc(loc), dc(dc) {}
 };
 
+enum class DeclContextKind : uint8_t {
+  Decl,
+  Expr,
+  File,
+};
+
 class DeclContext {
-
-public:
-  enum class Type : unsigned {
-    Decl,
-    Expr,
-    File,
-  };
-
-private:
   DeclKind dTy;
-  DeclContext::Type dcTy;
+  DeclContextKind dcTy;
 
   DeclContext *parent;
 
@@ -222,17 +218,17 @@ protected:
                                                   bool fieldsAlreadyLoaded);
 
 public:
-  DeclContext(DeclContext::Type dcTy, DeclKind dTy,
+  DeclContext(DeclContextKind dcTy, DeclKind dTy,
               DeclContext *parent = nullptr);
 
 public:
   DeclKind GetDeclKind() { return dTy; }
-  DeclContext::Type GetDeclContextType() { return dcTy; }
+  DeclContextKind GetDeclContextType() { return dcTy; }
   DeclContext *GetParent() { return parent; }
 
   Decl *GetAsDecl() {
     switch (dcTy) {
-    case DeclContext::Type::Decl:
+    case DeclContextKind::Decl:
       return reinterpret_cast<Decl *>(this + 1); // TODO: UB
     default:
       return nullptr;
@@ -292,8 +288,7 @@ class TypeDecl : public NamedDecl {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
-      : NamedDecl(ty, loc, dc) {}
+  TypeDecl(DeclKind ty, SrcLoc loc, DeclContext *dc) : NamedDecl(ty, loc, dc) {}
 
 public:
   void SetIdentifier(Identifier *identifier) { SetDeclName(identifier); }

@@ -17,18 +17,18 @@ namespace syn {
 class Module;
 static inline unsigned AlignOfModuleFile();
 
+enum class ModuleFileKind : uint8_t { Source, Builtin };
+
 class ModuleFile : public DeclContext {
-public:
-  enum class Kind { Source, Builtin };
 
 private:
-  ModuleFile::Kind kind;
+  ModuleFileKind kind;
 
 public:
-  ModuleFile(ModuleFile::Kind kind, Module &owner);
+  ModuleFile(ModuleFileKind kind, Module &owner);
 
 public:
-  ModuleFile::Kind GetKind() const { return kind; }
+  ModuleFileKind GetKind() const { return kind; }
 
 private:
   // MAKE placement new and vanilla new/delete ILLEGAL for ModuleFiles
@@ -43,6 +43,7 @@ public:
                      unsigned alignment = AlignOfModuleFile());
 };
 
+enum class SyntaxFileKind : uint8_t { None, Library };
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
   friend TreeContext;
@@ -52,16 +53,13 @@ private:
   const SrcID srcID;
 
 public:
-  enum class Kind { None, Library };
-
-public:
-  SyntaxFile::Kind kind = Kind::None;
+  SyntaxFileKind kind = SyntaxFileKind::None;
 
   // TODO: You may want const list
   UnsafeList<Decl> decls;
 
 public:
-  SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner, const SrcID srcID,
+  SyntaxFile(SyntaxFileKind kind, syn::Module &owner, const SrcID srcID,
              bool isPrimary = false);
 
   ~SyntaxFile();
@@ -76,12 +74,12 @@ public:
   // override;
 
 public:
-  static syn::SyntaxFile *Make(SyntaxFile::Kind kind, Module &owner,
+  static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
                                TreeContext &tc, SrcID srcID,
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
-    return file->GetKind() == ModuleFile::Kind::Source;
+    return file->GetKind() == ModuleFileKind::Source;
   }
 };
 
@@ -110,7 +108,7 @@ public:
 
   SyntaxFile &GetMainSyntaxFile() const;
 
-  ModuleFile &GetMainFile(ModuleFile::Kind kind) const;
+  ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.

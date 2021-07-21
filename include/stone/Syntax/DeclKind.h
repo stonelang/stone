@@ -4,7 +4,7 @@
 namespace stone {
 namespace syn {
 
-enum class DeclKind : uint8_t{
+enum class DeclKind : uint8_t {
   None,
 #define DECL(Id, Parent) Id,
 #define LAST_DECL(Id) LastDecl = Id,

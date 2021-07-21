@@ -22,9 +22,8 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
   auto srcID = compiler.GetSrcMgr().CreateSrcID(std::move(*fileBuffer));
   compiler.GetSrcMgr().SetMainSrcID(srcID);
 
-  auto sf =
-      SyntaxFile::Make(SyntaxFile::Kind::Library, *compiler.GetMainModule(),
-                       compiler.GetTreeContext(), srcID);
+  auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
+                             compiler.GetTreeContext(), srcID);
 
   assert(sf && "Could not create SyntaxFile");
 

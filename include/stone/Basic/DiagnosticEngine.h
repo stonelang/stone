@@ -15,7 +15,7 @@ class DiagnosticEngine;
 class InFlightDiagnostic;
 class DiagnosticListener;
 class LangOptions;
-class LangVersion; 
+class LangVersion;
 class StoredDiagnostic;
 
 struct DiagnosticStorage {

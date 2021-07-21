@@ -42,6 +42,6 @@ void *syn::Module::operator new(std::size_t bytes, const TreeContext &tc,
 
 FunctionDecl::FunctionDecl(DeclKind ty, SrcLoc loc, TreeContext &tc,
                            DeclContext *dc)
-    : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContext::Type::Decl, ty) {}
+    : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContextKind::Decl, ty) {}
 
 void DeclStats::Print() {}

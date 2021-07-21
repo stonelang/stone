@@ -20,14 +20,12 @@ void *ModuleFile::operator new(size_t bytes, TreeContext &tc,
   return tc.Allocate(bytes, alignment);
 }
 
-ModuleFile::ModuleFile(ModuleFile::Kind kind, Module &owner)
-    : DeclContext(DeclContext::Type::File, DeclKind::None, &owner),
-      kind(kind) {}
+ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
+    : DeclContext(DeclContextKind::File, DeclKind::None, &owner), kind(kind) {}
 
 Module::Module(Identifier &name, TreeContext &tc)
-    : DeclContext(DeclContext::Type::Decl, DeclKind::Module),
-      TypeDecl(DeclKind::Module, SrcLoc(),
-               nullptr /*TODO: pass DeclContext*/) {
+    : DeclContext(DeclContextKind::Decl, DeclKind::Module),
+      TypeDecl(DeclKind::Module, SrcLoc(), nullptr /*TODO: pass DeclContext*/) {
 
   // TODO: SetDeclName(name);
 }
@@ -38,22 +36,22 @@ void Module::AddFile(ModuleFile &file) {
   //         cast<LoadedFile>(newFile).hadLoadError()));
   // Require Main and REPL files to be the first file added.
   assert(files.empty() || !isa<SyntaxFile>(file) ||
-         cast<SyntaxFile>(file).kind == SyntaxFile::Kind::Library
-         /*||cast<SyntaxFile>(unit).Kind == SyntaxFile::Kind::SIL*/);
+         cast<SyntaxFile>(file).kind == SyntaxFileKind::Library
+         /*||cast<SyntaxFile>(unit).Kind == SyntaxFileKind::SIL*/);
   files.push_back(&file);
   // ClearLookupCache();
 }
 
 bool Module::Walk(Walker &waker) {}
 
-SyntaxFile::SyntaxFile(SyntaxFile::Kind kind, syn::Module &owner,
+SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
                        const SrcID srcID, bool isPrimary)
-    : ModuleFile(ModuleFile::Kind::Source, owner), kind(kind), srcID(srcID),
+    : ModuleFile(ModuleFileKind::Source, owner), kind(kind), srcID(srcID),
       isPrimary(isPrimary) {}
 
-syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFile::Kind kind,
-                                       syn::Module &owner, TreeContext &tc,
-                                       SrcID srcID, bool isPrimary) {
+syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
+                                       TreeContext &tc, SrcID srcID,
+                                       bool isPrimary) {
 
   auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);
   return syntaxFile;
