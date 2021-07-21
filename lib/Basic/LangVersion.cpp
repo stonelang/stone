@@ -1,26 +1,21 @@
-#ifndef STONE_BASIC_VERSION_H
-#define STONE_BASIC_VERSION_H
-#include <string>
+#include "stone/Basic/LangVersion.h"
 
-namespace stone {
+using stone::LangVersion;
+
 /// Retrieves the repository path (e.g., Subversion path) that
 /// identifies the particular stone branch, tag, or trunk from which this
 /// stone was built.
-std::string GetRepoPath();
+llvm::StringRef LangVersion::GetRepoPath() { return llvm::StringRef(); }
 
 /// Retrieves the repository revision number (or identifier) from which
 /// this stone was built.
-std::string GetRevision();
+llvm::StringRef LangVersion::GetRevision() { return llvm::StringRef(); }
 
 /// Retrieves the full repository version that is an amalgamation of
 /// the information in GetRepPath() and GetRevision().
-std::string GetFullRepoVersion();
+llvm::StringRef LangVersion::GetFullRepoVersion() { return llvm::StringRef(); }
 
 /// Retrieves a string representing the complete stone version,
 /// which includes the stone version number, the repository version,
 /// and the vendor tag.
-std::string GetFullVersion();
-
-} // namespace stone
-
-#endif
+llvm::StringRef LangVersion::GetFullVersion() { return llvm::StringRef(); }

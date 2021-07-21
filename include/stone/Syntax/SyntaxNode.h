@@ -4,7 +4,10 @@
 namespace stone {
 namespace syn {
 
+enum class SyntaxKind { Decl, Smt, Expr };
 class SyntaxNode {
+  SyntaxKind kind;
+
 public:
 };
 

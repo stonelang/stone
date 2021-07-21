@@ -16,9 +16,6 @@
 
 namespace stone {
 
-class LangVersion final {
-public:
-};
 class LangOptions final {
 public:
   /// This represents the statistics generated due to a session
@@ -43,8 +40,6 @@ public:
   /// macOS processes. A value of 'None' means no zippering will be
   /// performed.
   llvm::Optional<llvm::Triple> targetVariant;
-
-  LangVersion langVersion;
 };
 
 } // namespace stone
