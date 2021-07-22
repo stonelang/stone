@@ -18,6 +18,8 @@ public:
 
 public:
   void Listen(diag::Level level, const EmissionDiagnostic &diagnostic) override;
+  void Finish() override;
+  void Flush() override;
 
 public:
   void SetEmitter(std::unique_ptr<DiagnosticEmitter> emitter);

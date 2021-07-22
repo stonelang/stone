@@ -264,7 +264,6 @@ public:
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
-  ~DiagnosticEngine();
 
 public:
   bool HasError();
@@ -345,6 +344,7 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
+  void Finish();
 
 public:
   /// Generate EmissionDiagnostic for a Diagnostic to be passed to listeners.

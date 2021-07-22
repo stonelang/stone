@@ -11,3 +11,9 @@ void DiagnosticListener::Listen(diag::Level level,
 
   printf("%s", "print basic stuff\n");
 }
+
+/// Callback to inform the diagnostic client that processing of all
+/// source files has ended.
+void DiagnosticListener::Finish() {}
+
+void DiagnosticListener::Flush() {}

@@ -1,5 +1,6 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/Defer.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/Basic/TextDiagnosticListener.h"
@@ -30,6 +31,8 @@ public:
 };
 
 TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
+
+  STONE_DEFER { basic.GetDiagEngine().Finish(); };
 
   basic.GetDiagOptions().useColor = true;
 

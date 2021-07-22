@@ -113,8 +113,6 @@ bool InFlightDiagnostic::Emit() {
 DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm)
     : diagOpts(diagOpts), sm(sm) {}
 
-DiagnosticEngine::~DiagnosticEngine() {}
-
 // void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
 
 llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
@@ -157,3 +155,5 @@ DiagnosticEngine::GetEmissionDiagnosticForDiagnostic(
       diagnostic, GetDiagString(diagnostic.GetContext().GetDiagID(), true),
       /*TODO*/ llvm::StringRef());
 }
+
+void DiagnosticEngine::Finish() { FlushListeners(); }

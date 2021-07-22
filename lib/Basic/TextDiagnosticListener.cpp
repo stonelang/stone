@@ -12,8 +12,10 @@ TextDiagnosticListener::~TextDiagnosticListener() {}
 
 void TextDiagnosticListener::Listen(diag::Level level,
                                     const EmissionDiagnostic &diagnostic) {
-
   DiagnosticListener::Listen(level, diagnostic);
-
   emitter->EmitMessage();
 }
+
+void TextDiagnosticListener::Finish() {}
+
+void TextDiagnosticListener::Flush() {}

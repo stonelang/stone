@@ -23,9 +23,9 @@ public:
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
-  virtual void Finish() {}
+  virtual void Finish();
 
-  virtual void Flush() {}
+  virtual void Flush();
 
   /// Indicates whether the diagnostics handled by this
   /// DiagnosticListener should be included in the number of diagnostics
