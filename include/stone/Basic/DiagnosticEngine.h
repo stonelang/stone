@@ -262,6 +262,13 @@ public:
 
   Diagnostic &GetCurrentDiagnostic() { return *curDiagnostic; }
 
+  /// Determine whethere there is already a diagnostic in flight -- there is a
+  /// better way.
+  bool IsDiagnosticInFlight() {
+    return (unsigned)curDiagnostic->GetContext().GetDiagID() !=
+           std::numeric_limits<unsigned>::max();
+  }
+
 private:
   InFlightDiagnostic CreateInFlightDiagnostic(SrcLoc loc,
                                               const Diagnostic &diagnostic) {
@@ -292,13 +299,6 @@ public:
            typename detail::PassArgument<ArgTypes>::type... args) {
 
     return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
-  }
-
-  /// Determine whethere there is already a diagnostic in flight -- there is a
-  /// better way.
-  bool HasInflightDiagnostic() {
-    return (unsigned)curDiagnostic->GetContext().GetDiagID() !=
-           std::numeric_limits<unsigned>::max();
   }
 };
 
