@@ -55,6 +55,7 @@ struct TypeArgument final : public SyntaxArgument {
 class SyntaxDiagnostic final : public Diagnostic {
 public:
   explicit SyntaxDiagnostic(DiagnosticContext context) : Diagnostic(context) {}
+  ~SyntaxDiagnostic();
 
 public:
   void Format(llvm::SmallVectorImpl<char> &outStr,

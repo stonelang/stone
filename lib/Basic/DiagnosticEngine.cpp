@@ -138,7 +138,7 @@ void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
   auto emissionDiagnostic = GetEmissionDiagnosticForDiagnostic(diagnostic);
 
   for (auto &listener : listeners) {
-    listener->Listen(diag::Level::Warn, *emissionDiagnostic);
+    listener->Listen(/*TODO*/ diag::Level::Warn, *emissionDiagnostic);
   }
 }
 

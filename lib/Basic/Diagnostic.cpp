@@ -43,64 +43,63 @@ CodeFix::CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
 
 /// Create a code modification hint that inserts the given
 /// code string at a specific location.
-InFlightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
-                                            llvm::StringRef code,
-                                            bool beforePreviousInsertions) {
+InFlightDiagnostic &CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
+                                             llvm::StringRef code,
+                                             bool beforePreviousInsertions) {
 
   inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
               CharSrcRange(), code, beforePreviousInsertions));
 
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }
 
 /// Create a code modification hint that inserts the given
 /// code from \p FromRange at a specific location.
-InFlightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
-                                              CharSrcRange fromRange,
-                                              bool beforePreviousInsertions) {
+InFlightDiagnostic &CodeFixer::InsertFromRange(SrcLoc insertionLoc,
+                                               CharSrcRange fromRange,
+                                               bool beforePreviousInsertions) {
 
   inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
               llvm::StringRef(), beforePreviousInsertions));
-
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }
 /// Create a code modification hint that removes the given
 /// source range.
-InFlightDiagnostic CodeFixer::RemoveRange(CharSrcRange removeRange) {
+InFlightDiagnostic &CodeFixer::RemoveRange(CharSrcRange removeRange) {
 
   inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
 
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }
-InFlightDiagnostic CodeFixer::RemoveRange(SrcRange removeRange) {
+InFlightDiagnostic &CodeFixer::RemoveRange(SrcRange removeRange) {
   return RemoveRange(CharSrcRange::getTokenRange(removeRange));
 }
 
 /// Create a code modification hint that replaces the given
 /// source range with the given code string.
-InFlightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
-                                      llvm::StringRef code) {
+InFlightDiagnostic &CodeFixer::Replace(CharSrcRange removeRange,
+                                       llvm::StringRef code) {
 
   inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange(), removeRange, code));
 
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }
 
-InFlightDiagnostic CodeFixer::Replace(SrcRange removeRange,
-                                      llvm::StringRef code) {
+InFlightDiagnostic &CodeFixer::Replace(SrcRange removeRange,
+                                       llvm::StringRef code) {
   return Replace(CharSrcRange::getTokenRange(removeRange), code);
 }
 
-InFlightDiagnostic CodeFixer::Highlight(SrcRange range) {
+InFlightDiagnostic &CodeFixer::Highlight(SrcRange range) {
 
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }
 /// Add a character-based range to the currently-active diagnostic.
-InFlightDiagnostic CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {
+InFlightDiagnostic &CodeFixer::HighlightChars(SrcLoc sartLoc, SrcLoc endLoc) {
 
-  return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
+  return inFlightDiag;
 }

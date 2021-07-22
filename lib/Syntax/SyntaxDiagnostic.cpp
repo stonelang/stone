@@ -3,6 +3,11 @@
 
 using stone::SyntaxDiagnostic;
 
+SyntaxDiagnostic::~SyntaxDiagnostic() {
+
+  printf("%s", "Destroying SyntaxDiagnostic\n");
+}
+
 void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                               const DiagnosticFormatOptions &fmtOptions) const {
 

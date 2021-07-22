@@ -11,6 +11,6 @@ TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
 void TextDiagnosticEmitter::EmitLevel() {}
 
-void TextDiagnosticEmitter::EmitMessage() {}
+void TextDiagnosticEmitter::EmitMessage() { printf("%s", "emit message\n"); }
 
 void TextDiagnosticEmitter::EmitLoc() {}
