@@ -4,19 +4,22 @@
 #include <cstddef>
 
 namespace stone {
+
+namespace syn {
 class Decl;
 class Expr;
 class Stmt;
-class Diagnosable;
 class TreeContext;
 class DeclContext;
+} // namespace syn
 
 /// We frequently use three tag bits on all of these types.
 constexpr size_t DeclAlignInBits = 3;
-constexpr size_t DeclContextAlignInBits = 3;
 constexpr size_t ExprAlignInBits = 3;
 constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
+constexpr size_t TreeContextAlignInBits = 2;
+constexpr size_t DeclContextAlignInBits = 3;
 
 } // namespace stone
 
@@ -43,11 +46,14 @@ template <class T> struct PointerLikeTypeTraits;
       : public MoreAlignedPointerTraits<CLASS, ALIGNMENT> {};                  \
   }
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Decl, stone::DeclAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::TreeContext, 2);
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext, stone::DeclContextAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Decl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Stmt, stone::StmtAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Expr, stone::ExprAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TreeContext,
+                            stone::TreeContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
+                            stone::DeclContextAlignInBits)
+
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 
 #endif
