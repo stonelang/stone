@@ -44,4 +44,10 @@ TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
                       diag::DeclArgument(nullptr))
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
+
+  syntax
+      .DiagnoseSyntax(SrcLoc(), diag::err_case_stmt_without_body,
+                      diag::BoolArgument(false))
+      .WithFix()
+      .Replace(SrcLoc(), llvm::StringRef());
 }

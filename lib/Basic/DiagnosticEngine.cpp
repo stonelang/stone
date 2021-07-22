@@ -85,35 +85,18 @@ static constexpr const char *const FixItStrings[] = {
 };
 
 void InFlightDiagnostic::Flush() {
-  de.GetCurrentDiagnostic().GetContext().Flush();
-}
-
-void InFlightDiagnostic::Clear() {}
-
-bool InFlightDiagnostic::Emit() {
   // If this diagnostic is inactive, then its soul was stolen by the copy ctor
   // (or by a subclass, as in SemaInFlightDiagnostic).
-  if (!IsActive()) {
-    return false;
+  if (IsActive()) {
+    // de.GetCurrentDiagnostic().GetContext().Flush();
+    de.FlushCurrentDiagnostic();
+
+    // Clear();
   }
-
-  de.EmitCurrentDiagnostic(isForceEmit);
-  // When emitting diagnostics, we set the final argument count into
-  // the DiagnosticEngine object.
-  Flush();
-  // Process the diagnostic.
-  // bool result = de->EmitCurrentDiagnostic(IsForceEmit);
-
-  // This diagnostic is dead.
-  Clear();
-  // return Result;
-  return false;
 }
 
 DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm)
     : diagOpts(diagOpts), sm(sm) {}
-
-// void DiagnosticEngine::Issue(const StoredDiagnostic &storedDiagnostic) {}
 
 llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
                                                 bool printDiagnosticName) {
@@ -124,7 +107,12 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
   return DiagnosticStrings[(unsigned)diagID];
 }
 
-void DiagnosticEngine::FlushCurrentDiagnostic() {}
+void DiagnosticEngine::FlushCurrentDiagnostic() {
+
+  assert(curDiagnostic && "No active diagnostic to flush");
+  EmitCurrentDiagnostic(true);
+  curDiagnostic.reset();
+}
 
 bool DiagnosticEngine::HasError() { return false; }
 

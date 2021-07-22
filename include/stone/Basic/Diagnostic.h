@@ -102,7 +102,7 @@ public:
 };
 struct DiagnosticFormatOptions final {};
 
-/// Pass the D
+// TODO: Free Context
 class DiagnosticContext {
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
