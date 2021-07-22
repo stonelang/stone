@@ -1,12 +1,12 @@
 
 space Syntax.Template {
 
-	public any<T> interface Queue {
+	public template<T> interface Queue {
 		fun Add(const T* t) -> void;
 		fun Pop() -> *T;
 	}
 
-	public any<T> struct PriorityQueue : Queue<T> {
+	public template<T> struct PriorityQueue : Queue<T> {
 		private T[] entries; 
 	}
 	public PriorityQueue::PriorityQueue() {
@@ -18,5 +18,6 @@ space Syntax.Template {
 	}
 	public fun PriorityQueue::Pop() -> T* {
 	}
+
 }
 

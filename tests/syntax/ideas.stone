@@ -43,45 +43,5 @@ space Physics.QM {
 
 space Physics.QM {
 
-	public struct Particle {
-		public bool fired = false; 
-	}
-	public any<T> interface Accelerator {
-		fun Fire(const Particle* p) -> bool;
-	}
-	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
-		private string maker; 
-		private Detector* detector = null; 
-	}
-	public default fun LinearAccelerator::this() : this("")  {
-	}
 
-	public LinearAccelerator::this(string maker) {
-		detector = new Detector();
-	}
-
-	public LinearAccelerator::~this() {
-		if(detector) {
-			free detector;
-		}
-	}	
-	public fun LinearAcellerator::Fire(const Particle* p) -> bool {
-		p.fired = true; 
-		return true; 
-	}
-
-	fun Main() -> i32 {
-
-		auto p = new Particle();
-		auto a = new LinearAcceleartor(); 
-		a.Fire(a);
-
-		free p; 
-		free a;
-	}
-
-
-	fun Do(const any* ptr) {
-
-	}
-
+}	

@@ -148,8 +148,14 @@ public:
   tk::Type GetVal() const { return val; }
 };
 
-enum class SyntaxArgumentKind { None, Decl, DeclContext, Type, Identifier };
-
+enum class SyntaxArgumentKind {
+  None,
+  Decl,
+  DeclContext,
+  Type,
+  Identifier,
+  Token
+};
 struct SyntaxArgument : public Argument {
   SyntaxArgumentKind kind = SyntaxArgumentKind::None;
 

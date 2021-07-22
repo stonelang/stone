@@ -47,7 +47,7 @@ InFlightDiagnostic CodeFixer::InsertFromLoc(SrcLoc insertionLoc,
                                             llvm::StringRef code,
                                             bool beforePreviousInsertions) {
 
-  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetContext().AddFix(
+  inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
               CharSrcRange(), code, beforePreviousInsertions));
 
@@ -60,7 +60,7 @@ InFlightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
                                               CharSrcRange fromRange,
                                               bool beforePreviousInsertions) {
 
-  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetContext().AddFix(
+  inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc), fromRange,
               llvm::StringRef(), beforePreviousInsertions));
 
@@ -70,7 +70,7 @@ InFlightDiagnostic CodeFixer::InsertFromRange(SrcLoc insertionLoc,
 /// source range.
 InFlightDiagnostic CodeFixer::RemoveRange(CharSrcRange removeRange) {
 
-  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetContext().AddFix(
+  inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
 
   return InFlightDiagnostic(inFlightDiag.GetDiagEngine());
@@ -84,7 +84,7 @@ InFlightDiagnostic CodeFixer::RemoveRange(SrcRange removeRange) {
 InFlightDiagnostic CodeFixer::Replace(CharSrcRange removeRange,
                                       llvm::StringRef code) {
 
-  inFlightDiag.GetDiagEngine()->GetCurrentDiagnostic().GetContext().AddFix(
+  inFlightDiag.GetDiagEngine().GetCurrentDiagnostic().GetContext().AddFix(
       CodeFix(CharSrcRange(), removeRange, code));
 
   return InFlightDiagnostic(inFlightDiag.GetDiagEngine());

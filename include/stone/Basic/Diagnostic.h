@@ -159,7 +159,7 @@ public:
   explicit Diagnostic(DiagnosticContext context) : context(context) {}
 
 public:
-  DiagnosticContext &GetContext() { return context; }
+  DiagnosticContext &GetContext() const { return context; }
 
   // TODO: UB
   void AddChild(Diagnostic &&diagnostic);

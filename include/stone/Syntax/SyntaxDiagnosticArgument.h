@@ -12,9 +12,14 @@ using stone::Diagnostic;
 
 namespace stone {
 
-class DiagnosticEngine;
-
 namespace diag {
+
+// struct TokenArgument final : public SyntaxArgument {
+//   const syn::Token *val;
+//   DeclArgument() = delete;
+//   explicit TokenArgument(const syn::Token *val)
+//       : SyntaxArgument(SyntaxArgumentKind::Token), val(val) {}
+// };
 
 struct DeclArgument final : public SyntaxArgument {
   const syn::Decl *val;

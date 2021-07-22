@@ -123,7 +123,7 @@ class InFlightDiagnostic final {
   friend class PartialDiagnostic;
 
   CodeFixer fixer;
-  DiagnosticEngine *de = nullptr;
+  DiagnosticEngine &de;
 
   /// Status variable indicating if this diagnostic is still active.
   ///
@@ -142,10 +142,10 @@ class InFlightDiagnostic final {
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
 
 public:
-  InFlightDiagnostic(DiagnosticEngine *de)
+  InFlightDiagnostic(DiagnosticEngine &de)
       : de(de), fixer(*this), isActive(true) {
 
-    assert(de && "InFlightDiagnostic requires a valid DiagnosticEngine!");
+    // TODO:
     Flush();
   }
 
@@ -156,40 +156,27 @@ public:
     other.isActive = false;
   }
   /// Emits the diagnostic.
-  ~InFlightDiagnostic() { Emit(); }
+  ~InFlightDiagnostic() {
+
+    if (IsActive()) {
+      Emit();
+    }
+  }
 
 public:
   CodeFixer &WithFix() { return fixer; }
-  DiagnosticEngine *GetDiagEngine() { return de; }
+  DiagnosticEngine &GetDiagEngine() { return de; }
 
 protected:
-  void FlushCounts() {}
-
   void Flush();
 
   /// Clear out the current diagnostic.
-  void Clear() const {}
+  void Clear();
 
   /// Determine whether this diagnostic is still active.
   bool IsActive() const { return isActive; }
 
-  bool Emit() {
-    // If this diagnostic is inactive, then its soul was stolen by the copy ctor
-    // (or by a subclass, as in SemaInFlightDiagnostic).
-    if (!IsActive())
-      return false;
-
-    // When emitting diagnostics, we set the final argument count into
-    // the DiagnosticEngine object.
-    FlushCounts();
-    // Process the diagnostic.
-    // bool result = de->EmitCurrentDiagnostic(IsForceEmit);
-
-    // This diagnostic is dead.
-    Clear();
-    // return Result;
-    return false;
-  }
+  bool Emit();
 };
 
 /// Concrete class used by the front-end to report problems and issues.
@@ -365,7 +352,7 @@ public:
   GetEmissionDiagnosticForDiagnostic(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
-  void EmitDiagnostic(const Diagnostic &diag);
+  void EmitSpecificDiagnostic(const Diagnostic &diag);
 
   /// Send all tentative diagnostics to all diagnostic consumers and
   /// delete them.
@@ -381,7 +368,7 @@ public:
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
     curDiagnostic->GetContext().SetLoc(loc);
-    return InFlightDiagnostic(this);
+    return InFlightDiagnostic(*this);
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,

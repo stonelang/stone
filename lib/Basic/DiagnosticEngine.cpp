@@ -84,6 +84,32 @@ static constexpr const char *const FixItStrings[] = {
     "<not a fix-it>",
 };
 
+void InFlightDiagnostic::Flush() {
+  de.GetCurrentDiagnostic().GetContext().Flush();
+}
+
+void InFlightDiagnostic::Clear() {}
+
+bool InFlightDiagnostic::Emit() {
+  // If this diagnostic is inactive, then its soul was stolen by the copy ctor
+  // (or by a subclass, as in SemaInFlightDiagnostic).
+  if (!IsActive()) {
+    return false;
+  }
+
+  de.EmitCurrentDiagnostic(isForceEmit);
+  // When emitting diagnostics, we set the final argument count into
+  // the DiagnosticEngine object.
+  Flush();
+  // Process the diagnostic.
+  // bool result = de->EmitCurrentDiagnostic(IsForceEmit);
+
+  // This diagnostic is dead.
+  Clear();
+  // return Result;
+  return false;
+}
+
 DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm)
     : diagOpts(diagOpts), sm(sm) {}
 
@@ -101,11 +127,33 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
 }
 
 void DiagnosticEngine::FlushCurrentDiagnostic() {}
+
 bool DiagnosticEngine::HasError() { return false; }
 
 void DiagnosticEngine::Print(ColorOutputStream &os,
                              const PrintingPolicy *policy) const {}
 
-void InFlightDiagnostic::Flush() {
-  de->GetCurrentDiagnostic().GetContext().Flush();
+void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
+
+  auto emissionDiagnostic = GetEmissionDiagnosticForDiagnostic(diagnostic);
+
+  for (auto &listener : listeners) {
+    listener->Listen(diag::Level::Warn, *emissionDiagnostic);
+  }
+}
+
+void DiagnosticEngine::EmitPendingDiagnostics() {}
+
+bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
+
+  EmitSpecificDiagnostic(*curDiagnostic);
+}
+
+llvm::Optional<EmissionDiagnostic>
+DiagnosticEngine::GetEmissionDiagnosticForDiagnostic(
+    const Diagnostic &diagnostic) {
+
+  return EmissionDiagnostic(
+      diagnostic, GetDiagString(diagnostic.GetContext().GetDiagID(), true),
+      /*TODO*/ llvm::StringRef());
 }

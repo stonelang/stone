@@ -29,6 +29,8 @@ public:
   void Print() override;
 };
 
+class CheckingDiagnostics {};
+
 class Checker final {
   friend CheckerStats;
 
