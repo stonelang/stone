@@ -25,22 +25,13 @@ namespace syn {
 
 class Expr : public ValueStmt {
 public:
-  enum Type {};
-
-private:
-  Expr::Type ty;
-
-public:
   Expr() = delete;
   Expr(const Expr &) = delete;
   Expr(Expr &&) = delete;
   Expr &operator=(const Expr &) = delete;
   Expr &operator=(Expr &&) = delete;
-
 public:
-  Expr::Type GetType() { return ty; }
-
-public:
+  //Expr(StmtKind kind) : ValueStmt(kind) {}
 };
 
 /// FullExpr - Represents a "full-expression" node.

@@ -24,6 +24,8 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/SyntaxNode.h"
+#include "stone/Syntax/StmtKind.h"
+
 
 namespace stone {
 class SrcMgr;
@@ -34,15 +36,10 @@ class FunDecl;
 class VarDecl;
 class Expr;
 class StringLiteral;
-
 class TreeContext;
 
 class Stmt : public SyntaxNode {
-public:
-  enum Type {};
-
-private:
-  Stmt::Type ty;
+  StmtKind kind; 
 
 public:
   Stmt() = delete;
@@ -52,7 +49,10 @@ public:
   Stmt &operator=(Stmt &&) = delete;
 
 public:
-  Stmt::Type GetType() { return ty; }
+  Stmt(StmtKind kind) : kind(kind) {}
+
+public:
+  StmtKind GetKind() { return kind; }
 };
 
 class DeclStmt : public Stmt {
@@ -85,7 +85,11 @@ class DefaultStmt : public MatchCase {
   Stmt *subStmt;
 };
 
-class ValueStmt : public Stmt {};
+class ValueStmt : public Stmt {
+public:
+  
+
+};
 
 /// LabelStmt - Represents a label, which has a substatement.  For example:
 ///    foo: return;

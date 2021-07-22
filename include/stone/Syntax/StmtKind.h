@@ -4,8 +4,13 @@
 namespace stone {
 namespace syn {
 
-enum class StmtKind : uint8_t { None };
-} // namespace syn
-
+enum class StmtKind : uint8_t{
+#define STMT(ID, PARENT) ID,
+#define LAST_STMT(ID) Last_Stmt = ID,
+#define STMT_RANGE(Id, FirstId, LastId) \
+  First_##Id##Stmt = FirstId, Last_##Id##Stmt = LastId,
+#include "stone/Syntax/StmtKind.def"
+};
+}
 } // namespace stone
 #endif

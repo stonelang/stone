@@ -121,8 +121,7 @@ void DiagnosticEngine::Print(ColorOutputStream &os,
 
 void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 
-  auto emissionDiagnostic = GetEmissionDiagnosticForDiagnostic(diagnostic);
-
+  auto emissionDiagnostic = BuildEmissionDiagnostic(diagnostic);
   for (auto &listener : listeners) {
     listener->Listen(/*TODO*/ diag::Level::Warn, *emissionDiagnostic);
   }
@@ -136,8 +135,7 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
 }
 
 llvm::Optional<EmissionDiagnostic>
-DiagnosticEngine::GetEmissionDiagnosticForDiagnostic(
-    const Diagnostic &diagnostic) {
+DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
 
   return EmissionDiagnostic(
       diagnostic, GetDiagString(diagnostic.GetContext().GetDiagID(), true),

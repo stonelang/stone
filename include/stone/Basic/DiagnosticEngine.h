@@ -51,6 +51,14 @@ public:
       : ignoreAllWarnings(false), enableAllWarnings(false),
         warningsAsErrors(false), errorsAsFatal(false),
         suppressSystemWarnings(false) {}
+
+  private:
+    // Make the state movable only
+    DiagnosticState(const DiagnosticState &) = delete;
+    const DiagnosticState &operator=(const DiagnosticState &) = delete;
+
+    DiagnosticState(DiagnosticState &&) = default;
+    DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
 class InFlightDiagnostic final {
@@ -243,7 +251,7 @@ public:
 public:
   /// Generate EmissionDiagnostic for a Diagnostic to be passed to listeners.
   llvm::Optional<EmissionDiagnostic>
-  GetEmissionDiagnosticForDiagnostic(const Diagnostic &diagnostic);
+  BuildEmissionDiagnostic(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
   void EmitSpecificDiagnostic(const Diagnostic &diag);
@@ -265,8 +273,10 @@ public:
   /// Determine whethere there is already a diagnostic in flight -- there is a
   /// better way.
   bool IsDiagnosticInFlight() {
-    return (unsigned)curDiagnostic->GetContext().GetDiagID() !=
-           std::numeric_limits<unsigned>::max();
+    if (curDiagnostic) {
+      return true;
+    }
+    return false;
   }
 
 private:

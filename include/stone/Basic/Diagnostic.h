@@ -146,7 +146,8 @@ public:
   void SetLevel(diag::Level l) { level = l; }
   diag::Level GetLevel() { return level; }
 
-  void Flush() {
+  void Clear() {
+    args.clear();
     ranges.clear();
     fixes.clear();
   }
