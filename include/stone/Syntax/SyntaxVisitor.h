@@ -16,9 +16,9 @@ public:
 
 class SyntaxVisitor {
 public:
-  void Visit(const Decl* d);
-  void Visit(const Stmt* s);
-  void Visit(const Expr* e);
+  void Visit(const Decl *d);
+  void Visit(const Stmt *s);
+  void Visit(const Expr *e);
 };
 } // namespace syn
 } // namespace stone

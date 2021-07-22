@@ -6,7 +6,9 @@ namespace syn {
 class TreeContext;
 
 namespace builtin {
-enum ID {};
+
+enum BuiltinID {};
+
 struct Profile {
   const char *name;
   const char *ty;

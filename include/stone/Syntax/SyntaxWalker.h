@@ -6,7 +6,7 @@ namespace syn {
 
 class Decl;
 class Stmt;
-class Expr; 
+class Expr;
 
 class SyntaxWalker;
 class WalkableSyntax {
@@ -15,9 +15,9 @@ public:
 };
 class SyntaxWalker {
 public:
-  void Walk(const Decl* d);
-  void Walk(const Stmt* s);
-  void Walk(const Expr* e);
+  void Walk(const Decl *d);
+  void Walk(const Stmt *s);
+  void Walk(const Expr *e);
 };
 } // namespace syn
 } // namespace stone

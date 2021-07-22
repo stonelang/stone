@@ -2,17 +2,17 @@
 #define STONE_SYNTAX_DECL_H
 
 #include "stone/Basic/AddressSpace.h"
-
 #include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/DeclContext.h"
+#include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -41,7 +41,17 @@ class Module;
 class BraceStmt;
 class DeclContext;
 class TreeContext;
-class DeclFactory;
+class ValueDecl;
+class VarDecl;
+class SyntaxNode;
+class Type;
+class Expr;
+class ConstructorDecl;
+class DestructorDecl;
+class DiagnosticEngine;
+class TypeAliasDecl;
+class ArchetypeKind;
+class SyntaxPrinter;
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -52,14 +62,12 @@ public:
   void Print() override;
 };
 
-enum { DeclAlignment = 8 };
-
-class alignas(DeclAlignment) Decl : public SyntaxNode {
+class alignas(1 << DeclAlignInBits) Decl : public SyntaxNode {
 
   friend DeclStats;
 
   DeclKind kind;
-  // The Decl location
+  /// The location of the decl
   SrcLoc loc;
   DeclContext *dc;
 
@@ -130,16 +138,14 @@ public:
 
   TreeContext &GetTreeContext() const LLVM_READONLY;
 
-  /*
-    const TreeContext &GetTreeContext() const {
-      auto DC = context.dyn_cast<DeclContext *>();
-      if (DC) {
-        return DC->GetASTContext();
-      }
-      return *context.get<ASTContext *>();
-    }
+  // const TreeContext &GetTreeContext() const {
+  //   auto DC = context.dyn_cast<DeclContext *>();
+  //   if (DC) {
+  //     return DC->GetASTContext();
+  //   }
+  //   return *context.get<ASTContext *>();
+  // }
 
-  */
 protected:
   Decl(DeclKind kind, SrcLoc loc, DeclContext *dc)
       : kind(kind), loc(loc), dc(dc) {}
@@ -150,11 +156,9 @@ enum class DeclContextKind : uint8_t {
   Expr,
   File,
 };
-
 class DeclContext {
   DeclKind dTy;
   DeclContextKind dcTy;
-
   DeclContext *parent;
 
 protected:
@@ -275,8 +279,11 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-class AnyDecl : public NamedDecl {};
-class TypeDecl : public NamedDecl {
+class AnyDecl : public NamedDecl {
+public:
+};
+
+class TypeDecl : public NamedDecl /*TODO: AnyDecl*/ {
 
   friend class TreeContext;
   /// This indicates the Type object that represents
@@ -341,7 +348,7 @@ class FunctionDecl
       public DeclContext,
       public AccessControl /*, syn::Redeclarable<FunctionDecl> */ {
 
-  StorageType storageTy;
+  StorageKind storageKind;
 
 public:
   FunctionDecl(DeclKind kind, SrcLoc loc, TreeContext &tc, DeclContext *dc);
@@ -351,8 +358,10 @@ public:
   Stmt *GetBody();
   // void SetBody(Stmt body) {}
 
-  void SetStorageType(StorageType storageTy) { this->storageTy = storageTy; }
-  StorageType GetStorageType() { return storageTy; }
+  void SetStorageKind(StorageKind storageTy) {
+    this->storageKind = storageKind;
+  }
+  StorageKind GetStorageKind() { return storageKind; }
 
   // void SetReturnType(TypeDecl* tyDecl);
 
@@ -393,16 +402,16 @@ public:
 };
 
 // Member functions: fun Particle::Fire() -> bool ...
-class MethodDecl : public FunctionDecl {
-public:
-  // MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
-  //            const DeclName &dn, SrcLoc dnLoc, StorageType st)
-  //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
+// class MethodDecl : public FunctionDecl {
+// public:
+//   // MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
+//   //            const DeclName &dn, SrcLoc dnLoc, StorageType st)
+//   //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 
-public:
-  bool IsStatic() const;
-  bool IsInstance() const { return !IsStatic(); }
-};
+// public:
+//   bool IsStatic() const;
+//   bool IsInstance() const { return !IsStatic(); }
+// };
 
 class NominalTypeDecl : public TypeDecl,
                         public DeclContext,
@@ -429,13 +438,13 @@ class ConstructorInitializer final {
 public:
 };
 
-class ConstructorDecl : public MethodDecl {
-public:
-};
+// class ConstructorDecl : public MethodDecl {
+// public:
+// };
 
-class DestructorDecl : public MethodDecl {
-public:
-};
+// class DestructorDecl : public MethodDecl {
+// public:
+// };
 
 // TODO: Maybe Enum, Struct, ... can be replaced with Member
 enum class UseDeclKind : uint8_t {

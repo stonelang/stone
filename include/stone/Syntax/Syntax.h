@@ -1,16 +1,16 @@
 #ifndef STONE_SYNTAX_SYNTAX_H
 #define STONE_SYNTAX_SYNTAX_H
 
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxResult.h"
 #include "stone/Syntax/TreeContext.h"
 #include "stone/Syntax/Type.h"
 
 namespace stone {
-class InFlightDiagnostic;
-
 namespace syn {
 class Decl;
 class DeclContext;
@@ -63,6 +63,29 @@ public:
 public:
   Identifier &MakeIdentifier(llvm::StringRef name);
   DeclName MakeDeclName();
+
+public:
+  stone::InFlightDiagnostic DiagnoseSyntax(SrcLoc loc, DiagID diagID) {
+    return tc.GetBasic().GetDiagEngine().Diagnose(
+        loc, SyntaxDiagnostic(
+                 DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())));
+  }
+
+  stone::InFlightDiagnostic
+  DiagnoseSyntax(SrcLoc loc, DiagID diagID,
+                 llvm::ArrayRef<diag::Argument> args) {
+    return tc.GetBasic().GetDiagEngine().Diagnose(
+        loc, SyntaxDiagnostic(DiagnosticContext(diagID, args)));
+  }
+
+  template <typename... ArgTypes>
+  stone::InFlightDiagnostic
+  DiagnoseSyntax(SrcLoc loc, Diag<ArgTypes...> id,
+                 typename stone::detail::PassArgument<ArgTypes>::type... args) {
+
+    return tc.GetBasic().GetDiagEngine().Diagnose(
+        loc, SyntaxDiagnostic(DiagnosticContext(id, std::move(args)...)));
+  }
 
 public:
   /// \param extraSpace The amount of extra space to allocate after the object

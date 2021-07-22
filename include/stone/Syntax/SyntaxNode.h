@@ -1,10 +1,11 @@
-#ifndef STONE_SYNTAX_NODE_H
-#define STONE_SYNTAX_NODE_H
+#ifndef STONE_SYNTAX_SYNTAXNODE_H
+#define STONE_SYNTAX_SYNTAXNODE_H
 
 namespace stone {
 namespace syn {
 
-enum class SyntaxNodeKind { Decl, Smt, Expr };
+enum class SyntaxNodeKind : uint8_t { Decl, Smt, Expr };
+
 class SyntaxNode {
   SyntaxNodeKind kind;
 

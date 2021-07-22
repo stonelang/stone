@@ -7,8 +7,8 @@
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/SyntaxScope.h"
-#include "stone/Syntax/TreeContext.h"
 #include "stone/Syntax/SyntaxWalker.h"
+#include "stone/Syntax/TreeContext.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -87,7 +87,9 @@ class BuiltinFile final : public ModuleFile {
 public:
 };
 
-class Module final : public DeclContext, public TypeDecl, public WalkableSyntax {
+class Module final : public DeclContext,
+                     public TypeDecl,
+                     public WalkableSyntax {
 
 public:
   Module(Identifier &name, TreeContext &tc);

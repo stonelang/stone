@@ -35,8 +35,8 @@ Identifier &Syntax::MakeIdentifier(llvm::StringRef name) {
 }
 Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
 
-  auto declPtr =
-      Syntax::AllocateDeclMem<Module>(GetTreeContext(), sizeof(Module));
+  auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetTreeContext(),
+                                                      sizeof(syn::Module));
 
   return ::new (declPtr) syn::Module(name, GetTreeContext());
 }

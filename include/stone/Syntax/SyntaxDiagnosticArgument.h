@@ -46,6 +46,7 @@ struct TypeArgument final : public SyntaxArgument {
 };
 
 } // namespace diag
+
 class SyntaxDiagnostic final : public Diagnostic {
 public:
   explicit SyntaxDiagnostic(DiagnosticContext context) : Diagnostic(context) {}

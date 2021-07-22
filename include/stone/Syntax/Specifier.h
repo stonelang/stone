@@ -49,7 +49,7 @@ enum class ExprValueType {
 
 /// Storage classes.
 /// These are legal on both functions and variables
-enum class StorageType {
+enum class StorageKind {
   None,
   Extern,
   Static,

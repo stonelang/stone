@@ -1,4 +1,6 @@
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/Builtin.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"

@@ -737,6 +737,7 @@ class SrcMgr : public RefCountedBase<SrcMgr> {
 public:
   SrcMgr(DiagnosticEngine &de, FileMgr &fileMgr,
          bool UserFilesAreVolatile = false);
+
   explicit SrcMgr(const SrcMgr &) = delete;
   SrcMgr &operator=(const SrcMgr &) = delete;
   ~SrcMgr();

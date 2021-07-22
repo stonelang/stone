@@ -1,22 +1,8 @@
 #ifndef STONE_SYNTAX_DECLBITS_H
 #define STONE_SYNTAX_DECLBITS_H
 
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <iterator>
-#include <string>
-#include <type_traits>
-#include <utility>
-
 namespace stone {
 namespace syn {
-
-class Module;
-class Decl;
-class NominalTypeDecl;
-class DeclContext;
-class FunctionDecl;
 
 /// Stores the bits used by DeclContext.
 /// If modified NumDeclContextBit, the ctor of DeclContext and the accessor
@@ -182,6 +168,11 @@ class ModuleDeclBits final {
   uint64_t IsMainModule : 1;
 };
 enum { NumModuleBits = 5 };
+
+class EnumDeclBitfields final {
+
+  friend class EnumDecl;
+};
 
 } // namespace syn
 } // namespace stone
