@@ -52,13 +52,13 @@ public:
         warningsAsErrors(false), errorsAsFatal(false),
         suppressSystemWarnings(false) {}
 
-  private:
-    // Make the state movable only
-    DiagnosticState(const DiagnosticState &) = delete;
-    const DiagnosticState &operator=(const DiagnosticState &) = delete;
+private:
+  // Make the state movable only
+  DiagnosticState(const DiagnosticState &) = delete;
+  const DiagnosticState &operator=(const DiagnosticState &) = delete;
 
-    DiagnosticState(DiagnosticState &&) = default;
-    DiagnosticState &operator=(DiagnosticState &&) = default;
+  DiagnosticState(DiagnosticState &&) = default;
+  DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
 class InFlightDiagnostic final {

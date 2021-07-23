@@ -30,8 +30,9 @@ public:
   Expr(Expr &&) = delete;
   Expr &operator=(const Expr &) = delete;
   Expr &operator=(Expr &&) = delete;
+
 public:
-  //Expr(StmtKind kind) : ValueStmt(kind) {}
+  // Expr(StmtKind kind) : ValueStmt(kind) {}
 };
 
 /// FullExpr - Represents a "full-expression" node.

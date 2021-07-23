@@ -23,9 +23,8 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/StmtBits.h"
-#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/StmtKind.h"
-
+#include "stone/Syntax/SyntaxNode.h"
 
 namespace stone {
 class SrcMgr;
@@ -39,7 +38,7 @@ class StringLiteral;
 class TreeContext;
 
 class Stmt : public SyntaxNode {
-  StmtKind kind; 
+  StmtKind kind;
 
 public:
   Stmt() = delete;
@@ -80,17 +79,19 @@ class CaseStmt final : public MatchCase,
   friend TrailingObjects;
 };
 
-// TODO: fallthrough
+
 class DefaultStmt : public MatchCase {
   Stmt *subStmt;
 };
 
-class ValueStmt : public Stmt {
-public:
-  
-
+class NextStmt : public Stmt {
+  Stmt *subStmt;
 };
 
+
+class ValueStmt : public Stmt {
+public:
+};
 /// LabelStmt - Represents a label, which has a substatement.  For example:
 ///    foo: return;
 class LabelStmt : public ValueStmt {
