@@ -19,7 +19,7 @@ public:
   llvm::StringRef GetName() override { return "Check"; }
 
 public:
-  virtual void ObserveDecl(const syn::Decl *decl) = 0;
+  virtual void OnDecl(const syn::Decl *decl) = 0;
 };
 
 } // namespace stone

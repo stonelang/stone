@@ -11,13 +11,13 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace gen {
+namespace codegen {
 
 class CodeGenBlocks {
 public:
   CodeGenBlocks();
 };
 
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 #endif

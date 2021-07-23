@@ -1,5 +1,5 @@
 #include "stone/CodeGen/CodeGenBlocks.h"
 
-using namespace stone::gen;
+using namespace stone::codegen;
 
 CodeGenBlocks::CodeGenBlocks() {}

@@ -9,11 +9,6 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_code_analysis_sources
-	TypeCheck.cpp
-	CheckDecl.cpp
-	TypeChecker.cpp
-	CheckExpr.cpp
-	CheckStmt.cpp
 	Lexer.cpp
 	LexerCache.cpp
 	Parse.cpp
@@ -21,6 +16,11 @@ set(stone_code_analysis_sources
 	Parser.cpp
 	ParseExpr.cpp
 	ParseStmt.cpp
+	TypeCheck.cpp
+	TypeCheckDecl.cpp
+	TypeChecker.cpp
+	TypeCheckExpr.cpp
+	TypeCheckStmt.cpp
 	
 	LINK_LIBS
 	StoneSyntax

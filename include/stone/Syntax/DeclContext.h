@@ -37,11 +37,7 @@ class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
 
-enum class DeclContextKind : uint8_t {
-  Decl,
-  Expr,
-  File
-};
+enum class DeclContextKind : uint8_t { Decl, Expr, File };
 class DeclContext {
   DeclKind dTy;
   DeclContextKind dcTy;

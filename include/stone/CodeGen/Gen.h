@@ -23,21 +23,21 @@ namespace syn {
 class TreeContext;
 class Module;
 } // namespace syn
-namespace gen {
+namespace codegen {
 class CodeGenOptions;
 class GenModuleProfile;
-} // namespace gen
+} // namespace codegen
 
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const gen::CodeGenOptions &genOpts,
+CreateTargetMachine(const codegen::CodeGenOptions &genOpts,
                     syn::TreeContext &basic);
 
 // TODO: remove GenModuleProfile
 llvm::Module *GenIR(syn::Module *langMod, const Basic &basic,
-                    const gen::CodeGenOptions &genOpts,
+                    const codegen::CodeGenOptions &genOpts,
                     const OutputFile *output);
 
-bool GenObject(llvm::Module *llvmMod, const gen::CodeGenOptions &genOpts,
+bool GenObject(llvm::Module *llvmMod, const codegen::CodeGenOptions &genOpts,
                syn::TreeContext &basic, const OutputFile *output);
 
 void GenModule();

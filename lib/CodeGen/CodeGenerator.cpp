@@ -5,6 +5,6 @@
 #include "llvm/IR/Module.h"
 
 using namespace stone;
-using namespace stone::gen;
+using namespace stone::codegen;
 
 CodeGenerator::CodeGenerator() {}

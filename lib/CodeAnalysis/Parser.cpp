@@ -4,7 +4,6 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/CodeAnalysis/Parser.h"
-#include "stone/CodeAnalysis/CheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 

@@ -8,7 +8,7 @@
 namespace stone {
 namespace syn {
 
-enum class TriviaKind {
+enum class TriviaKind : uint8_t {
   BlockComment,
   CarriageReturn,
   CarriageReturnLineFeed,

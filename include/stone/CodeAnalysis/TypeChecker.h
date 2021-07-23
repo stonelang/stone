@@ -20,11 +20,11 @@ class SyntaxFile;
 namespace sema {
 class TypeChecker;
 
-class CheckerStats final : public Stats {
+class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;
 
 public:
-  CheckerStats(const TypeChecker &checker, Basic &basic)
+  TypeCheckerStats(const TypeChecker &checker, Basic &basic)
       : Stats("checker statistics:", basic), checker(checker) {}
   void Print() override;
 };
@@ -32,17 +32,17 @@ public:
 class TypeCheckingDiagnostics {};
 
 class TypeChecker final {
-  friend CheckerStats;
+  friend TypeCheckerStats;
 
   Syntax &syntax;
   syn::SyntaxFile &sf;
-  std::unique_ptr<CheckerStats> stats;
+  std::unique_ptr<TypeCheckerStats> stats;
   TypeCheckerPipeline *pipeline;
 
 public:
   /// TODO: Pass in Syntax so that you can create the Nodes
   TypeChecker(syn::SyntaxFile &sf, Syntax &syntax,
-          TypeCheckerPipeline *pipeline = nullptr);
+              TypeCheckerPipeline *pipeline = nullptr);
 
 public:
   void CheckDecl(Decl *d);

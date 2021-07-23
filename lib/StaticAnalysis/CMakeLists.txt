@@ -9,7 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_static_analysis_sources
-	StaticAnalysis.cpp
+	StaticChecker.cpp
 		
 	LINK_LIBS
 		StoneSyntax

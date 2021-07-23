@@ -1,5 +1,5 @@
 #include "stone/Basic/Ret.h"
-#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/Gen.h"
 #include "stone/CodeGen/CodeGenOptions.h"
 #include "stone/CodeGen/CodeGenerator.h"
 #include "stone/CodeGen/Native.h"
@@ -75,7 +75,7 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::gen;
+using namespace stone::codegen;
 using namespace stone::syn;
 
 llvm::Module *stone::GenIR(syn::Module *langMod, const Basic &basic,
@@ -90,8 +90,8 @@ std::unique_ptr<llvm::TargetMachine>
 stone::CreateTargetMachine(const CodeGenOptions &genOpts, TreeContext &astCtx) {
   return nullptr;
 }
-bool stone::GenObject(llvm::Module *llvmMod, const gen::CodeGenOptions &genOpts,
-                      syn::TreeContext &basic, const OutputFile *output) {
+bool stone::GenObject(llvm::Module *llvmMod, const CodeGenOptions &genOpts,
+                      TreeContext &basic, const OutputFile *output) {
 
   assert(llvmMod && "Null LLVM Module");
 

@@ -7,8 +7,7 @@ class StaticChecker final {
 public:
   StaticChecker();
   ~StaticChecker();
-  
 };
 
-}
-#endif 
+} // namespace stone
+#endif

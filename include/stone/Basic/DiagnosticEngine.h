@@ -4,6 +4,7 @@
 #include "stone/Basic/Diagnostic.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticTransaction.h"
+#include "stone/Basic/DiagnosticEngineBase.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/LangVersion.h"
 #include "stone/Basic/List.h"
@@ -122,7 +123,7 @@ public:
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public Printable {
+class DiagnosticEngine final : public DiagnosticEngineBase, public Printable {
 
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;

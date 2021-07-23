@@ -2,11 +2,11 @@
 #define STONE_CODEGEN_CODEGENMODULE_H
 
 namespace stone {
-namespace gen {
+namespace codegen {
 
 class CodeGenModule final {};
 
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 
 #endif

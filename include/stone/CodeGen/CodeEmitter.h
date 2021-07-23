@@ -14,7 +14,7 @@ namespace stone {
 namespace syn {
 class Decl;
 }
-namespace gen {
+namespace codegen {
 
 class CodeEmitter final {
 public:
@@ -29,6 +29,6 @@ public:
 public:
   void EmitExpr();
 };
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 #endif

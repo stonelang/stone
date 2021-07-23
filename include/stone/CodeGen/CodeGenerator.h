@@ -14,7 +14,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace gen {
+namespace codegen {
 class CodeGenModule;
 class CodeGenerator final {
 public:
@@ -36,6 +36,6 @@ public:
   /// It will also return null if the module is released.
   llvm::Module *GetModule();
 };
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 #endif

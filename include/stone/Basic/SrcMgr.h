@@ -42,7 +42,7 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngineBase.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -62,7 +62,7 @@ namespace stone {
 
 class SrcLineTable;
 class SrcMgr;
-class DiagnosticEngine;
+class DiagnosticEngineBase;
 /// Public enums and private classes that are part of the
 /// SrcMgr implementation.
 namespace src {
@@ -188,8 +188,8 @@ public:
   ///   will be emitted at.
   ///
   /// \param Invalid If non-NULL, will be set \c true if an error occurred.
-  const llvm::MemoryBuffer *getBuffer(DiagnosticEngine &de, const SrcMgr &sm,
-                                      SrcLoc Loc = SrcLoc(),
+  const llvm::MemoryBuffer *getBuffer(DiagnosticEngineBase &de,
+                                      const SrcMgr &sm, SrcLoc Loc = SrcLoc(),
                                       bool *invalid = nullptr) const;
 
   /// Returns the size of the content encapsulated by this
@@ -572,10 +572,8 @@ using ModuleBuildStack = ArrayRef<std::pair<std::string, FullSrcLoc>>;
 /// where the expanded token came from and the expansion location specifies
 /// where it was expanded.
 class SrcMgr : public RefCountedBase<SrcMgr> {
-  /// DiagnosticEngine object.
-  DiagnosticEngine &de;
-
   FileMgr &fileMgr;
+  DiagnosticEngineBase &de;
 
   mutable llvm::BumpPtrAllocator ContentCacheAlloc;
 
@@ -735,7 +733,7 @@ class SrcMgr : public RefCountedBase<SrcMgr> {
       StoredModuleBuildStack;
 
 public:
-  SrcMgr(DiagnosticEngine &de, FileMgr &fileMgr,
+  SrcMgr(DiagnosticEngineBase &de, FileMgr &fileMgr,
          bool UserFilesAreVolatile = false);
 
   explicit SrcMgr(const SrcMgr &) = delete;
@@ -748,7 +746,7 @@ public:
   /// described by \p Old. Requires that \p Old outlive \p *this.
   void initializeForReplay(const SrcMgr &Old);
 
-  DiagnosticEngine &getDiagnosticEngine() const { return de; }
+  DiagnosticEngineBase &getDiagnosticEngine() const { return de; }
 
   FileMgr &getFileMgr() const { return fileMgr; }
 

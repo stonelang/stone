@@ -4,7 +4,7 @@
 #include "stone/Syntax/SyntaxScope.h"
 namespace stone {
 namespace syn {
-  
+
 class SyntaxScopeCache final {
   enum { MaxSize = 16 };
   unsigned curSize;

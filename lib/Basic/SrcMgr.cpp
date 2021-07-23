@@ -90,7 +90,7 @@ void ContentCache::replaceBuffer(const llvm::MemoryBuffer *B, bool DoNotFree) {
   Buffer.setInt((B && DoNotFree) ? DoNotFreeFlag : 0);
 }
 
-const llvm::MemoryBuffer *ContentCache::getBuffer(DiagnosticEngine &de,
+const llvm::MemoryBuffer *ContentCache::getBuffer(DiagnosticEngineBase &de,
                                                   const SrcMgr &SM, SrcLoc Loc,
                                                   bool *Invalid) const {
   // Lazily create the Buffer for ContentCaches that wrap files.  If we already
@@ -343,7 +343,7 @@ SrcLineTable &SrcMgr::getLineTable() {
 // Private 'Create' methods.
 //===----------------------------------------------------------------------===//
 
-SrcMgr::SrcMgr(DiagnosticEngine &de, FileMgr &fileMgr,
+SrcMgr::SrcMgr(DiagnosticEngineBase &de, FileMgr &fileMgr,
                bool UserFilesAreVolatile)
     : de(de), fileMgr(fileMgr), UserFilesAreVolatile(UserFilesAreVolatile) {
   clearIDTables();
@@ -1211,10 +1211,10 @@ unsigned SrcMgr::getPresumedColumnNumber(SrcLoc Loc, bool *Invalid) const {
 #endif
 
 static LLVM_ATTRIBUTE_NOINLINE void
-ComputeLineNumbers(DiagnosticEngine &de, ContentCache *FI,
+ComputeLineNumbers(DiagnosticEngineBase &de, ContentCache *FI,
                    llvm::BumpPtrAllocator &Alloc, const SrcMgr &SM,
                    bool &Invalid);
-static void ComputeLineNumbers(DiagnosticEngine &de, ContentCache *FI,
+static void ComputeLineNumbers(DiagnosticEngineBase &de, ContentCache *FI,
                                llvm::BumpPtrAllocator &Alloc, const SrcMgr &SM,
                                bool &Invalid) {
   // Note that calling 'getBuffer()' may lazily page in the file.

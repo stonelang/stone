@@ -8,7 +8,7 @@ set( LLVM_LINK_COMPONENTS
   IPO
   Option
   )
-set(stone_gen_sources
+set(stone_codegen_sources
 	CodeGenBlocks.cpp
 	CodeGenerator.cpp
 	CodeEmitter.cpp
@@ -20,8 +20,8 @@ set(stone_gen_sources
 	LINK_LIBS
 	StoneSyntax
 )
-add_stone_library(StoneGen
-	${stone_gen_sources}
+add_stone_library(StoneCodeGen
+	${stone_codegen_sources}
 )
 
 

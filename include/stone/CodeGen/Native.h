@@ -2,13 +2,13 @@
 #define STONE_CODEGEN_NATIVE_H
 
 namespace stone {
-namespace gen {
+namespace codegen {
 class Native final {
 public:
   Native();
   ~Native();
 };
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 
 #endif

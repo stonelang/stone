@@ -4,7 +4,7 @@
 #include "stone/CodeGen/CodeEmitter.h"
 
 namespace stone {
-namespace gen {
+namespace codegen {
 
 class CodeGenFunction final {
 public:
@@ -13,7 +13,7 @@ public:
 public:
   CodeEmitter &GetEmitter() { return emitter; }
 };
-} // namespace gen
+} // namespace codegen
 } // namespace stone
 
 #endif
