@@ -1,4 +1,4 @@
-#include "stone/Syntax/Decl.h"
+#include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/Syntax.h"
 
 #include "stone/Basic/LLVM.h"
