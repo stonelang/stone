@@ -1,7 +1,7 @@
+#include "stone/CodeAnalysis/Lexer.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/CodeAnalysis/Lexer.h"
 #include "stone/CodeAnalysis/LexerPipeline.h"
 
 using namespace stone;

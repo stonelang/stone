@@ -24,10 +24,10 @@ set(stone_tools_files
 )
 set(stone_tests_files
 	${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
-	${STONE_SOURCE_DIR}/tests/units/CodeAnalysis/*.cpp 
-	${STONE_SOURCE_DIR}/tests/units/CodeGen/*.cpp 
-	${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
-	${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/CodeAnalysis/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/CodeGen/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
 )
 find_program(CLANG_FORMAT clang-format)
 	if(CLANG_FORMAT)

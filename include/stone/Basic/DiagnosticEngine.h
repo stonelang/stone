@@ -2,9 +2,9 @@
 #define STONE_BASIC_DIAGNOSTICENGINE_H
 
 #include "stone/Basic/Diagnostic.h"
+#include "stone/Basic/DiagnosticEngineBase.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticTransaction.h"
-#include "stone/Basic/DiagnosticEngineBase.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/LangVersion.h"
 #include "stone/Basic/List.h"

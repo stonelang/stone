@@ -1,5 +1,5 @@
-#include "stone/Basic/Ret.h"
 #include "stone/CodeAnalysis/TypeCheck.h"
+#include "stone/Basic/Ret.h"
 #include "stone/CodeAnalysis/TypeChecker.h"
 #include "stone/CodeAnalysis/TypeCheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"

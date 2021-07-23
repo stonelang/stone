@@ -27,12 +27,12 @@ namespace stone {
 // public:
 // };
 class DiagnosticEngineBase {
-// public:
-//   DiagnosticEngineBase() {}
-//   virtual ~DiagnosticEngineBase() {}
+  // public:
+  //   DiagnosticEngineBase() {}
+  //   virtual ~DiagnosticEngineBase() {}
 
 public:
-  //virtual void DelayDiagnostic(DiagID diagID) = 0;
+  // virtual void DelayDiagnostic(DiagID diagID) = 0;
 
   // virtual bool HasError() = 0;
 

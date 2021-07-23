@@ -1,9 +1,9 @@
+#include "stone/CodeAnalysis/Parser.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/CodeAnalysis/Parser.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
