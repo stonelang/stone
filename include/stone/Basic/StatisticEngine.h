@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_STATS_H
-#define STONE_BASIC_STATS_H
+#ifndef STONE_BASIC_STATISTICENGINE_H
+#define STONE_BASIC_STATISTICENGINE_H
 
 #include "stone/Basic/Color.h"
 #include "stone/Basic/List.h"
@@ -46,12 +46,13 @@ public:
   virtual void Print() = 0;
 };
 
-class StatEngine final {
+//TODO: You can do something very similar to that of the DiagnosticEngine
+class StatisticEngine final {
   llvm::SmallVector<Stats *, 4> entries;
 
 public:
-  StatEngine();
-  ~StatEngine();
+  StatisticEngine();
+  ~StatisticEngine();
 
 public:
   void Register(Stats *stats);

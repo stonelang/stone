@@ -1,4 +1,4 @@
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 
 using namespace stone;
 
@@ -6,15 +6,15 @@ Stats::Stats(const char *name, Basic &basic) : name(name), basic(basic) {
   timer.reset(new llvm::Timer(name, name));
 }
 
-StatEngine::StatEngine() {}
-StatEngine::~StatEngine() {}
+StatisticEngine::StatisticEngine() {}
+StatisticEngine::~StatisticEngine() {}
 
-void StatEngine::Register(Stats *stats) {
+void StatisticEngine::Register(Stats *stats) {
   assert(stats && "Unable to register null stats.");
   entries.push_back(stats);
 }
 
-void StatEngine::Print() {
+void StatisticEngine::Print() {
   for (const auto &stats : entries) {
     stats->Print();
   }

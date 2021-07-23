@@ -36,7 +36,7 @@ Compiler::Compiler(PipelineEngine *pe)
   syntax.reset(new Syntax(*tc.get()));
 
   stats.reset(new CompilerStats(*this, *this));
-  GetStatEngine().Register(stats.get());
+  GetStatisticEngine().Register(stats.get());
 }
 
 void Compiler::ComputeMode(const llvm::opt::DerivedArgList &args) {

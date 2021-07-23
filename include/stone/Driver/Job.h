@@ -9,7 +9,7 @@
 #include "llvm/Support/Timer.h"
 
 #include "stone/Basic/List.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/CmdOutput.h"
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/JobOptions.h"

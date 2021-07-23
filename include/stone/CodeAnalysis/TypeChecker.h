@@ -2,7 +2,7 @@
 #define STONE_CODEANALYSIS_CHECKER_H
 
 #include "stone/Basic/Basic.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/TreeContext.h"
 

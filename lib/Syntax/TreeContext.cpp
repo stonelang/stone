@@ -19,7 +19,7 @@ TreeContext::TreeContext(Basic &basic, const SearchPathOptions &spOpts,
     : basic(basic), searchPathOpts(spOpts), sm(sm),
       identifiers(basic.GetLangOptions()) {
   stats.reset(new TreeContextStats(*this, basic));
-  basic.GetStatEngine().Register(stats.get());
+  basic.GetStatisticEngine().Register(stats.get());
 
   builtin.Init(*this);
 }

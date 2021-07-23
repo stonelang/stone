@@ -5,7 +5,7 @@
 #include "stone/Basic/File.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/List.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/SessionOptions.h"

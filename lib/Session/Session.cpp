@@ -134,7 +134,7 @@ void Session::PrintDiagnostics() { /*GetDiagEngine(basic.OS()).Print();*/
 void Session::PrintStatistics() {
   if (sessionOpts.printStats) {
     GetTimer().stopTimer();
-    GetStatEngine().Print();
+    GetStatisticEngine().Print();
   }
 }
 

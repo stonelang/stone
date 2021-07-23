@@ -11,7 +11,7 @@ TypeChecker::TypeChecker(SyntaxFile &sf, Syntax &syntax,
                          TypeCheckerPipeline *pipeline)
     : sf(sf), syntax(syntax), pipeline(pipeline) {
   stats.reset(new TypeCheckerStats(*this, syntax.GetTreeContext().GetBasic()));
-  syntax.GetTreeContext().GetBasic().GetStatEngine().Register(stats.get());
+  syntax.GetTreeContext().GetBasic().GetStatisticEngine().Register(stats.get());
 }
 
 void TypeCheckerStats::Print() {}

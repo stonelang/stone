@@ -682,7 +682,7 @@ Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
 
   stats.reset(new LexerStats(*this, basic));
-  basic.GetStatEngine().Register(stats.get());
+  basic.GetStatisticEngine().Register(stats.get());
 
   bool invalid = false;
   auto memBuffer = sm.getBuffer(srcID, SrcLoc(), &invalid /*true means error*/);

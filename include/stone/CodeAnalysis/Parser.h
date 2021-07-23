@@ -1,7 +1,7 @@
 #ifndef STONE_CODEANALYSIS_PARSER_H
 #define STONE_CODEANALYSIS_PARSER_H
 
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/CodeAnalysis/Lexer.h"
 #include "stone/CodeAnalysis/SyntaxScopeCache.h"
 #include "stone/Syntax/Identifier.h"

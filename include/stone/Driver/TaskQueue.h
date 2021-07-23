@@ -7,7 +7,7 @@
 
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"

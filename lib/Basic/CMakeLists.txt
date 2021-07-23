@@ -30,7 +30,7 @@ set(stone_utils_sources
 	PipelineEngine.cpp
 	SrcLoc.cpp
 	SrcMgr.cpp
-	Stats.cpp
+	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp
 	TextDiagnosticListener.cpp

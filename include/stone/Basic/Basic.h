@@ -7,7 +7,7 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Host.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 
 namespace stone {
 class Basic {
@@ -15,7 +15,7 @@ protected:
   LangOptions langOpts;
   DiagnosticOptions diagOpts;
   DiagnosticEngine de;
-  StatEngine se;
+  StatisticEngine se;
   ColorOutputStream cos;
   FileMgr fm;
   Host host;
@@ -33,8 +33,8 @@ public:
   DiagnosticEngine &GetDiagEngine() { return de; }
   const DiagnosticEngine &GetDiagEngine() const { return de; }
 
-  StatEngine &GetStatEngine() { return se; }
-  const StatEngine &GeStatEngine() const { return se; }
+  StatisticEngine &GetStatisticEngine() { return se; }
+  const StatisticEngine &GeStatisticEngine() const { return se; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }

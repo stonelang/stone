@@ -10,7 +10,7 @@
 
 #include "stone/Basic/Clock.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/Stats.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/TaskQueue.h"
 #include "llvm/ADT/ArrayRef.h"
