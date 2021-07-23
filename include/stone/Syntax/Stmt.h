@@ -79,7 +79,6 @@ class CaseStmt final : public MatchCase,
   friend TrailingObjects;
 };
 
-
 class DefaultStmt : public MatchCase {
   Stmt *subStmt;
 };
@@ -87,7 +86,6 @@ class DefaultStmt : public MatchCase {
 class NextStmt : public Stmt {
   Stmt *subStmt;
 };
-
 
 class ValueStmt : public Stmt {
 public:

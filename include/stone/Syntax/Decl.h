@@ -71,8 +71,6 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxNode {
   SrcLoc loc;
   DeclContext *dc;
 
-  //llvm::PointerUnion<DeclContext *, ASTContext *> context;
-
 public:
   // Make vanilla new/delete illegal for Decls.
   void *operator new(size_t bytes) = delete;
@@ -83,9 +81,9 @@ public:
   void *operator new(size_t bytes, const TreeContext &tc,
                      unsigned alignment = alignof(Decl));
 
-  void *operator new(size_t bytes, void *mem) { 
-    assert(mem); 
-    return mem; 
+  void *operator new(size_t bytes, void *mem) {
+    assert(mem);
+    return mem;
   }
 
   // TODO: UB
@@ -102,25 +100,25 @@ public:
 public:
   friend class DeclContext;
 
-  struct MultipleDeclContext final {
-    DeclContext *semaDeclContext;
-    DeclContext *lexicalDeclContext;
-  };
+  // struct MultipleDeclContext final {
+  //   DeclContext *semaDeclContext;
+  //   DeclContext *lexicalDeclContext;
+  // };
 
-  llvm::PointerUnion<DeclContext *, MultipleDeclContext *> context;
+  llvm::PointerUnion<DeclContext *, TreeContext *> context;
 
-  bool IsInSemaDeclContext() const { return context.is<DeclContext *>(); }
-  bool IsOutOfSemaDeclContext() const {
-    return context.is<MultipleDeclContext *>();
-  }
+  // bool IsInSemaDeclContext() const { return context.is<DeclContext *>(); }
+  // bool IsOutOfSemaDeclContext() const {
+  //   return context.is<MultipleDeclContext *>();
+  // }
 
-  MultipleDeclContext *GetMultipleDeclContext() const {
-    return context.get<MultipleDeclContext *>();
-  }
+  // MultipleDeclContext *GetMultipleDeclContext() const {
+  //   return context.get<MultipleDeclContext *>();
+  // }
 
-  DeclContext *GetSemaDeclContext() const {
-    return context.get<DeclContext *>();
-  }
+  // DeclContext *GetSemaDeclContext() const {
+  //   return context.get<DeclContext *>();
+  // }
 
   /// DeclKind - This indicates which class this is.
   // unsigned declType : 7;
@@ -154,7 +152,8 @@ public:
   // }
 
 protected:
-  Decl(DeclKind kind, SrcLoc loc, DeclContext *context)
+  Decl(DeclKind kind, SrcLoc loc,
+       llvm::PointerUnion<DeclContext *, TreeContext *> context)
       : kind(kind), loc(loc), context(context) {}
 };
 
