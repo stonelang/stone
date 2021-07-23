@@ -1,5 +1,5 @@
-#ifndef ABSTRACT_STMT
-#define ABSTRACT_STMT(Id, Parent)
+#ifndef BASE_STMT
+#define BASE_STMT(Id, Parent)
 #endif
 
 /// A subclass of LabeledStmt.  Forwards to STMT by default.
@@ -26,9 +26,12 @@ STMT(Brace, Stmt)
 STMT(Return, Stmt)
 STMT(Yield, Stmt)
 STMT(Defer, Stmt)
-ABSTRACT_STMT(ValueStmt, Stmt)
-  ABSTRACT_STMT(Labeled, ValueStmt)
-    ABSTRACT_STMT(LabeledConditional, LabeledStmt)
+STMT(Case, Stmt)
+STMT(Break, Stmt)
+STMT(Continue, Stmt)
+BASE_STMT(ValueStmt, Stmt)
+  BASE_STMT(Labeled, ValueStmt)
+    BASE_STMT(LabeledConditional, LabeledStmt)
       LABELED_STMT(If, LabeledConditionalStmt)
       LABELED_STMT(While, LabeledConditionalStmt)
       STMT_RANGE(LabeledConditional, If, While)
@@ -37,22 +40,17 @@ ABSTRACT_STMT(ValueStmt, Stmt)
     LABELED_STMT(ForEach, LabeledStmt)
     LABELED_STMT(Match, LabeledStmt)
     STMT_RANGE(Labeled, If, Match)
-ABSTRACT_STMT(ValueStmt, Stmt)
-  ABSTRACT_STMT(Expr, ValueStmt)
+  BASE_STMT(Expr, ValueStmt)
     EXPR_STMT(New,  Expr)
     EXPR_STMT(This, Expr)
     EXPR_STMT(Call, Expr)
 
-STMT(Case, Stmt)
-STMT(Break, Stmt)
-STMT(Continue, Stmt)
 STMT(Next, Stmt)
-
 LAST_STMT(Next)
 
 #undef STMT_RANGE
 #undef LABELED_STMT
-#undef ABSTRACT_STMT
+#undef BASE_STMT
 #undef EXPR_STMT
 #undef STMT
 #undef LAST_STMT
