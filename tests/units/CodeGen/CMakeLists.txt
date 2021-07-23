@@ -4,7 +4,7 @@ set(LLVM_LINK_COMPONENTS
 )
 
 add_stone_unittest(StoneCodeGenUnitTests
-
+	CodeGenTest.cpp
 )
 target_link_libraries(StoneCodeGenUnitTests
   PRIVATE
