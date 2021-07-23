@@ -25,7 +25,7 @@ class Module;
 } // namespace syn
 namespace codegen {
 class CodeGenOptions;
-class GenModuleProfile;
+class CodeGenModule;
 } // namespace codegen
 
 std::unique_ptr<llvm::TargetMachine>

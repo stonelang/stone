@@ -10,9 +10,13 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_codegen_sources
 	CodeGenBlocks.cpp
+	CodeGenDecl.cpp
 	CodeGenerator.cpp
+	CodeGenExpr.cpp
 	CodeEmitter.cpp
 	CodeGenFunction.cpp
+	CodeGenStmt.cpp
+	CodeGenExpr.cpp
 	Gen.cpp
 	Native.cpp
 	Optimize.cpp
