@@ -1,7 +1,7 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/DiagnosticEngine.h"
-#include "stone/Basic/SynDiagnostic.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
@@ -18,7 +18,7 @@ public:
 public:
 };
 
-TEST_F(DiagTest, DiagnoseSyntax) {
+TEST_F(DiagTest, DiagnoseCompile) {
 
   basic.GetDiagOptions().useColor = true;
 
@@ -26,7 +26,7 @@ TEST_F(DiagTest, DiagnoseSyntax) {
   basic.GetDiagEngine().AddListener(textListener);
 
   basic.GetDiagEngine()
-      .Diagnose(SrcLoc(), diag::note_prev_decl_def, diag::DeclArgument(nullptr))
+      .Diagnose(SrcLoc(), diag::err_no_compile_mode)
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 }

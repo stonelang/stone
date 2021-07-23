@@ -5,8 +5,6 @@ set(LLVM_LINK_COMPONENTS
 
 add_stone_unittest(StoneCompileUnitTests
 	CompileTest.cpp
-	LexerTest.cpp
-	ParserTest.cpp
 )
 target_link_libraries(StoneCompileUnitTests
   PRIVATE

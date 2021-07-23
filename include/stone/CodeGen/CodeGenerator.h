@@ -16,7 +16,9 @@ class TargetMachine;
 namespace stone {
 namespace codegen {
 class CodeGenModule;
+class CodeEmitter;
 class CodeGenerator final {
+  // CodeEmitter* emiiter = nullpt
 public:
   CodeGenerator();
 
@@ -34,7 +36,7 @@ public:
   /// will be deleted.
   ///
   /// It will also return null if the module is released.
-  llvm::Module *GetModule();
+  llvm::Module *GetLLVMModule();
 };
 } // namespace codegen
 } // namespace stone

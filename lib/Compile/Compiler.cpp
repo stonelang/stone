@@ -1,7 +1,7 @@
-#include "stone/Basic/Ret.h"
-#include "stone/Basic/CompileDiagnostic.h"
-#include "stone/Basic/TextDiagnosticEmitter.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/Ret.h"
+#include "stone/Basic/TextDiagnosticEmitter.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"

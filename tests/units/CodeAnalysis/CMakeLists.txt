@@ -4,7 +4,10 @@ set(LLVM_LINK_COMPONENTS
 )
 
 add_stone_unittest(StoneCodeAnalysisUnitTests
-	TypeCheckTest.cpp	
+	LexerTest.cpp
+	ParserTest.cpp
+	TypeCheckTest.cpp
+
 )
 target_link_libraries(StoneCodeAnalysisUnitTests
   PRIVATE

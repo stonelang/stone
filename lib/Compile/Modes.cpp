@@ -1,10 +1,10 @@
 
+#include "stone/Compile/Modes.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
 #include "stone/CodeAnalysis/Parse.h"
 #include "stone/CodeAnalysis/TypeCheck.h"
 #include "stone/CodeGen/Gen.h"
-#include "stone/Compile/Modes.h"
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Syntax/Module.h"

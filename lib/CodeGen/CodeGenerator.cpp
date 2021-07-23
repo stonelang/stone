@@ -8,3 +8,7 @@ using namespace stone;
 using namespace stone::codegen;
 
 CodeGenerator::CodeGenerator() {}
+
+// CodeGenModule &GetCodeGenModule();
+
+llvm::Module *CodeGenerator::GetLLVMModule() { return nullptr; }
