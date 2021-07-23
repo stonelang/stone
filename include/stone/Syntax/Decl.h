@@ -107,6 +107,9 @@ public:
 
   llvm::PointerUnion<DeclContext *, TreeContext *> context;
 
+
+  //llvm::PointerUnion<DeclContext *, MultipleDeclContext *> context;
+
   // bool IsInSemaDeclContext() const { return context.is<DeclContext *>(); }
   // bool IsOutOfSemaDeclContext() const {
   //   return context.is<MultipleDeclContext *>();
@@ -155,6 +158,7 @@ protected:
   Decl(DeclKind kind, SrcLoc loc,
        llvm::PointerUnion<DeclContext *, TreeContext *> context)
       : kind(kind), loc(loc), context(context) {}
+
 };
 
 class NamedDecl : public Decl {
