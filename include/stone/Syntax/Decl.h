@@ -71,6 +71,8 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxNode {
   SrcLoc loc;
   DeclContext *dc;
 
+  //llvm::PointerUnion<DeclContext *, ASTContext *> context;
+
 public:
   // Make vanilla new/delete illegal for Decls.
   void *operator new(size_t bytes) = delete;
@@ -81,9 +83,14 @@ public:
   void *operator new(size_t bytes, const TreeContext &tc,
                      unsigned alignment = alignof(Decl));
 
+  void *operator new(size_t bytes, void *mem) { 
+    assert(mem); 
+    return mem; 
+  }
+
   // TODO: UB
-  void *operator new(std::size_t size, const TreeContext &ctx,
-                     DeclContext *parent, std::size_t extra = 0);
+  // void *operator new(std::size_t size, const TreeContext &ctx,
+  //                    DeclContext *parent, std::size_t extra = 0);
 
 public:
   Decl() = delete;
@@ -100,19 +107,19 @@ public:
     DeclContext *lexicalDeclContext;
   };
 
-  llvm::PointerUnion<DeclContext *, MultipleDeclContext *> declCtx;
+  llvm::PointerUnion<DeclContext *, MultipleDeclContext *> context;
 
-  bool IsInSemaDeclContext() const { return declCtx.is<DeclContext *>(); }
+  bool IsInSemaDeclContext() const { return context.is<DeclContext *>(); }
   bool IsOutOfSemaDeclContext() const {
-    return declCtx.is<MultipleDeclContext *>();
+    return context.is<MultipleDeclContext *>();
   }
 
   MultipleDeclContext *GetMultipleDeclContext() const {
-    return declCtx.get<MultipleDeclContext *>();
+    return context.get<MultipleDeclContext *>();
   }
 
   DeclContext *GetSemaDeclContext() const {
-    return declCtx.get<DeclContext *>();
+    return context.get<DeclContext *>();
   }
 
   /// DeclKind - This indicates which class this is.
@@ -147,8 +154,8 @@ public:
   // }
 
 protected:
-  Decl(DeclKind kind, SrcLoc loc, DeclContext *dc)
-      : kind(kind), loc(loc), dc(dc) {}
+  Decl(DeclKind kind, SrcLoc loc, DeclContext *context)
+      : kind(kind), loc(loc), context(context) {}
 };
 
 enum class DeclContextKind : uint8_t {
