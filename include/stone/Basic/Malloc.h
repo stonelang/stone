@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_MEMORY_H
-#define STONE_BASIC_MEMORY_H
+#ifndef STONE_BASIC_MALLOC_H
+#define STONE_BASIC_MALLOC_H
 
 #include <cassert>
 #if defined(_WIN32)

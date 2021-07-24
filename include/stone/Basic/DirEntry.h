@@ -136,7 +136,7 @@ public:
     return *this;
   }
 };
-}
+} // namespace fm
 } // end namespace stone
 
 namespace llvm {
@@ -147,8 +147,7 @@ namespace optional_detail {
 template <>
 class OptionalStorage<stone::DirEntryRef>
     : public stone::fm::MapEntryOptionalStorage<stone::DirEntryRef> {
-  using StorageImpl =
-      stone::fm::MapEntryOptionalStorage<stone::DirEntryRef>;
+  using StorageImpl = stone::fm::MapEntryOptionalStorage<stone::DirEntryRef>;
 
 public:
   OptionalStorage() = default;
@@ -167,30 +166,26 @@ static_assert(sizeof(Optional<stone::DirEntryRef>) ==
                   sizeof(stone::DirEntryRef),
               "Optional<DirEntryRef> must avoid size overhead");
 
-static_assert(
-    std::is_trivially_copyable<Optional<stone::DirEntryRef>>::value,
-    "Optional<DirEntryRef> should be trivially copyable");
+static_assert(std::is_trivially_copyable<Optional<stone::DirEntryRef>>::value,
+              "Optional<DirEntryRef> should be trivially copyable");
 
 } // end namespace optional_detail
 
 /// Specialisation of DenseMapInfo for DirEntryRef.
 template <> struct DenseMapInfo<stone::DirEntryRef> {
   static inline stone::DirEntryRef getEmptyKey() {
-    return stone::DirEntryRef(
-        stone::DirEntryRef::dense_map_empty_tag());
+    return stone::DirEntryRef(stone::DirEntryRef::dense_map_empty_tag());
   }
 
   static inline stone::DirEntryRef getTombstoneKey() {
-    return stone::DirEntryRef(
-        stone::DirEntryRef::dense_map_tombstone_tag());
+    return stone::DirEntryRef(stone::DirEntryRef::dense_map_tombstone_tag());
   }
 
   static unsigned getHashValue(stone::DirEntryRef Val) {
     return hash_value(Val);
   }
 
-  static bool isEqual(stone::DirEntryRef LHS,
-                      stone::DirEntryRef RHS) {
+  static bool isEqual(stone::DirEntryRef LHS, stone::DirEntryRef RHS) {
     // Catch the easy cases: both empty, both tombstone, or the same ref.
     if (LHS.isSameRef(RHS))
       return true;
@@ -229,8 +224,7 @@ namespace stone {
 /// FIXME: Once DirEntryRef is "everywhere" and DirEntry::LastRef
 /// and DirEntry::getName have been deleted, delete this class and
 /// replace instances with Optional<DirEntryRef>.
-class OptionalDirEntryRefDegradesToDirEntryPtr
-    : public Optional<DirEntryRef> {
+class OptionalDirEntryRefDegradesToDirEntryPtr : public Optional<DirEntryRef> {
 public:
   OptionalDirEntryRefDegradesToDirEntryPtr() = default;
   OptionalDirEntryRefDegradesToDirEntryPtr(
@@ -270,12 +264,11 @@ public:
   }
 };
 
-static_assert(std::is_trivially_copyable<
-                  OptionalDirEntryRefDegradesToDirEntryPtr>::value,
-              "OptionalDirEntryRefDegradesToDirEntryPtr should be "
-              "trivially copyable");
-
+static_assert(
+    std::is_trivially_copyable<OptionalDirEntryRefDegradesToDirEntryPtr>::value,
+    "OptionalDirEntryRefDegradesToDirEntryPtr should be "
+    "trivially copyable");
 
 } // end namespace stone
 
-#endif 
+#endif

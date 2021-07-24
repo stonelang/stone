@@ -3,7 +3,7 @@
 
 #include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/DiagnosticOptions.h"
-#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/SrcMgr.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -40,32 +40,17 @@ template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
 class CodeFix final {
-  /// Code that should be replaced to correct the error. Empty for an
-  /// insertion hint.
-  CharSrcRange removeRange;
-
-  /// Code in the specific range that should be inserted in the insertion
-  /// location.
-  CharSrcRange insertFromRange;
-
-  /// The actual code to insert at the insertion location, as a
-  /// string.
+  CharSrcRange range;
+  /// The new code to insert at the insertion location.
   llvm::StringRef code;
 
-  bool beforePreviousInsertions = false;
-
 public:
-  CodeFix(CharSrcRange removeRange, CharSrcRange insertFromRange,
-          llvm::StringRef code, bool beforePreviousInsertions = false);
+  CodeFix(CharSrcRange range, llvm::StringRef code);
 
-public:
-  CharSrcRange GetRemoveRange() const { return removeRange; }
-  CharSrcRange GetInsertFromRange() const { return removeRange; }
+  CharSrcRange GetRange() const { return range; }
   llvm::StringRef GetCode() const { return code; }
-  bool IsBeforePreviousInsertions() { return beforePreviousInsertions; }
-
-  bool IsNull() const { return !removeRange.isValid(); }
 };
+
 class CodeFixer final {
   friend class InFlightDiagnostic;
   InFlightDiagnostic &inFlightDiag;
@@ -74,32 +59,107 @@ public:
   CodeFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
 
 public:
-  /// Create a code fix that inserts the given code string at a specific
-  /// location.
-  InFlightDiagnostic &InsertFromLoc(SrcLoc insertionLoc, StringRef code,
-                                    bool beforePreviousInsertions = false);
-
-  /// Create a code fixthat inserts the given
-  /// code from \p FromRange at a specific location.
-  InFlightDiagnostic &InsertFromRange(SrcLoc insertionLoc,
-                                      CharSrcRange fromRange,
-                                      bool beforePreviousInsertions = false);
-
-  /// Create a code fix that removes the given source range.
-  InFlightDiagnostic &RemoveRange(CharSrcRange removeRange);
-  InFlightDiagnostic &RemoveRange(SrcRange removeRange);
-
-  /// Create a code fix that replaces the given source range with the given code
-  /// string.
-  InFlightDiagnostic &Replace(CharSrcRange removeRange, llvm::StringRef code);
-  InFlightDiagnostic &Replace(SrcRange removeRange, llvm::StringRef code);
+  static llvm::StringRef GetFixIDString(const FixID fixID);
+  /// Prevent the diagnostic from behaving more severely than \p limit. For
+  /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
+  /// emitted as a warning, but a note will still be emitted as a note.
+  InFlightDiagnostic &CapDiagLevel(diag::Level level);
 
   /// Add a token-based range to the currently-active diagnostic.
-  InFlightDiagnostic &Highlight(SrcRange range);
+  InFlightDiagnostic &Highlight(SrcRange R);
 
   /// Add a character-based range to the currently-active diagnostic.
-  InFlightDiagnostic &HighlightChars(SrcLoc sartLoc, SrcLoc endLoc);
+  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
+
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  Replace(SrcRange R, Fix<ArgTypes...> fixIt,
+          typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    return Replace(R, GetFixIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add a character-based replacement fix-it to the currently-active
+  /// diagnostic.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  ReplaceChars(SrcLoc Start, SrcLoc End, Fix<ArgTypes...> fixIt,
+               typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    return ReplaceChars(Start, End, GetFixIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  Insert(SrcLoc L, Fix<ArgTypes...> fixIt,
+         typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    return ReplaceChars(L, L, GetFixIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.  The
+  /// text is inserted immediately *after* the token specified.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  InsertAfter(SrcLoc L, Fix<ArgTypes...> fixIt,
+              typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    return InsertAfter(L, GetFixIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add a token-based replacement fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &Replace(SrcRange R, StringRef Str);
+
+  /// Add a character-based replacement fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End, StringRef Str) {
+    return ReplaceChars(Start, End, "%0", diag::LLVMStrArgument{Str});
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.
+  InFlightDiagnostic &Insert(SrcLoc L, StringRef Str) {
+    return ReplaceChars(L, L, "%0", diag::LLVMStrArgument{Str});
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic. The
+  /// text is inserted immediately *after* the token specified.
+  InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef Str) {
+    return InsertAfter(L, "%0", diag::LLVMStrArgument{Str});
+  }
+
+  /// Add a token-based removal fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &Remove(SrcRange R);
+
+  /// Add a character-based removal fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &RemoveChars(SrcLoc Start, SrcLoc End) {
+    return ReplaceChars(Start, End, {});
+  }
+
+  /// Add two replacement fix-it exchanging source ranges to the
+  /// currently-active diagnostic.
+  InFlightDiagnostic &Exchange(SrcRange R1, SrcRange R2);
+
+private:
+  InFlightDiagnostic &Replace(SrcRange R, StringRef FormatString,
+                              ArrayRef<diag::Argument> Args);
+
+  InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End,
+                                   StringRef FormatString,
+                                   ArrayRef<diag::Argument> Args);
+
+  InFlightDiagnostic &Insert(SrcLoc L, StringRef FormatString,
+                             ArrayRef<diag::Argument> Args) {
+    return ReplaceChars(L, L, FormatString, Args);
+  }
+
+  InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef FormatString,
+                                  ArrayRef<diag::Argument> Args);
 };
+
 struct DiagnosticFormatOptions final {};
 
 // TODO: Free Context

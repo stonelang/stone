@@ -9,11 +9,12 @@
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Malloc.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/LinkType.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/SessionOptions.h"
+
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"

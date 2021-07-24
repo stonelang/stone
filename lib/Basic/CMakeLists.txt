@@ -30,9 +30,7 @@ set(stone_basic_sources
 	LangVersion.cpp
 	LLVMContext.cpp
 	PipelineEngine.cpp
-	SrcLoc.cpp
 	SrcMgr.cpp
-	Source.cpp
 	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp

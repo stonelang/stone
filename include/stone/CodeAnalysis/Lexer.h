@@ -4,15 +4,15 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/Token.h"
+#include "stone/Basic/Tokenable.h"
 #include "stone/CodeAnalysis/LexerCache.h"
-#include "stone/CodeAnalysis/Token.h"
 #include "stone/CodeAnalysis/Trivia.h"
 
 namespace stone {
 
 class SrcID;
 class SrcMgr;
-class Token;
 class LexerPipeline;
 
 namespace syn {
@@ -34,16 +34,39 @@ class LexerStats final : public Stats {
 public:
   LexerStats(const Lexer &lexer, Basic &basic)
       : Stats("lexer statistics:", basic), lexer(lexer) {}
+
+  const Lexer &GetLexer() { return lexer; }
   void Print() override;
 };
 
-class Lexer final {
-  friend LexerStats;
-  const SrcID srcID;
-  SrcMgr &sm;
+struct PrincipalCtor {};
 
+/// Lexer state can be saved/restored to/from objects of this class.
+class LexerState {
+public:
+  LexerState() {}
+
+  bool IsValid() const { return loc.isValid(); }
+
+  LexerState Advance(unsigned offset) const {
+    assert(IsValid());
+    return LexerState(loc.getAdvancedLoc(offset));
+  }
+
+private:
+  explicit LexerState(SrcLoc loc) : loc(loc) {}
+  SrcLoc loc;
+  llvm::Optional<Trivia> leadingTrivia;
+  friend class Lexer;
+};
+
+class Lexer final : public Tokenable {
+  friend LexerStats;
+  const unsigned srcID;
+  const SrcMgr &sm;
   Basic &basic;
   LexerCache cache;
+  LexerState state;
 
   std::unique_ptr<LexerStats> stats;
 
@@ -105,8 +128,12 @@ private:
   void operator=(const Lexer &) = delete;
 
 public:
-  Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
+  Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm, Basic &basic,
         LexerPipeline *pipeline = nullptr);
+
+  Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
+        LexerPipeline *pipeline = nullptr);
+
   void Init(unsigned startOffset, unsigned endOffset);
 
 public:
@@ -114,6 +141,14 @@ public:
 
   // TODO:
   bool ShouldKeepComments() const { return false; }
+
+  /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
+  /// start.
+  void ResetToOffset(size_t offset) {
+    assert(bufferStart + offset <= bufferEnd && "Offset after buffer end");
+    curPtr = bufferStart + offset;
+    Lex();
+  }
 
 private:
   void Lex();
@@ -141,7 +176,7 @@ public:
   bool LexAlien(bool emitDiagnosticsIfToken);
 
   Token &Peek() { return nextToken; }
-  SrcID GetSrcID() { return srcID; }
+  unsigned GetSrcID() { return srcID; }
   NullCharType GetNullCharType(const char *data) const;
 
 public:
@@ -149,13 +184,17 @@ public:
   InFlightDiagnostic Diagnose(const char *locPtr, Diag<DiagArgTypes...> DiagID,
                               ArgTypes &&...Args) {
 
-    basic.GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(locPtr), DiagID,
-                                   std::forward<ArgTypes>(Args)...);
+    // TODO:basic.GetDiagEngine().Diagnose(SrcLoc::GetFromPtr(locPtr), DiagID,
+    //                               std::forward<ArgTypes>(Args)...);
   }
 
 private:
   void SkipToEndOfLine(bool eatNewline);
   void SkipSlashSlashComment(bool eatNewline);
+
+public:
+  Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) override;
+  SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) override;
 };
 } // namespace syn
 } // namespace stone

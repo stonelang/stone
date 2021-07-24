@@ -7,7 +7,6 @@
 #include <assert.h>
 
 namespace stone {
-
 /// Enumeration describing all of possible diagnostics.
 ///
 /// Each of the diagnostics described in DiagnosticEngine.def has an entry in
@@ -24,6 +23,11 @@ enum class FixID : uint32_t;
 template <typename... argTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   DiagID diagID;
+};
+
+template <typename... ArgTypes> struct Fix {
+  /// The code fix ID corresponding to this fix.
+  FixID ID;
 };
 
 namespace diag {

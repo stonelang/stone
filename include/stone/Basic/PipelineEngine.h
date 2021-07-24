@@ -3,11 +3,7 @@
 
 #include <iostream>
 
-#include "stone/Basic/Color.h"
 #include "stone/Basic/List.h"
-#include "stone/Basic/Mem.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/Support/Chrono.h"
 
 namespace stone {
 

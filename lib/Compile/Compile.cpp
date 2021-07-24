@@ -19,9 +19,7 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                       diag::LLVMStrArgument(input.GetName()));
     return nullptr;
   }
-  auto srcID = compiler.GetSrcMgr().CreateSrcID(std::move(*fileBuffer));
-  compiler.GetSrcMgr().SetMainSrcID(srcID);
-
+  auto srcID = compiler.GetSrcMgr().addNewSourceBuffer(std::move(*fileBuffer));
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
                              compiler.GetTreeContext(), srcID);
 

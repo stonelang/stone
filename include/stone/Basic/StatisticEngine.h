@@ -1,9 +1,8 @@
 #ifndef STONE_BASIC_STATISTICENGINE_H
 #define STONE_BASIC_STATISTICENGINE_H
 
-#include "stone/Basic/Color.h"
 #include "stone/Basic/List.h"
-#include "stone/Basic/Mem.h"
+
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Chrono.h"
 #include "llvm/Support/Timer.h"

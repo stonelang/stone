@@ -677,27 +677,24 @@ static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
   }
 }
 
-Lexer::Lexer(const SrcID srcID, SrcMgr &sm, Basic &basic,
+Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
+             Basic &basic, LexerPipeline *pipeline)
+    : srcID(srcID), sm(sm), basic(basic) {}
+
+Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
              LexerPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
 
   stats.reset(new LexerStats(*this, basic));
   basic.GetStatisticEngine().Register(stats.get());
 
-  bool invalid = false;
-  auto memBuffer = sm.getBuffer(srcID, SrcLoc(), &invalid /*true means error*/);
-
-  assert(invalid = true && "No memory buffer found for the Lexer");
-
-  Init(/*startOffset=*/0, memBuffer->getBufferSize());
+  unsigned endOffset = sm.getRangeForBuffer(srcID).getByteLength();
+  Init(/*startOffset=*/0, endOffset);
 }
 void Lexer::Init(unsigned startOffset, unsigned endOffset) {
   assert(startOffset <= endOffset);
 
-  bool invalid;
-  StringRef contents = sm.getBufferData(srcID, &invalid);
-
-  assert(invalid = true && "No source buffer found for the Lexer");
+  StringRef contents = sm.extractText(sm.getRangeForBuffer(srcID));
 
   bufferStart = contents.data();
   bufferEnd = contents.data() + contents.size();
@@ -713,29 +710,24 @@ void Lexer::Init(unsigned startOffset, unsigned endOffset) {
   // editing with libSyntax.
   contentStart = bufferStart + bomLength;
 
-  // TODO:
   // Initialize code completion.
-  // if (BufferID == SM.getCodeCompletionBufferID()) {
-  //  const char *Ptr = BufferStart + SM.getCodeCompletionOffset();
-  //  if (Ptr >= BufferStart && Ptr <= BufferEnd)
-  //    CodeCompletionPtr = Ptr;
-  //}
+  if (srcID == sm.getCodeCompletionBufferID()) {
+    const char *Ptr = bufferStart + sm.getCodeCompletionOffset();
+    if (Ptr >= bufferStart && Ptr <= bufferEnd)
+      codeCompletionPtr = Ptr;
+  }
 
   artificialEOF = bufferStart + endOffset;
   curPtr = bufferStart + startOffset;
 
   assert(nextToken.Is(tk::Type::MAX));
 
-  // Prime the lexer
   Lex();
-
   assert((nextToken.IsAtStartOfLine() || curPtr != bufferStart) &&
          "The token should be at the beginning of the line, "
-         "or we should be Lexing from the middle of the buffer");
-
-  // TODO: basic.GetDiagEngine().AddDiagnostics(diagnostics.reset(new
-  // LexerDiagnostics()));
+         "or we should be lexing from the middle of the buffer");
 }
+
 void Lexer::Lex(Token &result) {
   Trivia leading, trailing;
   Lex(result, leading, trailing);
@@ -1194,6 +1186,37 @@ void Lexer::MakeTok(tk::Type ty, const char *tokenStart) {
     // TODO: I think you want the current token -- this returns the next.
     pipeline->OnTokenCreated(Peek());
   }
+}
+
+Token Lexer::GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) {
+
+  // Don't try to do anything with an invalid location.
+  if (!loc.isValid()) {
+    return Token();
+  }
+
+  // Figure out which buffer contains this location.
+  int bufferID = sm.findBufferContainingLoc(loc);
+  if (bufferID < 0) {
+    return Token();
+  }
+
+  // Use fake language options; language options only affect validity
+  // and the exact token produced.
+  LangOptions fakeLangOpts;
+
+  // Here we return comments as tokens because either the caller skipped
+  // comments and normally we won't be at the beginning of a comment token
+  // (making this option irrelevant), or the caller lexed comments and
+  // we need to lex just the comment token.
+  Lexer lexer(srcID, sm, basic, pipeline);
+
+  // TODO: lexer.RestoreState(LexerState(loc));
+  return lexer.Peek();
+}
+
+SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) {
+  return loc.getAdvancedLocOrInvalid(GetTokenAtLoc(sm, loc).GetLength());
 }
 
 void LexerStats::Print() {}

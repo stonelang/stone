@@ -4,7 +4,6 @@
 #include "stone/Basic/DirEntry.h"
 #include "stone/Basic/LLVM.h"
 
-
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/Hashing.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -41,11 +40,10 @@ class OptionalStorage<stone::FileEntryRef, /*is_trivially_copyable*/ true>;
 } // namespace llvm
 
 namespace stone {
-
 class FileEntry;
 
 /// A reference to a \c FileEntry that includes the name of the file as it was
-/// accessed by the FileManager's client.
+/// accessed by the FileMgr's client.
 class FileEntryRef {
 public:
   StringRef getName() const { return ME->first(); }
@@ -96,10 +94,10 @@ public:
 
   /// Type stored in the StringMap.
   struct MapValue {
-    /// The pointer at another MapEntry is used when the FileManager should
+    /// The pointer at another MapEntry is used when the FileMgr should
     /// silently forward from one name to another, which occurs in Redirecting
     /// VFSs that use external names. In that case, the \c FileEntryRef
-    /// returned by the \c FileManager will have the external name, and not the
+    /// returned by the \c FileMgr will have the external name, and not the
     /// name that was used to lookup the file.
     ///
     /// The second type is really a `const MapEntry *`, but that confuses
@@ -188,8 +186,7 @@ namespace optional_detail {
 template <>
 class OptionalStorage<stone::FileEntryRef>
     : public stone::fm::MapEntryOptionalStorage<stone::FileEntryRef> {
-  using StorageImpl =
-      stone::fm::MapEntryOptionalStorage<stone::FileEntryRef>;
+  using StorageImpl = stone::fm::MapEntryOptionalStorage<stone::FileEntryRef>;
 
 public:
   OptionalStorage() = default;
@@ -318,11 +315,11 @@ static_assert(
 /// If the 'File' member is valid, then this FileEntry has an open file
 /// descriptor for the file.
 class FileEntry {
-  friend class FileManager;
+  friend class FileMgr;
 
-  std::string RealPathName;   // Real path to the file; could be empty.
-  off_t Size = 0;             // File size in bytes.
-  time_t ModTime = 0;         // Modification time of file.
+  std::string RealPathName;      // Real path to the file; could be empty.
+  off_t Size = 0;                // File size in bytes.
+  time_t ModTime = 0;            // Modification time of file.
   const DirEntry *Dir = nullptr; // Directory file lives in.
   llvm::sys::fs::UniqueID UniqueID;
   unsigned UID = 0; // A unique (small) ID for the file.
@@ -366,7 +363,7 @@ public:
   bool operator<(const FileEntry &RHS) const { return UniqueID < RHS.UniqueID; }
 
   /// Check whether the file is a named pipe (and thus can't be opened by
-  /// the native FileManager methods).
+  /// the native FileMgr methods).
   bool isNamedPipe() const { return IsNamedPipe; }
 
   void closeFile() const;

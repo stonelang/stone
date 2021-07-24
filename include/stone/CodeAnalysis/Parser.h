@@ -63,11 +63,6 @@ class Parser final {
   unsigned short bracketCount = 0;
   unsigned short braceCount = 0;
 
-  /// ScopeCache - cache scopes to reduce malloc traffic.
-  // enum { scopeCacheSize = 16 };
-  // unsigned numCachedScopes;
-  // SyntaxScope *scopeCache[scopeCacheSize];
-
   SyntaxScopeCache scopeCache;
 
   /// We may consider performing type-checking during parsing

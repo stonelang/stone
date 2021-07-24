@@ -50,7 +50,7 @@ private:
   // llvm::NullablePtr<SyntaxScope> scope = nullptr;
   bool isPrimary;
 
-  const SrcID srcID;
+  const unsigned srcID;
 
 public:
   SyntaxFileKind kind = SyntaxFileKind::None;
@@ -59,14 +59,14 @@ public:
   UnsafeList<Decl> decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::Module &owner, const SrcID srcID,
+  SyntaxFile(SyntaxFileKind kind, syn::Module &owner, const unsigned srcID,
              bool isPrimary = false);
 
   ~SyntaxFile();
 
 public:
   bool IsPrimary() { return isPrimary; }
-  SrcID GetSrcID() { return srcID; }
+  unsigned GetSrcID() { return srcID; }
 
   void AddDecl(Decl *decl) { decls.Add(decl); }
 
@@ -75,7 +75,7 @@ public:
 
 public:
   static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
-                               TreeContext &tc, SrcID srcID,
+                               TreeContext &tc, unsigned srcID,
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {

@@ -47,12 +47,12 @@ void Module::AddFile(ModuleFile &file) {
 bool Module::Walk(SyntaxWalker &waker) {}
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
-                       const SrcID srcID, bool isPrimary)
+                       const unsigned srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Source, owner), kind(kind), srcID(srcID),
       isPrimary(isPrimary) {}
 
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
-                                       TreeContext &tc, SrcID srcID,
+                                       TreeContext &tc, unsigned srcID,
                                        bool isPrimary) {
 
   auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);

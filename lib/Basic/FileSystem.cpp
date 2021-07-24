@@ -1,7 +1,6 @@
 #include "stone/Basic/FileSystem.h"
 #include "stone/Basic/LLVM.h"
 
-
 #include "llvm/ADT/Twine.h"
 #include "llvm/Support/Errc.h"
 #include "llvm/Support/FileSystem.h"
@@ -13,16 +12,17 @@
 using namespace stone;
 
 namespace {
-  class OpenFileRAII {
-    static const int INVALID_FD = -1;
-  public:
-    int fd = INVALID_FD;
+class OpenFileRAII {
+  static const int INVALID_FD = -1;
 
-    ~OpenFileRAII() {
-      if (fd != INVALID_FD)
-        llvm::sys::Process::SafelyCloseFileDescriptor(fd);
-    }
-  };
+public:
+  int fd = INVALID_FD;
+
+  ~OpenFileRAII() {
+    if (fd != INVALID_FD)
+      llvm::sys::Process::SafelyCloseFileDescriptor(fd);
+  }
+};
 } // end anonymous namespace
 
 /// Does some simple checking to see if a temporary file can be written next to
@@ -32,8 +32,7 @@ namespace {
 ///
 /// If the result is an error, the write won't succeed at all, and the calling
 /// operation should bail out early.
-static llvm::ErrorOr<bool>
-canUseTemporaryForWrite(const StringRef outputPath) {
+static llvm::ErrorOr<bool> canUseTemporaryForWrite(const StringRef outputPath) {
   namespace fs = llvm::sys::fs;
 
   if (outputPath == "-") {
@@ -175,9 +174,9 @@ stone::areFilesDifferent(const llvm::Twine &source,
 
   /// Converts an error from the destination file into either an error or
   /// DifferentContents return, depending on `allowDestinationErrors`.
-  auto convertDestinationError = [=](std::error_code error) ->
-      llvm::ErrorOr<FileDifference> {
-    if (allowDestinationErrors){
+  auto convertDestinationError =
+      [=](std::error_code error) -> llvm::ErrorOr<FileDifference> {
+    if (allowDestinationErrors) {
       return FileDifference::DifferentContents;
     }
     return error;
@@ -208,16 +207,16 @@ stone::areFilesDifferent(const llvm::Twine &source,
   // if they're the same.
   std::error_code sourceRegionErr;
   fs::mapped_file_region sourceRegion(fs::convertFDToNativeFile(sourceFile.fd),
-                                      fs::mapped_file_region::readonly,
-                                      size, 0, sourceRegionErr);
+                                      fs::mapped_file_region::readonly, size, 0,
+                                      sourceRegionErr);
   if (sourceRegionErr) {
     return sourceRegionErr;
   }
 
   std::error_code destRegionErr;
   fs::mapped_file_region destRegion(fs::convertFDToNativeFile(destFile.fd),
-                                    fs::mapped_file_region::readonly,
-                                    size, 0, destRegionErr);
+                                    fs::mapped_file_region::readonly, size, 0,
+                                    destRegionErr);
 
   if (destRegionErr) {
     return convertDestinationError(destRegionErr);
@@ -258,15 +257,13 @@ std::error_code stone::moveFileIfDifferent(const llvm::Twine &source,
 
 llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>
 stone::vfs::getFileOrSTDIN(llvm::vfs::FileSystem &FS,
-                           const llvm::Twine &Filename,
-                           int64_t FileSize,
-                           bool RequiresNullTerminator,
-                           bool IsVolatile) {
+                           const llvm::Twine &Filename, int64_t FileSize,
+                           bool RequiresNullTerminator, bool IsVolatile) {
   llvm::SmallString<256> NameBuf;
   llvm::StringRef NameRef = Filename.toStringRef(NameBuf);
 
   if (NameRef == "-")
     return llvm::MemoryBuffer::getSTDIN();
-  return FS.getBufferForFile(Filename, FileSize,
-                             RequiresNullTerminator, IsVolatile);
+  return FS.getBufferForFile(Filename, FileSize, RequiresNullTerminator,
+                             IsVolatile);
 }

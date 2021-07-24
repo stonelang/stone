@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_TOKEN_H
-#define STONE_CODEANALYSIS_TOKEN_H
+#ifndef STONE_BASIC_TOKEN_H
+#define STONE_BASIC_TOKEN_H
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
@@ -8,6 +8,7 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
+
 namespace syn {
 class Token final {
   /// The token type
@@ -167,11 +168,11 @@ public:
 
   /// GetLoc - Return a source location identifier for the specified
   /// offset in the current file.
-  SrcLoc GetLoc() const { return SrcLoc::getFromPtrEncoding(text.begin()); }
+  SrcLoc GetLoc() const {
+    return SrcLoc(llvm::SMLoc::getFromPointer(text.begin()));
+  }
 
-  // CharSrcRange GetRange() const {
-  //       return CharSourceRange(GetLoc(), GetLength());
-  //   }
+  CharSrcRange GetRange() const { return CharSrcRange(GetLoc(), GetLength()); }
 
   /*
   CharSourceRange GetCommentRange() const {

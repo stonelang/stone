@@ -2,7 +2,7 @@
 #define STONE_CODEANALYSIS_LEXERPIPELINE_H
 
 #include "stone/Basic/PipelineEngine.h"
-#include "stone/CodeAnalysis/Token.h"
+#include "stone/Basic/Token.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
