@@ -46,7 +46,7 @@ public:
   virtual void Print() = 0;
 };
 
-//TODO: You can do something very similar to that of the DiagnosticEngine
+// TODO: You can do something very similar to that of the DiagnosticEngine
 class StatisticEngine final {
   llvm::SmallVector<Stats *, 4> entries;
 

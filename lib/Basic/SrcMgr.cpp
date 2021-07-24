@@ -117,14 +117,12 @@ const llvm::MemoryBuffer *ContentCache::getBuffer(DiagnosticEngineBase &de,
         llvm::MemoryBuffer::getMemBuffer("", ContentsEntry->getName())
             .release());
 
-    /*
-if (de.isDiagnosticInFlight())
-Diag.SetDelayedDiagnostic(diag::err_file_too_large,
-                    ContentsEntry->getName());
-else
-de.Report(Loc, diag::err_file_too_large)
-<< ContentsEntry->getName();
-    */
+    // if (de.IsDiagnosticInFlight()){
+    //   de.DelayDiagnostic(diag::err_file_too_large, ContentsEntry->getName());
+    // }
+    // else{
+    //   de.Diagnose(loc, diag::err_file_too_large, ContentsEntry->getName());
+    // }
 
     Buffer.setInt(Buffer.getInt() | InvalidFlag);
     if (Invalid)

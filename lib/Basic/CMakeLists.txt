@@ -6,7 +6,7 @@ set( LLVM_LINK_COMPONENTS
   Support
 	Core
   )
-set(stone_utils_sources
+set(stone_basic_sources
 	Basic.cpp
 	BumpTable.cpp
 	Char.cpp
@@ -23,6 +23,7 @@ set(stone_utils_sources
 	DirWatcher.cpp
 	File.cpp
 	FileMgr.cpp
+	FileSystem.cpp
 	FileSystemStatCache.cpp
 	Fmt.cpp
 	LangVersion.cpp
@@ -30,6 +31,7 @@ set(stone_utils_sources
 	PipelineEngine.cpp
 	SrcLoc.cpp
 	SrcMgr.cpp
+	Source.cpp
 	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp
@@ -39,7 +41,7 @@ set(stone_utils_sources
 	WinDirWatcher.cpp
 )
 add_stone_library(StoneBasic
-	${stone_utils_sources}
+	${stone_basic_sources}
 )
 
 
