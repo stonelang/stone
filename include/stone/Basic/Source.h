@@ -16,8 +16,9 @@
 #include <map>
 
 namespace stone {
-namespace src {
+namespace sm {
 
+  
 class SrcMgr;
 /// SrcLoc in stone::src is just an SMLoc.  We define it as a different type
 /// (instead of as a typedef) just to remove the "getFromPointer" methods and
@@ -489,50 +490,50 @@ public:
 namespace llvm {
 template <typename T> struct DenseMapInfo;
 
-template <> struct DenseMapInfo<stone::src::SrcLoc> {
-  static stone::src::SrcLoc getEmptyKey() {
-    return stone::src::SrcLoc(
+template <> struct DenseMapInfo<stone::sm::SrcLoc> {
+  static stone::sm::SrcLoc getEmptyKey() {
+    return stone::sm::SrcLoc(
         SMLoc::getFromPointer(DenseMapInfo<const char *>::getEmptyKey()));
   }
 
-  static stone::src::SrcLoc getTombstoneKey() {
+  static stone::sm::SrcLoc getTombstoneKey() {
     // Make this different from empty key. See for context:
     // http://lists.llvm.org/pipermail/llvm-dev/2015-July/088744.html
-    return stone::src::SrcLoc(
+    return stone::sm::SrcLoc(
         SMLoc::getFromPointer(DenseMapInfo<const char *>::getTombstoneKey()));
   }
 
-  static unsigned getHashValue(const stone::src::SrcLoc &Val) {
+  static unsigned getHashValue(const stone::sm::SrcLoc &Val) {
     return DenseMapInfo<const void *>::getHashValue(
         Val.getOpaquePointerValue());
   }
 
-  static bool isEqual(const stone::src::SrcLoc &LHS,
-                      const stone::src::SrcLoc &RHS) {
+  static bool isEqual(const stone::sm::SrcLoc &LHS,
+                      const stone::sm::SrcLoc &RHS) {
     return LHS == RHS;
   }
 };
 
-template <> struct DenseMapInfo<stone::src::SrcRange> {
-  static stone::src::SrcRange getEmptyKey() {
-    return stone::src::SrcRange(stone::src::SrcLoc(
+template <> struct DenseMapInfo<stone::sm::SrcRange> {
+  static stone::sm::SrcRange getEmptyKey() {
+    return stone::sm::SrcRange(stone::sm::SrcLoc(
         SMLoc::getFromPointer(DenseMapInfo<const char *>::getEmptyKey())));
   }
 
-  static stone::src::SrcRange getTombstoneKey() {
+  static stone::sm::SrcRange getTombstoneKey() {
     // Make this different from empty key. See for context:
     // http://lists.llvm.org/pipermail/llvm-dev/2015-July/088744.html
-    return stone::src::SrcRange(stone::src::SrcLoc(
+    return stone::sm::SrcRange(stone::sm::SrcLoc(
         SMLoc::getFromPointer(DenseMapInfo<const char *>::getTombstoneKey())));
   }
 
-  static unsigned getHashValue(const stone::src::SrcRange &Val) {
+  static unsigned getHashValue(const stone::sm::SrcRange &Val) {
     return hash_combine(Val.Start.getOpaquePointerValue(),
                         Val.End.getOpaquePointerValue());
   }
 
-  static bool isEqual(const stone::src::SrcRange &LHS,
-                      const stone::src::SrcRange &RHS) {
+  static bool isEqual(const stone::sm::SrcRange &LHS,
+                      const stone::sm::SrcRange &RHS) {
     return LHS == RHS;
   }
 };

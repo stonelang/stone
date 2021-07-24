@@ -22,6 +22,7 @@ set(stone_basic_sources
 	DirScanner.cpp
 	DirWatcher.cpp
 	File.cpp
+	FileEntry.cpp
 	FileMgr.cpp
 	FileSystem.cpp
 	FileSystemStatCache.cpp
