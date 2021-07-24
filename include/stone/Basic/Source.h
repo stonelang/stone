@@ -2,8 +2,8 @@
 #define STONE_BASIC_SOURCE_H
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/Debug.h"
 #include "stone/Basic/FileSystem.h"
-
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseMapInfo.h"
@@ -68,7 +68,7 @@ public:
     print(OS, SM, Tmp);
   }
 
-  // SWIFT_DEBUG_DUMPER(dump(const SrcMgr &SM));
+  STONE_DEBUG_DUMPER(dump(const SrcMgr &SM));
 
   friend size_t hash_value(SrcLoc loc) {
     return reinterpret_cast<uintptr_t>(loc.getOpaquePointerValue());
@@ -118,7 +118,7 @@ public:
     print(OS, SM, Tmp, PrintText);
   }
 
-  //SWIFT_DEBUG_DUMPER(dump(const SrcMgr &SM));
+  STONE_DEBUG_DUMPER(dump(const SrcMgr &SM));
 };
 
 /// A half-open character-based source range.
@@ -210,16 +210,15 @@ public:
     print(OS, SM, Tmp, PrintText);
   }
 
-  // SWIFT_DEBUG_DUMPER(dump(const SrcMgr &SM));
+  STONE_DEBUG_DUMPER(dump(const SrcMgr &SM));
 };
 
 /// This class manages and owns source buffers.
 class SrcMgr {
   llvm::SourceMgr llvmSrcMgr;
-  llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fileSystem;
   unsigned CodeCompletionBufferID = 0U;
   unsigned CodeCompletionOffset;
-
+  llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fileSystem;
   /// Associates buffer identifiers to buffer IDs.
   llvm::DenseMap<StringRef, unsigned> BufIdentIDMap;
 
