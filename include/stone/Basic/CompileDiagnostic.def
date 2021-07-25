@@ -6,9 +6,6 @@ ERROR(err_no_compile_args, none,
 
 ERROR(err_no_compile_mode, none, "no compile mode", ())
 
-ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStrArgument, diag::LLVMStrArgument))
-
-ERROR(err_unable_to_open_filebuffer, none, "could not open file buffer for", (diag::LLVMStrArgument))
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

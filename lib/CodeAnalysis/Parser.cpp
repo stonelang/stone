@@ -23,7 +23,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, bool check,
       pipeline(pipeline) {
 
   stats.reset(new ParserStats(*this, GetBasic()));
-  GetBasic().GetStatisticEngine().Register(stats.get());
+  GetBasic().GetStatEngine().Register(stats.get());
 
   Init();
 }

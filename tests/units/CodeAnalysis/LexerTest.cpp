@@ -1,7 +1,6 @@
 #include "stone/CodeAnalysis/Lexer.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 
 #include "gtest/gtest.h"
@@ -20,21 +19,17 @@ protected:
   Basic basic;
 
 protected:
-  LexerTest() : de(diagOpts, &sm), fm(fmOpts), sm(de, fm) {}
+  LexerTest() : de(diagOpts, &sm), fm(fmOpts) {}
 
 protected:
-  std::unique_ptr<Lexer> CreateLexer(llvm::StringRef srcBuffer) {
+  std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
-    auto memBuffer = llvm::MemoryBuffer::getMemBuffer(srcBuffer);
-    auto srcID = sm.CreateSrcID(std::move(memBuffer));
-
-    sm.SetMainSrcID(srcID);
-    auto lexer = std::make_unique<Lexer>(srcID, sm, basic);
-    return lexer;
+    auto srcID = sm.addMemBufferCopy(source);
+    return std::make_unique<Lexer>(srcID, sm, basic);
   }
-  std::vector<syn::Token> Lex(llvm::StringRef srcBuffer) {
+  std::vector<syn::Token> Lex(llvm::StringRef source) {
 
-    auto lexer = CreateLexer(srcBuffer);
+    auto lexer = CreateLexer(source);
     std::vector<syn::Token> tokens;
     while (true) {
       syn::Token token;
@@ -51,8 +46,8 @@ protected:
 
 TEST_F(LexerTest, GetNextToken) {
 
-  llvm::StringRef srcBuffer = "fun\n";
-  auto tokens = Lex(srcBuffer);
+  llvm::StringRef source = "fun\n";
+  auto tokens = Lex(source);
 
   ASSERT_EQ(tk::Type::kw_fun, tokens[0].GetType());
 }

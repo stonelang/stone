@@ -686,7 +686,7 @@ Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
 
   stats.reset(new LexerStats(*this, basic));
-  basic.GetStatisticEngine().Register(stats.get());
+  basic.GetStatEngine().Register(stats.get());
 
   unsigned endOffset = sm.getRangeForBuffer(srcID).getByteLength();
   Init(/*startOffset=*/0, endOffset);
@@ -722,6 +722,7 @@ void Lexer::Init(unsigned startOffset, unsigned endOffset) {
 
   assert(nextToken.Is(tk::Type::MAX));
 
+  // Prime the lexer
   Lex();
   assert((nextToken.IsAtStartOfLine() || curPtr != bufferStart) &&
          "The token should be at the beginning of the line, "
@@ -880,7 +881,7 @@ void Lexer::LexIdentifier() {
   curPtr = tokStart;
   bool didStart = AdvanceIfValidStartOfIdentifier(curPtr, bufferEnd);
 
-  assert(didStart && "Unexpected start");
+  assert(didStart && "Invalid start of identifier");
   (void)didStart;
 
   // Lex [a-zA-Z_$0-9[[:XID_Continue:]]]*

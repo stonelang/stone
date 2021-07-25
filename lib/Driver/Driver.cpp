@@ -232,7 +232,7 @@ Driver::Driver(llvm::StringRef stoneExecutable, llvm::StringRef driverName)
       driverTitle("Compiler driver"), checkInputFilesExist(true) {
 
   stats.reset(new DriverStats(*this, *this));
-  GetStatisticEngine().Register(stats.get());
+  GetStatEngine().Register(stats.get());
 }
 
 std::unique_ptr<driver::TaskQueue>

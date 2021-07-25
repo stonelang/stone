@@ -13,13 +13,11 @@ using namespace stone;
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
 
-  auto fileBuffer = compiler.GetFileMgr().getBufferForFile(input.GetName());
-  if (!fileBuffer) {
-    compiler.Diagnose(SrcLoc(), diag::err_unable_to_open_filebuffer,
-                      diag::LLVMStrArgument(input.GetName()));
+  auto srcID = compiler.MakeSrcID(input.GetName());
+  if(compiler.HasError()){
     return nullptr;
   }
-  auto srcID = compiler.GetSrcMgr().addNewSourceBuffer(std::move(*fileBuffer));
+  // TODO: Check for errors
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
                              compiler.GetTreeContext(), srcID);
 

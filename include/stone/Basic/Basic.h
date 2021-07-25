@@ -7,6 +7,7 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Host.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 
 namespace stone {
@@ -18,6 +19,7 @@ protected:
   StatisticEngine se;
   ColorOutputStream cos;
   FileMgr fm;
+  SrcMgr sm;
   Host host;
   FileSystemOptions fsOpts;
   /// Default target triple.
@@ -33,8 +35,8 @@ public:
   DiagnosticEngine &GetDiagEngine() { return de; }
   const DiagnosticEngine &GetDiagEngine() const { return de; }
 
-  StatisticEngine &GetStatisticEngine() { return se; }
-  const StatisticEngine &GeStatisticEngine() const { return se; }
+  StatisticEngine &GetStatEngine() { return se; }
+  const StatisticEngine &GeStatEngine() const { return se; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
@@ -46,11 +48,16 @@ public:
   const Host &GetHost() const { return host; }
 
   FileMgr &GetFileMgr() { return fm; }
+  FileMgr &GetSrcMgr() { return fm; }
+
   std::string GetTarget() { return targetTriple; }
 
   bool HasError() { return de.HasError(); }
 
   void Panic();
+
+public:
+  unsigned MakeSrcID(llvm::StringRef filePath);
 
 public:
   InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {

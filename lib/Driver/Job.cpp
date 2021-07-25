@@ -13,7 +13,7 @@ Job::Job(JobType jobType, Compilation &compilation)
   // TODO: if -print-stats
   timer.startTimer();
   stats.reset(new JobStats(*this, compilation.GetDriver()));
-  compilation.GetDriver().GetStatisticEngine().Register(stats.get());
+  compilation.GetDriver().GetStatEngine().Register(stats.get());
 }
 
 void Job::AddDep(const Job *job) { deps.Add(job); }
