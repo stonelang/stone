@@ -790,26 +790,16 @@ void Lexer::Lex() {
   // Remember the start of the token so we can form the text range.
   const char *tokStart = curPtr;
   signed char ch = (signed char)*curPtr++;
+
+	assert(!IsNewLine(ch) && "Newlines should be eaten by 'LexTrivia' as leadingTrivia");
+	assert(!IsWhiteSpace(ch) && "Whitespaces should be eaten by 'LexTrivia' as leadingTrivia");
+
   switch (ch) {
-
-  case '\n':
-  case '\r':
-    llvm_unreachable(
-        "Newlines should be eaten by 'LexTrivia' as leadingTrivia");
-
-  case ' ':
-  case '\t':
-  case '\f':
-  case '\v':
-    llvm_unreachable(
-        "Whitespaces should be eaten by 'LexTrivia' as leadingTrivia");
-
   case -1:
   case -2:
     // Diagnose(curPtr-1, diag::lex_utf16_bom_marker);
     curPtr = bufferEnd;
     return MakeTok(tk::Type::unk, tokStart);
-
   case '{':
     return MakeTok(tk::Type::l_brace, tokStart);
   case '[':
