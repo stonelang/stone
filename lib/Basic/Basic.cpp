@@ -15,7 +15,7 @@ unsigned Basic::MakeSrcID(llvm::StringRef filePath) {
 
   auto fileBuffer = fm.getBufferForFile(filePath);
   if (!fileBuffer) {
-    Diagnose(SrcLoc(), diag::err_unable_to_open_filebuffer,
+    Diagnose(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
              diag::LLVMStrArgument(filePath));
     return 0;
   }
