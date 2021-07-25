@@ -14,11 +14,22 @@ set(stone_compile_sources
 	Compiler.cpp
 	Modes.cpp
 	Serialize.cpp	
-	
+
+	Lexer.cpp
+	LexerCache.cpp
+	Parse.cpp
+	ParseDecl.cpp
+	Parser.cpp
+	ParseExpr.cpp
+	ParseStmt.cpp
+	TypeCheck.cpp
+	TypeCheckDecl.cpp
+	TypeChecker.cpp
+	TypeCheckExpr.cpp
+	TypeCheckStmt.cpp
+
 	LINK_LIBS
-	StoneCodeAnalysis
 	StoneCodeGen
-	StoneStaticAnalysis
 	StoneSession
 
 	DEPENDS

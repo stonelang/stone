@@ -37,7 +37,6 @@ Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
 
   auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetTreeContext(),
                                                       sizeof(syn::Module));
-
   return ::new (declPtr) syn::Module(name, GetTreeContext());
 }
 

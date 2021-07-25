@@ -1,0 +1,14 @@
+
+space Stone.Diagnostics {
+
+	public struct InFlightDiagnostic {
+		private ref CodeFixer fixer; 
+  }
+	public fun InFlightDiagnostic::Flush() -> void {
+	}
+	public fun InFlightDiagnostic::GetCodeFixer() -> ref CodeFixer {
+		return fixer;
+	}
+}
+
+

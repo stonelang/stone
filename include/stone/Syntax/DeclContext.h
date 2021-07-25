@@ -39,6 +39,14 @@ class StructDecl;
 
 enum class DeclContextKind : uint8_t { Decl, Expr, File };
 class DeclContext {
+  enum class TreeHierarchy : unsigned {
+    Decl,
+    Expr,
+    ModuleFile,
+    Initializer,
+    SerializedLocal,
+    // If you add a new Tree hierarchies, then update the static_assert() below.
+  };
   DeclKind dTy;
   DeclContextKind dcTy;
   DeclContext *parent;
@@ -125,6 +133,22 @@ public:
   const Decl *GetAsDecl() const {
     return const_cast<DeclContext *>(this)->GetAsDecl();
   }
+
+  // Return the TreeContext for a specified DeclContext by
+  /// walking up to the enclosing module and returning its TreeContext.
+  TreeContext &GetTreeContext() const;
+
+  /// Returns the semantic parent of this context.  A context has a
+  /// parent if and only if it is not a module context.
+  DeclContext *GetParent() const {
+    // TODO:
+    assert(false && "Not implemented");
+    return nullptr;
+    // return ParentAndKind.getPointer();
+  }
+  bool IsModuleContext() const;
+
+  Module *GetParentModule() const;
 };
 
 } // namespace syn

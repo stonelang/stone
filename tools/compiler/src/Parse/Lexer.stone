@@ -3,7 +3,7 @@ space Stone.Syntax {
 	
 	public struct Lexer {
 	}
-	public Lexer::Lexer() {
+	public Lexer::Lexer(uint64 bufferID, ref SrcMgr sm) {
 	}
 	public Lexer::~Lexer() {
 	}

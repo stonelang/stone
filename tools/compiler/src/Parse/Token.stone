@@ -1,13 +1,13 @@
 
 space Stone.Analysis {
 	
-	public enum TokenType {
+	public enum TokenKind {
 	}
 
 	public struct Token {
-		private TokenType tokenType = TokenType.None; 
+		private TokenKind kind = TokenKind.None; 
 	}
-	public fun Token::GetType() -> TokenType {
-		return tokenType;
+	public fun Token::GetType() -> TokenKind {
+		return kind;
 	}
 }

@@ -39,7 +39,6 @@ public:
   ~Syntax();
 
 public:
-  // Verifier &GetVerifier() { return verifier; }
   TreeContext &GetTreeContext() { return tc; }
 
 public:
@@ -54,7 +53,6 @@ public:
 
 public:
   StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
-  void VerifyStructDecl(Decl *d);
 
 public:
   bool HasError() { return tc.GetBasic().HasError(); }

@@ -47,9 +47,9 @@ void Module::AddFile(ModuleFile &file) {
 bool Module::Walk(SyntaxWalker &waker) {}
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
-                       const unsigned srcID, bool isPrimary)
-    : ModuleFile(ModuleFileKind::Source, owner), kind(kind), srcID(srcID),
-      isPrimary(isPrimary) {}
+                       llvm::Optional<unsigned> srcID, bool isPrimary)
+    : ModuleFile(ModuleFileKind::Source, owner), kind(kind),
+      srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
                                        TreeContext &tc, unsigned srcID,

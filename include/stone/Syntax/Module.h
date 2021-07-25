@@ -48,9 +48,20 @@ class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
   friend TreeContext;
   // llvm::NullablePtr<SyntaxScope> scope = nullptr;
-  bool isPrimary;
 
-  const unsigned srcID;
+  /// A unique identifier representing this file; used to mark private decls
+  /// within the file to keep them from conflicting with other files in the
+  /// same module.
+  // mutable Identifier privateDiscriminator;
+
+  // The ID for the memory buffer containing this file's source.
+  ///
+  /// May be -1, to indicate no association with a buffer.
+
+  int srcID;
+
+  /// Whether this is a primary source file which we'll be generating code for.
+  bool isPrimary;
 
 public:
   SyntaxFileKind kind = SyntaxFileKind::None;
@@ -59,8 +70,8 @@ public:
   UnsafeList<Decl> decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::Module &owner, const unsigned srcID,
-             bool isPrimary = false);
+  SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
+             llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~SyntaxFile();
 
@@ -133,6 +144,14 @@ public:
   void *operator new(size_t bytes, const TreeContext &tc,
                      unsigned alignment = alignof(Module));
 };
+
+inline bool DeclContext::IsModuleContext() const {
+  // TODO:
+  // if (auto D = GetAsDecl()){
+  //   return Module::classof(D);
+  // }
+  return false;
+}
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 

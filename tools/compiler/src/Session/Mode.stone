@@ -1,18 +1,18 @@
 
 space Stone.Session {
-	public enum ModeType {
+	public enum ModeKind {
 		None,
 		Parse,
 		Check
 	}
 	public struct Mode {
-		public ModeType modeType = ModeType.None;
+		public ModeKind kind = ModeKind.None;
 	}
 
 	public fun Mode::IsCompilable() -> bool {	
-		match(modeType){
-			case Parse:
-			case Check:
+		match(kind){
+			case ModeKind.Parse:
+			case ModeKind.Check:
 				return true; 
 			default:
 				return false; 

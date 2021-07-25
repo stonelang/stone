@@ -2,8 +2,13 @@
 
 space Stone.Syntax {
 
+	public enum DeclKind {
+		Fun,
+		Struct,
+		Interface
+	}
 	public struct Decl : Node<Decl> {
-		private DeclType declType = DeclType.None;
+		private DeclKind kind = DeclKind.None;
 	}
 	public Decl::Decl() {
 	}
@@ -11,8 +16,8 @@ space Stone.Syntax {
 	}
 	public fun Decl::Walk() -> void {
 	}
-	public fun Decl::GetType() -> DeclType {
-		return declType;
+	public fun Decl::GetKind() -> DeclKind {
+		return kind;
 	}
 
 	public struct ValueDecl {

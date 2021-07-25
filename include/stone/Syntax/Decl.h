@@ -143,15 +143,13 @@ public:
   DeclKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
-  TreeContext &GetTreeContext() const LLVM_READONLY;
-
-  // const TreeContext &GetTreeContext() const {
-  //   auto DC = context.dyn_cast<DeclContext *>();
-  //   if (DC) {
-  //     return DC->GetASTContext();
-  //   }
-  //   return *context.get<ASTContext *>();
-  // }
+  TreeContext &GetTreeContext() const {
+    auto dc = context.dyn_cast<DeclContext *>();
+    if (dc) {
+      return dc->GetTreeContext();
+    }
+    return *context.get<TreeContext *>();
+  }
 
 protected:
   Decl(DeclKind kind, SrcLoc loc,

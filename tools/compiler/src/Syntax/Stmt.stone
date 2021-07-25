@@ -1,7 +1,7 @@
 
 space Stone.Syntax {
 
-	public enum StmtType {
+	public enum StmtKind {
 		If,
 		While,
 		For,
@@ -15,7 +15,7 @@ space Stone.Syntax {
 	}
 
 
-	public fun Stmt::GetType() -> NodeType {
-		return NodeType.Stmt; 
+	public fun Stmt::GetKind() -> NodeKind {
+		return NodeKind.Stmt; 
 	}
 }

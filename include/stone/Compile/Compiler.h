@@ -50,15 +50,16 @@ class Compiler final : public Session {
   mutable syn::Module *mainModule = nullptr;
 
   std::unique_ptr<TreeContext> tc;
-  std::unique_ptr<Syntax> syntax;
 
   friend CompilerStats;
   std::unique_ptr<CompilerStats> stats;
 
   ConstList<CompilableFile> inputs;
 
+  std::unique_ptr<Syntax> syntax;
+
   // TODO: Make unsafe and use Compiler to create them
-  SafeList<CompilableItem> cis;
+  SafeList<CompilableItem> compilables;
 
   /// If the output doesn't support seeking (terminal, pipe). we switch
   /// the stream to a buffer_ostream. These are the buffer and the original
@@ -122,8 +123,6 @@ public:
   TreeContext &GetTreeContext() { return *tc.get(); }
 
   Syntax &GetSyntax() { return *syntax.get(); }
-
-  Basic &GetBasic() { GetSyntax().GetTreeContext().GetBasic(); }
 
   /// Retrieve the main module containing the files being compiled.
   syn::Module *GetMainModule() const;
