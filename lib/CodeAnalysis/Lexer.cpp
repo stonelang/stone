@@ -174,23 +174,22 @@ static bool IsValidIdentifierStartCodePoint(uint32_t c) {
 }
 
 static bool IsOperatorStartCodePoint(uint32_t C) {
-    // ASCII operator chars.
-    static const char OpChars[] = "/=-+*%<>!&|^~.?";
-    if (C < 0x80)
-      return memchr(OpChars, C, sizeof(OpChars) - 1) != 0;
-    
-    // Unicode math, symbol, arrow, dingbat, and line/box drawing chars.
-    return (C >= 0x00A1 && C <= 0x00A7)
-        || C == 0x00A9 || C == 0x00AB || C == 0x00AC || C == 0x00AE
-        || C == 0x00B0 || C == 0x00B1 || C == 0x00B6 || C == 0x00BB
-        || C == 0x00BF || C == 0x00D7 || C == 0x00F7
-        || C == 0x2016 || C == 0x2017 || (C >= 0x2020 && C <= 0x2027)
-        || (C >= 0x2030 && C <= 0x203E) || (C >= 0x2041 && C <= 0x2053)
-        || (C >= 0x2055 && C <= 0x205E) || (C >= 0x2190 && C <= 0x23FF)
-        || (C >= 0x2500 && C <= 0x2775) || (C >= 0x2794 && C <= 0x2BFF)
-        || (C >= 0x2E00 && C <= 0x2E7F) || (C >= 0x3001 && C <= 0x3003)
-        || (C >= 0x3008 && C <= 0x3030);
-  }
+  // ASCII operator chars.
+  static const char OpChars[] = "/=-+*%<>!&|^~.?";
+  if (C < 0x80)
+    return memchr(OpChars, C, sizeof(OpChars) - 1) != 0;
+
+  // Unicode math, symbol, arrow, dingbat, and line/box drawing chars.
+  return (C >= 0x00A1 && C <= 0x00A7) || C == 0x00A9 || C == 0x00AB ||
+         C == 0x00AC || C == 0x00AE || C == 0x00B0 || C == 0x00B1 ||
+         C == 0x00B6 || C == 0x00BB || C == 0x00BF || C == 0x00D7 ||
+         C == 0x00F7 || C == 0x2016 || C == 0x2017 ||
+         (C >= 0x2020 && C <= 0x2027) || (C >= 0x2030 && C <= 0x203E) ||
+         (C >= 0x2041 && C <= 0x2053) || (C >= 0x2055 && C <= 0x205E) ||
+         (C >= 0x2190 && C <= 0x23FF) || (C >= 0x2500 && C <= 0x2775) ||
+         (C >= 0x2794 && C <= 0x2BFF) || (C >= 0x2E00 && C <= 0x2E7F) ||
+         (C >= 0x3001 && C <= 0x3003) || (C >= 0x3008 && C <= 0x3030);
+}
 static bool AdvanceIf(char const *&ptr, char const *end,
                       bool (*predicate)(uint32_t)) {
   char const *next = ptr;
@@ -212,8 +211,7 @@ static bool AdvanceIfValidContinuationOfIdentifier(char const *&ptr,
   return AdvanceIf(ptr, end, IsValidIdentifierContinuationCodePoint);
 }
 
-static bool AdvanceIfValidStartOfOperator(char const *&ptr,
-                                          char const *end) {
+static bool AdvanceIfValidStartOfOperator(char const *&ptr, char const *end) {
   return AdvanceIf(ptr, end, IsOperatorStartCodePoint);
 }
 /// Is the operator beginning at the given character "left-bound"?
@@ -791,7 +789,7 @@ void Lexer::Lex() {
 
   // Remember the start of the token so we can form the text range.
   const char *tokStart = curPtr;
-  auto ch = (signed char)*curPtr++;
+  signed char ch = (signed char)*curPtr++;
   switch (ch) {
 
   case '\n':
@@ -824,7 +822,6 @@ void Lexer::Lex() {
     return MakeTok(tk::Type::r_square, tokStart);
   case ')':
     return MakeTok(tk::Type::r_paren, tokStart);
-
   case ',':
     return MakeTok(tk::Type::comma, tokStart);
   case ';':
@@ -833,30 +830,26 @@ void Lexer::Lex() {
     return MakeTok(tk::Type::colon, tokStart);
   case '\\':
     return MakeTok(tk::Type::backslash, tokStart);
-
-    // case '<':
-    // case '>':
-    //  return LexOperatorIdentifier();
-
-  default: {
-    char const *tmpCh = curPtr-1;
-    // if (IsOperator(tmpCh)) {
-    //   // return LexOperatorIdentifier());
-    // }
-    // if (IsIdentifier(tmpCh)) {
-    //   return LexIdentifier();
-    // }
-    // if (IsNumber(tmpCh)) {
-    //   return LexNumber();
-    // }
-
-    if (AdvanceIfValidStartOfIdentifier(tmpCh, bufferEnd))
-      return LexIdentifier();
-    
-    if (AdvanceIfValidStartOfOperator(tmpCh, bufferEnd))
-      //return LexOperatorIdentifier();
-      return;
+  case '<':
+  case '>':
+    // return LexOperatorIdentifier();
+    return;
+  default:
+    break;
   }
+
+  if (IsNumber(ch)) {
+    return LexNumber();
+  }
+
+  char const *tmpPtr = curPtr - 1;
+  if (IsIdentifier(ch) && AdvanceIfValidStartOfIdentifier(tmpPtr, bufferEnd)) {
+    return LexIdentifier();
+  }
+
+  if (IsOperator(ch) && AdvanceIfValidStartOfOperator(tmpPtr, bufferEnd)) {
+    // return LexOperatorIdentifier();
+    return;
   }
 }
 

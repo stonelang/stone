@@ -14,7 +14,7 @@ static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
 
   auto srcID = compiler.MakeSrcID(input.GetName());
-  if(compiler.HasError()){
+  if (compiler.HasError()) {
     return nullptr;
   }
   // TODO: Check for errors
