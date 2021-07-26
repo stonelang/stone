@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_LEXER_H
-#define STONE_CODEANALYSIS_LEXER_H
+#ifndef STONE_PARSE_LEXER_H
+#define STONE_PARSE_LEXER_H
 
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/DiagnosticEngine.h"

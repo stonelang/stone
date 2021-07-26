@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_LEXERCACHE_H
-#define STONE_CODEANALYSIS_LEXERCACHE_H
+#ifndef STONE_PARSE_LEXERCACHE_H
+#define STONE_PARSE_LEXERCACHE_H
 
 namespace stone {
 namespace syn {

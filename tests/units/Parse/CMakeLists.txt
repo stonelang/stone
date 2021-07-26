@@ -10,6 +10,6 @@ add_stone_unittest(StoneParseUnitTests
 )
 target_link_libraries(StoneParseUnitTests
   PRIVATE
-	StoneCompile
+	StoneParse
 )
 

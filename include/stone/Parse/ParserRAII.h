@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_PARSERRAII_H
-#define STONE_CODEANALYSIS_PARSERRAII_H
+#ifndef STONE_PARSE_PARSERRAII_H
+#define STONE_PARSE_PARSERRAII_H
 
 #include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Parse/Parser.h"

@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_PARSER_H
-#define STONE_CODEANALYSIS_PARSER_H
+#ifndef STONE_PARSE_PARSER_H
+#define STONE_PARSE_PARSER_H
 
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Parse/Lexer.h"

@@ -9,6 +9,6 @@ add_stone_unittest(StoneSemanticsUnitTests
 )
 target_link_libraries(StoneSemanticsUnitTests
   PRIVATE
-	StoneCompile
+	StoneSemantics
 )
 

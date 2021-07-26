@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANALYSIS_CHECKER_H
-#define STONE_CODEANALYSIS_CHECKER_H
+#ifndef STONE_SEMANTICS_CHECKER_H
+#define STONE_SEMANTICS_CHECKER_H
 
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/StatisticEngine.h"
