@@ -140,8 +140,5 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
 
   // syntax.VerifyDecl(funDecl);
 
-  if (check) {
-  }
-
   return funDecl;
 }

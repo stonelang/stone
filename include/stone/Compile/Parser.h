@@ -40,10 +40,13 @@ class Parser final {
 
   Syntax &syntax;
   SyntaxFile &sf;
-  SyntaxScopeCache syntaxScopeCache;
+
+  SyntaxScopeCache scopeCache;
   ParserPipeline *pipeline;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
+
+  DeclContext *curDC;
 
   /// This is the current token being considered by the parser.
   Token tok;
@@ -62,15 +65,6 @@ class Parser final {
   unsigned short parenCount = 0;
   unsigned short bracketCount = 0;
   unsigned short braceCount = 0;
-
-  SyntaxScopeCache scopeCache;
-
-  /// We may consider performing type-checking during parsing
-  // std::unique_ptr<TypeChecker> tc;
-
-  DeclContext *curDC;
-
-  bool check = false;
 
 private:
   // Identifiers

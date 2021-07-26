@@ -789,7 +789,7 @@ void Lexer::Lex() {
 
   // Remember the start of the token so we can form the text range.
   const char *tokStart = curPtr;
-  signed char ch = (signed char)*curPtr++;
+  auto ch = (signed char)*curPtr++;
 
   assert(!IsNewLine(ch) &&
          "Newlines should be eaten by 'LexTrivia' as leadingTrivia");
