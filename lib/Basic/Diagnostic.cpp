@@ -117,6 +117,13 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 //   return inFlightDiag;
 // }
 
+/// Add a token-based replacement fix-it to the currently-active
+/// diagnostic.
+InFlightDiagnostic &CodeFixer::Replace(SrcRange range, StringRef formatString) {
+
+  return inFlightDiag;
+}
+
 InFlightDiagnostic &CodeFixer::Replace(SrcRange range, StringRef formatString,
                                        ArrayRef<diag::Argument> args) {
 

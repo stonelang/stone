@@ -1,7 +1,7 @@
+#include "stone/Parse/Lexer.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/Parse/Lexer.h"
 #include "stone/Parse/LexerPipeline.h"
 
 using namespace stone;

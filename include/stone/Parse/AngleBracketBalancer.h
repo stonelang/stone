@@ -5,7 +5,7 @@
 
 namespace stone {
 namespace syn {
-class Parser; 
+class Parser;
 
 struct AngleBracketBalancer final {
   /// Flags used to rank candidate template names when there is more than one

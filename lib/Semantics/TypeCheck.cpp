@@ -1,5 +1,5 @@
-#include "stone/Basic/Ret.h"
 #include "stone/Semantics/TypeCheck.h"
+#include "stone/Basic/Ret.h"
 #include "stone/Semantics/TypeChecker.h"
 #include "stone/Semantics/TypeCheckerOptions.h"
 #include "stone/Semantics/TypeCheckerPipeline.h"
