@@ -26,8 +26,7 @@ protected:
 
 public:
   SyntaxDiagTest()
-      : sm(basic.GetDiagEngine(), basic.GetFileMgr()), tc(basic, pathOpts, sm),
-        syntax(tc) {}
+    : tc(basic, pathOpts, sm), syntax(tc) {}
 };
 
 TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
