@@ -261,12 +261,6 @@ void SrcLoc::print(raw_ostream &OS, const SrcMgr &SM,
   OS << ':' << LineAndCol.first << ':' << LineAndCol.second;
 }
 
-SrcLoc SrcLoc::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc,
-                                   Tokenable &tokenable) {
-  return loc.getAdvancedLocOrInvalid(
-      tokenable.GetTokenAtLoc(sm, loc).GetLength());
-}
-
 void SrcLoc::dump(const SrcMgr &SM) const { print(llvm::errs(), SM); }
 
 void SrcRange::print(raw_ostream &OS, const SrcMgr &SM, unsigned &LastBufferID,

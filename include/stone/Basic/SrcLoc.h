@@ -72,9 +72,6 @@ public:
   }
 
 public:
-  static SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc,
-                                    Tokenable &tokenable);
-
   static SrcLoc GetFromPtr(const char *ptr) {
     return SrcLoc(llvm::SMLoc::getFromPointer(ptr));
   }
