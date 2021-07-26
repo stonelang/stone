@@ -1,4 +1,4 @@
-#include "stone/Compile/TypeChecker.h"
+#include "stone/Semantics/TypeChecker.h"
 
 using stone::sema::TypeChecker;
 

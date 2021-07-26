@@ -1,11 +1,11 @@
-#include "stone/Compile/Modes.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
 #include "stone/CodeGen/Gen.h"
+#include "stone/Compile/Modes.h"
 #include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/Compiler.h"
-#include "stone/Compile/Parse.h"
-#include "stone/Compile/TypeCheck.h"
+#include "stone/Parse/Parse.h"
+#include "stone/Semantics/TypeCheck.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;

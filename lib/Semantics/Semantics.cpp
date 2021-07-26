@@ -1,4 +1,4 @@
-#include "stone/Compile/Semantics.h"
+#include "stone/Semantics/Semantics.h"
 
 using stone::sema::Semantics;
 

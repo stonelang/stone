@@ -1,8 +1,8 @@
-#include "stone/Compile/TypeCheck.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/TypeChecker.h"
-#include "stone/Compile/TypeCheckerOptions.h"
-#include "stone/Compile/TypeCheckerPipeline.h"
+#include "stone/Semantics/TypeCheck.h"
+#include "stone/Semantics/TypeChecker.h"
+#include "stone/Semantics/TypeCheckerOptions.h"
+#include "stone/Semantics/TypeCheckerPipeline.h"
 
 using namespace stone;
 using namespace stone::syn;

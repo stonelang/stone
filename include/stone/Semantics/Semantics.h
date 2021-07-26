@@ -1,7 +1,7 @@
 #ifndef STONE_CODEANALYSIS_SEMANTICS_H
 #define STONE_CODEANALYSIS_SEMANTICS_H
 
-#include "stone/Compile/TypeChecker.h"
+#include "stone/Semantics/TypeChecker.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

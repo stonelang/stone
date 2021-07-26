@@ -1,8 +1,8 @@
-#include "stone/Compile/Parse.h"
+#include "stone/Parse/Parse.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/LexerPipeline.h"
-#include "stone/Compile/Parser.h"
-#include "stone/Compile/ParserPipeline.h"
+#include "stone/Parse/LexerPipeline.h"
+#include "stone/Parse/Parser.h"
+#include "stone/Parse/ParserPipeline.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 

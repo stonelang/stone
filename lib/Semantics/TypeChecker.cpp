@@ -1,7 +1,7 @@
-#include "stone/Compile/TypeChecker.h"
+#include "stone/Semantics/TypeChecker.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Compile/TypeCheckerOptions.h"
-#include "stone/Compile/TypeCheckerPipeline.h"
+#include "stone/Semantics/TypeCheckerOptions.h"
+#include "stone/Semantics/TypeCheckerPipeline.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
