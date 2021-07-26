@@ -116,3 +116,26 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 
 //   return inFlightDiag;
 // }
+
+InFlightDiagnostic &CodeFixer::Replace(SrcRange range, StringRef formatString,
+                                       ArrayRef<diag::Argument> args) {
+
+  return inFlightDiag;
+}
+
+InFlightDiagnostic &CodeFixer::ReplaceChars(SrcLoc start, SrcLoc end,
+                                            StringRef formatString,
+                                            ArrayRef<diag::Argument> args) {
+  return inFlightDiag;
+}
+
+InFlightDiagnostic &
+CodeFixer::InsertAfter(SrcLoc loc, llvm::StringRef formatString,
+                       llvm::ArrayRef<diag::Argument> args) {
+
+  assert(inFlightDiag.tokenable && "InsertAfter requires a Tokenable");
+  loc = inFlightDiag.tokenable->GetLocForEndOfToken(
+      inFlightDiag.GetDiagEngine().GetSrcMgr(), loc);
+  
+  return Insert(loc, formatString, args);
+}

@@ -6,6 +6,8 @@ compile(0): {test.stone} -> object
 compile(1): {sample.stone} -> object 
 link: {compile(0),compile(1)} -> image 
 
-3. Implement LinkType 
+3. Implement LinkKind 
 
-4. Foreign 
+4. Foreign/C
+
+5. Break Compile into Compile, Parse, and Semantics.

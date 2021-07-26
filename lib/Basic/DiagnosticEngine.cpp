@@ -84,6 +84,11 @@ static constexpr const char *const FixItStrings[] = {
     "<not a fix-it>",
 };
 
+InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
+                                       Tokenable *tokenable)
+    : de(de), fixer(*this), isActive(true), isForceFlush(false),
+      tokenable(tokenable) {}
+
 void InFlightDiagnostic::Flush() {
   // If this diagnostic is inactive, then its soul was stolen by the copy ctor
   // (or by a subclass, as in SemaInFlightDiagnostic).

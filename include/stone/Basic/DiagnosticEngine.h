@@ -24,6 +24,7 @@ class DiagnosticListener;
 class LangOptions;
 class LangVersion;
 class SavedDiagnostic;
+class Tokenable;
 
 class DiagnosticState {
 
@@ -69,6 +70,8 @@ class InFlightDiagnostic final {
   CodeFixer fixer;
   DiagnosticEngine &de;
 
+  Tokenable *tokenable;
+
   /// Status variable indicating if this diagnostic is still active.
   ///
   // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj == 0)),
@@ -86,14 +89,13 @@ class InFlightDiagnostic final {
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
 
 public:
-  InFlightDiagnostic(DiagnosticEngine &de)
-      : de(de), fixer(*this), isActive(true), isForceFlush(false) {}
+  InFlightDiagnostic(DiagnosticEngine &de, Tokenable *tokenable = nullptr);
 
   /// Transfer an in-flight diagnostic to a new object, which is
   /// typically used when returning in-flight diagnostics.
   InFlightDiagnostic(InFlightDiagnostic &&other)
       : de(other.de), fixer(*this), isActive(other.isActive),
-        isForceFlush(other.isForceFlush) {
+        isForceFlush(other.isForceFlush), tokenable(other.tokenable) {
     other.isActive = false;
     other.isForceFlush = false;
   }
@@ -282,26 +284,33 @@ public:
 
 private:
   InFlightDiagnostic CreateInFlightDiagnostic(SrcLoc loc,
-                                              const Diagnostic &diagnostic) {
+                                              const Diagnostic &diagnostic,
+                                              Tokenable *tokenable = nullptr) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
     curDiagnostic->GetContext().SetLoc(loc);
-    return InFlightDiagnostic(*this);
+    return InFlightDiagnostic(*this, tokenable);
   }
 
 public:
-  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic) {
-    return CreateInFlightDiagnostic(loc, diagnostic);
+  InFlightDiagnostic Diagnose(SrcLoc loc, const Diagnostic &diagnostic,
+                              Tokenable *tokenable = nullptr) {
+    return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
   }
 
   InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
-                              llvm::ArrayRef<diag::Argument> args) {
-    return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)));
+                              llvm::ArrayRef<diag::Argument> args,
+                              Tokenable *tokenable = nullptr) {
+    return Diagnose(loc, Diagnostic(DiagnosticContext(diagID, args)),
+                    tokenable);
   }
 
-  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID) {
-    return Diagnose(loc, Diagnostic(DiagnosticContext(
-                             diagID, llvm::ArrayRef<diag::Argument>())));
+  InFlightDiagnostic Diagnose(SrcLoc loc, DiagID diagID,
+                              Tokenable *tokenable = nullptr) {
+    return Diagnose(
+        loc,
+        Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
+        tokenable);
   }
 
   template <typename... ArgTypes>
@@ -310,6 +319,15 @@ public:
            typename detail::PassArgument<ArgTypes>::type... args) {
 
     return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
+  }
+
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  Diagnose(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
+           typename detail::PassArgument<ArgTypes>::type... args) {
+
+    return Diagnose(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)),
+                    tokenable);
   }
 };
 

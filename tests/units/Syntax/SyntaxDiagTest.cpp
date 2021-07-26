@@ -25,8 +25,7 @@ protected:
   TreeContext tc;
 
 public:
-  SyntaxDiagTest()
-    : tc(basic, pathOpts, sm), syntax(tc) {}
+  SyntaxDiagTest() : tc(basic, pathOpts, sm), syntax(tc) {}
 };
 
 TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
