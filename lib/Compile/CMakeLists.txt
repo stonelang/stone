@@ -22,6 +22,7 @@ set(stone_compile_sources
 	Parser.cpp
 	ParseExpr.cpp
 	ParseStmt.cpp
+	Semantics.cpp
 	TypeCheck.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp

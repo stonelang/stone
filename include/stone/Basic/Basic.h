@@ -53,7 +53,6 @@ public:
   std::string GetTarget() { return targetTriple; }
 
   bool HasError() { return de.HasError(); }
-
   void Panic();
 
 public:
