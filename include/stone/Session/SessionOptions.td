@@ -38,7 +38,7 @@ def Parse: Flag<["-"], "parse">,
 HelpText<"Parse input file(s)">, ModeOpt,
 Flags<[CompilerOption]>;
 
-def Check : Flag<["-"], "check">,
+def TypeCheck : Flag<["-"], "type-check">,
 HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[CompilerOption]>;
 

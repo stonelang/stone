@@ -407,7 +407,7 @@ void Driver::BuildOutputProfile(const llvm::opt::DerivedArgList &args,
     outputProfile.compilerOutputType = Type::BC;
     break;
   case ModeType::Parse:
-  case ModeType::Check:
+  case ModeType::TypeCheck:
     outputProfile.compilerOutputType = Type::None;
     break;
   default:

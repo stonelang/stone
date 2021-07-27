@@ -17,7 +17,7 @@ private:
   bool IsCompileOnlyImpl() const {
     switch (GetType()) {
     case ModeType::Parse:
-    case ModeType::Check:
+    case ModeType::TypeCheck:
     case ModeType::EmitIR:
     case ModeType::EmitBC:
     case ModeType::EmitObject:
@@ -75,7 +75,7 @@ public:
   bool IsValid() {
     switch (GetType()) {
     case ModeType::Parse:
-    case ModeType::Check:
+    case ModeType::TypeCheck:
     case ModeType::EmitIR:
     case ModeType::EmitBC:
     case ModeType::EmitObject:

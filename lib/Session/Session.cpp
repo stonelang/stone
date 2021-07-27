@@ -91,8 +91,8 @@ void Session::ComputeMode(const llvm::opt::DerivedArgList &args) {
     case opts::Parse:
       mode.SetType(ModeType::Parse);
       break;
-    case opts::Check:
-      mode.SetType(ModeType::Check);
+    case opts::TypeCheck:
+      mode.SetType(ModeType::TypeCheck);
       break;
     case opts::EmitIR:
       mode.SetType(ModeType::EmitIR);

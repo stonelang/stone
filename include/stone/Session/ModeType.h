@@ -6,7 +6,7 @@ namespace stone {
 enum class ModeType {
   None,
   Parse,
-  Check,
+  TypeCheck,
   EmitIR,
   EmitBC,
   EmitObject,

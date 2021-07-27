@@ -78,5 +78,6 @@ public:
   // void *operator new(std::size_t bytes, const Compiler &compiler,
   //                    unsigned alignment = alignof(CompilableItem));
 };
+
 } // namespace stone
 #endif

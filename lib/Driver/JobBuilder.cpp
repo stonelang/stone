@@ -136,7 +136,7 @@ int Driver::BuildJobs() {
     return ret::err;
   }
   switch (GetMode().GetType()) {
-  case ModeType::Check:
+  case ModeType::TypeCheck:
   case ModeType::EmitLibrary:
   case ModeType::EmitObject:
   case ModeType::EmitAssembly:

@@ -12,6 +12,7 @@ set(stone_compile_sources
 	CompilableItem.cpp
 	Compile.cpp
 	Compiler.cpp
+	InFlightMode.cpp
 	Modes.cpp
 	Serialize.cpp	
 

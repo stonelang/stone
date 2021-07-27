@@ -4,11 +4,31 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/InFlightMode.h"
 #include "stone/Compile/Modes.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
+
+static std::unique_ptr<InFlightMode> GetInFlightMode(Compiler &compiler) {
+  switch (compiler.GetMode().GetType()) {
+  case ModeType::Parse:
+    return std::unique_ptr<ParseInFlightMode>(new ParseInFlightMode(compiler));
+  case ModeType::TypeCheck:
+    return std::unique_ptr<TypeCheckInFlightMode>(
+        new TypeCheckInFlightMode(compiler));
+  case ModeType::EmitIR:
+    return std::unique_ptr<EmitIRInFlightMode>(
+        new EmitIRInFlightMode(compiler));
+  case ModeType::EmitObject:
+    return std::unique_ptr<EmitObjectInFlightMode>(
+        new EmitObjectInFlightMode(compiler));
+  default:
+    break;
+  }
+  return nullptr;
+}
 
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
                                                        file::File &input) {
@@ -37,7 +57,7 @@ int mode::Execute(CompilableItem &ci) {
   switch (ci.GetCompiler().GetMode().GetType()) {
   case ModeType::Parse:
     return mode::Parse(ci);
-  case ModeType::Check:
+  case ModeType::TypeCheck:
     return mode::Check(ci);
   case ModeType::EmitModule:
     return mode::EmitModule(ci);
