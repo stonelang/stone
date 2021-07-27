@@ -8,8 +8,7 @@
 namespace stone {
 
 enum class PipelineType {
-  Lex,
-  Parse,
+  Syntax,
   TypeCheck,
   CodeGen,
 };

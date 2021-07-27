@@ -15,7 +15,9 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 
 int Compile(Compiler &compiler, file::File &input);
 
-int Compile(InFlightMode *inFlight);
+int Compile(InFlightMode &inFlight);
+
+std::unique_ptr<InFlightMode> GetInFlightMode(Compiler &compiler);
 
 } // namespace stone
 #endif

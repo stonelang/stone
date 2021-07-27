@@ -2,7 +2,7 @@
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/Parse/LexerPipeline.h"
+#include "stone/Parse/SyntaxPipeline.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -699,11 +699,11 @@ static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
 }
 
 Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
-             Basic &basic, LexerPipeline *pipeline)
+             Basic &basic, SyntaxPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic) {}
 
 Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
-             LexerPipeline *pipeline)
+             SyntaxPipeline *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
 
   stats.reset(new LexerStats(*this, basic));
@@ -1200,8 +1200,7 @@ void Lexer::MakeTok(tk::Type ty, const char *tokenStart) {
   }
   nextToken.SetToken(ty, tokenText, commentLength);
   if (pipeline) {
-    // TODO: I think you want the current token -- this returns the next.
-    pipeline->OnTokenCreated(Peek());
+    pipeline->OnToken(&nextToken);
   }
 }
 

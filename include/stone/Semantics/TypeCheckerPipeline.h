@@ -1,26 +1,20 @@
-#ifndef STONE_SEMANTICS_CHECKERPIPELINE_H
-#define STONE_SEMANTICS_CHECKERPIPELINE_H
+#ifndef STONE_SEMANTICS_TYPECHECKERPIPELINE_H
+#define STONE_SEMANTICS_TYPECHECKERPIPELINE_H
 
 #include "stone/Basic/PipelineEngine.h"
-#include "stone/Syntax/Decl.h"
-#include "stone/Syntax/Expr.h"
-#include "stone/Syntax/Stmt.h"
-
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-
+namespace syn {
+class Decl;
+class Stmt;
+class Expr;
+} // namespace syn
 class TypeCheckerPipeline : public Pipeline {
-
 public:
   TypeCheckerPipeline() : Pipeline(PipelineType::TypeCheck) {}
 
 public:
-  llvm::StringRef GetName() override { return "TypeCheck"; }
-
-public:
-  virtual void OnDecl(const syn::Decl *decl) = 0;
 };
-
 } // namespace stone
 #endif

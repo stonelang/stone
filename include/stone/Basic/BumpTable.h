@@ -24,8 +24,8 @@ public:
   llvm::BumpPtrAllocator &GetAllocator() { return entries.getAllocator(); }
   /// Return the identifier token info for the specified named
   /// identifier.
-  T &Get(llvm::StringRef name) {
-    auto &entry = *entries.insert(std::make_pair(name, nullptr)).first;
+  T &Get(T ty) {
+    auto &entry = *entries.insert(std::make_pair(ty, nullptr)).first;
     T *&second = entry.second;
     if (second) {
       return *second;

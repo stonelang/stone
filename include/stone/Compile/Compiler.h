@@ -145,6 +145,15 @@ public:
 
   ConstList<CompilableFile> &GetCompilableFiles() { return inputs; }
 
+  // llvm::MemoryBuffer *GetFileBuffer(llvm::StringRef inputFile) {
+  //   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBufOrErr =
+  //       llvm::MemoryBuffer::getFileOrSTDIN(inputFile);
+  //   if (!fileBufOrErr) {
+  //     return nullptr;
+  //   }
+  //   return fileBufOrErr.get().get();
+  // }
+
   std::unique_ptr<raw_pwrite_stream>
   CreateOutputFile(llvm::StringRef outFile, bool isBinary,
                    bool removeFileOnSignal, StringRef inFile,

@@ -4,6 +4,7 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/CodeGen/CodeGenOptions.h"
+#include "stone/Semantics/TypeCheckerOptions.h"
 #include "stone/Session/SessionOptions.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
@@ -15,6 +16,7 @@ class CompilerOptions final : public SessionOptions {
 public:
   CodeGenOptions genOpts;
   SearchPathOptions spOpts;
+  sema::TypeCheckerOptions typeCheckerOptions;
   bool typeCheckwholeModule = false;
 
 public:

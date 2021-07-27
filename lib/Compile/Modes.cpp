@@ -12,8 +12,8 @@ using namespace stone;
 
 int mode::Parse(CompilableItem &ci, bool check) {
 
-  syn::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
-                       ci.GetCompiler().GetPipelineEngine());
+  // syn::ParseSyntaxFile(ci.GetSyntaxFile(), ci.GetCompiler().GetSyntax(),
+  //                      ci.GetCompiler().GetPipelineEngine());
 
   if (ci.GetCompiler().HasError()) {
     return ret::err;

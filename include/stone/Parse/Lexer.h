@@ -13,7 +13,7 @@ namespace stone {
 
 class SrcID;
 class SrcMgr;
-class LexerPipeline;
+class SyntaxPipeline;
 
 namespace syn {
 class Token;
@@ -107,7 +107,7 @@ class Lexer final : public Tokenable {
   /// `TriviaRetentionMode::With`.
   Trivia trailingTrivia;
 
-  LexerPipeline *pipeline = nullptr;
+  SyntaxPipeline *pipeline = nullptr;
 
 private:
   enum class NullCharType {
@@ -129,15 +129,15 @@ private:
 
 public:
   Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm, Basic &basic,
-        LexerPipeline *pipeline = nullptr);
+        SyntaxPipeline *pipeline = nullptr);
 
   Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
-        LexerPipeline *pipeline = nullptr);
+        SyntaxPipeline *pipeline = nullptr);
 
   void Init(unsigned startOffset, unsigned endOffset);
 
 public:
-  void SetPipeline(LexerPipeline *p) { pipeline = p; }
+  void SetPipeline(SyntaxPipeline *p) { pipeline = p; }
 
   // TODO:
   bool ShouldKeepComments() const { return false; }

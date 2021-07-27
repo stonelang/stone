@@ -2,6 +2,7 @@
 #define STONE_PARSE_PARSERPIPELINE_H
 
 #include "stone/Basic/PipelineEngine.h"
+#include "stone/Basic/Token.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Stmt.h"
@@ -10,10 +11,10 @@
 
 namespace stone {
 
-class ParserPipeline : public Pipeline {
+class SyntaxPipeline : public Pipeline {
 
 public:
-  ParserPipeline() : Pipeline(PipelineType::Parse) {}
+  SyntaxPipeline() : Pipeline(PipelineType::Syntax) {}
 
 public:
   llvm::StringRef GetName() override { return "Parse"; }
@@ -28,6 +29,9 @@ public:
 
   virtual void OnStmt(const syn::Stmt *stmt) = 0;
   virtual void OnExpr(const syn::Expr *expr) = 0;
+
+public:
+  virtual void OnToken(const syn::Token *token) = 0;
 };
 } // namespace stone
 #endif

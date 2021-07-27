@@ -1,3 +1,4 @@
+
 #include "stone/Compile/Compile.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
@@ -11,7 +12,7 @@
 
 using namespace stone;
 
-static std::unique_ptr<InFlightMode> GetInFlightMode(Compiler &compiler) {
+std::unique_ptr<InFlightMode> stone::GetInFlightMode(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
     return std::unique_ptr<ParseInFlightMode>(new ParseInFlightMode(compiler));
@@ -78,18 +79,29 @@ int stone::Compile(Compiler &compiler, file::File &input) {
   return ret::ok;
 }
 
-int stone::Compile(InFlightMode &inFlight) {}
+int stone::Compile(InFlightMode &inFlight) {
+  // assert(inFlight.GetInFlightFile() && "No InFlightFile");
+}
+
 int Compiler::Run(Compiler &compiler) {
 
   assert(compiler.GetMode().IsCompilable() && "Invalid compile mode.");
+
   if (compiler.GetInputFiles().empty()) {
     compiler.GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_input_files);
     return ret::err;
   }
+  auto inFlightMode = GetInFlightMode(compiler);
+
   for (auto &input : compiler.GetInputFiles()) {
-    if (!stone::Compile(compiler, input)) {
-      ret::err;
-    }
+    // auto inFlightInputFile = std::make_unique<InFlightInputFile>()
+    // inFlightMode->SetInFlightInputFile(std::move(std::unique_ptr<InFlightFile(input,
+    // false));
+    // inFlightMode->Execute();
+
+    // if (!stone::Compile(inFlightMode, input)) {
+    //   ret::err;
+    // }
   }
   return ret::ok;
 }

@@ -1,49 +1,48 @@
 #include "stone/Parse/Parse.h"
 #include "stone/Basic/Ret.h"
-#include "stone/Parse/LexerPipeline.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/ParserPipeline.h"
+#include "stone/Parse/SyntaxPipeline.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, PipelineEngine *pe) {
+void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxPipeline *sp) {
 
-  ParserPipeline *pp = nullptr;
-  LexerPipeline *lp = nullptr;
+  // ParserPipeline *pp = nullptr;
+  // LexerPipeline *lp = nullptr;
 
   Parser parser(sf, syntax);
 
-  if (pe) {
-    if (pe->Get(PipelineType::Parse)) {
-      pp = static_cast<ParserPipeline *>(pe->Get(PipelineType::Parse));
-      if (pp) {
-        parser.SetPipeline(pp);
-      }
-    }
-    if (pe->Get(PipelineType::Lex)) {
-      lp = static_cast<LexerPipeline *>(pe->Get(PipelineType::Lex));
-      if (lp) {
-        parser.GetLexer().SetPipeline(lp);
-      }
-    }
-  }
+  // if (pe) {
+  //   if (pe->Get(PipelineType::Parse)) {
+  //     pp = static_cast<ParserPipeline *>(pe->Get(PipelineType::Parse));
+  //     if (pp) {
+  //       parser.SetPipeline(pp);
+  //     }
+  //   }
+  //   if (pe->Get(PipelineType::Lex)) {
+  //     lp = static_cast<LexerPipeline *>(pe->Get(PipelineType::Lex));
+  //     if (lp) {
+  //       parser.GetLexer().SetPipeline(lp);
+  //     }
+  //   }
+  // }
 
   syn::DeclGroupPtrTy topDecl;
   while (true) {
     // Check for tk::eof
     if (parser.IsDone()) {
-      if (pp) {
-        pp->OnDone();
+      if (sp) {
+        sp->OnDone();
       }
       break;
     }
     // Check for errors from diag and if there are then exit.
     if (parser.HasError()) {
-      if (pp) {
-        pp->OnError();
+      if (sp) {
+        sp->OnError();
       }
       break;
     }
@@ -51,8 +50,8 @@ void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, PipelineEngine *pe) {
     // As you process a decl, it will be added to the SyntaxFile
     if (parser.ParseTopDecl(topDecl)) {
       // Notifify that a top decl has been parsed.
-      if (pp) {
-        pp->OnTopDecl(topDecl.get().getSingleDecl());
+      if (sp) {
+        sp->OnTopDecl(topDecl.get().getSingleDecl());
       }
     }
   }
