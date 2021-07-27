@@ -4,13 +4,17 @@
 #include "stone/Compile/CompilableItem.h"
 
 namespace stone {
+namespace syn {
+SyntaxFile;
+}
 class compiler;
 class InFlightFile final {
 public:
 };
 class InFlightMode {
-  InFlightFile inFlightFile;
+
   Compiler &compiler;
+  InFlightFile inFlightFile;
 
 public:
   InFlightMode(Compiler &compiler);
@@ -20,8 +24,12 @@ public:
 };
 
 class SyntaxInFlightMode : public InFlightMode {
+  syn::SyntaxFile *syntaxFile;
+
 public:
   SyntaxInFlightMode(Compiler &compiler);
+private:
+  syn::SyntaxFile *GetSyntaxFile() { return syntaxFile; }
 
 public:
   virtual int Execute() = 0;
@@ -44,8 +52,13 @@ public:
 };
 
 class EmitIRInFlightMode : public TypeCheckInFlightMode {
+  llvm::Module *llvmModule;
+
 public:
   EmitIRInFlightMode(Compiler &compiler);
+
+public:
+  llvm::Module *GetLLVMModule() { return llvmModule; }
 
 public:
   int Execute() override;

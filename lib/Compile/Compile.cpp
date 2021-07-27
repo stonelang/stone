@@ -78,6 +78,7 @@ int stone::Compile(Compiler &compiler, file::File &input) {
   return ret::ok;
 }
 
+int stone::Compile(InFlightMode &inFlight) {}
 int Compiler::Run(Compiler &compiler) {
 
   assert(compiler.GetMode().IsCompilable() && "Invalid compile mode.");

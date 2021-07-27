@@ -7,12 +7,15 @@
 
 namespace stone {
 class Compiler;
+class InFlightMode;
 class PipelineEngine;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             PipelineEngine *pe = nullptr);
 
 int Compile(Compiler &compiler, file::File &input);
+
+int Compile(InFlightMode *inFlight);
 
 } // namespace stone
 #endif
