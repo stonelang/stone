@@ -28,57 +28,69 @@ public:
 };
 
 class InFlightInputFile final {
-  file::File &input;
+
   bool isPrimary;
+
+  file::File *input = nullptr;
   /// The input, if it comes from a buffer rather than a file. This object
   /// does not own the buffer, and the caller is responsible for ensuring
   /// that it outlives any users.
   llvm::MemoryBuffer *buffer = nullptr;
 
 public:
-  InFlightInputFile(file::File &input, bool isPrimary)
+  InFlightInputFile() = default;
+
+  InFlightInputFile(file::File *input, bool isPrimary)
       : InFlightInputFile(input, isPrimary, nullptr) {}
 
   /// Constructs an input file from the provided data.
-  InFlightInputFile(file::File &input, bool isPrimary,
+  InFlightInputFile(file::File *input, bool isPrimary,
                     llvm::MemoryBuffer *buffer)
       : input(input), isPrimary(isPrimary), buffer(buffer) {}
 
 public:
-  file::File &GetFile() { return input; }
-
+  
   bool IsPrimary() { return isPrimary; }
+
+  file::File &GetFile() {
+    assert(input && "No File associated with the InFlightInputFile");
+    return *input;
+  }
   /// Retrieves the backing buffer for this input file, if any.
-  llvm::MemoryBuffer *GetBuffer() { return buffer; }
+  llvm::MemoryBuffer &GetBuffer() {
+    assert(buffer && "No MemboryBuffer associated with the InFlightInputFile");
+    return *buffer;
+  }
 };
 class InFlightMode {
 
 protected:
   Compiler &compiler;
-  // TODO: May want to use PumbPtr
-  std::unique_ptr<InFlightInputFile> inFlightInputFile;
+
+  InFlightInputFile inFlightInputFile;
 
 public:
-  InFlightMode(Compiler &compiler);
+  explicit InFlightMode(Compiler &compiler);
   virtual ~InFlightMode() { Finish(); }
 
-public:
-  void SetInFlightFile(std::unique_ptr<InFlightInputFile> input) {
-    // inFlightInputFile(std::move(input));
+protected:
+  void SetInFlightInputFile(const InFlightInputFile &inFlightInputFile) {
+    this->inFlightInputFile = inFlightInputFile;
   }
-  InFlightInputFile &GetInFlightInputFile() { return *inFlightInputFile.get(); }
+
+public:
+  InFlightInputFile &GetInFlightInputFile() { return inFlightInputFile; }
   Compiler &GetCompiler() { return compiler; }
 
 public:
-  virtual int Execute() = 0;
+  virtual int Execute(const InFlightInputFile &inFlightInputFile);
   virtual void Finish() = 0;
 };
 
 class SyntaxInFlightMode : public InFlightMode {
 
   syn::SyntaxFile *syntaxFile;
-  /// Hmm... think about
-  friend class ParseInFlightMode;
+
   friend class TypeCheckInFlightMode;
   friend class EmitIRInFlightMode;
 
@@ -86,26 +98,17 @@ public:
   SyntaxInFlightMode(Compiler &compiler);
 
 public:
-  virtual int Execute() = 0;
-  virtual void Finish() = 0;
-};
-
-class ParseInFlightMode : public SyntaxInFlightMode {
-public:
-  ParseInFlightMode(Compiler &compiler);
-
-public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 
-class TypeCheckInFlightMode : public ParseInFlightMode {
+class TypeCheckInFlightMode : public SyntaxInFlightMode {
 
 public:
   TypeCheckInFlightMode(Compiler &compiler);
 
 public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 
@@ -125,7 +128,7 @@ public:
   llvm::Module *GetLLVMModule() { return llvmModule; }
 
 public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 
@@ -134,7 +137,7 @@ public:
   EmitModuleInFlightMode(Compiler &compiler);
 
 public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 
@@ -143,7 +146,7 @@ public:
   EmitBitCodeInFlightMode(Compiler &compiler);
 
 public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 
@@ -152,7 +155,7 @@ public:
   EmitObjectInFlightMode(Compiler &compiler);
 
 public:
-  int Execute() override;
+  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
 };
 

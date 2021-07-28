@@ -90,11 +90,8 @@ public:
 
 public:
   Compiler(const Compiler &) = delete;
-  Compiler(Compiler &&) = delete;
-  Compiler &operator=(const Compiler &) = delete;
-  Compiler &operator=(Compiler &&) = delete;
-
-  Compiler(PipelineEngine *pe = nullptr);
+  void operator=(const Compiler &) = delete;
+  explicit Compiler(PipelineEngine *pe = nullptr);
 
 public:
   void Init() override;

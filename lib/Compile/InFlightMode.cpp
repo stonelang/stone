@@ -15,15 +15,20 @@ using namespace stone;
 
 InFlightMode::InFlightMode(Compiler &compiler) : compiler(compiler) {}
 
+int InFlightMode::Execute(const InFlightInputFile &inFlightInputFile) {
+  SetInFlightInputFile(inFlightInputFile);
+  return ret::ok;
+}
+
 SyntaxInFlightMode::SyntaxInFlightMode(Compiler &compiler)
     : InFlightMode(compiler) {}
 
-ParseInFlightMode::ParseInFlightMode(Compiler &compiler)
-    : SyntaxInFlightMode(compiler) {}
+int SyntaxInFlightMode::Execute(const InFlightInputFile &input) {
 
-int ParseInFlightMode::Execute() {
-
-  // auto srcID = compiler.MakeSrcID(inFlightInputFile.GetFile().GetName());
+  if (!InFlightMode::Execute(input)) {
+    return ret::err;
+  }
+  auto srcID = compiler.MakeSrcID(inFlightInputFile.GetFile().GetName());
   // if (compiler.HasError()) {
   //   return ret::err;
   // }
@@ -41,17 +46,16 @@ int ParseInFlightMode::Execute() {
 
   return ret::ok;
 }
-void ParseInFlightMode::Finish() {}
+void SyntaxInFlightMode::Finish() {}
 
 TypeCheckInFlightMode::TypeCheckInFlightMode(Compiler &compiler)
-    : ParseInFlightMode(compiler) {}
+    : SyntaxInFlightMode(compiler) {}
 
-int TypeCheckInFlightMode::Execute() {
+int TypeCheckInFlightMode::Execute(const InFlightInputFile &input) {
 
-  if (!ParseInFlightMode::Execute()) {
+  if (!SyntaxInFlightMode::Execute(input)) {
     return ret::err;
   }
-
   TypeCheckerPipeline *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<TypeCheckerPipeline *>(
@@ -66,9 +70,9 @@ void TypeCheckInFlightMode::Finish() {}
 EmitIRInFlightMode::EmitIRInFlightMode(Compiler &compiler)
     : TypeCheckInFlightMode(compiler) {}
 
-int EmitIRInFlightMode::Execute() {
+int EmitIRInFlightMode::Execute(const InFlightInputFile &input) {
 
-  if (!TypeCheckInFlightMode::Execute()) {
+  if (!TypeCheckInFlightMode::Execute(input)) {
     return ret::err;
   }
 
@@ -89,9 +93,13 @@ void EmitIRInFlightMode::Finish() {}
 EmitObjectInFlightMode::EmitObjectInFlightMode(Compiler &compiler)
     : EmitIRInFlightMode(compiler) {}
 
-int EmitObjectInFlightMode::Execute() {
+int EmitObjectInFlightMode::Execute(const InFlightInputFile &input) {
 
   if (!compiler.GetMode().CanOutput()) {
+    return ret::err;
+  }
+
+  if (!TypeCheckInFlightMode::Execute(input)) {
     return ret::err;
   }
 
@@ -118,8 +126,10 @@ void EmitObjectInFlightMode::Finish() {}
 EmitModuleInFlightMode::EmitModuleInFlightMode(Compiler &compiler)
     : EmitIRInFlightMode(compiler) {}
 
-int EmitModuleInFlightMode::Execute() {
-  TypeCheckInFlightMode::Execute();
+int EmitModuleInFlightMode::Execute(const InFlightInputFile &input) {
+  if (!TypeCheckInFlightMode::Execute(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmitModuleInFlightMode::Finish() {}
@@ -127,8 +137,10 @@ void EmitModuleInFlightMode::Finish() {}
 EmitBitCodeInFlightMode::EmitBitCodeInFlightMode(Compiler &compiler)
     : EmitIRInFlightMode(compiler) {}
 
-int EmitBitCodeInFlightMode::Execute() {
-  EmitIRInFlightMode::Execute();
+int EmitBitCodeInFlightMode::Execute(const InFlightInputFile &input) {
+  if (!EmitIRInFlightMode::Execute(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmitBitCodeInFlightMode::Finish() {}

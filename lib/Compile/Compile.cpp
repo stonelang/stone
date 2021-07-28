@@ -15,7 +15,8 @@ using namespace stone;
 std::unique_ptr<InFlightMode> stone::GetInFlightMode(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
-    return std::unique_ptr<ParseInFlightMode>(new ParseInFlightMode(compiler));
+    return std::unique_ptr<SyntaxInFlightMode>(
+        new SyntaxInFlightMode(compiler));
   case ModeType::TypeCheck:
     return std::unique_ptr<TypeCheckInFlightMode>(
         new TypeCheckInFlightMode(compiler));
