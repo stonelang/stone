@@ -15,6 +15,7 @@ Session::Session(SessionOptions &sessionOpts, SessionType ty)
 
 Session::~Session() {}
 
+bool Session::Build(llvm::ArrayRef<const char *> args) {}
 void Session::CreateTimer() {
 
   if (sessionOpts.printStats) {

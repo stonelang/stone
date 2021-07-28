@@ -63,6 +63,7 @@ void Compiler::Init() {}
 bool Compiler::Build(llvm::ArrayRef<const char *> args) {
 
   excludedFlagsBitmask = opts::NoCompilerOption;
+
   originalArgs = ParseArgList(args);
 
   if (HasError())

@@ -16,6 +16,12 @@ public:
   CompilerWorkspace &operator=(const CompilerWorkspace &other);
 
 public:
+  void BuildInFlightInputFile(Compile &compiler);
+
+public:
+  // BasicList<InFlightInputFile> GetInFlightInputFiles() { return }
+
+public:
   void AddInFlightInputFile(const InFlightInputFile &input);
 };
 } // namespace stone

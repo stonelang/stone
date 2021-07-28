@@ -49,7 +49,6 @@ public:
       : input(input), isPrimary(isPrimary), buffer(buffer) {}
 
 public:
-  
   bool IsPrimary() { return isPrimary; }
 
   file::File &GetFile() {
@@ -85,12 +84,14 @@ public:
 public:
   virtual int Execute(const InFlightInputFile &inFlightInputFile);
   virtual void Finish() = 0;
+
+protected:
+  int Execute() = 0;
 };
 
 class SyntaxInFlightMode : public InFlightMode {
 
   syn::SyntaxFile *syntaxFile;
-
   friend class TypeCheckInFlightMode;
   friend class EmitIRInFlightMode;
 

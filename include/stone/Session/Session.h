@@ -110,7 +110,7 @@ protected:
 public:
   virtual void Init() = 0;
   ///
-  virtual bool Build(llvm::ArrayRef<const char *> args) = 0;
+  virtual bool Build(llvm::ArrayRef<const char *> args);
   ///
   virtual int Run() = 0;
   ///

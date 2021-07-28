@@ -93,6 +93,12 @@ int Compiler::Run(Compiler &compiler) {
     return ret::err;
   }
   auto inFlightMode = GetInFlightMode(compiler);
+  // TODO: Build out the InFlightInputFiles
+
+  workspace.BuildInFlightInputFiles();
+
+  for (auto &input : workspace.GetInFlightInputFiles()) {
+  }
 
   for (auto &input : compiler.GetInputFiles()) {
     // auto inFlightInputFile = std::make_unique<InFlightInputFile>()

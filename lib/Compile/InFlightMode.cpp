@@ -29,20 +29,27 @@ int SyntaxInFlightMode::Execute(const InFlightInputFile &input) {
     return ret::err;
   }
   auto srcID = compiler.MakeSrcID(inFlightInputFile.GetFile().GetName());
-  // if (compiler.HasError()) {
-  //   return ret::err;
-  // }
-  // // TODO: Check for errors
-  // syntaxFile =
-  //     SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
-  //                      compiler.GetTreeContext(), srcID);
+  if (compiler.HasError()) {
+    return ret::err;
+  }
+  syntaxFile =
+      SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
+                       compiler.GetTreeContext(), srcID);
+
+  if (compiler.HasError()) {
+    return ret::err;
+  }
 
   SyntaxPipeline *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<SyntaxPipeline *>(
         compiler.GetPipelineEngine()->Get(PipelineType::Syntax));
   }
-  // syn::ParseSyntaxFile(syntaxFile, compiler.GetSyntax(), pipeline);
+  syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
+
+  if (compiler.HasError()) {
+    return ret::err;
+  }
 
   return ret::ok;
 }
@@ -61,8 +68,13 @@ int TypeCheckInFlightMode::Execute(const InFlightInputFile &input) {
     pipeline = static_cast<TypeCheckerPipeline *>(
         compiler.GetPipelineEngine()->Get(PipelineType::TypeCheck));
   }
+
   sema::TypeCheckSyntaxFile(
       *syntaxFile, compiler.GetCompilerOptions().typeCheckerOptions, pipeline);
+
+  if (compiler.HasError()) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void TypeCheckInFlightMode::Finish() {}
