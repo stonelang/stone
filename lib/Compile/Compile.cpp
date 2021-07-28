@@ -15,21 +15,16 @@ using namespace stone;
 std::unique_ptr<InFlightMode> stone::GetInFlightMode(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
-    return std::unique_ptr<SyntaxInFlightMode>(
-        new SyntaxInFlightMode(compiler));
+    return std::make_unique<SyntaxInFlightMode>(compiler);
   case ModeType::TypeCheck:
-    return std::unique_ptr<TypeCheckInFlightMode>(
-        new TypeCheckInFlightMode(compiler));
+    return std::make_unique<TypeCheckInFlightMode>(compiler);
   case ModeType::EmitIR:
-    return std::unique_ptr<EmitIRInFlightMode>(
-        new EmitIRInFlightMode(compiler));
+    return std::make_unique<EmitIRInFlightMode>(compiler);
   case ModeType::EmitObject:
-    return std::unique_ptr<EmitObjectInFlightMode>(
-        new EmitObjectInFlightMode(compiler));
+    return std::make_unique<EmitObjectInFlightMode>(compiler);
   default:
-    break;
+    llvm_unreachable("Invalid compiler mode!");
   }
-  return nullptr;
 }
 
 static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
@@ -95,10 +90,10 @@ int Compiler::Run(Compiler &compiler) {
   auto inFlightMode = GetInFlightMode(compiler);
   // TODO: Build out the InFlightInputFiles
 
-  workspace.BuildInFlightInputFiles();
+  // workspace.BuildInFlightInputFiles();
 
-  for (auto &input : workspace.GetInFlightInputFiles()) {
-  }
+  // for (auto &input : workspace.GetInFlightInputFiles()) {
+  // }
 
   for (auto &input : compiler.GetInputFiles()) {
     // auto inFlightInputFile = std::make_unique<InFlightInputFile>()

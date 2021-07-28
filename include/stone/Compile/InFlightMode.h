@@ -65,7 +65,6 @@ class InFlightMode {
 
 protected:
   Compiler &compiler;
-
   InFlightInputFile inFlightInputFile;
 
 public:
@@ -82,25 +81,26 @@ public:
   Compiler &GetCompiler() { return compiler; }
 
 public:
-  virtual int Execute(const InFlightInputFile &inFlightInputFile);
+  int Execute(const InFlightInputFile &inFlightInputFile);
   virtual void Finish() = 0;
 
 protected:
-  int Execute() = 0;
+  virtual int Execute() = 0;
 };
 
 class SyntaxInFlightMode : public InFlightMode {
 
+protected:
   syn::SyntaxFile *syntaxFile;
-  friend class TypeCheckInFlightMode;
-  friend class EmitIRInFlightMode;
 
 public:
   SyntaxInFlightMode(Compiler &compiler);
 
 public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
+
+protected:
+  int Execute() override;
 };
 
 class TypeCheckInFlightMode : public SyntaxInFlightMode {
@@ -109,18 +109,17 @@ public:
   TypeCheckInFlightMode(Compiler &compiler);
 
 public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
+
+protected:
+  int Execute() override;
 };
 
 class EmitIRInFlightMode : public TypeCheckInFlightMode {
 
+protected:
   llvm::Module *llvmModule;
   CodeGenPipeline *pipeline;
-
-  friend class EmitModuleInFlightMode;
-  friend class EmitObjectInFlightMode;
-  friend class EmitBitCodeInFlightMode;
 
 public:
   EmitIRInFlightMode(Compiler &compiler);
@@ -129,26 +128,10 @@ public:
   llvm::Module *GetLLVMModule() { return llvmModule; }
 
 public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
-};
 
-class EmitModuleInFlightMode : public EmitIRInFlightMode {
-public:
-  EmitModuleInFlightMode(Compiler &compiler);
-
-public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
-  void Finish() override;
-};
-
-class EmitBitCodeInFlightMode : public EmitIRInFlightMode {
-public:
-  EmitBitCodeInFlightMode(Compiler &compiler);
-
-public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
-  void Finish() override;
+protected:
+  int Execute() override;
 };
 
 class EmitObjectInFlightMode : public EmitIRInFlightMode {
@@ -156,25 +139,55 @@ public:
   EmitObjectInFlightMode(Compiler &compiler);
 
 public:
-  int Execute(const InFlightInputFile &inFlightInputFile) override;
   void Finish() override;
+
+protected:
+  int Execute() override;
 };
 
-// class EmitAssemblyInFlightMode : public EmitIRInFlightMode {
-// public:
-//   EmitAssemblyInFlightMode(Compiler &compiler);
+class EmitModuleInFlightMode : public EmitIRInFlightMode {
+public:
+  EmitModuleInFlightMode(Compiler &compiler);
 
-// public:
-//   int Execute() override;
-// };
+public:
+  void Finish() override;
 
-// class EmitLibraryInFlightMode : public EmitIRInFlightMode {
-// public:
-//   EmitLibraryInFlightMode(Compiler &compiler);
+protected:
+  int Execute() override;
+};
 
-// public:
-//   int Execute() override;
-// };
+class EmitBitCodeInFlightMode : public EmitIRInFlightMode {
+public:
+  EmitBitCodeInFlightMode(Compiler &compiler);
+
+public:
+  void Finish() override;
+
+protected:
+  int Execute() override;
+};
+
+class EmitAssemblyInFlightMode : public EmitIRInFlightMode {
+public:
+  EmitAssemblyInFlightMode(Compiler &compiler);
+
+public:
+  void Finish() override;
+
+protected:
+  int Execute() override;
+};
+
+class EmitLibraryInFlightMode : public EmitIRInFlightMode {
+public:
+  EmitLibraryInFlightMode(Compiler &compiler);
+
+public:
+  void Finish() override;
+
+protected:
+  int Execute() override;
+};
 
 } // namespace stone
 #endif

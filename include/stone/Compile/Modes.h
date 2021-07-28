@@ -4,6 +4,7 @@
 #include "stone/Compile/CompilableItem.h"
 
 namespace stone {
+
 namespace mode {
 int Execute(CompilableItem &ci);
 int Parse(CompilableItem &ci, bool check);

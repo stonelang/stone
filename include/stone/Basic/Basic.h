@@ -12,6 +12,7 @@
 
 namespace stone {
 class Basic {
+
 protected:
   LangOptions langOpts;
   DiagnosticOptions diagOpts;
