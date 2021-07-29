@@ -86,6 +86,8 @@ int EmittingIR::DoCompileFile() {
     return ret::err;
   }
 
+  compiler.GetMainModule()->AddFile(*typeChecking.GetSyntaxFile());
+
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<CodeGenPipeline *>(
         compiler.GetPipelineEngine()->Get(PipelineType::CodeGen));
@@ -93,9 +95,9 @@ int EmittingIR::DoCompileFile() {
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());
 
-  // if (GetCompiler().HasError()) {
-  //   return ret::err;
-  // }
+  if (compiler.HasError()) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmittingIR::Finish() {}

@@ -13,6 +13,10 @@
 #include <memory>
 using namespace stone;
 
+class CompilerWorkspace {
+public:
+};
+
 static std::unique_ptr<Compilable> GetCompilable(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
@@ -27,59 +31,6 @@ static std::unique_ptr<Compilable> GetCompilable(Compiler &compiler) {
     llvm_unreachable("Invalid compiler mode!");
   }
 }
-
-static std::unique_ptr<CompilableItem> BuildCompilable(Compiler &compiler,
-                                                       file::File &input) {
-
-  auto srcID = compiler.MakeSrcID(input.GetName());
-  if (compiler.HasError()) {
-    return nullptr;
-  }
-  // TODO: Check for errors
-  auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
-                             compiler.GetTreeContext(), srcID);
-
-  assert(sf && "Could not create SyntaxFile");
-
-  std::unique_ptr<CompilableItem> ci(
-      new CompilableItem(CompilableFile(input, false), compiler, *sf));
-
-  // TODO: May want to do tis later
-  if (ci->CanOutput()) {
-    ci->CreateOutputFile();
-  }
-  return ci;
-}
-
-int mode::Execute(CompilableItem &ci) {
-  switch (ci.GetCompiler().GetMode().GetType()) {
-  case ModeType::Parse:
-    return mode::Parse(ci);
-  case ModeType::TypeCheck:
-    return mode::Check(ci);
-  case ModeType::EmitModule:
-    return mode::EmitModule(ci);
-  default:
-    return mode::EmitObject(ci);
-  }
-}
-int stone::Compile(Compiler &compiler, file::File &input) {
-  auto ci = BuildCompilable(compiler, input);
-  if (!ci) {
-    return ret::err;
-  }
-  if (!mode::Execute(*ci.get())) {
-    return ret::err;
-  }
-  compiler.GetCompilerContext().AddCompilable(std::move(ci));
-
-  return ret::ok;
-}
-
-int stone::Compile(InFlightMode &inFlight) {
-  // assert(inFlight.GetInFlightFile() && "No InFlightFile");
-}
-
 int Compiler::Run(Compiler &compiler) {
 
   assert(compiler.GetMode().IsCompilable() && "Invalid compile mode.");
@@ -97,8 +48,8 @@ int Compiler::Run(Compiler &compiler) {
     if (compilable->CompileFile(mode::CompilableFile(&input, false))) {
       ret::err;
     }
-    compilable->Finish();
   }
+  compilable->Finish();
   return ret::ok;
 }
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,

@@ -104,6 +104,8 @@ public:
 public:
   void Finish() override;
 
+  syn::SyntaxFile *GetSyntaxFile() { return syntaxParsing.GetSyntaxFile(); }
+
 protected:
   int DoCompileFile() override;
 };
