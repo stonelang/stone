@@ -70,14 +70,13 @@ protected:
   }
 
 public:
-  mode::CompilableFile &GetCompilableFile() { return input; }
+  const mode::CompilableFile &GetCompilableFile() { return input; }
   Compiler &GetCompiler() { return compiler; }
 
-public:
   int CompileFile(const mode::CompilableFile &input);
 
 protected:
-  virtual int CompileFile() = 0;
+  virtual int DoCompileFile() = 0;
 };
 
 class SyntaxParsing final : public Compilable {
@@ -93,7 +92,7 @@ public:
   syn::SyntaxFile *GetSyntaxFile() { return syntaxFile; }
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
 class TypeChecking final : public Compilable {
@@ -106,15 +105,15 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class OutputableCompilable : public Compilable {
+class OutputCompilable : public Compilable {
 public:
-  explicit OutputableCompilable(Compiler &compiler) : Compilable(compiler) {}
+  explicit OutputCompilable(Compiler &compiler) : Compilable(compiler) {}
 };
 
-class EmittingIR final : public OutputableCompilable {
+class EmittingIR final : public OutputCompilable {
 
   llvm::Module *llvmModule;
   CodeGenPipeline *pipeline;
@@ -130,10 +129,10 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class EmittingObject final : public OutputableCompilable {
+class EmittingObject final : public OutputCompilable {
 
   EmittingIR emittingIR;
 
@@ -144,10 +143,10 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class EmittingModule final : public OutputableCompilable {
+class EmittingModule final : public OutputCompilable {
 
   EmittingIR emittingIR;
 
@@ -158,10 +157,10 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class EmittingBitCode final : public OutputableCompilable {
+class EmittingBitCode final : public OutputCompilable {
 
   EmittingIR emittingIR;
 
@@ -172,10 +171,10 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class EmittingAssembly final : public OutputableCompilable {
+class EmittingAssembly final : public OutputCompilable {
 
   EmittingIR emittingIR;
 
@@ -186,10 +185,10 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
-class EmittingLibrary final : public OutputableCompilable {
+class EmittingLibrary final : public OutputCompilable {
 
   EmittingIR emittingIR;
 
@@ -200,7 +199,7 @@ public:
   void Finish() override;
 
 protected:
-  int CompileFile() override;
+  int DoCompileFile() override;
 };
 
 } // namespace stone

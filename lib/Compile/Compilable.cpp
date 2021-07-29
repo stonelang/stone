@@ -17,14 +17,14 @@ Compilable::Compilable(Compiler &compiler) : compiler(compiler) {}
 
 int Compilable::CompileFile(const mode::CompilableFile &input) {
   SetCompilableFile(input);
-  return CompileFile();
+  return DoCompileFile();
 }
 
 void Compilable::Finish() {}
 
 SyntaxParsing::SyntaxParsing(Compiler &compiler) : Compilable(compiler) {}
 
-int SyntaxParsing::CompileFile() {
+int SyntaxParsing::DoCompileFile() {
 
   auto srcID = compiler.MakeSrcID(input.GetFile().GetName());
   if (compiler.HasError()) {
@@ -56,11 +56,11 @@ void SyntaxParsing::Finish() {}
 TypeChecking::TypeChecking(Compiler &compiler)
     : Compilable(compiler), syntaxParsing(compiler) {}
 
-int TypeChecking::CompileFile() {
+int TypeChecking::DoCompileFile() {
 
-  // if (!syntaxParsing.CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!syntaxParsing.CompileFile(GetCompilableFile())) {
+    return ret::err;
+  }
   TypeCheckerPipeline *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<TypeCheckerPipeline *>(
@@ -78,13 +78,13 @@ int TypeChecking::CompileFile() {
 void TypeChecking::Finish() {}
 
 EmittingIR::EmittingIR(Compiler &compiler)
-    : OutputableCompilable(compiler), typeChecking(compiler) {}
+    : OutputCompilable(compiler), typeChecking(compiler) {}
 
-int EmittingIR::CompileFile() {
+int EmittingIR::DoCompileFile() {
 
-  // if (!typeChecking.CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!typeChecking.CompileFile(input)) {
+    return ret::err;
+  }
 
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<CodeGenPipeline *>(
@@ -101,16 +101,16 @@ int EmittingIR::CompileFile() {
 void EmittingIR::Finish() {}
 
 EmittingObject::EmittingObject(Compiler &compiler)
-    : OutputableCompilable(compiler), emittingIR(compiler) {}
+    : OutputCompilable(compiler), emittingIR(compiler) {}
 
-int EmittingObject::CompileFile() {
+int EmittingObject::DoCompileFile() {
 
   if (!compiler.GetMode().CanOutput()) {
     return ret::err;
   }
-  // if (!emittingIR.CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!emittingIR.CompileFile(input)) {
+    return ret::err;
+  }
 
   // GetCompiler().CreateOutputFile();
 
@@ -133,49 +133,49 @@ int EmittingObject::CompileFile() {
 void EmittingObject::Finish() {}
 
 EmittingModule::EmittingModule(Compiler &compiler)
-    : OutputableCompilable(compiler), emittingIR(compiler) {}
+    : OutputCompilable(compiler), emittingIR(compiler) {}
 
-int EmittingModule::CompileFile() {
+int EmittingModule::DoCompileFile() {
 
-  // if (!typeChecking.CompileFile(compilableFile)) {
-  //   return ret::err;
-  // }
+  if (!emittingIR.CompileFile(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmittingModule::Finish() {}
 
 EmittingBitCode::EmittingBitCode(Compiler &compiler)
-    : OutputableCompilable(compiler), emittingIR(compiler) {}
+    : OutputCompilable(compiler), emittingIR(compiler) {}
 
-int EmittingBitCode::CompileFile() {
+int EmittingBitCode::DoCompileFile() {
 
-  // if (!emittingIR.CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!emittingIR.CompileFile(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmittingBitCode::Finish() {}
 
 EmittingAssembly::EmittingAssembly(Compiler &compiler)
-    : OutputableCompilable(compiler), emittingIR(compiler) {}
+    : OutputCompilable(compiler), emittingIR(compiler) {}
 
-int EmittingAssembly::CompileFile() {
+int EmittingAssembly::DoCompileFile() {
 
-  // if (!emittingIR::CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!emittingIR.CompileFile(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmittingAssembly::Finish() {}
 
 EmittingLibrary::EmittingLibrary(Compiler &compiler)
-    : OutputableCompilable(compiler), emittingIR(compiler) {}
+    : OutputCompilable(compiler), emittingIR(compiler) {}
 
-int EmittingLibrary::CompileFile() {
+int EmittingLibrary::DoCompileFile() {
 
-  // if (!emittingIR::CompileFile(input)) {
-  //   return ret::err;
-  // }
+  if (!emittingIR.CompileFile(input)) {
+    return ret::err;
+  }
   return ret::ok;
 }
 void EmittingLibrary::Finish() {}
