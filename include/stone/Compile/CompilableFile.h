@@ -15,6 +15,9 @@ class CompilableFile final {
   llvm::MemoryBuffer *buffer = nullptr;
 
 public:
+  CompilableFile() = default;
+
+public:
   CompilableFile(file::File &input, bool isPrimary)
       : CompilableFile(input, isPrimary, nullptr) {}
 

@@ -4,24 +4,25 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
+#include "stone/Compile/Compilable.h"
 #include "stone/Compile/Compiler.h"
-#include "stone/Compile/InFlightMode.h"
 #include "stone/Compile/Modes.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
 
+#include <memory>
 using namespace stone;
 
-std::unique_ptr<InFlightMode> stone::GetInFlightMode(Compiler &compiler) {
+static std::unique_ptr<Compilable> GetCompilable(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
-    return std::make_unique<SyntaxInFlightMode>(compiler);
+    return std::unique_ptr<SyntaxParsing>(new SyntaxParsing(compiler));
   case ModeType::TypeCheck:
-    return std::make_unique<TypeCheckInFlightMode>(compiler);
+    return std::unique_ptr<TypeChecking>(new TypeChecking(compiler));
   case ModeType::EmitIR:
-    return std::make_unique<EmitIRInFlightMode>(compiler);
+    return std::unique_ptr<EmittingIR>(new EmittingIR(compiler));
   case ModeType::EmitObject:
-    return std::make_unique<EmitObjectInFlightMode>(compiler);
+    return std::unique_ptr<EmittingObject>(new EmittingObject(compiler));
   default:
     llvm_unreachable("Invalid compiler mode!");
   }
@@ -87,23 +88,16 @@ int Compiler::Run(Compiler &compiler) {
     compiler.GetDiagEngine().Diagnose(SrcLoc(), diag::err_no_input_files);
     return ret::err;
   }
-  auto inFlightMode = GetInFlightMode(compiler);
   // TODO: Build out the InFlightInputFiles
-
   // workspace.BuildInFlightInputFiles();
-
   // for (auto &input : workspace.GetInFlightInputFiles()) {
   // }
-
+  auto compilable = GetCompilable(compiler);
   for (auto &input : compiler.GetInputFiles()) {
-    // auto inFlightInputFile = std::make_unique<InFlightInputFile>()
-    // inFlightMode->SetInFlightInputFile(std::move(std::unique_ptr<InFlightFile(input,
-    // false));
-    // inFlightMode->Execute();
-
-    // if (!stone::Compile(inFlightMode, input)) {
-    //   ret::err;
-    // }
+    if (compilable->CompileFile(mode::CompilableFile(&input, false))) {
+      ret::err;
+    }
+    compilable->Finish();
   }
   return ret::ok;
 }

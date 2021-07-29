@@ -9,6 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_compile_sources
+	Compilable.cpp
 	CompilableItem.cpp
 	Compile.cpp
 	Compiler.cpp
