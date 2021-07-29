@@ -66,9 +66,9 @@ int TypeChecking::DoCompileFile() {
     pipeline = static_cast<TypeCheckerPipeline *>(
         compiler.GetPipelineEngine()->Get(PipelineType::TypeCheck));
   }
-  // sema::TypeCheckSyntaxFile(
-  //     *syntaxFile, compiler.GetCompilerOptions().typeCheckerOptions,
-  //     pipeline);
+  sema::TypeCheckSyntaxFile(*syntaxParsing.GetSyntaxFile(),
+                            compiler.GetCompilerOptions().typeCheckerOptions,
+                            pipeline);
 
   if (compiler.HasError()) {
     return ret::err;
@@ -82,7 +82,7 @@ EmittingIR::EmittingIR(Compiler &compiler)
 
 int EmittingIR::DoCompileFile() {
 
-  if (!typeChecking.CompileFile(input)) {
+  if (!typeChecking.CompileFile(GetCompilableFile())) {
     return ret::err;
   }
 

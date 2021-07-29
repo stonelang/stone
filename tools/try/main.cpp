@@ -16,14 +16,13 @@ protected:
 
 int Compilable::CompileFile(int i) { return CompileFile(); }
 
-
 class SyntaxParsing final : public Compilable {
 
 public:
   SyntaxParsing() {}
 
 protected:
- int CompileFile() override;
+  int CompileFile() override;
 };
 
 int SyntaxParsing::CompileFile() { return 0; }
@@ -55,8 +54,6 @@ int main() {
   SyntaxParsing syntaxParsing;
 
   syntaxParsing.CompileFile(1);
-
-
 
   return 0;
 }
