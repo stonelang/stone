@@ -72,6 +72,15 @@ unsigned SrcMgr::addMemBufferCopy(StringRef InputData,
   return addNewSourceBuffer(std::move(Buffer));
 }
 
+llvm::MemoryBuffer *SrcMgr::GetFileBuffer(llvm::StringRef inputFile) {
+  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBufOrErr =
+      llvm::MemoryBuffer::getFileOrSTDIN(inputFile);
+  if (!fileBufOrErr) {
+    return nullptr;
+  }
+  return fileBufOrErr.get().get();
+}
+
 bool SrcMgr::openVirtualFile(SrcLoc loc, StringRef name, int lineOffset) {
   CharSrcRange fullRange = getRangeForBuffer(findBufferContainingLoc(loc));
   SrcLoc end;

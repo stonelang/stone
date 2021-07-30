@@ -1,10 +1,7 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Compile/CompilableFile.h"
-#include "stone/Compile/CompilableItem.h"
 #include "stone/Compile/CompilerAlloc.h"
-#include "stone/Compile/CompilerContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
@@ -32,7 +29,6 @@ using namespace stone::syn;
 namespace stone {
 class PipelineEngine;
 class Compiler;
-class CompilerContext;
 
 class CompilerStats final : public Stats {
   Compiler &compiler;
@@ -45,7 +41,6 @@ public:
 
 class Compiler final : public Session {
   SrcMgr sm;
-  CompilerContext cc;
   PipelineEngine *pe = nullptr;
   mutable syn::Module *mainModule = nullptr;
 
@@ -53,13 +48,7 @@ class Compiler final : public Session {
 
   friend CompilerStats;
   std::unique_ptr<CompilerStats> stats;
-
-  ConstList<CompilableFile> inputs;
-
   std::unique_ptr<Syntax> syntax;
-
-  // TODO: Make unsafe and use Compiler to create them
-  SafeList<CompilableItem> compilables;
 
   /// If the output doesn't support seeking (terminal, pipe). we switch
   /// the stream to a buffer_ostream. These are the buffer and the original
@@ -111,8 +100,6 @@ public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
-  CompilerContext &GetCompilerContext() { return cc; }
-
   SrcMgr &GetSrcMgr() { return sm; }
 
   llvm::vfs::FileSystem &GetVFS() const;
@@ -139,17 +126,6 @@ public:
   CompilerStats &GetStats() { return *stats.get(); }
 
   PipelineEngine *GetPipelineEngine() { return pe; }
-
-  ConstList<CompilableFile> &GetCompilableFiles() { return inputs; }
-
-  // llvm::MemoryBuffer *GetFileBuffer(llvm::StringRef inputFile) {
-  //   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBufOrErr =
-  //       llvm::MemoryBuffer::getFileOrSTDIN(inputFile);
-  //   if (!fileBufOrErr) {
-  //     return nullptr;
-  //   }
-  //   return fileBufOrErr.get().get();
-  // }
 
   std::unique_ptr<raw_pwrite_stream>
   CreateOutputFile(llvm::StringRef outFile, bool isBinary,

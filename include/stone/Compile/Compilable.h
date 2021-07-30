@@ -56,7 +56,6 @@ public:
 };
 } // namespace mode
 
-
 class CompilableScope final {
 public:
   CompilableScope(const CompilableScope &) = delete;

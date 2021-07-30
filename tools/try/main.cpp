@@ -184,14 +184,10 @@ public:
   virtual void SyntaxFileTypeChecked(SyntaxFile *sf) {}
 };
 
-int main() {
-
-  auto parsing = std::make_unique<SyntaxParsing>();
-  parsing->SetListener(std::make_unique<TypeChecking>());
-  parsing->CompileFile();
-  // TypeChecking typeChecking;
-  // typeChecking.CompileFile();
-
-  return 0;
-}
 */
+
+// SafeList<CompilableItem> cis;
+// void AddCompilable(std::unique_ptr<CompilableItem> ci) {
+//  cis.Add(std::move(ci));
+//}
+int main() { return 0; }

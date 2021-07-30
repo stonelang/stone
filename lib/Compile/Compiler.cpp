@@ -29,7 +29,7 @@ using namespace stone::opts;
 using namespace stone::syn;
 
 Compiler::Compiler(PipelineEngine *pe)
-    : Session(compilerOpts, SessionType::Compiler), pe(pe), cc(*this) {
+    : Session(compilerOpts, SessionType::Compiler), pe(pe) {
 
   tc.reset(new TreeContext(*this, compilerOpts.spOpts, sm));
   syntax.reset(new Syntax(*tc.get()));
@@ -266,5 +266,3 @@ void CompilerStats::Print() {
   // auto timeRecord = GetTimer().getTotalTime();
   // timeRecord.print(timeRecord, compiler.Out().GetOS());
 }
-
-CompilerContext::~CompilerContext() {}

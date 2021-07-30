@@ -126,6 +126,8 @@ public:
   /// Adds a memory buffer to the SrcMgr, taking ownership of it.
   unsigned addNewSourceBuffer(std::unique_ptr<llvm::MemoryBuffer> Buffer);
 
+  llvm::MemoryBuffer *GetFileBuffer(llvm::StringRef inputFile);
+
   /// Add a \c #sourceLocation-defined virtual file region.
   ///
   /// By default, this region continues to the end of the buffer.
