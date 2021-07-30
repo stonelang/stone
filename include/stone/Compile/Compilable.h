@@ -104,11 +104,6 @@ protected:
   void NotifyListeners() override;
 };
 
-class OutputCompilable : public Compilable {
-public:
-  explicit OutputCompilable(Compiler &compiler) : Compilable(compiler) {}
-};
-
 class EmittingIR final : public Compilable, public TypeCheckerPipelineListener {
 
   llvm::Module *llvmModule = nullptr;

@@ -84,9 +84,8 @@ void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {
     pipeline = static_cast<TypeCheckerPipelineListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeChecking));
   }
-  sema::TypeCheckSyntaxFile(*syntaxFile,
-                            compiler.GetCompilerOptions().typeCheckerOptions,
-                            pipeline);
+  sema::TypeCheckSyntaxFile(
+      *syntaxFile, compiler.GetCompilerOptions().typeCheckerOptions, pipeline);
 
   if (pipeline && !compiler.HasError()) {
     pipeline->OnSyntaxFileTypeChecked(syntaxFile);
@@ -128,7 +127,8 @@ void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
 
   NotifyListeners();
 }
-void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {
+void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
+void EmittingIR::NotifyListeners() {
 
   // Nofify internal listeners
   // for (auto listener : listeners) {
@@ -142,8 +142,6 @@ void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {
   //   }
   // }
 }
-
-void EmittingIR::NotifyListeners() {}
 void EmittingIR::Finish() {}
 
 EmittingObject::EmittingObject(Compiler &compiler) : Compilable(compiler) {}
