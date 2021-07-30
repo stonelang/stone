@@ -15,7 +15,7 @@ using namespace stone;
 
 Compilable::Compilable(Compiler &compiler) : compiler(compiler) {}
 
-int Compilable::CompileFile(const mode::CompilableFile &input) {
+int Compilable::CompileFile(const CompilableFile &input) {
   SetCompilableFile(input);
   return DoCompileFile();
 }

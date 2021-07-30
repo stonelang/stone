@@ -43,7 +43,7 @@ int Compiler::Run(Compiler &compiler) {
   // }
   auto compilable = GetCompilable(compiler);
   for (auto &input : compiler.GetInputFiles()) {
-    if (compilable->CompileFile(mode::CompilableFile(&input, false))) {
+    if (compilable->CompileFile(CompilableFile(&input, false))) {
       ret::err;
     }
   }

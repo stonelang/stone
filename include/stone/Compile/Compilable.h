@@ -22,8 +22,6 @@ namespace syn {
 class SyntaxFile;
 }
 class Compiler;
-
-namespace mode {
 class CompilableFile final {
 
   bool isPrimary;
@@ -54,7 +52,6 @@ public:
   /// Retrieves the backing buffer for this input file, if any.
   llvm::MemoryBuffer *GetBuffer() { return buffer; }
 };
-} // namespace mode
 
 class CompilableScope final {
 public:
@@ -76,7 +73,7 @@ class alignas(8) Compilable {
 
 protected:
   Compiler &compiler;
-  mode::CompilableFile input;
+  CompilableFile input;
 
 public:
   explicit Compilable(Compiler &compiler);
@@ -84,15 +81,13 @@ public:
   virtual void Finish();
 
 protected:
-  void SetCompilableFile(const mode::CompilableFile &input) {
-    this->input = input;
-  }
+  void SetCompilableFile(const CompilableFile &input) { this->input = input; }
 
 public:
-  const mode::CompilableFile &GetCompilableFile() { return input; }
+  const CompilableFile &GetCompilableFile() { return input; }
   Compiler &GetCompiler() { return compiler; }
 
-  int CompileFile(const mode::CompilableFile &input);
+  int CompileFile(const CompilableFile &input);
 
 protected:
   virtual int DoCompileFile() = 0;
