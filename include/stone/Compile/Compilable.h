@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILABLE_H
 #define STONE_COMPILE_COMPILABLE_H
 
-#include "stone/CodeGen/CodeGenPipelineListener.h"
+#include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Compile/CompilableFile.h"
 #include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
@@ -123,7 +123,7 @@ protected:
 };
 
 class EmittingObject final : public Compilable,
-                             public EmittingIRPipelineListener {
+                             public EmittingIRListener {
 
 public:
   EmittingObject(Compiler &compiler);
@@ -139,7 +139,7 @@ protected:
 };
 
 class EmittingModule final : public Compilable,
-                             public EmittingIRPipelineListener {
+                             public EmittingIRListener {
 
 public:
   EmittingModule(Compiler &compiler);
@@ -154,7 +154,7 @@ protected:
 };
 
 class EmittingBitCode final : public Compilable,
-                              public EmittingIRPipelineListener {
+                              public EmittingIRListener {
 public:
   EmittingBitCode(Compiler &compiler);
 
@@ -168,7 +168,7 @@ protected:
 };
 
 class EmittingAssembly final : public Compilable,
-                               public EmittingIRPipelineListener {
+                               public EmittingIRListener {
 public:
   EmittingAssembly(Compiler &compiler);
 
@@ -182,7 +182,7 @@ protected:
 };
 
 class EmittingLibrary final : public Compilable,
-                              public EmittingIRPipelineListener {
+                              public EmittingIRListener {
 
 public:
   EmittingLibrary(Compiler &compiler);

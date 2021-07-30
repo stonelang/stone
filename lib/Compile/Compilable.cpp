@@ -2,10 +2,10 @@
 #include "stone/Compile/Compilable.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
-#include "stone/CodeGen/CodeGenPipelineListener.h"
 #include "stone/CodeGen/Gen.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Parse/Parse.h"
+#include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheck.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
@@ -117,9 +117,9 @@ EmittingIR::EmittingIR(Compiler &compiler) : Compilable(compiler) {}
 int EmittingIR::DoCompileFile() { return ret::ok; }
 void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
 
-  EmittingIRPipelineListener *pipeline = nullptr;
+  EmittingIRListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<EmittingIRPipelineListener *>(
+    pipeline = static_cast<EmittingIRListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::EmittingIR));
   }
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,

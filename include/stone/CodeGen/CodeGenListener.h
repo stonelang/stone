@@ -9,9 +9,9 @@ class Module;
 }
 namespace stone {
 
-class EmittingIRPipelineListener : public PipelineListener {
+class EmittingIRListener : public PipelineListener {
 public:
-  EmittingIRPipelineListener()
+  EmittingIRListener()
       : PipelineListener(PipelineListenerKind::EmittingIR) {}
 
 public:
@@ -20,9 +20,9 @@ public:
 public:
 };
 
-class EmittingObjectPipelineListener : public PipelineListener {
+class EmittingObjectListener : public PipelineListener {
 public:
-  EmittingObjectPipelineListener()
+  EmittingObjectListener()
       : PipelineListener(PipelineListenerKind::EmittingObject) {}
 
 public:
@@ -31,9 +31,9 @@ public:
 public:
 };
 
-class EmittingBitCodePipelineListener : public PipelineListener {
+class EmittingBitCodeListener : public PipelineListener {
 public:
-  EmittingBitCodePipelineListener()
+  EmittingBitCodeListener()
       : PipelineListener(PipelineListenerKind::EmittingBitCode) {}
 
 public:
@@ -42,9 +42,9 @@ public:
 public:
 };
 
-class EmittingModulePipelineListener : public PipelineListener {
+class EmittingModuleListener : public PipelineListener {
 public:
-  EmittingModulePipelineListener()
+  EmittingModuleListener()
       : PipelineListener(PipelineListenerKind::EmittingModule) {}
 
 public:
@@ -53,9 +53,9 @@ public:
 public:
 };
 
-class EmittingLibraryPipelineListener : public PipelineListener {
+class EmittingLibraryListener : public PipelineListener {
 public:
-  EmittingLibraryPipelineListener()
+  EmittingLibraryListener()
       : PipelineListener(PipelineListenerKind::EmittingLibrary) {}
 
 public:

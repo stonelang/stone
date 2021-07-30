@@ -1,9 +1,7 @@
 #ifndef STONE_COMPILE_COMPILABLEFACTORY_H
 #define STONE_COMPILE_COMPILABLEFACTORY_H
 
-#include "stone/CodeGen/CodeGenPipelineListener.h"
-#include "stone/Parse/SyntaxPipelineListener.h"
-#include "stone/Semantics/TypeCheckerPipelineListener.h"
+#include <memory>
 
 namespace stone {
 class Compiler;
