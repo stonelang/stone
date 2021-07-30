@@ -56,7 +56,24 @@ public:
 };
 } // namespace mode
 
-class Compilable {
+
+class CompilableScope final {
+public:
+  CompilableScope(const CompilableScope &) = delete;
+  CompilableScope(CompilableScope &&) = delete;
+  CompilableScope &operator=(const CompilableScope &) = delete;
+  CompilableScope &operator=(CompilableScope &&) = delete;
+
+public:
+  CompilableScope() {}
+  ~CompilableScope() {}
+
+public:
+  void Enter();
+  void Exit();
+};
+
+class alignas(8) Compilable {
 
 protected:
   Compiler &compiler;
