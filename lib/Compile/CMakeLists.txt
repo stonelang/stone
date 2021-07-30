@@ -10,6 +10,7 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_compile_sources
 	Compilable.cpp
+	CompilableFactory.cpp
 	Compile.cpp
 	Compiler.cpp
 	Serialize.cpp	

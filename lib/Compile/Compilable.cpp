@@ -13,44 +13,6 @@
 
 using namespace stone;
 
-std::unique_ptr<SyntaxParsing>
-CompilableFactory::MakeSyntaxParsing(Compiler &compiler) {
-  return std::make_unique<SyntaxParsing>(compiler);
-}
-std::unique_ptr<TypeChecking>
-CompilableFactory::MakeTypeChecking(Compiler &compiler) {
-
-  // auto syntax = std::make_unique<SyntaxParsing>(compiler);
-  // syntax->AddListener(std::make_unique<TypeChecking>(compiler));
-  // return syntax;
-  std::make_unique<TypeChecking>(compiler);
-}
-
-std::unique_ptr<EmittingIR>
-CompilableFactory::MakeEmittingIR(Compiler &compiler) {
-  return std::make_unique<EmittingIR>(compiler);
-}
-
-std::unique_ptr<EmittingObject>
-CompilableFactory::MakeEmittingObject(Compiler &compiler) {
-  return std::make_unique<EmittingObject>(compiler);
-}
-
-std::unique_ptr<EmittingBitCode>
-CompilableFactory::MakeEmittingBitCode(Compiler &compiler) {
-  return std::make_unique<EmittingBitCode>(compiler);
-}
-
-std::unique_ptr<EmittingModule>
-CompilableFactory::MakeEmittingModule(Compiler &compiler) {
-  return std::make_unique<EmittingModule>(compiler);
-}
-
-std::unique_ptr<EmittingAssembly>
-CompilableFactory::MakeEmittingAssembly(Compiler &compiler) {
-  return std::make_unique<EmittingAssembly>(compiler);
-}
-
 Compilable::Compilable(Compiler &compiler) : compiler(compiler) {}
 
 int Compilable::CompileFile(const CompilableFile &input) {

@@ -1,9 +1,8 @@
 #ifndef STONE_COMPILE_COMPILABLE_H
 #define STONE_COMPILE_COMPILABLE_H
 
-#include "stone/Basic/File.h"
-#include "stone/Basic/List.h"
 #include "stone/CodeGen/CodeGenPipelineListener.h"
+#include "stone/Compile/CompilableFile.h"
 #include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
 
@@ -25,36 +24,6 @@ namespace syn {
 class SyntaxFile;
 }
 class Compiler;
-class CompilableFile final {
-
-  bool isPrimary;
-
-  file::File *input = nullptr;
-  /// The input, if it comes from a buffer rather than a file. This object
-  /// does not own the buffer, and the caller is responsible for ensuring
-  /// that it outlives any users.
-  llvm::MemoryBuffer *buffer = nullptr;
-
-public:
-  CompilableFile() = default;
-
-  CompilableFile(file::File *input, bool isPrimary)
-      : CompilableFile(input, isPrimary, nullptr) {}
-
-  /// Constructs an input file from the provided data.
-  CompilableFile(file::File *input, bool isPrimary, llvm::MemoryBuffer *buffer)
-      : input(input), isPrimary(isPrimary), buffer(buffer) {}
-
-public:
-  file::File &GetFile() {
-    assert(input && "No File");
-    return *input;
-  }
-
-  bool IsPrimary() { return isPrimary; }
-  /// Retrieves the backing buffer for this input file, if any.
-  llvm::MemoryBuffer *GetBuffer() { return buffer; }
-};
 
 class CompilableScope final {
 public:
@@ -241,21 +210,6 @@ public:
 
 protected:
   int DoCompileFile() override;
-};
-
-struct CompilableFactory final {
-
-  static std::unique_ptr<SyntaxParsing> MakeSyntaxParsing(Compiler &compiler);
-  static std::unique_ptr<TypeChecking> MakeTypeChecking(Compiler &compiler);
-  static std::unique_ptr<EmittingIR> MakeEmittingIR(Compiler &compiler);
-  static std::unique_ptr<EmittingObject> MakeEmittingObject(Compiler &compiler);
-  static std::unique_ptr<EmittingBitCode>
-  MakeEmittingBitCode(Compiler &compiler);
-  static std::unique_ptr<EmittingModule> MakeEmittingModule(Compiler &compiler);
-  static std::unique_ptr<EmittingLibrary>
-  MakeEmittingLibrary(Compiler &compiler);
-  static std::unique_ptr<EmittingAssembly>
-  MakeEmittingAssembly(Compiler &compiler);
 };
 
 } // namespace stone

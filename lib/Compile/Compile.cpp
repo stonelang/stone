@@ -1,4 +1,5 @@
 #include "stone/Compile/Compile.h"
+#include "stone/Compile/CompilableFactory.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
