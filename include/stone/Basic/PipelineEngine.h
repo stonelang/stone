@@ -8,10 +8,14 @@
 namespace stone {
 
 enum class PipelineListenerKind {
-  Syntax,
-  Lex,
-  TypeCheck,
-  CodeGen,
+  Lexing,
+  Parsing,
+  TypeChecking,
+  EmittingIR,
+  EmittingObject,
+  EmittingModule,
+  EmittingBitCode,
+  EmittingLibrary
 };
 
 class PipelineListener {

@@ -47,9 +47,7 @@ class alignas(8) Compilable {
 protected:
   Compiler &compiler;
   CompilableFile input;
-
   SafeList<PipelineListener> listeners;
-
 public:
   explicit Compilable(Compiler &compiler);
   virtual ~Compilable() { Finish(); }

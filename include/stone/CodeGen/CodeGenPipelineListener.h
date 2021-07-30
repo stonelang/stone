@@ -12,7 +12,7 @@ namespace stone {
 class EmittingIRPipelineListener : public PipelineListener {
 public:
   EmittingIRPipelineListener()
-      : PipelineListener(PipelineListenerKind::CodeGen) {}
+      : PipelineListener(PipelineListenerKind::EmittingIR) {}
 
 public:
   virtual void OnIREmitted(llvm::Module *m) {}
@@ -23,7 +23,7 @@ public:
 class EmittingObjectPipelineListener : public PipelineListener {
 public:
   EmittingObjectPipelineListener()
-      : PipelineListener(PipelineListenerKind::CodeGen) {}
+      : PipelineListener(PipelineListenerKind::EmittingObject) {}
 
 public:
   virtual void OnObjectEmitted() {}
@@ -34,7 +34,7 @@ public:
 class EmittingBitCodePipelineListener : public PipelineListener {
 public:
   EmittingBitCodePipelineListener()
-      : PipelineListener(PipelineListenerKind::CodeGen) {}
+      : PipelineListener(PipelineListenerKind::EmittingBitCode) {}
 
 public:
   virtual void OnBitCodeEmitted() {}
@@ -45,7 +45,7 @@ public:
 class EmittingModulePipelineListener : public PipelineListener {
 public:
   EmittingModulePipelineListener()
-      : PipelineListener(PipelineListenerKind::CodeGen) {}
+      : PipelineListener(PipelineListenerKind::EmittingModule) {}
 
 public:
   virtual void OnModuleEmitted() {}
@@ -56,7 +56,7 @@ public:
 class EmittingLibraryPipelineListener : public PipelineListener {
 public:
   EmittingLibraryPipelineListener()
-      : PipelineListener(PipelineListenerKind::CodeGen) {}
+      : PipelineListener(PipelineListenerKind::EmittingLibrary) {}
 
 public:
   virtual void OnLibraryEmitted() {}

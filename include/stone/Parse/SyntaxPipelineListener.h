@@ -12,10 +12,19 @@
 
 namespace stone {
 
+
+class LexerPipelineListener : public PipelineListener {
+public:
+  LexerPipelineListener() : PipelineListener(PipelineListenerKind::Lexing) {}
+
+public:
+  virtual void OnToken(const syn::Token *token) {}
+};
+
 class SyntaxPipelineListener : public PipelineListener {
 
 public:
-  SyntaxPipelineListener() : PipelineListener(PipelineListenerKind::Syntax) {}
+  SyntaxPipelineListener() : PipelineListener(PipelineListenerKind::Parsing) {}
 
 public:
   virtual void OnDone() {}
@@ -29,14 +38,6 @@ public:
   virtual void OnExpr(const syn::Expr *expr) {}
 
   virtual void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {}
-
-public:
-  virtual void OnToken(const syn::Token *token) {}
-};
-
-class LexerPipelineListener : public PipelineListener {
-public:
-  LexerPipelineListener() : PipelineListener(PipelineListenerKind::Lex) {}
 
 public:
   virtual void OnToken(const syn::Token *token) {}

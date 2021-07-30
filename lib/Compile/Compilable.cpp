@@ -41,7 +41,7 @@ int SyntaxParsing::DoCompileFile() {
   SyntaxPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<SyntaxPipelineListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::Syntax));
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::Parsing));
   }
   syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
 
@@ -61,7 +61,7 @@ int SyntaxParsing::DoCompileFile() {
 void SyntaxParsing::NotifyListeners() {
   // Nofify internal listeners
   for (auto listener : listeners) {
-    if (listener.GetKind() == PipelineListenerKind::Syntax) {
+    if (listener.GetKind() == PipelineListenerKind::Parsing) {
       auto syntaxParsing = static_cast<SyntaxPipelineListener *>(&listener);
       if (compiler.HasError()) {
         syntaxParsing->OnError();
@@ -84,26 +84,43 @@ int TypeChecking::DoCompileFile() {
   TypeCheckerPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<TypeCheckerPipelineListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeCheck));
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeChecking));
   }
   sema::TypeCheckSyntaxFile(*syntaxParsing.GetSyntaxFile(),
                             compiler.GetCompilerOptions().typeCheckerOptions,
                             pipeline);
 
+  
+  if (pipeline && !compiler.HasError()) {
+    pipeline->OnSyntaxFileTypeChecked(syntaxParsing.GetSyntaxFile());
+  }
+
+  NotifyListeners();
+
   if (compiler.HasError()) {
     return ret::err;
-  }
-  if (pipeline) {
-    pipeline->OnSyntaxFileTypeChecked(syntaxParsing.GetSyntaxFile());
   }
   return ret::ok;
 }
 
 void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {}
 
-void TypeChecking::NotifyListeners() {}
+void TypeChecking::NotifyListeners() {
 
-void TypeChecking::Finish() {}
+ // Nofify internal listeners
+  // for (auto listener : listeners) {
+  //   if (listener.GetKind() == PipelineListenerKind::TypeChecking) {
+  //     auto typeChecking = static_cast<TypeCheckerPipelineListener *>(&listener);
+  //     if (compiler.HasError()) {
+  //       //typeChecking->OnError();
+  //     } else {
+  //       typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
+  //     }
+  //   }
+  // }
+}
+void TypeChecking::Finish() {
+}
 
 EmittingIR::EmittingIR(Compiler &compiler)
     : OutputCompilable(compiler), typeChecking(compiler) {}
@@ -118,7 +135,7 @@ int EmittingIR::DoCompileFile() {
   EmittingIRPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<EmittingIRPipelineListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::CodeGen));
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::EmittingIR));
   }
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());

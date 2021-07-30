@@ -15,7 +15,7 @@ class SyntaxFile;
 class TypeCheckerPipelineListener : public PipelineListener {
 public:
   TypeCheckerPipelineListener()
-      : PipelineListener(PipelineListenerKind::TypeCheck) {}
+      : PipelineListener(PipelineListenerKind::TypeChecking) {}
 
 public:
   virtual void OnTopDeclTypeChecked(syn::Decl *decl) {}
