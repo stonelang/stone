@@ -11,8 +11,7 @@ namespace stone {
 
 class EmittingIRListener : public PipelineListener {
 public:
-  EmittingIRListener()
-      : PipelineListener(PipelineListenerKind::EmittingIR) {}
+  EmittingIRListener() : PipelineListener(PipelineListenerKind::EmittingIR) {}
 
 public:
   virtual void OnIREmitted(llvm::Module *m) {}

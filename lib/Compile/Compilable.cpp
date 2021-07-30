@@ -1,10 +1,10 @@
 #include "stone/Compile/Compilable.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
+#include "stone/CodeGen/CodeGenListener.h"
 #include "stone/CodeGen/Gen.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Parse/Parse.h"
-#include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Semantics/TypeCheck.h"
 #include "stone/Semantics/TypeCheckerListener.h"
@@ -79,7 +79,7 @@ int TypeChecking::DoCompileFile() { return ret::ok; }
 void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
 
   syntaxFile = sf;
-  
+
   TypeCheckerListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
     pipeline = static_cast<TypeCheckerListener *>(
@@ -121,8 +121,8 @@ void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
     pipeline = static_cast<EmittingIRListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::EmittingIR));
   }
-  // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
-  //                          compiler.compilerOpts.genOpts, GetOutputFile());
+  lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
+                           compiler.compilerOpts.genOpts, GetOutputFile());
 
   compiler.GetMainModule()->AddFile(*syntaxFile);
 

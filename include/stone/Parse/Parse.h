@@ -10,7 +10,8 @@ namespace syn {
 class Syntax;
 class SyntaxFile;
 
-void ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp = nullptr);
+void ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
+                     SyntaxListener *sp = nullptr);
 
 } // namespace syn
 } // namespace stone

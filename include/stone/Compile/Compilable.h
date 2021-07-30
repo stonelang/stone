@@ -122,8 +122,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingObject final : public Compilable,
-                             public EmittingIRListener {
+class EmittingObject final : public Compilable, public EmittingIRListener {
 
 public:
   EmittingObject(Compiler &compiler);
@@ -138,8 +137,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingModule final : public Compilable,
-                             public EmittingIRListener {
+class EmittingModule final : public Compilable, public EmittingIRListener {
 
 public:
   EmittingModule(Compiler &compiler);
@@ -153,8 +151,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingBitCode final : public Compilable,
-                              public EmittingIRListener {
+class EmittingBitCode final : public Compilable, public EmittingIRListener {
 public:
   EmittingBitCode(Compiler &compiler);
 
@@ -167,8 +164,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingAssembly final : public Compilable,
-                               public EmittingIRListener {
+class EmittingAssembly final : public Compilable, public EmittingIRListener {
 public:
   EmittingAssembly(Compiler &compiler);
 
@@ -181,8 +177,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingLibrary final : public Compilable,
-                              public EmittingIRListener {
+class EmittingLibrary final : public Compilable, public EmittingIRListener {
 
 public:
   EmittingLibrary(Compiler &compiler);
