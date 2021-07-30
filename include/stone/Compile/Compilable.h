@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILABLE_H
 
 #include "stone/Basic/File.h"
+#include "stone/Basic/List.h"
 #include "stone/Parse/SyntaxPipelineListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
@@ -76,6 +77,8 @@ protected:
   Compiler &compiler;
   CompilableFile input;
 
+  SafeList<PipelineListener> listeners;
+
 public:
   explicit Compilable(Compiler &compiler);
   virtual ~Compilable() { Finish(); }
@@ -88,6 +91,9 @@ public:
   const CompilableFile &GetCompilableFile() { return input; }
   Compiler &GetCompiler() { return compiler; }
 
+  void AddListener(std::unique_ptr<PipelineListener> listener) {
+    listeners.Add(std::move(listener));
+  }
   int CompileFile(const CompilableFile &input);
 
 protected:
@@ -110,7 +116,7 @@ protected:
   int DoCompileFile() override;
 };
 
-class TypeChecking final : public Compilable {
+class TypeChecking final : public Compilable, public SyntaxPipelineListener {
   SyntaxParsing syntaxParsing;
 
 public:
@@ -119,6 +125,9 @@ public:
 public:
   void Finish() override;
   syn::SyntaxFile *GetSyntaxFile() { return syntaxParsing.GetSyntaxFile(); }
+
+public:
+  void OnSyntaxFile(syn::SyntaxFile *syntaxFile) override;
 
 protected:
   int DoCompileFile() override;
@@ -223,10 +232,13 @@ struct CompilableFactory final {
   static std::unique_ptr<TypeChecking> MakeTypeChecking(Compiler &compiler);
   static std::unique_ptr<EmittingIR> MakeEmittingIR(Compiler &compiler);
   static std::unique_ptr<EmittingObject> MakeEmittingObject(Compiler &compiler);
-  static std::unique_ptr<EmittingBitCode> MakeEmittingBitCode(Compiler &compiler);
+  static std::unique_ptr<EmittingBitCode>
+  MakeEmittingBitCode(Compiler &compiler);
   static std::unique_ptr<EmittingModule> MakeEmittingModule(Compiler &compiler);
-  static std::unique_ptr<EmittingLibrary> MakeEmittingLibrary(Compiler &compiler);
-  static std::unique_ptr<EmittingAssembly> MakeEmittingAssembly(Compiler &compiler);
+  static std::unique_ptr<EmittingLibrary>
+  MakeEmittingLibrary(Compiler &compiler);
+  static std::unique_ptr<EmittingAssembly>
+  MakeEmittingAssembly(Compiler &compiler);
 };
 
 } // namespace stone

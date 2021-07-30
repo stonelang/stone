@@ -15,12 +15,15 @@ using namespace stone;
 
 std::unique_ptr<SyntaxParsing>
 CompilableFactory::MakeSyntaxParsing(Compiler &compiler) {
-
   return std::make_unique<SyntaxParsing>(compiler);
 }
 std::unique_ptr<TypeChecking>
 CompilableFactory::MakeTypeChecking(Compiler &compiler) {
-  return std::make_unique<TypeChecking>(compiler);
+
+  // auto syntax = std::make_unique<SyntaxParsing>(compiler);
+  // syntax->AddListener(std::make_unique<TypeChecking>(compiler));
+  // return syntax;
+  std::make_unique<TypeChecking>(compiler);
 }
 
 std::unique_ptr<EmittingIR>
@@ -115,6 +118,9 @@ int TypeChecking::DoCompileFile() {
   }
   return ret::ok;
 }
+
+void TypeChecking::OnSyntaxFile(syn::SyntaxFile *syntaxFile) {}
+
 void TypeChecking::Finish() {}
 
 EmittingIR::EmittingIR(Compiler &compiler)
