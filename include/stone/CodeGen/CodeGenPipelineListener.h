@@ -6,16 +6,57 @@
 
 namespace stone {
 
-class CodeGenPipelineListener : public PipelineListener {
+class EmittingIRPipelineListener : public PipelineListener {
 public:
-  CodeGenPipelineListener() : PipelineListener(PipelineListenerKind::CodeGen) {}
+  EmittingIRPipelineListener()
+      : PipelineListener(PipelineListenerKind::CodeGen) {}
 
 public:
   virtual void OnIREmitted() {}
+
+public:
+};
+
+class EmittingObjectPipelineListener : public PipelineListener {
+public:
+  EmittingObjectPipelineListener()
+      : PipelineListener(PipelineListenerKind::CodeGen) {}
+
+public:
   virtual void OnObjectEmitted() {}
+
+public:
+};
+
+class EmittingBitCodePipelineListener : public PipelineListener {
+public:
+  EmittingBitCodePipelineListener()
+      : PipelineListener(PipelineListenerKind::CodeGen) {}
+
+public:
   virtual void OnBitCodeEmitted() {}
-  virtual void OnLibraryEmitted() {}
+
+public:
+};
+
+class EmittingModulePipelineListener : public PipelineListener {
+public:
+  EmittingModulePipelineListener()
+      : PipelineListener(PipelineListenerKind::CodeGen) {}
+
+public:
   virtual void OnModuleEmitted() {}
+
+public:
+};
+
+class EmittingLibraryPipelineListener : public PipelineListener {
+public:
+  EmittingLibraryPipelineListener()
+      : PipelineListener(PipelineListenerKind::CodeGen) {}
+
+public:
+  virtual void OnLibraryEmitted() {}
 
 public:
 };

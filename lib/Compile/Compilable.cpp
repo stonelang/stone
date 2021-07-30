@@ -133,9 +133,9 @@ int EmittingIR::DoCompileFile() {
   }
 
   compiler.GetMainModule()->AddFile(*typeChecking.GetSyntaxFile());
-  CodeGenPipelineListener *pipeline = nullptr;
+  EmittingIRPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<CodeGenPipelineListener *>(
+    pipeline = static_cast<EmittingIRPipelineListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::CodeGen));
   }
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
