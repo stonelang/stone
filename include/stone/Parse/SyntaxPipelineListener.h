@@ -12,7 +12,6 @@
 
 namespace stone {
 
-
 class LexerPipelineListener : public PipelineListener {
 public:
   LexerPipelineListener() : PipelineListener(PipelineListenerKind::Lexing) {}

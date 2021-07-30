@@ -48,6 +48,7 @@ protected:
   Compiler &compiler;
   CompilableFile input;
   SafeList<PipelineListener> listeners;
+
 public:
   explicit Compilable(Compiler &compiler);
   virtual ~Compilable() { Finish(); }
@@ -88,14 +89,12 @@ protected:
 };
 
 class TypeChecking final : public Compilable, public SyntaxPipelineListener {
-  SyntaxParsing syntaxParsing;
 
 public:
   TypeChecking(Compiler &compiler);
 
 public:
   void Finish() override;
-  syn::SyntaxFile *GetSyntaxFile() { return syntaxParsing.GetSyntaxFile(); }
 
 public:
   void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) override;
@@ -110,21 +109,15 @@ public:
   explicit OutputCompilable(Compiler &compiler) : Compilable(compiler) {}
 };
 
-class EmittingIR final : public OutputCompilable,
-                         public TypeCheckerPipelineListener {
+class EmittingIR final : public Compilable, public TypeCheckerPipelineListener {
 
-  llvm::Module *llvmModule;
-  TypeChecking typeChecking;
+  llvm::Module *llvmModule = nullptr;
 
 public:
   EmittingIR(Compiler &compiler);
 
 public:
-  llvm::Module *GetLLVMModule() { return llvmModule; }
-
-public:
   void Finish() override;
-
   void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) override;
   void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) override;
 
@@ -133,10 +126,8 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingObject final : public OutputCompilable,
+class EmittingObject final : public Compilable,
                              public EmittingIRPipelineListener {
-
-  EmittingIR emittingIR;
 
 public:
   EmittingObject(Compiler &compiler);
@@ -151,10 +142,8 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingModule final : public OutputCompilable,
+class EmittingModule final : public Compilable,
                              public EmittingIRPipelineListener {
-
-  EmittingIR emittingIR;
 
 public:
   EmittingModule(Compiler &compiler);
@@ -168,11 +157,8 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingBitCode final : public OutputCompilable,
+class EmittingBitCode final : public Compilable,
                               public EmittingIRPipelineListener {
-
-  EmittingIR emittingIR;
-
 public:
   EmittingBitCode(Compiler &compiler);
 
@@ -185,11 +171,8 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingAssembly final : public OutputCompilable,
+class EmittingAssembly final : public Compilable,
                                public EmittingIRPipelineListener {
-
-  EmittingIR emittingIR;
-
 public:
   EmittingAssembly(Compiler &compiler);
 
@@ -202,10 +185,8 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingLibrary final : public OutputCompilable,
+class EmittingLibrary final : public Compilable,
                               public EmittingIRPipelineListener {
-
-  EmittingIR emittingIR;
 
 public:
   EmittingLibrary(Compiler &compiler);
