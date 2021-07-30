@@ -1,10 +1,10 @@
 #include "stone/Compile/Compile.h"
-#include "stone/Compile/CompilableFactory.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Compile/Compilable.h"
+#include "stone/Compile/CompilableFactory.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
@@ -16,7 +16,7 @@ class CompilerWorkspace {
 public:
 };
 
-static std::unique_ptr<Compilable> GetCompilable(Compiler &compiler) {
+static std::unique_ptr<Compilable> MakeCompilable(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
     return CompilableFactory::MakeSyntaxParsing(compiler);
@@ -44,7 +44,7 @@ int Compiler::Run(Compiler &compiler) {
   // workspace.BuildInFlightInputFiles();
   // for (auto &input : workspace.GetInFlightInputFiles()) {
   // }
-  auto compilable = GetCompilable(compiler);
+  auto compilable = MakeCompilable(compiler);
   for (auto &input : compiler.GetInputFiles()) {
     if (compilable->CompileFile(CompilableFile(&input, false))) {
       ret::err;

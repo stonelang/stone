@@ -45,13 +45,31 @@ int SyntaxParsing::DoCompileFile() {
   }
   syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
 
+  // TODO: Clean this up:
+  // Notify external listeners
+  if (pipeline && !compiler.HasError()) {
+    pipeline->OnSyntaxFileParsed(syntaxFile);
+  }
+  NotifyListeners();
+
   if (compiler.HasError()) {
     return ret::err;
   }
-  if (pipeline) {
-    pipeline->OnSyntaxFileParsed(syntaxFile);
-  }
   return ret::ok;
+}
+
+void SyntaxParsing::NotifyListeners() {
+  // Nofify internal listeners
+  for (auto listener : listeners) {
+    if (listener.GetKind() == PipelineListenerKind::Syntax) {
+      auto syntaxParsing = static_cast<SyntaxPipelineListener *>(&listener);
+      if (compiler.HasError()) {
+        syntaxParsing->OnError();
+      } else {
+        syntaxParsing->OnSyntaxFileParsed(syntaxFile);
+      }
+    }
+  }
 }
 void SyntaxParsing::Finish() {}
 
@@ -83,6 +101,8 @@ int TypeChecking::DoCompileFile() {
 
 void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {}
 
+void TypeChecking::NotifyListeners() {}
+
 void TypeChecking::Finish() {}
 
 EmittingIR::EmittingIR(Compiler &compiler)
@@ -112,6 +132,7 @@ int EmittingIR::DoCompileFile() {
 void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
 void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
 
+void EmittingIR::NotifyListeners() {}
 void EmittingIR::Finish() {}
 
 EmittingObject::EmittingObject(Compiler &compiler)
@@ -147,6 +168,7 @@ int EmittingObject::DoCompileFile() {
 
 void EmittingObject::OnIREmitted(llvm::Module *m) {}
 
+void EmittingObject::NotifyListeners() {}
 void EmittingObject::Finish() {}
 
 EmittingModule::EmittingModule(Compiler &compiler)
@@ -160,6 +182,9 @@ int EmittingModule::DoCompileFile() {
   return ret::ok;
 }
 void EmittingModule::OnIREmitted(llvm::Module *m) {}
+
+void EmittingModule::NotifyListeners() {}
+
 void EmittingModule::Finish() {}
 
 EmittingBitCode::EmittingBitCode(Compiler &compiler)
@@ -174,6 +199,7 @@ int EmittingBitCode::DoCompileFile() {
 }
 
 void EmittingBitCode::OnIREmitted(llvm::Module *m) {}
+void EmittingBitCode::NotifyListeners() {}
 void EmittingBitCode::Finish() {}
 
 EmittingAssembly::EmittingAssembly(Compiler &compiler)
@@ -187,6 +213,7 @@ int EmittingAssembly::DoCompileFile() {
   return ret::ok;
 }
 void EmittingAssembly::OnIREmitted(llvm::Module *m) {}
+void EmittingAssembly::NotifyListeners() {}
 void EmittingAssembly::Finish() {}
 
 EmittingLibrary::EmittingLibrary(Compiler &compiler)
@@ -200,4 +227,5 @@ int EmittingLibrary::DoCompileFile() {
   return ret::ok;
 }
 void EmittingLibrary::OnIREmitted(llvm::Module *m) {}
+void EmittingLibrary::NotifyListeners() {}
 void EmittingLibrary::Finish() {}

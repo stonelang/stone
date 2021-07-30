@@ -69,6 +69,7 @@ public:
 
 protected:
   virtual int DoCompileFile() = 0;
+  virtual void NotifyListeners() = 0;
 };
 
 class SyntaxParsing final : public Compilable {
@@ -85,6 +86,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class TypeChecking final : public Compilable, public SyntaxPipelineListener {
@@ -102,6 +104,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class OutputCompilable : public Compilable {
@@ -129,6 +132,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class EmittingObject final : public OutputCompilable,
@@ -146,6 +150,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class EmittingModule final : public OutputCompilable,
@@ -162,6 +167,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class EmittingBitCode final : public OutputCompilable,
@@ -178,6 +184,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class EmittingAssembly final : public OutputCompilable,
@@ -194,6 +201,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 class EmittingLibrary final : public OutputCompilable,
@@ -210,6 +218,7 @@ public:
 
 protected:
   int DoCompileFile() override;
+  void NotifyListeners() override;
 };
 
 } // namespace stone

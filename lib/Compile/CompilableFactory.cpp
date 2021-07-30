@@ -1,6 +1,6 @@
-#include "stone/Compile/Compiler.h"
-#include "stone/Compile/Compilable.h"
 #include "stone/Compile/CompilableFactory.h"
+#include "stone/Compile/Compilable.h"
+#include "stone/Compile/Compiler.h"
 
 #include <memory>
 

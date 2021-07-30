@@ -5,10 +5,10 @@
 #include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
 
-
 namespace stone {
 class Compiler;
-class Compilable; 
+class Compilable;
+
 struct CompilableFactory final {
   static std::unique_ptr<Compilable> MakeSyntaxParsing(Compiler &compiler);
   static std::unique_ptr<Compilable> MakeTypeChecking(Compiler &compiler);
