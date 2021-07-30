@@ -3,8 +3,8 @@
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/List.h"
-#include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/CodeGen/CodeGenPipelineListener.h"
+#include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
@@ -140,7 +140,8 @@ public:
   explicit OutputCompilable(Compiler &compiler) : Compilable(compiler) {}
 };
 
-class EmittingIR final : public OutputCompilable {
+class EmittingIR final : public OutputCompilable,
+                         public TypeCheckerPipelineListener {
 
   llvm::Module *llvmModule;
   TypeChecking typeChecking;
@@ -158,7 +159,8 @@ protected:
   int DoCompileFile() override;
 };
 
-class EmittingObject final : public OutputCompilable {
+class EmittingObject final : public OutputCompilable,
+                             public EmittingIRPipelineListener {
 
   EmittingIR emittingIR;
 
@@ -172,7 +174,8 @@ protected:
   int DoCompileFile() override;
 };
 
-class EmittingModule final : public OutputCompilable {
+class EmittingModule final : public OutputCompilable,
+                             public EmittingIRPipelineListener {
 
   EmittingIR emittingIR;
 
@@ -186,7 +189,8 @@ protected:
   int DoCompileFile() override;
 };
 
-class EmittingBitCode final : public OutputCompilable {
+class EmittingBitCode final : public OutputCompilable,
+                              public EmittingIRPipelineListener {
 
   EmittingIR emittingIR;
 
@@ -200,7 +204,8 @@ protected:
   int DoCompileFile() override;
 };
 
-class EmittingAssembly final : public OutputCompilable {
+class EmittingAssembly final : public OutputCompilable,
+                               public EmittingIRPipelineListener {
 
   EmittingIR emittingIR;
 
@@ -214,7 +219,8 @@ protected:
   int DoCompileFile() override;
 };
 
-class EmittingLibrary final : public OutputCompilable {
+class EmittingLibrary final : public OutputCompilable,
+                              public EmittingIRPipelineListener {
 
   EmittingIR emittingIR;
 
