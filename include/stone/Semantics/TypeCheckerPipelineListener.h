@@ -18,8 +18,8 @@ public:
       : PipelineListener(PipelineListenerKind::TypeCheck) {}
 
 public:
-  virtual void OnSyntaxFileTypeChecked(SyntaxFile *syntaxFile) = 0;
-  virtual void OnModuleTypeChecked(SyntaxFile *syntaxFile) = 0;
+  virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) = 0;
+  virtual void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) = 0;
 
 public:
 };

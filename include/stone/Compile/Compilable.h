@@ -4,6 +4,8 @@
 #include "stone/Basic/File.h"
 #include "stone/Basic/List.h"
 #include "stone/Parse/SyntaxPipelineListener.h"
+#include "stone/CodeGen/CodeGenPipelineListener.h"
+#include "stone/Semantics/TypeCheckerPipelineListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
