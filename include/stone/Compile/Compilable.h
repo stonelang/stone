@@ -3,7 +3,7 @@
 
 #include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Compile/CompilableFile.h"
-#include "stone/Parse/SyntaxPipelineListener.h"
+#include "stone/Parse/SyntaxListener.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
@@ -88,7 +88,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class TypeChecking final : public Compilable, public SyntaxPipelineListener {
+class TypeChecking final : public Compilable, public SyntaxListener {
   syn::SyntaxFile *syntaxFile = nullptr;
 
 public:

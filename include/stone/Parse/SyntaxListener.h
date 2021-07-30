@@ -12,18 +12,18 @@
 
 namespace stone {
 
-class LexerPipelineListener : public PipelineListener {
+class LexerListener : public PipelineListener {
 public:
-  LexerPipelineListener() : PipelineListener(PipelineListenerKind::Lexing) {}
+  LexerListener() : PipelineListener(PipelineListenerKind::Lexing) {}
 
 public:
   virtual void OnToken(const syn::Token *token) {}
 };
 
-class SyntaxPipelineListener : public PipelineListener {
+class SyntaxListener : public PipelineListener {
 
 public:
-  SyntaxPipelineListener() : PipelineListener(PipelineListenerKind::Parsing) {}
+  SyntaxListener() : PipelineListener(PipelineListenerKind::Parsing) {}
 
 public:
   virtual void OnDone() {}

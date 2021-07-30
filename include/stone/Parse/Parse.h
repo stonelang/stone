@@ -4,13 +4,13 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-class SyntaxPipelineListener;
+class SyntaxListener;
+
 namespace syn {
 class Syntax;
 class SyntaxFile;
 
-void ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
-                     SyntaxPipelineListener *sp = nullptr);
+void ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp = nullptr);
 
 } // namespace syn
 } // namespace stone

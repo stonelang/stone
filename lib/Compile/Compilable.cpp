@@ -1,4 +1,3 @@
-
 #include "stone/Compile/Compilable.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Ret.h"
@@ -6,7 +5,7 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Parse/Parse.h"
 #include "stone/CodeGen/CodeGenListener.h"
-#include "stone/Parse/SyntaxPipelineListener.h"
+#include "stone/Parse/SyntaxListener.h"
 #include "stone/Semantics/TypeCheck.h"
 #include "stone/Semantics/TypeCheckerPipelineListener.h"
 #include "stone/Syntax/Module.h"
@@ -38,9 +37,9 @@ int SyntaxParsing::DoCompileFile() {
     return ret::err;
   }
 
-  SyntaxPipelineListener *pipeline = nullptr;
+  SyntaxListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<SyntaxPipelineListener *>(
+    pipeline = static_cast<SyntaxListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::Parsing));
   }
   syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
@@ -62,7 +61,7 @@ void SyntaxParsing::NotifyListeners() {
   // Nofify internal listeners
   for (auto listener : listeners) {
     if (listener.GetKind() == PipelineListenerKind::Parsing) {
-      auto syntaxParsing = static_cast<SyntaxPipelineListener *>(&listener);
+      auto syntaxParsing = static_cast<SyntaxListener *>(&listener);
       if (compiler.HasError()) {
         syntaxParsing->OnError();
       } else {

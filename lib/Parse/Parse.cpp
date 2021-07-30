@@ -1,15 +1,14 @@
 #include "stone/Parse/Parse.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/SyntaxPipelineListener.h"
+#include "stone/Parse/SyntaxListener.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
-                          SyntaxPipelineListener *sp) {
+void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp) {
 
   Parser parser(sf, syntax);
   syn::DeclGroupPtrTy topDecl;
