@@ -46,8 +46,10 @@ int Compiler::Run(Compiler &compiler) {
   // }
   auto compilable = MakeCompilable(compiler);
   for (auto &input : compiler.GetInputFiles()) {
-    if (compilable->CompileFile(CompilableFile(&input, false))) {
-      ret::err;
+    compilable->CompileFile(CompilableFile(&input, false));
+    compilable->NotifyListeners();
+    if (compiler.HasError()) {
+      return ret::err;
     }
   }
   compilable->Finish();

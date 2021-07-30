@@ -49,7 +49,6 @@ int SyntaxParsing::DoCompileFile() {
   if (pipeline && !compiler.HasError()) {
     pipeline->OnSyntaxFileParsed(syntaxFile);
   }
-  NotifyListeners();
 
   if (compiler.HasError()) {
     return ret::err;
@@ -121,12 +120,10 @@ void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
     pipeline = static_cast<EmittingIRListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::EmittingIR));
   }
-  lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
-                           compiler.compilerOpts.genOpts, GetOutputFile());
+  // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
+  //                          compiler.compilerOpts.genOpts, GetOutputFile());
 
   compiler.GetMainModule()->AddFile(*syntaxFile);
-
-  NotifyListeners();
 }
 void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
 void EmittingIR::NotifyListeners() {

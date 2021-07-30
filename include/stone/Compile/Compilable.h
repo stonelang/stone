@@ -66,9 +66,10 @@ public:
   }
   int CompileFile(const CompilableFile &input);
 
+  virtual void NotifyListeners() = 0;
+
 protected:
   virtual int DoCompileFile() = 0;
-  virtual void NotifyListeners() = 0;
 };
 
 class SyntaxParsing final : public Compilable {
@@ -82,10 +83,10 @@ public:
 public:
   void Finish() override;
   syn::SyntaxFile *GetSyntaxFile() { return syntaxFile; }
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class TypeChecking final : public Compilable, public SyntaxListener {
@@ -101,8 +102,8 @@ public:
   void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) override;
 
 protected:
-  int DoCompileFile() override;
   void NotifyListeners() override;
+  int DoCompileFile() override;
 };
 
 class EmittingIR final : public Compilable, public TypeCheckerListener {
@@ -116,10 +117,10 @@ public:
   void Finish() override;
   void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) override;
   void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class EmittingObject final : public Compilable, public EmittingIRListener {
@@ -131,10 +132,10 @@ public:
   void Finish() override;
 
   void OnIREmitted(llvm::Module *m) override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class EmittingModule final : public Compilable, public EmittingIRListener {
@@ -145,10 +146,10 @@ public:
 public:
   void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class EmittingBitCode final : public Compilable, public EmittingIRListener {
@@ -158,10 +159,10 @@ public:
 public:
   void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class EmittingAssembly final : public Compilable, public EmittingIRListener {
@@ -171,10 +172,10 @@ public:
 public:
   void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 class EmittingLibrary final : public Compilable, public EmittingIRListener {
@@ -185,10 +186,10 @@ public:
 public:
   void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
+  void NotifyListeners() override;
 
 protected:
   int DoCompileFile() override;
-  void NotifyListeners() override;
 };
 
 } // namespace stone
