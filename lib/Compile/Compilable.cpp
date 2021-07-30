@@ -7,7 +7,7 @@
 #include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Semantics/TypeCheck.h"
-#include "stone/Semantics/TypeCheckerPipelineListener.h"
+#include "stone/Semantics/TypeCheckerListener.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
@@ -79,10 +79,10 @@ int TypeChecking::DoCompileFile() { return ret::ok; }
 void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
 
   syntaxFile = sf;
-
-  TypeCheckerPipelineListener *pipeline = nullptr;
+  
+  TypeCheckerListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<TypeCheckerPipelineListener *>(
+    pipeline = static_cast<TypeCheckerListener *>(
         compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeChecking));
   }
   sema::TypeCheckSyntaxFile(
@@ -100,7 +100,7 @@ void TypeChecking::NotifyListeners() {
   // Nofify internal listeners
   for (auto listener : listeners) {
     if (listener.GetKind() == PipelineListenerKind::TypeChecking) {
-      auto typeChecking = static_cast<TypeCheckerPipelineListener *>(&listener);
+      auto typeChecking = static_cast<TypeCheckerListener *>(&listener);
       if (compiler.HasError()) {
         // typeChecking->OnError();
       } else {

@@ -12,9 +12,9 @@ class Expr;
 class SyntaxFile;
 
 } // namespace syn
-class TypeCheckerPipelineListener : public PipelineListener {
+class TypeCheckerListener : public PipelineListener {
 public:
-  TypeCheckerPipelineListener()
+  TypeCheckerListener()
       : PipelineListener(PipelineListenerKind::TypeChecking) {}
 
 public:

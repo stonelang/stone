@@ -4,7 +4,7 @@
 #include "stone/CodeGen/CodeGenListener.h"
 #include "stone/Compile/CompilableFile.h"
 #include "stone/Parse/SyntaxListener.h"
-#include "stone/Semantics/TypeCheckerPipelineListener.h"
+#include "stone/Semantics/TypeCheckerListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
@@ -105,7 +105,7 @@ protected:
   void NotifyListeners() override;
 };
 
-class EmittingIR final : public Compilable, public TypeCheckerPipelineListener {
+class EmittingIR final : public Compilable, public TypeCheckerListener {
 
   llvm::Module *llvmModule = nullptr;
 
