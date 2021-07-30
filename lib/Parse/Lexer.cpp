@@ -2,7 +2,7 @@
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/Parse/SyntaxPipeline.h"
+#include "stone/Parse/SyntaxPipelineListener.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -699,11 +699,11 @@ static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
 }
 
 Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
-             Basic &basic, SyntaxPipeline *pipeline)
+             Basic &basic, SyntaxPipelineListener *pipeline)
     : srcID(srcID), sm(sm), basic(basic) {}
 
 Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Basic &basic,
-             SyntaxPipeline *pipeline)
+             SyntaxPipelineListener *pipeline)
     : srcID(srcID), sm(sm), basic(basic), pipeline(pipeline) {
 
   stats.reset(new LexerStats(*this, basic));

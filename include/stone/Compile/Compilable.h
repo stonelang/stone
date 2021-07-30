@@ -2,7 +2,7 @@
 #define STONE_COMPILE_COMPILABLE_H
 
 #include "stone/Basic/File.h"
-#include "stone/Parse/SyntaxPipeline.h"
+#include "stone/Parse/SyntaxPipelineListener.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
@@ -69,6 +69,7 @@ public:
   void Exit();
 };
 
+/// TODO: CompilableMode
 class alignas(8) Compilable {
 
 protected:
@@ -131,7 +132,6 @@ public:
 class EmittingIR final : public OutputCompilable {
 
   llvm::Module *llvmModule;
-  CodeGenPipeline *pipeline;
   TypeChecking typeChecking;
 
 public:
@@ -215,6 +215,18 @@ public:
 
 protected:
   int DoCompileFile() override;
+};
+
+struct CompilableFactory final {
+
+  static std::unique_ptr<SyntaxParsing> MakeSyntaxParsing(Compiler &compiler);
+  static std::unique_ptr<TypeChecking> MakeTypeChecking(Compiler &compiler);
+  static std::unique_ptr<EmittingIR> MakeEmittingIR(Compiler &compiler);
+  static std::unique_ptr<EmittingObject> MakeEmittingObject(Compiler &compiler);
+  static std::unique_ptr<EmittingBitCode> MakeEmittingBitCode(Compiler &compiler);
+  static std::unique_ptr<EmittingModule> MakeEmittingModule(Compiler &compiler);
+  static std::unique_ptr<EmittingLibrary> MakeEmittingLibrary(Compiler &compiler);
+  static std::unique_ptr<EmittingAssembly> MakeEmittingAssembly(Compiler &compiler);
 };
 
 } // namespace stone

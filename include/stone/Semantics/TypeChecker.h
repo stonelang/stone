@@ -11,7 +11,7 @@
 using namespace stone::syn;
 
 namespace stone {
-class TypeCheckerPipeline;
+class TypeCheckerPipelineListener;
 
 namespace syn {
 class SyntaxFile;
@@ -36,12 +36,12 @@ class TypeChecker final {
   syn::SyntaxFile &sf;
   TypeCheckerOptions &typeCheckerOpts;
   std::unique_ptr<TypeCheckerStats> stats;
-  TypeCheckerPipeline *pipeline;
+  TypeCheckerPipelineListener *pipeline;
 
 public:
   /// TODO: Pass in Syntax so that you can create the Nodes
   TypeChecker(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
-              TypeCheckerPipeline *pipeline = nullptr);
+              TypeCheckerPipelineListener *pipeline = nullptr);
 
 public:
   void CheckDecl(Decl *d);

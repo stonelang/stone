@@ -12,13 +12,10 @@
 
 namespace stone {
 
-class SyntaxPipeline : public Pipeline {
+class SyntaxPipelineListener : public PipelineListener {
 
 public:
-  SyntaxPipeline() : Pipeline(PipelineType::Syntax) {}
-
-public:
-  llvm::StringRef GetName() override { return "Parse"; }
+  SyntaxPipelineListener() : PipelineListener(PipelineListenerKind::Syntax) {}
 
 public:
   virtual void OnDone() {}
@@ -31,10 +28,19 @@ public:
   virtual void OnStmt(const syn::Stmt *stmt) {}
   virtual void OnExpr(const syn::Expr *expr) {}
 
-  virtual void Listen(const syn::SyntaxFile *expr) {}
+  virtual void OnSyntaxFile(const syn::SyntaxFile *expr) {}
 
 public:
   virtual void OnToken(const syn::Token *token) {}
 };
+
+class LexerPipelineListener : public PipelineListener {
+public:
+  LexerPipelineListener() : PipelineListener(PipelineListenerKind::Lex) {}
+
+public:
+  virtual void OnToken(const syn::Token *token) {}
+};
+
 } // namespace stone
 #endif

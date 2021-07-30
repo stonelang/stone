@@ -10,14 +10,14 @@
 using namespace stone;
 using namespace stone::syn;
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, Syntaxpipeline *pipeline)
+Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxPipelineListener *pipeline)
     : Parser(sf, syntax,
              std::unique_ptr<Lexer>(
                  new Lexer(sf.GetSrcID(), syntax.GetTreeContext().GetSrcMgr(),
                            syntax.GetTreeContext().GetBasic()))) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
-               Syntaxpipeline *pipeline)
+               SyntaxPipelineListener *pipeline)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
       pipeline(pipeline) {
 

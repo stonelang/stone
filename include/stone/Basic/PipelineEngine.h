@@ -7,37 +7,38 @@
 
 namespace stone {
 
-enum class PipelineType {
+enum class PipelineListenerKind {
   Syntax,
+  Lex,
   TypeCheck,
   CodeGen,
 };
 
-class Pipeline {
-  PipelineType ty;
+class PipelineListener {
+  PipelineListenerKind kind;
 
 public:
-  Pipeline() = default;
-  Pipeline(PipelineType ty) : ty(ty) {}
-  virtual ~Pipeline() {}
+  PipelineListener() = default;
+  PipelineListener(PipelineListenerKind kind) : kind(kind) {}
+  virtual ~PipelineListener() {}
 
 public:
-  PipelineType GetType() { return ty; }
-  virtual llvm::StringRef GetName() = 0;
+  PipelineListenerKind GetKind() { return kind; }
 };
 
 class PipelineEngine final {
-  ConstList<std::pair<PipelineType, Pipeline>> entries;
+  ConstList<std::pair<PipelineListenerKind, PipelineListener>> entries;
 
 public:
   PipelineEngine();
   ~PipelineEngine();
 
 public:
-  void Add(const Pipeline *pipeline);
-  // TODO: template<typename T> Get(PipelineType);
-  Pipeline *Get(PipelineType ty);
+  void Add(const PipelineListener *pipeline);
+  // TODO: template<typename T> Get(PipelineListenerKind);
+  PipelineListener *Get(PipelineListenerKind kind);
 };
+
 } // namespace stone
 
 #endif

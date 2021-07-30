@@ -1,35 +1,17 @@
 #include "stone/Parse/Parse.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/SyntaxPipeline.h"
+#include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxPipeline *sp) {
-
-  // ParserPipeline *pp = nullptr;
-  // LexerPipeline *lp = nullptr;
+void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
+                          SyntaxPipelineListener *sp) {
 
   Parser parser(sf, syntax);
-
-  // if (pe) {
-  //   if (pe->Get(PipelineType::Parse)) {
-  //     pp = static_cast<ParserPipeline *>(pe->Get(PipelineType::Parse));
-  //     if (pp) {
-  //       parser.SetPipeline(pp);
-  //     }
-  //   }
-  //   if (pe->Get(PipelineType::Lex)) {
-  //     lp = static_cast<LexerPipeline *>(pe->Get(PipelineType::Lex));
-  //     if (lp) {
-  //       parser.GetLexer().SetPipeline(lp);
-  //     }
-  //   }
-  // }
-
   syn::DeclGroupPtrTy topDecl;
   while (true) {
     // Check for tk::eof

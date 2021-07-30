@@ -4,7 +4,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-class TypeCheckerPipeline;
+class TypeCheckerPipelineListener;
 
 namespace syn {
 class SyntaxFile;
@@ -16,11 +16,11 @@ class TypeCheckerOptions;
 /// Perform type checking
 void TypeCheckSyntaxFile(syn::SyntaxFile &sf,
                          TypeCheckerOptions &typeCheckerOpts,
-                         TypeCheckerPipeline *pipeline = nullptr);
+                         TypeCheckerPipelineListener *pipeline = nullptr);
 
 /// Perform type checking
 void TypeCheckModule(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
-                     TypeCheckerPipeline *pipeline = nullptr);
+                     TypeCheckerPipelineListener *pipeline = nullptr);
 } // namespace sema
 
 } // namespace stone

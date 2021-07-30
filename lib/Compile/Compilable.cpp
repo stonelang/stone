@@ -1,17 +1,52 @@
+
 #include "stone/Compile/Compilable.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/PipelineEngine.h"
 #include "stone/Basic/Ret.h"
-#include "stone/CodeGen/CodeGenPipeline.h"
+#include "stone/CodeGen/CodeGenPipelineListener.h"
 #include "stone/CodeGen/Gen.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Parse/Parse.h"
-#include "stone/Parse/SyntaxPipeline.h"
+#include "stone/Parse/SyntaxPipelineListener.h"
 #include "stone/Semantics/TypeCheck.h"
-#include "stone/Semantics/TypeCheckerPipeline.h"
+#include "stone/Semantics/TypeCheckerPipelineListener.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
+
+std::unique_ptr<SyntaxParsing>
+CompilableFactory::MakeSyntaxParsing(Compiler &compiler) {
+
+  return std::make_unique<SyntaxParsing>(compiler);
+}
+std::unique_ptr<TypeChecking>
+CompilableFactory::MakeTypeChecking(Compiler &compiler) {
+  return std::make_unique<TypeChecking>(compiler);
+}
+
+std::unique_ptr<EmittingIR>
+CompilableFactory::MakeEmittingIR(Compiler &compiler) {
+  return std::make_unique<EmittingIR>(compiler);
+}
+
+std::unique_ptr<EmittingObject>
+CompilableFactory::MakeEmittingObject(Compiler &compiler) {
+  return std::make_unique<EmittingObject>(compiler);
+}
+
+std::unique_ptr<EmittingBitCode>
+CompilableFactory::MakeEmittingBitCode(Compiler &compiler) {
+  return std::make_unique<EmittingBitCode>(compiler);
+}
+
+std::unique_ptr<EmittingModule>
+CompilableFactory::MakeEmittingModule(Compiler &compiler) {
+  return std::make_unique<EmittingModule>(compiler);
+}
+
+std::unique_ptr<EmittingAssembly>
+CompilableFactory::MakeEmittingAssembly(Compiler &compiler) {
+  return std::make_unique<EmittingAssembly>(compiler);
+}
 
 Compilable::Compilable(Compiler &compiler) : compiler(compiler) {}
 
@@ -38,17 +73,19 @@ int SyntaxParsing::DoCompileFile() {
     return ret::err;
   }
 
-  SyntaxPipeline *pipeline = nullptr;
+  SyntaxPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<SyntaxPipeline *>(
-        compiler.GetPipelineEngine()->Get(PipelineType::Syntax));
+    pipeline = static_cast<SyntaxPipelineListener *>(
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::Syntax));
   }
   syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
 
   if (compiler.HasError()) {
     return ret::err;
   }
-
+  if (pipeline) {
+    pipeline->OnSyntaxFile(syntaxFile);
+  }
   return ret::ok;
 }
 void SyntaxParsing::Finish() {}
@@ -61,10 +98,10 @@ int TypeChecking::DoCompileFile() {
   if (!syntaxParsing.CompileFile(GetCompilableFile())) {
     return ret::err;
   }
-  TypeCheckerPipeline *pipeline = nullptr;
+  TypeCheckerPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<TypeCheckerPipeline *>(
-        compiler.GetPipelineEngine()->Get(PipelineType::TypeCheck));
+    pipeline = static_cast<TypeCheckerPipelineListener *>(
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeCheck));
   }
   sema::TypeCheckSyntaxFile(*syntaxParsing.GetSyntaxFile(),
                             compiler.GetCompilerOptions().typeCheckerOptions,
@@ -72,6 +109,9 @@ int TypeChecking::DoCompileFile() {
 
   if (compiler.HasError()) {
     return ret::err;
+  }
+  if (pipeline) {
+    pipeline->OnSyntaxFileTypeChecked(syntaxParsing.GetSyntaxFile());
   }
   return ret::ok;
 }
@@ -87,10 +127,10 @@ int EmittingIR::DoCompileFile() {
   }
 
   compiler.GetMainModule()->AddFile(*typeChecking.GetSyntaxFile());
-
+  CodeGenPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<CodeGenPipeline *>(
-        compiler.GetPipelineEngine()->Get(PipelineType::CodeGen));
+    pipeline = static_cast<CodeGenPipelineListener *>(
+        compiler.GetPipelineEngine()->Get(PipelineListenerKind::CodeGen));
   }
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());

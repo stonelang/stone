@@ -2,16 +2,17 @@
 
 using namespace stone;
 
-void PipelineEngine::Add(const Pipeline *pipeline) {
+void PipelineEngine::Add(const PipelineListener *pipeline) {
   assert(pipeline && "Null pipeline");
 
   // entries.Add(
-  //    std::make_pair<PipelineType, Pipeline>(pipeline->GetType(), pipeline));
+  //    std::make_pair<PipelineListenerKind, Pipeline>(pipeline->GetType(),
+  //    pipeline));
 }
 
-Pipeline *PipelineEngine::Get(PipelineType ty) {
+PipelineListener *PipelineEngine::Get(PipelineListenerKind knd) {
   // for (auto p : entries) {
-  //   if (p.first == ty) {
+  //   if (p.first == kind) {
   //     return p.second;
   //   }
   // }

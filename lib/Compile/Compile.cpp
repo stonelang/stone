@@ -18,13 +18,15 @@ public:
 static std::unique_ptr<Compilable> GetCompilable(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
-    return std::unique_ptr<SyntaxParsing>(new SyntaxParsing(compiler));
+    return CompilableFactory::MakeSyntaxParsing(compiler);
   case ModeType::TypeCheck:
-    return std::unique_ptr<TypeChecking>(new TypeChecking(compiler));
+    return CompilableFactory::MakeTypeChecking(compiler);
   case ModeType::EmitIR:
-    return std::unique_ptr<EmittingIR>(new EmittingIR(compiler));
+    return CompilableFactory::MakeEmittingIR(compiler);
   case ModeType::EmitObject:
-    return std::unique_ptr<EmittingObject>(new EmittingObject(compiler));
+    return CompilableFactory::MakeEmittingObject(compiler);
+  case ModeType::EmitModule:
+    return CompilableFactory::MakeEmittingModule(compiler);
   default:
     llvm_unreachable("Invalid compiler mode!");
   }
