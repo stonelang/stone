@@ -146,7 +146,6 @@ int EmittingObject::DoCompileFile() {
   if (!emittingIR.CompileFile(input)) {
     return ret::err;
   }
-
   // GetCompiler().CreateOutputFile();
 
   // if (!ci.GetOutputFile()) {
