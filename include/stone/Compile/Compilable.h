@@ -155,6 +155,9 @@ public:
 public:
   void Finish() override;
 
+  void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) override;
+  void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) override;
+
 protected:
   int DoCompileFile() override;
 };
@@ -170,6 +173,8 @@ public:
 public:
   void Finish() override;
 
+  void OnIREmitted(llvm::Module *m) override;
+
 protected:
   int DoCompileFile() override;
 };
@@ -183,6 +188,7 @@ public:
   EmittingModule(Compiler &compiler);
 
 public:
+  void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
 
 protected:
@@ -198,6 +204,7 @@ public:
   EmittingBitCode(Compiler &compiler);
 
 public:
+  void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
 
 protected:
@@ -213,6 +220,7 @@ public:
   EmittingAssembly(Compiler &compiler);
 
 public:
+  void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
 
 protected:
@@ -228,6 +236,7 @@ public:
   EmittingLibrary(Compiler &compiler);
 
 public:
+  void OnIREmitted(llvm::Module *m) override;
   void Finish() override;
 
 protected:

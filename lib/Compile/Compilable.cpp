@@ -119,10 +119,7 @@ int TypeChecking::DoCompileFile() {
   return ret::ok;
 }
 
-void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {
-
-
-}
+void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {}
 
 void TypeChecking::Finish() {}
 
@@ -149,6 +146,10 @@ int EmittingIR::DoCompileFile() {
   }
   return ret::ok;
 }
+
+void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
+void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
+
 void EmittingIR::Finish() {}
 
 EmittingObject::EmittingObject(Compiler &compiler)
@@ -181,6 +182,9 @@ int EmittingObject::DoCompileFile() {
 
   return ret::ok;
 }
+
+void EmittingObject::OnIREmitted(llvm::Module *m) {}
+
 void EmittingObject::Finish() {}
 
 EmittingModule::EmittingModule(Compiler &compiler)
@@ -193,6 +197,7 @@ int EmittingModule::DoCompileFile() {
   }
   return ret::ok;
 }
+void EmittingModule::OnIREmitted(llvm::Module *m) {}
 void EmittingModule::Finish() {}
 
 EmittingBitCode::EmittingBitCode(Compiler &compiler)
@@ -205,6 +210,8 @@ int EmittingBitCode::DoCompileFile() {
   }
   return ret::ok;
 }
+
+void EmittingBitCode::OnIREmitted(llvm::Module *m) {}
 void EmittingBitCode::Finish() {}
 
 EmittingAssembly::EmittingAssembly(Compiler &compiler)
@@ -217,6 +224,7 @@ int EmittingAssembly::DoCompileFile() {
   }
   return ret::ok;
 }
+void EmittingAssembly::OnIREmitted(llvm::Module *m) {}
 void EmittingAssembly::Finish() {}
 
 EmittingLibrary::EmittingLibrary(Compiler &compiler)
@@ -229,4 +237,5 @@ int EmittingLibrary::DoCompileFile() {
   }
   return ret::ok;
 }
+void EmittingLibrary::OnIREmitted(llvm::Module *m) {}
 void EmittingLibrary::Finish() {}

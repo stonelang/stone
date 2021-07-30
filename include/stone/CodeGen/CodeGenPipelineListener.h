@@ -4,6 +4,9 @@
 #include "stone/Basic/PipelineEngine.h"
 #include "llvm/ADT/ArrayRef.h"
 
+namespace llvm {
+class Module;
+}
 namespace stone {
 
 class EmittingIRPipelineListener : public PipelineListener {
@@ -12,7 +15,7 @@ public:
       : PipelineListener(PipelineListenerKind::CodeGen) {}
 
 public:
-  virtual void OnIREmitted() {}
+  virtual void OnIREmitted(llvm::Module *m) {}
 
 public:
 };
