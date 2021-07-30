@@ -77,7 +77,9 @@ TypeChecking::TypeChecking(Compiler &compiler) : Compilable(compiler) {}
 
 int TypeChecking::DoCompileFile() { return ret::ok; }
 
-void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {
+void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
+
+  syntaxFile = sf;
 
   TypeCheckerPipelineListener *pipeline = nullptr;
   if (compiler.GetPipelineEngine()) {
@@ -97,16 +99,16 @@ void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {
 void TypeChecking::NotifyListeners() {
 
   // Nofify internal listeners
-  // for (auto listener : listeners) {
-  //   if (listener.GetKind() == PipelineListenerKind::TypeChecking) {
-  //     auto typeChecking = static_cast<TypeCheckerPipelineListener
-  //     *>(&listener); if (compiler.HasError()) {
-  //       //typeChecking->OnError();
-  //     } else {
-  //       typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
-  //     }
-  //   }
-  // }
+  for (auto listener : listeners) {
+    if (listener.GetKind() == PipelineListenerKind::TypeChecking) {
+      auto typeChecking = static_cast<TypeCheckerPipelineListener *>(&listener);
+      if (compiler.HasError()) {
+        // typeChecking->OnError();
+      } else {
+        typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
+      }
+    }
+  }
 }
 void TypeChecking::Finish() {}
 

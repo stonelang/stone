@@ -89,6 +89,7 @@ protected:
 };
 
 class TypeChecking final : public Compilable, public SyntaxPipelineListener {
+  syn::SyntaxFile *syntaxFile = nullptr;
 
 public:
   TypeChecking(Compiler &compiler);
