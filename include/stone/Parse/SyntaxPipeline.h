@@ -5,6 +5,7 @@
 #include "stone/Basic/Token.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Expr.h"
+#include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -20,18 +21,20 @@ public:
   llvm::StringRef GetName() override { return "Parse"; }
 
 public:
-  virtual void OnDone() = 0;
-  virtual void OnError() = 0;
+  virtual void OnDone() {}
+  virtual void OnError() {}
 
 public:
-  virtual void OnTopDecl(const syn::Decl *decl) = 0;
-  virtual void OnDecl(const syn::Decl *decl) = 0;
+  virtual void OnTopDecl(const syn::Decl *decl) {}
+  virtual void OnDecl(const syn::Decl *decl) {}
 
-  virtual void OnStmt(const syn::Stmt *stmt) = 0;
-  virtual void OnExpr(const syn::Expr *expr) = 0;
+  virtual void OnStmt(const syn::Stmt *stmt) {}
+  virtual void OnExpr(const syn::Expr *expr) {}
+
+  virtual void Listen(const syn::SyntaxFile *expr) {}
 
 public:
-  virtual void OnToken(const syn::Token *token) = 0;
+  virtual void OnToken(const syn::Token *token) {}
 };
 } // namespace stone
 #endif

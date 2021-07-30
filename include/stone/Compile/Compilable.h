@@ -2,6 +2,8 @@
 #define STONE_COMPILE_COMPILABLE_H
 
 #include "stone/Basic/File.h"
+#include "stone/Parse/SyntaxPipeline.h"
+
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 
@@ -53,6 +55,7 @@ public:
   llvm::MemoryBuffer *GetBuffer() { return buffer; }
 };
 } // namespace mode
+
 class Compilable {
 
 protected:
@@ -103,7 +106,6 @@ public:
 
 public:
   void Finish() override;
-
   syn::SyntaxFile *GetSyntaxFile() { return syntaxParsing.GetSyntaxFile(); }
 
 protected:

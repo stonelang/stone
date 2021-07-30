@@ -19,7 +19,7 @@ class Pipeline {
 public:
   Pipeline() = default;
   Pipeline(PipelineType ty) : ty(ty) {}
-  virtual ~Pipeline();
+  virtual ~Pipeline() {}
 
 public:
   PipelineType GetType() { return ty; }
