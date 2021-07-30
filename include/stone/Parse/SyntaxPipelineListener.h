@@ -28,7 +28,7 @@ public:
   virtual void OnStmt(const syn::Stmt *stmt) {}
   virtual void OnExpr(const syn::Expr *expr) {}
 
-  virtual void OnSyntaxFile(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {}
 
 public:
   virtual void OnToken(const syn::Token *token) {}

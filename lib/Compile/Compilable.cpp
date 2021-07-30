@@ -87,7 +87,7 @@ int SyntaxParsing::DoCompileFile() {
     return ret::err;
   }
   if (pipeline) {
-    pipeline->OnSyntaxFile(syntaxFile);
+    pipeline->OnSyntaxFileParsed(syntaxFile);
   }
   return ret::ok;
 }
@@ -119,7 +119,10 @@ int TypeChecking::DoCompileFile() {
   return ret::ok;
 }
 
-void TypeChecking::OnSyntaxFile(syn::SyntaxFile *syntaxFile) {}
+void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) {
+
+
+}
 
 void TypeChecking::Finish() {}
 

@@ -129,7 +129,7 @@ public:
   syn::SyntaxFile *GetSyntaxFile() { return syntaxParsing.GetSyntaxFile(); }
 
 public:
-  void OnSyntaxFile(syn::SyntaxFile *syntaxFile) override;
+  void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) override;
 
 protected:
   int DoCompileFile() override;
