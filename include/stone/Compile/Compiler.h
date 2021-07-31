@@ -29,8 +29,8 @@ class TimerGroup;
 using namespace stone::syn;
 
 namespace stone {
-class PipelineEngine;
 class Compiler;
+class CompilerListener;
 
 class CompilerStats final : public Stats {
   Compiler &compiler;
@@ -43,7 +43,7 @@ public:
 
 class Compiler final : public Session {
   SrcMgr sm;
-  PipelineEngine *pe = nullptr;
+  CompilerListener *cl = nullptr;
   mutable syn::Module *mainModule = nullptr;
 
   std::unique_ptr<TreeContext> tc;
@@ -82,7 +82,7 @@ public:
 public:
   Compiler(const Compiler &) = delete;
   void operator=(const Compiler &) = delete;
-  explicit Compiler(PipelineEngine *pe = nullptr);
+  explicit Compiler(CompilerListener *cl = nullptr);
 
 public:
   void Init() override;
@@ -127,7 +127,8 @@ public:
 
   CompilerStats &GetStats() { return *stats.get(); }
 
-  PipelineEngine *GetPipelineEngine() { return pe; }
+  void SetCompilerListener(CompilerListener *listener) { cl = listener; }
+  CompilerListener *GetCompilerListener() { return cl; }
 
   std::unique_ptr<raw_pwrite_stream>
   CreateOutputFile(llvm::StringRef outFile, bool isBinary,

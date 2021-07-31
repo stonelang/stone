@@ -30,19 +30,6 @@ public:
   PipelineListenerKind GetKind() { return kind; }
 };
 
-class PipelineEngine final {
-  ConstList<std::pair<PipelineListenerKind, PipelineListener>> entries;
-
-public:
-  PipelineEngine();
-  ~PipelineEngine();
-
-public:
-  void Add(const PipelineListener *pipeline);
-  // TODO: template<typename T> Get(PipelineListenerKind);
-  PipelineListener *Get(PipelineListenerKind kind);
-};
-
 } // namespace stone
 
 #endif

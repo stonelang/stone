@@ -1,4 +1,5 @@
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerListener.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Ret.h"
 #include "stone/Basic/TextDiagnosticEmitter.h"
@@ -28,8 +29,8 @@ using namespace stone;
 using namespace stone::opts;
 using namespace stone::syn;
 
-Compiler::Compiler(PipelineEngine *pe)
-    : Session(compilerOpts, SessionType::Compiler), pe(pe) {
+Compiler::Compiler(CompilerListener *cl)
+    : Session(compilerOpts, SessionType::Compiler), cl(cl) {
 
   tc.reset(new TreeContext(*this, compilerOpts.spOpts, sm));
   syntax.reset(new Syntax(*tc.get()));

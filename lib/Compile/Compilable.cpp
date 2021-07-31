@@ -4,6 +4,7 @@
 #include "stone/CodeGen/CodeGenListener.h"
 #include "stone/CodeGen/Gen.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerListener.h"
 #include "stone/Parse/Parse.h"
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Semantics/TypeCheck.h"
@@ -37,18 +38,8 @@ int SyntaxParsing::DoCompileFile() {
     return ret::err;
   }
 
-  SyntaxListener *pipeline = nullptr;
-  if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<SyntaxListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::Parsing));
-  }
-  syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(), pipeline);
-
-  // TODO: Clean this up:
-  // Notify external listeners
-  if (pipeline && !compiler.HasError()) {
-    pipeline->OnSyntaxFileParsed(syntaxFile);
-  }
+  syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(),
+                       compiler.GetCompilerListener());
 
   if (compiler.HasError()) {
     return ret::err;
@@ -65,6 +56,10 @@ void SyntaxParsing::NotifyListeners() {
         syntaxParsing->OnError();
       } else {
         syntaxParsing->OnSyntaxFileParsed(syntaxFile);
+        // Notify caller
+        if (compiler.GetCompilerListener()) {
+          compiler.GetCompilerListener()->OnSyntaxFileParsed(syntaxFile);
+        }
       }
     }
   }
@@ -79,17 +74,9 @@ void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
 
   syntaxFile = sf;
 
-  TypeCheckerListener *pipeline = nullptr;
-  if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<TypeCheckerListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::TypeChecking));
-  }
-  sema::TypeCheckSyntaxFile(
-      *syntaxFile, compiler.GetCompilerOptions().typeCheckerOptions, pipeline);
-
-  if (pipeline && !compiler.HasError()) {
-    pipeline->OnSyntaxFileTypeChecked(syntaxFile);
-  }
+  sema::TypeCheckSyntaxFile(*syntaxFile,
+                            compiler.GetCompilerOptions().typeCheckerOptions,
+                            compiler.GetCompilerListener());
 
   NotifyListeners();
 }
@@ -104,6 +91,9 @@ void TypeChecking::NotifyListeners() {
         // typeChecking->OnError();
       } else {
         typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
+        if (compiler.GetCompilerListener()) {
+          compiler.GetCompilerListener()->OnSyntaxFileTypeChecked(syntaxFile);
+        }
       }
     }
   }
@@ -115,11 +105,6 @@ EmittingIR::EmittingIR(Compiler &compiler) : Compilable(compiler) {}
 int EmittingIR::DoCompileFile() { return ret::ok; }
 void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
 
-  EmittingIRListener *pipeline = nullptr;
-  if (compiler.GetPipelineEngine()) {
-    pipeline = static_cast<EmittingIRListener *>(
-        compiler.GetPipelineEngine()->Get(PipelineListenerKind::EmittingIR));
-  }
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());
 

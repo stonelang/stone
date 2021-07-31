@@ -8,10 +8,10 @@
 namespace stone {
 class Compiler;
 class InFlightMode;
-class PipelineEngine;
+class CompilerListener;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            PipelineEngine *pe = nullptr);
+            CompilerListener *cl = nullptr);
 
 int Compile(Compiler &compiler, file::File &input);
 

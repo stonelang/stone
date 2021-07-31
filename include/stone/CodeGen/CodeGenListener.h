@@ -1,7 +1,7 @@
 #ifndef STONE_CODEGEN_CODEGENPIPELINE_H
 #define STONE_CODEGEN_CODEGENPIPELINE_H
 
-#include "stone/Basic/PipelineEngine.h"
+#include "stone/Basic/PipelineListener.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace llvm {

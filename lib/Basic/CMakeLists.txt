@@ -29,7 +29,6 @@ set(stone_basic_sources
 	Fmt.cpp
 	LangVersion.cpp
 	LLVMContext.cpp
-	PipelineEngine.cpp
 	SrcMgr.cpp
 	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
