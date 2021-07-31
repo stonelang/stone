@@ -56,12 +56,12 @@ void SyntaxParsing::NotifyListeners() {
         syntaxParsing->OnError();
       } else {
         syntaxParsing->OnSyntaxFileParsed(syntaxFile);
-        // Notify caller
-        if (compiler.GetCompilerListener()) {
-          compiler.GetCompilerListener()->OnSyntaxFileParsed(syntaxFile);
-        }
       }
     }
+  }
+  // Notify caller
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnSyntaxFileParsed(syntaxFile);
   }
 }
 void SyntaxParsing::Finish() {}
@@ -73,12 +73,9 @@ int TypeChecking::DoCompileFile() { return ret::ok; }
 void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
 
   syntaxFile = sf;
-
   sema::TypeCheckSyntaxFile(*syntaxFile,
                             compiler.GetCompilerOptions().typeCheckerOptions,
                             compiler.GetCompilerListener());
-
-  NotifyListeners();
 }
 
 void TypeChecking::NotifyListeners() {
@@ -91,11 +88,11 @@ void TypeChecking::NotifyListeners() {
         // typeChecking->OnError();
       } else {
         typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
-        if (compiler.GetCompilerListener()) {
-          compiler.GetCompilerListener()->OnSyntaxFileTypeChecked(syntaxFile);
-        }
       }
     }
+  }
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnSyntaxFileTypeChecked(syntaxFile);
   }
 }
 void TypeChecking::Finish() {}
