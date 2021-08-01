@@ -68,6 +68,7 @@ public:
 
 public:
   llvm::StringRef GetName() { return name; }
+  const llvm::StringRef GetName() const { return name; }
   file::Type GetType() { return ty; }
 };
 /// Type used for a list of input arguments.

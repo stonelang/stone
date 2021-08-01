@@ -30,6 +30,10 @@ public:
       : input(input), isPrimary(isPrimary), buffer(buffer) {}
 
 public:
+  const file::File &GetFile() const {
+    assert(input && "No File");
+    return *input;
+  }
   file::File &GetFile() {
     assert(input && "No File");
     return *input;

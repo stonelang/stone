@@ -24,8 +24,9 @@ public:
   void CompileFiles();
 
 private:
-  void CompileFile(CompilableFile &cf);
-  void Parse(CompilableFile &cf);
+  void CompileFile(const CompilableFile &cf);
+  void Parse(const CompilableFile &cf);
+
   void TypeCheck(syn::SyntaxFile *sf);
   void EmitIR(syn::SyntaxFile *sf);
   void EmitObject(llvm::Module *m);

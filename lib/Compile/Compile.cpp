@@ -7,28 +7,13 @@
 #include "stone/Compile/CompilableFactory.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerListener.h"
+#include "stone/Compile/CompilerWorkspace.h"
 #include "stone/Session/ExecutablePath.h"
 #include "stone/Syntax/Module.h"
 
 #include <memory>
 using namespace stone;
 
-static std::unique_ptr<Compilable> MakeCompilable(Compiler &compiler) {
-  switch (compiler.GetMode().GetType()) {
-  case ModeType::Parse:
-    return CompilableFactory::MakeSyntaxParsing(compiler);
-  case ModeType::TypeCheck:
-    return CompilableFactory::MakeTypeChecking(compiler);
-  case ModeType::EmitIR:
-    return CompilableFactory::MakeEmittingIR(compiler);
-  case ModeType::EmitObject:
-    return CompilableFactory::MakeEmittingObject(compiler);
-  case ModeType::EmitModule:
-    return CompilableFactory::MakeEmittingModule(compiler);
-  default:
-    llvm_unreachable("Invalid compiler mode!");
-  }
-}
 int Compiler::Run(Compiler &compiler) {
 
   assert(compiler.GetMode().IsCompilable() && "Invalid compile mode.");
@@ -40,18 +25,11 @@ int Compiler::Run(Compiler &compiler) {
   if (compiler.GetCompilerListener()) {
     compiler.GetCompilerListener()->OnPreCompile(compiler);
   }
-  // TODO: Build out the InFlightInputFiles
-  // workspace.BuildInFlightInputFiles();
-  // for (auto &input : workspace.GetInFlightInputFiles()) {
-  // }
-  auto compilable = MakeCompilable(compiler);
-  for (auto &input : compiler.GetInputFiles()) {
-    compilable->CompileFile(CompilableFile(&input, false));
-    if (compiler.HasError()) {
-      return ret::err;
-    }
-  }
-  compilable->Finish();
+
+  CompilerWorkspace workspace(compiler);
+  workspace.BuildCompilableFiles();
+  workspace.CompileFiles();
+
   if (compiler.GetCompilerListener()) {
     compiler.GetCompilerListener()->OnPostCompile(compiler);
   }

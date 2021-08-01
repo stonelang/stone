@@ -15,14 +15,25 @@
 using namespace stone;
 
 CompilerWorkspace::CompilerWorkspace(Compiler &compiler) : compiler(compiler) {}
+CompilerWorkspace::~CompilerWorkspace() {}
 
 void CompilerWorkspace::BuildCompilableFiles() {}
 
-void CompilerWorkspace::CompileFiles() {}
+void CompilerWorkspace::CompileFiles() {
 
-void CompilerWorkspace::CompileFile(CompilableFile &cf) { Parse(cf); }
+  // Do only parsing and type-cheching?
+  for (auto &input : compiler.GetInputFiles()) {
+    CompileFile(CompilableFile(&input, false));
+    if (compiler.HasError()) {
+      return;
+    }
+  }
+  // Do emitting here?
+}
 
-void CompilerWorkspace::Parse(CompilableFile &cf) {
+void CompilerWorkspace::CompileFile(const CompilableFile &cf) { Parse(cf); }
+
+void CompilerWorkspace::Parse(const CompilableFile &cf) {
 
   auto srcID = compiler.MakeSrcID(cf.GetFile().GetName());
   if (compiler.HasError()) {
