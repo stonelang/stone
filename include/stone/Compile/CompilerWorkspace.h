@@ -29,6 +29,7 @@ private:
   void TypeCheck(syn::SyntaxFile *sf);
   void EmitIR(syn::SyntaxFile *sf);
   void EmitObject(llvm::Module *m);
+  void EmitModule(llvm::Module *m);
 };
 
 } // namespace stone

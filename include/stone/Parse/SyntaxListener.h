@@ -33,11 +33,11 @@ public:
   virtual void OnDecl(const syn::Decl *decl, bool isTopLvel = false) {}
   virtual void OnStmt(const syn::Stmt *stmt) {}
   virtual void OnExpr(const syn::Expr *expr) {}
-
-  virtual void OnParseCompleted(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnToken(const syn::Token *token) {}
 
 public:
-  virtual void OnToken(const syn::Token *token) {}
+  virtual void OnParseError(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnParseCompleted(syn::SyntaxFile *syntaxFile) {}
 };
 
 } // namespace stone

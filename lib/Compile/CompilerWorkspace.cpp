@@ -79,9 +79,12 @@ void CompilerWorkspace::EmitIR(syn::SyntaxFile *sf) {
   if (compiler.GetMode().Is(ModeType::EmitIR)) {
     return;
   }
+
   switch (compiler.GetMode().GetType()) {
   case ModeType::EmitObject:
     return EmitObject(ir);
+  case ModeType::EmitModule:
+    return EmitModule(ir);
   default:
     break; // llvm should not reach
   }
@@ -91,5 +94,11 @@ void CompilerWorkspace::EmitObject(llvm::Module *ir) {
 
   if (compiler.GetCompilerListener()) {
     compiler.GetCompilerListener()->OnEmitObjectCompleted();
+  }
+}
+void CompilerWorkspace::EmitModule(llvm::Module *ir) {
+
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnEmitModuleCompleted();
   }
 }

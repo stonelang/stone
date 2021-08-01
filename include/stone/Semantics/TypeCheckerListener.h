@@ -23,6 +23,7 @@ public:
   virtual void OnExprTypeChecked(syn::Expr *expr) {}
 
 public:
+  virtual void OnTypeCheckError() {}
   virtual void OnTypeCheckCompleted(syn::SyntaxFile *syntaxFile) {}
 
 public:

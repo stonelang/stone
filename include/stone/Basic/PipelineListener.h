@@ -11,7 +11,6 @@ enum class PipelineListenerKind {
   Lexing,
   Parsing,
   TypeChecking,
-  Emitting,
   EmittingIR,
   EmittingObject,
   EmittingModule,
@@ -25,7 +24,7 @@ class PipelineListener {
 public:
   PipelineListener() = default;
   PipelineListener(PipelineListenerKind kind) : kind(kind) {}
-  virtual ~PipelineListener() {}
+  virtual ~PipelineListener() = default;
 
 public:
   PipelineListenerKind GetKind() { return kind; }
