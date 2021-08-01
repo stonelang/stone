@@ -19,6 +19,7 @@ set(stone_driver_sources
 	CrashState.cpp
 	DarwinToolChain.cpp
 	Driver.cpp
+	DriverWorkspace.cpp
 	Job.cpp
 	JobBuilder.cpp
 	LinkJob.cpp
