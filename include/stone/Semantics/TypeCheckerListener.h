@@ -21,6 +21,7 @@ public:
   virtual void OnDeclTypeChecked(syn::Decl *decl, bool isTopLvel = false) {}
   virtual void OnStmtTypeChecked(syn::Stmt *stmt) {}
   virtual void OnExprTypeChecked(syn::Expr *expr) {}
+
 public:
   virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
   virtual void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}

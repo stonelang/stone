@@ -34,6 +34,8 @@ public:
   ModeType GetType() const { return ty; }
   llvm::StringRef GetName() const { return name; }
 
+  bool Is(ModeType mt) const { return ty == mt; }
+
   bool CanOutput() {
     switch (GetType()) {
     case ModeType::EmitIR:

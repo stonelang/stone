@@ -13,6 +13,7 @@ set(stone_compile_sources
 	CompilableFactory.cpp
 	Compile.cpp
 	Compiler.cpp
+	CompilerWorkspace.cpp
 	Serialize.cpp	
 
 	LINK_LIBS

@@ -190,4 +190,37 @@ public:
 // void AddCompilable(std::unique_ptr<CompilableItem> ci) {
 //  cis.Add(std::move(ci));
 //}
+
+class CompilerWorkspace {
+
+public:
+  void BuildCompilableFiles();
+
+public:
+  void CompileFile(CompilableFile &cf) { ParseFile(cf); }
+
+  void ParseFile(CompilableFile &cf) {
+
+    if (Parse)
+      return;
+
+    TypeCheck(sf);
+  }
+  void TypeCheck(SyntaxFile *sf) {
+    if (TypeCheck)
+      return;
+
+    EmitIR(sf);
+  }
+
+  void EmitIR(SyntaxFile *sf) {
+
+    if (EmitIR)
+      return;
+
+    EmitObject(m);
+  }
+  void EmitObject(llvm::Module *m) {}
+};
+
 int main() { return 0; }

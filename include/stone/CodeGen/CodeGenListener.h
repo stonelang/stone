@@ -11,6 +11,7 @@ namespace stone {
 namespace syn {
 class Module;
 }
+
 class EmittingIRListener : public PipelineListener {
 public:
   EmittingIRListener() : PipelineListener(PipelineListenerKind::EmittingIR) {}
