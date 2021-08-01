@@ -20,36 +20,76 @@ void CompilerWorkspace::BuildCompilableFiles() {}
 
 void CompilerWorkspace::CompileFiles() {}
 
-void CompilerWorkspace::CompileFile(CompilableFile &cf) { ParseFile(cf); }
+void CompilerWorkspace::CompileFile(CompilableFile &cf) { Parse(cf); }
 
-void CompilerWorkspace::ParseFile(CompilableFile &cf) {
+void CompilerWorkspace::Parse(CompilableFile &cf) {
+
+  auto srcID = compiler.MakeSrcID(cf.GetFile().GetName());
+  if (compiler.HasError()) {
+    return;
+  }
+  auto syntaxFile =
+      SyntaxFile::Make(SyntaxFileKind::Library, *compiler.GetMainModule(),
+                       compiler.GetTreeContext(), srcID);
+
+  if (compiler.HasError()) {
+    return;
+  }
+
+  syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(),
+                       compiler.GetCompilerListener());
+
+  if (compiler.HasError()) {
+    return;
+  }
+
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnParseCompleted(syntaxFile);
+  }
 
   if (compiler.GetMode().Is(ModeType::Parse)) {
     return;
   }
-  TypeCheckFile(nullptr);
+  TypeCheck(syntaxFile);
 }
 
-void CompilerWorkspace::TypeCheckFile(syn::SyntaxFile *sf) {
+void CompilerWorkspace::TypeCheck(syn::SyntaxFile *sf) {
+
+  sema::TypeCheckSyntaxFile(*sf,
+                            compiler.GetCompilerOptions().typeCheckerOptions,
+                            compiler.GetCompilerListener());
+
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnTypeCheckCompleted(sf);
+  }
 
   if (compiler.GetMode().Is(ModeType::TypeCheck)) {
     return;
   }
-
-  EmitIR(nullptr);
+  EmitIR(sf);
 }
 
 void CompilerWorkspace::EmitIR(syn::SyntaxFile *sf) {
+
+  llvm::Module *ir = nullptr;
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnEmitIRCompleted(ir);
+  }
 
   if (compiler.GetMode().Is(ModeType::EmitIR)) {
     return;
   }
   switch (compiler.GetMode().GetType()) {
   case ModeType::EmitObject:
-    return EmitObject(nullptr);
+    return EmitObject(ir);
   default:
     break; // llvm should not reach
   }
 }
 
-void CompilerWorkspace::EmitObject(llvm::Module *m) {}
+void CompilerWorkspace::EmitObject(llvm::Module *ir) {
+
+  if (compiler.GetCompilerListener()) {
+    compiler.GetCompilerListener()->OnEmitObjectCompleted();
+  }
+}

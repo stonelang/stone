@@ -23,8 +23,7 @@ public:
   virtual void OnExprTypeChecked(syn::Expr *expr) {}
 
 public:
-  virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
-  virtual void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnTypeCheckCompleted(syn::SyntaxFile *syntaxFile) {}
 
 public:
 };

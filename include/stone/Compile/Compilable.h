@@ -99,7 +99,7 @@ public:
   void Finish() override;
 
 public:
-  void OnSyntaxFileParsed(syn::SyntaxFile *syntaxFile) override;
+  void OnParseCompleted(syn::SyntaxFile *syntaxFile) override;
 
 protected:
   void NotifyListeners() override;
@@ -115,8 +115,7 @@ public:
 
 public:
   void Finish() override;
-  void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) override;
-  void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) override;
+  void OnTypeCheckCompleted(syn::SyntaxFile *syntaxFile) override;
   void NotifyListeners() override;
 
 protected:
@@ -131,7 +130,7 @@ public:
 public:
   void Finish() override;
 
-  void OnIREmitted(llvm::Module *m) override;
+  void OnEmitIRCompleted(llvm::Module *m) override;
   void NotifyListeners() override;
 
 protected:
@@ -144,7 +143,7 @@ public:
   EmittingModule(Compiler &compiler);
 
 public:
-  void OnIREmitted(llvm::Module *m) override;
+  void OnEmitIRCompleted(llvm::Module *m) override;
   void Finish() override;
   void NotifyListeners() override;
 
@@ -157,7 +156,7 @@ public:
   EmittingBitCode(Compiler &compiler);
 
 public:
-  void OnIREmitted(llvm::Module *m) override;
+  void OnEmitIRCompleted(llvm::Module *m) override;
   void Finish() override;
   void NotifyListeners() override;
 
@@ -170,7 +169,7 @@ public:
   EmittingAssembly(Compiler &compiler);
 
 public:
-  void OnIREmitted(llvm::Module *m) override;
+  void OnEmitIRCompleted(llvm::Module *m) override;
   void Finish() override;
   void NotifyListeners() override;
 
@@ -184,7 +183,7 @@ public:
   EmittingLibrary(Compiler &compiler);
 
 public:
-  void OnIREmitted(llvm::Module *m) override;
+  void OnEmitIRCompleted(llvm::Module *m) override;
   void Finish() override;
   void NotifyListeners() override;
 

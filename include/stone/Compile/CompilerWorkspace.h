@@ -25,8 +25,8 @@ public:
 
 private:
   void CompileFile(CompilableFile &cf);
-  void ParseFile(CompilableFile &cf);
-  void TypeCheckFile(syn::SyntaxFile *sf);
+  void Parse(CompilableFile &cf);
+  void TypeCheck(syn::SyntaxFile *sf);
   void EmitIR(syn::SyntaxFile *sf);
   void EmitObject(llvm::Module *m);
 };

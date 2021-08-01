@@ -57,13 +57,13 @@ void SyntaxParsing::NotifyListeners() {
       if (compiler.HasError()) {
         syntaxParsing->OnError();
       } else {
-        syntaxParsing->OnSyntaxFileParsed(syntaxFile);
+        syntaxParsing->OnParseCompleted(syntaxFile);
       }
     }
   }
   // Notify caller
   if (compiler.GetCompilerListener()) {
-    compiler.GetCompilerListener()->OnSyntaxFileParsed(syntaxFile);
+    compiler.GetCompilerListener()->OnParseCompleted(syntaxFile);
   }
 }
 void SyntaxParsing::Finish() {}
@@ -72,7 +72,7 @@ TypeChecking::TypeChecking(Compiler &compiler) : Compilable(compiler) {}
 
 int TypeChecking::DoCompileFile() { return ret::ok; }
 
-void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
+void TypeChecking::OnParseCompleted(syn::SyntaxFile *sf) {
 
   syntaxFile = sf;
   sema::TypeCheckSyntaxFile(*syntaxFile,
@@ -90,12 +90,12 @@ void TypeChecking::NotifyListeners() {
       if (compiler.HasError()) {
         // typeChecking->OnError();
       } else {
-        typeChecking->OnSyntaxFileTypeChecked(syntaxFile);
+        typeChecking->OnTypeCheckCompleted(syntaxFile);
       }
     }
   }
   if (compiler.GetCompilerListener()) {
-    compiler.GetCompilerListener()->OnSyntaxFileTypeChecked(syntaxFile);
+    compiler.GetCompilerListener()->OnTypeCheckCompleted(syntaxFile);
   }
 }
 void TypeChecking::Finish() {}
@@ -104,7 +104,7 @@ EmittingIR::EmittingIR(Compiler &compiler) : Compilable(compiler) {}
 
 int EmittingIR::DoCompileFile() { return ret::ok; }
 
-void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
+void EmittingIR::OnTypeCheckCompleted(syn::SyntaxFile *syntaxFile) {
 
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());
@@ -113,7 +113,6 @@ void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
 
   NotifyListeners();
 }
-void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
 
 void EmittingIR::NotifyListeners() {
 
@@ -135,7 +134,7 @@ EmittingObject::EmittingObject(Compiler &compiler) : Compilable(compiler) {}
 
 int EmittingObject::DoCompileFile() { return ret::ok; }
 
-void EmittingObject::OnIREmitted(llvm::Module *m) {
+void EmittingObject::OnEmitIRCompleted(llvm::Module *m) {
 
   if (!compiler.GetMode().CanOutput()) {
     return;
@@ -156,24 +155,24 @@ void EmittingObject::Finish() {}
 
 EmittingModule::EmittingModule(Compiler &compiler) : Compilable(compiler) {}
 int EmittingModule::DoCompileFile() { return ret::ok; }
-void EmittingModule::OnIREmitted(llvm::Module *m) {}
+void EmittingModule::OnEmitIRCompleted(llvm::Module *m) {}
 void EmittingModule::NotifyListeners() {}
 void EmittingModule::Finish() {}
 
 EmittingBitCode::EmittingBitCode(Compiler &compiler) : Compilable(compiler) {}
 int EmittingBitCode::DoCompileFile() { return ret::ok; }
-void EmittingBitCode::OnIREmitted(llvm::Module *m) {}
+void EmittingBitCode::OnEmitIRCompleted(llvm::Module *m) {}
 void EmittingBitCode::NotifyListeners() {}
 void EmittingBitCode::Finish() {}
 
 EmittingAssembly::EmittingAssembly(Compiler &compiler) : Compilable(compiler) {}
 int EmittingAssembly::DoCompileFile() { return ret::ok; }
-void EmittingAssembly::OnIREmitted(llvm::Module *m) {}
+void EmittingAssembly::OnEmitIRCompleted(llvm::Module *m) {}
 void EmittingAssembly::NotifyListeners() {}
 void EmittingAssembly::Finish() {}
 
 EmittingLibrary::EmittingLibrary(Compiler &compiler) : Compilable(compiler) {}
 int EmittingLibrary::DoCompileFile() { return ret::ok; }
-void EmittingLibrary::OnIREmitted(llvm::Module *m) {}
+void EmittingLibrary::OnEmitIRCompleted(llvm::Module *m) {}
 void EmittingLibrary::NotifyListeners() {}
 void EmittingLibrary::Finish() {}

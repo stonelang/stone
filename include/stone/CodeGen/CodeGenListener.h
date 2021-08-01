@@ -12,12 +12,25 @@ namespace syn {
 class Module;
 }
 
+class EmittingListener : public PipelineListener {
+public:
+  EmittingListener() : PipelineListener(PipelineListenerKind::Emitting) {}
+
+public:
+  virtual void OnIREmitted(llvm::Module *m) {}
+  virtual void OnObjectEmitted() {}
+  virtual void OnBitCodeEmitted() {}
+  virtual void OnLibraryEmitted() {}
+
+public:
+};
+
 class EmittingIRListener : public PipelineListener {
 public:
   EmittingIRListener() : PipelineListener(PipelineListenerKind::EmittingIR) {}
 
 public:
-  virtual void OnIREmitted(llvm::Module *m) {}
+  virtual void OnEmitIRCompleted(llvm::Module *m) {}
 
 public:
 };
@@ -28,7 +41,7 @@ public:
       : PipelineListener(PipelineListenerKind::EmittingObject) {}
 
 public:
-  virtual void OnObjectEmitted() {}
+  virtual void OnEmitObjectCompleted() {}
 
 public:
 };
@@ -39,7 +52,7 @@ public:
       : PipelineListener(PipelineListenerKind::EmittingBitCode) {}
 
 public:
-  virtual void OnBitCodeEmitted() {}
+  virtual void OnEmitBitCodeompleted() {}
 
 public:
 };
@@ -50,7 +63,7 @@ public:
       : PipelineListener(PipelineListenerKind::EmittingModule) {}
 
 public:
-  virtual void OnModuleEmitted() {}
+  virtual void OnEmitModuleCompleted() {}
 
 public:
 };
@@ -61,7 +74,7 @@ public:
       : PipelineListener(PipelineListenerKind::EmittingLibrary) {}
 
 public:
-  virtual void OnLibraryEmitted() {}
+  virtual void OnEmitLibraryCompleted() {}
 
 public:
 };

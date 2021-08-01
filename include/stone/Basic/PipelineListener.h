@@ -11,6 +11,7 @@ enum class PipelineListenerKind {
   Lexing,
   Parsing,
   TypeChecking,
+  Emitting,
   EmittingIR,
   EmittingObject,
   EmittingModule,
