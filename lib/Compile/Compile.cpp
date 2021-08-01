@@ -13,10 +13,6 @@
 #include <memory>
 using namespace stone;
 
-class CompilerWorkspace {
-public:
-};
-
 static std::unique_ptr<Compilable> MakeCompilable(Compiler &compiler) {
   switch (compiler.GetMode().GetType()) {
   case ModeType::Parse:
