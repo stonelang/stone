@@ -18,10 +18,10 @@ public:
       : PipelineListener(PipelineListenerKind::TypeChecking) {}
 
 public:
-  virtual void OnTopDeclTypeChecked(syn::Decl *decl) {}
+  virtual void OnDeclTypeChecked(syn::Decl *decl, bool isTopLvel = false) {}
   virtual void OnStmtTypeChecked(syn::Stmt *stmt) {}
   virtual void OnExprTypeChecked(syn::Expr *expr) {}
-
+public:
   virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
   virtual void OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
 

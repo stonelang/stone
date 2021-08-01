@@ -41,6 +41,8 @@ int SyntaxParsing::DoCompileFile() {
   syn::ParseSyntaxFile(*syntaxFile, compiler.GetSyntax(),
                        compiler.GetCompilerListener());
 
+  NotifyListeners();
+
   if (compiler.HasError()) {
     return ret::err;
   }
@@ -76,6 +78,7 @@ void TypeChecking::OnSyntaxFileParsed(syn::SyntaxFile *sf) {
   sema::TypeCheckSyntaxFile(*syntaxFile,
                             compiler.GetCompilerOptions().typeCheckerOptions,
                             compiler.GetCompilerListener());
+  NotifyListeners();
 }
 
 void TypeChecking::NotifyListeners() {
@@ -100,12 +103,15 @@ void TypeChecking::Finish() {}
 EmittingIR::EmittingIR(Compiler &compiler) : Compilable(compiler) {}
 
 int EmittingIR::DoCompileFile() { return ret::ok; }
+
 void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
 
   // lvmModule = stone::GenIR(compiler.GetMainModule(), compiler,
   //                          compiler.compilerOpts.genOpts, GetOutputFile());
 
   compiler.GetMainModule()->AddFile(*syntaxFile);
+
+  NotifyListeners();
 }
 void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
 
@@ -138,16 +144,11 @@ void EmittingObject::OnIREmitted(llvm::Module *m) {
   // if (!ci.GetOutputFile()) {
   //   return ret::err;
   // }
-  /// Should be in EmitIR Scope
-  // if (!EmitIRModable::Execute()){
-  //   return ret::err;
-  // }
-  // if (!stone::GenObject(GetCompiler().GetCompilerContext().GetLLVMModule(),
-  //                       GetCompiler().GetCompilerOptions().genOpts,
-  //                       GetCompiler().GetTreeContext(),
-  //                       GetCompiler().GetOutputFile())) {
-  //   return ret::err;
-  // }
+
+  // stone::GenObject(m, compiler.GetCompilerOptions().genOpts,
+  //                  compiler.GetTreeContext(), compiler.GetOutputFile());
+
+  NotifyListeners();
 }
 
 void EmittingObject::NotifyListeners() {}

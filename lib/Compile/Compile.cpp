@@ -51,7 +51,6 @@ int Compiler::Run(Compiler &compiler) {
   auto compilable = MakeCompilable(compiler);
   for (auto &input : compiler.GetInputFiles()) {
     compilable->CompileFile(CompilableFile(&input, false));
-    compilable->NotifyListeners();
     if (compiler.HasError()) {
       return ret::err;
     }
