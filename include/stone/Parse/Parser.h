@@ -15,7 +15,7 @@
 #include <memory>
 
 namespace stone {
-class SyntaxPipelineListener;
+class SyntaxListener;
 namespace syn {
 
 class Syntax;
@@ -41,7 +41,7 @@ class Parser final {
   SyntaxFile &sf;
 
   SyntaxScopeCache scopeCache;
-  SyntaxPipelineListener *pipeline;
+  SyntaxListener *listener;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
@@ -71,11 +71,10 @@ private:
   mutable Identifier *moduleIdentifier;
 
 public:
-  Parser(SyntaxFile &sf, Syntax &syntax,
-         SyntaxPipelineListener *pipeline = nullptr);
+  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
 
   Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
-         SyntaxPipelineListener *pipeline = nullptr);
+         SyntaxListener *listener = nullptr);
 
   ~Parser();
 
@@ -123,10 +122,7 @@ public:
   Lexer &GetLexer() { return *lexer.get(); }
   const Token &GetCurTok() const { return tok; }
 
-  void SetPipeline(SyntaxPipelineListener *p) { pipeline = p; }
-
-  // Checker& GetChecker() { return checker; }
-
+  void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
 public:

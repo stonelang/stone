@@ -108,6 +108,7 @@ void EmittingIR::OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {
   compiler.GetMainModule()->AddFile(*syntaxFile);
 }
 void EmittingIR::OnModuleTypeChecked(syn::SyntaxFile *syntaxFile) {}
+
 void EmittingIR::NotifyListeners() {
 
   // Nofify internal listeners

@@ -8,22 +8,23 @@
 using namespace stone;
 using namespace stone::syn;
 
-void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp) {
+void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
+                          SyntaxListener *listener) {
 
-  Parser parser(sf, syntax);
+  Parser parser(sf, syntax, listener);
   syn::DeclGroupPtrTy topDecl;
   while (true) {
     // Check for tk::eof
     if (parser.IsDone()) {
-      if (sp) {
-        sp->OnDone();
+      if (listener) {
+        listener->OnDone();
       }
       break;
     }
     // Check for errors from diag and if there are then exit.
     if (parser.HasError()) {
-      if (sp) {
-        sp->OnError();
+      if (listener) {
+        listener->OnError();
       }
       break;
     }
@@ -31,8 +32,8 @@ void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp) {
     // As you process a decl, it will be added to the SyntaxFile
     if (parser.ParseTopDecl(topDecl)) {
       // Notifify that a top decl has been parsed.
-      if (sp) {
-        sp->OnTopDecl(topDecl.get().getSingleDecl());
+      if (listener) {
+        listener->OnDecl(topDecl.get().getSingleDecl(), true);
       }
     }
   }

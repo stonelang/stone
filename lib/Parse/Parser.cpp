@@ -4,22 +4,24 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/SyntaxDiagnostic.h"
+#include "stone/Parse/SyntaxListener.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxPipelineListener *pipeline)
+Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
     : Parser(sf, syntax,
              std::unique_ptr<Lexer>(
                  new Lexer(sf.GetSrcID(), syntax.GetTreeContext().GetSrcMgr(),
-                           syntax.GetTreeContext().GetBasic()))) {}
+                           syntax.GetTreeContext().GetBasic())),
+             listener) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
-               SyntaxPipelineListener *pipeline)
+               SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
-      pipeline(pipeline) {
+      listener(listener) {
 
   stats.reset(new ParserStats(*this, GetBasic()));
   GetBasic().GetStatEngine().Register(stats.get());

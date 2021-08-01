@@ -30,9 +30,7 @@ public:
   virtual void OnError() {}
 
 public:
-  virtual void OnTopDecl(const syn::Decl *decl) {}
-  virtual void OnDecl(const syn::Decl *decl) {}
-
+  virtual void OnDecl(const syn::Decl *decl, bool isTopLvel) {}
   virtual void OnStmt(const syn::Stmt *stmt) {}
   virtual void OnExpr(const syn::Expr *expr) {}
 
