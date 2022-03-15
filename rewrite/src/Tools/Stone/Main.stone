@@ -1,6 +1,0 @@
-
-use STD.Format; 
-
-fun Main(string[] args) -> int {
- 		return 0; 
-}

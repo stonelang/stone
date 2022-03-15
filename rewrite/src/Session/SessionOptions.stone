@@ -1,6 +1,0 @@
-
-space Stone.Session {
-	
-	public struct SessionOptions {
-	}
-}

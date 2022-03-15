@@ -29,6 +29,17 @@ public:
   template <typename A> A *GetAs() { return static_cast<A *>(Get()); }
 };
 
+class Target final {
+  /// The target platform that we are running on.
+  llvm::Triple triple;
+public:
+  Target();
+
+public:
+  void Init(const llvm::Triple &triple);
+  void Init(llvm::StringRef triple);
+};
+
 class Context final {
 
   FileMgr fm;
@@ -39,7 +50,7 @@ class Context final {
   StatisticEngine se;
   ColorOutputStream cos;
   FileSystemOptions fsOpts;
-  std::string defaultTargetTriple;
+  Target target;
 
 public:
   Context();
@@ -66,12 +77,11 @@ public:
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
 
-  std::string GetDefaultTargetTriple() { return defaultTargetTriple; }
-
   bool HasError() { return de.HasError(); }
 
   /// TODO: Something to think about
   void AddDiagnosticListener(DiagnosticListener *listener);
+
 
 public:
   InFlightDiagnostic Printd(SrcLoc loc, const Diagnostic &diagnostic) {

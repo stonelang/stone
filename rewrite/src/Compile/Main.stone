@@ -1,5 +1,0 @@
-
-
-fun Main(string[] args) -> int {
-	Lang::Run(args);
-}

@@ -106,6 +106,7 @@ Driver::ComputeCompileModel(const llvm::opt::DerivedArgList &args,
 void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
+
     defaultTargetTriple = llvm::Triple::normalize(arg->getValue());
   }
   llvm::Triple target(defaultTargetTriple);

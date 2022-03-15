@@ -1,6 +1,0 @@
-
-space STD.Math {
-	public fun Cos(float64 x) -> float64 {
-		return 0;
-	}
-}

@@ -1,9 +1,0 @@
-
-use Stone.Utils; 
-
-space Stone.Checker {
-	public fun Check(SyntaxFile* sf) -> int32 {
-		return 0;
-	}
-}
-

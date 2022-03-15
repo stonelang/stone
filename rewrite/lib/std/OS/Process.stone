@@ -1,8 +1,0 @@
-
-use STD.Time;
-use STD.IO;
-
-space STD.OS {
-	public struct Process {
-	}
-}

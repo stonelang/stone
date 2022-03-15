@@ -18,6 +18,9 @@ namespace stone {
 
 class SystemOptions final {
 public:
+  /// The target platform that we are running on.
+  llvm::Triple target;
+
   /// This represents the statistics generated due to a session
   bool printStatistics = true;
 
@@ -27,20 +30,6 @@ public:
   bool showTimer = false;
   ///
   bool useMalloc = false;
-  /// The target we are building for.
-  ///
-  /// This represents the minimum deployment target.
-  // llvm::Triple target;
-  /// \brief The second target for a zippered build
-  ///
-  /// This represents the target and minimum deployment version for the
-  /// second ('variant') target when performing a zippered build.
-  /// For example, if the target is x86_64-apple-macosx10.14 then
-  /// a target-variant of x86_64-apple-ios12.0-macabi will produce
-  /// a zippered binary that can be loaded into both macCatalyst and
-  /// macOS processes. A value of 'None' means no zippering will be
-  /// performed.
-  llvm::Optional<llvm::Triple> targetVariant;
 
   /// The name of the module being built.
   std::string moduleName;
@@ -50,6 +39,13 @@ public:
   /// (If empty, this implies no SDK.)
   std::string sdkPath;
   bool HasSDKPath() { return sdkPath.size() > 0; }
+
+public:
+  void SetTargetTriple(const llvm::Triple &triple);
+  void SetTargetTriple(StringRef Triple);
+
+  //std::string GetTargetTriple() { return targetTriple; }
+  
 };
 
 } // namespace stone

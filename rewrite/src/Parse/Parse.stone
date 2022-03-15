@@ -1,7 +1,0 @@
-space Stone.Syntax {
-
-	public fun Parse(ref SyntaxFile sf) -> bool {
-		Parser parser{sf}; 
-		return true; 
-	}
-}
