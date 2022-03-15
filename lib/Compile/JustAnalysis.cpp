@@ -29,7 +29,6 @@ void Lang::PerformCodeAnalysis() {
   if (lc.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
     TypeCheckModule(nullptr);
   }
-
   if (lc.GetMode().JustTypeCheck()) {
     // Do some things
     return;
@@ -42,16 +41,13 @@ void Lang::PerformCodeAnalysis(const unsigned srcID) {
   if (lc.GetMode().IsParse()) {
     return;
   }
-
   if (lc.GetMode().IsEmitParse()) {
     // lang.EmitParse(syntaxFile);
     return;
   }
-
   if (lc.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
     TypeCheckSyntaxFile(*syntaxFile);
   }
-
   if (lc.GetMode().IsTypeCheck()) {
     return;
   }

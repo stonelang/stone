@@ -80,7 +80,7 @@ public:
 };
 
 class LinkIntent : public CompilationIntent {
-  /// LinkKind
+  /// LinkMode
 public:
   LinkIntent(IntentKind kind, Intents inputs)
       : CompilationIntent(kind, inputs, true /*TopLevel*/) {}

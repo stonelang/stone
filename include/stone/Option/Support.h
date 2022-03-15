@@ -10,6 +10,8 @@
 
 namespace stone {
 namespace opts {
+
+// TODO: OptSupport
 class Support final {
 
   std::unique_ptr<Mode> mode;

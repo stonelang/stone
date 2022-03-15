@@ -23,34 +23,36 @@ using stone::ModeKind;
 
 using namespace stone;
 
-Driver::Driver(const char *programName, const char *programPath)
-    : Session(SessionKind::Driver, programName, programPath) {
+Driver::Driver(llvm::StringRef name, llvm::StringRef path,
+               CompilationListener *listener) {
 
   buildSystem = std::make_unique<BuildSystem>(*this);
 }
 
-void Driver::Initialize() {
-  excludedFlagsBitmask = opts::NoDriverOption;
-  Session::Initialize();
-}
-
 Driver::~Driver() {}
 
-// llvm::opt::InputArgList &
-// Driver::ParseArguments(llvm::ArrayRef<const char *> args){
+void Driver::Initialize() {}
 
-//   return Session::ParseArguments(args);
-// }
-// Build the session
-void Driver::BuildSession(const llvm::opt::InputArgList &ial) {}
+bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-void Driver::BuildCompilation() {
-
-  if (driverOpts.cleanBuild) {
-    buildSystem->Clean();
+  optSupport.SetExcludedFlagsBitmask(opts::NoDriverOption);
+  if (optSupport.ParseArgs(args, &ctx) == stone::Err) {
+    return stone::Err;
   }
+  // support.BuildInputFiles(GetInputArgList());
+  ComputeLinkMode();
+
+  return stone::Ok;
+}
+
+std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain& tc) {
+
+  // if (driverOpts.cleanBuild) {
+  //   buildSystem->Clean();
+  // }
+
   // Now, build the job system since we have a toolchain
-  compilation = std::make_unique<Compilation>(*this);
+  auto compilation = std::make_unique<Compilation>(*this);
 
   // Driver::Inflight inflight;
 
@@ -64,39 +66,27 @@ void Driver::BuildCompilation() {
 
   // BuiltJobs bj;
   // BuildJobs(bj, bi);
+
+  return compilation;
 }
 
-struct Driver::Inflight final {
-
-  /// All the inputs associated with the module
-  llvm::SmallVector<const Intent *, 4> moduleInputs;
-
-  /// The top level intents -- ex: linker. We only queue the top level intents.
-  llvm::SmallVector<const Intent *, 16> topLevelIntents;
-
-  /// All the inputs for the linker
-  llvm::SmallVector<const Intent *, 2> linkerInputs;
-
-  Intent *current;
-};
-
-void Driver::ComputeLinkKind() {
+void Driver::ComputeLinkMode() {
 
   switch (GetMode().GetKind()) {
-  case ModeKind::Unknown: {
-    // record error
-    break;
-  }
   case ModeKind::None: {
-    GetDriverOptions().linkKind = LinkKind::EmitExecutable;
+    GetDriverOptions().linkMode = LinkMode::EmitExecutable;
     break;
   }
   case ModeKind::EmitLibrary: {
     if (tal->hasArg(opts::Static)) {
-      GetDriverOptions().linkKind = LinkKind::EmitStaticLibrary;
+      GetDriverOptions().linkMode = LinkMode::EmitStaticLibrary;
     } else {
-      GetDriverOptions().linkKind = LinkKind::EmitDynamicLibrary;
+      GetDriverOptions().linkMode = LinkMode::EmitDynamicLibrary;
     }
+    break;
+  }
+  case ModeKind::Alien: {
+    // ctx.Printd(err_alien_mode);
     break;
   }
   default: {
@@ -106,21 +96,11 @@ void Driver::ComputeLinkKind() {
   }
 }
 
-void Driver::Build(llvm::ArrayRef<const char *> args) {
-
-  Session::Build(args);
-
-  ComputeLinkKind();
-
-  BuildToolChain(*ial);
-
-  BuildCompilation();
-}
-stone::CompileModelKind
-Driver::ComputeCompileModelKind(const llvm::opt::DerivedArgList &args,
-                                const file::Files &inputs) const {
+stone::CompileModel
+Driver::ComputeCompileModel(const llvm::opt::DerivedArgList &args,
+                            const file::Files &inputs) const {
   // Just use multiple for now
-  return stone::CompileModelKind::Multiple;
+  return stone::CompileModel::Multiple;
 }
 
 void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
@@ -164,7 +144,7 @@ void Driver::BuildOptions() {
   driverOpts.outputFileType = file::Type::Object;
 
   // TODO:
-  // driverOpts.compileModelKind = ComputeCompileModelKind(
+  // driverOpts.compileModelKind = ComputeCompileModel(
   //     *tal, driverOpts.inputFiles);
 
   auto stcPathResult = GetEQValue(opts::LangPathEQ);
@@ -193,9 +173,4 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const
 //     {}
 
-ModeKind Driver::GetDefaultMode() { return ModeKind::None; }
-
-llvm::StringRef Driver::GetSessionName() { return "Stone"; }
-llvm::StringRef Driver::GetSessionDesc() { return "Stone compilation time"; }
-
-void Driver::Finish() { Session::Finish(); }
+void Driver::Finish() {}

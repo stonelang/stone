@@ -44,6 +44,12 @@ public:
 
   /// The name of the module being built.
   std::string moduleName;
+  bool HasModuleName() { return moduleName.size() > 0; }
+
+  /// The path to the SDK against which to build.
+  /// (If empty, this implies no SDK.)
+  std::string sdkPath;
+  bool HasSDKPath() { return sdkPath.size() > 0; }
 };
 
 } // namespace stone

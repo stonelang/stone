@@ -52,7 +52,7 @@ void BuildSystem::Clean() {
 // static Job *BuildCompileJob(Compilation &compilation, JobsBuilt &jb,
 //                             file::File &input) {
 
-//   switch (compilation.GetCompileModelKind()) {}
+//   switch (compilation.GetCompileModel()) {}
 
 //   auto job = compilation.GetToolChain().CreateCompileJob(compilation);
 //   job->AddInput(input);

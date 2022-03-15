@@ -147,18 +147,18 @@ public:
 // };
 
 // class LinkJob : public Job {
-//   LinkKind linkKind;
+//   LinkMode linkMode;
 //   bool requiresLTO;
 
 // public:
 //   // Some jobs only consume inputs -- For example, LinkJob
 //   LinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO,
-//           LinkKind linkKind);
+//           LinkMode linkMode);
 
 //   void PrintIntent() override;
 
 // public:
-//   LinkKind GetLinkKind() { return linkKind; }
+//   LinkMode GetLinkMode() { return linkMode; }
 //   bool RequiresLTO() { return requiresLTO; }
 // };
 

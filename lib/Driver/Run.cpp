@@ -7,9 +7,8 @@
 
 using stone::Driver;
 
-int Driver::Run() {
+void Driver::Run() {
 
-  llvm::PrettyStackTraceString crashInfo("Driver construction...");
   // assert(GetSessionKind() == SessionKind::Compilation && "Invalid
   // SessionKind");
 
@@ -18,27 +17,57 @@ int Driver::Run() {
   //   diag::err_no_input_files); return stone::err;
   // }
 
-  if (driverOpts.printJobs) {
-    GetCompilation().PrintJobs();
-    return stone::ok;
-  }
-  GetCompilation().RunJobs();
-  return stone::ok;
+  // if (driverOpts.printJobs) {
+  //   GetCompilation().PrintJobs();
+  //   return stone::ok;
+  // }
+  // GetCompilation().RunJobs();
+  // return stone::ok;
 }
 
-int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
-               void *mainAddr, CompilationListener *listener) {
+int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
+                void *mainAddr, CompilationListener *listener) {
 
   FINISH_LLVM_INIT();
 
-  auto programPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  auto programName = file::GetStem(programPath);
+  llvm::PrettyStackTraceString crashInfo("Driver construction.");
 
-  Driver driver(programName.data(), programPath.c_str());
+  auto path = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  auto name = file::GetStem(programPath);
+
+  auto Finish = [&](int status = 0) -> int {
+    int err = 1;
+    return status ? status : err;
+  };
+
+  if (args.empty()) {
+    // ctx.Printd(SrcLoc(), diag::err_no_input_args);
+    return Finish(1);
+  }
+
+  Driver driver(name, path, listener);
   driver.Initialize();
-  // driver.SetListener(listener);
 
   STONE_DEFER { driver.Finish(); };
-  driver.Build(args);
-  return driver.Run();
+
+  if (driver.ParseArgs(args) == stone::Err) {
+    return Finish(1);
+  }
+  if (driver.GetMode().IsAlien()) {
+    // lang.Printd(SrcLoc(), diags::err_alien_mode)
+    Finish(1);
+  }
+
+  if (driver.GetMode().IsPrintHelp()) {
+    driver.PrintHelp();
+    return Finish();
+  }
+  if (driver.GetMode().IsPrintVersion()) {
+    driver.PrintVersion();
+    return Finish();
+  }
+
+  auto tc = driver.BuildToolChain(driver.GetInputArgList());
+
+
 }

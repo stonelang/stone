@@ -31,17 +31,20 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
   Lang lang(listener);
+  lang.Initialize();
 
-  STONE_DEFER { lang.Finish(); };
+      STONE_DEFER {
+    lang.Finish();
+  };
 
-  auto FinishCompile = [&](int status = 0) -> int {
+  auto Finish = [&](int status = 0) -> int {
     int err = 1;
     return status ? status : err;
   };
 
   if (args.empty()) {
     // ctx.Printd(SrcLoc(), diag::err_no_compile_args);
-    return FinishCompile(1);
+    return Finish(1);
   }
 
   // Build up the context
@@ -50,26 +53,26 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   lc.SetMainExecutablePath(matinExecPath);
 
   if (lc.ParseArgs(args) == stone::Err) {
-    return FinishCompile(1);
+    return Finish(1);
   }
 
   if (lc.GetMode().IsAlien()) {
     // lang.Printd(SrcLoc(), diags::err_alien_mode)
-    FinishCompile(1);
+    Finish(1);
   }
 
   if (lc.GetMode().IsPrintHelp()) {
     lang.PrintHelp();
-    return FinishCompile();
+    return Finish();
   }
   if (lc.GetMode().IsPrintVersion()) {
     lang.PrintVersion();
-    return FinishCompile();
+    return Finish();
   }
 
   if (!lc.GetMode().CanCompile()) {
     /// lang.Printd()
-    return FinishCompile(1);
+    return Finish(1);
   }
 
   // lc.BuildSources();
@@ -79,7 +82,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   lang.Compile();
 
-  return FinishCompile();
+  return Finish();
 }
 
 void Lang::Compile() {

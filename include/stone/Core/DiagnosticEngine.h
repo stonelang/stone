@@ -311,6 +311,12 @@ public:
         Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
         tokenable);
   }
+  InFlightDiagnostic Printd(DiagID diagID, Tokenable *tokenable = nullptr) {
+    return Printd(
+        SrcLoc(),
+        Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
+        tokenable);
+  }
 
   template <typename... ArgTypes>
   InFlightDiagnostic

@@ -66,7 +66,6 @@ public:
 public:
   void Initialize();
   void Finish();
-
   LangContext &GetLangContext() { return lc; }
 
 public:

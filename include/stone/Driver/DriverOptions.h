@@ -2,24 +2,22 @@
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
 #include "stone/Option/Options.h"
-#include "stone/Option/SessionOptions.h"
 
 namespace stone {
 
 enum class LTOKind { None, Full, Thin };
 
 // CompileModel
-enum class CompileModelKind {
-  None,
-  /// A single compile using a single compile invocation without -main-file.
-  Single,
-  /// Multiple compile invocations and -main-file.
-  Multiple,
-  /// A single batch that contains may 'Multiple' CompilingKind.
-  Batch
+enum class CompileModel : uint8_t None,
+    /// A single compile using a single compile invocation without -main-file.
+    Single,
+    /// Multiple compile invocations and -main-file.
+    Multiple,
+    /// A single batch that contains may 'Multiple' CompilingKind.
+    Batch
 };
 
-enum class LinkKind {
+enum class LinkMode : uint8_t {
   None,
   // The default output compiling -- sc looks afor a main file and
   // outputs an executable file
@@ -38,6 +36,8 @@ class DriverOptions final {
   friend class Driver;
 
 public:
+  SystemOptions systemOpts;
+
   /// Print the jobs in the JobQueue
   bool printJobs = false;
 
@@ -62,22 +62,13 @@ public:
   // True if temporary files should not be deleted.
   bool saveTempFiles = false;
 
-  LinkKind linkKind = LinkKind::None;
+  LinkMode linkMode = LinkMode::None;
   LTOKind ltoVariant = LTOKind::None;
 
   std::string libLTOPath;
-  bool hasLibLTOPath;
+  bool HasLibLTOPath() { return libLTOPath.size() > 0; }
 
-  CompileModelKind compileModelKind = CompileModelKind::Multiple;
-
-  /// The path to the SDK against which to build.
-  /// (If empty, this implies no SDK.)
-  std::string sdkPath;
-  bool hasSdkPath = false;
-
-  /// The name of the module which we are building.
-  std::string moduleName;
-  bool hasModuleName;
+  CompileModel compileModel = CompileModel::Multiple;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
@@ -86,10 +77,10 @@ public:
   bool IsMultiThreading() const { return numThreads > 0; }
 
   bool RequiresLTO() { return ltoVariant != LTOKind::None; }
-  bool RequiresLink() { return linkKind != LinkKind::None; }
+  bool RequiresLink() { return linkMode != LinkMode::None; }
 
-  std::string stcPath;
-  bool hasLangPath = false;
+  std::string scPath;
+  bool HasSCPath() { return scPath.size() > 0; }
 };
 } // namespace stone
 

@@ -35,8 +35,8 @@ bool Support::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
     // TODO: return stone::Err
     stone::Panic("error_unknown_arg");
   }
+  // Create the mode
   mode = Support::CreateMode(GetInputArgList());
-
   // BuildInputFiles();
 
   return stone::Ok;

@@ -136,16 +136,16 @@ DarwinToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
 //   }
 //   assert(tool && "Could not find either 'ld' or 'lld' linker tools");
 
-//   switch (driver.GetLinkKind()) {
-//   case LinkKind::EmitExecutable: {
+//   switch (driver.GetLinkMode()) {
+//   case LinkMode::EmitExecutable: {
 //     return driver.GetCompilation().CreateJob<ExecutableLinkJob>(
 //         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
 //   }
-//   case LinkKind::EmitDynamicLibrary: {
+//   case LinkMode::EmitDynamicLibrary: {
 //     return driver.GetCompilation().CreateJob<DynamicLinkJob>(
 //         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
 //   }
-//   case LinkKind::EmitStaticLibrary: {
+//   case LinkMode::EmitStaticLibrary: {
 //     return driver.GetCompilation().CreateJob<StaticLinkJob>(
 //         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
 //   }

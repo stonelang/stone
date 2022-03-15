@@ -48,6 +48,8 @@ Lang::Lang(LangListener *listener) : listener(listener) {
 }
 Lang::~Lang() {}
 
+void Lang::Initialize() {}
+
 // // Build the session
 // void Lang::BuildSession(const llvm::opt::InputArgList &ial) {
 

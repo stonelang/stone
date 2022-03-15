@@ -18,7 +18,7 @@ SyntaxContext::SyntaxContext(stone::Context &ctx,
                              const SearchPathOptions &spOpts)
     : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetSystemOptions()) {
 
-  stats.reset(new SyntaxContextStats(*this, ctx));
+  stats = std::make_unique<SyntaxContextStats>(*this, ctx);
   ctx.GetStatEngine().Register(stats.get());
 
   builtin.Init(*this);

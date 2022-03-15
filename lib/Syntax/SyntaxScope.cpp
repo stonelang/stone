@@ -2,5 +2,6 @@
 
 using stone::syn::SyntaxScope;
 
-SyntaxScope::SyntaxScope() {}
+SyntaxScope::SyntaxScope(SyntaxScopeKind kind, SyntaxScope *parent)
+    : kind(kind), parent(parent) {}
 SyntaxScope::~SyntaxScope() {}
