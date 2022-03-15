@@ -10,7 +10,7 @@
 
 using stone::diag::DeclArgument;
 using stone::syn::Syntax;
-using stone::syn::TreeContext;
+using stone::syn::SyntaxContext;
 
 #include "gtest/gtest.h"
 
@@ -22,7 +22,7 @@ protected:
   SearchPathOptions pathOpts;
   Syntax syntax;
   SrcMgr sm;
-  TreeContext tc;
+  SyntaxContext tc;
 
 public:
   SyntaxDiagTest() : tc(ctx, pathOpts), syntax(tc) {}

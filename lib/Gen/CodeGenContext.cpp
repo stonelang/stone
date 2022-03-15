@@ -18,6 +18,7 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
   mpm = pb.buildPerModuleDefaultPipeline(
       llvm::PassBuilder::OptimizationLevel::O2);
 
-  llvmModule = std::make_unique<llvm::Module>(genOpts.moduleName, llvmContext);
+  // TODO: llvmModule = std::make_unique<llvm::Module>(genOpts.moduleName,
+  // llvmContext);
 }
 CodeGenContext::~CodeGenContext() {}

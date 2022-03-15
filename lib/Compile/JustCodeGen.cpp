@@ -67,5 +67,5 @@ void Lang::GenObject(const unsigned srcID, llvm::Module *mod,
 
   /// TODO: This is the only time we should perform a lookup
   // auto outputFile = lc.ComputeOutputFile(srcID);
-  // auto result GenObject(cgc GetTreeContext(), outputFile.get());
+  // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }

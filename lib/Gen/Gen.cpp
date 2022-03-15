@@ -3,7 +3,7 @@
 #include "stone/Gen/IRGen.h"
 #include "stone/Gen/ObjGen.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -122,11 +122,11 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
 }
 
 std::unique_ptr<llvm::TargetMachine>
-stone::CreateTargetMachine(const CodeGenOptions &genOpts, TreeContext &tc) {
+stone::CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
   return nullptr;
 }
 // TODO: Pass LLVMCore
-bool stone::GenObject(CodeGenContext &cgc, syn::TreeContext &tc,
+bool stone::GenObject(CodeGenContext &cgc, syn::SyntaxContext &tc,
                       const OutputFile *output) {
 
   // assert(llvmMod && "Null LLVM Module");

@@ -2,18 +2,19 @@
 #define STONE_SYNTAX_MODULESYSTEM_H
 
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/Syntax.h"
 
 namespace stone {
 namespace syn {
-  
+
 class ModuleSystem final {
   // We need built-in information
-  TreeContext &tc;
+  Syntax &syntax;
   /// This is the main module that will be created
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(TreeContext &tc);
+  ModuleSystem(Syntax &syntax);
   ~ModuleSystem();
 
   syn::Module *GetMainModule();

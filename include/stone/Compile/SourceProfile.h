@@ -53,7 +53,6 @@ public:
 
 } // namespace stone
 
-// Defined in Compiler.h
 void *operator new(size_t bytes, const stone::LangContext &lc,
                    size_t alignment = 8);
 

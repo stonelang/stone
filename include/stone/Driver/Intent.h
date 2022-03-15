@@ -138,7 +138,6 @@ public:
   virtual void RunSync() = 0;
 };
 
-
 class BuiltIntents final {
 public:
   /// All the inputs associated with the module

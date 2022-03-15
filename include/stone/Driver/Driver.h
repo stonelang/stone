@@ -47,7 +47,7 @@ public:
          CompilationListener *listener);
   ~Driver();
 
-  //virtual void Initialize() override;
+  // virtual void Initialize() override;
 
   // Build the session
   void BuildSession(const llvm::opt::InputArgList &ial) override;
@@ -62,9 +62,7 @@ public:
   void Build(llvm::ArrayRef<const char *> args) override;
   void BuildOutputContext();
 
-  CompilationOutputContext &GetOuputContext() {
-    return coc;
-  }
+  CompilationOutputContext &GetOuputContext() { return coc; }
 
   void BuildIntents(BuiltIntents &bi);
   void PrintIntents(BuiltIntents &bi);
@@ -125,7 +123,7 @@ public:
 
 public:
   // IntentExecutor ConstructIntentExecutor(ProcessIntent& intent);
-  //IntentExecutor ConstructIntentExecutor(CompilationIntent &intent);
+  // IntentExecutor ConstructIntentExecutor(CompilationIntent &intent);
 
 protected:
   // ModeKind GetDefaultMode() override;

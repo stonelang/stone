@@ -39,7 +39,7 @@ class Stmt;
 class Module;
 class BraceStmt;
 class DeclContext;
-class TreeContext;
+class SyntaxContext;
 class ValueDecl;
 class VarDecl;
 class SyntaxNode;
@@ -77,7 +77,7 @@ public:
 
   // Only allow allocation of Decls using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const TreeContext &tc,
+  void *operator new(size_t bytes, const SyntaxContext &tc,
                      unsigned alignment = alignof(Decl));
 
   void *operator new(size_t bytes, void *mem) {
@@ -86,7 +86,7 @@ public:
   }
 
   // TODO: UB
-  // void *operator new(std::size_t size, const TreeContext &ctx,
+  // void *operator new(std::size_t size, const SyntaxContext &ctx,
   //                    DeclContext *parent, std::size_t extra = 0);
 
 public:
@@ -104,7 +104,7 @@ public:
   //   DeclContext *lexicalDeclContext;
   // };
 
-  llvm::PointerUnion<DeclContext *, TreeContext *> context;
+  llvm::PointerUnion<DeclContext *, SyntaxContext *> context;
 
   // llvm::PointerUnion<DeclContext *, MultipleDeclContext *> context;
 
@@ -142,17 +142,17 @@ public:
   DeclKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
-  TreeContext &GetTreeContext() const {
+  SyntaxContext &GetSyntaxContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
     if (dc) {
-      return dc->GetTreeContext();
+      return dc->GetSyntaxContext();
     }
-    return *context.get<TreeContext *>();
+    return *context.get<SyntaxContext *>();
   }
 
 protected:
   Decl(DeclKind kind, SrcLoc loc,
-       llvm::PointerUnion<DeclContext *, TreeContext *> context)
+       llvm::PointerUnion<DeclContext *, SyntaxContext *> context)
       : kind(kind), loc(loc), context(context) {}
 };
 
@@ -196,7 +196,7 @@ public:
 
 class TypeDecl : public NamedDecl /*TODO: AnyDecl*/ {
 
-  friend class TreeContext;
+  friend class SyntaxContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
@@ -262,7 +262,7 @@ class FunctionDecl
   StorageKind storageKind;
 
 public:
-  FunctionDecl(DeclKind kind, SrcLoc loc, TreeContext &tc, DeclContext *dc);
+  FunctionDecl(DeclKind kind, SrcLoc loc, SyntaxContext &tc, DeclContext *dc);
 
 public:
   /// BraceStmt
@@ -282,9 +282,9 @@ public:
 /// Standalone function: fun F0() -> void {}
 class FunDecl : public FunctionDecl {
 
-  // TODO: You should aonly pass TreeContext and DeclContext
+  // TODO: You should aonly pass SyntaxContext and DeclContext
 public:
-  FunDecl(SrcLoc loc, TreeContext &tc, DeclContext *dc)
+  FunDecl(SrcLoc loc, SyntaxContext &tc, DeclContext *dc)
       : FunctionDecl(DeclKind::Fun, loc, tc, dc) {}
 
 public:
@@ -321,7 +321,7 @@ public:
 // Member functions: fun Particle::Fire() -> bool ...
 // class MethodDecl : public FunctionDecl {
 // public:
-//   // MethodDecl(TreeContext &tc, DeclContext *dc, SrcLoc funLoc,
+//   // MethodDecl(SyntaxContext &tc, DeclContext *dc, SrcLoc funLoc,
 //   //            const DeclName &dn, SrcLoc dnLoc, StorageType st)
 //   //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 

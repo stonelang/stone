@@ -29,18 +29,18 @@ using namespace stone;
 using namespace stone::syn;
 
 // Only allow allocation of Decls using the allocator in ASTContext.
-void *syn::Decl::operator new(std::size_t bytes, const TreeContext &tc,
+void *syn::Decl::operator new(std::size_t bytes, const SyntaxContext &tc,
                               unsigned alignment) {
   return tc.Allocate(bytes, alignment);
 }
 
 // Only allow allocation of Modules using the allocator in ASTContext.
-void *syn::Module::operator new(std::size_t bytes, const TreeContext &tc,
+void *syn::Module::operator new(std::size_t bytes, const SyntaxContext &tc,
                                 unsigned alignment) {
   return tc.Allocate(bytes, alignment);
 }
 
-FunctionDecl::FunctionDecl(DeclKind ty, SrcLoc loc, TreeContext &tc,
+FunctionDecl::FunctionDecl(DeclKind ty, SrcLoc loc, SyntaxContext &tc,
                            DeclContext *dc)
     : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContextKind::Decl, ty) {}
 

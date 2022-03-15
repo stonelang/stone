@@ -12,7 +12,7 @@ namespace stone {
 class PrintingPolicy;
 namespace syn {
 
-class TreeContext;
+class SyntaxContext;
 class DeclName;
 class DeclNameTable;
 
@@ -76,7 +76,7 @@ public:
 /// retrieved using its member functions (e.g., GetConstructorName).
 class DeclNameTable {
   /// Used to allocate elements in the FoldingSets below.
-  const TreeContext &tc;
+  const SyntaxContext &tc;
 
   /// Manage the uniqued CXXSpecialNameExtra representing C++ constructors.
   /// getCXXConstructorName and getCXXSpecialName can be used to obtain
@@ -113,7 +113,7 @@ class DeclNameTable {
   // CXXDeductionGuideNames;
 
 public:
-  DeclNameTable(const TreeContext &tc);
+  DeclNameTable(const SyntaxContext &tc);
   DeclNameTable(const DeclNameTable &) = delete;
   DeclNameTable &operator=(const DeclNameTable &) = delete;
   DeclNameTable(DeclNameTable &&) = delete;

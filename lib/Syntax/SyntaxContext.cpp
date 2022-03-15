@@ -9,27 +9,29 @@
 #include "llvm/Support/Compiler.h"
 
 #include "stone/Core/DiagnosticEngine.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-TreeContext::TreeContext(stone::Context &ctx, const SearchPathOptions &spOpts)
+SyntaxContext::SyntaxContext(stone::Context &ctx,
+                             const SearchPathOptions &spOpts)
     : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetSystemOptions()) {
 
-  stats.reset(new TreeContextStats(*this, ctx));
+  stats.reset(new SyntaxContextStats(*this, ctx));
   ctx.GetStatEngine().Register(stats.get());
 
   builtin.Init(*this);
 }
 
-TreeContext::~TreeContext() {}
+SyntaxContext::~SyntaxContext() {}
 
-Identifier &TreeContext::GetIdentifier(llvm::StringRef name) {
+Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
   return identifiers.Get(name);
 }
-size_t TreeContext::GetSizeOfMemUsed() const {
+size_t SyntaxContext::GetSizeOfMemUsed() const {
+  // TODO: use ctx.GetBumpAlloc()
   return bumpAlloc.getTotalMemory();
 }
 
-void TreeContextStats::Print() {}
+void SyntaxContextStats::Print() {}

@@ -7,7 +7,7 @@
 #include "stone/Option/Mode.h"
 #include "stone/Syntax/ModuleSystem.h"
 #include "stone/Syntax/Syntax.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 namespace llvm {
 class raw_pwrite_stream;
@@ -48,7 +48,7 @@ class Lang final {
 
   std::unique_ptr<LangStats> stats;
   std::unique_ptr<syn::Syntax> syntax;
-  std::unique_ptr<syn::TreeContext> tc;
+  std::unique_ptr<syn::SyntaxContext> tc;
 
   bool isEoc = false;
 
@@ -70,7 +70,7 @@ public:
   LangContext &GetLangContext() { return lc; }
 
 public:
-  syn::TreeContext &GetTreeContext() { return *tc.get(); }
+  syn::SyntaxContext &GetSyntaxContext() { return *tc.get(); }
   syn::Syntax &GetSyntax() { return *syntax.get(); }
 
   ///
@@ -110,7 +110,7 @@ public:
 
 private:
   /// Perform code analysis on source code.
-  void AnalyzeCode(const unsigned srcID);
+  void PerformCodeAnalysis(const unsigned srcID);
 
   /// Parse a single file and return a syntax tree
   syn::SyntaxFile *Parse(unsigned srcID);

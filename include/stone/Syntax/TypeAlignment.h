@@ -9,7 +9,7 @@ namespace syn {
 class Decl;
 class Expr;
 class Stmt;
-class TreeContext;
+class SyntaxContext;
 class DeclContext;
 } // namespace syn
 
@@ -18,7 +18,7 @@ constexpr size_t DeclAlignInBits = 3;
 constexpr size_t ExprAlignInBits = 3;
 constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
-constexpr size_t TreeContextAlignInBits = 2;
+constexpr size_t SyntaxContextAlignInBits = 2;
 constexpr size_t DeclContextAlignInBits = 3;
 
 } // namespace stone
@@ -49,8 +49,8 @@ template <class T> struct PointerLikeTypeTraits;
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Decl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Expr, stone::ExprAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TreeContext,
-                            stone::TreeContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::SyntaxContext,
+                            stone::SyntaxContextAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
                             stone::DeclContextAlignInBits)
 

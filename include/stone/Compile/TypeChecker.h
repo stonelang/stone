@@ -4,7 +4,7 @@
 #include "stone/Core/Context.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include <memory>
 

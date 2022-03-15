@@ -3,7 +3,7 @@
 
 namespace stone {
 namespace syn {
-class TreeContext;
+class SyntaxContext;
 
 namespace builtin {
 
@@ -23,14 +23,14 @@ public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
 
-  void InitType(TreeContext &tc);
-  void InitTypes(TreeContext &tc);
+  void InitType(SyntaxContext &tc);
+  void InitTypes(SyntaxContext &tc);
 
 public:
   Builtin() = default;
   ~Builtin();
 
-  void Init(TreeContext &tc);
+  void Init(SyntaxContext &tc);
 };
 } // namespace syn
 } // namespace stone

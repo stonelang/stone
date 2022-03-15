@@ -14,14 +14,14 @@ class TargetMachine;
 
 namespace stone {
 namespace syn {
-class TreeContext;
+class SyntaxContext;
 class Module;
 } // namespace syn
 
 class ObjGen final {
   CodeGenContext &codeGenContext;
   llvm::Module *llvmMod = nullptr;
-  syn::TreeContext &tc;
+  syn::SyntaxContext &tc;
 
 public:
   ObjGen(const ObjGen &) = delete;
@@ -29,7 +29,7 @@ public:
 
 public:
   ObjGen(CodeGenContext &codeGenContext, llvm::Module *llvmMod,
-         syn::TreeContext &tc);
+         syn::SyntaxContext &tc);
   ~ObjGen();
 
 public:

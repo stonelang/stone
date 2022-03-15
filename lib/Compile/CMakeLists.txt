@@ -1,7 +1,7 @@
 set(stone_compile_sources
 	Compile.cpp
-	CodeAnalysis.cpp
-	CodeGen.cpp
+	JustAnalysis.cpp
+	JustCodeGen.cpp
 	Lang.cpp
 	LangContext.cpp
 	Lexer.cpp

@@ -27,8 +27,8 @@ using stone::SrcMgr;
 using stone::syn::Identifier;
 using stone::syn::Module;
 using stone::syn::Syntax;
+using stone::syn::SyntaxContext;
 using stone::syn::SyntaxFileKind;
-using stone::syn::TreeContext;
 
 using namespace stone;
 using namespace stone::syn;
@@ -39,12 +39,12 @@ Lang::Lang(LangListener *listener) : listener(listener) {
 
   lc.GetContext().GetStatEngine().Register(stats.get());
 
-  tc = std::make_unique<syn::TreeContext>(lc.GetContext(),
-                                          lc.GetLangOptions().searchPathOpts);
+  tc = std::make_unique<syn::SyntaxContext>(lc.GetContext(),
+                                            lc.GetLangOptions().searchPathOpts);
 
   syntax = std::make_unique<syn::Syntax>(*tc.get());
 
-  moduleSystem = std::make_unique<syn::ModuleSystem>(*tc.get());
+  moduleSystem = std::make_unique<syn::ModuleSystem>(*syntax.get());
 }
 Lang::~Lang() {}
 

@@ -3,7 +3,7 @@
 
 #include "stone/Core/LLVM.h"
 #include "stone/Core/OutputFile.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/Target/TargetMachine.h"
 
@@ -20,7 +20,7 @@ namespace stone {
 class EmitPipeline;
 
 namespace syn {
-class TreeContext;
+class SyntaxContext;
 class Module;
 class SyntaxFile;
 } // namespace syn
@@ -29,7 +29,7 @@ class CodeGenOptions;
 class CodeGenContext;
 
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &genOpts, syn::TreeContext &tc);
+CreateTargetMachine(const CodeGenOptions &genOpts, syn::SyntaxContext &tc);
 
 std::unique_ptr<llvm::Module> GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
                                     const Context &ctx,
@@ -39,7 +39,7 @@ std::unique_ptr<llvm::Module> GenIR(CodeGenContext &cgc, syn::Module &mod,
                                     const Context &ctx,
                                     const OutputFile *output);
 
-bool GenObject(CodeGenContext &cgc, syn::TreeContext &tc,
+bool GenObject(CodeGenContext &cgc, syn::SyntaxContext &tc,
                const OutputFile *output);
 
 // void GenModule();

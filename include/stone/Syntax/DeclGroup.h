@@ -9,7 +9,7 @@ namespace stone {
 namespace syn {
 
 class Decl;
-class TreeContext;
+class SyntaxContext;
 
 class DeclGroup final : private llvm::TrailingObjects<DeclGroup, Decl *> {
   // FIXME: Include a TypeSpecifier object.
@@ -22,7 +22,7 @@ private:
 public:
   friend TrailingObjects;
 
-  static DeclGroup *Create(TreeContext &tc, Decl **decls, unsigned numDecls);
+  static DeclGroup *Create(SyntaxContext &tc, Decl **decls, unsigned numDecls);
 
   unsigned size() const { return NumDecls; }
 
@@ -52,7 +52,8 @@ public:
   explicit DeclGroupRef(DeclGroup *dg)
       : D((Decl *)(reinterpret_cast<uintptr_t>(dg) | DeclGroupKind)) {}
 
-  static DeclGroupRef Create(TreeContext &C, Decl **Decls, unsigned NumDecls) {
+  static DeclGroupRef Create(SyntaxContext &C, Decl **Decls,
+                             unsigned NumDecls) {
     if (NumDecls == 0)
       return DeclGroupRef();
     if (NumDecls == 1)

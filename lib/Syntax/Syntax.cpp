@@ -4,7 +4,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-Syntax::Syntax(TreeContext &tc) : tc(tc) {}
+Syntax::Syntax(SyntaxContext &tc) : tc(tc) {}
 Syntax::~Syntax() {}
 
 template <std::size_t Len>
@@ -31,27 +31,27 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 }
 
 Identifier &Syntax::MakeIdentifier(llvm::StringRef name) {
-  return GetTreeContext().GetIdentifier(name);
+  return GetSyntaxContext().GetIdentifier(name);
 }
 Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
 
-  auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetTreeContext(),
+  auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetSyntaxContext(),
                                                       sizeof(syn::Module));
-  return ::new (declPtr) syn::Module(name, GetTreeContext());
+  return ::new (declPtr) syn::Module(name, GetSyntaxContext());
 }
 
 FunDecl *Syntax::MakeFunDecl(SrcLoc loc, DeclContext *dc) {
   size_t size =
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetTreeContext(), size);
-  return ::new (declPtr) FunDecl(loc, GetTreeContext(), dc);
+  auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetSyntaxContext(), size);
+  return ::new (declPtr) FunDecl(loc, GetSyntaxContext(), dc);
 }
 
 StructDecl *Syntax::MakeStructDecl(SrcLoc loc, DeclContext *dc) {
   size_t size = sizeof(StructDecl);
 
-  auto declPtr = Syntax::AllocateDeclMem<StructDecl>(GetTreeContext(), size);
-  // return ::new (declPtr) StructDecl(loc, GetTreeContext(), dc);
+  auto declPtr = Syntax::AllocateDeclMem<StructDecl>(GetSyntaxContext(), size);
+  // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
   return nullptr;
 }

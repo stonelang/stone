@@ -3,7 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(TreeContext &tc) : tc(tc) {}
+ModuleSystem::ModuleSystem(Syntax &syntax) : syntax(syntax) {}
 
 ModuleSystem::~ModuleSystem() {}
 
@@ -13,6 +13,6 @@ syn::Module *ModuleSystem::GetMainModule() {
 }
 
 // bool ModuleSystem::CreateMainModule(llvm::StringRef name) {
-//   auto identifier = tc->GetIdentifier(name);
+//   auto identifier = syntax.GetSyntaxContext().GetIdentifier(name);
 //   return true;
 // }

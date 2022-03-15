@@ -5,9 +5,9 @@
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Syntax/TreeContext.h"
 #include "stone/Syntax/Type.h"
 
 namespace stone {
@@ -25,7 +25,7 @@ class SyntaxFile;
 
 class Syntax final {
   // Verifier verifier;
-  TreeContext &tc;
+  SyntaxContext &tc;
 
 public:
   Syntax(const Syntax &) = delete;
@@ -35,11 +35,11 @@ public:
   Syntax() = delete;
 
 public:
-  Syntax(TreeContext &tc);
+  Syntax(SyntaxContext &tc);
   ~Syntax();
 
 public:
-  TreeContext &GetTreeContext() { return tc; }
+  SyntaxContext &GetSyntaxContext() { return tc; }
 
 public:
   Module *MakeModuleDecl(Identifier &name, bool isMainModule);

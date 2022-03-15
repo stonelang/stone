@@ -7,8 +7,8 @@
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Syntax/TreeContext.h"
 
 #include "llvm/Support/Timer.h"
 

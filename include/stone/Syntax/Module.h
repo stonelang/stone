@@ -6,9 +6,9 @@
 #include "stone/Core/Printable.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/SyntaxWalker.h"
-#include "stone/Syntax/TreeContext.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -39,7 +39,7 @@ private:
 public:
   // Only allow allocation of FileUnits using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, TreeContext &tc,
+  void *operator new(size_t bytes, SyntaxContext &tc,
                      unsigned alignment = AlignOfModuleFile());
 };
 
@@ -48,7 +48,7 @@ enum class SyntaxFileStage : uint8_t { None, AtImports, AtTypeCheck };
 
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
-  friend TreeContext;
+  friend SyntaxContext;
   // llvm::NullablePtr<SyntaxScope> scope = nullptr;
 
   /// A unique identifier representing this file; used to mark private decls
@@ -95,7 +95,7 @@ public:
 
 public:
   static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
-                               TreeContext &tc, unsigned srcID,
+                               SyntaxContext &tc, unsigned srcID,
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
@@ -112,10 +112,10 @@ class Module final : public DeclContext,
                      public WalkableSyntax {
 
 public:
-  Module(Identifier &name, TreeContext &tc);
+  Module(Identifier &name, SyntaxContext &tc);
 
 public:
-  using syn::Decl::GetTreeContext;
+  using syn::Decl::GetSyntaxContext;
   llvm::SmallVector<ModuleFile *, 2> files;
 
 public:
@@ -147,7 +147,7 @@ private:
 public:
   // Only allow allocation of Modules using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const TreeContext &tc,
+  void *operator new(size_t bytes, const SyntaxContext &tc,
                      unsigned alignment = alignof(Module));
 };
 

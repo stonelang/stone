@@ -22,7 +22,7 @@ class raw_ostream;
 namespace stone {
 namespace syn {
 
-class TreeContext;
+class SyntaxContext;
 class CanType;
 class Decl;
 class DeclContext;
@@ -134,9 +134,9 @@ public:
     return const_cast<DeclContext *>(this)->GetAsDecl();
   }
 
-  // Return the TreeContext for a specified DeclContext by
-  /// walking up to the enclosing module and returning its TreeContext.
-  TreeContext &GetTreeContext() const;
+  // Return the SyntaxContext for a specified DeclContext by
+  /// walking up to the enclosing module and returning its SyntaxContext.
+  SyntaxContext &GetSyntaxContext() const;
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.

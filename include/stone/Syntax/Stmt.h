@@ -35,7 +35,7 @@ class FunDecl;
 class VarDecl;
 class Expr;
 class StringLiteral;
-class TreeContext;
+class SyntaxContext;
 
 class Stmt : public SyntaxNode {
   StmtKind kind;

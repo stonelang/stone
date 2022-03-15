@@ -1,6 +1,6 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Builtin.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -17,7 +17,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-void *ModuleFile::operator new(size_t bytes, TreeContext &tc,
+void *ModuleFile::operator new(size_t bytes, SyntaxContext &tc,
                                unsigned alignment) {
   return tc.Allocate(bytes, alignment);
 }
@@ -25,7 +25,7 @@ void *ModuleFile::operator new(size_t bytes, TreeContext &tc,
 ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
     : DeclContext(DeclContextKind::File, DeclKind::None, &owner), kind(kind) {}
 
-Module::Module(Identifier &name, TreeContext &tc)
+Module::Module(Identifier &name, SyntaxContext &tc)
     : DeclContext(DeclContextKind::Decl, DeclKind::Module),
       TypeDecl(DeclKind::Module, SrcLoc(), nullptr /*TODO: pass DeclContext*/) {
 
@@ -52,7 +52,7 @@ SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
-                                       TreeContext &tc, unsigned srcID,
+                                       SyntaxContext &tc, unsigned srcID,
                                        bool isPrimary) {
 
   auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);

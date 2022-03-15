@@ -13,8 +13,8 @@ using namespace stone::syn;
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
     : Parser(sf, syntax,
              std::unique_ptr<Lexer>(
-                 new Lexer(sf.GetSrcID(), syntax.GetTreeContext().GetSrcMgr(),
-                           syntax.GetTreeContext().GetContext())),
+                 new Lexer(sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
+                           syntax.GetSyntaxContext().GetContext())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
@@ -54,7 +54,7 @@ SyntaxScope *Parser::GetCurScope() const {
 }
 
 bool Parser::HasError() { return GetContext().HasError(); }
-Context &Parser::GetContext() { return syntax.GetTreeContext().GetContext(); }
+Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 
 void Parser::EnterScope(unsigned scopeFlags) {}
 void Parser::ExitScope() {}

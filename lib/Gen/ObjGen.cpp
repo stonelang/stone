@@ -4,7 +4,7 @@
 using namespace stone;
 
 ObjGen::ObjGen(CodeGenContext &codeGenContext, llvm::Module *llvmMod,
-               syn::TreeContext &tc)
+               syn::SyntaxContext &tc)
     : codeGenContext(codeGenContext), llvmMod(llvmMod), tc(tc) {}
 
 ObjGen::~ObjGen() {}

@@ -17,13 +17,13 @@ set(stone_syn_sources
 	ModuleSystem.cpp
 	Stmt.cpp
 	Syntax.cpp
+	SyntaxContext.cpp
 	SyntaxBuilder.cpp
 	SyntaxDiagnostic.cpp
 	SyntaxScope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp
 	Template.cpp
-	TreeContext.cpp
 	Type.cpp
 	VerifyDecl.cpp
 	Witness.cpp

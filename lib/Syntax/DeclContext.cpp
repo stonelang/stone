@@ -4,7 +4,7 @@
 #include "stone/Core/SystemOptions.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
-#include "stone/Syntax/TreeContext.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -25,8 +25,8 @@ DeclContext::DeclContext(DeclContextKind dcTy, DeclKind dTy,
   // declContextBits.DeclKind = ty;
 }
 
-TreeContext &DeclContext::GetTreeContext() const {
-  return GetParentModule()->GetTreeContext();
+SyntaxContext &DeclContext::GetSyntaxContext() const {
+  return GetParentModule()->GetSyntaxContext();
 }
 
 Module *DeclContext::GetParentModule() const {

@@ -6,6 +6,10 @@
 namespace stone {
 namespace syn {
 
+class TypeContext final {
+public:
+};
+
 class ExtQuals;
 class QualType;
 // class ConceptDecl;

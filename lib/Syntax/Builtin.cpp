@@ -5,4 +5,4 @@ using namespace stone::syn;
 
 Builtin::~Builtin() {}
 
-void Builtin::Init(TreeContext &tc) {}
+void Builtin::Init(SyntaxContext &tc) {}

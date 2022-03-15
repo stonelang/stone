@@ -21,7 +21,7 @@ using stone::syn::SyntaxFileKind;
 void Lang::PerformCodeAnalysis() {
 
   for (auto source : lc.sources) {
-    AnalyzeCode(source.first);
+    PerformCodeAnalysis(source.first);
   }
   if (lc.GetMode().JustParse()) {
     return;
@@ -36,7 +36,7 @@ void Lang::PerformCodeAnalysis() {
   }
 }
 
-void Lang::AnalyzeCode(const unsigned srcID) {
+void Lang::PerformCodeAnalysis(const unsigned srcID) {
 
   auto syntaxFile = Parse(srcID);
   if (lc.GetMode().IsParse()) {
@@ -64,7 +64,7 @@ SyntaxFile *Lang::Parse(const unsigned srcID) {
 
   // Create syntax file
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *GetMainModule(),
-                             GetTreeContext(), srcID);
+                             GetSyntaxContext(), srcID);
   syn::ParseSyntaxFile(*sf, GetSyntax());
   return sf;
 }
