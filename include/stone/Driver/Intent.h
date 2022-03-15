@@ -132,40 +132,6 @@ public:
   }
 };
 
-class IntentExecutor {
-public:
-  virtual void RunAsync() = 0;
-  virtual void RunSync() = 0;
-};
-
-class BuiltIntents final {
-public:
-  /// All the inputs associated with the module
-  llvm::SmallVector<const Intent *, 4> moduleInputs;
-
-  /// The top level intents -- ex: linker. We only queue the top level intents.
-  llvm::SmallVector<const Intent *, 16> topLevelIntents;
-
-  /// All the inputs for the linker
-  llvm::SmallVector<const Intent *, 2> linkerInputs;
-
-  Intent *current;
-
-public:
-  BuiltIntents(const BuiltIntents &) = delete;
-  void operator=(const BuiltIntents &) = delete;
-
-public:
-  BuiltIntents() {}
-  ~BuiltIntents() {}
-
-public:
-  void Finish();
-
-public:
-  void AddModuleInput(const Intent *input) {}
-};
-
 } // namespace stone
 
 #endif

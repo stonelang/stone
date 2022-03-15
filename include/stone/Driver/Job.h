@@ -39,22 +39,11 @@ public:
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
 
-// class CommandIntentExecutor final : public IntentExecutor {
-//   Intent &intent;
-//   CommandInvocation &ci;
-
-// public:
-//   CommandIntentExecutor(Intent &intent, CommandInvocation &ci)
-//       : intent(intent), ci(ci) {}
-
-// public:
-//   void RunAsync() override;
-//   void RunSync() override;
-// };
-
-class Job final {
-
+class Job {
   friend class JobQueue;
+
+  Context &ctx;
+  CompilationIntent &intent;
   ThreadingMode threadingMode = ThreadingMode::None;
 
 protected:
@@ -62,20 +51,26 @@ protected:
   int queueID = -1;
 
 public:
+  JobStage stage = JobStage::None;
+
+public:
   Job() = delete;
 
 public:
-  Job();
-  Job(ThreadingMode threadingMode);
+  Job(CompilationIntent &intent, Context &ctx);
+  Job(CompilationIntent &intent, Context &ctx, ThreadingMode threadingMode);
   virtual ~Job();
 
 public:
-  virtual void Run();
+  stone::ColorOutputStream &OS();
 
 public:
-  IntentExecutor &GetExecutor() { return executor; }
+  Context &GetContext() { return ctx; }
+  CompilationIntent &GetCompilationIntent() { return intent; }
   ThreadingMode GetThreadingMode() { return threadingMode; }
 };
+
+class BatchJob : public Job {};
 
 // class Job : public Command {
 //   friend JobStats;

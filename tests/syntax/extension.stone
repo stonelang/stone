@@ -3,12 +3,6 @@
 struct Universe {
 
 }
-Universe::Initialize(int a) {
-
-}
-Universe::Finalize() {
-
-}
 
 fun Universe::Start() -> bool {
 }

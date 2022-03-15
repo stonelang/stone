@@ -8,8 +8,8 @@ space Physics.QM {
 		fun Fire(const Particle* p) -> bool;
 	}
 	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
-		private string maker; 
-		private Detector* detector = null;
+		local string maker; 
+		local Detector* detector = null;
 	}
 
 	LinearAcceleartor::this() : this("none") {

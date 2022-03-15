@@ -28,6 +28,7 @@ set(stone_ctx_sources
 	LLVMContext.cpp
 	OutputFileMap.cpp
 	SrcMgr.cpp
+	SystemOptions.cpp
 	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp

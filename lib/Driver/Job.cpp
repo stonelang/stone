@@ -2,20 +2,13 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
-using stone::BuiltJobs;
 using stone::Compilation;
-// using stone::CompilationJob;
-// using stone::CompileJob;
+using stone::Driver;
 using stone::Job;
-
-using stone::CommandIntentExecutor;
-
-// using stone::JobKind;
 using stone::JobStats;
 
-using stone::Driver;
-
-// Job::Job(Intent &intent, Context &ctx, Tool &tool)
+// Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
+// threadingMode)
 //     : Command(tool), intent(intent), ctx(ctx), jobKind(jobKind),
 //     jobID(0),
 //       isAsync(true) {
@@ -86,12 +79,12 @@ using stone::Driver;
 
 void JobStats::Print() {}
 
-Job::Job() : Job(ThreadingMode::Async) {}
+// Job::Job() : Job(ThreadingMode::Async) {}
 
-Job::Job(ThreadingMode threadingMode) : threadingMode(threadingMode) {}
+// Job::Job(ThreadingMode threadingMode) : threadingMode(threadingMode) {}
 
-Job::~Job() {}
+// Job::~Job() {}
 
-void Job::Run() {}
+// void Job::Run() {}
 
 void Driver::BuildJobs(BuildCompilationCache &bcc) {}

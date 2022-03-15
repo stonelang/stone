@@ -34,9 +34,10 @@ enum class BuiltinType {
 
 };
 
+// TODO: All you need is Public and Local
 enum class AccessLevel : uint8_t {
   None,
-  Internal,
+  Internal, // TODO: Rename to Local
   Public,
 
   //  TODO: you may not need this -- public and internal given the correct

@@ -106,12 +106,11 @@ Driver::ComputeCompileModel(const llvm::opt::DerivedArgList &args,
 void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
-
-    defaultTargetTriple = llvm::Triple::normalize(arg->getValue());
+    ctx.GetSystemOptions().SetTargetTriple(
+        llvm::Triple::normalize(arg->getValue()));
   }
-  llvm::Triple target(defaultTargetTriple);
 
-  switch (target.getOS()) {
+  switch (ctx.GetSystemOptions().target.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX: {
     llvm::Optional<llvm::Triple> targetVariant;

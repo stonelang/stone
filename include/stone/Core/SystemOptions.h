@@ -21,10 +21,10 @@ public:
   /// The target platform that we are running on.
   llvm::Triple target;
 
-  /// This represents the statistics generated due to a session
+  /// This represents the statistics generated
   bool printStatistics = true;
 
-  /// This represents the diatnostics generated due to a session
+  /// This represents the diatnostics generated
   bool printDiagnostics = true;
   ///
   bool showTimer = false;
@@ -41,11 +41,10 @@ public:
   bool HasSDKPath() { return sdkPath.size() > 0; }
 
 public:
+  SystemOptions();
+public:
   void SetTargetTriple(const llvm::Triple &triple);
-  void SetTargetTriple(StringRef Triple);
-
-  //std::string GetTargetTriple() { return targetTriple; }
-  
+  void SetTargetTriple(llvm::StringRef Triple);
 };
 
 } // namespace stone
