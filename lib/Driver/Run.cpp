@@ -68,6 +68,4 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   auto tc = driver.BuildToolChain(driver.GetInputArgList());
-
-
 }

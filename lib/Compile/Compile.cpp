@@ -33,9 +33,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   Lang lang(listener);
   lang.Initialize();
 
-      STONE_DEFER {
-    lang.Finish();
-  };
+  STONE_DEFER { lang.Finish(); };
 
   auto Finish = [&](int status = 0) -> int {
     int err = 1;

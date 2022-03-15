@@ -15,13 +15,6 @@ using stone::JobStats;
 
 using stone::Driver;
 
-BuiltJobs::BuiltJobs() {
-  //
-}
-BuiltJobs::~BuiltJobs() {
-  //
-}
-
 // Job::Job(Intent &intent, Context &ctx, Tool &tool)
 //     : Command(tool), intent(intent), ctx(ctx), jobKind(jobKind),
 //     jobID(0),
@@ -93,19 +86,12 @@ BuiltJobs::~BuiltJobs() {
 
 void JobStats::Print() {}
 
-Job::Job(IntentExecutor &executor) : Job(executor, ThreadingMode::Async) {}
+Job::Job() : Job(ThreadingMode::Async) {}
 
-Job::Job(IntentExecutor &executor, ThreadingMode threadingMode)
-    : executor(executor), threadingMode(threadingMode) {}
+Job::Job(ThreadingMode threadingMode) : threadingMode(threadingMode) {}
 
 Job::~Job() {}
 
 void Job::Run() {}
 
-void CommandIntentExecutor::RunAsync() {}
-
-void CommandIntentExecutor::RunSync() {}
-
-void Driver::BuildJobs(BuiltJobs &bj, BuiltIntents &bi) {
-  //
-}
+void Driver::BuildJobs(BuildCompilationCache &bcc) {}

@@ -27,10 +27,8 @@ public:
 
 class Compilation final {
   friend CompilationStats;
-  std::unique_ptr<CompilationStats> stats;
 
-  // SafeList<Job> jobs;
-  // SafeList<Intent> intents;
+  std::unique_ptr<CompilationStats> stats;
   std::unique_ptr<JobQueue> jobQueue;
 
   Driver &driver;
@@ -69,6 +67,7 @@ public:
   // }
 
 public:
+  void Run();
   // void CancelJob();
   // void CancelJobs();
   // void PruneJob();
@@ -78,24 +77,6 @@ public:
 
 public:
   Driver &GetDriver() { return driver; }
-
-public:
-private:
-  // bool ExecuteProcs(std::unique_ptr<stone::JobQueue> &&queue);
-  /// ExecuteProc - Execute an actual command.
-  ///
-  /// \param fallBackProc - For non-zero results, this will be set to the
-  /// Command which failed, if any.
-  /// \return The result code of the subprocess.
-  // int ExecuteJob(const Job &job, const Job *&fallBackJob) const;
-
-  // /// ExecuteProc - Execute a single job.
-  // ///
-  // /// \param fallBackProc - For non-zero results, this will be a vector of
-  // /// failing commands and their associated result code.
-  // void ExecuteJobs(
-  //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const;
-};
 
 } // namespace stone
 

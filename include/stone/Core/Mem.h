@@ -1,5 +1,5 @@
-#ifndef STONE_CORE_MALLOC_H
-#define STONE_CORE_MALLOC_H
+#ifndef STONE_CORE_MEM_H
+#define STONE_CORE_MEM_H
 
 #include <cassert>
 #if defined(_WIN32)
@@ -10,6 +10,9 @@
 
 namespace stone {
 namespace mem {
+
+template <typename T> using safe = std::unique_ptr<T>;
+
 // FIXME: Use C11 aligned_alloc if available.
 inline void *AlignedAlloc(size_t size, size_t align) {
   // posix_memalign only accepts alignments greater than sizeof(void*).

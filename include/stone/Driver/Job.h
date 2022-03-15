@@ -55,7 +55,6 @@ enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
 class Job final {
 
   friend class JobQueue;
-  IntentExecutor &executor;
   ThreadingMode threadingMode = ThreadingMode::None;
 
 protected:
@@ -66,8 +65,8 @@ public:
   Job() = delete;
 
 public:
-  Job(IntentExecutor &executor);
-  Job(IntentExecutor &executor, ThreadingMode threadingMode);
+  Job();
+  Job(ThreadingMode threadingMode);
   virtual ~Job();
 
 public:
@@ -212,20 +211,6 @@ class ImageBaseName final {
 public:
   ImageBaseName() {}
   ~ImageBaseName() = delete;
-};
-
-class BuiltJobs final {
-
-public:
-  BuiltJobs(const BuiltJobs &) = delete;
-  void operator=(const BuiltJobs &) = delete;
-
-public:
-  BuiltJobs();
-  ~BuiltJobs();
-
-private:
-  void Finish();
 };
 
 } // namespace stone

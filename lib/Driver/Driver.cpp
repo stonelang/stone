@@ -45,7 +45,7 @@ bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
   return stone::Ok;
 }
 
-std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain& tc) {
+std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
 
   // if (driverOpts.cleanBuild) {
   //   buildSystem->Clean();
