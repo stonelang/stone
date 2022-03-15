@@ -4,10 +4,9 @@
 #include "stone/Syntax/Module.h"
 
 namespace stone {
-
 namespace syn {
+  
 class ModuleSystem final {
-
   // We need built-in information
   TreeContext &tc;
   /// This is the main module that will be created
