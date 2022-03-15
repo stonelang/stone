@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_SOURCEPROFILE_H
-#define STONE_COMPILE_SOURCEPROFILE_H
+#ifndef STONE_COMPILE_SOURCEUNIT_H
+#define STONE_COMPILE_SOURCEUNIT_H
 
 #include "stone/Core/File.h"
 #include "stone/Core/List.h"
@@ -11,7 +11,7 @@
 namespace stone {
 
 class LangContext;
-class alignas(8) SourceProfile final {
+class alignas(8) SourceUnit final {
 
   bool isPrimary;
   bool hasOutput;
@@ -23,9 +23,9 @@ class alignas(8) SourceProfile final {
   // OutputFile outputFile;
 
 public:
-  SourceProfile(const unsigned srcID, const file::File &input)
+  SourceUnit(const unsigned srcID, const file::File &input)
       : srcID(srcID), input(input) {}
-  ~SourceProfile();
+  ~SourceUnit();
 
 public:
   bool IsPrimary() { return isPrimary; }
@@ -41,10 +41,10 @@ public:
   // Only allow allocation of Decls using the allocator in ASTContext
   // or by doing a placement new.
   void *operator new(std::size_t bytes,
-                     unsigned alignment = alignof(SourceProfile));
+                     unsigned alignment = alignof(SourceUnit));
 
 public:
-  static SourceProfile *Allocate(const unsigned srcID, const file::File &input,
+  static SourceUnit *Allocate(const unsigned srcID, const file::File &input,
                                  LangContext &lc);
 
   // file::File *GetOutput() { return output; }

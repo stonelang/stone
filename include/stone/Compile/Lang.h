@@ -2,7 +2,7 @@
 #define STONE_COMPILE_LANG_H
 
 #include "stone/Compile/LangContext.h"
-#include "stone/Compile/SourceProfile.h"
+#include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Option/Mode.h"
 #include "stone/Syntax/ModuleSystem.h"

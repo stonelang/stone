@@ -11,14 +11,14 @@ using namespace stone::opts;
 LangContext::LangContext() {}
 LangContext::~LangContext() {}
 
-SourceProfile::~SourceProfile() {}
+SourceUnit::~SourceUnit() {}
 
-SourceProfile *SourceProfile::Allocate(const unsigned srcID,
+SourceUnit *SourceUnit::Allocate(const unsigned srcID,
                                        const file::File &input,
                                        LangContext &lc) {
   auto sizePtr =
-      LangContext::Allocate<SourceProfile>(lc, sizeof(SourceProfile));
-  return ::new (sizePtr) SourceProfile(srcID, input);
+      LangContext::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
+  return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
 static void ParseCodeGenArguments() {}
@@ -36,7 +36,7 @@ bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
   // support.BuildInputFiles(GetInputArgList());
 
   // for (auto &input : inputs) {
-  //   auto sf BuildSourceProfile(input);
+  //   auto sf BuildSourceUnit(input);
   //   sources.
   // }
 
@@ -58,9 +58,9 @@ unsigned LangContext::CreateSourceBuffer(const file::File &input) {
   return srcID;
 }
 
-SourceProfile *LangContext::BuildSourceProfile(const file::File &input) {
+SourceUnit *LangContext::BuildSourceUnit(const file::File &input) {
   auto srcID = CreateSourceBuffer(input);
-  auto sp = SourceProfile::Allocate(srcID, input, *this);
+  auto sp = SourceUnit::Allocate(srcID, input, *this);
   sources.insert(std::make_pair(srcID, sp));
 }
 

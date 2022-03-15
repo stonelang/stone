@@ -2,7 +2,7 @@
 #define STONE_LANG_LANGCONTEXT_H
 
 #include "stone/Compile/LangOptions.h"
-#include "stone/Compile/SourceProfile.h"
+#include "stone/Compile/SourceUnit.h"
 #include "stone/Compile/TypeCheckerOptions.h"
 #include "stone/Core/Context.h"
 #include "stone/Core/FileSystemOptions.h"
@@ -34,9 +34,9 @@ class LangContext final {
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   // Let use use a map for the time being.
-  std::map<unsigned, SourceProfile *> sources;
+  std::map<unsigned, SourceUnit *> sources;
 
-  /// Allocator SourceProfile
+  /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
@@ -76,7 +76,7 @@ public:
 
   file::Files &GetInputFiles() { return support.inputFiles; }
 
-  SourceProfile *GetSourceProfile(const unsigned srcID) {
+  SourceUnit *GetSourceUnit(const unsigned srcID) {
     return sources[srcID];
   }
 
@@ -107,7 +107,7 @@ public:
   }
 
 private:
-  SourceProfile *BuildSourceProfile(const file::File &input);
+  SourceUnit *BuildSourceUnit(const file::File &input);
 };
 
 } // namespace stone
