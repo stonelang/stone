@@ -140,17 +140,17 @@ void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 
 void Driver::BuildOptions() {
 
-  // We default to object files -- this will be updated as we go along
+  // Since the mode has already been created
+  // switch(GetMode().GetKind().)
   driverOpts.outputFileType = file::Type::Object;
 
   // TODO:
-  // driverOpts.compileModelKind = ComputeCompileModel(
+  // driverOpts.compileModel = ComputeCompileModel(
   //     *tal, driverOpts.inputFiles);
 
-  auto stcPathResult = GetEQValue(opts::LangPathEQ);
-  if (!stcPathResult.IsErr()) {
-    driverOpts.hasLangPath = true;
-    driverOpts.stcPath = stcPathResult.Get();
+  auto stPathResult = GetEQValue(opts::LangPathEQ);
+  if (!stPathResult.IsErr()) {
+    driverOpts.scPath = stPathResult.Get();
   }
 
   driverOpts.printIntents = tal->hasArg(opts::PrintDriverIntents);

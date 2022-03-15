@@ -30,6 +30,7 @@ public:
 
 public:
   virtual void OnEmitObjectError() {}
+  virtual void OnEmitObject() {}
   virtual void OnEmitObjectCompleted() {}
 
 public:
@@ -42,6 +43,7 @@ public:
 
 public:
   virtual void OnEmitBitCodeError() {}
+  virtual void OnEmitBitCode() {}
   virtual void OnEmitBitCodeompleted() {}
 
 public:
@@ -54,6 +56,7 @@ public:
 
 public:
   virtual void OnEmitModuleError() {}
+  virtual void OnEmitModule() {}
   virtual void OnEmitModuleCompleted() {}
 
 public:
@@ -66,6 +69,7 @@ public:
 
 public:
   virtual void OnEmitLibraryError() {}
+  virtual void OnEmitLibrary() {}
   virtual void OnEmitLibraryCompleted() {}
 
 public:

@@ -10,7 +10,7 @@
 #include "stone/Core/File.h"
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
-#include "stone/Core/Malloc.h"
+#include "stone/Core/Mem.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
 

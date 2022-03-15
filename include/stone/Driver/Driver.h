@@ -6,6 +6,7 @@
 #include "stone/Core/OutputFileMap.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/BuildSystem.h"
+#include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Option/Support.h"
@@ -35,7 +36,7 @@ public:
 class Driver final {
 
   llvm::StringRef name;
-  llvm::string path;
+  llvm::StringRef path;
 
   opts::Support optSupport;
 
@@ -73,6 +74,7 @@ public:
 
 public:
   void Run();
+
   void PrintHelp();
   void PrintVersion();
 
@@ -102,7 +104,7 @@ public:
 
   stone::CompileModel ComputeCompileModel(const llvm::opt::DerivedArgList &args,
                                           const file::Files &inputs) const;
-  CompileModel GetCompileModel() const { return driverOpts.compileModelKind; }
+  CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
   void BuildIntents(BuildCompilationCache &bcc);
   void PrintIntents(BuildCompilationCache &bcc);
@@ -121,7 +123,6 @@ public:
 
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
-  SessionOptions &GetOptions() override { return driverOpts; }
 
   OutputFileMap &GetOutputFileMap() { return outputFileMap; }
   const OutputFileMap &GetOutputFileMap() const { return outputFileMap; }
@@ -145,11 +146,6 @@ public:
       // StringRef PrimaryInput,
       // llvm::SmallString<128> &Buffer
   );
-
-public:
-  // IntentExecutor ConstructIntentExecutor(ProcessIntent& intent);
-  // IntentExecutor ConstructIntentExecutor(CompilationIntent &intent);
-  // void BuildOptions() override;
 };
 
 } // namespace stone

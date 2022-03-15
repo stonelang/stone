@@ -5,7 +5,7 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
-using stone::Driver;
+using namespace stone;
 
 void Driver::Run() {
 

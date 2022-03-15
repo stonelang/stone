@@ -1,13 +1,14 @@
-#include "stone/Option/Support.h"
+#include "stone/Option/OptUtil.h"
 #include "stone/Core/Context.h"
+
 #include "stone/Option/Options.h"
 
 using namespace stone;
 using namespace stone::opts;
 
-Support::Support() : optst(stone::opts::CreateOptTable()) {}
+OptUtil::OptUtil() : optst(stone::opts::CreateOptTable()) {}
 
-bool Support::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
+bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
 
   ial = std::make_unique<llvm::opt::InputArgList>(
       GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
@@ -36,12 +37,14 @@ bool Support::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
     stone::Panic("error_unknown_arg");
   }
   // Create the mode
-  mode = Support::CreateMode(GetInputArgList());
-  // BuildInputFiles();
+  mode = OptUtil::CreateMode(GetInputArgList());
+
+  // Build all input files
+  inputFiles = OptUtil::BuildInputFiles(GetInputArgList());
 
   return stone::Ok;
 }
-std::unique_ptr<Mode> Support::CreateMode(const llvm::opt::InputArgList &ial) {
+std::unique_ptr<Mode> OptUtil::CreateMode(const llvm::opt::InputArgList &ial) {
 
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {
@@ -78,8 +81,13 @@ std::unique_ptr<Mode> Support::CreateMode(const llvm::opt::InputArgList &ial) {
   return std::make_unique<Mode>(ModeKind::None);
 }
 
+file::Files OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
+  file::Files files;
+
+  return files;
+}
 // // TODO: May move to session
-// void Session::BuildInputFiles(const llvm::opt::DerivedArgList &args) {
+// stone::Files Support::BuildInputFiles(const llvm::opt::InputArgList &args) {
 // bool isDone = false;
 //   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
 
@@ -144,6 +152,6 @@ std::unique_ptr<Mode> Support::CreateMode(const llvm::opt::InputArgList &ial) {
 // void Support::AddFile(llvm::StringRef name, file::Type ty) {
 //   inputFiles.push_back(file::File(name, ty));
 // }
-void Support::PrintHelp() {}
+void OptUtil::PrintHelp() {}
 
 // void Support::BuildInputFiles() {}

@@ -3,9 +3,6 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
-using stone::BuildingIntents;
-using stone::Driver;
-using stone::Intent;
 using namespace stone;
 
 const char *Intent::GetNameByKind(IntentKind kind) {
@@ -34,24 +31,25 @@ static void TryBuildMergeModuleIntent() {
   //   mergeModuleIntent = std::move(ibc.moduleInputs).IntoIntent(ibc.current);
   // }
 }
-static void BuildCompileIntent(Driver &driver, BuiltIntents &bi,
+static void BuildCompileIntent(Driver &driver, BuildCompilationCache &bcc,
                                Intent *intent) {
   assert(intent);
   // TODO: GetLastBuildState
-  bool isTopLvel = (driver.IsLinkable()) ? false : true;
-  bi.current =
-      driver.GetCompilation().CreateIntent<CompileIntent>(intent, isTopLvel);
+  // bool isTopLvel = (driver.IsLinkable()) ? false : true;
+  // bi.current =
+  //     driver.GetCompilation().CreateIntent<CompileIntent>(intent, isTopLvel);
 
-  // TODO: driver.GetDriverOptions().outputFileType);
-  // driver.GetBuildSystem().GetLastBuildState());
+  // // TODO: driver.GetDriverOptions().outputFileType);
+  // // driver.GetBuildSystem().GetLastBuildState());
 
-  // TODO: Think about
-  if (!isTopLvel) {
-    bi.linkerInputs.push_back(bi.current);
-  }
+  // // TODO: Think about
+  // if (!isTopLvel) {
+  //   bi.linkerInputs.push_back(bi.current);
+  // }
 }
 
-static void BuildLinkIntent(Driver &driver, BuiltIntents &bi, Intent *intent) {
+static void BuildLinkIntent(Driver &driver, BuildCompilationCache &bcc,
+                            Intent *intent) {
   // if (driver.IsLinkable()) {
   //   bi.likerInputs.push_back(intent);
   // }
@@ -59,32 +57,32 @@ static void BuildLinkIntent(Driver &driver, BuiltIntents &bi, Intent *intent) {
 
 static void BuildIntent(Driver &driver, BuiltIntents &bi, file::File &input) {
 
-  bi.current = driver.GetCompilation().CreateIntent<ProcessIntent>(input);
-  assert(bi.current);
+  // bi.current = driver.GetCompilation().CreateIntent<ProcessIntent>(input);
+  // assert(bi.current);
 
-  switch (input.GetType()) {
-  case file::Type::Stone:
-    BuildCompileIntent(driver, bi, bi.current);
-    break;
-  case file::Type::Object:
-    BuildLinkIntent(driver, bi, bi.current);
-    break;
-  }
+  // switch (input.GetType()) {
+  // case file::Type::Stone:
+  //   BuildCompileIntent(driver, bi, bi.current);
+  //   break;
+  // case file::Type::Object:
+  //   BuildLinkIntent(driver, bi, bi.current);
+  //   break;
+  // }
 }
 
-void Driver::BuildIntents(BuiltIntents &bi) {
+void Driver::BuildIntents(BuildCompilationCache &bcc) {
 
   for (auto &input : GetOptions().inputFiles) {
 
-    if (GetBuild().IsDirty(input)) {
+    // if (GetBuild().IsDirty(input)) {
 
-      assert(input.GetType() == GetInputFileType() &&
-             "Incompatible input file types");
+    //   assert(input.GetType() == GetInputFileType() &&
+    //          "Incompatible input file types");
 
-      assert(file::IsPartOfCompilation(input.GetType()));
+    //   assert(file::IsPartOfCompilation(input.GetType()));
 
-      BuildIntent(*this, bi, input);
-    }
+    //   BuildIntent(*this, bi, input);
+    // }
   }
   // We are in optional territory -- try to build
 

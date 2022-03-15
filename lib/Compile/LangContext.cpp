@@ -13,11 +13,9 @@ LangContext::~LangContext() {}
 
 SourceUnit::~SourceUnit() {}
 
-SourceUnit *SourceUnit::Allocate(const unsigned srcID,
-                                       const file::File &input,
-                                       LangContext &lc) {
-  auto sizePtr =
-      LangContext::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
+SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
+                                 LangContext &lc) {
+  auto sizePtr = LangContext::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
@@ -27,9 +25,9 @@ static void ParseSearchPathArguments() {}
 
 bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  support.SetExcludedFlagsBitmask(opts::NoLangOption);
+  optUtil.SetExcludedFlagsBitmask(opts::NoLangOption);
 
-  if (support.ParseArgs(args, &ctx) == stone::Err) {
+  if (optUtil.ParseArgs(args, &ctx) == stone::Err) {
     return stone::Err;
   }
 

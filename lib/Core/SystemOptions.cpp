@@ -1,15 +1,12 @@
 #include "stone/Core/SystemOptions.h"
 
-
 #include "llvm/Support/Host.h"
 
 using namespace stone;
 
-SystemOptions::SystemOptions()
-    : target(llvm::sys::getDefaultTargetTriple()){}
-    
+SystemOptions::SystemOptions() : target(llvm::sys::getDefaultTargetTriple()) {}
 
-          void SystemOptions::SetTargetTriple(llvm::StringRef triple) {
+void SystemOptions::SetTargetTriple(llvm::StringRef triple) {
   SetTargetTriple(llvm::Triple(triple));
 }
 

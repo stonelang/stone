@@ -36,9 +36,10 @@ public:
   virtual void OnToken(const syn::Token *token) {}
 
 public:
-  virtual void OnParseError(syn::SyntaxFile *syntaxFile) {}
-  virtual void OnParseCompleted(syn::SyntaxFile *syntaxFile) {}
-  virtual void OnSyntaxFileCompleted(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnParseError() {}
+  virtual void OnParseStarted() {}
+  virtual void OnParseSyntaxFile(syn::SyntaxFile *sf) {}
+  virtual void OnParseCompleted() {}
 };
 
 } // namespace stone

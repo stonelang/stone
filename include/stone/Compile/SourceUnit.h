@@ -45,7 +45,7 @@ public:
 
 public:
   static SourceUnit *Allocate(const unsigned srcID, const file::File &input,
-                                 LangContext &lc);
+                              LangContext &lc);
 
   // file::File *GetOutput() { return output; }
   // void SetOutput(file::File *o) { output = o; };

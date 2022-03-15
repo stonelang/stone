@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILATION_COMPILATION_H
-#define STONE_COMPILATION_COMPILATION_H
+#ifndef STONE_DRIVER_COMPILATION_H
+#define STONE_DRIVER_COMPILATION_H
 
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
@@ -77,6 +77,7 @@ public:
 
 public:
   Driver &GetDriver() { return driver; }
+};
 
 } // namespace stone
 

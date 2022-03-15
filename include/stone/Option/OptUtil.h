@@ -1,5 +1,5 @@
-#ifndef STONE_OPTION_SUPPORT_H
-#define STONE_OPTION_SUPPORT_H
+#ifndef STONE_OPTION_OPTUTIL_H
+#define STONE_OPTION_OPTUTIL_H
 
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
@@ -12,7 +12,7 @@ namespace stone {
 namespace opts {
 
 // TODO: OptSupport
-class Support final {
+class OptUtil final {
 
   std::unique_ptr<Mode> mode;
 
@@ -32,7 +32,7 @@ public:
   file::Files inputFiles;
 
 public:
-  Support();
+  OptUtil();
 
   /// Return true means successful
   bool ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx = nullptr);
@@ -59,19 +59,14 @@ public:
 
   void SetIncludedFlagsBitmask(unsigned flag) { includedFlagsBitmask = flag; }
   void SetExcludedFlagsBitmask(unsigned flag) { excludedFlagsBitmask = flag; }
-
   unsigned GetMissingArgIndex() const { return missingArgIndex; }
   unsigned GetMissingArgCount() const { return missingArgCount; }
 
   void PrintHelp();
 
-  // void BuildInputFiles();
-  // file::Files GetInputFiles() { return inputFiles; }
-  // void AddInputFile(file::File &file);
-
 private:
-  /// Think about static
   static std::unique_ptr<Mode> CreateMode(const llvm::opt::InputArgList &ial);
+  static file::Files BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace opts

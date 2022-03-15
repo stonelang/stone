@@ -42,6 +42,7 @@ public:
 
 public:
   SystemOptions();
+
 public:
   void SetTargetTriple(const llvm::Triple &triple);
   void SetTargetTriple(llvm::StringRef Triple);

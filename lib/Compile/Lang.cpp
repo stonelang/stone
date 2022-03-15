@@ -102,7 +102,7 @@ syn::Module *Lang::GetMainModule() const {
   return mainModule;
 }
 
-void Lang::PrintHelp() { lc.GetSupport().PrintHelp(); }
+void Lang::PrintHelp() { lc.GetOptUtil().PrintHelp(); }
 
 void Lang::PrintVersion() {}
 

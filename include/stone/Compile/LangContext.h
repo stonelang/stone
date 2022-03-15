@@ -9,7 +9,7 @@
 #include "stone/Core/Mem.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Gen/CodeGenOptions.h"
-#include "stone/Option/Support.h"
+#include "stone/Option/OptUtil.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
 #include "llvm/Option/ArgList.h"
@@ -22,7 +22,7 @@ class LangContext final {
 
   LangOptions langOpts;
 
-  opts::Support support;
+  opts::OptUtil optUtil;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -69,16 +69,14 @@ public:
 public:
   Context &GetContext() { return ctx; }
 
-  opts::Support &GetSupport() { return support; }
+  opts::OptUtil &GetOptUtil() { return optUtil; }
 
-  Mode &GetMode() { return support.GetMode(); }
-  const Mode &GetMode() const { return support.GetMode(); }
+  Mode &GetMode() { return optUtil.GetMode(); }
+  const Mode &GetMode() const { return optUtil.GetMode(); }
 
-  file::Files &GetInputFiles() { return support.inputFiles; }
+  file::Files &GetInputFiles() { return optUtil.inputFiles; }
 
-  SourceUnit *GetSourceUnit(const unsigned srcID) {
-    return sources[srcID];
-  }
+  SourceUnit *GetSourceUnit(const unsigned srcID) { return sources[srcID]; }
 
   std::unique_ptr<OutputFile> ComputeOutputFile(const unsigned srcID);
 

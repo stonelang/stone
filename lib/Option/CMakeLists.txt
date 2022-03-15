@@ -9,7 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_option_sources
-	Support.cpp	
+	OptUtil.cpp	
 	Options.cpp
 
 	LINK_LIBS 

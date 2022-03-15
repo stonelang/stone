@@ -1,6 +1,7 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
+#include "stone/Core/SystemOptions.h"
 #include "stone/Option/Options.h"
 
 namespace stone {
@@ -8,13 +9,14 @@ namespace stone {
 enum class LTOKind { None, Full, Thin };
 
 // CompileModel
-enum class CompileModel : uint8_t None,
-    /// A single compile using a single compile invocation without -main-file.
-    Single,
-    /// Multiple compile invocations and -main-file.
-    Multiple,
-    /// A single batch that contains may 'Multiple' CompilingKind.
-    Batch
+enum class CompileModel : uint8_t {
+  None,
+  /// A single compile using a single compile invocation without -main-file.
+  Single,
+  /// Multiple compile invocations and -main-file.
+  Multiple,
+  /// A single batch that contains may 'Multiple' CompilingKind.
+  Batch
 };
 
 enum class LinkMode : uint8_t {
