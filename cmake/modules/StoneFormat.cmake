@@ -18,7 +18,6 @@ set(stone_lib_files
 set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/driver/*.cpp
 	${STONE_SOURCE_DIR}/tools/compile/*.cpp    
-	${STONE_SOURCE_DIR}/tools/try/*.cpp
 )
 set(stone_tests_files
 	${STONE_SOURCE_DIR}/tests/units/Core/*.cpp 

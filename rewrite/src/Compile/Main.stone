@@ -1,7 +1,5 @@
 
 
-
 fun Main(string[] args) -> int {
-
-	Stc::Run(args);
+	Lang::Run(args);
 }
