@@ -1,0 +1,19 @@
+
+space Stone.Syntax {
+	
+	public struct Lexer {
+		private uint64 bufferID;
+		private ref SrcMgr sm; 
+	
+	}
+	public Lexer::this(uint64 bufferID, ref SrcMgr sm) {
+	}
+	public Lexer::~this() {
+	}
+	public fun Lexer::Lex(ref Token token) -> void {
+	
+	}
+
+	public fun Lexer::LexIdentifier() -> void {
+	}
+}

@@ -1,0 +1,56 @@
+#ifndef BASE_STMT
+#define BASE_STMT(Id, Parent)
+#endif
+
+/// A subclass of LabeledStmt.  Forwards to STMT by default.
+#ifndef LABELED_STMT
+#define LABELED_STMT(Id, Parent) STMT(Id, Parent)
+#endif
+
+/// A subclass of LabeledStmt.  Forwards to STMT by default.
+#ifndef EXPR_STMT
+#define EXPR_STMT(Id, Parent) STMT(Id, Parent)
+#endif
+
+/// A convenience for determining the range of statements.  These will always
+/// appear immediately after the last member.
+#ifndef STMT_RANGE
+#define STMT_RANGE(Id, First, Last)
+#endif
+
+#ifndef LAST_STMT
+#define LAST_STMT(Id)
+#endif
+
+STMT(Brace, Stmt)
+STMT(Return, Stmt)
+STMT(Yield, Stmt)
+STMT(Defer, Stmt)
+STMT(Case, Stmt)
+STMT(Break, Stmt)
+STMT(Continue, Stmt)
+BASE_STMT(ValueStmt, Stmt)
+  BASE_STMT(Labeled, ValueStmt)
+    BASE_STMT(LabeledConditional, LabeledStmt)
+      LABELED_STMT(If, LabeledConditionalStmt)
+      LABELED_STMT(While, LabeledConditionalStmt)
+      STMT_RANGE(LabeledConditional, If, While)
+    LABELED_STMT(Do, LabeledStmt)
+    LABELED_STMT(Loop, LabeledStmt)
+    LABELED_STMT(ForEach, LabeledStmt)
+    LABELED_STMT(Match, LabeledStmt)
+    STMT_RANGE(Labeled, If, Match)
+  BASE_STMT(Expr, ValueStmt)
+    EXPR_STMT(New,  Expr)
+    EXPR_STMT(This, Expr)
+    EXPR_STMT(Call, Expr)
+
+STMT(Next, Stmt)
+LAST_STMT(Next)
+
+#undef STMT_RANGE
+#undef LABELED_STMT
+#undef BASE_STMT
+#undef EXPR_STMT
+#undef STMT
+#undef LAST_STMT

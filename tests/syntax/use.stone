@@ -1,0 +1,8 @@
+
+
+use Syntax.Physics;
+
+fun Main() -> i32 {	
+	return 0;
+}
+

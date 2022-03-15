@@ -1,0 +1,13 @@
+space Stone.Compilation {
+
+public fun RunCompilation(string[] args) -> int32 {
+
+	auto compilation = new Compilation(); 
+	compilation.Init();
+	compilation.Build();
+	compilation.Run();
+	compilaiton.Finish();
+	delete compilation; 
+	return 0;
+
+}

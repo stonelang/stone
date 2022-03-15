@@ -1,0 +1,34 @@
+use Stone.Basic; 
+
+
+space Stone.Syntax {
+	
+	public struct Parser {
+		private Lexer* lexer = null;
+		private ref Syntax syntax = null;
+
+	}
+	public Parser::this(ref Syntax syntax) {
+			this.syntax = syntax; 
+			this.lexer = new Lexer();
+	}
+	public Parser::~this() {
+		if(lexer){
+			free lexer;
+		}
+	}
+	public fun Parser::ParseTopDecl() -> SyntaxResult<Decl*>  {
+
+	}
+	public fun Parser::ParseDecl() -> SyntaxResult<Decl*> {
+
+	}
+	public fun Parser::ParseFunDecl() -> SyntaxResult<Decl*> {
+
+	}
+	
+	public fun Parser::ParseStmt() -> SyntaxResult<Stmt*> {
+
+	}
+}
+

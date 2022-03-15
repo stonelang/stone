@@ -1,0 +1,7 @@
+
+
+fun Main() -> void {
+
+	int a = 10;
+	int b* = &a; 
+}

@@ -1,0 +1,9 @@
+
+space Stone.Utils {
+	public struct Statistic {
+	}
+	public Statistic::this() {
+	}
+	public Statistic::~this() {
+	}
+}

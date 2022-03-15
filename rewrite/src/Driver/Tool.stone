@@ -1,0 +1,22 @@
+space Stone.Compilaiton {
+
+	public struct Tool {
+		private TokenKind kind;
+		private string path; 
+		private string name;
+		private string fullName;
+	}
+	delete Tool::this(); 
+
+	public Tool::this(TokenKind kind, string path, string name) {
+		this.kind = kind;
+		this.fullName = fullName;
+		this.shortName = shortName; 
+	}
+
+	public fun Tool::GetKind() -> string { return this.kind; }
+	public fun Tool::GetName() -> string { return this.name; }
+	public fun Tool::GetPath() -> string { return this.path;}
+	public fun Tool::GetFullName() -> string { return (this.path + this.name) ;}
+	
+}

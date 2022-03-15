@@ -1,0 +1,26 @@
+
+// Module one 
+struct Universe {
+
+}
+Universe::Initialize(int a) {
+
+}
+Universe::Finalize() {
+
+}
+
+fun Universe::Start() -> bool {
+}
+enum Planet {
+	Earth,
+	Mars,
+}
+
+extension Planet {
+	Pluto 
+}
+// Some other module 
+extension Universe::MakeEarth() -> bool {
+
+}

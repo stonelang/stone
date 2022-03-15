@@ -1,0 +1,6 @@
+
+space Syntax.Space { 
+	public fun F0() -> void {
+	}
+}
+

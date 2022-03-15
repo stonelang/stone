@@ -1,0 +1,9 @@
+
+space Stone.Utils {
+
+	public struct DiagnosticOptions {
+  }
+
+}
+
+

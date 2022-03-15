@@ -1,0 +1,9 @@
+
+space Stone.Basic {
+	public struct LangContext {
+	}
+	public struct LangOptions {
+	}
+	public struct LangVersion {
+	}
+}

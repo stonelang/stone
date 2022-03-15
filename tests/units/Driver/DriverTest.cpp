@@ -1,0 +1,37 @@
+#include "stone/Driver/Driver.h"
+#include "stone/Core/Context.h"
+#include "stone/Core/Malloc.h"
+#include "stone/Core/SrcMgr.h"
+#include "stone/Core/SystemOptions.h"
+
+#include "gtest/gtest.h"
+
+using namespace stone;
+
+class DriverTest : public ::testing::Test {
+protected:
+  Context ctx;
+};
+
+TEST_F(DriverTest, ProcessIntent) {
+
+  Driver driver("stone", "stone");
+  driver.Initialize();
+
+  const char *args[] = {"-parse", "test.stone"};
+  auto &ial = driver.ParseArguments(args);
+
+  // driver.BuildSession(ial);
+  // auto &compilation = driver.BuildCompilation(ial);
+  // auto &queue = driver.BuildJobQueue();
+
+  // compilation.Run(queue);
+
+  // auto driverOptions = driver.BuildOptions(*parsedArgs.get());
+  // driver.Build(*parsedArgs.get()) // all of this can be done here
+  // auto tc = driver.BuildToolChain(*parsedArgs.get())
+  // auto c = driver.BuildCompilation(*tc.get(), parsedArgs);
+}
+
+TEST_F(DriverTest, CompileIntent) {}
+TEST_F(DriverTest, LinkIntent) {}

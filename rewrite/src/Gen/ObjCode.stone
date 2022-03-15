@@ -1,0 +1,10 @@
+
+space Stone.Gen {
+
+	public struct ObjCode {
+	}
+	public ObjCode::this() {
+	}
+	public ObjCode::~this() {
+	}
+}

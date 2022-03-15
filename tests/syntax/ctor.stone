@@ -1,0 +1,29 @@
+
+
+public struct Spin {
+}
+public struct Proton {
+	private Spin* spin = null;
+}
+public Proton::this(Spin* spin){
+		this.spin = spin;
+}
+public Proton::~this(){
+	if(spin) {
+		delete spin; 
+	}
+}
+
+
+public Proton::this() : this (null) {
+
+}
+public Proton::Initialize(Spin* spin){
+		this.spin = spin;
+}
+public Proton::~Initialize() {
+	if(spin) {
+		delete spin; 
+	}
+}
+

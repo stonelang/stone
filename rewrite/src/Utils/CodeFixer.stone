@@ -1,0 +1,24 @@
+
+space Stone.Utils {
+
+	public struct CodeFix {
+		private string code;
+		private CharSrcRange range; 
+	}
+
+	public CodeFix::this(CharSrcRange range, string code) {
+		this.range = range; 
+		this.code = code; 
+	}
+	public CodeFix::~this() {
+	}
+	public struct CodeFixer {
+		private ref InFlightDiagnostic inFlightDiag;
+  }
+	public default CodeFixer::this(ref InFlightDiagnostic inFlightDiag){
+		this.inFlightDiag = inFlightDiag;
+	}
+  public fun CodeFixer::InsertFrom(SrcLoc loc, string code) -> ref InFlightDiagnostic {
+		
+	}  
+}

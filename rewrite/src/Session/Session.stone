@@ -1,0 +1,10 @@
+
+space Stone.Session {
+	
+	public any<T> interface Session {
+		fun Build() void;
+		fun Run() void ;
+		fun Finish() bool;
+		fun GetSessionOptions() ref SessionOptions;
+	}
+}

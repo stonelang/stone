@@ -1,0 +1,8 @@
+
+space STD.Collections {
+
+	public struct Array {
+	}
+	public Array::this() {
+	}
+}

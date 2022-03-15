@@ -1,0 +1,59 @@
+
+
+space Stone.Syntax {
+
+	public enum DeclKind {
+		Fun,
+		Struct,
+		Interface
+	}
+	public struct Decl : Node<Decl> {
+		private DeclKind kind = DeclKind.None;
+	}
+	public Decl::this() {
+	}
+	public Decl::~this() {
+	}
+	public fun Decl::Walk() -> void {
+	}
+	public fun Decl::GetKind() -> DeclKind {
+		return kind;
+	}
+
+	public struct ValueDecl {
+		private Decl* decl = null;
+		private DeclName name;
+		private Loc nameLoc;
+
+	}
+	public ValueDecl::this(DeclName name, Loc nameLoc) {
+			this.decl = new Decl();
+	}
+	public ValueDecl::~this() {
+		if(decl){
+			free decl; 
+		}
+	}
+	public fun ValueDecl::GetDecl() -> Decl* {
+		return decl;
+	}
+
+	public struct FunDecl {
+		private ValueDecl* vd = null; 
+		private Loc funLoc; 
+	}
+	public FunDecl::this(Loc funLoc, DeclName name, Loc nameLoc) {
+			this.funLoc = funLoc; 
+			this.name = name; 
+			this.nameLoc = nameLoc; 
+			this.vd = new ValueDecl(name, nameLoc);
+		}
+	public FunDecl::~this() {
+		if (vd){
+			free vd;
+		}
+	}
+	public fun FunDecl::GetValueDecl() -> ValueDecl* {
+		return vd; 
+	}
+}

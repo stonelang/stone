@@ -1,0 +1,32 @@
+use Stone.Session;
+use Stone.Syntax;
+use Stone.Basic; 
+
+space Stone {
+
+	public struct Stc : Session<Stc> {
+		///
+		private Basic* basic = null;
+		///
+		private StcOptions* stcOpts = null; 
+		///
+		private Module* mainModule = null;
+	}
+
+	public Stc::this(Basic* basic) {
+			this.basic = basic; 
+			this.stcOpts = new StcOptions(); 
+			this.mainModule = new Module(); 
+	}
+	public Stc::~this() {
+			if(mainModule) { 
+				free mainModule;
+			}
+	}
+	public fun Stc::Run() -> void {
+	}
+
+	public fun Stc::GetBasic() -> Basic* {
+		return basic; 
+	}
+}

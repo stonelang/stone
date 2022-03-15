@@ -1,0 +1,51 @@
+
+use Stone.Syntax; 
+use Stone.Diagnostics;
+
+space Stone.Compile {
+
+	fun Parse() -> bool {
+		return Parse(false); 
+	}
+
+	fun Parse(bool check) -> bool {
+	}
+
+	fun Check() -> bool {
+		Parse(true);
+	}
+
+	fun EmitIR() -> bool {
+
+	}
+
+	fun EmitModule() -> bool {
+
+	}
+	fun EmitObject() -> bool {
+
+	}
+
+	fun Compile(ref Compiler compiler) -> bool {
+
+	}
+
+	public fun Compile(string[] args, PipelineEngine* pe) -> int {
+
+		Compiler compiler{args};
+		compiler.Build();
+
+		if(compiler.HasError()) {
+			return false; 
+		}
+
+		Compile(compiler);
+
+		defer {
+			compiler.Finish();
+		}
+		compiler.Run();
+	
+		return 0;
+	}
+}

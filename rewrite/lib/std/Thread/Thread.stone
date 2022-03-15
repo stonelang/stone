@@ -1,0 +1,13 @@
+
+space STD.Thread {
+
+	public struct Thread {
+	}
+	public Thread::Init(fun ThreadFun){
+	}
+	public Thread::Start() -> void {
+	
+	}
+	public Thread::Join() -> void {
+	}
+}

@@ -1,0 +1,54 @@
+
+space Stone.Physics.QM {
+
+	struct ParticleProfile {
+		public float32 mass; 
+		public string name; 
+	}
+	public interface Particle {
+		fun Fire() -> auto;  
+	}	
+	struct Proton : Particle {
+		ParticleProfile* profile = null;
+	}
+
+	public Proton::this(const ParticleProfile* profile) {
+			this.profile = profile; 
+	 }
+	public Proton::~this() {
+		free profile;
+	}
+	public fun Proton::GetProfile() -> ParticleProfile* {
+		return profile;  
+	}
+	public fun Proton::Fire() -> auto {
+		int* result = null;
+		if(profile.mass > 10.00) {
+		}
+		return true;
+	}
+}
+
+// You may want to consider:
+
+// Physics.stone
+use System.Physics.QM;
+
+public fun Fire(Particle* particle) -> bool {
+	if(particle == null) {
+		Panic("Could not create 'Particle'");
+	}
+	return false; 
+}
+
+// Main
+use Stone.Core;
+use Stone.Physics; 
+
+fun Main() -> int32 {	
+	auto particle = new Particle();
+	Fire(particle);
+	delete particle; 
+	return 0; 
+}
+

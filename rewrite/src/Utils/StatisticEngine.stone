@@ -1,0 +1,12 @@
+
+space Stone.Utils {
+
+	public struct StatisticEngine {
+	}
+
+	public StatisticEngine::this() {
+	}
+
+	public StatisticEngine::~this() {
+	}
+}

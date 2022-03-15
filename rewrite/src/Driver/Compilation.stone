@@ -1,0 +1,27 @@
+use STD.Collections; 
+
+space Stone.Compilation {
+
+	public struct Compilaiton  : Session<Compilation> {
+		private ref CompilationOptions compilationOpts;
+		private Queue* jobQueue = null; 
+	}
+	public Compilation::this(ref CompiationOptions compilationOpts) {
+		this.compilationOpts = compilationOpts; 
+		this.jobQueue = new JobQueue(); 
+
+	}
+	public Compilation::~this() {
+		if(jobQueue){
+			free jobQueue; 
+		}
+	}
+	public fun Compilation::Build() {
+	}
+	public fun Compilation::Finish() {
+
+	}
+
+	public fun JobQueue* Compilation::GetQueue() { return this.jobQueue;}
+}
+

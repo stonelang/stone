@@ -1,0 +1,6 @@
+space Stone.Syntax {
+
+	public struct File {
+		public Decl[] decls; 
+	}
+}

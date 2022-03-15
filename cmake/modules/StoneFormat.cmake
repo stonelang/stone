@@ -1,0 +1,45 @@
+set(stone_include_files
+	${STONE_SOURCE_DIR}/include/stone/Core/*.h
+	${STONE_SOURCE_DIR}/include/stone/Gen/*.h
+	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
+	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/include/stone/Syntax/*.h
+	${STONE_SOURCE_DIR}/include/stone/Option/*.h
+)
+set(stone_lib_files
+	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
+	${STONE_SOURCE_DIR}/lib/Core/*.cpp
+	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
+	${STONE_SOURCE_DIR}/lib/Gen/*.cpp
+	${STONE_SOURCE_DIR}/lib/Option/*.cpp		
+	${STONE_SOURCE_DIR}/lib/Syntax/*.cpp
+	
+)
+set(stone_tools_files
+	${STONE_SOURCE_DIR}/tools/driver/*.cpp
+	${STONE_SOURCE_DIR}/tools/compile/*.cpp    
+	${STONE_SOURCE_DIR}/tools/try/*.cpp
+)
+set(stone_tests_files
+	${STONE_SOURCE_DIR}/tests/units/Core/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Gen/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Driver/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Parse/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Check/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Lex/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
+)
+find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
+	if(CLANG_FORMAT)
+	add_custom_target(
+		stone-fmt
+		clang-format
+		-i
+		-style=llvm
+		${stone_lib_files}
+		${stone_include_files}
+		${stone_tools_files}
+		${stone_tests_files}
+	)
+endif()

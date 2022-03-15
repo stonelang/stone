@@ -1,0 +1,6 @@
+
+space Stone.Utils {
+
+	public struct Source {
+	}
+}

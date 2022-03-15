@@ -1,0 +1,18 @@
+
+* Start working on ParseTopDecl -- yoyu are now in an infinite loop. 
+* Module.cpp: 23 - you are passing nullptr for DeclContext
+
+jobs:
+	0: compile(test0.stone) -> object
+	1: compile(test1.stone) -> object
+	2: compile(test2.stone) -> object
+	3: link(0,1,2) -> image 
+
+* Foreign/C
+
+
+
+
+* stone.build 
+
+/path/file.stone 'last-build-date' -build-clean 

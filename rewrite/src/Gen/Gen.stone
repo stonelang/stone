@@ -1,0 +1,8 @@
+
+use Stone.Syntax; 
+
+space Stone.CodeGen {
+	public fun Gen() -> int  {
+		return 0; 
+	}
+}

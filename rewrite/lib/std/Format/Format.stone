@@ -1,0 +1,5 @@
+
+space STD.Format {
+	public fun Print(string[] args) -> void {
+	}
+}

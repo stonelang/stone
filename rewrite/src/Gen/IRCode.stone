@@ -1,0 +1,10 @@
+
+space Stone.Gen {
+
+	public struct IRCode {
+	}
+	public IRCode::this() {
+	}
+	public IRCode::~this() {
+	}
+}

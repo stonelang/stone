@@ -1,0 +1,16 @@
+space Stone.Compilation {
+	public any<T> interface Job {
+	}
+	public struct StoneJob : Job<StoneJob> {
+	}
+	public StoneJob::this() {
+	}
+	public StoneJob::~this() {
+	}
+	public struct LDJob : Job<LDJob> {
+	}
+	public LDJob::this() {
+	}
+	public LDJob::~this() {
+	}
+}

@@ -1,0 +1,10 @@
+space Stone.Syntax {
+
+	public struct Walker {
+	}
+	public Walker::this() {
+	}
+	public Walker::~this() {
+	}
+}
+

@@ -1,0 +1,11 @@
+
+
+space STD.Foreign.C {
+	
+	public fun Free() -> void {
+
+	}
+	public fun Malloc() -> void * {
+	}
+
+}

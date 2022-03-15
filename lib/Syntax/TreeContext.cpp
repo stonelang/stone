@@ -1,0 +1,35 @@
+#include <algorithm>
+#include <memory>
+
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/Statistic.h"
+#include "llvm/ADT/StringMap.h"
+#include "llvm/ADT/StringSwitch.h"
+#include "llvm/Support/Allocator.h"
+#include "llvm/Support/Compiler.h"
+
+#include "stone/Core/DiagnosticEngine.h"
+#include "stone/Syntax/TreeContext.h"
+
+using namespace stone;
+using namespace stone::syn;
+
+TreeContext::TreeContext(stone::Context &ctx, const SearchPathOptions &spOpts)
+    : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetSystemOptions()) {
+
+  stats.reset(new TreeContextStats(*this, ctx));
+  ctx.GetStatEngine().Register(stats.get());
+
+  builtin.Init(*this);
+}
+
+TreeContext::~TreeContext() {}
+
+Identifier &TreeContext::GetIdentifier(llvm::StringRef name) {
+  return identifiers.Get(name);
+}
+size_t TreeContext::GetSizeOfMemUsed() const {
+  return bumpAlloc.getTotalMemory();
+}
+
+void TreeContextStats::Print() {}

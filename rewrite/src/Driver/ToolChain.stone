@@ -1,0 +1,43 @@
+space Stone.Compilaiton {
+
+	public interface ToolChain {
+		fun BuildStoneTool() -> Tool*; 
+		fun BuildLDTool() -> Tool*; 
+	}
+
+	public struct CompilaitonToolChain : ToolChain {
+
+	}
+	public fun CompilaitonToolChain::Build() -> void {
+		private List<Tool> tools; 
+	}
+	public CompilaitonToolChain::Build() -> void {
+
+		auto stoneTool = BuildStoneTool(); 
+		if(tool){
+			this.tools.Add(stoneTool)
+		}
+	}
+
+	public fun CompilaitonToolChain::BuildLDTool() -> Tool* {
+		auto tool = new Tool(ToolKind::LD, )
+	}
+	public fun CompilaitonToolChain::BuildStoneTool() -> Tool* {
+		
+	}
+	public struct DarwinToolChain : Builder, Runner {
+		private ref CompilaitonToolChain ctc;
+	}
+	public DarwinToolChain::this(ref CompilaitonToolChain ctc) {
+		this.ctc = ctc; 
+	}
+	public DarwinToolChain::~this() {
+
+	}
+	public fun DarwinToolChain::Build() -> void {
+		this.ctc.Build(); 
+	}
+	public fun DarwinToolChain::Run() -> bool {
+
+	}
+}
