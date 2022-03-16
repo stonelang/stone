@@ -1,4 +1,5 @@
 #include "stone/Compile/Compile.h"
+#include "stone/Compile/DebugLangListener.h"
 #include "stone/Compile/Lang.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Compile/Parse.h"
@@ -27,13 +28,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, LangListener *listener) {
 
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
-
   FINISH_LLVM_INIT();
-
-  Lang lang(listener);
-  lang.Initialize();
-
-  STONE_DEFER { lang.Finish(); };
 
   auto Finish = [&](int status = 0) -> int {
     int err = 1;
@@ -43,6 +38,19 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (args.empty()) {
     // ctx.Printd(SrcLoc(), diag::err_no_compile_args);
     return Finish(1);
+  }
+
+  std::unique_ptr<DebugLangListener> debugListener;
+  Lang lang;
+
+  STONE_DEFER { lang.Finish(); };
+  lang.Initialize();
+
+  if (listener) {
+    lang.SetListener(listener);
+  } else {
+    debugListener = std::make_unique<DebugLangListener>();
+    lang.SetListener(debugListener.get());
   }
 
   // Build up the context
@@ -74,10 +82,10 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // lc.BuildSources();
-
-  if (listener) {
-    listener->OnCompileConfigured(lang);
+  if (lang.GetListener()) {
+    lang.GetListener()->OnCompileConfigured(lang);
   }
+
   lang.Compile();
 
   return Finish();

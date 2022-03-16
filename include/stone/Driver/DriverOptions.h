@@ -11,9 +11,11 @@ enum class LTOKind { None, Full, Thin };
 // CompileModel
 enum class CompileModel : uint8_t {
   None,
-  /// A single compile using a single compile invocation without -main-file.
+  /// There is no linking in this mode -- we pass all the files to the compile
+  /// command This scenario will not have a file with 'fun Main()'
   Single,
-  /// Multiple compile invocations and -main-file.
+  /// There is linking in this mode. So, we pass each file to the compile
+  /// command which produces an object file
   Multiple,
   /// A single batch that contains may 'Multiple' CompilingKind.
   Batch

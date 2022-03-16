@@ -186,7 +186,7 @@ class BatchJob : public Job {};
 // public:
 //   ExecutableLinkJob(Intent &intent, Context &ctx, Tool &tool, bool
 //   requiresLTO);
-//   // void BuildCmdOutput() override;
+//
 
 //   int ExecuteAsync() override;
 //   int ExecuteSync() override;

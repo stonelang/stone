@@ -34,17 +34,28 @@ static void TryBuildMergeModuleIntent() {
 static void BuildCompileIntent(Driver &driver, Compilation &compilation,
                                BuildCompilationState &bcs, Intent *intent) {
   assert(intent);
+
+  auto IsTopLevel = [&]() -> bool {
+    bool isTopLevel = (driver.CanLink()) ? false : true;
+    bcs.current = compilation.CreateIntent<CompileIntent>(intent, isTopLevel);
+    return isTopLevel;
+  };
+  if (IsTopLevel()) {
+    bcs.topLevelIntents.push_back(bcs.current);
+  } else {
+    bcs.linkerInputs.push_back(bcs.current);
+  }
+
   // TODO: GetLastBuildState
-  // bool isTopLvel = (driver.IsLinkable()) ? false : true;
-  // bi.current =
-  //     driver.GetCompilation().CreateIntent<CompileIntent>(intent, isTopLvel);
+  // bool isTopLevel = (driver.CanLink()) ? false : true;
+  // bcs.current = compilation.CreateIntent<CompileIntent>(intent, isTopLevel);
 
-  // // TODO: driver.GetDriverOptions().outputFileType);
-  // // driver.GetBuildSystem().GetLastBuildState());
+  // TODO: driver.GetDriverOptions().outputFileType);
+  // driver.GetBuildSystem().GetLastBuildState());
 
-  // // TODO: Think about
-  // if (!isTopLvel) {
-  //   bi.linkerInputs.push_back(bi.current);
+  // TODO: Think about
+  // if (!isTopLevel) {
+  //   bcs.linkerInputs.push_back(bcs.current);
   // }
 }
 
@@ -67,10 +78,9 @@ static void BuildIntent(Driver &driver, Compilation &compilation,
   case file::Type::Object:
     BuildLinkIntent(driver, compilation, bcs, bcs.current);
     break;
-    default:
-  stone::Panic("Alien file type whilst builid intent");
+  default:
+    stone::Panic("Alien file type whilst builid intent");
   }
-
 }
 
 void Driver::BuildIntents(Compilation &compilation, BuildCompilationState &) {

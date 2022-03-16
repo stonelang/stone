@@ -3,6 +3,7 @@
 #include "stone/Core/LLVMInit.h"
 #include "stone/Core/MainExecutablePath.h"
 #include "stone/Driver/Compilation.h"
+#include "stone/Driver/DebugCompilationListener.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -28,9 +29,8 @@ void Driver::Run() {
 int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
                 void *mainAddr, CompilationListener *listener) {
 
-  FINISH_LLVM_INIT();
-
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
+  FINISH_LLVM_INIT();
 
   auto path = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto name = file::GetStem(path);
@@ -45,10 +45,18 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
 
-  Driver driver(name, path, listener);
+  std::unique_ptr<DebugCompilationListener> debugListener;
+
+  Driver driver(name, path);
+  STONE_DEFER { driver.Finish(); };
   driver.Initialize();
 
-  STONE_DEFER { driver.Finish(); };
+  if (listener) {
+    driver.SetListener(listener);
+  } else {
+    debugListener = std::make_unique<DebugCompilationListener>();
+    driver.SetListener(debugListener.get());
+  }
 
   if (driver.ParseArgs(args) == stone::Err) {
     return Finish(1);

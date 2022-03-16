@@ -27,6 +27,11 @@ class Intent {
   IntentKind kind;
 
 public:
+  using size_type = llvm::ArrayRef<const Intent *>::size_type;
+  using iterator = llvm::ArrayRef<const Intent *>::iterator;
+  using const_iterator = llvm::ArrayRef<const Intent *>::const_iterator;
+
+public:
   Intent(IntentKind kind) : kind(kind) {}
   virtual ~Intent() = default;
 
@@ -64,6 +69,17 @@ public:
       : Intent(kind), inputs(inputs), topLevel(topLevel) {}
 
 public:
+  llvm::ArrayRef<const Intent *> GetInputs() const { return inputs; }
+  void AddInput(const Intent *input) { inputs.push_back(input); }
+
+public:
+  size_type size() const { return inputs.size(); }
+  iterator begin() { return inputs.begin(); }
+  iterator end() { return inputs.end(); }
+  const_iterator begin() const { return inputs.begin(); }
+  const_iterator end() const { return inputs.end(); }
+
+public:
   bool IsTopLevel() { return topLevel; }
 };
 
@@ -85,7 +101,7 @@ class LinkIntent : public CompilationIntent {
 
 public:
   LinkIntent(IntentKind kind, Intents inputs)
-      : CompilationIntent(kind, inputs, true /*TopLevel*/) {}
+      : CompilationIntent(kind, inputs, true /*Always TopLevel*/) {}
 
 public:
 };
@@ -102,10 +118,11 @@ public:
 };
 
 class DynamicLinkIntent final : public LinkIntent {
-  // bool requiresLTO;
+  bool requiresLTO;
+
 public:
-  DynamicLinkIntent(Intents inputs, bool topLevel)
-      : LinkIntent(IntentKind::DynamicLink, inputs) {}
+  DynamicLinkIntent(Intents inputs, bool topLevel, bool requiresLTO = false)
+      : LinkIntent(IntentKind::DynamicLink, inputs), requiresLTO(requiresLTO) {}
 
 public:
   static bool classof(const Intent *intent) {

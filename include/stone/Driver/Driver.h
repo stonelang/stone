@@ -140,10 +140,8 @@ public:
   Compilation &GetCompilation() { return *compilation.get(); }
   BuildSystem &GetBuildSystem() { return *buildSystem.get(); }
 
-  CompilationListener *GetListener() {
-    assert(listener);
-    return listener;
-  }
+  CompilationListener *GetListener() { return listener; }
+  void SetListener(CompilationListener *l) { listener = l; }
 
   // void BuildImageBaseName(const LinkJob &linkJob, ImageBaseName
   // &imageBaseName);

@@ -224,6 +224,7 @@ public:
 };
 
 namespace cmd {
+// TODO: Pass CommandInvocation
 int ExecuteSync(Command &command, Context *ctx = nullptr);
 int ExecuteAsync(Command &command, Context *ctx = nullptr);
 } // namespace cmd

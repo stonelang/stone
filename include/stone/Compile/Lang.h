@@ -90,6 +90,9 @@ public:
   /// TODO: Something to think about -- right now this is in Context.
   // void AddDiagnosticListener(DiagnosticListener* listener);
 
+  LangListener *GetListener() { return listener; }
+  void SetListener(LangListener *l) { listener = l; }
+
 public:
   /// Perform code analysis and code generation
   void Compile();
