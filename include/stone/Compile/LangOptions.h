@@ -6,6 +6,7 @@
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Gen/CodeGenOptions.h"
+#include "stone/Option/BaseOptions.h"
 #include "stone/Option/Options.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
@@ -13,7 +14,7 @@ using namespace stone::types;
 
 namespace stone {
 
-class LangOptions final {
+class LangOptions final : public opts::BaseOptions {
 public:
   /// Options for the entire system
   SystemOptions systemOpts;
@@ -27,13 +28,11 @@ public:
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
 
-  /// The default mode kind of the system
-  ModeKind defaultModeKind = ModeKind::EmitObject;
-
-  // private:
-  //   OptUtil optUtil;
-  // public:
-  //   OptUtil& GetOptUtil() { return optUtil; }
+public:
+  LangOptions() {
+    /// The default mode kind of the system
+    defaultModeKind = ModeKind::EmitObject;
+  }
 };
 
 } // namespace stone

@@ -75,7 +75,7 @@ public:
   Mode &GetMode() { return optUtil.GetMode(); }
   const Mode &GetMode() const { return optUtil.GetMode(); }
 
-  file::Files &GetInputFiles() { return optUtil.inputFiles; }
+  file::Files &GetInputFiles() { return langOpts.inputFiles; }
 
   SourceUnit *GetSourceUnit(const unsigned srcID) { return sources[srcID]; }
 

@@ -8,7 +8,7 @@
 using namespace stone;
 using namespace stone::opts;
 
-LangContext::LangContext() {}
+LangContext::LangContext() : optUtil(GetLangOptions()) {}
 LangContext::~LangContext() {}
 
 SourceUnit::~SourceUnit() {}
@@ -31,7 +31,7 @@ bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
     return stone::Err;
   }
 
-  for (auto &input : GetOptUtil().inputFiles) {
+  for (auto &input : langOpts.inputFiles) {
     BuildSourceUnit(input);
   }
   /// Now, build the source profiles

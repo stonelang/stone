@@ -9,7 +9,8 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-OptUtil::OptUtil() : optst(stone::opts::CreateOptTable()) {}
+OptUtil::OptUtil(BaseOptions &baseOpts)
+    : baseOpts(baseOpts), optst(stone::opts::CreateOptTable()) {}
 
 bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
 
@@ -94,18 +95,18 @@ void OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
         auto fileType = file::GetTypeByExt(file::GetExt(input));
         switch (fileType) {
         case file::Type::Stone: {
-          if (inputFileType == file::Type::None) {
-            inputFileType = file::Type::Stone;
-          } else if (inputFileType != file::Type::Stone) {
+          if (baseOpts.inputFileType == file::Type::None) {
+            baseOpts.inputFileType = file::Type::Stone;
+          } else if (baseOpts.inputFileType != file::Type::Stone) {
             stone::Panic("Different file types"); // TODO: Printd
           }
           AddInputFile(input, fileType);
           break;
         }
         case file::Type::Object: {
-          if (inputFileType == file::Type::None) {
-            inputFileType = file::Type::Object;
-          } else if (inputFileType != file::Type::Object) {
+          if (baseOpts.inputFileType == file::Type::None) {
+            baseOpts.inputFileType = file::Type::Object;
+          } else if (baseOpts.inputFileType != file::Type::Object) {
             // TODO: Different file types
             stone::Panic("Different file types"); // TODO: Printd
           }
@@ -143,7 +144,7 @@ void OptUtil::AddInputFile(llvm::StringRef name) {
 }
 // TODO: There is a potential to add duplicate files here.
 void OptUtil::AddInputFile(llvm::StringRef name, file::Type ty) {
-  inputFiles.push_back(file::File(name, ty));
+  baseOpts.inputFiles.push_back(file::File(name, ty));
 }
 
 void OptUtil::PrintHelp() {}

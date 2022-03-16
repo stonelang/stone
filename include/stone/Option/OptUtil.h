@@ -4,6 +4,7 @@
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
 
+#include "stone/Option/BaseOptions.h"
 #include "stone/Option/Mode.h"
 #include "stone/Option/Options.h"
 #include "llvm/Option/ArgList.h"
@@ -21,6 +22,8 @@ class OptUtil final {
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
+  BaseOptions &baseOpts;
+
   /// The options table
   std::unique_ptr<llvm::opt::OptTable> optst;
 
@@ -28,14 +31,7 @@ class OptUtil final {
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
 public:
-  /// All the input files
-  file::Files inputFiles;
-
-  /// The input type of the file(s) to process.
-  file::Type inputFileType = file::Type::None;
-
-public:
-  OptUtil();
+  OptUtil(BaseOptions &baseOpts);
 
   /// Return true means successful
   bool ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx = nullptr);
