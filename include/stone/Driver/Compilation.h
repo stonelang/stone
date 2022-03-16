@@ -13,7 +13,7 @@ namespace stone {
 
 class Job;
 class JobQueue;
-class BuildSystem; 
+class BuildSystem;
 class Compilation;
 
 class CompilationStats final : public Stats {

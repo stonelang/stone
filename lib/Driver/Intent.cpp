@@ -31,7 +31,7 @@ static void TryBuildMergeModuleIntent() {
   //   mergeModuleIntent = std::move(ibc.moduleInputs).IntoIntent(ibc.current);
   // }
 }
-static void BuildCompileIntent(Driver &driver, BuildCompilationCache &bcc,
+static void BuildCompileIntent(Driver &driver, BuildCompilationState &bcs,
                                Intent *intent) {
   assert(intent);
   // TODO: GetLastBuildState
@@ -48,14 +48,15 @@ static void BuildCompileIntent(Driver &driver, BuildCompilationCache &bcc,
   // }
 }
 
-static void BuildLinkIntent(Driver &driver, BuildCompilationCache &bcc,
+static void BuildLinkIntent(Driver &driver, BuildCompilationState &bcs,
                             Intent *intent) {
   // if (driver.IsLinkable()) {
   //   bi.likerInputs.push_back(intent);
   // }
 }
 
-static void BuildIntent(Driver &driver, BuildCompilationCache &bcc, file::File &input) {
+static void BuildIntent(Compilation& compilation, BuildCompilationState &bcs,
+                        file::File &input) {
 
   // bi.current = driver.GetCompilation().CreateIntent<ProcessIntent>(input);
   // assert(bi.current);
@@ -70,19 +71,18 @@ static void BuildIntent(Driver &driver, BuildCompilationCache &bcc, file::File &
   // }
 }
 
-void Driver::BuildIntents(BuildCompilationCache &bcc) {
+void Driver::BuildIntents(Compilation& compilation, BuildCompilationState &) {
 
   for (auto &input : GetDriverOptions().inputFiles) {
 
-    // if (GetBuild().IsDirty(input)) {
+    if (GetBuildSystem().IsDirty(input)) {
 
-    //   assert(input.GetType() == GetInputFileType() &&
-    //          "Incompatible input file types");
+      assert(input.GetType() == GetInputFileType() &&
+             "Incompatible input file types");
 
-    //   assert(file::IsPartOfCompilation(input.GetType()));
-
-    //   BuildIntent(*this, bi, input);
-    // }
+      assert(file::IsPartOfCompilation(input.GetType()));
+      BuildIntent(compilation, bcs, input);
+    }
   }
   // We are in optional territory -- try to build
 

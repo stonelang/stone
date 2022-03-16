@@ -48,19 +48,16 @@ bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
 std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
 
-  // if (driverOpts.cleanBuild) {
-  //   buildSystem->Clean();
-  // }
+  if (driverOpts.cleanBuild) {
+    GetBuildSystem().Clean();
+  }
+  GetBuildSystem().StartBuild();
 
   // Now, build the job system since we have a toolchain
-  //auto compilation = std::make_unique<Compilation>(*this);
+  auto compilation = std::make_unique<Compilation>(GetContext(), tc, GetBuildSystem());
 
-    //BuildCompilationCache bcc; 
-
-
-
-  // BuiltIntents bi;
-  // BuildIntents(bi);
+  BuildCompilationState bcs;
+  BuildIntents(*compilation.get(), bcs);
 
   if (driverOpts.printIntents) {
     // PrintIntents(bi);
@@ -70,7 +67,7 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   // BuiltJobs bj;
   // BuildJobs(bj, bi);
 
-  //return compilation;
+  // return compilation;
 
   return nullptr;
 }
@@ -178,14 +175,7 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const
 //     {}
 
-void Driver::PrintHelp() {
+void Driver::PrintHelp() {}
 
-}
-
-void Driver::PrintVersion() {
-
-
-}
+void Driver::PrintVersion() {}
 void Driver::Finish() {}
-
-

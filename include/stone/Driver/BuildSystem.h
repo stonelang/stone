@@ -46,6 +46,10 @@ public:
 
 public:
   llvm::sys::TimePoint<> GetStartTime();
+
+public:
+  void StartBuild();
+  void StopBuild();
 };
 
 } // namespace stone

@@ -19,7 +19,7 @@ public:
 };
 
 class Intent;
-class BuildCompilationCache final {
+class BuildCompilationState final {
 public:
   /// All the inputs associated with the module
   llvm::SmallVector<const Intent *, 4> moduleInputs;
@@ -57,7 +57,7 @@ class Driver final {
   /// derive otherwise-unspecified output filenames from context.
   OutputFileMap outputFileMap;
 
-  BuildCompilationCache bcc;
+  BuildCompilationState bcs;
 
 public:
   Driver(const Driver &) = delete;
@@ -110,13 +110,13 @@ public:
                                           const file::Files &inputs) const;
   CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
-  void BuildIntents(BuildCompilationCache &bcc);
-  void PrintIntents(BuildCompilationCache &bcc);
+  void BuildIntents(Compilation& compilation, BuildCompilationState &bcc);
+  void PrintIntents(BuildCompilationState &bcc);
 
-  void BuildJobs(BuildCompilationCache &bcc);
-  void PrintJobs(BuildCompilationCache &bcc);
+  void BuildJobs(Compilation& compilation, BuildCompilationState &bcs);
+  void PrintJobs(BuildCompilationState &bcs);
 
-  BuildCompilationCache &GetBuildCompilationCache() { return bcc; }
+  BuildCompilationState &GetBuildCompilationState() { return bcs; }
   CompilationOutputContext &GetOuputContext() { return coc; }
 
 public:

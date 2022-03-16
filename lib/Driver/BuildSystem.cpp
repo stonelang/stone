@@ -17,6 +17,14 @@ bool BuildSystem::IsDirty(file::File &entry) {
 void BuildSystem::Clean() {
   // Delelete stone.build
 }
+
+void BuildSystem::StartBuild(){
+
+}
+void BuildSystem::StopBuild() {
+
+
+}
 // class JobsBuilt final {
 //   Compilation &compilation;
 

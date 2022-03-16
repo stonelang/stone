@@ -3,6 +3,7 @@
 
 #include "stone/Core/File.h"
 #include "stone/Core/LLVM.h"
+#include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -80,7 +81,8 @@ public:
 };
 
 class LinkIntent : public CompilationIntent {
-  /// LinkMode
+  LinkMode linkMode;
+
 public:
   LinkIntent(IntentKind kind, Intents inputs)
       : CompilationIntent(kind, inputs, true /*TopLevel*/) {}
@@ -100,6 +102,7 @@ public:
 };
 
 class DynamicLinkIntent final : public LinkIntent {
+  // bool requiresLTO;
 public:
   DynamicLinkIntent(Intents inputs, bool topLevel)
       : LinkIntent(IntentKind::DynamicLink, inputs) {}
