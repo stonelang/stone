@@ -9,6 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_option_sources
+	BaseOptions.cpp
 	OptUtil.cpp	
 	Options.cpp
 
