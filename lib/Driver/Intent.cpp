@@ -55,7 +55,7 @@ static void BuildLinkIntent(Driver &driver, BuildCompilationCache &bcc,
   // }
 }
 
-static void BuildIntent(Driver &driver, BuiltIntents &bi, file::File &input) {
+static void BuildIntent(Driver &driver, BuildCompilationCache &bcc, file::File &input) {
 
   // bi.current = driver.GetCompilation().CreateIntent<ProcessIntent>(input);
   // assert(bi.current);
@@ -72,7 +72,7 @@ static void BuildIntent(Driver &driver, BuiltIntents &bi, file::File &input) {
 
 void Driver::BuildIntents(BuildCompilationCache &bcc) {
 
-  for (auto &input : GetOptions().inputFiles) {
+  for (auto &input : GetDriverOptions().inputFiles) {
 
     // if (GetBuild().IsDirty(input)) {
 

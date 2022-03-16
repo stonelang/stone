@@ -33,7 +33,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
 
   auto path = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  auto name = file::GetStem(programPath);
+  auto name = file::GetStem(path);
 
   auto Finish = [&](int status = 0) -> int {
     int err = 1;
@@ -67,5 +67,5 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
 
-  auto tc = driver.BuildToolChain(driver.GetInputArgList());
+  auto tc = driver.BuildToolChain(driver.GetOptUtil().GetInputArgList());
 }

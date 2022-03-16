@@ -17,16 +17,22 @@ class BuildState final {
 public:
 };
 
-class BuildHistory {};
+// class BuildEntry {
+// public:
+//   void PrevTime();
+//   void CurrTime();
+// };
 
-class BuildEntry {
+class BuildHistory final {
+  std::string path;
+
 public:
-  void PrevTime();
-  void CurrTime();
+  llvm::sys::TimePoint<> GetLastTime();
 };
 
 class BuildSystem final {
   Driver &driver;
+  // saveTempFiles
 
 public:
   BuildSystem(Driver &driver);
@@ -37,6 +43,9 @@ public:
 public:
   bool IsDirty(file::File &entry);
   void Clean();
+
+public:
+  llvm::sys::TimePoint<> GetStartTime();
 };
 
 } // namespace stone

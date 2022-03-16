@@ -1,5 +1,5 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Driver.h"
+#include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/Job.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -18,21 +18,21 @@
 
 using stone::Compilation;
 using stone::CompilationStats;
-using stone::Driver;
 using stone::Job;
 using stone::ModeKind;
 
-Compilation::Compilation(Driver &driver) : driver(driver) {
+Compilation::Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs)
+    : ctx(ctx), tc(tc), bs(bs) {
 
-  stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
-  driver.GetContext().GetStatEngine().Register(stats.get());
+  stats = std::make_unique<CompilationStats>(*this, ctx);
+  ctx.GetStatEngine().Register(stats.get());
 
-  switch (driver.GetToolChain().GetKind()) {
+  switch (tc.GetKind()) {
   case ToolChainKind::Darwin:
-    jobQueue = std::make_unique<DarwinJobQueue>(driver.GetContext());
+    jobQueue = std::make_unique<DarwinJobQueue>(ctx);
     break;
   case ToolChainKind::Unix:
-    jobQueue = std::make_unique<UnixJobQueue>(driver.GetContext());
+    jobQueue = std::make_unique<UnixJobQueue>(ctx);
     break;
   default:
     assert(false && "Unknown ToolChain Kind");
@@ -67,7 +67,7 @@ void Compilation::PrintJobs() {
 }
 
 void CompilationStats::Print() {
-  if (compilation.GetDriver().GetDriverOptions().systemOpts.printStatistics) {
+  if (compilation.GetContext().GetSystemOptions().printStatistics) {
     // GetContext().Out() << compilation.GetSessionName() << '\n';
   }
 }

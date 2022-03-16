@@ -2,7 +2,7 @@
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
 #include "stone/Core/SystemOptions.h"
-#include "stone/Option/Options.h"
+#include "stone/Option/BaseOptions.h"
 
 namespace stone {
 
@@ -34,7 +34,7 @@ enum class LinkMode : uint8_t {
 };
 
 // TODO: a lot of what is in DriverOutputProfile can go here
-class DriverOptions final {
+class DriverOptions final : public opts::BaseOptions {
   friend class Driver;
 
 public:
@@ -68,7 +68,7 @@ public:
   LTOKind ltoVariant = LTOKind::None;
 
   std::string libLTOPath;
-  bool HasLibLTOPath() { return libLTOPath.size() > 0; }
+  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
 
   CompileModel compileModel = CompileModel::Multiple;
 
@@ -82,7 +82,10 @@ public:
   bool RequiresLink() { return linkMode != LinkMode::None; }
 
   std::string scPath;
-  bool HasSCPath() { return scPath.size() > 0; }
+  bool HasSCPath() const { return scPath.size() > 0; }
+
+public:
+  DriverOptions() { defaultModeKind = ModeKind::None; }
 };
 } // namespace stone
 

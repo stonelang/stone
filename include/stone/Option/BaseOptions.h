@@ -3,6 +3,7 @@
 
 #include "stone/Core/File.h"
 #include "stone/Option/Mode.h"
+#include "stone/Option/Options.h"
 
 #include "llvm/ADT/Triple.h"
 #include "llvm/Option/ArgList.h"

@@ -24,7 +24,8 @@ using stone::ModeKind;
 using namespace stone;
 
 Driver::Driver(llvm::StringRef name, llvm::StringRef path,
-               CompilationListener *listener) {
+               CompilationListener *listener)
+    : optUtil(GetDriverOptions()) {
 
   buildSystem = std::make_unique<BuildSystem>(*this);
 }
@@ -40,8 +41,6 @@ bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
     return stone::Err;
   }
 
-  driverOpts.inputFileType = GetOptUtil().inputFileType;
-
   ComputeLinkMode(GetOptUtil().GetInputArgList());
 
   return stone::Ok;
@@ -54,22 +53,26 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   // }
 
   // Now, build the job system since we have a toolchain
-  auto compilation = std::make_unique<Compilation>(*this);
+  //auto compilation = std::make_unique<Compilation>(*this);
 
-  // Driver::Inflight inflight;
+    //BuildCompilationCache bcc; 
+
+
 
   // BuiltIntents bi;
   // BuildIntents(bi);
 
   if (driverOpts.printIntents) {
     // PrintIntents(bi);
-    return;
+    return nullptr;
   }
 
   // BuiltJobs bj;
   // BuildJobs(bj, bi);
 
-  return compilation;
+  //return compilation;
+
+  return nullptr;
 }
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
@@ -80,7 +83,7 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
     break;
   }
   case ModeKind::EmitLibrary: {
-    if (ial->hasArg(opts::Static)) {
+    if (ial.hasArg(opts::Static)) {
       GetDriverOptions().linkMode = LinkMode::EmitStaticLibrary;
     } else {
       GetDriverOptions().linkMode = LinkMode::EmitDynamicLibrary;
@@ -175,4 +178,14 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const
 //     {}
 
+void Driver::PrintHelp() {
+
+}
+
+void Driver::PrintVersion() {
+
+
+}
 void Driver::Finish() {}
+
+

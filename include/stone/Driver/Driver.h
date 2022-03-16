@@ -95,7 +95,9 @@ public:
   bool CanLink() const { return (GetLinkMode() != LinkMode::None); }
   bool JustLink() const { return justLink; }
 
-  void void BuildDriverOptions(const llvm::opt::InputArgList &ial);
+  void BuildDriverOptions(const llvm::opt::InputArgList &ial);
+  // void BuildCompilationOptions(const llvm::opt::InputArgList &ial);
+
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
 
   void BuildOutputContext();
@@ -118,6 +120,7 @@ public:
   CompilationOutputContext &GetOuputContext() { return coc; }
 
 public:
+  Context &GetContext() { return ctx; }
   opts::OptUtil &GetOptUtil() { return optUtil; }
 
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
@@ -133,7 +136,6 @@ public:
   bool CanCompile() { return file::CanCompile(driverOpts.inputFileType); }
 
   Compilation &GetCompilation() { return *compilation.get(); }
-
   BuildSystem &GetBuildSystem() { return *buildSystem.get(); }
 
   // void BuildImageBaseName(const LinkJob &linkJob, ImageBaseName

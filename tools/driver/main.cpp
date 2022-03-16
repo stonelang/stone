@@ -27,7 +27,8 @@ int main(int argc, const char **args) {
           ? llvm::cl::TokenizeWindowsCommandLine
           : llvm::cl::TokenizeGNUCommandLine,
       argsToExpand);
-
+  
+  llvm::ArrayRef<const char *> argv(argsToExpand);
   return driver::Run(
       llvm::makeArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
       (void *)(intptr_t)stone::GetMainExecutablePath, nullptr);

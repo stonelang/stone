@@ -13,7 +13,7 @@ namespace stone {
 
 class Job;
 class JobQueue;
-class Driver;
+class BuildSystem; 
 class Compilation;
 
 class CompilationStats final : public Stats {
@@ -31,7 +31,12 @@ class Compilation final {
   std::unique_ptr<CompilationStats> stats;
   std::unique_ptr<JobQueue> jobQueue;
 
-  Driver &driver;
+  //
+  Context &ctx;
+  //
+  BuildSystem &bs;
+  ///
+  ToolChain &tc;
 
   /// This is mostly only here for lifetime management.
   llvm::SmallVector<std::unique_ptr<const Intent>, 32> intents;
@@ -40,7 +45,7 @@ class Compilation final {
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
-  Compilation(Driver &driver);
+  Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs);
 
 public:
   /// TODO: cleanup
@@ -76,9 +81,10 @@ public:
   JobQueue &GetQueue() { return *jobQueue.get(); }
 
 public:
-  Driver &GetDriver() { return driver; }
+  Context &GetContext() { return ctx; }
+  ToolChain &GetToolChain() { return tc; }
+  BuildSystem &GetBuildSystem() { return bs; }
 };
-
 } // namespace stone
 
 #endif

@@ -13,7 +13,7 @@ bool ToolChain::Initialize() {
   auto stoneTool = BuildSCTool();
   if (stoneTool) {
     tools.Add(std::move(stoneTool));
-    if (driver.IsCompileOnly()) {
+    if (driver.JustCompile()) {
       return true;
     }
   }
