@@ -15,6 +15,7 @@ class Job;
 class JobQueue;
 class BuildSystem;
 class Compilation;
+class CompilationListener;
 
 class CompilationStats final : public Stats {
   Compilation &compilation;
@@ -31,6 +32,7 @@ class Compilation final {
   std::unique_ptr<CompilationStats> stats;
   std::unique_ptr<JobQueue> jobQueue;
 
+  CompilationListener *listener = nullptr;
   //
   Context &ctx;
   //
@@ -45,7 +47,8 @@ class Compilation final {
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
-  Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs);
+  Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs,
+              CompilationListener *listener = nullptr);
 
 public:
   /// TODO: cleanup
@@ -84,6 +87,10 @@ public:
   Context &GetContext() { return ctx; }
   ToolChain &GetToolChain() { return tc; }
   BuildSystem &GetBuildSystem() { return bs; }
+  CompilationListener *GetListener() {
+    assert(listener);
+    return listener;
+  }
 };
 } // namespace stone
 

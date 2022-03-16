@@ -87,4 +87,4 @@ void JobStats::Print() {}
 
 // void Job::Run() {}
 
-void Driver::BuildJobs(Compilation& compilation, BuildCompilationState &bcs) {}
+void Driver::BuildJobs(Compilation &compilation, BuildCompilationState &bcs) {}

@@ -1,5 +1,6 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/BuildSystem.h"
+#include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/Job.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -21,8 +22,9 @@ using stone::CompilationStats;
 using stone::Job;
 using stone::ModeKind;
 
-Compilation::Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs)
-    : ctx(ctx), tc(tc), bs(bs) {
+Compilation::Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs,
+                         CompilationListener *listener)
+    : ctx(ctx), tc(tc), bs(bs), listener(listener) {
 
   stats = std::make_unique<CompilationStats>(*this, ctx);
   ctx.GetStatEngine().Register(stats.get());

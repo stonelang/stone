@@ -5,6 +5,7 @@
 	CompileJob.cpp
 	Command.cpp
 	Darwin.cpp
+	DebugCompilationListener.cpp
 	Driver.cpp
 	Intent.cpp
 	Job.cpp

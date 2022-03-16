@@ -18,13 +18,8 @@ void BuildSystem::Clean() {
   // Delelete stone.build
 }
 
-void BuildSystem::StartBuild(){
-
-}
-void BuildSystem::StopBuild() {
-
-
-}
+void BuildSystem::StartBuild() {}
+void BuildSystem::StopBuild() {}
 // class JobsBuilt final {
 //   Compilation &compilation;
 

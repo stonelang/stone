@@ -1,5 +1,6 @@
 set(stone_compile_sources
 	Compile.cpp
+	DebugLangListener.cpp
 	JustAnalysis.cpp
 	JustCodeGen.cpp
 	Lang.cpp

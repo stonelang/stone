@@ -54,7 +54,8 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   GetBuildSystem().StartBuild();
 
   // Now, build the job system since we have a toolchain
-  auto compilation = std::make_unique<Compilation>(GetContext(), tc, GetBuildSystem());
+  auto compilation =
+      std::make_unique<Compilation>(GetContext(), tc, GetBuildSystem());
 
   BuildCompilationState bcs;
   BuildIntents(*compilation.get(), bcs);

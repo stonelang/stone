@@ -31,8 +31,8 @@ static void TryBuildMergeModuleIntent() {
   //   mergeModuleIntent = std::move(ibc.moduleInputs).IntoIntent(ibc.current);
   // }
 }
-static void BuildCompileIntent(Driver &driver, BuildCompilationState &bcs,
-                               Intent *intent) {
+static void BuildCompileIntent(Driver &driver, Compilation &compilation,
+                               BuildCompilationState &bcs, Intent *intent) {
   assert(intent);
   // TODO: GetLastBuildState
   // bool isTopLvel = (driver.IsLinkable()) ? false : true;
@@ -48,30 +48,32 @@ static void BuildCompileIntent(Driver &driver, BuildCompilationState &bcs,
   // }
 }
 
-static void BuildLinkIntent(Driver &driver, BuildCompilationState &bcs,
-                            Intent *intent) {
-  // if (driver.IsLinkable()) {
-  //   bi.likerInputs.push_back(intent);
-  // }
+static void BuildLinkIntent(Driver &driver, Compilation &compilation,
+                            BuildCompilationState &bcs, Intent *intent) {
+  if (driver.CanLink()) {
+    bcs.linkerInputs.push_back(intent);
+  }
 }
 
-static void BuildIntent(Compilation& compilation, BuildCompilationState &bcs,
-                        file::File &input) {
+static void BuildIntent(Driver &driver, Compilation &compilation,
+                        BuildCompilationState &bcs, file::File &input) {
 
-  // bi.current = driver.GetCompilation().CreateIntent<ProcessIntent>(input);
-  // assert(bi.current);
+  bcs.current = compilation.CreateIntent<ProcessIntent>(input);
+  assert(bcs.current);
+  switch (input.GetType()) {
+  case file::Type::Stone:
+    BuildCompileIntent(driver, compilation, bcs, bcs.current);
+    break;
+  case file::Type::Object:
+    BuildLinkIntent(driver, compilation, bcs, bcs.current);
+    break;
+    default:
+  stone::Panic("Alien file type whilst builid intent");
+  }
 
-  // switch (input.GetType()) {
-  // case file::Type::Stone:
-  //   BuildCompileIntent(driver, bi, bi.current);
-  //   break;
-  // case file::Type::Object:
-  //   BuildLinkIntent(driver, bi, bi.current);
-  //   break;
-  // }
 }
 
-void Driver::BuildIntents(Compilation& compilation, BuildCompilationState &) {
+void Driver::BuildIntents(Compilation &compilation, BuildCompilationState &) {
 
   for (auto &input : GetDriverOptions().inputFiles) {
 
@@ -81,7 +83,7 @@ void Driver::BuildIntents(Compilation& compilation, BuildCompilationState &) {
              "Incompatible input file types");
 
       assert(file::IsPartOfCompilation(input.GetType()));
-      BuildIntent(compilation, bcs, input);
+      BuildIntent(*this, compilation, bcs, input);
     }
   }
   // We are in optional territory -- try to build

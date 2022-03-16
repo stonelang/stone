@@ -59,6 +59,8 @@ class Driver final {
 
   BuildCompilationState bcs;
 
+  CompilationListener *listener = nullptr;
+
 public:
   Driver(const Driver &) = delete;
   void operator=(const Driver &) = delete;
@@ -110,10 +112,10 @@ public:
                                           const file::Files &inputs) const;
   CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
-  void BuildIntents(Compilation& compilation, BuildCompilationState &bcc);
+  void BuildIntents(Compilation &compilation, BuildCompilationState &bcc);
   void PrintIntents(BuildCompilationState &bcc);
 
-  void BuildJobs(Compilation& compilation, BuildCompilationState &bcs);
+  void BuildJobs(Compilation &compilation, BuildCompilationState &bcs);
   void PrintJobs(BuildCompilationState &bcs);
 
   BuildCompilationState &GetBuildCompilationState() { return bcs; }
@@ -137,6 +139,11 @@ public:
 
   Compilation &GetCompilation() { return *compilation.get(); }
   BuildSystem &GetBuildSystem() { return *buildSystem.get(); }
+
+  CompilationListener *GetListener() {
+    assert(listener);
+    return listener;
+  }
 
   // void BuildImageBaseName(const LinkJob &linkJob, ImageBaseName
   // &imageBaseName);
