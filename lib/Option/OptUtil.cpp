@@ -1,10 +1,13 @@
 #include "stone/Option/OptUtil.h"
 #include "stone/Core/Context.h"
-
 #include "stone/Option/Options.h"
+
+#include "llvm/Option/Option.h"
 
 using namespace stone;
 using namespace stone::opts;
+
+using namespace llvm::opt;
 
 OptUtil::OptUtil() : optst(stone::opts::CreateOptTable()) {}
 
@@ -37,10 +40,10 @@ bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
     stone::Panic("error_unknown_arg");
   }
   // Create the mode
-  mode = OptUtil::CreateMode(GetInputArgList());
+  mode = CreateMode(GetInputArgList());
 
   // Build all input files
-  inputFiles = OptUtil::BuildInputFiles(GetInputArgList());
+  BuildInputFiles(GetInputArgList());
 
   return stone::Ok;
 }
@@ -81,77 +84,68 @@ std::unique_ptr<Mode> OptUtil::CreateMode(const llvm::opt::InputArgList &ial) {
   return std::make_unique<Mode>(ModeKind::None);
 }
 
-file::Files OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
-  file::Files files;
+void OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
 
-  return files;
+  llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
+  for (Arg *arg : ial) {
+    if (arg->getOption().getKind() == Option::InputClass) {
+      auto input = arg->getValue();
+      if (file::Exists(input)) {
+        auto fileType = file::GetTypeByExt(file::GetExt(input));
+        switch (fileType) {
+        case file::Type::Stone: {
+          if (inputFileType == file::Type::None) {
+            inputFileType = file::Type::Stone;
+          } else if (inputFileType != file::Type::Stone) {
+            stone::Panic("Different file types"); // TODO: Printd
+          }
+          AddInputFile(input, fileType);
+          break;
+        }
+        case file::Type::Object: {
+          if (inputFileType == file::Type::None) {
+            inputFileType = file::Type::Object;
+          } else if (inputFileType != file::Type::Object) {
+            // TODO: Different file types
+            stone::Panic("Different file types"); // TODO: Printd
+          }
+          AddInputFile(input, fileType);
+          break;
+        }
+        default:
+          stone::Panic("Unknown file type");
+          break;
+        }
+        if (fileType == file::Type::Stone) {
+          auto baseName = llvm::sys::path::filename(input);
+
+          if (!seenFiles.insert({baseName, input}).second) {
+            stone::Panic("error_two_files_same_name");
+
+            // GetContext().Out()
+            //     << "de.D(SourceLoc(),"
+            //     << "diag::error_two_files_same_name,"
+            //     << "basename, seenFiles[basename], argValue);" << '\n';
+            // GetContext().Out() << " de.D(SourceLoc(), "
+            //                  << "diag::note_explain_two_files_"
+            //                     "same_name);"
+            //                  << '\n';
+          }
+        }
+      }
+    }
+  }
 }
-// // TODO: May move to session
-// stone::Files Support::BuildInputFiles(const llvm::opt::InputArgList &args) {
-// bool isDone = false;
-//   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
+void OptUtil::AddInputFile(llvm::StringRef name) {
+  auto ty = file::GetTypeByName(name);
+  assert(ty != file::Type::INVALID && "Invalid file type.");
+  AddInputFile(name, ty);
+}
+// TODO: There is a potential to add duplicate files here.
+void OptUtil::AddInputFile(llvm::StringRef name, file::Type ty) {
+  inputFiles.push_back(file::File(name, ty));
+}
 
-//   for (Arg *arg : args) {
-//     if (arg->getOption().getKind() == Option::InputClass) {
-//       auto input = arg->getValue();
-//       if (file::Exists(input)) {
-//         auto fileType = file::GetTypeByExt(file::GetExt(input));
-
-//         switch (fileType) {
-//         case file::Type::Stone: {
-//           if (GetOptions().inputFileType == file::Type::None) {
-//             GetOptions().inputFileType = file::Type::Stone;
-//           } else if (GetOptions().inputFileType != file::Type::Stone) {
-//             // TODO: Different file types
-//             return;
-//           }
-//           AddFile(input, fileType);
-//           break;
-//         }
-//         case file::Type::Object: {
-//           if (GetOptions().inputFileType == file::Type::None) {
-//             GetOptions().inputFileType = file::Type::Object;
-//           } else if (GetOptions().inputFileType != file::Type::Object) {
-//             // TODO: Different file types
-//             return;
-//             break;
-//           }
-//           AddFile(input, fileType);
-//           break;
-//         }
-//         default:
-//           stone::Panic("Unknown file type");
-//           break;
-//         }
-//         if (fileType == file::Type::Stone) {
-//           auto baseName = llvm::sys::path::filename(input);
-
-//           if (!seenFiles.insert({baseName, input}).second) {
-//             stone::Panic("error_two_files_same_name");
-
-//             // GetContext().Out()
-//             //     << "de.D(SourceLoc(),"
-//             //     << "diag::error_two_files_same_name,"
-//             //     << "basename, seenFiles[basename], argValue);" << '\n';
-//             // GetContext().Out() << " de.D(SourceLoc(), "
-//             //                  << "diag::note_explain_two_files_"
-//             //                     "same_name);"
-//             //                  << '\n';
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-// void Support::AddFile(llvm::StringRef name) {
-//   auto ty = file::GetTypeByName(name);
-//   assert(ty != file::Type::INVALID && "Invalid file type.");
-//   AddFile(name, ty);
-// }
-// void Support::AddFile(llvm::StringRef name, file::Type ty) {
-//   inputFiles.push_back(file::File(name, ty));
-// }
 void OptUtil::PrintHelp() {}
 
 // void Support::BuildInputFiles() {}

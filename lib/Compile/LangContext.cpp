@@ -25,19 +25,15 @@ static void ParseSearchPathArguments() {}
 
 bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  optUtil.SetExcludedFlagsBitmask(opts::NoLangOption);
+  GetOptUtil().SetExcludedFlagsBitmask(opts::NoLangOption);
 
-  if (optUtil.ParseArgs(args, &ctx) == stone::Err) {
+  if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
     return stone::Err;
   }
 
-  // support.BuildInputFiles(GetInputArgList());
-
-  // for (auto &input : inputs) {
-  //   auto sf BuildSourceUnit(input);
-  //   sources.
-  // }
-
+  for (auto &input : GetOptUtil().inputFiles) {
+    BuildSourceUnit(input);
+  }
   /// Now, build the source profiles
   return stone::Ok;
 }

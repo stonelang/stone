@@ -35,11 +35,13 @@ void Driver::Initialize() {}
 
 bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  optSupport.SetExcludedFlagsBitmask(opts::NoDriverOption);
-  if (optSupport.ParseArgs(args, &ctx) == stone::Err) {
+  GetOptUtil().SetExcludedFlagsBitmask(opts::NoDriverOption);
+  if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
     return stone::Err;
   }
-  // support.BuildInputFiles(GetInputArgList());
+
+  driverOpts.inputFileType = GetOptUtil().inputFileType;
+
   ComputeLinkMode();
 
   return stone::Ok;

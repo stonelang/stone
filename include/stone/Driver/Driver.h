@@ -38,10 +38,10 @@ class Driver final {
   llvm::StringRef name;
   llvm::StringRef path;
 
-  opts::Support optSupport;
-
   /// The system context
   Context ctx;
+
+  opts::OptUtil optUtil;
 
   DriverOptions driverOpts;
   CompilationOutputContext coc;
@@ -116,7 +116,7 @@ public:
   CompilationOutputContext &GetOuputContext() { return coc; }
 
 public:
-  opts::Support &GetOptSupport() { return optSupport; }
+  opts::OptUtil &GetOptUtil() { return optUtil; }
 
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
   file::Type GetOutputFileType() const { return driverOpts.outputFileType; }

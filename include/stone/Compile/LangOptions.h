@@ -34,6 +34,12 @@ public:
 
   /// The default mode kind of the system
   ModeKind defaultModeKind = ModeKind::EmitObject;
+
+  // private:
+  //   OptUtil optUtil;
+
+  // public:
+  //   OptUtil& GetOptUtil() { return optUtil; }
 };
 
 } // namespace stone

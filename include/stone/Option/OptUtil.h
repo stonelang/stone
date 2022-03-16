@@ -11,7 +11,6 @@
 namespace stone {
 namespace opts {
 
-// TODO: OptSupport
 class OptUtil final {
 
   std::unique_ptr<Mode> mode;
@@ -29,7 +28,12 @@ class OptUtil final {
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
 public:
+
+  /// All the input files 
   file::Files inputFiles;
+
+  /// The input type of the file(s) to process. 
+  file::Type inputFileType = file::Type::None;
 
 public:
   OptUtil();
@@ -64,9 +68,13 @@ public:
 
   void PrintHelp();
 
+public:
+  void AddInputFile(llvm::StringRef name);
+  void AddInputFile(llvm::StringRef name, file::Type ty);
+
 private:
-  static std::unique_ptr<Mode> CreateMode(const llvm::opt::InputArgList &ial);
-  static file::Files BuildInputFiles(const llvm::opt::InputArgList &ial);
+  std::unique_ptr<Mode> CreateMode(const llvm::opt::InputArgList &ial);
+  void BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace opts
