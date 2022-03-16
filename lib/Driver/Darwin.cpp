@@ -9,12 +9,14 @@ DarwinToolChain::DarwinToolChain(
     const Driver &driver, const llvm::Triple &triple,
     const llvm::Optional<llvm::Triple> &targetVariant)
     : ToolChain(ToolChainKind::Darwin, driver, triple),
-      targetVariant(targetVariant) {}
+      targetVariant(targetVariant) {
+
+  Initialize();
+}
 
 bool DarwinToolChain::Initialize() {
 
   libPaths.push_back("/usr/lib/");
-
   return ToolChain::Initialize();
 }
 

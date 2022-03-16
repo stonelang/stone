@@ -59,7 +59,8 @@ void Lang::PerformCodeAnalysis(const unsigned srcID) {
 SyntaxFile *Lang::Parse(const unsigned srcID) {
 
   // Create syntax file
-  auto sf = SyntaxFile::Make(SyntaxFileKind::Library, *GetMainModule(),
+  auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
+                             *GetModuleSystem().GetMainModule(),
                              GetSyntaxContext(), srcID);
   syn::ParseSyntaxFile(*sf, GetSyntax());
   return sf;

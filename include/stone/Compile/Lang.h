@@ -2,10 +2,10 @@
 #define STONE_COMPILE_LANG_H
 
 #include "stone/Compile/LangContext.h"
+#include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Option/Mode.h"
-#include "stone/Syntax/ModuleSystem.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -42,17 +42,16 @@ class Lang final {
   LangContext lc;
   LangListener *listener = nullptr;
 
-  // This is the primary module that will be created
-  // It will contain SyntaxFile
-  mutable syn::Module *mainModule = nullptr;
-
   std::unique_ptr<LangStats> stats;
   std::unique_ptr<syn::Syntax> syntax;
   std::unique_ptr<syn::SyntaxContext> tc;
 
   bool isEoc = false;
 
-  std::unique_ptr<syn::ModuleSystem> moduleSystem;
+  llvm::StringRef name;
+  llvm::StringRef path;
+
+  std::unique_ptr<ModuleSystem> moduleSystem;
 
 public:
   Lang(const Lang &) = delete;
@@ -72,17 +71,14 @@ public:
   syn::SyntaxContext &GetSyntaxContext() { return *tc.get(); }
   syn::Syntax &GetSyntax() { return *syntax.get(); }
 
-  ///
-  syn::Module *GetMainModule() const;
-
-  syn::ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
+  ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
 
   // TODO:
   void SetModuleName(llvm::StringRef name) {
-    lc.GetLangOptions().moduleName = name;
+    lc.GetLangOptions().systemOpts.moduleName = name.data();
   }
   const llvm::StringRef GetModuleName() const {
-    return lc.GetLangOptions().moduleName;
+    return lc.GetLangOptions().systemOpts.moduleName;
   }
 
   bool IsEoc() { return isEoc; }

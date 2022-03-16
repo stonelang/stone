@@ -28,11 +28,10 @@ class OptUtil final {
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
 public:
-
-  /// All the input files 
+  /// All the input files
   file::Files inputFiles;
 
-  /// The input type of the file(s) to process. 
+  /// The input type of the file(s) to process.
   file::Type inputFileType = file::Type::None;
 
 public:

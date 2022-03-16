@@ -9,7 +9,7 @@
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
-#include "stone/Option/Support.h"
+#include "stone/Option/OptUtil.h"
 
 namespace stone {
 
@@ -81,19 +81,21 @@ public:
 public:
   // TODO: May just want parse to return the ial
   bool ParseArgs(llvm::ArrayRef<const char *> args);
+
   llvm::opt::InputArgList &GetGetInputArgList() {
-    return optSupport.GetInputArgList();
+    return optUtil.GetInputArgList();
   }
 
-  Mode &GetMode() { return optSupport.GetMode(); }
-  const Mode &GetMode() const { return optSupport.GetMode(); }
+  Mode &GetMode() { return optUtil.GetMode(); }
+  const Mode &GetMode() const { return optUtil.GetMode(); }
 
-  void ComputeLinkMode();
+  void ComputeLinkMode(const llvm::opt::InputArgList &ial);
   LinkMode GetLinkMode() const { return driverOpts.linkMode; }
 
   bool CanLink() const { return (GetLinkMode() != LinkMode::None); }
   bool JustLink() const { return justLink; }
 
+  void void BuildDriverOptions(const llvm::opt::InputArgList &ial);
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
 
   void BuildOutputContext();

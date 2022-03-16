@@ -6,6 +6,7 @@ set(stone_compile_sources
 	LangContext.cpp
 	Lexer.cpp
 	LexerCache.cpp
+	ModuleSystem.cpp
 	Parse.cpp
 	ParseDecl.cpp
 	Parser.cpp

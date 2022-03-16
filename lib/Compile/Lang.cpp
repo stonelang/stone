@@ -44,7 +44,8 @@ Lang::Lang(LangListener *listener) : listener(listener) {
 
   syntax = std::make_unique<syn::Syntax>(*tc.get());
 
-  moduleSystem = std::make_unique<syn::ModuleSystem>(*syntax.get());
+  moduleSystem =
+      std::make_unique<ModuleSystem>(*syntax.get(), lc.GetLangOptions());
 }
 Lang::~Lang() {}
 
@@ -91,16 +92,6 @@ void Lang::Initialize() {}
 
 // llvm::StringRef Lang::GetProgramName() { return name; }
 // llvm::StringRef Lang::GetProgramPath() { return path; }
-
-syn::Module *Lang::GetMainModule() const {
-
-  if (mainModule) {
-    return mainModule;
-  }
-  Identifier &moduleName = tc->GetIdentifier(GetModuleName());
-  mainModule = syntax->MakeModuleDecl(moduleName, true);
-  return mainModule;
-}
 
 void Lang::PrintHelp() { lc.GetOptUtil().PrintHelp(); }
 

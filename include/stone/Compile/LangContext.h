@@ -22,7 +22,7 @@ class LangContext final {
 
   LangOptions langOpts;
 
-  // TODO: May move to Options 
+  // TODO: May move to Options
   opts::OptUtil optUtil;
 
   /// The main executable path of the running program

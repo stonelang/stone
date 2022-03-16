@@ -14,7 +14,6 @@ set(stone_syn_sources
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
-	ModuleSystem.cpp
 	Stmt.cpp
 	Syntax.cpp
 	SyntaxContext.cpp

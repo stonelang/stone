@@ -60,10 +60,9 @@ Tool *ToolChain::FindTool(ToolKind tk) const {
 
 std::unique_ptr<Tool> ToolChain::BuildSCTool() {
 
-  if (driver.GetDriverOptions().hasLangPath &&
-      driver.GetDriverOptions().stcPath.size() > 0) {
+  if (driver.GetDriverOptions().HasSCPath()) {
     auto tool =
-        BuildTool(ToolKind::SC, driver.GetDriverOptions().stcPath.c_str(),
+        BuildTool(ToolKind::SC, driver.GetDriverOptions().scPath.c_str(),
                   "stone-compile", true);
     if (tool) {
       return tool;

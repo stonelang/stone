@@ -42,7 +42,7 @@ bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   driverOpts.inputFileType = GetOptUtil().inputFileType;
 
-  ComputeLinkMode();
+  ComputeLinkMode(GetOptUtil().GetInputArgList());
 
   return stone::Ok;
 }
@@ -72,7 +72,7 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   return compilation;
 }
 
-void Driver::ComputeLinkMode() {
+void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
   switch (GetMode().GetKind()) {
   case ModeKind::None: {
@@ -80,7 +80,7 @@ void Driver::ComputeLinkMode() {
     break;
   }
   case ModeKind::EmitLibrary: {
-    if (tal->hasArg(opts::Static)) {
+    if (ial->hasArg(opts::Static)) {
       GetDriverOptions().linkMode = LinkMode::EmitStaticLibrary;
     } else {
       GetDriverOptions().linkMode = LinkMode::EmitDynamicLibrary;
@@ -105,7 +105,8 @@ Driver::ComputeCompileModel(const llvm::opt::DerivedArgList &args,
   return stone::CompileModel::Multiple;
 }
 
-void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
+std::unique_ptr<ToolChain>
+Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
     ctx.GetSystemOptions().SetTargetTriple(
@@ -119,9 +120,8 @@ void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
     if (const llvm::opt::Arg *A = argList.getLastArg(opts::TargetVariant)) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
-    toolChain = std::make_unique<DarwinToolChain>(*this, target, targetVariant);
-    toolChain->Initialize();
-    break;
+    return std::make_unique<DarwinToolChain>(
+        *this, ctx.GetSystemOptions().target, targetVariant);
   }
   // case llvm::Triple::Linux:
   //   toolChain = std::make_unique<stone::Linux>(*this, target);
@@ -140,7 +140,7 @@ void Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   }
 }
 
-void Driver::BuildOptions() {
+void Driver::BuildDriverOptions(const llvm::opt::InputArgList &ial) {
 
   // Since the mode has already been created
   // switch(GetMode().GetKind().)
@@ -150,15 +150,15 @@ void Driver::BuildOptions() {
   // driverOpts.compileModel = ComputeCompileModel(
   //     *tal, driverOpts.inputFiles);
 
-  auto stPathResult = GetEQValue(opts::LangPathEQ);
-  if (!stPathResult.IsErr()) {
-    driverOpts.scPath = stPathResult.Get();
-  }
+  // auto scPathResult = GetEQValue(opts::LangPathEQ);
+  // if (!stPathResult.IsErr()) {
+  //   driverOpts.scPath = stPathResult.Get();
+  // }
 
-  driverOpts.printIntents = tal->hasArg(opts::PrintDriverIntents);
-  driverOpts.printJobs = tal->hasArg(opts::PrintDriverJobs);
-  driverOpts.printLifecycle = tal->hasArg(opts::PrintDriverLifecycle);
-  driverOpts.systemOpts.printStatistics = tal->hasArg(opts::PrintStats);
+  driverOpts.printIntents = ial.hasArg(opts::PrintDriverIntents);
+  driverOpts.printJobs = ial.hasArg(opts::PrintDriverJobs);
+  driverOpts.printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
+  driverOpts.systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
 }
 
 // IntentExecutor Driver::ConstructIntentExecutor(CompilationIntent &intent) {
