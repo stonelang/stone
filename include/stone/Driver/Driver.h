@@ -81,10 +81,11 @@ public:
 
   void ComputeOutputOptions(const llvm::opt::InputArgList &ial);
 
-  CompileModel ComputeCompilingModel(const llvm::opt::DerivedArgList &args,
-                                     const file::Files &inputs) const;
+  CompilingModel ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
+                                       const file::Files &inputs,
+                                       bool batchMode = false) const;
 
-  CompileModel GetCompilingModel() const { return driverOpts.compilingModel; }
+  CompilingModel GetCompilingModel() const { return driverOpts.compilingModel; }
 
 public:
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);

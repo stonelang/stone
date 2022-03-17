@@ -54,11 +54,11 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
-  /// Think about
-  bool batchMode = false;
-  driverOpts.compilingModel = ComputeCompilingModel(*dal, inputs, batchMode);
+  // /// Think about
+  // bool batchMode = false;
+  // driverOpts.compilingModel = ComputeCompilingModel(*dal, inputs, batchMode);
 
-  ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
+  // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
@@ -105,7 +105,7 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 }
 
 CompilingModel
-Driver::ComputeCompilingModel(const llvm::opt::DerivedArgList &args,
+Driver::ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
                               const file::Files &inputs, bool batchMode) const {
   // Just use multiple for now
   return CompilingModel::Multiple;
@@ -153,7 +153,7 @@ void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
   driverOpts.outputFileType = file::Type::Object;
 
   // TODO:
-  // driverOpts.compileModel = ComputeCompileModel(
+  // driverOpts.compileModel = ComputeCompilingModel(
   //     *tal, driverOpts.inputFiles);
 
   // auto scPathResult = GetEQValue(opts::LangPathEQ);

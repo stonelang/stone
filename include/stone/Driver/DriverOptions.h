@@ -8,7 +8,7 @@ namespace stone {
 
 enum class LTOKind { None, Full, Thin };
 
-// CompileModel
+// CompilingModel
 enum class CompilingModel : uint8_t {
   None,
   /// There is no linking in this mode -- we pass all the files to the compile

@@ -24,7 +24,7 @@ static void TryBuildMergeModuleIntent() {
   // Intent *mergeModuleIntent = nullptr;
   // if (OI.ShouldGenerateModule &&
   //     OI.compileModelKind !=
-  //     DriverOutputContext::CompileModel::SingleCompile &&
+  //     DriverOutputContext::CompilingModel::SingleCompile &&
   //     !AllModuleInputs.empty()) {
   //   // We're performing multiple compilations; set up a merge module step
   //   // so we generate a single swiftmodule as output.

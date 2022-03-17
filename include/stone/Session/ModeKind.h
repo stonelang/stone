@@ -1,5 +1,5 @@
-#ifndef STONE_OPTION_MODEKIND_H
-#define STONE_OPTION_MODEKIND_H
+#ifndef STONE_SESSION_MODEKIND_H
+#define STONE_SESSION_MODEKIND_H
 
 namespace stone {
 

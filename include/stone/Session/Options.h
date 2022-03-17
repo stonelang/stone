@@ -1,5 +1,5 @@
-#ifndef STONE_OPTION_OPTIONS_H
-#define STONE_OPTION_OPTIONS_H
+#ifndef STONE_SESSION_OPTIONS_H
+#define STONE_SESSION_OPTIONS_H
 
 #include "stone/Session/Mode.h"
 

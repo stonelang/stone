@@ -1,5 +1,5 @@
-#ifndef STONE_OPTION_OPTUTIL_H
-#define STONE_OPTION_OPTUTIL_H
+#ifndef STONE_SESSION_SESSION_H
+#define STONE_SESSION_SESSION_H
 
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
@@ -8,11 +8,11 @@
 #include "stone/Session/Options.h"
 
 #include "llvm/Option/ArgList.h"
+#include "llvm/Support/PrettyStackTrace.h"
 
 namespace stone {
 
 class Session {
-
 protected:
   std::unique_ptr<Mode> mode;
 
@@ -54,6 +54,10 @@ public:
   llvm::opt::InputArgList &GetInputArgList() {
     assert(ial);
     return *ial.get();
+  }
+  llvm::opt::DerivedArgList &GetDerivedArgList() {
+    assert(dal);
+    return *dal.get();
   }
 
   void SetIncludedFlagsBitmask(unsigned flag) { includedFlagsBitmask = flag; }
