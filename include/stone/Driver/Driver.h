@@ -81,7 +81,7 @@ public:
 
 public:
   // void BuildOutputContext();
-  std::unique_ptr<Compilation> BuildCompilation(ToolChain &tc);
+  std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial);
 
   stone::CompileModel ComputeCompileModel(const llvm::opt::DerivedArgList &args,
                                           const file::Files &inputs) const;

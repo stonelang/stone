@@ -69,12 +69,11 @@ public:
   // }
 
 public:
-  void Run();
   // void CancelJob();
   // void CancelJobs();
   // void PruneJob();
   void PrintJobs();
-  void RunJobs();
+  int RunJobs();
   JobQueue &GetQueue() { return *jobQueue.get(); }
 
 public:
