@@ -56,7 +56,6 @@ namespace stone {
 
 class Session {
 protected:
-  
   Context ctx;
 
   std::unique_ptr<Mode> mode;
@@ -85,6 +84,7 @@ protected:
 
 public:
   Session();
+  void CreateTimer();
 
 public:
   virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
@@ -138,8 +138,6 @@ public:
   llvm::vfs::FileSystem &GetVFS() const { return *vfs; }
 
 public:
-  void PrintHelp();
-
   void AddInputFile(llvm::StringRef name);
   void AddInputFile(llvm::StringRef name, file::Type ty);
 
@@ -148,6 +146,14 @@ public:
   file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 
   llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);
+  stone::Result<std::string>
+  GetOptEqualValue(opts::OptID optID, const llvm::opt::InputArgList &ial);
+
+public:
+  void PrintHelp(const llvm::opt::OptTable &optst);
+  void PrintTimer();
+  void PrintDiagnostics();
+  void PrintStatistics();
 };
 
 } // namespace stone

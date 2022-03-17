@@ -65,7 +65,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     Finish(1);
   }
   if (mode.IsPrintHelp()) {
-    // lang.PrintHelp();
+    frontend.PrintHelp(frontend.GetOpts());
     return Finish();
   }
   if (mode.IsPrintVersion()) {

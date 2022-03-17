@@ -11,7 +11,19 @@ using namespace llvm::opt;
 
 Session::Session()
     : optst(stone::opts::CreateOptTable()),
-      vfs(llvm::vfs::getRealFileSystem()) {}
+      vfs(llvm::vfs::getRealFileSystem()) {
+
+  CreateTimer();
+}
+
+void Session::CreateTimer() {
+
+  // timerGroup =
+  //     std::make_unique<llvm::TimerGroup>(GetSessionName(), GetSessionDesc());
+  // timer = std::make_unique<llvm::Timer>(GetSessionName(), GetSessionDesc(),
+  //                                       *timerGroup);
+  // timer->startTimer();
+}
 
 llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   ial = std::make_unique<llvm::opt::InputArgList>(
@@ -155,7 +167,6 @@ void Session::AddInputFile(llvm::StringRef name, file::Type ty) {
   GetBaseOptions().inputFiles.push_back(file::File(name, ty));
 }
 
-
 llvm::StringRef Session::ComputeWorkDir(const llvm::opt::InputArgList &ial) {
 
   if (auto *arg = ial.getLastArg(opts::WorkDir)) {
@@ -167,6 +178,23 @@ llvm::StringRef Session::ComputeWorkDir(const llvm::opt::InputArgList &ial) {
   return llvm::StringRef();
 }
 
-void Session::PrintHelp() {}
+stone::Result<std::string>
+Session::GetOptEqualValue(opts::OptID optID,
+                          const llvm::opt::InputArgList &ial) {
 
-// void Support::BuildInputFiles() {}
+  if (ial.hasArg(optID)) {
+    auto arg = ial.getLastArg(optID);
+    if (arg) {
+      return stone::Result<std::string>(arg->getValue());
+    }
+  }
+  return stone::Result<std::string>();
+}
+
+void Session::PrintHelp(const llvm::opt::OptTable &optst) {}
+
+void Session::PrintTimer() {}
+
+void Session::PrintDiagnostics() {}
+
+void Session::PrintStatistics() {}

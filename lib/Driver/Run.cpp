@@ -63,12 +63,16 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     Finish(1);
   }
   if (mode.IsPrintHelp()) {
-    // driver.PrintHelp();
+    driver.PrintHelp(driver.GetOpts());
     return Finish();
   }
   if (mode.IsPrintVersion()) {
     driver.PrintVersion();
     return Finish();
+  }
+  if (mode.IsNone()) {
+    // We are doing some form of linking
+    // driver.ComputeLinkMode();
   }
   auto toolChain = driver.BuildToolChain(ial);
   if (driver.HasError()) {
