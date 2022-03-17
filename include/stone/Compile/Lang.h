@@ -46,8 +46,6 @@ class Lang final {
   std::unique_ptr<syn::Syntax> syntax;
   std::unique_ptr<syn::SyntaxContext> tc;
 
-  bool isEoc = false;
-
   llvm::StringRef name;
   llvm::StringRef path;
 
@@ -72,9 +70,6 @@ public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
 
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
-
-  bool IsEoc() { return isEoc; }
-  void Stopc() { isEoc = true; }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
@@ -121,20 +116,6 @@ private:
   // Peform code generation
   void PerformCodeGen();
 
-  bool CanCodeGen() {
-    switch (frontend.GetMode().GetKind()) {
-    case ModeKind::None:
-    case ModeKind::EmitIR:
-    case ModeKind::EmitBC:
-    case ModeKind::EmitObject:
-    case ModeKind::EmitAssembly:
-    case ModeKind::EmitModule:
-    case ModeKind::EmitLibrary:
-      return true;
-    default:
-      return false;
-    }
-  }
   /// Generate the IR for an entire module
   llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
 

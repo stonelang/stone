@@ -9,18 +9,17 @@
 #include "llvm/Support/Path.h"
 
 namespace stone {
-
 class Frontend;
 class alignas(8) SourceUnit final {
+
+  // friend Lang;
 
   bool isPrimary;
   bool hasOutput;
   const unsigned srcID;
   const file::File &input;
 
-  // file::File *output = nullptr;
-  /// TODO:
-  // OutputFile outputFile;
+  std::unique_ptr<OutputFile> outputFile;
 
 public:
   SourceUnit(const unsigned srcID, const file::File &input)
@@ -33,6 +32,12 @@ public:
 
   unsigned GetSrcID() const { return srcID; }
   const file::File &GetInput() const { return input; }
+  OutputFile &GetOutputFile() { return *outputFile.get(); }
+
+private:
+  void SetOutputFile(std::unique_ptr<OutputFile> output) {
+    outputFile = std::move(output);
+  }
 
 public:
   // Make vanilla new/delete illegal for Decls.

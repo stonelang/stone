@@ -56,6 +56,6 @@ SourceUnit *Frontend::BuildSource(const file::File &input) {
   return SourceUnit::Allocate(srcID, input, *this);
 }
 
-std::unique_ptr<OutputFile> Frontend::ComputeOutputFile(const unsigned srcID) {
+std::unique_ptr<OutputFile> Frontend::ComputeOutputFile(SourceUnit &source) {
   stone::Panic("ComputeSourceOutputFile not implemented");
 }

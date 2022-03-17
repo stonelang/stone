@@ -19,7 +19,7 @@ using stone::syn::SyntaxFileKind;
 
 void Lang::PerformCodeGen() {
 
-  assert(CanCodeGen());
+  assert(frontend.CanCodeGen());
 
   // We are performing some low leverl code generation
   CodeGenContext cgc(stone::GetLLVMContext(), frontend.GetCodeGenOptions());

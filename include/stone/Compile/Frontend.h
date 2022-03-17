@@ -77,6 +77,20 @@ public:
     }
     return false;
   }
+  bool CanCodeGen() {
+    switch (GetMode().GetKind()) {
+    case ModeKind::None:
+    case ModeKind::EmitIR:
+    case ModeKind::EmitBC:
+    case ModeKind::EmitObject:
+    case ModeKind::EmitAssembly:
+    case ModeKind::EmitModule:
+    case ModeKind::EmitLibrary:
+      return true;
+    default:
+      return false;
+    }
+  }
 
 public:
   Context &GetContext() override { return ctx; }
@@ -84,7 +98,7 @@ public:
 
 public:
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
-  std::unique_ptr<OutputFile> ComputeOutputFile(const unsigned srcID);
+  std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);
 
 public:
   llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
@@ -108,16 +122,13 @@ public:
 
     return (void *)A.Allocate(BaseSize, alignof(ProfileTy));
   }
-
-private:
-  SourceUnit *BuildSourceUnit(const file::File &input);
 };
 
 } // namespace stone
 
-inline void *operator new(size_t bytes, const stone::Frontend &lc,
+inline void *operator new(size_t bytes, const stone::Frontend &frontend,
                           size_t alignment) {
-  return lc.Allocate(bytes, alignment);
+  return frontend.Allocate(bytes, alignment);
 }
 
 /// Placement delete companion to the new above.
@@ -126,8 +137,9 @@ inline void *operator new(size_t bytes, const stone::Frontend &lc,
 /// invoking it directly; see the new operator for more details. This operator
 /// is called implicitly by the compiler if a placement new expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete(void *Ptr, const stone::Frontend &lc, size_t) {
-  lc.Deallocate(Ptr);
+inline void operator delete(void *Ptr, const stone::Frontend &frontend,
+                            size_t) {
+  frontend.Deallocate(Ptr);
 }
 /// This placement form of operator new[] uses the CompilerInstance's
 /// allocator for obtaining memory.
@@ -153,9 +165,9 @@ inline void operator delete(void *Ptr, const stone::Frontend &lc, size_t) {
 /// @param Alignment The alignment of the allocated memory (if the underlying
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
-inline void *operator new[](size_t bytes, const stone::Frontend &lc,
+inline void *operator new[](size_t bytes, const stone::Frontend &frontend,
                             size_t alignment) {
-  return lc.Allocate(bytes, alignment);
+  return frontend.Allocate(bytes, alignment);
 }
 /// Placement delete[] companion to the new[] above.
 ///
@@ -163,9 +175,9 @@ inline void *operator new[](size_t bytes, const stone::Frontend &lc,
 /// invoking it directly; see the new[] operator for more details. This operator
 /// is called implicitly by the compiler if a placement new[] expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete[](void *Ptr, const stone::Frontend &lc,
+inline void operator delete[](void *Ptr, const stone::Frontend &frontend,
                               size_t alignment) {
-  lc.Deallocate(Ptr);
+  frontend.Deallocate(Ptr);
 }
 
 #endif

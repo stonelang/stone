@@ -39,6 +39,11 @@ void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
 void Lang::PerformAnalysis(SourceUnit &source) {
 
   auto syntaxFile = Parse(source.GetSrcID());
+  assert(syntaxFile);
+
+  // TODO: May not need this because we are going to add it to the main module.
+  // source.SetSyntaxFile(syntaxFile);
+
   if (frontend.GetMode().IsParse()) {
     return;
   }
