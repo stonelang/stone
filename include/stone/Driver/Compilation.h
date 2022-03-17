@@ -32,12 +32,7 @@ class Compilation final {
   std::unique_ptr<CompilationStats> stats;
   std::unique_ptr<JobQueue> jobQueue;
 
-  CompilationListener *listener = nullptr;
-  //
-  Context &ctx;
-  //
-  BuildSystem &bs;
-  ///
+  Driver &driver;
   ToolChain &tc;
 
   /// This is mostly only here for lifetime management.
@@ -47,8 +42,7 @@ class Compilation final {
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
-  Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs,
-              CompilationListener *listener = nullptr);
+  Compilation(Driver &driver, ToolChain &tc);
 
 public:
   /// TODO: cleanup
@@ -84,13 +78,8 @@ public:
   JobQueue &GetQueue() { return *jobQueue.get(); }
 
 public:
-  Context &GetContext() { return ctx; }
+  Driver &GetDriver() { return driver; }
   ToolChain &GetToolChain() { return tc; }
-  BuildSystem &GetBuildSystem() { return bs; }
-  CompilationListener *GetListener() {
-    assert(listener);
-    return listener;
-  }
 };
 } // namespace stone
 

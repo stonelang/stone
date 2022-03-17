@@ -25,7 +25,7 @@ class SyntaxFile;
 
 class Syntax final {
   // Verifier verifier;
-  SyntaxContext &tc;
+  std::unique_ptr<SyntaxContext> sc;
 
 public:
   Syntax(const Syntax &) = delete;
@@ -35,11 +35,11 @@ public:
   Syntax() = delete;
 
 public:
-  Syntax(SyntaxContext &tc);
+  Syntax(std::unique_ptr<SyntaxContext> sc);
   ~Syntax();
 
 public:
-  SyntaxContext &GetSyntaxContext() { return tc; }
+  SyntaxContext &GetSyntaxContext() { return *sc.get(); }
 
 public:
   Module *MakeModuleDecl(Identifier &name, bool isMainModule);
@@ -55,8 +55,8 @@ public:
   StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
 
 public:
-  bool HasError() { return tc.GetContext().HasError(); }
-  Context &GetContext() { return tc.GetContext(); }
+  bool HasError() { return GetSyntaxContext().GetContext().HasError(); }
+  Context &GetContext() { return GetSyntaxContext().GetContext(); }
 
 public:
   Identifier &MakeIdentifier(llvm::StringRef name);
@@ -64,14 +64,14 @@ public:
 
 public:
   stone::InFlightDiagnostic DiagnoseSyntax(SrcLoc loc, DiagID diagID) {
-    return tc.GetContext().GetDiagEngine().Printd(
+    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
         loc, SyntaxDiagnostic(
                  DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())));
   }
   stone::InFlightDiagnostic
   DiagnoseSyntax(SrcLoc loc, DiagID diagID,
                  llvm::ArrayRef<diag::Argument> args) {
-    return tc.GetContext().GetDiagEngine().Printd(
+    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
         loc, SyntaxDiagnostic(DiagnosticContext(diagID, args)));
   }
 
@@ -80,7 +80,7 @@ public:
   DiagnoseSyntax(SrcLoc loc, Diag<ArgTypes...> id,
                  typename stone::detail::PassArgument<ArgTypes>::type... args) {
 
-    return tc.GetContext().GetDiagEngine().Printd(
+    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
         loc, SyntaxDiagnostic(DiagnosticContext(id, std::move(args)...)));
   }
 

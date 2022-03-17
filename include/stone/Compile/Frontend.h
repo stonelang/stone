@@ -63,6 +63,7 @@ public:
     return GetTypeCheckerOptions().typeCheckMode;
   }
 
+  // TODO: Move to the module system
   void SetModuleName(llvm::StringRef name) {
     GetLangOptions().systemOpts.moduleName = name.data();
   }

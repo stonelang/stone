@@ -8,22 +8,36 @@
 
 using namespace stone;
 
-void Driver::Run() {
+// void Driver::Run() {
 
-  // assert(GetSessionKind() == SessionKind::Compilation && "Invalid
-  // SessionKind");
+//   // assert(GetSessionKind() == SessionKind::Compilation && "Invalid
+//   // SessionKind");
 
-  // if (GetDriverOptions().inputFiles.empty()) {
-  //   // GetContext().GetDiagEngine().Printd(SrcLoc(),
-  //   diag::err_no_input_files); return stone::err;
+//   // if (GetDriverOptions().inputFiles.empty()) {
+//   //   // GetContext().GetDiagEngine().Printd(SrcLoc(),
+//   //   diag::err_no_input_files); return stone::err;
+//   // }
+
+//   // if (driverOpts.printJobs) {
+//   //   GetCompilation().PrintJobs();
+//   //   return stone::ok;
+//   // }
+//   // GetCompilation().RunJobs();
+//   // return stone::ok;
+// }
+
+void Compilation::RunJobs() {
+  // while (!GetQueue().IsEmpty()) {
+  //   auto job = GetQueue().Front();
+  //   if (job) {
+  //     if (job->IsAsync()) {
+  //       job->ExecuteAsync();
+  //     } else {
+  //       job->ExecuteSync();
+  //     }
+  //   }
+  //   GetQueue().Pop();
   // }
-
-  // if (driverOpts.printJobs) {
-  //   GetCompilation().PrintJobs();
-  //   return stone::ok;
-  // }
-  // GetCompilation().RunJobs();
-  // return stone::ok;
 }
 
 int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -58,22 +72,24 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     driver.SetListener(debugListener.get());
   }
 
-  if (driver.ParseArgs(args) == stone::Err) {
+  auto &ial = driver.ParseArgs(args);
+  if (driver.HasError()) {
     return Finish(1);
   }
-  if (driver.GetMode().IsAlien()) {
-    // lang.Printd(SrcLoc(), diags::err_alien_mode)
-    Finish(1);
-  }
 
-  if (driver.GetMode().IsPrintHelp()) {
-    driver.PrintHelp();
-    return Finish();
-  }
-  if (driver.GetMode().IsPrintVersion()) {
-    driver.PrintVersion();
-    return Finish();
-  }
+  // if (driver.GetMode().IsAlien()) {
+  //   // lang.Printd(SrcLoc(), diags::err_alien_mode)
+  //   Finish(1);
+  // }
 
-  auto tc = driver.BuildToolChain(driver.GetOptUtil().GetInputArgList());
+  // if (driver.GetMode().IsPrintHelp()) {
+  //   driver.PrintHelp();
+  //   return Finish();
+  // }
+  // if (driver.GetMode().IsPrintVersion()) {
+  //   driver.PrintVersion();
+  //   return Finish();
+  // }
+
+  // auto tc = driver.BuildToolChain(driver.GetOptUtil().GetInputArgList());
 }

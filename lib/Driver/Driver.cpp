@@ -23,28 +23,28 @@ using stone::ModeKind;
 
 using namespace stone;
 
-Driver::Driver(llvm::StringRef name, llvm::StringRef path,
-               CompilationListener *listener)
-    : optUtil(GetDriverOptions()) {
+Driver::Driver(llvm::StringRef name, llvm::StringRef path)
+    : name(name), path(path) {
 
   buildSystem = std::make_unique<BuildSystem>(*this);
+  SetExcludedFlagsBitmask(opts::NoLangOption);
 }
 
 Driver::~Driver() {}
 
 void Driver::Initialize() {}
 
-bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
+// bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  GetOptUtil().SetExcludedFlagsBitmask(opts::NoDriverOption);
-  if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
-    return stone::Err;
-  }
+//   GetOptUtil().SetExcludedFlagsBitmask(opts::NoDriverOption);
+//   if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
+//     return stone::Err;
+//   }
 
-  ComputeLinkMode(GetOptUtil().GetInputArgList());
+//   ComputeLinkMode(GetOptUtil().GetInputArgList());
 
-  return stone::Ok;
-}
+//   return stone::Ok;
+// }
 
 std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
 
@@ -54,11 +54,10 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   GetBuildSystem().StartBuild();
 
   // Now, build the job system since we have a toolchain
-  auto compilation =
-      std::make_unique<Compilation>(GetContext(), tc, GetBuildSystem());
+  auto compilation = std::make_unique<Compilation>(*this, tc);
 
-  BuildCompilationState bcs;
-  BuildIntents(*compilation.get(), bcs);
+  CompilationHotInfo chi;
+  BuildIntents(*compilation.get(), chi);
 
   if (driverOpts.printIntents) {
     // PrintIntents(bi);
@@ -68,9 +67,7 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &tc) {
   // BuiltJobs bj;
   // BuildJobs(bj, bi);
 
-  // return compilation;
-
-  return nullptr;
+  return compilation;
 }
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
@@ -162,10 +159,6 @@ void Driver::BuildDriverOptions(const llvm::opt::InputArgList &ial) {
   driverOpts.systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
 }
 
-// IntentExecutor Driver::ConstructIntentExecutor(CompilationIntent &intent) {
-//   // CommandIntentExecutor(intent, .... tc.ContructInvocation(intent));
-// }
-
 llvm::StringRef Driver::ComputeOutputFilename() {}
 
 // int Driver::ExecuteJob(const Job &job, const Job *&fallBackJob) const
@@ -175,8 +168,6 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 // void Driver::ExecuteJobs(
 //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const
 //     {}
-
-void Driver::PrintHelp() {}
 
 void Driver::PrintVersion() {}
 void Driver::Finish() {}

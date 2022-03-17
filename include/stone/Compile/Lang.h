@@ -44,7 +44,6 @@ class Lang final {
 
   std::unique_ptr<LangStats> stats;
   std::unique_ptr<syn::Syntax> syntax;
-  std::unique_ptr<syn::SyntaxContext> tc;
 
   llvm::StringRef name;
   llvm::StringRef path;
@@ -66,7 +65,6 @@ public:
   Frontend &GetFrontend() { return frontend; }
 
 public:
-  syn::SyntaxContext &GetSyntaxContext() { return *tc.get(); }
   syn::Syntax &GetSyntax() { return *syntax.get(); }
 
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }

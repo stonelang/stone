@@ -1,6 +1,6 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/CompilationListener.h"
+#include "stone/Driver/Driver.h"
 #include "stone/Driver/Job.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -22,37 +22,22 @@ using stone::CompilationStats;
 using stone::Job;
 using stone::ModeKind;
 
-Compilation::Compilation(Context &ctx, ToolChain &tc, BuildSystem &bs,
-                         CompilationListener *listener)
-    : ctx(ctx), tc(tc), bs(bs), listener(listener) {
+Compilation::Compilation(Driver &driver, ToolChain &tc)
+    : driver(driver), tc(tc) {
 
-  stats = std::make_unique<CompilationStats>(*this, ctx);
-  ctx.GetStatEngine().Register(stats.get());
+  stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
+  driver.GetContext().GetStatEngine().Register(stats.get());
 
   switch (tc.GetKind()) {
   case ToolChainKind::Darwin:
-    jobQueue = std::make_unique<DarwinJobQueue>(ctx);
+    jobQueue = std::make_unique<DarwinJobQueue>(driver.GetContext());
     break;
   case ToolChainKind::Unix:
-    jobQueue = std::make_unique<UnixJobQueue>(ctx);
+    jobQueue = std::make_unique<UnixJobQueue>(driver.GetContext());
     break;
   default:
-    assert(false && "Unknown ToolChain Kind");
+    stone::Panic("Unknown ToolChain Kind -- cannot create JobQueue");
   }
-}
-
-void Compilation::RunJobs() {
-  // while (!GetQueue().IsEmpty()) {
-  //   auto job = GetQueue().Front();
-  //   if (job) {
-  //     if (job->IsAsync()) {
-  //       job->ExecuteAsync();
-  //     } else {
-  //       job->ExecuteSync();
-  //     }
-  //   }
-  //   GetQueue().Pop();
-  // }
 }
 
 void Compilation::PrintJobs() {
@@ -69,7 +54,7 @@ void Compilation::PrintJobs() {
 }
 
 void CompilationStats::Print() {
-  if (compilation.GetContext().GetSystemOptions().printStatistics) {
+  if (compilation.GetDriver().GetContext().GetSystemOptions().printStatistics) {
     // GetContext().Out() << compilation.GetSessionName() << '\n';
   }
 }

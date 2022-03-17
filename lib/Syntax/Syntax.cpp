@@ -4,7 +4,8 @@
 using namespace stone;
 using namespace stone::syn;
 
-Syntax::Syntax(SyntaxContext &tc) : tc(tc) {}
+Syntax::Syntax(std::unique_ptr<SyntaxContext> sc) : sc(std::move(sc)) {}
+
 Syntax::~Syntax() {}
 
 template <std::size_t Len>

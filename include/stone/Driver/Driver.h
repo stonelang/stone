@@ -9,17 +9,13 @@
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
-#include "stone/Option/OptUtil.h"
+#include "stone/Option/OptInvocation.h"
 
 namespace stone {
 
-class Compilation;
-class CompilationOutputContext final {
-public:
-};
-
 class Intent;
-class BuildCompilationState final {
+class Compilation;
+class CompilationHotInfo final {
 public:
   /// All the inputs associated with the module
   llvm::SmallVector<const Intent *, 4> moduleInputs;
@@ -33,7 +29,7 @@ public:
   Intent *current;
 };
 
-class Driver final {
+class Driver final : public opts::OptInvocation {
 
   llvm::StringRef name;
   llvm::StringRef path;
@@ -41,10 +37,7 @@ class Driver final {
   /// The system context
   Context ctx;
 
-  opts::OptUtil optUtil;
-
   DriverOptions driverOpts;
-  CompilationOutputContext coc;
 
   std::unique_ptr<ToolChain> toolChain;
   std::unique_ptr<BuildSystem> buildSystem;
@@ -57,8 +50,6 @@ class Driver final {
   /// derive otherwise-unspecified output filenames from context.
   OutputFileMap outputFileMap;
 
-  BuildCompilationState bcs;
-
   CompilationListener *listener = nullptr;
 
 public:
@@ -67,30 +58,16 @@ public:
   Driver() = delete;
 
 public:
-  Driver(llvm::StringRef name, llvm::StringRef path,
-         CompilationListener *listener = nullptr);
+  Driver(llvm::StringRef name, llvm::StringRef path);
   ~Driver();
 
   void Initialize();
   void Finish();
 
 public:
-  void Run();
-
-  void PrintHelp();
   void PrintVersion();
 
 public:
-  // TODO: May just want parse to return the ial
-  bool ParseArgs(llvm::ArrayRef<const char *> args);
-
-  llvm::opt::InputArgList &GetGetInputArgList() {
-    return optUtil.GetInputArgList();
-  }
-
-  Mode &GetMode() { return optUtil.GetMode(); }
-  const Mode &GetMode() const { return optUtil.GetMode(); }
-
   void ComputeLinkMode(const llvm::opt::InputArgList &ial);
   LinkMode GetLinkMode() const { return driverOpts.linkMode; }
 
@@ -102,8 +79,6 @@ public:
 
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
 
-  void BuildOutputContext();
-
 public:
   // void BuildOutputContext();
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &tc);
@@ -112,18 +87,15 @@ public:
                                           const file::Files &inputs) const;
   CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
-  void BuildIntents(Compilation &compilation, BuildCompilationState &bcc);
-  void PrintIntents(BuildCompilationState &bcc);
+  void BuildIntents(Compilation &compilation, CompilationHotInfo &chi);
+  void PrintIntents(CompilationHotInfo &chi);
 
-  void BuildJobs(Compilation &compilation, BuildCompilationState &bcs);
-  void PrintJobs(BuildCompilationState &bcs);
-
-  BuildCompilationState &GetBuildCompilationState() { return bcs; }
-  CompilationOutputContext &GetOuputContext() { return coc; }
+  void BuildJobs(Compilation &compilation, CompilationHotInfo &chi);
+  void PrintJobs(CompilationHotInfo &chi);
 
 public:
-  Context &GetContext() { return ctx; }
-  opts::OptUtil &GetOptUtil() { return optUtil; }
+  Context &GetContext() override { return ctx; }
+  opts::BaseOptions &GetBaseOptions() override { return driverOpts; }
 
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
   file::Type GetOutputFileType() const { return driverOpts.outputFileType; }
@@ -155,6 +127,8 @@ public:
       // StringRef PrimaryInput,
       // llvm::SmallString<128> &Buffer
   );
+
+  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 };
 
 } // namespace stone

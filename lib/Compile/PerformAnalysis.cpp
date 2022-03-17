@@ -64,10 +64,11 @@ void Lang::PerformAnalysis(SourceUnit &source) {
 
 SyntaxFile *Lang::Parse(const unsigned srcID) {
 
-  // Create syntax file
+  // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
                              *GetModuleSystem().GetMainModule(),
-                             GetSyntaxContext(), srcID);
+                             GetSyntax().GetSyntaxContext(), srcID);
+
   syn::ParseSyntaxFile(*sf, GetSyntax());
   return sf;
 }

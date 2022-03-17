@@ -13,6 +13,7 @@
 // TODO:  Similar implementation to that of DiagnosticEngine
 namespace stone {
 class Context;
+
 class StatsPrinter {};
 class StatsListener {};
 
@@ -39,7 +40,6 @@ public:
   ConstList<Stats> GetDeps() { return deps; }
 
   stone::Timer &GetTimer() { return *timer.get(); }
-
   Context &GetContext() { return ctx; }
 
 public:

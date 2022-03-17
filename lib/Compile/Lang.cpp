@@ -39,10 +39,10 @@ Lang::Lang(LangListener *listener) : listener(listener) {
 
   frontend.GetContext().GetStatEngine().Register(stats.get());
 
-  tc = std::make_unique<syn::SyntaxContext>(
+  auto syntaxContext = std::make_unique<syn::SyntaxContext>(
       frontend.GetContext(), frontend.GetLangOptions().searchPathOpts);
 
-  syntax = std::make_unique<syn::Syntax>(*tc.get());
+  syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
 
   moduleSystem =
       std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetLangOptions());
