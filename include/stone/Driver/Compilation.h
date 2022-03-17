@@ -34,6 +34,7 @@ class Compilation final {
 
   Driver &driver;
   ToolChain &tc;
+  std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   /// This is mostly only here for lifetime management.
   llvm::SmallVector<std::unique_ptr<const Intent>, 32> intents;
@@ -42,7 +43,8 @@ class Compilation final {
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
-  Compilation(Driver &driver, ToolChain &tc);
+  Compilation(Driver &driver, ToolChain &tc,
+              std::unique_ptr<llvm::opt::DerivedArgList> dal);
 
 public:
   /// TODO: cleanup

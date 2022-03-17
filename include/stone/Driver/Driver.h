@@ -71,6 +71,10 @@ public:
   void ComputeLinkMode(const llvm::opt::InputArgList &ial);
   LinkMode GetLinkMode() const { return driverOpts.linkMode; }
 
+  std::unique_ptr<llvm::opt::DerivedArgList>
+  TranslateInputArgList(const llvm::opt::InputArgList &ial,
+                        llvm::StringRef workDir);
+
   bool CanLink() const { return (GetLinkMode() != LinkMode::None); }
   bool JustLink() const { return justLink; }
 
@@ -79,8 +83,7 @@ public:
   void ComputeOutputOptions(const llvm::opt::InputArgList &ial);
 
   CompilingModel ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
-                                       const file::Files &inputs,
-                                       bool batchMode = false) const;
+                                       bool &isBatchModel) const;
 
   CompilingModel GetCompilingModel() const { return driverOpts.compilingModel; }
 

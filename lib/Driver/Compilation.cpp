@@ -22,8 +22,9 @@ using stone::CompilationStats;
 using stone::Job;
 using stone::ModeKind;
 
-Compilation::Compilation(Driver &driver, ToolChain &tc)
-    : driver(driver), tc(tc) {
+Compilation::Compilation(Driver &driver, ToolChain &tc,
+                         std::unique_ptr<llvm::opt::DerivedArgList> dal)
+    : driver(driver), tc(tc), dal(std::move(dal)) {
 
   stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
   driver.GetContext().GetStatEngine().Register(stats.get());

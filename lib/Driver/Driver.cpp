@@ -54,15 +54,19 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
+  auto workDir = ComputeWorkDir(ial);
+  auto dal = TranslateInputArgList(ial, workDir);
+
   // /// Think about
-  // bool batchMode = false;
-  // driverOpts.compilingModel = ComputeCompilingModel(*dal, inputs, batchMode);
+  bool isBatchModel = false;
+  driverOpts.compilingModel = ComputeCompilingModel(*dal, isBatchModel);
 
   // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
-  auto compilation = std::make_unique<Compilation>(*this, toolChain);
+  auto compilation =
+      std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
   CompilationHotInfo chi;
   BuildIntents(*compilation, chi, inputs);
@@ -92,9 +96,27 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
   }
 }
 
+std::unique_ptr<llvm::opt::DerivedArgList>
+Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
+                              llvm::StringRef workDir) {
+
+  auto dal = std::make_unique<llvm::opt::DerivedArgList>(ial);
+
+  // auto addPath = [workingDirectory, DAL](Arg *A) {
+  //   assert(A->getNumValues() == 1 && "multiple values not handled");
+  //   StringRef path = A->getValue();
+  //   if (workingDirectory.empty() || path == "-" ||
+  //       llvm::sys::path::is_absolute(path)) {
+  //     DAL->append(A);
+  //     return;
+  //   }
+  // }
+  return dal;
+}
+
 CompilingModel
 Driver::ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
-                              const file::Files &inputs, bool batchMode) const {
+                              bool &isBatchModel) const {
   // Just use multiple for now
   return CompilingModel::Multiple;
 }

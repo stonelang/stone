@@ -67,7 +67,7 @@ protected:
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
   /// The translated arguments.
-  std::unique_ptr<llvm::opt::DerivedArgList> dal;
+  // TODO? std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
@@ -110,10 +110,10 @@ public:
     assert(ial);
     return *ial.get();
   }
-  llvm::opt::DerivedArgList &GetDerivedArgList() {
-    assert(dal);
-    return *dal.get();
-  }
+  // llvm::opt::DerivedArgList &GetDerivedArgList() {
+  //   assert(dal);
+  //   return *dal.get();
+  // }
 
   llvm::TimerGroup &GetTimerGroup() {
     assert(timerGroup);
