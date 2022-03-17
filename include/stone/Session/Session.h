@@ -56,6 +56,7 @@ namespace stone {
 
 class Session {
 protected:
+  
   Context ctx;
 
   std::unique_ptr<Mode> mode;
@@ -145,6 +146,8 @@ public:
 public:
   Mode &ComputeMode(const llvm::opt::InputArgList &ial);
   file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
+
+  llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace stone

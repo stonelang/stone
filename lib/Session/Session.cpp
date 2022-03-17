@@ -53,6 +53,7 @@ Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
       break;
     case opts::EmitParse:
       mode = std::make_unique<Mode>(ModeKind::EmitParse);
+      break;
     case opts::TypeCheck:
       mode = std::make_unique<Mode>(ModeKind::TypeCheck);
       break;
@@ -152,6 +153,18 @@ void Session::AddInputFile(llvm::StringRef name) {
 // TODO: There is a potential to add duplicate files here.
 void Session::AddInputFile(llvm::StringRef name, file::Type ty) {
   GetBaseOptions().inputFiles.push_back(file::File(name, ty));
+}
+
+
+llvm::StringRef Session::ComputeWorkDir(const llvm::opt::InputArgList &ial) {
+
+  if (auto *arg = ial.getLastArg(opts::WorkDir)) {
+    llvm::SmallString<128> smallStr;
+    smallStr = arg->getValue();
+    llvm::sys::fs::make_absolute(smallStr);
+    return smallStr.str();
+  }
+  return llvm::StringRef();
 }
 
 void Session::PrintHelp() {}
