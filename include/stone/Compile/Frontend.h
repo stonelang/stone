@@ -1,5 +1,5 @@
-#ifndef STONE_LANG_LANGCONTEXT_H
-#define STONE_LANG_LANGCONTEXT_H
+#ifndef STONE_COMPILE_FRONTEND_H
+#define STONE_COMPILE_FRONTEND_H
 
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/SourceUnit.h"
@@ -9,21 +9,18 @@
 #include "stone/Core/Mem.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Gen/CodeGenOptions.h"
-#include "stone/Option/OptUtil.h"
+#include "stone/Option/OptInvocation.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
-class Frontend final {
+class Frontend final : public opts::OptInvocation {
 
   friend class Lang;
 
   LangOptions langOpts;
-
-  // TODO: May move to Options
-  opts::OptUtil optUtil;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -36,6 +33,8 @@ class Frontend final {
 
   // Let use use a map for the time being.
   std::map<unsigned, SourceUnit *> sources;
+
+  llvm::SmallVector<unsigned, 16> sourceIDs;
 
   /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
@@ -67,25 +66,31 @@ public:
     return GetTypeCheckerOptions().typeCheckMode;
   }
 
+  void SetModuleName(llvm::StringRef name) {
+    GetLangOptions().systemOpts.moduleName = name.data();
+  }
+  const llvm::StringRef GetModuleName() const {
+    return GetLangOptions().systemOpts.moduleName;
+  }
+  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
+
 public:
-  Context &GetContext() { return ctx; }
+  Context &GetContext() override { return ctx; }
+  opts::BaseOptions &GetBaseOptions() override { return langOpts; }
 
-  opts::OptUtil &GetOptUtil() { return optUtil; }
-
-  Mode &GetMode() { return optUtil.GetMode(); }
-  const Mode &GetMode() const { return optUtil.GetMode(); }
-
+public:
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
-
   SourceUnit *GetSourceUnit(const unsigned srcID) { return sources[srcID]; }
 
   std::unique_ptr<OutputFile> ComputeOutputFile(const unsigned srcID);
 
 public:
-  bool ParseArgs(llvm::ArrayRef<const char *> args);
-  unsigned CreateSourceBuffer(const file::File &input);
+  llvm::ArrayRef<unsigned> CreateSourceIDs(file::Files &inputs);
+  unsigned CreateSourceID(const file::File &input);
 
-  void BuildSources(file::Files &files);
+  // std::SmallVector<unsigned> &BuildSources(file::Files &files);
+
+  // llvm::SmallVector<unsigned> &BuildSourceBufferIDs(file::Files &files);
 
 public:
   void *Allocate(size_t Size, unsigned Align) const {

@@ -8,14 +8,15 @@
 using namespace stone;
 using namespace stone::opts;
 
-Frontend::Frontend() : optUtil(GetLangOptions()) {}
+Frontend::Frontend() { SetExcludedFlagsBitmask(opts::NoLangOption); }
 Frontend::~Frontend() {}
 
 SourceUnit::~SourceUnit() {}
 
 SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
-                                 Frontend &lc) {
-  auto sizePtr = Frontend::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
+                                 Frontend &frontend) {
+
+  auto sizePtr = Frontend::Allocate<SourceUnit>(frontend, sizeof(SourceUnit));
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
@@ -23,22 +24,12 @@ static void ParseCodeGenArguments() {}
 static void ParseTypeCheckerArguments() {}
 static void ParseSearchPathArguments() {}
 
-bool Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
+// llvm::opts::InputArgList& Frontend::ParseArgs(llvm::ArrayRef<const char *>
+// args) {
+// auto result = OptBase::ParseArgs(....)
+// }
 
-  GetOptUtil().SetExcludedFlagsBitmask(opts::NoLangOption);
-
-  if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
-    return stone::Err;
-  }
-
-  for (auto &input : langOpts.inputFiles) {
-    BuildSourceUnit(input);
-  }
-  /// Now, build the source profiles
-  return stone::Ok;
-}
-
-unsigned Frontend::CreateSourceBuffer(const file::File &input) {
+unsigned Frontend::CreateSourceID(const file::File &input) {
 
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
@@ -52,14 +43,20 @@ unsigned Frontend::CreateSourceBuffer(const file::File &input) {
   return srcID;
 }
 
-SourceUnit *Frontend::BuildSourceUnit(const file::File &input) {
-  auto srcID = CreateSourceBuffer(input);
-  auto sp = SourceUnit::Allocate(srcID, input, *this);
-  sources.insert(std::make_pair(srcID, sp));
+llvm::ArrayRef<unsigned> Frontend::CreateSourceIDs(file::Files &inputs) {
+  for (auto &input : inputs) {
+    auto sourceID = CreateSourceID(input);
+    sourceIDs.push_back(sourceID);
+  }
+  return sourceIDs;
 }
 
-std::unique_ptr<OutputFile>
-Frontend::ComputeOutputFile(const unsigned srcID) {
+// SourceUnit *Frontend::BuildSourceUnit(const file::File &input) {
+//   auto srcID = CreateSourceBuffer(input);
+//   auto sp = SourceUnit::Allocate(srcID, input, *this);
+//   sources.insert(std::make_pair(srcID, sp));
+// }
 
+std::unique_ptr<OutputFile> Frontend::ComputeOutputFile(const unsigned srcID) {
   stone::Panic("ComputeSourceOutputFile not implemented");
 }

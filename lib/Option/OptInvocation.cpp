@@ -1,4 +1,4 @@
-#include "stone/Option/OptUtil.h"
+#include "stone/Option/OptInvocation.h"
 #include "stone/Core/Context.h"
 #include "stone/Option/Options.h"
 
@@ -9,10 +9,10 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-OptUtil::OptUtil(BaseOptions &baseOpts)
-    : baseOpts(baseOpts), optst(stone::opts::CreateOptTable()) {}
+OptInvocation::OptInvocation() : optst(stone::opts::CreateOptTable()) {}
 
-bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
+llvm::opt::InputArgList &
+OptInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   ial = std::make_unique<llvm::opt::InputArgList>(
       GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
@@ -21,9 +21,9 @@ bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
   assert(ial && "No input argument list.");
 
   // Check for missing argument error.
-  if (missingArgCount && ctx) {
+  if (missingArgCount) {
     // TODO:
-    // ctx.Printd << "D(SrcLoc(),"
+    // GetContext().Printd << "D(SrcLoc(),"
     //     << "msg::error_missing_arg_value,"
     //     << "argList->getArgString(missingArgIndex),"
     //     << "missingArgCount" << '\n';
@@ -33,59 +33,68 @@ bool OptUtil::ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx) {
 
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    /// TODO: ctx.Printd
+    /// TODO: GetContext().Printd
     // cos << "D(SourceLoc(), "
     //     << "msg::error_unknown_arg,"
     //     << "arg->getAsString(*ArgList));" << '\n';
     // TODO: return stone::Err
     stone::Panic("error_unknown_arg");
   }
-  // Create the mode
-  mode = CreateMode(GetInputArgList());
 
-  // Build all input files
-  BuildInputFiles(GetInputArgList());
-
-  return stone::Ok;
+  return *ial.get();
 }
-std::unique_ptr<Mode> OptUtil::CreateMode(const llvm::opt::InputArgList &ial) {
+Mode &OptInvocation::CreateMode(const llvm::opt::InputArgList &ial) {
 
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {
     // TODO: may have to claim
     switch (modeArg->getOption().getID()) {
     case opts::Parse:
-      return std::make_unique<Mode>(ModeKind::Parse);
+      mode = std::make_unique<Mode>(ModeKind::Parse);
+      break;
     case opts::EmitParse:
-      return std::make_unique<Mode>(ModeKind::EmitParse);
+      mode = std::make_unique<Mode>(ModeKind::EmitParse);
     case opts::TypeCheck:
-      return std::make_unique<Mode>(ModeKind::TypeCheck);
+      mode = std::make_unique<Mode>(ModeKind::TypeCheck);
+      break;
     case opts::EmitSyntax:
-      return std::make_unique<Mode>(ModeKind::EmitSyntax);
+      mode = std::make_unique<Mode>(ModeKind::EmitSyntax);
+      break;
     case opts::EmitIR:
-      return std::make_unique<Mode>(ModeKind::EmitIR);
+      mode = std::make_unique<Mode>(ModeKind::EmitIR);
+      break;
     case opts::EmitBC:
-      return std::make_unique<Mode>(ModeKind::EmitBC);
+      mode = std::make_unique<Mode>(ModeKind::EmitBC);
+      break;
     case opts::EmitObject:
-      return std::make_unique<Mode>(ModeKind::EmitObject);
+      mode = std::make_unique<Mode>(ModeKind::EmitObject);
+      break;
     case opts::EmitAssembly:
-      return std::make_unique<Mode>(ModeKind::EmitAssembly);
+      mode = std::make_unique<Mode>(ModeKind::EmitAssembly);
+      break;
     case opts::EmitLibrary:
-      return std::make_unique<Mode>(ModeKind::EmitLibrary);
+      mode = std::make_unique<Mode>(ModeKind::EmitLibrary);
+      break;
     case opts::EmitModule:
-      return std::make_unique<Mode>(ModeKind::EmitModule);
+      mode = std::make_unique<Mode>(ModeKind::EmitModule);
+      break;
     case opts::PrintVersion:
-      return std::make_unique<Mode>(ModeKind::PrintVersion);
+      mode = std::make_unique<Mode>(ModeKind::PrintVersion);
+      break;
     case opts::PrintHelp:
-      return std::make_unique<Mode>(ModeKind::PrintVersion);
+      mode = std::make_unique<Mode>(ModeKind::PrintVersion);
+      break;
     default:
-      return std::make_unique<Mode>(ModeKind::Alien);
+      mode = std::make_unique<Mode>(ModeKind::Alien);
+      break;
     }
   }
-  return std::make_unique<Mode>(ModeKind::None);
+  mode = std::make_unique<Mode>(ModeKind::None);
+  return *mode.get();
 }
 
-void OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
+file::Files &
+OptInvocation::BuildInputFiles(const llvm::opt::InputArgList &ial) {
 
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
   for (Arg *arg : ial) {
@@ -95,18 +104,18 @@ void OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
         auto fileType = file::GetTypeByExt(file::GetExt(input));
         switch (fileType) {
         case file::Type::Stone: {
-          if (baseOpts.inputFileType == file::Type::None) {
-            baseOpts.inputFileType = file::Type::Stone;
-          } else if (baseOpts.inputFileType != file::Type::Stone) {
+          if (GetBaseOptions().inputFileType == file::Type::None) {
+            GetBaseOptions().inputFileType = file::Type::Stone;
+          } else if (GetBaseOptions().inputFileType != file::Type::Stone) {
             stone::Panic("Different file types"); // TODO: Printd
           }
           AddInputFile(input, fileType);
           break;
         }
         case file::Type::Object: {
-          if (baseOpts.inputFileType == file::Type::None) {
-            baseOpts.inputFileType = file::Type::Object;
-          } else if (baseOpts.inputFileType != file::Type::Object) {
+          if (GetBaseOptions().inputFileType == file::Type::None) {
+            GetBaseOptions().inputFileType = file::Type::Object;
+          } else if (GetBaseOptions().inputFileType != file::Type::Object) {
             // TODO: Different file types
             stone::Panic("Different file types"); // TODO: Printd
           }
@@ -136,17 +145,18 @@ void OptUtil::BuildInputFiles(const llvm::opt::InputArgList &ial) {
       }
     }
   }
+  return GetBaseOptions().inputFiles;
 }
-void OptUtil::AddInputFile(llvm::StringRef name) {
+void OptInvocation::AddInputFile(llvm::StringRef name) {
   auto ty = file::GetTypeByName(name);
   assert(ty != file::Type::INVALID && "Invalid file type.");
   AddInputFile(name, ty);
 }
 // TODO: There is a potential to add duplicate files here.
-void OptUtil::AddInputFile(llvm::StringRef name, file::Type ty) {
-  baseOpts.inputFiles.push_back(file::File(name, ty));
+void OptInvocation::AddInputFile(llvm::StringRef name, file::Type ty) {
+  GetBaseOptions().inputFiles.push_back(file::File(name, ty));
 }
 
-void OptUtil::PrintHelp() {}
+void OptInvocation::PrintHelp() {}
 
 // void Support::BuildInputFiles() {}

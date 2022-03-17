@@ -12,17 +12,9 @@
 namespace stone {
 namespace opts {
 
-class OptUtil final {
+class OptInvocation {
 
   std::unique_ptr<Mode> mode;
-
-  unsigned includedFlagsBitmask = 0;
-  unsigned excludedFlagsBitmask;
-
-  unsigned missingArgIndex;
-  unsigned missingArgCount;
-
-  BaseOptions &baseOpts;
 
   /// The options table
   std::unique_ptr<llvm::opt::OptTable> optst;
@@ -30,11 +22,18 @@ class OptUtil final {
   /// The input argument list
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
-public:
-  OptUtil(BaseOptions &baseOpts);
+protected:
+  unsigned includedFlagsBitmask = 0;
+  unsigned excludedFlagsBitmask;
+  unsigned missingArgIndex;
+  unsigned missingArgCount;
 
+public:
+  OptInvocation();
+
+public:
   /// Return true means successful
-  bool ParseArgs(llvm::ArrayRef<const char *> args, Context *ctx = nullptr);
+  llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
 
 public:
   llvm::opt::OptTable &GetOpts() const {
@@ -61,15 +60,19 @@ public:
   unsigned GetMissingArgIndex() const { return missingArgIndex; }
   unsigned GetMissingArgCount() const { return missingArgCount; }
 
-  void PrintHelp();
+public:
+  virtual Context &GetContext() = 0;
+  virtual BaseOptions &GetBaseOptions() = 0;
 
 public:
+  void PrintHelp();
+
   void AddInputFile(llvm::StringRef name);
   void AddInputFile(llvm::StringRef name, file::Type ty);
 
-private:
-  std::unique_ptr<Mode> CreateMode(const llvm::opt::InputArgList &ial);
-  void BuildInputFiles(const llvm::opt::InputArgList &ial);
+public:
+  Mode &CreateMode(const llvm::opt::InputArgList &ial);
+  file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace opts

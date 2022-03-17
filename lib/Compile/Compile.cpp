@@ -35,16 +35,16 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status ? status : err;
   };
 
-  if (args.empty()) {
-    // ctx.Printd(SrcLoc(), diag::err_no_compile_args);
-    return Finish(1);
-  }
-
   std::unique_ptr<DebugLangListener> debugListener;
-  Lang lang;
 
+  Lang lang;
   STONE_DEFER { lang.Finish(); };
   lang.Initialize();
+
+  if (args.empty()) {
+    // lang.Printd(SrcLoc(), diag::err_no_compile_args);
+    return Finish(1);
+  }
 
   if (listener) {
     lang.SetListener(listener);
@@ -53,51 +53,52 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     lang.SetListener(debugListener.get());
   }
 
-  // Build up the context
-  auto &lc = lang.GetFrontend();
+  auto &frontend = lang.GetFrontend();
   auto matinExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  lc.SetMainExecutablePath(matinExecPath);
+  frontend.SetMainExecutablePath(matinExecPath);
 
-  if (lc.ParseArgs(args) == stone::Err) {
+  auto &ial = frontend.ParseArgs(args);
+  if (frontend.HasError()) {
     return Finish(1);
   }
-
-  if (lc.GetMode().IsAlien()) {
+  auto &mode = frontend.CreateMode(ial);
+  if (mode.IsAlien()) {
     // lang.Printd(SrcLoc(), diags::err_alien_mode)
     Finish(1);
   }
-
-  if (lc.GetMode().IsPrintHelp()) {
-    lang.PrintHelp();
+  if (mode.IsPrintHelp()) {
+    // lang.PrintHelp();
     return Finish();
   }
-  if (lc.GetMode().IsPrintVersion()) {
+  if (mode.IsPrintVersion()) {
     lang.PrintVersion();
     return Finish();
   }
-
-  if (!lc.GetMode().CanCompile()) {
+  if (!mode.CanCompile()) {
     /// lang.Printd()
     return Finish(1);
   }
+  auto inputs = frontend.BuildInputFiles(ial);
 
-  // lc.BuildSources();
-  if (lang.GetListener()) {
-    lang.GetListener()->OnCompileConfigured(lang);
-  }
+  // auto sourceIDs = frontend.BuildSourceIDs(inputs);
 
-  lang.Compile();
+  // lang.Compile(sourceIDs);
+
+  // if (lang.GetListener()) {
+  //   lang.GetListener()->OnCompileConfigured(lang);
+  // }
+  // // Pass
+  // lang.Compile();
 
   return Finish();
 }
 
-void Lang::Compile() {
+void Lang::Compile(llvm::ArrayRef<const unsigned> sourceIDs) {
 
   if (listener) {
     listener->OnCompileStarted(*this);
   }
-
-  PerformCodeAnalysis();
+  PerformCodeAnalysis(sourceIDs);
   if (JustCodeAnalysis()) {
     // Do some things
     return;

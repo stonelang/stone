@@ -10,7 +10,6 @@
 #include "llvm/IR/Module.h"
 
 using namespace stone;
-
 using stone::Lang;
 using stone::LangListener;
 using stone::ModeKind;
@@ -23,7 +22,7 @@ void Lang::PerformCodeGen() {
   assert(CanCodeGen());
 
   // We are performing some low leverl code generation
-  CodeGenContext cgc(stone::GetLLVMContext(), lc.GetCodeGenOptions());
+  CodeGenContext cgc(stone::GetLLVMContext(), frontend.GetCodeGenOptions());
 
   // At this point, we much generate IR for all succeeding modes
 
@@ -33,17 +32,17 @@ void Lang::PerformCodeGen() {
 
   // auto mod = stone::GenIR(GetMainModule(), cgc);
 
-  if (lc.GetMode().IsEmitIR()) {
+  if (frontend.GetMode().IsEmitIR()) {
     // EmitIR()
     return;
   }
 
-  if (!lc.GetCodeGenOptions().skipOptimization) {
+  if (!frontend.GetCodeGenOptions().skipOptimization) {
     /// Send the SyntaxFile to the optimizer
     // OptimizeIR(llvmMod);
   }
 
-  if (lc.GetMode().IsNone() || lc.GetMode().IsEmitObject()) {
+  if (frontend.GetMode().IsNone() || frontend.GetMode().IsEmitObject()) {
     // GenObject(srcID, llvmMod, cgc);
     return;
   }
@@ -66,6 +65,6 @@ void Lang::GenObject(const unsigned srcID, llvm::Module *mod,
                      CodeGenContext &cc) {
 
   /// TODO: This is the only time we should perform a lookup
-  // auto outputFile = lc.ComputeOutputFile(srcID);
+  // auto outputFile = frontend.ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }

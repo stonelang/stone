@@ -39,7 +39,7 @@ class Lang final {
 
   friend LangStats;
 
-  Frontend lc;
+  Frontend frontend;
   LangListener *listener = nullptr;
 
   std::unique_ptr<LangStats> stats;
@@ -65,21 +65,13 @@ public:
 public:
   void Initialize();
   void Finish();
-  Frontend &GetFrontend() { return lc; }
+  Frontend &GetFrontend() { return frontend; }
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *tc.get(); }
   syn::Syntax &GetSyntax() { return *syntax.get(); }
 
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
-
-  // TODO:
-  void SetModuleName(llvm::StringRef name) {
-    lc.GetLangOptions().systemOpts.moduleName = name.data();
-  }
-  const llvm::StringRef GetModuleName() const {
-    return lc.GetLangOptions().systemOpts.moduleName;
-  }
 
   bool IsEoc() { return isEoc; }
   void Stopc() { isEoc = true; }
@@ -95,10 +87,10 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  void Compile();
+  void Compile(llvm::ArrayRef<const unsigned> sourceIDs);
 
   // Perform code analysis
-  void PerformCodeAnalysis();
+  void PerformCodeAnalysis(llvm::ArrayRef<const unsigned> sourceIDs);
 
   /// Print the lanuage help
   void PrintHelp();
@@ -126,7 +118,7 @@ private:
   void EmitSyntax(syn::SyntaxFile *sf);
 
   bool JustCodeAnalysis() {
-    if (lc.GetMode().JustParse() || lc.GetMode().JustTypeCheck()) {
+    if (frontend.GetMode().JustParse() || frontend.GetMode().JustTypeCheck()) {
       return true;
     }
     return false;
@@ -137,7 +129,7 @@ private:
   void PerformCodeGen();
 
   bool CanCodeGen() {
-    switch (lc.GetMode().GetKind()) {
+    switch (frontend.GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitIR:
     case ModeKind::EmitBC:

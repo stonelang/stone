@@ -18,18 +18,18 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-void Lang::PerformCodeAnalysis() {
+void Lang::PerformCodeAnalysis(llvm::ArrayRef<const unsigned> sourceIDs) {
 
-  for (auto source : lc.sources) {
-    PerformCodeAnalysis(source.first);
+  for (auto sourceID : sourceIDs) {
+    PerformCodeAnalysis(sourceID);
   }
-  if (lc.GetMode().JustParse()) {
+  if (frontend.GetMode().JustParse()) {
     return;
   }
-  if (lc.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
+  if (frontend.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
     TypeCheckModule(nullptr);
   }
-  if (lc.GetMode().JustTypeCheck()) {
+  if (frontend.GetMode().JustTypeCheck()) {
     // Do some things
     return;
   }
@@ -38,20 +38,20 @@ void Lang::PerformCodeAnalysis() {
 void Lang::PerformCodeAnalysis(const unsigned srcID) {
 
   auto syntaxFile = Parse(srcID);
-  if (lc.GetMode().IsParse()) {
+  if (frontend.GetMode().IsParse()) {
     return;
   }
-  if (lc.GetMode().IsEmitParse()) {
+  if (frontend.GetMode().IsEmitParse()) {
     // lang.EmitParse(syntaxFile);
     return;
   }
-  if (lc.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
+  if (frontend.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
     TypeCheckSyntaxFile(*syntaxFile);
   }
-  if (lc.GetMode().IsTypeCheck()) {
+  if (frontend.GetMode().IsTypeCheck()) {
     return;
   }
-  if (lc.GetMode().IsEmitSyntax()) {
+  if (frontend.GetMode().IsEmitSyntax()) {
     // lang.EmitSyntax(*sntaxFile)
   }
 }
@@ -68,7 +68,7 @@ SyntaxFile *Lang::Parse(const unsigned srcID) {
 
 void Lang::TypeCheckSyntaxFile(SyntaxFile &sf) {
   assert(sf.stage == syn::SyntaxFileStage::AtImports);
-  types::TypeCheckSyntaxFile(sf, lc.GetTypeCheckerOptions());
+  types::TypeCheckSyntaxFile(sf, frontend.GetTypeCheckerOptions());
 }
 /// Perform type-checking on the entire module
 void Lang::TypeCheckModule(syn::Module *mod) {

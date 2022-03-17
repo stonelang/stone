@@ -35,17 +35,17 @@ using namespace stone::syn;
 
 Lang::Lang(LangListener *listener) : listener(listener) {
 
-  stats = std::make_unique<LangStats>(*this, lc.GetContext());
+  stats = std::make_unique<LangStats>(*this, frontend.GetContext());
 
-  lc.GetContext().GetStatEngine().Register(stats.get());
+  frontend.GetContext().GetStatEngine().Register(stats.get());
 
-  tc = std::make_unique<syn::SyntaxContext>(lc.GetContext(),
-                                            lc.GetLangOptions().searchPathOpts);
+  tc = std::make_unique<syn::SyntaxContext>(
+      frontend.GetContext(), frontend.GetLangOptions().searchPathOpts);
 
   syntax = std::make_unique<syn::Syntax>(*tc.get());
 
   moduleSystem =
-      std::make_unique<ModuleSystem>(*syntax.get(), lc.GetLangOptions());
+      std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetLangOptions());
 }
 Lang::~Lang() {}
 
@@ -92,8 +92,6 @@ void Lang::Initialize() {}
 
 // llvm::StringRef Lang::GetProgramName() { return name; }
 // llvm::StringRef Lang::GetProgramPath() { return path; }
-
-void Lang::PrintHelp() { lc.GetOptUtil().PrintHelp(); }
 
 void Lang::PrintVersion() {}
 
