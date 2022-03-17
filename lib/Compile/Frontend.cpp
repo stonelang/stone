@@ -20,14 +20,23 @@ SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
-static void ParseCodeGenArguments() {}
-static void ParseTypeCheckerArguments() {}
-static void ParseSearchPathArguments() {}
+static void ParseLangArgs(llvm::opt::InputArgList &ial) {}
+static void ParseCodeGenArgs(llvm::opt::InputArgList &ial) {}
+static void ParseTypeCheckerArgs(llvm::opt::InputArgList &ial) {}
+static void ParseSearchPathArgs(llvm::opt::InputArgList &ial) {}
 
-// llvm::opts::InputArgList &
-// Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
-//   return OptInvocation::ParseArgs(args);
-// }
+llvm::opt::InputArgList &
+Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
+
+  auto& ial = OptInvocation::ParseArgs(args);
+
+  ParseLangArgs(ial);
+  ParseTypeCheckerArgs(ial);
+  ParseSearchPathArgs(ial);
+  ParseCodeGenArgs(ial);
+
+  return ial;
+}
 
 unsigned Frontend::CreateSourceID(const file::File &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());

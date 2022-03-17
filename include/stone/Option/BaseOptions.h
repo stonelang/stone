@@ -12,7 +12,7 @@ namespace stone {
 namespace opts {
 
 class BaseOptions {
-public:
+
   // /// The target platform that we are running on.
   // llvm::Triple target;
 

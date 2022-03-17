@@ -36,15 +36,13 @@ space Physics.QM {
 		auto a = new LinearAcceleartor(); 
 		a.Fire(a);
 
-
 		delete p; 
 		delete a;
-
-
-		auto result = fun() -> Particle* {
-			auto p = new Particle(); 
-		}
-		delete result; 
+		// auto Fire = fun() -> Particle* {
+		// 	auto p = new Particle();
+		// 	p.Fire(); 
+		// }
+		
 
 	}
 }

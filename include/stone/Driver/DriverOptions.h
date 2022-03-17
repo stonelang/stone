@@ -40,6 +40,7 @@ class DriverOptions final : public opts::BaseOptions {
   friend class Driver;
 
 public:
+  // TODO: Move to base
   SystemOptions systemOpts;
 
   /// Print the jobs in the JobQueue

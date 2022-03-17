@@ -100,11 +100,12 @@ void Lang::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   if (listener) {
     listener->OnCompileStarted(*this);
   }
+  // Create SyntaxFiles and perform type-checking on them
   PerformAnalysis(sources);
   if (frontend.JustAnalysis()) {
     // Do some things
     return;
   }
-  /// Pass what you are performing codegen on
+  // At this point, we should have a module with one or more syntax files
   PerformCodeGen();
 }

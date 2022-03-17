@@ -126,7 +126,6 @@ public:
   void AddFile(ModuleFile &file);
 
   SyntaxFile &GetMainSyntaxFile() const;
-
   ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
 public:

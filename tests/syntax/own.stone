@@ -18,6 +18,9 @@ fun TakeS1(own S1* s) -> void {
 	S0 s0(move s); 
 
 }
+
+struct Quark {
+}
 fun Main() -> int {
 	// This will auto free 
 	own S0* s0 = new S0();
@@ -27,6 +30,10 @@ fun Main() -> int {
 	UseS1(s1);
 
 	Take(move s1);
+
+	// Behaves like std::unique_ptr 
+	own Quark* quark = new Quark(); 
+
 
 }
 	

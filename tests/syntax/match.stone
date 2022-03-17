@@ -2,15 +2,15 @@
 public fun F0() -> void {
 
 	i32 i = 1; 
-	match i {
+	switch(i) {
 		case 1:
-		// this will automatically break out; 
+		// Automatically break out 
 		case 2:
 		case 3:
 		default: 
 	}
 
-	match i {
+	switch (i) {
 		case 1:
 			next;
 		case 2;

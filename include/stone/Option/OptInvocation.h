@@ -32,8 +32,7 @@ public:
   OptInvocation();
 
 public:
-  /// Return true means successful
-  llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
+  virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
 
 public:
   llvm::opt::OptTable &GetOpts() const {

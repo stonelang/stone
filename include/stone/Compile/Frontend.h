@@ -41,6 +41,9 @@ public:
   ~Frontend();
 
 public:
+  llvm::opt::InputArgList &
+  ParseArgs(llvm::ArrayRef<const char *> args) override;
+
   void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
   std::string GetMainExecutablePath() const { return mainExecutablePath; }
 
