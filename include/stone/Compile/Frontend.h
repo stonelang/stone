@@ -25,9 +25,6 @@ class Frontend final : public Session {
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
-  /// The system context
-  Context ctx;
-
   llvm::SmallVector<SourceUnit *> sources;
 
   /// Allocator SourceUnit
@@ -44,7 +41,6 @@ public:
   SourceUnit *BuildSource(const file::File &input);
   unsigned CreateSourceID(const file::File &input);
 
-  Context &GetContext() override { return ctx; }
   BaseOptions &GetBaseOptions() override { return langOpts; }
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
   std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);

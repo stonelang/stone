@@ -3,17 +3,61 @@
 
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
+#include "stone/Core/TextDiagnosticListener.h"
+#include "stone/Core/Timer.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
 
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/IntrusiveRefCntPtr.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/SmallSet.h"
+#include "llvm/ADT/StringExtras.h"
+#include "llvm/ADT/StringMap.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/StringSet.h"
+#include "llvm/ADT/StringSwitch.h"
+
+#include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
+#include "llvm/Option/OptSpecifier.h"
+#include "llvm/Option/OptTable.h"
+#include "llvm/Option/Option.h"
+
+#include "llvm/Support/BuryPointer.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/Chrono.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
+#include "llvm/Support/MemoryBuffer.h"
+#include "llvm/Support/Path.h"
 #include "llvm/Support/PrettyStackTrace.h"
+#include "llvm/Support/StringSaver.h"
+#include "llvm/Support/TargetRegistry.h"
+#include "llvm/Support/Timer.h"
+#include "llvm/Support/VirtualFileSystem.h"
+
+#include <cassert>
+#include <list>
+#include <memory>
+#include <string>
+#include <utility>
+
+namespace llvm {
+class raw_fd_ostream;
+class Timer;
+class TimerGroup;
+} // namespace llvm
 
 namespace stone {
 
 class Session {
 protected:
+  Context ctx;
+
   std::unique_ptr<Mode> mode;
 
   /// The options table
@@ -25,6 +69,14 @@ protected:
   /// The translated arguments.
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
+  std::unique_ptr<llvm::Timer> timer;
+  std::unique_ptr<llvm::TimerGroup> timerGroup;
+
+  TextDiagnosticListener textDiagListener;
+
+  llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> vfs;
+
+protected:
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
   unsigned missingArgIndex;
@@ -35,6 +87,7 @@ public:
 
 public:
   virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
+  virtual BaseOptions &GetBaseOptions() = 0;
 
 public:
   llvm::opt::OptTable &GetOpts() const {
@@ -42,6 +95,7 @@ public:
     return *optst.get();
   }
 
+  Context &GetContext() { return ctx; }
   Mode &GetMode() {
     assert(mode);
     return *mode.get();
@@ -60,14 +114,27 @@ public:
     return *dal.get();
   }
 
+  llvm::TimerGroup &GetTimerGroup() {
+    assert(timerGroup);
+    return *timerGroup.get();
+  }
+  llvm::Timer &GetTimer() {
+    assert(timer);
+    return *timer.get();
+  }
+
+  TextDiagnosticListener &GetTextDiagnosticListener() {
+    return textDiagListener;
+  }
+
+public:
   void SetIncludedFlagsBitmask(unsigned flag) { includedFlagsBitmask = flag; }
   void SetExcludedFlagsBitmask(unsigned flag) { excludedFlagsBitmask = flag; }
   unsigned GetMissingArgIndex() const { return missingArgIndex; }
   unsigned GetMissingArgCount() const { return missingArgCount; }
 
-public:
-  virtual Context &GetContext() = 0;
-  virtual BaseOptions &GetBaseOptions() = 0;
+  void SetVFS(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fs) { vfs = fs; }
+  llvm::vfs::FileSystem &GetVFS() const { return *vfs; }
 
 public:
   void PrintHelp();

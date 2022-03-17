@@ -34,9 +34,6 @@ class Driver final : public Session {
   llvm::StringRef name;
   llvm::StringRef path;
 
-  /// The system context
-  Context ctx;
-
   DriverOptions driverOpts;
 
   std::unique_ptr<ToolChain> toolChain;
@@ -100,9 +97,7 @@ public:
   void PrintJobs(CompilationHotInfo &chi);
 
 public:
-  Context &GetContext() override { return ctx; }
   BaseOptions &GetBaseOptions() override { return driverOpts; }
-
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
   file::Type GetOutputFileType() const { return driverOpts.outputFileType; }
 

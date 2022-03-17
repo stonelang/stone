@@ -9,10 +9,11 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-Session::Session() : optst(stone::opts::CreateOptTable()) {}
+Session::Session()
+    : optst(stone::opts::CreateOptTable()),
+      vfs(llvm::vfs::getRealFileSystem()) {}
 
 llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
-
   ial = std::make_unique<llvm::opt::InputArgList>(
       GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
                           includedFlagsBitmask, excludedFlagsBitmask));
@@ -43,7 +44,6 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   return *ial.get();
 }
 Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
-
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {
     // TODO: may have to claim
@@ -93,7 +93,6 @@ Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
 }
 
 file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
-
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
   for (Arg *arg : ial) {
     if (arg->getOption().getKind() == Option::InputClass) {
