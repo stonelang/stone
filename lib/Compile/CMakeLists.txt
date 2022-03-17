@@ -1,8 +1,6 @@
 set(stone_compile_sources
 	Compile.cpp
 	DebugLangListener.cpp
-	JustAnalysis.cpp
-	JustCodeGen.cpp
 	Lang.cpp
 	Frontend.cpp
 	Lexer.cpp
@@ -13,6 +11,8 @@ set(stone_compile_sources
 	Parser.cpp
 	ParseExpr.cpp
 	ParseStmt.cpp
+	PerformAnalysis.cpp
+	PerformCodeGen.cpp
 	TypeCheck.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp

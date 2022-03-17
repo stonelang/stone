@@ -31,10 +31,7 @@ class Frontend final : public opts::OptInvocation {
   /// The translated arguments.
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
-  // Let use use a map for the time being.
-  std::map<unsigned, SourceUnit *> sources;
-
-  llvm::SmallVector<unsigned, 16> sourceIDs;
+  llvm::SmallVector<SourceUnit *> sources;
 
   /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
@@ -74,23 +71,25 @@ public:
   }
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 
+  bool JustAnalysis() {
+    if (GetMode().JustParse() || GetMode().JustTypeCheck()) {
+      return true;
+    }
+    return false;
+  }
+
 public:
   Context &GetContext() override { return ctx; }
   opts::BaseOptions &GetBaseOptions() override { return langOpts; }
 
 public:
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
-  SourceUnit *GetSourceUnit(const unsigned srcID) { return sources[srcID]; }
-
   std::unique_ptr<OutputFile> ComputeOutputFile(const unsigned srcID);
 
 public:
-  llvm::ArrayRef<unsigned> CreateSourceIDs(file::Files &inputs);
+  llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
+  SourceUnit *BuildSource(const file::File &input);
   unsigned CreateSourceID(const file::File &input);
-
-  // std::SmallVector<unsigned> &BuildSources(file::Files &files);
-
-  // llvm::SmallVector<unsigned> &BuildSourceBufferIDs(file::Files &files);
 
 public:
   void *Allocate(size_t Size, unsigned Align) const {

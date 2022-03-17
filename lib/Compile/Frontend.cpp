@@ -24,13 +24,12 @@ static void ParseCodeGenArguments() {}
 static void ParseTypeCheckerArguments() {}
 static void ParseSearchPathArguments() {}
 
-// llvm::opts::InputArgList& Frontend::ParseArgs(llvm::ArrayRef<const char *>
-// args) {
-// auto result = OptBase::ParseArgs(....)
+// llvm::opts::InputArgList &
+// Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
+//   return OptInvocation::ParseArgs(args);
 // }
 
 unsigned Frontend::CreateSourceID(const file::File &input) {
-
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
     // ctx.Printd(SrcLoc(),
@@ -43,19 +42,19 @@ unsigned Frontend::CreateSourceID(const file::File &input) {
   return srcID;
 }
 
-llvm::ArrayRef<unsigned> Frontend::CreateSourceIDs(file::Files &inputs) {
+llvm::ArrayRef<SourceUnit *> Frontend::BuildSources(const file::Files &inputs) {
   for (auto &input : inputs) {
-    auto sourceID = CreateSourceID(input);
-    sourceIDs.push_back(sourceID);
+    auto source = BuildSource(input);
+    assert(source);
+    sources.push_back(source);
   }
-  return sourceIDs;
+  return sources;
 }
 
-// SourceUnit *Frontend::BuildSourceUnit(const file::File &input) {
-//   auto srcID = CreateSourceBuffer(input);
-//   auto sp = SourceUnit::Allocate(srcID, input, *this);
-//   sources.insert(std::make_pair(srcID, sp));
-// }
+SourceUnit *Frontend::BuildSource(const file::File &input) {
+  auto srcID = CreateSourceID(input);
+  return SourceUnit::Allocate(srcID, input, *this);
+}
 
 std::unique_ptr<OutputFile> Frontend::ComputeOutputFile(const unsigned srcID) {
   stone::Panic("ComputeSourceOutputFile not implemented");

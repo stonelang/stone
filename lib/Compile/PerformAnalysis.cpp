@@ -18,10 +18,11 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-void Lang::PerformCodeAnalysis(llvm::ArrayRef<const unsigned> sourceIDs) {
+void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
 
-  for (auto sourceID : sourceIDs) {
-    PerformCodeAnalysis(sourceID);
+  for (auto source : sources) {
+    assert(source);
+    PerformAnalysis(*source);
   }
   if (frontend.GetMode().JustParse()) {
     return;
@@ -35,9 +36,9 @@ void Lang::PerformCodeAnalysis(llvm::ArrayRef<const unsigned> sourceIDs) {
   }
 }
 
-void Lang::PerformCodeAnalysis(const unsigned srcID) {
+void Lang::PerformAnalysis(SourceUnit &source) {
 
-  auto syntaxFile = Parse(srcID);
+  auto syntaxFile = Parse(source.GetSrcID());
   if (frontend.GetMode().IsParse()) {
     return;
   }

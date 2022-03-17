@@ -87,10 +87,13 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  void Compile(llvm::ArrayRef<const unsigned> sourceIDs);
+  void Compile(llvm::ArrayRef<SourceUnit *> sources);
 
   // Perform code analysis
-  void PerformCodeAnalysis(llvm::ArrayRef<const unsigned> sourceIDs);
+  void PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources);
+
+  /// Perform code analysis on source code.
+  void PerformAnalysis(SourceUnit &source);
 
   /// Print the lanuage help
   void PrintHelp();
@@ -99,9 +102,6 @@ public:
   void PrintVersion();
 
 private:
-  /// Perform code analysis on source code.
-  void PerformCodeAnalysis(const unsigned srcID);
-
   /// Parse a single file and return a syntax tree
   syn::SyntaxFile *Parse(unsigned srcID);
 
@@ -116,13 +116,6 @@ private:
 
   /// Emit the syntax after performing type-checking
   void EmitSyntax(syn::SyntaxFile *sf);
-
-  bool JustCodeAnalysis() {
-    if (frontend.GetMode().JustParse() || frontend.GetMode().JustTypeCheck()) {
-      return true;
-    }
-    return false;
-  }
 
 private:
   // Peform code generation

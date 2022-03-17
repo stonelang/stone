@@ -45,17 +45,15 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     // lang.Printd(SrcLoc(), diag::err_no_compile_args);
     return Finish(1);
   }
-
   if (listener) {
     lang.SetListener(listener);
   } else {
     debugListener = std::make_unique<DebugLangListener>();
     lang.SetListener(debugListener.get());
   }
-
   auto &frontend = lang.GetFrontend();
-  auto matinExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  frontend.SetMainExecutablePath(matinExecPath);
+  auto mainExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  frontend.SetMainExecutablePath(mainExecPath);
 
   auto &ial = frontend.ParseArgs(args);
   if (frontend.HasError()) {
@@ -79,29 +77,34 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
   auto inputs = frontend.BuildInputFiles(ial);
-
-  // auto sourceIDs = frontend.BuildSourceIDs(inputs);
-
-  // lang.Compile(sourceIDs);
-
-  // if (lang.GetListener()) {
-  //   lang.GetListener()->OnCompileConfigured(lang);
-  // }
-  // // Pass
-  // lang.Compile();
+  if (frontend.HasError()) {
+    return Finish(1);
+  }
+  auto sources = frontend.BuildSources(inputs);
+  if (frontend.HasError()) {
+    return Finish(1);
+  }
+  if (lang.GetListener()) {
+    lang.GetListener()->OnCompileConfigured(lang);
+  }
+  lang.Compile(sources);
+  if (frontend.HasError()) {
+    return Finish(1);
+  }
 
   return Finish();
 }
 
-void Lang::Compile(llvm::ArrayRef<const unsigned> sourceIDs) {
+void Lang::Compile(llvm::ArrayRef<SourceUnit *> sources) {
 
   if (listener) {
     listener->OnCompileStarted(*this);
   }
-  PerformCodeAnalysis(sourceIDs);
-  if (JustCodeAnalysis()) {
+  PerformAnalysis(sources);
+  if (frontend.JustAnalysis()) {
     // Do some things
     return;
   }
+  /// Pass what you are performing codegen on
   PerformCodeGen();
 }
