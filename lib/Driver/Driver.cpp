@@ -39,6 +39,11 @@ llvm::opt::InputArgList &Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
 
 void Driver::Initialize() {}
 
+void Driver::ComputeOutputOptions(const ToolChain &toolChain,
+                                  const llvm::opt::InputArgList &ial,
+                                  const file::Files &inputs,
+                                  OutputOptions &outputOptions) {}
+
 std::unique_ptr<Compilation>
 Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 
@@ -59,7 +64,8 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 
   // /// Think about
   bool isBatchModel = false;
-  driverOpts.compilingModel = ComputeCompilingModel(*dal, isBatchModel);
+  driverOpts.outputOptions.compilingModel =
+      ComputeCompilingModel(*dal, isBatchModel);
 
   // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
@@ -86,12 +92,12 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
   assert(GetMode().IsAlien() && "Alien mode");
   if (GetMode().IsNone()) {
-    GetDriverOptions().linkMode = LinkMode::EmitExecutable;
+    GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
   } else if (GetMode().IsEmitLibrary()) {
     if (ial.hasArg(opts::Static)) {
-      GetDriverOptions().linkMode = LinkMode::EmitStaticLibrary;
+      GetDriverOptions().outputOptions.linkMode = LinkMode::EmitStaticLibrary;
     } else {
-      GetDriverOptions().linkMode = LinkMode::EmitDynamicLibrary;
+      GetDriverOptions().outputOptions.linkMode = LinkMode::EmitDynamicLibrary;
     }
   }
 }

@@ -137,6 +137,8 @@ public:
   void SetVFS(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fs) { vfs = fs; }
   llvm::vfs::FileSystem &GetVFS() const { return *vfs; }
 
+  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
+
 public:
   void AddInputFile(llvm::StringRef name);
   void AddInputFile(llvm::StringRef name, file::Type ty);

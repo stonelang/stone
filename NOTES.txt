@@ -9,3 +9,8 @@ stone -use-module Session.stonemodule -emit-module SC.stone -> SC.stonemodule
 * For the job system, use threading to lauch the jobs that will call individual processes.
 
 * "-mode -no-jobs" is enough to run the system sync  
+
+* stone -init -solution  -> stone.solution and stone.project and you perform a git init and -A
+
+stone -init -project  -> stone.solution and stone.project and you perform a git init and -A
+

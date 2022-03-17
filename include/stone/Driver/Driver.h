@@ -15,6 +15,7 @@ namespace stone {
 
 class Intent;
 class Compilation;
+
 class CompilationHotInfo final {
 public:
   /// All the inputs associated with the module
@@ -69,7 +70,7 @@ public:
   ParseArgs(llvm::ArrayRef<const char *> args) override;
 
   void ComputeLinkMode(const llvm::opt::InputArgList &ial);
-  LinkMode GetLinkMode() const { return driverOpts.linkMode; }
+  LinkMode GetLinkMode() const { return driverOpts.outputOptions.linkMode; }
 
   std::unique_ptr<llvm::opt::DerivedArgList>
   TranslateInputArgList(const llvm::opt::InputArgList &ial,
@@ -80,12 +81,17 @@ public:
 
   void ComputeOptions(const llvm::opt::InputArgList &ial);
 
-  void ComputeOutputOptions(const llvm::opt::InputArgList &ial);
+  void ComputeOutputOptions(const ToolChain &toolChain,
+                            const llvm::opt::InputArgList &ial,
+                            const file::Files &inputs,
+                            OutputOptions &outputOptions);
 
   CompilingModel ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
                                        bool &isBatchModel) const;
 
-  CompilingModel GetCompilingModel() const { return driverOpts.compilingModel; }
+  CompilingModel GetCompilingModel() const {
+    return driverOpts.outputOptions.compilingModel;
+  }
 
 public:
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
@@ -102,7 +108,9 @@ public:
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
-  file::Type GetOutputFileType() const { return driverOpts.outputFileType; }
+  file::Type GetOutputFileType() const {
+    return driverOpts.outputOptions.outputFileType;
+  }
 
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
@@ -110,7 +118,9 @@ public:
   OutputFileMap &GetOutputFileMap() { return outputFileMap; }
   const OutputFileMap &GetOutputFileMap() const { return outputFileMap; }
 
-  bool JustCompile() const { return driverOpts.linkMode == LinkMode::None; }
+  bool JustCompile() const {
+    return driverOpts.outputOptions.linkMode == LinkMode::None;
+  }
   bool CanCompile() { return file::CanCompile(driverOpts.inputFileType); }
 
   Compilation &GetCompilation() { return *compilation.get(); }
@@ -131,8 +141,6 @@ public:
       // StringRef PrimaryInput,
       // llvm::SmallString<128> &Buffer
   );
-
-  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 };
 
 } // namespace stone

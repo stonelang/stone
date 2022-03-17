@@ -74,9 +74,9 @@ public:
   bool IsDefault() { return isDefault; }
 };
 
+class OutputOptions;
 /// A map for caching Jobs for a given Action/ToolChain pair
 // using ToolGroupCache = llvm::DenseMap<ToolKind, std::unique_ptr<ToolGroup>>;
-
 enum class ToolChainKind { None, Darwin, Unix, Win };
 
 class ToolChain {
@@ -147,7 +147,8 @@ protected:
   ConstructInvocation(const DynamicLinkIntent &intent) const;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const Intent &intent, Compilation &c);
+  std::unique_ptr<Job> ConstructJob(const Intent &intent, Compilation &c,
+                                    const OutputOptions &outputOptions);
 
 protected:
   virtual std::unique_ptr<Tool> BuildSCTool();

@@ -35,16 +35,29 @@ static void BuildCompileIntent(Compilation &compilation,
                                CompilationHotInfo &chi, Intent *intent) {
   assert(intent);
 
-  auto IsTopLevel = [&]() -> bool {
-    bool isTopLevel = (compilation.GetDriver().CanLink()) ? false : true;
-    chi.current = compilation.CreateIntent<CompileIntent>(intent);
-    return isTopLevel;
-  };
-  if (IsTopLevel()) {
-    chi.topLevelIntents.push_back(chi.current);
-  } else {
-    chi.linkerInputs.push_back(chi.current);
-  }
+  // auto IsTopLevel = [&]() -> bool {
+  //   bool isTopLevel = (compilation.GetDriver().CanLink()) ? false : true;
+  //   chi.current = compilation.CreateIntent<CompileIntent>(intent,
+  //   IntentLevel::); return isTopLevel;
+  // };
+  // if (IsTopLevel()) {
+  //   chi.topLevelIntents.push_back(chi.current);
+  // } else {
+  //   chi.linkerInputs.push_back(chi.current);
+  // }
+
+  auto level =
+      (compilation.GetDriver().CanLink()) ? IntentLevel::Dep : IntentLevel::Top;
+  chi.current = compilation.CreateIntent<CompileIntent>(level, intent);
+
+  // Think about
+  // if (IsTopLevel()) {
+  //   chi.topLevelIntents.push_back(chi.current);
+  // } else {
+  //   chi.linkerInputs.push_back(chi.current);
+  // }
+
+  // chi.linkerInputs.push_back(chi.current);
 
   // TODO: GetLastBuildState
   // bool isTopLevel = (driver.CanLink()) ? false : true;

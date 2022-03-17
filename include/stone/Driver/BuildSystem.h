@@ -30,6 +30,10 @@ public:
   llvm::sys::TimePoint<> GetLastTime();
 };
 
+class BuildFile {};
+
+class BuildSolution {};
+class BuildProject {};
 class BuildSystem final {
   Driver &driver;
   // saveTempFiles
@@ -41,6 +45,8 @@ public:
   void Initialize();
 
 public:
+  // Create a unique hash key for this file(/path/file.stone) and save to build
+  // history
   bool IsDirty(const file::File &entry);
   void Clean();
 

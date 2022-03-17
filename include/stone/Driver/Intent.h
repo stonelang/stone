@@ -23,8 +23,15 @@ enum class IntentKind : unsigned {
   GenPCH,
 };
 
+enum class IntentLevel : unsigned {
+  None = 0,
+  Top,
+  Dep,
+};
+
 class Intent {
   IntentKind kind;
+  IntentLevel level;
 
 public:
   using size_type = llvm::ArrayRef<const Intent *>::size_type;
@@ -32,11 +39,12 @@ public:
   using const_iterator = llvm::ArrayRef<const Intent *>::const_iterator;
 
 public:
-  Intent(IntentKind kind) : kind(kind) {}
+  Intent(IntentKind kind, IntentLevel level) : kind(kind), level(level) {}
   virtual ~Intent() = default;
 
 public:
   IntentKind GetKind() const { return kind; }
+  IntentLevel GetLevel() const { return level; }
   const char *GetName() const { return Intent::GetNameByKind(kind); }
 
 public:
@@ -48,7 +56,7 @@ class ProcessIntent final : public Intent {
 
 public:
   ProcessIntent(const file::File &input)
-      : Intent(IntentKind::Process), input(input) {}
+      : Intent(IntentKind::Process, IntentLevel::None), input(input) {}
 
   const file::File &GetInput() const { return input; }
 
@@ -64,8 +72,8 @@ class CompilationIntent : public Intent {
   llvm::TinyPtrVector<const Intent *> inputs;
 
 public:
-  CompilationIntent(IntentKind kind, Intents inputs)
-      : Intent(kind), inputs(inputs) {}
+  CompilationIntent(IntentKind kind, IntentLevel level, Intents inputs)
+      : Intent(kind, level), inputs(inputs) {}
 
 public:
   llvm::ArrayRef<const Intent *> GetInputs() const { return inputs; }
@@ -82,8 +90,8 @@ public:
 // Not valid for compile session
 class CompileIntent final : public CompilationIntent {
 public:
-  CompileIntent(Intent *input)
-      : CompilationIntent(IntentKind::Compile, input) {}
+  CompileIntent(IntentLevel level, Intent *input)
+      : CompilationIntent(IntentKind::Compile, level, input) {}
 
 public:
   static bool classof(const Intent *intent) {
@@ -96,7 +104,7 @@ class LinkIntent : public CompilationIntent {
 
 public:
   LinkIntent(IntentKind kind, Intents inputs)
-      : CompilationIntent(kind, inputs) {}
+      : CompilationIntent(kind, IntentLevel::Top, inputs) {}
 
 public:
 };
@@ -139,7 +147,7 @@ public:
 class MergeModuleIntent final : public CompilationIntent {
 public:
   MergeModuleIntent(Intents inputs)
-      : CompilationIntent(IntentKind::MergeModule, inputs) {}
+      : CompilationIntent(IntentKind::MergeModule, IntentLevel::Top, inputs) {}
 
 public:
   static bool classof(const Intent *intent) {

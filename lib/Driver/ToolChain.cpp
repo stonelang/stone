@@ -88,8 +88,9 @@ ToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
   assert(false && "DynamicLink construction not implemented in base!");
 }
 
-std::unique_ptr<Job> ToolChain::ConstructJob(const Intent &intent,
-                                             Compilation &c) {
+std::unique_ptr<Job>
+ToolChain::ConstructJob(const Intent &intent, Compilation &c,
+                        const OutputOptions &outputOptions) {
 
   auto commandInvocation = [&]() -> CommandInvocation {
     switch (intent.GetKind()) {
