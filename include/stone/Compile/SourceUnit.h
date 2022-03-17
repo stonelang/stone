@@ -10,7 +10,7 @@
 
 namespace stone {
 
-class LangContext;
+class Frontend;
 class alignas(8) SourceUnit final {
 
   bool isPrimary;
@@ -45,7 +45,7 @@ public:
 
 public:
   static SourceUnit *Allocate(const unsigned srcID, const file::File &input,
-                              LangContext &lc);
+                              Frontend &lc);
 
   // file::File *GetOutput() { return output; }
   // void SetOutput(file::File *o) { output = o; };
@@ -53,17 +53,17 @@ public:
 
 } // namespace stone
 
-void *operator new(size_t bytes, const stone::LangContext &lc,
+void *operator new(size_t bytes, const stone::Frontend &lc,
                    size_t alignment = 8);
 
-void *operator new[](size_t bytes, const stone::LangContext &lc,
+void *operator new[](size_t bytes, const stone::Frontend &lc,
                      size_t alignment = 8);
 
 // It is good practice to pair new/delete operators.  Also, MSVC gives many
 // warnings if a matching delete overload is not declared, even though the
 // throw() spec guarantees it will not be implicitly called.
-void operator delete(void *currPtr, const stone::LangContext &lc, size_t);
+void operator delete(void *currPtr, const stone::Frontend &lc, size_t);
 
-void operator delete[](void *currPtr, const stone::LangContext &lc, size_t);
+void operator delete[](void *currPtr, const stone::Frontend &lc, size_t);
 
 #endif

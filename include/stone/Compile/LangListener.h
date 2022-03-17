@@ -10,7 +10,7 @@
 namespace stone {
 
 class Lang;
-class LangContext;
+class Frontend;
 class LangListener : public SyntaxListener,
                      public TypeCheckerListener,
                      public EmitIRListener,

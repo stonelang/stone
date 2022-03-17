@@ -18,7 +18,7 @@ TEST_F(CompileTest, CompileFileVerbosely) {
 
   const char *args[] = {"-parse", "/var/tmp/test.stone"};
 
-  LangContext lc;
+  Frontend lc;
   lc.ParseArguments(args);
 
   // Lang lang("stone-compile", "stone-compile");

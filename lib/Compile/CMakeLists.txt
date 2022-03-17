@@ -4,7 +4,7 @@ set(stone_compile_sources
 	JustAnalysis.cpp
 	JustCodeGen.cpp
 	Lang.cpp
-	LangContext.cpp
+	Frontend.cpp
 	Lexer.cpp
 	LexerCache.cpp
 	ModuleSystem.cpp

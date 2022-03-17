@@ -16,7 +16,7 @@
 
 namespace stone {
 
-class LangContext final {
+class Frontend final {
 
   friend class Lang;
 
@@ -41,8 +41,8 @@ class LangContext final {
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
-  LangContext();
-  ~LangContext();
+  Frontend();
+  ~Frontend();
 
 public:
   void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
@@ -111,7 +111,7 @@ private:
 
 } // namespace stone
 
-inline void *operator new(size_t bytes, const stone::LangContext &lc,
+inline void *operator new(size_t bytes, const stone::Frontend &lc,
                           size_t alignment) {
   return lc.Allocate(bytes, alignment);
 }
@@ -122,7 +122,7 @@ inline void *operator new(size_t bytes, const stone::LangContext &lc,
 /// invoking it directly; see the new operator for more details. This operator
 /// is called implicitly by the compiler if a placement new expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete(void *Ptr, const stone::LangContext &lc, size_t) {
+inline void operator delete(void *Ptr, const stone::Frontend &lc, size_t) {
   lc.Deallocate(Ptr);
 }
 /// This placement form of operator new[] uses the CompilerInstance's
@@ -149,7 +149,7 @@ inline void operator delete(void *Ptr, const stone::LangContext &lc, size_t) {
 /// @param Alignment The alignment of the allocated memory (if the underlying
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
-inline void *operator new[](size_t bytes, const stone::LangContext &lc,
+inline void *operator new[](size_t bytes, const stone::Frontend &lc,
                             size_t alignment) {
   return lc.Allocate(bytes, alignment);
 }
@@ -159,7 +159,7 @@ inline void *operator new[](size_t bytes, const stone::LangContext &lc,
 /// invoking it directly; see the new[] operator for more details. This operator
 /// is called implicitly by the compiler if a placement new[] expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete[](void *Ptr, const stone::LangContext &lc,
+inline void operator delete[](void *Ptr, const stone::Frontend &lc,
                               size_t alignment) {
   lc.Deallocate(Ptr);
 }

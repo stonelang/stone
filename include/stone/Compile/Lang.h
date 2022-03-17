@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_LANG_H
 #define STONE_COMPILE_LANG_H
 
-#include "stone/Compile/LangContext.h"
+#include "stone/Compile/Frontend.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -39,7 +39,7 @@ class Lang final {
 
   friend LangStats;
 
-  LangContext lc;
+  Frontend lc;
   LangListener *listener = nullptr;
 
   std::unique_ptr<LangStats> stats;
@@ -65,7 +65,7 @@ public:
 public:
   void Initialize();
   void Finish();
-  LangContext &GetLangContext() { return lc; }
+  Frontend &GetFrontend() { return lc; }
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *tc.get(); }

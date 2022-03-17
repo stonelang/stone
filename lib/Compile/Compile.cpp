@@ -54,7 +54,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // Build up the context
-  auto &lc = lang.GetLangContext();
+  auto &lc = lang.GetFrontend();
   auto matinExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   lc.SetMainExecutablePath(matinExecPath);
 

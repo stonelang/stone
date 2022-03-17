@@ -1,4 +1,4 @@
-#include "stone/Compile/LangContext.h"
+#include "stone/Compile/Frontend.h"
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/SrcMgr.h"
@@ -8,14 +8,14 @@
 using namespace stone;
 using namespace stone::opts;
 
-LangContext::LangContext() : optUtil(GetLangOptions()) {}
-LangContext::~LangContext() {}
+Frontend::Frontend() : optUtil(GetLangOptions()) {}
+Frontend::~Frontend() {}
 
 SourceUnit::~SourceUnit() {}
 
 SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
-                                 LangContext &lc) {
-  auto sizePtr = LangContext::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
+                                 Frontend &lc) {
+  auto sizePtr = Frontend::Allocate<SourceUnit>(lc, sizeof(SourceUnit));
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
@@ -23,7 +23,7 @@ static void ParseCodeGenArguments() {}
 static void ParseTypeCheckerArguments() {}
 static void ParseSearchPathArguments() {}
 
-bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
+bool Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   GetOptUtil().SetExcludedFlagsBitmask(opts::NoLangOption);
 
@@ -38,7 +38,7 @@ bool LangContext::ParseArgs(llvm::ArrayRef<const char *> args) {
   return stone::Ok;
 }
 
-unsigned LangContext::CreateSourceBuffer(const file::File &input) {
+unsigned Frontend::CreateSourceBuffer(const file::File &input) {
 
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
@@ -52,14 +52,14 @@ unsigned LangContext::CreateSourceBuffer(const file::File &input) {
   return srcID;
 }
 
-SourceUnit *LangContext::BuildSourceUnit(const file::File &input) {
+SourceUnit *Frontend::BuildSourceUnit(const file::File &input) {
   auto srcID = CreateSourceBuffer(input);
   auto sp = SourceUnit::Allocate(srcID, input, *this);
   sources.insert(std::make_pair(srcID, sp));
 }
 
 std::unique_ptr<OutputFile>
-LangContext::ComputeOutputFile(const unsigned srcID) {
+Frontend::ComputeOutputFile(const unsigned srcID) {
 
   stone::Panic("ComputeSourceOutputFile not implemented");
 }
