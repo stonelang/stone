@@ -81,13 +81,15 @@ public:
 
 public:
   // void BuildOutputContext();
-  std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial);
+  std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
+                                                llvm::opt::InputArgList &ial);
 
   stone::CompileModel ComputeCompileModel(const llvm::opt::DerivedArgList &args,
                                           const file::Files &inputs) const;
   CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
-  void BuildIntents(Compilation &compilation, CompilationHotInfo &chi);
+  void BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
+                    const file::Files &inputs);
   void PrintIntents(CompilationHotInfo &chi);
 
   void BuildJobs(Compilation &compilation, CompilationHotInfo &chi);

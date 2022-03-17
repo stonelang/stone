@@ -67,7 +67,7 @@ static void BuildLinkIntent(Compilation &compilation, CompilationHotInfo &chi,
 }
 
 static void BuildIntent(Compilation &compilation, CompilationHotInfo &chi,
-                        file::File &input) {
+                        const file::File &input) {
 
   chi.current = compilation.CreateIntent<ProcessIntent>(input);
   assert(chi.current);
@@ -83,15 +83,13 @@ static void BuildIntent(Compilation &compilation, CompilationHotInfo &chi,
   }
 }
 
-void Driver::BuildIntents(Compilation &compilation, CompilationHotInfo &chi) {
+void Driver::BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
+                          const file::Files &inputs) {
 
-  for (auto &input : GetDriverOptions().inputFiles) {
-
+  for (auto &input : inputs) {
     if (GetBuildSystem().IsDirty(input)) {
-
       assert(input.GetType() == GetInputFileType() &&
              "Incompatible input file types");
-
       assert(file::IsPartOfCompilation(input.GetType()));
       BuildIntent(compilation, chi, input);
     }

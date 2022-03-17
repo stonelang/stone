@@ -41,7 +41,7 @@ public:
   void Initialize();
 
 public:
-  bool IsDirty(file::File &entry);
+  bool IsDirty(const file::File &entry);
   void Clean();
 
 public:

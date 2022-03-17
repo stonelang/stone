@@ -8,7 +8,6 @@
 
 using namespace stone;
 
-
 int Compilation::RunJobs() {
   // while (!GetQueue().IsEmpty()) {
   //   auto job = GetQueue().Front();
@@ -21,7 +20,7 @@ int Compilation::RunJobs() {
   //   }
   //   GetQueue().Pop();
   // }
-  return 0; 
+  return 0;
 }
 
 int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -79,7 +78,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   if (driver.HasError()) {
     return Finish(1);
   }
-  if(compilation){
+  if (compilation) {
     return Finish(compilation->RunJobs());
   }
   return Finish();

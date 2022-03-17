@@ -9,7 +9,7 @@ void BuildSystem::Initialize() {}
 
 BuildSystem::~BuildSystem() {}
 
-bool BuildSystem::IsDirty(file::File &entry) {
+bool BuildSystem::IsDirty(const file::File &entry) {
   return true;
   // Load("stone.build")
   // Get BuildEntry().IsDirty();

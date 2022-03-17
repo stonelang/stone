@@ -6,7 +6,13 @@
 namespace stone {
 
 class DebugLangListener final : public LangListener {
+
 public:
+  DebugLangListener();
+
+  void OnCompileConfigured(Lang &lang) override;
+  void OnCompileStarted(Lang &lang) override;
+  void OnCompileCompleted(Lang &lang) override;
 };
 
 } // namespace stone

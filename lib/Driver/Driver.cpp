@@ -46,24 +46,24 @@ void Driver::Initialize() {}
 //   return stone::Ok;
 // }
 
-std::unique_ptr<Compilation> Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
+std::unique_ptr<Compilation>
+Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 
   if (driverOpts.cleanBuild) {
     GetBuildSystem().Clean();
   }
   GetBuildSystem().StartBuild();
 
+  auto inputs = BuildInputFiles(ial);
+  if (HasError()) {
+    return nullptr;
+  }
+  // TODO: Check input size
   // Now, build the job system since we have a toolchain
   auto compilation = std::make_unique<Compilation>(*this, toolChain);
 
-
-  // auto inputs = BuildInputFiles(ial);
-  // if (HasError()) {
-  //   return Finish(1);
-  // }
-
   CompilationHotInfo chi;
-  BuildIntents(*compilation, chi);
+  BuildIntents(*compilation, chi, inputs);
 
   if (driverOpts.printIntents) {
     // PrintIntents(bi);
