@@ -61,12 +61,11 @@ public:
 using Intents = llvm::ArrayRef<const Intent *>;
 class CompilationIntent : public Intent {
 
-  bool topLevel;
   llvm::TinyPtrVector<const Intent *> inputs;
 
 public:
-  CompilationIntent(IntentKind kind, Intents inputs, bool topLevel)
-      : Intent(kind), inputs(inputs), topLevel(topLevel) {}
+  CompilationIntent(IntentKind kind, Intents inputs)
+      : Intent(kind), inputs(inputs) {}
 
 public:
   llvm::ArrayRef<const Intent *> GetInputs() const { return inputs; }
@@ -78,17 +77,13 @@ public:
   iterator end() { return inputs.end(); }
   const_iterator begin() const { return inputs.begin(); }
   const_iterator end() const { return inputs.end(); }
-
-public:
-  bool IsTopLevel() { return topLevel; }
 };
 
 // Not valid for compile session
 class CompileIntent final : public CompilationIntent {
 public:
-  CompileIntent(Intent *input, bool topLevel)
-      : CompilationIntent(IntentKind::Compile, input,
-                          topLevel /*Sometimes TopLevel*/) {}
+  CompileIntent(Intent *input)
+      : CompilationIntent(IntentKind::Compile, input) {}
 
 public:
   static bool classof(const Intent *intent) {
@@ -101,7 +96,7 @@ class LinkIntent : public CompilationIntent {
 
 public:
   LinkIntent(IntentKind kind, Intents inputs)
-      : CompilationIntent(kind, inputs, true /*Always TopLevel*/) {}
+      : CompilationIntent(kind, inputs) {}
 
 public:
 };
@@ -121,7 +116,7 @@ class DynamicLinkIntent final : public LinkIntent {
   bool requiresLTO;
 
 public:
-  DynamicLinkIntent(Intents inputs, bool topLevel, bool requiresLTO = false)
+  DynamicLinkIntent(Intents inputs, bool requiresLTO = false)
       : LinkIntent(IntentKind::DynamicLink, inputs), requiresLTO(requiresLTO) {}
 
 public:
@@ -144,7 +139,7 @@ public:
 class MergeModuleIntent final : public CompilationIntent {
 public:
   MergeModuleIntent(Intents inputs)
-      : CompilationIntent(IntentKind::MergeModule, inputs, true /*TopLevel*/) {}
+      : CompilationIntent(IntentKind::MergeModule, inputs) {}
 
 public:
   static bool classof(const Intent *intent) {

@@ -2,14 +2,14 @@
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
 #include "stone/Core/SystemOptions.h"
-#include "stone/Option/BaseOptions.h"
+#include "stone/Session/BaseOptions.h"
 
 namespace stone {
 
 enum class LTOKind { None, Full, Thin };
 
 // CompileModel
-enum class CompileModel : uint8_t {
+enum class CompilingModel : uint8_t {
   None,
   /// There is no linking in this mode -- we pass all the files to the compile
   /// command This scenario will not have a file with 'fun Main()'
@@ -36,7 +36,7 @@ enum class LinkMode : uint8_t {
 };
 
 // TODO: a lot of what is in DriverOutputProfile can go here
-class DriverOptions final : public opts::BaseOptions {
+class DriverOptions final : public BaseOptions {
   friend class Driver;
 
 public:
@@ -73,7 +73,7 @@ public:
   std::string libLTOPath;
   bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
 
-  CompileModel compileModel = CompileModel::Multiple;
+  CompilingModel compilingModel = CompilingModel::Multiple;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;

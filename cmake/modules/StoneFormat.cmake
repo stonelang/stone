@@ -3,15 +3,16 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/include/stone/Gen/*.h
 	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
 	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/include/stone/Session/*.h
 	${STONE_SOURCE_DIR}/include/stone/Syntax/*.h
-	${STONE_SOURCE_DIR}/include/stone/Option/*.h
+	
 )
 set(stone_lib_files
 	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/lib/Core/*.cpp
 	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/lib/Gen/*.cpp
-	${STONE_SOURCE_DIR}/lib/Option/*.cpp		
+	${STONE_SOURCE_DIR}/lib/Session/*.cpp		
 	${STONE_SOURCE_DIR}/lib/Syntax/*.cpp
 	
 )

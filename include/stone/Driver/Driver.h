@@ -9,7 +9,7 @@
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
-#include "stone/Option/OptInvocation.h"
+#include "stone/Session/Session.h"
 
 namespace stone {
 
@@ -29,7 +29,7 @@ public:
   Intent *current;
 };
 
-class Driver final : public opts::OptInvocation {
+class Driver final : public Session {
 
   llvm::StringRef name;
   llvm::StringRef path;
@@ -68,25 +68,28 @@ public:
   void PrintVersion();
 
 public:
+  llvm::opt::InputArgList &
+  ParseArgs(llvm::ArrayRef<const char *> args) override;
+
   void ComputeLinkMode(const llvm::opt::InputArgList &ial);
   LinkMode GetLinkMode() const { return driverOpts.linkMode; }
 
   bool CanLink() const { return (GetLinkMode() != LinkMode::None); }
   bool JustLink() const { return justLink; }
 
-  void BuildDriverOptions(const llvm::opt::InputArgList &ial);
-  // void BuildCompilationOptions(const llvm::opt::InputArgList &ial);
+  void ComputeOptions(const llvm::opt::InputArgList &ial);
 
-  std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
+  void ComputeOutputOptions(const llvm::opt::InputArgList &ial);
+
+  CompileModel ComputeCompilingModel(const llvm::opt::DerivedArgList &args,
+                                     const file::Files &inputs) const;
+
+  CompileModel GetCompilingModel() const { return driverOpts.compilingModel; }
 
 public:
-  // void BuildOutputContext();
+  std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
                                                 llvm::opt::InputArgList &ial);
-
-  stone::CompileModel ComputeCompileModel(const llvm::opt::DerivedArgList &args,
-                                          const file::Files &inputs) const;
-  CompileModel GetCompileModel() const { return driverOpts.compileModel; }
 
   void BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
                     const file::Files &inputs);
@@ -97,7 +100,7 @@ public:
 
 public:
   Context &GetContext() override { return ctx; }
-  opts::BaseOptions &GetBaseOptions() override { return driverOpts; }
+  BaseOptions &GetBaseOptions() override { return driverOpts; }
 
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }
   file::Type GetOutputFileType() const { return driverOpts.outputFileType; }

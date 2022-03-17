@@ -1,7 +1,8 @@
 #ifndef STONE_OPTION_MODE_H
 #define STONE_OPTION_MODE_H
 
-#include "stone/Option/ModeKind.h"
+#include "stone/Session/ModeKind.h"
+
 #include "llvm/Option/ArgList.h"
 
 namespace stone {

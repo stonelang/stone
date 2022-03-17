@@ -3,7 +3,7 @@
 #include "stone/Core/Malloc.h"
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
-#include "stone/Option/ModeKind.h"
+#include "stone/Session/ModeKind.h"
 
 #include "gtest/gtest.h"
 

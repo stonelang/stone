@@ -3,17 +3,17 @@
 
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
+#include "stone/Session/BaseOptions.h"
+#include "stone/Session/Mode.h"
+#include "stone/Session/Options.h"
 
-#include "stone/Option/BaseOptions.h"
-#include "stone/Option/Mode.h"
-#include "stone/Option/Options.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
-namespace opts {
 
-class OptInvocation {
+class Session {
 
+protected:
   std::unique_ptr<Mode> mode;
 
   /// The options table
@@ -22,14 +22,16 @@ class OptInvocation {
   /// The input argument list
   std::unique_ptr<llvm::opt::InputArgList> ial;
 
-protected:
+  /// The translated arguments.
+  std::unique_ptr<llvm::opt::DerivedArgList> dal;
+
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
 public:
-  OptInvocation();
+  Session();
 
 public:
   virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
@@ -70,10 +72,9 @@ public:
   void AddInputFile(llvm::StringRef name, file::Type ty);
 
 public:
-  Mode &CreateMode(const llvm::opt::InputArgList &ial);
+  Mode &ComputeMode(const llvm::opt::InputArgList &ial);
   file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 
-} // namespace opts
 } // namespace stone
 #endif

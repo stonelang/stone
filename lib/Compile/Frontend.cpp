@@ -3,7 +3,7 @@
 #include "stone/Core/Defer.h"
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/TextDiagnosticEmitter.h"
-#include "stone/Option/Options.h"
+#include "stone/Session/Options.h"
 
 using namespace stone;
 using namespace stone::opts;
@@ -28,7 +28,7 @@ static void ParseSearchPathArgs(llvm::opt::InputArgList &ial) {}
 llvm::opt::InputArgList &
 Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  auto& ial = OptInvocation::ParseArgs(args);
+  auto &ial = Session::ParseArgs(args);
 
   ParseLangArgs(ial);
   ParseTypeCheckerArgs(ial);

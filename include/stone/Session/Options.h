@@ -1,7 +1,7 @@
 #ifndef STONE_OPTION_OPTIONS_H
 #define STONE_OPTION_OPTIONS_H
 
-#include "stone/Option/Mode.h"
+#include "stone/Session/Mode.h"
 
 #include <memory>
 
@@ -26,7 +26,7 @@ enum OptID : unsigned {
 #define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
                HELPTEXT, METAVAR, VALUES)                                      \
   ID,
-#include "stone/Option/StoneOptions.inc"
+#include "stone/Session/StoneOptions.inc"
   LAST
 #undef OPTION
 };

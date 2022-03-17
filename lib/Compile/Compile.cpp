@@ -10,7 +10,7 @@
 #include "stone/Core/MainExecutablePath.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Option/ModeKind.h"
+#include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/Module.h"
@@ -59,7 +59,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (frontend.HasError()) {
     return Finish(1);
   }
-  auto &mode = frontend.CreateMode(ial);
+  auto &mode = frontend.ComputeMode(ial);
   if (mode.IsAlien()) {
     // lang.Printd(SrcLoc(), diags::err_alien_mode)
     Finish(1);

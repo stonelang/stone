@@ -1,10 +1,10 @@
-#include "stone/Option/BaseOptions.h"
+#include "stone/Session/BaseOptions.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/Host.h"
 
-using namespace stone::opts;
+using namespace stone;
 
 BaseOptions::BaseOptions() {}
 

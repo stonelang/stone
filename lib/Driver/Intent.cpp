@@ -37,7 +37,7 @@ static void BuildCompileIntent(Compilation &compilation,
 
   auto IsTopLevel = [&]() -> bool {
     bool isTopLevel = (compilation.GetDriver().CanLink()) ? false : true;
-    chi.current = compilation.CreateIntent<CompileIntent>(intent, isTopLevel);
+    chi.current = compilation.CreateIntent<CompileIntent>(intent);
     return isTopLevel;
   };
   if (IsTopLevel()) {
@@ -61,6 +61,7 @@ static void BuildCompileIntent(Compilation &compilation,
 
 static void BuildLinkIntent(Compilation &compilation, CompilationHotInfo &chi,
                             Intent *intent) {
+
   if (compilation.GetDriver().CanLink()) {
     chi.linkerInputs.push_back(intent);
   }
@@ -87,6 +88,7 @@ void Driver::BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
                           const file::Files &inputs) {
 
   for (auto &input : inputs) {
+    // TODO: Way out there, but there is a potential for git here?
     if (GetBuildSystem().IsDirty(input)) {
       assert(input.GetType() == GetInputFileType() &&
              "Incompatible input file types");

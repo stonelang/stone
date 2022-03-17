@@ -9,14 +9,14 @@
 #include "stone/Core/Mem.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Gen/CodeGenOptions.h"
-#include "stone/Option/OptInvocation.h"
+#include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
-class Frontend final : public opts::OptInvocation {
+class Frontend final : public Session {
 
   friend class Lang;
 
@@ -27,9 +27,6 @@ class Frontend final : public opts::OptInvocation {
 
   /// The system context
   Context ctx;
-
-  /// The translated arguments.
-  std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   llvm::SmallVector<SourceUnit *> sources;
 
@@ -43,7 +40,24 @@ public:
 public:
   llvm::opt::InputArgList &
   ParseArgs(llvm::ArrayRef<const char *> args) override;
+  llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
+  SourceUnit *BuildSource(const file::File &input);
+  unsigned CreateSourceID(const file::File &input);
 
+  Context &GetContext() override { return ctx; }
+  BaseOptions &GetBaseOptions() override { return langOpts; }
+  file::Files &GetInputFiles() { return langOpts.inputFiles; }
+  std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);
+
+  // TODO: Move to the module system
+  void SetModuleName(llvm::StringRef name) {
+    GetLangOptions().systemOpts.moduleName = name.data();
+  }
+  const llvm::StringRef GetModuleName() const {
+    return GetLangOptions().systemOpts.moduleName;
+  }
+
+public:
   void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
   std::string GetMainExecutablePath() const { return mainExecutablePath; }
 
@@ -66,13 +80,6 @@ public:
     return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  // TODO: Move to the module system
-  void SetModuleName(llvm::StringRef name) {
-    GetLangOptions().systemOpts.moduleName = name.data();
-  }
-  const llvm::StringRef GetModuleName() const {
-    return GetLangOptions().systemOpts.moduleName;
-  }
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 
   bool JustAnalysis() {
@@ -95,19 +102,6 @@ public:
       return false;
     }
   }
-
-public:
-  Context &GetContext() override { return ctx; }
-  opts::BaseOptions &GetBaseOptions() override { return langOpts; }
-
-public:
-  file::Files &GetInputFiles() { return langOpts.inputFiles; }
-  std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);
-
-public:
-  llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
-  SourceUnit *BuildSource(const file::File &input);
-  unsigned CreateSourceID(const file::File &input);
 
 public:
   void *Allocate(size_t Size, unsigned Align) const {

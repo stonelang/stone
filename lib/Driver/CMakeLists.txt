@@ -17,7 +17,7 @@
 	Unix.cpp
 
 	LINK_LIBS 
-	StoneOption
+	StoneSession
 )
 add_stone_library(StoneDriver
 	${stone_driver_sources}

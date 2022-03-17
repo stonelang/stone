@@ -6,15 +6,15 @@
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Gen/CodeGenOptions.h"
-#include "stone/Option/BaseOptions.h"
-#include "stone/Option/Options.h"
+#include "stone/Session/BaseOptions.h"
+#include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
 using namespace stone::types;
 
 namespace stone {
 
-class LangOptions final : public opts::BaseOptions {
+class LangOptions final : public BaseOptions {
 public:
   /// Options for the entire system
   SystemOptions systemOpts;

@@ -1,6 +1,6 @@
-#include "stone/Option/OptInvocation.h"
+#include "stone/Session/Session.h"
 #include "stone/Core/Context.h"
-#include "stone/Option/Options.h"
+#include "stone/Session/Options.h"
 
 #include "llvm/Option/Option.h"
 
@@ -9,10 +9,9 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-OptInvocation::OptInvocation() : optst(stone::opts::CreateOptTable()) {}
+Session::Session() : optst(stone::opts::CreateOptTable()) {}
 
-llvm::opt::InputArgList &
-OptInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
+llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   ial = std::make_unique<llvm::opt::InputArgList>(
       GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
@@ -43,7 +42,7 @@ OptInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   return *ial.get();
 }
-Mode &OptInvocation::CreateMode(const llvm::opt::InputArgList &ial) {
+Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
 
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {
@@ -93,8 +92,7 @@ Mode &OptInvocation::CreateMode(const llvm::opt::InputArgList &ial) {
   return *mode.get();
 }
 
-file::Files &
-OptInvocation::BuildInputFiles(const llvm::opt::InputArgList &ial) {
+file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
 
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
   for (Arg *arg : ial) {
@@ -147,16 +145,16 @@ OptInvocation::BuildInputFiles(const llvm::opt::InputArgList &ial) {
   }
   return GetBaseOptions().inputFiles;
 }
-void OptInvocation::AddInputFile(llvm::StringRef name) {
+void Session::AddInputFile(llvm::StringRef name) {
   auto ty = file::GetTypeByName(name);
   assert(ty != file::Type::INVALID && "Invalid file type.");
   AddInputFile(name, ty);
 }
 // TODO: There is a potential to add duplicate files here.
-void OptInvocation::AddInputFile(llvm::StringRef name, file::Type ty) {
+void Session::AddInputFile(llvm::StringRef name, file::Type ty) {
   GetBaseOptions().inputFiles.push_back(file::File(name, ty));
 }
 
-void OptInvocation::PrintHelp() {}
+void Session::PrintHelp() {}
 
 // void Support::BuildInputFiles() {}

@@ -4,7 +4,7 @@
 #include "stone/Core/LLVMContext.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Option/ModeKind.h"
+#include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/Module.h"

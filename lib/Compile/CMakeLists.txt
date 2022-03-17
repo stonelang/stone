@@ -21,8 +21,9 @@ set(stone_compile_sources
 
 	LINK_LIBS
 	StoneGen
+	StoneSession
 	StoneSyntax
-	StoneOption
+	
 
 	DEPENDS
 	StoneOptions

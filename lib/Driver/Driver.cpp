@@ -32,22 +32,17 @@ Driver::Driver(llvm::StringRef name, llvm::StringRef path)
 
 Driver::~Driver() {}
 
+llvm::opt::InputArgList &Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
+  auto &ial = Session::ParseArgs(args);
+  return ial;
+}
+
 void Driver::Initialize() {}
-
-// bool Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
-
-//   GetOptUtil().SetExcludedFlagsBitmask(opts::NoDriverOption);
-//   if (GetOptUtil().ParseArgs(args, &ctx) == stone::Err) {
-//     return stone::Err;
-//   }
-
-//   ComputeLinkMode(GetOptUtil().GetInputArgList());
-
-//   return stone::Ok;
-// }
 
 std::unique_ptr<Compilation>
 Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
+
+  llvm::PrettyStackTraceString crashInfo("Building compilation");
 
   if (driverOpts.cleanBuild) {
     GetBuildSystem().Clean();
@@ -58,6 +53,13 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   if (HasError()) {
     return nullptr;
   }
+
+  /// Think about
+  bool batchMode = false;
+  driverOpts.compilingModel = ComputeCompilingModel(*dal, inputs, batchMode);
+
+  ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
+
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
   auto compilation = std::make_unique<Compilation>(*this, toolChain);
@@ -102,11 +104,11 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
   }
 }
 
-stone::CompileModel
-Driver::ComputeCompileModel(const llvm::opt::DerivedArgList &args,
-                            const file::Files &inputs) const {
+CompilingModel
+Driver::ComputeCompilingModel(const llvm::opt::DerivedArgList &args,
+                              const file::Files &inputs, bool batchMode) const {
   // Just use multiple for now
-  return stone::CompileModel::Multiple;
+  return CompilingModel::Multiple;
 }
 
 std::unique_ptr<ToolChain>
@@ -144,7 +146,7 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   }
 }
 
-void Driver::BuildDriverOptions(const llvm::opt::InputArgList &ial) {
+void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
 
   // Since the mode has already been created
   // switch(GetMode().GetKind().)

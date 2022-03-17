@@ -57,7 +57,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   if (driver.HasError()) {
     return Finish(1);
   }
-  auto &mode = driver.CreateMode(ial);
+  auto &mode = driver.ComputeMode(ial);
   if (mode.IsAlien()) {
     // driver.GetContext().Printd(diags::err_alien_mode)
     Finish(1);

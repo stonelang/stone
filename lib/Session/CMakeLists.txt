@@ -10,13 +10,13 @@ set( LLVM_LINK_COMPONENTS
  )
 set(stone_option_sources
 	BaseOptions.cpp
-	OptInvocation.cpp	
+	Session.cpp	
 	Options.cpp
 
 	LINK_LIBS 
 	StoneCore
 )
-add_stone_library(StoneOption
+add_stone_library(StoneSession
 	${stone_option_sources}
 
 	DEPENDS

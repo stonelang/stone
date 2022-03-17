@@ -4,7 +4,7 @@
 #include "stone/Compile/TypeCheck.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/LLVMContext.h"
-#include "stone/Option/ModeKind.h"
+#include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/Module.h"

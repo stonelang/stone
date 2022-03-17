@@ -5,7 +5,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Option/Mode.h"
+#include "stone/Session/Mode.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 

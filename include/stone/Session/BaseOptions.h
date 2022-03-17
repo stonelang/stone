@@ -2,14 +2,13 @@
 #define STONE_OPTION_BASEOPTIONS_H
 
 #include "stone/Core/File.h"
-#include "stone/Option/Mode.h"
-#include "stone/Option/Options.h"
+#include "stone/Session/Mode.h"
+#include "stone/Session/Options.h"
 
 #include "llvm/ADT/Triple.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
-namespace opts {
 
 class BaseOptions {
 
@@ -54,6 +53,5 @@ public:
   //   void SetTargetTriple(const llvm::Triple &triple);
   //   void SetTargetTriple(llvm::StringRef Triple);
 };
-} // namespace opts
 } // namespace stone
 #endif
