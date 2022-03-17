@@ -80,27 +80,15 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
-  switch (GetMode().GetKind()) {
-  case ModeKind::None: {
+  assert(GetMode().IsAlien() && "Alien mode");
+  if (GetMode().IsNone()) {
     GetDriverOptions().linkMode = LinkMode::EmitExecutable;
-    break;
-  }
-  case ModeKind::EmitLibrary: {
+  } else if (GetMode().IsEmitLibrary()) {
     if (ial.hasArg(opts::Static)) {
       GetDriverOptions().linkMode = LinkMode::EmitStaticLibrary;
     } else {
       GetDriverOptions().linkMode = LinkMode::EmitDynamicLibrary;
     }
-    break;
-  }
-  case ModeKind::Alien: {
-    // ctx.Printd(err_alien_mode);
-    break;
-  }
-  default: {
-    assert(GetMode().CanCompile() && "Invalid compile mode.");
-    break;
-  }
   }
 }
 
