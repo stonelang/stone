@@ -76,20 +76,27 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   if (driver.HasError()) {
     return Finish(1);
   }
-
-  // if (driver.GetMode().IsAlien()) {
-  //   // lang.Printd(SrcLoc(), diags::err_alien_mode)
-  //   Finish(1);
-  // }
-
-  // if (driver.GetMode().IsPrintHelp()) {
-  //   driver.PrintHelp();
-  //   return Finish();
-  // }
-  // if (driver.GetMode().IsPrintVersion()) {
-  //   driver.PrintVersion();
-  //   return Finish();
-  // }
+  auto &mode = driver.CreateMode(ial);
+  if (mode.IsAlien()) {
+    // lang.Printd(SrcLoc(), diags::err_alien_mode)
+    Finish(1);
+  }
+  if (mode.IsPrintHelp()) {
+    // lang.PrintHelp();
+    return Finish();
+  }
+  if (mode.IsPrintVersion()) {
+    driver.PrintVersion();
+    return Finish();
+  }
+  if (!mode.CanCompile()) {
+    /// lang.Printd()
+    return Finish(1);
+  }
+  auto inputs = driver.BuildInputFiles(ial);
+  if (driver.HasError()) {
+    return Finish(1);
+  }
 
   // auto tc = driver.BuildToolChain(driver.GetOptUtil().GetInputArgList());
 }
