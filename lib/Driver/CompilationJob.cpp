@@ -3,7 +3,7 @@
 using namespace stone;
 
 /// Print a nice summary of this job
-void CompilationJob::Print(ColorOutputStream &stream) {
+void CompilationJob::Print(ColorOutputStream &stream, CrashState *crashState) {
 
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
@@ -25,8 +25,8 @@ void CompilationJob::Print(ColorOutputStream &stream) {
 }
 
 /// Perform a complete dump of this job.
-void CompilationJob::Dump(ColorOutputStream &stream,
-                          llvm::StringRef terminator) {
+void CompilationJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+                          CrashState *crashState) {
 
   //
 }
@@ -37,6 +37,13 @@ void CompilationJob::Dump(ColorOutputStream &stream,
 
 //   return llvm::dyn_cast<Command>(this);
 // }
+
+/// Print a nice summary of this job
+void TopLevelJob::Print(ColorOutputStream &stream, CrashState *crashState) {}
+
+/// Perform a complete dump of this job.
+void TopLevelJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+                       CrashState *crashState) {}
 
 // void DynamicLinkJob::Run() { cmd::ExecuteAsync(*ToCommand()); }
 

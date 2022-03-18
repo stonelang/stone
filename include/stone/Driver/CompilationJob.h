@@ -1,8 +1,7 @@
-#ifndef STONE_COMPILATIONJOB_H
-#define STONE_COMPILATIONJOB_H
+#ifndef STONE_DRIVER_COMPILATIONJOB_H
+#define STONE_DRIVER_COMPILATIONJOB_H
 
 #include "stone/Core/Color.h"
-#include "stone/Core/Context.h"
 #include "stone/Core/List.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/Command.h"
@@ -42,13 +41,10 @@ enum class CompilationJobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadingKind : uint8_t { None = 0, Single, Multi };
 
 using Inputs = llvm::ArrayRef<const file::File *>;
-using Deps = llvm::ArrayRef<const CompilationJob *>;
-
 class CompilationJob : public Command {
 
   friend class Compilation;
 
-  Context &ctx;
   CompilationJobID jobID;
   CompilationJobKind kind;
   llvm::TinyPtrVector<const file::File *> inputs;
@@ -60,21 +56,24 @@ public:
   CompilationJobStage stage = CompilationJobStage::None;
 
 public:
-  CompilationJob(CompilationJobKind kind, Context &ctx, const Tool &tool,
-                 Inputs inputs)
-      : Command(tool), kind(kind), ctx(ctx), inputs(inputs) {}
+  CompilationJob(CompilationJobKind kind, const Tool &tool, Inputs inputs)
+      : Command(tool), kind(kind), inputs(inputs) {}
 
 public:
   virtual void Run() {}
 
   /// Print a nice summary of this job
-  void Print(ColorOutputStream &stream);
+  virtual void Print(ColorOutputStream &stream,
+                     CrashState *crashState = nullptr);
 
   /// Perform a complete dump of this job.
-  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n");
+  virtual void Dump(ColorOutputStream &stream,
+                    llvm::StringRef terminator = "\n",
+                    CrashState *crashState = nullptr);
 
   int GetQueueID() const { return queueID; }
-  ColorOutputStream &OS() { return ctx.Out(); }
+  // const char *GetName() const { return
+  // CompilationJob::GetNameByKind(jobKind); }
 
 protected:
   virtual const Command *ToCommand() const {
@@ -97,14 +96,14 @@ public:
 
 class CompileJob final : public CompilationJob {
 public:
-  CompileJob(Context &ctx, const Tool &tool, const file::File *input)
-      : CompilationJob(CompilationJobKind::Compile, ctx, tool, input) {}
+  CompileJob(const Tool &tool, const file::File *input)
+      : CompilationJob(CompilationJobKind::Compile, tool, input) {}
 
 public:
-  void Run() override;
+  // void Run() override;
 
 protected:
-  const Command *ToCommand() const override;
+  // const Command *ToCommand() const override;
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -112,6 +111,7 @@ public:
   }
 };
 
+using Deps = llvm::ArrayRef<const CompilationJob *>;
 // These jobs have no parents.
 class TopLevelJob : public CompilationJob {
 
@@ -123,17 +123,23 @@ public:
   using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
 
 public:
-  TopLevelJob(CompilationJobKind kind, Context &ctx, const Tool &tool,
-              Inputs inputs)
-      : CompilationJob(kind, ctx, tool, inputs) {}
+  TopLevelJob(CompilationJobKind kind, const Tool &tool, Inputs inputs)
+      : CompilationJob(kind, tool, inputs) {}
 
-  TopLevelJob(CompilationJobKind kind, Context &ctx, const Tool &tool,
-              Deps deps)
-      : CompilationJob(kind, ctx, tool, {}), deps(deps) {}
+  TopLevelJob(CompilationJobKind kind, const Tool &tool, Deps deps)
+      : CompilationJob(kind, tool, {}), deps(deps) {}
 
 public:
   virtual void Run() {}
   void AddDep(const CompilationJob *dep) { deps.push_back(dep); }
+
+  /// Print a nice summary of this job
+  void Print(ColorOutputStream &stream,
+             CrashState *crashState = nullptr) override;
+
+  /// Perform a complete dump of this job.
+  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
+            CrashState *crashState = nullptr) override;
 
 protected:
   const Command *ToCommand() const override {
@@ -160,14 +166,12 @@ class DynamicLinkJob final : public TopLevelJob {
   bool requiresLTO;
 
 public:
-  DynamicLinkJob(Context &ctx, const Tool &tool, Inputs inputs,
-                 bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, ctx, tool, inputs),
+  DynamicLinkJob(const Tool &tool, Inputs inputs, bool requiresLTO = false)
+      : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs),
         requiresLTO(requiresLTO) {}
 
-  DynamicLinkJob(Context &ctx, const Tool &tool, Deps deps,
-                 bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, ctx, tool, deps),
+  DynamicLinkJob(const Tool &tool, Deps deps, bool requiresLTO = false)
+      : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps),
         requiresLTO(requiresLTO) {}
 
 public:
@@ -185,11 +189,11 @@ public:
 class StaticLinkJob final : public TopLevelJob {
 
 public:
-  StaticLinkJob(Context &ctx, const Tool &tool, Inputs inputs)
-      : TopLevelJob(CompilationJobKind::StaticLink, ctx, tool, inputs) {}
+  StaticLinkJob(const Tool &tool, Inputs inputs)
+      : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs) {}
 
-  StaticLinkJob(Context &ctx, const Tool &tool, Deps deps)
-      : TopLevelJob(CompilationJobKind::StaticLink, ctx, tool, deps) {}
+  StaticLinkJob(const Tool &tool, Deps deps)
+      : TopLevelJob(CompilationJobKind::StaticLink, tool, deps) {}
 
 public:
   void Run() override;
@@ -206,11 +210,11 @@ public:
 class ExecLinkJob final : public TopLevelJob {
 
 public:
-  ExecLinkJob(Context &ctx, const Tool &tool, Inputs inputs)
-      : TopLevelJob(CompilationJobKind::ExecLink, ctx, tool, inputs) {}
+  ExecLinkJob(const Tool &tool, Inputs inputs)
+      : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs) {}
 
-  ExecLinkJob(Context &ctx, const Tool &tool, Deps deps)
-      : TopLevelJob(CompilationJobKind::ExecLink, ctx, tool, deps) {}
+  ExecLinkJob(const Tool &tool, Deps deps)
+      : TopLevelJob(CompilationJobKind::ExecLink, tool, deps) {}
 
 public:
   void Run() override;

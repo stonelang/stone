@@ -16,9 +16,11 @@ public:
 
 TEST_F(DriverTest, CompileJobTest) {
 
-  CompileJob cj(CompilationJobLevel::Top,
-                Tool(ToolKind::SC, GetToolChain(), "test", "test"),
-                file::File("test", file::Type::Stone));
+  auto file = std::make_unique<file::File>("test", file::Type::Stone);
+  auto tool =
+      std::make_unique<Tool>(ToolKind::SC, "test", "test", *GetToolChain());
+
+  CompileJob cj(*tool, file.get());
 }
 // TEST_F(DriverTest, ProcessIntent) {
 
