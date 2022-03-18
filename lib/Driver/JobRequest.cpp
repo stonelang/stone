@@ -58,7 +58,46 @@ static void BuildBatchCompilingModel(Compilation &comp, HotCache &chi,
                                      const file::Files &inputs,
                                      const OutputOptions &outputOptions) {}
 
-static void BuildMultipleCompilingModel(Compilation &comp, HotCache &chi,
+static void BuildLinkJobRequest(Compilation &comp, HotCache &hc,
+                                const file::File &input,
+                                const OutputOptions &outputOptions) {
+
+  // assert(input.GetType() == file::Type::Object);
+  // hc.currentJobRequest =
+  //     comp.GetDriver().MakeJobRequest<LinkJobRequest>(input);
+}
+
+static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
+                                   const file::File &input,
+                                   const OutputOptions &outputOptions) {
+
+  assert(input.GetType() == file::Type::Stone);
+
+  /// Since you are here, you could just get the tool -- this will
+  /// be done in the ConstructInvocatin calls. 
+
+  // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
+  // assert(tool && "Could not find stone-compile tool!");
+
+  hc.currentJobRequest =
+      comp.GetDriver().MakeJobRequest<CompileJobRequest>(&input);
+}
+
+static void BuildJobRequest(Compilation &comp, HotCache &hc,
+                            const file::File &input,
+                            const OutputOptions &outputOptions) {
+  switch (input.GetType()) {
+  case file::Type::Stone:
+    BuildCompileJobRequest(comp, hc, input, outputOptions);
+    break;
+  case file::Type::Object:
+    BuildLinkJobRequest(comp, hc, input, outputOptions);
+    break;
+  default:
+    stone::Panic("Alien file -- cannot build job request");
+  }
+}
+static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
                                         const file::Files &inputs,
                                         const OutputOptions &outputOptions) {
   for (auto &input : inputs) {
@@ -67,9 +106,9 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &chi,
 
       assert(input.GetType() == comp.GetDriver().GetInputFileType() &&
              "Incompatible input file types");
-
       assert(file::IsPartOfCompilation(input.GetType()));
 
+      BuildJobRequest(comp, hc, input, outputOptions);
     }
   }
 }
