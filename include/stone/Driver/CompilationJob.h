@@ -40,7 +40,7 @@ enum class CompilationJobStage : uint8_t { None = 0, Running, Finished, Error };
 /// See OutputOptions
 enum class ThreadingKind : uint8_t { None = 0, Single, Multi };
 
-using Inputs = llvm::ArrayRef<const file::File *>;
+using CompilationJobInputs = llvm::ArrayRef<const file::File *>;
 class CompilationJob : public Command {
 
   friend class Compilation;
@@ -56,11 +56,9 @@ public:
   CompilationJobStage stage = CompilationJobStage::None;
 
 public:
-  CompilationJob(CompilationJobKind kind, const Tool &tool, Inputs inputs)
+  CompilationJob(CompilationJobKind kind, const Tool &tool,
+                 CompilationJobInputs inputs)
       : Command(tool), kind(kind), inputs(inputs) {}
-
-public:
-  virtual void Run() {}
 
   /// Print a nice summary of this job
   virtual void Print(ColorOutputStream &stream,
@@ -89,18 +87,16 @@ public:
 
 class CompileJob final : public CompilationJob {
 public:
-  CompileJob(const Tool &tool, const file::File *input)
-      : CompilationJob(CompilationJobKind::Compile, tool, input) {}
+  CompileJob(const Tool &tool, CompilationJobInputs inputs)
+      : CompilationJob(CompilationJobKind::Compile, tool, inputs) {}
 
-public:
-  // void Run() override;
 public:
   static bool classof(const CompilationJob *job) {
     return job->GetKind() == CompilationJobKind::Compile;
   }
 };
 
-using Deps = llvm::ArrayRef<const CompilationJob *>;
+using CompilationJobDeps = llvm::ArrayRef<const CompilationJob *>;
 // These jobs have no parents.
 class TopLevelJob : public CompilationJob {
 
@@ -112,14 +108,15 @@ public:
   using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
 
 public:
-  TopLevelJob(CompilationJobKind kind, const Tool &tool, Inputs inputs)
+  TopLevelJob(CompilationJobKind kind, const Tool &tool,
+              CompilationJobInputs inputs)
       : CompilationJob(kind, tool, inputs) {}
 
-  TopLevelJob(CompilationJobKind kind, const Tool &tool, Deps deps)
+  TopLevelJob(CompilationJobKind kind, const Tool &tool,
+              CompilationJobDeps deps)
       : CompilationJob(kind, tool, {}), deps(deps) {}
 
 public:
-  virtual void Run() {}
   void AddDep(const CompilationJob *dep) { deps.push_back(dep); }
 
   /// Print a nice summary of this job
@@ -149,16 +146,16 @@ class DynamicLinkJob final : public TopLevelJob {
   bool requiresLTO;
 
 public:
-  DynamicLinkJob(const Tool &tool, Inputs inputs, bool requiresLTO = false)
+
+  DynamicLinkJob(const Tool &tool, CompilationJobInputs inputs,
+                 bool requiresLTO = false)
       : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs),
         requiresLTO(requiresLTO) {}
 
-  DynamicLinkJob(const Tool &tool, Deps deps, bool requiresLTO = false)
+  DynamicLinkJob(const Tool &tool, CompilationJobDeps deps,
+                 bool requiresLTO = false)
       : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps),
         requiresLTO(requiresLTO) {}
-
-public:
-  void Run() override;
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -169,14 +166,11 @@ public:
 class StaticLinkJob final : public TopLevelJob {
 
 public:
-  StaticLinkJob(const Tool &tool, Inputs inputs)
+  StaticLinkJob(const Tool &tool, CompilationJobInputs inputs)
       : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs) {}
 
-  StaticLinkJob(const Tool &tool, Deps deps)
+  StaticLinkJob(const Tool &tool, CompilationJobDeps deps)
       : TopLevelJob(CompilationJobKind::StaticLink, tool, deps) {}
-
-public:
-  void Run() override;
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -187,14 +181,11 @@ public:
 class ExecLinkJob final : public TopLevelJob {
 
 public:
-  ExecLinkJob(const Tool &tool, Inputs inputs)
+  ExecLinkJob(const Tool &tool, CompilationJobInputs inputs)
       : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs) {}
 
-  ExecLinkJob(const Tool &tool, Deps deps)
+  ExecLinkJob(const Tool &tool, CompilationJobDeps deps)
       : TopLevelJob(CompilationJobKind::ExecLink, tool, deps) {}
-
-public:
-  void Run() override;
 
 public:
   static bool classof(const CompilationJob *job) {

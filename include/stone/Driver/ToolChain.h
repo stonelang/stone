@@ -163,7 +163,7 @@ protected:
   // ConstructInvocation(const DynamicLinkJobRequest &request) const;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const JobRequest &requestor, Compilation &c,
+  std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
                                     const OutputOptions &outputOptions);
 };
 
