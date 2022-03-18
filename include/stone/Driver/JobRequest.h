@@ -32,7 +32,7 @@ enum class JobRequestKind : uint8_t {
   Last = ExecLink,
 };
 
-using Inputs = llvm::ArrayRef<const file::File *>;
+using JobRequestInputs = llvm::ArrayRef<const file::File *>;
 class JobRequest {
 
   JobRequestKind kind;
@@ -40,7 +40,8 @@ class JobRequest {
   // file::Type outputFileType = file::Type::None;
 
 public:
-  JobRequest(JobRequestKind kind, Inputs inputs) : kind(kind), inputs(inputs) {}
+  JobRequest(JobRequestKind kind, JobRequestInputs inputs)
+      : kind(kind), inputs(inputs) {}
 
 public:
   /// Perform a complete dump of this job.
@@ -68,7 +69,7 @@ public:
 
 class CompileJobRequest final : public JobRequest {
 public:
-  CompileJobRequest(Inputs inputs)
+  CompileJobRequest(JobRequestInputs inputs)
       : JobRequest(JobRequestKind::Compile, inputs) {}
 
 public:
@@ -77,48 +78,44 @@ public:
   }
 };
 
-// using Deps = llvm::ArrayRef<const JobRequest *>;
-// // These jobs have no parents.
-// class TopLevelJobRequest : public JobRequest {
-//   llvm::TinyPtrVector<const JobRequest *> deps;
+// These jobs have no parents -- they can directly receive inputs or other jobs
+using JobRequestDeps = llvm::ArrayRef<const JobRequest *>;
+class TopLevelJobRequest : public JobRequest {
+  llvm::TinyPtrVector<const JobRequest *> deps;
 
-// public:
-//   using size_type = llvm::ArrayRef<const JobRequest *>::size_type;
-//   using iterator = llvm::ArrayRef<const JobRequest *>::iterator;
-//   using const_iterator = llvm::ArrayRef<const JobRequest *>::const_iterator;
+public:
+  using size_type = llvm::ArrayRef<const JobRequest *>::size_type;
+  using iterator = llvm::ArrayRef<const JobRequest *>::iterator;
+  using const_iterator = llvm::ArrayRef<const JobRequest *>::const_iterator;
 
-// public:
-//   TopLevelJobRequest(JobRequestKind kind, Inputs inputs)
-//       : JobRequestuest(kind, inputs) {}
+public:
+  TopLevelJobRequest(JobRequestKind kind, JobRequestInputs inputs)
+      : JobRequest(kind, inputs) {}
 
-//   TopLevelJobRequest(JobRequestKind kind, Deps deps)
-//       : JobRequestuest(kind, {}), deps(deps) {}
+  TopLevelJobRequest(JobRequestKind kind, JobRequestDeps deps)
+      : JobRequest(kind, {}), deps(deps) {}
 
-// public:
-//   void AddDep(const JobRequest *dep) { deps.push_back(dep); }
+public:
+  void AddDep(const JobRequest *dep) { deps.push_back(dep); }
 
-//   /// Print a nice summary of this job
-//   void Print(ColorOutputStream &stream,
-//              CrashState *crashState = nullptr) override;
+  /// Perform a complete dump of this job.
+  void Print(ColorOutputStream &stream,
+             llvm::StringRef terminator = "\n") override;
 
-//   /// Perform a complete dump of this job.
-//   void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
-//             CrashState *crashState = nullptr) override;
+public:
+  size_type size() const { return deps.size(); }
+  iterator begin() { return deps.begin(); }
+  iterator end() { return deps.end(); }
+  const_iterator begin() const { return deps.begin(); }
+  const_iterator end() const { return deps.end(); }
 
-// public:
-//   size_type size() const { return deps.size(); }
-//   iterator begin() { return deps.begin(); }
-//   iterator end() { return deps.end(); }
-//   const_iterator begin() const { return deps.begin(); }
-//   const_iterator end() const { return deps.end(); }
-
-// public:
-//   // Required for llvm::dyn_cast
-//   static bool classof(const JobRequest *job) {
-//     return (job->GetKind() >= JobRequestKind::First &&
-//             job->GetKind() <= JobRequestKind::Last);
-//   }
-// };
+public:
+  // Required for llvm::dyn_cast
+  static bool classof(const JobRequest *job) {
+    return (job->GetKind() >= JobRequestKind::First &&
+            job->GetKind() <= JobRequestKind::Last);
+  }
+};
 
 // class DynamicLinkJobRequest final : public TopLevelJobRequest {
 //   bool requiresLTO;
