@@ -2,7 +2,7 @@
 
 using namespace stone;
 
-void JobRequest::Print(ColorOutputStream &stream, llvm::StringRef terminator) {
+void JobRequest::Print(ColorOutputStream &stream, llvm::StringRef terminator) const {
 
   //   /// TODO: IntentFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
@@ -26,8 +26,9 @@ void JobRequest::Print(ColorOutputStream &stream, llvm::StringRef terminator) {
 }
 
 void TopLevelJobRequest::Print(ColorOutputStream &stream,
-                               llvm::StringRef terminator) {
+                               llvm::StringRef terminator) const{
   for (auto jr : *this) {
+    jr->Print(stream, terminator);
   }
 }
 

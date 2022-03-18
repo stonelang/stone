@@ -81,7 +81,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   BuildJobRequests(*compilation, hc, inputs);
 
   if (driverOpts.printIntents) {
-    // PrintIntents(bi);
+    //PrintJobRequests(hc);
     return nullptr;
   }
 

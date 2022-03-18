@@ -46,7 +46,7 @@ public:
 public:
   /// Perform a complete dump of this job.
   virtual void Print(ColorOutputStream &stream,
-                     llvm::StringRef terminator = "\n");
+                     llvm::StringRef terminator = "\n") const;
 
 public:
   llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
@@ -94,7 +94,7 @@ public:
 
   /// Perform a complete dump of this job.
   void Print(ColorOutputStream &stream,
-             llvm::StringRef terminator = "\n") override;
+             llvm::StringRef terminator = "\n") const override;
 
 public:
   size_type size() const { return deps.size(); }
