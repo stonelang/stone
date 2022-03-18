@@ -117,55 +117,57 @@ public:
   }
 };
 
-// class DynamicLinkJobRequest final : public TopLevelJobRequest {
-//   bool requiresLTO;
+class DynamicLinkJobRequest final : public TopLevelJobRequest {
+  bool requiresLTO;
 
-// public:
-//   DynamicLinkJobRequest(const Tool &tool, Inputs inputs,
-//                         bool requiresLTO = false)
-//       : TopLevelJobRequest(JobRequestKind::DynamicLink, tool, inputs),
-//         requiresLTO(requiresLTO) {}
+public:
+  DynamicLinkJobRequest(JobRequestInputs inputs, bool requiresLTO = false)
+      : TopLevelJobRequest(JobRequestKind::DynamicLink, inputs),
+        requiresLTO(requiresLTO) {}
 
-//   DynamicLinkJobRequest(const Tool &tool, Deps deps, bool requiresLTO =
-//   false)
-//       : TopLevelJobRequest(JobRequestKind::DynamicLink, tool, deps),
-//         requiresLTO(requiresLTO) {}
+  DynamicLinkJobRequest(JobRequestDeps deps, bool requiresLTO = false)
+      : TopLevelJobRequest(JobRequestKind::DynamicLink, deps),
+        requiresLTO(requiresLTO) {}
 
-// public:
-//   static bool classof(const JobRequest *job) {
-//     return job->GetKind() == JobRequestKind::DynamicLink;
-//   }
-// };
+public:
+  static bool classof(const JobRequest *job) {
+    return job->GetKind() == JobRequestKind::DynamicLink;
+  }
+};
 
-// class StaticLinkJobRequest final : public TopLevelJobRequest {
+class StaticLinkJobRequest final : public TopLevelJobRequest {
 
-// public:
-//   StaticLinkJobRequest(const Tool &tool, Inputs inputs)
-//       : TopLevelJobRequest(JobRequestKind::StaticLink, tool, inputs) {}
+public:
+  StaticLinkJobRequest(JobRequestInputs inputs)
+      : TopLevelJobRequest(JobRequestKind::StaticLink, inputs),
+        requiresLTO(requiresLTO) {}
 
-//   StaticLinkJobRequest(const Tool &tool, Deps deps)
-//       : TopLevelJobRequest(JobRequestKind::StaticLink, tool, deps) {}
+  StaticLinkJobRequest(JobRequestDeps deps)
+      : TopLevelJobRequest(JobRequestKind::StaticLink, deps),
+        requiresLTO(requiresLTO) {}
 
-// public:
-//   static bool classof(const JobRequest *job) {
-//     return job->GetKind() == JobRequestKind::StaticLink;
-//   }
-// };
+public:
+  static bool classof(const JobRequest *job) {
+    return job->GetKind() == JobRequestKind::DynamicLink;
+  }
+};
+class ExecLinkJobRequest final : public TopLevelJobRequest {
+  bool requiresLTO;
 
-// class ExecLinkJobRequest final : public TopLevelJobRequest {
+public:
+  ExecLinkJobRequest(JobRequestInputs inputs)
+      : TopLevelJobRequest(JobRequestKind::ExecLink, inputs),
+        requiresLTO(requiresLTO) {}
 
-// public:
-//   ExecLinkJobRequest(const Tool &tool, Inputs inputs)
-//       : TopLevelJobRequest(JobRequestKind::ExecLink, tool, inputs) {}
+  ExecLinkJobRequest(JobRequestDeps deps)
+      : TopLevelJobRequest(JobRequestKind::ExecLink, deps),
+        requiresLTO(requiresLTO) {}
 
-//   ExecLinkJobRequest(const Tool &tool, Deps deps)
-//       : TopLevelJobRequest(JobRequestKind::ExecLink, tool, deps) {}
-
-// public:
-//   static bool classof(const JobRequest *job) {
-//     return job->GetKind() == JobRequestKind::ExecLink;
-//   }
-// };
+public:
+  static bool classof(const JobRequest *job) {
+    return job->GetKind() == JobRequestKind::ExecLink;
+  }
+};
 
 } // namespace stone
 #endif

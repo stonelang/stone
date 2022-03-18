@@ -15,21 +15,28 @@ public:
   const ToolChain *GetToolChain() const { return nullptr; }
 };
 
-TEST_F(DriverTest, CompileJobTest) {
+// TEST_F(DriverTest, CompileJobTest) {
 
-  auto file = std::make_unique<file::File>("test", file::Type::Stone);
-  auto tool =
-      std::make_unique<Tool>(ToolKind::SC, "test", "test", *GetToolChain());
+//   auto file = std::make_unique<file::File>("test", file::Type::Stone);
+//   auto tool =
+//       std::make_unique<Tool>(ToolKind::SC, "test", "test", *GetToolChain());
 
-  CompileJob cj(*tool, file.get());
-}
+//   CompileJob cj(*tool, file.get());
+// }
 
 TEST_F(DriverTest, JobRequestTest) {
 
   auto file = std::make_unique<file::File>("test", file::Type::Stone);
 
-  auto jr = JobRequest::Make<CompileJobRequest>(file.get());
-  jr->Print(ctx.Out());
+  auto cjr = JobRequest::Make<CompileJobRequest>(file.get());
+  cjr->Print(ctx.Out());
+
+  auto djrd = JobRequest::Make<DynamicLinkJobRequest>(cjr.get());
+  auto djri = JobRequest::Make<DynamicLinkJobRequest>(file.get());
+
+  // Compilation compilation;
+  // auto job = toolChain.MakeJob(JobRequest& jobRequest, Compilation& c)
+  // compilation.EnqueuJob(job);
 
   // auto file = std::make_unique<file::File>("test", file::Type::Stone);
   // auto tool =
