@@ -43,7 +43,11 @@ void TopLevelJob::Print(ColorOutputStream &stream, CrashState *crashState) {}
 
 /// Perform a complete dump of this job.
 void TopLevelJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
-                       CrashState *crashState) {}
+                       CrashState *crashState) {
+
+  for (auto dep : *this) {
+  }
+}
 
 // void DynamicLinkJob::Run() { cmd::ExecuteAsync(*ToCommand()); }
 

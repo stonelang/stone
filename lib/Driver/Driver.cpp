@@ -1,4 +1,5 @@
 #include "stone/Driver/Driver.h"
+#include "stone/Core/CoreDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Darwin.h"
 #include "stone/Driver/Job.h"
@@ -74,11 +75,12 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto compilation =
       std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
-  // CompilationHotInfo chi;
-  // BuildIntents(*compilation, chi, inputs);
-
+  if (inputs.empty()) {
+    GetContext().Printd(SrcLoc(), diag::err_no_input_files);
+    return nullptr;
+  }
   HotCache hc;
-  BuildJobRequests(*compilation, hc, inputs);
+  BuildJobRequests(*compilation, hc, inputs, driverOpts.outputOptions);
 
   if (driverOpts.printIntents) {
     // PrintJobRequests(hc);

@@ -71,14 +71,23 @@ public:
   void AddDiagnosticListener(DiagnosticListener *listener);
 
 public:
+  InFlightDiagnostic Printd(const Diagnostic &diagnostic) {
+    return Printd(SrcLoc(), diagnostic);
+  }
   InFlightDiagnostic Printd(SrcLoc loc, const Diagnostic &diagnostic) {
     return de.Printd(loc, diagnostic);
   }
 
+  InFlightDiagnostic Printd(DiagID diagID,
+                            llvm::ArrayRef<diag::Argument> args) {
+    return Printd(SrcLoc(), diagID, args);
+  }
   InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args) {
     return de.Printd(loc, diagID, args);
   }
+
+  InFlightDiagnostic Printd(DiagID diagID) { return Printd(SrcLoc(), diagID); }
 
   InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID) {
     return de.Printd(loc, diagID);

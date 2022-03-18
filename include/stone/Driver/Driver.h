@@ -119,8 +119,9 @@ public:
   //                   const file::Files &inputs);
   // void PrintIntents(CompilationHotInfo &chi);
 
-  void BuildJobRequests(Compilation &c, HotCache &hc,
-                        const file::Files &inputs);
+  void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
+                        const OutputOptions &outputOptions);
+
   void PrintJobRequests(const HotCache &hc);
 
   // void BuildJobs(Compilation &c, HotCache &hc);

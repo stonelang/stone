@@ -227,11 +227,10 @@ public:
   CommandOutput &GetOutput() const { return *cmdOutput.get(); }
 };
 
-namespace cmd {
-// TODO: Pass CommandInvocation
-int ExecuteSync(const Command &command, Context *ctx = nullptr);
-int ExecuteAsync(const Command &command, Context *ctx = nullptr);
-} // namespace cmd
+namespace job {
+int RunSync(const Command &command, Context *ctx = nullptr);
+int RunAsync(const Command &command, Context *ctx = nullptr);
+} // namespace job
 
 } // namespace stone
 

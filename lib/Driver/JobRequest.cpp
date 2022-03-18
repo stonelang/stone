@@ -1,3 +1,5 @@
+#include "stone/Core/File.h"
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -33,5 +35,47 @@ void TopLevelJobRequest::Print(ColorOutputStream &stream,
   }
 }
 
-void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
-                              const file::Files &inputs) {}
+static void BuildSingleCompilingModel(Compilation &comp, HotCache &chi,
+                                      const file::Files &inputs,
+                                      const OutputOptions &outputOptions) {}
+
+static void BuildBatchCompilingModel(Compilation &comp, HotCache &chi,
+                                     const file::Files &inputs,
+                                     const OutputOptions &outputOptions) {}
+
+static void BuildMultipleCompilingModel(Compilation &comp, HotCache &chi,
+                                        const file::Files &inputs,
+                                        const OutputOptions &outputOptions) {
+  for (auto &input : inputs) {
+    // TODO: Way out there, but there is potential for git here?
+    if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
+
+      assert(input.GetType() == comp.GetDriver().GetInputFileType() &&
+             "Incompatible input file types");
+
+      assert(file::IsPartOfCompilation(input.GetType()));
+    }
+  }
+}
+
+void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
+                              const file::Files &inputs,
+                              const OutputOptions &outputOptions) {
+
+  // We assert here because this should have been checked above.
+  assert(inputs.empty());
+
+  switch (driverOpts.outputOptions.compilingModel) {
+  case CompilingModel::Multiple:
+    BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);
+    break;
+  case CompilingModel::Single:
+    BuildSingleCompilingModel(comp, hc, inputs, outputOptions);
+    break;
+  case CompilingModel::Batch:
+    BuildBatchCompilingModel(comp, hc, inputs, outputOptions);
+    break;
+  default:
+    stone::Panic("Unsupported Compiling mode");
+  }
+}
