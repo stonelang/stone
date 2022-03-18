@@ -15,22 +15,28 @@
 
 namespace stone {
 
-class Intent;
+class JobRequest;
+class TopLevelJobRequest;
 class Compilation;
 
-class CompilationHotInfo final {
+class HotCache final {
 public:
-  /// All the inputs associated with the module
-  llvm::SmallVector<const Intent *, 4> moduleInputs;
+  JobRequest *currentJobRequest;
+  /// We keep track of the inputs for the module that we are building.
+  /// These are generally CompileJobRequest(s)
+  llvm::SmallVector<const JobRequest *, 4> moduleInputs;
 
-  /// The top level intents. Ex: Linker. We will recursively call
-  /// BuildJobsForTopLevelIntents() -> BuildJobsForTopLvelIntent()
-  llvm::SmallVector<const Intent *, 16> topLevelIntents;
+  /// When are building the  request(s), keep track of the linker dependecies
+  llvm::SmallVector<const JobRequest *, 2> linkerDeps;
 
-  /// All the inputs for the linker
-  llvm::SmallVector<const Intent *, 2> linkerInputs;
+  /// These are the top-level job requests -- we use them recursively to build
+  /// out the "real" jobs.
+  llvm::SmallVector<const TopLevelJobRequest *, 16> topLevelJobRequests;
 
-  Intent *current;
+public:
+  bool HasModuleInputs() { return moduleInputs.size(); }
+  bool HasLinkerDeps() { return linkerDeps.size(); }
+  bool HasTopLvelJobRequest() { return topLevelJobRequests.size(); }
 };
 
 class Driver final : public Session {
@@ -53,6 +59,9 @@ class Driver final : public Session {
 
   CompilationListener *listener = nullptr;
 
+  /// Lifetime management.
+  llvm::SmallVector<std::unique_ptr<const JobRequest>, 32> jobRequests;
+
 public:
   Driver(const Driver &) = delete;
   void operator=(const Driver &) = delete;
@@ -64,9 +73,14 @@ public:
 
   void Initialize();
   void Finish();
+  void PrintVersion();
 
 public:
-  void PrintVersion();
+  template <typename T, typename... Args> T *MakeJobRequest(Args &&...args) {
+    auto result = new T(std::forward<Args>(args)...);
+    jobRequests.emplace_back(result);
+    return result;
+  }
 
 public:
   llvm::opt::InputArgList &
@@ -101,12 +115,16 @@ public:
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
                                                 llvm::opt::InputArgList &ial);
 
-  void BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
-                    const file::Files &inputs);
-  void PrintIntents(CompilationHotInfo &chi);
+  // void BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
+  //                   const file::Files &inputs);
+  // void PrintIntents(CompilationHotInfo &chi);
 
-  void BuildJobs(Compilation &compilation, CompilationHotInfo &chi);
-  void PrintJobs(CompilationHotInfo &chi);
+  void BuildJobRequests(Compilation &c, HotCache &hc,
+                        const file::Files &inputs);
+  void PrintJobRequests(const HotCache &hc);
+
+  // void BuildJobs(Compilation &c, HotCache &hc);
+  // void PrintJobs(CompilationHotInfo &chi);
 
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }

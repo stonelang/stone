@@ -139,34 +139,57 @@ class StaticLinkJobRequest final : public TopLevelJobRequest {
 
 public:
   StaticLinkJobRequest(JobRequestInputs inputs)
-      : TopLevelJobRequest(JobRequestKind::StaticLink, inputs),
-        requiresLTO(requiresLTO) {}
+      : TopLevelJobRequest(JobRequestKind::StaticLink, inputs) {}
 
   StaticLinkJobRequest(JobRequestDeps deps)
-      : TopLevelJobRequest(JobRequestKind::StaticLink, deps),
-        requiresLTO(requiresLTO) {}
+      : TopLevelJobRequest(JobRequestKind::StaticLink, deps) {}
 
 public:
   static bool classof(const JobRequest *job) {
-    return job->GetKind() == JobRequestKind::DynamicLink;
+    return job->GetKind() == JobRequestKind::StaticLink;
   }
 };
 class ExecLinkJobRequest final : public TopLevelJobRequest {
-  bool requiresLTO;
 
 public:
   ExecLinkJobRequest(JobRequestInputs inputs)
-      : TopLevelJobRequest(JobRequestKind::ExecLink, inputs),
-        requiresLTO(requiresLTO) {}
+      : TopLevelJobRequest(JobRequestKind::ExecLink, inputs) {}
 
   ExecLinkJobRequest(JobRequestDeps deps)
-      : TopLevelJobRequest(JobRequestKind::ExecLink, deps),
-        requiresLTO(requiresLTO) {}
+      : TopLevelJobRequest(JobRequestKind::ExecLink, deps) {}
 
 public:
   static bool classof(const JobRequest *job) {
     return job->GetKind() == JobRequestKind::ExecLink;
   }
+};
+
+class JobInvocation final {
+private:
+  /// The tool that this command will use
+  const Tool &tool;
+  /// The outputs this command is expected to produce
+  std::unique_ptr<CommandOutput> cmdOutput;
+
+public:
+  llvm::SmallVector<llvm::StringRef, 16> args;
+  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
+  llvm::ArrayRef<llvm::Optional<llvm::StringRef>> redirects;
+
+  unsigned waitSecs = 0;
+  unsigned memLimit = 0;
+  std::string *errMsg;
+  bool *failed;
+
+public:
+  JobInvocation() = delete;
+  JobInvocation(const Tool &tool) : JobInvocation(tool, nullptr) {}
+  JobInvocation(const Tool &tool, std::unique_ptr<CommandOutput> cmdOutput)
+      : tool(tool), cmdOutput(std::move(cmdOutput)) {}
+
+public:
+  const Tool &GetTool() const { return tool; }
+  CommandOutput &GetOutput() const { return *cmdOutput.get(); }
 };
 
 } // namespace stone

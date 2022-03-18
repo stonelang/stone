@@ -71,48 +71,44 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-CommandInvocation
-ToolChain::ConstructInvocation(const CompileIntent &intent) const {
+// CommandInvocation
+// ToolChain::ConstructInvocation(const StaticLinkIntent &intent) const {
+//   assert(false && "StaticLink construction not implemented in base!");
+// }
 
-  auto tool = FindTool(ToolKind::SC);
-  assert(tool && "Could not find stone sc tool!");
-}
-
-CommandInvocation
-ToolChain::ConstructInvocation(const StaticLinkIntent &intent) const {
-  assert(false && "StaticLink construction not implemented in base!");
-}
-
-CommandInvocation
-ToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
-  assert(false && "DynamicLink construction not implemented in base!");
-}
+// CommandInvocation
+// ToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
+//   assert(false && "DynamicLink construction not implemented in base!");
+// }
 
 std::unique_ptr<Job>
-ToolChain::ConstructJob(const Intent &intent, Compilation &c,
+ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
                         const OutputOptions &outputOptions) {
 
-  auto commandInvocation = [&]() -> CommandInvocation {
-    switch (intent.GetKind()) {
-    case IntentKind::Compile:
-      return ConstructInvocation(llvm::cast<CompileIntent>(intent));
-    case IntentKind::StaticLink:
-      return ConstructInvocation(llvm::cast<StaticLinkIntent>(intent));
-    case IntentKind::DynamicLink:
-      return ConstructInvocation(llvm::cast<DynamicLinkIntent>(intent));
-    case IntentKind::Process:
-    case IntentKind::None:
+  auto Invocation = [&]() -> JobInvocation {
+    switch (request.GetKind()) {
+    case JobRequestKind::Compile:
+      return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
+      // case JobRequestKind::StaticLink:
+      //   return ConstructInvocation(llvm::cast<StaticLinkIntent>(intent));
+      // case JobRequestKind::DynamicLink:
+      //   return ConstructInvocation(llvm::cast<DynamicLinkIntent>(intent));
+
+    case JobRequestKind::None:
       stone::Panic("Not a 'CompilationIntent' ");
     }
   };
 }
 
-// CommandInvocation ToolChain::ConstructInvocation(const CompileIntent &intent)
-// {
+JobInvocation
+ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 
-//   auto tool = driver.GetToolChain().FindTool(ToolKind::Stone);
-//   CommandInvocation cmdInvocation(tool);
-// }
+  auto tool = FindTool(ToolKind::SC);
+  assert(tool && "Could not find stone sc tool!");
+
+  JobInvocation ji(*tool);
+  return ji; 
+}
 
 // Job *ToolChain::CreateCompileJob(Driver &driver) {
 

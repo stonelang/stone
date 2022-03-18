@@ -91,32 +91,32 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
   return nullptr;
 }
 
-CommandInvocation
-DarwinToolChain::ConstructInvocation(const CompileIntent &intent) const {
-  return ToolChain::ConstructInvocation(intent);
+JobInvocation
+DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
+  return ToolChain::ConstructInvocation(request);
 }
-CommandInvocation
-DarwinToolChain::ConstructInvocation(const StaticLinkIntent &intent) const {
+// JobInvocation DarwinToolChain::ConstructInvocation(
+//     const StaticLinkJobRequest &request) const {
 
-  auto tool = FindTool(ToolKind::LD);
-  if (!tool) {
-    tool = FindTool(ToolKind::LLD);
-  }
-  assert(tool && "Could not find a linker tool");
-}
+//   auto tool = FindTool(ToolKind::LD);
+//   if (!tool) {
+//     tool = FindTool(ToolKind::LLD);
+//   }
+//   assert(tool && "Could not find a linker tool");
+// }
 
-CommandInvocation
-DarwinToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
+// JobInvocation DarwinToolChain::ConstructInvocation(
+//     const DynamicLinkJobRequest &request) const {
 
-  auto tool = FindTool(ToolKind::LD);
-  /// Warn if you are asked to use LD only
-  if (!tool) {
-    tool = FindTool(ToolKind::LLD);
-  }
-  assert(tool && "Could not find a linker tool");
+//   auto tool = FindTool(ToolKind::LD);
+//   /// Warn if you are asked to use LD only
+//   if (!tool) {
+//     tool = FindTool(ToolKind::LLD);
+//   }
+//   assert(tool && "Could not find a linker tool");
 
-  // assert(tool && "Could not find stone sc tool!");
-}
+//   // assert(tool && "Could not find stone sc tool!");
+// }
 
 // Job *DarwinToolChain::CreateCompileJob(Driver &driver) {
 //   return ToolChain::CreateCompileJob(driver);

@@ -50,14 +50,14 @@ public:
   bool Initialize() override;
 
 public:
-  CommandInvocation
-  ConstructInvocation(const CompileIntent &intent) const override;
+  JobInvocation
+  ConstructInvocation(const CompileJobRequest &request) const override;
 
-  CommandInvocation
-  ConstructInvocation(const StaticLinkIntent &intent) const override;
+  // CommandInvocation
+  // ConstructInvocation(const StaticLinkIntent &intent) const override;
 
-  CommandInvocation
-  ConstructInvocation(const DynamicLinkIntent &intent) const override;
+  // CommandInvocation
+  // ConstructInvocation(const DynamicLinkIntent &intent) const override;
 
   // Command* ConstructCommand(const CompileJob& job) const override;
 

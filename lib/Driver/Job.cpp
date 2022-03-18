@@ -90,22 +90,22 @@ void JobStats::Print() {}
 
 // void Job::Run() {}
 
-static void BuildJobsForTopLevelIntent(Compilation &C,
-                                       const CompilationIntent *ci) {
+// static void BuildJobsForTopLevelIntent(Compilation &C,
+//                                        const CompilationIntent *ci) {
 
-  for (const Intent *input : *ci) {
-    if (auto *processIntent = llvm::dyn_cast<CompilationIntent>(input)) {
-    }
-  }
-}
+//   for (const Intent *input : *ci) {
+//     if (auto *processIntent = llvm::dyn_cast<CompilationIntent>(input)) {
+//     }
+//   }
+// }
 
-void Driver::BuildJobs(Compilation &compilation, CompilationHotInfo &chi) {
+// void Driver::BuildJobs(Compilation &compilation, CompilationHotInfo &chi) {
 
-  for (const Intent *intent : chi.topLevelIntents) {
-    if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
+//   for (const Intent *intent : chi.topLevelIntents) {
+//     if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
 
-      assert(ci->GetLevel() == IntentLevel::Top);
-      BuildJobsForTopLevelIntent(compilation, ci);
-    }
-  }
-}
+//       assert(ci->GetLevel() == IntentLevel::Top);
+//       BuildJobsForTopLevelIntent(compilation, ci);
+//     }
+//   }
+// }

@@ -38,9 +38,6 @@ class Compilation final {
   ToolChain &tc;
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
-  /// This is mostly only here for lifetime management.
-  llvm::SmallVector<std::unique_ptr<const Intent>, 32> intents;
-
   /// The Jobs which will be performed by this compilation.
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
@@ -57,12 +54,11 @@ public:
   //   intents.Add(std::move(i));
   //   return result;
   // }
-
-  template <typename I, typename... Args> I *CreateIntent(Args &&...args) {
-    auto result = new I(std::forward<Args>(args)...);
-    intents.emplace_back(result);
-    return result;
-  }
+  // template <typename I, typename... Args> I *CreateIntent(Args &&...args) {
+  //   auto result = new I(std::forward<Args>(args)...);
+  //   intents.emplace_back(result);
+  //   return result;
+  // }
 
   // template <typename J, typename... Args> J *CreateJob(Args &&...args) {
   //   J *result = nullptr;

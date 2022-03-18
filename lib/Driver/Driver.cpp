@@ -74,8 +74,11 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto compilation =
       std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
-  CompilationHotInfo chi;
-  BuildIntents(*compilation, chi, inputs);
+  // CompilationHotInfo chi;
+  // BuildIntents(*compilation, chi, inputs);
+
+  HotCache hc;
+  BuildJobRequests(*compilation, hc, inputs);
 
   if (driverOpts.printIntents) {
     // PrintIntents(bi);

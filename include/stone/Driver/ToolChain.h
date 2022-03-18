@@ -14,6 +14,8 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 
+#include "stone/Driver/JobRequest.h"
+
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -148,17 +150,20 @@ public:
   Tool *FindTool(ToolKind tk) const;
 
 protected:
-  virtual CommandInvocation
-  ConstructInvocation(const CompileIntent &intent) const;
+  // virtual CommandInvocation
+  // ConstructInvocation(const CompileIntent &intent) const;
 
-  virtual CommandInvocation
-  ConstructInvocation(const StaticLinkIntent &intent) const;
+  // virtual CommandInvocation
+  // ConstructInvocation(const StaticLinkIntent &intent) const;
 
-  virtual CommandInvocation
-  ConstructInvocation(const DynamicLinkIntent &intent) const;
+  // virtual CommandInvocation
+  // ConstructInvocation(const DynamicLinkIntent &intent) const;
+
+  virtual JobInvocation
+  ConstructInvocation(const CompileJobRequest &request) const;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const Intent &intent, Compilation &c,
+  std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
                                     const OutputOptions &outputOptions);
 };
 
