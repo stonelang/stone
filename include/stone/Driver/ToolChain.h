@@ -59,7 +59,7 @@ class Tool final {
 
 public:
   Tool(ToolKind kind, const char *fullName, const char *shortName,
-       const ToolChain &toolChain, bool isDefault)
+       const ToolChain &toolChain, bool isDefault = false)
       : kind(kind), fullName(fullName), shortName(shortName),
         toolChain(toolChain), isDefault(isDefault) {}
 

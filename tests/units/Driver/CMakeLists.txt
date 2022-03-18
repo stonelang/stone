@@ -4,10 +4,9 @@ set(LLVM_LINK_COMPONENTS
 )
 
 add_stone_unittest(StoneDriverUnitTests
-	DriverTest.cpp
+  DriverTest.cpp
 )
 target_link_libraries(StoneDriverUnitTests
   PRIVATE
   StoneDriver
 )
-

@@ -59,6 +59,8 @@ public:
   CommandInvocation
   ConstructInvocation(const DynamicLinkIntent &intent) const override;
 
+  // Command* ConstructCommand(const CompileJob& job) const override;
+
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;
   std::unique_ptr<Tool> BuildLDTool() override;

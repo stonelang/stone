@@ -39,6 +39,9 @@ enum class CompilationJobLevel {
   Dep,
 };
 
+/// See OutputOptions
+enum class ThreadingKind : uint8_t { None = 0, Sync, Async };
+
 using Inputs = llvm::ArrayRef<const file::File *>;
 using Deps = llvm::ArrayRef<const CompilationJob *>;
 
@@ -83,6 +86,8 @@ public:
   CompilationJobKind GetKind() const { return kind; }
   CompilationJobLevel GetLevel() const { return level; }
 
+  void AddInput(const file::File *input) { inputs.push_back(input); }
+
 public:
   size_type size() const { return deps.size(); }
   iterator begin() { return deps.begin(); }
@@ -97,17 +102,19 @@ public:
             job->GetKind() <= CompilationJobKind::Last);
   }
 };
+class TopLevelCompilationJob : public CompilationJob {
+
+};
 
 class CompileJob final : public CompilationJob {
 public:
-  CompileJob(CompilationJobLevel level, const Tool &tool, Inputs inputs)
-      : CompilationJob(CompilationJobKind::Compile, level, tool, inputs) {}
+  CompileJob(CompilationJobLevel level, const Tool &tool,
+             const file::File *input)
+      : CompilationJob(CompilationJobKind::Compile, level, tool, input) {}
 
 public:
-  const Command *ToCommand() const override {
-    //TODO: Build out command
-    return llvm::dyn_cast<Command>(this);
-  }
+  void Run() override;
+  const Command *ToCommand() const override;
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -115,28 +122,29 @@ public:
   }
 };
 
-// class DynamicLinkJob final : public CompilationJob {
-//   bool requiresLTO;
+class DynamicLinkJob final : public CompilationJob {
+  bool requiresLTO;
 
-// public:
-//   DynamicLinkJob(Inputs inputs, bool requiresLTO = false)
-//       : CompilationJob(CompilationJobKind::DynamicLink,
-//                        CompilationJobLevel::Top, inputs),
-//         requiresLTO(requiresLTO) {}
+public:
+  DynamicLinkJob(const Tool &tool, Inputs inputs, bool requiresLTO = false)
+      : CompilationJob(CompilationJobKind::DynamicLink,
+                       CompilationJobLevel::Top, tool, inputs),
+        requiresLTO(requiresLTO) {}
 
-//   DynamicLinkJob(Deps deps, bool requiresLTO = false)
-//       : CompilationJob(CompilationJobKind::DynamicLink,
-//                        CompilationJobLevel::Top, deps),
-//         requiresLTO(requiresLTO) {}
+  DynamicLinkJob(const Tool &tool, Deps deps, bool requiresLTO = false)
+      : CompilationJob(CompilationJobKind::DynamicLink,
+                       CompilationJobLevel::Top, tool, deps),
+        requiresLTO(requiresLTO) {}
 
-// public:
-//   //Command *ToCommand() const override { return this; }
+public:
+  void Run() override;
+  const Command *ToCommand() const override;
 
-// public:
-//   static bool classof(const CompilationJob *job) {
-//     return job->GetKind() == CompilationJobKind::DynamicLink;
-//   }
-// };
+public:
+  static bool classof(const CompilationJob *job) {
+    return job->GetKind() == CompilationJobKind::DynamicLink;
+  }
+};
 
 // class StaticLinkJob final : public CompilationJob {
 // public:

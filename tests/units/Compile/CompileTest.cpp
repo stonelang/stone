@@ -1,6 +1,5 @@
 #include "stone/Compile/Lang.h"
 #include "stone/Core/Context.h"
-#include "stone/Core/Malloc.h"
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Session/ModeKind.h"
@@ -10,7 +9,7 @@
 using namespace stone;
 
 class CompileTest : public ::testing::Test {
-protected:
+public:
   // Context ctx;
 };
 
@@ -18,8 +17,8 @@ TEST_F(CompileTest, CompileFileVerbosely) {
 
   const char *args[] = {"-parse", "/var/tmp/test.stone"};
 
-  Frontend lc;
-  lc.ParseArguments(args);
+  // Frontend lc;
+  // lc.ParseArguments(args);
 
   // Lang lang("stone-compile", "stone-compile");
   // lang.Initialize();
