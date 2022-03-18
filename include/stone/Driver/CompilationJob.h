@@ -74,13 +74,6 @@ public:
   int GetQueueID() const { return queueID; }
   // const char *GetName() const { return
   // CompilationJob::GetNameByKind(jobKind); }
-
-protected:
-  virtual const Command *ToCommand() const {
-    assert(false && "Not implemented on purpose.");
-    return nullptr;
-  }
-
 public:
   llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
   CompilationJobKind GetKind() const { return kind; }
@@ -101,10 +94,6 @@ public:
 
 public:
   // void Run() override;
-
-protected:
-  // const Command *ToCommand() const override;
-
 public:
   static bool classof(const CompilationJob *job) {
     return job->GetKind() == CompilationJobKind::Compile;
@@ -141,12 +130,6 @@ public:
   void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
             CrashState *crashState = nullptr) override;
 
-protected:
-  const Command *ToCommand() const override {
-    assert(false && "Not implemented on purpose.");
-    return nullptr;
-  }
-
 public:
   size_type size() const { return deps.size(); }
   iterator begin() { return deps.begin(); }
@@ -177,9 +160,6 @@ public:
 public:
   void Run() override;
 
-protected:
-  const Command *ToCommand() const override;
-
 public:
   static bool classof(const CompilationJob *job) {
     return job->GetKind() == CompilationJobKind::DynamicLink;
@@ -198,9 +178,6 @@ public:
 public:
   void Run() override;
 
-protected:
-  const Command *ToCommand() const override;
-
 public:
   static bool classof(const CompilationJob *job) {
     return job->GetKind() == CompilationJobKind::StaticLink;
@@ -218,9 +195,6 @@ public:
 
 public:
   void Run() override;
-
-protected:
-  const Command *ToCommand() const override;
 
 public:
   static bool classof(const CompilationJob *job) {
