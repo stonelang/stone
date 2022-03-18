@@ -146,7 +146,6 @@ class DynamicLinkJob final : public TopLevelJob {
   bool requiresLTO;
 
 public:
-
   DynamicLinkJob(const Tool &tool, CompilationJobInputs inputs,
                  bool requiresLTO = false)
       : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs),
