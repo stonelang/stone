@@ -111,7 +111,6 @@ protected:
 
   // Tne compilaiton tools for this tool chain
   // Tools tools;
-
   SafeList<Tool> tools;
 
 public:
@@ -135,6 +134,7 @@ public:
   ToolChainKind GetKind() { return kind; }
 
 protected:
+  // TODO: Now that you are using the construction method, you may no need this.
   virtual std::unique_ptr<Tool> BuildSCTool();
   virtual std::unique_ptr<Tool> BuildLDTool() = 0;
   virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
@@ -150,20 +150,20 @@ public:
   Tool *FindTool(ToolKind tk) const;
 
 protected:
-  // virtual CommandInvocation
-  // ConstructInvocation(const CompileIntent &intent) const;
-
-  // virtual CommandInvocation
-  // ConstructInvocation(const StaticLinkIntent &intent) const;
-
-  // virtual CommandInvocation
-  // ConstructInvocation(const DynamicLinkIntent &intent) const;
-
+  /// Construct a JobInvocation for a compile job request
   virtual JobInvocation
   ConstructInvocation(const CompileJobRequest &request) const;
 
+  // /// Construct a JobInvocation for a static link job request
+  // virtual JobInvocation
+  // ConstructInvocation(const StaticLinkJobRequest &request) const;
+
+  // /// Construct a JobInvocation for a dynamic link job reques
+  // virtual JobInvocation
+  // ConstructInvocation(const DynamicLinkJobRequest &request) const;
+
 public:
-  std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
+  std::unique_ptr<Job> ConstructJob(const JobRequest &requestor, Compilation &c,
                                     const OutputOptions &outputOptions);
 };
 

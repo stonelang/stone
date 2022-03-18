@@ -7,8 +7,8 @@
 #include "stone/Driver/Command.h"
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/JobKind.h"
+#include "stone/Driver/JobRequest.h"
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -42,9 +42,10 @@ enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
 class Job {
   friend class JobQueue;
 
-  Context &ctx;
-  CompilationIntent &intent;
-  ThreadingMode threadingMode = ThreadingMode::None;
+  JobRequest &request;
+  const JobInvocation &invocation;
+  /// The list of other Jobs which are inputs to this Job.
+  llvm::SmallVector<const Job *, 4> deps;
 
 protected:
   // Updated by the JobQueue if or when the job is queued.
@@ -52,22 +53,33 @@ protected:
 
 public:
   JobStage stage = JobStage::None;
+  /// public for now
+  ThreadingMode threadingMode = ThreadingMode::None;
 
 public:
   Job() = delete;
 
 public:
-  Job(CompilationIntent &intent, Context &ctx);
-  Job(CompilationIntent &intent, Context &ctx, ThreadingMode threadingMode);
+  Job(JobRequest &request, llvm::SmallVectorImpl<const Job *> &&deps,
+      const JobInvocation &invocation);
+
   virtual ~Job();
 
 public:
-  stone::ColorOutputStream &OS();
+  /// Print a nice summary of this job
+  virtual void Print(ColorOutputStream &stream,
+                     CrashState *crashState = nullptr);
+
+  /// Perform a complete dump of this job.
+  virtual void Dump(ColorOutputStream &stream,
+                    llvm::StringRef terminator = "\n",
+                    CrashState *crashState = nullptr);
 
 public:
-  Context &GetContext() { return ctx; }
-  CompilationIntent &GetCompilationIntent() { return intent; }
-  ThreadingMode GetThreadingMode() { return threadingMode; }
+  int GetQueueID() const { return queueID; }
+  stone::ColorOutputStream &OS();
+  JobRequest &GetJobRequest() { return request; }
+  const JobInvocation &GetJobInvocation() const { return invocation; }
 };
 
 class BatchJob : public Job {};

@@ -59,12 +59,6 @@ public:
     return (job->GetKind() >= JobRequestKind::First &&
             job->GetKind() <= JobRequestKind::Last);
   }
-
-public:
-  template <typename J, typename... Args>
-  static std::unique_ptr<J> Make(Args &&...args) {
-    return std::make_unique<J>(std::forward<Args>(args)...);
-  }
 };
 
 class CompileJobRequest final : public JobRequest {

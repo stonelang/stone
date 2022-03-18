@@ -10,6 +10,12 @@ using stone::Intent;
 using stone::Job;
 using stone::JobStats;
 
+Job::Job(JobRequest &request, llvm::SmallVectorImpl<const Job *> &&deps,
+         const JobInvocation &invocation)
+    : request(request), deps(std::move(deps)), invocation(invocation) {}
+
+Job::~Job() {}
+
 // Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
 // threadingMode)
 //     : Command(tool), intent(intent), ctx(ctx), jobKind(jobKind),
@@ -79,6 +85,13 @@ using stone::JobStats;
 //     assert(false && "Invalid JobKind");
 //   }
 // }
+
+/// Print a nice summary of this job
+void Job::Print(ColorOutputStream &stream, CrashState *crashState) {}
+
+/// Perform a complete dump of this job.
+void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+               CrashState *crashState) {}
 
 void JobStats::Print() {}
 

@@ -103,6 +103,7 @@ DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 //     tool = FindTool(ToolKind::LLD);
 //   }
 //   assert(tool && "Could not find a linker tool");
+//   return JobInvocation(*tool);
 // }
 
 // JobInvocation DarwinToolChain::ConstructInvocation(
@@ -115,7 +116,7 @@ DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 //   }
 //   assert(tool && "Could not find a linker tool");
 
-//   // assert(tool && "Could not find stone sc tool!");
+//   return JobInvocation(*tool);
 // }
 
 // Job *DarwinToolChain::CreateCompileJob(Driver &driver) {

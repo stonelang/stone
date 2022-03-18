@@ -107,7 +107,7 @@ ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
   assert(tool && "Could not find stone sc tool!");
 
   JobInvocation ji(*tool);
-  return ji; 
+  return ji;
 }
 
 // Job *ToolChain::CreateCompileJob(Driver &driver) {
