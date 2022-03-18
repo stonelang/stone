@@ -3,6 +3,7 @@
 	BuildSystem.cpp
 	Compilation.cpp
 	CompileJob.cpp
+	CompilationJob.cpp
 	Command.cpp
 	Darwin.cpp
 	DebugCompilationListener.cpp

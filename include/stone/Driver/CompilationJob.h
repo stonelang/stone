@@ -54,6 +54,11 @@ class CompilationJob : public Command {
   llvm::TinyPtrVector<const CompilationJob *> deps;
 
 public:
+  using size_type = llvm::ArrayRef<const CompilationJob *>::size_type;
+  using iterator = llvm::ArrayRef<const CompilationJob *>::iterator;
+  using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
+
+public:
   CompilationJob(CompilationJobKind kind, CompilationJobLevel level,
                  const Tool &tool, Inputs inputs)
       : Command(tool), kind(kind), level(level), inputs(inputs) {}
@@ -66,7 +71,10 @@ public:
   virtual void Run() {}
 
 protected:
-  virtual Command *ToCommand() const { return nullptr; }
+  virtual const Command *ToCommand() const {
+    assert(false && "Not implemented on purpose.");
+    return nullptr;
+  }
 
 public:
   llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
@@ -76,6 +84,13 @@ public:
   CompilationJobLevel GetLevel() const { return level; }
 
 public:
+  size_type size() const { return deps.size(); }
+  iterator begin() { return deps.begin(); }
+  iterator end() { return deps.end(); }
+  const_iterator begin() const { return deps.begin(); }
+  const_iterator end() const { return deps.end(); }
+
+public:
   // Required for llvm::dyn_cast
   static bool classof(const CompilationJob *job) {
     return (job->GetKind() >= CompilationJobKind::First &&
@@ -83,19 +98,22 @@ public:
   }
 };
 
-// class CompileJob final : public CompilationJob {
-// public:
-//   CompileJob(CompilationJobLevel level, Inputs inputs)
-//       : CompilationJob(CompilationJobKind::Compile, level, inputs) {}
+class CompileJob final : public CompilationJob {
+public:
+  CompileJob(CompilationJobLevel level, const Tool &tool, Inputs inputs)
+      : CompilationJob(CompilationJobKind::Compile, level, tool, inputs) {}
 
-// public:
-//   //Command *ToCommand() const override { return this; }
+public:
+  const Command *ToCommand() const override {
+    //TODO: Build out command
+    return llvm::dyn_cast<Command>(this);
+  }
 
-// public:
-//   static bool classof(const CompilationJob *job) {
-//     return job->GetKind() == CompilationJobKind::Compile;
-//   }
-// };
+public:
+  static bool classof(const CompilationJob *job) {
+    return job->GetKind() == CompilationJobKind::Compile;
+  }
+};
 
 // class DynamicLinkJob final : public CompilationJob {
 //   bool requiresLTO;
