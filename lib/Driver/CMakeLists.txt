@@ -11,6 +11,7 @@
 	Intent.cpp
 	Job.cpp
 	JobQueue.cpp
+	JobRequest.cpp
 	LinkJob.cpp
 	Linux.cpp
 	Run.cpp

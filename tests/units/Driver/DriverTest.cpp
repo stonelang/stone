@@ -3,6 +3,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Driver/CompilationJob.h"
+#include "stone/Driver/JobRequest.h"
 
 #include "gtest/gtest.h"
 
@@ -21,6 +22,20 @@ TEST_F(DriverTest, CompileJobTest) {
       std::make_unique<Tool>(ToolKind::SC, "test", "test", *GetToolChain());
 
   CompileJob cj(*tool, file.get());
+}
+
+TEST_F(DriverTest, JobRequestTest) {
+
+  auto file = std::make_unique<file::File>("test", file::Type::Stone);
+
+  auto jr = JobRequest::Make<CompileJobRequest>(file.get());
+  jr->Print(ctx.Out());
+
+  // auto file = std::make_unique<file::File>("test", file::Type::Stone);
+  // auto tool =
+  //     std::make_unique<Tool>(ToolKind::SC, "test", "test", *GetToolChain());
+
+  // CompileJob cj(*tool, file.get());
 }
 // TEST_F(DriverTest, ProcessIntent) {
 

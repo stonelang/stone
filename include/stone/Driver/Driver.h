@@ -11,6 +11,8 @@
 #include "stone/Driver/ToolChain.h"
 #include "stone/Session/Session.h"
 
+#include "stone/Driver/JobRequest.h"
+
 namespace stone {
 
 class Intent;

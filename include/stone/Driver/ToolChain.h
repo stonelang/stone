@@ -132,6 +132,17 @@ public:
 
   ToolChainKind GetKind() { return kind; }
 
+protected:
+  virtual std::unique_ptr<Tool> BuildSCTool();
+  virtual std::unique_ptr<Tool> BuildLDTool() = 0;
+  virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
+  virtual std::unique_ptr<Tool> BuildClangTool() = 0;
+  virtual std::unique_ptr<Tool> BuildGCCTool() = 0;
+
+protected:
+  std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
+                                  const char *shortName, bool isDefault);
+
 public:
   virtual bool Initialize();
   Tool *FindTool(ToolKind tk) const;
@@ -149,17 +160,6 @@ protected:
 public:
   std::unique_ptr<Job> ConstructJob(const Intent &intent, Compilation &c,
                                     const OutputOptions &outputOptions);
-
-protected:
-  virtual std::unique_ptr<Tool> BuildSCTool();
-  virtual std::unique_ptr<Tool> BuildLDTool() = 0;
-  virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
-  virtual std::unique_ptr<Tool> BuildClangTool() = 0;
-  virtual std::unique_ptr<Tool> BuildGCCTool() = 0;
-
-protected:
-  std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
-                                  const char *shortName, bool isDefault);
 };
 
 /*
