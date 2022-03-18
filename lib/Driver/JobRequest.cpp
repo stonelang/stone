@@ -4,6 +4,21 @@
 
 using namespace stone;
 
+const char *JobRequest::GetNameByKind(JobRequestKind kind) {
+  switch (kind) {
+  case JobRequestKind::Compile:
+    return "compile";
+  case JobRequestKind::DynamicLink:
+    return "dynamic-link";
+  case JobRequestKind::StaticLink:
+    return "static-link";
+  case JobRequestKind::ExecLink:
+    return "executable-link";
+  default:
+    stone::Panic("Invalid JobRequest");
+  }
+}
+
 void JobRequest::Print(ColorOutputStream &stream,
                        llvm::StringRef terminator) const {
 
@@ -54,6 +69,7 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &chi,
              "Incompatible input file types");
 
       assert(file::IsPartOfCompilation(input.GetType()));
+
     }
   }
 }

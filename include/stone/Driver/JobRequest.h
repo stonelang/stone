@@ -47,11 +47,13 @@ public:
   /// Perform a complete dump of this job.
   virtual void Print(ColorOutputStream &stream,
                      llvm::StringRef terminator = "\n") const;
-
 public:
   llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
   JobRequestKind GetKind() const { return kind; }
   void AddInput(const file::File *input) { inputs.push_back(input); }
+  const char *GetName() const { return JobRequest::GetNameByKind(kind); }
+public:
+  static const char *GetNameByKind(JobRequestKind kind);
 
 public:
   // Required for llvm::dyn_cast
