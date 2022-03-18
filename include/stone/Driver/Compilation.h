@@ -9,6 +9,8 @@
 #include "stone/Driver/JobQueue.h"
 #include "stone/Driver/ToolChain.h"
 
+#include "stone/Driver/CompilationJob.h"
+
 namespace stone {
 
 class Job;

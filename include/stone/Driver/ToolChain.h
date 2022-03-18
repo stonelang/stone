@@ -68,8 +68,8 @@ public:
   bool CanExec() { return file::CanExec(fullName); }
   bool IsObsolete() { return isObsolete; }
 
-  const char *GetFullName() { return fullName; }
-  const char *GetShortName() { return shortName; }
+  const char *GetFullName() const { return fullName; }
+  const char *GetShortName() const { return shortName; }
   ToolKind GetKind() { return kind; }
   bool IsDefault() { return isDefault; }
 };

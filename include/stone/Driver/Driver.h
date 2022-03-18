@@ -21,7 +21,8 @@ public:
   /// All the inputs associated with the module
   llvm::SmallVector<const Intent *, 4> moduleInputs;
 
-  /// The top level intents -- ex: linker. We only queue the top level intents.
+  /// The top level intents. Ex: Linker. We will recursively call
+  /// BuildJobsForTopLevelIntents() -> BuildJobsForTopLvelIntent()
   llvm::SmallVector<const Intent *, 16> topLevelIntents;
 
   /// All the inputs for the linker

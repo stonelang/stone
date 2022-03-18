@@ -97,16 +97,35 @@ static void BuildIntent(Compilation &compilation, CompilationHotInfo &chi,
   }
 }
 
+static void BuildIntentForMultipleCompilingModel(Compilation &compilation,
+                                                 CompilationHotInfo &chi,
+                                                 const file::File input) {}
+
+static void BuildIntentForSingleCompilingModel(Compilation &compilation,
+                                               CompilationHotInfo &chi,
+                                               const file::File &input) {}
+
 void Driver::BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
                           const file::Files &inputs) {
 
   for (auto &input : inputs) {
     // TODO: Way out there, but there is a potential for git here?
     if (GetBuildSystem().IsDirty(input)) {
+
       assert(input.GetType() == GetInputFileType() &&
              "Incompatible input file types");
       assert(file::IsPartOfCompilation(input.GetType()));
-      BuildIntent(compilation, chi, input);
+
+      switch (driverOpts.outputOptions.compilingModel) {
+      case CompilingModel::Multiple:
+        BuildIntentForMultipleCompilingModel(compilation, chi, input);
+        break;
+      case CompilingModel::Single:
+        BuildIntentForSingleCompilingModel(compilation, chi, input);
+        break;
+      default:
+        stone::Panic("Unsupported Compiling mode");
+      }
     }
   }
   // We are in optional territory -- try to build

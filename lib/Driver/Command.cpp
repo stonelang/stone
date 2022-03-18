@@ -15,14 +15,14 @@ CommandOutput::CommandOutput(file::Type primaryOutputType, OutputFileMap &map)
 CommandOutput::CommandOutput(llvm::StringRef fakeBaseName, OutputFileMap &map)
     : derivedOutputMap(map) {}
 
-int cmd::ExecuteSync(Command &c, Context *ctx) {
+int Command::ExecuteSync(const Command &c, Context *ctx) {
 
   assert(c.waitSecs > 0 && "Wait seconds must be greater than 0");
   return llvm::sys::ExecuteAndWait(
       c.GetTool().GetFullName(), llvm::ArrayRef<llvm::StringRef>(c.args), c.env,
       c.redirects, c.waitSecs, c.memLimit, c.errMsg, c.failed);
 }
-int cmd::ExecuteAsync(Command &c, Context *ctx) {
+int Command::ExecuteAsync(const Command &c, Context *ctx) {
 
   assert(c.waitSecs == 0 && "Wait seconds must be equal to 0");
   return llvm::sys::ExecuteAndWait(

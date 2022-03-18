@@ -21,6 +21,8 @@ enum class IntentKind : unsigned {
   DynamicLink,
   StaticLink,
   GenPCH,
+  FirstCompilationIntent = Compile,
+  LastCompilationIntent = GenPCH,
 };
 
 enum class IntentLevel : unsigned {
@@ -85,6 +87,13 @@ public:
   iterator end() { return inputs.end(); }
   const_iterator begin() const { return inputs.begin(); }
   const_iterator end() const { return inputs.end(); }
+
+public:
+  // Required for llvm::dyn_cast
+  static bool classof(const Intent *intent) {
+    return (intent->GetKind() >= IntentKind::FirstCompilationIntent &&
+            intent->GetKind() <= IntentKind::LastCompilationIntent);
+  }
 };
 
 // Not valid for compile session

@@ -82,9 +82,6 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
-  // BuiltJobs bj;
-  // BuildJobs(bj, bi);
-
   return compilation;
 }
 

@@ -1,9 +1,12 @@
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
+#include "stone/Driver/Intent.h"
 
 using stone::Compilation;
+using stone::CompilationIntent;
 using stone::Driver;
+using stone::Intent;
 using stone::Job;
 using stone::JobStats;
 
@@ -87,4 +90,22 @@ void JobStats::Print() {}
 
 // void Job::Run() {}
 
-void Driver::BuildJobs(Compilation &compilation, CompilationHotInfo &bcs) {}
+static void BuildJobsForTopLevelIntent(Compilation &C,
+                                       const CompilationIntent *ci) {
+
+  for (const Intent *input : *ci) {
+    if (auto *processIntent = llvm::dyn_cast<CompilationIntent>(input)) {
+    }
+  }
+}
+
+void Driver::BuildJobs(Compilation &compilation, CompilationHotInfo &chi) {
+
+  for (const Intent *intent : chi.topLevelIntents) {
+    if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
+
+      assert(ci->GetLevel() == IntentLevel::Top);
+      BuildJobsForTopLevelIntent(compilation, ci);
+    }
+  }
+}

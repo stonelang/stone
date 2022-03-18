@@ -169,7 +169,7 @@ class Context;
 class Command {
 private:
   /// The tool that this command will use
-  Tool &tool;
+  const Tool &tool;
   /// The outputs this command is expected to produce
   std::unique_ptr<CommandOutput> cmdOutput;
 
@@ -184,15 +184,19 @@ public:
   bool *failed;
 
 public:
-  Command() = delete;
-  Command(Tool &tool) : tool(tool) {}
+  Command(const Tool &tool) : tool(tool) {}
 
 public:
-  Tool &GetTool() { return tool; }
+  const Tool &GetTool() const { return tool; }
+
   CommandOutput &GetOutput() { return *cmdOutput.get(); }
   void TakeCommandOutput(std::unique_ptr<CommandOutput> commandOutput) {
     cmdOutput = std::move(commandOutput);
   }
+
+public:
+  static int ExecuteSync(const Command &c, Context *ctx = nullptr);
+  static int ExecuteAsync(const Command &c, Context *ctx = nullptr);
 };
 
 class CommandInvocation final {
@@ -225,8 +229,8 @@ public:
 
 namespace cmd {
 // TODO: Pass CommandInvocation
-int ExecuteSync(Command &command, Context *ctx = nullptr);
-int ExecuteAsync(Command &command, Context *ctx = nullptr);
+int ExecuteSync(const Command &command, Context *ctx = nullptr);
+int ExecuteAsync(const Command &command, Context *ctx = nullptr);
 } // namespace cmd
 
 } // namespace stone
