@@ -22,7 +22,26 @@ bool Parser::AtStartOflDecl(const Token &tok) {
     return false;
   }
 }
-
+void Parser::ParseTopLevelDecls(
+    llvm::SmallVector<SyntaxResult<Decl *>> &results) {
+  // Prime the Parser's token
+  // The Lexer has the first token but the Parser's token defaults to tk::MAX
+  // So, update the parser's token with the first token from the Lexer
+  if (tok.Is(tk::Kind::MAX)) {
+    ConsumeTok();
+  }
+  SyntaxResult<Decl *> result;
+  while (!IsDone()) {
+    ParseTopLevelDecl(result);
+    if (HasError()) {
+      if (listener) {
+        listener->OnError();
+      }
+      return;
+    }
+    results.push_back(result.Get());
+  }
+}
 void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
 
   assert(AtStartOflDecl(tok) && "Invalid top-declaration");
@@ -52,7 +71,7 @@ static bool HasAccessLevel(const syn::Token &tok) {
     return false;
   }
 }
-syn::DeclGroupPtrTy Parser::ParseDecl(ParsingDeclSpecifier *pds) {
+SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
 
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
@@ -78,7 +97,7 @@ syn::DeclGroupPtrTy Parser::ParseDecl(ParsingDeclSpecifier *pds) {
   ParsingDeclSpecifier localPDS(*this);
   return ParseDecl(localPDS, accessLevel);
 }
-syn::DeclGroupPtrTy Parser::ParseDecl(ParsingDeclSpecifier &pds,
+SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
                                       AccessLevel accessLevel) {
 
   SyntaxResult<Decl *> syntaxResult;
@@ -96,7 +115,7 @@ syn::DeclGroupPtrTy Parser::ParseDecl(ParsingDeclSpecifier &pds,
     break;
   }
   // return CreateDeclGroup(singleDecl);
-  return nullptr;
+  return DeclResult(); 
 }
 
 void Parser::ParseFunctionSignature(FunDecl *funDecl) {

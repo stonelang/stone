@@ -3,12 +3,14 @@
 
 #include "stone/Compile/Lexer.h"
 #include "stone/Compile/SyntaxScopeCache.h"
+#include "stone/Compile/SyntaxListener.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
+
 
 #include "llvm/Support/Timer.h"
 
@@ -132,16 +134,15 @@ public:
   // Decl Parsing
 
   bool AtStartOflDecl(const Token &tok);
-  bool ParseTopLevelDecl(DeclGroupPtrTy &result, bool isFirstDecl = false);
 
   void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
+  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
 
-  // SyntaxResult<Decl>
+  bool ParseTopLevelDecl(DeclGroupPtrTy &result, bool isFirstDecl = false);
 
-  syn::DeclGroupPtrTy ParseDecl(ParsingDeclSpecifier *pds = nullptr);
-  syn::DeclGroupPtrTy ParseDecl(ParsingDeclSpecifier &pds,
+  SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier *pds = nullptr);
+  SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier &pds,
                                 AccessLevel al = AccessLevel::None);
-
 public:
   // Function
   SyntaxResult<Decl *> ParseFunDecl(ParsingDeclSpecifier &pds,

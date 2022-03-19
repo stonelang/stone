@@ -12,7 +12,7 @@ void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
                           SyntaxListener *listener) {
 
   Parser parser(sf, syntax, listener);
-  
+
   SyntaxResult<Decl *> result;
   while (!parser.IsDone()) {
     parser.ParseTopLevelDecl(result);

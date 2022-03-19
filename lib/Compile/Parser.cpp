@@ -1,5 +1,4 @@
 #include "stone/Compile/Parser.h"
-#include "stone/Compile/SyntaxListener.h"
 #include "stone/Core/Context.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SrcMgr.h"
