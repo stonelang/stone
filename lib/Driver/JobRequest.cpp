@@ -79,13 +79,14 @@ static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
   // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
   // assert(tool && "Could not find stone-compile tool!");
 
-  hc.currentJobRequest =
+  hc.currentRequest =
       comp.GetDriver().MakeJobRequest<CompileJobRequest>(&input);
 
-  hc.moduleInputs.push_back(hc.currentJobRequest);
+  // TODO: Think about this
+  hc.AddCompileRequest(hc.currentRequest);
 
   if (outputOptions.CanLink()) {
-    hc.linkerDeps.push_back(hc.currentJobRequest);
+    hc.AddLinkDep(hc.currentRequest);
   }
 }
 
@@ -119,30 +120,30 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
   }
 
   // Now, do we need any top-level JobRequests
-  if (outputOptions.CanLink() && hc.HasLinkerDeps()) {
+  if (outputOptions.CanLink() && hc.HasLinkDeps()) {
 
     TopLevelJobRequest *linkRequest = nullptr;
     switch (comp.GetDriver().GetLinkMode()) {
     case LinkMode::EmitExecutable: {
       linkRequest =
-          comp.GetDriver().MakeJobRequest<ExecLinkJobRequest>(hc.linkerDeps);
+          comp.GetDriver().MakeJobRequest<ExecLinkJobRequest>(hc.linkDeps);
       break;
     }
     case LinkMode::EmitDynamicLibrary: {
       linkRequest = comp.GetDriver().MakeJobRequest<DynamicLinkJobRequest>(
-          hc.linkerDeps, outputOptions.RequiresLTO());
+          hc.linkDeps, outputOptions.RequiresLTO());
       break;
     }
     case LinkMode::EmitStaticLibrary: {
       linkRequest =
-          comp.GetDriver().MakeJobRequest<StaticLinkJobRequest>(hc.linkerDeps);
+          comp.GetDriver().MakeJobRequest<StaticLinkJobRequest>(hc.linkDeps);
       break;
     }
     default:
       stone::Panic("Invalid linking mode");
     }
     assert(linkRequest);
-    hc.topLevelJobRequests.push_back(linkRequest);
+    hc.AddTopLevelRequest(linkRequest);
   }
 }
 
@@ -165,5 +166,15 @@ void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
     break;
   default:
     stone::Panic("Unsupported Compiling mode");
+  }
+}
+
+void Driver::PrintJobRequests(const HotCache &hc) {
+
+  // Let just handle top level
+  if (hc.HasTopLevelRequest()) {
+    for (auto &request : hc.topLevelRequests) {
+      request->Print(GetContext().Out());
+    }
   }
 }

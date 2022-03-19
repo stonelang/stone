@@ -32,6 +32,11 @@ enum class JobRequestKind : uint8_t {
   Last = ExecLink,
 };
 
+class RequestScope {
+public:
+  RequestScope *parent = nullptr;
+};
+
 using JobRequestInputs = llvm::ArrayRef<const file::File *>;
 class JobRequest {
 

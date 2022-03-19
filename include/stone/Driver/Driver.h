@@ -16,27 +16,38 @@
 namespace stone {
 
 class JobRequest;
-class TopLevelJobRequest;
 class Compilation;
+class TopLevelJobRequest;
 
 class HotCache final {
 public:
-  JobRequest *currentJobRequest;
+  JobRequest *currentRequest;
   /// We keep track of the inputs for the module that we are building.
-  /// These are generally CompileJobRequest(s)
-  llvm::SmallVector<const JobRequest *, 4> moduleInputs;
+  /// These are CompileJobRequest
+  llvm::SmallVector<const JobRequest *, 4> compileRequests;
 
   /// When are building the  request(s), keep track of the linker dependecies
-  llvm::SmallVector<const JobRequest *, 2> linkerDeps;
+  llvm::SmallVector<const JobRequest *, 2> linkDeps;
 
   /// These are the top-level job requests -- we use them recursively to build
   /// out the "real" jobs.
-  llvm::SmallVector<const TopLevelJobRequest *, 16> topLevelJobRequests;
+  llvm::SmallVector<const TopLevelJobRequest *, 16> topLevelRequests;
 
 public:
-  bool HasModuleInputs() { return moduleInputs.size(); }
-  bool HasLinkerDeps() { return linkerDeps.size(); }
-  bool HasTopLevelJobRequest() { return topLevelJobRequests.size(); }
+  bool HasCompileRequests() const { return compileRequests.size(); }
+  bool HasLinkDeps() const { return linkDeps.size(); }
+  bool HasTopLevelRequest() const { return topLevelRequests.size(); }
+
+public:
+  void AddCompileRequest(const JobRequest *request) {
+    compileRequests.push_back(request);
+  }
+  void AddLinkDep(const JobRequest *request) { linkDeps.push_back(request); }
+
+  void AddTopLevelRequest(const TopLevelJobRequest *request) {
+    topLevelRequests.push_back(request);
+  }
+  void SetCurrentRequest(JobRequest *curr) { currentRequest = curr; }
 };
 
 class Driver final : public Session {
@@ -124,8 +135,9 @@ public:
 
   void PrintJobRequests(const HotCache &hc);
 
-  // void BuildJobs(Compilation &c, HotCache &hc);
-  // void PrintJobs(CompilationHotInfo &chi);
+  void BuildJobs(Compilation &c, const HotCache &hc,
+                 const OutputOptions &outputOptions);
+  // void PrintJobs(HotCache &hc);
 
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }

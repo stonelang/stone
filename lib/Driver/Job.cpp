@@ -114,16 +114,27 @@ void JobStats::Print() {}
 //   }
 // }
 
-// void Driver::BuildJobs(Compilation &compilation, CompilationHotInfo &chi) {
+void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
+                       const OutputOptions &outputOpts) {
 
-//   for (const Intent *intent : chi.topLevelIntents) {
-//     if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
+  // First, check to see if there are any top-level requests
+  if (hc.HasTopLevelRequest()) {
+    // We are building the jobs recursively and we are linking, module-merging
+    // and the like.
 
-//       assert(ci->GetLevel() == IntentLevel::Top);
-//       BuildJobsForTopLevelIntent(compilation, ci);
-//     }
-//   }
-// }
+  } else {
+    // This must be a compile only scenario
+    assert(JustCompile());
+  }
+
+  //   for (const Intent *intent : chi.topLevelIntents) {
+  //     if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
+
+  //       assert(ci->GetLevel() == IntentLevel::Top);
+  //       BuildJobsForTopLevelIntent(compilation, ci);
+  //     }
+  //   }
+}
 
 // int job::RunSync(const Command &c, Context *ctx) {
 

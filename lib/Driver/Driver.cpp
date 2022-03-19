@@ -87,14 +87,9 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     // PrintJobRequests(hc);
     return nullptr;
   }
-  // First, check to see if there are any top-level requests
-  if (hc.HasTopLevelJobRequest()) {
-    // We are building the jobs recursively and we are linking, module-merging
-    // and the like.
-  } else {
-    // This must be a compile only scenario
-    assert(JustCompile());
-  }
+
+  BuildJobs(*compilation, hc, driverOpts.outputOptions);
+
   return compilation;
 }
 
