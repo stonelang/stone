@@ -13,8 +13,7 @@
 #include "stone/Core/Mem.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
-
-#include "stone/Driver/JobRequest.h"
+#include "stone/Driver/Request.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -153,17 +152,13 @@ protected:
   /// Construct a JobInvocation for a compile job request
   virtual JobInvocation
   ConstructInvocation(const CompileJobRequest &request) const;
-
-  // /// Construct a JobInvocation for a static link job request
-  // virtual JobInvocation
-  // ConstructInvocation(const StaticLinkJobRequest &request) const;
-
-  // /// Construct a JobInvocation for a dynamic link job reques
-  // virtual JobInvocation
-  // ConstructInvocation(const DynamicLinkJobRequest &request) const;
+  /// Construct a JobInvocation for a compile job request
+  virtual JobInvocation
+  ConstructInvocation(const LinkJobRequest &request) const;
 
 public:
   std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
+                                    std::unique_ptr<CommandOutput> output,
                                     const OutputOptions &outputOptions);
 };
 

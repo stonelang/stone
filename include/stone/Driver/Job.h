@@ -8,7 +8,7 @@
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
-#include "stone/Driver/JobRequest.h"
+#include "stone/Driver/Request.h"
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -33,6 +33,42 @@ public:
   JobStats(const Job &job, Context &ctx)
       : Stats("job statistics:", ctx), job(job) {}
   void Print() override;
+};
+
+class Job;
+class JobInvocation final {
+private:
+  /// The tool that this command will use
+  const Tool &tool;
+  const JobRequest &request;
+
+  /// The outputs this command is expected to produce
+  std::unique_ptr<CommandOutput> cmdOutput;
+
+public:
+  llvm::SmallVector<llvm::StringRef, 16> args;
+  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
+  llvm::ArrayRef<llvm::Optional<llvm::StringRef>> redirects;
+
+  unsigned waitSecs = 0;
+  unsigned memLimit = 0;
+  std::string *errMsg;
+  bool *failed;
+
+public:
+  JobInvocation() = delete;
+
+  JobInvocation(const JobRequest &request, const Tool &tool)
+      : JobInvocation(request, tool, nullptr) {}
+
+  JobInvocation(const JobRequest &request, const Tool &tool,
+                std::unique_ptr<CommandOutput> cmdOutput)
+      : request(request), tool(tool), cmdOutput(std::move(cmdOutput)) {}
+
+public:
+  const Tool &GetTool() const { return tool; }
+  const JobRequest &GetRequest() const { return request; }
+  CommandOutput &GetOutput() const { return *cmdOutput.get(); }
 };
 
 // TODO: JobStatus

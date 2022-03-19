@@ -71,43 +71,36 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-// CommandInvocation
-// ToolChain::ConstructInvocation(const StaticLinkIntent &intent) const {
-//   assert(false && "StaticLink construction not implemented in base!");
-// }
-
-// CommandInvocation
-// ToolChain::ConstructInvocation(const DynamicLinkIntent &intent) const {
-//   assert(false && "DynamicLink construction not implemented in base!");
-// }
-
-std::unique_ptr<Job>
-ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
-                        const OutputOptions &outputOptions) {
-
-  auto Invocation = [&]() -> JobInvocation {
-    switch (request.GetKind()) {
-    case JobRequestKind::Compile:
-      return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
-      // case JobRequestKind::StaticLink:
-      //   return ConstructInvocation(llvm::cast<StaticLinkIntent>(intent));
-      // case JobRequestKind::DynamicLink:
-      //   return ConstructInvocation(llvm::cast<DynamicLinkIntent>(intent));
-
-    case JobRequestKind::None:
-      stone::Panic("Not a 'CompilationIntent' ");
-    }
-  };
-}
-
 JobInvocation
 ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 
   auto tool = FindTool(ToolKind::SC);
-  assert(tool && "Could not find stone sc tool!");
+  assert(tool && "Could not find 'stone-compile' tool!");
 
   JobInvocation ji(request, *tool);
   return ji;
+}
+
+JobInvocation
+ToolChain::ConstructInvocation(const LinkJobRequest &request) const {
+  stone::Panic("StaticLink construction not implemented  here");
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
+                        std::unique_ptr<CommandOutput> output,
+                        const OutputOptions &outputOptions) {
+
+  auto Invocation = [&]() -> JobInvocation {
+    switch (request.GetKind()) {
+    case RequestKind::Compile:
+      return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
+    case RequestKind::Link:
+      return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
+    case RequestKind::Input:
+      stone::Panic("Not a 'JobRequest'");
+    }
+  };
 }
 
 // Job *ToolChain::CreateCompileJob(Driver &driver) {

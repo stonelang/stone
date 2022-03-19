@@ -66,6 +66,9 @@ llvm::StringRef GetStem(llvm::StringRef path);
 
 template <typename Fn> void forAllTypes(const Fn &fn);
 
+// llvm::StringRef FindProgramByName(llvm::StringRef programName);
+// llvm::sys::findProgramByName
+
 class File final {
   file::Type ty;
   llvm::StringRef name;

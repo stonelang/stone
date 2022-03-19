@@ -8,10 +8,9 @@
 #include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Request.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Session/Session.h"
-
-#include "stone/Driver/JobRequest.h"
 
 namespace stone {
 
@@ -21,33 +20,33 @@ class TopLevelJobRequest;
 
 class HotCache final {
 public:
-  JobRequest *currentRequest;
+  Request *currentRequest;
   /// We keep track of the inputs for the module that we are building.
   /// These are CompileJobRequest
-  llvm::SmallVector<const JobRequest *, 4> compileRequests;
+  llvm::SmallVector<const Request *, 4> mouleInputs;
 
   /// When are building the  request(s), keep track of the linker dependecies
-  llvm::SmallVector<const JobRequest *, 2> linkDeps;
+  llvm::SmallVector<const Request *, 2> linkInputs;
 
   /// These are the top-level job requests -- we use them recursively to build
   /// out the "real" jobs.
-  llvm::SmallVector<const TopLevelJobRequest *, 16> topLevelRequests;
+  llvm::SmallVector<const Request *, 16> topLevelRequests;
 
 public:
-  bool HasCompileRequests() const { return compileRequests.size(); }
-  bool HasLinkDeps() const { return linkDeps.size(); }
+  bool HasModuleRequests() const { return mouleInputs.size(); }
+  bool HasLinkInputs() const { return linkInputs.size(); }
   bool HasTopLevelRequest() const { return topLevelRequests.size(); }
 
 public:
-  void AddCompileRequest(const JobRequest *request) {
-    compileRequests.push_back(request);
+  void AddModuleInput(const Request *request) {
+    mouleInputs.push_back(request);
   }
-  void AddLinkDep(const JobRequest *request) { linkDeps.push_back(request); }
+  void AddLinkInput(const Request *request) { linkInputs.push_back(request); }
 
-  void AddTopLevelRequest(const TopLevelJobRequest *request) {
+  void AddTopLevelRequest(const Request *request) {
     topLevelRequests.push_back(request);
   }
-  void SetCurrentRequest(JobRequest *curr) { currentRequest = curr; }
+  void SetCurrentRequest(Request *curr) { currentRequest = curr; }
 };
 
 class Driver final : public Session {
@@ -71,7 +70,7 @@ class Driver final : public Session {
   CompilationListener *listener = nullptr;
 
   /// Lifetime management.
-  llvm::SmallVector<std::unique_ptr<const JobRequest>, 32> jobRequests;
+  llvm::SmallVector<std::unique_ptr<const Request>, 32> requests;
 
 public:
   Driver(const Driver &) = delete;
@@ -87,9 +86,9 @@ public:
   void PrintVersion();
 
 public:
-  template <typename T, typename... Args> T *MakeJobRequest(Args &&...args) {
+  template <typename T, typename... Args> T *MakeRequest(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
-    jobRequests.emplace_back(result);
+    requests.emplace_back(result);
     return result;
   }
 
@@ -104,8 +103,15 @@ public:
   TranslateInputArgList(const llvm::opt::InputArgList &ial,
                         llvm::StringRef workDir);
 
-  // TODO:
-  bool JustLink() const { return justLink; }
+  bool JustLink() const {
+    return (GetMode().IsNone() &&
+            (driverOpts.outputOptions.linkMode != LinkMode::None));
+  }
+
+  bool JustCompile() const {
+    return (GetMode().CanCompile() &&
+            (driverOpts.outputOptions.linkMode == LinkMode::None));
+  }
 
   void ComputeOptions(const llvm::opt::InputArgList &ial);
 
@@ -151,15 +157,6 @@ public:
 
   OutputFileMap &GetOutputFileMap() { return outputFileMap; }
   const OutputFileMap &GetOutputFileMap() const { return outputFileMap; }
-
-  bool JustCompile() const {
-    if ((driverOpts.outputOptions.linkMode == LinkMode::None) &&
-        GetMode().CanCompile()) {
-      return true;
-    }
-    return false;
-  }
-  bool CanCompileFile() { return file::CanCompile(driverOpts.inputFileType); }
 
   Compilation &GetCompilation() { return *compilation.get(); }
   BuildSystem &GetBuildSystem() { return *buildSystem.get(); }

@@ -68,7 +68,7 @@ public:
 
 public:
   // Convenience
-  bool IsNone() { return GetKind() == ModeKind::None; }
+  bool IsNone() const { return GetKind() == ModeKind::None; }
   bool IsParse() { return GetKind() == ModeKind::Parse; }
   bool IsEmitParse() { return GetKind() == ModeKind::EmitParse; }
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }

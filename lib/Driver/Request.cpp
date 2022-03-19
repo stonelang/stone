@@ -4,23 +4,19 @@
 
 using namespace stone;
 
-const char *JobRequest::GetNameByKind(JobRequestKind kind) {
+const char *Request::GetNameByKind(RequestKind kind) {
   switch (kind) {
-  case JobRequestKind::Compile:
+  case RequestKind::Compile:
     return "compile";
-  case JobRequestKind::DynamicLink:
-    return "dynamic-link";
-  case JobRequestKind::StaticLink:
-    return "static-link";
-  case JobRequestKind::ExecLink:
-    return "executable-link";
+  case RequestKind::Link:
+    return "link";
   default:
     stone::Panic("Invalid JobRequest");
   }
 }
 
-void JobRequest::Print(ColorOutputStream &stream,
-                       llvm::StringRef terminator) const {
+void Request::Print(ColorOutputStream &stream,
+                    llvm::StringRef terminator) const {
 
   //   /// TODO: IntentFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
@@ -43,8 +39,8 @@ void JobRequest::Print(ColorOutputStream &stream,
   // }
 }
 
-void TopLevelJobRequest::Print(ColorOutputStream &stream,
-                               llvm::StringRef terminator) const {
+void JobRequest::Print(ColorOutputStream &stream,
+                       llvm::StringRef terminator) const {
   for (auto jr : *this) {
     jr->Print(stream, terminator);
   }
@@ -59,7 +55,7 @@ static void BuildBatchCompilingModel(Compilation &comp, HotCache &chi,
                                      const OutputOptions &outputOptions) {}
 
 static void BuildLinkJobRequest(Compilation &comp, HotCache &hc,
-                                const file::File &input,
+                                const Request *request,
                                 const OutputOptions &outputOptions) {
 
   // assert(input.GetType() == file::Type::Object);
@@ -68,37 +64,40 @@ static void BuildLinkJobRequest(Compilation &comp, HotCache &hc,
 }
 
 static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
-                                   const file::File &input,
+                                   const Request *request,
                                    const OutputOptions &outputOptions) {
-
-  assert(input.GetType() == file::Type::Stone);
+  assert(request);
+  auto *input = llvm::dyn_cast<InputRequest>(request);
+  assert(input);
+  assert(input->GetInput().GetType() == file::Type::Stone);
 
   /// Since you are here, you could just get the tool -- this will
   /// be done in the ConstructInvocatin calls.
 
   // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
   // assert(tool && "Could not find stone-compile tool!");
-
-  hc.currentRequest =
-      comp.GetDriver().MakeJobRequest<CompileJobRequest>(&input);
+  hc.currentRequest = comp.GetDriver().MakeRequest<CompileJobRequest>(
+      request, comp.GetDriver().GetOutputFileType());
 
   // TODO: Think about this
-  hc.AddCompileRequest(hc.currentRequest);
+  hc.AddModuleInput(hc.currentRequest);
 
   if (outputOptions.CanLink()) {
-    hc.AddLinkDep(hc.currentRequest);
+    hc.AddLinkInput(hc.currentRequest);
   }
 }
 
 static void BuildJobRequest(Compilation &comp, HotCache &hc,
                             const file::File &input,
                             const OutputOptions &outputOptions) {
+
+  hc.currentRequest = comp.GetDriver().MakeRequest<InputRequest>(input);
   switch (input.GetType()) {
   case file::Type::Stone:
-    BuildCompileJobRequest(comp, hc, input, outputOptions);
+    BuildCompileJobRequest(comp, hc, hc.currentRequest, outputOptions);
     break;
   case file::Type::Object:
-    BuildLinkJobRequest(comp, hc, input, outputOptions);
+    BuildLinkJobRequest(comp, hc, hc.currentRequest, outputOptions);
     break;
   default:
     stone::Panic("Alien file -- cannot build job request");
@@ -120,23 +119,24 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
   }
 
   // Now, do we need any top-level JobRequests
-  if (outputOptions.CanLink() && hc.HasLinkDeps()) {
+  if (outputOptions.CanLink() && hc.HasLinkInputs()) {
 
-    TopLevelJobRequest *linkRequest = nullptr;
+    Request *linkRequest = nullptr;
     switch (comp.GetDriver().GetLinkMode()) {
     case LinkMode::EmitExecutable: {
-      linkRequest =
-          comp.GetDriver().MakeJobRequest<ExecLinkJobRequest>(hc.linkDeps);
+      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
+          hc.linkInputs, comp.GetDriver().GetLinkMode(), false);
       break;
     }
     case LinkMode::EmitDynamicLibrary: {
-      linkRequest = comp.GetDriver().MakeJobRequest<DynamicLinkJobRequest>(
-          hc.linkDeps, outputOptions.RequiresLTO());
+      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
+          hc.linkInputs, comp.GetDriver().GetLinkMode(),
+          outputOptions.RequiresLTO());
       break;
     }
     case LinkMode::EmitStaticLibrary: {
-      linkRequest =
-          comp.GetDriver().MakeJobRequest<StaticLinkJobRequest>(hc.linkDeps);
+      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
+          hc.linkInputs, comp.GetDriver().GetLinkMode(), false);
       break;
     }
     default:

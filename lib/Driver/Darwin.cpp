@@ -95,29 +95,16 @@ JobInvocation
 DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
   return ToolChain::ConstructInvocation(request);
 }
-// JobInvocation DarwinToolChain::ConstructInvocation(
-//     const StaticLinkJobRequest &request) const {
 
-//   auto tool = FindTool(ToolKind::LD);
-//   if (!tool) {
-//     tool = FindTool(ToolKind::LLD);
-//   }
-//   assert(tool && "Could not find a linker tool");
-//   return JobInvocation(*tool);
-// }
-
-// JobInvocation DarwinToolChain::ConstructInvocation(
-//     const DynamicLinkJobRequest &request) const {
-
-//   auto tool = FindTool(ToolKind::LD);
-//   /// Warn if you are asked to use LD only
-//   if (!tool) {
-//     tool = FindTool(ToolKind::LLD);
-//   }
-//   assert(tool && "Could not find a linker tool");
-
-//   return JobInvocation(*tool);
-// }
+JobInvocation
+DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {
+  auto tool = FindTool(ToolKind::LD);
+  if (!tool) {
+    tool = FindTool(ToolKind::LLD);
+  }
+  assert(tool && "Could not find a linker tool");
+  return JobInvocation(request, *tool);
+}
 
 // Job *DarwinToolChain::CreateCompileJob(Driver &driver) {
 //   return ToolChain::CreateCompileJob(driver);
