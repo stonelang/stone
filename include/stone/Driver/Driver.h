@@ -93,7 +93,7 @@ public:
   TranslateInputArgList(const llvm::opt::InputArgList &ial,
                         llvm::StringRef workDir);
 
-  bool CanLink() const { return (GetLinkMode() != LinkMode::None); }
+  // TODO:
   bool JustLink() const { return justLink; }
 
   void ComputeOptions(const llvm::opt::InputArgList &ial);

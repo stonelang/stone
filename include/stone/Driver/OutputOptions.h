@@ -58,8 +58,8 @@ public:
   /// Returns true if multi-threading is enabled.
   bool IsMultiThreading() const { return numThreads > 0; }
 
-  bool RequiresLTO() { return ltoVariant != LTOKind::None; }
-  bool RequiresLink() { return linkMode != LinkMode::None; }
+  bool RequiresLTO() const { return ltoVariant != LTOKind::None; }
+  bool CanLink() const { return linkMode != LinkMode::None; }
 
   /// Whether or not the driver should generate a module.
   bool generateModule = false;

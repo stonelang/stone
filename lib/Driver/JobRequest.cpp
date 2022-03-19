@@ -74,13 +74,17 @@ static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
   assert(input.GetType() == file::Type::Stone);
 
   /// Since you are here, you could just get the tool -- this will
-  /// be done in the ConstructInvocatin calls. 
+  /// be done in the ConstructInvocatin calls.
 
   // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
   // assert(tool && "Could not find stone-compile tool!");
 
   hc.currentJobRequest =
       comp.GetDriver().MakeJobRequest<CompileJobRequest>(&input);
+
+  if (outputOptions.CanLink()) {
+    hc.linkerDeps.push_back(hc.currentJobRequest);
+  }
 }
 
 static void BuildJobRequest(Compilation &comp, HotCache &hc,
@@ -111,6 +115,34 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
       BuildJobRequest(comp, hc, input, outputOptions);
     }
   }
+
+  // Now, do we need any top-level JobRequests
+  if (outputOptions.CanLink() && hc.HasLinkerDeps()) {
+
+    TopLevelJobRequest *linkRequest = nullptr;
+    switch (comp.GetDriver().GetLinkMode()) {
+    case LinkMode::EmitExecutable: {
+      linkRequest =
+          comp.GetDriver().MakeJobRequest<ExecLinkJobRequest>(hc.linkerDeps);
+      break;
+    }
+    case LinkMode::EmitDynamicLibrary: {
+      linkRequest = comp.GetDriver().MakeJobRequest<DynamicLinkJobRequest>(
+          hc.linkerDeps, outputOptions.RequiresLTO());
+      break;
+    }
+    case LinkMode::EmitStaticLibrary: {
+      linkRequest =
+          comp.GetDriver().MakeJobRequest<StaticLinkJobRequest>(hc.linkerDeps);
+      break;
+    }
+    default:
+      stone::Panic("Invalid linking mode");
+    }
+    assert(linkRequest);
+    hc.topLevelJobRequests.push_back(linkRequest);
+  }
+  
 }
 
 void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
