@@ -161,7 +161,7 @@ def PrintStats : Flag<["-"], "print-stats">,
 Flags<[DebugOption]>,
 HelpText<"Print the 'Compile' statistics">;
 
-def PrintDriverIntents : Flag<["-"], "print-intents">,
+def PrintDriverRequests : Flag<["-"], "print-requests">,
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Print what the driver intends to do">;
 

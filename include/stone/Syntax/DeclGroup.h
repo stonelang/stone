@@ -37,6 +37,7 @@ public:
   }
 };
 
+/// Replace with llvm::SmallVector<DeclResult, 12>
 class DeclGroupRef {
   // Note this is not a PointerIntPair because we need the address of the
   // non-group case to be valid as a Decl** for iteration.

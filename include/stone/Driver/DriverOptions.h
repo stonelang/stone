@@ -31,7 +31,7 @@ public:
   bool cleanBuild = false;
 
   /// Print the driver intentions
-  bool printIntents = false;
+  bool printRequests = false;
 
   // True if temporary files should not be deleted.
   bool saveTempFiles = false;

@@ -36,7 +36,7 @@ public:
 public:
   bool HasModuleInputs() { return moduleInputs.size(); }
   bool HasLinkerDeps() { return linkerDeps.size(); }
-  bool HasTopLvelJobRequest() { return topLevelJobRequests.size(); }
+  bool HasTopLevelJobRequest() { return topLevelJobRequests.size(); }
 };
 
 class Driver final : public Session {
@@ -141,9 +141,13 @@ public:
   const OutputFileMap &GetOutputFileMap() const { return outputFileMap; }
 
   bool JustCompile() const {
-    return driverOpts.outputOptions.linkMode == LinkMode::None;
+    if ((driverOpts.outputOptions.linkMode == LinkMode::None) &&
+        GetMode().CanCompile()) {
+      return true;
+    }
+    return false;
   }
-  bool CanCompile() { return file::CanCompile(driverOpts.inputFileType); }
+  bool CanCompileFile() { return file::CanCompile(driverOpts.inputFileType); }
 
   Compilation &GetCompilation() { return *compilation.get(); }
   BuildSystem &GetBuildSystem() { return *buildSystem.get(); }

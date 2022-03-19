@@ -82,11 +82,19 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   HotCache hc;
   BuildJobRequests(*compilation, hc, inputs, driverOpts.outputOptions);
 
-  if (driverOpts.printIntents) {
+  // A quick -print-requests check
+  if (driverOpts.printRequests) {
     // PrintJobRequests(hc);
     return nullptr;
   }
-
+  // First, check to see if there are any top-level requests
+  if (hc.HasTopLevelJobRequest()) {
+    // We are building the jobs recursively and we are linking, module-merging
+    // and the like.
+  } else {
+    // This must be a compile only scenario
+    assert(JustCompile());
+  }
   return compilation;
 }
 
@@ -179,7 +187,7 @@ void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
   //   driverOpts.scPath = stPathResult.Get();
   // }
 
-  driverOpts.printIntents = ial.hasArg(opts::PrintDriverIntents);
+  driverOpts.printRequests = ial.hasArg(opts::PrintDriverRequests);
   driverOpts.printJobs = ial.hasArg(opts::PrintDriverJobs);
   driverOpts.printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
   driverOpts.systemOpts.printStatistics = ial.hasArg(opts::PrintStats);

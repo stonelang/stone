@@ -82,6 +82,8 @@ static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
   hc.currentJobRequest =
       comp.GetDriver().MakeJobRequest<CompileJobRequest>(&input);
 
+  hc.moduleInputs.push_back(hc.currentJobRequest);
+
   if (outputOptions.CanLink()) {
     hc.linkerDeps.push_back(hc.currentJobRequest);
   }
@@ -142,7 +144,6 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
     assert(linkRequest);
     hc.topLevelJobRequests.push_back(linkRequest);
   }
-  
 }
 
 void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
