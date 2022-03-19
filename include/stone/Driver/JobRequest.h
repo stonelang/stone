@@ -162,10 +162,13 @@ public:
   }
 };
 
+class Job;
 class JobInvocation final {
 private:
   /// The tool that this command will use
   const Tool &tool;
+  const JobRequest &request;
+
   /// The outputs this command is expected to produce
   std::unique_ptr<CommandOutput> cmdOutput;
 
@@ -181,12 +184,17 @@ public:
 
 public:
   JobInvocation() = delete;
-  JobInvocation(const Tool &tool) : JobInvocation(tool, nullptr) {}
-  JobInvocation(const Tool &tool, std::unique_ptr<CommandOutput> cmdOutput)
-      : tool(tool), cmdOutput(std::move(cmdOutput)) {}
+
+  JobInvocation(const JobRequest &request, const Tool &tool)
+      : JobInvocation(request, tool, nullptr) {}
+
+  JobInvocation(const JobRequest &request, const Tool &tool,
+                std::unique_ptr<CommandOutput> cmdOutput)
+      : request(request), tool(tool), cmdOutput(std::move(cmdOutput)) {}
 
 public:
   const Tool &GetTool() const { return tool; }
+  const JobRequest &GetRequest() const { return request; }
   CommandOutput &GetOutput() const { return *cmdOutput.get(); }
 };
 

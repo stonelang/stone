@@ -2,15 +2,14 @@
 #define STONE_PARSE_PARSER_H
 
 #include "stone/Compile/Lexer.h"
-#include "stone/Compile/SyntaxScopeCache.h"
 #include "stone/Compile/SyntaxListener.h"
+#include "stone/Compile/SyntaxScopeCache.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
-
 
 #include "llvm/Support/Timer.h"
 
@@ -133,16 +132,15 @@ public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
 
-  bool AtStartOflDecl(const Token &tok);
+  bool AtStartOfDecl(const Token &tok);
 
   void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
 
-  bool ParseTopLevelDecl(DeclGroupPtrTy &result, bool isFirstDecl = false);
-
   SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier *pds = nullptr);
   SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier &pds,
-                                AccessLevel al = AccessLevel::None);
+                                 AccessLevel al = AccessLevel::None);
+
 public:
   // Function
   SyntaxResult<Decl *> ParseFunDecl(ParsingDeclSpecifier &pds,
@@ -296,6 +294,13 @@ private:
 private:
   // Helpers
   Token &Peek() { return lexer->Peek(); }
+
+private:
+  //===--------------------------------------------------------------------===//
+  // Helpers
+
+  bool IsRightBrace() { return (tok.GetKind() == tk::Kind::r_brace); }
+  bool IsLeftBrace() { return (tok.GetKind() == tk::Kind::l_brace); }
 };
 
 } // namespace syn

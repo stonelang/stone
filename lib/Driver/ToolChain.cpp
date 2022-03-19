@@ -106,7 +106,7 @@ ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
   auto tool = FindTool(ToolKind::SC);
   assert(tool && "Could not find stone sc tool!");
 
-  JobInvocation ji(*tool);
+  JobInvocation ji(request, *tool);
   return ji;
 }
 

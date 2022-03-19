@@ -5,7 +5,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::AtStartOflDecl(const Token &tok) {
+bool Parser::AtStartOfDecl(const Token &tok) {
   switch (tok.GetKind()) {
   case tk::Kind::kw_interface:
   case tk::Kind::kw_fun:
@@ -42,23 +42,14 @@ void Parser::ParseTopLevelDecls(
     results.push_back(result.Get());
   }
 }
-void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
-
-  assert(AtStartOflDecl(tok) && "Invalid top-declaration");
-}
-
 // Ex: sample.stone
 // fun F0() -> void {}
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
-bool Parser::ParseTopLevelDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
+void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
 
-  assert(AtStartOflDecl(tok) && "Invalid top-declaration");
-
-  // ParseDecl();
-
-  return false;
+  assert(AtStartOfDecl(tok) && "Invalid top-declaration");
 }
 
 static bool HasAccessLevel(const syn::Token &tok) {
@@ -98,7 +89,7 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
   return ParseDecl(localPDS, accessLevel);
 }
 SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
-                                      AccessLevel accessLevel) {
+                                       AccessLevel accessLevel) {
 
   SyntaxResult<Decl *> syntaxResult;
 
@@ -115,7 +106,7 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
     break;
   }
   // return CreateDeclGroup(singleDecl);
-  return DeclResult(); 
+  return DeclResult();
 }
 
 void Parser::ParseFunctionSignature(FunDecl *funDecl) {

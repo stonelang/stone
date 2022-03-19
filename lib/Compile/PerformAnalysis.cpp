@@ -73,6 +73,8 @@ SyntaxFile *Lang::Parse(const unsigned srcID) {
   return sf;
 }
 
+void Lang::ResolveUse() {}
+
 void Lang::TypeCheckSyntaxFile(SyntaxFile &sf) {
   assert(sf.stage == syn::SyntaxFileStage::AtImports);
   types::TypeCheckSyntaxFile(sf, frontend.GetTypeCheckerOptions());

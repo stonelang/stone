@@ -42,7 +42,6 @@ enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
 class Job {
   friend class JobQueue;
 
-  JobRequest &request;
   const JobInvocation &invocation;
   /// The list of other Jobs which are inputs to this Job.
   llvm::SmallVector<const Job *, 4> deps;
@@ -60,8 +59,9 @@ public:
   Job() = delete;
 
 public:
-  Job(JobRequest &request, llvm::SmallVectorImpl<const Job *> &&deps,
-      const JobInvocation &invocation);
+  Job(const JobInvocation &invocation);
+  Job(const JobInvocation &invocation,
+      llvm::SmallVectorImpl<const Job *> &&deps);
 
   virtual ~Job();
 
@@ -78,7 +78,6 @@ public:
 public:
   int GetQueueID() const { return queueID; }
   stone::ColorOutputStream &OS();
-  JobRequest &GetJobRequest() { return request; }
   const JobInvocation &GetJobInvocation() const { return invocation; }
 };
 

@@ -98,6 +98,8 @@ private:
   /// Parse a single file and return a syntax tree
   syn::SyntaxFile *Parse(unsigned srcID);
 
+  void ResolveUse();
+
   /// Print out the syntax tree
   void EmitParse(syn::SyntaxFile *sf);
 

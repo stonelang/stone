@@ -10,9 +10,11 @@ using stone::Intent;
 using stone::Job;
 using stone::JobStats;
 
-Job::Job(JobRequest &request, llvm::SmallVectorImpl<const Job *> &&deps,
-         const JobInvocation &invocation)
-    : request(request), deps(std::move(deps)), invocation(invocation) {}
+Job::Job(const JobInvocation &invocation) : invocation(invocation) {}
+
+Job::Job(const JobInvocation &invocation,
+         llvm::SmallVectorImpl<const Job *> &&deps)
+    : invocation(invocation), deps(std::move(deps)) {}
 
 Job::~Job() {}
 
