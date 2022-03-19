@@ -50,10 +50,10 @@ public:
   bool isUsable() const { return !Invalid && Val; }
   bool isUnset() const { return !Invalid && !Val; }
 
-  PtrTy get() const { return Val; }
-  template <typename T> T *getAs() { return static_cast<T *>(get()); }
+  PtrTy Get() const { return Val; }
+  template <typename T> T *GetAs() { return static_cast<T *>(Get()); }
 
-  void set(PtrTy V) { Val = V; }
+  void Set(PtrTy V) { Val = V; }
 
   const SyntaxResult &operator=(PtrTy RHS) {
     Val = RHS;
@@ -90,14 +90,14 @@ public:
   bool isUsable() const { return PtrWithInvalid > 0x01; }
   bool isUnset() const { return PtrWithInvalid == 0; }
 
-  PtrTy get() const {
+  PtrTy Get() const {
     void *VP = reinterpret_cast<void *>(PtrWithInvalid & ~0x01);
     return PtrTraits::getFromVoidPointer(VP);
   }
 
-  template <typename T> T *getAs() { return static_cast<T *>(get()); }
+  template <typename T> T *GetAs() { return static_cast<T *>(Get()); }
 
-  void set(PtrTy V) {
+  void Set(PtrTy V) {
     void *VP = PtrTraits::getAsVoidPointer(V);
     PtrWithInvalid = reinterpret_cast<uintptr_t>(VP);
     assert((PtrWithInvalid & 0x01) == 0 && "Badly aligned pointer");
@@ -173,12 +173,12 @@ inline StmtResult StmtEmpty() { return StmtResult(false); }
 
 inline Expr *AssertSuccess(ExprResult R) {
   assert(!R.isInvalid() && "operation was asserted to never fail!");
-  return R.get();
+  return R.Get();
 }
 
 inline Stmt *AssertSuccess(StmtResult R) {
   assert(!R.isInvalid() && "operation was asserted to never fail!");
-  return R.get();
+  return R.Get();
 }
 } // namespace syn
 } // namespace stone

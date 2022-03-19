@@ -12,9 +12,10 @@ void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
                           SyntaxListener *listener) {
 
   Parser parser(sf, syntax, listener);
-  syn::DeclGroupPtrTy topLevelDecl;
-
+  
+  SyntaxResult<Decl *> result;
   while (!parser.IsDone()) {
+    parser.ParseTopLevelDecl(result);
     // Check for errors from diag and if there are then exit.
     if (parser.HasError()) {
       if (listener) {
@@ -22,13 +23,8 @@ void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
       }
       break;
     }
-    // Go through all of the top level decls in the file one at a time
-    // As you process a decl, it will be added to the SyntaxFile
-    if (parser.ParseTopLevelDecl(topLevelDecl)) {
-      // Notifify that a top decl has been parsed.
-      if (listener) {
-        listener->OnDecl(topLevelDecl.get().getSingleDecl(), true);
-      }
+    if (listener) {
+      listener->OnDecl(result.Get(), true);
     }
   }
   if (listener) {

@@ -128,8 +128,15 @@ public:
   DeclContext *GetCurDeclContext() { return curDC; }
 
 public:
-  bool IsTopLevelDeclStart(const Token &tok);
+  //===--------------------------------------------------------------------===//
+  // Decl Parsing
+
+  bool AtStartOflDecl(const Token &tok);
   bool ParseTopLevelDecl(DeclGroupPtrTy &result, bool isFirstDecl = false);
+
+  void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
+
+  // SyntaxResult<Decl>
 
   syn::DeclGroupPtrTy ParseDecl(ParsingDeclSpecifier *pds = nullptr);
   syn::DeclGroupPtrTy ParseDecl(ParsingDeclSpecifier &pds,

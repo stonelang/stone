@@ -5,7 +5,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsTopLevelDeclStart(const Token &tok) {
+bool Parser::AtStartOflDecl(const Token &tok) {
   switch (tok.GetKind()) {
   case tk::Kind::kw_interface:
   case tk::Kind::kw_fun:
@@ -23,6 +23,11 @@ bool Parser::IsTopLevelDeclStart(const Token &tok) {
   }
 }
 
+void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
+
+  assert(AtStartOflDecl(tok) && "Invalid top-declaration");
+}
+
 // Ex: sample.stone
 // fun F0() -> void {}
 // fun F1() -> void {}
@@ -30,7 +35,7 @@ bool Parser::IsTopLevelDeclStart(const Token &tok) {
 // This call parses one at a time and adds it to the SyntaxFile
 bool Parser::ParseTopLevelDecl(syn::DeclGroupPtrTy &result, bool isFirstDecl) {
 
-  assert(IsTopLevelDeclStart(tok) && "Invalid top-declaration");
+  assert(AtStartOflDecl(tok) && "Invalid top-declaration");
 
   // ParseDecl();
 
