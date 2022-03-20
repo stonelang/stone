@@ -103,6 +103,12 @@ ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
   };
 }
 
+std::unique_ptr<CompilationJob> ToolChain::ConstructCompileJob() {
+
+  auto tool = FindTool(ToolKind::SC);
+  return nullptr;
+}
+
 // Job *ToolChain::CreateCompileJob(Driver &driver) {
 
 //   auto tool = driver.GetToolChain().FindTool(ToolKind::Stone);

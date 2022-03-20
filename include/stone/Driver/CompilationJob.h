@@ -43,8 +43,8 @@ enum class ThreadingKind : uint8_t { None = 0, Single, Multi };
 using InputList = llvm::ArrayRef<const file::File *>;
 class CompilationJob : public Command {
 
-  friend class Compilation;
-  /// Jobs are made via Compilation::MakeJob(...)
+  friend class ToolChain;
+  /// Jobs are made via ToolChain::MakeJob(...)
   void *operator new(size_t size) { return ::operator new(size); };
 
   CompilationJobID jobID;
@@ -91,6 +91,7 @@ public:
 };
 
 class CompileJob final : public CompilationJob {
+  // ToolChain::ConstructCompileJob(...)
 public:
   CompileJob(const Tool &tool, file::Type outputFileType)
       : CompilationJob(CompilationJobKind::Compile, tool, {}, outputFileType) {}
@@ -111,6 +112,12 @@ class UniversalJob : public CompilationJob {
   llvm::TinyPtrVector<const CompilationJob *> deps;
 
 public:
+  enum class Purpose { Solo, Top };
+
+private:
+  Purpose purpose;
+
+public:
   using size_type = llvm::ArrayRef<const CompilationJob *>::size_type;
   using iterator = llvm::ArrayRef<const CompilationJob *>::iterator;
   using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
@@ -118,11 +125,13 @@ public:
 public:
   UniversalJob(CompilationJobKind kind, const Tool &tool, InputList inputs,
                file::Type outputFileType)
-      : CompilationJob(kind, tool, inputs, outputFileType) {}
+      : CompilationJob(kind, tool, inputs, outputFileType),
+        purpose(Purpose::Solo) {}
 
   UniversalJob(CompilationJobKind kind, const Tool &tool, DepList deps,
                file::Type outputFileType)
-      : CompilationJob(kind, tool, {}, outputFileType), deps(deps) {}
+      : CompilationJob(kind, tool, {}, outputFileType), deps(deps),
+        purpose(Purpose::Top) {}
 
 public:
   void AddDep(const CompilationJob *dep) { deps.push_back(dep); }
@@ -134,6 +143,8 @@ public:
   /// Perform a complete dump of this job.
   void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
             CrashState *crashState = nullptr) override;
+
+  Purpose GetPurpose() { return purpose; }
 
 public:
   size_type size() const { return deps.size(); }

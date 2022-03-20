@@ -11,6 +11,7 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
 #include "stone/Core/Mem.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Request.h"
@@ -160,6 +161,13 @@ public:
   std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
                                     std::unique_ptr<CommandOutput> output,
                                     const OutputOptions &outputOptions);
+
+public:
+  virtual std::unique_ptr<CompilationJob> ConstructCompileJob();
+
+  // virtual std::unique_ptr<Job> ConstructStaticLinkJob() = 0;
+  // virtual std::unique_ptr<Job> ConstructDynamicLinkob() = 0;
+  // virtual std::unique_ptr<Job> ConstructExecutableJob() = 0;
 };
 
 /*
