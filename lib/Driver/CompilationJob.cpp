@@ -60,6 +60,44 @@ void UniversalJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 //   return llvm::dyn_cast<Command>(this);
 // }
 
+static void BuildLinkJob(Compilation &compilation, const file::File &input,
+                         JobCache &jc, const OutputOptions &outputOptions) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  // toolChain.ConstructCompileJob()
+  //       hc.currentRequest =
+  //           compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //               hc.currentRequest,
+  //               compilation.GetDriver().GetOutputFileType());
+  //       hc.AddModuleInput(hc.currentRequest);
+  //       if (outputOptions.CanLink()) {
+  //         hc.AddLinkInput(hc.currentRequest);
+  //       }
+
+  // if (outputOptions.CanLink()) {
+  //        hc.AddLinkInput(hc.currentRequest);
+  //        break;
+  //      }
+}
+
+static void BuildCompileJob(Compilation &compilation, const file::File &input,
+                            JobCache &jc, const OutputOptions &outputOptions) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  // toolChain.ConstructCompileJob()
+  //       hc.currentRequest =
+  //           compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //               hc.currentRequest,
+  //               compilation.GetDriver().GetOutputFileType());
+  //       hc.AddModuleInput(hc.currentRequest);
+  //       if (outputOptions.CanLink()) {
+  //         hc.AddLinkInput(hc.currentRequest);
+  //       }
+}
 static void BuildBatchCompilingModelJobs(Compilation &compilation,
                                          const file::Files &inputs,
                                          JobCache &jc,
@@ -68,7 +106,31 @@ static void BuildBatchCompilingModelJobs(Compilation &compilation,
 static void BuildSingleCompilingModelJobs(Compilation &compilation,
                                           const file::Files &inputs,
                                           JobCache &jc,
-                                          const OutputOptions &outputOptions) {}
+                                          const OutputOptions &outputOptions) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  // // Create a single CompileJobRequest to handl all InputRequest(s)
+  // auto *compileRequest = compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //     compilation.GetDriver().GetOutputFileType());
+  // for (auto &input : inputs) {
+
+  //   if (driver.GetBuildSystem().IsDirty(input)) {
+  //     assert(input.GetType() == driver.GetInputFileType() &&
+  //            "Incompatible input file types");
+
+  //     assert(file::IsPartOfCompilation(input.GetType()));
+
+  //     // compileRequest->AddInput(.MakeRequest<InputRequest>(input));
+
+  //     // hc.AddModuleInput(compileRequest);
+  //     // if (outputOptions.CanLink()) {
+  //     //   hc.AddLinkInput(hc.currentRequest);
+  //     // }
+  //   }
+  // }
+}
 
 static void
 BuildMultipleCompilingModelJobs(Compilation &compilation,
@@ -86,26 +148,17 @@ BuildMultipleCompilingModelJobs(Compilation &compilation,
              "Incompatible input file types");
       assert(file::IsPartOfCompilation(input.GetType()));
 
-      // switch (input.GetType()) {
-      // case file::Type::Stone: {
-      //   hc.currentRequest =
-      //       compilation.GetDriver().MakeRequest<CompileJobRequest>(
-      //           hc.currentRequest,
-      //           compilation.GetDriver().GetOutputFileType());
-      //   hc.AddModuleInput(hc.currentRequest);
-      //   if (outputOptions.CanLink()) {
-      //     hc.AddLinkInput(hc.currentRequest);
-      //   }
-      //   break;
-      // }
-      // case file::Type::Object:
-      //   if (outputOptions.CanLink()) {
-      //     hc.AddLinkInput(hc.currentRequest);
-      //     break;
-      //   }
-      // default:
-      //   stone::Panic("Alien file -- cannot build job request");
-      // }
+      switch (input.GetType()) {
+      case file::Type::Stone: {
+        BuildCompileJob(compilation, input, jc, outputOptions);
+        break;
+      }
+      case file::Type::Object:
+        BuildCompileJob(compilation, input, jc, outputOptions);
+        break;
+      default:
+        stone::Panic("Alien file -- cannot build job.");
+      }
     }
   }
 }
@@ -115,7 +168,7 @@ void Driver::BuildCompilationJobs(Compilation &compilation,
                                   const OutputOptions &outputOptions) {
 
   JobCache jc;
-  STONE_DEFER { jc.Finish(); };
+  STONE_DEFER { jc.Finish(compilation, outputOptions); };
 
   // We assert here because this should have been checked above.
   assert(inputs.empty());
@@ -134,9 +187,25 @@ void Driver::BuildCompilationJobs(Compilation &compilation,
     stone::Panic("Unsupported Compiling mode");
   }
 }
-
 // Now, we process all of the jobs that are top level
-void JobCache::Finish() {
+void JobCache::Finish(Compilation &compilation,
+                      const OutputOptions &outputOpts) {
+  // auto &driver = compilation.GetDriver();
 
-  //
+  // if ((forLink.size() > 0) && outputOptions.CanLink()) {
+
+  //   switch (driver.GetLinkMode()) {
+  //   case LinkMode::EmitExecutable: {
+  //     break;
+  //   }
+  //   case LinkMode::EmitDynamicLibrary: {
+  //     break;
+  //   }
+  //   case LinkMode::EmitStaticLibrary: {
+  //     break;
+  //   }
+  //   default:
+  //     stone::Panic("Invalid linking mode");
+  //   }
+  // }
 }

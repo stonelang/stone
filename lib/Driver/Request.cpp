@@ -67,9 +67,9 @@ static void BuildSingleCompilingModel(Compilation &compilation, HotCache &hc,
       compileRequest->AddInput(
           compilation.GetDriver().MakeRequest<InputRequest>(input));
 
-      hc.AddModuleInput(compileRequest);
+      hc.CacheForModule(compileRequest);
       if (outputOptions.CanLink()) {
-        hc.AddLinkInput(hc.currentRequest);
+        hc.CacheForLink(hc.currentRequest);
       }
     }
   }
@@ -93,15 +93,15 @@ static void BuildMultipleCompilingModel(Compilation &compilation, HotCache &hc,
         hc.currentRequest =
             compilation.GetDriver().MakeRequest<CompileJobRequest>(
                 hc.currentRequest, compilation.GetDriver().GetOutputFileType());
-        hc.AddModuleInput(hc.currentRequest);
+        hc.CacheForModule(hc.currentRequest);
         if (outputOptions.CanLink()) {
-          hc.AddLinkInput(hc.currentRequest);
+          hc.CacheForLink(hc.currentRequest);
         }
         break;
       }
       case file::Type::Object:
         if (outputOptions.CanLink()) {
-          hc.AddLinkInput(hc.currentRequest);
+          hc.CacheForLink(hc.currentRequest);
           break;
         }
       default:
@@ -133,38 +133,38 @@ void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
   }
 
   // Now, do we need any top-level JobRequests
-  if (outputOptions.CanLink() && hc.HasLinkInputs()) {
+  if (outputOptions.CanLink() && hc.ForLink()) {
 
     Request *linkRequest = nullptr;
     switch (GetLinkMode()) {
     case LinkMode::EmitExecutable: {
       linkRequest =
-          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+          MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
       break;
     }
     case LinkMode::EmitDynamicLibrary: {
-      linkRequest = MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(),
+      linkRequest = MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(),
                                                 outputOptions.RequiresLTO());
       break;
     }
     case LinkMode::EmitStaticLibrary: {
       linkRequest =
-          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+          MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
       break;
     }
     default:
       stone::Panic("Invalid linking mode");
     }
     assert(linkRequest);
-    hc.AddTopLevelRequest(linkRequest);
+    hc.CacheForTop(linkRequest);
   }
 }
 
 void Driver::PrintJobRequests(const HotCache &hc) {
 
   // Let just handle top level
-  if (hc.HasTopLevelRequest()) {
-    for (auto &request : hc.topLevelRequests) {
+  if (hc.ForTop()) {
+    for (auto &request : hc.forTop) {
       request->Print(GetContext().Out());
     }
   }

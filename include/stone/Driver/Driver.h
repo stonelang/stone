@@ -16,40 +16,39 @@ namespace stone {
 
 class JobRequest;
 class Compilation;
-class TopLevelJobRequest;
-
-// class RequestState {
-// };
-
 class HotCache final {
+
 public:
+  //===--------------------------------------------------------------------===//
+  // Request
+
   Request *currentRequest;
   /// We keep track of the inputs for the module that we are building.
   /// These are CompileJobRequest
-  llvm::SmallVector<const Request *, 4> mouleInputs;
+  llvm::SmallVector<const Request *, 4> forModule;
 
   /// When are building the  request(s), keep track of the linker dependecies
-  llvm::SmallVector<const Request *, 2> linkInputs;
+  llvm::SmallVector<const Request *, 2> forLink;
 
   /// These are the top-level job requests -- we use them recursively to build
   /// out the "real" jobs.
-  llvm::SmallVector<const Request *, 16> topLevelRequests;
+  llvm::SmallVector<const Request *, 16> forTop;
+
+  bool ForModule() const { return forModule.size(); }
+  void CacheForModule(const Request *request) { forModule.push_back(request); }
+
+  bool ForLink() const { return forLink.size(); }
+  void CacheForLink(const Request *request) { forLink.push_back(request); }
+
+  bool ForTop() const { return forTop.size(); }
+  void CacheForTop(const Request *request) { forTop.push_back(request); }
 
 public:
-  bool HasModuleRequests() const { return mouleInputs.size(); }
-  bool HasLinkInputs() const { return linkInputs.size(); }
-  bool HasTopLevelRequest() const { return topLevelRequests.size(); }
+  //===--------------------------------------------------------------------===//
+  // Jobs
 
 public:
-  void AddModuleInput(const Request *request) {
-    mouleInputs.push_back(request);
-  }
-  void AddLinkInput(const Request *request) { linkInputs.push_back(request); }
-
-  void AddTopLevelRequest(const Request *request) {
-    topLevelRequests.push_back(request);
-  }
-  void SetCurrentRequest(Request *curr) { currentRequest = curr; }
+  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
 };
 
 class Driver final : public Session {

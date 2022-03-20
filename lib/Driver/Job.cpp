@@ -128,7 +128,7 @@ void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
   // }
 
   // First, check to see if there are any top-level requests
-  if (hc.HasTopLevelRequest()) {
+  if (hc.ForTop()) {
     // We are building the jobs recursively and we are linking, module-merging
     // and the like.
 

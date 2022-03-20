@@ -164,7 +164,6 @@ public:
 
 public:
   virtual std::unique_ptr<CompilationJob> ConstructCompileJob();
-
   // virtual std::unique_ptr<Job> ConstructStaticLinkJob() = 0;
   // virtual std::unique_ptr<Job> ConstructDynamicLinkob() = 0;
   // virtual std::unique_ptr<Job> ConstructExecutableJob() = 0;

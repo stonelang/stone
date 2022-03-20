@@ -25,7 +25,7 @@ auto operator+(DeferTask, F &&fn)
 ///   };
 ///
 
-#define STONE_DEFER                                                                  \
+#define STONE_DEFER                                                            \
   auto DEFER_MACRO_CONCAT(defer_func, __COUNTER__) =                           \
       ::stone::detail::DeferTask() + [&]()
 

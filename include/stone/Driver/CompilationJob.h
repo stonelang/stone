@@ -218,6 +218,8 @@ public:
   }
 };
 
+class OutputOptions;
+class Compilation;
 class JobCache final {
 public:
   /// We keep track of the jobs for the module that we are building.
@@ -231,7 +233,7 @@ public:
   llvm::SmallVector<const CompilationJob *, 16> forTop;
 
 public:
-  void Finish();
+  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
 };
 
 } // namespace stone
