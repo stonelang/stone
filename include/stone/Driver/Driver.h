@@ -148,6 +148,9 @@ public:
                  const OutputOptions &outputOptions);
   // void PrintJobs(HotCache &hc);
 
+  void BuildCompilationJobs(Compilation &compilation, const file::Files &inputs,
+                            const OutputOptions &outputOptions);
+
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }
   file::Type GetInputFileType() const { return driverOpts.inputFileType; }

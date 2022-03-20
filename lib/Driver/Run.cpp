@@ -41,6 +41,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
 
   Driver driver(name, path);
   STONE_DEFER { driver.Finish(); };
+
   driver.Initialize();
 
   if (args.empty()) {

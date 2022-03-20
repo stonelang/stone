@@ -30,7 +30,7 @@ public:
 
 TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
 
-  STONE_DEFER { ctx.GetDiagEngine().Finish(); };
+  Defer { ctx.GetDiagEngine().Finish(); };
 
   ctx.GetDiagOptions().useColor = true;
 

@@ -28,8 +28,9 @@ using CompilationJobID = int64_t;
 enum class CompilationJobKind : uint8_t {
   None = 0,
   Compile,
-  DynamicLink,
+  Link,
   StaticLink,
+  DynamicLink,
   ExecLink,
   First = Compile,
   Last = ExecLink,
@@ -215,6 +216,22 @@ public:
   static bool classof(const CompilationJob *job) {
     return job->GetKind() == CompilationJobKind::ExecLink;
   }
+};
+
+class JobCache final {
+public:
+  /// We keep track of the jobs for the module that we are building.
+  /// These are CompileJob
+  llvm::SmallVector<const CompilationJob *, 16> forModule;
+
+  /// When are building the Jobs(s), keep track of the linker dependecies
+  llvm::SmallVector<const CompilationJob *, 16> forLink;
+
+  /// These are the top-level jobs -- we use them recursively to build
+  llvm::SmallVector<const CompilationJob *, 16> forTop;
+
+public:
+  void Finish();
 };
 
 } // namespace stone

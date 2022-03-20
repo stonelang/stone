@@ -1,5 +1,5 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Job.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;

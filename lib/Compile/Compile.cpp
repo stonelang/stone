@@ -39,6 +39,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   Lang lang;
   STONE_DEFER { lang.Finish(); };
+
   lang.Initialize();
 
   if (args.empty()) {
