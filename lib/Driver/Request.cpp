@@ -46,77 +46,16 @@ void JobRequest::Print(ColorOutputStream &stream,
   }
 }
 
-static void BuildSingleCompilingModel(Compilation &comp, HotCache &chi,
-                                      const file::Files &inputs,
-                                      const OutputOptions &outputOptions) {}
+static void BuildSingleCompilingModelKind(Compilation &comp, HotCache &chi,
+                                          const file::Files &inputs,
+                                          const OutputOptions &outputOptions) {}
 
-static void BuildBatchCompilingModel(Compilation &comp, HotCache &chi,
-                                     const file::Files &inputs,
-                                     const OutputOptions &outputOptions) {}
+static void BuildBatchCompilingModelKind(Compilation &comp, HotCache &chi,
+                                         const file::Files &inputs,
+                                         const OutputOptions &outputOptions) {}
 
 static void BuildLinkJobRequest(Compilation &comp, HotCache &hc,
-                                const Request *request,
                                 const OutputOptions &outputOptions) {
-
-  // assert(input.GetType() == file::Type::Object);
-  // hc.currentJobRequest =
-  //     comp.GetDriver().MakeJobRequest<LinkJobRequest>(input);
-}
-
-static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
-                                   const Request *request,
-                                   const OutputOptions &outputOptions) {
-  assert(request);
-  auto *input = llvm::dyn_cast<InputRequest>(request);
-  assert(input);
-  assert(input->GetInput().GetType() == file::Type::Stone);
-
-  /// Since you are here, you could just get the tool -- this will
-  /// be done in the ConstructInvocatin calls.
-
-  // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
-  // assert(tool && "Could not find stone-compile tool!");
-  hc.currentRequest = comp.GetDriver().MakeRequest<CompileJobRequest>(
-      request, comp.GetDriver().GetOutputFileType());
-
-  // TODO: Think about this
-  hc.AddModuleInput(hc.currentRequest);
-
-  if (outputOptions.CanLink()) {
-    hc.AddLinkInput(hc.currentRequest);
-  }
-}
-
-static void BuildJobRequest(Compilation &comp, HotCache &hc,
-                            const file::File &input,
-                            const OutputOptions &outputOptions) {
-
-  hc.currentRequest = comp.GetDriver().MakeRequest<InputRequest>(input);
-  switch (input.GetType()) {
-  case file::Type::Stone:
-    BuildCompileJobRequest(comp, hc, hc.currentRequest, outputOptions);
-    break;
-  case file::Type::Object:
-    BuildLinkJobRequest(comp, hc, hc.currentRequest, outputOptions);
-    break;
-  default:
-    stone::Panic("Alien file -- cannot build job request");
-  }
-}
-static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
-                                        const file::Files &inputs,
-                                        const OutputOptions &outputOptions) {
-  for (auto &input : inputs) {
-    // TODO: Way out there, but there is potential for git here?
-    if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
-
-      assert(input.GetType() == comp.GetDriver().GetInputFileType() &&
-             "Incompatible input file types");
-      assert(file::IsPartOfCompilation(input.GetType()));
-
-      BuildJobRequest(comp, hc, input, outputOptions);
-    }
-  }
 
   // Now, do we need any top-level JobRequests
   if (outputOptions.CanLink() && hc.HasLinkInputs()) {
@@ -147,6 +86,56 @@ static void BuildMultipleCompilingModel(Compilation &comp, HotCache &hc,
   }
 }
 
+static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
+                                   const Request *request,
+                                   const OutputOptions &outputOptions) {
+  /// Since you are here, you could just get the tool -- this will
+  /// be done in the ConstructInvocatin calls.
+
+  // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
+  // assert(tool && "Could not find stone-compile tool!");
+  hc.currentRequest = comp.GetDriver().MakeRequest<CompileJobRequest>(
+      request, comp.GetDriver().GetOutputFileType());
+
+  // TODO: Think about this
+  hc.AddModuleInput(hc.currentRequest);
+
+  if (outputOptions.CanLink()) {
+    hc.AddLinkInput(hc.currentRequest);
+  }
+}
+
+static void
+BuildMultipleCompilingModelKind(Compilation &comp, HotCache &hc,
+                                const file::Files &inputs,
+                                const OutputOptions &outputOptions) {
+  for (auto &input : inputs) {
+    // TODO: Way out there, but there is potential for git here?
+    if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
+
+      assert(input.GetType() == comp.GetDriver().GetInputFileType() &&
+             "Incompatible input file types");
+      assert(file::IsPartOfCompilation(input.GetType()));
+
+      hc.currentRequest = comp.GetDriver().MakeRequest<InputRequest>(input);
+
+      switch (input.GetType()) {
+      case file::Type::Stone:
+        BuildCompileJobRequest(comp, hc, hc.currentRequest, outputOptions);
+        break;
+      case file::Type::Object:
+        if (outputOptions.CanLink()) {
+          hc.AddLinkInput(hc.currentRequest);
+          break;
+        }
+      default:
+        stone::Panic("Alien file -- cannot build job request");
+      }
+    }
+  }
+  BuildLinkJobRequest(comp, hc, outputOptions);
+}
+
 void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
                               const file::Files &inputs,
                               const OutputOptions &outputOptions) {
@@ -154,15 +143,15 @@ void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
   // We assert here because this should have been checked above.
   assert(inputs.empty());
 
-  switch (driverOpts.outputOptions.compilingModel) {
-  case CompilingModel::Multiple:
-    BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);
+  switch (driverOpts.outputOptions.compilingModelKind) {
+  case CompilingModelKind::Multiple:
+    BuildMultipleCompilingModelKind(comp, hc, inputs, outputOptions);
     break;
-  case CompilingModel::Single:
-    BuildSingleCompilingModel(comp, hc, inputs, outputOptions);
+  case CompilingModelKind::Single:
+    BuildSingleCompilingModelKind(comp, hc, inputs, outputOptions);
     break;
-  case CompilingModel::Batch:
-    BuildBatchCompilingModel(comp, hc, inputs, outputOptions);
+  case CompilingModelKind::Batch:
+    BuildBatchCompilingModelKind(comp, hc, inputs, outputOptions);
     break;
   default:
     stone::Panic("Unsupported Compiling mode");

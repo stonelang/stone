@@ -18,6 +18,9 @@ class JobRequest;
 class Compilation;
 class TopLevelJobRequest;
 
+// class RequestState {
+// };
+
 class HotCache final {
 public:
   Request *currentRequest;
@@ -70,6 +73,9 @@ class Driver final : public Session {
   CompilationListener *listener = nullptr;
 
   /// Lifetime management.
+  // llvm::SmallVector<std::function<void(Compilation &compilation,
+  //  HotCache &hc,const Request *input)>,32> listeners;
+
   llvm::SmallVector<std::unique_ptr<const Request>, 32> requests;
 
 public:
@@ -120,11 +126,12 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
-  CompilingModel ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
-                                       bool &isBatchModel) const;
+  CompilingModelKind
+  ComputeCompilingModelKind(const llvm::opt::DerivedArgList &dal,
+                            bool &isBatchModel) const;
 
-  CompilingModel GetCompilingModel() const {
-    return driverOpts.outputOptions.compilingModel;
+  CompilingModelKind GetCompilingModelKind() const {
+    return driverOpts.outputOptions.compilingModelKind;
   }
 
 public:

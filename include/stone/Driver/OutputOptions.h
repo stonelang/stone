@@ -12,8 +12,8 @@ enum class LTOKind {
   ///
   Thin
 };
-// CompilingModel
-enum class CompilingModel : uint8_t {
+// CompilingModelKind
+enum class CompilingModelKind : uint8_t {
   None,
   /// There is no linking in this mode -- we pass all the files to the compile
   /// command This scenario will not have a file with 'fun Main()'
@@ -50,7 +50,7 @@ public:
   std::string libLTOPath;
   bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
 
-  CompilingModel compilingModel = CompilingModel::Multiple;
+  CompilingModelKind compilingModelKind = CompilingModelKind::Multiple;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;

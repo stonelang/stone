@@ -24,7 +24,7 @@ static void TryBuildMergeModuleIntent() {
   // Intent *mergeModuleIntent = nullptr;
   // if (OI.ShouldGenerateModule &&
   //     OI.compileModelKind !=
-  //     DriverOutputContext::CompilingModel::SingleCompile &&
+  //     DriverOutputContext::CompilingModelKind::SingleCompile &&
   //     !AllModuleInputs.empty()) {
   //   // We're performing multiple compilations; set up a merge module step
   //   // so we generate a single swiftmodule as output.
@@ -100,11 +100,12 @@ static void TryBuildMergeModuleIntent() {
 //   }
 // }
 
-// static void BuildIntentForMultipleCompilingModel(Compilation &compilation,
+// static void BuildIntentForMultipleCompilingModelKind(Compilation
+// &compilation,
 //                                                  CompilationHotInfo &chi,
 //                                                  const file::File input) {}
 
-// static void BuildIntentForSingleCompilingModel(Compilation &compilation,
+// static void BuildIntentForSingleCompilingModelKind(Compilation &compilation,
 //                                                CompilationHotInfo &chi,
 //                                                const file::File &input) {}
 
@@ -119,12 +120,12 @@ static void TryBuildMergeModuleIntent() {
 //              "Incompatible input file types");
 //       assert(file::IsPartOfCompilation(input.GetType()));
 
-//       switch (driverOpts.outputOptions.compilingModel) {
-//       case CompilingModel::Multiple:
-//         BuildIntentForMultipleCompilingModel(compilation, chi, input);
+//       switch (driverOpts.outputOptions.compilingModelKind) {
+//       case CompilingModelKind::Multiple:
+//         BuildIntentForMultipleCompilingModelKind(compilation, chi, input);
 //         break;
-//       case CompilingModel::Single:
-//         BuildIntentForSingleCompilingModel(compilation, chi, input);
+//       case CompilingModelKind::Single:
+//         BuildIntentForSingleCompilingModelKind(compilation, chi, input);
 //         break;
 //       default:
 //         stone::Panic("Unsupported Compiling mode");

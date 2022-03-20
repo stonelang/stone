@@ -65,8 +65,8 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 
   // /// Think about
   bool isBatchModel = false;
-  driverOpts.outputOptions.compilingModel =
-      ComputeCompilingModel(*dal, isBatchModel);
+  driverOpts.outputOptions.compilingModelKind =
+      ComputeCompilingModelKind(*dal, isBatchModel);
 
   // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
@@ -125,11 +125,11 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
   return dal;
 }
 
-CompilingModel
-Driver::ComputeCompilingModel(const llvm::opt::DerivedArgList &dal,
-                              bool &isBatchModel) const {
+CompilingModelKind
+Driver::ComputeCompilingModelKind(const llvm::opt::DerivedArgList &dal,
+                                  bool &isBatchModel) const {
   // Just use multiple for now
-  return CompilingModel::Multiple;
+  return CompilingModelKind::Multiple;
 }
 
 std::unique_ptr<ToolChain>
@@ -174,7 +174,7 @@ void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
   driverOpts.outputFileType = file::Type::Object;
 
   // TODO:
-  // driverOpts.compileModel = ComputeCompilingModel(
+  // driverOpts.compileModel = ComputeCompilingModelKind(
   //     *tal, driverOpts.inputFiles);
 
   // auto scPathResult = GetEQValue(opts::LangPathEQ);
