@@ -139,10 +139,6 @@ public:
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
                                                 llvm::opt::InputArgList &ial);
 
-  // void BuildIntents(Compilation &compilation, CompilationHotInfo &chi,
-  //                   const file::Files &inputs);
-  // void PrintIntents(CompilationHotInfo &chi);
-
   void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
                         const OutputOptions &outputOptions);
 

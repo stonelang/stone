@@ -79,6 +79,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     GetContext().Printd(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
+
   HotCache hc;
   BuildJobRequests(*compilation, hc, inputs, driverOpts.outputOptions);
 
@@ -89,7 +90,6 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   BuildJobs(*compilation, hc, driverOpts.outputOptions);
-
   return compilation;
 }
 

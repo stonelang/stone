@@ -30,11 +30,6 @@ enum class RequestKind : uint8_t {
   LastJob = Link,
 };
 
-class RequestScope {
-public:
-  RequestScope *parent = nullptr;
-};
-
 class Request {
 
   RequestKind kind;
@@ -114,6 +109,9 @@ public:
 
 class CompileJobRequest final : public JobRequest {
 public:
+  CompileJobRequest(file::Type outputFileType)
+      : JobRequest(RequestKind::Compile, llvm::None, outputFileType) {}
+
   CompileJobRequest(const Request *input, file::Type outputFileType)
       : JobRequest(RequestKind::Compile, input, outputFileType) {}
 

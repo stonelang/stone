@@ -117,6 +117,20 @@ void JobStats::Print() {}
 void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
                        const OutputOptions &outputOpts) {
 
+  // switch (GetCompilingModelKind()) {
+  // case CompilingModelKind::Multiple:
+  //   BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);
+  //   break;
+  // case CompilingModelKind::Single:
+  //   BuildSingleCompilingModel(comp, hc, inputs, outputOptions);
+  //   break;
+  // case CompilingModelKind::Batch:
+  //   BuildBatchCompilingModel(comp, hc, inputs, outputOptions);
+  //   break;
+  // default:
+  //   stone::Panic("Unsupported Compiling mode");
+  // }
+
   // First, check to see if there are any top-level requests
   if (hc.HasTopLevelRequest()) {
     // We are building the jobs recursively and we are linking, module-merging

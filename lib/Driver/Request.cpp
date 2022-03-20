@@ -46,83 +46,59 @@ void JobRequest::Print(ColorOutputStream &stream,
   }
 }
 
-static void BuildSingleCompilingModelKind(Compilation &comp, HotCache &chi,
-                                          const file::Files &inputs,
-                                          const OutputOptions &outputOptions) {}
+static void BuildBatchCompilingModel(Compilation &compilation, HotCache &chi,
+                                     const file::Files &inputs,
+                                     const OutputOptions &outputOptions) {}
 
-static void BuildBatchCompilingModelKind(Compilation &comp, HotCache &chi,
-                                         const file::Files &inputs,
-                                         const OutputOptions &outputOptions) {}
+static void BuildSingleCompilingModel(Compilation &compilation, HotCache &hc,
+                                      const file::Files &inputs,
+                                      const OutputOptions &outputOptions) {
 
-static void BuildLinkJobRequest(Compilation &comp, HotCache &hc,
-                                const OutputOptions &outputOptions) {
+  // Create a single CompileJobRequest to handl all InputRequest(s)
+  auto *compileRequest = compilation.GetDriver().MakeRequest<CompileJobRequest>(
+      compilation.GetDriver().GetOutputFileType());
+  for (auto &input : inputs) {
 
-  // Now, do we need any top-level JobRequests
-  if (outputOptions.CanLink() && hc.HasLinkInputs()) {
+    if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
+      assert(input.GetType() == compilation.GetDriver().GetInputFileType() &&
+             "Incompatible input file types");
 
-    Request *linkRequest = nullptr;
-    switch (comp.GetDriver().GetLinkMode()) {
-    case LinkMode::EmitExecutable: {
-      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
-          hc.linkInputs, comp.GetDriver().GetLinkMode(), false);
-      break;
+      assert(file::IsPartOfCompilation(input.GetType()));
+      compileRequest->AddInput(
+          compilation.GetDriver().MakeRequest<InputRequest>(input));
+
+      hc.AddModuleInput(compileRequest);
+      if (outputOptions.CanLink()) {
+        hc.AddLinkInput(hc.currentRequest);
+      }
     }
-    case LinkMode::EmitDynamicLibrary: {
-      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
-          hc.linkInputs, comp.GetDriver().GetLinkMode(),
-          outputOptions.RequiresLTO());
-      break;
-    }
-    case LinkMode::EmitStaticLibrary: {
-      linkRequest = comp.GetDriver().MakeRequest<LinkJobRequest>(
-          hc.linkInputs, comp.GetDriver().GetLinkMode(), false);
-      break;
-    }
-    default:
-      stone::Panic("Invalid linking mode");
-    }
-    assert(linkRequest);
-    hc.AddTopLevelRequest(linkRequest);
   }
 }
 
-static void BuildCompileJobRequest(Compilation &comp, HotCache &hc,
-                                   const Request *request,
-                                   const OutputOptions &outputOptions) {
-  /// Since you are here, you could just get the tool -- this will
-  /// be done in the ConstructInvocatin calls.
-
-  // auto tool = comp.GetToolChain().FindTool(ToolKind::SC);
-  // assert(tool && "Could not find stone-compile tool!");
-  hc.currentRequest = comp.GetDriver().MakeRequest<CompileJobRequest>(
-      request, comp.GetDriver().GetOutputFileType());
-
-  // TODO: Think about this
-  hc.AddModuleInput(hc.currentRequest);
-
-  if (outputOptions.CanLink()) {
-    hc.AddLinkInput(hc.currentRequest);
-  }
-}
-
-static void
-BuildMultipleCompilingModelKind(Compilation &comp, HotCache &hc,
-                                const file::Files &inputs,
-                                const OutputOptions &outputOptions) {
+static void BuildMultipleCompilingModel(Compilation &compilation, HotCache &hc,
+                                        const file::Files &inputs,
+                                        const OutputOptions &outputOptions) {
   for (auto &input : inputs) {
     // TODO: Way out there, but there is potential for git here?
-    if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
+    if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
 
-      assert(input.GetType() == comp.GetDriver().GetInputFileType() &&
+      assert(input.GetType() == compilation.GetDriver().GetInputFileType() &&
              "Incompatible input file types");
       assert(file::IsPartOfCompilation(input.GetType()));
 
-      hc.currentRequest = comp.GetDriver().MakeRequest<InputRequest>(input);
-
+      hc.currentRequest =
+          compilation.GetDriver().MakeRequest<InputRequest>(input);
       switch (input.GetType()) {
-      case file::Type::Stone:
-        BuildCompileJobRequest(comp, hc, hc.currentRequest, outputOptions);
+      case file::Type::Stone: {
+        hc.currentRequest =
+            compilation.GetDriver().MakeRequest<CompileJobRequest>(
+                hc.currentRequest, compilation.GetDriver().GetOutputFileType());
+        hc.AddModuleInput(hc.currentRequest);
+        if (outputOptions.CanLink()) {
+          hc.AddLinkInput(hc.currentRequest);
+        }
         break;
+      }
       case file::Type::Object:
         if (outputOptions.CanLink()) {
           hc.AddLinkInput(hc.currentRequest);
@@ -133,28 +109,54 @@ BuildMultipleCompilingModelKind(Compilation &comp, HotCache &hc,
       }
     }
   }
-  BuildLinkJobRequest(comp, hc, outputOptions);
 }
 
-void Driver::BuildJobRequests(Compilation &comp, HotCache &hc,
+void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
                               const file::Files &inputs,
                               const OutputOptions &outputOptions) {
 
   // We assert here because this should have been checked above.
   assert(inputs.empty());
 
-  switch (driverOpts.outputOptions.compilingModelKind) {
+  switch (GetCompilingModelKind()) {
   case CompilingModelKind::Multiple:
-    BuildMultipleCompilingModelKind(comp, hc, inputs, outputOptions);
+    BuildMultipleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
   case CompilingModelKind::Single:
-    BuildSingleCompilingModelKind(comp, hc, inputs, outputOptions);
+    BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
   case CompilingModelKind::Batch:
-    BuildBatchCompilingModelKind(comp, hc, inputs, outputOptions);
+    BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
     break;
   default:
     stone::Panic("Unsupported Compiling mode");
+  }
+
+  // Now, do we need any top-level JobRequests
+  if (outputOptions.CanLink() && hc.HasLinkInputs()) {
+
+    Request *linkRequest = nullptr;
+    switch (GetLinkMode()) {
+    case LinkMode::EmitExecutable: {
+      linkRequest =
+          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+      break;
+    }
+    case LinkMode::EmitDynamicLibrary: {
+      linkRequest = MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(),
+                                                outputOptions.RequiresLTO());
+      break;
+    }
+    case LinkMode::EmitStaticLibrary: {
+      linkRequest =
+          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+      break;
+    }
+    default:
+      stone::Panic("Invalid linking mode");
+    }
+    assert(linkRequest);
+    hc.AddTopLevelRequest(linkRequest);
   }
 }
 

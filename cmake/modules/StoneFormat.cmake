@@ -14,6 +14,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/lib/Gen/*.cpp
 	${STONE_SOURCE_DIR}/lib/Session/*.cpp		
 	${STONE_SOURCE_DIR}/lib/Syntax/*.cpp
+	${STONE_SOURCE_DIR}/tmp.cpp
 	
 )
 set(stone_tools_files
