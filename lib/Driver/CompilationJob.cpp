@@ -39,11 +39,11 @@ void CompilationJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 // }
 
 /// Print a nice summary of this job
-void TopLevelJob::Print(ColorOutputStream &stream, CrashState *crashState) {}
+void UniversalJob::Print(ColorOutputStream &stream, CrashState *crashState) {}
 
 /// Perform a complete dump of this job.
-void TopLevelJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
-                       CrashState *crashState) {
+void UniversalJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+                        CrashState *crashState) {
 
   for (auto dep : *this) {
   }

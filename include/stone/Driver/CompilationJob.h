@@ -44,6 +44,8 @@ using InputList = llvm::ArrayRef<const file::File *>;
 class CompilationJob : public Command {
 
   friend class Compilation;
+  /// Jobs are made via Compilation::MakeJob(...)
+  void *operator new(size_t size) { return ::operator new(size); };
 
   CompilationJobID jobID;
   CompilationJobKind kind;
@@ -90,6 +92,9 @@ public:
 
 class CompileJob final : public CompilationJob {
 public:
+  CompileJob(const Tool &tool, file::Type outputFileType)
+      : CompilationJob(CompilationJobKind::Compile, tool, {}, outputFileType) {}
+
   CompileJob(const Tool &tool, InputList inputs, file::Type outputFileType)
       : CompilationJob(CompilationJobKind::Compile, tool, inputs,
                        outputFileType) {}
@@ -101,9 +106,8 @@ public:
 };
 
 using DepList = llvm::ArrayRef<const CompilationJob *>;
-// These jobs have no parents.
-class TopLevelJob : public CompilationJob {
-
+// Can accept inputs and deps.
+class UniversalJob : public CompilationJob {
   llvm::TinyPtrVector<const CompilationJob *> deps;
 
 public:
@@ -112,12 +116,12 @@ public:
   using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
 
 public:
-  TopLevelJob(CompilationJobKind kind, const Tool &tool, InputList inputs,
-              file::Type outputFileType)
+  UniversalJob(CompilationJobKind kind, const Tool &tool, InputList inputs,
+               file::Type outputFileType)
       : CompilationJob(kind, tool, inputs, outputFileType) {}
 
-  TopLevelJob(CompilationJobKind kind, const Tool &tool, DepList deps,
-              file::Type outputFileType)
+  UniversalJob(CompilationJobKind kind, const Tool &tool, DepList deps,
+               file::Type outputFileType)
       : CompilationJob(kind, tool, {}, outputFileType), deps(deps) {}
 
 public:
@@ -146,20 +150,20 @@ public:
   }
 };
 
-class DynamicLinkJob final : public TopLevelJob {
+class DynamicLinkJob final : public UniversalJob {
   bool requiresLTO;
 
 public:
   DynamicLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType,
                  bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs,
-                    outputFileType),
+      : UniversalJob(CompilationJobKind::DynamicLink, tool, inputs,
+                     outputFileType),
         requiresLTO(requiresLTO) {}
 
   DynamicLinkJob(const Tool &tool, DepList deps, file::Type outputFileType,
                  bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps,
-                    outputFileType),
+      : UniversalJob(CompilationJobKind::DynamicLink, tool, deps,
+                     outputFileType),
         requiresLTO(requiresLTO) {}
 
 public:
@@ -168,16 +172,16 @@ public:
   }
 };
 
-class StaticLinkJob final : public TopLevelJob {
+class StaticLinkJob final : public UniversalJob {
 
 public:
   StaticLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
-      : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs,
-                    outputFileType) {}
+      : UniversalJob(CompilationJobKind::StaticLink, tool, inputs,
+                     outputFileType) {}
 
   StaticLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
-      : TopLevelJob(CompilationJobKind::StaticLink, tool, deps,
-                    outputFileType) {}
+      : UniversalJob(CompilationJobKind::StaticLink, tool, deps,
+                     outputFileType) {}
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -185,15 +189,16 @@ public:
   }
 };
 
-class ExecLinkJob final : public TopLevelJob {
+class ExecLinkJob final : public UniversalJob {
 
 public:
   ExecLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
-      : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs,
-                    outputFileType) {}
+      : UniversalJob(CompilationJobKind::ExecLink, tool, inputs,
+                     outputFileType) {}
 
   ExecLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
-      : TopLevelJob(CompilationJobKind::ExecLink, tool, deps, outputFileType) {}
+      : UniversalJob(CompilationJobKind::ExecLink, tool, deps, outputFileType) {
+  }
 
 public:
   static bool classof(const CompilationJob *job) {
