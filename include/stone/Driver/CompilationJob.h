@@ -7,11 +7,11 @@
 #include "stone/Driver/Command.h"
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/JobKind.h"
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/TinyPtrVector.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/StringSaver.h"
@@ -40,7 +40,7 @@ enum class CompilationJobStage : uint8_t { None = 0, Running, Finished, Error };
 /// See OutputOptions
 enum class ThreadingKind : uint8_t { None = 0, Single, Multi };
 
-using CompilationJobInputs = llvm::ArrayRef<const file::File *>;
+using InputList = llvm::ArrayRef<const file::File *>;
 class CompilationJob : public Command {
 
   friend class Compilation;
@@ -56,8 +56,7 @@ public:
   CompilationJobStage stage = CompilationJobStage::None;
 
 public:
-  CompilationJob(CompilationJobKind kind, const Tool &tool,
-                 CompilationJobInputs inputs)
+  CompilationJob(CompilationJobKind kind, const Tool &tool, InputList inputs)
       : Command(tool), kind(kind), inputs(inputs) {}
 
   /// Print a nice summary of this job
@@ -87,7 +86,7 @@ public:
 
 class CompileJob final : public CompilationJob {
 public:
-  CompileJob(const Tool &tool, CompilationJobInputs inputs)
+  CompileJob(const Tool &tool, InputList inputs)
       : CompilationJob(CompilationJobKind::Compile, tool, inputs) {}
 
 public:
@@ -96,12 +95,11 @@ public:
   }
 };
 
-using CompilationJobDeps = llvm::ArrayRef<const CompilationJob *>;
+using DepList = llvm::ArrayRef<const CompilationJob *>;
 // These jobs have no parents.
 class TopLevelJob : public CompilationJob {
 
   llvm::TinyPtrVector<const CompilationJob *> deps;
-
 public:
   using size_type = llvm::ArrayRef<const CompilationJob *>::size_type;
   using iterator = llvm::ArrayRef<const CompilationJob *>::iterator;
@@ -109,11 +107,11 @@ public:
 
 public:
   TopLevelJob(CompilationJobKind kind, const Tool &tool,
-              CompilationJobInputs inputs)
+              InputList inputs)
       : CompilationJob(kind, tool, inputs) {}
 
   TopLevelJob(CompilationJobKind kind, const Tool &tool,
-              CompilationJobDeps deps)
+              DepList deps)
       : CompilationJob(kind, tool, {}), deps(deps) {}
 
 public:
@@ -146,12 +144,12 @@ class DynamicLinkJob final : public TopLevelJob {
   bool requiresLTO;
 
 public:
-  DynamicLinkJob(const Tool &tool, CompilationJobInputs inputs,
+  DynamicLinkJob(const Tool &tool, InputList inputs,
                  bool requiresLTO = false)
       : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs),
         requiresLTO(requiresLTO) {}
 
-  DynamicLinkJob(const Tool &tool, CompilationJobDeps deps,
+  DynamicLinkJob(const Tool &tool, DepList deps,
                  bool requiresLTO = false)
       : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps),
         requiresLTO(requiresLTO) {}
@@ -165,10 +163,10 @@ public:
 class StaticLinkJob final : public TopLevelJob {
 
 public:
-  StaticLinkJob(const Tool &tool, CompilationJobInputs inputs)
+  StaticLinkJob(const Tool &tool, InputList inputs)
       : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs) {}
 
-  StaticLinkJob(const Tool &tool, CompilationJobDeps deps)
+  StaticLinkJob(const Tool &tool, DepList deps)
       : TopLevelJob(CompilationJobKind::StaticLink, tool, deps) {}
 
 public:
@@ -180,10 +178,10 @@ public:
 class ExecLinkJob final : public TopLevelJob {
 
 public:
-  ExecLinkJob(const Tool &tool, CompilationJobInputs inputs)
+  ExecLinkJob(const Tool &tool, InputList inputs)
       : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs) {}
 
-  ExecLinkJob(const Tool &tool, CompilationJobDeps deps)
+  ExecLinkJob(const Tool &tool, DepList deps)
       : TopLevelJob(CompilationJobKind::ExecLink, tool, deps) {}
 
 public:

@@ -5,7 +5,6 @@
 #include "stone/Core/List.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/JobQueue.h"
 #include "stone/Driver/ToolChain.h"
 

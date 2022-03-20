@@ -1,12 +1,8 @@
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
-#include "stone/Driver/Intent.h"
 
-using stone::Compilation;
-using stone::CompilationIntent;
 using stone::Driver;
-using stone::Intent;
 using stone::Job;
 using stone::JobStats;
 

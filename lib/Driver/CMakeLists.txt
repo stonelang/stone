@@ -8,7 +8,6 @@
 	Darwin.cpp
 	DebugCompilationListener.cpp
 	Driver.cpp
-	Intent.cpp
 	Job.cpp
 	JobQueue.cpp
 	Request.cpp
