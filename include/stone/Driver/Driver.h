@@ -14,14 +14,12 @@
 
 namespace stone {
 
+class Job;
 class JobRequest;
 class Compilation;
-class HotCache final {
 
+class ReqCache final {
 public:
-  //===--------------------------------------------------------------------===//
-  // Request
-
   Request *currentRequest;
   /// We keep track of the inputs for the module that we are building.
   /// These are CompileJobRequest
@@ -34,21 +32,33 @@ public:
   /// out the "real" jobs.
   llvm::SmallVector<const Request *, 16> forTop;
 
-  bool ForModule() const { return forModule.size(); }
+  bool ForModule() { return forModule.size(); }
   void CacheForModule(const Request *request) { forModule.push_back(request); }
 
-  bool ForLink() const { return forLink.size(); }
+  bool ForLink() { return forLink.size(); }
   void CacheForLink(const Request *request) { forLink.push_back(request); }
 
-  bool ForTop() const { return forTop.size(); }
+  bool ForTop() { return forTop.size(); }
   void CacheForTop(const Request *request) { forTop.push_back(request); }
 
 public:
-  //===--------------------------------------------------------------------===//
-  // Jobs
+  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
+};
+
+class JobCache final {
+  // llvm::SmallVector<const Job *, 16> forTop;
 
 public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);
+};
+
+class HotCache final {
+  ReqCache reqCache;
+  JobCache jobCache;
+
+public:
+  ReqCache &GetReqCache() { return reqCache; }
+  JobCache &GetJobCache() { return jobCache; }
 };
 
 class Driver final : public Session {
@@ -141,14 +151,14 @@ public:
   void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
                         const OutputOptions &outputOptions);
 
-  void PrintJobRequests(const HotCache &hc);
+  void PrintJobRequests(HotCache &hc) ;
 
-  void BuildJobs(Compilation &c, const HotCache &hc,
-                 const OutputOptions &outputOptions);
+  void BuildJobs(Compilation &c, HotCache &hc, const OutputOptions &outputOptions);
   // void PrintJobs(HotCache &hc);
 
-  void BuildCompilationJobs(Compilation &compilation, const file::Files &inputs,
-                            const OutputOptions &outputOptions);
+  // void BuildCompilationJobs(Compilation &compilation, const file::Files
+  // &inputs,
+  //                           const OutputOptions &outputOptions);
 
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }

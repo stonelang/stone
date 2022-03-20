@@ -198,35 +198,35 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //     llvm::SmallVectorImpl<std::pair<int, const Job *>> &fallBackJob) const
 //     {}
 
-void HotCache::Finish(Compilation &compilation,
-                      const OutputOptions &outputOpts) {
+// void HotCache::Finish(Compilation &compilation,
+//                       const OutputOptions &outputOpts) {
 
-  //  // Now, do we need any top-level JobRequests
-  // if (outputOptions.CanLink() && hc.ForLink()) {
+//  // Now, do we need any top-level JobRequests
+// if (outputOptions.CanLink() && hc.ForLink()) {
 
-  //   Request *linkRequest = nullptr;
-  //   switch (GetLinkMode()) {
-  //   case LinkMode::EmitExecutable: {
-  //     linkRequest =
-  //         MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
-  //     break;
-  //   }
-  //   case LinkMode::EmitDynamicLibrary: {
-  //     linkRequest = MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(),
-  //                                               outputOptions.RequiresLTO());
-  //     break;
-  //   }
-  //   case LinkMode::EmitStaticLibrary: {
-  //     linkRequest =
-  //         MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
-  //     break;
-  //   }
-  //   default:
-  //     stone::Panic("Invalid linking mode");
-  //   }
-  //   assert(linkRequest);
-  //   hc.AddTopLevelRequest(linkRequest);
-  // }
-}
+//   Request *linkRequest = nullptr;
+//   switch (GetLinkMode()) {
+//   case LinkMode::EmitExecutable: {
+//     linkRequest =
+//         MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
+//     break;
+//   }
+//   case LinkMode::EmitDynamicLibrary: {
+//     linkRequest = MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(),
+//                                               outputOptions.RequiresLTO());
+//     break;
+//   }
+//   case LinkMode::EmitStaticLibrary: {
+//     linkRequest =
+//         MakeRequest<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
+//     break;
+//   }
+//   default:
+//     stone::Panic("Invalid linking mode");
+//   }
+//   assert(linkRequest);
+//   hc.AddTopLevelRequest(linkRequest);
+// }
+//}
 void Driver::PrintVersion() {}
 void Driver::Finish() {}

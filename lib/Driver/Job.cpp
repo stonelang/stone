@@ -110,8 +110,7 @@ void JobStats::Print() {}
 //   }
 // }
 
-void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
-                       const OutputOptions &outputOpts) {
+void Driver::BuildJobs(Compilation &compilation, HotCache &hc, const OutputOptions &outputOpts) {
 
   // switch (GetCompilingModelKind()) {
   // case CompilingModelKind::Multiple:
@@ -128,7 +127,7 @@ void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
   // }
 
   // First, check to see if there are any top-level requests
-  if (hc.ForTop()) {
+  if (hc.GetReqCache().ForTop()) {
     // We are building the jobs recursively and we are linking, module-merging
     // and the like.
 
