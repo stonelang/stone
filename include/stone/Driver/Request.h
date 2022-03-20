@@ -11,11 +11,11 @@
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/TinyPtrVector.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/StringSaver.h"
 #include "llvm/Support/Timer.h"
-#include "llvm/ADT/TinyPtrVector.h"
 
 namespace stone {
 

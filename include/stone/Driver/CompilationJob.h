@@ -47,6 +47,8 @@ class CompilationJob : public Command {
 
   CompilationJobID jobID;
   CompilationJobKind kind;
+
+  file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<const file::File *> inputs;
 
 protected:
@@ -56,8 +58,10 @@ public:
   CompilationJobStage stage = CompilationJobStage::None;
 
 public:
-  CompilationJob(CompilationJobKind kind, const Tool &tool, InputList inputs)
-      : Command(tool), kind(kind), inputs(inputs) {}
+  CompilationJob(CompilationJobKind kind, const Tool &tool, InputList inputs,
+                 file::Type outputFileType)
+      : Command(tool), kind(kind), inputs(inputs),
+        outputFileType(outputFileType) {}
 
   /// Print a nice summary of this job
   virtual void Print(ColorOutputStream &stream,
@@ -86,8 +90,9 @@ public:
 
 class CompileJob final : public CompilationJob {
 public:
-  CompileJob(const Tool &tool, InputList inputs)
-      : CompilationJob(CompilationJobKind::Compile, tool, inputs) {}
+  CompileJob(const Tool &tool, InputList inputs, file::Type outputFileType)
+      : CompilationJob(CompilationJobKind::Compile, tool, inputs,
+                       outputFileType) {}
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -100,19 +105,20 @@ using DepList = llvm::ArrayRef<const CompilationJob *>;
 class TopLevelJob : public CompilationJob {
 
   llvm::TinyPtrVector<const CompilationJob *> deps;
+
 public:
   using size_type = llvm::ArrayRef<const CompilationJob *>::size_type;
   using iterator = llvm::ArrayRef<const CompilationJob *>::iterator;
   using const_iterator = llvm::ArrayRef<const CompilationJob *>::const_iterator;
 
 public:
-  TopLevelJob(CompilationJobKind kind, const Tool &tool,
-              InputList inputs)
-      : CompilationJob(kind, tool, inputs) {}
+  TopLevelJob(CompilationJobKind kind, const Tool &tool, InputList inputs,
+              file::Type outputFileType)
+      : CompilationJob(kind, tool, inputs, outputFileType) {}
 
-  TopLevelJob(CompilationJobKind kind, const Tool &tool,
-              DepList deps)
-      : CompilationJob(kind, tool, {}), deps(deps) {}
+  TopLevelJob(CompilationJobKind kind, const Tool &tool, DepList deps,
+              file::Type outputFileType)
+      : CompilationJob(kind, tool, {}, outputFileType), deps(deps) {}
 
 public:
   void AddDep(const CompilationJob *dep) { deps.push_back(dep); }
@@ -144,14 +150,16 @@ class DynamicLinkJob final : public TopLevelJob {
   bool requiresLTO;
 
 public:
-  DynamicLinkJob(const Tool &tool, InputList inputs,
+  DynamicLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType,
                  bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs),
+      : TopLevelJob(CompilationJobKind::DynamicLink, tool, inputs,
+                    outputFileType),
         requiresLTO(requiresLTO) {}
 
-  DynamicLinkJob(const Tool &tool, DepList deps,
+  DynamicLinkJob(const Tool &tool, DepList deps, file::Type outputFileType,
                  bool requiresLTO = false)
-      : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps),
+      : TopLevelJob(CompilationJobKind::DynamicLink, tool, deps,
+                    outputFileType),
         requiresLTO(requiresLTO) {}
 
 public:
@@ -163,11 +171,13 @@ public:
 class StaticLinkJob final : public TopLevelJob {
 
 public:
-  StaticLinkJob(const Tool &tool, InputList inputs)
-      : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs) {}
+  StaticLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
+      : TopLevelJob(CompilationJobKind::StaticLink, tool, inputs,
+                    outputFileType) {}
 
-  StaticLinkJob(const Tool &tool, DepList deps)
-      : TopLevelJob(CompilationJobKind::StaticLink, tool, deps) {}
+  StaticLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
+      : TopLevelJob(CompilationJobKind::StaticLink, tool, deps,
+                    outputFileType) {}
 
 public:
   static bool classof(const CompilationJob *job) {
@@ -178,11 +188,12 @@ public:
 class ExecLinkJob final : public TopLevelJob {
 
 public:
-  ExecLinkJob(const Tool &tool, InputList inputs)
-      : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs) {}
+  ExecLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
+      : TopLevelJob(CompilationJobKind::ExecLink, tool, inputs,
+                    outputFileType) {}
 
-  ExecLinkJob(const Tool &tool, DepList deps)
-      : TopLevelJob(CompilationJobKind::ExecLink, tool, deps) {}
+  ExecLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
+      : TopLevelJob(CompilationJobKind::ExecLink, tool, deps, outputFileType) {}
 
 public:
   static bool classof(const CompilationJob *job) {
