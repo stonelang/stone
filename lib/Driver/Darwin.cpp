@@ -5,7 +5,8 @@
 
 using namespace stone;
 
-DarwinToolChain::DarwinToolChain(Driver &driver, const llvm::Triple &triple,
+DarwinToolChain::DarwinToolChain(
+    Driver &driver, const llvm::Triple &triple,
     const llvm::Optional<llvm::Triple> &targetVariant)
     : ToolChain(ToolChainKind::Darwin, driver, triple),
       targetVariant(targetVariant) {
@@ -91,13 +92,15 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructCompileJob(const file::File &input) {
-  return ToolChain::ConstructCompileJob(input);
+DarwinToolChain::ConstructCompileJob(const file::File &input,
+                                     const OutputOptions &outputOpts) {
+  return ToolChain::ConstructCompileJob(input, outputOpts);
 }
 
 std::unique_ptr<Job>
 DarwinToolChain::ConstructStaticLinkJob(InputList inputs,
-                                        file::Type outputFileType) {
+                                        file::Type outputFileType,
+                                        const OutputOptions &outputOpts) {
 
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
@@ -109,36 +112,41 @@ DarwinToolChain::ConstructStaticLinkJob(InputList inputs,
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructStaticLinkJob(DepList deps,
-                                        file::Type outputFileType) {
+DarwinToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
+                                        const OutputOptions &outputOpts) {
 
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
   }
   assert(tool && "Could not find a linker tool");
-  //return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, deps, outputFileType);
-  return nullptr;
+  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, deps,
+                                         outputFileType);
 }
 
 std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
-    InputList inputs, file::Type outputFileType, bool withLTO) {
+    InputList inputs, file::Type outputFileType,
+    const OutputOptions &outputOpts, bool withLTO) {
+  
   return nullptr;
 }
 std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
-    DepList deps, file::Type outputFileType, bool withLTO) {
+    DepList deps, file::Type outputFileType, const OutputOptions &outputOpts,
+    bool withLTO) {
 
   return nullptr;
 }
 
 std::unique_ptr<Job>
 DarwinToolChain::ConstructExecLinkJob(InputList inputs,
-                                      file::Type outputFileType) {
+                                      file::Type outputFileType,
+                                      const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType) {
+DarwinToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
+                                      const OutputOptions &outputOpts) {
   return nullptr;
 }
 

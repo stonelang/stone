@@ -134,6 +134,7 @@ public:
   }
 
   bool IsSolo() { return (solo && (deps.size() == 0)); }
+
 public:
   size_type size() const { return deps.size(); }
   iterator begin() { return deps.begin(); }
@@ -202,131 +203,6 @@ public:
 };
 
 class BatchJob : public Job {};
-
-// class Job : public Command {
-//   friend JobStats;
-//   friend class JobQueue;
-
-// protected:
-//   JobID jobID;
-
-//   bool isAsync;
-//   JobKind jobKind;
-//   Context &ctx;
-//   file::Files inputs;
-//   stone::ConstList<Job> deps;
-//   std::unique_ptr<JobStats> stats;
-//   int queueID = -1;
-
-//   Intent &intent;
-
-// public:
-//   JobStage stage = JobStage::None;
-
-// public:
-//   Job(Intent &intent, Context &ctx, Tool &tool);
-//   virtual ~Job();
-
-// public:
-//   JobKind GetKind() const { return jobKind; }
-//   const ConstList<Job> &GetDeps() const { return deps; }
-
-//   Intent &GetIntent() const { return intent; }
-
-//   void AddInput(const file::File input);
-//   void AddDep(const Job *job);
-
-//   Context &GetContext() { return ctx; }
-//   bool IsAsync() { return isAsync; }
-
-//   void Print(const char *terminator, bool quote, CrashState *crashState)
-//   const; const char *GetName() const { return Job::GetNameByKind(jobKind); }
-
-//   void SetJobID(JobID jid) { jobID = jid; }
-//   JobID GetJobID() { return jobID; }
-
-//   int GetQueueID() const { return queueID; }
-//   virtual void PrintIntent() = 0;
-//   virtual int ExecuteAsync();
-//   virtual int ExecuteSync();
-
-// protected:
-//   stone::ColorOutputStream &OS();
-
-// public:
-//   static const char *GetNameByKind(JobKind jobKind);
-// };
-
-// class CompileJob final : public Job {
-// public:
-//   CompileJob(Intent &intent, Context &ctx, Tool &tool);
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-//   void PrintIntent() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::Compile;
-//   }
-// };
-
-// class LinkJob : public Job {
-//   LinkMode linkMode;
-//   bool requiresLTO;
-
-// public:
-//   // Some jobs only consume inputs -- For example, LinkJob
-//   LinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO,
-//           LinkMode linkMode);
-
-//   void PrintIntent() override;
-
-// public:
-//   LinkMode GetLinkMode() { return linkMode; }
-//   bool RequiresLTO() { return requiresLTO; }
-// };
-
-// class DynamicLinkJob final : public LinkJob {
-//   // Only Dynamic requirest LTO
-// public:
-//   DynamicLinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO);
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::DynamicLink;
-//   }
-// };
-
-// class StaticLinkJob final : public LinkJob {
-// public:
-//   StaticLinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO);
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::StaticLink;
-//   }
-// };
-
-// class ExecutableLinkJob final : public LinkJob {
-// public:
-//   ExecutableLinkJob(Intent &intent, Context &ctx, Tool &tool, bool
-//   requiresLTO);
-//
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::ExecutableLink;
-//   }
-// };
 
 class Compilation;
 class JobCache final {

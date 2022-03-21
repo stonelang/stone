@@ -50,25 +50,31 @@ public:
   bool Initialize() override;
 
 public:
-
-  std::unique_ptr<Job> ConstructCompileJob(const file::File &input);
+  std::unique_ptr<Job> ConstructCompileJob(const file::File &input,
+                                           const OutputOptions &outputOpts);
   std::unique_ptr<Job> ConstructStaticLinkJob(InputList inputs,
-                                              file::Type outputFileType);
+                                              file::Type outputFileType,
+                                              const OutputOptions &outputOpts);
 
   std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
-                                              file::Type outputFileType);
+                                              file::Type outputFileType,
+                                              const OutputOptions &outputOpts);
 
   std::unique_ptr<Job> ConstructDynamicLinkJob(InputList inputs,
                                                file::Type outputFileType,
+                                               const OutputOptions &outputOpts,
                                                bool withLTO) override;
   std::unique_ptr<Job> ConstructDynamicLinkJob(DepList deps,
                                                file::Type outputFileType,
+                                               const OutputOptions &outputOpts,
                                                bool withLTO) override;
 
-  std::unique_ptr<Job> ConstructExecLinkJob(InputList inputs,
-                                            file::Type outputFileType) override;
-  std::unique_ptr<Job> ConstructExecLinkJob(DepList deps,
-                                            file::Type outputFileType) override;
+  std::unique_ptr<Job>
+  ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
+                       constOutputOptions &outputOpts, ) override;
+  std::unique_ptr<Job>
+  ConstructExecLinkJob(DepList deps, file::Type outputFileType,
+                       const OutputOptions &outputOpts) override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;

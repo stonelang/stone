@@ -147,39 +147,30 @@ public:
   virtual bool Initialize();
   Tool *FindTool(ToolKind tk) const;
 
-protected:
-  // /// Construct a JobInvocation for a compile job request
-  // virtual JobInvocation
-  // ConstructInvocation(const CompileJobRequest &request) const;
-  // /// Construct a JobInvocation for a compile job request
-  // virtual JobInvocation
-  // ConstructInvocation(const LinkJobRequest &request) const;
-
 public:
-  // std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation
-  // &c,
-  //                                   std::unique_ptr<CommandOutput> output,
-  //                                   const OutputOptions &outputOptions);
-
-public:
-  virtual std::unique_ptr<Job> ConstructCompileJob(const file::File &input);
+  virtual std::unique_ptr<Job>
+  ConstructCompileJob(const file::File &input, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(InputList inputs, file::Type outputFileType);
+  ConstructStaticLinkJob(InputList inputs, file::Type outputFileType,
+                         const OutputOptions &outputOpts);
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(DepList deps, file::Type outputFileType);
+  ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
+                         const OutputOptions &outputOpts);
 
-  virtual std::unique_ptr<Job> ConstructExecLinkJob(InputList inputs,
-                                                    file::Type outputFileType);
-  virtual std::unique_ptr<Job> ConstructExecLinkJob(DepList deps,
-                                                    file::Type outputFileType);
+  virtual std::unique_ptr<Job>
+  ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
+                       const OutputOptions &outputOpts);
+  virtual std::unique_ptr<Job>
+  ConstructExecLinkJob(DepList deps, file::Type outputFileType,
+                       const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
   ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
-                          bool withLTO);
+                          const OutputOptions &outputOpts, bool withLTO);
   virtual std::unique_ptr<Job>
   ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
-                          bool withLTO);
+                          const OutputOptions &outputOpts, bool withLTO);
 };
 
 /*
