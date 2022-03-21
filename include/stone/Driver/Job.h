@@ -94,6 +94,72 @@ public:
   }
 };
 
+class CompileJob final : public Job {
+public:
+  CompileJob(const Tool &tool, file::Type outputFileType)
+      : Job(JobKind::Compile, tool, {}, outputFileType) {}
+
+  CompileJob(const Tool &tool, const file::File *input,
+             file::Type outputFileType)
+      : Job(JobKind::Compile, tool, input, outputFileType) {}
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::Compile;
+  }
+};
+
+using DepList = llvm::ArrayRef<const Job *>;
+// Can have deps
+class FlexJob : public Job {
+
+  bool solo = false;
+  llvm::TinyPtrVector<const Job *> deps;
+
+public:
+  using size_type = llvm::ArrayRef<const Job *>::size_type;
+  using iterator = llvm::ArrayRef<const Job *>::iterator;
+  using const_iterator = llvm::ArrayRef<const Job *>::const_iterator;
+
+public:
+  FlexJob(JobKind kind, const Tool &tool, InputList inputs,
+          file::Type outputFileType)
+      : Job(kind, tool, inputs, outputFileType), solo(true), deps({}) {}
+
+  FlexJob(JobKind kind, const Tool &tool, DepList deps,
+          file::Type outputFileType)
+      : Job(kind, tool, {}, outputFileType), deps(deps), solo(false) {}
+
+public:
+  void AddDep(const Job *dep) {
+    assert(solo);
+    deps.push_back(dep);
+  }
+
+  bool IsSolo() { return (solo && (deps.size() == 0)); }
+  /// Print a nice summary of this job
+  void Print(ColorOutputStream &stream,
+             CrashState *crashState = nullptr) override;
+
+  /// Perform a complete dump of this job.
+  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
+            CrashState *crashState = nullptr) override;
+
+public:
+  size_type size() const { return deps.size(); }
+  iterator begin() { return deps.begin(); }
+  iterator end() { return deps.end(); }
+  const_iterator begin() const { return deps.begin(); }
+  const_iterator end() const { return deps.end(); }
+
+public:
+  // Required for llvm::dyn_cast
+  static bool classof(const Job *job) {
+    return (job->GetKind() >= JobKind::First &&
+            job->GetKind() <= JobKind::Last);
+  }
+};
+
 class BatchJob : public Job {};
 
 // class Job : public Command {
