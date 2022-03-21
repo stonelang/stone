@@ -18,6 +18,7 @@
 #include "llvm/Support/Timer.h"
 
 namespace stone {
+
 class Tool;
 class Job;
 class JobQueue;
@@ -49,7 +50,7 @@ class Job : public Command {
   llvm::TinyPtrVector<const file::File *> inputs;
 
   const char *GetNameByKind(JobKind kind) const;
-  
+
 protected:
   Context &ctx;
   // Updated by the JobQueue if or when the job is queued.

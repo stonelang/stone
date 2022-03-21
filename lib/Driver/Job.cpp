@@ -64,21 +64,6 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
   //
 }
 
-// Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
-// threadingMode)
-//     : Command(tool), intent(intent), ctx(ctx), jobKind(jobKind),
-//     jobID(0),
-//       isAsync(true) {
-
-//   stats = std::make_unique<JobStats>(*this, ctx);
-//   ctx.GetStatEngine().Register(stats.get());
-// }
-
-// void Job::AddDep(const Job *job) { deps.Add(job); }
-// void Job::AddInput(const file::File input) { inputs.push_back(input); }
-
-// Job::~Job() {}
-
 // stone::ColorOutputStream &Job::OS() { return ctx.Out(); }
 
 // int Job::ExecuteAsync() {
@@ -116,14 +101,6 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 // {}
 
 void JobStats::Print() {}
-
-// Job::Job() : Job(ThreadingMode::Async) {}
-
-// Job::Job(ThreadingMode threadingMode) : threadingMode(threadingMode) {}
-
-// Job::~Job() {}
-
-// void Job::Run() {}
 
 // static void BuildJobsForTopLevelIntent(Compilation &C,
 //                                        const CompilationIntent *ci) {

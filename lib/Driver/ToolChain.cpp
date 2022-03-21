@@ -71,6 +71,11 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
+std::unique_ptr<Job> ConstructCompileJob(const Tool &tool,
+                                         const file::File* input) {
+  return nullptr;
+}
+
 // JobInvocation
 // ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 
