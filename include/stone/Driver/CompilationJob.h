@@ -224,31 +224,6 @@ namespace stone {
 //   }
 // };
 
-// class JobCache final {
-// public:
-//   /// We keep track of the jobs for the module that we are building.
-//   /// These are CompileJob
-//   llvm::SmallVector<const Job *, 16> forModule;
-
-//   /// When are building the Jobs(s), keep track of the linker dependecies
-//   llvm::SmallVector<const Job *, 16> forLink;
-
-//   /// These are the top-level jobs -- we use them recursively to build
-//   llvm::SmallVector<const Job *, 16> forTop;
-
-// public:
-//   bool ForModule() { return forModule.size(); }
-//   void CacheForModule(const Job *input) { forModule.push_back(input); }
-
-//   bool ForLink() { return forLink.size(); }
-//   void CacheForLink(const Job *input) { forLink.push_back(input); }
-
-//   bool ForTop() { return forTop.size(); }
-//   void CacheForTop(const Job *input) { forTop.push_back(input); }
-
-// public:
-//   void Finish(Compilation &compilation, const OutputOptions &outputOpts);
-// };
 
 } // namespace stone
 #endif

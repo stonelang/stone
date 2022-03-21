@@ -45,12 +45,6 @@ public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);
 };
 
-class JobCache final {
-  // llvm::SmallVector<const Job *, 16> forTop;
-
-public:
-  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
-};
 
 class HotCache final {
   ReqCache reqCache;
