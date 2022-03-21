@@ -151,14 +151,15 @@ public:
   void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
                         const OutputOptions &outputOptions);
 
-  void PrintJobRequests(HotCache &hc) ;
+  void PrintJobRequests(HotCache &hc);
 
-  void BuildJobs(Compilation &c, HotCache &hc, const OutputOptions &outputOptions);
+  void BuildJobs(Compilation &c, HotCache &hc,
+                 const OutputOptions &outputOptions);
   // void PrintJobs(HotCache &hc);
 
-  // void BuildCompilationJobs(Compilation &compilation, const file::Files
-  // &inputs,
-  //                           const OutputOptions &outputOptions);
+  void BuildCompilationUnits(Compilation &compilation,
+                             const file::Files &inputs,
+                             const OutputOptions &outputOptions);
 
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }

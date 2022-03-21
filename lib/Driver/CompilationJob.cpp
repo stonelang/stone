@@ -6,33 +6,35 @@
 using namespace stone;
 
 /// -print-jobs
-void CompilationJob::Print(ColorOutputStream &stream, CrashState *crashState) {
+// void CompilationJob::Print(ColorOutputStream &stream, CrashState *crashState)
+// {
 
-  // stream() << std::to_string(GetQueueID()) << ":";
-  // stream().UseGreen();
-  // stream() << GetName();
-  // stream().Reset();
-  // stream() << "(";
-  // int inputSize = inputs.size();
-  // for (auto &input : inputs) {
-  //   --inputSize;
-  //   stream() << input.GetName();
-  //   if (inputSize != 0) {
-  //     stream() << ",";
-  //   }
-  // }
-  // stream() << ")"
-  //          << " -> "
-  //          << "object" << '\n';
-  // stream() << '\n';
-}
+// stream() << std::to_string(GetQueueID()) << ":";
+// stream().UseGreen();
+// stream() << GetName();
+// stream().Reset();
+// stream() << "(";
+// int inputSize = inputs.size();
+// for (auto &input : inputs) {
+//   --inputSize;
+//   stream() << input.GetName();
+//   if (inputSize != 0) {
+//     stream() << ",";
+//   }
+// }
+// stream() << ")"
+//          << " -> "
+//          << "object" << '\n';
+// stream() << '\n';
+//}
 
 /// -print-jobs -v
-void CompilationJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
-                          CrashState *crashState) {
+// void CompilationJob::Dump(ColorOutputStream &stream, llvm::StringRef
+// terminator,
+//                           CrashState *crashState) {
 
-  //
-}
+//   //
+// }
 // void CompileJob::Run() { cmd::ExecuteAsync(*ToCommand()); }
 
 // const Command *CompileJob::ToCommand() const {
@@ -41,16 +43,18 @@ void CompilationJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 //   return llvm::dyn_cast<Command>(this);
 // }
 
-/// -print-jobs
-void UniversalJob::Print(ColorOutputStream &stream, CrashState *crashState) {}
+// /// -print-jobs
+// void UniversalJob::Print(ColorOutputStream &stream, CrashState *crashState)
+// {}
 
-/// -print-jobs -v
-void UniversalJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
-                        CrashState *crashState) {
+// /// -print-jobs -v
+// void UniversalJob::Dump(ColorOutputStream &stream, llvm::StringRef
+// terminator,
+//                         CrashState *crashState) {
 
-  for (auto dep : *this) {
-  }
-}
+//   for (auto dep : *this) {
+//   }
+// }
 
 // void DynamicLinkJob::Run() { cmd::ExecuteAsync(*ToCommand()); }
 

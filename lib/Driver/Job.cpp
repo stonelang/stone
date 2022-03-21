@@ -110,7 +110,8 @@ void JobStats::Print() {}
 //   }
 // }
 
-void Driver::BuildJobs(Compilation &compilation, HotCache &hc, const OutputOptions &outputOpts) {
+void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
+                       const OutputOptions &outputOpts) {
 
   // switch (GetCompilingModelKind()) {
   // case CompilingModelKind::Multiple:
