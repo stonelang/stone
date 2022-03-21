@@ -38,7 +38,7 @@ enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
 namespace job {
 using Input = llvm::PointerUnion<file::File *, Job *>;
-using InputList = llvm::ArrayRef<Input *>;
+using InputList = llvm::ArrayRef<job::Input *>;
 } // namespace job
 
 class Job : public Command {
@@ -80,6 +80,11 @@ public:
   job::InputList GetInputs() { return inputs; }
   JobKind GetKind() const { return kind; }
   void AddInput(job::Input *input) { inputs.push_back(input); }
+
+  static file::File *GetInputAsFile(job::Input *input) {
+    return input->dyn_cast<file::File *>();
+  }
+  static Job *GetInputAsJob(job::Input *input) { return input->dyn_cast<Job *>(); }
 
 public:
   /// Print a nice summary of this job

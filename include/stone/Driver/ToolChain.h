@@ -158,7 +158,8 @@ public:
   ConstructExecLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
+  ConstructDynamicLinkJob(job::InputList inputs,
+                          const OutputOptions &outputOpts);
 };
 
 /*
