@@ -155,10 +155,8 @@ public:
 
   void BuildJobs(Compilation &c, HotCache &hc,
                  const OutputOptions &outputOptions);
-  // void PrintJobs(HotCache &hc);
 
-  void BuildActivities(Compilation &compilation, const file::Files &inputs,
-                             const OutputOptions &outputOptions);
+  // void PrintJobs(HotCache &hc);
 
 public:
   BaseOptions &GetBaseOptions() override { return driverOpts; }

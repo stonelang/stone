@@ -163,7 +163,7 @@ using namespace stone;
 //         break;
 //       }
 //       case file::Type::Object:
-//         BuildCompileJob(compilation, input, jc, outputOptions);
+//         BuildLinkJob(compilation, input, jc, outputOptions);
 //         break;
 //       default:
 //         stone::Panic("Alien file -- cannot build job.");

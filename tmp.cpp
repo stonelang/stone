@@ -1,101 +1,76 @@
 
-
-class Compilation {};
-
-class FileTypeCompilation {
-  Compilation &compilation;
+enum class JobKind {
+  None,
+  Compile,
+  Link,
+};
+class Job {
+  JobKind kind;
+  llvm::TinyPtrVector<const file::File *> inputs;
 
 public:
-  FileTypeCompilation(Compilation &compilation) : compilation(compilation) {}
-
-public:
-  Request *MakeInputRequest() = 0;
-  Request *MakeCompileRequest() = 0;
-  Request *MakeLinkRequest() = 0;
-
-  virtual void BuildMultiCompilingModel() {}
-  virtual void BuildCompileRequest();
-  virtual void BuildLinkRequest();
+  Job(JobKind kind) : kind(kind) {}
 };
 
-class StoneFileTypeCompilation : public FileTypeCompilation {
-
+class CompileJob : public Job {
 public:
-  StoneFileTypeCompilation(Compilation &compilation)
-      : FileTypeCompilation(compilation) {}
-
-  void BuildMultiCompilingModel() override {
-    for (auto &input : inputs) {
-      // TODO: Way out there, but there is potential for git here?
-      if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
-
-        assert(input.GetType() == GetInputFileType() &&
-               "Incompatible input file types");
-        assert(file::IsPartOfCompilation(input.GetType()));
-
-        hc.currentRequest = MakeInputRequest(input);
-        hc.currentRequest = MakeCompileRequest(request, GetOutputFileType());
-        hc.AddModuleInput(hc.currentRequest);
-      }
-    }
-  }
-  void BuildMultiCompilingModel(Request *request) override {
-
-    // Create a single CompileJobRequest to handl all InputRequest(s)
-    auto *compileRequest = MakeRequest<CompileJobRequest>(GetOutputFileType());
-    for (auto &input : inputs) {
-
-      if (GetBuildSystem().IsDirty(input)) {
-        assert(input.GetType() == GetInputFileType() &&
-               "Incompatible input file types");
-
-        assert(file::IsPartOfCompilation(input.GetType()));
-
-        compileRequest->AddInput(MakeRequest<InputRequest>(input));
-
-        compilingModel.BuildRequest()
-
-            if (CompilingModelKind::Single) {
-          hc.AddModuleInput(compileRequest);
-          if (outputOptions.CanLink()) {
-            hc.AddLinkInput(hc.currentRequest);
-          }
-        }
-      }
-    }
-  }
-  void BuildCompilationModel() {}
+  CompileJob(const file::File *input) : Job(JobKind::Compile) {}
 };
 
-// CompilingModel ComputeCompilingModel(Compilation & compilation){
+/// DepList
+class MultiPuJob : public Job {
+  llvm::TinyPtrVector<const Job *> deps;
 
-// }
-// CompilingModel.BuildCompilation();
+public:
+  FlexJob(JobKind kind, InputList inputs) : SoloJob(kind) {}
+  FlexJob(JobKind kind, DepList inputs) : SoloJob(kind) {}
 
-void StoneFileTypeCompilation::BuildCompilation() {
-  auto compilingMode = GetCompilingModel(GetCompilingModelKind());
+public:
+  void AddDep(const Job *job) {}
+};
 
-  for (auto &input : inputs) {
+class LinkJob : public FlexJob {
 
-    if (GetBuildSystem().IsDirty(input)) {
-      assert(input.GetType() == GetInputFileType() &&
-             "Incompatible input file types");
+public:
+  LinkJob() : FlexJob(JobKind::Link) {}
+};
 
-      assert(file::IsPartOfCompilation(input.GetType()));
+//-----------
 
-      compilingModel.BuildRequest(file);
-    }
-  }
+enum class JobKind {
+  None,
+  Compile,
+  Link,
+};
+class Job {
+  JobKind kind;
+  llvm::TinyPtrVector<const file::File *> inputs;
 
-  int main() {
+public:
+  Job(JobKind kind) : kind(kind) {}
+};
 
-    Compilation compilation;
-    StoneFileTypeCompilation stoneFileTypeCompilation(compilation);
-    stoneFileTypeCompilation.BuildMultiCompilingModel();
+class CompileJob : public Job {
+public:
+  CompileJob(const file::File *input) : Job(JobKind::Compile) {}
+};
 
-    Compilation compilation;
-    StoneFileTypeCompilation stoneFileTypeCompilation(compilation);
-    stoneFileTypeCompilation.BuildCompilation();
+/// DepList
+class FlexJob : public Job {
+  llvm::TinyPtrVector<const Job *> deps;
 
-    return 0;
-  }
+public:
+  FlexJob(JobKind kind, InputList inputs) : SoloJob(kind) {}
+  FlexJob(JobKind kind, DepList inputs) : SoloJob(kind) {}
+
+public:
+  void AddDep(const Job *job) {}
+};
+
+class LinkJob : public FlexJob {
+
+public:
+  LinkJob() : FlexJob(JobKind::Link) {}
+};
+
+int main() { return 0; }
