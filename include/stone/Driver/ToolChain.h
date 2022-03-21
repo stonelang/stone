@@ -157,7 +157,8 @@ protected:
   // ConstructInvocation(const LinkJobRequest &request) const;
 
 public:
-  // std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
+  // std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation
+  // &c,
   //                                   std::unique_ptr<CommandOutput> output,
   //                                   const OutputOptions &outputOptions);
 

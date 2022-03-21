@@ -224,6 +224,5 @@ namespace stone {
 //   }
 // };
 
-
 } // namespace stone
 #endif

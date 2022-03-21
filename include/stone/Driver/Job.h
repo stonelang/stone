@@ -20,7 +20,8 @@
 namespace stone {
 class Tool;
 class Job;
-class Tool;
+class JobQueue;
+class Compilation;
 
 // The process ID
 using JobID = int64_t;
@@ -35,69 +36,36 @@ public:
   void Print() override;
 };
 
-class Job;
-class JobInvocation final {
-private:
-  /// The tool that this command will use
-  const Tool &tool;
-  const JobRequest &request;
-
-  /// The outputs this command is expected to produce
-  std::unique_ptr<CommandOutput> cmdOutput;
-
-public:
-  llvm::SmallVector<llvm::StringRef, 16> args;
-  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
-  llvm::ArrayRef<llvm::Optional<llvm::StringRef>> redirects;
-
-  unsigned waitSecs = 0;
-  unsigned memLimit = 0;
-  std::string *errMsg;
-  bool *failed;
-
-public:
-  JobInvocation() = delete;
-
-  JobInvocation(const JobRequest &request, const Tool &tool)
-      : JobInvocation(request, tool, nullptr) {}
-
-  JobInvocation(const JobRequest &request, const Tool &tool,
-                std::unique_ptr<CommandOutput> cmdOutput)
-      : request(request), tool(tool), cmdOutput(std::move(cmdOutput)) {}
-
-public:
-  const Tool &GetTool() const { return tool; }
-  const JobRequest &GetRequest() const { return request; }
-  CommandOutput &GetOutput() const { return *cmdOutput.get(); }
-};
-
 // TODO: JobStatus
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
-enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
+enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
-class Job {
-  friend class JobQueue;
+using InputList = llvm::ArrayRef<const file::File *>;
+class Job : public Command {
 
-  const JobInvocation &invocation;
-  /// The list of other Jobs which are inputs to this Job.
-  llvm::SmallVector<const Job *, 4> deps;
+  friend JobQueue;
+  friend Compilation;
+
+  JobKind kind;
+  file::Type outputFileType = file::Type::None;
+  llvm::TinyPtrVector<const file::File *> inputs;
 
 protected:
   // Updated by the JobQueue if or when the job is queued.
-  int queueID = -1;
+  JobID jobID = -1;
+  void SetID(JobID jid) { jobID = jid; }
 
 public:
   JobStage stage = JobStage::None;
-  /// public for now
-  ThreadingMode threadingMode = ThreadingMode::None;
+  ThreadMode threaMode = ThreadMode::None;
 
 public:
   Job() = delete;
 
-public:
-  Job(const JobInvocation &invocation);
-  Job(const JobInvocation &invocation,
-      llvm::SmallVectorImpl<const Job *> &&deps);
+  Job(JobKind kind, const Tool &tool, InputList inputs,
+      file::Type outputFileType)
+      : Command(tool), kind(kind), inputs(inputs),
+        outputFileType(outputFileType) {}
 
   virtual ~Job();
 
@@ -112,9 +80,8 @@ public:
                     CrashState *crashState = nullptr);
 
 public:
-  int GetQueueID() const { return queueID; }
-  stone::ColorOutputStream &OS();
-  const JobInvocation &GetJobInvocation() const { return invocation; }
+  JobID GetID() { return jobID; }
+  ColorOutputStream &OS();
 };
 
 class BatchJob : public Job {};
@@ -244,7 +211,7 @@ class BatchJob : public Job {};
 //   }
 // };
 
-class Compilation; 
+class Compilation;
 class JobCache final {
 public:
   /// We keep track of the jobs for the module that we are building.
@@ -270,8 +237,6 @@ public:
 public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);
 };
-
-
 
 class ImageBaseName final {
   // llvm::Triple &triple;

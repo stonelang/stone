@@ -92,7 +92,8 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
 }
 
 // JobInvocation
-// DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
+// DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const
+// {
 //   return ToolChain::ConstructInvocation(request);
 // }
 

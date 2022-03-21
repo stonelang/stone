@@ -45,7 +45,6 @@ public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);
 };
 
-
 class HotCache final {
   ReqCache reqCache;
   JobCache jobCache;

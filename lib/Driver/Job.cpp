@@ -6,12 +6,6 @@ using stone::Driver;
 using stone::Job;
 using stone::JobStats;
 
-Job::Job(const JobInvocation &invocation) : invocation(invocation) {}
-
-Job::Job(const JobInvocation &invocation,
-         llvm::SmallVectorImpl<const Job *> &&deps)
-    : invocation(invocation), deps(std::move(deps)) {}
-
 Job::~Job() {}
 
 // Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
