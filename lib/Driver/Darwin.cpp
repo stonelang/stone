@@ -101,38 +101,17 @@ Darwin::ConstructStaticLinkJob(job::InputList inputs,
   return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
 }
 
-// std::unique_ptr<Job>
-// Darwin::ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts)
-// {
-//   auto tool = FindTool(ToolKind::LD);
-//   if (!tool) {
-//     tool = FindTool(ToolKind::LLD);
-//   }
-//   assert(tool && "Could not find a linker tool");
-//   return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, deps);
-// }
+std::unique_ptr<Job>
+Darwin::ConstructDynamicLinkJob(job::InputList inputs,
+                                const OutputOptions &outputOpts) {
+  return nullptr;
+}
 
-// std::unique_ptr<Job>
-// Darwin::ConstructDynamicLinkJob(InputList inputs,
-//                                 const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
-// std::unique_ptr<Job>
-// Darwin::ConstructDynamicLinkJob(DepList deps, const OutputOptions
-// &outputOpts) {
-//   return nullptr;
-// }
-
-// std::unique_ptr<Job>
-// Darwin::ConstructExecLinkJob(InputList inputs,
-//                              const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
-
-// std::unique_ptr<Job>
-// Darwin::ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
+std::unique_ptr<Job>
+Darwin::ConstructExecLinkJob(job::InputList inputs,
+                             const OutputOptions &outputOpts) {
+  return nullptr;
+}
 
 // JobInvocation
 // Darwin::ConstructInvocation(const CompileJobRequest &request) const

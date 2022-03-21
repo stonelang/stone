@@ -48,7 +48,6 @@ class Job : public Command {
   JobKind kind;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
-
   llvm::TinyPtrVector<job::Input *> inputs;
 
   const char *GetNameByKind(JobKind kind) const;
@@ -122,52 +121,13 @@ public:
   }
 };
 
-class FlexJob : public Job {
-
-public:
-  // using size_type = llvm::ArrayRef<const Job *>::size_type;
-  // using iterator = llvm::ArrayRef<const Job *>::iterator;
-  // using const_iterator = llvm::ArrayRef<const Job *>::const_iterator;
-
-public:
-  FlexJob(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
-          file::Type outFileType)
-      : Job(kind, ctx, tool, inputs, outFileType) {}
-
-  // FlexJob(JobKind kind, Context &ctx, const Tool &tool, DepList deps,
-  //         file::Type outFileType)
-  //     : Job(kind, ctx, tool, {}, outFileType), deps(deps), solo(false) {}
-
-public:
-  // void AddDep(const Job *dep) {
-  //   assert(solo);
-  //   deps.push_back(dep);
-  // }
-
-  // bool IsSolo() { return (solo && (deps.size() == 0)); }
-
-public:
-  // size_type size() const { return deps.size(); }
-  // iterator begin() { return deps.begin(); }
-  // iterator end() { return deps.end(); }
-  // const_iterator begin() const { return deps.begin(); }
-  // const_iterator end() const { return deps.end(); }
-
-public:
-  // Required for llvm::dyn_cast
-  static bool classof(const Job *job) {
-    return (job->GetKind() >= JobKind::First &&
-            job->GetKind() <= JobKind::Last);
-  }
-};
-
-class DynamicLinkJob final : public FlexJob {
+class DynamicLinkJob final : public Job {
   bool withLTO;
 
 public:
   DynamicLinkJob(Context &ctx, const Tool &tool, job::InputList inputs,
                  bool withLTO = false)
-      : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
+      : Job(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
         withLTO(withLTO) {}
 
   bool WithLTO() { return withLTO; }
@@ -177,10 +137,10 @@ public:
     return job->GetKind() == JobKind::DynamicLink;
   }
 };
-class StaticLinkJob final : public FlexJob {
+class StaticLinkJob final : public Job {
 public:
   StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
-      : FlexJob(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
+      : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {
@@ -188,11 +148,10 @@ public:
   }
 };
 
-class ExecutableLinkJob final : public FlexJob {
+class ExecutableLinkJob final : public Job {
 public:
   ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
-      : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {
-  }
+      : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {

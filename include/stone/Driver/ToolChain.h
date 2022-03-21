@@ -154,18 +154,11 @@ public:
   ConstructStaticLinkJob(job::InputList inputs,
                          const OutputOptions &outputOpts);
 
-  // virtual std::unique_ptr<Job>
-  // ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts);
+  virtual std::unique_ptr<Job>
+  ConstructExecLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
 
-  // virtual std::unique_ptr<Job>
-  // ConstructExecLinkJob(InputList inputs, const OutputOptions &outputOpts);
-  // virtual std::unique_ptr<Job>
-  // ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts);
-
-  // virtual std::unique_ptr<Job>
-  // ConstructDynamicLinkJob(InputList inputs, const OutputOptions &outputOpts);
-  // virtual std::unique_ptr<Job>
-  // ConstructDynamicLinkJob(DepList deps, const OutputOptions &outputOpts);
+  virtual std::unique_ptr<Job>
+  ConstructDynamicLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
 };
 
 /*

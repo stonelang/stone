@@ -82,34 +82,17 @@ ToolChain::ConstructStaticLinkJob(job::InputList inputs,
   return nullptr;
 }
 
-// std::unique_ptr<Job>
-// ToolChain::ConstructStaticLinkJob(DepList deps,
-//                                   const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
+std::unique_ptr<Job>
+ToolChain::ConstructDynamicLinkJob(job::InputList inputs,
+                                   const OutputOptions &outputOpts) {
+  return nullptr;
+}
 
-// std::unique_ptr<Job>
-// ToolChain::ConstructDynamicLinkJob(InputList inputs,
-//                                    const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
-// std::unique_ptr<Job>
-// ToolChain::ConstructDynamicLinkJob(DepList deps,
-//                                    const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
-
-// std::unique_ptr<Job>
-// ToolChain::ConstructExecLinkJob(InputList inputs,
-//                                 const OutputOptions &outputOpts) {
-//   return nullptr;
-// }
-
-// std::unique_ptr<Job>
-// ToolChain::ConstructExecLinkJob(DepList deps, const OutputOptions
-// &outputOpts) {
-//   return nullptr;
-// }
+std::unique_ptr<Job>
+ToolChain::ConstructExecLinkJob(job::InputList inputs,
+                                const OutputOptions &outputOpts) {
+  return nullptr;
+}
 
 // std::unique_ptr<Job>
 // ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
