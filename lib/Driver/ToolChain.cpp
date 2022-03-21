@@ -71,8 +71,44 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Job> ConstructCompileJob(const Tool &tool,
-                                         const file::File* input) {
+std::unique_ptr<Job> ToolChain::ConstructCompileJob(const Tool &tool,
+                                                    const file::File &input) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructStaticLinkJob(const Tool &tool, InputList inputs,
+                                  file::Type outputFileType) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructStaticLinkJob(const Tool &tool, DepList deps,
+                                  file::Type outputFileType) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructDynamicLinkJob(const Tool &tool, InputList inputs,
+                                   file::Type outputFileType, bool withLTO) {
+  return nullptr;
+}
+std::unique_ptr<Job>
+ToolChain::ConstructDynamicLinkJob(const Tool &tool, DepList deps,
+                                   file::Type outputFileType, bool withLTO) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructExecLinkJob(const Tool &tool, InputList inputs,
+                                file::Type outputFileType) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructExecLinkJob(const Tool &tool, DepList deps,
+                                file::Type outputFileType) {
+
   return nullptr;
 }
 

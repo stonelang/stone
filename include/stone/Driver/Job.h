@@ -18,7 +18,6 @@
 #include "llvm/Support/Timer.h"
 
 namespace stone {
-
 class Tool;
 class Job;
 class JobQueue;
@@ -63,10 +62,8 @@ public:
 
 public:
   Job() = delete;
-
   Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
       file::Type outputFileType);
-
   virtual ~Job();
 
 public:

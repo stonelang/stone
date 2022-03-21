@@ -91,6 +91,50 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
   return nullptr;
 }
 
+std::unique_ptr<Job>
+DarwinToolChain::ConstructCompileJob(const Tool &tool,
+                                     const file::File &input) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+DarwinToolChain::ConstructStaticLinkJob(const Tool &tool, InputList inputs,
+                                        file::Type outputFileType) {
+
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+DarwinToolChain::ConstructStaticLinkJob(const Tool &tool, DepList deps,
+                                        file::Type outputFileType) {
+
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+DarwinToolChain::ConstructDynamicLinkJob(const Tool &tool, InputList inputs,
+                                         file::Type outputFileType,
+                                         bool withLTO) {
+  return nullptr;
+}
+std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
+    const Tool &tool, DepList deps, file::Type outputFileType, bool withLTO) {
+
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+DarwinToolChain::ConstructExecLinkJob(const Tool &tool, InputList inputs,
+                                      file::Type outputFileType) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+DarwinToolChain::ConstructExecLinkJob(const Tool &tool, DepList deps,
+                                      file::Type outputFileType) {
+  return nullptr;
+}
+
 // JobInvocation
 // DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const
 // {
