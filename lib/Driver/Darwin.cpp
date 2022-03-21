@@ -102,7 +102,8 @@ Darwin::ConstructStaticLinkJob(job::InputList inputs,
 }
 
 // std::unique_ptr<Job>
-// Darwin::ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts) {
+// Darwin::ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts)
+// {
 //   auto tool = FindTool(ToolKind::LD);
 //   if (!tool) {
 //     tool = FindTool(ToolKind::LLD);
@@ -117,7 +118,8 @@ Darwin::ConstructStaticLinkJob(job::InputList inputs,
 //   return nullptr;
 // }
 // std::unique_ptr<Job>
-// Darwin::ConstructDynamicLinkJob(DepList deps, const OutputOptions &outputOpts) {
+// Darwin::ConstructDynamicLinkJob(DepList deps, const OutputOptions
+// &outputOpts) {
 //   return nullptr;
 // }
 

@@ -53,6 +53,11 @@ class Job : public Command {
 
   const char *GetNameByKind(JobKind kind) const;
 
+public:
+  using size_type = llvm::ArrayRef<job::Input *>::size_type;
+  using iterator = llvm::ArrayRef<job::Input *>::iterator;
+  using const_iterator = llvm::ArrayRef<job::Input *>::const_iterator;
+
 protected:
   Context &ctx;
   // Updated by the JobQueue if or when the job is queued.
@@ -75,7 +80,7 @@ public:
 
   job::InputList GetInputs() { return inputs; }
   JobKind GetKind() const { return kind; }
-  void AddInput(job::Input* input) { inputs.push_back(input); }
+  void AddInput(job::Input *input) { inputs.push_back(input); }
 
 public:
   /// Print a nice summary of this job
@@ -87,6 +92,14 @@ public:
                     llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 
+public:
+  size_type size() const { return inputs.size(); }
+  iterator begin() { return inputs.begin(); }
+  iterator end() { return inputs.end(); }
+  const_iterator begin() const { return inputs.begin(); }
+  const_iterator end() const { return inputs.end(); }
+
+public:
   // Required for llvm::dyn_cast
   static bool classof(const Job *job) {
     return (job->GetKind() >= JobKind::First &&
@@ -99,7 +112,7 @@ public:
   CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
 
-  CompileJob(Context &ctx, const Tool &tool, job::Input* input,
+  CompileJob(Context &ctx, const Tool &tool, job::Input *input,
              file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
 
@@ -110,7 +123,6 @@ public:
 };
 
 class FlexJob : public Job {
-  //llvm::TinyPtrVector<const Job *> deps;
 
 public:
   // using size_type = llvm::ArrayRef<const Job *>::size_type;
@@ -132,7 +144,7 @@ public:
   //   deps.push_back(dep);
   // }
 
-  //bool IsSolo() { return (solo && (deps.size() == 0)); }
+  // bool IsSolo() { return (solo && (deps.size() == 0)); }
 
 public:
   // size_type size() const { return deps.size(); }
@@ -158,11 +170,6 @@ public:
       : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
         withLTO(withLTO) {}
 
-  // DynamicLinkJob(Context &ctx, const Tool &tool, DepList deps,
-  //                bool withLTO = false)
-  //     : FlexJob(JobKind::DynamicLink, ctx, tool, deps, file::Type::Image),
-  //       withLTO(withLTO) {}
-
   bool WithLTO() { return withLTO; }
 
 public:
@@ -175,9 +182,6 @@ public:
   StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : FlexJob(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
-  // StaticLinkJob(Context &ctx, const Tool &tool, DepList deps)
-  //     : FlexJob(JobKind::StaticLink, ctx, tool, deps, file::Type::Image) {}
-
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::StaticLink;
@@ -189,9 +193,6 @@ public:
   ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {
   }
-
-  // ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps)
-  //     : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {

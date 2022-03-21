@@ -106,7 +106,8 @@ ToolChain::ConstructStaticLinkJob(job::InputList inputs,
 // }
 
 // std::unique_ptr<Job>
-// ToolChain::ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) {
+// ToolChain::ConstructExecLinkJob(DepList deps, const OutputOptions
+// &outputOpts) {
 //   return nullptr;
 // }
 

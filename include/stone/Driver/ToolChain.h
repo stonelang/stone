@@ -151,7 +151,8 @@ public:
   ConstructCompileJob(const file::File &input, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
+  ConstructStaticLinkJob(job::InputList inputs,
+                         const OutputOptions &outputOpts);
 
   // virtual std::unique_ptr<Job>
   // ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts);

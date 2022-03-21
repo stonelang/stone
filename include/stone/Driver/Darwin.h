@@ -51,13 +51,14 @@ public:
 public:
   std::unique_ptr<Job> ConstructCompileJob(const file::File &input,
                                            const OutputOptions &outputOpts);
-  
+
   std::unique_ptr<Job> ConstructStaticLinkJob(job::InputList inputs,
                                               const OutputOptions &outputOpts);
 
   // std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
 
-  //                                             const OutputOptions &outputOpts);
+  //                                             const OutputOptions
+  //                                             &outputOpts);
 
   // std::unique_ptr<Job>
   // ConstructDynamicLinkJob(InputList inputs,
@@ -72,7 +73,8 @@ public:
   // ConstructExecLinkJob(InputList inputs,
   //                      const OutputOptions &outputOpts) override;
   // std::unique_ptr<Job>
-  // ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) override;
+  // ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts)
+  // override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;
