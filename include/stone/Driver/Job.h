@@ -71,7 +71,6 @@ public:
 public:
   JobID GetID() { return jobID; }
   const char *GetName() const { return Job::GetNameByKind(kind); }
-  ColorOutputStream &OS();
 
   llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
   JobKind GetKind() const { return kind; }
@@ -202,6 +201,7 @@ public:
 
   ExecutableLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
       : FlexJob(JobKind::ExecutableLink, tool, deps, outputFileType) {}
+
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::ExecutableLink;
