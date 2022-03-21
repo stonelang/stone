@@ -24,13 +24,7 @@ class Compilation;
 
 enum class CompilationUnitKind : uint8_t {
   Input = 0,
-  Compile,
-  Link,
-  StaticLink,
-  DynamicLink,
-  ExecLink,
-  FirstJob = Compile,
-  LastJob = ExecLink,
+  Job,
 };
 
 /// A class for parsing a DeclSpecifier.
@@ -51,15 +45,11 @@ public:
 };
 
 class CompilationInput : public CompilationUnit {
-
   const file::File &input;
-
 public:
   CompilationInput(const file::File &input)
       : CompilationUnit(CompilationUnitKind::Input), input(input) {}
-
   const file::File &GetInput() const { return input; }
-
 public:
   static bool classof(const CompilationUnit *unit) {
     return unit->GetKind() == CompilationUnitKind::Input;
@@ -69,8 +59,18 @@ public:
 // The process ID
 using CompilationJobID = int64_t;
 enum class CompilationJobStage : uint8_t { None = 0, Running, Finished, Error };
-using UnitList = llvm::ArrayRef<const CompilationUnit *>;
 
+using UnitList = llvm::ArrayRef<const CompilationUnit *>;
+constexpr uint8_t CompilationJobKindIota =
+    static_cast<uint8_t>(CompilationUnitKind::Job) + 1;
+
+enum class CompilationJobKind {
+  Compile = CompilationJobKindIota,
+  Link,
+  StaticLink,
+  DynamicLink,
+  ExecLink,
+};
 class CompilationJob : public CompilationUnit {
 
   friend ToolChain;
@@ -78,6 +78,8 @@ class CompilationJob : public CompilationUnit {
 
   const Tool &tool;
   CompilationJobID jobID;
+
+  CompilationJobKind jobKind;
 
   /// Jobs are made via ToolChain::MakeJob(...)
   void *operator new(size_t size) { return ::operator new(size); };
@@ -92,10 +94,10 @@ public:
       llvm::ArrayRef<const CompilationUnit *>::const_iterator;
 
 public:
-  CompilationJob(CompilationUnitKind kind, const Tool &tool, UnitList inputs,
+  CompilationJob(CompilationJobKind jobKind, const Tool &tool, UnitList inputs,
                  file::Type outputFileType)
-      : CompilationUnit(kind), tool(tool), inputs(inputs),
-        outputFileType(outputFileType) {}
+      : CompilationUnit(CompilationUnitKind::Job), jobKind(jobKind), tool(tool),
+        inputs(inputs), outputFileType(outputFileType) {}
 
 public:
   UnitList GetInputs() const { return inputs; }
@@ -106,6 +108,8 @@ public:
   /// Perform a complete dump of this job.
   virtual void Dump(ColorOutputStream &stream,
                     llvm::StringRef terminator = "\n") const;
+
+  CompilationJobKind GetJobKind() const { return jobKind; }
 
 public:
   size_type size() const { return inputs.size(); }
@@ -120,27 +124,24 @@ private:
 
 public:
   // Required for llvm::dyn_cast
-  static bool classof(const CompilationUnit *unit) {
-    return (unit->GetKind() >= CompilationUnitKind::FirstJob &&
-            unit->GetKind() <= CompilationUnitKind::LastJob);
+  static bool classof(const CompilationJob *job) {
+    return (job->GetJobKind() >= CompilationJobKind::Compile &&
+            job->GetJobKind() <= CompilationJobKind::ExecLink);
   }
 };
 
 class CompileJob final : public CompilationJob {
-
 public:
   CompileJob(const Tool &tool, file::Type outputFileType)
-      : CompilationJob(CompilationUnitKind::Compile, tool, {}, outputFileType) {
-  }
+      : CompilationJob(CompilationJobKind::Compile, tool, {}, outputFileType) {}
 
   CompileJob(const Tool &tool, const CompilationUnit *input,
              file::Type outputFileType)
-      : CompilationJob(CompilationUnitKind::Compile, tool, input,
+      : CompilationJob(CompilationJobKind::Compile, tool, input,
                        outputFileType) {}
-
 public:
-  static bool classof(const CompilationUnit *unit) {
-    return unit->GetKind() == CompilationUnitKind::Compile;
+  static bool classof(const CompilationJob *job) {
+    return job->GetJobKind() == CompilationJobKind::Compile;
   }
 };
 
@@ -150,38 +151,36 @@ class DynamicLinkJob final : public CompilationJob {
 public:
   DynamicLinkJob(const Tool &tool, UnitList inputs, file::Type outputFileType,
                  bool requiresLTO = false)
-      : CompilationJob(CompilationUnitKind::DynamicLink, tool, inputs,
+      : CompilationJob(CompilationJobKind::DynamicLink, tool, inputs,
                        outputFileType),
         requiresLTO(requiresLTO) {}
 
 public:
-  static bool classof(const CompilationUnit *unit) {
-    return unit->GetKind() == CompilationUnitKind::DynamicLink;
+  static bool classof(const CompilationJob *job) {
+    return job->GetJobKind() == CompilationJobKind::DynamicLink;
   }
 };
 
 class StaticLinkJob final : public CompilationJob {
-
 public:
   StaticLinkJob(const Tool &tool, UnitList inputs, file::Type outputFileType)
-      : CompilationJob(CompilationUnitKind::StaticLink, tool, inputs,
+      : CompilationJob(CompilationJobKind::StaticLink, tool, inputs,
                        outputFileType) {}
-
 public:
-  static bool classof(const CompilationUnit *unit) {
-    return unit->GetKind() == CompilationUnitKind::StaticLink;
+  static bool classof(const CompilationJob *job) {
+    return job->GetJobKind() == CompilationJobKind::StaticLink;
   }
 };
 
 class ExecLinkJob final : public CompilationJob {
 public:
   ExecLinkJob(const Tool &tool, UnitList inputs, file::Type outputFileType)
-      : CompilationJob(CompilationUnitKind::ExecLink, tool, inputs,
+      : CompilationJob(CompilationJobKind::ExecLink, tool, inputs,
                        outputFileType) {}
 
 public:
-  static bool classof(const CompilationUnit *unit) {
-    return unit->GetKind() == CompilationUnitKind::ExecLink;
+  static bool classof(const CompilationJob *job) {
+    return job->GetJobKind() == CompilationJobKind::ExecLink;
   }
 };
 

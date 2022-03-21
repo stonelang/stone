@@ -45,10 +45,10 @@ void CompilationJob::Dump(ColorOutputStream &stream,
 
 const char *CompilationUnit::GetNameByKind(CompilationUnitKind kind) {
   switch (kind) {
-  case CompilationUnitKind::Compile:
-    return "compile";
-  case CompilationUnitKind::StaticLink:
-    return "static-link";
+  case CompilationUnitKind::Input:
+    return "input";
+  case CompilationUnitKind::Job:
+    return "job";
   default:
     stone::Panic("Invalid 'compilation unit'");
   }
