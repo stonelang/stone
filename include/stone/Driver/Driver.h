@@ -145,8 +145,8 @@ public:
 
   void PrintJobRequests(HotCache &hc);
 
-  void BuildJobs(Compilation &c, HotCache &hc,
-                 const OutputOptions &outputOptions);
+  void BuildJobs(Compilation &compilation, HotCache &hc,
+                 const file::Files &inputs, const OutputOptions &outputOptions);
 
   // void PrintJobs(HotCache &hc);
 

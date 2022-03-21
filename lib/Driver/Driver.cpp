@@ -87,7 +87,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
-  BuildJobs(*compilation, hc, driverOpts.outputOptions);
+  BuildJobs(*compilation, hc, inputs, driverOpts.outputOptions);
   return compilation;
 }
 

@@ -1,11 +1,9 @@
 #include "stone/Driver/Job.h"
-
+#include "stone/Core/Defer.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
-using stone::Driver;
-using stone::Job;
-using stone::JobStats;
+using namespace stone;
 
 const char *Job::GetNameByKind(JobKind jobKind) const {
   switch (jobKind) {
@@ -95,35 +93,59 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 //   return 0;
 // }
 
-// void Job::Print(const char *terminator, bool quote, CrashState *crash) const
-// {}
+static void BuildMultipleCompilingModel(Compilation &compilation,
+                                        const file::Files &inputs, JobCache &jc,
+                                        const OutputOptions &outputOpts) {
 
-void JobStats::Print() {}
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
 
-// static void BuildJobsForTopLevelIntent(Compilation &C,
-//                                        const CompilationIntent *ci) {
+  for (auto &input : inputs) {
+    // TODO: Way out there, but there is potential for git here?
+    if (driver.GetBuildSystem().IsDirty(input)) {
 
-//   for (const Intent *input : *ci) {
-//     if (auto *processIntent = llvm::dyn_cast<CompilationIntent>(input)) {
-//     }
-//   }
-// }
+      assert(input.GetType() == driver.GetInputFileType() &&
+             "Incompatible input file types");
+      assert(file::IsPartOfCompilation(input.GetType()));
+
+      switch (input.GetType()) {
+      case file::Type::Stone: {
+
+        break;
+      }
+      case file::Type::Object:
+
+        break;
+      default:
+        stone::Panic("Alien file -- cannot build job.");
+      }
+    }
+  }
+}
 
 void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
+                       const file::Files &inputs,
                        const OutputOptions &outputOpts) {
-  // switch (GetCompilingModelKind()) {
-  // case CompilingModelKind::Multiple:
-  //   BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);
-  //   break;
+
+  STONE_DEFER { hc.GetJobCache().Finish(compilation, outputOpts); };
+
+  // We assert here because this should have been checked above.
+  assert(inputs.empty());
+
+  switch (GetCompilingModelKind()) {
+  case CompilingModelKind::Multiple:
+    BuildMultipleCompilingModel(compilation, inputs, hc.GetJobCache(),
+                                outputOpts);
+    break;
   // case CompilingModelKind::Single:
-  //   BuildSingleCompilingModel(comp, hc, inputs, outputOptions);
+  //   BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
   //   break;
   // case CompilingModelKind::Batch:
-  //   BuildBatchCompilingModel(comp, hc, inputs, outputOptions);
+  //   BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
   //   break;
-  // default:
-  //   stone::Panic("Unsupported Compiling mode");
-  // }
+  default:
+    stone::Panic("Unsupported Compiling mode");
+  }
 
   // First, check to see if there are any top-level requests
   if (hc.GetReqCache().ForTop()) {
@@ -158,3 +180,7 @@ void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
 //       c.GetTool().GetFullName(), llvm::ArrayRef<llvm::StringRef>(c.args),
 //       c.env, c.redirects, c.waitSecs, c.memLimit, c.errMsg, c.failed);
 // }
+
+void JobCache::Finish(Compilation &compilation,
+                      const OutputOptions &outputOpts) {}
+void JobStats::Print() {}

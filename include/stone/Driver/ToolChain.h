@@ -130,7 +130,8 @@ public:
   ToolChainKind GetKind() { return kind; }
 
 protected:
-  // TODO: Now that you are using the construction method, you may not need this.
+  // TODO: Now that you are using the construction method, you may not need
+  // this.
   virtual std::unique_ptr<Tool> BuildSCTool();
   virtual std::unique_ptr<Tool> BuildLDTool() = 0;
   virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
