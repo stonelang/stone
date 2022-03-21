@@ -36,7 +36,6 @@ public:
 // llvm::sys::fs::current_path(workingDirectory);
 
 class Lang final {
-
   friend LangStats;
 
   Frontend frontend;

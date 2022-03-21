@@ -1,4 +1,5 @@
 #include "stone/Compile/Parse.h"
+
 #include "stone/Compile/Parser.h"
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Core/Context.h"
@@ -10,7 +11,6 @@ using namespace stone::syn;
 
 void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
                           SyntaxListener *listener) {
-
   Parser parser(sf, syntax, listener);
 
   SyntaxResult<Decl *> result;

@@ -2,7 +2,6 @@
 #define STONE_SESSION_MODE_H
 
 #include "stone/Session/ModeKind.h"
-
 #include "llvm/Option/ArgList.h"
 
 namespace stone {

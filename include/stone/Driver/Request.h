@@ -8,7 +8,6 @@
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
-
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/TinyPtrVector.h"
@@ -31,7 +30,6 @@ enum class RequestKind : uint8_t {
 };
 
 class Request {
-
   RequestKind kind;
   friend class Driver;
   /// Requests are only created via Driver::CreateRequest(...)
@@ -70,7 +68,6 @@ public:
 
 using RequestList = llvm::ArrayRef<const Request *>;
 class JobRequest : public Request {
-
   file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<const Request *> inputs;
 
@@ -141,7 +138,6 @@ public:
   LinkJobRequest(RequestList inputs, LinkMode linkMode, bool canPerformLTO)
       : JobRequest(RequestKind::Link, inputs, file::Type::Image),
         linkMode(linkMode), canPerformLTO(canPerformLTO) {
-
     assert(LinkJobRequest::IsLinkMode(linkMode));
   }
   bool CanPerformLTO() {

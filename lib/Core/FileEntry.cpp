@@ -1,4 +1,5 @@
 #include "stone/Core/FileEntry.h"
+
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/VirtualFileSystem.h"
 

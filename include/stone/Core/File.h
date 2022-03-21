@@ -1,14 +1,14 @@
 #ifndef STONE_CORE_FILE_H
 #define STONE_CORE_FILE_H
 
-#include <functional>
 #include <stdio.h>
 
+#include <functional>
+
+#include "stone/Core/LLVM.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/raw_ostream.h"
-
-#include "stone/Core/LLVM.h"
 
 namespace stone {
 namespace file {

@@ -1,4 +1,5 @@
 #include "stone/Driver/Job.h"
+
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
@@ -29,7 +30,6 @@ Job::Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
          file::Type outputFileType)
     : Command(tool), kind(kind), ctx(ctx), inputs(inputs),
       outputFileType(outputFileType) {
-
   stats = std::make_unique<JobStats>(*this, ctx);
   ctx.GetStatEngine().Register(stats.get());
 }
@@ -37,7 +37,6 @@ Job::~Job() {}
 
 /// -print-jobs
 void Job::Print(ColorOutputStream &stream, CrashState *crashState) {
-
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
   // stream() << GetName();
@@ -60,7 +59,6 @@ void Job::Print(ColorOutputStream &stream, CrashState *crashState) {
 // -print-jobs -v
 void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
                CrashState *crashState) {
-
   //
 }
 
@@ -113,7 +111,6 @@ void JobStats::Print() {}
 
 void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
                        const OutputOptions &outputOpts) {
-
   // switch (GetCompilingModelKind()) {
   // case CompilingModelKind::Multiple:
   //   BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);

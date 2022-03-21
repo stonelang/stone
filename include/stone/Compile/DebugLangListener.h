@@ -6,7 +6,6 @@
 namespace stone {
 
 class DebugLangListener final : public LangListener {
-
 public:
   DebugLangListener();
 

@@ -8,7 +8,6 @@ using stone::InFlightDiagnostic;
 
 void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                         const DiagnosticFormatOptions &fmtOptions) const {
-
   diag::ArgumentKind kind = diag::ArgumentKind::None;
   switch (kind) {
   case diag::ArgumentKind::STDStr:
@@ -120,13 +119,11 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 /// Add a token-based replacement fix-it to the currently-active
 /// diagnostic.
 InFlightDiagnostic &CodeFixer::Replace(SrcRange range, StringRef formatString) {
-
   return inFlightDiag;
 }
 
 InFlightDiagnostic &CodeFixer::Replace(SrcRange range, StringRef formatString,
                                        ArrayRef<diag::Argument> args) {
-
   return inFlightDiag;
 }
 
@@ -139,7 +136,6 @@ InFlightDiagnostic &CodeFixer::ReplaceChars(SrcLoc start, SrcLoc end,
 InFlightDiagnostic &
 CodeFixer::InsertAfter(SrcLoc loc, llvm::StringRef formatString,
                        llvm::ArrayRef<diag::Argument> args) {
-
   assert(inFlightDiag.tokenable && "InsertAfter requires a Tokenable");
   loc = inFlightDiag.tokenable->GetLocForEndOfToken(
       inFlightDiag.GetDiagEngine().GetSrcMgr(), loc);

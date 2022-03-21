@@ -36,7 +36,6 @@ struct DeclContextArgument final : public SyntaxArgument {
 };
 
 struct IdentifierArgument final : public SyntaxArgument {
-
   const syn::Identifier *val;
   IdentifierArgument() = delete;
   explicit IdentifierArgument(const syn::Identifier *val)

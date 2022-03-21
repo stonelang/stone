@@ -1,7 +1,7 @@
 #include "stone/Syntax/Module.h"
+
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/SyntaxContext.h"
-
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/STLExtras.h"
@@ -28,7 +28,6 @@ ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
 Module::Module(Identifier &name, SyntaxContext &tc)
     : DeclContext(DeclContextKind::Decl, DeclKind::Module),
       TypeDecl(DeclKind::Module, SrcLoc(), nullptr /*TODO: pass DeclContext*/) {
-
   // TODO: SetDeclName(name);
 }
 
@@ -54,7 +53,6 @@ SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
                                        SyntaxContext &tc, unsigned srcID,
                                        bool isPrimary) {
-
   auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);
   return syntaxFile;
 }

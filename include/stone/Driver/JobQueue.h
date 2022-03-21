@@ -9,7 +9,6 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/Job.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"

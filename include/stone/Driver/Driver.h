@@ -55,7 +55,6 @@ public:
 };
 
 class Driver final : public Session {
-
   llvm::StringRef name;
   llvm::StringRef path;
 

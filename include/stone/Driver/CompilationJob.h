@@ -8,7 +8,6 @@
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
-
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/TinyPtrVector.h"

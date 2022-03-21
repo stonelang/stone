@@ -30,7 +30,6 @@ public:
 };
 
 class LinkJob : public FlexJob {
-
 public:
   LinkJob() : FlexJob(JobKind::Link) {}
 };
@@ -68,7 +67,6 @@ public:
 };
 
 class LinkJob : public FlexJob {
-
 public:
   LinkJob() : FlexJob(JobKind::Link) {}
 };

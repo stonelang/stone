@@ -3,7 +3,6 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Session/ModeKind.h"
-
 #include "gtest/gtest.h"
 
 using namespace stone;
@@ -14,7 +13,6 @@ public:
 };
 
 TEST_F(CompileTest, CompileFileVerbosely) {
-
   const char *args[] = {"-parse", "/var/tmp/test.stone"};
 
   // Frontend lc;
@@ -57,7 +55,6 @@ TEST_F(CompileTest, CompileFileVerbosely) {
 }
 
 TEST_F(CompileTest, CompileFile) {
-
   // Lang lang("test", "test");
   // lang.Initialize();
 

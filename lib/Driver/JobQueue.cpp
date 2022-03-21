@@ -1,4 +1,5 @@
 #include "stone/Driver/JobQueue.h"
+
 #include "stone/Driver/Job.h"
 
 using stone::Job;

@@ -1,4 +1,5 @@
 #include "stone/Syntax/Syntax.h"
+
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
@@ -17,7 +18,6 @@ static bool IsNamed(const NamedDecl *namedDecl, const char (&str)[Len]) {
 template <typename DeclTy, typename AllocatorTy>
 void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                               bool extraSace) {
-
   static_assert(alignof(DeclTy) >= sizeof(void *),
                 "A pointer must fit in the alignment of the DeclTy!");
 
@@ -35,7 +35,6 @@ Identifier &Syntax::MakeIdentifier(llvm::StringRef name) {
   return GetSyntaxContext().GetIdentifier(name);
 }
 Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
-
   auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetSyntaxContext(),
                                                       sizeof(syn::Module));
   return ::new (declPtr) syn::Module(name, GetSyntaxContext());

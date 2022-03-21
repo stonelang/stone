@@ -1,14 +1,13 @@
 #ifndef STONE_CORE_STATISTICENGINE_H
 #define STONE_CORE_STATISTICENGINE_H
 
+#include <iostream>
+
 #include "stone/Core/List.h"
 #include "stone/Core/Timer.h"
-
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Chrono.h"
 #include "llvm/Support/Timer.h"
-
-#include <iostream>
 
 // TODO:  Similar implementation to that of DiagnosticEngine
 namespace stone {

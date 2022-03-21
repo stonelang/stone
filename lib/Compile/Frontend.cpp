@@ -1,4 +1,5 @@
 #include "stone/Compile/Frontend.h"
+
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/SrcMgr.h"
@@ -15,7 +16,6 @@ SourceUnit::~SourceUnit() {}
 
 SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
                                  Frontend &frontend) {
-
   auto sizePtr = Frontend::Allocate<SourceUnit>(frontend, sizeof(SourceUnit));
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
@@ -27,7 +27,6 @@ static void ParseSearchPathArgs(llvm::opt::InputArgList &ial) {}
 
 llvm::opt::InputArgList &
 Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
-
   auto &ial = Session::ParseArgs(args);
 
   ParseLangArgs(ial);

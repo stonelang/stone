@@ -1,8 +1,9 @@
 #ifndef STONE_CORE_FILESYSTEMOPTIONS_H
 #define STONE_CORE_FILESYSTEMOPTIONS_H
 
-#include "llvm/ADT/StringRef.h"
 #include <string>
+
+#include "llvm/ADT/StringRef.h"
 
 namespace stone {
 

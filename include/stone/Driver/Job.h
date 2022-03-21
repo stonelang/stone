@@ -9,7 +9,6 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
 #include "stone/Driver/Request.h"
-
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Option/Arg.h"
@@ -39,7 +38,6 @@ enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
 using InputList = llvm::ArrayRef<const file::File *>;
 class Job : public Command {
-
   friend JobQueue;
   friend Compilation;
 
@@ -109,7 +107,6 @@ public:
 // FlexJob can have dependencies
 using DepList = llvm::ArrayRef<const Job *>;
 class FlexJob : public Job {
-
   bool solo = false;
   llvm::TinyPtrVector<const Job *> deps;
 
@@ -170,7 +167,6 @@ public:
   }
 };
 class StaticLinkJob final : public FlexJob {
-
 public:
   StaticLinkJob(Context &ctx, const Tool &tool, InputList inputs,
                 file::Type outputFileType)

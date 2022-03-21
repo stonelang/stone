@@ -16,7 +16,6 @@ const char *syn::Token::GetName() { return tk::GetName(kind); }
 bool tk::IsTokenTextDetermined(tk::Kind kind) { return false; }
 
 const char *tk::GetName(tk::Kind kind) {
-
   if (static_cast<uint8_t>(kind) < static_cast<uint8_t>(tk::Kind::MAX))
     return TokenNames[static_cast<uint8_t>(kind)];
 

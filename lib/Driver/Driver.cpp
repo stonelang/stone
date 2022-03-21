@@ -1,9 +1,9 @@
 #include "stone/Driver/Driver.h"
+
 #include "stone/Core/CoreDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Darwin.h"
 #include "stone/Driver/Job.h"
-
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
@@ -26,7 +26,6 @@ using namespace stone;
 
 Driver::Driver(llvm::StringRef name, llvm::StringRef path)
     : name(name), path(path) {
-
   buildSystem = std::make_unique<BuildSystem>(*this);
   SetExcludedFlagsBitmask(opts::NoLangOption);
 }
@@ -47,7 +46,6 @@ void Driver::ComputeOutputOptions(const ToolChain &toolChain,
 
 std::unique_ptr<Compilation>
 Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
-
   llvm::PrettyStackTraceString crashInfo("Building compilation");
 
   if (driverOpts.cleanBuild) {
@@ -94,7 +92,6 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
 }
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
-
   assert(GetMode().IsAlien() && "Alien mode");
   if (GetMode().IsNone()) {
     GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
@@ -110,7 +107,6 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 std::unique_ptr<llvm::opt::DerivedArgList>
 Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
                               llvm::StringRef workDir) {
-
   auto dal = std::make_unique<llvm::opt::DerivedArgList>(ial);
 
   // auto addPath = [workingDirectory, DAL](Arg *A) {
@@ -134,7 +130,6 @@ Driver::ComputeCompilingModelKind(const llvm::opt::DerivedArgList &dal,
 
 std::unique_ptr<ToolChain>
 Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
-
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
     ctx.GetSystemOptions().SetTargetTriple(
         llvm::Triple::normalize(arg->getValue()));
@@ -168,7 +163,6 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 }
 
 void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
-
   // Since the mode has already been created
   // switch(GetMode().GetKind().)
   driverOpts.outputFileType = file::Type::Object;

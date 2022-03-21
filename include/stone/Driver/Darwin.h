@@ -13,7 +13,6 @@
 #include "stone/Core/Mem.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
-
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -71,7 +70,7 @@ public:
 
   std::unique_ptr<Job>
   ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
-                       constOutputOptions &outputOpts, ) override;
+                       const OutputOptions &outputOpts) override;
   std::unique_ptr<Job>
   ConstructExecLinkJob(DepList deps, file::Type outputFileType,
                        const OutputOptions &outputOpts) override;

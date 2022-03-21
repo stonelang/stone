@@ -1,10 +1,10 @@
 #ifndef STONE_CORE_DIAGNOSTICARGUMENT_H
 #define STONE_CORE_DIAGNOSTICARGUMENT_H
 
+#include <assert.h>
+
 #include "stone/Core/TokenKind.h"
 #include "llvm/ADT/StringRef.h"
-
-#include <assert.h>
 
 namespace stone {
 /// Enumeration describing all of possible diagnostics.
@@ -94,7 +94,6 @@ public:
 };
 
 struct LLVMStrArgument final : public Argument {
-
 private:
   const std::string val;
 

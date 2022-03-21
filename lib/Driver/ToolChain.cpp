@@ -1,4 +1,5 @@
 #include "stone/Driver/ToolChain.h"
+
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -8,7 +9,6 @@ ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
     : kind(kind), driver(driver), triple(triple) {}
 
 bool ToolChain::Initialize() {
-
   // TODO: Clean this up -- works for now
   auto stoneTool = BuildSCTool();
   if (stoneTool) {
@@ -59,7 +59,6 @@ Tool *ToolChain::FindTool(ToolKind tk) const {
 }
 
 std::unique_ptr<Tool> ToolChain::BuildSCTool() {
-
   if (driver.GetDriverOptions().HasSCPath()) {
     auto tool =
         BuildTool(ToolKind::SC, driver.GetDriverOptions().scPath.c_str(),
@@ -71,39 +70,46 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Job> ToolChain::ConstructCompileJob(const file::File &input) {
+std::unique_ptr<Job>
+ToolChain::ConstructCompileJob(const file::File &input,
+                               const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(InputList inputs, file::Type outputFileType) {
+ToolChain::ConstructStaticLinkJob(InputList inputs, file::Type outputFileType,
+                                  const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType) {
+ToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
+                                  const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
 ToolChain::ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
+                                   const OutputOptions &outputOpts,
                                    bool withLTO) {
   return nullptr;
 }
 std::unique_ptr<Job>
 ToolChain::ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
+                                   const OutputOptions &outputOpts,
                                    bool withLTO) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(InputList inputs, file::Type outputFileType) {
+ToolChain::ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
+                                const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType) {
-
+ToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
+                                const OutputOptions &outputOpts) {
   return nullptr;
 }
 

@@ -1,10 +1,10 @@
 #include "stone/Gen/Gen.h"
+
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Gen/IRGen.h"
 #include "stone/Gen/ObjGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
-
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -128,7 +128,6 @@ stone::CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
 // TODO: Pass LLVMCore
 bool stone::GenObject(CodeGenContext &cgc, syn::SyntaxContext &tc,
                       const OutputFile *output) {
-
   // assert(llvmMod && "Null LLVM Module");
   // ObjGen objGen(llvmMod, genOpts, tc);
   // objGen.Emit();

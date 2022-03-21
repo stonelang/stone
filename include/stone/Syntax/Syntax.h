@@ -79,7 +79,6 @@ public:
   stone::InFlightDiagnostic
   DiagnoseSyntax(SrcLoc loc, Diag<ArgTypes...> id,
                  typename stone::detail::PassArgument<ArgTypes>::type... args) {
-
     return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
         loc, SyntaxDiagnostic(DiagnosticContext(id, std::move(args)...)));
   }

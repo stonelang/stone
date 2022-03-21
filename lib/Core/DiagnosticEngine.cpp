@@ -1,4 +1,5 @@
 #include "stone/Core/DiagnosticEngine.h"
+
 #include "stone/Core/CoreDiagnostic.h"
 
 using namespace stone;
@@ -24,7 +25,6 @@ enum class LocalOptions {
 };
 
 struct LocalDiagnostic {
-
   diag::Level severity : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
@@ -113,7 +113,6 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
 }
 
 void DiagnosticEngine::FlushCurrentDiagnostic() {
-
   assert(curDiagnostic && "No active diagnostic to flush");
   EmitCurrentDiagnostic(true);
   curDiagnostic.reset();
@@ -125,7 +124,6 @@ void DiagnosticEngine::Print(ColorOutputStream &os,
                              const PrintingPolicy *policy) const {}
 
 void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
-
   auto emissionDiagnostic = BuildEmissionDiagnostic(diagnostic);
   for (auto &listener : listeners) {
     listener->Listen(/*TODO*/ diag::Level::Warn, *emissionDiagnostic);
@@ -135,13 +133,11 @@ void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 void DiagnosticEngine::EmitPendingDiagnostics() {}
 
 bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
-
   EmitSpecificDiagnostic(*curDiagnostic);
 }
 
 llvm::Optional<EmissionDiagnostic>
 DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
-
   return EmissionDiagnostic(
       diagnostic, GetDiagString(diagnostic.GetContext().GetDiagID(), true),
       /*TODO*/ llvm::StringRef());

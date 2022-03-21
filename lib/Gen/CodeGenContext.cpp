@@ -1,4 +1,5 @@
 #include "stone/Gen/CodeGenContext.h"
+
 #include "stone/Gen/CodeGenOptions.h"
 
 using namespace stone;
@@ -6,7 +7,6 @@ using namespace stone;
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                const CodeGenOptions &genOpts)
     : llvmContext(llvmContext), genOpts(genOpts) {
-
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);

@@ -1,6 +1,12 @@
 #ifndef STONE_SESSION_SESSION_H
 #define STONE_SESSION_SESSION_H
 
+#include <cassert>
+#include <list>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "stone/Core/Context.h"
 #include "stone/Core/File.h"
 #include "stone/Core/TextDiagnosticListener.h"
@@ -8,7 +14,6 @@
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -19,13 +24,11 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/StringSwitch.h"
-
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/OptSpecifier.h"
 #include "llvm/Option/OptTable.h"
 #include "llvm/Option/Option.h"
-
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Chrono.h"
@@ -39,12 +42,6 @@
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/VirtualFileSystem.h"
-
-#include <cassert>
-#include <list>
-#include <memory>
-#include <string>
-#include <utility>
 
 namespace llvm {
 class raw_fd_ostream;

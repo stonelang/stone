@@ -170,7 +170,6 @@ class ModuleDeclBits final {
 enum { NumModuleBits = 5 };
 
 class EnumDeclBitfields final {
-
   friend class EnumDecl;
 };
 

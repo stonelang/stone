@@ -1,4 +1,5 @@
 #include "stone/Driver/Run.h"
+
 #include "stone/Core/Defer.h"
 #include "stone/Core/LLVMInit.h"
 #include "stone/Core/MainExecutablePath.h"
@@ -25,7 +26,6 @@ int Compilation::RunJobs() {
 
 int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
                 void *mainAddr, CompilationListener *listener) {
-
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
   FINISH_LLVM_INIT();
 

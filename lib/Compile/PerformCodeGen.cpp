@@ -6,7 +6,6 @@
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
-
 #include "llvm/IR/Module.h"
 
 using namespace stone;
@@ -18,7 +17,6 @@ using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
 void Lang::PerformCodeGen() {
-
   assert(frontend.CanCodeGen());
 
   // We are performing some low leverl code generation
@@ -48,22 +46,18 @@ void Lang::PerformCodeGen() {
   }
 }
 llvm::Module *Lang::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
-
   return nullptr;
 }
 
 llvm::Module *Lang::GenIR(syn::Module &mod, CodeGenContext &cc) {
-
   return nullptr;
 }
 void Lang::OptimizeIR(llvm::Module *mod) {
-
   // stone::OptimizeIR
 }
 
 void Lang::GenObject(const unsigned srcID, llvm::Module *mod,
                      CodeGenContext &cc) {
-
   /// TODO: This is the only time we should perform a lookup
   // auto outputFile = frontend.ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());

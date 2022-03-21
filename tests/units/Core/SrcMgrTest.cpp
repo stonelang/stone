@@ -1,15 +1,14 @@
-#include "stone/Core/SrcMgr.h"
+#include <cstddef>
+
 #include "stone/Core/DiagnosticEngine.h"
 #include "stone/Core/DiagnosticOptions.h"
 #include "stone/Core/FileMgr.h"
 #include "stone/Core/FileSystemOptions.h"
-
+#include "stone/Core/SrcMgr.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Config/llvm-config.h"
 #include "llvm/Support/Process.h"
 #include "gtest/gtest.h"
-
-#include <cstddef>
 
 using namespace stone;
 
@@ -26,7 +25,6 @@ protected:
 };
 
 TEST_F(SrcMgrTest, GetColNumber) {
-
   const char *source = "int x;\n"
                        "int y;";
 

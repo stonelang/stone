@@ -6,7 +6,6 @@
 namespace stone {
 class DiagnosticListener;
 class DiagnosticEmitter {
-
   DiagnosticListener *listener;
 
 public:

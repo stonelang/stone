@@ -13,14 +13,14 @@
 #ifndef STONE_SYNTAX_OWNERSHIP_H
 #define STONE_SYNTAX_OWNERSHIP_H
 
-#include "stone/Core/LLVM.h"
-
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/Support/PointerLikeTypeTraits.h"
-#include "llvm/Support/type_traits.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+
+#include "stone/Core/LLVM.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/Support/PointerLikeTypeTraits.h"
+#include "llvm/Support/type_traits.h"
 
 //===----------------------------------------------------------------------===//
 // OpaquePtr

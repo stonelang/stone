@@ -1,4 +1,5 @@
 #include "stone/Driver/Darwin.h"
+
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/ToolChain.h"
@@ -10,18 +11,15 @@ DarwinToolChain::DarwinToolChain(
     const llvm::Optional<llvm::Triple> &targetVariant)
     : ToolChain(ToolChainKind::Darwin, driver, triple),
       targetVariant(targetVariant) {
-
   Initialize();
 }
 
 bool DarwinToolChain::Initialize() {
-
   libPaths.push_back("/usr/lib/");
   return ToolChain::Initialize();
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
-
   // Check to see if the SC path was given by the user.
   auto tool = ToolChain::BuildSCTool();
   if (tool) {
@@ -41,7 +39,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
-
   auto tool = BuildTool(ToolKind::LD, "/usr/bin/ld", "ld", true);
   if (tool) {
     return tool;
@@ -55,7 +52,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
-
   auto tool = BuildTool(ToolKind::LLD, "/usr/bin/lld", "lld", true);
   if (tool) {
     return tool;
@@ -67,7 +63,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
   return nullptr;
 }
 std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
-
   auto tool = BuildTool(ToolKind::Clang, "/usr/bin/clang++", "clang++", true);
   if (tool) {
     return tool;
@@ -79,7 +74,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
   return nullptr;
 }
 std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
-
   auto tool = BuildTool(ToolKind::GCC, "/usr/bin/g++", "g++", true);
   if (tool) {
     return tool;
@@ -101,7 +95,6 @@ std::unique_ptr<Job>
 DarwinToolChain::ConstructStaticLinkJob(InputList inputs,
                                         file::Type outputFileType,
                                         const OutputOptions &outputOpts) {
-
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
@@ -114,7 +107,6 @@ DarwinToolChain::ConstructStaticLinkJob(InputList inputs,
 std::unique_ptr<Job>
 DarwinToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
                                         const OutputOptions &outputOpts) {
-
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
@@ -127,13 +119,11 @@ DarwinToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
 std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
     InputList inputs, file::Type outputFileType,
     const OutputOptions &outputOpts, bool withLTO) {
-  
   return nullptr;
 }
 std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
     DepList deps, file::Type outputFileType, const OutputOptions &outputOpts,
     bool withLTO) {
-
   return nullptr;
 }
 

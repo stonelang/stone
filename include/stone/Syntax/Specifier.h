@@ -2,7 +2,6 @@
 #define STONE_SYNTAX_SPECIFIER_H
 
 #include "stone/Core/LLVM.h"
-
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {

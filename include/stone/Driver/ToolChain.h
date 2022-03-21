@@ -14,7 +14,6 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Request.h"
-
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -81,7 +80,6 @@ class OutputOptions;
 enum class ToolChainKind { None, Darwin, Unix, Win };
 
 class ToolChain {
-
   ToolChainKind kind;
 
 protected:
@@ -132,7 +130,7 @@ public:
   ToolChainKind GetKind() { return kind; }
 
 protected:
-  // TODO: Now that you are using the construction method, you may no need this.
+  // TODO: Now that you are using the construction method, you may not need this.
   virtual std::unique_ptr<Tool> BuildSCTool();
   virtual std::unique_ptr<Tool> BuildLDTool() = 0;
   virtual std::unique_ptr<Tool> BuildLLDTool() = 0;

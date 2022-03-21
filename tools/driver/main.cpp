@@ -1,7 +1,6 @@
 #include "stone/Core/LLVMInit.h"
 #include "stone/Core/MainExecutablePath.h"
 #include "stone/Driver/Run.h"
-
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
@@ -15,7 +14,6 @@
 using namespace stone;
 
 int main(int argc, const char **args) {
-
   START_LLVM_INIT(argc, args);
 
   llvm::SmallVector<const char *, 256> argsToExpand(args, args + argc);

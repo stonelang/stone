@@ -1,11 +1,11 @@
 #include "stone/Syntax/DeclContext.h"
+
 #include "stone/Core/LLVM.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"

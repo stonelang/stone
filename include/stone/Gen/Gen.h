@@ -4,7 +4,6 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/OutputFile.h"
 #include "stone/Syntax/SyntaxContext.h"
-
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {

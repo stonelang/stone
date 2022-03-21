@@ -37,7 +37,6 @@ enum class DeclNameKind : uint8_t {
   UseDirective,
 };
 class DeclName : public Dumpable, public Printable {
-
   friend class NamedDecl;
   DeclNameKind ty;
 

@@ -8,7 +8,6 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Core/SystemOptions.h"
-
 #include "llvm/Support/Debug.h"
 
 namespace stone {
@@ -30,7 +29,6 @@ public:
 };
 
 class Context final {
-
   FileMgr fm;
   SrcMgr sm;
   SystemOptions systemOpts;
@@ -96,7 +94,6 @@ public:
   InFlightDiagnostic
   Printd(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-
     return de.Printd(loc, id, std::forward<ArgTypes>(args)...);
   }
 };

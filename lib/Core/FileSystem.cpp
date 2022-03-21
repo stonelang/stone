@@ -1,6 +1,6 @@
 #include "stone/Core/FileSystem.h"
-#include "stone/Core/LLVM.h"
 
+#include "stone/Core/LLVM.h"
 #include "llvm/ADT/Twine.h"
 #include "llvm/Support/Errc.h"
 #include "llvm/Support/FileSystem.h"

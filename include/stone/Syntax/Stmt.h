@@ -9,6 +9,11 @@
 #include <type_traits>
 #include <utility>
 
+#include "stone/Core/LLVM.h"
+#include "stone/Core/SrcLoc.h"
+#include "stone/Syntax/StmtBits.h"
+#include "stone/Syntax/StmtKind.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -19,12 +24,6 @@
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/VersionTuple.h"
-
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
-#include "stone/Syntax/StmtBits.h"
-#include "stone/Syntax/StmtKind.h"
-#include "stone/Syntax/SyntaxNode.h"
 
 namespace stone {
 class SrcMgr;
@@ -62,7 +61,6 @@ class DeclStmt : public Stmt {
 /// represents a group of statements like { stmt stmt }.
 class BlockStmt final : public Stmt,
                         private llvm::TrailingObjects<BlockStmt, Stmt *> {
-
 public:
 };
 

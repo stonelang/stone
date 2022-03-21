@@ -1,6 +1,16 @@
 #ifndef STONE_SYNTAX_TREECONTEXT_H
 #define STONE_SYNTAX_TREECONTEXT_H
 
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include "stone/Core/Context.h"
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/StatisticEngine.h"
@@ -11,7 +21,6 @@
 #include "stone/Syntax/SearchPathOptions.h"
 #include "stone/Syntax/SyntaxContextAlloc.h"
 #include "stone/Syntax/Type.h"
-
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -31,16 +40,6 @@
 #include "llvm/Support/AlignOf.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
-
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <iterator>
-#include <memory>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
 namespace stone {
 namespace syn {
@@ -68,7 +67,6 @@ public:
   void Print() override;
 };
 class SyntaxContext final {
-
   friend SyntaxContextStats;
   std::unique_ptr<SyntaxContextStats> stats;
 

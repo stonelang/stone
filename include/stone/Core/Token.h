@@ -4,7 +4,6 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/TokenKind.h"
-
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {

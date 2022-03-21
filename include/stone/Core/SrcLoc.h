@@ -4,7 +4,6 @@
 #include "stone/Core/Debug.h"
 #include "stone/Core/LLVM.h"
 #include "stone/Core/Tokenable.h"
-
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/SMLoc.h"

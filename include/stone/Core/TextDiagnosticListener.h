@@ -1,15 +1,14 @@
 #ifndef STONE_CORE_TEXTDIAGNOSTICLISTENER_H
 #define STONE_CORE_TEXTDIAGNOSTICLISTENER_H
 
+#include <memory>
+
 #include "stone/Core/DiagnosticListener.h"
 #include "stone/Core/TextDiagnosticEmitter.h"
-
-#include <memory>
 
 namespace stone {
 class EmissionDiagnostic;
 class TextDiagnosticListener : public DiagnosticListener {
-
   std::unique_ptr<TextDiagnosticEmitter> emitter;
 
 public:

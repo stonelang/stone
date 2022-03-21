@@ -20,7 +20,6 @@ static inline unsigned AlignOfModuleFile();
 enum class ModuleFileKind : uint8_t { Source, Builtin };
 
 class ModuleFile : public DeclContext {
-
 private:
   ModuleFileKind kind;
 
@@ -110,7 +109,6 @@ public:
 class Module final : public DeclContext,
                      public TypeDecl,
                      public WalkableSyntax {
-
 public:
   Module(Identifier &name, SyntaxContext &tc);
 

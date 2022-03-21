@@ -4,11 +4,10 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
 #include "stone/Core/StatisticEngine.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobQueue.h"
 #include "stone/Driver/ToolChain.h"
-
-#include "stone/Driver/CompilationJob.h"
 
 namespace stone {
 
