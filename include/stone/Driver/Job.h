@@ -109,8 +109,8 @@ public:
   }
 };
 
+// FlexJob can have dependencies
 using DepList = llvm::ArrayRef<const Job *>;
-// Can have deps
 class FlexJob : public Job {
 
   bool solo = false;
@@ -157,6 +157,54 @@ public:
   static bool classof(const Job *job) {
     return (job->GetKind() >= JobKind::First &&
             job->GetKind() <= JobKind::Last);
+  }
+};
+
+class DynamicLinkJob final : public FlexJob {
+  bool requiresLTO;
+
+public:
+  DynamicLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType,
+                 bool requiresLTO = false)
+      : FlexJob(JobKind::DynamicLink, tool, inputs, outputFileType),
+        requiresLTO(requiresLTO) {}
+
+  DynamicLinkJob(const Tool &tool, DepList deps, file::Type outputFileType,
+                 bool requiresLTO = false)
+      : FlexJob(JobKind::DynamicLink, tool, deps, outputFileType),
+        requiresLTO(requiresLTO) {}
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::DynamicLink;
+  }
+};
+class StaticLinkJob final : public FlexJob {
+
+public:
+  StaticLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
+      : FlexJob(JobKind::ExecutableLink, tool, inputs, outputFileType) {}
+
+  StaticLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
+      : FlexJob(JobKind::StaticLink, tool, deps, outputFileType) {}
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::StaticLink;
+  }
+};
+
+class ExecutableLinkJob final : public FlexJob {
+public:
+  ExecutableLinkJob(const Tool &tool, InputList inputs,
+                    file::Type outputFileType)
+      : FlexJob(JobKind::ExecutableLink, tool, inputs, outputFileType) {}
+
+  ExecutableLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
+      : FlexJob(JobKind::ExecutableLink, tool, deps, outputFileType) {}
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::ExecutableLink;
   }
 };
 
