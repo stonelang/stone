@@ -4,7 +4,7 @@
 	Compilation.cpp
 	CompileJob.cpp
 	CompilationJob.cpp
-	CompilationUnit.cpp
+	Activity.cpp
 	Command.cpp
 	Darwin.cpp
 	DebugCompilationListener.cpp

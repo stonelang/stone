@@ -157,8 +157,7 @@ public:
                  const OutputOptions &outputOptions);
   // void PrintJobs(HotCache &hc);
 
-  void BuildCompilationUnits(Compilation &compilation,
-                             const file::Files &inputs,
+  void BuildActivities(Compilation &compilation, const file::Files &inputs,
                              const OutputOptions &outputOptions);
 
 public:

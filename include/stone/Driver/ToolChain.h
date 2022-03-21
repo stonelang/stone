@@ -11,7 +11,7 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
 #include "stone/Core/Mem.h"
-#include "stone/Driver/CompilationJob.h"
+#include "stone/Driver/Activity.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Request.h"
@@ -157,10 +157,17 @@ protected:
   virtual JobInvocation
   ConstructInvocation(const LinkJobRequest &request) const;
 
+  // virtual AcitityInvocation
+  // ConstructInvocation(const LinkJobActivity &jobContext) const;
+
 public:
   std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
                                     std::unique_ptr<CommandOutput> output,
                                     const OutputOptions &outputOptions);
+
+  // std::unique_ptr<Job> ConstructJob(const JobActivity &ju, Compilation &c,
+  //                                   std::unique_ptr<CommandOutput> output,
+  //                                   const OutputOptions &outputOptions);
 
 public:
   // virtual std::unique_ptr<CompilationJob> ConstructCompileJob();
