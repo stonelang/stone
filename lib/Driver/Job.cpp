@@ -25,6 +25,14 @@ const char *Job::GetNameByKind(JobKind jobKind) const {
   }
 }
 
+Job::Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
+         file::Type outputFileType)
+    : Command(tool), kind(kind), ctx(ctx), inputs(inputs),
+      outputFileType(outputFileType) {
+
+  stats = std::make_unique<JobStats>(*this, ctx);
+  ctx.GetStatEngine().Register(stats.get());
+}
 Job::~Job() {}
 
 /// -print-jobs

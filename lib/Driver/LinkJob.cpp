@@ -47,14 +47,3 @@ using namespace stone;
 //                                bool requiresLTO)
 //     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitDynamicLibrary)
 //     {}
-
-// int DynamicLinkJob::ExecuteAsync() { return Job::ExecuteAsync(); }
-// int DynamicLinkJob::ExecuteSync() { return Job::ExecuteSync(); }
-
-// ExecutableLinkJob::ExecutableLinkJob(Intent &intent, Context &ctx, Tool
-// &tool,
-//                                      bool requiresLTO)
-//     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitExecutable) {}
-
-// int ExecutableLinkJob::ExecuteAsync() { return Job::ExecuteAsync(); }
-// int ExecutableLinkJob::ExecuteSync() { return Job::ExecuteSync(); }

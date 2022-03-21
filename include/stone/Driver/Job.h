@@ -44,12 +44,14 @@ class Job : public Command {
   friend Compilation;
 
   JobKind kind;
+  std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<const file::File *> inputs;
 
   const char *GetNameByKind(JobKind kind) const;
-
+  
 protected:
+  Context &ctx;
   // Updated by the JobQueue if or when the job is queued.
   JobID jobID = -1;
   void SetID(JobID jid) { jobID = jid; }
@@ -61,10 +63,8 @@ public:
 public:
   Job() = delete;
 
-  Job(JobKind kind, const Tool &tool, InputList inputs,
-      file::Type outputFileType)
-      : Command(tool), kind(kind), inputs(inputs),
-        outputFileType(outputFileType) {}
+  Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
+      file::Type outputFileType);
 
   virtual ~Job();
 
@@ -95,12 +95,12 @@ public:
 
 class CompileJob final : public Job {
 public:
-  CompileJob(const Tool &tool, file::Type outputFileType)
-      : Job(JobKind::Compile, tool, {}, outputFileType) {}
+  CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType)
+      : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
 
-  CompileJob(const Tool &tool, const file::File *input,
+  CompileJob(Context &ctx, const Tool &tool, const file::File *input,
              file::Type outputFileType)
-      : Job(JobKind::Compile, tool, input, outputFileType) {}
+      : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
 
 public:
   static bool classof(const Job *job) {
@@ -121,13 +121,13 @@ public:
   using const_iterator = llvm::ArrayRef<const Job *>::const_iterator;
 
 public:
-  FlexJob(JobKind kind, const Tool &tool, InputList inputs,
+  FlexJob(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
           file::Type outputFileType)
-      : Job(kind, tool, inputs, outputFileType), solo(true), deps({}) {}
+      : Job(kind, ctx, tool, inputs, outputFileType), solo(true), deps({}) {}
 
-  FlexJob(JobKind kind, const Tool &tool, DepList deps,
+  FlexJob(JobKind kind, Context &ctx, const Tool &tool, DepList deps,
           file::Type outputFileType)
-      : Job(kind, tool, {}, outputFileType), deps(deps), solo(false) {}
+      : Job(kind, ctx, tool, {}, outputFileType), deps(deps), solo(false) {}
 
 public:
   void AddDep(const Job *dep) {
@@ -163,14 +163,14 @@ class DynamicLinkJob final : public FlexJob {
   bool requiresLTO;
 
 public:
-  DynamicLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType,
-                 bool requiresLTO = false)
-      : FlexJob(JobKind::DynamicLink, tool, inputs, outputFileType),
+  DynamicLinkJob(Context &ctx, const Tool &tool, InputList inputs,
+                 file::Type outputFileType, bool requiresLTO = false)
+      : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, outputFileType),
         requiresLTO(requiresLTO) {}
 
-  DynamicLinkJob(const Tool &tool, DepList deps, file::Type outputFileType,
-                 bool requiresLTO = false)
-      : FlexJob(JobKind::DynamicLink, tool, deps, outputFileType),
+  DynamicLinkJob(Context &ctx, const Tool &tool, DepList deps,
+                 file::Type outputFileType, bool requiresLTO = false)
+      : FlexJob(JobKind::DynamicLink, ctx, tool, deps, outputFileType),
         requiresLTO(requiresLTO) {}
 
 public:
@@ -181,11 +181,13 @@ public:
 class StaticLinkJob final : public FlexJob {
 
 public:
-  StaticLinkJob(const Tool &tool, InputList inputs, file::Type outputFileType)
-      : FlexJob(JobKind::ExecutableLink, tool, inputs, outputFileType) {}
+  StaticLinkJob(Context &ctx, const Tool &tool, InputList inputs,
+                file::Type outputFileType)
+      : FlexJob(JobKind::StaticLink, ctx, tool, inputs, outputFileType) {}
 
-  StaticLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
-      : FlexJob(JobKind::StaticLink, tool, deps, outputFileType) {}
+  StaticLinkJob(Context &ctx, const Tool &tool, DepList deps,
+                file::Type outputFileType)
+      : FlexJob(JobKind::StaticLink, ctx, tool, deps, outputFileType) {}
 
 public:
   static bool classof(const Job *job) {
@@ -195,12 +197,13 @@ public:
 
 class ExecutableLinkJob final : public FlexJob {
 public:
-  ExecutableLinkJob(const Tool &tool, InputList inputs,
+  ExecutableLinkJob(Context &ctx, const Tool &tool, InputList inputs,
                     file::Type outputFileType)
-      : FlexJob(JobKind::ExecutableLink, tool, inputs, outputFileType) {}
+      : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, outputFileType) {}
 
-  ExecutableLinkJob(const Tool &tool, DepList deps, file::Type outputFileType)
-      : FlexJob(JobKind::ExecutableLink, tool, deps, outputFileType) {}
+  ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps,
+                    file::Type outputFileType)
+      : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, outputFileType) {}
 
 public:
   static bool classof(const Job *job) {
