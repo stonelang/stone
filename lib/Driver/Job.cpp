@@ -24,7 +24,7 @@ const char *Job::GetNameByKind(JobKind jobKind) const {
   }
 }
 
-Job::Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
+Job::Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
          file::Type outputFileType)
     : Command(tool), kind(kind), ctx(ctx), inputs(inputs),
       outputFileType(outputFileType) {

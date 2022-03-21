@@ -36,7 +36,11 @@ using JobID = int64_t;
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
-using InputList = llvm::ArrayRef<const file::File *>;
+namespace job {
+using Input = llvm::PointerUnion<file::File *, Job *>;
+using InputList = llvm::ArrayRef<Input *>;
+} // namespace job
+
 class Job : public Command {
   friend JobQueue;
   friend Compilation;
@@ -44,7 +48,8 @@ class Job : public Command {
   JobKind kind;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
-  llvm::TinyPtrVector<const file::File *> inputs;
+
+  llvm::TinyPtrVector<job::Input *> inputs;
 
   const char *GetNameByKind(JobKind kind) const;
 
@@ -60,7 +65,7 @@ public:
 
 public:
   Job() = delete;
-  Job(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
+  Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
       file::Type outputFileType);
   virtual ~Job();
 
@@ -68,9 +73,9 @@ public:
   JobID GetID() { return jobID; }
   const char *GetName() const { return Job::GetNameByKind(kind); }
 
-  llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
+  job::InputList GetInputs() { return inputs; }
   JobKind GetKind() const { return kind; }
-  void AddInput(const file::File *input) { inputs.push_back(input); }
+  void AddInput(job::Input* input) { inputs.push_back(input); }
 
 public:
   /// Print a nice summary of this job
@@ -94,7 +99,7 @@ public:
   CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
 
-  CompileJob(Context &ctx, const Tool &tool, const file::File *input,
+  CompileJob(Context &ctx, const Tool &tool, job::Input* input,
              file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
 
@@ -104,40 +109,37 @@ public:
   }
 };
 
-// FlexJob can have dependencies
-using DepList = llvm::ArrayRef<const Job *>;
 class FlexJob : public Job {
-  bool solo = false;
-  llvm::TinyPtrVector<const Job *> deps;
+  //llvm::TinyPtrVector<const Job *> deps;
 
 public:
-  using size_type = llvm::ArrayRef<const Job *>::size_type;
-  using iterator = llvm::ArrayRef<const Job *>::iterator;
-  using const_iterator = llvm::ArrayRef<const Job *>::const_iterator;
+  // using size_type = llvm::ArrayRef<const Job *>::size_type;
+  // using iterator = llvm::ArrayRef<const Job *>::iterator;
+  // using const_iterator = llvm::ArrayRef<const Job *>::const_iterator;
 
 public:
-  FlexJob(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
+  FlexJob(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
           file::Type outFileType)
-      : Job(kind, ctx, tool, inputs, outFileType), solo(true), deps({}) {}
+      : Job(kind, ctx, tool, inputs, outFileType) {}
 
-  FlexJob(JobKind kind, Context &ctx, const Tool &tool, DepList deps,
-          file::Type outFileType)
-      : Job(kind, ctx, tool, {}, outFileType), deps(deps), solo(false) {}
-
-public:
-  void AddDep(const Job *dep) {
-    assert(solo);
-    deps.push_back(dep);
-  }
-
-  bool IsSolo() { return (solo && (deps.size() == 0)); }
+  // FlexJob(JobKind kind, Context &ctx, const Tool &tool, DepList deps,
+  //         file::Type outFileType)
+  //     : Job(kind, ctx, tool, {}, outFileType), deps(deps), solo(false) {}
 
 public:
-  size_type size() const { return deps.size(); }
-  iterator begin() { return deps.begin(); }
-  iterator end() { return deps.end(); }
-  const_iterator begin() const { return deps.begin(); }
-  const_iterator end() const { return deps.end(); }
+  // void AddDep(const Job *dep) {
+  //   assert(solo);
+  //   deps.push_back(dep);
+  // }
+
+  //bool IsSolo() { return (solo && (deps.size() == 0)); }
+
+public:
+  // size_type size() const { return deps.size(); }
+  // iterator begin() { return deps.begin(); }
+  // iterator end() { return deps.end(); }
+  // const_iterator begin() const { return deps.begin(); }
+  // const_iterator end() const { return deps.end(); }
 
 public:
   // Required for llvm::dyn_cast
@@ -151,15 +153,15 @@ class DynamicLinkJob final : public FlexJob {
   bool withLTO;
 
 public:
-  DynamicLinkJob(Context &ctx, const Tool &tool, InputList inputs,
+  DynamicLinkJob(Context &ctx, const Tool &tool, job::InputList inputs,
                  bool withLTO = false)
       : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
         withLTO(withLTO) {}
 
-  DynamicLinkJob(Context &ctx, const Tool &tool, DepList deps,
-                 bool withLTO = false)
-      : FlexJob(JobKind::DynamicLink, ctx, tool, deps, file::Type::Image),
-        withLTO(withLTO) {}
+  // DynamicLinkJob(Context &ctx, const Tool &tool, DepList deps,
+  //                bool withLTO = false)
+  //     : FlexJob(JobKind::DynamicLink, ctx, tool, deps, file::Type::Image),
+  //       withLTO(withLTO) {}
 
   bool WithLTO() { return withLTO; }
 
@@ -170,11 +172,11 @@ public:
 };
 class StaticLinkJob final : public FlexJob {
 public:
-  StaticLinkJob(Context &ctx, const Tool &tool, InputList inputs)
+  StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : FlexJob(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
-  StaticLinkJob(Context &ctx, const Tool &tool, DepList deps)
-      : FlexJob(JobKind::StaticLink, ctx, tool, deps, file::Type::Image) {}
+  // StaticLinkJob(Context &ctx, const Tool &tool, DepList deps)
+  //     : FlexJob(JobKind::StaticLink, ctx, tool, deps, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {
@@ -184,12 +186,12 @@ public:
 
 class ExecutableLinkJob final : public FlexJob {
 public:
-  ExecutableLinkJob(Context &ctx, const Tool &tool, InputList inputs)
+  ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {
   }
 
-  ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps)
-      : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, file::Type::Image) {}
+  // ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps)
+  //     : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {

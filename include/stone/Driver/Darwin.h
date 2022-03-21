@@ -51,28 +51,28 @@ public:
 public:
   std::unique_ptr<Job> ConstructCompileJob(const file::File &input,
                                            const OutputOptions &outputOpts);
-  std::unique_ptr<Job> ConstructStaticLinkJob(InputList inputs,
-
+  
+  std::unique_ptr<Job> ConstructStaticLinkJob(job::InputList inputs,
                                               const OutputOptions &outputOpts);
 
-  std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
+  // std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
 
-                                              const OutputOptions &outputOpts);
+  //                                             const OutputOptions &outputOpts);
 
-  std::unique_ptr<Job>
-  ConstructDynamicLinkJob(InputList inputs,
+  // std::unique_ptr<Job>
+  // ConstructDynamicLinkJob(InputList inputs,
 
-                          const OutputOptions &outputOpts) override;
-  std::unique_ptr<Job>
-  ConstructDynamicLinkJob(DepList deps,
+  //                         const OutputOptions &outputOpts) override;
+  // std::unique_ptr<Job>
+  // ConstructDynamicLinkJob(DepList deps,
 
-                          const OutputOptions &outputOpts) override;
+  //                         const OutputOptions &outputOpts) override;
 
-  std::unique_ptr<Job>
-  ConstructExecLinkJob(InputList inputs,
-                       const OutputOptions &outputOpts) override;
-  std::unique_ptr<Job>
-  ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) override;
+  // std::unique_ptr<Job>
+  // ConstructExecLinkJob(InputList inputs,
+  //                      const OutputOptions &outputOpts) override;
+  // std::unique_ptr<Job>
+  // ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;
