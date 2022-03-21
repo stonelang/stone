@@ -71,37 +71,37 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-JobInvocation
-ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
+// JobInvocation
+// ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
 
-  auto tool = FindTool(ToolKind::SC);
-  assert(tool && "Could not find 'stone-compile' tool!");
+//   auto tool = FindTool(ToolKind::SC);
+//   assert(tool && "Could not find 'stone-compile' tool!");
 
-  JobInvocation ji(request, *tool);
-  return ji;
-}
+//   JobInvocation ji(request, *tool);
+//   return ji;
+// }
 
-JobInvocation
-ToolChain::ConstructInvocation(const LinkJobRequest &request) const {
-  stone::Panic("StaticLink construction not implemented  here");
-}
+// JobInvocation
+// ToolChain::ConstructInvocation(const LinkJobRequest &request) const {
+//   stone::Panic("StaticLink construction not implemented  here");
+// }
 
-std::unique_ptr<Job>
-ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
-                        std::unique_ptr<CommandOutput> output,
-                        const OutputOptions &outputOptions) {
+// std::unique_ptr<Job>
+// ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
+//                         std::unique_ptr<CommandOutput> output,
+//                         const OutputOptions &outputOptions) {
 
-  auto Invocation = [&]() -> JobInvocation {
-    switch (request.GetKind()) {
-    case RequestKind::Compile:
-      return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
-    case RequestKind::Link:
-      return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
-    case RequestKind::Input:
-      stone::Panic("Not a 'JobRequest'");
-    }
-  };
-}
+//   auto Invocation = [&]() -> JobInvocation {
+//     switch (request.GetKind()) {
+//     case RequestKind::Compile:
+//       return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
+//     case RequestKind::Link:
+//       return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
+//     case RequestKind::Input:
+//       stone::Panic("Not a 'JobRequest'");
+//     }
+//   };
+// }
 
 // std::unique_ptr<CompilationJob> ToolChain::ConstructCompileJob() {
 

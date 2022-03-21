@@ -91,20 +91,20 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
   return nullptr;
 }
 
-JobInvocation
-DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
-  return ToolChain::ConstructInvocation(request);
-}
+// JobInvocation
+// DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const {
+//   return ToolChain::ConstructInvocation(request);
+// }
 
-JobInvocation
-DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {
-  auto tool = FindTool(ToolKind::LD);
-  if (!tool) {
-    tool = FindTool(ToolKind::LLD);
-  }
-  assert(tool && "Could not find a linker tool");
-  return JobInvocation(request, *tool);
-}
+// JobInvocation
+// DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {
+//   auto tool = FindTool(ToolKind::LD);
+//   if (!tool) {
+//     tool = FindTool(ToolKind::LLD);
+//   }
+//   assert(tool && "Could not find a linker tool");
+//   return JobInvocation(request, *tool);
+// }
 
 // Job *DarwinToolChain::CreateCompileJob(Driver &driver) {
 //   return ToolChain::CreateCompileJob(driver);

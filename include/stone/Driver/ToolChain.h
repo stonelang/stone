@@ -149,17 +149,17 @@ public:
   Tool *FindTool(ToolKind tk) const;
 
 protected:
-  /// Construct a JobInvocation for a compile job request
-  virtual JobInvocation
-  ConstructInvocation(const CompileJobRequest &request) const;
-  /// Construct a JobInvocation for a compile job request
-  virtual JobInvocation
-  ConstructInvocation(const LinkJobRequest &request) const;
+  // /// Construct a JobInvocation for a compile job request
+  // virtual JobInvocation
+  // ConstructInvocation(const CompileJobRequest &request) const;
+  // /// Construct a JobInvocation for a compile job request
+  // virtual JobInvocation
+  // ConstructInvocation(const LinkJobRequest &request) const;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
-                                    std::unique_ptr<CommandOutput> output,
-                                    const OutputOptions &outputOptions);
+  // std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
+  //                                   std::unique_ptr<CommandOutput> output,
+  //                                   const OutputOptions &outputOptions);
 
 public:
   // virtual std::unique_ptr<CompilationJob> ConstructCompileJob();
