@@ -8,7 +8,7 @@ JobQueue::JobQueue(JobQueueKind kind, Context &ctx) : kind(kind), ctx(ctx) {}
 
 stone::ProcID JobQueue::Push(Job *job) {
   entries.push(job);
-  job->SetID(entries.size()); 
+  job->SetID(entries.size());
 }
 
 // Job *JobQueue::Dequeue(stone::ProcID procID) { return nullptr; }

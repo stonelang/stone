@@ -6,6 +6,25 @@ using stone::Driver;
 using stone::Job;
 using stone::JobStats;
 
+const char *Job::GetNameByKind(JobKind jobKind) const {
+  switch (jobKind) {
+  case JobKind::Compile:
+    return "compile";
+  case JobKind::Backend:
+    return "backend";
+  case JobKind::Assemble:
+    return "assemble";
+  case JobKind::DynamicLink:
+    return "dynamic-link";
+  case JobKind::StaticLink:
+    return "static-link";
+  case JobKind::ExecutableLink:
+    return "executable-link";
+  default:
+    stone::Panic("Invalid JobKind");
+  }
+}
+
 Job::~Job() {}
 
 // Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
@@ -58,25 +77,6 @@ Job::~Job() {}
 
 // void Job::Print(const char *terminator, bool quote, CrashState *crash) const
 // {}
-
-// const char *Job::GetNameByKind(JobKind jobKind) {
-//   switch (jobKind) {
-//   case JobKind::Compile:
-//     return "compile";
-//   case JobKind::Backend:
-//     return "backend";
-//   case JobKind::Assemble:
-//     return "assemble";
-//   case JobKind::DynamicLink:
-//     return "dynamic-link";
-//   case JobKind::StaticLink:
-//     return "static-link";
-//   case JobKind::ExecutableLink:
-//     return "executable-link";
-//   default:
-//     assert(false && "Invalid JobKind");
-//   }
-// }
 
 /// Print a nice summary of this job
 void Job::Print(ColorOutputStream &stream, CrashState *crashState) {}

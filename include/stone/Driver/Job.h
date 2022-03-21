@@ -23,10 +23,6 @@ class Job;
 class JobQueue;
 class Compilation;
 
-// The process ID
-using JobID = int64_t;
-class Driver;
-
 class JobStats final : public Stats {
   const Job &job;
 
@@ -36,7 +32,8 @@ public:
   void Print() override;
 };
 
-// TODO: JobStatus
+// The process ID
+using JobID = int64_t;
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
@@ -49,6 +46,8 @@ class Job : public Command {
   JobKind kind;
   file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<const file::File *> inputs;
+
+  const char *GetNameByKind(JobKind kind) const;
 
 protected:
   // Updated by the JobQueue if or when the job is queued.
@@ -70,6 +69,15 @@ public:
   virtual ~Job();
 
 public:
+  JobID GetID() { return jobID; }
+  const char *GetName() const { return Job::GetNameByKind(kind); }
+  ColorOutputStream &OS();
+
+  llvm::ArrayRef<const file::File *> GetInputs() { return inputs; }
+  JobKind GetKind() const { return kind; }
+  void AddInput(const file::File *input) { inputs.push_back(input); }
+
+public:
   /// Print a nice summary of this job
   virtual void Print(ColorOutputStream &stream,
                      CrashState *crashState = nullptr);
@@ -79,9 +87,11 @@ public:
                     llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 
-public:
-  JobID GetID() { return jobID; }
-  ColorOutputStream &OS();
+  // Required for llvm::dyn_cast
+  static bool classof(const Job *job) {
+    return (job->GetKind() >= JobKind::First &&
+            job->GetKind() <= JobKind::Last);
+  }
 };
 
 class BatchJob : public Job {};
