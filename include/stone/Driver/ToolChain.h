@@ -151,25 +151,19 @@ public:
   ConstructCompileJob(const file::File &input, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(InputList inputs, file::Type outputFileType,
-                         const OutputOptions &outputOpts);
+  ConstructStaticLinkJob(InputList inputs, const OutputOptions &outputOpts);
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
-                         const OutputOptions &outputOpts);
+  ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
-                       const OutputOptions &outputOpts);
+  ConstructExecLinkJob(InputList inputs, const OutputOptions &outputOpts);
   virtual std::unique_ptr<Job>
-  ConstructExecLinkJob(DepList deps, file::Type outputFileType,
-                       const OutputOptions &outputOpts);
+  ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts);
 
   virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
-                          const OutputOptions &outputOpts, bool withLTO);
+  ConstructDynamicLinkJob(InputList inputs, const OutputOptions &outputOpts);
   virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
-                          const OutputOptions &outputOpts, bool withLTO);
+  ConstructDynamicLinkJob(DepList deps, const OutputOptions &outputOpts);
 };
 
 /*

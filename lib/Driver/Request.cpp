@@ -139,7 +139,7 @@ void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
     }
     case LinkMode::EmitDynamicLibrary: {
       linkRequest = MakeRequest<LinkJobRequest>(
-          hc.GetReqCache().forLink, GetLinkMode(), outputOptions.RequiresLTO());
+          hc.GetReqCache().forLink, GetLinkMode(), outputOptions.WithLTO());
       break;
     }
     case LinkMode::EmitStaticLibrary: {

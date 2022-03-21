@@ -48,18 +48,11 @@ public:
   file::Type outputFileType = file::Type::None;
 
   std::string libLTOPath;
-  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
 
   CompilingModelKind compilingModelKind = CompilingModelKind::Multiple;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
-
-  /// Returns true if multi-threading is enabled.
-  bool IsMultiThreading() const { return numThreads > 0; }
-
-  bool RequiresLTO() const { return ltoVariant != LTOKind::None; }
-  bool CanLink() const { return linkMode != LinkMode::None; }
 
   /// Whether or not the driver should generate a module.
   bool generateModule = false;
@@ -70,6 +63,15 @@ public:
 
   /// Whether the compiler picked the current module name, rather than the user.
   bool moduleNameIsFallback = false;
+
+public:
+  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+  bool WithLTO() const { return ltoVariant != LTOKind::None; }
+  bool CanLink() const { return linkMode != LinkMode::None; }
 
   /// Might this sort of compile have explicit primary inputs?
   /// When running a single compile for the whole module (in other words

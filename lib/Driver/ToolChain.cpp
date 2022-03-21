@@ -77,39 +77,36 @@ ToolChain::ConstructCompileJob(const file::File &input,
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(InputList inputs, file::Type outputFileType,
+ToolChain::ConstructStaticLinkJob(InputList inputs,
                                   const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
+ToolChain::ConstructStaticLinkJob(DepList deps,
                                   const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
-                                   const OutputOptions &outputOpts,
-                                   bool withLTO) {
+ToolChain::ConstructDynamicLinkJob(InputList inputs,
+                                   const OutputOptions &outputOpts) {
   return nullptr;
 }
 std::unique_ptr<Job>
-ToolChain::ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
-                                   const OutputOptions &outputOpts,
-                                   bool withLTO) {
+ToolChain::ConstructDynamicLinkJob(DepList deps,
+                                   const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
+ToolChain::ConstructExecLinkJob(InputList inputs,
                                 const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
-                                const OutputOptions &outputOpts) {
+ToolChain::ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) {
   return nullptr;
 }
 

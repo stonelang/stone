@@ -93,6 +93,15 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 //   return 0;
 // }
 
+static void BuildCompileJob(Compilation &compilation, const file::File &input,
+                            JobCache &jc, const OutputOptions &outputOptions) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  // toolChain.ConstructCompileJob()
+}
+
 static void BuildMultipleCompilingModel(Compilation &compilation,
                                         const file::Files &inputs, JobCache &jc,
                                         const OutputOptions &outputOpts) {
@@ -110,7 +119,7 @@ static void BuildMultipleCompilingModel(Compilation &compilation,
 
       switch (input.GetType()) {
       case file::Type::Stone: {
-
+        toolChain.ConstructCompileJob(input, outputOpts);
         break;
       }
       case file::Type::Object:

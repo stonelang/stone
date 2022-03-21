@@ -117,12 +117,12 @@ public:
 
 public:
   FlexJob(JobKind kind, Context &ctx, const Tool &tool, InputList inputs,
-          file::Type outputFileType)
-      : Job(kind, ctx, tool, inputs, outputFileType), solo(true), deps({}) {}
+          file::Type outFileType)
+      : Job(kind, ctx, tool, inputs, outFileType), solo(true), deps({}) {}
 
   FlexJob(JobKind kind, Context &ctx, const Tool &tool, DepList deps,
-          file::Type outputFileType)
-      : Job(kind, ctx, tool, {}, outputFileType), deps(deps), solo(false) {}
+          file::Type outFileType)
+      : Job(kind, ctx, tool, {}, outFileType), deps(deps), solo(false) {}
 
 public:
   void AddDep(const Job *dep) {
@@ -148,18 +148,20 @@ public:
 };
 
 class DynamicLinkJob final : public FlexJob {
-  bool requiresLTO;
+  bool withLTO;
 
 public:
   DynamicLinkJob(Context &ctx, const Tool &tool, InputList inputs,
-                 file::Type outputFileType, bool requiresLTO = false)
-      : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, outputFileType),
-        requiresLTO(requiresLTO) {}
+                 bool withLTO = false)
+      : FlexJob(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
+        withLTO(withLTO) {}
 
   DynamicLinkJob(Context &ctx, const Tool &tool, DepList deps,
-                 file::Type outputFileType, bool requiresLTO = false)
-      : FlexJob(JobKind::DynamicLink, ctx, tool, deps, outputFileType),
-        requiresLTO(requiresLTO) {}
+                 bool withLTO = false)
+      : FlexJob(JobKind::DynamicLink, ctx, tool, deps, file::Type::Image),
+        withLTO(withLTO) {}
+
+  bool WithLTO() { return withLTO; }
 
 public:
   static bool classof(const Job *job) {
@@ -168,13 +170,11 @@ public:
 };
 class StaticLinkJob final : public FlexJob {
 public:
-  StaticLinkJob(Context &ctx, const Tool &tool, InputList inputs,
-                file::Type outputFileType)
-      : FlexJob(JobKind::StaticLink, ctx, tool, inputs, outputFileType) {}
+  StaticLinkJob(Context &ctx, const Tool &tool, InputList inputs)
+      : FlexJob(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
-  StaticLinkJob(Context &ctx, const Tool &tool, DepList deps,
-                file::Type outputFileType)
-      : FlexJob(JobKind::StaticLink, ctx, tool, deps, outputFileType) {}
+  StaticLinkJob(Context &ctx, const Tool &tool, DepList deps)
+      : FlexJob(JobKind::StaticLink, ctx, tool, deps, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {
@@ -184,13 +184,12 @@ public:
 
 class ExecutableLinkJob final : public FlexJob {
 public:
-  ExecutableLinkJob(Context &ctx, const Tool &tool, InputList inputs,
-                    file::Type outputFileType)
-      : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, outputFileType) {}
+  ExecutableLinkJob(Context &ctx, const Tool &tool, InputList inputs)
+      : FlexJob(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {
+  }
 
-  ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps,
-                    file::Type outputFileType)
-      : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, outputFileType) {}
+  ExecutableLinkJob(Context &ctx, const Tool &tool, DepList deps)
+      : FlexJob(JobKind::ExecutableLink, ctx, tool, deps, file::Type::Image) {}
 
 public:
   static bool classof(const Job *job) {

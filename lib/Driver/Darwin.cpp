@@ -6,20 +6,19 @@
 
 using namespace stone;
 
-DarwinToolChain::DarwinToolChain(
-    Driver &driver, const llvm::Triple &triple,
-    const llvm::Optional<llvm::Triple> &targetVariant)
+Darwin::Darwin(Driver &driver, const llvm::Triple &triple,
+               const llvm::Optional<llvm::Triple> &targetVariant)
     : ToolChain(ToolChainKind::Darwin, driver, triple),
       targetVariant(targetVariant) {
   Initialize();
 }
 
-bool DarwinToolChain::Initialize() {
+bool Darwin::Initialize() {
   libPaths.push_back("/usr/lib/");
   return ToolChain::Initialize();
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
+std::unique_ptr<Tool> Darwin::BuildSCTool() {
   // Check to see if the SC path was given by the user.
   auto tool = ToolChain::BuildSCTool();
   if (tool) {
@@ -38,7 +37,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
+std::unique_ptr<Tool> Darwin::BuildLDTool() {
   auto tool = BuildTool(ToolKind::LD, "/usr/bin/ld", "ld", true);
   if (tool) {
     return tool;
@@ -51,7 +50,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
   return nullptr;
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
+std::unique_ptr<Tool> Darwin::BuildLLDTool() {
   auto tool = BuildTool(ToolKind::LLD, "/usr/bin/lld", "lld", true);
   if (tool) {
     return tool;
@@ -62,7 +61,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
   }
   return nullptr;
 }
-std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
+std::unique_ptr<Tool> Darwin::BuildClangTool() {
   auto tool = BuildTool(ToolKind::Clang, "/usr/bin/clang++", "clang++", true);
   if (tool) {
     return tool;
@@ -73,7 +72,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
   }
   return nullptr;
 }
-std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
+std::unique_ptr<Tool> Darwin::BuildGCCTool() {
   auto tool = BuildTool(ToolKind::GCC, "/usr/bin/g++", "g++", true);
   if (tool) {
     return tool;
@@ -86,68 +85,61 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructCompileJob(const file::File &input,
-                                     const OutputOptions &outputOpts) {
+Darwin::ConstructCompileJob(const file::File &input,
+                            const OutputOptions &outputOpts) {
   return ToolChain::ConstructCompileJob(input, outputOpts);
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructStaticLinkJob(InputList inputs,
-                                        file::Type outputFileType,
-                                        const OutputOptions &outputOpts) {
+Darwin::ConstructStaticLinkJob(InputList inputs,
+                               const OutputOptions &outputOpts) {
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
   }
   assert(tool && "Could not find a linker tool");
-  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs,
-                                         outputFileType);
+  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType,
-                                        const OutputOptions &outputOpts) {
+Darwin::ConstructStaticLinkJob(DepList deps, const OutputOptions &outputOpts) {
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
   }
   assert(tool && "Could not find a linker tool");
-  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, deps,
-                                         outputFileType);
+  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, deps);
 }
 
-std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
-    InputList inputs, file::Type outputFileType,
-    const OutputOptions &outputOpts, bool withLTO) {
+std::unique_ptr<Job>
+Darwin::ConstructDynamicLinkJob(InputList inputs,
+                                const OutputOptions &outputOpts) {
   return nullptr;
 }
-std::unique_ptr<Job> DarwinToolChain::ConstructDynamicLinkJob(
-    DepList deps, file::Type outputFileType, const OutputOptions &outputOpts,
-    bool withLTO) {
+std::unique_ptr<Job>
+Darwin::ConstructDynamicLinkJob(DepList deps, const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructExecLinkJob(InputList inputs,
-                                      file::Type outputFileType,
-                                      const OutputOptions &outputOpts) {
+Darwin::ConstructExecLinkJob(InputList inputs,
+                             const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-DarwinToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
-                                      const OutputOptions &outputOpts) {
+Darwin::ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) {
   return nullptr;
 }
 
 // JobInvocation
-// DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const
+// Darwin::ConstructInvocation(const CompileJobRequest &request) const
 // {
 //   return ToolChain::ConstructInvocation(request);
 // }
 
 // JobInvocation
-// DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {
+// Darwin::ConstructInvocation(const LinkJobRequest &request) const {
 //   auto tool = FindTool(ToolKind::LD);
 //   if (!tool) {
 //     tool = FindTool(ToolKind::LLD);
@@ -156,11 +148,11 @@ DarwinToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
 //   return JobInvocation(request, *tool);
 // }
 
-// Job *DarwinToolChain::CreateCompileJob(Driver &driver) {
+// Job *Darwin::CreateCompileJob(Driver &driver) {
 //   return ToolChain::CreateCompileJob(driver);
 // }
 
-// Job *DarwinToolChain::CreateLinkJob(Driver &driver) {
+// Job *Darwin::CreateLinkJob(Driver &driver) {
 
 //   Tool *tool = nullptr;
 //   if (driver.GetDriverOptions().useLDLinker) {
@@ -193,9 +185,9 @@ DarwinToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType,
 //     assert(false && "Invalid linking kind");
 //   }
 // }
-// Job *DarwinToolChain::CreateMergeModuleJob(Driver &driver) {
+// Job *Darwin::CreateMergeModuleJob(Driver &driver) {
 // return nullptr; }
 
-// void DarwinToolChain::AddTool(Tool& tool){
+// void Darwin::AddTool(Tool& tool){
 //   tools.push_back(tool)
 // }

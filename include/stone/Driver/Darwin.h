@@ -37,13 +37,13 @@ class FileSystem;
 
 namespace stone {
 
-class DarwinToolChain final : public ToolChain {
+class Darwin final : public ToolChain {
   const llvm::Optional<llvm::Triple> &targetVariant;
 
 public:
-  DarwinToolChain(Driver &driver, const llvm::Triple &triple,
-                  const llvm::Optional<llvm::Triple> &targetVariant);
-  ~DarwinToolChain() = default;
+  Darwin(Driver &driver, const llvm::Triple &triple,
+         const llvm::Optional<llvm::Triple> &targetVariant);
+  ~Darwin() = default;
 
 public:
   bool Initialize() override;
@@ -52,28 +52,27 @@ public:
   std::unique_ptr<Job> ConstructCompileJob(const file::File &input,
                                            const OutputOptions &outputOpts);
   std::unique_ptr<Job> ConstructStaticLinkJob(InputList inputs,
-                                              file::Type outputFileType,
+
                                               const OutputOptions &outputOpts);
 
   std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
-                                              file::Type outputFileType,
+
                                               const OutputOptions &outputOpts);
 
-  std::unique_ptr<Job> ConstructDynamicLinkJob(InputList inputs,
-                                               file::Type outputFileType,
-                                               const OutputOptions &outputOpts,
-                                               bool withLTO) override;
-  std::unique_ptr<Job> ConstructDynamicLinkJob(DepList deps,
-                                               file::Type outputFileType,
-                                               const OutputOptions &outputOpts,
-                                               bool withLTO) override;
+  std::unique_ptr<Job>
+  ConstructDynamicLinkJob(InputList inputs,
+
+                          const OutputOptions &outputOpts) override;
+  std::unique_ptr<Job>
+  ConstructDynamicLinkJob(DepList deps,
+
+                          const OutputOptions &outputOpts) override;
 
   std::unique_ptr<Job>
-  ConstructExecLinkJob(InputList inputs, file::Type outputFileType,
+  ConstructExecLinkJob(InputList inputs,
                        const OutputOptions &outputOpts) override;
   std::unique_ptr<Job>
-  ConstructExecLinkJob(DepList deps, file::Type outputFileType,
-                       const OutputOptions &outputOpts) override;
+  ConstructExecLinkJob(DepList deps, const OutputOptions &outputOpts) override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;

@@ -142,8 +142,8 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
     if (const llvm::opt::Arg *A = argList.getLastArg(opts::TargetVariant)) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
-    return std::make_unique<DarwinToolChain>(
-        *this, ctx.GetSystemOptions().target, targetVariant);
+    return std::make_unique<stone::Darwin>(*this, ctx.GetSystemOptions().target,
+                                           targetVariant);
   }
   // case llvm::Triple::Linux:
   //   toolChain = std::make_unique<stone::Linux>(*this, target);
