@@ -42,7 +42,7 @@ class DarwinToolChain final : public ToolChain {
   const llvm::Optional<llvm::Triple> &targetVariant;
 
 public:
-  DarwinToolChain(const Driver &driver, const llvm::Triple &triple,
+  DarwinToolChain(Driver &driver, const llvm::Triple &triple,
                   const llvm::Optional<llvm::Triple> &targetVariant);
   ~DarwinToolChain() = default;
 
@@ -50,40 +50,24 @@ public:
   bool Initialize() override;
 
 public:
-  // JobInvocation
-  // ConstructInvocation(const CompileJobRequest &request) const override;
 
-  // JobInvocation
-  // ConstructInvocation(const LinkJobRequest &request) const override;
-
-  // CommandInvocation
-  // ConstructInvocation(const StaticLinkIntent &intent) const override;
-
-  // CommandInvocation
-  // ConstructInvocation(const DynamicLinkIntent &intent) const override;
-
-  // Command* ConstructCommand(const CompileJob& job) const override;
-
-  std::unique_ptr<Job> ConstructCompileJob(const Tool &tool,
-                                           const file::File &input);
-  std::unique_ptr<Job> ConstructStaticLinkJob(const Tool &tool,
-                                              InputList inputs,
+  std::unique_ptr<Job> ConstructCompileJob(const file::File &input);
+  std::unique_ptr<Job> ConstructStaticLinkJob(InputList inputs,
                                               file::Type outputFileType);
 
-  std::unique_ptr<Job> ConstructStaticLinkJob(const Tool &tool, DepList deps,
+  std::unique_ptr<Job> ConstructStaticLinkJob(DepList deps,
                                               file::Type outputFileType);
 
-  std::unique_ptr<Job> ConstructDynamicLinkJob(const Tool &tool,
-                                               InputList inputs,
+  std::unique_ptr<Job> ConstructDynamicLinkJob(InputList inputs,
                                                file::Type outputFileType,
                                                bool withLTO) override;
-  std::unique_ptr<Job> ConstructDynamicLinkJob(const Tool &tool, DepList deps,
+  std::unique_ptr<Job> ConstructDynamicLinkJob(DepList deps,
                                                file::Type outputFileType,
                                                bool withLTO) override;
 
-  std::unique_ptr<Job> ConstructExecLinkJob(const Tool &tool, InputList inputs,
+  std::unique_ptr<Job> ConstructExecLinkJob(InputList inputs,
                                             file::Type outputFileType) override;
-  std::unique_ptr<Job> ConstructExecLinkJob(const Tool &tool, DepList deps,
+  std::unique_ptr<Job> ConstructExecLinkJob(DepList deps,
                                             file::Type outputFileType) override;
 
 protected:

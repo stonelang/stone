@@ -85,7 +85,7 @@ class ToolChain {
   ToolChainKind kind;
 
 protected:
-  const Driver &driver;
+  Driver &driver;
   const llvm::Triple triple;
 
 public:
@@ -95,8 +95,7 @@ public:
   // using ToolPaths = llvm::SmallVector<std::pair<llvm::StringRef,
   // llvm::StringRef, 16>
 protected:
-  ToolChain(ToolChainKind kind, const Driver &driver,
-            const llvm::Triple &triple);
+  ToolChain(ToolChainKind kind, Driver &driver, const llvm::Triple &triple);
 
 protected:
   /// The list of toolchain specific path prefixes to search for libraries.
@@ -163,29 +162,24 @@ public:
   //                                   const OutputOptions &outputOptions);
 
 public:
-  virtual std::unique_ptr<Job> ConstructCompileJob(const Tool &tool,
-                                                   const file::File &input);
+  virtual std::unique_ptr<Job> ConstructCompileJob(const file::File &input);
 
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(const Tool &tool, InputList inputs,
-                         file::Type outputFileType);
+  ConstructStaticLinkJob(InputList inputs, file::Type outputFileType);
   virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(const Tool &tool, DepList deps,
-                         file::Type outputFileType);
+  ConstructStaticLinkJob(DepList deps, file::Type outputFileType);
 
-  virtual std::unique_ptr<Job> ConstructExecLinkJob(const Tool &tool,
-                                                    InputList inputs,
+  virtual std::unique_ptr<Job> ConstructExecLinkJob(InputList inputs,
                                                     file::Type outputFileType);
-  virtual std::unique_ptr<Job> ConstructExecLinkJob(const Tool &tool,
-                                                    DepList deps,
+  virtual std::unique_ptr<Job> ConstructExecLinkJob(DepList deps,
                                                     file::Type outputFileType);
 
   virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(const Tool &tool, InputList inputs,
-                          file::Type outputFileType, bool withLTO);
+  ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
+                          bool withLTO);
   virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(const Tool &tool, DepList deps,
-                          file::Type outputFileType, bool withLTO);
+  ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
+                          bool withLTO);
 };
 
 /*

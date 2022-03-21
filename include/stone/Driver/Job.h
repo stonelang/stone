@@ -134,14 +134,6 @@ public:
   }
 
   bool IsSolo() { return (solo && (deps.size() == 0)); }
-  /// Print a nice summary of this job
-  void Print(ColorOutputStream &stream,
-             CrashState *crashState = nullptr) override;
-
-  /// Perform a complete dump of this job.
-  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
-            CrashState *crashState = nullptr) override;
-
 public:
   size_type size() const { return deps.size(); }
   iterator begin() { return deps.begin(); }

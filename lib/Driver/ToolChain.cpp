@@ -3,7 +3,7 @@
 
 using namespace stone;
 
-ToolChain::ToolChain(ToolChainKind kind, const Driver &driver,
+ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
                      const llvm::Triple &triple)
     : kind(kind), driver(driver), triple(triple) {}
 
@@ -71,43 +71,38 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Job> ToolChain::ConstructCompileJob(const Tool &tool,
-                                                    const file::File &input) {
+std::unique_ptr<Job> ToolChain::ConstructCompileJob(const file::File &input) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(const Tool &tool, InputList inputs,
-                                  file::Type outputFileType) {
+ToolChain::ConstructStaticLinkJob(InputList inputs, file::Type outputFileType) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(const Tool &tool, DepList deps,
-                                  file::Type outputFileType) {
+ToolChain::ConstructStaticLinkJob(DepList deps, file::Type outputFileType) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructDynamicLinkJob(const Tool &tool, InputList inputs,
-                                   file::Type outputFileType, bool withLTO) {
+ToolChain::ConstructDynamicLinkJob(InputList inputs, file::Type outputFileType,
+                                   bool withLTO) {
   return nullptr;
 }
 std::unique_ptr<Job>
-ToolChain::ConstructDynamicLinkJob(const Tool &tool, DepList deps,
-                                   file::Type outputFileType, bool withLTO) {
-  return nullptr;
-}
-
-std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(const Tool &tool, InputList inputs,
-                                file::Type outputFileType) {
+ToolChain::ConstructDynamicLinkJob(DepList deps, file::Type outputFileType,
+                                   bool withLTO) {
   return nullptr;
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(const Tool &tool, DepList deps,
-                                file::Type outputFileType) {
+ToolChain::ConstructExecLinkJob(InputList inputs, file::Type outputFileType) {
+  return nullptr;
+}
+
+std::unique_ptr<Job>
+ToolChain::ConstructExecLinkJob(DepList deps, file::Type outputFileType) {
 
   return nullptr;
 }
