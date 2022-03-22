@@ -76,7 +76,7 @@ Job *ToolChain::ConstructCompileJob(Compilation &compilation,
 
   auto tool = FindTool(ToolKind::SC);
   assert(tool);
-  
+
   auto job = compilation.CreateJob<CompileJob>(driver.GetContext(), *tool,
                                                const_cast<file::File *>(&input),
                                                outputOpts.outputFileType);

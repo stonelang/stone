@@ -98,15 +98,14 @@ static void BuildCompileJob(Compilation &compilation, const file::File &input,
 
   auto &toolChain = compilation.GetToolChain();
   auto &driver = compilation.GetDriver();
-  auto compileJob =
-      toolChain.ConstructCompileJob(compilation, input, outputOpts);
+  auto job = toolChain.ConstructCompileJob(compilation, input, outputOpts);
 
   // TODO: Maybe move into transitionQ -> finalQ
   // if(compileJob){
   //   compilation.EnqueueJob(compileJob);
   // }
   // Cache for now:
-  jc.CacheForLink(compileJob);
+  jc.CacheForLink(job);
 }
 
 static void BuildMultipleCompilingModel(Compilation &compilation,
@@ -163,8 +162,10 @@ void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
     stone::Panic("Unsupported Compiling mode");
   }
 
+  // TryBuildLinkJob();
+
   // First, check to see if there are any top-level requests
-  if (hc.GetReqCache().ForTop()) {
+  if (hc.GetJobCache().ForTop()) {
     // We are building the jobs recursively and we are linking, module-merging
     // and the like.
 
@@ -198,5 +199,25 @@ void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
 // }
 
 void JobCache::Finish(Compilation &compilation,
-                      const OutputOptions &outputOpts) {}
+                      const OutputOptions &outputOpts) {
+  auto &driver = compilation.GetDriver();
+
+  if ((forLink.size() > 0) && outputOpts.CanLink()) {
+
+    switch (driver.GetLinkMode()) {
+    case LinkMode::EmitExecutable: {
+      break;
+    }
+    case LinkMode::EmitDynamicLibrary: {
+      break;
+    }
+    case LinkMode::EmitStaticLibrary: {
+      break;
+    }
+    default:
+      stone::Panic("Invalid linking mode");
+    }
+  }
+}
+
 void JobStats::Print() {}
