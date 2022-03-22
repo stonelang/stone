@@ -82,9 +82,11 @@ public:
   void AddInput(job::Input input) { inputs.push_back(input); }
 
   static file::File *GetInputAsFile(job::Input *input) {
+    assert(input);
     return input->dyn_cast<file::File *>();
   }
   static Job *GetInputAsJob(job::Input *input) {
+    assert(input);
     return input->dyn_cast<Job *>();
   }
 
@@ -115,12 +117,19 @@ public:
 
 class CompileJob final : public Job {
 public:
-  CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType)
-      : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
+  CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType);
 
   CompileJob(Context &ctx, const Tool &tool, job::Input input,
-             file::Type outputFileType)
-      : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
+             file::Type outputFileType);
+
+public:
+  /// Print a nice summary of this job
+  void Print(ColorOutputStream &stream,
+             CrashState *crashState = nullptr) override;
+
+  /// Perform a complete dump of this job.
+  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
+            CrashState *crashState = nullptr) override;
 
 public:
   static bool classof(const Job *job) {
