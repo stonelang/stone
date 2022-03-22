@@ -61,6 +61,10 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto workDir = ComputeWorkDir(ial);
   auto dal = TranslateInputArgList(ial, workDir);
 
+  // TODO:
+  // auto compilationModel = ComputeCompilationModel(...)
+  // auto compilation = computeCompilationModel->BuildCompilation();
+
   // /// Think about
   bool isBatchModel = false;
   driverOpts.outputOptions.compilationMode =

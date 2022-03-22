@@ -71,17 +71,20 @@ template <typename Fn> void forAllTypes(const Fn &fn);
 
 class File final {
   file::Type ty;
+  unsigned fileID;
   llvm::StringRef name;
 
 public:
   File() = delete;
-  File(llvm::StringRef name, file::Type ty) : name(name), ty(ty) {}
+  File(llvm::StringRef name, file::Type ty, unsigned fileID = 0)
+      : name(name), ty(ty), fileID(fileID) {}
 
 public:
   llvm::StringRef GetName() { return name; }
   const llvm::StringRef GetName() const { return name; }
   file::Type GetType() const { return ty; }
   bool OnSystem() { return file::Exists(GetName()); }
+  unsigned GetFileID() { return fileID; }
 };
 
 /// Type used for a list of input arguments.

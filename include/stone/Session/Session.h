@@ -137,8 +137,8 @@ public:
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 
 public:
-  void AddInputFile(llvm::StringRef name);
-  void AddInputFile(llvm::StringRef name, file::Type ty);
+  void AddInputFile(llvm::StringRef name, unsigned fileID = 0);
+  void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID = 0);
 
 public:
   Mode &ComputeMode(const llvm::opt::InputArgList &ial);

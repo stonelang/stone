@@ -23,8 +23,8 @@ enum class CompilationMode : unsigned {
   /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
   Flat,
   /// n inputs, j CPU(s), j compile(s), n * j parses
-  /// Ex: compile_1(1=p,...,n),..., compile_2(1,2=p,...,n
-  /// ),...,compile_j(1,...,p=j,...,n)
+  /// Ex: compile_1(1=p,...,n),...,
+  /// compile_2(1,2=p,...,n),...,compile_j(1,...,p=j,...,n)
   CPU,
   /// n inputs, 1 compile, n parses
   /// Ex: compile(1,....,n)
