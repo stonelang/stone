@@ -37,7 +37,7 @@ void QuadraticCompilationModel::BuildCompileJobs(
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
     auto job = BuildCompileJob(input, inputs, outputOpts);
-    // We always add there in the event we are printing 
+    // We always add there in the event we are printing
     jc.forCompile.push_back(job);
 
     // Add to cache

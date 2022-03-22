@@ -135,9 +135,8 @@ public:
   CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal,
                                          bool &isBatchModel) const;
 
-
-  //std::unique_ptr<CompilationModel> ComputeCompilationModel(const llvm::opt::DerivedArgList &dal);
-
+  // std::unique_ptr<CompilationModel> ComputeCompilationModel(const
+  // llvm::opt::DerivedArgList &dal);
 
   CompilationMode GetCompilationMode() const {
     return driverOpts.outputOptions.compilationMode;
