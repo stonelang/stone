@@ -12,21 +12,22 @@ enum class LTOKind {
   ///
   Thin
 };
-// CompilationMode
-enum class CompilationMode {
-  // N compile job(s) per N files => N^2 parses
+/// This mode controls the compilation process
+/// p := -primary-file
+enum class CompilationMode : unsigned {
+  /// n inputs, n compile(s), n * n  parses(s)
+  /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
+  /// compile_n(1,....,n=p)
   Quadratic = 0,
-  /// Multiple compile jobs
-
-  // One compile job per file, with each job having a single primary => N
-  // parses
+  /// n input(s), n compile(s), n parse(s)
+  /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
   Flat,
-
-  // One compile job per CPU, identifying an equal-sized "batch" of
-  // the module's files as primaries
+  /// n inputs, j CPU(s), j compile(s), n * j parses
+  /// Ex: compile_1(1=p,...,n),..., compile_2(1,2=p,...,n
+  /// ),...,compile_j(1,...,p=j,...,n)
   CPU,
-
-  /// One compile job for the entire module,
+  /// n inputs, 1 compile, n parses
+  /// Ex: compile(1,....,n)
   Single,
 };
 
