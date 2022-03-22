@@ -187,6 +187,10 @@ class JobCache final {
 public:
   /// We keep track of the jobs for the module that we are building.
   /// These are CompileJob
+  llvm::SmallVector<job::Input, 16> forCompile;
+
+  /// We keep track of the jobs for the module that we are building.
+  /// These are CompileJob
   llvm::SmallVector<job::Input, 16> forModule;
 
   /// When are building the Jobs(s), keep track of the linker dependecies

@@ -18,12 +18,18 @@ public:
 
 public:
   virtual std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
+  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
                    const OutputOptions &outputOpts) {}
 
 protected:
   virtual void BuildJobs(Driver &driver, const file::Files &inputs,
-                         const OutputOptions &outputOpts) {}
+                         JobCache &jc, const OutputOptions &outputOpts) {}
+
+protected:
+  Job *BuildLinkJob(Driver &driver, JobCache &jc,
+                    const OutputOptions &outputOpts);
+  Job *BuildLinkJob(Driver &driver, const file::Files &inputs,
+                    const OutputOptions &outputOpts);
 };
 
 class QuadraticCompilationModel final : public CompilationModel {
@@ -32,15 +38,15 @@ public:
 
 public:
   std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
+  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
                    const OutputOptions &outputOpts) override;
 
 protected:
-  void BuildJobs(Driver &driver, const file::Files &inputs,
+  void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
-  void BuildCompileJobs(Driver &driver, const file::Files &inputs,
+  void BuildCompileJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                         const OutputOptions &outputOpts);
 };
 
@@ -49,12 +55,12 @@ public:
   FlatCompilationModel() : CompilationModel(CompilationMode::Flat) {}
 
 protected:
-  void BuildJobs(Driver &driver, const file::Files &inputs,
+  void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 public:
   std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
+  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
                    const OutputOptions &outputOpts) override;
 };
 
@@ -64,12 +70,12 @@ public:
   CPUCompilationModel() : CompilationModel(CompilationMode::CPU) {}
 
 protected:
-  void BuildJobs(Driver &driver, const file::Files &inputs,
+  void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 public:
   std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
+  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
                    const OutputOptions &outputOpts) override;
 };
 class SingleCompilationModel final : public CompilationModel {
@@ -77,12 +83,12 @@ public:
   SingleCompilationModel() : CompilationModel(CompilationMode::Single) {}
 
 protected:
-  void BuildJobs(Driver &driver, const file::Files &inputs,
+  void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 public:
   std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
+  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
                    const OutputOptions &outputOpts) override;
 };
 
