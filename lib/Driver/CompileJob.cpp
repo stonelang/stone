@@ -10,7 +10,7 @@ CompileJob::CompileJob(Context &ctx, const Tool &tool,
 
 CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
                        file::Type outputFileType)
-    : Job(JobKind::Compile, ctx, tool, {}, outputFileType),
+    : Job(JobKind::Compile, ctx, tool, input, outputFileType),
       primaryInput(input) {}
 
 /// Print a nice summary of this job

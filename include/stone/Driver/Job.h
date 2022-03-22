@@ -126,7 +126,7 @@ public:
 
 public:
   job::Input GetPrimaryInput() { return primaryInput; }
-  void SetPrimaryInput(job::Input input) { primaryInput = input; }
+  // void SetPrimaryInput(job::Input input) { primaryInput = input; }
 
   /// Print a nice summary of this job
   void Print(ColorOutputStream &stream,

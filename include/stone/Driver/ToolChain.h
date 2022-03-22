@@ -86,6 +86,9 @@ protected:
   Driver &driver;
   const llvm::Triple triple;
 
+  // All the jobs the tool chain created --- Lifetime management.
+  llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
+
 public:
   using Paths = llvm::SmallVector<std::string, 16>;
   using Tools = llvm::SmallVector<Tool, 16>;
@@ -159,6 +162,13 @@ public:
 
   virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
                                        const OutputOptions &outputOpts);
+
+protected:
+  template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {
+    auto job = new JobTy(std::forward<Args>(args)...);
+    jobs.emplace_back(job);
+    return job;
+  }
 };
 
 /*
