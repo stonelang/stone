@@ -19,7 +19,7 @@
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPathOptions.h"
-#include "stone/Syntax/SyntaxContextAlloc.h"
+#include "stone/Syntax/SyntaxAlloc.h"
 #include "stone/Syntax/Type.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"

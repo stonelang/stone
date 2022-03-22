@@ -31,7 +31,7 @@ enum class CompilationMode {
 };
 
 enum class LinkMode : uint8_t {
-  // We are not linking 
+  // We are not linking
   None = 0,
   // The default output compiling -- sc looks afor a main file and
   // outputs an executable file

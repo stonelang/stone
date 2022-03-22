@@ -13,19 +13,15 @@ class CompilationModel {
 public:
   CompilationModel(CompilationMode mode) : mode(mode) {}
 };
-class QuadraticCompilationModel final : public CompilationModel{
+class QuadraticCompilationModel final : public CompilationModel {
 public:
-
 };
 
-class FlatCompilationModel final  : public CompilationModel{
+class FlatCompilationModel final : public CompilationModel {};
 
-};
+class CPUCompilationModel final : public CompilationModel {
 
-class CPUCompilationModel final : public CompilationModel{
-
-}
-class SingleCompilationModel final : public CompilationModel {
+} class SingleCompilationModel final : public CompilationModel {
 };
 
 } // namespace stone
