@@ -111,7 +111,12 @@ public:
                         llvm::StringRef workDir);
 
   bool JustLink() const {
-    return (GetMode().IsNone() &&
+    return (!GetMode().CanCompile() &&
+            (driverOpts.outputOptions.linkMode != LinkMode::None));
+  }
+
+  bool CanLink() const {
+    return (GetMode().CanCompile() &&
             (driverOpts.outputOptions.linkMode != LinkMode::None));
   }
 

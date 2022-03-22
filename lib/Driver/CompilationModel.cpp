@@ -1,29 +1,40 @@
 #include "stone/Driver/CompilationModel.h"
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 
-void QuadraticCompilationModel::BuildCompileJob(
-    const file::File &primaryInput, const file::Files &inputs,
+void QuadraticCompilationModel::BuildCompileJobs(
+    Driver &driver, const file::Files &inputs,
     const OutputOptions &outputOpts) {
 
-  // auto job = toolChain.ConstructCompileJob(primaryInput, outputOpts);
-  // for (auto &input : inputs) {
-  //   /// The tool chain stores the jobs that it created.
-  //   job.AddInput(input);
-  // }
-}
+  auto BuildCompileJob = [&](const file::File &primaryInput,
+                             const file::Files &inputs,
+                             const OutputOptions &outputOpts) -> Job * {
+    // auto job = toolChain.ConstructCompileJob(primaryInput, outputOpts);
+    // for (auto &input : inputs) {
+    //   /// The tool chain stores the jobs that it created.
+    //   job.AddInput(input);
+    // }
+    return nullptr;
+  };
 
+  for (auto &input : inputs) {
+    assert(input.GetType() == file::Type::Stone); // Only file-type for now
+    auto job = BuildCompileJob(input, inputs, outputOpts);
+  }
+}
 void QuadraticCompilationModel::BuildJobs(Driver &driver,
                                           const file::Files &inputs,
                                           const OutputOptions &outputOpts) {
-  for (auto &input : inputs) {
-    switch (input.GetType()) {
-    case file::Type::Stone: {
-      BuildCompileJob(input, inputs, outputOpts);
-      break;
+  if (driver.GetMode().CanCompile()) {
+    BuildCompileJobs(driver, inputs, outputOpts);
+    if (driver.JustCompile()) {
+      return;
     }
-    default:
-      stone::Panic("Alien file -- cannot build job.");
+  }
+  if (driver.CanLink()) {
+    if (driver.JustLink()) {
+      return;
     }
   }
 }

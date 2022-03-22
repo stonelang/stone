@@ -16,31 +16,32 @@ class CompilationModel {
 public:
   CompilationModel(CompilationMode mode) : mode(mode) {}
 
-protected:
-  virtual void BuildJobs(Driver &driver, const file::Files &inputs,
-                         const OutputOptions &outputOpts) {}
-
 public:
   virtual std::unique_ptr<Compilation>
   BuildCompilation(Driver &driver, const file::Files &inputs,
                    const OutputOptions &outputOpts) {}
+
+protected:
+  virtual void BuildJobs(Driver &driver, const file::Files &inputs,
+                         const OutputOptions &outputOpts) {}
 };
 
 class QuadraticCompilationModel final : public CompilationModel {
 public:
   QuadraticCompilationModel() : CompilationModel(CompilationMode::Quadratic) {}
 
+public:
+  std::unique_ptr<Compilation>
+  BuildCompilation(Driver &driver, const file::Files &inputs,
+                   const OutputOptions &outputOpts) override;
+
 protected:
   void BuildJobs(Driver &driver, const file::Files &inputs,
                  const OutputOptions &outputOpts) override;
 
-public:
-  void BuildCompileJob(const file::File &input, const file::Files &inputs,
-                       const OutputOptions &outputOpts);
-
-  std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs,
-                   const OutputOptions &outputOpts) override;
+private:
+  void BuildCompileJobs(Driver &driver, const file::Files &inputs,
+                        const OutputOptions &outputOpts);
 };
 
 class FlatCompilationModel final : public CompilationModel {

@@ -86,7 +86,7 @@ protected:
   Driver &driver;
   const llvm::Triple triple;
 
-  // All the jobs the tool chain created --- Lifetime management.
+  // All the jobs the tool chain created --- lifetime management.
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
@@ -154,14 +154,15 @@ public:
                                    const file::File &input,
                                    const OutputOptions &outputOpts);
 
+  // TODO: You only need ConstructLinkJob
   virtual Job *ConstructStaticLinkJob(job::InputList inputs,
-                                      const OutputOptions &outputOpts);
+                                      const OutputOptions &outputOpts) = 0;
 
   virtual Job *ConstructExecLinkJob(job::InputList inputs,
-                                    const OutputOptions &outputOpts);
+                                    const OutputOptions &outputOpts) = 0;
 
   virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
-                                       const OutputOptions &outputOpts);
+                                       const OutputOptions &outputOpts) = 0;
 
 protected:
   template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {

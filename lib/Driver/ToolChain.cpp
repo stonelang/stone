@@ -78,24 +78,8 @@ Job *ToolChain::ConstructCompileJob(Compilation &compilation,
   auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,
                                  const_cast<file::File *>(&input),
                                  outputOpts.outputFileType);
-
   // Do more stuff here.
   return job;
-}
-
-Job *ToolChain::ConstructStaticLinkJob(job::InputList inputs,
-                                       const OutputOptions &outputOpts) {
-  return nullptr;
-}
-
-Job *ToolChain::ConstructDynamicLinkJob(job::InputList inputs,
-                                        const OutputOptions &outputOpts) {
-  return nullptr;
-}
-
-Job *ToolChain::ConstructExecLinkJob(job::InputList inputs,
-                                     const OutputOptions &outputOpts) {
-  return nullptr;
 }
 
 // std::unique_ptr<Job>
