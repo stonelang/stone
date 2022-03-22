@@ -34,10 +34,12 @@ void QuadraticCompilationModel::BuildCompileJobs(
     // }
     return nullptr;
   };
-
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
     auto job = BuildCompileJob(input, inputs, outputOpts);
+    // We always add there in the event we are printing 
+    jc.forCompile.push_back(job);
+
     // Add to cache
   }
 }
@@ -54,9 +56,9 @@ void QuadraticCompilationModel::BuildJobs(Driver &driver,
   if (driver.CanLink()) {
     if (driver.JustLink()) {
       BuildLinkJob(driver, inputs, outputOpts);
-      return;
+    } else {
+      BuildLinkJob(driver, jc, outputOpts);
     }
-    BuildLinkJob(driver, jc, outputOpts);
   }
 }
 
