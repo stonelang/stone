@@ -1,6 +1,7 @@
 
 * Uses clang 12.0.1 and llvm 12.0.1 
 
+
 * stone usage ideas 
 stone -emit-module Session.stone -> Session.stonemodule 
 
