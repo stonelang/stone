@@ -1,6 +1,6 @@
 #include "stone/Core/Context.h"
-#include "stone/Core/CoreDiagnostic.h"
 
+#include "stone/Core/CoreDiagnostic.h"
 #include "llvm/Support/Host.h"
 
 using namespace stone;

@@ -1,4 +1,5 @@
 #include "stone/Driver/BuildSystem.h"
+
 #include "stone/Core/Defer.h"
 
 using namespace stone;
@@ -55,7 +56,7 @@ void BuildSystem::StopBuild() {}
 // static Job *BuildCompileJob(Compilation &compilation, JobsBuilt &jb,
 //                             file::File &input) {
 
-//   switch (compilation.GetCompilingModelKind()) {}
+//   switch (compilation.GetCompilationMode()) {}
 
 //   auto job = compilation.GetToolChain().CreateCompileJob(compilation);
 //   job->AddInput(input);

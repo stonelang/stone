@@ -48,7 +48,6 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
-
   assert(AtStartOfDecl(tok) && "Invalid top-declaration");
 }
 
@@ -63,7 +62,6 @@ static bool HasAccessLevel(const syn::Token &tok) {
   }
 }
 SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
-
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
   AccessLevel accessLevel = AccessLevel::None;
@@ -90,7 +88,6 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
 }
 SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
                                        AccessLevel accessLevel) {
-
   SyntaxResult<Decl *> syntaxResult;
 
   // TODO: ParseTemplateDecl first before you move
@@ -110,7 +107,6 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
 }
 
 void Parser::ParseFunctionSignature(FunDecl *funDecl) {
-
   assert(funDecl && "Null FunDecl");
 
   // TODO:
@@ -131,18 +127,15 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
 }
 
 void Parser::ParseFunctionBody(FunDecl *funDecl) {
-
   assert(funDecl && "Null FunDecl");
   // assert(tok.Is(tk::Kind::l_brace) && "Require left brace.");
 }
 void Parser::ParseFunctionArguments(FunDecl *funDecl) {
-
   assert(funDecl && "Null FunDecl");
   // assert(tok.Is(tk::Kind::l_brace) && "Require left brace.");
 }
 SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
                                           AccessLevel accessLevel) {
-
   assert(tok.GetKind() == tk::Kind::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 

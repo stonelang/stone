@@ -1,8 +1,43 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Job.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;
+
+CompileJob::CompileJob(Context &ctx, const Tool &tool,
+                       file::Type outputFileType)
+    : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
+
+CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
+                       file::Type outputFileType)
+    : Job(JobKind::Compile, ctx, tool, input, outputFileType),
+      primaryInput(input) {}
+
+/// Print a nice summary of this job
+void CompileJob::Print(ColorOutputStream &stream, CrashState *crashState) {
+
+  // stream() << std::to_string(GetQueueID()) << ":";
+  // stream().UseGreen();
+  // stream() << GetName();
+  // stream().Reset();
+  // stream() << "(";
+  // int inputSize = inputs.size();
+  // for (auto &input : inputs) {
+  //   --inputSize;
+  //   stream() << input.GetName();
+  //   if (inputSize != 0) {
+  //     stream() << ",";
+  //   }
+  // }
+  // stream() << ")"
+  //          << " -> "
+  //          << "object" << '\n';
+  // stream() << '\n';
+}
+
+/// Perform a complete dump of this job.
+void CompileJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+                      CrashState *crashState) {}
 
 // CompileJob::CompileJob(Intent &intent, Context &ctx, Tool &tool)
 //     : Job(intent, ctx, tool) {}

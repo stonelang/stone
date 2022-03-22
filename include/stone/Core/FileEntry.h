@@ -3,7 +3,6 @@
 
 #include "stone/Core/DirEntry.h"
 #include "stone/Core/LLVM.h"
-
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/Hashing.h"
 #include "llvm/ADT/PointerUnion.h"

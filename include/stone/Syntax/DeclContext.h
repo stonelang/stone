@@ -1,19 +1,18 @@
 #ifndef STONE_SYNTAX_DECLCONTEXT_H
 #define STONE_SYNTAX_DECLCONTEXT_H
 
+#include <type_traits>
+
 #include "stone/Core/LLVM.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeAlignment.h"
-
 #include "llvm/ADT/PointerEmbeddedInt.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/Support/raw_ostream.h"
-
-#include <type_traits>
 
 namespace llvm {
 class raw_ostream;

@@ -1,14 +1,14 @@
 #include "stone/Driver/ToolChain.h"
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
 
-ToolChain::ToolChain(ToolChainKind kind, const Driver &driver,
+ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
                      const llvm::Triple &triple)
     : kind(kind), driver(driver), triple(triple) {}
 
 bool ToolChain::Initialize() {
-
   // TODO: Clean this up -- works for now
   auto stoneTool = BuildSCTool();
   if (stoneTool) {
@@ -59,7 +59,6 @@ Tool *ToolChain::FindTool(ToolKind tk) const {
 }
 
 std::unique_ptr<Tool> ToolChain::BuildSCTool() {
-
   if (driver.GetDriverOptions().HasSCPath()) {
     auto tool =
         BuildTool(ToolKind::SC, driver.GetDriverOptions().scPath.c_str(),
@@ -71,43 +70,40 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-JobInvocation
-ToolChain::ConstructInvocation(const CompileJobRequest &request) const {
-
+Job *ToolChain::ConstructCompileJob(Compilation &compilation,
+                                    const file::File &input,
+                                    const OutputOptions &outputOpts) {
   auto tool = FindTool(ToolKind::SC);
-  assert(tool && "Could not find 'stone-compile' tool!");
-
-  JobInvocation ji(request, *tool);
-  return ji;
+  assert(tool);
+  auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,
+                                 const_cast<file::File *>(&input),
+                                 outputOpts.outputFileType);
+  // Do more stuff here.
+  return job;
 }
 
-JobInvocation
-ToolChain::ConstructInvocation(const LinkJobRequest &request) const {
-  stone::Panic("StaticLink construction not implemented  here");
-}
+// std::unique_ptr<Job>
+// ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
+//                         std::unique_ptr<CommandOutput> output,
+//                         const OutputOptions &outputOptions) {
 
-std::unique_ptr<Job>
-ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
-                        std::unique_ptr<CommandOutput> output,
-                        const OutputOptions &outputOptions) {
+//   auto Invocation = [&]() -> JobInvocation {
+//     switch (request.GetKind()) {
+//     case RequestKind::Compile:
+//       return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
+//     case RequestKind::Link:
+//       return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
+//     case RequestKind::Input:
+//       stone::Panic("Not a 'JobRequest'");
+//     }
+//   };
+// }
 
-  auto Invocation = [&]() -> JobInvocation {
-    switch (request.GetKind()) {
-    case RequestKind::Compile:
-      return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
-    case RequestKind::Link:
-      return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
-    case RequestKind::Input:
-      stone::Panic("Not a 'JobRequest'");
-    }
-  };
-}
+// std::unique_ptr<CompilationJob> ToolChain::ConstructCompileJob() {
 
-std::unique_ptr<CompilationJob> ToolChain::ConstructCompileJob() {
-
-  auto tool = FindTool(ToolKind::SC);
-  return nullptr;
-}
+//   auto tool = FindTool(ToolKind::SC);
+//   return nullptr;
+// }
 
 // Job *ToolChain::CreateCompileJob(Driver &driver) {
 

@@ -24,7 +24,6 @@ public:
   Syntax &GetSyntax() { return syntax; }
 };
 class BlockStmtSyntaxBuilder : public SyntaxBuilder {
-
 public:
   BlockStmtSyntaxBuilder(Syntax &syntax);
 

@@ -3,7 +3,6 @@
 
 #include "stone/Core/File.h"
 #include "stone/Core/LLVM.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/TinyPtrVector.h"

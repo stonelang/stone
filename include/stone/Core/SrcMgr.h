@@ -1,16 +1,15 @@
 #ifndef STONE_CORE_SRCMGR_H
 #define STONE_CORE_SRCMGR_H
 
+#include <functional>
+#include <map>
+
 #include "stone/Core/FileSystem.h"
 #include "stone/Core/SrcLoc.h"
-
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/Support/SourceMgr.h"
-
-#include <functional>
-#include <map>
 
 namespace stone {
 

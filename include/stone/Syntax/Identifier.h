@@ -1,10 +1,16 @@
 #ifndef LLVM_CLANG_CORE_IDENTIFIERTABLE_H
 #define LLVM_CLANG_CORE_IDENTIFIERTABLE_H
 
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <utility>
+
 #include "stone/Core/LLVM.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Core/TokenKind.h"
-
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringMap.h"
@@ -12,13 +18,6 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include "llvm/Support/type_traits.h"
-
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <string>
-#include <utility>
 
 namespace stone {
 class SystemOptions;

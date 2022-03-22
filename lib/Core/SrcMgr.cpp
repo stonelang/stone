@@ -1,6 +1,6 @@
 #include "stone/Core/SrcMgr.h"
-#include "stone/Core/Token.h"
 
+#include "stone/Core/Token.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/raw_ostream.h"

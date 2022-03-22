@@ -17,7 +17,6 @@ const char *Request::GetNameByKind(RequestKind kind) {
 
 void Request::Print(ColorOutputStream &stream,
                     llvm::StringRef terminator) const {
-
   //   /// TODO: IntentFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();
@@ -53,12 +52,10 @@ static void BuildBatchCompilingModel(Compilation &compilation, HotCache &chi,
 static void BuildSingleCompilingModel(Compilation &compilation, HotCache &hc,
                                       const file::Files &inputs,
                                       const OutputOptions &outputOptions) {
-
   // Create a single CompileJobRequest to handl all InputRequest(s)
   auto *compileRequest = compilation.GetDriver().MakeRequest<CompileJobRequest>(
       compilation.GetDriver().GetOutputFileType());
   for (auto &input : inputs) {
-
     if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
       assert(input.GetType() == compilation.GetDriver().GetInputFileType() &&
              "Incompatible input file types");
@@ -67,9 +64,9 @@ static void BuildSingleCompilingModel(Compilation &compilation, HotCache &hc,
       compileRequest->AddInput(
           compilation.GetDriver().MakeRequest<InputRequest>(input));
 
-      hc.AddModuleInput(compileRequest);
+      hc.GetReqCache().CacheForModule(compileRequest);
       if (outputOptions.CanLink()) {
-        hc.AddLinkInput(hc.currentRequest);
+        hc.GetReqCache().CacheForLink(hc.GetReqCache().currentRequest);
       }
     }
   }
@@ -78,30 +75,30 @@ static void BuildSingleCompilingModel(Compilation &compilation, HotCache &hc,
 static void BuildMultipleCompilingModel(Compilation &compilation, HotCache &hc,
                                         const file::Files &inputs,
                                         const OutputOptions &outputOptions) {
+  auto &tc = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
   for (auto &input : inputs) {
     // TODO: Way out there, but there is potential for git here?
     if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
-
       assert(input.GetType() == compilation.GetDriver().GetInputFileType() &&
              "Incompatible input file types");
       assert(file::IsPartOfCompilation(input.GetType()));
 
-      hc.currentRequest =
-          compilation.GetDriver().MakeRequest<InputRequest>(input);
+      hc.GetReqCache().currentRequest = driver.MakeRequest<InputRequest>(input);
       switch (input.GetType()) {
       case file::Type::Stone: {
-        hc.currentRequest =
-            compilation.GetDriver().MakeRequest<CompileJobRequest>(
-                hc.currentRequest, compilation.GetDriver().GetOutputFileType());
-        hc.AddModuleInput(hc.currentRequest);
+        hc.GetReqCache().currentRequest = driver.MakeRequest<CompileJobRequest>(
+            hc.GetReqCache().currentRequest, driver.GetOutputFileType());
+        hc.GetReqCache().CacheForModule(hc.GetReqCache().currentRequest);
         if (outputOptions.CanLink()) {
-          hc.AddLinkInput(hc.currentRequest);
+          hc.GetReqCache().CacheForLink(hc.GetReqCache().currentRequest);
         }
         break;
       }
       case file::Type::Object:
         if (outputOptions.CanLink()) {
-          hc.AddLinkInput(hc.currentRequest);
+          hc.GetReqCache().CacheForLink(hc.GetReqCache().currentRequest);
           break;
         }
       default:
@@ -114,18 +111,17 @@ static void BuildMultipleCompilingModel(Compilation &compilation, HotCache &hc,
 void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
                               const file::Files &inputs,
                               const OutputOptions &outputOptions) {
-
   // We assert here because this should have been checked above.
   assert(inputs.empty());
 
-  switch (GetCompilingModelKind()) {
-  case CompilingModelKind::Multiple:
+  switch (GetCompilationMode()) {
+  case CompilationMode::Quadratic:
     BuildMultipleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
-  case CompilingModelKind::Single:
+  case CompilationMode::Single:
     BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
-  case CompilingModelKind::Batch:
+  case CompilationMode::CPU:
     BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
     break;
   default:
@@ -133,38 +129,36 @@ void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
   }
 
   // Now, do we need any top-level JobRequests
-  if (outputOptions.CanLink() && hc.HasLinkInputs()) {
-
+  if (outputOptions.CanLink() && hc.GetReqCache().ForLink()) {
     Request *linkRequest = nullptr;
     switch (GetLinkMode()) {
     case LinkMode::EmitExecutable: {
-      linkRequest =
-          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+      linkRequest = MakeRequest<LinkJobRequest>(hc.GetReqCache().forLink,
+                                                GetLinkMode(), false);
       break;
     }
     case LinkMode::EmitDynamicLibrary: {
-      linkRequest = MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(),
-                                                outputOptions.RequiresLTO());
+      linkRequest = MakeRequest<LinkJobRequest>(
+          hc.GetReqCache().forLink, GetLinkMode(), outputOptions.WithLTO());
       break;
     }
     case LinkMode::EmitStaticLibrary: {
-      linkRequest =
-          MakeRequest<LinkJobRequest>(hc.linkInputs, GetLinkMode(), false);
+      linkRequest = MakeRequest<LinkJobRequest>(hc.GetReqCache().forLink,
+                                                GetLinkMode(), false);
       break;
     }
     default:
       stone::Panic("Invalid linking mode");
     }
     assert(linkRequest);
-    hc.AddTopLevelRequest(linkRequest);
+    hc.GetReqCache().CacheForTop(linkRequest);
   }
 }
 
-void Driver::PrintJobRequests(const HotCache &hc) {
-
+void Driver::PrintJobRequests(HotCache &hc) {
   // Let just handle top level
-  if (hc.HasTopLevelRequest()) {
-    for (auto &request : hc.topLevelRequests) {
+  if (hc.GetReqCache().ForTop()) {
+    for (auto &request : hc.GetReqCache().forTop) {
       request->Print(GetContext().Out());
     }
   }

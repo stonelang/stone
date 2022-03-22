@@ -1,6 +1,14 @@
 #ifndef STONE_SYNTAX_DECL_H
 #define STONE_SYNTAX_DECL_H
 
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <iterator>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 #include "stone/Core/AddressSpace.h"
 #include "stone/Core/DiagnosticArgument.h"
 #include "stone/Core/LLVM.h"
@@ -13,7 +21,6 @@
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -22,14 +29,6 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/VersionTuple.h"
-
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <iterator>
-#include <string>
-#include <type_traits>
-#include <utility>
 
 namespace stone {
 namespace syn {
@@ -62,7 +61,6 @@ public:
 };
 
 class alignas(1 << DeclAlignInBits) Decl : public SyntaxNode {
-
   friend DeclStats;
 
   DeclKind kind;
@@ -195,7 +193,6 @@ public:
 };
 
 class TypeDecl : public NamedDecl /*TODO: AnyDecl*/ {
-
   friend class SyntaxContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
@@ -258,7 +255,6 @@ class FunctionDecl
     : public DeclaratorDecl,
       public DeclContext,
       public AccessControl /*, syn::Redeclarable<FunctionDecl> */ {
-
   StorageKind storageKind;
 
 public:
@@ -281,7 +277,6 @@ public:
 
 /// Standalone function: fun F0() -> void {}
 class FunDecl : public FunctionDecl {
-
   // TODO: You should aonly pass SyntaxContext and DeclContext
 public:
   FunDecl(SrcLoc loc, SyntaxContext &tc, DeclContext *dc)
@@ -333,7 +328,6 @@ public:
 class NominalTypeDecl : public TypeDecl,
                         public DeclContext,
                         public AccessControl {
-
 public:
 };
 

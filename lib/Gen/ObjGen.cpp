@@ -1,4 +1,5 @@
 #include "stone/Gen/ObjGen.h"
+
 #include "llvm/IR/Module.h"
 
 using namespace stone;

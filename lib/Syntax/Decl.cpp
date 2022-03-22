@@ -1,4 +1,12 @@
 #include "stone/Syntax/Decl.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <string>
+#include <tuple>
+#include <utility>
+
 #include "stone/Core/LLVM.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SystemOptions.h"
@@ -7,7 +15,6 @@
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Type.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"
@@ -17,13 +24,6 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/VersionTuple.h"
 #include "llvm/Support/raw_ostream.h"
-
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <string>
-#include <tuple>
-#include <utility>
 
 using namespace stone;
 using namespace stone::syn;

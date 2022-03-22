@@ -1,4 +1,5 @@
 #include "stone/Compile/Parser.h"
+
 #include "stone/Core/Context.h"
 #include "stone/Core/SrcLoc.h"
 #include "stone/Core/SrcMgr.h"
@@ -20,14 +21,12 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
       listener(listener) {
-
   stats.reset(new ParserStats(*this, GetContext()));
   GetContext().GetStatEngine().Register(stats.get());
 
   Initialize();
 }
 void Parser::Initialize() {
-
   // TODO: fishy?
   if (Peek().Is(tk::Kind::MAX) && (tok.Is(tk::Kind::MAX))) {
     // This is an empty file

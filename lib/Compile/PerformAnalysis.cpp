@@ -6,7 +6,6 @@
 #include "stone/Core/LLVMContext.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
-
 #include "llvm/IR/Module.h"
 
 using namespace stone;
@@ -19,7 +18,6 @@ using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
 void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
-
   for (auto source : sources) {
     assert(source);
     PerformAnalysis(*source);
@@ -37,7 +35,6 @@ void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
 }
 
 void Lang::PerformAnalysis(SourceUnit &source) {
-
   auto syntaxFile = Parse(source.GetSrcID());
   assert(syntaxFile);
 
@@ -63,7 +60,6 @@ void Lang::PerformAnalysis(SourceUnit &source) {
 }
 
 SyntaxFile *Lang::Parse(const unsigned srcID) {
-
   // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
                              *GetModuleSystem().GetMainModule(),
@@ -81,7 +77,6 @@ void Lang::TypeCheckSyntaxFile(SyntaxFile &sf) {
 }
 /// Perform type-checking on the entire module
 void Lang::TypeCheckModule(syn::Module *mod) {
-
   assert(mod && "Null 'syn::Module'");
   for (auto mf : mod->GetFiles()) {
     if (auto sf = llvm::dyn_cast<SyntaxFile>(mf))

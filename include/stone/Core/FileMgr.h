@@ -1,11 +1,15 @@
 #ifndef STONE_CORE_FILEMANAGER_H
 #define STONE_CORE_FILEMANAGER_H
 
+#include <ctime>
+#include <map>
+#include <memory>
+#include <string>
+
 #include "stone/Core/DirEntry.h"
 #include "stone/Core/FileEntry.h"
 #include "stone/Core/FileSystemOptions.h"
 #include "stone/Core/LLVM.h"
-
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -16,11 +20,6 @@
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/VirtualFileSystem.h"
-
-#include <ctime>
-#include <map>
-#include <memory>
-#include <string>
 
 namespace llvm {
 
@@ -264,7 +263,6 @@ public:
 
   getBufferForFile(StringRef Filename, bool isVolatile = false,
                    bool RequiresNullTerminator = true) {
-
     return getBufferForFileImpl(Filename, /*FileSize=*/-1, isVolatile,
                                 RequiresNullTerminator);
   }

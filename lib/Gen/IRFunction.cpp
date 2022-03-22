@@ -1,4 +1,5 @@
 #include "stone/Gen/IRFunction.h"
+
 #include "stone/Gen/IRModule.h"
 
 using namespace stone;

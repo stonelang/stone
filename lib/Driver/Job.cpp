@@ -1,33 +1,64 @@
 #include "stone/Driver/Job.h"
+#include "stone/Core/Defer.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
-using stone::Driver;
-using stone::Job;
-using stone::JobStats;
+using namespace stone;
 
-Job::Job(const JobInvocation &invocation) : invocation(invocation) {}
+const char *Job::GetNameByKind(JobKind jobKind) const {
+  switch (jobKind) {
+  case JobKind::Compile:
+    return "compile";
+  case JobKind::Backend:
+    return "backend";
+  case JobKind::Assemble:
+    return "assemble";
+  case JobKind::DynamicLink:
+    return "dynamic-link";
+  case JobKind::StaticLink:
+    return "static-link";
+  case JobKind::ExecutableLink:
+    return "executable-link";
+  default:
+    stone::Panic("Invalid JobKind");
+  }
+}
 
-Job::Job(const JobInvocation &invocation,
-         llvm::SmallVectorImpl<const Job *> &&deps)
-    : invocation(invocation), deps(std::move(deps)) {}
-
+Job::Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
+         file::Type outputFileType)
+    : Command(tool), kind(kind), ctx(ctx), inputs(inputs),
+      outputFileType(outputFileType) {
+  stats = std::make_unique<JobStats>(*this, ctx);
+  ctx.GetStatEngine().Register(stats.get());
+}
 Job::~Job() {}
 
-// Job::Job(Intent &intent, Context &ctx, Tool &tool, ThreadingMode
-// threadingMode)
-//     : Command(tool), intent(intent), ctx(ctx), jobKind(jobKind),
-//     jobID(0),
-//       isAsync(true) {
+/// -print-jobs
+void Job::Print(ColorOutputStream &stream, CrashState *crashState) {
+  // stream() << std::to_string(GetQueueID()) << ":";
+  // stream().UseGreen();
+  // stream() << GetName();
+  // stream().Reset();
+  // stream() << "(";
+  // int inputSize = inputs.size();
+  // for (auto &input : inputs) {
+  //   --inputSize;
+  //   stream() << input.GetName();
+  //   if (inputSize != 0) {
+  //     stream() << ",";
+  //   }
+  // }
+  // stream() << ")"
+  //          << " -> "
+  //          << "object" << '\n';
+  // stream() << '\n';
+}
 
-//   stats = std::make_unique<JobStats>(*this, ctx);
-//   ctx.GetStatEngine().Register(stats.get());
-// }
-
-// void Job::AddDep(const Job *job) { deps.Add(job); }
-// void Job::AddInput(const file::File input) { inputs.push_back(input); }
-
-// Job::~Job() {}
+// -print-jobs -v
+void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+               CrashState *crashState) {
+  //
+}
 
 // stone::ColorOutputStream &Job::OS() { return ctx.Out(); }
 
@@ -62,88 +93,123 @@ Job::~Job() {}
 //   return 0;
 // }
 
-// void Job::Print(const char *terminator, bool quote, CrashState *crash) const
-// {}
+static void BuildLinkJob(Compilation &compilation, JobCache &jc,
+                         const OutputOptions &outputOpts) {
 
-// const char *Job::GetNameByKind(JobKind jobKind) {
-//   switch (jobKind) {
-//   case JobKind::Compile:
-//     return "compile";
-//   case JobKind::Backend:
-//     return "backend";
-//   case JobKind::Assemble:
-//     return "assemble";
-//   case JobKind::DynamicLink:
-//     return "dynamic-link";
-//   case JobKind::StaticLink:
-//     return "static-link";
-//   case JobKind::ExecutableLink:
-//     return "executable-link";
-//   default:
-//     assert(false && "Invalid JobKind");
-//   }
-// }
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
 
-/// Print a nice summary of this job
-void Job::Print(ColorOutputStream &stream, CrashState *crashState) {}
+  // if (outputOptions.CanLink()) {
 
-/// Perform a complete dump of this job.
-void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
-               CrashState *crashState) {}
+  // }
+  // toolChain.ConstructCompileJob()
+  //       hc.currentRequest =
+  //           compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //               hc.currentRequest,
+  //               compilation.GetDriver().GetOutputFileType());
+  //       hc.AddModuleInput(hc.currentRequest);
+  //       if (outputOptions.CanLink()) {
+  //         hc.AddLinkInput(hc.currentRequest);
+  //       }
 
-void JobStats::Print() {}
+  // if (outputOptions.CanLink()) {
+  //        hc.AddLinkInput(hc.currentRequest);
+  //        break;
+  //      }
+}
 
-// Job::Job() : Job(ThreadingMode::Async) {}
+static void BuildCompileJob(Compilation &compilation, const file::File &input,
+                            JobCache &jc, const OutputOptions &outputOpts) {
 
-// Job::Job(ThreadingMode threadingMode) : threadingMode(threadingMode) {}
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+  auto job = toolChain.ConstructCompileJob(compilation, input, outputOpts);
 
-// Job::~Job() {}
-
-// void Job::Run() {}
-
-// static void BuildJobsForTopLevelIntent(Compilation &C,
-//                                        const CompilationIntent *ci) {
-
-//   for (const Intent *input : *ci) {
-//     if (auto *processIntent = llvm::dyn_cast<CompilationIntent>(input)) {
-//     }
-//   }
-// }
-
-void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
-                       const OutputOptions &outputOpts) {
-
-  // switch (GetCompilingModelKind()) {
-  // case CompilingModelKind::Multiple:
-  //   BuildMultipleCompilingModel(comp, hc, inputs, outputOptions);
-  //   break;
-  // case CompilingModelKind::Single:
-  //   BuildSingleCompilingModel(comp, hc, inputs, outputOptions);
-  //   break;
-  // case CompilingModelKind::Batch:
-  //   BuildBatchCompilingModel(comp, hc, inputs, outputOptions);
-  //   break;
-  // default:
-  //   stone::Panic("Unsupported Compiling mode");
+  // TODO: Maybe move into transitionQ -> finalQ
+  // if(compileJob){
+  //   compilation.EnqueueJob(compileJob);
   // }
 
-  // First, check to see if there are any top-level requests
-  if (hc.HasTopLevelRequest()) {
-    // We are building the jobs recursively and we are linking, module-merging
-    // and the like.
+  jc.CacheForModule(job);
+  // Cache for now:
+  if (outputOpts.CanLink()) {
+    jc.CacheForLink(job);
+  }
+}
 
-  } else {
-    // This must be a compile only scenario
-    assert(JustCompile());
+static void BuildCompilationModeMultiple(Compilation &compilation,
+                                         const file::Files &inputs,
+                                         JobCache &jc,
+                                         const OutputOptions &outputOpts) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  for (auto &input : inputs) {
+    // TODO: Way out there, but there is potential for git here?
+    if (driver.GetBuildSystem().IsDirty(input)) {
+
+      assert(input.GetType() == driver.GetInputFileType() &&
+             "Incompatible input file types");
+      assert(file::IsPartOfCompilation(input.GetType()));
+
+      switch (input.GetType()) {
+      case file::Type::Stone: {
+        BuildCompileJob(compilation, input, jc, outputOpts);
+        break;
+      }
+      case file::Type::Object: {
+        // TODO: Cannot think of a scenario now where we have
+        // an object file and we are not linking.
+        assert(outputOpts.CanLink());
+        jc.CacheForLink(const_cast<file::File *>(&input));
+        break;
+      }
+      default:
+        stone::Panic("Alien file -- cannot build job.");
+      }
+    }
+  }
+}
+
+void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
+                       const file::Files &inputs,
+                       const OutputOptions &outputOpts) {
+
+  STONE_DEFER { hc.GetJobCache().Finish(compilation, outputOpts); };
+
+  // We assert here because this should have been checked above.
+  assert(inputs.empty());
+
+  switch (GetCompilationMode()) {
+  case CompilationMode::Quadratic:
+    BuildCompilationModeMultiple(compilation, inputs, hc.GetJobCache(),
+                                 outputOpts);
+    break;
+  // case CompilationMode::Single:
+  //   BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
+  //   break;
+  // case CompilationMode::CPU:
+  //   BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
+  //   break;
+  default:
+    stone::Panic("Unsupported Compiling mode");
   }
 
-  //   for (const Intent *intent : chi.topLevelIntents) {
-  //     if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
+  if (outputOpts.CanLink() && hc.GetJobCache().ForLink()) {
+  }
+  // TryBuildLinkJob();
 
-  //       assert(ci->GetLevel() == IntentLevel::Top);
-  //       BuildJobsForTopLevelIntent(compilation, ci);
-  //     }
-  //   }
+  // // First, check to see if there are any top-level requests
+  // if (hc.GetJobCache().ForTop()) {
+  //   // We are building the jobs recursively and we are linking,
+  //   module-merging
+  //   // and the like.
+
+  // } else {
+  //   // This must be a compile only scenario
+  //   assert(JustCompile());
+  // }
 }
 
 // int job::RunSync(const Command &c, Context *ctx) {
@@ -160,3 +226,27 @@ void Driver::BuildJobs(Compilation &compilation, const HotCache &hc,
 //       c.GetTool().GetFullName(), llvm::ArrayRef<llvm::StringRef>(c.args),
 //       c.env, c.redirects, c.waitSecs, c.memLimit, c.errMsg, c.failed);
 // }
+
+void JobCache::Finish(Compilation &compilation,
+                      const OutputOptions &outputOpts) {
+  auto &driver = compilation.GetDriver();
+
+  if ((forLink.size() > 0) && outputOpts.CanLink()) {
+
+    switch (driver.GetLinkMode()) {
+    case LinkMode::EmitExecutable: {
+      break;
+    }
+    case LinkMode::EmitDynamicLibrary: {
+      break;
+    }
+    case LinkMode::EmitStaticLibrary: {
+      break;
+    }
+    default:
+      stone::Panic("Invalid linking mode");
+    }
+  }
+}
+
+void JobStats::Print() {}

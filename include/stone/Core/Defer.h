@@ -20,10 +20,11 @@ auto operator+(DeferTask, F &&fn)
 /// This macro is used to register a function / lambda to be run on exit from a
 /// scope.  Its typical use looks like:
 ///
-///   STONE_DEFER {
+///   Defer {
 ///     stuff
 ///   };
 ///
+
 #define STONE_DEFER                                                            \
   auto DEFER_MACRO_CONCAT(defer_func, __COUNTER__) =                           \
       ::stone::detail::DeferTask() + [&]()

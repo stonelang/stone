@@ -4,14 +4,12 @@
 #include "stone/Core/File.h"
 #include "stone/Core/List.h"
 #include "stone/Core/OutputFile.h"
-
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 
 namespace stone {
 class Frontend;
 class alignas(8) SourceUnit final {
-
   friend class Lang;
 
   bool isPrimary;

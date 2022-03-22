@@ -1,4 +1,5 @@
 #include "stone/Syntax/Stmt.h"
+
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;

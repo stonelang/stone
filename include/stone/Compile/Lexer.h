@@ -197,7 +197,6 @@ public:
   template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic Printd(const char *locPtr, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-
     // TODO:ctx.GetDiagEngine().Printd(SrcLoc::GetFromPtr(locPtr), DiagID,
     //                               std::forward<ArgTypes>(Args)...);
   }

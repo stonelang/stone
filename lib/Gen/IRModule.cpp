@@ -1,4 +1,5 @@
 #include "stone/Gen/IRModule.h"
+
 #include "stone/Gen/IRGen.h"
 #include "stone/Syntax/Decl.h"
 
@@ -18,7 +19,6 @@ void IRModuleEmitter::EmitSyntaxFile(const syn::SyntaxFile &sf) {
   }
 }
 void IRModuleEmitter::EmitTopLevelDecl(Decl *topLevelDecl) {
-
   switch (topLevelDecl->GetKind()) {
   case DeclKind::Interface:
     return EmitInterfaceDecl(cast<InterfaceDecl>(topLevelDecl));

@@ -9,7 +9,7 @@ space Physics.QM {
 	}
 	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
 		local string maker; 
-		local Detector* detector = null;
+		own Detector* detector = null;
 	}
 
 	LinearAcceleartor::this() : this("none") {
@@ -26,10 +26,7 @@ space Physics.QM {
 		p.fired = true; 
 		return true; 
 	}
-
-
 	use max = fun(int first, int second) -> int;
-
 	fun Main() -> i32 {
 
 		Particle* p = new Particle();
@@ -42,7 +39,6 @@ space Physics.QM {
 		// 	auto p = new Particle();
 		// 	p.Fire(); 
 		// }
-		
 
 	}
 }

@@ -9,7 +9,6 @@
 #include "stone/Core/Printable.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Core/Version.h"
-
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
@@ -27,7 +26,6 @@ class SavedDiagnostic;
 class Tokenable;
 
 class DiagnosticState {
-
 public:
   // "Global" configuration state that can actually vary between modules.
 
@@ -126,7 +124,6 @@ public:
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
 class DiagnosticEngine final : public DiagnosticEngineBase, public Printable {
-
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
@@ -322,7 +319,6 @@ public:
   InFlightDiagnostic
   Printd(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-
     return Printd(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
   }
 
@@ -330,7 +326,6 @@ public:
   InFlightDiagnostic
   Printd(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-
     return Printd(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)),
                   tokenable);
   }

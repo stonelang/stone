@@ -12,21 +12,28 @@ enum class LTOKind {
   ///
   Thin
 };
-// CompilingModelKind
-enum class CompilingModelKind : uint8_t {
-  None,
-  /// There is no linking in this mode -- we pass all the files to the compile
-  /// command This scenario will not have a file with 'fun Main()'
+/// This mode controls the compilation process
+/// p := -primary-file
+enum class CompilationMode : unsigned {
+  /// n inputs, n compile(s), n * n  parses
+  /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
+  /// compile_n(1,....,n=p)
+  Quadratic = 0,
+  /// n input(s), n compile(s), n parses
+  /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
+  Flat,
+  /// n inputs, j CPU(s), j compile(s), n * j parses
+  /// Ex: compile_1(1=p,...,n),...,
+  /// compile_2(1,2=p,...,n),...,compile_j(1,...,p=j,...,n)
+  CPU,
+  /// n inputs, 1 compile, n parses
+  /// Ex: compile(1,....,n)
   Single,
-  /// There is linking in this mode. So, we pass each file to the compile
-  /// command which produces an object file
-  Multiple,
-  /// A single batch that contains may 'Multiple' CompilingKind.
-  Batch
 };
 
 enum class LinkMode : uint8_t {
-  None,
+  // We are not linking
+  None = 0,
   // The default output compiling -- sc looks afor a main file and
   // outputs an executable file
   EmitExecutable,
@@ -48,18 +55,11 @@ public:
   file::Type outputFileType = file::Type::None;
 
   std::string libLTOPath;
-  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
 
-  CompilingModelKind compilingModelKind = CompilingModelKind::Multiple;
+  CompilationMode compilationMode = CompilationMode::Quadratic;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
-
-  /// Returns true if multi-threading is enabled.
-  bool IsMultiThreading() const { return numThreads > 0; }
-
-  bool RequiresLTO() const { return ltoVariant != LTOKind::None; }
-  bool CanLink() const { return linkMode != LinkMode::None; }
 
   /// Whether or not the driver should generate a module.
   bool generateModule = false;
@@ -70,6 +70,15 @@ public:
 
   /// Whether the compiler picked the current module name, rather than the user.
   bool moduleNameIsFallback = false;
+
+public:
+  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+  bool WithLTO() const { return ltoVariant != LTOKind::None; }
+  bool CanLink() const { return linkMode != LinkMode::None; }
 
   /// Might this sort of compile have explicit primary inputs?
   /// When running a single compile for the whole module (in other words

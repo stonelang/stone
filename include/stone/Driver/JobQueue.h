@@ -9,7 +9,6 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/Job.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"
@@ -38,8 +37,10 @@ protected:
   JobQueueKind kind;
   Context &ctx;
 
+  std::queue<Job *> pendingQueue;
+
   /// Jobs which have not begun execution.
-  std::queue<Job *> entries;
+  std::queue<Job *> runQueue;
 
   mutable std::mutex jobQueueMutext;
   std::condition_variable jobQueuCondition;
@@ -52,7 +53,6 @@ public:
 
 public:
   ProcID Push(Job *job);
-  // Job *Dequeue(ProcID procID);
   Job *Front();
   void Pop();
   void Print();
@@ -63,8 +63,11 @@ public:
   JobQueueKind GetKind() { return kind; }
   JobQueueStats &GetStats() { return *stats.get(); }
 
-  int Size() { return entries.size(); }
-  bool IsEmpty() { return entries.empty(); }
+  int Size() { return runQueue.size(); }
+  bool IsEmpty() { return runQueue.empty(); }
+
+public:
+  void Run(); // TODO: virtual
 };
 
 class DarwinJobQueue final : public JobQueue {

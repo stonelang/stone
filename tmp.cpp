@@ -1,101 +1,35 @@
 
 
-class Compilation {};
+enum class CompilationMode {
 
-class FileTypeCompilation {
-  Compilation &compilation;
+  // N compile job(s) per N files => N^2 parses
+  Quadratic,
+  /// Multiple compile jobs
 
-public:
-  FileTypeCompilation(Compilation &compilation) : compilation(compilation) {}
+  // One compile job per file, with each job having a single primary => N
+  // parses
+  Flat,
 
-public:
-  Request *MakeInputRequest() = 0;
-  Request *MakeCompileRequest() = 0;
-  Request *MakeLinkRequest() = 0;
+  // One compile job per CPU, identifying an equal-sized "batch" of
+  // the module's files as primaries
+  CPU,
 
-  virtual void BuildMultiCompilingModel() {}
-  virtual void BuildCompileRequest();
-  virtual void BuildLinkRequest();
-};
+  /// One compile for the entire module,
+  Single,
+}
 
-class StoneFileTypeCompilation : public FileTypeCompilation {
+static void
+BuildJobs() {
 
-public:
-  StoneFileTypeCompilation(Compilation &compilation)
-      : FileTypeCompilation(compilation) {}
-
-  void BuildMultiCompilingModel() override {
-    for (auto &input : inputs) {
-      // TODO: Way out there, but there is potential for git here?
-      if (comp.GetDriver().GetBuildSystem().IsDirty(input)) {
-
-        assert(input.GetType() == GetInputFileType() &&
-               "Incompatible input file types");
-        assert(file::IsPartOfCompilation(input.GetType()));
-
-        hc.currentRequest = MakeInputRequest(input);
-        hc.currentRequest = MakeCompileRequest(request, GetOutputFileType());
-        hc.AddModuleInput(hc.currentRequest);
-      }
-    }
-  }
-  void BuildMultiCompilingModel(Request *request) override {
-
-    // Create a single CompileJobRequest to handl all InputRequest(s)
-    auto *compileRequest = MakeRequest<CompileJobRequest>(GetOutputFileType());
-    for (auto &input : inputs) {
-
-      if (GetBuildSystem().IsDirty(input)) {
-        assert(input.GetType() == GetInputFileType() &&
-               "Incompatible input file types");
-
-        assert(file::IsPartOfCompilation(input.GetType()));
-
-        compileRequest->AddInput(MakeRequest<InputRequest>(input));
-
-        compilingModel.BuildRequest()
-
-            if (CompilingModelKind::Single) {
-          hc.AddModuleInput(compileRequest);
-          if (outputOptions.CanLink()) {
-            hc.AddLinkInput(hc.currentRequest);
-          }
-        }
-      }
-    }
-  }
-  void BuildCompilationModel() {}
-};
-
-// CompilingModel ComputeCompilingModel(Compilation & compilation){
-
-// }
-// CompilingModel.BuildCompilation();
-
-void StoneFileTypeCompilation::BuildCompilation() {
-  auto compilingMode = GetCompilingModel(GetCompilingModelKind());
-
-  for (auto &input : inputs) {
-
-    if (GetBuildSystem().IsDirty(input)) {
-      assert(input.GetType() == GetInputFileType() &&
-             "Incompatible input file types");
-
-      assert(file::IsPartOfCompilation(input.GetType()));
-
-      compilingModel.BuildRequest(file);
-    }
+  switch (GetMode()) {
+  case ModeKind::Parse:
+  case ModeKind::TypeCheck:
+    BuildCompileJobs();
+    return;
   }
 
-  int main() {
+  if (LinkOnly)
+    BuildLinkJobONly()
+}
 
-    Compilation compilation;
-    StoneFileTypeCompilation stoneFileTypeCompilation(compilation);
-    stoneFileTypeCompilation.BuildMultiCompilingModel();
-
-    Compilation compilation;
-    StoneFileTypeCompilation stoneFileTypeCompilation(compilation);
-    stoneFileTypeCompilation.BuildCompilation();
-
-    return 0;
-  }
+int main() { return 0; }

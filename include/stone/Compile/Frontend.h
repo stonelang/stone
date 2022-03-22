@@ -11,13 +11,11 @@
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
-
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
 class Frontend final : public Session {
-
   friend class Lang;
 
   LangOptions langOpts;

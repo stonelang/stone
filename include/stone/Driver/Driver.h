@@ -14,46 +14,47 @@
 
 namespace stone {
 
+class Job;
 class JobRequest;
 class Compilation;
-class TopLevelJobRequest;
 
-// class RequestState {
-// };
-
-class HotCache final {
+class ReqCache final {
 public:
   Request *currentRequest;
   /// We keep track of the inputs for the module that we are building.
   /// These are CompileJobRequest
-  llvm::SmallVector<const Request *, 4> mouleInputs;
+  llvm::SmallVector<const Request *, 4> forModule;
 
   /// When are building the  request(s), keep track of the linker dependecies
-  llvm::SmallVector<const Request *, 2> linkInputs;
+  llvm::SmallVector<const Request *, 2> forLink;
 
   /// These are the top-level job requests -- we use them recursively to build
   /// out the "real" jobs.
-  llvm::SmallVector<const Request *, 16> topLevelRequests;
+  llvm::SmallVector<const Request *, 16> forTop;
+
+  bool ForModule() { return forModule.size(); }
+  void CacheForModule(const Request *request) { forModule.push_back(request); }
+
+  bool ForLink() { return forLink.size(); }
+  void CacheForLink(const Request *request) { forLink.push_back(request); }
+
+  bool ForTop() { return forTop.size(); }
+  void CacheForTop(const Request *request) { forTop.push_back(request); }
 
 public:
-  bool HasModuleRequests() const { return mouleInputs.size(); }
-  bool HasLinkInputs() const { return linkInputs.size(); }
-  bool HasTopLevelRequest() const { return topLevelRequests.size(); }
+  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
+};
+
+class HotCache final {
+  ReqCache reqCache;
+  JobCache jobCache;
 
 public:
-  void AddModuleInput(const Request *request) {
-    mouleInputs.push_back(request);
-  }
-  void AddLinkInput(const Request *request) { linkInputs.push_back(request); }
-
-  void AddTopLevelRequest(const Request *request) {
-    topLevelRequests.push_back(request);
-  }
-  void SetCurrentRequest(Request *curr) { currentRequest = curr; }
+  ReqCache &GetReqCache() { return reqCache; }
+  JobCache &GetJobCache() { return jobCache; }
 };
 
 class Driver final : public Session {
-
   llvm::StringRef name;
   llvm::StringRef path;
 
@@ -110,7 +111,12 @@ public:
                         llvm::StringRef workDir);
 
   bool JustLink() const {
-    return (GetMode().IsNone() &&
+    return (!GetMode().CanCompile() &&
+            (driverOpts.outputOptions.linkMode != LinkMode::None));
+  }
+
+  bool CanLink() const {
+    return (GetMode().CanCompile() &&
             (driverOpts.outputOptions.linkMode != LinkMode::None));
   }
 
@@ -126,12 +132,15 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
-  CompilingModelKind
-  ComputeCompilingModelKind(const llvm::opt::DerivedArgList &dal,
-                            bool &isBatchModel) const;
+  CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal,
+                                         bool &isBatchModel) const;
 
-  CompilingModelKind GetCompilingModelKind() const {
-    return driverOpts.outputOptions.compilingModelKind;
+
+  //std::unique_ptr<CompilationModel> ComputeCompilationModel(const llvm::opt::DerivedArgList &dal);
+
+
+  CompilationMode GetCompilationMode() const {
+    return driverOpts.outputOptions.compilationMode;
   }
 
 public:
@@ -142,10 +151,11 @@ public:
   void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
                         const OutputOptions &outputOptions);
 
-  void PrintJobRequests(const HotCache &hc);
+  void PrintJobRequests(HotCache &hc);
 
-  void BuildJobs(Compilation &c, const HotCache &hc,
-                 const OutputOptions &outputOptions);
+  void BuildJobs(Compilation &compilation, HotCache &hc,
+                 const file::Files &inputs, const OutputOptions &outputOptions);
+
   // void PrintJobs(HotCache &hc);
 
 public:

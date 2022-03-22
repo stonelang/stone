@@ -1,8 +1,14 @@
+#include "stone/Syntax/Identifier.h"
+
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <string>
 
+#include "stone/Core/Char.h"
+#include "stone/Core/Context.h"
+#include "stone/Core/SystemOptions.h"
+#include "stone/Core/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/SmallString.h"
@@ -11,12 +17,6 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
-
-#include "stone/Core/Char.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/SystemOptions.h"
-#include "stone/Core/TokenKind.h"
-#include "stone/Syntax/Identifier.h"
 //#include "stone/Syntax/OperatorKind.h"
 //#include "stone/Syntax/Specifiers.h"
 
@@ -61,7 +61,6 @@ IdentifierTable::IdentifierTable(const SystemOptions &systemOpts)
 static void AddKeyword(llvm::StringRef keyword, tk::Kind kind, unsigned flag,
                        const SystemOptions &systemOpts,
                        IdentifierTable &table) {
-
   auto status = GetKeywordStatus(systemOpts, flag);
   if (status == KeywordStatus::Off) {
     return;

@@ -1,5 +1,5 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Job.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;
@@ -47,14 +47,3 @@ using namespace stone;
 //                                bool requiresLTO)
 //     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitDynamicLibrary)
 //     {}
-
-// int DynamicLinkJob::ExecuteAsync() { return Job::ExecuteAsync(); }
-// int DynamicLinkJob::ExecuteSync() { return Job::ExecuteSync(); }
-
-// ExecutableLinkJob::ExecutableLinkJob(Intent &intent, Context &ctx, Tool
-// &tool,
-//                                      bool requiresLTO)
-//     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitExecutable) {}
-
-// int ExecutableLinkJob::ExecuteAsync() { return Job::ExecuteAsync(); }
-// int ExecutableLinkJob::ExecuteSync() { return Job::ExecuteSync(); }

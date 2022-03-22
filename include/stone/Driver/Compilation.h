@@ -4,11 +4,10 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
 #include "stone/Core/StatisticEngine.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobQueue.h"
 #include "stone/Driver/ToolChain.h"
-
-#include "stone/Driver/CompilationJob.h"
 
 namespace stone {
 
@@ -63,16 +62,24 @@ public:
   //   J *result = nullptr;
   //   auto j = std::make_unique<J>(std::forward<Args>(args)...);
   //   result = j.get();
-  //   jobs.Add(std::move(j));
+  //   jobs.emplace_back(std::move(j));
   //   return result;
   // }
+
+  template <typename T, typename... Args> T *CreateJob(Args &&...args) {
+    auto result = new T(std::forward<Args>(args)...);
+    jobs.emplace_back(result);
+    return result;
+  }
 
 public:
   // void CancelJob();
   // void CancelJobs();
   // void PruneJob();
+
   void PrintJobs();
   int RunJobs();
+
   JobQueue &GetQueue() { return *jobQueue.get(); }
 
 public:

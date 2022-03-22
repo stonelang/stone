@@ -1,7 +1,7 @@
 #include "stone/Session/Session.h"
+
 #include "stone/Core/Context.h"
 #include "stone/Session/Options.h"
-
 #include "llvm/Option/Option.h"
 
 using namespace stone;
@@ -12,12 +12,10 @@ using namespace llvm::opt;
 Session::Session()
     : optst(stone::opts::CreateOptTable()),
       vfs(llvm::vfs::getRealFileSystem()) {
-
   CreateTimer();
 }
 
 void Session::CreateTimer() {
-
   // timerGroup =
   //     std::make_unique<llvm::TimerGroup>(GetSessionName(), GetSessionDesc());
   // timer = std::make_unique<llvm::Timer>(GetSessionName(), GetSessionDesc(),
@@ -107,10 +105,12 @@ Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
 
 file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
+  unsigned fileID = 0;
   for (Arg *arg : ial) {
     if (arg->getOption().getKind() == Option::InputClass) {
       auto input = arg->getValue();
       if (file::Exists(input)) {
+        fileID++;
         auto fileType = file::GetTypeByExt(file::GetExt(input));
         switch (fileType) {
         case file::Type::Stone: {
@@ -119,7 +119,7 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
           } else if (GetBaseOptions().inputFileType != file::Type::Stone) {
             stone::Panic("Different file types"); // TODO: Printd
           }
-          AddInputFile(input, fileType);
+          AddInputFile(input, fileType, fileID);
           break;
         }
         case file::Type::Object: {
@@ -129,7 +129,7 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
             // TODO: Different file types
             stone::Panic("Different file types"); // TODO: Printd
           }
-          AddInputFile(input, fileType);
+          AddInputFile(input, fileType, fileID);
           break;
         }
         default:
@@ -157,18 +157,18 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
   }
   return GetBaseOptions().inputFiles;
 }
-void Session::AddInputFile(llvm::StringRef name) {
+void Session::AddInputFile(llvm::StringRef name, unsigned fileID) {
   auto ty = file::GetTypeByName(name);
   assert(ty != file::Type::INVALID && "Invalid file type.");
-  AddInputFile(name, ty);
+  AddInputFile(name, ty, fileID);
 }
 // TODO: There is a potential to add duplicate files here.
-void Session::AddInputFile(llvm::StringRef name, file::Type ty) {
-  GetBaseOptions().inputFiles.push_back(file::File(name, ty));
+void Session::AddInputFile(llvm::StringRef name, file::Type ty,
+                           unsigned fileID) {
+  GetBaseOptions().inputFiles.push_back(file::File(name, ty, fileID));
 }
 
 llvm::StringRef Session::ComputeWorkDir(const llvm::opt::InputArgList &ial) {
-
   if (auto *arg = ial.getLastArg(opts::WorkDir)) {
     llvm::SmallString<128> smallStr;
     smallStr = arg->getValue();
@@ -181,7 +181,6 @@ llvm::StringRef Session::ComputeWorkDir(const llvm::opt::InputArgList &ial) {
 stone::Result<std::string>
 Session::GetOptEqualValue(opts::OptID optID,
                           const llvm::opt::InputArgList &ial) {
-
   if (ial.hasArg(optID)) {
     auto arg = ial.getLastArg(optID);
     if (arg) {

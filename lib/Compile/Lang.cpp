@@ -1,10 +1,10 @@
 #include "stone/Compile/Lang.h"
+
 #include "stone/Compile/LangListener.h"
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/TextDiagnosticEmitter.h"
-
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
@@ -34,7 +34,6 @@ using namespace stone;
 using namespace stone::syn;
 
 Lang::Lang(LangListener *listener) : listener(listener) {
-
   stats = std::make_unique<LangStats>(*this, frontend.GetContext());
 
   frontend.GetContext().GetStatEngine().Register(stats.get());
@@ -102,7 +101,6 @@ void Lang::Finish() {
 }
 
 void LangStats::Print() {
-
   // if (sc.GetLangOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;

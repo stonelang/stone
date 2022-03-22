@@ -13,7 +13,6 @@
 #include "stone/Core/Mem.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/ToolChain.h"
-
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -38,31 +37,31 @@ class FileSystem;
 
 namespace stone {
 
-class DarwinToolChain final : public ToolChain {
+class Darwin final : public ToolChain {
   const llvm::Optional<llvm::Triple> &targetVariant;
 
 public:
-  DarwinToolChain(const Driver &driver, const llvm::Triple &triple,
-                  const llvm::Optional<llvm::Triple> &targetVariant);
-  ~DarwinToolChain() = default;
+  Darwin(Driver &driver, const llvm::Triple &triple,
+         const llvm::Optional<llvm::Triple> &targetVariant);
+  ~Darwin() = default;
 
 public:
   bool Initialize() override;
 
 public:
-  JobInvocation
-  ConstructInvocation(const CompileJobRequest &request) const override;
+  /// Consruct the compile job
+  Job *ConstructCompileJob(Compilation &compilation, const file::File &input,
+                           const OutputOptions &outputOpts);
 
-  JobInvocation
-  ConstructInvocation(const LinkJobRequest &request) const override;
+  /// Construct the static-link job
+  Job *ConstructStaticLinkJob(job::InputList inputs,
+                              const OutputOptions &outputOpts);
 
-  // CommandInvocation
-  // ConstructInvocation(const StaticLinkIntent &intent) const override;
+  Job *ConstructDynamicLinkJob(job::InputList inputs,
+                               const OutputOptions &outputOpts) override;
 
-  // CommandInvocation
-  // ConstructInvocation(const DynamicLinkIntent &intent) const override;
-
-  // Command* ConstructCommand(const CompileJob& job) const override;
+  Job *ConstructExecLinkJob(job::InputList inputs,
+                            const OutputOptions &outputOpts) override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;

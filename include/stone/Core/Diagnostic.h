@@ -1,19 +1,6 @@
 #ifndef STONE_CORE_DIAGNOSTIC_H
 #define STONE_CORE_DIAGNOSTIC_H
 
-#include "stone/Core/DiagnosticArgument.h"
-#include "stone/Core/DiagnosticOptions.h"
-#include "stone/Core/SrcMgr.h"
-
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/IntrusiveRefCntPtr.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/iterator_range.h"
-#include "llvm/Support/Compiler.h"
-#include "llvm/Support/Error.h"
-
 #include <cassert>
 #include <cstdint>
 #include <limits>
@@ -24,6 +11,18 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "stone/Core/DiagnosticArgument.h"
+#include "stone/Core/DiagnosticOptions.h"
+#include "stone/Core/SrcMgr.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/IntrusiveRefCntPtr.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/iterator_range.h"
+#include "llvm/Support/Compiler.h"
+#include "llvm/Support/Error.h"
 
 namespace stone {
 class Diagnostic;
@@ -177,7 +176,6 @@ public:
   DiagnosticContext(Diag<ArgTypes...> d,
                     typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
-
     diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
 
     args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
@@ -244,7 +242,6 @@ public:
 };
 
 class EmissionDiagnostic final {
-
   llvm::StringRef category;
   llvm::StringRef formatMessage;
   const Diagnostic &diagnostic;

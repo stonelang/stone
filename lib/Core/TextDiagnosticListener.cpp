@@ -1,4 +1,5 @@
 #include "stone/Core/TextDiagnosticListener.h"
+
 #include "stone/Core/DiagnosticEngine.h"
 
 using stone::Diagnostic;

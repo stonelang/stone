@@ -9,7 +9,6 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
 #include "stone/Driver/Request.h"
-
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Option/Arg.h"
@@ -20,11 +19,8 @@
 namespace stone {
 class Tool;
 class Job;
-class Tool;
-
-// The process ID
-using JobID = int64_t;
-class Driver;
+class JobQueue;
+class Compilation;
 
 class JobStats final : public Stats {
   const Job &job;
@@ -35,71 +31,64 @@ public:
   void Print() override;
 };
 
-class Job;
-class JobInvocation final {
-private:
-  /// The tool that this command will use
-  const Tool &tool;
-  const JobRequest &request;
-
-  /// The outputs this command is expected to produce
-  std::unique_ptr<CommandOutput> cmdOutput;
-
-public:
-  llvm::SmallVector<llvm::StringRef, 16> args;
-  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
-  llvm::ArrayRef<llvm::Optional<llvm::StringRef>> redirects;
-
-  unsigned waitSecs = 0;
-  unsigned memLimit = 0;
-  std::string *errMsg;
-  bool *failed;
-
-public:
-  JobInvocation() = delete;
-
-  JobInvocation(const JobRequest &request, const Tool &tool)
-      : JobInvocation(request, tool, nullptr) {}
-
-  JobInvocation(const JobRequest &request, const Tool &tool,
-                std::unique_ptr<CommandOutput> cmdOutput)
-      : request(request), tool(tool), cmdOutput(std::move(cmdOutput)) {}
-
-public:
-  const Tool &GetTool() const { return tool; }
-  const JobRequest &GetRequest() const { return request; }
-  CommandOutput &GetOutput() const { return *cmdOutput.get(); }
-};
-
-// TODO: JobStatus
+// The process ID
+using JobID = int64_t;
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
-enum class ThreadingMode : uint8_t { None = 0, Sync, Async };
+enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
-class Job {
-  friend class JobQueue;
+namespace job {
+using Input = llvm::PointerUnion<stone::file::File *, Job *>;
+using InputList = llvm::ArrayRef<job::Input>;
+} // namespace job
 
-  const JobInvocation &invocation;
-  /// The list of other Jobs which are inputs to this Job.
-  llvm::SmallVector<const Job *, 4> deps;
+class Job : public Command {
+  friend JobQueue;
+  friend Compilation;
+
+  JobKind kind;
+  std::unique_ptr<JobStats> stats;
+  file::Type outputFileType = file::Type::None;
+  llvm::TinyPtrVector<job::Input> inputs;
+
+  const char *GetNameByKind(JobKind kind) const;
+
+public:
+  using size_type = llvm::ArrayRef<job::Input>::size_type;
+  using iterator = llvm::ArrayRef<job::Input>::iterator;
+  using const_iterator = llvm::ArrayRef<job::Input>::const_iterator;
 
 protected:
+  Context &ctx;
   // Updated by the JobQueue if or when the job is queued.
-  int queueID = -1;
+  JobID jobID = -1;
+  void SetID(JobID jid) { jobID = jid; }
 
 public:
   JobStage stage = JobStage::None;
-  /// public for now
-  ThreadingMode threadingMode = ThreadingMode::None;
+  ThreadMode threaMode = ThreadMode::None;
 
 public:
   Job() = delete;
+  Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
+      file::Type outputFileType);
+  virtual ~Job();
 
 public:
-  Job(const JobInvocation &invocation);
-  Job(const JobInvocation &invocation,
-      llvm::SmallVectorImpl<const Job *> &&deps);
+  JobID GetID() { return jobID; }
+  const char *GetName() const { return Job::GetNameByKind(kind); }
 
-  virtual ~Job();
+  job::InputList GetInputs() { return inputs; }
+  JobKind GetKind() const { return kind; }
+  void AddInput(job::Input input) { inputs.push_back(input); }
+
+  static file::File *GetInputAsFile(job::Input *input) {
+    assert(input);
+    return input->dyn_cast<file::File *>();
+  }
+  static Job *GetInputAsJob(job::Input *input) {
+    assert(input);
+    return input->dyn_cast<Job *>();
+  }
 
 public:
   /// Print a nice summary of this job
@@ -112,137 +101,117 @@ public:
                     CrashState *crashState = nullptr);
 
 public:
-  int GetQueueID() const { return queueID; }
-  stone::ColorOutputStream &OS();
-  const JobInvocation &GetJobInvocation() const { return invocation; }
+  size_type size() const { return inputs.size(); }
+  iterator begin() { return inputs.begin(); }
+  iterator end() { return inputs.end(); }
+  const_iterator begin() const { return inputs.begin(); }
+  const_iterator end() const { return inputs.end(); }
+
+public:
+  // Required for llvm::dyn_cast
+  static bool classof(const Job *job) {
+    return (job->GetKind() >= JobKind::First &&
+            job->GetKind() <= JobKind::Last);
+  }
+};
+
+class CompileJob final : public Job {
+  job::Input primaryInput;
+
+public:
+  CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType);
+
+  CompileJob(Context &ctx, const Tool &tool, job::Input input,
+             file::Type outputFileType);
+
+public:
+  job::Input GetPrimaryInput() { return primaryInput; }
+  // void SetPrimaryInput(job::Input input) { primaryInput = input; }
+
+  /// Print a nice summary of this job
+  void Print(ColorOutputStream &stream,
+             CrashState *crashState = nullptr) override;
+
+  /// Perform a complete dump of this job.
+  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
+            CrashState *crashState = nullptr) override;
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::Compile;
+  }
+};
+
+class DynamicLinkJob final : public Job {
+  bool withLTO;
+
+public:
+  DynamicLinkJob(Context &ctx, const Tool &tool, job::InputList inputs,
+                 bool withLTO = false)
+      : Job(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
+        withLTO(withLTO) {}
+
+  bool WithLTO() { return withLTO; }
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::DynamicLink;
+  }
+};
+class StaticLinkJob final : public Job {
+public:
+  StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
+      : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::StaticLink;
+  }
+};
+
+class ExecutableLinkJob final : public Job {
+public:
+  ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
+      : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
+
+public:
+  static bool classof(const Job *job) {
+    return job->GetKind() == JobKind::ExecutableLink;
+  }
 };
 
 class BatchJob : public Job {};
 
-// class Job : public Command {
-//   friend JobStats;
-//   friend class JobQueue;
+class Compilation;
+class JobCache final {
+public:
+  /// We keep track of the jobs for the module that we are building.
+  /// These are CompileJob
+  llvm::SmallVector<job::Input, 16> forCompile;
 
-// protected:
-//   JobID jobID;
+  /// We keep track of the jobs for the module that we are building.
+  /// These are CompileJob
+  llvm::SmallVector<job::Input, 16> forModule;
 
-//   bool isAsync;
-//   JobKind jobKind;
-//   Context &ctx;
-//   file::Files inputs;
-//   stone::ConstList<Job> deps;
-//   std::unique_ptr<JobStats> stats;
-//   int queueID = -1;
+  /// When are building the Jobs(s), keep track of the linker dependecies
+  llvm::SmallVector<job::Input, 16> forLink;
 
-//   Intent &intent;
+  /// These are the top-level jobs -- we use them recursively to build
+  llvm::SmallVector<job::Input, 16> forTop;
 
-// public:
-//   JobStage stage = JobStage::None;
+public:
+  bool ForModule() { return forModule.size(); }
+  void CacheForModule(job::Input input) { forModule.push_back(input); }
 
-// public:
-//   Job(Intent &intent, Context &ctx, Tool &tool);
-//   virtual ~Job();
+  bool ForLink() { return forLink.size(); }
+  void CacheForLink(job::Input input) { forLink.push_back(input); }
 
-// public:
-//   JobKind GetKind() const { return jobKind; }
-//   const ConstList<Job> &GetDeps() const { return deps; }
+  bool ForTop() { return forTop.size(); }
+  void CacheForTop(job::Input input) { forTop.push_back(input); }
 
-//   Intent &GetIntent() const { return intent; }
-
-//   void AddInput(const file::File input);
-//   void AddDep(const Job *job);
-
-//   Context &GetContext() { return ctx; }
-//   bool IsAsync() { return isAsync; }
-
-//   void Print(const char *terminator, bool quote, CrashState *crashState)
-//   const; const char *GetName() const { return Job::GetNameByKind(jobKind); }
-
-//   void SetJobID(JobID jid) { jobID = jid; }
-//   JobID GetJobID() { return jobID; }
-
-//   int GetQueueID() const { return queueID; }
-//   virtual void PrintIntent() = 0;
-//   virtual int ExecuteAsync();
-//   virtual int ExecuteSync();
-
-// protected:
-//   stone::ColorOutputStream &OS();
-
-// public:
-//   static const char *GetNameByKind(JobKind jobKind);
-// };
-
-// class CompileJob final : public Job {
-// public:
-//   CompileJob(Intent &intent, Context &ctx, Tool &tool);
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-//   void PrintIntent() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::Compile;
-//   }
-// };
-
-// class LinkJob : public Job {
-//   LinkMode linkMode;
-//   bool requiresLTO;
-
-// public:
-//   // Some jobs only consume inputs -- For example, LinkJob
-//   LinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO,
-//           LinkMode linkMode);
-
-//   void PrintIntent() override;
-
-// public:
-//   LinkMode GetLinkMode() { return linkMode; }
-//   bool RequiresLTO() { return requiresLTO; }
-// };
-
-// class DynamicLinkJob final : public LinkJob {
-//   // Only Dynamic requirest LTO
-// public:
-//   DynamicLinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO);
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::DynamicLink;
-//   }
-// };
-
-// class StaticLinkJob final : public LinkJob {
-// public:
-//   StaticLinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO);
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::StaticLink;
-//   }
-// };
-
-// class ExecutableLinkJob final : public LinkJob {
-// public:
-//   ExecutableLinkJob(Intent &intent, Context &ctx, Tool &tool, bool
-//   requiresLTO);
-//
-
-//   int ExecuteAsync() override;
-//   int ExecuteSync() override;
-
-// public:
-//   static bool classof(const Job *j) {
-//     return j->GetIntent().GetKind() == IntentKind::ExecutableLink;
-//   }
-// };
+public:
+  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
+};
 
 class ImageBaseName final {
   // llvm::Triple &triple;

@@ -1,10 +1,11 @@
 #ifndef STONE_CORE_NULLABLEPTR_H
 #define STONE_CORE_NULLABLEPTR_H
 
-#include "llvm/Support/PointerLikeTypeTraits.h"
 #include <cassert>
 #include <cstddef>
 #include <type_traits>
+
+#include "llvm/Support/PointerLikeTypeTraits.h"
 
 namespace stone {
 /// NullPtr pointer wrapper - NullPtr is used for APIs where a

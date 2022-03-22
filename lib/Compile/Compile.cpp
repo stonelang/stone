@@ -1,4 +1,5 @@
 #include "stone/Compile/Compile.h"
+
 #include "stone/Compile/DebugLangListener.h"
 #include "stone/Compile/Lang.h"
 #include "stone/Compile/LangListener.h"
@@ -12,7 +13,6 @@
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
-
 #include "llvm/IR/Module.h"
 
 using namespace stone;
@@ -26,7 +26,6 @@ using stone::syn::SyntaxFileKind;
 
 int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, LangListener *listener) {
-
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
@@ -39,6 +38,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   Lang lang;
   STONE_DEFER { lang.Finish(); };
+
   lang.Initialize();
 
   if (args.empty()) {
@@ -96,7 +96,6 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 }
 
 void Lang::Compile(llvm::ArrayRef<SourceUnit *> sources) {
-
   if (listener) {
     listener->OnCompileStarted(*this);
   }

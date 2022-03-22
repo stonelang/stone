@@ -7,7 +7,6 @@
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
-
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
@@ -21,7 +20,6 @@ public:
 };
 
 class SyntaxListener : public PipelineListener {
-
 public:
   SyntaxListener() : PipelineListener(PipelineListenerKind::Parsing) {}
 

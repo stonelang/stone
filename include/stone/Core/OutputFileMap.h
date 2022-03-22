@@ -1,6 +1,9 @@
 #ifndef STONE_CORE_OUTPUTFILEMAP_H
 #define STONE_CORE_OUTPUTFILEMAP_H
 
+#include <memory>
+#include <string>
+
 #include "stone/Core/File.h"
 #include "stone/Core/LLVM.h"
 #include "llvm/ADT/DenseMap.h"
@@ -9,9 +12,6 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/YAMLParser.h"
-
-#include <memory>
-#include <string>
 
 namespace stone {
 

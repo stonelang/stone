@@ -11,11 +11,9 @@
 #include "stone/Core/LLVM.h"
 #include "stone/Core/List.h"
 #include "stone/Core/Mem.h"
-#include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Request.h"
-
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
@@ -82,12 +80,14 @@ class OutputOptions;
 enum class ToolChainKind { None, Darwin, Unix, Win };
 
 class ToolChain {
-
   ToolChainKind kind;
 
 protected:
-  const Driver &driver;
+  Driver &driver;
   const llvm::Triple triple;
+
+  // All the jobs the tool chain created --- lifetime management.
+  llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
   using Paths = llvm::SmallVector<std::string, 16>;
@@ -96,8 +96,7 @@ public:
   // using ToolPaths = llvm::SmallVector<std::pair<llvm::StringRef,
   // llvm::StringRef, 16>
 protected:
-  ToolChain(ToolChainKind kind, const Driver &driver,
-            const llvm::Triple &triple);
+  ToolChain(ToolChainKind kind, Driver &driver, const llvm::Triple &triple);
 
 protected:
   /// The list of toolchain specific path prefixes to search for libraries.
@@ -134,7 +133,8 @@ public:
   ToolChainKind GetKind() { return kind; }
 
 protected:
-  // TODO: Now that you are using the construction method, you may no need this.
+  // TODO: Now that you are using the construction method, you may not need
+  // this.
   virtual std::unique_ptr<Tool> BuildSCTool();
   virtual std::unique_ptr<Tool> BuildLDTool() = 0;
   virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
@@ -149,25 +149,27 @@ public:
   virtual bool Initialize();
   Tool *FindTool(ToolKind tk) const;
 
+public:
+  virtual Job *ConstructCompileJob(Compilation &compilation,
+                                   const file::File &input,
+                                   const OutputOptions &outputOpts);
+
+  // TODO: You only need ConstructLinkJob
+  virtual Job *ConstructStaticLinkJob(job::InputList inputs,
+                                      const OutputOptions &outputOpts) = 0;
+
+  virtual Job *ConstructExecLinkJob(job::InputList inputs,
+                                    const OutputOptions &outputOpts) = 0;
+
+  virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
+                                       const OutputOptions &outputOpts) = 0;
+
 protected:
-  /// Construct a JobInvocation for a compile job request
-  virtual JobInvocation
-  ConstructInvocation(const CompileJobRequest &request) const;
-  /// Construct a JobInvocation for a compile job request
-  virtual JobInvocation
-  ConstructInvocation(const LinkJobRequest &request) const;
-
-public:
-  std::unique_ptr<Job> ConstructJob(const JobRequest &request, Compilation &c,
-                                    std::unique_ptr<CommandOutput> output,
-                                    const OutputOptions &outputOptions);
-
-public:
-  virtual std::unique_ptr<CompilationJob> ConstructCompileJob();
-
-  // virtual std::unique_ptr<Job> ConstructStaticLinkJob() = 0;
-  // virtual std::unique_ptr<Job> ConstructDynamicLinkob() = 0;
-  // virtual std::unique_ptr<Job> ConstructExecutableJob() = 0;
+  template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {
+    auto job = new JobTy(std::forward<Args>(args)...);
+    jobs.emplace_back(job);
+    return job;
+  }
 };
 
 /*

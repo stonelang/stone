@@ -2,10 +2,10 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
+#include <memory>
+
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
-
-#include <memory>
 
 namespace llvm {
 class raw_pwrite_stream;

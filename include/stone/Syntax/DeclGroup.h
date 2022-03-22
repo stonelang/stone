@@ -1,9 +1,10 @@
 #ifndef STONE_SYNTAX_DECLGROUP_H
 #define STONE_SYNTAX_DECLGROUP_H
 
-#include "llvm/Support/TrailingObjects.h"
 #include <cassert>
 #include <cstdint>
+
+#include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
 namespace syn {

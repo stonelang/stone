@@ -10,7 +10,9 @@ enum class JobKind {
   DynamicLink,
   StaticLink,
   ExecutableLink,
-  Assemble
+  Assemble,
+  First = Compile,
+  Last = Assemble
 };
 } // namespace stone
 #endif

@@ -1,7 +1,7 @@
 #include "stone/Gen/IRGen.h"
+
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Syntax/Module.h"
-
 #include "llvm/IR/Module.h"
 
 using namespace stone;

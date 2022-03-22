@@ -1,8 +1,8 @@
 #include "stone/Driver/Compilation.h"
+
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/Job.h"
-
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
@@ -25,7 +25,6 @@ using stone::ModeKind;
 Compilation::Compilation(Driver &driver, ToolChain &tc,
                          std::unique_ptr<llvm::opt::DerivedArgList> dal)
     : driver(driver), tc(tc), dal(std::move(dal)) {
-
   stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
   driver.GetContext().GetStatEngine().Register(stats.get());
 

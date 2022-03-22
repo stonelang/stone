@@ -1,4 +1,5 @@
 #include "stone/Compile/Lexer.h"
+
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Core/Char.h"
 #include "stone/Core/SrcMgr.h"
@@ -417,7 +418,6 @@ static bool IsIdentifier(const signed char ch) {
 }
 
 static bool IsValidtokStart(const signed char ch) {
-
   if (IsIdentifier(ch)) {
     return true;
   }
@@ -450,7 +450,6 @@ static bool IsValidtokStart(const signed char ch) {
 }
 
 static void DiagnoseEmbeddedNull(const char *locPtr, Context *ctx) {
-
   assert(locPtr && "invalid source location");
   assert(*locPtr == '\0' && "not an embedded null");
 
@@ -508,7 +507,6 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
                                         const char *bufferEnd,
                                         const char *codeCompletionPtr,
                                         Context *ctx) {
-
   const char *startPtr = curPtr - 1;
   assert(curPtr[-1] == '/' && curPtr[0] == '*' && "Not a /* comment");
   // Make sure to advance over the * so that we don't incorrectly handle /*/ as
@@ -601,7 +599,6 @@ static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
 /// opening a string literal, advances curPtr if a delimiter is found and
 /// returns a non-zero delimiter length. curPtr[-1] must be '#' when called.
 static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Context *ctx) {
-
   assert(curPtr[-1] == '#');
   const char *tmpPtr = curPtr;
   unsigned customDelimiterLen = 1;
@@ -649,7 +646,6 @@ static bool DelimiterMatches(unsigned customDelimiterLen, const char *&bytesPtr,
 static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
                                         const char *&curPtr, Context *ctx,
                                         bool isOpening = false) {
-
   // Test for single-line string literals that resemble multiline delimiter.
   const char *tmpPtr = curPtr + 1;
   if (isOpening && customDelimiterLen) {
@@ -705,7 +701,6 @@ Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
 Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Context &ctx,
              SyntaxListener *pipeline)
     : srcID(srcID), sm(sm), ctx(ctx), pipeline(pipeline) {
-
   stats = std::make_unique<LexerStats>(*this, ctx);
   ctx.GetStatEngine().Register(stats.get());
 
@@ -766,7 +761,6 @@ void Lexer::Lex(Token &result, Trivia &leading, Trivia &trailing) {
 }
 
 void Lexer::Lex() {
-
   assert((curPtr >= bufferStart && curPtr <= bufferEnd) &&
          "Cannot Lex -- the current pointer is out of range!");
 
@@ -883,7 +877,6 @@ void Lexer::SkipSlashSlashComment(bool eatNewline) {
 }
 
 unsigned Lexer::LexUnicodeEscape(const char *&curPtr, Context *ctx) {
-
   assert(curPtr[0] == '{' && "Invalid unicode escape");
   ++curPtr;
 
@@ -943,7 +936,6 @@ tk::Kind Lexer::GetIdentifierType(llvm::StringRef tokStr) {
   return tk::Kind::identifier;
 }
 void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
-
   const char *triviaStart = curPtr;
   while (true) {
     auto ch = (signed char)*curPtr++;
@@ -1046,7 +1038,6 @@ void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
 unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
                         bool emitDiagnostics, bool isMultilineString,
                         unsigned customDelimiterLen) {
-
   const char *charStart = curPtr;
   switch (*curPtr++) {
   default: { // Normal characters are part of the string.
@@ -1187,7 +1178,6 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
 
 enum class ExpectedDigitKind : unsigned { Binary, Octal, Decimal, Hex };
 void Lexer::LexNumber() {
-
   const char *tokStart = curPtr - 1;
   assert((isDigit(*tokStart) || *tokStart == '.') && "Unexpected start");
 
@@ -1319,7 +1309,6 @@ void Lexer::LexNumber() {
 
     auto tmpPtr = curPtr;
     if (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd)) {
-
       // stone::Panic("diagnose(tmpPtr,
       //              diag::lex_invalid_digit_in_fp_exponent,
       //              StringRef(tmp, 1), false);
@@ -1333,7 +1322,6 @@ void Lexer::LexNumber() {
 }
 
 void Lexer::LexHexNumber() {
-
   // We assume we're starting from the 'x' in a '0x...' floating-point
   // literal.
   assert(*curPtr == 'x' && "not a hex literal");
@@ -1445,7 +1433,6 @@ void Lexer::LexHexNumber() {
 
   auto tmpPtr = curPtr;
   if (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd)) {
-
     // diagnose(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp,
     // 1),
     //          false);
@@ -1458,7 +1445,6 @@ void Lexer::LexHexNumber() {
 static const char *SkipToEndOfInterpolatedExpression(const char *curPtr,
                                                      const char *endPtr,
                                                      bool isMultilineString) {
-
   stone::Panic("Imp: SkipToEndOfInterpolatedExpression");
   return 0;
 }
@@ -1467,7 +1453,6 @@ void Lexer::LexEscapedIdentifier() {
   stone::Panic("Impl: LexEscapedIdentifier");
 }
 void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
-
   const char quoteChar = curPtr[-1];
   const char *tokStart = curPtr - 1 - customDelimiterLen;
 
@@ -1478,7 +1463,6 @@ void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
   bool isMultilineString =
       AdvanceIfMultilineDelimiter(customDelimiterLen, curPtr, &ctx, true);
   if (isMultilineString && *curPtr != '\n' && *curPtr != '\r') {
-
     stone::Panic("lex_illegal_multiline_string_start");
     // diagnose(curPtr, diag::lex_illegal_multiline_string_start)
     //     .fixItInsert(Lexer::getSourceLoc(curPtr), "\n");
@@ -1571,7 +1555,6 @@ void Lexer::MakeTok(tk::Kind ty, const char *tokenStart) {
 }
 
 Token Lexer::GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) {
-
   // Don't try to do anything with an invalid location.
   if (!loc.isValid()) {
     return Token();

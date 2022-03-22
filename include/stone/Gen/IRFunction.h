@@ -1,11 +1,10 @@
 #ifndef STONE_GEN_IRFUNCTION_H
 #define STONE_GEN_IRFUNCTION_H
 
-#include "stone/Gen/IRModule.h"
-
-#include "llvm/IR/Function.h"
-
 #include <memory>
+
+#include "stone/Gen/IRModule.h"
+#include "llvm/IR/Function.h"
 
 namespace stone {
 
@@ -26,7 +25,6 @@ public:
 };
 
 class IRFunctionEmitter final {
-
 public:
   IRFunctionEmitter(const IRFunctionEmitter &) = delete;
   void operator=(const IRFunctionEmitter &) = delete;

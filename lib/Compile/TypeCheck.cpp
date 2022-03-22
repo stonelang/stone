@@ -1,4 +1,5 @@
 #include "stone/Compile/TypeCheck.h"
+
 #include "stone/Compile/TypeChecker.h"
 #include "stone/Compile/TypeCheckerListener.h"
 #include "stone/Compile/TypeCheckerOptions.h"

@@ -4,14 +4,12 @@
 #include "stone/Core/File.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
-
 #include "llvm/ADT/Triple.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
 class BaseOptions {
-
   // /// The target platform that we are running on.
   // llvm::Triple target;
 

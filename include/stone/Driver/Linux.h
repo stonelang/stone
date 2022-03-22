@@ -2,7 +2,7 @@
 
 /*
 
-class LinuxToolChain final : public ToolChain {
+class Linux final : public ToolChain {
 public:
   LinuxToolChain(const Driver &driver, const llvm::Triple &triple);
   ~LinuxToolChain() = default;

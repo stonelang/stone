@@ -3,7 +3,6 @@
 
 #include "stone/Compile/Parser.h"
 #include "stone/Syntax/DeclSpecifier.h"
-
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
@@ -35,7 +34,6 @@ public:
 
 /// A class for parsing a declarator.
 class ParsingDeclarator final : public Declarator {
-
   // ParsingDeclRAIIObject ParsingRAII;
 
   // public:

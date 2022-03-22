@@ -4,7 +4,6 @@
 #include "stone/Core/SystemOptions.h"
 #include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/JobRequest.h"
-
 #include "gtest/gtest.h"
 
 using namespace stone;
@@ -25,7 +24,6 @@ public:
 // }
 
 TEST_F(DriverTest, JobRequestTest) {
-
   auto file = std::make_unique<file::File>("test", file::Type::Stone);
 
   auto cjr = JobRequest::Make<CompileJobRequest>(file.get());

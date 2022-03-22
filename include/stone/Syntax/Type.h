@@ -23,7 +23,6 @@ public:
 };
 
 class QualType {
-
 public:
   QualType() = default;
 };

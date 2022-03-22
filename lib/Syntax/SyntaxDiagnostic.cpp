@@ -4,13 +4,11 @@
 using stone::SyntaxDiagnostic;
 
 SyntaxDiagnostic::~SyntaxDiagnostic() {
-
   printf("%s", "Destroying SyntaxDiagnostic\n");
 }
 
 void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
                               const DiagnosticFormatOptions &fmtOptions) const {
-
   diag::SyntaxArgumentKind kind = diag::SyntaxArgumentKind::None;
   switch (kind) {
   case diag::SyntaxArgumentKind::Decl:

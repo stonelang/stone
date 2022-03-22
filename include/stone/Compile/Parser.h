@@ -1,6 +1,8 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
+#include <memory>
+
 #include "stone/Compile/Lexer.h"
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Compile/SyntaxScopeCache.h"
@@ -10,10 +12,7 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
-
 #include "llvm/Support/Timer.h"
-
-#include <memory>
 
 namespace stone {
 class SyntaxListener;
@@ -94,7 +93,6 @@ public:
     ParsingScope(Parser *self, unsigned scopeFlags, bool enteredScope = true,
                  bool beforeCompoundStmt = false)
         : self(self) {
-
       if (enteredScope && !beforeCompoundStmt) {
         self->EnterScope(scopeFlags);
       } else {
