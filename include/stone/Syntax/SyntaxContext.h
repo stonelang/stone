@@ -96,6 +96,8 @@ class SyntaxContext final {
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
 
+  struct Detail;
+
 public:
   SyntaxContext(Context &ctx, const SearchPathOptions &spOpts);
   ~SyntaxContext();

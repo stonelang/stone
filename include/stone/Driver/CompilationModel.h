@@ -15,13 +15,23 @@ public:
 };
 class QuadraticCompilationModel final : public CompilationModel {
 public:
+  QuadraticCompilationModel() : CompilationModel(CompilationMode::Quadratic) {}
 };
 
-class FlatCompilationModel final : public CompilationModel {};
+class FlatCompilationModel final : public CompilationModel {
+public:
+  FlatCompilationModel() : CompilationModel(CompilationMode::Flat) {}
+};
 
 class CPUCompilationModel final : public CompilationModel {
 
-} class SingleCompilationModel final : public CompilationModel {
+public:
+  CPUCompilationModel() : CompilationModel(CompilationMode::CPU) {}
+};
+
+class SingleCompilationModel final : public CompilationModel {
+public:
+  SingleCompilationModel() : CompilationModel(CompilationMode::Single) {}
 };
 
 } // namespace stone
