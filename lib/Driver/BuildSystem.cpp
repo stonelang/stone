@@ -56,7 +56,7 @@ void BuildSystem::StopBuild() {}
 // static Job *BuildCompileJob(Compilation &compilation, JobsBuilt &jb,
 //                             file::File &input) {
 
-//   switch (compilation.GetCompilingModelKind()) {}
+//   switch (compilation.GetCompilationMode()) {}
 
 //   auto job = compilation.GetToolChain().CreateCompileJob(compilation);
 //   job->AddInput(input);

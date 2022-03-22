@@ -116,6 +116,8 @@ public:
 };
 
 class CompileJob final : public Job {
+  job::Input primaryInput;
+
 public:
   CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType);
 
@@ -123,6 +125,9 @@ public:
              file::Type outputFileType);
 
 public:
+  job::Input GetPrimaryInput() { return primaryInput; }
+  void SetPrimaryInput(job::Input input) { primaryInput = input; }
+
   /// Print a nice summary of this job
   void Print(ColorOutputStream &stream,
              CrashState *crashState = nullptr) override;

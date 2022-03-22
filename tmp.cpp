@@ -1,74 +1,35 @@
 
-enum class JobKind {
-  None,
-  Compile,
-  Link,
-};
-class Job {
-  JobKind kind;
-  llvm::TinyPtrVector<const file::File *> inputs;
 
-public:
-  Job(JobKind kind) : kind(kind) {}
-};
+enum class CompilationMode {
 
-class CompileJob : public Job {
-public:
-  CompileJob(const file::File *input) : Job(JobKind::Compile) {}
-};
+  // N compile job(s) per N files => N^2 parses
+  Quadratic,
+  /// Multiple compile jobs
 
-/// DepList
-class MultiPuJob : public Job {
-  llvm::TinyPtrVector<const Job *> deps;
+  // One compile job per file, with each job having a single primary => N
+  // parses
+  Flat,
 
-public:
-  FlexJob(JobKind kind, InputList inputs) : SoloJob(kind) {}
-  FlexJob(JobKind kind, DepList inputs) : SoloJob(kind) {}
+  // One compile job per CPU, identifying an equal-sized "batch" of
+  // the module's files as primaries
+  CPU,
 
-public:
-  void AddDep(const Job *job) {}
-};
+  /// One compile for the entire module,
+  Single,
+}
 
-class LinkJob : public FlexJob {
-public:
-  LinkJob() : FlexJob(JobKind::Link) {}
-};
+static void
+BuildJobs() {
 
-//-----------
+  switch (GetMode()) {
+  case ModeKind::Parse:
+  case ModeKind::TypeCheck:
+    BuildCompileJobs();
+    return;
+  }
 
-enum class JobKind {
-  None,
-  Compile,
-  Link,
-};
-class Job {
-  JobKind kind;
-  llvm::TinyPtrVector<const file::File *> inputs;
-
-public:
-  Job(JobKind kind) : kind(kind) {}
-};
-
-class CompileJob : public Job {
-public:
-  CompileJob(const file::File *input) : Job(JobKind::Compile) {}
-};
-
-/// DepList
-class FlexJob : public Job {
-  llvm::TinyPtrVector<const Job *> deps;
-
-public:
-  FlexJob(JobKind kind, InputList inputs) : SoloJob(kind) {}
-  FlexJob(JobKind kind, DepList inputs) : SoloJob(kind) {}
-
-public:
-  void AddDep(const Job *job) {}
-};
-
-class LinkJob : public FlexJob {
-public:
-  LinkJob() : FlexJob(JobKind::Link) {}
-};
+  if (LinkOnly)
+    BuildLinkJobONly()
+}
 
 int main() { return 0; }

@@ -9,7 +9,7 @@ space Physics.QM {
 	}
 	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
 		local string maker; 
-		local Detector* detector = null;
+		own Detector* detector = null;
 	}
 
 	LinearAcceleartor::this() : this("none") {

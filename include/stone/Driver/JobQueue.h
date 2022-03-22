@@ -37,7 +37,7 @@ protected:
   JobQueueKind kind;
   Context &ctx;
 
-  std::queue<Job *> waitQueue;
+  std::queue<Job *> pendingQueue;
 
   /// Jobs which have not begun execution.
   std::queue<Job *> runQueue;
@@ -65,6 +65,9 @@ public:
 
   int Size() { return runQueue.size(); }
   bool IsEmpty() { return runQueue.empty(); }
+
+public:
+  void Run(); // TODO: virtual
 };
 
 class DarwinJobQueue final : public JobQueue {

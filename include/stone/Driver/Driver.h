@@ -127,12 +127,11 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
-  CompilingModelKind
-  ComputeCompilingModelKind(const llvm::opt::DerivedArgList &dal,
-                            bool &isBatchModel) const;
+  CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal,
+                                         bool &isBatchModel) const;
 
-  CompilingModelKind GetCompilingModelKind() const {
-    return driverOpts.outputOptions.compilingModelKind;
+  CompilationMode GetCompilationMode() const {
+    return driverOpts.outputOptions.compilationMode;
   }
 
 public:

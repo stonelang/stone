@@ -12,21 +12,27 @@ enum class LTOKind {
   ///
   Thin
 };
-// CompilingModelKind
-enum class CompilingModelKind : uint8_t {
-  None,
-  /// There is no linking in this mode -- we pass all the files to the compile
-  /// command This scenario will not have a file with 'fun Main()'
+// CompilationMode
+enum class CompilationMode {
+  // N compile job(s) per N files => N^2 parses
+  Quadratic = 0,
+  /// Multiple compile jobs
+
+  // One compile job per file, with each job having a single primary => N
+  // parses
+  Flat,
+
+  // One compile job per CPU, identifying an equal-sized "batch" of
+  // the module's files as primaries
+  CPU,
+
+  /// One compile job for the entire module,
   Single,
-  /// There is linking in this mode. So, we pass each file to the compile
-  /// command which produces an object file
-  Multiple,
-  /// A single batch that contains may 'Multiple' CompilingKind.
-  Batch
 };
 
 enum class LinkMode : uint8_t {
-  None,
+  // We are not linking 
+  None = 0,
   // The default output compiling -- sc looks afor a main file and
   // outputs an executable file
   EmitExecutable,
@@ -49,7 +55,7 @@ public:
 
   std::string libLTOPath;
 
-  CompilingModelKind compilingModelKind = CompilingModelKind::Multiple;
+  CompilationMode compilationMode = CompilationMode::Quadratic;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;

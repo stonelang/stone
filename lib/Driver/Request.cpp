@@ -114,14 +114,14 @@ void Driver::BuildJobRequests(Compilation &compilation, HotCache &hc,
   // We assert here because this should have been checked above.
   assert(inputs.empty());
 
-  switch (GetCompilingModelKind()) {
-  case CompilingModelKind::Multiple:
+  switch (GetCompilationMode()) {
+  case CompilationMode::Quadratic:
     BuildMultipleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
-  case CompilingModelKind::Single:
+  case CompilationMode::Single:
     BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
     break;
-  case CompilingModelKind::Batch:
+  case CompilationMode::CPU:
     BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
     break;
   default:

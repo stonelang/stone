@@ -93,6 +93,31 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 //   return 0;
 // }
 
+static void BuildLinkJob(Compilation &compilation, JobCache &jc,
+                         const OutputOptions &outputOpts) {
+
+  auto &toolChain = compilation.GetToolChain();
+  auto &driver = compilation.GetDriver();
+
+  // if (outputOptions.CanLink()) {
+
+  // }
+  // toolChain.ConstructCompileJob()
+  //       hc.currentRequest =
+  //           compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //               hc.currentRequest,
+  //               compilation.GetDriver().GetOutputFileType());
+  //       hc.AddModuleInput(hc.currentRequest);
+  //       if (outputOptions.CanLink()) {
+  //         hc.AddLinkInput(hc.currentRequest);
+  //       }
+
+  // if (outputOptions.CanLink()) {
+  //        hc.AddLinkInput(hc.currentRequest);
+  //        break;
+  //      }
+}
+
 static void BuildCompileJob(Compilation &compilation, const file::File &input,
                             JobCache &jc, const OutputOptions &outputOpts) {
 
@@ -104,13 +129,18 @@ static void BuildCompileJob(Compilation &compilation, const file::File &input,
   // if(compileJob){
   //   compilation.EnqueueJob(compileJob);
   // }
+
+  jc.CacheForModule(job);
   // Cache for now:
-  jc.CacheForLink(job);
+  if (outputOpts.CanLink()) {
+    jc.CacheForLink(job);
+  }
 }
 
-static void BuildMultipleCompilingModel(Compilation &compilation,
-                                        const file::Files &inputs, JobCache &jc,
-                                        const OutputOptions &outputOpts) {
+static void BuildCompilationModeMultiple(Compilation &compilation,
+                                         const file::Files &inputs,
+                                         JobCache &jc,
+                                         const OutputOptions &outputOpts) {
 
   auto &toolChain = compilation.GetToolChain();
   auto &driver = compilation.GetDriver();
@@ -128,9 +158,13 @@ static void BuildMultipleCompilingModel(Compilation &compilation,
         BuildCompileJob(compilation, input, jc, outputOpts);
         break;
       }
-      case file::Type::Object:
-
+      case file::Type::Object: {
+        // TODO: Cannot think of a scenario now where we have
+        // an object file and we are not linking.
+        assert(outputOpts.CanLink());
+        jc.CacheForLink(const_cast<file::File *>(&input));
         break;
+      }
       default:
         stone::Panic("Alien file -- cannot build job.");
       }
@@ -147,40 +181,35 @@ void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
   // We assert here because this should have been checked above.
   assert(inputs.empty());
 
-  switch (GetCompilingModelKind()) {
-  case CompilingModelKind::Multiple:
-    BuildMultipleCompilingModel(compilation, inputs, hc.GetJobCache(),
-                                outputOpts);
+  switch (GetCompilationMode()) {
+  case CompilationMode::Quadratic:
+    BuildCompilationModeMultiple(compilation, inputs, hc.GetJobCache(),
+                                 outputOpts);
     break;
-  // case CompilingModelKind::Single:
+  // case CompilationMode::Single:
   //   BuildSingleCompilingModel(compilation, hc, inputs, outputOptions);
   //   break;
-  // case CompilingModelKind::Batch:
+  // case CompilationMode::CPU:
   //   BuildBatchCompilingModel(compilation, hc, inputs, outputOptions);
   //   break;
   default:
     stone::Panic("Unsupported Compiling mode");
   }
 
+  if (outputOpts.CanLink() && hc.GetJobCache().ForLink()) {
+  }
   // TryBuildLinkJob();
 
-  // First, check to see if there are any top-level requests
-  if (hc.GetJobCache().ForTop()) {
-    // We are building the jobs recursively and we are linking, module-merging
-    // and the like.
+  // // First, check to see if there are any top-level requests
+  // if (hc.GetJobCache().ForTop()) {
+  //   // We are building the jobs recursively and we are linking,
+  //   module-merging
+  //   // and the like.
 
-  } else {
-    // This must be a compile only scenario
-    assert(JustCompile());
-  }
-
-  //   for (const Intent *intent : chi.topLevelIntents) {
-  //     if (auto *ci = llvm::dyn_cast<CompilationIntent>(intent)) {
-
-  //       assert(ci->GetLevel() == IntentLevel::Top);
-  //       BuildJobsForTopLevelIntent(compilation, ci);
-  //     }
-  //   }
+  // } else {
+  //   // This must be a compile only scenario
+  //   assert(JustCompile());
+  // }
 }
 
 // int job::RunSync(const Command &c, Context *ctx) {

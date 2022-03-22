@@ -10,16 +10,34 @@ CompileJob::CompileJob(Context &ctx, const Tool &tool,
 
 CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
                        file::Type outputFileType)
-    : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
+    : Job(JobKind::Compile, ctx, tool, {}, outputFileType),
+      primaryInput(input) {}
 
 /// Print a nice summary of this job
-void CompileJob::Print(ColorOutputStream &stream,
-                       CrashState *crashState) {}
+void CompileJob::Print(ColorOutputStream &stream, CrashState *crashState) {
+
+  // stream() << std::to_string(GetQueueID()) << ":";
+  // stream().UseGreen();
+  // stream() << GetName();
+  // stream().Reset();
+  // stream() << "(";
+  // int inputSize = inputs.size();
+  // for (auto &input : inputs) {
+  //   --inputSize;
+  //   stream() << input.GetName();
+  //   if (inputSize != 0) {
+  //     stream() << ",";
+  //   }
+  // }
+  // stream() << ")"
+  //          << " -> "
+  //          << "object" << '\n';
+  // stream() << '\n';
+}
 
 /// Perform a complete dump of this job.
-void CompileJob::Dump(ColorOutputStream &stream,
-                      llvm::StringRef terminator,
-                      CrashState *crashState ) {}
+void CompileJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+                      CrashState *crashState) {}
 
 // CompileJob::CompileJob(Intent &intent, Context &ctx, Tool &tool)
 //     : Job(intent, ctx, tool) {}

@@ -14,3 +14,12 @@ stone -use-module Session.stonemodule -emit-module SC.stone -> SC.stonemodule
 
 stone -init -project  -> stone.solution and stone.project and you perform a git init and -A
 
+
+* Build system update:
+~/code/projecta
+file0.stone
+file1.stone 
+
+1. .projecta/.git ....
+2. /var/stone/projecta/.git ....
+

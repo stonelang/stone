@@ -183,14 +183,14 @@ using namespace stone;
 //   // We assert here because this should have been checked above.
 //   assert(inputs.empty());
 
-//   switch (GetCompilingModelKind()) {
-//   case CompilingModelKind::Multiple:
+//   switch (GetCompilationMode()) {
+//   case CompilationMode::Quadratic:
 //     BuildMultipleCompilingModelJobs(compilation, inputs, jc, outputOptions);
 //     break;
-//   case CompilingModelKind::Single:
+//   case CompilationMode::Single:
 //     BuildSingleCompilingModelJobs(compilation, inputs, jc, outputOptions);
 //     break;
-//   case CompilingModelKind::Batch:
+//   case CompilationMode::CPU:
 //     BuildBatchCompilingModelJobs(compilation, inputs, jc, outputOptions);
 //     break;
 //   default:
