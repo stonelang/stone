@@ -37,8 +37,8 @@ enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
 namespace job {
-using Input = llvm::PointerUnion<file::File *, Job *>;
-using InputList = llvm::ArrayRef<job::Input *>;
+using Input = llvm::PointerUnion<stone::file::File *, Job *>;
+using InputList = llvm::ArrayRef<job::Input>;
 } // namespace job
 
 class Job : public Command {
@@ -48,14 +48,14 @@ class Job : public Command {
   JobKind kind;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
-  llvm::TinyPtrVector<job::Input *> inputs;
+  llvm::TinyPtrVector<job::Input> inputs;
 
   const char *GetNameByKind(JobKind kind) const;
 
 public:
-  using size_type = llvm::ArrayRef<job::Input *>::size_type;
-  using iterator = llvm::ArrayRef<job::Input *>::iterator;
-  using const_iterator = llvm::ArrayRef<job::Input *>::const_iterator;
+  using size_type = llvm::ArrayRef<job::Input>::size_type;
+  using iterator = llvm::ArrayRef<job::Input>::iterator;
+  using const_iterator = llvm::ArrayRef<job::Input>::const_iterator;
 
 protected:
   Context &ctx;
@@ -79,12 +79,14 @@ public:
 
   job::InputList GetInputs() { return inputs; }
   JobKind GetKind() const { return kind; }
-  void AddInput(job::Input *input) { inputs.push_back(input); }
+  void AddInput(job::Input input) { inputs.push_back(input); }
 
   static file::File *GetInputAsFile(job::Input *input) {
     return input->dyn_cast<file::File *>();
   }
-  static Job *GetInputAsJob(job::Input *input) { return input->dyn_cast<Job *>(); }
+  static Job *GetInputAsJob(job::Input *input) {
+    return input->dyn_cast<Job *>();
+  }
 
 public:
   /// Print a nice summary of this job
@@ -116,7 +118,7 @@ public:
   CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
 
-  CompileJob(Context &ctx, const Tool &tool, job::Input *input,
+  CompileJob(Context &ctx, const Tool &tool, job::Input input,
              file::Type outputFileType)
       : Job(JobKind::Compile, ctx, tool, input, outputFileType) {}
 

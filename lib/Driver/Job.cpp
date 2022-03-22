@@ -94,12 +94,19 @@ void Job::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
 // }
 
 static void BuildCompileJob(Compilation &compilation, const file::File &input,
-                            JobCache &jc, const OutputOptions &outputOptions) {
+                            JobCache &jc, const OutputOptions &outputOpts) {
 
   auto &toolChain = compilation.GetToolChain();
   auto &driver = compilation.GetDriver();
+  auto compileJob =
+      toolChain.ConstructCompileJob(compilation, input, outputOpts);
 
-  // toolChain.ConstructCompileJob()
+  // TODO: Maybe move into transitionQ -> finalQ
+  // if(compileJob){
+  //   compilation.EnqueueJob(compileJob);
+  // }
+  // Cache for now:
+  jc.CacheForLink(compileJob);
 }
 
 static void BuildMultipleCompilingModel(Compilation &compilation,
@@ -119,7 +126,7 @@ static void BuildMultipleCompilingModel(Compilation &compilation,
 
       switch (input.GetType()) {
       case file::Type::Stone: {
-        toolChain.ConstructCompileJob(input, outputOpts);
+        BuildCompileJob(compilation, input, jc, outputOpts);
         break;
       }
       case file::Type::Object:

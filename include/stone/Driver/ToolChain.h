@@ -147,19 +147,18 @@ public:
   Tool *FindTool(ToolKind tk) const;
 
 public:
-  virtual std::unique_ptr<Job>
-  ConstructCompileJob(const file::File &input, const OutputOptions &outputOpts);
+  virtual Job *ConstructCompileJob(Compilation &compilation,
+                                   const file::File &input,
+                                   const OutputOptions &outputOpts);
 
-  virtual std::unique_ptr<Job>
-  ConstructStaticLinkJob(job::InputList inputs,
-                         const OutputOptions &outputOpts);
+  virtual Job *ConstructStaticLinkJob(job::InputList inputs,
+                                      const OutputOptions &outputOpts);
 
-  virtual std::unique_ptr<Job>
-  ConstructExecLinkJob(job::InputList inputs, const OutputOptions &outputOpts);
+  virtual Job *ConstructExecLinkJob(job::InputList inputs,
+                                    const OutputOptions &outputOpts);
 
-  virtual std::unique_ptr<Job>
-  ConstructDynamicLinkJob(job::InputList inputs,
-                          const OutputOptions &outputOpts);
+  virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
+                                       const OutputOptions &outputOpts);
 };
 
 /*

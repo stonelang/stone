@@ -1,5 +1,5 @@
 #include "stone/Driver/ToolChain.h"
-
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -70,27 +70,40 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Job>
-ToolChain::ConstructCompileJob(const file::File &input,
-                               const OutputOptions &outputOpts) {
+Job *ToolChain::ConstructCompileJob(Compilation &compilation,
+                                    const file::File &input,
+                                    const OutputOptions &outputOpts) {
+
+  // file::File* a  = new file::File("hello", file::Type::Object);
+
+  auto tool = FindTool(ToolKind::SC);
+
+
+//CompileJob(Context &ctx, const Tool &tool, job::Input *input,
+//             file::Type outputFileType)
+
+
+  //auto job = new CompileJob(driver.GetContext(), *tool, input , outputOpts.outputFileType);
+
+  //auto job = compilation.CreateJob<CompileJob>(driver.GetContext(), *tool, a,
+  //                                             outputOpts.outputFileType);
+  //return job;
+
   return nullptr;
 }
 
-std::unique_ptr<Job>
-ToolChain::ConstructStaticLinkJob(job::InputList inputs,
-                                  const OutputOptions &outputOpts) {
+Job *ToolChain::ConstructStaticLinkJob(job::InputList inputs,
+                                       const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-std::unique_ptr<Job>
-ToolChain::ConstructDynamicLinkJob(job::InputList inputs,
-                                   const OutputOptions &outputOpts) {
+Job *ToolChain::ConstructDynamicLinkJob(job::InputList inputs,
+                                        const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-std::unique_ptr<Job>
-ToolChain::ConstructExecLinkJob(job::InputList inputs,
-                                const OutputOptions &outputOpts) {
+Job *ToolChain::ConstructExecLinkJob(job::InputList inputs,
+                                     const OutputOptions &outputOpts) {
   return nullptr;
 }
 

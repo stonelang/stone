@@ -62,16 +62,24 @@ public:
   //   J *result = nullptr;
   //   auto j = std::make_unique<J>(std::forward<Args>(args)...);
   //   result = j.get();
-  //   jobs.Add(std::move(j));
+  //   jobs.emplace_back(std::move(j));
   //   return result;
   // }
+
+  template <typename T, typename... Args> T *CreateJob(Args &&...args) {
+    auto result = new T(std::forward<Args>(args)...);
+    jobs.emplace_back(result);
+    return result;
+  }
 
 public:
   // void CancelJob();
   // void CancelJobs();
   // void PruneJob();
+
   void PrintJobs();
   int RunJobs();
+
   JobQueue &GetQueue() { return *jobQueue.get(); }
 
 public:

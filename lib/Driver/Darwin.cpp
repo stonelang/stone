@@ -84,32 +84,30 @@ std::unique_ptr<Tool> Darwin::BuildGCCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Job>
-Darwin::ConstructCompileJob(const file::File &input,
-                            const OutputOptions &outputOpts) {
-  return ToolChain::ConstructCompileJob(input, outputOpts);
+Job *Darwin::ConstructCompileJob(Compilation &compilation,
+                                 const file::File &input,
+                                 const OutputOptions &outputOpts) {
+  return ToolChain::ConstructCompileJob(compilation, input, outputOpts);
 }
 
-std::unique_ptr<Job>
-Darwin::ConstructStaticLinkJob(job::InputList inputs,
-                               const OutputOptions &outputOpts) {
+Job *Darwin::ConstructStaticLinkJob(job::InputList inputs,
+                                    const OutputOptions &outputOpts) {
   auto tool = FindTool(ToolKind::LD);
   if (!tool) {
     tool = FindTool(ToolKind::LLD);
   }
   assert(tool && "Could not find a linker tool");
-  return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
-}
-
-std::unique_ptr<Job>
-Darwin::ConstructDynamicLinkJob(job::InputList inputs,
-                                const OutputOptions &outputOpts) {
+  // return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
   return nullptr;
 }
 
-std::unique_ptr<Job>
-Darwin::ConstructExecLinkJob(job::InputList inputs,
-                             const OutputOptions &outputOpts) {
+Job *Darwin::ConstructDynamicLinkJob(job::InputList inputs,
+                                     const OutputOptions &outputOpts) {
+  return nullptr;
+}
+
+Job *Darwin::ConstructExecLinkJob(job::InputList inputs,
+                                  const OutputOptions &outputOpts) {
   return nullptr;
 }
 

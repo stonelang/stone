@@ -49,17 +49,15 @@ public:
   bool Initialize() override;
 
 public:
-  std::unique_ptr<Job> ConstructCompileJob(const file::File &input,
-                                           const OutputOptions &outputOpts);
+  Job *ConstructCompileJob(Compilation &compilation, const file::File &input,
+                           const OutputOptions &outputOpts);
 
-  std::unique_ptr<Job> ConstructStaticLinkJob(job::InputList inputs,
-                                              const OutputOptions &outputOpts);
-  std::unique_ptr<Job>
-  ConstructDynamicLinkJob(job::InputList inputs,
-                          const OutputOptions &outputOpts) override;
-  std::unique_ptr<Job>
-  ConstructExecLinkJob(job::InputList inputs,
-                       const OutputOptions &outputOpts) override;
+  Job *ConstructStaticLinkJob(job::InputList inputs,
+                              const OutputOptions &outputOpts);
+  Job *ConstructDynamicLinkJob(job::InputList inputs,
+                               const OutputOptions &outputOpts) override;
+  Job *ConstructExecLinkJob(job::InputList inputs,
+                            const OutputOptions &outputOpts) override;
 
 protected:
   std::unique_ptr<Tool> BuildSCTool() override;

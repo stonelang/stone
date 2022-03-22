@@ -37,8 +37,10 @@ protected:
   JobQueueKind kind;
   Context &ctx;
 
+  std::queue<Job *> waitQueue;
+
   /// Jobs which have not begun execution.
-  std::queue<Job *> entries;
+  std::queue<Job *> runQueue;
 
   mutable std::mutex jobQueueMutext;
   std::condition_variable jobQueuCondition;
@@ -51,7 +53,6 @@ public:
 
 public:
   ProcID Push(Job *job);
-  // Job *Dequeue(ProcID procID);
   Job *Front();
   void Pop();
   void Print();
@@ -62,8 +63,8 @@ public:
   JobQueueKind GetKind() { return kind; }
   JobQueueStats &GetStats() { return *stats.get(); }
 
-  int Size() { return entries.size(); }
-  bool IsEmpty() { return entries.empty(); }
+  int Size() { return runQueue.size(); }
+  bool IsEmpty() { return runQueue.empty(); }
 };
 
 class DarwinJobQueue final : public JobQueue {
