@@ -1,8 +1,7 @@
 #include "stone/Driver/Driver.h"
-
 #include "stone/Core/CoreDiagnostic.h"
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Darwin.h"
+#include "stone/Driver/DarwinToolChain.h"
 #include "stone/Driver/Job.h"
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -163,20 +162,20 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
     if (const llvm::opt::Arg *A = argList.getLastArg(opts::TargetVariant)) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
-    return std::make_unique<stone::Darwin>(*this, ctx.GetSystemOptions().target,
-                                           targetVariant);
+    return std::make_unique<stone::darwin::DarwinToolChain>(
+        *this, ctx.GetSystemOptions().target, targetVariant);
   }
   // case llvm::Triple::Linux:
-  //   toolChain = std::make_unique<stone::Linux>(*this, target);
-  //   break;
+  //   toolChain = std::make_unique<stone::linux::LinuxToolChain>(*this,
+  //   target); break;
   // case llvm::Triple::FreeBSD:
-  //   toolChain = std::make_unique<stone::FreeBSD>(*this, target);
-  //   break;
+  //   toolChain = std::make_unique<stone:unix::FreeBSDToolChain>(*this,
+  //   target); break;
   // case llvm::Triple::OpenBSD:
-  //   toolChain = std::make_unique<stone::OpenBSD>(*this, target);
-  //   break;
+  //   toolChain = std::make_unique<stone::unix::OpenBSDToolChain>(*this,
+  //   target); break;
   // case llvm::Triple::Win32:
-  //   toolChain = std::make_unique<stone::Win>(*this, target);
+  //   toolChain = std::make_unique<stone::win::WinToolChain>(*this, target);
   //   break;
   default:
     stone::Panic("OS not found!");

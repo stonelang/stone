@@ -1,6 +1,6 @@
 #include "stone/Driver/Compilation.h"
-
 #include "stone/Driver/CompilationListener.h"
+#include "stone/Driver/DarwinTaskQueue.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/Job.h"
 #include "llvm/Support/BuryPointer.h"
@@ -25,18 +25,16 @@ using stone::ModeKind;
 Compilation::Compilation(Driver &driver, ToolChain &tc,
                          std::unique_ptr<llvm::opt::DerivedArgList> dal)
     : driver(driver), tc(tc), dal(std::move(dal)) {
+
   stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
   driver.GetContext().GetStatEngine().Register(stats.get());
 
   switch (tc.GetKind()) {
   case ToolChainKind::Darwin:
-    jobQueue = std::make_unique<DarwinJobQueue>(driver.GetContext());
-    break;
-  case ToolChainKind::Unix:
-    jobQueue = std::make_unique<UnixJobQueue>(driver.GetContext());
+    tq = std::make_unique<darwin::DarwinTaskQueue>(driver.GetContext());
     break;
   default:
-    stone::Panic("Unknown ToolChain Kind -- cannot create JobQueue");
+    stone::Panic("Unknown ToolChain Kind -- cannot create TaskQueue");
   }
 }
 

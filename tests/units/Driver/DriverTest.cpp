@@ -52,7 +52,7 @@ TEST_F(DriverTest, JobRequestTest) {
 
 // driver.BuildSession(ial);
 // auto &compilation = driver.BuildCompilation(ial);
-// auto &queue = driver.BuildJobQueue();
+// auto &queue = driver.BuildTaskQueue();
 
 // compilation.Run(queue);
 

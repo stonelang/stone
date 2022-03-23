@@ -1,22 +1,25 @@
   set(stone_driver_sources
 	
 	BuildSystem.cpp
+	Command.cpp
 	Compilation.cpp
 	CompileJob.cpp
 	CompilationJob.cpp
 	CompilationModel.cpp
-	Command.cpp
-	Darwin.cpp
+	DarwinTaskQueue.cpp
+	DarwinToolChain.cpp
 	DebugCompilationListener.cpp
 	Driver.cpp
 	Job.cpp
-	JobQueue.cpp
+	TaskQueue.cpp
 	Request.cpp
 	LinkJob.cpp
-	Linux.cpp
+	LinuxTaskQueue.cpp
+	LinuxToolChain.cpp
 	Run.cpp
 	ToolChain.cpp
-	Unix.cpp
+	UnixTaskQueue.cpp
+	UnixToolChain.cpp
 
 	LINK_LIBS 
 	StoneSession

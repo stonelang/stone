@@ -6,13 +6,13 @@
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/JobQueue.h"
+#include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 
 namespace stone {
 
 class Job;
-class JobQueue;
+class TaskQueue;
 class BuildSystem;
 class Compilation;
 class CompilationListener;
@@ -29,11 +29,11 @@ public:
 class Compilation final {
   friend CompilationStats;
 
-  std::unique_ptr<CompilationStats> stats;
-  std::unique_ptr<JobQueue> jobQueue;
-
   Driver &driver;
   ToolChain &tc;
+
+  std::unique_ptr<CompilationStats> stats;
+  std::unique_ptr<TaskQueue> tq;
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   /// The Jobs which will be performed by this compilation.
@@ -44,28 +44,6 @@ public:
               std::unique_ptr<llvm::opt::DerivedArgList> dal);
 
 public:
-  /// TODO: cleanup
-  // template <typename I, typename... Args> I *CreateIntent(Args &&...args) {
-  //   I *result = nullptr;
-  //   auto i = std::make_unique<I>(std::forward<Args>(args)...);
-  //   result = i.get();
-  //   intents.Add(std::move(i));
-  //   return result;
-  // }
-  // template <typename I, typename... Args> I *CreateIntent(Args &&...args) {
-  //   auto result = new I(std::forward<Args>(args)...);
-  //   intents.emplace_back(result);
-  //   return result;
-  // }
-
-  // template <typename J, typename... Args> J *CreateJob(Args &&...args) {
-  //   J *result = nullptr;
-  //   auto j = std::make_unique<J>(std::forward<Args>(args)...);
-  //   result = j.get();
-  //   jobs.emplace_back(std::move(j));
-  //   return result;
-  // }
-
   template <typename T, typename... Args> T *CreateJob(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
     jobs.emplace_back(result);
@@ -80,7 +58,7 @@ public:
   void PrintJobs();
   int RunJobs();
 
-  JobQueue &GetQueue() { return *jobQueue.get(); }
+  TaskQueue &GetQueue() { return *tq.get(); }
 
 public:
   Driver &GetDriver() { return driver; }

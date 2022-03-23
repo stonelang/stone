@@ -173,6 +173,7 @@ private:
   std::unique_ptr<CommandOutput> cmdOutput;
 
 public:
+  const char *execPath;
   llvm::SmallVector<llvm::StringRef, 16> args;
   llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
   llvm::ArrayRef<llvm::Optional<llvm::StringRef>> redirects;

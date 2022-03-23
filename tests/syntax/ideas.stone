@@ -1,6 +1,5 @@
 
 space Physics.QM {
-
 	public struct Particle {
 		public bool fired = false; 
 	}
@@ -41,4 +40,24 @@ space Physics.QM {
 		// }
 
 	}
+
 }
+
+/// Forwarding maybe of great value 
+
+forward public struct Projectile; 
+forward public fun Launch(const Projectile* projectile) -> bool; 
+
+fun Maiin() -> int {
+	Projectile* p = new Projectile();
+	Launch(p);
+}
+public struct Projectile{
+
+}
+public fun Launch(const Projectile* projectile) -> bool {
+
+}
+
+
+

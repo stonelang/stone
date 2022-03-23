@@ -36,14 +36,14 @@ class FileSystem;
 } // namespace llvm
 
 namespace stone {
-
-class Darwin final : public ToolChain {
+namespace darwin {
+class DarwinToolChain final : public ToolChain {
   const llvm::Optional<llvm::Triple> &targetVariant;
 
 public:
-  Darwin(Driver &driver, const llvm::Triple &triple,
-         const llvm::Optional<llvm::Triple> &targetVariant);
-  ~Darwin() = default;
+  DarwinToolChain(Driver &driver, const llvm::Triple &triple,
+                  const llvm::Optional<llvm::Triple> &targetVariant);
+  ~DarwinToolChain() = default;
 
 public:
   bool Initialize() override;
@@ -70,6 +70,6 @@ protected:
   std::unique_ptr<Tool> BuildClangTool() override;
   std::unique_ptr<Tool> BuildGCCTool() override;
 };
-
+} // namespace darwin
 } // namespace stone
 #endif

@@ -19,7 +19,7 @@
 namespace stone {
 class Tool;
 class Job;
-class JobQueue;
+class TaskQueue;
 class Compilation;
 
 class JobStats final : public Stats {
@@ -41,11 +41,12 @@ using Input = llvm::PointerUnion<stone::file::File *, Job *>;
 using InputList = llvm::ArrayRef<job::Input>;
 } // namespace job
 
-class Job : public Command {
-  friend JobQueue;
+class Job {
+  friend TaskQueue;
   friend Compilation;
 
   JobKind kind;
+  const Tool &tool;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<job::Input> inputs;
@@ -59,7 +60,7 @@ public:
 
 protected:
   Context &ctx;
-  // Updated by the JobQueue if or when the job is queued.
+  // Updated by the TaskQueue if or when the job is queued.
   JobID jobID = -1;
   void SetID(JobID jid) { jobID = jid; }
 
@@ -100,6 +101,8 @@ public:
                     llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const;
+
 public:
   size_type size() const { return inputs.size(); }
   iterator begin() { return inputs.begin(); }
@@ -136,6 +139,8 @@ public:
   void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
             CrashState *crashState = nullptr) override;
 
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
+
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::Compile;
@@ -153,6 +158,8 @@ public:
 
   bool WithLTO() { return withLTO; }
 
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
+
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::DynamicLink;
@@ -162,6 +169,9 @@ class StaticLinkJob final : public Job {
 public:
   StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
+
+public:
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
 
 public:
   static bool classof(const Job *job) {
@@ -175,12 +185,17 @@ public:
       : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
 
 public:
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
+
+public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::ExecutableLink;
   }
 };
 
-class BatchJob : public Job {};
+class CPUJob final : public Job {
+public:
+};
 
 class Compilation;
 class JobCache final {

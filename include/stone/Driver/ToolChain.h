@@ -164,6 +164,16 @@ public:
   virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
                                        const OutputOptions &outputOpts) = 0;
 
+public:
+  // virtual TaskDetail ConstructTaskDetail(const CompileJob &job,
+  //                                        Compilation &compilation);
+  // virtual TaskDetail ConstructTaskDetail(const StaticLinkJob &job,
+  //                                        Compilation &compilation);
+  // virtual TaskDetail ConstructTaskDetail(const DynamicLinkJob &job,
+  //                                        Compilation &compilation);
+  // virtual TaskDetail ConstructTaskDetail(const ExecutableLinkJob &job,
+  //                                        Compilation &compilation);
+
 protected:
   template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {
     auto job = new JobTy(std::forward<Args>(args)...);

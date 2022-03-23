@@ -15,7 +15,7 @@ public:
   // TODO: Move to base
   SystemOptions systemOpts;
 
-  /// Print the jobs in the JobQueue
+  /// Print the jobs in the TaskQueue
   bool printJobs = false;
 
   /// Use the default LD linker
