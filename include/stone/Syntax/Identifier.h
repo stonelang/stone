@@ -398,20 +398,20 @@ class IdentifierTable final {
   const SystemOptions &systemOpts;
   friend IdentifierTableStats;
 
-  using Entries = llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>;
-  Entries entries;
+  using Symbols = llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>;
+  Symbols symbols;
 
 public:
   /// Create the identifier table, populating it with info about the
   /// language keywords for the language specified by \p LangOpts.
   explicit IdentifierTable(const SystemOptions &systemOpts);
 
-  llvm::BumpPtrAllocator &GetAllocator() { return entries.getAllocator(); }
+  llvm::BumpPtrAllocator &GetAllocator() { return symbols.getAllocator(); }
 
   /// Return the identifier token info for the specified named
   /// identifier.
   Identifier &Get(llvm::StringRef name) {
-    auto &entry = *entries.insert(std::make_pair(name, nullptr)).first;
+    auto &entry = *symbols.insert(std::make_pair(name, nullptr)).first;
     Identifier *&identifier = entry.second;
     if (identifier) {
       return *identifier;
@@ -440,7 +440,7 @@ public:
   /// introduce or modify an identifier. If they called Get(), they would
   /// likely end up in a recursion.
   Identifier &GetOwn(llvm::StringRef name) {
-    auto &entry = *entries.insert(std::make_pair(name, nullptr)).first;
+    auto &entry = *symbols.insert(std::make_pair(name, nullptr)).first;
     Identifier *&identifier = entry.second;
     if (identifier) {
       return *identifier;
@@ -455,12 +455,12 @@ public:
     return *identifier;
   }
 
-  using iterator = Entries::const_iterator;
-  using const_iterator = Entries::const_iterator;
+  using iterator = Symbols::const_iterator;
+  using const_iterator = Symbols::const_iterator;
 
-  iterator begin() const { return entries.begin(); }
-  iterator end() const { return entries.end(); }
-  unsigned size() const { return entries.size(); }
+  iterator begin() const { return symbols.begin(); }
+  iterator end() const { return symbols.end(); }
+  unsigned size() const { return symbols.size(); }
 
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.

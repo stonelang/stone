@@ -85,16 +85,16 @@ void IdentifierTable::AddKeywords(const SystemOptions &LangOpts) {
 /// PrintStats - Print statistics about how well the identifier table is doing
 /// at hashing identifiers.
 void IdentifierTableStats::Print() {
-  unsigned numBuckets = table.entries.getNumBuckets();
-  unsigned numIdentifiers = table.entries.getNumItems();
+  unsigned numBuckets = table.symbols.getNumBuckets();
+  unsigned numIdentifiers = table.symbols.getNumItems();
   unsigned numEmptyBuckets = numBuckets - numIdentifiers;
   unsigned averageIdentifierSize = 0;
   unsigned maxIdentifierLength = 0;
 
   // TODO: Figure out maximum times an identifier had to probe for -stats.
   for (llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>::const_iterator
-           I = table.entries.begin(),
-           E = table.entries.end();
+           I = table.symbols.begin(),
+           E = table.symbols.end();
        I != E; ++I) {
     unsigned idLen = I->getKeyLength();
     averageIdentifierSize += idLen;
@@ -113,5 +113,5 @@ void IdentifierTableStats::Print() {
   fprintf(stderr, "Max identifier length: %d\n", maxIdentifierLength);
 
   // Compute statistics about the memory allocated for identifiers.
-  table.entries.getAllocator().PrintStats();
+  table.symbols.getAllocator().PrintStats();
 }
