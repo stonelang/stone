@@ -201,10 +201,6 @@ public:
   /// These are CompileJob
   llvm::SmallVector<job::Input, 16> forCompile;
 
-  /// We keep track of the jobs for the module that we are building.
-  /// These are CompileJob
-  llvm::SmallVector<job::Input, 16> forModule;
-
   /// When are building the Jobs(s), keep track of the linker dependecies
   llvm::SmallVector<job::Input, 16> forLink;
 
@@ -212,8 +208,8 @@ public:
   llvm::SmallVector<job::Input, 16> forTop;
 
 public:
-  bool ForModule() { return forModule.size(); }
-  void CacheForModule(job::Input input) { forModule.push_back(input); }
+  bool ForCompile() { return forCompile.size(); }
+  void CacheForCompile(job::Input input) { forCompile.push_back(input); }
 
   bool ForLink() { return forLink.size(); }
   void CacheForLink(job::Input input) { forLink.push_back(input); }

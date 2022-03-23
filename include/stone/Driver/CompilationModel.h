@@ -28,8 +28,7 @@ public:
                          const OutputOptions &outputOpts) {}
 
   virtual void BuildTaskDetails(Driver &driver, ToolChain &tc, JobCache &jc,
-                         const OutputOptions &outputOpts) {}
-
+                                const OutputOptions &outputOpts) {}
 
   CompilationMode GetCompilationMode() { return mode; }
 
@@ -57,6 +56,9 @@ public:
 
   void BuildJobs(Driver &driver, ToolChain &tc, const file::Files &inputs,
                  JobCache &jc, const OutputOptions &outputOpts) override;
+
+  void BuildTaskDetails(Driver &driver, ToolChain &tc, JobCache &jc,
+                        const OutputOptions &outputOpts) override;
 
 private:
   void BuildCompileJobs(Driver &driver, ToolChain &tc,

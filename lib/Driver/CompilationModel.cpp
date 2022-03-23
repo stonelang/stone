@@ -34,15 +34,12 @@ void QuadraticCompilationModel::BuildCompileJobs(
       /// The tool chain stores the jobs that it created.
       job->AddInput(const_cast<file::File *>(&input));
     }
-    return nullptr;
+    return job;
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
     auto job = BuildCompileJob(input, inputs, outputOpts);
-    // We always add there in the event we are printing
-    jc.forCompile.push_back(job);
-
-    // Add to cache
+    jc.CacheForCompile(job);
   }
 }
 void QuadraticCompilationModel::BuildJobs(Driver &driver, ToolChain &tc,
@@ -63,30 +60,54 @@ void QuadraticCompilationModel::BuildJobs(Driver &driver, ToolChain &tc,
     }
   }
 }
+void QuadraticCompilationModel::BuildTaskDetails(
+    Driver &driver, ToolChain &tc, JobCache &jc,
+    const OutputOptions &outputOpts) {
 
+  auto BuildCompileTaskDetails = [&]() -> void {
+
+  };
+
+  // if(driver.JustCompile()){
+
+  // }
+  // if (driver.GetMode().CanCompile()) {
+  //   BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
+  //   if (driver.JustCompile()) {
+  //     return;
+  //   }
+  // }
+  // if (driver.CanLink()) {
+  //   if (driver.JustLink()) {
+  //     BuildLinkJob(driver, tc, inputs, outputOpts);
+  //   } else {
+  //     BuildLinkJob(driver, tc, jc, outputOpts);
+  //   }
+  // }
+
+  // // if we have nothing to do, we return
+  // if (jc.ForCompile()) {
+  //   return nullptr;
+  // }
+  // for (auto input : jc.forCompile) {
+  //   auto job = InputToJob(input);
+  //   assert(job);
+  //   auto taskDetail = tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job));
+  // }
+}
 std::unique_ptr<Compilation>
 QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
                                             const file::Files &inputs,
                                             const OutputOptions &outputOpts) {
   JobCache jc;
   BuildJobs(driver, tc, inputs, jc, outputOpts);
+  BuildTaskDetails(driver, tc, jc, outputOpts);
 
   // TODO: if print ....
 
   // TODO: it seems that we can skip these steps if we create the compilation
-  // ahead of time and just do 
+  // ahead of time and just do
   /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job)))
-
-
-  // if we have nothing to do, we return
-  if (jc.forCompile.size() == 0) {
-    return nullptr;
-  }
-  for (auto input : jc.forCompile) {
-    auto job = InputToJob(input);
-    assert(job);
-    auto taskDetail = tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job));
-  }
 
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
