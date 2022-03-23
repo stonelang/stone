@@ -42,8 +42,8 @@ enum { IdentifierAlignment = 8 };
 /// set, and all tk::Kind::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class alignas(IdentifierAlignment) Identifier {
-  friend class SyntaxContext; 
-  friend class IdentifierTable; // TODO: Replace with SyntaxContext 
+  friend class SyntaxContext;
+  friend class IdentifierTable; // TODO: Replace with SyntaxContext
 
   // Front-end token ID or tk::Kind::identifier.
   tk::Kind ty;
@@ -98,7 +98,6 @@ class alignas(IdentifierAlignment) Identifier {
   llvm::StringMapEntry<Identifier *> *entry = nullptr;
 
 public:
-
   explicit Identifier()
       : ty(tk::Kind::identifier), BuiltinID(0), IsExtension(false),
         isKeywordReserved(false), IsPoisoned(false), IsOperatorKeyword(false),
@@ -128,7 +127,20 @@ public:
   unsigned getLength() const { return entry->getKeyLength(); }
 
   /// Return the actual identifier string.
-  StringRef GetName() const { return StringRef(getNameStart(), getLength()); }
+  llvm::StringRef GetName() const {
+    return StringRef(getNameStart(), getLength());
+  }
+
+  bool IsArithmeticOperator() const {
+    return isStr("+") || isStr("-") || isStr("*") || isStr("/") || isStr("%");
+  }
+
+  // Returns whether this is a standard comparison operator,
+  // such as '==', '>=' or '!=='.
+  bool IsSTDComparisonOperator() const {
+    return isStr("==") || isStr("!=") || isStr("===") || isStr("!==") ||
+           isStr("<") || isStr(">") || isStr("<=") || isStr(">=");
+  }
 
   /// If this is a source-language token (e.g. 'for'), this API
   /// can be used to cause the lexer to map identifiers to source-language

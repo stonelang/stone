@@ -102,7 +102,8 @@ void IdentifierTableStats::Print() {
       maxIdentifierLength = idLen;
   }
 
-  GetContext().Out() << GetName() << '\n';
+  auto &print = GetContext().Out();
+  print << GetName() << '\n';
 
   fprintf(stderr, "# Identifiers:   %d\n", numIdentifiers);
   fprintf(stderr, "# Empty Buckets: %d\n", numEmptyBuckets);

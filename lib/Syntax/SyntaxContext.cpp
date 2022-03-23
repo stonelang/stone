@@ -40,13 +40,13 @@ public:
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier*, syn::Module *> loadedModules;
+  llvm::MapVector<Identifier *, syn::Module *> loadedModules;
 };
 
 SyntaxContext::Detail::Detail() {}
 
 SyntaxContext::Detail::~Detail() {
-  for (auto& cleanup : cleanups) {
+  for (auto &cleanup : cleanups) {
     cleanup();
   }
 }
