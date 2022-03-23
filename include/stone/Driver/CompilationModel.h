@@ -27,6 +27,10 @@ public:
                          const file::Files &inputs, JobCache &jc,
                          const OutputOptions &outputOpts) {}
 
+  virtual void BuildTaskDetails(Driver &driver, ToolChain &tc, JobCache &jc,
+                         const OutputOptions &outputOpts) {}
+
+
   CompilationMode GetCompilationMode() { return mode; }
 
 protected:

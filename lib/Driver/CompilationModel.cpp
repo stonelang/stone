@@ -74,7 +74,9 @@ QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
   // TODO: if print ....
 
   // TODO: it seems that we can skip these steps if we create the compilation
-  // ahead of time and just do compilation.AddTaskDetail(job.ToTaskDetail())
+  // ahead of time and just do 
+  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job)))
+
 
   // if we have nothing to do, we return
   if (jc.forCompile.size() == 0) {
@@ -83,7 +85,7 @@ QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
   for (auto input : jc.forCompile) {
     auto job = InputToJob(input);
     assert(job);
-    // auto taskDetail = tc.ConstructTaskDetail(llvm::dyn_cast<CompileJob>(job);
+    auto taskDetail = tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job));
   }
 
   // TODO: Check input size
