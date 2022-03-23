@@ -48,10 +48,7 @@ class alignas(IdentifierAlignment) Identifier {
   // Front-end token ID or tk::Kind::identifier.
   tk::Kind ty;
 
-  // ObjC keyword ('protocol' in '@protocol') or builtin (__builtin_inf).
-  // First NUM_OBJC_KEYWORDS values are for Objective-C,
-  // the remaining values are for builtins.
-  unsigned BuiltinID : 13;
+  unsigned BuiltinID;
 
   // True if the identifier is a keyword in a newer or proposed Standard.
   unsigned isKeywordReserved : 1;
@@ -111,19 +108,8 @@ public:
   /// Return a value indicating whether this is a builtin function.
   ///
   /// 0 is not-built-in. 1+ are specific builtin functions.
-  unsigned getBuiltinID() const {
-    // TODO:
-    // if (BuiltinID >= tk::Kind::NUM_OBJC_KEYWORDS)
-    //  return ObjCOrBuiltinID - tk::Kind::NUM_OBJC_KEYWORDS;
-    // else
-    return 0;
-  }
-  void setBuiltinID(unsigned ID) {
-    // TODO:
-    // ObjCOrBuiltinID = ID + tk::Kind::NUM_OBJC_KEYWORDS;
-    // assert(ObjCOrBuiltinID - unsigned(tk::Kind::NUM_OBJC_KEYWORDS) == ID
-    //       && "ID too large for field!");
-  }
+  unsigned GetBuiltinID() const { return BuiltinID; }
+  void SetBuiltinID(unsigned ID) { BuiltinID = ID; }
 
   /// is/setIsKeywordReserved - Initialize information about whether or not
   /// this language token is a keyword in a newer or proposed Standard. This

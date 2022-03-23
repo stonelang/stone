@@ -86,7 +86,6 @@ class SyntaxContext final {
 
   /// Table for all
   IdentifierTable identifiers;
-
   ///
   mutable llvm::SmallVector<Type *, 0> types;
 
@@ -96,7 +95,8 @@ class SyntaxContext final {
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
 
-  class Detail;
+  struct Detail;
+  Detail &GetDetail() const;
 
 public:
   SyntaxContext(Context &ctx, const SearchPathOptions &spOpts);

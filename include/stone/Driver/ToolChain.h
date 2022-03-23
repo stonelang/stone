@@ -172,20 +172,5 @@ protected:
   }
 };
 
-/*
-class WindowsToolChain : public ToolChain {
-public:
-  WinToolChain(const Driver &driver, const llvm::Triple &triple);
-  ~WinToolChain() = default;
-
-public:
-  Tool *BuildAssembleTool() override const;
-  Tool *BuildLinkTool() override const;
-  Tool *BuildStaticLibTool() override const;
-  Tool *BuildDynamicLibTool() override const;
-  Tool *GetTool(ModeKind modeType) override const;
-};
-*/
-
 } // namespace stone
 #endif

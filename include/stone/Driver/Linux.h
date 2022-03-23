@@ -4,8 +4,8 @@
 
 class Linux final : public ToolChain {
 public:
-  LinuxToolChain(const Driver &driver, const llvm::Triple &triple);
-  ~LinuxToolChain() = default;
+  Linux(const Driver &driver, const llvm::Triple &triple);
+  ~Linux() = default;
 
 public:
   Tool *BuildAssembleTool() override const;

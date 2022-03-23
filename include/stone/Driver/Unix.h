@@ -1,16 +1,16 @@
 /*
-class UnixToolChain : public ToolChain {
+class Unix : public ToolChain {
 public:
-  UnixToolChain(const Driver &driver, const llvm::Triple &triple);
-  ~UnixToolChain() = default;
+  Unix(const Driver &driver, const llvm::Triple &triple);
+  ~Unix() = default;
 };
 */
 
 /*
-class FreeBSDToolChain final : public ToolChain {
+class FreeBSD final : public ToolChain {
 public:
-  FreeBSDToolChain(const Driver &driver, const llvm::Triple &triple);
-  ~FreeBSDToolChain() = default;
+  FreeBSD(const Driver &driver, const llvm::Triple &triple);
+  ~FreeBSD() = default;
 
 public:
   Tool *BuildAssembleTool() override const;
@@ -19,10 +19,10 @@ public:
   Tool *BuildDynamicLibTool() override const;
   Tool *GetTool(ModeKind modeType) override const;
 };
-class OpenBSDToolChain final : public UnixToolChain {
+class OpenBSD final : public UnixToolChain {
 public:
-  OpenBSDToolChain(const Driver &driver, const llvm::Triple &triple);
-  ~OpenBSDToolChain() = default;
+  OpenBSD(const Driver &driver, const llvm::Triple &triple);
+  ~OpenBSD() = default;
 
 public:
   Tool *BuildAssembleTool() override const;

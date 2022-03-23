@@ -25,13 +25,10 @@ SyntaxContext::SyntaxContext(stone::Context &ctx,
 
 SyntaxContext::~SyntaxContext() {}
 
-class SyntaxContext::Detail {
-
-public:
+struct SyntaxContext::Detail final {
   Detail();
   ~Detail();
 
-public:
   llvm::BumpPtrAllocator Allocator; // used in later initializations
 
   /// The set of cleanups to be called when the SyntaxContext is destroyed.
@@ -51,9 +48,18 @@ SyntaxContext::Detail::~Detail() {
   }
 }
 
+// TODO:
+inline SyntaxContext::Detail &SyntaxContext::GetDetail() const {
+  auto pointer = reinterpret_cast<char *>(const_cast<SyntaxContext *>(this));
+  auto offset =
+      llvm::alignAddr((void *)sizeof(*this), llvm::Align(alignof(Detail)));
+  return *reinterpret_cast<Detail *>(pointer + offset);
+}
+
 Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
   return identifiers.Get(name);
 }
+
 size_t SyntaxContext::GetSizeOfMemUsed() const {
   // TODO: use ctx.GetBumpAlloc()
   return bumpAlloc.getTotalMemory();
