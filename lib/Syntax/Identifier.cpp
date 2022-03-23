@@ -51,7 +51,10 @@ bool Identifier::IsKeyword(const SystemOptions &systemOpts) const {
 }
 
 // TODO:
-bool Identifier::IsIdentifier(llvm::StringRef identifier) { return false; }
+bool Identifier::IsIdentifier(llvm::StringRef identifier) { 
+  assert(false && "TODO"); 
+  return false; 
+}
 
 IdentifierTable::IdentifierTable(const SystemOptions &systemOpts)
     : systemOpts(systemOpts) {
