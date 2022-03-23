@@ -93,10 +93,6 @@ Job *DarwinToolChain::ConstructCompileJob(const file::File &input,
 Job *DarwinToolChain::ConstructStaticLinkJob(job::InputList inputs,
                                              const OutputOptions &outputOpts) {
   auto tool = GetLD();
-  if (!tool) {
-    tool = GetLLD();
-  }
-  assert(tool && "Could not find a linker tool");
   // return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
   return nullptr;
 }
@@ -108,7 +104,12 @@ Job *DarwinToolChain::ConstructDynamicLinkJob(job::InputList inputs,
 
 Job *DarwinToolChain::ConstructExecLinkJob(job::InputList inputs,
                                            const OutputOptions &outputOpts) {
-  return nullptr;
+
+  // TODO: Assert from the begining if we cannot find LD or LLD
+  auto tool = GetLD();
+  auto job = MakeJob<ExecutableLinkJob>(driver.GetContext(), *tool, inputs);
+  // Do more stuff here?
+  return job;
 }
 
 std::unique_ptr<TaskDetail>

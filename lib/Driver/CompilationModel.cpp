@@ -18,16 +18,18 @@ Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
   switch (driver.GetLinkMode()) {
   case LinkMode::EmitExecutable:
     job = tc.ConstructExecLinkJob(jc.forCompile, outputOpts);
+    break;
   case LinkMode::EmitStaticLibrary:
     job = tc.ConstructStaticLinkJob(jc.forCompile, outputOpts);
+    break;
   case LinkMode::EmitDynamicLibrary:
     job = tc.ConstructDynamicLinkJob(jc.forCompile, outputOpts);
+    break;
   default:
     stone::Panic("Alien link mode");
   }
   assert(job);
   jc.CacheForTop(job);
-
   return job;
 }
 
