@@ -3,6 +3,25 @@
 
 using namespace stone;
 
+Job *CompilationModel::ConstructCompileJob(job::Input input,
+                                           const OutputOptions &outputOpts) {
+  return nullptr;
+}
+Job *CompilationModel::ConstructStaticLinkJob(job::InputList inputs,
+                                              const OutputOptions &outputOpts) {
+  return nullptr;
+}
+
+Job *CompilationModel::ConstructExecLinkJob(job::InputList inputs,
+                                            const OutputOptions &outputOpts) {
+  return nullptr;
+}
+
+Job *CompilationModel::ConstructDynamicLinkJob(
+    job::InputList inputs, const OutputOptions &outputOpts) {
+  return nullptr;
+}
+
 // TODO: Look into the JobCache instead of the job::Input
 /// Goal: Build the link job and CacheForTop(..)
 Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
@@ -13,7 +32,7 @@ Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
   assert(driver.CanLink() && "The current mode does not allow linking.");
 
   // Make sure that there is stuff to link
-  assert(jc.ForCompile() && "There is nothing to link.");
+  assert(jc.ForCompile() && "There is nothing to link");
 
   switch (driver.GetLinkMode()) {
   case LinkMode::EmitExecutable:

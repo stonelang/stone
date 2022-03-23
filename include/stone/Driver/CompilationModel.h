@@ -43,6 +43,18 @@ protected:
     return input.dyn_cast<file::File *>();
   }
   Job *InputToJob(job::Input input) const { return input.dyn_cast<Job *>(); }
+
+public:
+  Job *ConstructCompileJob(job::Input input, const OutputOptions &outputOpts);
+
+  Job *ConstructStaticLinkJob(job::InputList inputs,
+                              const OutputOptions &outputOpts);
+
+  Job *ConstructExecLinkJob(job::InputList inputs,
+                            const OutputOptions &outputOpts);
+
+  Job *ConstructDynamicLinkJob(job::InputList inputs,
+                               const OutputOptions &outputOpts);
 };
 
 class QuadraticCompilationModel final : public CompilationModel {
