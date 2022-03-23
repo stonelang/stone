@@ -105,12 +105,12 @@ public:
   llvm::opt::InputArgList &
   ParseArgs(llvm::ArrayRef<const char *> args) override;
 
-  void ComputeLinkMode(const llvm::opt::InputArgList &ial);
-  LinkMode GetLinkMode() const { return driverOpts.outputOptions.linkMode; }
-
   std::unique_ptr<llvm::opt::DerivedArgList>
   TranslateInputArgList(const llvm::opt::InputArgList &ial,
                         llvm::StringRef workDir);
+
+  void ComputeLinkMode(const llvm::opt::InputArgList &ial);
+  LinkMode GetLinkMode() const { return driverOpts.outputOptions.linkMode; }
 
   bool JustLink() const {
     return (!GetMode().CanCompile() &&

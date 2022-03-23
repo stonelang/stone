@@ -63,6 +63,10 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   auto workDir = ComputeWorkDir(ial);
+
+  /// TODO: for now...move into ComputeOptions
+  ComputeLinkMode(ial);
+
   auto dal = TranslateInputArgList(ial, workDir);
 
   // TODO:
@@ -92,15 +96,21 @@ Driver::BuildTaskQueue(const Compilation &compilation) {
 }
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
-  assert(GetMode().IsAlien() && "Alien mode");
-  if (GetMode().IsNone()) {
+
+  switch (GetMode().GetKind()) {
+  case ModeKind::None:
     GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
-  } else if (GetMode().IsEmitLibrary()) {
+    break;
+  case ModeKind::EmitLibrary: {
     if (ial.hasArg(opts::Static)) {
       GetDriverOptions().outputOptions.linkMode = LinkMode::EmitStaticLibrary;
-    } else {
-      GetDriverOptions().outputOptions.linkMode = LinkMode::EmitDynamicLibrary;
+      break;
     }
+    GetDriverOptions().outputOptions.linkMode = LinkMode::EmitDynamicLibrary;
+    break;
+  }
+  default:
+    stone::Panic("Alien mode");
   }
 }
 

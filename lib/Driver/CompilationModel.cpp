@@ -4,19 +4,39 @@
 using namespace stone;
 
 // TODO: Look into the JobCache instead of the job::Input
+/// Goal: Build the link job and CacheForTop(..)
 Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
                                     const OutputOptions &outputOpts) {
-  // Just an assert for now
-  assert(jc.forCompile.size() > 0);
 
-  return nullptr;
+  Job *job = nullptr;
+  // Make sure that we can link
+  assert(driver.CanLink() && "The current mode does not allow linking.");
+
+  // Make sure that there is stuff to link
+  assert(jc.ForCompile() && "There is nothing to link.");
+
+  switch (driver.GetLinkMode()) {
+  case LinkMode::EmitExecutable:
+    job = tc.ConstructExecLinkJob(jc.forCompile, outputOpts);
+  case LinkMode::EmitStaticLibrary:
+    job = tc.ConstructStaticLinkJob(jc.forCompile, outputOpts);
+  case LinkMode::EmitDynamicLibrary:
+    job = tc.ConstructDynamicLinkJob(jc.forCompile, outputOpts);
+  default:
+    stone::Panic("Alien link mode");
+  }
+  assert(job);
+  jc.CacheForTop(job);
+
+  return job;
 }
 
 Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc,
                                     const file::Files &inputs,
                                     const OutputOptions &outputOpts) {
+  Job *job = nullptr;
 
-  assert(inputs.size() > 0);
+  assert(driver.JustLink() && "The current mode is only for linking");
 
   return nullptr;
 }
@@ -42,10 +62,12 @@ void QuadraticCompilationModel::BuildCompileJobs(
     jc.CacheForCompile(job);
   }
 }
+// Goal :
 void QuadraticCompilationModel::BuildJobs(Driver &driver, ToolChain &tc,
                                           const file::Files &inputs,
                                           JobCache &jc,
                                           const OutputOptions &outputOpts) {
+
   if (driver.GetMode().CanCompile()) {
     BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
     if (driver.JustCompile()) {

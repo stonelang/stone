@@ -74,7 +74,7 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
 Job *ToolChain::ConstructCompileJob(const file::File &input,
                                     const OutputOptions &outputOpts) {
   auto tool = GetSC();
-  assert(tool);
+  // TODO: assert(tool);
   auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,
                                  const_cast<file::File *>(&input),
                                  outputOpts.outputFileType);

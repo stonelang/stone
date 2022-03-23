@@ -211,6 +211,7 @@ public:
   bool ForCompile() { return forCompile.size(); }
   void CacheForCompile(job::Input input) { forCompile.push_back(input); }
 
+  // TODO: The approach that you are taking, this is not needed.
   bool ForLink() { return forLink.size(); }
   void CacheForLink(job::Input input) { forLink.push_back(input); }
 
