@@ -41,6 +41,23 @@ using Input = llvm::PointerUnion<stone::file::File *, Job *>;
 using InputList = llvm::ArrayRef<job::Input>;
 } // namespace job
 
+class TaskDetail final {
+  llvm::StringRef execPath;
+  llvm::ArrayRef<llvm::StringRef> args;
+  llvm::ArrayRef<llvm::StringRef> env = llvm::None;
+  void *context;
+
+  unsigned waitSecs = 0;
+  unsigned memLimit = 0;
+  std::string *errMsg;
+  bool *failed;
+
+public:
+  TaskDetail(llvm::StringRef execPath, llvm::ArrayRef<llvm::StringRef> args,
+             llvm::ArrayRef<llvm::StringRef> env, void *context)
+      : execPath(execPath), args(args), env(env), context(context) {}
+};
+
 class Job {
   friend TaskQueue;
   friend Compilation;
@@ -101,7 +118,7 @@ public:
                     llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const;
+  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const {}
 
 public:
   size_type size() const { return inputs.size(); }

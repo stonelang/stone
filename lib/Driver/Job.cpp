@@ -122,19 +122,19 @@ static void BuildCompileJob(Compilation &compilation, const file::File &input,
                             JobCache &jc, const OutputOptions &outputOpts) {
 
   auto &toolChain = compilation.GetToolChain();
-  auto &driver = compilation.GetDriver();
-  auto job = toolChain.ConstructCompileJob(compilation, input, outputOpts);
+  // auto &driver = compilation.GetDriver();
+  // auto job = toolChain.ConstructCompileJob(compilation, input, outputOpts);
 
   // TODO: Maybe move into transitionQ -> finalQ
   // if(compileJob){
   //   compilation.EnqueueJob(compileJob);
   // }
 
-  jc.CacheForModule(job);
-  // Cache for now:
-  if (outputOpts.CanLink()) {
-    jc.CacheForLink(job);
-  }
+  // jc.CacheForModule(job);
+  // // Cache for now:
+  // if (outputOpts.CanLink()) {
+  //   jc.CacheForLink(job);
+  // }
 }
 
 static void BuildCompilationModeMultiple(Compilation &compilation,

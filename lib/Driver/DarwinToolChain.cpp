@@ -85,10 +85,9 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
   return nullptr;
 }
 
-Job *DarwinToolChain::ConstructCompileJob(Compilation &compilation,
-                                          const file::File &input,
+Job *DarwinToolChain::ConstructCompileJob(const file::File &input,
                                           const OutputOptions &outputOpts) {
-  return ToolChain::ConstructCompileJob(compilation, input, outputOpts);
+  return ToolChain::ConstructCompileJob(input, outputOpts);
 }
 
 Job *DarwinToolChain::ConstructStaticLinkJob(job::InputList inputs,

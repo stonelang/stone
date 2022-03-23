@@ -50,7 +50,7 @@ public:
 
 public:
   /// Consruct the compile job
-  Job *ConstructCompileJob(Compilation &compilation, const file::File &input,
+  Job *ConstructCompileJob(const file::File &input,
                            const OutputOptions &outputOpts);
 
   /// Construct the static-link job

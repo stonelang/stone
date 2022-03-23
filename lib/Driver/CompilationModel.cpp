@@ -28,11 +28,12 @@ void QuadraticCompilationModel::BuildCompileJobs(
   auto BuildCompileJob = [&](const file::File &primaryInput,
                              const file::Files &inputs,
                              const OutputOptions &outputOpts) -> Job * {
-    // auto job = toolChain.ConstructCompileJob(primaryInput, outputOpts);
-    // for (auto &input : inputs) {
-    //   /// The tool chain stores the jobs that it created.
-    //   job.AddInput(input);
-    // }
+    auto job = tc.ConstructCompileJob(primaryInput, outputOpts);
+    assert(job);
+    for (auto &input : inputs) {
+      /// The tool chain stores the jobs that it created.
+      job->AddInput(const_cast<file::File *>(&input));
+    }
     return nullptr;
   };
   for (auto &input : inputs) {
@@ -67,7 +68,6 @@ std::unique_ptr<Compilation>
 QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
                                             const file::Files &inputs,
                                             const OutputOptions &outputOpts) {
-
   JobCache jc;
   BuildJobs(driver, tc, inputs, jc, outputOpts);
 

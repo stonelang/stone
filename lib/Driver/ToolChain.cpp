@@ -70,9 +70,9 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-Job *ToolChain::ConstructCompileJob(Compilation &compilation,
-                                    const file::File &input,
-                                    const OutputOptions &outputOpts) {
+Job *ToolChain::ConstructCompileJob(
+    const file::File &input, /* TODO: job::Input*/
+    const OutputOptions &outputOpts) {
   auto tool = FindTool(ToolKind::SC);
   assert(tool);
   auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,

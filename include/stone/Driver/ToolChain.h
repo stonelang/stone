@@ -150,8 +150,7 @@ public:
   Tool *FindTool(ToolKind tk) const;
 
 public:
-  virtual Job *ConstructCompileJob(Compilation &compilation,
-                                   const file::File &input,
+  virtual Job *ConstructCompileJob(const file::File &input,
                                    const OutputOptions &outputOpts);
 
   // TODO: You only need ConstructLinkJob
