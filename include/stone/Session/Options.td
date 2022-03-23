@@ -107,12 +107,12 @@ def v : Flag<["-"], "v">,
 Flags<[LangOption, DriverOption]>,
 HelpText<"Show commands to run and use verbose output">;
 
-def Lang : Flag<["-"], "stc">, 
+def Lang : Flag<["-"], "st">, 
 Flags<[LangOption, DriverOption]>,
 HelpText<"Compiles only and skips the linking phase.">;
 
 
-def LangPathEQ : Joined<["--"], "stc-path=">, 
+def LangPathEQ : Joined<["--"], "sc-path=">, 
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Override the default paths for 'stone-compile'">;
 

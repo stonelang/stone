@@ -83,15 +83,14 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   HotCache hc;
-  BuildJobRequests(*compilation, hc, inputs, driverOpts.outputOptions);
-
-  // A quick -print-requests check
-  if (driverOpts.printRequests) {
-    // PrintJobRequests(hc);
-    return nullptr;
-  }
-
   BuildJobs(*compilation, hc, inputs, driverOpts.outputOptions);
+
+  // // A quick -print-requests check
+  // if (driverOpts.printJobs) {
+  //   // PrintJobRequests(hc);
+  //   return nullptr;
+  // }
+
   return compilation;
 }
 

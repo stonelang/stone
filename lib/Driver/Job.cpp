@@ -179,7 +179,7 @@ void Driver::BuildJobs(Compilation &compilation, HotCache &hc,
   STONE_DEFER { hc.GetJobCache().Finish(compilation, outputOpts); };
 
   // We assert here because this should have been checked above.
-  assert(inputs.empty());
+  // assert(!inputs.empty());
 
   switch (GetCompilationMode()) {
   case CompilationMode::Quadratic:

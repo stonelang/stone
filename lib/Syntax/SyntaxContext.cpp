@@ -25,6 +25,32 @@ SyntaxContext::SyntaxContext(stone::Context &ctx,
 
 SyntaxContext::~SyntaxContext() {}
 
+class SyntaxContext::Detail {
+
+public:
+  Detail();
+  ~Detail();
+
+public:
+  llvm::BumpPtrAllocator Allocator; // used in later initializations
+
+  /// The set of cleanups to be called when the SyntaxContext is destroyed.
+  std::vector<std::function<void(void)>> cleanups;
+
+  /// The set of top-level modules we have loaded.
+  /// This map is used for iteration, therefore it's a MapVector and not a
+  /// DenseMap.
+  llvm::MapVector<Identifier*, syn::Module *> loadedModules;
+};
+
+SyntaxContext::Detail::Detail() {}
+
+SyntaxContext::Detail::~Detail() {
+  for (auto& cleanup : cleanups) {
+    cleanup();
+  }
+}
+
 Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
   return identifiers.Get(name);
 }

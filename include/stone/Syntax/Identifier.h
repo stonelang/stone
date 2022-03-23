@@ -42,7 +42,8 @@ enum { IdentifierAlignment = 8 };
 /// set, and all tk::Kind::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class alignas(IdentifierAlignment) Identifier {
-  friend class IdentifierTable;
+  friend class SyntaxContext; 
+  friend class IdentifierTable; // TODO: Replace with SyntaxContext 
 
   // Front-end token ID or tk::Kind::identifier.
   tk::Kind ty;
@@ -96,18 +97,14 @@ class alignas(IdentifierAlignment) Identifier {
 
   llvm::StringMapEntry<Identifier *> *entry = nullptr;
 
-  Identifier()
+public:
+
+  explicit Identifier()
       : ty(tk::Kind::identifier), BuiltinID(0), IsExtension(false),
         isKeywordReserved(false), IsPoisoned(false), IsOperatorKeyword(false),
         NeedsHandleIdentifier(false), IsFromAST(false), ChangedAfterLoad(false),
         FEChangedAfterLoad(false), RevertedTokenID(false), OutOfDate(false),
         IsModulesImport(false) {}
-
-public:
-  Identifier(const Identifier &) = delete;
-  Identifier &operator=(const Identifier &) = delete;
-  Identifier(Identifier &&) = delete;
-  Identifier &operator=(Identifier &&) = delete;
 
   /// Return true if this is the identifier for the specified string.
   ///
