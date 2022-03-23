@@ -52,7 +52,7 @@ fun Maiin() -> int {
 	Projectile* p = new Projectile();
 	Launch(p);
 }
-public struct Projectile{
+public struct Projectile {
 
 }
 public fun Launch(const Projectile* projectile) -> bool {

@@ -58,6 +58,8 @@ public:
   void Pop();
   void Print();
 
+  ProcID CreateTask(const TaskDetail &td);
+
   // void Remove(ProcID procID);
 
 public:

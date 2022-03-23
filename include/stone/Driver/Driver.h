@@ -16,6 +16,7 @@
 namespace stone {
 
 class Job;
+class TaskQueue;
 class JobRequest;
 class Compilation;
 
@@ -143,8 +144,11 @@ public:
 
 public:
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
+
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
                                                 llvm::opt::InputArgList &ial);
+
+  std::unique_ptr<TaskQueue> BuildTaskQueue(const Compilation &compilation);
 
   void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
                         const OutputOptions &outputOptions);

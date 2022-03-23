@@ -4,7 +4,7 @@
 using namespace stone;
 
 // TODO: Look into the JobCache instead of the job::Input
-Job *CompilationModel::BuildLinkJob(Driver &driver, JobCache &jc,
+Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
                                     const OutputOptions &outputOpts) {
   // Just an assert for now
   assert(jc.forCompile.size() > 0);
@@ -12,7 +12,8 @@ Job *CompilationModel::BuildLinkJob(Driver &driver, JobCache &jc,
   return nullptr;
 }
 
-Job *CompilationModel::BuildLinkJob(Driver &driver, const file::Files &inputs,
+Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc,
+                                    const file::Files &inputs,
                                     const OutputOptions &outputOpts) {
 
   assert(inputs.size() > 0);
@@ -21,7 +22,7 @@ Job *CompilationModel::BuildLinkJob(Driver &driver, const file::Files &inputs,
 }
 
 void QuadraticCompilationModel::BuildCompileJobs(
-    Driver &driver, const file::Files &inputs, JobCache &jc,
+    Driver &driver, ToolChain &tc, const file::Files &inputs, JobCache &jc,
     const OutputOptions &outputOpts) {
 
   auto BuildCompileJob = [&](const file::File &primaryInput,
@@ -43,37 +44,45 @@ void QuadraticCompilationModel::BuildCompileJobs(
     // Add to cache
   }
 }
-void QuadraticCompilationModel::BuildJobs(Driver &driver,
+void QuadraticCompilationModel::BuildJobs(Driver &driver, ToolChain &tc,
                                           const file::Files &inputs,
                                           JobCache &jc,
                                           const OutputOptions &outputOpts) {
   if (driver.GetMode().CanCompile()) {
-    BuildCompileJobs(driver, inputs, jc, outputOpts);
+    BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
     if (driver.JustCompile()) {
       return;
     }
   }
   if (driver.CanLink()) {
     if (driver.JustLink()) {
-      BuildLinkJob(driver, inputs, outputOpts);
+      BuildLinkJob(driver, tc, inputs, outputOpts);
     } else {
-      BuildLinkJob(driver, jc, outputOpts);
+      BuildLinkJob(driver, tc, jc, outputOpts);
     }
   }
 }
 
-// std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
-//     Driver &driver, const file::Files &inputs, JobCache &jc,
-//     const OutputOptions &outputOpts) {
+std::unique_ptr<Compilation>
+QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
+                                            const file::Files &inputs,
+                                            const OutputOptions &outputOpts) {
 
-//   BuildJobs(driver, inputs, jc, outputOpts);
+  JobCache jc;
+  BuildJobs(driver, tc, inputs, jc, outputOpts);
 
-//   return nullptr;
-// }
+  // TODO: Check input size
+  // Now, build the job system since we have a toolchain
+  // auto compilation =
+  //     std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
-void FlatCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
-                                     JobCache &jc,
-                                     const OutputOptions &outputOpts) {}
+  return nullptr;
+}
+
+// void FlatCompilationModel::BuildJobs(Compilation& compilation, const
+// file::Files &inputs,
+//                                      JobCache &jc,
+//                                      const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // FlatCompilationModel::BuildCompilation(Driver &driver,
@@ -85,9 +94,10 @@ void FlatCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
 //   return nullptr;
 // }
 
-void CPUCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
-                                    JobCache &jc,
-                                    const OutputOptions &outputOpts) {}
+// void CPUCompilationModel::BuildJobs(Compilation& compilation, const
+// file::Files &inputs,
+//                                     JobCache &jc,
+//                                     const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // CPUCompilationModel::BuildCompilation(Driver &driver, const file::Files
@@ -99,9 +109,10 @@ void CPUCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
 //   return nullptr;
 // }
 
-void SingleCompilationModel::BuildJobs(Driver &driver,
-                                       const file::Files &inputs, JobCache &jc,
-                                       const OutputOptions &outputOpts) {}
+// void SingleCompilationModel::BuildJobs(Compilation& compilation,
+//                                        const file::Files &inputs, JobCache
+//                                        &jc, const OutputOptions &outputOpts)
+//                                        {}
 
 // std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(
 //     Driver &driver, const file::Files &inputs, JobCache &jc,

@@ -57,42 +57,38 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
-  auto workDir = ComputeWorkDir(ial);
-  auto dal = TranslateInputArgList(ial, workDir);
-
-  auto compilationMode = ComputeCompilationMode(*dal);
-
-  // TODO:
-  // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
-
-  HotCache hc;
-  auto compilationModel = ComputeCompilationModel(compilationMode);
-  assert(compilationModel);
-  compilationModel->BuildJobs(*this, inputs, hc.GetJobCache(),
-                              driverOpts.outputOptions);
-
-  // auto compilation = computeCompilationModel->BuildCompilation();
-
-  // TODO: Check input size
-  // Now, build the job system since we have a toolchain
-  auto compilation =
-      std::make_unique<Compilation>(*this, toolChain, std::move(dal));
-
   if (inputs.empty()) {
     GetContext().Printd(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
 
-  // HotCache hc;
-  // BuildJobs(*compilation, hc, inputs, driverOpts.outputOptions);
+  auto workDir = ComputeWorkDir(ial);
+  auto dal = TranslateInputArgList(ial, workDir);
 
-  // // A quick -print-requests check
-  // if (driverOpts.printJobs) {
-  //   // PrintJobRequests(hc);
-  //   return nullptr;
-  // }
+  // TODO:
+  // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
+  // Get the compilation mode
+  auto compilationMode = ComputeCompilationMode(*dal);
+
+  auto compilationModel = ComputeCompilationModel(compilationMode);
+
+  auto compilation = compilationModel->BuildCompilation(
+      *this, toolChain, inputs, driverOpts.outputOptions);
+
+  // A quick -print-requests check
+  if (driverOpts.printJobs) {
+    compilation->PrintJobs();
+    compilation.reset();
+  }
   return compilation;
+}
+/// We take the Jobs from the compilation and we create TaskDetails that
+///  are used to add Tasks into the TaskQueue
+/// auto taskDetail = job.ToTaskDetail() => tq.CreateTask(taskDetail)
+std::unique_ptr<TaskQueue>
+Driver::BuildTaskQueue(const Compilation &compilation) {
+  return nullptr;
 }
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
@@ -127,7 +123,7 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
 
 CompilationMode
 Driver::ComputeCompilationMode(const llvm::opt::DerivedArgList &dal) {
-  // Just use multiple for now
+  // Just Quad for now
   return CompilationMode::Quadratic;
 }
 
@@ -136,12 +132,12 @@ Driver::ComputeCompilationModel(CompilationMode mode) {
   switch (mode) {
   case CompilationMode::Quadratic:
     return std::make_unique<QuadraticCompilationModel>();
-  case CompilationMode::Flat:
-    return std::make_unique<FlatCompilationModel>();
-  case CompilationMode::CPU:
-    return std::make_unique<CPUCompilationModel>();
-  case CompilationMode::Single:
-    return std::make_unique<SingleCompilationModel>();
+  // case CompilationMode::Flat:
+  //   return std::make_unique<FlatCompilationModel>();
+  // case CompilationMode::CPU:
+  //   return std::make_unique<CPUCompilationModel>();
+  // case CompilationMode::Single:
+  //   return std::make_unique<SingleCompilationModel>();
   default:
     stone::Panic("Unknown Compilation Mode");
   }
