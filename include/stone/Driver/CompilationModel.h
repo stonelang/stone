@@ -17,11 +17,11 @@ public:
   CompilationModel(CompilationMode mode) : mode(mode) {}
 
 public:
-  virtual std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
-                   const OutputOptions &outputOpts) {}
+  // virtual std::unique_ptr<Compilation>
+  // BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
+  //                  const OutputOptions &outputOpts) {}
 
-protected:
+public:
   virtual void BuildJobs(Driver &driver, const file::Files &inputs,
                          JobCache &jc, const OutputOptions &outputOpts) {}
 
@@ -37,11 +37,11 @@ public:
   QuadraticCompilationModel() : CompilationModel(CompilationMode::Quadratic) {}
 
 public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
-                   const OutputOptions &outputOpts) override;
+  // std::unique_ptr<Compilation>
+  // BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
+  //                  const OutputOptions &outputOpts) override;
 
-protected:
+public:
   void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
@@ -54,14 +54,14 @@ class FlatCompilationModel final : public CompilationModel {
 public:
   FlatCompilationModel() : CompilationModel(CompilationMode::Flat) {}
 
-protected:
+public:
   void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
-                   const OutputOptions &outputOpts) override;
+  // public:
+  //   std::unique_ptr<Compilation>
+  //   BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
+  //                    const OutputOptions &outputOpts) override;
 };
 
 class CPUCompilationModel final : public CompilationModel {
@@ -69,27 +69,27 @@ class CPUCompilationModel final : public CompilationModel {
 public:
   CPUCompilationModel() : CompilationModel(CompilationMode::CPU) {}
 
-protected:
+public:
   void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
-                   const OutputOptions &outputOpts) override;
+  // public:
+  //   std::unique_ptr<Compilation>
+  //   BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
+  //                    const OutputOptions &outputOpts) override;
 };
 class SingleCompilationModel final : public CompilationModel {
 public:
   SingleCompilationModel() : CompilationModel(CompilationMode::Single) {}
 
-protected:
+public:
   void BuildJobs(Driver &driver, const file::Files &inputs, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
-                   const OutputOptions &outputOpts) override;
+  // public:
+  //   std::unique_ptr<Compilation>
+  //   BuildCompilation(Driver &driver, const file::Files &inputs, JobCache &jc,
+  //                    const OutputOptions &outputOpts) override;
 };
 
 } // namespace stone

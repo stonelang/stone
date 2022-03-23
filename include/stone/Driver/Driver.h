@@ -7,6 +7,7 @@
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/CompilationListener.h"
+#include "stone/Driver/CompilationModel.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Request.h"
 #include "stone/Driver/ToolChain.h"
@@ -132,11 +133,9 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
-  CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal,
-                                         bool &isBatchModel) const;
-
-  // std::unique_ptr<CompilationModel> ComputeCompilationModel(const
-  // llvm::opt::DerivedArgList &dal);
+  CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal);
+  std::unique_ptr<CompilationModel>
+  ComputeCompilationModel(CompilationMode mode);
 
   CompilationMode GetCompilationMode() const {
     return driverOpts.outputOptions.compilationMode;

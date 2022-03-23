@@ -61,16 +61,18 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto workDir = ComputeWorkDir(ial);
   auto dal = TranslateInputArgList(ial, workDir);
 
+  auto compilationMode = ComputeCompilationMode(*dal);
+
   // TODO:
-  // auto compilationModel = ComputeCompilationModel(...)
-  // auto compilation = computeCompilationModel->BuildCompilation();
-
-  // /// Think about
-  bool isBatchModel = false;
-  driverOpts.outputOptions.compilationMode =
-      ComputeCompilationMode(*dal, isBatchModel);
-
   // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
+
+  HotCache hc;
+  auto compilationModel = ComputeCompilationModel(compilationMode);
+  assert(compilationModel);
+  compilationModel->BuildJobs(*this, inputs, hc.GetJobCache(),
+                              driverOpts.outputOptions);
+
+  // auto compilation = computeCompilationModel->BuildCompilation();
 
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
@@ -82,8 +84,8 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
     return nullptr;
   }
 
-  HotCache hc;
-  BuildJobs(*compilation, hc, inputs, driverOpts.outputOptions);
+  // HotCache hc;
+  // BuildJobs(*compilation, hc, inputs, driverOpts.outputOptions);
 
   // // A quick -print-requests check
   // if (driverOpts.printJobs) {
@@ -125,10 +127,26 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
 }
 
 CompilationMode
-Driver::ComputeCompilationMode(const llvm::opt::DerivedArgList &dal,
-                               bool &isBatchModel) const {
+Driver::ComputeCompilationMode(const llvm::opt::DerivedArgList &dal) {
   // Just use multiple for now
   return CompilationMode::Quadratic;
+}
+
+std::unique_ptr<CompilationModel>
+Driver::ComputeCompilationModel(CompilationMode mode) {
+  switch (mode) {
+  case CompilationMode::Quadratic:
+    return std::make_unique<QuadraticCompilationModel>();
+  case CompilationMode::Flat:
+    return std::make_unique<FlatCompilationModel>();
+  case CompilationMode::CPU:
+    return std::make_unique<CPUCompilationModel>();
+  case CompilationMode::Single:
+    return std::make_unique<SingleCompilationModel>();
+  default:
+    stone::Panic("Unknown Compilation Mode");
+  }
+  return nullptr;
 }
 
 std::unique_ptr<ToolChain>

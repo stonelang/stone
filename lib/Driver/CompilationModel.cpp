@@ -62,49 +62,51 @@ void QuadraticCompilationModel::BuildJobs(Driver &driver,
   }
 }
 
-std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
-    Driver &driver, const file::Files &inputs, JobCache &jc,
-    const OutputOptions &outputOpts) {
+// std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
+//     Driver &driver, const file::Files &inputs, JobCache &jc,
+//     const OutputOptions &outputOpts) {
 
-  BuildJobs(driver, inputs, jc, outputOpts);
+//   BuildJobs(driver, inputs, jc, outputOpts);
 
-  return nullptr;
-}
+//   return nullptr;
+// }
 
 void FlatCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
                                      JobCache &jc,
                                      const OutputOptions &outputOpts) {}
 
-std::unique_ptr<Compilation>
-FlatCompilationModel::BuildCompilation(Driver &driver,
-                                       const file::Files &inputs, JobCache &jc,
-                                       const OutputOptions &outputOpts) {
+// std::unique_ptr<Compilation>
+// FlatCompilationModel::BuildCompilation(Driver &driver,
+//                                        const file::Files &inputs, JobCache
+//                                        &jc, const OutputOptions &outputOpts)
+//                                        {
 
-  BuildJobs(driver, inputs, jc, outputOpts);
-  return nullptr;
-}
+//   BuildJobs(driver, inputs, jc, outputOpts);
+//   return nullptr;
+// }
 
 void CPUCompilationModel::BuildJobs(Driver &driver, const file::Files &inputs,
                                     JobCache &jc,
                                     const OutputOptions &outputOpts) {}
 
-std::unique_ptr<Compilation>
-CPUCompilationModel::BuildCompilation(Driver &driver, const file::Files &inputs,
-                                      JobCache &jc,
-                                      const OutputOptions &outputOpts) {
+// std::unique_ptr<Compilation>
+// CPUCompilationModel::BuildCompilation(Driver &driver, const file::Files
+// &inputs,
+//                                       JobCache &jc,
+//                                       const OutputOptions &outputOpts) {
 
-  BuildJobs(driver, inputs, jc, outputOpts);
-  return nullptr;
-}
+//   BuildJobs(driver, inputs, jc, outputOpts);
+//   return nullptr;
+// }
 
 void SingleCompilationModel::BuildJobs(Driver &driver,
                                        const file::Files &inputs, JobCache &jc,
                                        const OutputOptions &outputOpts) {}
 
-std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(
-    Driver &driver, const file::Files &inputs, JobCache &jc,
-    const OutputOptions &outputOpts) {
+// std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(
+//     Driver &driver, const file::Files &inputs, JobCache &jc,
+//     const OutputOptions &outputOpts) {
 
-  BuildJobs(driver, inputs, jc, outputOpts);
-  return nullptr;
-}
+//   BuildJobs(driver, inputs, jc, outputOpts);
+//   return nullptr;
+// }
