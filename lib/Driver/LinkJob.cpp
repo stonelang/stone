@@ -31,21 +31,6 @@ using namespace stone;
 //        << "image" << '\n';
 // }
 
-// std::unique_ptr<TaskDetail> StaticLinkJob::ToTaskDetail() const {
-
-//   return nullptr;
-// }
-
-// std::unique_ptr<TaskDetail> DynamicLinkJob::ToTaskDetail() const {
-
-//   return nullptr;
-// }
-
-// std::unique_ptr<TaskDetail> ExecutableLinkJob::ToTaskDetail() const {
-
-//   return nullptr;
-// }
-
 // // Some jobs only consume inputs -- For example, LinkJob
 // StaticLinkJob::StaticLinkJob(Intent &intent, Context &ctx, Tool &tool,
 //                              bool requiresLTO)

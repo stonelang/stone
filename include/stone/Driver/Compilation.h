@@ -37,18 +37,18 @@ class Compilation final {
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
   /// The Jobs which will be performed by this compilation.
-  llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
+  llvm::SmallVector<std::unique_ptr<const TaskDetail>, 32> taskDetails;
 
 public:
   Compilation(Driver &driver, ToolChain &tc,
               std::unique_ptr<llvm::opt::DerivedArgList> dal);
 
 public:
-  template <typename T, typename... Args> T *CreateJob(Args &&...args) {
-    auto result = new T(std::forward<Args>(args)...);
-    jobs.emplace_back(result);
-    return result;
-  }
+  // template <typename T, typename... Args> T *CreateJob(Args &&...args) {
+  //   auto result = new T(std::forward<Args>(args)...);
+  //   jobs.emplace_back(result);
+  //   return result;
+  // }
 
 public:
   // void CancelJob();

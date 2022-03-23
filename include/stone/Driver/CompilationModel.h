@@ -34,6 +34,12 @@ protected:
                     const OutputOptions &outputOpts);
   Job *BuildLinkJob(Driver &driver, ToolChain &tc, const file::Files &inputs,
                     const OutputOptions &outputOpts);
+
+protected:
+  file::File *InputToFile(job::Input input) const {
+    return input.dyn_cast<file::File *>();
+  }
+  Job *InputToJob(job::Input input) const { return input.dyn_cast<Job *>(); }
 };
 
 class QuadraticCompilationModel final : public CompilationModel {

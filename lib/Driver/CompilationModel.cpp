@@ -71,6 +71,21 @@ QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
   JobCache jc;
   BuildJobs(driver, tc, inputs, jc, outputOpts);
 
+  // TODO: if print ....
+
+  // TODO: it seems that we can skip these steps if we create the compilation
+  // ahead of time and just do compilation.AddTaskDetail(job.ToTaskDetail())
+
+  // if we have nothing to do, we return
+  if (jc.forCompile.size() == 0) {
+    return nullptr;
+  }
+  for (auto input : jc.forCompile) {
+    auto job = InputToJob(input);
+    assert(job);
+    // auto taskDetail = tc.ConstructTaskDetail(llvm::dyn_cast<CompileJob>(job);
+  }
+
   // TODO: Check input size
   // Now, build the job system since we have a toolchain
   // auto compilation =

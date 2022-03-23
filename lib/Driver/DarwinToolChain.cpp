@@ -19,9 +19,9 @@ bool DarwinToolChain::Initialize() {
   return ToolChain::Initialize();
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
+std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
   // Check to see if the SC path was given by the user.
-  auto tool = ToolChain::BuildSCTool();
+  auto tool = ToolChain::BuildSC();
   if (tool) {
     return tool;
   }
@@ -38,7 +38,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSCTool() {
   return nullptr;
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
+std::unique_ptr<Tool> DarwinToolChain::BuildLD() {
   auto tool = BuildTool(ToolKind::LD, "/usr/bin/ld", "ld", true);
   if (tool) {
     return tool;
@@ -51,7 +51,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLDTool() {
   return nullptr;
 }
 
-std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
+std::unique_ptr<Tool> DarwinToolChain::BuildLLD() {
   auto tool = BuildTool(ToolKind::LLD, "/usr/bin/lld", "lld", true);
   if (tool) {
     return tool;
@@ -62,7 +62,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLLDTool() {
   }
   return nullptr;
 }
-std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
+std::unique_ptr<Tool> DarwinToolChain::BuildClang() {
   auto tool = BuildTool(ToolKind::Clang, "/usr/bin/clang++", "clang++", true);
   if (tool) {
     return tool;
@@ -73,7 +73,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildClangTool() {
   }
   return nullptr;
 }
-std::unique_ptr<Tool> DarwinToolChain::BuildGCCTool() {
+std::unique_ptr<Tool> DarwinToolChain::BuildGCC() {
   auto tool = BuildTool(ToolKind::GCC, "/usr/bin/g++", "g++", true);
   if (tool) {
     return tool;
@@ -92,9 +92,9 @@ Job *DarwinToolChain::ConstructCompileJob(const file::File &input,
 
 Job *DarwinToolChain::ConstructStaticLinkJob(job::InputList inputs,
                                              const OutputOptions &outputOpts) {
-  auto tool = FindTool(ToolKind::LD);
+  auto tool = GetLD();
   if (!tool) {
-    tool = FindTool(ToolKind::LLD);
+    tool = GetLLD();
   }
   assert(tool && "Could not find a linker tool");
   // return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
@@ -111,11 +111,28 @@ Job *DarwinToolChain::ConstructExecLinkJob(job::InputList inputs,
   return nullptr;
 }
 
-// JobInvocation
-// DarwinToolChain::ConstructInvocation(const CompileJobRequest &request) const
-// {
-//   return ToolChain::ConstructInvocation(request);
-// }
+std::unique_ptr<TaskDetail>
+DarwinToolChain::ConstructTaskDetail(const CompileJob &job) {
+  return ToolChain::ConstructTaskDetail(job);
+}
+
+std::unique_ptr<TaskDetail>
+DarwinToolChain::ConstructTaskDetail(const DynamicLinkJob &job) {
+
+  return nullptr;
+}
+
+std::unique_ptr<TaskDetail>
+DarwinToolChain::ConstructTaskDetail(const StaticLinkJob &job) {
+
+  return nullptr;
+}
+
+std::unique_ptr<TaskDetail>
+DarwinToolChain::ConstructTaskDetail(const ExecutableLinkJob &job) {
+
+  return nullptr;
+}
 
 // JobInvocation
 // DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {

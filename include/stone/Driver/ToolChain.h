@@ -133,27 +133,33 @@ public:
   ToolChainKind GetKind() { return kind; }
 
 protected:
-  // TODO: Now that you are using the construction method, you may not need
-  // this.
-  virtual std::unique_ptr<Tool> BuildSCTool();
-  virtual std::unique_ptr<Tool> BuildLDTool() = 0;
-  virtual std::unique_ptr<Tool> BuildLLDTool() = 0;
-  virtual std::unique_ptr<Tool> BuildClangTool() = 0;
-  virtual std::unique_ptr<Tool> BuildGCCTool() = 0;
+  // Build tools and add to the tools
+  virtual std::unique_ptr<Tool> BuildSC();
+  virtual std::unique_ptr<Tool> BuildLD() = 0;
+  virtual std::unique_ptr<Tool> BuildLLD() = 0;
+  virtual std::unique_ptr<Tool> BuildClang() = 0;
+  virtual std::unique_ptr<Tool> BuildGCC() = 0;
 
 protected:
   std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
                                   const char *shortName, bool isDefault);
 
-public:
-  virtual bool Initialize();
   Tool *FindTool(ToolKind tk) const;
 
 public:
+  virtual bool Initialize();
+
+  Tool *GetSC() { return FindTool(ToolKind::SC); }
+  Tool *GetLD() { return FindTool(ToolKind::LD); }
+  Tool *GetLLD() { return FindTool(ToolKind::LLD); }
+  Tool *GetClang() { return FindTool(ToolKind::Clang); }
+  Tool *GetGCC() { return FindTool(ToolKind::GCC); }
+
+public:
+  /// TODO: Move these to CompilationModel
   virtual Job *ConstructCompileJob(const file::File &input,
                                    const OutputOptions &outputOpts);
 
-  // TODO: You only need ConstructLinkJob
   virtual Job *ConstructStaticLinkJob(job::InputList inputs,
                                       const OutputOptions &outputOpts) = 0;
 
@@ -164,14 +170,17 @@ public:
                                        const OutputOptions &outputOpts) = 0;
 
 public:
-  // virtual TaskDetail ConstructTaskDetail(const CompileJob &job,
-  //                                        Compilation &compilation);
-  // virtual TaskDetail ConstructTaskDetail(const StaticLinkJob &job,
-  //                                        Compilation &compilation);
-  // virtual TaskDetail ConstructTaskDetail(const DynamicLinkJob &job,
-  //                                        Compilation &compilation);
-  // virtual TaskDetail ConstructTaskDetail(const ExecutableLinkJob &job,
-  //                                        Compilation &compilation);
+  virtual std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const CompileJob &job);
+
+  virtual std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const DynamicLinkJob &job) = 0;
+
+  virtual std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const StaticLinkJob &job) = 0;
+
+  virtual std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const ExecutableLinkJob &job) = 0;
 
 protected:
   template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {

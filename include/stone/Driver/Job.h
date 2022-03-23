@@ -47,15 +47,16 @@ class TaskDetail final {
   llvm::ArrayRef<llvm::StringRef> env = llvm::None;
   void *context;
 
-  unsigned waitSecs = 0;
-  unsigned memLimit = 0;
-  std::string *errMsg;
-  bool *failed;
-
 public:
   TaskDetail(llvm::StringRef execPath, llvm::ArrayRef<llvm::StringRef> args,
              llvm::ArrayRef<llvm::StringRef> env, void *context)
       : execPath(execPath), args(args), env(env), context(context) {}
+
+public:
+  llvm::StringRef GetExecPath() { return execPath; }
+  llvm::ArrayRef<llvm::StringRef> GetArgs() { return args; }
+  llvm::ArrayRef<llvm::StringRef> GetEnv() { return env; }
+  void *GetContext() { return context; }
 };
 
 class Job {
@@ -99,15 +100,6 @@ public:
   JobKind GetKind() const { return kind; }
   void AddInput(job::Input input) { inputs.push_back(input); }
 
-  static file::File *GetInputAsFile(job::Input *input) {
-    assert(input);
-    return input->dyn_cast<file::File *>();
-  }
-  static Job *GetInputAsJob(job::Input *input) {
-    assert(input);
-    return input->dyn_cast<Job *>();
-  }
-
 public:
   /// Print a nice summary of this job
   virtual void Print(ColorOutputStream &stream,
@@ -117,8 +109,6 @@ public:
   virtual void Dump(ColorOutputStream &stream,
                     llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
-
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const {}
 
 public:
   size_type size() const { return inputs.size(); }
@@ -156,8 +146,6 @@ public:
   void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
             CrashState *crashState = nullptr) override;
 
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
-
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::Compile;
@@ -175,8 +163,6 @@ public:
 
   bool WithLTO() { return withLTO; }
 
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
-
 public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::DynamicLink;
@@ -188,9 +174,6 @@ public:
       : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
 public:
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
-
-public:
   static bool classof(const Job *job) {
     return job->GetKind() == JobKind::StaticLink;
   }
@@ -200,9 +183,6 @@ class ExecutableLinkJob final : public Job {
 public:
   ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
       : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
-
-public:
-  // virtual std::unique_ptr<TaskDetail> ToTaskDetail() const override;
 
 public:
   static bool classof(const Job *job) {

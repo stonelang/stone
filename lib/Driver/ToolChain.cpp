@@ -10,26 +10,26 @@ ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
 
 bool ToolChain::Initialize() {
   // TODO: Clean this up -- works for now
-  auto stoneTool = BuildSCTool();
-  if (stoneTool) {
-    tools.Add(std::move(stoneTool));
+  auto sc = BuildSC();
+  if (sc) {
+    tools.Add(std::move(sc));
     if (driver.JustCompile()) {
       return true;
     }
   }
-  auto ldTool = BuildLDTool();
-  if (ldTool) {
-    tools.Add(std::move(ldTool));
+  auto ld = BuildLD();
+  if (ld) {
+    tools.Add(std::move(ld));
   }
-  auto lldTool = BuildLLDTool();
-  if (lldTool) {
-    tools.Add(std::move(lldTool));
+  auto lld = BuildLLD();
+  if (lld) {
+    tools.Add(std::move(lld));
   }
-  auto clangTool = BuildClangTool();
+  auto clangTool = BuildClang();
   if (clangTool) {
     tools.Add(std::move(clangTool));
   }
-  auto gccTool = BuildGCCTool();
+  auto gccTool = BuildGCC();
   if (gccTool) {
     tools.Add(std::move(gccTool));
   }
@@ -58,7 +58,7 @@ Tool *ToolChain::FindTool(ToolKind tk) const {
   return nullptr;
 }
 
-std::unique_ptr<Tool> ToolChain::BuildSCTool() {
+std::unique_ptr<Tool> ToolChain::BuildSC() {
   if (driver.GetDriverOptions().HasSCPath()) {
     auto tool =
         BuildTool(ToolKind::SC, driver.GetDriverOptions().scPath.c_str(),
@@ -70,18 +70,23 @@ std::unique_ptr<Tool> ToolChain::BuildSCTool() {
   return nullptr;
 }
 
-Job *ToolChain::ConstructCompileJob(
-    const file::File &input, /* TODO: job::Input*/
-    const OutputOptions &outputOpts) {
-  auto tool = FindTool(ToolKind::SC);
+/* TODO: job::Input*/
+Job *ToolChain::ConstructCompileJob(const file::File &input,
+                                    const OutputOptions &outputOpts) {
+  auto tool = GetSC();
   assert(tool);
   auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,
                                  const_cast<file::File *>(&input),
                                  outputOpts.outputFileType);
-  // Do more stuff here.
+  // Do more stuff here?
   return job;
 }
 
+std::unique_ptr<TaskDetail>
+ToolChain::ConstructTaskDetail(const CompileJob &job) {
+
+  return nullptr;
+}
 // std::unique_ptr<Job>
 // ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
 //                         std::unique_ptr<CommandOutput> output,

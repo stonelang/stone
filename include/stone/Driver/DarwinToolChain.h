@@ -63,12 +63,25 @@ public:
   Job *ConstructExecLinkJob(job::InputList inputs,
                             const OutputOptions &outputOpts) override;
 
+public:
+  std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const CompileJob &job) override;
+
+  std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const DynamicLinkJob &job) override;
+
+  std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const StaticLinkJob &job) override;
+
+  std::unique_ptr<TaskDetail>
+  ConstructTaskDetail(const ExecutableLinkJob &job) override;
+
 protected:
-  std::unique_ptr<Tool> BuildSCTool() override;
-  std::unique_ptr<Tool> BuildLDTool() override;
-  std::unique_ptr<Tool> BuildLLDTool() override;
-  std::unique_ptr<Tool> BuildClangTool() override;
-  std::unique_ptr<Tool> BuildGCCTool() override;
+  std::unique_ptr<Tool> BuildSC() override;
+  std::unique_ptr<Tool> BuildLD() override;
+  std::unique_ptr<Tool> BuildLLD() override;
+  std::unique_ptr<Tool> BuildClang() override;
+  std::unique_ptr<Tool> BuildGCC() override;
 };
 } // namespace darwin
 } // namespace stone

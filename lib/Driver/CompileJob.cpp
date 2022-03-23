@@ -39,8 +39,9 @@ void CompileJob::Print(ColorOutputStream &stream, CrashState *crashState) {
 void CompileJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
                       CrashState *crashState) {}
 
-// std::unique_ptr<TaskDetail> CompileJob::ToTaskDetail() const { return
-// nullptr; }
+// std::unique_ptr<TaskDetail> CompileJob::ToTaskDetail(ToolChain &tc) const {
+//   return tc.ToTaskDetail(*this);
+// }
 
 // CompileJob::CompileJob(Intent &intent, Context &ctx, Tool &tool)
 //     : Job(intent, ctx, tool) {}
