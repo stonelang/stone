@@ -156,7 +156,24 @@ public:
   Tool *GetGCC() { return FindTool(ToolKind::GCC); }
 
 public:
-  /// TODO: Move these to CompilationModel
+  /// Searches for the given executable in appropriate paths relative to the
+  /// Stone binary.
+  ///
+  /// This method caches its results.
+  ///
+  /// \sa PerformFindProgramRelativeToStone
+  std::string FindProgramRelativeToStone(llvm::StringRef name) const;
+
+  /// An override point for platform-specific subclasses to customize how to
+  /// do relative searches for programs.
+  ///
+  /// This method is invoked by FindProgramRelativeToStone().
+  virtual std::string
+  FindProgramRelativeToStoneImpl(llvm::StringRef name) const {}
+
+public:
+  /// Construct a compile job from an input file
+  /// Stone binary.
   virtual Job *ConstructCompileJob(const file::File &input,
                                    const OutputOptions &outputOpts);
 

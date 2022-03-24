@@ -24,17 +24,18 @@ Job *CompilationModel::ConstructDynamicLinkJob(
 
 // TODO: Look into the JobCache instead of the job::Input
 /// Goal: Build the link job and CacheForTop(..)
-Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
+Job *CompilationModel::BuildLinkJob(ToolChain &tc, JobCache &jc,
                                     const OutputOptions &outputOpts) {
 
   Job *job = nullptr;
   // Make sure that we can link
-  assert(driver.CanLink() && "The current mode does not allow linking.");
+  assert(tc.GetDriver().CanLink() &&
+         "The current mode does not allow linking.");
 
   // Make sure that there is stuff to link
   assert(jc.ForCompile() && "There is nothing to link");
 
-  switch (driver.GetLinkMode()) {
+  switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
     job = tc.ConstructExecLinkJob(jc.forCompile, outputOpts);
     break;
@@ -52,18 +53,17 @@ Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
   return job;
 }
 
-Job *CompilationModel::BuildLinkJob(Driver &driver, ToolChain &tc,
-                                    const file::Files &inputs,
+Job *CompilationModel::BuildLinkJob(ToolChain &tc, const file::Files &inputs,
                                     const OutputOptions &outputOpts) {
   Job *job = nullptr;
 
-  assert(driver.JustLink() && "The current mode is only for linking");
+  assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
 
   return nullptr;
 }
 
 void QuadraticCompilationModel::BuildCompileJobs(
-    Driver &driver, ToolChain &tc, const file::Files &inputs, JobCache &jc,
+    ToolChain &tc, const file::Files &inputs, JobCache &jc,
     const OutputOptions &outputOpts) {
 
   auto BuildCompileJob = [&](const file::File &primaryInput,
@@ -84,44 +84,42 @@ void QuadraticCompilationModel::BuildCompileJobs(
   }
 }
 // Goal :
-void QuadraticCompilationModel::BuildJobs(Driver &driver, ToolChain &tc,
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc,
                                           const file::Files &inputs,
                                           JobCache &jc,
                                           const OutputOptions &outputOpts) {
-
-  if (driver.GetMode().CanCompile()) {
-    BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
-    if (driver.JustCompile()) {
+  if (tc.GetDriver().GetMode().CanCompile()) {
+    BuildCompileJobs(tc, inputs, jc, outputOpts);
+    if (tc.GetDriver().JustCompile()) {
       return;
     }
   }
-  if (driver.CanLink()) {
-    if (driver.JustLink()) {
-      BuildLinkJob(driver, tc, inputs, outputOpts);
+  if (tc.GetDriver().CanLink()) {
+    if (tc.GetDriver().JustLink()) {
+      BuildLinkJob(tc, inputs, outputOpts);
     } else {
-      BuildLinkJob(driver, tc, jc, outputOpts);
+      BuildLinkJob(tc, jc, outputOpts);
     }
   }
 }
 void QuadraticCompilationModel::BuildTaskDetails(
-    Driver &driver, ToolChain &tc, JobCache &jc,
-    const OutputOptions &outputOpts) {
+    ToolChain &tc, JobCache &jc, const OutputOptions &outputOpts) {
 
   auto BuildCompileTaskDetails = [&]() -> void {
 
   };
 
-  // if(driver.JustCompile()){
+  // if(tc.GetDriver().JustCompile()){
 
   // }
-  // if (driver.GetMode().CanCompile()) {
+  // if (tc.GetDriver().GetMode().CanCompile()) {
   //   BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
-  //   if (driver.JustCompile()) {
+  //   if (tc.GetDriver().JustCompile()) {
   //     return;
   //   }
   // }
-  // if (driver.CanLink()) {
-  //   if (driver.JustLink()) {
+  // if (tc.GetDriver().CanLink()) {
+  //   if (tc.GetDriver().JustLink()) {
   //     BuildLinkJob(driver, tc, inputs, outputOpts);
   //   } else {
   //     BuildLinkJob(driver, tc, jc, outputOpts);
@@ -138,13 +136,11 @@ void QuadraticCompilationModel::BuildTaskDetails(
   //   auto taskDetail = tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job));
   // }
 }
-std::unique_ptr<Compilation>
-QuadraticCompilationModel::BuildCompilation(Driver &driver, ToolChain &tc,
-                                            const file::Files &inputs,
-                                            const OutputOptions &outputOpts) {
+std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
+    ToolChain &tc, const file::Files &inputs, const OutputOptions &outputOpts) {
   JobCache jc;
-  BuildJobs(driver, tc, inputs, jc, outputOpts);
-  BuildTaskDetails(driver, tc, jc, outputOpts);
+  BuildJobs(tc, inputs, jc, outputOpts);
+  BuildTaskDetails(tc, jc, outputOpts);
 
   // TODO: if print ....
 

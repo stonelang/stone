@@ -20,22 +20,21 @@ public:
 
 public:
   virtual std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, ToolChain &tc, const file::Files &inputs,
+  BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) {}
 
-  virtual void BuildJobs(Driver &driver, ToolChain &tc,
-                         const file::Files &inputs, JobCache &jc,
+  virtual void BuildJobs(ToolChain &tc, const file::Files &inputs, JobCache &jc,
                          const OutputOptions &outputOpts) {}
 
-  virtual void BuildTaskDetails(Driver &driver, ToolChain &tc, JobCache &jc,
+  virtual void BuildTaskDetails(ToolChain &tc, JobCache &jc,
                                 const OutputOptions &outputOpts) {}
 
   CompilationMode GetCompilationMode() { return mode; }
 
 protected:
-  Job *BuildLinkJob(Driver &driver, ToolChain &tc, JobCache &jc,
+  Job *BuildLinkJob(ToolChain &tc, JobCache &jc,
                     const OutputOptions &outputOpts);
-  Job *BuildLinkJob(Driver &driver, ToolChain &tc, const file::Files &inputs,
+  Job *BuildLinkJob(ToolChain &tc, const file::Files &inputs,
                     const OutputOptions &outputOpts);
 
 protected:
@@ -63,18 +62,17 @@ public:
 
 public:
   std::unique_ptr<Compilation>
-  BuildCompilation(Driver &driver, ToolChain &tc, const file::Files &inputs,
+  BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildJobs(Driver &driver, ToolChain &tc, const file::Files &inputs,
-                 JobCache &jc, const OutputOptions &outputOpts) override;
+  void BuildJobs(ToolChain &tc, const file::Files &inputs, JobCache &jc,
+                 const OutputOptions &outputOpts) override;
 
-  void BuildTaskDetails(Driver &driver, ToolChain &tc, JobCache &jc,
+  void BuildTaskDetails(ToolChain &tc, JobCache &jc,
                         const OutputOptions &outputOpts) override;
 
 private:
-  void BuildCompileJobs(Driver &driver, ToolChain &tc,
-                        const file::Files &inputs, JobCache &jc,
+  void BuildCompileJobs(ToolChain &tc, const file::Files &inputs, JobCache &jc,
                         const OutputOptions &outputOpts);
 };
 

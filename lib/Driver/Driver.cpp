@@ -78,7 +78,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto compilationModel = ComputeCompilationModel(compilationMode);
 
   auto compilation = compilationModel->BuildCompilation(
-      *this, toolChain, inputs, driverOpts.outputOptions);
+      toolChain, inputs, driverOpts.outputOptions);
 
   // A quick -print-requests check
   if (driverOpts.printJobs) {
