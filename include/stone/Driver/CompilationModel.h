@@ -46,16 +46,16 @@ protected:
   }
 
 public:
-  Intent *ConstructCompileIntent(intent::Input input,
+  Intent *ConstructCompileIntent(ToolChain &tc, intent::Input input,
                                  const OutputOptions &outputOpts);
 
-  Intent *ConstructStaticLinkIntent(intent::InputList inputs,
+  Intent *ConstructStaticLinkIntent(ToolChain &tc, intent::InputList inputs,
                                     const OutputOptions &outputOpts);
 
-  Intent *ConstructExecLinkIntent(intent::InputList inputs,
+  Intent *ConstructExecLinkIntent(ToolChain &tc, intent::InputList inputs,
                                   const OutputOptions &outputOpts);
 
-  Intent *ConstructDynamicLinkIntent(intent::InputList inputs,
+  Intent *ConstructDynamicLinkIntent(ToolChain &tc, intent::InputList inputs,
                                      const OutputOptions &outputOpts);
 };
 

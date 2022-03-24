@@ -85,33 +85,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCC() {
   return nullptr;
 }
 
-Job *DarwinToolChain::ConstructCompileJob(const file::File &input,
-                                          const OutputOptions &outputOpts) {
-  return ToolChain::ConstructCompileJob(input, outputOpts);
-}
-
-Job *DarwinToolChain::ConstructStaticLinkJob(job::InputList inputs,
-                                             const OutputOptions &outputOpts) {
-  auto tool = GetLD();
-  // return std::make_unique<StaticLinkJob>(driver.GetContext(), *tool, inputs);
-  return nullptr;
-}
-
-Job *DarwinToolChain::ConstructDynamicLinkJob(job::InputList inputs,
-                                              const OutputOptions &outputOpts) {
-  return nullptr;
-}
-
-Job *DarwinToolChain::ConstructExecLinkJob(job::InputList inputs,
-                                           const OutputOptions &outputOpts) {
-
-  // TODO: Assert from the begining if we cannot find LD or LLD
-  auto tool = GetLD();
-  auto job = MakeJob<ExecutableLinkJob>(driver.GetContext(), *tool, inputs);
-  // Do more stuff here?
-  return job;
-}
-
 std::unique_ptr<TaskDetail>
 DarwinToolChain::ConstructTaskDetail(const CompileJob &job) {
   return ToolChain::ConstructTaskDetail(job);

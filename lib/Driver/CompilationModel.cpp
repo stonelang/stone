@@ -4,25 +4,27 @@
 using namespace stone;
 
 Intent *
-CompilationModel::ConstructCompileIntent(intent::Input input,
+CompilationModel::ConstructCompileIntent(ToolChain &tc, intent::Input input,
                                          const OutputOptions &outputOpts) {
-  return nullptr;
+  Intent* intent = nullptr;
+  // auto sc = tc.GetSC();
+  // intent = tc.GetDriver().MakeIntent<CompileIntent>(
+  //     *sc, input, outputOpts.outputFileType);
+  assert(intent);
+  return intent;
 }
-Intent *
-CompilationModel::ConstructStaticLinkIntent(intent::InputList inputs,
-                                            const OutputOptions &outputOpts) {
+Intent *CompilationModel::ConstructStaticLinkIntent(
+    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-Intent *
-CompilationModel::ConstructExecLinkIntent(intent::InputList inputs,
-                                          const OutputOptions &outputOpts) {
+Intent *CompilationModel::ConstructExecLinkIntent(
+    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-Intent *
-CompilationModel::ConstructDynamicLinkIntent(intent::InputList inputs,
-                                             const OutputOptions &outputOpts) {
+Intent *CompilationModel::ConstructDynamicLinkIntent(
+    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
   return nullptr;
 }
 
@@ -41,13 +43,13 @@ Intent *CompilationModel::BuildLinkIntent(ToolChain &tc, IntentCache &ic,
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    intent = ConstructExecLinkIntent(ic.forCompile, outputOpts);
+    intent = ConstructExecLinkIntent(tc, ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    intent = ConstructStaticLinkIntent(ic.forCompile, outputOpts);
+    intent = ConstructStaticLinkIntent(tc, ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    intent = ConstructDynamicLinkIntent(ic.forCompile, outputOpts);
+    intent = ConstructDynamicLinkIntent(tc, ic.forCompile, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
@@ -75,7 +77,7 @@ void QuadraticCompilationModel::BuildCompileIntents(
                                 const file::Files &inputs,
                                 const OutputOptions &outputOpts) -> Intent * {
     auto intent = ConstructCompileIntent(
-        const_cast<file::File *>(&primaryInput), outputOpts);
+        tc, const_cast<file::File *>(&primaryInput), outputOpts);
     assert(intent);
     for (auto &input : inputs) {
       /// The tool chain stores the intents that it created.

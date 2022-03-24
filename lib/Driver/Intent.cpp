@@ -46,8 +46,7 @@ static void PrintIntent(ColorOutputStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Intent::Print(ColorOutputStream &stream, llvm::StringRef terminator,
-                   CrashState *crash) const {
+void Intent::Print(ColorOutputStream &stream, llvm::StringRef terminator) const {
   for (auto intent : *this) {
   }
 }

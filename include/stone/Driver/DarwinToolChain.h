@@ -48,21 +48,6 @@ public:
   bool Initialize() override;
 
 public:
-  /// Consruct the compile job
-  Job *ConstructCompileJob(const file::File &input,
-                           const OutputOptions &outputOpts);
-
-  /// Construct the static-link job
-  Job *ConstructStaticLinkJob(job::InputList inputs,
-                              const OutputOptions &outputOpts);
-
-  Job *ConstructDynamicLinkJob(job::InputList inputs,
-                               const OutputOptions &outputOpts) override;
-
-  Job *ConstructExecLinkJob(job::InputList inputs,
-                            const OutputOptions &outputOpts) override;
-
-public:
   std::unique_ptr<TaskDetail>
   ConstructTaskDetail(const CompileJob &job) override;
 

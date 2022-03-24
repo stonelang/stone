@@ -70,18 +70,6 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
   return nullptr;
 }
 
-/* TODO: job::Input*/
-Job *ToolChain::ConstructCompileJob(const file::File &input,
-                                    const OutputOptions &outputOpts) {
-  auto tool = GetSC();
-  // TODO: assert(tool);
-  auto job = MakeJob<CompileJob>(driver.GetContext(), *tool,
-                                 const_cast<file::File *>(&input),
-                                 outputOpts.outputFileType);
-  // Do more stuff here?
-  return job;
-}
-
 std::unique_ptr<TaskDetail>
 ToolChain::ConstructTaskDetail(const CompileJob &job) {
 

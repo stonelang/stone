@@ -64,8 +64,7 @@ public:
 public:
   /// Perform a complete dump of this intent.
   virtual void Print(ColorOutputStream &stream,
-                     llvm::StringRef terminator = "\n",
-                     CrashState *crashState = nullptr) const;
+                     llvm::StringRef terminator = "\n") const;
 
 public:
   size_type size() const { return inputs.size(); }

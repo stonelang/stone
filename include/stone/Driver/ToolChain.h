@@ -171,21 +171,6 @@ public:
   FindProgramRelativeToStoneImpl(llvm::StringRef name) const {}
 
 public:
-  /// Construct a compile job from an input file
-  /// Stone binary.
-  virtual Job *ConstructCompileJob(const file::File &input,
-                                   const OutputOptions &outputOpts);
-
-  virtual Job *ConstructStaticLinkJob(job::InputList inputs,
-                                      const OutputOptions &outputOpts) = 0;
-
-  virtual Job *ConstructExecLinkJob(job::InputList inputs,
-                                    const OutputOptions &outputOpts) = 0;
-
-  virtual Job *ConstructDynamicLinkJob(job::InputList inputs,
-                                       const OutputOptions &outputOpts) = 0;
-
-public:
   virtual std::unique_ptr<TaskDetail>
   ConstructTaskDetail(const CompileJob &job);
 
