@@ -93,5 +93,11 @@ ToolChain::ConstructJob(const Intent &intent, Compilation &compilation,
       stone::Panic("No 'Intent' to build Job");
     }
   }();
+
+  // Determine if the argument list is so long that it needs to be written into
+  // a response file.
+  // auto responseFileDetail =
+  //     ComputeResponseFileDetail(compilation, executablePath, jobDetail, context);
+
   return nullptr;
 }

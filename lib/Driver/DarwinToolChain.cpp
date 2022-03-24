@@ -20,6 +20,7 @@ bool DarwinToolChain::Initialize() {
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
+
   // Check to see if the SC path was given by the user.
   auto tool = ToolChain::BuildSC();
   if (tool) {
@@ -35,7 +36,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
   if (tool) {
     return tool;
   }
-  return nullptr;
+  stone::Panic("Could not find 'stone-compile'");
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLD() {
@@ -103,19 +104,6 @@ JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkIntent &intent) {
   return JobDetail();
 }
 
-// JobInvocation
-// DarwinToolChain::ConstructInvocation(const LinkJobRequest &request) const {
-//   auto tool = FindTool(ToolKind::LD);
-//   if (!tool) {
-//     tool = FindTool(ToolKind::LLD);
-//   }
-//   assert(tool && "Could not find a linker tool");
-//   return JobInvocation(request, *tool);
-// }
-
-// Job *DarwinToolChain::CreateCompileJob(Driver &driver) {
-//   return ToolChain::CreateCompileJob(driver);
-// }
 
 // Job *DarwinToolChain::CreateLinkJob(Driver &driver) {
 

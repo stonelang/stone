@@ -20,16 +20,21 @@ Intent *CompilationModel::ConstructStaticLinkIntent(
   Intent *intent = nullptr;
   auto ld = tc.GetLD();
 
+
   return nullptr;
 }
 
 Intent *CompilationModel::ConstructExecLinkIntent(
     ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+  
+  auto ld = tc.GetLD();
   return nullptr;
 }
 
 Intent *CompilationModel::ConstructDynamicLinkIntent(
     ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+
+  auto ld = tc.GetLD();
   return nullptr;
 }
 
