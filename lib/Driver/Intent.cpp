@@ -1,6 +1,6 @@
-#include "stone/Core/File.h"
-#include "stone/Driver/Compilation.h"
-#include "stone/Driver/Driver.h"
+#include "stone/Driver/Intent.h"
+#include "stone/Core/Color.h"
+#include "stone/Core/Context.h"
 
 using namespace stone;
 
@@ -24,7 +24,7 @@ const char *Intent::GetNameByKind(IntentKind kind) const {
 }
 
 static void PrintIntent(ColorOutputStream &stream, llvm::StringRef terminator,
-                        const Intent &intent) {
+                        const intent::Input) {
   //   /// TODO: IntentFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();
@@ -46,10 +46,25 @@ static void PrintIntent(ColorOutputStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Intent::Print(ColorOutputStream &stream, llvm::StringRef terminator) const {
-  for (auto intent : *this) {
+void Intent::Print(ColorOutputStream &stream,
+                   llvm::StringRef terminator) const {
+  for (auto input : *this) {
+    PrintIntent(stream, terminator, input);
   }
 }
+Intent::Intent(IntentKind kind, const Tool &tool, intent::InputList inputs,
+               file::Type outputFileType)
+    : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
+
+Intent::~Intent() {}
+
+CompileIntent::CompileIntent(const Tool &tool, file::Type outputFileType)
+    : Intent(IntentKind::Compile, tool, {}, outputFileType) {}
+
+CompileIntent::CompileIntent(const Tool &tool, intent::Input input,
+                             file::Type outputFileType)
+    : Intent(IntentKind::Compile, tool, input, outputFileType),
+      primaryInput(input) {}
 
 // static void BuildBatchCompilingModel(Compilation &compilation, HotCache &chi,
 //                                      const file::Files &inputs,

@@ -44,6 +44,10 @@ class Intent {
 
   const char *GetNameByKind(IntentKind kind) const;
 
+  friend class Driver;
+  /// Itents must be created through Driver::MakeIntent(...)
+  void *operator new(size_t size) { return ::operator new(size); };
+
 public:
   using size_type = llvm::ArrayRef<intent::Input>::size_type;
   using iterator = llvm::ArrayRef<intent::Input>::iterator;

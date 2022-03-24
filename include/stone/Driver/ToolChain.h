@@ -118,7 +118,7 @@ public:
 
   virtual bool Initialize();
 
-  const Driver &GetDriver() { return driver; }
+  Driver &GetDriver() { return driver; }
   const llvm::Triple &GetTriple() const { return triple; }
 
   Paths &GetLibraryPaths() { return libPaths; }

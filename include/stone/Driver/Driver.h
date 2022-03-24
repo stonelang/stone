@@ -39,8 +39,6 @@ class Driver final : public Session {
   std::unique_ptr<BuildSystem> buildSystem;
   std::unique_ptr<Compilation> compilation;
 
-  bool justLink = false;
-
   /// The OutputFileMap describing the Compilation's outputs, populated both by
   /// the user-provided output file map (if it exists) and inference rules that
   /// derive otherwise-unspecified output filenames from context.

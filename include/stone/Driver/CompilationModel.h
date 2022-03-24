@@ -10,6 +10,8 @@
 namespace stone {
 
 class Driver;
+class ToolChain;
+
 class CompilationModel {
 
   CompilationMode mode;

@@ -1,15 +1,16 @@
 #include "stone/Driver/CompilationModel.h"
 #include "stone/Driver/Driver.h"
+#include "stone/Driver/ToolChain.h"
 
 using namespace stone;
 
 Intent *
 CompilationModel::ConstructCompileIntent(ToolChain &tc, intent::Input input,
                                          const OutputOptions &outputOpts) {
-  Intent* intent = nullptr;
-  // auto sc = tc.GetSC();
-  // intent = tc.GetDriver().MakeIntent<CompileIntent>(
-  //     *sc, input, outputOpts.outputFileType);
+  Intent *intent = nullptr;
+  auto sc = tc.GetSC();
+  intent = tc.GetDriver().MakeIntent<CompileIntent>(*sc, input,
+                                                    outputOpts.outputFileType);
   assert(intent);
   return intent;
 }
@@ -87,6 +88,7 @@ void QuadraticCompilationModel::BuildCompileIntents(
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
+
     auto intent = BuildCompileIntent(input, inputs, outputOpts);
     ic.CacheForCompile(intent);
   }
