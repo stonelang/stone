@@ -12,7 +12,7 @@
 	Driver.cpp
 	Job.cpp
 	TaskQueue.cpp
-	Request.cpp
+	Intent.cpp
 	LinkJob.cpp
 	LinuxTaskQueue.cpp
 	LinuxToolChain.cpp

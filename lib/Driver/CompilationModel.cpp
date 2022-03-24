@@ -3,198 +3,204 @@
 
 using namespace stone;
 
-Job *CompilationModel::ConstructCompileJob(job::Input input,
-                                           const OutputOptions &outputOpts) {
+Intent *
+CompilationModel::ConstructCompileIntent(intent::Input input,
+                                         const OutputOptions &outputOpts) {
   return nullptr;
 }
-Job *CompilationModel::ConstructStaticLinkJob(job::InputList inputs,
-                                              const OutputOptions &outputOpts) {
-  return nullptr;
-}
-
-Job *CompilationModel::ConstructExecLinkJob(job::InputList inputs,
+Intent *
+CompilationModel::ConstructStaticLinkIntent(intent::InputList inputs,
                                             const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-Job *CompilationModel::ConstructDynamicLinkJob(
-    job::InputList inputs, const OutputOptions &outputOpts) {
+Intent *
+CompilationModel::ConstructExecLinkIntent(intent::InputList inputs,
+                                          const OutputOptions &outputOpts) {
   return nullptr;
 }
 
-// TODO: Look into the JobCache instead of the job::Input
-/// Goal: Build the link job and CacheForTop(..)
-Job *CompilationModel::BuildLinkJob(ToolChain &tc, JobCache &jc,
-                                    const OutputOptions &outputOpts) {
+Intent *
+CompilationModel::ConstructDynamicLinkIntent(intent::InputList inputs,
+                                             const OutputOptions &outputOpts) {
+  return nullptr;
+}
 
-  Job *job = nullptr;
+// TODO: Look into the IntentCache instead of the intent::Input
+/// Goal: Build the link intent and CacheForTop(..)
+Intent *CompilationModel::BuildLinkIntent(ToolChain &tc, IntentCache &ic,
+                                          const OutputOptions &outputOpts) {
+
+  Intent *intent = nullptr;
   // Make sure that we can link
   assert(tc.GetDriver().CanLink() &&
          "The current mode does not allow linking.");
 
   // Make sure that there is stuff to link
-  assert(jc.ForCompile() && "There is nothing to link");
+  assert(ic.ForCompile() && "There is nothing to link");
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    job = tc.ConstructExecLinkJob(jc.forCompile, outputOpts);
+    intent = ConstructExecLinkIntent(ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    job = tc.ConstructStaticLinkJob(jc.forCompile, outputOpts);
+    intent = ConstructStaticLinkIntent(ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    job = tc.ConstructDynamicLinkJob(jc.forCompile, outputOpts);
+    intent = ConstructDynamicLinkIntent(ic.forCompile, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
   }
-  assert(job);
-  jc.CacheForTop(job);
-  return job;
+  assert(intent);
+  ic.CacheForTop(intent);
+  return intent;
 }
 
-Job *CompilationModel::BuildLinkJob(ToolChain &tc, const file::Files &inputs,
-                                    const OutputOptions &outputOpts) {
-  Job *job = nullptr;
+Intent *CompilationModel::BuildLinkIntent(ToolChain &tc,
+                                          const file::Files &inputs,
+                                          const OutputOptions &outputOpts) {
+  Intent *intent = nullptr;
 
   assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
 
   return nullptr;
 }
 
-void QuadraticCompilationModel::BuildCompileJobs(
-    ToolChain &tc, const file::Files &inputs, JobCache &jc,
+void QuadraticCompilationModel::BuildCompileIntents(
+    ToolChain &tc, const file::Files &inputs, IntentCache &ic,
     const OutputOptions &outputOpts) {
 
-  auto BuildCompileJob = [&](const file::File &primaryInput,
-                             const file::Files &inputs,
-                             const OutputOptions &outputOpts) -> Job * {
-    auto job = tc.ConstructCompileJob(primaryInput, outputOpts);
-    assert(job);
+  auto BuildCompileIntent = [&](const file::File &primaryInput,
+                                const file::Files &inputs,
+                                const OutputOptions &outputOpts) -> Intent * {
+    auto intent = ConstructCompileIntent(
+        const_cast<file::File *>(&primaryInput), outputOpts);
+    assert(intent);
     for (auto &input : inputs) {
-      /// The tool chain stores the jobs that it created.
-      job->AddInput(const_cast<file::File *>(&input));
+      /// The tool chain stores the intents that it created.
+      intent->AddInput(const_cast<file::File *>(&input));
     }
-    return job;
+    return intent;
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
-    auto job = BuildCompileJob(input, inputs, outputOpts);
-    jc.CacheForCompile(job);
+    auto intent = BuildCompileIntent(input, inputs, outputOpts);
+    ic.CacheForCompile(intent);
   }
 }
-// Goal :
-void QuadraticCompilationModel::BuildJobs(ToolChain &tc,
-                                          const file::Files &inputs,
-                                          JobCache &jc,
-                                          const OutputOptions &outputOpts) {
+void QuadraticCompilationModel::BuildIntents(ToolChain &tc,
+                                             const file::Files &inputs,
+                                             IntentCache &ic,
+                                             const OutputOptions &outputOpts) {
   if (tc.GetDriver().GetMode().CanCompile()) {
-    BuildCompileJobs(tc, inputs, jc, outputOpts);
+    BuildCompileIntents(tc, inputs, ic, outputOpts);
     if (tc.GetDriver().JustCompile()) {
       return;
     }
   }
   if (tc.GetDriver().CanLink()) {
     if (tc.GetDriver().JustLink()) {
-      BuildLinkJob(tc, inputs, outputOpts);
+      BuildLinkIntent(tc, inputs, outputOpts);
     } else {
-      BuildLinkJob(tc, jc, outputOpts);
+      BuildLinkIntent(tc, ic, outputOpts);
     }
   }
 }
-void QuadraticCompilationModel::BuildTaskDetails(
-    ToolChain &tc, JobCache &jc, const OutputOptions &outputOpts) {
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc, IntentCache &ic,
+                                          const OutputOptions &outputOpts) {
 
-  auto BuildCompileTaskDetails = [&]() -> void {
+  // auto BuildCompileTaskDetails = [&]() -> void {
 
-  };
+  // };
 
   // if(tc.GetDriver().JustCompile()){
 
   // }
   // if (tc.GetDriver().GetMode().CanCompile()) {
-  //   BuildCompileJobs(driver, tc, inputs, jc, outputOpts);
+  //   BuildCompileIntents(driver, tc, inputs, ic, outputOpts);
   //   if (tc.GetDriver().JustCompile()) {
   //     return;
   //   }
   // }
   // if (tc.GetDriver().CanLink()) {
   //   if (tc.GetDriver().JustLink()) {
-  //     BuildLinkJob(driver, tc, inputs, outputOpts);
+  //     BuildLinkIntent(driver, tc, inputs, outputOpts);
   //   } else {
-  //     BuildLinkJob(driver, tc, jc, outputOpts);
+  //     BuildLinkIntent(driver, tc, ic, outputOpts);
   //   }
   // }
 
   // // if we have nothing to do, we return
-  // if (jc.ForCompile()) {
+  // if (ic.ForCompile()) {
   //   return nullptr;
   // }
-  // for (auto input : jc.forCompile) {
-  //   auto job = InputToJob(input);
-  //   assert(job);
-  //   auto taskDetail = tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job));
+  // for (auto input : ic.forCompile) {
+  //   auto intent = InputToIntent(input);
+  //   assert(intent);
+  //   auto taskDetail =
+  //   tc.ConstructTaskDetail(llvm::cast<CompileIntent>(*intent));
   // }
 }
 std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
     ToolChain &tc, const file::Files &inputs, const OutputOptions &outputOpts) {
-  JobCache jc;
-  BuildJobs(tc, inputs, jc, outputOpts);
-  BuildTaskDetails(tc, jc, outputOpts);
+  IntentCache ic;
+  BuildIntents(tc, inputs, ic, outputOpts);
+  BuildJobs(tc, ic, outputOpts);
 
   // TODO: if print ....
 
   // TODO: it seems that we can skip these steps if we create the compilation
   // ahead of time and just do
-  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileJob>(*job)))
+  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileIntent>(*intent)))
 
   // TODO: Check input size
-  // Now, build the job system since we have a toolchain
+  // Now, build the intent system since we have a toolchain
   // auto compilation =
   //     std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
   return nullptr;
 }
 
-// void FlatCompilationModel::BuildJobs(Compilation& compilation, const
+// void FlatCompilationModel::BuildIntents(Compilation& compilation, const
 // file::Files &inputs,
-//                                      JobCache &jc,
+//                                      IntentCache &ic,
 //                                      const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // FlatCompilationModel::BuildCompilation(Driver &driver,
-//                                        const file::Files &inputs, JobCache
-//                                        &jc, const OutputOptions &outputOpts)
+//                                        const file::Files &inputs, IntentCache
+//                                        &ic, const OutputOptions &outputOpts)
 //                                        {
 
-//   BuildJobs(driver, inputs, jc, outputOpts);
+//   BuildIntents(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }
 
-// void CPUCompilationModel::BuildJobs(Compilation& compilation, const
+// void CPUCompilationModel::BuildIntents(Compilation& compilation, const
 // file::Files &inputs,
-//                                     JobCache &jc,
+//                                     IntentCache &ic,
 //                                     const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // CPUCompilationModel::BuildCompilation(Driver &driver, const file::Files
 // &inputs,
-//                                       JobCache &jc,
+//                                       IntentCache &ic,
 //                                       const OutputOptions &outputOpts) {
 
-//   BuildJobs(driver, inputs, jc, outputOpts);
+//   BuildIntents(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }
 
-// void SingleCompilationModel::BuildJobs(Compilation& compilation,
-//                                        const file::Files &inputs, JobCache
-//                                        &jc, const OutputOptions &outputOpts)
+// void SingleCompilationModel::BuildIntents(Compilation& compilation,
+//                                        const file::Files &inputs, IntentCache
+//                                        &ic, const OutputOptions &outputOpts)
 //                                        {}
 
 // std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(
-//     Driver &driver, const file::Files &inputs, JobCache &jc,
+//     Driver &driver, const file::Files &inputs, IntentCache &ic,
 //     const OutputOptions &outputOpts) {
 
-//   BuildJobs(driver, inputs, jc, outputOpts);
+//   BuildIntents(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }

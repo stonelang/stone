@@ -13,6 +13,7 @@ class Mode final {
 private:
   llvm::StringRef name;
   void SetName(llvm::StringRef v) { name = v; }
+
 public:
   Mode(ModeKind kind) : kind(kind) {}
 

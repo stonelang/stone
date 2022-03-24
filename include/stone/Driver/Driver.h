@@ -9,7 +9,7 @@
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/CompilationModel.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Request.h"
+#include "stone/Driver/Intent.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Session/Session.h"
 
@@ -17,42 +17,15 @@ namespace stone {
 
 class Job;
 class TaskQueue;
-class JobRequest;
+
 class Compilation;
 
-class ReqCache final {
-public:
-  Request *currentRequest;
-  /// We keep track of the inputs for the module that we are building.
-  /// These are CompileJobRequest
-  llvm::SmallVector<const Request *, 4> forModule;
-
-  /// When are building the  request(s), keep track of the linker dependecies
-  llvm::SmallVector<const Request *, 2> forLink;
-
-  /// These are the top-level job requests -- we use them recursively to build
-  /// out the "real" jobs.
-  llvm::SmallVector<const Request *, 16> forTop;
-
-  bool ForModule() { return forModule.size(); }
-  void CacheForModule(const Request *request) { forModule.push_back(request); }
-
-  bool ForLink() { return forLink.size(); }
-  void CacheForLink(const Request *request) { forLink.push_back(request); }
-
-  bool ForTop() { return forTop.size(); }
-  void CacheForTop(const Request *request) { forTop.push_back(request); }
-
-public:
-  void Finish(Compilation &compilation, const OutputOptions &outputOpts);
-};
-
 class HotCache final {
-  ReqCache reqCache;
+  IntentCache intentCache;
   JobCache jobCache;
 
 public:
-  ReqCache &GetReqCache() { return reqCache; }
+  IntentCache &GetIntentCache() { return intentCache; }
   JobCache &GetJobCache() { return jobCache; }
 };
 
@@ -79,7 +52,7 @@ class Driver final : public Session {
   // llvm::SmallVector<std::function<void(Compilation &compilation,
   //  HotCache &hc,const Request *input)>,32> listeners;
 
-  llvm::SmallVector<std::unique_ptr<const Request>, 32> requests;
+  llvm::SmallVector<std::unique_ptr<const Intent>, 32> intentions;
 
 public:
   Driver(const Driver &) = delete;
@@ -95,9 +68,9 @@ public:
   void PrintVersion();
 
 public:
-  template <typename T, typename... Args> T *MakeRequest(Args &&...args) {
+  template <typename T, typename... Args> T *MakeIntent(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
-    requests.emplace_back(result);
+    intentions.emplace_back(result);
     return result;
   }
 

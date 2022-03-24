@@ -8,9 +8,11 @@
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
-#include "stone/Driver/Request.h"
+
+#include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/TinyPtrVector.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/StringSaver.h"

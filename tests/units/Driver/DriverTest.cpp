@@ -3,7 +3,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Driver/CompilationJob.h"
-#include "stone/Driver/JobRequest.h"
+#include "stone/Driver/JobIntent.h"
 #include "gtest/gtest.h"
 
 using namespace stone;

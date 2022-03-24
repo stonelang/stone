@@ -104,7 +104,7 @@ static void BuildLinkJob(Compilation &compilation, JobCache &jc,
   // }
   // toolChain.ConstructCompileJob()
   //       hc.currentRequest =
-  //           compilation.GetDriver().MakeRequest<CompileJobRequest>(
+  //           compilation.GetDriver().MakeIntent<CompileJobRequest>(
   //               hc.currentRequest,
   //               compilation.GetDriver().GetOutputFileType());
   //       hc.AddModuleInput(hc.currentRequest);

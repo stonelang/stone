@@ -12,8 +12,9 @@
 #include "stone/Core/List.h"
 #include "stone/Core/Mem.h"
 #include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Intent.h"
 #include "stone/Driver/Job.h"
-#include "stone/Driver/Request.h"
+
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
