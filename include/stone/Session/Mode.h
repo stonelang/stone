@@ -7,14 +7,18 @@
 namespace stone {
 
 class Mode final {
+  friend class Session;
   ModeKind kind;
 
+private:
+  llvm::StringRef name;
+  void SetName(llvm::StringRef v) { name = v; }
 public:
   Mode(ModeKind kind) : kind(kind) {}
 
 public:
   ModeKind GetKind() const { return kind; }
-  // llvm::StringRef GetName() const { return Mode::GetNameByKind }
+  llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
 
   bool CanOutput() {
@@ -98,9 +102,6 @@ public:
       return false;
     }
   }
-
-public:
-  static llvm::StringRef GetNameByKind(ModeKind kind);
 };
 
 } // namespace stone

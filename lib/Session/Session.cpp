@@ -98,6 +98,9 @@ Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
       mode = std::make_unique<Mode>(ModeKind::Alien);
       break;
     }
+    if (!mode->IsAlien()) {
+      mode->SetName(modeArg->getOption().getName());
+    }
   } else {
     mode = std::make_unique<Mode>(ModeKind::None);
   }

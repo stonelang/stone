@@ -115,6 +115,8 @@ protected:
 public:
   virtual ~ToolChain() = default;
 
+  virtual bool Initialize();
+
   const Driver &GetDriver() { return driver; }
   const llvm::Triple &GetTriple() const { return triple; }
 
@@ -143,19 +145,15 @@ protected:
 protected:
   std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
                                   const char *shortName, bool isDefault);
-
   Tool *FindTool(ToolKind tk) const;
 
 public:
-  virtual bool Initialize();
-
   Tool *GetSC() { return FindTool(ToolKind::SC); }
   Tool *GetLD() { return FindTool(ToolKind::LD); }
   Tool *GetLLD() { return FindTool(ToolKind::LLD); }
   Tool *GetClang() { return FindTool(ToolKind::Clang); }
   Tool *GetGCC() { return FindTool(ToolKind::GCC); }
 
-public:
   /// Searches for the given executable in appropriate paths relative to the
   /// Stone binary.
   ///
@@ -198,6 +196,8 @@ public:
 
   virtual std::unique_ptr<TaskDetail>
   ConstructTaskDetail(const ExecutableLinkJob &job) = 0;
+
+  // virtual std::unique_ptr<Task> ConstructTask(const Job &job) {}
 
 protected:
   template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {
