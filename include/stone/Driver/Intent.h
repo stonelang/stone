@@ -108,9 +108,7 @@ class DynamicLinkIntent final : public Intent {
 
 public:
   DynamicLinkIntent(const Tool &tool, intent::InputList inputs,
-                    bool withLTO = false)
-      : Intent(IntentKind::DynamicLink, tool, inputs, file::Type::Image),
-        withLTO(withLTO) {}
+                    bool withLTO = false);
 
   bool WithLTO() { return withLTO; }
 
@@ -121,8 +119,7 @@ public:
 };
 class StaticLinkIntent final : public Intent {
 public:
-  StaticLinkIntent(const Tool &tool, intent::InputList inputs)
-      : Intent(IntentKind::StaticLink, tool, inputs, file::Type::Image) {}
+  StaticLinkIntent(const Tool &tool, intent::InputList inputs);
 
 public:
   static bool classof(const Intent *intent) {
@@ -132,8 +129,7 @@ public:
 
 class ExecutableLinkIntent final : public Intent {
 public:
-  ExecutableLinkIntent(const Tool &tool, intent::InputList inputs)
-      : Intent(IntentKind::ExecutableLink, tool, inputs, file::Type::Image) {}
+  ExecutableLinkIntent(const Tool &tool, intent::InputList inputs);
 
 public:
   static bool classof(const Intent *intent) {

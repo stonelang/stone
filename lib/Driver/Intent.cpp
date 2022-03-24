@@ -4,6 +4,32 @@
 
 using namespace stone;
 
+Intent::Intent(IntentKind kind, const Tool &tool, intent::InputList inputs,
+               file::Type outputFileType)
+    : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
+
+Intent::~Intent() {}
+
+CompileIntent::CompileIntent(const Tool &tool, file::Type outputFileType)
+    : Intent(IntentKind::Compile, tool, {}, outputFileType) {}
+
+CompileIntent::CompileIntent(const Tool &tool, intent::Input input,
+                             file::Type outputFileType)
+    : Intent(IntentKind::Compile, tool, input, outputFileType),
+      primaryInput(input) {}
+
+DynamicLinkIntent::DynamicLinkIntent(const Tool &tool, intent::InputList inputs,
+                                     bool withLTO)
+    : Intent(IntentKind::DynamicLink, tool, inputs, file::Type::Image),
+      withLTO(withLTO) {}
+
+StaticLinkIntent::StaticLinkIntent(const Tool &tool, intent::InputList inputs)
+    : Intent(IntentKind::StaticLink, tool, inputs, file::Type::Image) {}
+
+ExecutableLinkIntent::ExecutableLinkIntent(const Tool &tool,
+                                           intent::InputList inputs)
+    : Intent(IntentKind::ExecutableLink, tool, inputs, file::Type::Image) {}
+
 const char *Intent::GetNameByKind(IntentKind kind) const {
   switch (kind) {
   case IntentKind::Compile:
@@ -52,19 +78,6 @@ void Intent::Print(ColorOutputStream &stream,
     PrintIntent(stream, terminator, input);
   }
 }
-Intent::Intent(IntentKind kind, const Tool &tool, intent::InputList inputs,
-               file::Type outputFileType)
-    : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
-
-Intent::~Intent() {}
-
-CompileIntent::CompileIntent(const Tool &tool, file::Type outputFileType)
-    : Intent(IntentKind::Compile, tool, {}, outputFileType) {}
-
-CompileIntent::CompileIntent(const Tool &tool, intent::Input input,
-                             file::Type outputFileType)
-    : Intent(IntentKind::Compile, tool, input, outputFileType),
-      primaryInput(input) {}
 
 // static void BuildBatchCompilingModel(Compilation &compilation, HotCache &chi,
 //                                      const file::Files &inputs,
