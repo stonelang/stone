@@ -70,38 +70,28 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
   return nullptr;
 }
 
-std::unique_ptr<TaskDetail>
-ToolChain::ConstructTaskDetail(const CompileJob &job) {
+JobDetail ToolChain::ConstructDetail(const CompileIntent &intent) {
+  return JobDetail();
+}
 
+std::unique_ptr<Job>
+ToolChain::ConstructJob(const Intent &intent, Compilation &compilation,
+                        std::unique_ptr<CommandOutput> output,
+                        const OutputOptions &outputOptions) {
+
+  auto jobDetail = [&]() -> JobDetail {
+    switch (intent.GetKind()) {
+    case IntentKind::Compile:
+      return ConstructDetail(llvm::cast<CompileIntent>(intent));
+    case IntentKind::StaticLink:
+      return ConstructDetail(llvm::cast<StaticLinkIntent>(intent));
+    case IntentKind::DynamicLink:
+      return ConstructDetail(llvm::cast<DynamicLinkIntent>(intent));
+    case IntentKind::ExecutableLink:
+      return ConstructDetail(llvm::cast<ExecutableLinkIntent>(intent));
+    default:
+      stone::Panic("No 'Intent' to build Job");
+    }
+  }();
   return nullptr;
 }
-// std::unique_ptr<Job>
-// ToolChain::ConstructJob(const JobRequest &request, Compilation &c,
-//                         std::unique_ptr<CommandOutput> output,
-//                         const OutputOptions &outputOptions) {
-
-//   auto Invocation = [&]() -> JobInvocation {
-//     switch (request.GetKind()) {
-//     case RequestKind::Compile:
-//       return ConstructInvocation(llvm::cast<CompileJobRequest>(request));
-//     case RequestKind::Link:
-//       return ConstructInvocation(llvm::cast<LinkJobRequest>(request));
-//     case RequestKind::Input:
-//       stone::Panic("Not a 'JobRequest'");
-//     }
-//   };
-// }
-
-// std::unique_ptr<CompilationJob> ToolChain::ConstructCompileJob() {
-
-//   auto tool = FindTool(ToolKind::SC);
-//   return nullptr;
-// }
-
-// Job *ToolChain::CreateCompileJob(Driver &driver) {
-
-//   auto tool = driver.GetToolChain().FindTool(ToolKind::Stone);
-//   assert(tool && "Could not find stone sc tool!");
-//   return driver.GetCompilation().CreateJob<CompileJob>(driver.GetContext(),
-//                                                        *tool);
-// }

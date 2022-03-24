@@ -16,6 +16,10 @@ CompilationModel::ConstructCompileIntent(ToolChain &tc, intent::Input input,
 }
 Intent *CompilationModel::ConstructStaticLinkIntent(
     ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+
+  Intent *intent = nullptr;
+  auto ld = tc.GetLD();
+
   return nullptr;
 }
 

@@ -235,6 +235,8 @@ public:
   ~ImageBaseName() = delete;
 };
 
+class JobDetail {};
+
 } // namespace stone
 
 #endif

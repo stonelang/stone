@@ -47,25 +47,18 @@ public:
 public:
   bool Initialize() override;
 
-public:
-  std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const CompileJob &job) override;
-
-  std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const DynamicLinkJob &job) override;
-
-  std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const StaticLinkJob &job) override;
-
-  std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const ExecutableLinkJob &job) override;
-
 protected:
   std::unique_ptr<Tool> BuildSC() override;
   std::unique_ptr<Tool> BuildLD() override;
   std::unique_ptr<Tool> BuildLLD() override;
   std::unique_ptr<Tool> BuildClang() override;
   std::unique_ptr<Tool> BuildGCC() override;
+
+public:
+  JobDetail ConstructDetail(const CompileIntent &intent) override;
+  JobDetail ConstructDetail(const DynamicLinkIntent &intent) override;
+  JobDetail ConstructDetail(const StaticLinkIntent &intent) override;
+  JobDetail ConstructDetail(const ExecutableLinkIntent &intent) override;
 };
 } // namespace darwin
 } // namespace stone

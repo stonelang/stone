@@ -170,27 +170,17 @@ public:
   virtual std::string
   FindProgramRelativeToStoneImpl(llvm::StringRef name) const {}
 
-public:
-  virtual std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const CompileJob &job);
-
-  virtual std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const DynamicLinkJob &job) = 0;
-
-  virtual std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const StaticLinkJob &job) = 0;
-
-  virtual std::unique_ptr<TaskDetail>
-  ConstructTaskDetail(const ExecutableLinkJob &job) = 0;
-
-  // virtual std::unique_ptr<Task> ConstructTask(const Job &job) {}
-
 protected:
-  template <typename JobTy, typename... Args> JobTy *MakeJob(Args &&...args) {
-    auto job = new JobTy(std::forward<Args>(args)...);
-    jobs.emplace_back(job);
-    return job;
-  }
+  virtual JobDetail ConstructDetail(const CompileIntent &intent);
+  virtual JobDetail ConstructDetail(const DynamicLinkIntent &intent) = 0;
+  virtual JobDetail ConstructDetail(const StaticLinkIntent &intent) = 0;
+  virtual JobDetail ConstructDetail(const ExecutableLinkIntent &intent) = 0;
+
+public:
+  std::unique_ptr<Job> ConstructJob(const Intent &intent,
+                                    Compilation &compilation,
+                                    std::unique_ptr<CommandOutput> output,
+                                    const OutputOptions &outputOptions);
 };
 
 } // namespace stone

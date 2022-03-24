@@ -85,27 +85,22 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCC() {
   return nullptr;
 }
 
-std::unique_ptr<TaskDetail>
-DarwinToolChain::ConstructTaskDetail(const CompileJob &job) {
-  return ToolChain::ConstructTaskDetail(job);
+JobDetail DarwinToolChain::ConstructDetail(const CompileIntent &intent) {
+  return ToolChain::ConstructDetail(intent);
 }
 
-std::unique_ptr<TaskDetail>
-DarwinToolChain::ConstructTaskDetail(const DynamicLinkJob &job) {
+JobDetail DarwinToolChain::ConstructDetail(const DynamicLinkIntent &intent) {
 
-  return nullptr;
+  return JobDetail();
 }
 
-std::unique_ptr<TaskDetail>
-DarwinToolChain::ConstructTaskDetail(const StaticLinkJob &job) {
+JobDetail DarwinToolChain::ConstructDetail(const StaticLinkIntent &intent) {
 
-  return nullptr;
+  return JobDetail();
 }
 
-std::unique_ptr<TaskDetail>
-DarwinToolChain::ConstructTaskDetail(const ExecutableLinkJob &job) {
-
-  return nullptr;
+JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkIntent &intent) {
+  return JobDetail();
 }
 
 // JobInvocation
