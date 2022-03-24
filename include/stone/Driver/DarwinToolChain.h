@@ -45,7 +45,7 @@ public:
   ~DarwinToolChain() = default;
 
 public:
-  bool Initialize() override;
+  void Initialize() override;
 
 protected:
   std::unique_ptr<Tool> BuildSC() override;

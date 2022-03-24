@@ -115,9 +115,28 @@ protected:
 
 public:
   virtual ~ToolChain() = default;
+  virtual void Initialize();
 
-  virtual bool Initialize();
+protected:
+  // Build tools and add to the tools
+  virtual std::unique_ptr<Tool> BuildSC();
+  virtual std::unique_ptr<Tool> BuildLD() = 0;
+  virtual std::unique_ptr<Tool> BuildLLD() = 0;
+  virtual std::unique_ptr<Tool> BuildClang() = 0;
+  virtual std::unique_ptr<Tool> BuildGCC() = 0;
 
+  std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
+                                  const char *shortName, bool isDefault);
+  Tool *FindTool(ToolKind tk) const;
+
+public:
+  Tool *GetSC() { return FindTool(ToolKind::SC); }
+  Tool *GetLD() { return FindTool(ToolKind::LD); }
+  Tool *GetLLD() { return FindTool(ToolKind::LLD); }
+  Tool *GetClang() { return FindTool(ToolKind::Clang); }
+  Tool *GetGCC() { return FindTool(ToolKind::GCC); }
+
+public:
   Driver &GetDriver() { return driver; }
   const llvm::Triple &GetTriple() const { return triple; }
 
@@ -134,26 +153,6 @@ public:
   const llvm::Triple::ArchType GetArchType() const { return triple.getArch(); }
 
   ToolChainKind GetKind() { return kind; }
-
-protected:
-  // Build tools and add to the tools
-  virtual std::unique_ptr<Tool> BuildSC();
-  virtual std::unique_ptr<Tool> BuildLD() = 0;
-  virtual std::unique_ptr<Tool> BuildLLD() = 0;
-  virtual std::unique_ptr<Tool> BuildClang() = 0;
-  virtual std::unique_ptr<Tool> BuildGCC() = 0;
-
-protected:
-  std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
-                                  const char *shortName, bool isDefault);
-  Tool *FindTool(ToolKind tk) const;
-
-public:
-  Tool *GetSC() { return FindTool(ToolKind::SC); }
-  Tool *GetLD() { return FindTool(ToolKind::LD); }
-  Tool *GetLLD() { return FindTool(ToolKind::LLD); }
-  Tool *GetClang() { return FindTool(ToolKind::Clang); }
-  Tool *GetGCC() { return FindTool(ToolKind::GCC); }
 
   /// Searches for the given executable in appropriate paths relative to the
   /// Stone binary.

@@ -14,9 +14,9 @@ DarwinToolChain::DarwinToolChain(
   Initialize();
 }
 
-bool DarwinToolChain::Initialize() {
+void DarwinToolChain::Initialize() {
   libPaths.push_back("/usr/lib/");
-  return ToolChain::Initialize();
+  ToolChain::Initialize();
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
@@ -103,7 +103,6 @@ JobDetail DarwinToolChain::ConstructDetail(const StaticLinkIntent &intent) {
 JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkIntent &intent) {
   return JobDetail();
 }
-
 
 // Job *DarwinToolChain::CreateLinkJob(Driver &driver) {
 

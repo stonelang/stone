@@ -8,13 +8,13 @@ ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
                      const llvm::Triple &triple)
     : kind(kind), driver(driver), triple(triple) {}
 
-bool ToolChain::Initialize() {
+void ToolChain::Initialize() {
   // TODO: Clean this up -- works for now
   auto sc = BuildSC();
   if (sc) {
     tools.Add(std::move(sc));
     if (driver.JustCompile()) {
-      return true;
+      return;
     }
   }
   auto ld = BuildLD();
@@ -25,15 +25,14 @@ bool ToolChain::Initialize() {
   if (lld) {
     tools.Add(std::move(lld));
   }
-  auto clangTool = BuildClang();
-  if (clangTool) {
-    tools.Add(std::move(clangTool));
+  auto clang = BuildClang();
+  if (clang) {
+    tools.Add(std::move(clang));
   }
-  auto gccTool = BuildGCC();
-  if (gccTool) {
-    tools.Add(std::move(gccTool));
+  auto gcc = BuildGCC();
+  if (gcc) {
+    tools.Add(std::move(gcc));
   }
-  return false;
 }
 
 std::unique_ptr<Tool> ToolChain::BuildTool(ToolKind kind, const char *fullName,
@@ -97,7 +96,8 @@ ToolChain::ConstructJob(const Intent &intent, Compilation &compilation,
   // Determine if the argument list is so long that it needs to be written into
   // a response file.
   // auto responseFileDetail =
-  //     ComputeResponseFileDetail(compilation, executablePath, jobDetail, context);
+  //     ComputeResponseFileDetail(compilation, executablePath, jobDetail,
+  //     context);
 
   return nullptr;
 }
