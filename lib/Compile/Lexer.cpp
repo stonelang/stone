@@ -457,7 +457,7 @@ static void DiagnoseEmbeddedNull(const char *locPtr, Context *ctx) {
   SrcLoc nullEndLoc = SrcLoc::GetFromPtr(locPtr + 1);
 
   if (ctx) {
-    ctx->GetDiagEngine().Printd(nullStartLoc, diag::warn_null_character);
+    ctx->GetDiagEngine().PrintD(nullStartLoc, diag::warn_null_character);
     // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
   }
 }
@@ -482,7 +482,7 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
 
           // TODO; May not always want to call this
           if (ctx) {
-            ctx->GetDiagEngine().Printd(SrcLoc::GetFromPtr(charStart),
+            ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(charStart),
                                         diag::err_invalid_utf8);
           }
       }
@@ -546,7 +546,7 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
         --curPtr;
         const char *charStart = curPtr;
         if (ValidateUTF8CharAndAdvance(curPtr, bufferEnd) == ~0U) {
-          ctx->GetDiagEngine().Printd(SrcLoc::GetFromPtr(charStart),
+          ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(charStart),
                                       diag::err_invalid_utf8);
         }
       }
@@ -577,7 +577,7 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
         //                diag::lex_unterminated_block_comment)
         //     .fixItInsert(Lexer::getSourceLoc(endOfLine), Terminator);
 
-        ctx->GetDiagEngine().Printd(SrcLoc::GetFromPtr(startPtr),
+        ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(startPtr),
                                     diag::note_comment_start);
       }
       return isMultiline;
@@ -794,7 +794,7 @@ void Lexer::Lex() {
   switch (ch) {
   case -1:
   case -2:
-    // Printd(curPtr-1, diag::lex_utf16_bom_marker);
+    // PrintD(curPtr-1, diag::lex_utf16_bom_marker);
     curPtr = bufferEnd;
     return MakeTok(tk::Kind::alien, tokStart);
   case 0:
@@ -890,7 +890,7 @@ unsigned Lexer::LexUnicodeEscape(const char *&curPtr, Context *ctx) {
 
   if (curPtr[0] != '}') {
     if (ctx) {
-      ctx->GetDiagEngine().Printd(SrcLoc::GetFromPtr(curPtr),
+      ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(curPtr),
                                   diag::err_invalid_u_escape_rbrace);
     }
     return ~1U;
@@ -899,7 +899,7 @@ unsigned Lexer::LexUnicodeEscape(const char *&curPtr, Context *ctx) {
 
   if (numDigits < 1 || numDigits > 8) {
     if (ctx) {
-      ctx->GetDiagEngine().Printd(SrcLoc::GetFromPtr(curPtr),
+      ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(curPtr),
                                   diag::err_invalid_u_escape);
     }
     return ~1U;
@@ -1026,7 +1026,7 @@ void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
         return;
       }
       // TODO:
-      // LexUnknown(/*emitDiagnosticsIfToken=*/false);
+      // LexAlien(/*emitDiagnosticsIfToken=*/false);
       //   if (shouldTokenize) {
       //     curPtr = tmpPtr;
       //     return;
@@ -1047,7 +1047,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
       if (isPrintable(curPtr[-1]) == 0)
         if (!(isMultilineString && (curPtr[-1] == '\t')))
           if (emitDiagnostics) {
-            Printd(charStart, diag::err_unprintable_ascii_character);
+            PrintD(charStart, diag::err_unprintable_ascii_character);
           }
       return curPtr[-1];
     }
@@ -1057,7 +1057,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
       return charValue;
     }
     if (emitDiagnostics) {
-      Printd(charStart, diag::err_invalid_utf8);
+      PrintD(charStart, diag::err_invalid_utf8);
     }
     return ~1U;
   }
@@ -1094,7 +1094,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
   case 0:
     assert(curPtr - 1 != bufferEnd && "Caller must handle EOF");
     if (emitDiagnostics) {
-      Printd(curPtr - 1, diag::warn_null_character);
+      PrintD(curPtr - 1, diag::warn_null_character);
     }
     return curPtr[-1];
   case '\n': // String literals cannot have \n or \r in them.
@@ -1120,7 +1120,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
     LLVM_FALLTHROUGH;
   default: // Invalid escape.
     if (emitDiagnostics) {
-      Printd(curPtr, diag::err_invalid_escape);
+      PrintD(curPtr, diag::err_invalid_escape);
     }
 
     // If this looks like a plausible escape character, recover as though this
@@ -1156,7 +1156,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
     ++curPtr;
     if (*curPtr != '{') {
       if (emitDiagnostics)
-        Printd(curPtr - 1, diag::err_unicode_escape_braces);
+        PrintD(curPtr - 1, diag::err_unicode_escape_braces);
       return ~1U;
     }
 
@@ -1170,7 +1170,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
   llvm::SmallString<64> tempString;
   if (charValue >= 0x80 && EncodeToUTF8(charValue, tempString)) {
     if (emitDiagnostics)
-      Printd(charStart, diag::err_invalid_unicode_scalar);
+      PrintD(charStart, diag::err_invalid_unicode_scalar);
     return ~1U;
   }
   return charValue;
@@ -1527,7 +1527,7 @@ Lexer::NullCharKind Lexer::GetNullCharKind(const char *data) const {
   return NullCharKind::Embedded;
 }
 
-void Lexer::Printd() {}
+void Lexer::PrintD() {}
 
 void Lexer::MakeTok(tk::Kind ty, const char *tokenStart) {
   assert((curPtr >= bufferStart) && (curPtr <= bufferEnd) &&

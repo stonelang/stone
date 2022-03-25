@@ -279,15 +279,15 @@ public:
   SyntaxScope *GetCurScope() const;
 
 public:
-  InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID);
-  InFlightDiagnostic Printd(const Token &tok, DiagID diagID);
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID);
+  InFlightDiagnostic PrintD(const Token &tok, DiagID diagID);
 
-  // InFlightDiagnostic Printd(unsigned DiagID) {
+  // InFlightDiagnostic PrintD(unsigned DiagID) {
   //   return Diag(tok, diagID);
   // }
 
 private:
-  void Printd();
+  void PrintD();
 
 private:
   // Helpers

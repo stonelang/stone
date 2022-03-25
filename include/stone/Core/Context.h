@@ -69,32 +69,32 @@ public:
   void AddDiagnosticListener(DiagnosticListener *listener);
 
 public:
-  InFlightDiagnostic Printd(const Diagnostic &diagnostic) {
-    return Printd(SrcLoc(), diagnostic);
+  InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
+    return PrintD(SrcLoc(), diagnostic);
   }
-  InFlightDiagnostic Printd(SrcLoc loc, const Diagnostic &diagnostic) {
-    return de.Printd(loc, diagnostic);
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic) {
+    return de.PrintD(loc, diagnostic);
   }
 
-  InFlightDiagnostic Printd(DiagID diagID,
+  InFlightDiagnostic PrintD(DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args) {
-    return Printd(SrcLoc(), diagID, args);
+    return PrintD(SrcLoc(), diagID, args);
   }
-  InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID,
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args) {
-    return de.Printd(loc, diagID, args);
+    return de.PrintD(loc, diagID, args);
   }
 
-  InFlightDiagnostic Printd(DiagID diagID) { return Printd(SrcLoc(), diagID); }
+  InFlightDiagnostic PrintD(DiagID diagID) { return PrintD(SrcLoc(), diagID); }
 
-  InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID) {
-    return de.Printd(loc, diagID);
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+    return de.PrintD(loc, diagID);
   }
   template <typename... ArgTypes>
   InFlightDiagnostic
-  Printd(SrcLoc loc, Diag<ArgTypes...> id,
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return de.Printd(loc, id, std::forward<ArgTypes>(args)...);
+    return de.PrintD(loc, id, std::forward<ArgTypes>(args)...);
   }
 };
 void Panic();

@@ -40,7 +40,7 @@ Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
 unsigned Frontend::CreateSourceID(const file::File &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
-    // ctx.Printd(SrcLoc(),
+    // ctx.PrintD(SrcLoc(),
     // diag::err_unable_to_open_buffer_for_file,
     //          diag::LLVMStrArgument(input.GetName()));
     stone::Panic("err_unable_to_open_buffer_for_file");

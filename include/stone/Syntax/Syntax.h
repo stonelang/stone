@@ -63,23 +63,23 @@ public:
   DeclName MakeDeclName();
 
 public:
-  stone::InFlightDiagnostic DiagnoseSyntax(SrcLoc loc, DiagID diagID) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
         loc, SyntaxDiagnostic(
                  DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())));
   }
   stone::InFlightDiagnostic
-  DiagnoseSyntax(SrcLoc loc, DiagID diagID,
+  PrintD(SrcLoc loc, DiagID diagID,
                  llvm::ArrayRef<diag::Argument> args) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
+    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
         loc, SyntaxDiagnostic(DiagnosticContext(diagID, args)));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
-  DiagnoseSyntax(SrcLoc loc, Diag<ArgTypes...> id,
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
                  typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().Printd(
+    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
         loc, SyntaxDiagnostic(DiagnosticContext(id, std::move(args)...)));
   }
 

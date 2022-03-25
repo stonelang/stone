@@ -174,7 +174,7 @@ private:
 
   void LexAlien();
 
-  void Printd();
+  void PrintD();
 
   void MakeTok(tk::Kind ty, const char *tokenStart);
 
@@ -195,9 +195,9 @@ public:
 
 public:
   template <typename... DiagArgTypes, typename... ArgTypes>
-  InFlightDiagnostic Printd(const char *locPtr, Diag<DiagArgTypes...> DiagID,
+  InFlightDiagnostic PrintD(const char *locPtr, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-    // TODO:ctx.GetDiagEngine().Printd(SrcLoc::GetFromPtr(locPtr), DiagID,
+    // TODO:ctx.GetDiagEngine().PrintD(SrcLoc::GetFromPtr(locPtr), DiagID,
     //                               std::forward<ArgTypes>(Args)...);
   }
 

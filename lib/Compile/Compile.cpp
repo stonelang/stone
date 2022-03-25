@@ -42,7 +42,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   lang.Initialize();
 
   if (args.empty()) {
-    // lang.Printd(SrcLoc(), diag::err_no_compile_args);
+    // lang.PrintD(SrcLoc(), diag::err_no_compile_args);
     return Finish(1);
   }
   if (listener) {
@@ -61,7 +61,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   auto &mode = frontend.ComputeMode(ial);
   if (mode.IsAlien()) {
-    // lang.Printd(SrcLoc(), diags::err_alien_mode)
+    // lang.PrintD(SrcLoc(), diags::err_alien_mode)
     Finish(1);
   }
   if (mode.IsPrintHelp()) {
@@ -73,7 +73,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
   if (!mode.CanCompile()) {
-    /// lang.Printd()
+    /// lang.PrintD()
     return Finish(1);
   }
   auto inputs = frontend.BuildInputFiles(ial);

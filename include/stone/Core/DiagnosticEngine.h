@@ -290,26 +290,26 @@ private:
   }
 
 public:
-  InFlightDiagnostic Printd(SrcLoc loc, const Diagnostic &diagnostic,
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic,
                             Tokenable *tokenable = nullptr) {
     return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
   }
 
-  InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID,
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args,
                             Tokenable *tokenable = nullptr) {
-    return Printd(loc, Diagnostic(DiagnosticContext(diagID, args)), tokenable);
+    return PrintD(loc, Diagnostic(DiagnosticContext(diagID, args)), tokenable);
   }
 
-  InFlightDiagnostic Printd(SrcLoc loc, DiagID diagID,
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
-    return Printd(
+    return PrintD(
         loc,
         Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
         tokenable);
   }
-  InFlightDiagnostic Printd(DiagID diagID, Tokenable *tokenable = nullptr) {
-    return Printd(
+  InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
+    return PrintD(
         SrcLoc(),
         Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
         tokenable);
@@ -317,16 +317,16 @@ public:
 
   template <typename... ArgTypes>
   InFlightDiagnostic
-  Printd(SrcLoc loc, Diag<ArgTypes...> id,
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return Printd(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
+    return PrintD(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
   }
 
   template <typename... ArgTypes>
   InFlightDiagnostic
-  Printd(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
+  PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return Printd(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)),
+    return PrintD(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)),
                   tokenable);
   }
 };

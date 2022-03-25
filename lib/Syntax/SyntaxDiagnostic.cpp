@@ -27,21 +27,21 @@ void SyntaxDiagnostic::Format(const char *diagStr, const char *diagEnd,
 
 }
 
-// void DeclDiagnosticArgument::Printd(DiagnosticEngine &de) const {
+// void DeclDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
 //   // TODO: UB -- this may be too expensive
 //   auto arg = static_cast<const syn::Decl *>(val);
 //   de.Issue(arg->GetLoc(), 1) << "test";
 // }
 
-// void TypeDiagnosticArgument::Printd(DiagnosticEngine &de) const {
+// void TypeDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 //   auto arg = static_cast<const syn::Type *>(val);
 // }
 
-// void DeclContextDiagnosticArgument::Printd(DiagnosticEngine &de) const {
+// void DeclContextDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 //   auto arg = static_cast<const syn::DeclContext *>(val);
 // }
-// void IdentifierDiagnosticArgument::Printd(DiagnosticEngine &de) const {
+// void IdentifierDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
 //   auto arg = static_cast<const syn::Identifier *>(val);
 // }

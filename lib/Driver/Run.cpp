@@ -45,7 +45,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   driver.Initialize();
 
   if (args.empty()) {
-    // driver.GetContext().Printd(diag::err_no_input_args);
+    // driver.GetContext().PrintD(diag::err_no_input_args);
     return Finish(1);
   }
   if (listener) {
@@ -60,7 +60,7 @@ int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   auto &mode = driver.ComputeMode(ial);
   if (mode.IsAlien()) {
-    // driver.GetContext().Printd(diags::err_alien_mode)
+    // driver.GetContext().PrintD(diags::err_alien_mode)
     Finish(1);
   }
   if (mode.IsPrintHelp()) {

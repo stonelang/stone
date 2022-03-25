@@ -27,7 +27,7 @@ public:
   SyntaxDiagTest() : syntax(std::make_unique<SyntaxContext>(ctx, pathOpts)) {}
 };
 
-TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
+TEST_F(SyntaxDiagTest, PrintD) {
 
   STONE_DEFER { ctx.GetDiagEngine().Finish(); };
 
@@ -37,13 +37,13 @@ TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
   ctx.GetDiagEngine().AddListener(textListener);
 
   syntax
-      .DiagnoseSyntax(SrcLoc(), diag::note_prev_decl_def,
+      .PrintD(SrcLoc(), diag::note_prev_decl_def,
                       diag::DeclArgument(nullptr))
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 
   syntax
-      .DiagnoseSyntax(SrcLoc(), diag::err_case_stmt_without_body,
+      .PrintD(SrcLoc(), diag::err_case_stmt_without_body,
                       diag::BoolArgument(false))
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());

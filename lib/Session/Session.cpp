@@ -33,7 +33,7 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   // Check for missing argument error.
   if (missingArgCount) {
     // TODO:
-    // GetContext().Printd << "D(SrcLoc(),"
+    // GetContext().PrintD << "D(SrcLoc(),"
     //     << "msg::error_missing_arg_value,"
     //     << "argList->getArgString(missingArgIndex),"
     //     << "missingArgCount" << '\n';
@@ -43,7 +43,7 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    /// TODO: GetContext().Printd
+    /// TODO: GetContext().PrintD
     // cos << "D(SourceLoc(), "
     //     << "msg::error_unknown_arg,"
     //     << "arg->getAsString(*ArgList));" << '\n';
@@ -121,7 +121,7 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
           if (GetBaseOptions().inputFileType == file::Type::None) {
             GetBaseOptions().inputFileType = file::Type::Stone;
           } else if (GetBaseOptions().inputFileType != file::Type::Stone) {
-            stone::Panic("Different file types"); // TODO: Printd
+            stone::Panic("Different file types"); // TODO: PrintD
           }
           AddInputFile(input, fileType, fileID);
           break;
@@ -131,7 +131,7 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
             GetBaseOptions().inputFileType = file::Type::Object;
           } else if (GetBaseOptions().inputFileType != file::Type::Object) {
             // TODO: Different file types
-            stone::Panic("Different file types"); // TODO: Printd
+            stone::Panic("Different file types"); // TODO: PrintD
           }
           AddInputFile(input, fileType, fileID);
           break;

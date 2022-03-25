@@ -72,7 +72,7 @@ void Lang::Initialize() {}
 //     auto fileBuffer =
 //         GetContext().GetFileMgr().getBufferForFile(input.GetName());
 //     if (!fileBuffer) {
-//       // Printd(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+//       // PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
 //       //          diag::LLVMStrArgument(input.GetName()));
 //       return;
 //     }
