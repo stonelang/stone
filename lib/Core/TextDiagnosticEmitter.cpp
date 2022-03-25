@@ -18,7 +18,7 @@ void TextDiagnosticEmitter::EmitDiagnostic(
   // Display the diagnostic.
   // ColorefStream coloredErrs{Stream};
   // raw_ostream &out = ForceColors ? coloredErrs : Stream;
-  // const llvm::SourceMgr &rawSM = SM.getLLVMSourceMgr();
+  const llvm::SourceMgr &llvmSM = ed.GetSrcMgr().GetLLVMSrcMgr();
 
   // // Actually substitute the diagnostic arguments into the diagnostic text.
   // llvm::SmallString<256> Text;
@@ -28,8 +28,8 @@ void TextDiagnosticEmitter::EmitDiagnostic(
   //                                          Info.FormatArgs);
   // }
 
-  // auto Msg = SM.GetMessage(Info.Loc, SMKind, Text, Ranges, FixIts);
-  // rawSM.PrintMessage(out, Msg, ForceColors);
+  // auto Msg = ed.GetSrcMgr().GetMessage(Info.Loc, SMKind, Text, Ranges,
+  // FixIts); rawSM.PrintMessage(out, Msg, ForceColors);
 }
 
 void TextDiagnosticEmitter::EmitLoc() {}

@@ -342,7 +342,7 @@ llvm::Optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
     return None;
   }
   const bool LineEnd = Col == ~0u;
-  auto InputBuf = getllvmSrcMgr().getMemoryBuffer(BufferId);
+  auto InputBuf = GetLLVMSrcMgr().getMemoryBuffer(BufferId);
   const char *Ptr = InputBuf->getBufferStart();
   const char *End = InputBuf->getBufferEnd();
   const char *LineStart = Ptr;

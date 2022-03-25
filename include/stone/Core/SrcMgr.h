@@ -59,8 +59,8 @@ public:
              llvm::vfs::getRealFileSystem())
       : fileSystem(FS) {}
 
-  llvm::SourceMgr &getllvmSrcMgr() { return llvmSrcMgr; }
-  const llvm::SourceMgr &getllvmSrcMgr() const { return llvmSrcMgr; }
+  llvm::SourceMgr &GetLLVMSrcMgr() { return llvmSrcMgr; }
+  const llvm::SourceMgr &GetLLVMSrcMgr() const { return llvmSrcMgr; }
 
   void setFileSystem(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS) {
     fileSystem = FS;
@@ -231,11 +231,11 @@ public:
   StringRef extractText(CharSrcRange Range,
                         Optional<unsigned> BufferID = None) const;
 
-  llvm::SMDiagnostic GetMessage(stone::SrcLoc Loc,
+  llvm::SMDiagnostic GetMessage(stone::SrcLoc loc,
                                 llvm::SourceMgr::DiagKind Kind,
-                                const Twine &Msg,
-                                ArrayRef<llvm::SMRange> Ranges,
-                                ArrayRef<llvm::SMFixIt> FixIts) const;
+                                const Twine &msg,
+                                ArrayRef<llvm::SMRange> ranges,
+                                ArrayRef<llvm::SMFixIt> fixIts) const;
 
   /// Verifies that all buffers are still valid.
   void verifyAllBuffers() const;

@@ -251,3 +251,10 @@ DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
 }
 
 void DiagnosticEngine::Finish() { FlushListeners(); }
+
+llvm::SMDiagnostic
+SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
+                   const Twine &msg, llvm::ArrayRef<llvm::SMRange> ranges,
+                   llvm::ArrayRef<llvm::SMFixIt> fixIts) const {
+  return llvm::SMDiagnostic();
+}
