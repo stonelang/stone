@@ -7,17 +7,17 @@ namespace stone {
 
 /// RAII class for setting a color for a raw_ostream and resetting when it goes
 /// out-of-scope.
-class ColorOutputStream {
+class ColorfulStream {
   llvm::raw_ostream &os;
   bool useColor;
 
 public:
-  ColorOutputStream(llvm::raw_ostream &os) : os(os) {
+  ColorfulStream(llvm::raw_ostream &os) : os(os) {
     useColor = os.has_colors();
     if (useColor)
       os.changeColor(llvm::raw_ostream::Colors::WHITE);
   }
-  ~ColorOutputStream() {
+  ~ColorfulStream() {
     if (useColor)
       os.resetColor();
   }
@@ -31,15 +31,15 @@ public:
   void UseCyan() { os.changeColor(llvm::raw_ostream::Colors::CYAN); }
   void UseWhite() { os.changeColor(llvm::raw_ostream::Colors::WHITE); }
 
-  ColorOutputStream &operator<<(char *str) {
+  ColorfulStream &operator<<(char *str) {
     os << str;
     return *this;
   }
-  ColorOutputStream &operator<<(char ch) {
+  ColorfulStream &operator<<(char ch) {
     os << ch;
     return *this;
   }
-  ColorOutputStream &operator<<(llvm::StringRef str) {
+  ColorfulStream &operator<<(llvm::StringRef str) {
     os << str;
     return *this;
   }
@@ -47,4 +47,4 @@ public:
 
 } // namespace stone
 
-#endif // SWIFT_CORE_COLORUTILS_H
+#endif

@@ -14,6 +14,7 @@
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"

@@ -103,12 +103,10 @@ public:
 
 public:
   /// Print a nice summary of this job
-  virtual void Print(ColorOutputStream &stream,
-                     CrashState *crashState = nullptr);
+  virtual void Print(ColorfulStream &stream, CrashState *crashState = nullptr);
 
   /// Perform a complete dump of this job.
-  virtual void Dump(ColorOutputStream &stream,
-                    llvm::StringRef terminator = "\n",
+  virtual void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 
 public:
@@ -140,11 +138,10 @@ public:
   // void SetPrimaryInput(job::Input input) { primaryInput = input; }
 
   /// Print a nice summary of this job
-  void Print(ColorOutputStream &stream,
-             CrashState *crashState = nullptr) override;
+  void Print(ColorfulStream &stream, CrashState *crashState = nullptr) override;
 
   /// Perform a complete dump of this job.
-  void Dump(ColorOutputStream &stream, llvm::StringRef terminator = "\n",
+  void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
             CrashState *crashState = nullptr) override;
 
 public:

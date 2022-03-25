@@ -8,6 +8,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Core/SystemOptions.h"
+
 #include "llvm/Support/Debug.h"
 
 namespace stone {
@@ -35,7 +36,7 @@ class Context final {
   DiagnosticOptions diagOpts;
   DiagnosticEngine de;
   StatisticEngine se;
-  ColorOutputStream cos;
+  ColorfulStream cos;
   FileSystemOptions fsOpts;
 
 public:
@@ -46,7 +47,7 @@ public:
   // std::vector<std::function<void(void)>> cleanups;
 
 public:
-  ColorOutputStream &Out() { return cos; }
+  ColorfulStream &Out() { return cos; }
 
   DiagnosticEngine &GetDiagEngine() { return de; }
   const DiagnosticEngine &GetDiagEngine() const { return de; }

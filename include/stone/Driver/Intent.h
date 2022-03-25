@@ -67,7 +67,7 @@ public:
 
 public:
   /// Perform a complete dump of this intent.
-  virtual void Print(ColorOutputStream &stream,
+  virtual void Print(ColorfulStream &stream,
                      llvm::StringRef terminator = "\n") const;
 
 public:

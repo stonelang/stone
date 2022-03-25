@@ -225,7 +225,7 @@ void DiagnosticEngine::FlushCurrentDiagnostic() {
 
 bool DiagnosticEngine::HasError() { return false; }
 
-void DiagnosticEngine::Print(ColorOutputStream &os,
+void DiagnosticEngine::Print(ColorfulStream &os,
                              const PrintingPolicy *policy) const {}
 
 void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {

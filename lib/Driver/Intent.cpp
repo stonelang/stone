@@ -49,7 +49,7 @@ const char *Intent::GetNameByKind(IntentKind kind) const {
   }
 }
 
-static void PrintIntent(ColorOutputStream &stream, llvm::StringRef terminator,
+static void PrintIntent(ColorfulStream &stream, llvm::StringRef terminator,
                         const intent::Input) {
   //   /// TODO: IntentFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
@@ -72,8 +72,7 @@ static void PrintIntent(ColorOutputStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Intent::Print(ColorOutputStream &stream,
-                   llvm::StringRef terminator) const {
+void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
   for (auto input : *this) {
     PrintIntent(stream, terminator, input);
   }

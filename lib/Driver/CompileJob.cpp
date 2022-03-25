@@ -14,7 +14,7 @@ CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
       primaryInput(input) {}
 
 /// Print a nice summary of this job
-void CompileJob::Print(ColorOutputStream &stream, CrashState *crashState) {
+void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
 
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
@@ -36,7 +36,7 @@ void CompileJob::Print(ColorOutputStream &stream, CrashState *crashState) {
 }
 
 /// Perform a complete dump of this job.
-void CompileJob::Dump(ColorOutputStream &stream, llvm::StringRef terminator,
+void CompileJob::Dump(ColorfulStream &stream, llvm::StringRef terminator,
                       CrashState *crashState) {}
 
 // std::unique_ptr<TaskDetail> CompileJob::ToTaskDetail(ToolChain &tc) const {

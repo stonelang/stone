@@ -54,7 +54,7 @@ public:
   DeclNameKind GetDeclNameKind() { return ty; }
 
 public:
-  void Print(ColorOutputStream &os,
+  void Print(ColorfulStream &os,
              const PrintingPolicy *policy = nullptr) const override;
 
   void Dump() const override;
