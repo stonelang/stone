@@ -21,7 +21,7 @@ protected:
   SrcMgr sm;
 
 protected:
-  SrcMgrTest() : de(diagOpts,sm), fm(fmOpts) {}
+  SrcMgrTest() : de(diagOpts, sm), fm(fmOpts) {}
 };
 
 TEST_F(SrcMgrTest, GetColNumber) {

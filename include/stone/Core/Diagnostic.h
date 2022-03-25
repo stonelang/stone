@@ -166,7 +166,7 @@ class DiagnosticDetail {
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
   SrcLoc loc;
-  diag::Level level = diag::Level::None;
+  diag::Level levelLimit = diag::Level::None;
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
@@ -187,7 +187,7 @@ public:
       : diagID(diagID), args(args.begin(), args.end()) {}
 
 public:
-  DiagID GetDiagID() { return diagID; }
+  DiagID GetID() { return diagID; }
   llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
@@ -205,8 +205,8 @@ public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  void SetLevel(diag::Level l) { level = l; }
-  diag::Level GetLevel() { return level; }
+  void SetLevelLimit(diag::Level limit) { levelLimit = limit; }
+  diag::Level GetLevelLimit() { return levelLimit; }
 
   void Clear() {
     args.clear();
@@ -215,6 +215,10 @@ public:
   }
 };
 class Diagnostic {
+
+  friend class DiagnosticEngine;
+  friend class InFlightDiagnostic;
+
 protected:
   mutable DiagnosticDetail detail;
 
@@ -230,7 +234,7 @@ public:
 public:
   template <typename... otherArgTypes>
   bool IsEqual(Diag<otherArgTypes...> other) const {
-    return detail.GetDiagID() == other.GetDetail().GetDiagID();
+    return detail.GetID() == other.GetDetail().GetID();
   }
 
 public:

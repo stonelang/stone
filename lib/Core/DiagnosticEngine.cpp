@@ -1,6 +1,11 @@
 #include "stone/Core/DiagnosticEngine.h"
-
 #include "stone/Core/CoreDiagnostic.h"
+
+#include "llvm/ADT/SmallString.h"
+#include "llvm/ADT/Twine.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/Format.h"
+#include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
 
@@ -44,7 +49,7 @@ struct LocalDiagnostic {
 enum LocalDiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature) ID,
 #include "stone/Core/DiagnosticEngine.def"
-  Last
+  MAX
 };
 } // end anonymous namespace
 
@@ -62,7 +67,7 @@ static const constexpr LocalDiagnostic LocalDiagnostics[] = {
 };
 
 static_assert((sizeof(LocalDiagnostics) / sizeof(LocalDiagnostic)) ==
-                  LocalDiagID::Last,
+                  LocalDiagID::MAX,
               "array size mismatch");
 
 static constexpr const char *const DiagnosticStrings[] = {
@@ -77,12 +82,103 @@ static constexpr const char *const DebugDiagnosticStrings[] = {
     "<not a diagnostic>",
 };
 
-static constexpr const char *const FixItStrings[] = {
+static constexpr const char *const DiagnosticIDStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature) #ID,
+#include "stone/Core/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const CodeFixStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIX(ID, Text, Signature) Text,
 #include "stone/Core/DiagnosticEngine.def"
     "<not a fix-it>",
 };
+
+static diag::Level ToDiagnosticLevel(diag::Level severity, bool isFatal) {
+  switch (severity) {
+  case diag::Level::Note:
+    return diag::Level::Note;
+  case diag::Level::Error:
+    return isFatal ? diag::Level::Fatal : diag::Level::Error;
+  case diag::Level::Warn:
+    return diag::Level::Warn;
+  case diag::Level::Remark:
+    return diag::Level::Remark;
+  }
+  llvm_unreachable("Unhandled diagnostic severity in switch.");
+}
+// A special option only for compiler writers that causes Diagnostics to assert
+// when a failure diagnostic is emitted. Intended for use in the debugger.
+llvm::cl::opt<bool> AssertOnError("stone-diagnostics-assert-on-error",
+                                  llvm::cl::init(false));
+// A special option only for compiler writers that causes Diagnostics to assert
+// when a warning diagnostic is emitted. Intended for use in the debugger.
+llvm::cl::opt<bool> AssertOnWarn("stone-diagnostics-assert-on-warning",
+                                 llvm::cl::init(false));
+
+DiagnosticState::DiagnosticState() {
+  // Initialize our ignored diagnostics to default
+  ignoredDiagnostics.resize(LocalDiagID::MAX);
+}
+
+diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
+  // We determine how to handle a diagnostic based on the following rules
+  //   1) Map the diagnostic to its "intended" behavior, applying the behavior
+  //      limit for this particular emission
+  //   2) If current state dictates a certain behavior, follow that
+  //   3) If the user ignored this specific diagnostic, follow that
+  //   4) If the user substituted a different behavior for this behavior, apply
+  //      that change
+  //   5) Update current state for use during the next diagnostic
+
+  //   1) Map the diagnostic to its "intended" behavior, applying the behavior
+  //      limit for this particular emission
+  auto diagnostic = LocalDiagnostics[(unsigned)diag.GetDetail().GetID()];
+  diag::Level lvl =
+      std::max(ToDiagnosticLevel(diagnostic.severity, diagnostic.isFatal),
+               diag.GetDetail().GetLevelLimit());
+  assert(lvl != diag::Level::None);
+
+  //   2) If current state dictates a certain behavior, follow that
+
+  // Notes relating to ignored diagnostics should also be ignored
+  if (prevLevel == diag::Level::Ignore && lvl == diag::Level::Note)
+    lvl = diag::Level::Ignore;
+
+  // Suppress diagnostics when in a fatal state, except for follow-on notes
+  if (fatalErrorOccurred)
+    if (!showDiagnosticsAfterFatalError && lvl != diag::Level::Note)
+      lvl = diag::Level::Ignore;
+
+  //   3) If the user ignored this specific diagnostic, follow that
+  if (ignoredDiagnostics[(unsigned)diag.GetDetail().GetID()])
+    lvl = diag::Level::Ignore;
+
+  //   4) If the user substituted a different behavior for this behavior, apply
+  //      that change
+  if (lvl == diag::Level::Warn) {
+    if (warningsAsErrors)
+      lvl = diag::Level::Error;
+    if (suppressWarnings)
+      lvl = diag::Level::Ignore;
+  }
+
+  //   5) Update current state for use during the next diagnostic
+  if (lvl == diag::Level::Fatal) {
+    fatalErrorOccurred = true;
+    anyErrorOccurred = true;
+  } else if (lvl == diag::Level::Error) {
+    anyErrorOccurred = true;
+  }
+
+  assert((!AssertOnError || !anyErrorOccurred) && "We emitted an error?!");
+  assert((!AssertOnWarn || (lvl != diag::Level::Warn)) &&
+         "We emitted a warning?!");
+
+  prevLevel = lvl;
+  return lvl;
+}
 
 InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
                                        Tokenable *tokenable)
@@ -100,8 +196,13 @@ void InFlightDiagnostic::Flush() {
   }
 }
 
-DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr& sm)
-    : diagOpts(diagOpts), sm(sm) {}
+DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm)
+    : diagOpts(diagOpts), sm(sm), curDiagnostic() {}
+
+// TODO:
+//  diag::Level DiagnosticEngine::GetSeverityByDiagID(const DiagID id) {
+//    return LocalDiagnostics[(unsigned)id].severity;
+//  }
 
 llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
                                                 bool printDiagnosticName) {
@@ -110,6 +211,10 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
     return DebugDiagnosticStrings[(unsigned)diagID];
   }
   return DiagnosticStrings[(unsigned)diagID];
+}
+
+llvm::StringRef DiagnosticEngine::GetDiagIDStringByDiagID(const DiagID diagID) {
+  return DiagnosticIDStrings[(unsigned)diagID];
 }
 
 void DiagnosticEngine::FlushCurrentDiagnostic() {
@@ -141,7 +246,7 @@ llvm::Optional<EmissionDiagnostic>
 DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
   return EmissionDiagnostic(
       /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
-      GetDiagString(diagnostic.GetDetail().GetDiagID(), true),
+      GetDiagString(diagnostic.GetDetail().GetID(), true),
       /*TODO*/ llvm::StringRef());
 }
 

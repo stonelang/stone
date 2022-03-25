@@ -8,10 +8,15 @@
 #include "stone/Core/Printable.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Core/Version.h"
+
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/Support/Allocator.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Path.h"
+#include "llvm/Support/SaveAndRestore.h"
+#include "llvm/Support/VersionTuple.h"
 
 namespace stone {
 
@@ -22,34 +27,79 @@ class DiagnosticListener;
 class SystemOptions;
 class Version;
 class SavedDiagnostic;
+class DiagnosticState;
 class Tokenable;
 
 class DiagnosticState {
+  /// Whether we should continue to emit diagnostics, even after a
+  /// fatal error
+  bool showDiagnosticsAfterFatalError = false;
+
+  /// Don't emit any warnings
+  bool suppressWarnings = false;
+
+  /// Emit all warnings as errors
+  bool warningsAsErrors = false;
+
+  /// Whether a fatal error has occurred
+  bool fatalErrorOccurred = false;
+
+  /// Whether any error diagnostics have been emitted.
+  bool anyErrorOccurred = false;
+
+  /// Track the previous emitted Behavior, useful for notes
+  diag::Level prevLevel = diag::Level::None;
+
+  /// Track which diagnostics should be ignored.
+  llvm::BitVector ignoredDiagnostics;
+
+  friend class DiagnosticStateRAII;
+
 public:
-  // "Global" configuration state that can actually vary between modules.
+  DiagnosticState();
 
-  // Ignore all warnings: -w
-  unsigned ignoreAllWarnings : 1;
+  /// Figure out the Behavior for the given diagnostic, taking current
+  /// state such as fatality into account.
+  diag::Level DetermineLevel(const Diagnostic &diag);
 
-  // Enable all warnings.
-  unsigned enableAllWarnings : 1;
+  bool HadAnyError() const { return anyErrorOccurred; }
+  bool HasFatalErrorOccurred() const { return fatalErrorOccurred; }
 
-  // Treat warnings like errors.
-  unsigned warningsAsErrors : 1;
+  void SetShowDiagnosticsAfterFatalError(bool val = true) {
+    showDiagnosticsAfterFatalError = val;
+  }
+  bool GetShowDiagnosticsAfterFatalError() {
+    return showDiagnosticsAfterFatalError;
+  }
 
-  // Treat errors like fatal errors.
-  unsigned errorsAsFatal : 1;
+  /// Whether to skip emitting warnings
+  void SetSuppressWarnings(bool val) { suppressWarnings = val; }
+  bool GetSuppressWarnings() const { return suppressWarnings; }
 
-  // Suppress warnings in system headers.
-  unsigned suppressSystemWarnings : 1;
+  /// Whether to treat warnings as errors
+  void SetWarningsAsErrors(bool val) { warningsAsErrors = val; }
+  bool GetWarningsAsErrors() const { return warningsAsErrors; }
 
-  // Map extensions to warnings or errors?
-  diag::Level extBehavior = diag::Level::Ignore;
+  void ResetHadAnyError() {
+    anyErrorOccurred = false;
+    fatalErrorOccurred = false;
+  }
 
-  DiagnosticState()
-      : ignoreAllWarnings(false), enableAllWarnings(false),
-        warningsAsErrors(false), errorsAsFatal(false),
-        suppressSystemWarnings(false) {}
+  /// Set whether a diagnostic should be ignored.
+  void SetIgnoredDiagnostic(DiagID diagID, bool ignored) {
+    ignoredDiagnostics[(unsigned)diagID] = ignored;
+  }
+
+  void Swap(DiagnosticState &other) {
+    std::swap(showDiagnosticsAfterFatalError,
+              other.showDiagnosticsAfterFatalError);
+    std::swap(suppressWarnings, other.suppressWarnings);
+    std::swap(warningsAsErrors, other.warningsAsErrors);
+    std::swap(fatalErrorOccurred, other.fatalErrorOccurred);
+    std::swap(anyErrorOccurred, other.anyErrorOccurred);
+    std::swap(prevLevel, other.prevLevel);
+    std::swap(ignoredDiagnostics, other.ignoredDiagnostics);
+  }
 
 private:
   // Make the state movable only
@@ -60,13 +110,12 @@ private:
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
-class InFlightDiagnostic final {
+class InFlightDiagnostic {
   friend class CodeFixer;
   friend class DiagnosticEngine;
 
   CodeFixer fixer;
   DiagnosticEngine &de;
-
   Tokenable *tokenable;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -140,10 +189,10 @@ class DiagnosticEngine final : public Printable {
   // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
   DiagnosticOptions &diagOpts;
 
-  SrcMgr& sm;
+  SrcMgr &sm;
 
   /// The initial diagnostic state.
-  mutable DiagnosticState state;
+  DiagnosticState state;
 
   llvm::BumpPtrAllocator transactionAllocator;
 
@@ -178,6 +227,11 @@ class DiagnosticEngine final : public Printable {
 
   Version version;
 
+  friend class InFlightDiagnostic;
+  // friend class DiagnosticTransaction;
+  // friend class CompoundDiagnosticTransaction;
+  friend class DiagnosticStateRAII;
+
 public:
   explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm);
 
@@ -187,7 +241,6 @@ public:
   void Finish();
 
 public:
-
   bool HasError();
   SrcMgr &GetSrcMgr() { return sm; }
 
@@ -200,19 +253,38 @@ public:
   /// Zero disables the limit.
   void SetErrorLimit(unsigned limit) { diagOpts.errorLimit = limit; }
 
-  /// When set to true, any unmapped warnings are ignored.
-  ///
-  /// If this and WarningsAsErrors are both set, then this one wins.
-  void SetIgnoreAllWarnings(bool status) {
-    GetDiagState().ignoreAllWarnings = status;
-  }
-  bool GetIgnoreAllWarnings() const { return GetDiagState().ignoreAllWarnings; }
+public:
+  //==State management==//
+  /// HadAnyError - return true if any *error* diagnostics have been emitted.
+  bool HadAnyError() const { return state.HadAnyError(); }
+  bool HasFatalErrorOccurred() const { return state.HasFatalErrorOccurred(); }
 
-  /// Get the actual string in the ".def" for the diagnostic
-  llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
+  void SetShowDiagnosticsAfterFatalError(bool val = true) {
+    state.SetShowDiagnosticsAfterFatalError(val);
+  }
+  bool GetShowDiagnosticsAfterFatalError() {
+    return state.GetShowDiagnosticsAfterFatalError();
+  }
+  /// Whether to skip emitting warnings
+  void SetSuppressWarnings(bool val) { state.SetSuppressWarnings(val); }
+  bool GetSuppressWarnings() const { return state.GetSuppressWarnings(); }
+
+  /// Whether to treat warnings as errors
+  void SetWarningsAsErrors(bool val) { state.SetWarningsAsErrors(val); }
+  bool GetWarningsAsErrors() const { return state.GetWarningsAsErrors(); }
+
+  void IgnoreDiagnostic(DiagID diagID) {
+    state.SetIgnoredDiagnostic(diagID, true);
+  }
+  void ResetHadAnyError() { state.ResetHadAnyError(); }
 
   /// Grab the most-recently-added state point.
-  DiagnosticState &GetDiagState() const { return state; }
+  DiagnosticState &GetDiagState() { return state; }
+
+public:
+  /// Get the actual string in the ".def" for the diagnostic
+  llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
+  llvm::StringRef GetDiagIDStringByDiagID(const DiagID diagID);
 
 public:
   /// Add an additional DiagnosticListener to receive diagnostics.
@@ -324,7 +396,24 @@ public:
                   tokenable);
   }
 };
+class DiagnosticStateRAII final {
+  llvm::SaveAndRestore<diag::Level> prevLevel;
 
+public:
+  DiagnosticStateRAII(DiagnosticEngine &de) : prevLevel(de.state.prevLevel) {}
+
+  ~DiagnosticStateRAII() {}
+};
+
+// class BufferIndirectlyCausingDiagnosticRAII {
+// private:
+//   DiagnosticEngine &Diags;
+// public:
+//   BufferIndirectlyCausingDiagnosticRAII(const SourceFile &SF);
+//   ~BufferIndirectlyCausingDiagnosticRAII() {
+//     Diags.resetBufferIndirectlyCausingDiagnostic();
+//   }
+// };
 class SavedDiagnostic final {
   // unsigned diagIdentifier;
   // diag::Level level;

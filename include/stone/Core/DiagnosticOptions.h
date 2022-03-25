@@ -5,17 +5,17 @@
 
 namespace stone {
 namespace diag {
-
-enum class Level {
+enum class Level : uint8_t {
   None = 0,
-  Ignore = 1,
-  Note = 2,
-  Remark = 3,
-  Warn = 4,
-  Error = 5,
-  Panic = 6
+  // Highest
+  Fatal,
+  Error,
+  Warn,
+  Remark,
+  Note,
+  // Lowest
+  Ignore,
 };
-
 }
 /// Options for controlling diagnostics.
 class DiagnosticOptions
