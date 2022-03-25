@@ -43,22 +43,21 @@ using Input = llvm::PointerUnion<stone::file::File *, Job *>;
 using InputList = llvm::ArrayRef<job::Input>;
 } // namespace job
 
-class TaskDetail final {
+class JobDetail final {
   llvm::StringRef execPath;
   llvm::ArrayRef<llvm::StringRef> args;
   llvm::ArrayRef<llvm::StringRef> env = llvm::None;
-  void *context;
 
 public:
-  TaskDetail(llvm::StringRef execPath, llvm::ArrayRef<llvm::StringRef> args,
-             llvm::ArrayRef<llvm::StringRef> env, void *context)
-      : execPath(execPath), args(args), env(env), context(context) {}
+  JobDetail() {}
+  JobDetail(llvm::StringRef execPath, llvm::ArrayRef<llvm::StringRef> args,
+             llvm::ArrayRef<llvm::StringRef> env)
+      : execPath(execPath), args(args), env(env){}
 
 public:
   llvm::StringRef GetExecPath() { return execPath; }
   llvm::ArrayRef<llvm::StringRef> GetArgs() { return args; }
   llvm::ArrayRef<llvm::StringRef> GetEnv() { return env; }
-  void *GetContext() { return context; }
 };
 
 class Job {
@@ -234,8 +233,6 @@ public:
   ImageBaseName() {}
   ~ImageBaseName() = delete;
 };
-
-class JobDetail {};
 
 } // namespace stone
 

@@ -36,8 +36,9 @@ class Compilation final {
   std::unique_ptr<TaskQueue> tq;
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
-  /// The Jobs which will be performed by this compilation.
-  llvm::SmallVector<std::unique_ptr<const TaskDetail>, 32> taskDetails;
+
+  // All the jobs the tool chain created --- lifetime management.
+  llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 
 public:
   Compilation(Driver &driver, ToolChain &tc,

@@ -43,6 +43,14 @@ class ToolChain;
 class Driver;
 class Compilation;
 
+struct ToolName final {
+  constexpr static const char *SC = "stone-compile";
+  constexpr static const char *LD = "ld";
+  constexpr static const char *LLD = "lld";
+  constexpr static const char *Clang = "clang++";
+  constexpr static const char *GCC = "g++";
+};
+
 /// The tool types that are supported
 enum class ToolKind { None, Assemble, Clang, GCC, LD, LLD, SC };
 
@@ -87,9 +95,6 @@ protected:
   Driver &driver;
   const llvm::Triple triple;
 
-  // All the jobs the tool chain created --- lifetime management.
-  llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
-
 public:
   using Paths = llvm::SmallVector<std::string, 16>;
   using Tools = llvm::SmallVector<Tool, 16>;
@@ -115,9 +120,11 @@ protected:
 
 public:
   virtual ~ToolChain() = default;
-  virtual void Initialize();
+  
 
 protected:
+  virtual void Initialize();
+
   // Build tools and add to the tools
   virtual std::unique_ptr<Tool> BuildSC();
   virtual std::unique_ptr<Tool> BuildLD() = 0;
@@ -160,14 +167,14 @@ public:
   /// This method caches its results.
   ///
   /// \sa PerformFindProgramRelativeToStone
-  std::string FindProgramRelativeToStone(llvm::StringRef name) const;
+  std::string FindProgramRelativeToStone(llvm::StringRef executableName) const;
 
   /// An override point for platform-specific subclasses to customize how to
   /// do relative searches for programs.
   ///
   /// This method is invoked by FindProgramRelativeToStone().
   virtual std::string
-  FindProgramRelativeToStoneImpl(llvm::StringRef name) const {}
+  FindProgramRelativeToStoneImpl(llvm::StringRef executableName) const;
 
 protected:
   virtual JobDetail ConstructDetail(const CompileIntent &intent);

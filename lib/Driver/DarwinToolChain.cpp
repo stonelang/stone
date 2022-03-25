@@ -10,14 +10,9 @@ DarwinToolChain::DarwinToolChain(
     Driver &driver, const llvm::Triple &triple,
     const llvm::Optional<llvm::Triple> &targetVariant)
     : ToolChain(ToolChainKind::Darwin, driver, triple),
-      targetVariant(targetVariant) {
-  Initialize();
-}
+      targetVariant(targetVariant) {}
 
-void DarwinToolChain::Initialize() {
-  libPaths.push_back("/usr/lib/");
-  ToolChain::Initialize();
-}
+void DarwinToolChain::Initialize() { libPaths.push_back("/usr/lib/"); }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
 
@@ -26,13 +21,12 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
   if (tool) {
     return tool;
   }
-  tool =
-      BuildTool(ToolKind::SC, "/usr/bin/stone-compile", "stone-compile", true);
+  tool = BuildTool(ToolKind::SC, "/usr/bin/stone-compile", ToolName::SC, true);
   if (tool) {
     return tool;
   }
-  tool = BuildTool(ToolKind::SC, "/usr/local/bin/stone-compile",
-                   "stone-compile", false);
+  tool = BuildTool(ToolKind::SC, "/usr/local/bin/stone-compile", ToolName::SC,
+                   false);
   if (tool) {
     return tool;
   }
@@ -40,11 +34,11 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLD() {
-  auto tool = BuildTool(ToolKind::LD, "/usr/bin/ld", "ld", true);
+  auto tool = BuildTool(ToolKind::LD, "/usr/bin/ld", ToolName::LD, true);
   if (tool) {
     return tool;
   }
-  tool = BuildTool(ToolKind::LD, "/usr/local/bin/ld", "ld", false);
+  tool = BuildTool(ToolKind::LD, "/usr/local/bin/ld", ToolName::LD, false);
   if (tool) {
     return tool;
   }
@@ -53,33 +47,35 @@ std::unique_ptr<Tool> DarwinToolChain::BuildLD() {
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLLD() {
-  auto tool = BuildTool(ToolKind::LLD, "/usr/bin/lld", "lld", true);
+  auto tool = BuildTool(ToolKind::LLD, "/usr/bin/lld", ToolName::LLD, true);
   if (tool) {
     return tool;
   }
-  tool = BuildTool(ToolKind::LLD, "/usr/local/bin/lld", "lld", false);
+  tool = BuildTool(ToolKind::LLD, "/usr/local/bin/lld", ToolName::LLD, false);
   if (tool) {
     return tool;
   }
   return nullptr;
 }
 std::unique_ptr<Tool> DarwinToolChain::BuildClang() {
-  auto tool = BuildTool(ToolKind::Clang, "/usr/bin/clang++", "clang++", true);
+  auto tool =
+      BuildTool(ToolKind::Clang, "/usr/bin/clang++", ToolName::Clang, true);
   if (tool) {
     return tool;
   }
-  tool = BuildTool(ToolKind::Clang, "/usr/local/bin/clang++", "clang++", false);
+  tool = BuildTool(ToolKind::Clang, "/usr/local/bin/clang++", ToolName::Clang,
+                   false);
   if (tool) {
     return tool;
   }
   return nullptr;
 }
 std::unique_ptr<Tool> DarwinToolChain::BuildGCC() {
-  auto tool = BuildTool(ToolKind::GCC, "/usr/bin/g++", "g++", true);
+  auto tool = BuildTool(ToolKind::GCC, "/usr/bin/g++", ToolName::GCC, true);
   if (tool) {
     return tool;
   }
-  tool = BuildTool(ToolKind::GCC, "/usr/local/bin/g++", "g++", false);
+  tool = BuildTool(ToolKind::GCC, "/usr/local/bin/g++", ToolName::GCC, false);
   if (tool) {
     return tool;
   }

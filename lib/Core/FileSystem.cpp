@@ -9,6 +9,8 @@
 #include "llvm/Support/Signals.h"
 #include "llvm/Support/VirtualFileSystem.h"
 
+
+
 using namespace stone;
 
 namespace {
@@ -73,8 +75,7 @@ static llvm::ErrorOr<bool> canUseTemporaryForWrite(const StringRef outputPath) {
 static Optional<std::string>
 tryToOpenTemporaryFile(Optional<llvm::raw_fd_ostream> &openedStream,
                        const StringRef outputPath) {
-  namespace fs = llvm::sys::fs;
-
+ 
   // Create a temporary file path.
   // Insert a placeholder for a random suffix before the extension (if any).
   // Then because some tools glob for build artifacts (such as clang's own
@@ -86,9 +87,9 @@ tryToOpenTemporaryFile(Optional<llvm::raw_fd_ostream> &openedStream,
   tempPath += outputExtension;
   tempPath += ".tmp";
 
+  const unsigned perms = llvm::sys::fs::all_read | llvm::sys::fs::all_write;
   int fd;
-  const unsigned perms = fs::all_read | fs::all_write;
-  std::error_code EC = fs::createUniqueFile(tempPath, fd, tempPath, perms);
+  std::error_code EC = llvm::sys::fs::createUniqueFile(tempPath, fd, tempPath, llvm::sys::fs::OF_None, perms);
 
   if (EC) {
     // Ignore the specific error; the caller has to fall back to not using a
@@ -132,7 +133,7 @@ std::error_code stone::atomicallyWritingToFile(
 
     if (!OS.hasValue()) {
       std::error_code error;
-      OS.emplace(outputPath, error, fs::F_None);
+      OS.emplace(outputPath, error, fs::OF_None);
       if (error) {
         return error;
       }

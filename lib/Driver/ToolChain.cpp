@@ -6,7 +6,9 @@ using namespace stone;
 
 ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
                      const llvm::Triple &triple)
-    : kind(kind), driver(driver), triple(triple) {}
+    : kind(kind), driver(driver), triple(triple) {
+  Initialize();
+}
 
 void ToolChain::Initialize() {
   // TODO: Clean this up -- works for now
@@ -61,12 +63,43 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
   if (driver.GetDriverOptions().HasSCPath()) {
     auto tool =
         BuildTool(ToolKind::SC, driver.GetDriverOptions().scPath.c_str(),
-                  "stone-compile", true);
+                  ToolName::SC, true);
     if (tool) {
       return tool;
     }
+    // Try to find relative to running path
+    // std::string relativeToStone =
+    //     FindProgramRelativeToStone(invocationInfo.ExecutableName);
+
+    // tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC, true);
+    // if (tool) {
+    //   return tool;
+    // }
   }
   return nullptr;
+}
+
+std::string
+ToolChain::FindProgramRelativeToStone(llvm::StringRef executableName) const {
+  // auto insertionResult =
+  //     ProgramLookupCache.insert(std::make_pair(executableName, ""));
+  // if (insertionResult.second) {
+  //   std::string path = FindProgramRelativeToSwiftImpl(executableName);
+  //   insertionResult.first->setValue(std::move(path));
+  // }
+  // return insertionResult.first->getValue();
+  return {};
+}
+
+std::string ToolChain::FindProgramRelativeToStoneImpl(
+    llvm::StringRef executableName) const {
+  // llvm::StringRef stonePath = GetDriver().GetSwiftProgramPath();
+  // llvm::StringRef stoneBinDir = llvm::sys::path::parent_path(stonePath);
+  // auto result = llvm::sys::findProgramByName(executableName, {stoneBinDir});
+  // if (result) {
+  //   return result.get();
+  // }
+  return {};
 }
 
 JobDetail ToolChain::ConstructDetail(const CompileIntent &intent) {
