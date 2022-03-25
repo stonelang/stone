@@ -140,7 +140,7 @@ class DiagnosticEngine final : public Printable {
   // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
   DiagnosticOptions &diagOpts;
 
-  SrcMgr *sm;
+  SrcMgr& sm;
 
   /// The initial diagnostic state.
   mutable DiagnosticState state;
@@ -179,7 +179,7 @@ class DiagnosticEngine final : public Printable {
   Version version;
 
 public:
-  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm = nullptr);
+  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
@@ -187,14 +187,9 @@ public:
   void Finish();
 
 public:
-  bool HasSrcMgr() const { return sm != nullptr; }
-  void SetSrgMgr(SrcMgr *sm) { this->sm = sm; }
-  SrcMgr &GetSrcMgr() const {
-    assert(sm && "SrcMgr not set!");
-    return *sm;
-  }
 
   bool HasError();
+  SrcMgr &GetSrcMgr() { return sm; }
 
   void Print(ColorOutputStream &os,
              const PrintingPolicy *policy) const override;

@@ -6,9 +6,9 @@
 using namespace stone;
 
 Context::Context()
-    : fm(GetFileSystemOptions()), de(GetDiagOptions()), cos(llvm::outs()) {}
+    : fm(GetFileSystemOptions()), de(GetDiagOptions(), sm), cos(llvm::outs()){}
 
-Context::~Context() {}
+      Context::~Context() {}
 
 void stone::Panic() { assert(false && "Compiler cannot continue!"); }
 void stone::Panic(const char *msg) { llvm_unreachable(msg); }

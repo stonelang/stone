@@ -25,7 +25,7 @@ TEST_F(DiagTest, DiagnoseCompile) {
   ctx.GetDiagEngine().AddListener(textListener);
 
   ctx.GetDiagEngine()
-      .PrintD(SrcLoc(), diag::err_no_compile_mode)
+      .PrintD(SrcLoc(), diag::err_no_input_files)
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 }

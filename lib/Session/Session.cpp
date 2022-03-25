@@ -14,7 +14,7 @@ Session::Session()
       vfs(llvm::vfs::getRealFileSystem()) {
   CreateTimer();
 
-  // Add the default text listener 
+  // Add the default text listener
   ctx.GetDiagEngine().AddListener(textDiagListener);
 }
 

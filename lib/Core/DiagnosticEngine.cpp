@@ -100,7 +100,7 @@ void InFlightDiagnostic::Flush() {
   }
 }
 
-DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr *sm)
+DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr& sm)
     : diagOpts(diagOpts), sm(sm) {}
 
 llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,

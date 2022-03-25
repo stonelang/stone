@@ -1,9 +1,7 @@
 #include "stone/Core/TextDiagnosticEmitter.h"
-
-#include "stone/Core/TextDiagnosticListener.h"
+#include "stone/Core/Diagnostic.h"
 
 using stone::TextDiagnosticEmitter;
-using stone::TextDiagnosticListener;
 
 TextDiagnosticEmitter::TextDiagnosticEmitter() {}
 
@@ -13,7 +11,9 @@ void TextDiagnosticEmitter::EmitLevel() {}
 
 void TextDiagnosticEmitter::EmitDiagnostic(
     const EmissionDiagnostic &diagnostic) {
-  printf("%s", "TextDiagnosticEmitter::EmitMessage\n");
+
+  auto ed = const_cast<EmissionDiagnostic &>(diagnostic);
+  printf("%s", ed.GetFormatMessage().data());
 }
 
 void TextDiagnosticEmitter::EmitLoc() {}
