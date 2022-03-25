@@ -51,8 +51,8 @@ class JobDetail final {
 public:
   JobDetail() {}
   JobDetail(llvm::StringRef execPath, llvm::ArrayRef<llvm::StringRef> args,
-             llvm::ArrayRef<llvm::StringRef> env)
-      : execPath(execPath), args(args), env(env){}
+            llvm::ArrayRef<llvm::StringRef> env)
+      : execPath(execPath), args(args), env(env) {}
 
 public:
   llvm::StringRef GetExecPath() { return execPath; }

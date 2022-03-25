@@ -71,8 +71,8 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
     // std::string relativeToStone =
     //     FindProgramRelativeToStone(invocationInfo.ExecutableName);
 
-    // tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC, true);
-    // if (tool) {
+    // tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC,
+    // true); if (tool) {
     //   return tool;
     // }
   }

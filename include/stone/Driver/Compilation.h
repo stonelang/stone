@@ -36,7 +36,6 @@ class Compilation final {
   std::unique_ptr<TaskQueue> tq;
   std::unique_ptr<llvm::opt::DerivedArgList> dal;
 
-
   // All the jobs the tool chain created --- lifetime management.
   llvm::SmallVector<std::unique_ptr<const Job>, 32> jobs;
 

@@ -104,7 +104,7 @@ public:
   MapEntryOptionalStorage() : MaybeRef(optional_none_tag()) {}
 
   template <class... ArgTypes>
-  explicit MapEntryOptionalStorage(llvm::in_place_t,ArgTypes &&...Args)
+  explicit MapEntryOptionalStorage(llvm::in_place_t, ArgTypes &&...Args)
       : MaybeRef(std::forward<ArgTypes>(Args)...) {}
 
   void reset() { MaybeRef = optional_none_tag(); }

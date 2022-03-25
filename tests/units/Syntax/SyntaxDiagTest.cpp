@@ -22,15 +22,14 @@ protected:
   SearchPathOptions pathOpts;
   Syntax syntax;
   SrcMgr sm;
-  SyntaxContext tc;
 
 public:
-  SyntaxDiagTest() : tc(ctx, pathOpts), syntax(tc) {}
+  SyntaxDiagTest() : syntax(std::make_unique<SyntaxContext>(ctx, pathOpts)) {}
 };
 
 TEST_F(SyntaxDiagTest, DiagnoseSyntax) {
 
-  Defer { ctx.GetDiagEngine().Finish(); };
+  STONE_DEFER { ctx.GetDiagEngine().Finish(); };
 
   ctx.GetDiagOptions().useColor = true;
 

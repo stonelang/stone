@@ -3,7 +3,7 @@
 #include "stone/Core/SrcMgr.h"
 #include "stone/Core/SystemOptions.h"
 #include "stone/Driver/CompilationJob.h"
-#include "stone/Driver/JobIntent.h"
+#include "stone/Driver/Intent.h"
 #include "gtest/gtest.h"
 
 using namespace stone;
@@ -23,14 +23,14 @@ public:
 //   CompileJob cj(*tool, file.get());
 // }
 
-TEST_F(DriverTest, JobRequestTest) {
+TEST_F(DriverTest, IntentTest) {
   auto file = std::make_unique<file::File>("test", file::Type::Stone);
 
-  auto cjr = JobRequest::Make<CompileJobRequest>(file.get());
-  cjr->Print(ctx.Out());
+  // auto cjr = Driver::MakeIntent<CompileIntentt>(file.get());
+  // cjr->Print(ctx.Out());
 
-  auto djrd = JobRequest::Make<DynamicLinkJobRequest>(cjr.get());
-  auto djri = JobRequest::Make<DynamicLinkJobRequest>(file.get());
+  // auto djrd = Driver::MakeIntent<DynamicLinkIntent>(cjr.get());
+  // auto djri = Driver::MakeIntent<DynamicLinkJobRequest>(file.get());
 
   // Compilation compilation;
   // auto job = toolChain.MakeJob(JobRequest& jobRequest, Compilation& c)

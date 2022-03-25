@@ -124,7 +124,7 @@ void DiagnosticEngine::Print(ColorOutputStream &os,
                              const PrintingPolicy *policy) const {}
 
 void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
-  
+
   auto emissionDiagnostic = BuildEmissionDiagnostic(diagnostic);
   for (auto &listener : listeners) {
     listener->Listen(/*TODO*/ diag::Level::Warn, *emissionDiagnostic);

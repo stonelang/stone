@@ -120,7 +120,6 @@ protected:
 
 public:
   virtual ~ToolChain() = default;
-  
 
 protected:
   virtual void Initialize();

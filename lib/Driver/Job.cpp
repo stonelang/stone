@@ -35,7 +35,7 @@ Job::~Job() {}
 
 /// -print-jobs
 void Job::Print(ColorOutputStream &stream, CrashState *crashState) {
-  
+
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
   // stream() << GetName();
