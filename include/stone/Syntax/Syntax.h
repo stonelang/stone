@@ -66,21 +66,20 @@ public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
         loc, SyntaxDiagnostic(
-                 DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())));
+                 DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
   }
-  stone::InFlightDiagnostic
-  PrintD(SrcLoc loc, DiagID diagID,
-                 llvm::ArrayRef<diag::Argument> args) {
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+                                   llvm::ArrayRef<diag::Argument> args) {
     return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
-        loc, SyntaxDiagnostic(DiagnosticContext(diagID, args)));
+        loc, SyntaxDiagnostic(DiagnosticDetail(diagID, args)));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
-                 typename stone::detail::PassArgument<ArgTypes>::type... args) {
+         typename stone::detail::PassArgument<ArgTypes>::type... args) {
     return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
-        loc, SyntaxDiagnostic(DiagnosticContext(id, std::move(args)...)));
+        loc, SyntaxDiagnostic(DiagnosticDetail(id, std::move(args)...)));
   }
 
 public:

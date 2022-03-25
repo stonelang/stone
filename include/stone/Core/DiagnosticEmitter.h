@@ -4,26 +4,17 @@
 #include <assert.h>
 
 namespace stone {
-class DiagnosticListener;
+class EmissionDiagnostic;
 class DiagnosticEmitter {
-  DiagnosticListener *listener;
 
 public:
-  DiagnosticEmitter(DiagnosticListener *listener);
+  DiagnosticEmitter();
   virtual ~DiagnosticEmitter();
 
 public:
   virtual void EmitLevel();
-  virtual void EmitMessage();
+  virtual void EmitDiagnostic(const EmissionDiagnostic &diagnostic);
   virtual void EmitLoc();
-
-public:
-  DiagnosticListener *GetListener() {
-    assert(
-        listener &&
-        "A 'DiagnosticEmitter' must be associated with a 'DiagnosticListener'");
-    return listener;
-  }
 };
 } // namespace stone
 #endif

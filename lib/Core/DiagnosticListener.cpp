@@ -6,9 +6,9 @@ DiagnosticListener::~DiagnosticListener() {}
 
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
-void DiagnosticListener::Listen(diag::Level level,
-                                const EmissionDiagnostic &diagnostic) {
-  printf("%s", "print ctx stuff\n");
+void DiagnosticListener::OnDiagnostic(const EmissionDiagnostic &diagnostic) {
+
+  printf("%s", "DiagnosticListener::Listen\n");
 }
 
 /// Callback to inform the diagnostic client that processing of all

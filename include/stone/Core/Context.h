@@ -42,6 +42,9 @@ public:
   Context();
   ~Context();
 
+  /// The set of cleanups to be called when the Context is destroyed.
+  // std::vector<std::function<void(void)>> cleanups;
+
 public:
   ColorOutputStream &Out() { return cos; }
 

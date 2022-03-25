@@ -161,8 +161,8 @@ private:
 
 struct DiagnosticFormatOptions final {};
 
-// TODO: Free Context
-class DiagnosticContext {
+// TODO: Free Detail
+class DiagnosticDetail {
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
   SrcLoc loc;
@@ -170,11 +170,12 @@ class DiagnosticContext {
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
+  // llvm::SmallVector<DiagnosticDetail *> deps;
 
 public:
   template <typename... ArgTypes>
-  DiagnosticContext(Diag<ArgTypes...> d,
-                    typename detail::PassArgument<ArgTypes>::type... vArgs)
+  DiagnosticDetail(Diag<ArgTypes...> d,
+                   typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
     diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
 
@@ -182,19 +183,22 @@ public:
   }
 
 public:
-  DiagnosticContext(DiagID diagID, llvm::ArrayRef<diag::Argument> arguments)
-      : diagID(diagID), args(arguments.begin(), arguments.end()) {}
+  DiagnosticDetail(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+      : diagID(diagID), args(args.begin(), args.end()) {}
 
 public:
   DiagID GetDiagID() { return diagID; }
   llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
+  // llvm::ArrayRef<DiagnosticDetail *> GetDeps() const { return deps; }
 
 public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
   void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
+
+  // void AddDep(DiagnosticDetail *dep) { deps.push_back(dep); }
 
   void AddArgument(diag::Argument &&arg) { args.push_back(std::move(arg)); }
 
@@ -212,13 +216,13 @@ public:
 };
 class Diagnostic {
 protected:
-  mutable DiagnosticContext context;
+  mutable DiagnosticDetail detail;
 
 public:
-  explicit Diagnostic(DiagnosticContext context) : context(context) {}
+  explicit Diagnostic(DiagnosticDetail detail) : detail(detail) {}
 
 public:
-  DiagnosticContext &GetContext() const { return context; }
+  DiagnosticDetail &GetDetail() const { return detail; }
 
   // TODO: UB
   void AddChild(Diagnostic &&diagnostic);
@@ -226,7 +230,7 @@ public:
 public:
   template <typename... otherArgTypes>
   bool IsEqual(Diag<otherArgTypes...> other) const {
-    return context.GetDiagID() == other.GetContext().GetDiagID();
+    return detail.GetDiagID() == other.GetDetail().GetDiagID();
   }
 
 public:
@@ -242,20 +246,25 @@ public:
 };
 
 class EmissionDiagnostic final {
+  diag::Level level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
   const Diagnostic &diagnostic;
+  SrcMgr &sm;
 
 public:
-  EmissionDiagnostic(const Diagnostic &diagnostic,
-                     llvm::StringRef formatMessage, llvm::StringRef category)
-      : diagnostic(diagnostic), formatMessage(formatMessage),
-        category(category) {}
+  EmissionDiagnostic(diag::Level level, const Diagnostic &diagnostic,
+                     SrcMgr &sm, llvm::StringRef formatMessage,
+                     llvm::StringRef category)
+      : level(level), diagnostic(diagnostic), sm(sm),
+        formatMessage(formatMessage), category(category) {}
 
 public:
   llvm::StringRef GetCategory() { return category; }
   llvm::StringRef GetFormatMessage() { return formatMessage; }
   const Diagnostic &GetDiagnostic() const { return diagnostic; }
+  SrcMgr &GetSrcMgr() { return sm; }
+  diag::Level GetLevel() { return level; }
 
 public:
   // TODO: Think about

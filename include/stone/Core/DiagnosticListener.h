@@ -40,15 +40,12 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void Listen(diag::Level level, const EmissionDiagnostic &diagnostic);
+  virtual void OnDiagnostic(const EmissionDiagnostic &diagnostic);
 };
 
 class FakeDiagnosticListener final : public DiagnosticListener {
 public:
-  void Listen(diag::Level severity,
-              const EmissionDiagnostic &diagnostic) override {
-    // Ignore
-  }
+  void OnDiagnostic(const EmissionDiagnostic &diagnostic) override {}
 };
 } // namespace stone
 #endif

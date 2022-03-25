@@ -10,6 +10,5 @@ Context::Context()
 
 Context::~Context() {}
 
-// TODO: Remove
 void stone::Panic() { assert(false && "Compiler cannot continue!"); }
 void stone::Panic(const char *msg) { llvm_unreachable(msg); }

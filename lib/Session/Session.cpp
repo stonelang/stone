@@ -13,6 +13,9 @@ Session::Session()
     : optst(stone::opts::CreateOptTable()),
       vfs(llvm::vfs::getRealFileSystem()) {
   CreateTimer();
+
+  // Add the default text listener 
+  ctx.GetDiagEngine().AddListener(textDiagListener);
 }
 
 void Session::CreateTimer() {

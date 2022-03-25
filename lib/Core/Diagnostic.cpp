@@ -137,6 +137,7 @@ InFlightDiagnostic &
 CodeFixer::InsertAfter(SrcLoc loc, llvm::StringRef formatString,
                        llvm::ArrayRef<diag::Argument> args) {
   assert(inFlightDiag.tokenable && "InsertAfter requires a Tokenable");
+
   loc = inFlightDiag.tokenable->GetLocForEndOfToken(
       inFlightDiag.GetDiagEngine().GetSrcMgr(), loc);
 

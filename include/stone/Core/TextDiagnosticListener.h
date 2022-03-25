@@ -8,15 +8,16 @@
 
 namespace stone {
 class EmissionDiagnostic;
+
 class TextDiagnosticListener : public DiagnosticListener {
-  std::unique_ptr<TextDiagnosticEmitter> emitter;
+  TextDiagnosticEmitter emitter;
 
 public:
   TextDiagnosticListener();
   ~TextDiagnosticListener();
 
 public:
-  void Listen(diag::Level level, const EmissionDiagnostic &diagnostic) override;
+  void OnDiagnostic(const EmissionDiagnostic &diagnostic) override;
   void Finish() override;
   void Flush() override;
 

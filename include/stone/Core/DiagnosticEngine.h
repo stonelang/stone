@@ -2,7 +2,6 @@
 #define STONE_CORE_DIAGNOSTICENGINE_H
 
 #include "stone/Core/Diagnostic.h"
-#include "stone/Core/DiagnosticEngineBase.h"
 #include "stone/Core/DiagnosticListener.h"
 #include "stone/Core/DiagnosticTransaction.h"
 #include "stone/Core/List.h"
@@ -123,7 +122,7 @@ public:
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public DiagnosticEngineBase, public Printable {
+class DiagnosticEngine final : public Printable {
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
@@ -191,7 +190,7 @@ public:
   bool HasSrcMgr() const { return sm != nullptr; }
   void SetSrgMgr(SrcMgr *sm) { this->sm = sm; }
   SrcMgr &GetSrcMgr() const {
-    assert(sm && "SourceManager not set!");
+    assert(sm && "SrcMgr not set!");
     return *sm;
   }
 
@@ -285,7 +284,7 @@ private:
                                               Tokenable *tokenable = nullptr) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
-    curDiagnostic->GetContext().SetLoc(loc);
+    curDiagnostic->GetDetail().SetLoc(loc);
     return InFlightDiagnostic(*this, tokenable);
   }
 
@@ -298,20 +297,20 @@ public:
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(loc, Diagnostic(DiagnosticContext(diagID, args)), tokenable);
+    return PrintD(loc, Diagnostic(DiagnosticDetail(diagID, args)), tokenable);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
     return PrintD(
         loc,
-        Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
+        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
         tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
     return PrintD(
         SrcLoc(),
-        Diagnostic(DiagnosticContext(diagID, llvm::ArrayRef<diag::Argument>())),
+        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
         tokenable);
   }
 
@@ -319,14 +318,14 @@ public:
   InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)));
+    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)));
   }
 
   template <typename... ArgTypes>
   InFlightDiagnostic
   PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticContext(id, std::move(args)...)),
+    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)),
                   tokenable);
   }
 };

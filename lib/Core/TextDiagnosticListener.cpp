@@ -5,16 +5,14 @@
 using stone::Diagnostic;
 using stone::TextDiagnosticListener;
 
-TextDiagnosticListener::TextDiagnosticListener() {
-  emitter.reset(new TextDiagnosticEmitter(this));
-}
+TextDiagnosticListener::TextDiagnosticListener() {}
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
-void TextDiagnosticListener::Listen(diag::Level level,
-                                    const EmissionDiagnostic &diagnostic) {
-  DiagnosticListener::Listen(level, diagnostic);
-  emitter->EmitMessage();
+void TextDiagnosticListener::OnDiagnostic(
+    const EmissionDiagnostic &diagnostic) {
+  // DiagnosticListener::Listen(level, diagnostic);
+  emitter.EmitDiagnostic(diagnostic);
 }
 
 void TextDiagnosticListener::Finish() {}

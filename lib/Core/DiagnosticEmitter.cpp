@@ -4,11 +4,10 @@
 using stone::DiagnosticEmitter;
 using stone::DiagnosticListener;
 
-DiagnosticEmitter::DiagnosticEmitter(DiagnosticListener *listener)
-    : listener(listener) {}
+DiagnosticEmitter::DiagnosticEmitter() {}
 
 DiagnosticEmitter::~DiagnosticEmitter() {}
 
 void DiagnosticEmitter::EmitLevel() {}
-void DiagnosticEmitter::EmitMessage() {}
+void DiagnosticEmitter::EmitDiagnostic(const EmissionDiagnostic &diagnostic) {}
 void DiagnosticEmitter::EmitLoc() {}

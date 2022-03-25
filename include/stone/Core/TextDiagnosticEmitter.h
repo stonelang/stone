@@ -4,15 +4,14 @@
 #include "stone/Core/DiagnosticEmitter.h"
 namespace stone {
 
-class TextDiagnosticListener;
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
 public:
-  TextDiagnosticEmitter(TextDiagnosticListener *listener);
+  TextDiagnosticEmitter();
   ~TextDiagnosticEmitter();
 
 public:
   virtual void EmitLevel() override;
-  virtual void EmitMessage() override;
+  virtual void EmitDiagnostic(const EmissionDiagnostic &diagnostic) override;
   virtual void EmitLoc() override;
 };
 } // namespace stone

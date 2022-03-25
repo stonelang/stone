@@ -127,7 +127,7 @@ void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 
   auto emissionDiagnostic = BuildEmissionDiagnostic(diagnostic);
   for (auto &listener : listeners) {
-    listener->Listen(/*TODO*/ diag::Level::Warn, *emissionDiagnostic);
+    listener->OnDiagnostic(*emissionDiagnostic);
   }
 }
 
@@ -140,7 +140,8 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
 llvm::Optional<EmissionDiagnostic>
 DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
   return EmissionDiagnostic(
-      diagnostic, GetDiagString(diagnostic.GetContext().GetDiagID(), true),
+      /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
+      GetDiagString(diagnostic.GetDetail().GetDiagID(), true),
       /*TODO*/ llvm::StringRef());
 }
 

@@ -53,7 +53,7 @@ struct TypeArgument final : public SyntaxArgument {
 
 class SyntaxDiagnostic final : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(DiagnosticContext context) : Diagnostic(context) {}
+  explicit SyntaxDiagnostic(DiagnosticDetail context) : Diagnostic(context) {}
   ~SyntaxDiagnostic();
 
 public:
