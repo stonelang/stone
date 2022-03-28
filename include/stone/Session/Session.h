@@ -70,8 +70,6 @@ protected:
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
 
-  TextDiagnosticListener textDiagListener;
-
   llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> vfs;
 
 protected:
@@ -120,10 +118,6 @@ public:
   llvm::Timer &GetTimer() {
     assert(timer);
     return *timer.get();
-  }
-
-  TextDiagnosticListener &GetTextDiagnosticListener() {
-    return textDiagListener;
   }
 
 public:

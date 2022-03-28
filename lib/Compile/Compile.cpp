@@ -8,11 +8,16 @@
 #include "stone/Core/Defer.h"
 #include "stone/Core/LLVMContext.h"
 #include "stone/Core/LLVMInit.h"
+#include "stone/Core/TextDiagnosticEmitter.h"
+#include "stone/Core/TextDiagnosticFormatter.h"
+#include "stone/Core/TextDiagnosticListener.h"
 #include "stone/Core/MainExecutablePath.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
+
+
 #include "llvm/IR/Module.h"
 
 using namespace stone;
@@ -45,6 +50,18 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     // lang.PrintD(SrcLoc(), diag::err_no_compile_args);
     return Finish(1);
   }
+
+  // Setup the diagnostics
+  TextDiagnosticFormatter formatter;
+
+  TextDiagnosticEmitter emitter;
+  emitter.SetFormatter(std::move(formatter));
+
+  TextDiagnosticListener textDiagListener;
+  textDiagListener.SetEmitter(std::move(emitter));
+
+  //lang.GetContext().GetDiagEngine().AddListener(textDiagListener);
+
   if (listener) {
     lang.SetListener(listener);
   } else {
