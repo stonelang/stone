@@ -17,15 +17,15 @@ TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
 void TextDiagnosticEmitter::EmitLevel() {}
 
-void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagnostic) {
+void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagEvent) {
 
-  auto ed = const_cast<DiagnosticEvent &>(diagnostic);
+  auto ed = const_cast<DiagnosticEvent &>(diagEvent);
   printf("%s", ed.GetFormatMessage().data());
 
   assert(formatter);
 
   ColorfulStream cs;
-  // formatter->Format(cs.GetOS(), diagnostic);
+  formatter->Format(cs.GetOS(), diagEvent.GetDiagnostic().GetDetail());
 
   // formatter.FormatText()
 
