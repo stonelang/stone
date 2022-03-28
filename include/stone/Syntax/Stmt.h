@@ -64,7 +64,7 @@ class BlockStmt final : public Stmt,
 public:
 };
 
-class MatchCase : public Stmt {
+class SwitchCase : public Stmt {
 protected:
   /// The location of the ":".
   SrcLoc colonLoc;
@@ -72,12 +72,12 @@ protected:
 
 /// CaseStmt - Represent a case statement. It can optionally be a GNU case
 /// statement of the form LHS ... RHS representing a range of cases.
-class CaseStmt final : public MatchCase,
+class CaseStmt final : public SwitchCase,
                        private llvm::TrailingObjects<CaseStmt, Stmt *, SrcLoc> {
   friend TrailingObjects;
 };
 
-class DefaultStmt : public MatchCase {
+class DefaultStmt : public SwitchCase {
   Stmt *subStmt;
 };
 
