@@ -1,31 +1,33 @@
 #include "stone/Core/DiagnosticEngine.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
-using stone::SyntaxDiagnostic;
+using namespace stone;
 
 SyntaxDiagnostic::~SyntaxDiagnostic() {
   printf("%s", "Destroying SyntaxDiagnostic\n");
 }
 
-void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
-                              const DiagnosticFormatOptions &fmtOptions) const {
-  diag::SyntaxArgumentKind kind = diag::SyntaxArgumentKind::None;
-  switch (kind) {
-  case diag::SyntaxArgumentKind::Decl:
-    break;
-  default:
-    // Should not get here
-    break;
-  }
-}
+// void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
+//                               const DiagnosticFormatOptions &fmtOptions)
+//                               const {
+//   diag::SyntaxArgumentKind kind = diag::SyntaxArgumentKind::None;
+//   switch (kind) {
+//   case diag::SyntaxArgumentKind::Decl:
+//     break;
+//   default:
+//     // Should not get here
+//     break;
+//   }
+// }
 
 /// Format the given format-string into the output buffer using the
 /// arguments stored in this diagnostic.
-void SyntaxDiagnostic::Format(const char *diagStr, const char *diagEnd,
-                              llvm::SmallVectorImpl<char> &outStr,
-                              const DiagnosticFormatOptions &fmtOptions) const {
+// void SyntaxDiagnostic::Format(const char *diagStr, const char *diagEnd,
+//                               llvm::SmallVectorImpl<char> &outStr,
+//                               const DiagnosticFormatOptions &fmtOptions)
+//                               const {
 
-}
+// }
 
 // void DeclDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
@@ -45,3 +47,8 @@ void SyntaxDiagnostic::Format(const char *diagStr, const char *diagEnd,
 
 //   auto arg = static_cast<const syn::Identifier *>(val);
 // }
+
+SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
+
+void SyntaxDiagnosticFormatter::FormatText(
+    DiagnosticDetail &detail, DiagnosticFormatOptions &fmtOptions) {}

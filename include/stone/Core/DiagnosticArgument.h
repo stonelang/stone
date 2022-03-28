@@ -51,7 +51,7 @@ enum class ArgumentKind {
   /// unsigned
   UInt,
 
-  TokenType,
+  TokenKind,
 
   /// custom argument
   Syntax,
@@ -140,14 +140,14 @@ public:
   unsigned GetVal() const { return val; }
 };
 
-struct TokenTypeArgument final : public Argument {
+struct TokenKindArgument final : public Argument {
   tk::Kind val;
 
 public:
-  TokenTypeArgument() = delete;
+  TokenKindArgument() = delete;
 
-  explicit TokenTypeArgument(const tk::Kind val)
-      : Argument(ArgumentKind::TokenType), val(val) {}
+  explicit TokenKindArgument(const tk::Kind val)
+      : Argument(ArgumentKind::TokenKind), val(val) {}
   tk::Kind GetVal() const { return val; }
 };
 

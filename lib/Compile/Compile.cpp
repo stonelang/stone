@@ -16,6 +16,7 @@
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
 #include "llvm/IR/Module.h"
 
@@ -61,7 +62,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   frontend.SetMainExecutablePath(mainExecPath);
 
   // Setup the dianostics formatter an emitter
-  TextDiagnosticFormatter formatter;
+  SyntaxDiagnosticFormatter formatter;
 
   TextDiagnosticEmitter emitter;
   emitter.SetFormatter(std::move(formatter));

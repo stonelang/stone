@@ -22,6 +22,8 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagnostic) {
   auto ed = const_cast<DiagnosticEvent &>(diagnostic);
   printf("%s", ed.GetFormatMessage().data());
 
+  // formatter.FormatText()
+
   // Display the diagnostic.
   // ColorefStream coloredErrs{Stream};
   // raw_ostream &out = ForceColors ? coloredErrs : Stream;

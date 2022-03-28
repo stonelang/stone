@@ -241,14 +241,14 @@ public:
 
 public:
   /// The result is appended onto the \p OutStr array.
-  virtual void Format(llvm::SmallVectorImpl<char> &outStr,
-                      const DiagnosticFormatOptions &fmtOptions) const;
+  // virtual void Format(llvm::SmallVectorImpl<char> &outStr,
+  //                     const DiagnosticFormatOptions &fmtOptions) const;
 
-  /// Format the given format-string into the output buffer using the
-  /// arguments stored in this diagnostic.
-  virtual void Format(const char *diagStr, const char *diagEnd,
-                      llvm::SmallVectorImpl<char> &outStr,
-                      const DiagnosticFormatOptions &fmtOptions) const;
+  // /// Format the given format-string into the output buffer using the
+  // /// arguments stored in this diagnostic.
+  // virtual void Format(const char *diagStr, const char *diagEnd,
+  //                     llvm::SmallVectorImpl<char> &outStr,
+  //                     const DiagnosticFormatOptions &fmtOptions) const;
 
   // static void formatDiagnosticText(
   //       llvm::raw_ostream &Out, StringRef InText,

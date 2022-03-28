@@ -4,6 +4,5 @@
 
 ERROR(err_no_compile_mode, none, "no compile mode", ())
 
-
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

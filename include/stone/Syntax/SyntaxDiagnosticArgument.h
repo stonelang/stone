@@ -3,6 +3,7 @@
 
 #include "stone/Core/DiagnosticArgument.h"
 #include "stone/Core/DiagnosticEngine.h"
+#include "stone/Core/TextDiagnosticFormatter.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 
@@ -51,18 +52,27 @@ struct TypeArgument final : public SyntaxArgument {
 
 } // namespace diag
 
-class SyntaxDiagnostic final : public Diagnostic {
+class SyntaxDiagnostic : public Diagnostic {
 public:
   explicit SyntaxDiagnostic(DiagnosticDetail context) : Diagnostic(context) {}
   ~SyntaxDiagnostic();
 
 public:
-  void Format(llvm::SmallVectorImpl<char> &outStr,
-              const DiagnosticFormatOptions &fmtOptions) const override;
+  // void Format(llvm::SmallVectorImpl<char> &outStr,
+  //             const DiagnosticFormatOptions &fmtOptions) const override;
 
-  void Format(const char *diagStr, const char *diagEnd,
-              llvm::SmallVectorImpl<char> &outStr,
-              const DiagnosticFormatOptions &fmtOptions) const override;
+  // void Format(const char *diagStr, const char *diagEnd,
+  //             llvm::SmallVectorImpl<char> &outStr,
+  //             const DiagnosticFormatOptions &fmtOptions) const override;
+};
+
+class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {
+public:
+  SyntaxDiagnosticFormatter();
+
+public:
+  void FormatText(DiagnosticDetail &detail,
+                  DiagnosticFormatOptions &fmtOptions) override;
 };
 
 } // namespace stone

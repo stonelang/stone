@@ -5,7 +5,7 @@
 
 namespace stone {
 
-class TextDiagnosticEmitter final : public DiagnosticEmitter {
+class TextDiagnosticEmitter : public DiagnosticEmitter {
 public:
   TextDiagnosticEmitter();
   ~TextDiagnosticEmitter();

@@ -6,34 +6,34 @@ using stone::Diagnostic;
 using stone::DiagnosticEngine;
 using stone::InFlightDiagnostic;
 
-void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
-                        const DiagnosticFormatOptions &fmtOptions) const {
-  diag::ArgumentKind kind = diag::ArgumentKind::None;
-  switch (kind) {
-  case diag::ArgumentKind::STDStr:
-    break;
-  case diag::ArgumentKind::LLVMStr:
-    break;
-  case diag::ArgumentKind::SInt:
-    break;
-  case diag::ArgumentKind::UInt:
-    break;
-  case diag::ArgumentKind::TokenType:
-    break;
-  case diag::ArgumentKind::Syntax:
-    // Ignore and handle elswhere
-    break;
-  default:
-    // Should not get here
-    break;
-  }
-}
+// void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
+//                         const DiagnosticFormatOptions &fmtOptions) const {
+//   diag::ArgumentKind kind = diag::ArgumentKind::None;
+//   switch (kind) {
+//   case diag::ArgumentKind::STDStr:
+//     break;
+//   case diag::ArgumentKind::LLVMStr:
+//     break;
+//   case diag::ArgumentKind::SInt:
+//     break;
+//   case diag::ArgumentKind::UInt:
+//     break;
+//   case diag::ArgumentKind::TokenType:
+//     break;
+//   case diag::ArgumentKind::Syntax:
+//     // Ignore and handle elswhere
+//     break;
+//   default:
+//     // Should not get here
+//     break;
+//   }
+// }
 
 /// Format the given format-string into the output buffer using the
 /// arguments stored in this diagnostic.
-void Diagnostic::Format(const char *diagStr, const char *diagEnd,
-                        llvm::SmallVectorImpl<char> &outStr,
-                        const DiagnosticFormatOptions &fmtOptions) const {}
+// void Diagnostic::Format(const char *diagStr, const char *diagEnd,
+//                         llvm::SmallVectorImpl<char> &outStr,
+//                         const DiagnosticFormatOptions &fmtOptions) const {}
 
 CodeFix::CodeFix(CharSrcRange range, llvm::StringRef code)
     : range(range), code(code) {}

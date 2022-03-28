@@ -6,5 +6,5 @@ TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 
 TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
-void TextDiagnosticFormatter::FormatText(
-    const DiagnosticFormatOptions &fmtOptions) {}
+void TextDiagnosticFormatter::FormatText(DiagnosticDetail &detail,
+                                         DiagnosticFormatOptions &fmtOptions) {}

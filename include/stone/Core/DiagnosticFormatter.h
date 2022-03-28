@@ -4,6 +4,7 @@
 #include <assert.h>
 
 namespace stone {
+class DiagnosticDetail;
 class DiagnosticFormatOptions;
 
 class DiagnosticFormatter {
@@ -17,7 +18,8 @@ public:
   //       llvm::ArrayRef<DiagnosticArgument> formatArgs,
   //       DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
 
-  virtual void FormatText(const DiagnosticFormatOptions &fmtOptions) {}
+  virtual void FormatText(DiagnosticDetail &detail,
+                          DiagnosticFormatOptions &fmtOptions) {}
 
 public:
 };
