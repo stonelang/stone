@@ -7,10 +7,13 @@
 
 namespace stone {
 
-class TextDiagnosticFormatter : public DiagnosticFormatter {
+class TextDiagnosticFormatter final : public DiagnosticFormatter {
 public:
   TextDiagnosticFormatter();
   ~TextDiagnosticFormatter();
+
+public:
+  void FormatText(const DiagnosticFormatOptions &fmtOptions) override;
 
 public:
 };

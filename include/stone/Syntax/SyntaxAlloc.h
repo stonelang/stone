@@ -11,7 +11,7 @@ class SyntaxContext;
 // void *AllocateInSyntaxContext(size_t bytes, const syn::SyntaxContext &ctx,
 //                               AllocationArena arena, unsigned alignment);
 // }
-// template <typename AlignTy> class SyntaxAlloc {
+// template <typename AlignTy> class SyntaxAllocation {
 // public:
 //   // Make vanilla new/delete illegal.
 //   void *operator new(size_t bytes) throw() = delete;

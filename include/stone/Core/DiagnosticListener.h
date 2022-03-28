@@ -1,13 +1,17 @@
 #ifndef STONE_CORE_DIAGNOSTICLISTENER_H
 #define STONE_CORE_DIAGNOSTICLISTENER_H
 
+#include "stone/Core/DiagnosticEmitter.h"
 #include "stone/Core/DiagnosticOptions.h"
 
 namespace stone {
-class EmissionDiagnostic;
 
+class DiagnosticEvent;
 class DiagnosticListener {
+
 protected:
+  DiagnosticEmitter emitter;
+
   unsigned numWarnings = 0; ///< Number of warnings reported
   unsigned numErrors = 0;   ///< Number of errors reported
 
@@ -40,12 +44,15 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void OnDiagnostic(const EmissionDiagnostic &diagnostic);
+  virtual void OnDiagnostic(const DiagnosticEvent &diagnostic);
+
+  void SetEmitter(DiagnosticEmitter &&diagEmitter) { emitter = diagEmitter; }
+  DiagnosticEmitter &GetEmitter() { return emitter; }
 };
 
 class FakeDiagnosticListener final : public DiagnosticListener {
 public:
-  void OnDiagnostic(const EmissionDiagnostic &diagnostic) override {}
+  void OnDiagnostic(const DiagnosticEvent &diagnostic) override {}
 };
 } // namespace stone
 #endif

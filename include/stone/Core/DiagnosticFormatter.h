@@ -4,11 +4,20 @@
 #include <assert.h>
 
 namespace stone {
+class DiagnosticFormatOptions;
 
 class DiagnosticFormatter {
+
 public:
   DiagnosticFormatter();
   virtual ~DiagnosticFormatter();
+
+  // virtual void FormatText(
+  //       llvm::raw_ostream &result, llvm::StringRef textToFormat,
+  //       llvm::ArrayRef<DiagnosticArgument> formatArgs,
+  //       DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
+
+  virtual void FormatText(const DiagnosticFormatOptions &fmtOptions) {}
 
 public:
 };

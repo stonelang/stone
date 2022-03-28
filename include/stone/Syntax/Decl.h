@@ -18,9 +18,9 @@
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -60,7 +60,7 @@ public:
   void Print() override;
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public SyntaxNode {
+class alignas(1 << DeclAlignInBits) Decl {
   friend DeclStats;
 
   DeclKind kind;
@@ -186,6 +186,11 @@ public:
 
   void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
   SrcLoc GetDeclNameLoc() { return nameLoc; }
+};
+
+class ForwardDecl : public NamedDecl {
+
+public:
 };
 
 class AnyDecl : public NamedDecl {

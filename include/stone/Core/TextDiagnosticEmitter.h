@@ -2,6 +2,7 @@
 #define STONE_CORE_TEXTDIAGNOSTICEMITTER_H
 
 #include "stone/Core/DiagnosticEmitter.h"
+
 namespace stone {
 
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
@@ -11,7 +12,7 @@ public:
 
 public:
   virtual void EmitLevel() override;
-  virtual void EmitDiagnostic(const EmissionDiagnostic &diagnostic) override;
+  virtual void EmitDiagnostic(const DiagnosticEvent &diagnostic) override;
   virtual void EmitLoc() override;
 };
 } // namespace stone

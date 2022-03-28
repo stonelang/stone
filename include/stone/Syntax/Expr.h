@@ -33,6 +33,9 @@ public:
 
 public:
   // Expr(StmtKind kind) : ValueStmt(kind) {}
+
+public:
+  // ExprKind GetExprKind() { return exprKind;}
 };
 
 /// FullExpr - Represents a "full-expression" node.

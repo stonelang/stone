@@ -7,8 +7,8 @@
 namespace stone {
 namespace syn {
 
-enum class BuiltinType {
-  None,
+enum class BuiltinType : unsigned {
+  None = 0,
   Auto,
   Bool,
   Float32,
@@ -35,7 +35,7 @@ enum class BuiltinType {
 
 // TODO: All you need is Public and Local
 enum class AccessLevel : uint8_t {
-  None,
+  None = 0,
   Internal, // TODO: Rename to Local
   Public,
 
@@ -66,7 +66,7 @@ enum class ExprValueType : uint8_t {
 /// Storage classes.
 /// These are legal on both functions and variables
 enum class StorageKind : uint8_t {
-  None,
+  None = 0,
   Extern,
   Static,
   // These are only legal on variables.

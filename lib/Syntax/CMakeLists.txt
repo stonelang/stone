@@ -25,7 +25,7 @@ set(stone_syn_sources
 	Template.cpp
 	Type.cpp
 	VerifyDecl.cpp
-	Witness.cpp
+	VirtualTable.cpp
 	
 	LINK_LIBS
 	StoneCore

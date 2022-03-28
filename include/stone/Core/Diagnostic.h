@@ -159,7 +159,9 @@ private:
                                   ArrayRef<diag::Argument> Args);
 };
 
-struct DiagnosticFormatOptions final {};
+struct DiagnosticFormatOptions final {
+  //
+};
 
 // TODO: Free Detail
 class DiagnosticDetail {
@@ -247,9 +249,14 @@ public:
   virtual void Format(const char *diagStr, const char *diagEnd,
                       llvm::SmallVectorImpl<char> &outStr,
                       const DiagnosticFormatOptions &fmtOptions) const;
+
+  // static void formatDiagnosticText(
+  //       llvm::raw_ostream &Out, StringRef InText,
+  //       ArrayRef<DiagnosticArgument> FormatArgs,
+  //       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 };
 
-class EmissionDiagnostic final {
+class DiagnosticEvent final {
   diag::Level level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
@@ -257,9 +264,8 @@ class EmissionDiagnostic final {
   SrcMgr &sm;
 
 public:
-  EmissionDiagnostic(diag::Level level, const Diagnostic &diagnostic,
-                     SrcMgr &sm, llvm::StringRef formatMessage,
-                     llvm::StringRef category)
+  DiagnosticEvent(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
+                  llvm::StringRef formatMessage, llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}
 

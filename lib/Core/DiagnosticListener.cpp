@@ -6,7 +6,7 @@ DiagnosticListener::~DiagnosticListener() {}
 
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
-void DiagnosticListener::OnDiagnostic(const EmissionDiagnostic &diagnostic) {
+void DiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
 
   printf("%s", "DiagnosticListener::Listen\n");
 }

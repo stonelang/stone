@@ -15,6 +15,7 @@ namespace stone {
 namespace syn {
 
 class Module;
+
 static inline unsigned AlignOfModuleFile();
 
 enum class ModuleFileKind : uint8_t { Source, Builtin };

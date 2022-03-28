@@ -2,6 +2,7 @@
 #define STONE_CORE_DIAGNOSTICENGINE_H
 
 #include "stone/Core/Diagnostic.h"
+#include "stone/Core/DiagnosticFormatter.h"
 #include "stone/Core/DiagnosticListener.h"
 #include "stone/Core/DiagnosticTransaction.h"
 #include "stone/Core/List.h"
@@ -314,9 +315,9 @@ public:
   }
 
 public:
-  /// Generate EmissionDiagnostic for a Diagnostic to be passed to listeners.
-  llvm::Optional<EmissionDiagnostic>
-  BuildEmissionDiagnostic(const Diagnostic &diagnostic);
+  /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
+  llvm::Optional<DiagnosticEvent>
+  CreateDiagnosticEvent(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
   void EmitSpecificDiagnostic(const Diagnostic &diag);

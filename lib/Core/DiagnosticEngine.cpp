@@ -230,9 +230,9 @@ void DiagnosticEngine::Print(ColorfulStream &os,
 
 void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 
-  auto emissionDiagnostic = BuildEmissionDiagnostic(diagnostic);
+  auto diagnosticEvent = CreateDiagnosticEvent(diagnostic);
   for (auto &listener : listeners) {
-    listener->OnDiagnostic(*emissionDiagnostic);
+    listener->OnDiagnostic(*diagnosticEvent);
   }
 }
 
@@ -242,19 +242,12 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
   EmitSpecificDiagnostic(*curDiagnostic);
 }
 
-llvm::Optional<EmissionDiagnostic>
-DiagnosticEngine::BuildEmissionDiagnostic(const Diagnostic &diagnostic) {
-  return EmissionDiagnostic(
+llvm::Optional<DiagnosticEvent>
+DiagnosticEngine::CreateDiagnosticEvent(const Diagnostic &diagnostic) {
+  return DiagnosticEvent(
       /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
       GetDiagString(diagnostic.GetDetail().GetID(), true),
       /*TODO*/ llvm::StringRef());
 }
 
 void DiagnosticEngine::Finish() { FlushListeners(); }
-
-llvm::SMDiagnostic
-SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
-                   const Twine &msg, llvm::ArrayRef<llvm::SMRange> ranges,
-                   llvm::ArrayRef<llvm::SMFixIt> fixIts) const {
-  return llvm::SMDiagnostic();
-}

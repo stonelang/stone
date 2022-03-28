@@ -13,7 +13,7 @@
 #include "stone/Core/SrcLoc.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
-#include "stone/Syntax/SyntaxNode.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -36,7 +36,7 @@ class Expr;
 class StringLiteral;
 class SyntaxContext;
 
-class Stmt : public SyntaxNode {
+class Stmt {
   StmtKind kind;
 
 public:

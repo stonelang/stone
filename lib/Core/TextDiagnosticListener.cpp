@@ -9,8 +9,7 @@ TextDiagnosticListener::TextDiagnosticListener() {}
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
-void TextDiagnosticListener::OnDiagnostic(
-    const EmissionDiagnostic &diagnostic) {
+void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
   // DiagnosticListener::Listen(level, diagnostic);
   emitter.EmitDiagnostic(diagnostic);
 }
