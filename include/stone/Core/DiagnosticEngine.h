@@ -253,7 +253,6 @@ public:
   /// Zero disables the limit.
   void SetErrorLimit(unsigned limit) { diagOpts.errorLimit = limit; }
 
-
 public:
   //==State management==//
   /// HadAnyError - return true if any *error* diagnostics have been emitted.

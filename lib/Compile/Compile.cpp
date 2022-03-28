@@ -8,15 +8,14 @@
 #include "stone/Core/Defer.h"
 #include "stone/Core/LLVMContext.h"
 #include "stone/Core/LLVMInit.h"
+#include "stone/Core/MainExecutablePath.h"
 #include "stone/Core/TextDiagnosticEmitter.h"
 #include "stone/Core/TextDiagnosticFormatter.h"
 #include "stone/Core/TextDiagnosticListener.h"
-#include "stone/Core/MainExecutablePath.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
-
 
 #include "llvm/IR/Module.h"
 
@@ -51,17 +50,6 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
 
-  // Setup the diagnostics
-  TextDiagnosticFormatter formatter;
-
-  TextDiagnosticEmitter emitter;
-  emitter.SetFormatter(std::move(formatter));
-
-  TextDiagnosticListener textDiagListener;
-  textDiagListener.SetEmitter(std::move(emitter));
-
-  //lang.GetContext().GetDiagEngine().AddListener(textDiagListener);
-
   if (listener) {
     lang.SetListener(listener);
   } else {
@@ -71,6 +59,18 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto &frontend = lang.GetFrontend();
   auto mainExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   frontend.SetMainExecutablePath(mainExecPath);
+
+  // Setup the dianostics formatter an emitter
+  TextDiagnosticFormatter formatter;
+
+  TextDiagnosticEmitter emitter;
+  emitter.SetFormatter(std::move(formatter));
+
+  TextDiagnosticListener textDiagListener;
+  textDiagListener.SetEmitter(std::move(emitter));
+
+  // Add the diagnostic listener
+  frontend.GetContext().GetDiagEngine().AddListener(textDiagListener);
 
   auto &ial = frontend.ParseArgs(args);
   if (frontend.HasError()) {
