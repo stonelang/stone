@@ -10,7 +10,7 @@ class DiagnosticEvent;
 class DiagnosticListener {
 
 protected:
-  DiagnosticEmitter emitter;
+  DiagnosticEmitter *emitter = nullptr;
 
   unsigned numWarnings = 0; ///< Number of warnings reported
   unsigned numErrors = 0;   ///< Number of errors reported
@@ -46,8 +46,11 @@ public:
   /// warnings and errors.
   virtual void OnDiagnostic(const DiagnosticEvent &diagnostic);
 
-  void SetEmitter(DiagnosticEmitter &&diagEmitter) { emitter = diagEmitter; }
-  DiagnosticEmitter &GetEmitter() { return emitter; }
+  void SetEmitter(DiagnosticEmitter *diagEmitter) {
+    assert(diagEmitter);
+    emitter = diagEmitter;
+  }
+  DiagnosticEmitter *GetEmitter() { return emitter; }
 };
 
 class FakeDiagnosticListener final : public DiagnosticListener {

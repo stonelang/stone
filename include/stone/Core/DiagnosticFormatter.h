@@ -10,7 +10,7 @@
 
 namespace stone {
 class DiagnosticDetail;
-class DiagnosticFormatOptions;
+struct DiagnosticFormatOptions;
 
 class DiagnosticFormatter {
 
@@ -23,7 +23,7 @@ public:
   //       llvm::ArrayRef<DiagnosticArgument> formatArgs,
   //       DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
 
-  virtual void Format(DiagnosticDetail &detail,
+  virtual void Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
                       DiagnosticFormatOptions &fmtOpts) {}
 
   virtual void Format(llvm::raw_ostream &out, llvm::StringRef text,

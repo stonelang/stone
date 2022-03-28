@@ -13,7 +13,7 @@ public:
   ~TextDiagnosticFormatter();
 
 public:
-  void Format(DiagnosticDetail &detail,
+  void Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
               DiagnosticFormatOptions &fmtOptions) override;
 
   void Format(llvm::raw_ostream &out, llvm::StringRef text,

@@ -6,7 +6,8 @@ TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 
 TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
-void TextDiagnosticFormatter::Format(DiagnosticDetail &detail,
+void TextDiagnosticFormatter::Format(llvm::raw_ostream &out,
+                                     DiagnosticDetail &detail,
                                      DiagnosticFormatOptions &fmtOpts) {}
 
 void TextDiagnosticFormatter::Format(llvm::raw_ostream &out,

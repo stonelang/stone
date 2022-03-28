@@ -10,8 +10,10 @@ TextDiagnosticListener::TextDiagnosticListener() {}
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
 void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
-  // DiagnosticListener::Listen(level, diagnostic);
-  emitter.EmitDiagnostic(diagnostic);
+  // DiagnosticListener::OnDiagnostic(level, diagnostic);
+
+  assert(emitter);
+  emitter->EmitDiagnostic(diagnostic);
 }
 
 void TextDiagnosticListener::Finish() {}

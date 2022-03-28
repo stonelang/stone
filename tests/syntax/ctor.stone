@@ -3,14 +3,64 @@ space Syntax {
 	public struct Spin {
 	}
 	public struct Proton {
-		internal Spin* spin = null;
+		Spin* spin = null;
 	}
-	public Proton::this(Spin* spin){
+	public Proton::this(Spin* spin) {
+		//Proton()
 		this.spin = spin;
 	}
-	public Proton::~this(){
+
+	public Proton::this(ref const Proton copy) {
+		this.spin = copy.spin; 
+	}
+	Proton::~this(){
 		if(spin) {
 			delete spin; 
 		}
 	}
+
+	public interface Particle {
+		fun Fire() ->  bool; 
+	}
+	// Considering that structs can only have constructors and destructors
+	// Very good compromise 
+	// NOTE:: The issue with this approach is when you want to call a function 
+	// inside of Boson() but you can always do Boson::Inititialize(); 
+	// And, constructors should *only* initialize data members
+	public struct Boson : Particle {
+		float64 mass; 
+		
+		public this() {
+			this(0);
+		}
+		public this(float64 mass) {
+			this.mass = mass; 
+		}
+		public this(ref const Boson copy) {this.mass = copy.mass; }
+
+		~this(){
+		}
+
+	}
+	public Boson::Fire() -> bool {
+
+	}
+
+	public struct Boson : Particle {
+		float64 mass; 
+	}
+	public Boson::Boson() {
+		Boson(0);
+	}
+	public Boson::Boson(float64 mass) {
+		this.mass = mass; 
+	}
+	public Boson::Boson(ref const Boson copy) {this.mass = copy.mass; }
+
+	Boson::~Boson() {
+	}
+	public Boson::Fire() -> bool {
+
+	}
+
 }

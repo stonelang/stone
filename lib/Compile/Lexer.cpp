@@ -694,7 +694,7 @@ static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
   }
 }
 
-//TODO: Remove sm -- it is already in the ctx
+// TODO: Remove sm -- it is already in the ctx
 Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
              Context &ctx, SyntaxListener *pipeline)
     : srcID(srcID), sm(sm), ctx(ctx) {}

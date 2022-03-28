@@ -4,7 +4,7 @@
 using stone::DiagnosticEmitter;
 using stone::DiagnosticListener;
 
-DiagnosticEmitter::DiagnosticEmitter() {}
+DiagnosticEmitter::DiagnosticEmitter() : colorfulStream() {}
 
 DiagnosticEmitter::~DiagnosticEmitter() {}
 

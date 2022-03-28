@@ -9,27 +9,62 @@ namespace stone {
 /// out-of-scope.
 class ColorfulStream {
   llvm::raw_ostream &os;
-  bool useColor;
+  bool hasColors;
 
 public:
+  ColorfulStream() : ColorfulStream(llvm::outs()) {}
+
   ColorfulStream(llvm::raw_ostream &os) : os(os) {
-    useColor = os.has_colors();
-    if (useColor)
+    hasColors = os.has_colors();
+    if (hasColors) {
       os.changeColor(llvm::raw_ostream::Colors::WHITE);
+    }
   }
   ~ColorfulStream() {
-    if (useColor)
+    if (hasColors)
       os.resetColor();
   }
+
+public:
   llvm::raw_ostream &GetOS() { return os; }
+
   void Reset() { os.resetColor(); }
-  void UseBlack() { os.changeColor(llvm::raw_ostream::Colors::BLACK); }
-  void UseGreen() { os.changeColor(llvm::raw_ostream::Colors::GREEN); }
-  void UseYellow() { os.changeColor(llvm::raw_ostream::Colors::YELLOW); }
-  void UseBlue() { os.changeColor(llvm::raw_ostream::Colors::BLUE); }
-  void UseMagenta() { os.changeColor(llvm::raw_ostream::Colors::MAGENTA); }
-  void UseCyan() { os.changeColor(llvm::raw_ostream::Colors::CYAN); }
-  void UseWhite() { os.changeColor(llvm::raw_ostream::Colors::WHITE); }
+  void UseBlack() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::BLACK);
+    }
+  }
+  void UseGreen() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::GREEN);
+    }
+  }
+
+  void UseYellow() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::YELLOW);
+    }
+  }
+  void UseBlue() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::BLUE);
+    }
+  }
+  void UseMagenta() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::MAGENTA);
+    }
+  }
+  void UseCyan() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::CYAN);
+    }
+  }
+  void UseWhite() {
+    if (hasColors) {
+      os.changeColor(llvm::raw_ostream::Colors::WHITE);
+    }
+  }
 
   ColorfulStream &operator<<(char *str) {
     os << str;

@@ -25,7 +25,7 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagnostic) {
   // formatter.FormatText()
 
   // Display the diagnostic.
-  // ColorefStream coloredErrs{Stream};
+  // ColorStream coloredErrs{Stream};
   // raw_ostream &out = ForceColors ? coloredErrs : Stream;
   // const llvm::SourceMgr &llvmSM = ed.GetSrcMgr().GetLLVMSrcMgr();
 

@@ -17,7 +17,7 @@ using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
 void Lang::PerformCodeGen() {
-  
+
   assert(frontend.CanCodeGen());
 
   // We are performing some low leverl code generation

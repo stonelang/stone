@@ -1,6 +1,7 @@
 #ifndef STONE_CORE_DIAGNOSTICEMITTER_H
 #define STONE_CORE_DIAGNOSTICEMITTER_H
 
+#include "stone/Core/Color.h"
 #include "stone/Core/DiagnosticFormatter.h"
 
 #include <assert.h>
@@ -12,16 +13,19 @@ class DiagnosticEvent;
 class DiagnosticEmitter {
 
 protected:
-  DiagnosticFormatter formatter;
+  ColorfulStream colorfulStream;
+  DiagnosticFormatter *formatter = nullptr;
 
 public:
   DiagnosticEmitter();
   virtual ~DiagnosticEmitter();
 
-  void SetFormatter(DiagnosticFormatter &&diagFormatter) {
+  void SetFormatter(DiagnosticFormatter *diagFormatter) {
+    assert(diagFormatter);
     formatter = diagFormatter;
   }
-  DiagnosticFormatter &GetFormatter() { return formatter; }
+  DiagnosticFormatter *GetFormatter() { return formatter; }
+  ColorfulStream &GetColorfulOS() { return colorfulStream; }
 
 public:
   virtual void EmitLevel();

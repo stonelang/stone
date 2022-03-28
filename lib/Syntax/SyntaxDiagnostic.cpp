@@ -50,7 +50,8 @@ SyntaxDiagnostic::~SyntaxDiagnostic() {
 
 SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 
-void SyntaxDiagnosticFormatter::Format(DiagnosticDetail &detail,
+void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
+                                       DiagnosticDetail &detail,
                                        DiagnosticFormatOptions &fmtOpts) {}
 
 void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,

@@ -61,3 +61,20 @@ public fun Launch(const Projectile* projectile) -> bool {
 
 
 
+/// Hmm... thinking outside of the box 
+
+public struct Projectile {
+	float64 mass; 
+}
+
+
+public interface Launcher {
+	fun Launch(Projectile* projectile) -> bool; 
+}
+public class ProjectileLauncher : Launcher {
+	// No data members 
+	public fun Launch(Projectile* projectile){
+	}
+}
+
+

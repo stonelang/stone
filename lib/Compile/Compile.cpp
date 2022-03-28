@@ -65,10 +65,10 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticFormatter formatter;
 
   TextDiagnosticEmitter emitter;
-  emitter.SetFormatter(std::move(formatter));
+  emitter.SetFormatter(&formatter);
 
   TextDiagnosticListener textDiagListener;
-  textDiagListener.SetEmitter(std::move(emitter));
+  textDiagListener.SetEmitter(&emitter);
 
   // Add the diagnostic listener
   frontend.GetContext().GetDiagEngine().AddListener(textDiagListener);

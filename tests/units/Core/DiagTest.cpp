@@ -21,7 +21,6 @@ public:
 TEST_F(DiagTest, DiagnoseCompile) {
   ctx.GetDiagOptions().useColor = true;
 
-
   TextDiagnosticListener textListener;
   ctx.GetDiagEngine().AddListener(textListener);
 
