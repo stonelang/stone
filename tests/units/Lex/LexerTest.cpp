@@ -10,21 +10,15 @@ using namespace stone::syn;
 
 class LexerTest : public ::testing::Test {
 protected:
-  DiagnosticEngine de;
-  DiagnosticOptions diagOpts;
-  FileSystemOptions fmOpts;
-  SystemOptions systemOpts;
-  FileMgr fm;
-  SrcMgr sm;
   Context ctx;
 
 protected:
-  LexerTest() : de(diagOpts, &sm), fm(fmOpts) {}
+  LexerTest() {}
 
 protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
-    auto srcID = sm.addMemBufferCopy(source);
+    auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
     return std::make_unique<Lexer>(srcID, sm, ctx);
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {

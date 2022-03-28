@@ -71,8 +71,12 @@ public:
   SyntaxDiagnosticFormatter();
 
 public:
-  void FormatText(DiagnosticDetail &detail,
-                  DiagnosticFormatOptions &fmtOptions) override;
+  void Format(DiagnosticDetail &detail,
+              DiagnosticFormatOptions &fmtOptions) override;
+
+  void Format(llvm::raw_ostream &out, llvm::StringRef text,
+              llvm::ArrayRef<diag::Argument> args,
+              DiagnosticFormatOptions &fmtOpts) override;
 };
 
 } // namespace stone

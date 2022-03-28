@@ -26,7 +26,7 @@ void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
     return;
   }
   if (frontend.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
-    TypeCheckModule(nullptr);
+    TypeCheckModule(nullptr/*TODO: get module*/);
   }
   if (frontend.GetMode().JustTypeCheck()) {
     // Do some things

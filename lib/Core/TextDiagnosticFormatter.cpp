@@ -6,5 +6,10 @@ TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 
 TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
-void TextDiagnosticFormatter::FormatText(DiagnosticDetail &detail,
-                                         DiagnosticFormatOptions &fmtOptions) {}
+void TextDiagnosticFormatter::Format(DiagnosticDetail &detail,
+                                     DiagnosticFormatOptions &fmtOpts) {}
+
+void TextDiagnosticFormatter::Format(llvm::raw_ostream &out,
+                                     llvm::StringRef text,
+                                     llvm::ArrayRef<diag::Argument> args,
+                                     DiagnosticFormatOptions &fmtOpts) {}

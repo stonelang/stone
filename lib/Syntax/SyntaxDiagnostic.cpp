@@ -50,5 +50,10 @@ SyntaxDiagnostic::~SyntaxDiagnostic() {
 
 SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 
-void SyntaxDiagnosticFormatter::FormatText(
-    DiagnosticDetail &detail, DiagnosticFormatOptions &fmtOptions) {}
+void SyntaxDiagnosticFormatter::Format(DiagnosticDetail &detail,
+                                       DiagnosticFormatOptions &fmtOpts) {}
+
+void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
+                                       llvm::StringRef text,
+                                       llvm::ArrayRef<diag::Argument> args,
+                                       DiagnosticFormatOptions &fmtOpts) {}

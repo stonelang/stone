@@ -33,7 +33,15 @@ TEST_F(SyntaxDiagTest, PrintD) {
 
   ctx.GetDiagOptions().useColor = true;
 
+  // Setup the dianostics formatter and emitter
+  SyntaxDiagnosticFormatter formatter;
+
+  TextDiagnosticEmitter emitter;
+  emitter.SetFormatter(std::move(formatter));
+
   TextDiagnosticListener textListener;
+  textListener.SetEmitter(std::move(emitter));
+
   ctx.GetDiagEngine().AddListener(textListener);
 
   syntax

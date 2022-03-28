@@ -61,7 +61,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   frontend.SetMainExecutablePath(mainExecPath);
 
-  // Setup the dianostics formatter an emitter
+  // Setup the dianostics formatter and emitter
   SyntaxDiagnosticFormatter formatter;
 
   TextDiagnosticEmitter emitter;

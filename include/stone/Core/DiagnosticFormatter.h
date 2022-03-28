@@ -1,13 +1,10 @@
 #ifndef STONE_CORE_DIAGNOSTICFORMATTER_H
 #define STONE_CORE_DIAGNOSTICFORMATTER_H
 
-
 #include "stone/Core/DiagnosticArgument.h"
-
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
-
 
 #include <assert.h>
 
@@ -26,12 +23,12 @@ public:
   //       llvm::ArrayRef<DiagnosticArgument> formatArgs,
   //       DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
 
-  virtual void FormatText(DiagnosticDetail &detail,
-                          DiagnosticFormatOptions &fmtOpts) {}
+  virtual void Format(DiagnosticDetail &detail,
+                      DiagnosticFormatOptions &fmtOpts) {}
 
-  virtual void FormatText(llvm::raw_ostream &out, llvm::StringRef text,
-                          llvm::ArrayRef<diag::Argument> args,
-                          DiagnosticFormatOptions& fmtOpts) {}
+  virtual void Format(llvm::raw_ostream &out, llvm::StringRef text,
+                      llvm::ArrayRef<diag::Argument> args,
+                      DiagnosticFormatOptions &fmtOpts) {}
 
 public:
 };
