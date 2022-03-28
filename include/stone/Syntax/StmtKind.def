@@ -3,8 +3,8 @@
 #endif
 
 /// A subclass of LabeledStmt.  Forwards to STMT by default.
-#ifndef LABELED_STMT
-#define LABELED_STMT(Id, Parent) STMT(Id, Parent)
+#ifndef LBL_STMT
+#define LBL_STMT(Id, Parent) STMT(Id, Parent)
 #endif
 
 /// A subclass of LabeledStmt.  Forwards to STMT by default.
@@ -33,13 +33,13 @@ STMT(Continue, Stmt)
 BASE_STMT(ValueStmt, Stmt)
   BASE_STMT(Labeled, ValueStmt)
     BASE_STMT(LabeledConditional, LabeledStmt)
-      LABELED_STMT(If, LabeledConditionalStmt)
-      LABELED_STMT(While, LabeledConditionalStmt)
+      LBL_STMT(If, LabeledConditionalStmt)
+      LBL_STMT(While, LabeledConditionalStmt)
       STMT_RANGE(LabeledConditional, If, While)
-    LABELED_STMT(Do, LabeledStmt)
-    LABELED_STMT(Loop, LabeledStmt)
-    LABELED_STMT(ForEach, LabeledStmt)
-    LABELED_STMT(Switch, LabeledStmt)
+    LBL_STMT(Do, LabeledStmt)
+    LBL_STMT(Loop, LabeledStmt)
+    LBL_STMT(ForEach, LabeledStmt)
+    LBL_STMT(Switch, LabeledStmt)
     STMT_RANGE(Labeled, If, Switch)
   BASE_STMT(Expr, ValueStmt)
     EXPR_STMT(New,  Expr)
@@ -50,7 +50,7 @@ STMT(Next, Stmt)
 LAST_STMT(Next)
 
 #undef STMT_RANGE
-#undef LABELED_STMT
+#undef LBL_STMT
 #undef BASE_STMT
 #undef EXPR_STMT
 #undef STMT
