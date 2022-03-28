@@ -22,6 +22,11 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagnostic) {
   auto ed = const_cast<DiagnosticEvent &>(diagnostic);
   printf("%s", ed.GetFormatMessage().data());
 
+  assert(formatter);
+
+  ColorfulStream cs;
+  // formatter->Format(cs.GetOS(), diagnostic);
+
   // formatter.FormatText()
 
   // Display the diagnostic.

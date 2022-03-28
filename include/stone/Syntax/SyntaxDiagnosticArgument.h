@@ -71,12 +71,14 @@ public:
   SyntaxDiagnosticFormatter();
 
 public:
-  void Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
-              DiagnosticFormatOptions &fmtOptions) override;
+  void
+  Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
-  void Format(llvm::raw_ostream &out, llvm::StringRef text,
-              llvm::ArrayRef<diag::Argument> args,
-              DiagnosticFormatOptions &fmtOpts) override;
+  void
+  Format(llvm::raw_ostream &out, llvm::StringRef text,
+         llvm::ArrayRef<diag::Argument> args,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 };
 
 } // namespace stone

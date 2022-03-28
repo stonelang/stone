@@ -52,9 +52,13 @@ SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 
 void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
                                        DiagnosticDetail &detail,
-                                       DiagnosticFormatOptions &fmtOpts) {}
+                                       DiagnosticFormatOptions fmtOpts) {
+  //
+}
 
 void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
                                        llvm::StringRef text,
                                        llvm::ArrayRef<diag::Argument> args,
-                                       DiagnosticFormatOptions &fmtOpts) {}
+                                       DiagnosticFormatOptions fmtOpts) {
+  //
+}

@@ -37,10 +37,10 @@ TEST_F(SyntaxDiagTest, PrintD) {
   SyntaxDiagnosticFormatter formatter;
 
   TextDiagnosticEmitter emitter;
-  emitter.SetFormatter(std::move(formatter));
+  emitter.SetFormatter(&formatter);
 
   TextDiagnosticListener textListener;
-  textListener.SetEmitter(std::move(emitter));
+  textListener.SetEmitter(&emitter);
 
   ctx.GetDiagEngine().AddListener(textListener);
 
