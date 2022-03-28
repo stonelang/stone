@@ -15,6 +15,7 @@
 #include "stone/Core/DiagnosticArgument.h"
 #include "stone/Core/DiagnosticOptions.h"
 #include "stone/Core/SrcMgr.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
