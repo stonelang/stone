@@ -53,6 +53,8 @@ SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
                                        DiagnosticDetail &detail,
                                        DiagnosticFormatOptions fmtOpts) {
+  printf("%s\n", "Hello syntax formatting");
+
   //
 }
 

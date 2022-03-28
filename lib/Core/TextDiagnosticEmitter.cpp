@@ -20,7 +20,7 @@ void TextDiagnosticEmitter::EmitLevel() {}
 void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagEvent) {
 
   auto ed = const_cast<DiagnosticEvent &>(diagEvent);
-  printf("%s", ed.GetFormatMessage().data());
+  printf("%s\n", ed.GetFormatMessage().data());
 
   assert(formatter);
 
