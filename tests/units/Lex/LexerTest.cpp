@@ -19,7 +19,7 @@ protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
     auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
-    return std::make_unique<Lexer>(srcID, sm, ctx);
+    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), ctx);
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {
 

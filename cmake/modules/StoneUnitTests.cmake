@@ -2,50 +2,50 @@ include(StoneCore)
 
 add_custom_target(StoneUnitTests)
 
-set_target_properties(StoneUnitTests PROPERTIES FOLDER "Tests")
+set_target_properties(StoneUnitTests PROPERTIES FOLDER "tests")
 
 function(add_stone_unittest test_dirname)
 	add_unittest(StoneUnitTests ${test_dirname} ${ARGN})
 endfunction()
 
 
-find_program(STONE_CORE_UT ${PATH_TO_LLVM_BUILD}/tests/units/Core/StoneCoreUnitTests)
+find_program(STONE_CORE_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Core/StoneCoreUnitTests)
 	if(STONE_CORE_UT)
 	add_custom_target(StoneCoreUT StoneCoreUnitTests)
 endif()
 
-find_program(STONE_CHECK_UT ${PATH_TO_LLVM_BUILD}/tests/units/Check/StoneCheckUnitTests)
+find_program(STONE_CHECK_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Check/StoneCheckUnitTests)
 	if(STONE_CHECK_UT)
 	add_custom_target(StoneCheckUT StoneCheckUnitTests)
 endif()
 
-find_program(STONE_COMPILE_UT ${PATH_TO_LLVM_BUILD}/tests/units/Compile/StoneCompileUnitTests)
+find_program(STONE_COMPILE_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Compile/StoneCompileUnitTests)
 	if(STONE_COMPILE_UT)
 	add_custom_target(StoneCompileUT StoneCompileUnitTests)
 endif()
 
 
-find_program(STONE_DRIVER_UT ${PATH_TO_LLVM_BUILD}/tests/units/Driver/StoneDriverUnitTests)
+find_program(STONE_DRIVER_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Driver/StoneDriverUnitTests)
 	if(STONE_DRIVER_UT)
 	add_custom_target(StoneDriverUT StoneDriverUnitTests)
 endif()
 
-find_program(STONE_GEN_UT ${PATH_TO_LLVM_BUILD}/tests/units/Gen/StoneGenUnitTests)
+find_program(STONE_GEN_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Gen/StoneGenUnitTests)
 	if(STONE_GEN_UT)
 	add_custom_target(StoneGenUT StoneGenUnitTests)
 endif()
 
-find_program(STONE_LEX_UT ${PATH_TO_LLVM_BUILD}/tests/units/Lex/StoneLexUnitTests)
+find_program(STONE_LEX_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Lex/StoneLexUnitTests)
 	if(STONE_LEX_UT)
 	add_custom_target(StoneLexUT StoneLexUnitTests)
 endif()
 
-find_program(STONE_PARSE_UT ${PATH_TO_LLVM_BUILD}/tests/units/Parse/StoneParseUnitTests)
+find_program(STONE_PARSE_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Parse/StoneParseUnitTests)
 	if(STONE_PARSE_UT)
 	add_custom_target(StoneParseUT StoneParseUnitTests)
 endif()
 
-find_program(STONE_SYN_UT ${PATH_TO_LLVM_BUILD}/tests/units/Syntax/StoneSyntaxUnitTests)
+find_program(STONE_SYN_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Syntax/StoneSyntaxUnitTests)
 	if(STONE_SYN_UT)
 	add_custom_target(StoneSyntaxUT StoneSyntaxUnitTests)
 endif()
