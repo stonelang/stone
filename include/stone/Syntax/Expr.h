@@ -64,10 +64,6 @@ class DestructorExpr : public Expr {
 public:
 };
 
-class NullLiteralExpr : public Expr {
-public:
-};
-
 class ParenExpr final : public Expr {
   Stmt *val;
   SrcLoc leftLoc, rightLoc;
@@ -108,6 +104,13 @@ public:
   // const_child_range children() const {
   //   return const_child_range(&Val, &Val + 1);
   // }
+};
+
+/// LiteralExpr - Common base class between the literals.
+class LiteralExpr : public Expr {};
+
+class NullLiteralExpr : public LiteralExpr {
+public:
 };
 
 } // namespace syn

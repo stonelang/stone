@@ -12,6 +12,14 @@
 #define EXPR_STMT(Id, Parent) STMT(Id, Parent)
 #endif
 
+/// A literal expression node represents a literal value, such as a number,
+/// boolean, string, etc.
+///
+/// By default, these are treated like any other expression.
+#ifndef LIT_EXPR_STMT
+#define LIT_EXPR_STMT(Id, Parent) EXPR_STMT(Id, Parent)
+#endif
+
 /// A convenience for determining the range of statements.  These will always
 /// appear immediately after the last member.
 #ifndef STMT_RANGE
@@ -45,6 +53,8 @@ BASE_STMT(ValueStmt, Stmt)
     EXPR_STMT(New,  Expr)
     EXPR_STMT(This, Expr)
     EXPR_STMT(Call, Expr)
+    BASE_STMT(Literal, Expr)
+        LIT_EXPR_STMT(NullLiteral, LiteralExpr)
 
 STMT(Next, Stmt)
 LAST_STMT(Next)
@@ -52,6 +62,7 @@ LAST_STMT(Next)
 #undef STMT_RANGE
 #undef LBL_STMT
 #undef BASE_STMT
+#undef LIT_EXPR_STMT
 #undef EXPR_STMT
 #undef STMT
 #undef LAST_STMT
