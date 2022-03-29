@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "stone/Compile/Lexer.h"
-#include "stone/Compile/ParsingSupport.h"
+#include "stone/Compile/SyntaxParsing.h"
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Compile/SyntaxScopeCache.h"
 #include "stone/Core/StatisticEngine.h"

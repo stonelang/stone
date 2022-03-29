@@ -11,7 +11,7 @@ set(stone_compile_sources
 	Parser.cpp
 	ParseExpr.cpp
 	ParseStmt.cpp
-	ParsingSupport.cpp
+	SyntaxParsing.cpp
 	PerformAnalysis.cpp
 	PerformCodeGen.cpp
 	TypeCheck.cpp

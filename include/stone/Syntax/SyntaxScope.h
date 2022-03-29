@@ -6,12 +6,29 @@
 namespace stone {
 namespace syn {
 
+// TODO: Think about
 enum class SyntaxScopeKind : uint8_t {
 
-  /// This indicates that the scope corresponds to a function, which
-  /// means that labels are set here.
-  Fun,
+  /// A synta file , which is the root of a scope.
+  SyntaxFile,
 
+  // Declaration of a type
+  ForwardDecl,
+
+  // Declaration of a type
+  TypeDecl,
+
+  /// A function/initializer/deinitializer.
+  FunctionDecl,
+
+  /// The parameters of a function/initializer/deinitializer.
+  FunctionParams,
+
+  /// The body of a function.
+  FunctionBody,
+
+  /// Scope for a closure.
+  Closure,
   /// This is a while, do, switch, for, etc that can have break
   /// statements embedded into it.
   Break,
@@ -19,10 +36,6 @@ enum class SyntaxScopeKind : uint8_t {
   /// This is a while, do, for, which can have continue statements
   /// embedded into it.
   Continue,
-
-  /// This is a scope that can contain a declaration.  Some scopes
-  /// just contain loop constructs but don't contain decls.
-  Decl,
 
   /// The controlling scope in a if/switch/while/for statement.
   Control,
@@ -40,17 +53,7 @@ enum class SyntaxScopeKind : uint8_t {
   /// template parameters of a C++ template. Template parameter
   /// scope starts at the 'template' keyword and ends when the
   /// template declaration ends.
-  TemplateParam,
-
-  /// This is a scope that corresponds to the
-  /// parameters within a function prototype.
-  FunctionSignature,
-
-  /// This is a scope that corresponds to the parameters within
-  /// a function prototype for a function declaration (as opposed to any
-  /// other kind of function declarator). Always has FunctionPrototypeScope
-  /// set as well.
-  FunDecl,
+  TemplateParams,
 
   /// This scope corresponds to an enum.
   Enum,
@@ -59,7 +62,7 @@ enum class SyntaxScopeKind : uint8_t {
   BlockStmt,
 
   /// We are between inheritance colon and the real class/struct definition
-  /// scope.
+  /// scope. TypeDeclaration?
   Interface,
 
 };
