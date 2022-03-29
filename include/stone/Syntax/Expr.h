@@ -10,6 +10,9 @@
 #include <utility>
 
 #include "stone/Syntax/Stmt.h"
+#include "stone/Syntax/SyntaxWalker.h"
+
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -22,6 +25,7 @@
 
 namespace stone {
 namespace syn {
+class SyntaxWalker;
 
 class Expr : public ValueStmt {
 public:
@@ -33,6 +37,10 @@ public:
 
 public:
   // Expr(StmtKind kind) : ValueStmt(kind) {}
+
+  /// This recursively walks the AST rooted at this expression.
+  Expr *Walk(SyntaxWalker &walker);
+  Expr *Walk(SyntaxWalker &&walker) { return Walk(walker); }
 
 public:
   // ExprKind GetExprKind() { return exprKind;}

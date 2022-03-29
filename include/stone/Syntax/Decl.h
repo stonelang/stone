@@ -50,6 +50,7 @@ class DiagnosticEngine;
 class TypeAliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
+class SyntaxWalker;
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -152,6 +153,9 @@ protected:
   Decl(DeclKind kind, SrcLoc loc,
        llvm::PointerUnion<DeclContext *, SyntaxContext *> context)
       : kind(kind), loc(loc), context(context) {}
+
+public:
+  bool Walk(SyntaxWalker &walker);
 };
 
 class NamedDecl : public Decl {
