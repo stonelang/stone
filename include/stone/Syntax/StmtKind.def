@@ -20,6 +20,15 @@
 #define LIT_EXPR_STMT(Id, Parent) EXPR_STMT(Id, Parent)
 #endif
 
+
+/// A expression node with a DeclContext. For example: closures.
+///
+/// By default, these are treated like any other expression.
+#ifndef CTX_EXPR_STMT
+#define CTX_EXPR_STMT(Id, Parent) EXPR_STMT(Id, Parent)
+#endif
+
+
 /// A convenience for determining the range of statements.  These will always
 /// appear immediately after the last member.
 #ifndef STMT_RANGE
@@ -49,12 +58,23 @@ BASE_STMT(ValueStmt, Stmt)
     LBL_STMT(ForEach, LabeledStmt)
     LBL_STMT(Switch, LabeledStmt)
     STMT_RANGE(Labeled, If, Switch)
+    // Expressions 
   BASE_STMT(Expr, ValueStmt)
     EXPR_STMT(New,  Expr)
+    EXPR_STMT(Delete,  Expr)
     EXPR_STMT(This, Expr)
     EXPR_STMT(Call, Expr)
+    EXPR_STMT(Paren, Expr)
     BASE_STMT(Literal, Expr)
-        LIT_EXPR_STMT(NullLiteral, LiteralExpr)
+      LIT_EXPR_STMT(NullLiteral, LiteralExpr)
+      BASE_STMT(BuiltinLiteral, LiteralExpr)
+          LIT_EXPR_STMT(BooleanLiteral, BuiltinLiteralExpr)
+          LIT_EXPR_STMT(StringLiteral, BuiltinLiteralExpr)
+          BASE_STMT(NumberLiteral, BuiltinLiteralExpr)
+            LIT_EXPR_STMT(IntegerLiteral, NumberLiteralExpr)
+            LIT_EXPR_STMT(FloatLiteral, NumberLiteralExpr)
+  BASE_STMT(AbstractClosure, Expr)
+    CTX_EXPR_STMT(Closure, AbstractClosureExpr)
 
 STMT(Next, Stmt)
 LAST_STMT(Next)
@@ -63,6 +83,7 @@ LAST_STMT(Next)
 #undef LBL_STMT
 #undef BASE_STMT
 #undef LIT_EXPR_STMT
+#undef CTX_EXPR_STMT
 #undef EXPR_STMT
 #undef STMT
 #undef LAST_STMT
