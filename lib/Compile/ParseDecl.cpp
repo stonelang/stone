@@ -1,5 +1,5 @@
 #include "stone/Compile/Parser.h"
-#include "stone/Compile/ParserRAII.h"
+#include "stone/Compile/ParsingContext.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxNode.h"
 

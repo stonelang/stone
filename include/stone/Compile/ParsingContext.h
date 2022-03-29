@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_PARSERRAII_H
-#define STONE_COMPILE_PARSERRAII_H
+#ifndef STONE_COMPILE_PARSINGCONTEXT_H
+#define STONE_COMPILE_PARSINGCONTEXT_H
 
 #include "stone/Compile/Parser.h"
 #include "stone/Syntax/DeclSpecifier.h"
@@ -7,6 +7,10 @@
 
 namespace stone {
 namespace syn {
+
+class ParsingDeclContext {
+
+};
 
 /// A class for parsing a DeclSpecifier.
 class ParsingDeclSpecifier final : public DeclSpecifier {
