@@ -5,6 +5,7 @@
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/SyntaxNode.h"
 
 namespace stone {
 namespace syn {

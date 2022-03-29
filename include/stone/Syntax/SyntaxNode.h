@@ -2,19 +2,20 @@
 #define STONE_SYNTAX_SYNTAXNODE_H
 
 namespace stone {
+class SrcLoc;
+class SrcRange;
+
 namespace syn {
 
 class Expr;
 class Stmt;
 class Decl;
-class SrcLoc;
-class SrcRange;
+
 class SyntaxWalker;
+
 enum class ExprKind : uint8_t;
 enum class DeclKind : uint8_t;
 enum class StmtKind : uint8_t; // TODO: May not want uint8_t
-
-using StmtCondition = llvm::MutableArrayRef<StmtConditionElement>;
 
 struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *> {
   // Inherit the constructors from PointerUnion.

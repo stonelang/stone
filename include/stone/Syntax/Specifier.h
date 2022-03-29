@@ -7,7 +7,7 @@
 namespace stone {
 namespace syn {
 
-enum class BuiltinType : unsigned {
+enum class TypeSpecifierKind : unsigned {
   None = 0,
   Auto,
   Bool,
@@ -16,18 +16,17 @@ enum class BuiltinType : unsigned {
   Interface,
   Struct,
   Void,
-  Null,
   Int,
   Int8,
   Int16,
   Int32,
   Int64,
   UInt,
-  Uint8,
+  UInt8,
   Byte, // Alias for Uint8
-  Uint16,
-  Uint32,
-  Uint64,
+  UInt16,
+  UInt32,
+  UInt64,
   Complex32,
   Complex64,
 
@@ -35,16 +34,14 @@ enum class BuiltinType : unsigned {
 
 // TODO: All you need is Public and Local
 enum class AccessLevel : uint8_t {
-  None = 0,
-  Internal, // TODO: Rename to Local
+  /// Limited to the scope 
+  Private = 0, 
+  /// Accessible only within module 
+  Internal,
+  /// Open outside of module with certain restrictions
   Public,
-
-  //  TODO: you may not need this -- public and internal given the correct
-  //  context may Suffice. Ex:
-  /// struct Particle { internal int size; } means size is only accessible
-  /// within particle internal struct Planet{} means that Planet is only
-  /// accessible within the module
-  Private,
+  /// Completely open and available  
+  Global,
 };
 
 /// The categorization of expression values, currently following the

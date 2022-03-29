@@ -41,7 +41,7 @@ class DeclContext;
 class SyntaxContext;
 class ValueDecl;
 class VarDecl;
-class SyntaxNode;
+struct SyntaxNode;
 class Type;
 class Expr;
 class ConstructorDecl;
@@ -244,6 +244,7 @@ public:
 //       : NamedDecl(DeclKind::Space, dc, loc, name) {}
 // };
 
+/// int x = 0 => int := declaration specifier and x := declarator 
 class DeclaratorDecl : public ValueDecl {
 public:
   DeclaratorDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)

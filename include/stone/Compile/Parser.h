@@ -132,12 +132,12 @@ public:
 
   bool AtStartOfDecl(const Token &tok);
 
-  void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
-  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
+  void ParseTopLevelDecl(SyntaxResult<Decl*> &result);
+  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl*>> &results);
 
   SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier *pds = nullptr);
   SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier &pds,
-                                 AccessLevel al = AccessLevel::None);
+                                 AccessLevel al = AccessLevel::Private);
 
 public:
   // Function
