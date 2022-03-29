@@ -67,6 +67,8 @@ class Parser final {
   unsigned short bracketCount = 0;
   unsigned short braceCount = 0;
 
+  SyntaxScope *curScope;
+
 private:
   // Identifiers
   mutable Identifier *importIdentifier;
@@ -235,7 +237,7 @@ public:
 
 public:
   /// EnterScope - start a new scope.
-  void EnterScope(unsigned scopeFlags);
+  void EnterScope(SyntaxScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();

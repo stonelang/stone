@@ -2,12 +2,15 @@
 #define STONE_COMPILE_PARSINGSUPPORT_H
 
 #include "stone/Syntax/DeclSpecifier.h"
+
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 namespace syn {
 
 class Parser;
+enum class SyntaxScopeKind : uint8_t;
+
 class ParsingDeclContext {};
 
 /// A class for parsing a DeclSpecifier.
@@ -72,7 +75,6 @@ public:
   ~PairDelimiterBalancer();
 };
 
-class Parser;
 class ParsingScope final {
   Parser *self;
   ParsingScope(const ParsingScope &) = delete;
@@ -83,8 +85,8 @@ public:
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass SyntaxScope
-  ParsingScope(Parser *self, unsigned scopeFlags, bool enteredScope = true,
-               bool beforeCompoundStmt = false);
+  ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+               bool enteredScope = true, bool beforeCompoundStmt = false);
 
   ~ParsingScope();
 

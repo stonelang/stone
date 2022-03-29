@@ -54,7 +54,7 @@ SyntaxScope *Parser::GetCurScope() const {
 bool Parser::HasError() { return GetContext().HasError(); }
 Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 
-void Parser::EnterScope(unsigned scopeFlags) {}
+void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeTok(bool onTok) {

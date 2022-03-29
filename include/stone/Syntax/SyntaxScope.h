@@ -30,10 +30,6 @@ enum class SyntaxScopeKind : uint8_t {
   /// The scope of a struct/union/class definition.
   Struct,
 
-  /// We are between inheritance colon and the real class/struct definition
-  /// scope.
-  Interface,
-
   /// This is a scope that corresponds to a block/closure object.
   /// Blocks serve as top-level scopes for some objects like labels, they
   /// also prevent things like break and continue.  BlockScopes always have
@@ -61,6 +57,10 @@ enum class SyntaxScopeKind : uint8_t {
 
   /// This is a compound statement scope.
   BlockStmt,
+
+  /// We are between inheritance colon and the real class/struct definition
+  /// scope.
+  Interface,
 
 };
 

@@ -19,11 +19,11 @@ PairDelimiterBalancer::~PairDelimiterBalancer() {
 }
 
 //=Scope=//
-ParsingScope::ParsingScope(Parser *self, unsigned scopeFlags, bool enteredScope,
-                           bool beforeCompoundStmt)
+ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+                           bool enteredScope, bool beforeCompoundStmt)
     : self(self) {
   if (enteredScope && !beforeCompoundStmt) {
-    self->EnterScope(scopeFlags);
+    self->EnterScope(scopeKind);
   } else {
     if (beforeCompoundStmt) {
       // TODO: self->incrementMSManglingNumber();
