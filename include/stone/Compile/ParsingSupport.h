@@ -1,21 +1,23 @@
-#ifndef STONE_COMPILE_PARSINGCONTEXT_H
-#define STONE_COMPILE_PARSINGCONTEXT_H
+#ifndef STONE_COMPILE_PARSINGSUPPORT_H
+#define STONE_COMPILE_PARSINGSUPPORT_H
 
-#include "stone/Compile/Parser.h"
 #include "stone/Syntax/DeclSpecifier.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 namespace syn {
 
+class Parser;
 class ParsingDeclContext {};
 
 /// A class for parsing a DeclSpecifier.
 class ParsingDeclSpecifier final : public DeclSpecifier {
   //   ParsingDeclRAII parsingDeclRAII;
+  Parser &parser;
+
 public:
   // TODO: There is more to this
-  ParsingDeclSpecifier(Parser &p) {}
+  ParsingDeclSpecifier(Parser &parser);
 
   //   ParsingDeclSpecifier(Parser &P, ParsingDeclRAIIObject *RAII)
   //     : DeclSpecifier(P.getAttrFactory()),
@@ -66,17 +68,34 @@ class PairDelimiterBalancer final {
   unsigned short parenCount, bracketCount, braceCount;
 
 public:
-  PairDelimiterBalancer(Parser &other)
-      : parser(other), parenCount(other.parenCount),
-        bracketCount(other.bracketCount), braceCount(other.braceCount) {}
-
-  ~PairDelimiterBalancer() {
-    // parser.AngleBrackets.clear(parser);
-    parser.parenCount = parenCount;
-    parser.bracketCount = bracketCount;
-    parser.braceCount = braceCount;
-  }
+  PairDelimiterBalancer(Parser &other);
+  ~PairDelimiterBalancer();
 };
+
+class Parser;
+class ParsingScope final {
+  Parser *self;
+  ParsingScope(const ParsingScope &) = delete;
+  void operator=(const ParsingScope &) = delete;
+
+public:
+  // ParseScope - Construct a new object to manage a scope in the
+  // parser Self where the new Scope is created with the flags
+  // ScopeFlags, but only when we aren't about to enter a compound statement --
+  // may just pass SyntaxScope
+  ParsingScope(Parser *self, unsigned scopeFlags, bool enteredScope = true,
+               bool beforeCompoundStmt = false);
+
+  ~ParsingScope();
+
+public:
+  void Exit();
+};
+
+class MultiParsingScope final {
+public:
+};
+
 } // namespace syn
 } // namespace stone
 #endif
