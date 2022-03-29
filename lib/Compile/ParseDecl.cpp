@@ -3,7 +3,6 @@
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxNode.h"
 
-
 using namespace stone;
 using namespace stone::syn;
 
@@ -25,7 +24,7 @@ bool Parser::AtStartOfDecl(const Token &tok) {
   }
 }
 void Parser::ParseTopLevelDecls(
-    llvm::SmallVector<SyntaxResult<Decl*>> &results) {
+    llvm::SmallVector<SyntaxResult<Decl *>> &results) {
   // Prime the Parser's token
   // The Lexer has the first token but the Parser's token defaults to tk::MAX
   // So, update the parser's token with the first token from the Lexer
@@ -49,7 +48,7 @@ void Parser::ParseTopLevelDecls(
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
-void Parser::ParseTopLevelDecl(SyntaxResult<Decl*> &result) {
+void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
   assert(AtStartOfDecl(tok) && "Invalid top-declaration");
 }
 
@@ -66,7 +65,7 @@ static bool HasAccessLevel(const syn::Token &tok) {
 SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
-  // We always default to private 
+  // We always default to private
   AccessLevel accessLevel = AccessLevel::Private;
 
   switch (tok.GetKind()) {

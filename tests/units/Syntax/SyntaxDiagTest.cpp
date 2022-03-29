@@ -33,16 +33,12 @@ TEST_F(SyntaxDiagTest, PrintD) {
 
   ctx.GetDiagOptions().useColor = true;
 
-  // Setup the dianostics formatter and emitter
   SyntaxDiagnosticFormatter formatter;
 
-  TextDiagnosticEmitter emitter;
-  emitter.SetFormatter(&formatter);
-
-  TextDiagnosticListener textListener;
-  textListener.SetEmitter(&emitter);
-
-  ctx.GetDiagEngine().AddListener(textListener);
+  TextDiagnosticListener diagListener;
+  diagListener.SetFormatter(&formatter);
+  
+  ctx.GetDiagEngine().AddListener(diagListener);
 
   syntax
       .PrintD(SrcLoc(), diag::note_prev_decl_def,

@@ -4,8 +4,8 @@
 #include "stone/Syntax/DeclGroup.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/SyntaxNode.h"
+#include "stone/Syntax/Type.h"
 
 namespace stone {
 namespace syn {

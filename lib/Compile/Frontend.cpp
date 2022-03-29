@@ -3,7 +3,6 @@
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/SrcMgr.h"
-#include "stone/Core/TextDiagnosticEmitter.h"
 #include "stone/Session/Options.h"
 
 using namespace stone;

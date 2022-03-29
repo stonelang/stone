@@ -54,16 +54,10 @@ struct TypeArgument final : public SyntaxArgument {
 
 class SyntaxDiagnostic : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(DiagnosticDetail context) : Diagnostic(context) {}
+  explicit SyntaxDiagnostic(DiagnosticDetail detail) : Diagnostic(detail) {}
   ~SyntaxDiagnostic();
 
 public:
-  // void Format(llvm::SmallVectorImpl<char> &outStr,
-  //             const DiagnosticFormatOptions &fmtOptions) const override;
-
-  // void Format(const char *diagStr, const char *diagEnd,
-  //             llvm::SmallVectorImpl<char> &outStr,
-  //             const DiagnosticFormatOptions &fmtOptions) const override;
 };
 
 class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {

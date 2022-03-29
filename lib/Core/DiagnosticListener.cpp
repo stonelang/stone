@@ -2,6 +2,8 @@
 
 using stone::DiagnosticListener;
 
+DiagnosticListener::DiagnosticListener() : colorfulStream() {}
+
 DiagnosticListener::~DiagnosticListener() {}
 
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}

@@ -9,7 +9,6 @@
 #include "stone/Core/LLVMContext.h"
 #include "stone/Core/LLVMInit.h"
 #include "stone/Core/MainExecutablePath.h"
-#include "stone/Core/TextDiagnosticEmitter.h"
 #include "stone/Core/TextDiagnosticFormatter.h"
 #include "stone/Core/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -64,14 +63,11 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // Setup the dianostics formatter and emitter
   SyntaxDiagnosticFormatter formatter;
 
-  TextDiagnosticEmitter emitter;
-  emitter.SetFormatter(&formatter);
-
-  TextDiagnosticListener textDiagListener;
-  textDiagListener.SetEmitter(&emitter);
+  TextDiagnosticListener diagListener;
+  diagListener.SetFormatter(&formatter);
 
   // Add the diagnostic listener
-  frontend.GetContext().GetDiagEngine().AddListener(textDiagListener);
+  frontend.GetContext().GetDiagEngine().AddListener(diagListener);
 
   auto &ial = frontend.ParseArgs(args);
   if (frontend.HasError()) {

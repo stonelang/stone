@@ -12,7 +12,6 @@
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxWalker.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"

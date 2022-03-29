@@ -8,9 +8,7 @@
 namespace stone {
 namespace syn {
 
-class ParsingDeclContext {
-
-};
+class ParsingDeclContext {};
 
 /// A class for parsing a DeclSpecifier.
 class ParsingDeclSpecifier final : public DeclSpecifier {

@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "stone/Core/DiagnosticListener.h"
-#include "stone/Core/TextDiagnosticEmitter.h"
 
 namespace stone {
 class DiagnosticEvent;
