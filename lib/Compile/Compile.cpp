@@ -60,13 +60,12 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   frontend.SetMainExecutablePath(mainExecPath);
 
-  // Setup the dianostics formatter and emitter
-  SyntaxDiagnosticFormatter formatter;
+  // Setup the custom formatting to be able to handle syntax diagnostics
+  auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
+  auto diagEmitter =
+      std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
 
-  TextDiagnosticListener diagListener;
-  diagListener.SetFormatter(&formatter);
-
-  // Add the diagnostic listener
+  TextDiagnosticListener diagListener(std::move(diagEmitter));
   frontend.GetContext().GetDiagEngine().AddListener(diagListener);
 
   auto &ial = frontend.ParseArgs(args);

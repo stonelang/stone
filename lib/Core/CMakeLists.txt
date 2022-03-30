@@ -13,6 +13,7 @@ set(stone_ctx_sources
 	DarwinDirWatcher.cpp
 	DiagIDList.cpp
 	Diagnostic.cpp
+	DiagnosticEmitter.cpp
 	DiagnosticFormatter.cpp
 	DiagnosticEngine.cpp
 	DiagnosticListener.cpp
@@ -29,6 +30,7 @@ set(stone_ctx_sources
 	SrcMgr.cpp
 	SystemOptions.cpp
 	StatisticEngine.cpp
+	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp
 	TextDiagnosticListener.cpp
 	Timer.cpp

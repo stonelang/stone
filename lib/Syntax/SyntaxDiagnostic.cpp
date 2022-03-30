@@ -3,9 +3,7 @@
 
 using namespace stone;
 
-SyntaxDiagnostic::~SyntaxDiagnostic() {
-  printf("%s", "Destroying SyntaxDiagnostic\n");
-}
+SyntaxDiagnostic::~SyntaxDiagnostic() {}
 
 // void SyntaxDiagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
 //                               const DiagnosticFormatOptions &fmtOptions)

@@ -9,8 +9,7 @@ DiagnosticListener::~DiagnosticListener() {}
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
 void DiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
-
-  printf("%s", "DiagnosticListener::Listen\n");
+  // TODO: Basic stuff there like warnnings and errors
 }
 
 /// Callback to inform the diagnostic client that processing of all

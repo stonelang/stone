@@ -34,7 +34,7 @@ public:
   //     ParsingDeclRAII.complete(D);
   //   }
 
-  //   void Aort() {
+  //   void Abort() {
   //     ParsingDeclRAII.abort();
   //   }
 };
