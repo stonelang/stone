@@ -17,9 +17,21 @@ class SyntaxListener;
 
 namespace syn {
 class Token;
+
+
 enum class TriviaRetentionMode {
   Without,
   With,
+};
+
+/// Kinds of conflict marker which the lexer might encounter.
+enum class ConflictMarkerKind {
+  /// A normal or diff3 conflict marker, initiated by at least 7 "<"s,
+  /// separated by at least 7 "="s or "|"s, and terminated by at least 7 ">"s.
+  Normal,
+  /// A Perforce-style conflict marker, initiated by 4 ">"s,
+  /// separated by 4 "="s, and terminated by 4 "<"s.
+  Perforce
 };
 
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
@@ -110,6 +122,15 @@ class Lexer final : public Tokenable {
 
   SyntaxListener *pipeline = nullptr;
 
+  /// The location at which the comment of the next token starts. \c nullptr if
+  /// the next token doesn't have a comment.
+  const char *commentStart;
+
+  /// If this is not \c nullptr, all tokens after this point are treated as eof.
+  /// Used to cut off lexing early when we detect that the nesting level is too
+  /// deep.
+  const char *lexerCutOffPoint = nullptr;
+
 private:
   enum class NullCharKind {
     /// String buffer terminator.
@@ -151,6 +172,59 @@ public:
     Lex();
   }
 
+  /// Cut off lexing at the current position. The next token to be lexed will
+  /// be an EOF token, even if there is still source code to be lexed.
+  /// The current and next token (returned by \c peekNextToken ) are not
+  /// modified. The token after \c NextToken will be the EOF token.
+  void CutOff() {
+    // If we already have a cut off point, don't push it further towards the
+    // back.
+    if (lexerCutOffPoint == nullptr || lexerCutOffPoint >= curPtr) {
+      lexerCutOffPoint = curPtr;
+    }
+  }
+
+  /// If a lexer cut off point has been set returns the offset in the buffer at
+  /// which lexing is being cut off.
+  llvm::Optional<size_t> LexingCutOffOffset() const {
+    if (lexerCutOffPoint) {
+      return lexerCutOffPoint - bufferStart;
+    } else {
+      return llvm::None;
+    }
+  }
+
+ // /// Returns the lexer state for the beginning of the given token
+ //  /// location. After restoring the state, lexer will return this token and
+ //  /// continue from there.
+ //  LexerState GetStateForBeginningOfTokenLoc(SrcLoc Loc) const;
+
+ //  /// Returns the lexer state for the beginning of the given token.
+ //  /// After restoring the state, lexer will return this token and continue from
+ //  /// there.
+ //  LexerState GetStateForBeginningOfToken(const Token &tk,
+ //                                    const StringRef &LeadingTrivia = {}) const {
+
+ //    // If the token has a comment attached to it, rewind to before the comment,
+ //    // not just the start of the token.  This ensures that we will re-lex and
+ //    // reattach the comment to the token if rewound to this state.
+ //    SrcLoc tkStart = tk.getCommentStart();
+ //    if (tkStart.isInvalid())
+ //      tkStart = tk.getLoc();
+ //    auto state = GetStateForBeginningOfTokenLoc(TokStart);
+ //    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
+ //      S.LeadingTrivia = LeadingTrivia;
+ //    } else {
+ //      S.LeadingTrivia = StringRef();
+ //    }
+ //    return S;
+ //  }
+
+ //  LexerState GetStateForEndOfTokenLoc(SourceLoc Loc) const {
+ //    return LexerState(getLocForEndOfToken(SourceMgr, Loc));
+ //  }
+
+
 private:
   /// Main lexing loop
   void Lex();
@@ -176,9 +250,9 @@ private:
 
   void PrintD();
 
-  void MakeTok(tk::Kind ty, const char *tokenStart);
+  void MakeTok(tok ty, const char *tokenStart);
 
-  tk::Kind GetIdentifierType(llvm::StringRef tokStr);
+  tok GetIdentifierType(llvm::StringRef tokStr);
 
   void GoBack() { --curPtr; }
   void GoForward() { ++curPtr; }

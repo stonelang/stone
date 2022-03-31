@@ -50,7 +50,7 @@ class Parser final {
   DeclContext *curDC;
 
   /// This is the current token being considered by the parser.
-  Token tok;
+  Token token;
 
   /// leading trivias for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
@@ -87,7 +87,7 @@ public:
 public:
   ParserStats &GetStats() { return *stats.get(); }
   Lexer &GetLexer() { return *lexer.get(); }
-  const Token &GetCurTok() const { return tok; }
+  const Token &GetCurTok() const { return token; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
@@ -129,17 +129,13 @@ private:
   }
 
   /// isTokenParen - Return true if the cur token is '(' or ')'.
-  bool IsParenTok() const {
-    return tok.IsAny(tk::Kind::l_paren, tk::Kind::r_paren);
-  }
+  bool IsParenTok() const { return token.IsAny(tok::l_paren, tok::r_paren); }
   /// isTokenBracket - Return true if the cur token is '[' or ']'.
   bool IsBracketTok() const {
-    return tok.IsAny(tk::Kind::l_square, tk::Kind::r_square);
+    return token.IsAny(tok::l_square, tok::r_square);
   }
   /// isTokenBrace - Return true if the cur token is '{' or '}'.
-  bool IsBraceTok() const {
-    return tok.IsAny(tk::Kind::l_brace, tk::Kind::r_brace);
-  }
+  bool IsBraceTok() const { return token.IsAny(tok::l_brace, tok::r_brace); }
   /// isTokenStringLiteral - True if this token is a string-literal.
   // bool IsTokStringLiteral() const {
   //  return tok::isStringLiteral(Tok.getKind());
@@ -169,20 +165,20 @@ public:
   ///
   /// If SkipTo finds the specified token, it returns true, otherwise it
   /// returns false.
-  bool SkipTo(tk::Kind ty, SkipToFlags flags = static_cast<SkipToFlags>(0)) {
+  bool SkipTo(tok ty, SkipToFlags flags = static_cast<SkipToFlags>(0)) {
     return SkipTo(llvm::makeArrayRef(ty), flags);
   }
-  bool SkipTo(tk::Kind ty1, tk::Kind ty2,
+  bool SkipTo(tok ty1, tok ty2,
               SkipToFlags flags = static_cast<SkipToFlags>(0)) {
-    tk::Kind tokArray[] = {ty1, ty2};
+    tok tokArray[] = {ty1, ty2};
     return SkipTo(tokArray, flags);
   }
-  bool SkipTo(tk::Kind ty1, tk::Kind ty2, tk::Kind ty3,
+  bool SkipTo(tok ty1, tok ty2, tok ty3,
               SkipToFlags flags = static_cast<SkipToFlags>(0)) {
-    tk::Kind tokArray[] = {ty1, ty2, ty3};
+    tok tokArray[] = {ty1, ty2, ty3};
     return SkipTo(tokArray, flags);
   }
-  bool SkipTo(llvm::ArrayRef<tk::Kind> toks,
+  bool SkipTo(llvm::ArrayRef<tok> toks,
               SkipToFlags flags = static_cast<SkipToFlags>(0));
 
 public:
@@ -202,10 +198,10 @@ public:
 
 public:
   /// Stop parsing now.
-  void Stop() { tok.SetKind(tk::Kind::eof); }
+  void Stop() { token.SetKind(tok::eof); }
 
   /// Is at end of file.
-  bool IsDone() { return tok.GetKind() == tk::Kind::eof; }
+  bool IsDone() { return token.GetKind() == tok::eof; }
 
   bool HasError();
 
@@ -214,21 +210,21 @@ public:
 
   SrcLoc ConsumeParen() {
     assert(IsParenTok() && "Wrong consume method");
-    if (tok.GetKind() == tk::Kind::l_paren)
+    if (token.GetKind() == tok::l_paren)
       ++parenCount;
     else if (parenCount) {
       // TODO: angleBrackets.clear(*this);
       --parenCount; // Don't let unbalanced )'s drive the count negative.
     }
-    prevTokLoc = tok.GetLoc();
-    Lex(tok);
+    prevTokLoc = token.GetLoc();
+    Lex(token);
     return prevTokLoc;
   }
 
   /// Consume the token and update OnToken from SCPipeline
   SrcLoc ConsumeTok(bool onTok = true);
-  SrcLoc ConsumeTok(tk::Kind ty) {
-    assert(tok.Is(ty) && "Consuming wrong token type");
+  SrcLoc ConsumeTok(tok kind) {
+    assert(token.Is(kind) && "Consuming wrong token type");
     return ConsumeTok(false);
   }
   SrcLoc ConsumeAnyTok(bool consumeCodeCompletionTok = false);
@@ -246,7 +242,7 @@ public:
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID);
-  InFlightDiagnostic PrintD(const Token &tok, DiagID diagID);
+  InFlightDiagnostic PrintD(const Token &token, DiagID diagID);
 
   // InFlightDiagnostic PrintD(unsigned DiagID) {
   //   return Diag(tok, diagID);
@@ -263,8 +259,8 @@ private:
   //===--------------------------------------------------------------------===//
   // Helpers
 
-  bool IsRightBrace() { return (tok.GetKind() == tk::Kind::r_brace); }
-  bool IsLeftBrace() { return (tok.GetKind() == tk::Kind::l_brace); }
+  bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
+  bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
 };
 
 } // namespace syn

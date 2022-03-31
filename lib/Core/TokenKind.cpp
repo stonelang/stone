@@ -11,15 +11,15 @@ static const char *const TokenNames[] = {
 #include "stone/Core/TokenKind.def"
     nullptr};
 
-const char *syn::Token::GetName() { return tk::GetName(kind); }
+const char *syn::Token::GetName() { return stone::GetTokenNameByKind(kind); }
 
-bool tk::IsTokenTextDetermined(tk::Kind kind) { return false; }
+bool stone::IsTokenTextDetermined(tok kind) { return false; }
 
-const char *tk::GetName(tk::Kind kind) {
-  if (static_cast<uint8_t>(kind) < static_cast<uint8_t>(tk::Kind::MAX))
+const char *stone::GetTokenNameByKind(tok kind) {
+  if (static_cast<uint8_t>(kind) < static_cast<uint8_t>(tok::MAX))
     return TokenNames[static_cast<uint8_t>(kind)];
 
   llvm_unreachable("Unknown TokenType");
 }
 
-void tk::DumpTokenKind(llvm::raw_ostream &os, tk::Kind ty) {}
+void stone::DumpTokenKind(llvm::raw_ostream &os, tok ty) {}

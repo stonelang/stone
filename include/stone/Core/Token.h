@@ -11,7 +11,7 @@ namespace stone {
 namespace syn {
 class Token final {
   /// The token kind
-  tk::Kind kind;
+  tok kind;
 
   /// Whether this token is the first token on the line.
   unsigned atStartOfLine : 1;
@@ -40,46 +40,45 @@ class Token final {
   }
 
 public:
-  Token(tk::Kind kind, StringRef text, unsigned commentLength = 0)
+  Token(tok kind, StringRef text, unsigned commentLength = 0)
       : kind(kind), atStartOfLine(false), escapedIdentifier(false),
         multilineString(false), customDelimiterLen(0),
         commentLength(commentLength), text(text) {}
 
-  Token() : Token(tk::Kind::MAX, {}, 0) {}
+  Token() : Token(tok::MAX, {}, 0) {}
 
-  tk::Kind GetKind() const { return kind; }
-  void SetKind(tk::Kind k) { kind = k; }
+  tok GetKind() const { return kind; }
+  void SetKind(tok k) { kind = k; }
 
   const char *GetName();
   void ClearCommentLength() { commentLength = 0; }
 
   /// is/isNot - Predicates to check if this token is a specific kind, as in
   /// "if (Tok.is(tok::l_brace)) {...}".
-  bool Is(tk::Kind k) const { return kind == k; }
-  bool IsNot(tk::Kind k) const { return kind != k; }
+  bool Is(tok k) const { return kind == k; }
+  bool IsNot(tok k) const { return kind != k; }
 
   // Predicates to check to see if the token is any of a list of tokens.
 
-  bool IsAny(tk::Kind K1) const { return Is(K1); }
-  template <typename... T> bool IsAny(tk::Kind K1, tk::Kind K2, T... K) const {
+  bool IsAny(tok K1) const { return Is(K1); }
+  template <typename... T> bool IsAny(tok K1, tok K2, T... K) const {
     if (Is(K1))
       return true;
     return IsAny(K2, K...);
   }
 
   // Predicates to check to see if the token is not the same as any of a list.
-  template <typename... T> bool IsNot(tk::Kind K1, T... K) const {
+  template <typename... T> bool IsNot(tok K1, T... K) const {
     return !IsAny(K1, K...);
   }
 
   bool IsBinaryOperator() const {
-    return kind == tk::Kind::oper_binary_spaced ||
-           kind == tk::Kind::oper_binary_unspaced;
+    return kind == tok::oper_binary_spaced || kind == tok::oper_binary_unspaced;
   }
 
   bool IsAnyOperator() const {
-    return IsBinaryOperator() || kind == tk::Kind::oper_postfix ||
-           kind == tk::Kind::oper_prefix;
+    return IsBinaryOperator() || kind == tok::oper_postfix ||
+           kind == tok::oper_prefix;
   }
   bool IsNotAnyOperator() const { return !IsAnyOperator(); }
 
@@ -96,31 +95,31 @@ public:
   bool IsEscapedIdentifier() const { return escapedIdentifier; }
   /// Set whether this token is an escaped identifier token.
   void SetEscapedIdentifier(bool value) {
-    assert((!value || kind == tk::Kind::identifier) &&
+    assert((!value || kind == tok::identifier) &&
            "only identifiers can be escaped identifiers");
     escapedIdentifier = value;
   }
 
   /// True if the token is an identifier or '_'.
   bool IsIdentifierOrUnderscore() const {
-    return IsAny(tk::Kind::identifier, tk::Kind::kw__);
+    return IsAny(tok::identifier, tok::kw__);
   }
 
   /// True if the token is an l_paren token that does not start a new line.
   bool IsFollowingLParen() const {
-    return !IsAtStartOfLine() && kind == tk::Kind::l_paren;
+    return !IsAtStartOfLine() && kind == tok::l_paren;
   }
 
   /// True if the token is an l_square token that does not start a new line.
   bool IsFollowingLSquare() const {
-    return !IsAtStartOfLine() && kind == tk::Kind::l_square;
+    return !IsAtStartOfLine() && kind == tok::l_square;
   }
 
   /// True if the token is any keyword.
   bool IsKeyword() const {
     switch (kind) {
 #define KEYWORD(X, S)                                                          \
-  case tk::Kind::kw_##X:                                                       \
+  case tok::kw_##X:                                                            \
     return true;
 #include "stone/Core/TokenKind.def"
     default:
@@ -131,20 +130,20 @@ public:
   /// True if the token is any literal.
   bool IsLiteral() const {
     switch (kind) {
-    case tk::Kind::integer_literal:
-    case tk::Kind::floating_literal:
-    case tk::Kind::string_literal:
+    case tok::integer_literal:
+    case tok::floating_literal:
+    case tok::string_literal:
       return true;
     default:
       return false;
     }
   }
-  bool IsAlien() const { return kind == tk::Kind::alien; }
+  bool IsAlien() const { return kind == tok::alien; }
 
   bool IsPunctuation() const {
     switch (kind) {
 #define PUNCTUATOR(Name, Str)                                                  \
-  case tk::Kind::Name:                                                         \
+  case tok::Name:                                                              \
     return true;
 #include "stone/Core/TokenKind.def"
     default:
@@ -160,7 +159,7 @@ public:
 
   /// Set characteristics of string literal token.
   void setStringLiteral(bool isMultilineString, unsigned customDelimiterLen) {
-    assert(kind == tk::Kind::string_literal);
+    assert(kind == tok::string_literal);
     this->multilineString = isMultilineString;
     this->customDelimiterLen = customDelimiterLen;
   }
@@ -204,7 +203,7 @@ public:
     return text;
   }
   /// Set the token to the specified kind and source range.
-  void SetToken(tk::Kind K, StringRef T, unsigned commentLength = 0) {
+  void SetToken(tok K, StringRef T, unsigned commentLength = 0) {
     kind = K;
     text = T;
     this->commentLength = commentLength;

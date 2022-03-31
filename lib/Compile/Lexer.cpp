@@ -737,7 +737,7 @@ void Lexer::Initialize(unsigned startOffset, unsigned endOffset) {
   artificialEOF = bufferStart + endOffset;
   curPtr = bufferStart + startOffset;
 
-  assert(nextToken.Is(tk::Kind::MAX));
+  assert(nextToken.Is(tok::MAX));
 
   // Prime the lexer
   Lex();
@@ -756,7 +756,7 @@ void Lexer::Lex(Token &result, Trivia &leading, Trivia &trailing) {
     leading = {leadingTrivia};
     trailing = {trailingTrivia};
   }
-  if (result.IsNot(tk::Kind::eof)) {
+  if (result.IsNot(tok::eof)) {
     Lex();
   }
 }
@@ -797,45 +797,45 @@ void Lexer::Lex() {
   case -2:
     // PrintD(curPtr-1, diag::lex_utf16_bom_marker);
     curPtr = bufferEnd;
-    return MakeTok(tk::Kind::alien, tokStart);
+    return MakeTok(tok::alien, tokStart);
   case 0:
     switch (GetNullCharKind(curPtr - 1)) {
     case NullCharKind::CodeCompletion:
       while (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd))
         ;
-      return MakeTok(tk::Kind::code_complete, tokStart);
+      return MakeTok(tok::code_complete, tokStart);
 
     case NullCharKind::BufferEnd:
       // This is the real end of the buffer.
       // Put curPtr back into buffer bounds.
       --curPtr;
       // Return EOF.
-      return MakeTok(tk::Kind::eof, tokStart);
+      return MakeTok(tok::eof, tokStart);
 
     case NullCharKind::Embedded:
       stone::Panic(
           "Embedded nul should be eaten by lexTrivia as LeadingTrivia");
     }
   case '{':
-    return MakeTok(tk::Kind::l_brace, tokStart);
+    return MakeTok(tok::l_brace, tokStart);
   case '[':
-    return MakeTok(tk::Kind::l_square, tokStart);
+    return MakeTok(tok::l_square, tokStart);
   case '(':
-    return MakeTok(tk::Kind::l_paren, tokStart);
+    return MakeTok(tok::l_paren, tokStart);
   case '}':
-    return MakeTok(tk::Kind::r_brace, tokStart);
+    return MakeTok(tok::r_brace, tokStart);
   case ']':
-    return MakeTok(tk::Kind::r_square, tokStart);
+    return MakeTok(tok::r_square, tokStart);
   case ')':
-    return MakeTok(tk::Kind::r_paren, tokStart);
+    return MakeTok(tok::r_paren, tokStart);
   case ',':
-    return MakeTok(tk::Kind::comma, tokStart);
+    return MakeTok(tok::comma, tokStart);
   case ';':
-    return MakeTok(tk::Kind::semi, tokStart);
+    return MakeTok(tok::semi, tokStart);
   case ':':
-    return MakeTok(tk::Kind::colon, tokStart);
+    return MakeTok(tok::colon, tokStart);
   case '\\':
-    return MakeTok(tk::Kind::backslash, tokStart);
+    return MakeTok(tok::backslash, tokStart);
   case '<':
   case '>':
     // return LexOperatorIdentifier();
@@ -929,12 +929,12 @@ void Lexer::LexIdentifier() {
 }
 
 /// This is either an identifier or a keyword.
-tk::Kind Lexer::GetIdentifierType(llvm::StringRef tokStr) {
+tok Lexer::GetIdentifierType(llvm::StringRef tokStr) {
 #define KEYWORD(kw, S)                                                         \
   if (tokStr == #kw)                                                           \
-    return tk::Kind::kw_##kw;
+    return tok::kw_##kw;
 #include "stone/Core/TokenKind.def"
-  return tk::Kind::identifier;
+  return tok::identifier;
 }
 void Lexer::LexTrivia(Trivia trivia, bool isForTrailingTrivia) {
   const char *triviaStart = curPtr;
@@ -1185,7 +1185,7 @@ void Lexer::LexNumber() {
   auto ExpectedDigit = [&]() {
     while (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd))
       ;
-    return MakeTok(tk::Kind::alien, tokStart);
+    return MakeTok(tok::alien, tokStart);
   };
 
   auto ExpectedIntDigit = [&](const char *loc, ExpectedDigitKind kind) {
@@ -1216,7 +1216,7 @@ void Lexer::LexNumber() {
       return ExpectedIntDigit(tmpPtr, ExpectedDigitKind::Octal);
     }
 
-    return MakeTok(tk::Kind::integer_literal, tokStart);
+    return MakeTok(tok::integer_literal, tokStart);
   }
 
   if (*tokStart == '0' && *curPtr == 'b') {
@@ -1235,7 +1235,7 @@ void Lexer::LexNumber() {
       return ExpectedIntDigit(tmp, ExpectedDigitKind::Binary);
     }
 
-    return MakeTok(tk::Kind::integer_literal, tokStart);
+    return MakeTok(tok::integer_literal, tokStart);
   }
 
   // Handle a leading [0-9]+, lexing an integer or falling through if we have a
@@ -1248,8 +1248,8 @@ void Lexer::LexNumber() {
   if (*curPtr == '.') {
     // nextToken is the soon to be previous token
     // Therefore: x.0.1 is sub-tuple access, not x.float_literal
-    if (!isDigit(curPtr[1]) || nextToken.Is(tk::Kind::period)) {
-      return MakeTok(tk::Kind::integer_literal, tokStart);
+    if (!isDigit(curPtr[1]) || nextToken.Is(tok::period)) {
+      return MakeTok(tok::integer_literal, tokStart);
     }
   } else {
     // Floating literals must have '.', 'e', or 'E' after digits.  If it is
@@ -1260,7 +1260,7 @@ void Lexer::LexNumber() {
         return ExpectedIntDigit(tmpPtr, ExpectedDigitKind::Decimal);
       }
 
-      return MakeTok(tk::Kind::integer_literal, tokStart);
+      return MakeTok(tok::integer_literal, tokStart);
     }
   }
 
@@ -1319,7 +1319,7 @@ void Lexer::LexNumber() {
     }
   }
 
-  return MakeTok(tk::Kind::floating_literal, tokStart);
+  return MakeTok(tok::floating_literal, tokStart);
 }
 
 void Lexer::LexHexNumber() {
@@ -1332,7 +1332,7 @@ void Lexer::LexHexNumber() {
   auto ExpectedDigit = [&]() {
     while (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd))
       ;
-    return MakeTok(tk::Kind::alien, tokStart);
+    return MakeTok(tok::alien, tokStart);
   };
 
   auto ExpectedHexDigit = [&](const char *loc) {
@@ -1358,7 +1358,7 @@ void Lexer::LexHexNumber() {
     if (AdvanceIfValidContinuationOfIdentifier(curPtr, bufferEnd)) {
       return ExpectedHexDigit(tmpPtr);
     } else {
-      return MakeTok(tk::Kind::integer_literal, tokStart);
+      return MakeTok(tok::integer_literal, tokStart);
     }
   }
 
@@ -1373,7 +1373,7 @@ void Lexer::LexHexNumber() {
     // literal followed by a dot expression.
     if (!isHexDigit(*curPtr)) {
       --curPtr;
-      return MakeTok(tk::Kind::integer_literal, tokStart);
+      return MakeTok(tok::integer_literal, tokStart);
     }
 
     while (isHexDigit(*curPtr) || *curPtr == '_') {
@@ -1384,12 +1384,12 @@ void Lexer::LexHexNumber() {
       if (!isDigit(ptrOnDot[1])) {
         // e.g: 0xff.description
         curPtr = ptrOnDot;
-        return MakeTok(tk::Kind::integer_literal, tokStart);
+        return MakeTok(tok::integer_literal, tokStart);
       }
       // diagnose(curPtr,
       // diag::lex_expected_binary_exponent_in_hex_float_literal);
 
-      return MakeTok(tk::Kind::alien, tokStart);
+      return MakeTok(tok::alien, tokStart);
     }
   }
 
@@ -1407,7 +1407,7 @@ void Lexer::LexHexNumber() {
     if (ptrOnDot && !isDigit(ptrOnDot[1]) && !signedExponent) {
       // e.g: 0xff.fpValue, 0xff.fp
       curPtr = ptrOnDot;
-      return MakeTok(tk::Kind::integer_literal, tokStart);
+      return MakeTok(tok::integer_literal, tokStart);
     }
     // Note: 0xff.fp+otherExpr can be valid expression. But we don't accept it.
 
@@ -1440,7 +1440,7 @@ void Lexer::LexHexNumber() {
     return ExpectedDigit();
   }
 
-  return MakeTok(tk::Kind::floating_literal, tokStart);
+  return MakeTok(tok::floating_literal, tokStart);
 }
 
 static const char *SkipToEndOfInterpolatedExpression(const char *curPtr,
@@ -1494,7 +1494,7 @@ void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
       } else {
         // diagnose(tokStart, diag::lex_unterminated_string);
         stone::Panic("lex_unterminated_string");
-        return MakeTok(tk::Kind::alien, tokStart);
+        return MakeTok(tok::alien, tokStart);
       }
     }
 
@@ -1503,7 +1503,7 @@ void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
         curPtr == bufferEnd) {
       stone::Panic("lex_unterminated_string");
       // diagnose(tokStart, diag::lex_unterminated_string);
-      return MakeTok(tk::Kind::alien, tokStart);
+      return MakeTok(tok::alien, tokStart);
     }
 
     unsigned charValue =
@@ -1530,14 +1530,14 @@ Lexer::NullCharKind Lexer::GetNullCharKind(const char *data) const {
 
 void Lexer::PrintD() {}
 
-void Lexer::MakeTok(tk::Kind ty, const char *tokenStart) {
+void Lexer::MakeTok(tok ty, const char *tokenStart) {
   assert((curPtr >= bufferStart) && (curPtr <= bufferEnd) &&
          "Cannot create token -- the current pointer is out of range!");
   // When we are lexing a subrange from the middle of a file buffer, we will
   // run past the end of the range, but will stay within the file.  Check if
   // we are past the imaginary EOF, and synthesize a tok::eof in this case.
-  if (ty != tk::Kind::eof && tokenStart >= artificialEOF) {
-    ty = tk::Kind::eof;
+  if (ty != tok::eof && tokenStart >= artificialEOF) {
+    ty = tok::eof;
   }
   // TODO:
   unsigned commentLength = 0;
@@ -1545,7 +1545,7 @@ void Lexer::MakeTok(tk::Kind ty, const char *tokenStart) {
   llvm::StringRef tokenText{tokenStart,
                             static_cast<size_t>(curPtr - tokenStart)};
 
-  if (triviaRetention == TriviaRetentionMode::With && ty != tk::Kind::eof) {
+  if (triviaRetention == TriviaRetentionMode::With && ty != tok::eof) {
     assert(trailingTrivia.empty() && "TrailingTrivia is empty here");
     LexTrivia(trailingTrivia, /* IsForTrailingTrivia */ true);
   }

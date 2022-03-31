@@ -28,7 +28,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
 }
 void Parser::Initialize() {
   // TODO: fishy?
-  if (Peek().Is(tk::Kind::MAX) && (tok.Is(tk::Kind::MAX))) {
+  if (Peek().Is(tok::MAX) && (token.Is(tok::MAX))) {
     // This is an empty file
     Stop();
     return;
@@ -39,7 +39,7 @@ void Parser::Initialize() {
   // Prime the Parser's token
   // The Lexer has the first token but the Parser's token defaults to tk::MAX
   // So, update the parser's token with the first token from the Lexer
-  if (tok.Is(tk::Kind::MAX)) {
+  if (token.Is(tok::MAX)) {
     ConsumeTok();
   }
 }
@@ -58,9 +58,9 @@ void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeTok(bool onTok) {
-  SrcLoc loc = tok.GetLoc();
-  assert(tok.IsNot(tk::Kind::eof) && "Lexing past eof!");
-  Lex(tok, leadingTrivia, trailingTrivia);
+  SrcLoc loc = token.GetLoc();
+  assert(token.IsNot(tok::eof) && "Lexing past eof!");
+  Lex(token, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
   return loc;
 }
@@ -68,14 +68,14 @@ SrcLoc Parser::ConsumeTok(bool onTok) {
 static bool HasFlagsSet(Parser::SkipToFlags L, Parser::SkipToFlags R) {
   return (static_cast<unsigned>(L) & static_cast<unsigned>(R)) != 0;
 }
-bool Parser::SkipTo(llvm::ArrayRef<tk::Kind> toks, SkipToFlags flags) {
+bool Parser::SkipTo(llvm::ArrayRef<tok> toks, SkipToFlags flags) {
   // We always want this function to skip at least one token if the first token
   // isn't T and if not at EOF.
   bool isFirstTokenSkipped = true;
   while (true) {
     // If we found one of the tokens, stop and return true.
     for (unsigned i = 0, numToks = toks.size(); i != numToks; ++i) {
-      if (tok.Is(toks[i])) {
+      if (token.Is(toks[i])) {
         if (HasFlagsSet(flags, StopBeforeMatch)) {
           // Noop, don't consume the token.
         } else {
@@ -101,7 +101,7 @@ SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
   // if (IsTokenStringLiteral())
   //  return ConsumeStringTok();
 
-  // if (tok.Is(tk::Kind::code_completion))
+  // if (token.Is(tok::code_completion))
   //  return ConsumeCodeCompletionTok ? ConsumeCodeCompletionToken()
   //                                 : handleUnexpectedCodeCompletionToken();
 

@@ -30,7 +30,7 @@ protected:
       lexer->Lex(token);
       tokens.push_back(token);
       break;
-      // if(token.GetKind() == tk::Kind::eof) {
+      // if(token.GetKind() == tok::eof) {
       //	break;
       //}
     }
@@ -43,5 +43,5 @@ TEST_F(LexerTest, GetNextToken) {
   llvm::StringRef source = "fun\n";
   auto tokens = Lex(source);
 
-  ASSERT_EQ(tk::Kind::kw_fun, tokens[0].GetKind());
+  ASSERT_EQ(tok::kw_fun, tokens[0].GetKind());
 }

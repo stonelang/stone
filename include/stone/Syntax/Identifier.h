@@ -39,14 +39,14 @@ enum { IdentifierAlignment = 8 };
 /// is lexed.  This contains information about whether the token was \#define'd,
 /// is a language keyword, or if it is a front-end token of some sort (e.g. a
 /// variable or function name).  The preprocessor keeps this information in a
-/// set, and all tk::Kind::identifier tokens have a pointer to one of these.
+/// set, and all tok::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class alignas(IdentifierAlignment) Identifier {
   friend class SyntaxContext;
   friend class IdentifierTable; // TODO: Replace with SyntaxContext
 
-  // Front-end token ID or tk::Kind::identifier.
-  tk::Kind ty;
+  // Front-end token ID or tok::identifier.
+  tok ty;
 
   unsigned BuiltinID;
 
@@ -60,7 +60,7 @@ class alignas(IdentifierAlignment) Identifier {
 
 public:
   explicit Identifier()
-      : ty(tk::Kind::identifier), BuiltinID(0), isKeywordReserved(false),
+      : ty(tok::identifier), BuiltinID(0), isKeywordReserved(false),
         IsOperatorKeyword(false) {}
 
   /// Return true if this is the identifier for the specified string.
@@ -103,7 +103,7 @@ public:
   /// If this is a source-language token (e.g. 'for'), this API
   /// can be used to cause the lexer to map identifiers to source-language
   /// tokens.
-  tk::Kind GetTokenType() const { return ty; }
+  tok GetTokenType() const { return ty; }
 
   /// Return a value indicating whether this is a builtin function.
   ///
@@ -224,7 +224,7 @@ public:
     return *identifier;
   }
 
-  Identifier &Get(llvm::StringRef name, tk::Kind t) {
+  Identifier &Get(llvm::StringRef name, tok t) {
     auto &identifier = Get(name);
     identifier.ty = t;
     assert(identifier.ty == t && "TokenCode too large");

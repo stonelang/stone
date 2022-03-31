@@ -141,14 +141,14 @@ public:
 };
 
 struct TokenKindArgument final : public Argument {
-  tk::Kind val;
+  tok val;
 
 public:
   TokenKindArgument() = delete;
 
-  explicit TokenKindArgument(const tk::Kind val)
+  explicit TokenKindArgument(const tok val)
       : Argument(ArgumentKind::TokenKind), val(val) {}
-  tk::Kind GetVal() const { return val; }
+  tok GetVal() const { return val; }
 };
 
 enum class SyntaxArgumentKind {

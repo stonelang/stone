@@ -5,18 +5,18 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::AtStartOfDecl(const Token &tok) {
-  switch (tok.GetKind()) {
-  case tk::Kind::kw_interface:
-  case tk::Kind::kw_fun:
-  case tk::Kind::kw_any:
-  case tk::Kind::kw_struct:
-  case tk::Kind::kw_space:
-  case tk::Kind::kw_const:
-  case tk::Kind::kw_public:
-  case tk::Kind::kw_private:
-  case tk::Kind::kw_internal:
-  case tk::Kind::kw_static:
+bool Parser::AtStartOfDecl(const Token &token) {
+  switch (token.GetKind()) {
+  case tok::kw_interface:
+  case tok::kw_fun:
+  case tok::kw_any:
+  case tok::kw_struct:
+  case tok::kw_space:
+  case tok::kw_const:
+  case tok::kw_public:
+  case tok::kw_private:
+  case tok::kw_internal:
+  case tok::kw_static:
     return true;
   default:
     return false;
@@ -27,7 +27,7 @@ void Parser::ParseTopLevelDecls(
   // Prime the Parser's token
   // The Lexer has the first token but the Parser's token defaults to tk::MAX
   // So, update the parser's token with the first token from the Lexer
-  if (tok.Is(tk::Kind::MAX)) {
+  if (token.Is(tok::MAX)) {
     ConsumeTok();
   }
   SyntaxResult<Decl *> result;
@@ -48,14 +48,14 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
-  assert(AtStartOfDecl(tok) && "Invalid top-declaration");
+  assert(AtStartOfDecl(token) && "Invalid top-declaration");
 }
 
-static bool HasAccessLevel(const syn::Token &tok) {
-  switch (tok.GetKind()) {
-  case tk::Kind::kw_public:
-  case tk::Kind::kw_internal:
-  case tk::Kind::kw_private:
+static bool HasAccessLevel(const syn::Token &token) {
+  switch (token.GetKind()) {
+  case tok::kw_public:
+  case tok::kw_internal:
+  case tok::kw_private:
     return true;
   default:
     return false;
@@ -67,18 +67,18 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
   // We always default to private
   AccessLevel accessLevel = AccessLevel::Private;
 
-  switch (tok.GetKind()) {
-  case tk::Kind::kw_public:
+  switch (token.GetKind()) {
+  case tok::kw_public:
     accessLevel = AccessLevel::Public;
     break;
-  case tk::Kind::kw_internal:
+  case tok::kw_internal:
     accessLevel = AccessLevel::Internal;
     break;
   default:
     accessLevel = AccessLevel::Private;
     break;
   }
-  if (HasAccessLevel(tok)) {
+  if (HasAccessLevel(token)) {
     ConsumeTok();
   }
   if (pds) {
@@ -94,11 +94,11 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
 
   // TODO: ParseTemplateDecl first before you move
 
-  switch (tok.GetKind()) {
-  case tk::Kind::kw_any:
+  switch (token.GetKind()) {
+  case tok::kw_any:
     // ParseTemplateDecl();
     break;
-  case tk::Kind::kw_fun:
+  case tok::kw_fun:
     syntaxResult = ParseFunDecl(pds, accessLevel);
     break;
   default:
@@ -130,22 +130,22 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
 
 void Parser::ParseFunctionBody(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
-  // assert(tok.Is(tk::Kind::l_brace) && "Require left brace.");
+  // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
 void Parser::ParseFunctionArguments(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
-  // assert(tok.Is(tk::Kind::l_brace) && "Require left brace.");
+  // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
 SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
                                           AccessLevel accessLevel) {
-  assert(tok.GetKind() == tk::Kind::kw_fun &&
+  assert(token.GetKind() == tok::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 
   // TODO:
-  auto funDecl = syntax.MakeFunDecl(tok.GetLoc(), nullptr);
+  auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
   funDecl->SetAccessLevel(accessLevel);
 
-  ConsumeTok(tk::Kind::kw_fun);
+  ConsumeTok(tok::kw_fun);
 
   // funDecl->SetTemplate...
 
