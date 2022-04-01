@@ -24,9 +24,9 @@ class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;
 
 public:
-  TypeCheckerStats(const TypeChecker &checker, Context &ctx)
-      : Stats("checker statistics:", ctx), checker(checker) {}
-  void Print() override;
+  TypeCheckerStats(const TypeChecker &checker)
+      : Stats("checker statistics:"), checker(checker) {}
+  void Print(ColorfulStream& stream) override;
 };
 
 class TypeCheckerDiagnostics {};

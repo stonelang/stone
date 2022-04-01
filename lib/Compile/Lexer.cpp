@@ -702,7 +702,7 @@ Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
 Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Context &ctx,
              SyntaxListener *pipeline)
     : srcID(srcID), sm(sm), ctx(ctx), pipeline(pipeline) {
-  stats = std::make_unique<LexerStats>(*this, ctx);
+  stats = std::make_unique<LexerStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
 
   unsigned endOffset = sm.getRangeForBuffer(srcID).getByteLength();
@@ -1585,4 +1585,4 @@ SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) {
   return loc.getAdvancedLocOrInvalid(GetTokenAtLoc(sm, loc).GetLength());
 }
 
-void LexerStats::Print() {}
+void LexerStats::Print(ColorfulStream& stream) {}

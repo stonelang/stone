@@ -11,8 +11,9 @@ using namespace stone::syn;
 TypeChecker::TypeChecker(SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)
     : sf(sf), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
-  stats.reset(new TypeCheckerStats(*this, sf.GetSyntaxContext().GetContext()));
+
+  stats.reset(new TypeCheckerStats(*this));
   sf.GetSyntaxContext().GetContext().GetStatEngine().Register(stats.get());
 }
 
-void TypeCheckerStats::Print() {}
+void TypeCheckerStats::Print(ColorfulStream& stream) {}

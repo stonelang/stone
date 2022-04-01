@@ -33,7 +33,7 @@ using namespace stone;
 using namespace stone::syn;
 
 Lang::Lang(LangListener *listener) : listener(listener) {
-  stats = std::make_unique<LangStats>(*this, frontend.GetContext());
+  stats = std::make_unique<LangStats>(*this);
 
   frontend.GetContext().GetStatEngine().Register(stats.get());
 
@@ -99,7 +99,7 @@ void Lang::Finish() {
   }
 }
 
-void LangStats::Print() {
+void LangStats::Print(ColorfulStream& stream) {
   // if (sc.GetLangOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;

@@ -2,7 +2,7 @@
 
 using namespace stone;
 
-Stats::Stats(const char *name, Context &ctx) : name(name), ctx(ctx) {
+Stats::Stats(const char *name) : name(name) {
   timer = std::make_unique<stone::Timer>(name, name);
 }
 
@@ -14,8 +14,8 @@ void StatisticEngine::Register(Stats *stats) {
   entries.push_back(stats);
 }
 
-void StatisticEngine::Print() {
+void StatisticEngine::Print(ColorfulStream& stream) {
   for (const auto &stats : entries) {
-    stats->Print();
+    stats->Print(stream);
   }
 }

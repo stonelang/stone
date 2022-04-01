@@ -21,7 +21,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
       listener(listener) {
-  stats.reset(new ParserStats(*this, GetContext()));
+  stats.reset(new ParserStats(*this));
   GetContext().GetStatEngine().Register(stats.get());
 
   Initialize();
@@ -111,4 +111,4 @@ SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
   return ConsumeTok();
 }
 
-void ParserStats::Print() {}
+void ParserStats::Print(ColorfulStream& stream) {}

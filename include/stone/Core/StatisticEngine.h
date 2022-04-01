@@ -4,7 +4,10 @@
 #include <iostream>
 
 #include "stone/Core/List.h"
+#include "stone/Core/Color.h"
 #include "stone/Core/Timer.h"
+
+
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Chrono.h"
 #include "llvm/Support/Timer.h"
@@ -19,7 +22,6 @@ class StatsListener {};
 class Stats {
   bool enabled = false;
   ConstList<Stats> deps;
-  Context &ctx;
 
 protected:
   const char *name = nullptr;
@@ -28,7 +30,7 @@ public:
   std::unique_ptr<stone::Timer> timer;
 
 public:
-  Stats(const char *name, Context &ctx);
+  Stats(const char *name);
   virtual ~Stats() {}
 
 public:
@@ -39,10 +41,9 @@ public:
   ConstList<Stats> GetDeps() { return deps; }
 
   stone::Timer &GetTimer() { return *timer.get(); }
-  Context &GetContext() { return ctx; }
-
+  
 public:
-  virtual void Print() = 0;
+  virtual void Print(ColorfulStream& stream) = 0;
 };
 
 // TODO: You can do something very similar to that of the DiagnosticEngine
@@ -56,7 +57,7 @@ public:
 public:
   void Register(Stats *stats);
   /// Print all groups and entries in groups
-  void Print();
+  void Print(ColorfulStream& stream);
 };
 } // namespace stone
 

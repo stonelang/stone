@@ -26,7 +26,7 @@ Compilation::Compilation(Driver &driver, ToolChain &tc,
                          std::unique_ptr<llvm::opt::DerivedArgList> dal)
     : driver(driver), tc(tc), dal(std::move(dal)) {
 
-  stats = std::make_unique<CompilationStats>(*this, driver.GetContext());
+  stats = std::make_unique<CompilationStats>(*this);
   driver.GetContext().GetStatEngine().Register(stats.get());
 
   switch (tc.GetKind()) {
@@ -51,7 +51,7 @@ void Compilation::PrintJobs() {
   // }
 }
 
-void CompilationStats::Print() {
+void CompilationStats::Print(ColorfulStream& stream) {
   if (compilation.GetDriver().GetContext().GetSystemOptions().printStatistics) {
     // GetContext().Out() << compilation.GetSessionName() << '\n';
   }

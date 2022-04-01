@@ -27,9 +27,9 @@ class LangStats final : public Stats {
   Lang &lang;
 
 public:
-  LangStats(Lang &lang, Context &ctx)
-      : Stats("Lang statistics:", ctx), lang(lang) {}
-  void Print() override;
+  LangStats(Lang &lang)
+      : Stats("Lang statistics:"), lang(lang) {}
+  void Print(ColorfulStream& stream) override;
 };
 
 // TODO: SmallString<128> workingDirectory;

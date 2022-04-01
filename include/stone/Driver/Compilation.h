@@ -21,9 +21,9 @@ class CompilationStats final : public Stats {
   Compilation &compilation;
 
 public:
-  CompilationStats(Compilation &compilation, Context &ctx)
-      : Stats("Compilation statistics:", ctx), compilation(compilation) {}
-  void Print() override;
+  CompilationStats(Compilation &compilation)
+      : Stats("Compilation statistics:"), compilation(compilation) {}
+  void Print(ColorfulStream& stream) override;
 };
 
 class Compilation final {

@@ -62,9 +62,9 @@ class SyntaxContextStats final : public Stats {
   const SyntaxContext &tc;
 
 public:
-  SyntaxContextStats(const SyntaxContext &tc, Context &ctx)
-      : Stats("tree-context stats:", ctx), tc(tc) {}
-  void Print() override;
+  SyntaxContextStats(const SyntaxContext &tc)
+      : Stats("tree-context stats:"), tc(tc) {}
+  void Print(ColorfulStream& stream) override;
 };
 class SyntaxContext final {
   friend SyntaxContextStats;

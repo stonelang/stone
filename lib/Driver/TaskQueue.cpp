@@ -17,3 +17,8 @@ TaskQueue::TaskQueue(TaskQueueKind kind, Context &ctx) : kind(kind), ctx(ctx) {}
 // void TaskQueue::Pop() { runQueue.pop(); }
 
 // void TaskQueue::Remove(stone::ProcID procID) {}
+
+
+
+void stone::TaskQueueStats::Print(ColorfulStream &stream) {}
+

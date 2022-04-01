@@ -28,7 +28,7 @@ Job::Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
          file::Type outputFileType)
     : tool(tool), kind(kind), ctx(ctx), inputs(inputs),
       outputFileType(outputFileType) {
-  stats = std::make_unique<JobStats>(*this, ctx);
+  stats = std::make_unique<JobStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
 }
 Job::~Job() {}

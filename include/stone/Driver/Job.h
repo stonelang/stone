@@ -28,9 +28,9 @@ class JobStats final : public Stats {
   const Job &job;
 
 public:
-  JobStats(const Job &job, Context &ctx)
-      : Stats("job statistics:", ctx), job(job) {}
-  void Print() override;
+  JobStats(const Job &job)
+      : Stats("job statistics:"), job(job) {}
+  void Print(ColorfulStream& stream) override;
 };
 
 // The process ID

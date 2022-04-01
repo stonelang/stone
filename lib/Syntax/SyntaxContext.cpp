@@ -17,7 +17,7 @@ using namespace stone::syn;
 SyntaxContext::SyntaxContext(stone::Context &ctx,
                              const SearchPathOptions &spOpts)
     : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetSystemOptions()) {
-  stats = std::make_unique<SyntaxContextStats>(*this, ctx);
+  stats = std::make_unique<SyntaxContextStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
 
   builtin.Init(*this);
@@ -65,4 +65,4 @@ size_t SyntaxContext::GetSizeOfMemUsed() const {
   return bumpAlloc.getTotalMemory();
 }
 
-void SyntaxContextStats::Print() {}
+void SyntaxContextStats::Print(ColorfulStream& stream) {}

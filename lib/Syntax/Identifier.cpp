@@ -86,7 +86,7 @@ void IdentifierTable::AddKeywords(const SystemOptions &LangOpts) {
 //===----------------------------------------------------------------------===//
 /// PrintStats - Print statistics about how well the identifier table is doing
 /// at hashing identifiers.
-void IdentifierTableStats::Print() {
+void IdentifierTableStats::Print(ColorfulStream& stream) {
   unsigned numBuckets = table.symbols.getNumBuckets();
   unsigned numIdentifiers = table.symbols.getNumItems();
   unsigned numEmptyBuckets = numBuckets - numIdentifiers;
@@ -104,8 +104,7 @@ void IdentifierTableStats::Print() {
       maxIdentifierLength = idLen;
   }
 
-  auto &print = GetContext().Out();
-  print << GetName() << '\n';
+  stream << GetName() << '\n';
 
   fprintf(stderr, "# Identifiers:   %d\n", numIdentifiers);
   fprintf(stderr, "# Empty Buckets: %d\n", numEmptyBuckets);

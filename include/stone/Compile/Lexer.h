@@ -44,11 +44,10 @@ class LexerStats final : public Stats {
   const Lexer &lexer;
 
 public:
-  LexerStats(const Lexer &lexer, Context &ctx)
-      : Stats("lexer statistics:", ctx), lexer(lexer) {}
-
-  const Lexer &GetLexer() { return lexer; }
-  void Print() override;
+  LexerStats(const Lexer &lexer)
+      : Stats("lexer statistics:"), lexer(lexer) {}
+public:
+  void Print(ColorfulStream& stream) override;
 };
 
 struct PrincipalCtor {};
