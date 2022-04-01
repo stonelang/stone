@@ -1,5 +1,8 @@
-#ifndef STONE_PARSE_CONFUSABLES_H
-#define STONE_PARSE_CONFUSABLES_H
+#ifndef STONE_COMPILE_CONFUSABLE_H
+#define STONE_COMPILE_CONFUSABLE_H
+
+#include "llvm/ADT/StringRef.h"
+
 
 #include <stdint.h>
 
@@ -9,6 +12,11 @@ namespace syn {
 /// specification table of confusable characters and maps to punctuation,
 /// and either returns either the expected ASCII character or 0.
 char ConvertConfusableCharacterToASCII(uint32_t codepoint);
+
+std::pair<llvm::StringRef, llvm::StringRef>
+GetConfusableAndBaseCodepointNames(uint32_t codepoint);
+
+
 } // namespace syn
 } // namespace stone
 

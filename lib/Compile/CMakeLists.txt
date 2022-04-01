@@ -1,5 +1,6 @@
 set(stone_compile_sources
 	Compile.cpp
+	Confusable.cpp
 	DebugLangListener.cpp
 	Lang.cpp
 	Frontend.cpp
