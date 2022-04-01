@@ -88,6 +88,7 @@
 TOKEN(eof)
 // unknown token
 TOKEN(alien)
+TOKEN(dollarident)
 TOKEN(code_complete)
 TOKEN(identifier)
 TOKEN(oper_binary_unspaced) // "x+y"
@@ -104,6 +105,7 @@ LITERAL(integer_literal)
 LITERAL(floating_literal)
 LITERAL(string_literal)
 LITERAL(imaginary_literal)
+LITERAL(regex_literal)
 
 // STATUS FLAGS : TOKON, TOKOFF, TOKRSV
 // Keywords that start decls.
@@ -129,6 +131,7 @@ DECL_KEYWORD(const, TOKON)
 DECL_KEYWORD(own, TOKRSV)
 DECL_KEYWORD(free, TOKRSV)
 DECL_KEYWORD(delete, TOKRSV)
+DECL_KEYWORD(operator, TOKON)
 DECL_KEYWORD(forward, TOKON)
 DECL_KEYWORD(safe, TOKRSV)
 DECL_KEYWORD(fun, TOKON)
