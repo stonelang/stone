@@ -395,6 +395,7 @@ public:
     return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)),
                   tokenable);
   }
+
 };
 class DiagnosticStateRAII final {
   llvm::SaveAndRestore<diag::Level> prevLevel;

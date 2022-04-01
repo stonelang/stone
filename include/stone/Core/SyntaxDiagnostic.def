@@ -201,5 +201,13 @@ ERROR(err_case_stmt_without_body,none,
 //==============================================================================
 
 
+//------------------------------------------------------------------------------
+// MARK: Expression parsing diagnostics
+//------------------------------------------------------------------------------
+
+
+ERROR(expected_member_name,PointsToFirstBadToken,
+      "expected member name following '.'", ())
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

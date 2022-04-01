@@ -266,12 +266,16 @@ public:
   unsigned GetSrcID() { return srcID; }
   NullCharKind GetNullCharKind(const char *data) const;
 
+  static SrcLoc getSrcLoc(const char *Loc) { return SrcLoc::GetFromPtr(Loc); }
+
 public:
-  template <typename... DiagArgTypes, typename... ArgTypes>
-  InFlightDiagnostic PrintD(const char *locPtr, Diag<DiagArgTypes...> DiagID,
-                            ArgTypes &&...Args) {
-    // TODO:ctx.GetDiagEngine().PrintD(SrcLoc::GetFromPtr(locPtr), DiagID,
-    //                               std::forward<ArgTypes>(Args)...);
+  
+  InFlightDiagnostic PrintD(const char *loc, Diagnostic diagnostic);
+  
+  template<typename ...DiagArgTypes, typename ...ArgTypes>
+  InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
+                              ArgTypes &&...Args) {
+    return PrintD(loc, Diagnostic(DiagnosticDetail(DiagID, std::forward<ArgTypes>(Args)...)));
   }
 
 private:

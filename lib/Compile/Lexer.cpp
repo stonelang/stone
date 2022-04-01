@@ -631,6 +631,7 @@ static bool DelimiterMatches(unsigned customDelimiterLen, const char *&bytesPtr,
   }
   bytesPtr += customDelimiterLen;
   if (ctx && (tmpPtr > bytesPtr)) {
+
     stone::Panic("lex_invalid_closing_delimiter");
     // TODO:
     // Diag<> message = IsClosing ? diag::lex_invalid_closing_delimiter
@@ -1336,6 +1337,10 @@ void Lexer::LexHexNumber() {
   };
 
   auto ExpectedHexDigit = [&](const char *loc) {
+
+    PrintD(loc, diag::lex_invalid_character);
+
+
     // stone::Panic("diagnose(loc, diag::lex_invalid_digit_in_int_literal,
     // StringRef(loc, 1),
     //          (unsigned)ExpectedDigitKind::Hex);");
@@ -1584,5 +1589,17 @@ Token Lexer::GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) {
 SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) {
   return loc.getAdvancedLocOrInvalid(GetTokenAtLoc(sm, loc).GetLength());
 }
+
+
+InFlightDiagnostic Lexer::PrintD(const char *loc, Diagnostic diagnostic) {
+  // if (ctx){
+  //   return de->PrintD(getSrcLoc(loc), diagnostic);
+  // }
+  // return InFlightDiagnostic();
+return ctx.GetDiagEngine().PrintD(getSrcLoc(loc), diagnostic);
+
+}
+
+
 
 void LexerStats::Print(ColorfulStream& stream) {}
