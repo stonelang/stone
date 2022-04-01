@@ -3,7 +3,6 @@
 
 #include "llvm/ADT/StringRef.h"
 
-
 #include <stdint.h>
 
 namespace stone {
@@ -15,7 +14,6 @@ char ConvertConfusableCharacterToASCII(uint32_t codepoint);
 
 std::pair<llvm::StringRef, llvm::StringRef>
 GetConfusableAndBaseCodepointNames(uint32_t codepoint);
-
 
 } // namespace syn
 } // namespace stone

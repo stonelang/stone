@@ -3,10 +3,9 @@
 
 #include <iostream>
 
-#include "stone/Core/List.h"
 #include "stone/Core/Color.h"
+#include "stone/Core/List.h"
 #include "stone/Core/Timer.h"
-
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Chrono.h"
@@ -41,9 +40,9 @@ public:
   ConstList<Stats> GetDeps() { return deps; }
 
   stone::Timer &GetTimer() { return *timer.get(); }
-  
+
 public:
-  virtual void Print(ColorfulStream& stream) = 0;
+  virtual void Print(ColorfulStream &stream) = 0;
 };
 
 // TODO: You can do something very similar to that of the DiagnosticEngine
@@ -57,7 +56,7 @@ public:
 public:
   void Register(Stats *stats);
   /// Print all groups and entries in groups
-  void Print(ColorfulStream& stream);
+  void Print(ColorfulStream &stream);
 };
 } // namespace stone
 

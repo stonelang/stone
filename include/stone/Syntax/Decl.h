@@ -31,6 +31,7 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
+class DiagnosticEngine;
 namespace syn {
 
 class Decl;
@@ -46,7 +47,6 @@ class Type;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
-class DiagnosticEngine;
 class TypeAliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
@@ -58,7 +58,7 @@ class DeclStats final : public Stats {
 public:
   DeclStats(const Decl &declaration)
       : Stats("ast-declaration stats:"), declaration(declaration) {}
-  void Print(ColorfulStream& stream) override;
+  void Print(ColorfulStream &stream) override;
 };
 
 class alignas(1 << DeclAlignInBits) Decl {

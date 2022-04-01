@@ -18,7 +18,6 @@ class SyntaxListener;
 namespace syn {
 class Token;
 
-
 enum class TriviaRetentionMode {
   Without,
   With,
@@ -44,10 +43,10 @@ class LexerStats final : public Stats {
   const Lexer &lexer;
 
 public:
-  LexerStats(const Lexer &lexer)
-      : Stats("lexer statistics:"), lexer(lexer) {}
+  LexerStats(const Lexer &lexer) : Stats("lexer statistics:"), lexer(lexer) {}
+
 public:
-  void Print(ColorfulStream& stream) override;
+  void Print(ColorfulStream &stream) override;
 };
 
 struct PrincipalCtor {};
@@ -76,7 +75,8 @@ class Lexer final : public Tokenable {
 
   const unsigned srcID;
   const SrcMgr &sm;
-  Context &ctx;
+  DiagnosticEngine *de;
+  StatisticEngine *se;
   LexerCache cache;
   LexerState state;
 
@@ -149,11 +149,12 @@ private:
   void operator=(const Lexer &) = delete;
 
 public:
-  Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm, Context &ctx,
+  Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
+        DiagnosticEngine *de, StatisticEngine *se,
         SyntaxListener *pipeline = nullptr);
 
-  Lexer(const unsigned srcID, const SrcMgr &sm, Context &ctx,
-        SyntaxListener *pipeline = nullptr);
+  Lexer(const unsigned srcID, const SrcMgr &sm, DiagnosticEngine *de,
+        StatisticEngine *se, SyntaxListener *pipeline = nullptr);
 
   void Initialize(unsigned startOffset, unsigned endOffset);
 
@@ -193,36 +194,39 @@ public:
     }
   }
 
- // /// Returns the lexer state for the beginning of the given token
- //  /// location. After restoring the state, lexer will return this token and
- //  /// continue from there.
- //  LexerState GetStateForBeginningOfTokenLoc(SrcLoc Loc) const;
+  // /// Returns the lexer state for the beginning of the given token
+  //  /// location. After restoring the state, lexer will return this token and
+  //  /// continue from there.
+  //  LexerState GetStateForBeginningOfTokenLoc(SrcLoc Loc) const;
 
- //  /// Returns the lexer state for the beginning of the given token.
- //  /// After restoring the state, lexer will return this token and continue from
- //  /// there.
- //  LexerState GetStateForBeginningOfToken(const Token &tk,
- //                                    const StringRef &LeadingTrivia = {}) const {
+  //  /// Returns the lexer state for the beginning of the given token.
+  //  /// After restoring the state, lexer will return this token and continue
+  //  from
+  //  /// there.
+  //  LexerState GetStateForBeginningOfToken(const Token &tk,
+  //                                    const StringRef &LeadingTrivia = {})
+  //                                    const {
 
- //    // If the token has a comment attached to it, rewind to before the comment,
- //    // not just the start of the token.  This ensures that we will re-lex and
- //    // reattach the comment to the token if rewound to this state.
- //    SrcLoc tkStart = tk.getCommentStart();
- //    if (tkStart.isInvalid())
- //      tkStart = tk.getLoc();
- //    auto state = GetStateForBeginningOfTokenLoc(TokStart);
- //    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
- //      S.LeadingTrivia = LeadingTrivia;
- //    } else {
- //      S.LeadingTrivia = StringRef();
- //    }
- //    return S;
- //  }
+  //    // If the token has a comment attached to it, rewind to before the
+  //    comment,
+  //    // not just the start of the token.  This ensures that we will re-lex
+  //    and
+  //    // reattach the comment to the token if rewound to this state.
+  //    SrcLoc tkStart = tk.getCommentStart();
+  //    if (tkStart.isInvalid())
+  //      tkStart = tk.getLoc();
+  //    auto state = GetStateForBeginningOfTokenLoc(TokStart);
+  //    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
+  //      S.LeadingTrivia = LeadingTrivia;
+  //    } else {
+  //      S.LeadingTrivia = StringRef();
+  //    }
+  //    return S;
+  //  }
 
- //  LexerState GetStateForEndOfTokenLoc(SourceLoc Loc) const {
- //    return LexerState(getLocForEndOfToken(SourceMgr, Loc));
- //  }
-
+  //  LexerState GetStateForEndOfTokenLoc(SourceLoc Loc) const {
+  //    return LexerState(getLocForEndOfToken(SourceMgr, Loc));
+  //  }
 
 private:
   /// Main lexing loop
@@ -243,7 +247,7 @@ private:
   unsigned LexChar(const char *&curPtr, char stopQuote, bool emitDiagnostics,
                    bool isMultilineString, unsigned customDelimiterLen);
 
-  unsigned LexUnicodeEscape(const char *&curPtr, Context *ctx);
+  unsigned LexUnicodeEscape(const char *&curPtr, DiagnosticEngine *de);
 
   void LexAlien();
 
@@ -269,13 +273,13 @@ public:
   static SrcLoc getSrcLoc(const char *Loc) { return SrcLoc::GetFromPtr(Loc); }
 
 public:
-  
   InFlightDiagnostic PrintD(const char *loc, Diagnostic diagnostic);
-  
-  template<typename ...DiagArgTypes, typename ...ArgTypes>
+
+  template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
-                              ArgTypes &&...Args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(DiagID, std::forward<ArgTypes>(Args)...)));
+                            ArgTypes &&...Args) {
+    return PrintD(loc, Diagnostic(DiagnosticDetail(
+                           DiagID, std::forward<ArgTypes>(Args)...)));
   }
 
 private:

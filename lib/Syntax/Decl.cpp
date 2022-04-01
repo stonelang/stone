@@ -44,4 +44,4 @@ FunctionDecl::FunctionDecl(DeclKind ty, SrcLoc loc, SyntaxContext &tc,
                            DeclContext *dc)
     : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContextKind::Decl, ty) {}
 
-void DeclStats::Print(ColorfulStream& stream) {}
+void DeclStats::Print(ColorfulStream &stream) {}

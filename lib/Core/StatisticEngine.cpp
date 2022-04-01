@@ -14,7 +14,7 @@ void StatisticEngine::Register(Stats *stats) {
   entries.push_back(stats);
 }
 
-void StatisticEngine::Print(ColorfulStream& stream) {
+void StatisticEngine::Print(ColorfulStream &stream) {
   for (const auto &stats : entries) {
     stats->Print(stream);
   }

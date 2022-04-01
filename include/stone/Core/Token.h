@@ -191,14 +191,11 @@ public:
   }
 */
 
-
- SrcLoc GetCommentStart() const {
+  SrcLoc GetCommentStart() const {
     if (commentLength == 0)
       return SrcLoc();
     return SrcLoc(llvm::SMLoc::getFromPointer(TrimComment().begin()));
   }
-
-
 
   StringRef GetText() const { return text; }
   void SetText(StringRef T) { text = T; }

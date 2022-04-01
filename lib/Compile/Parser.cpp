@@ -12,15 +12,17 @@ using namespace stone::syn;
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
     : Parser(sf, syntax,
-             std::unique_ptr<Lexer>(
-                 new Lexer(sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
-                           syntax.GetSyntaxContext().GetContext())),
+             std::unique_ptr<Lexer>(new Lexer(
+                 sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
+                 &syntax.GetSyntaxContext().GetContext().GetDiagEngine(),
+                 &syntax.GetSyntaxContext().GetContext().GetStatEngine())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
       listener(listener) {
+
   stats.reset(new ParserStats(*this));
   GetContext().GetStatEngine().Register(stats.get());
 
@@ -111,4 +113,4 @@ SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
   return ConsumeTok();
 }
 
-void ParserStats::Print(ColorfulStream& stream) {}
+void ParserStats::Print(ColorfulStream &stream) {}

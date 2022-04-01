@@ -26,7 +26,7 @@ class TypeCheckerStats final : public Stats {
 public:
   TypeCheckerStats(const TypeChecker &checker)
       : Stats("checker statistics:"), checker(checker) {}
-  void Print(ColorfulStream& stream) override;
+  void Print(ColorfulStream &stream) override;
 };
 
 class TypeCheckerDiagnostics {};

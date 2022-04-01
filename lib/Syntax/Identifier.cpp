@@ -86,7 +86,7 @@ void IdentifierTable::AddKeywords(const SystemOptions &LangOpts) {
 //===----------------------------------------------------------------------===//
 /// PrintStats - Print statistics about how well the identifier table is doing
 /// at hashing identifiers.
-void IdentifierTableStats::Print(ColorfulStream& stream) {
+void IdentifierTableStats::Print(ColorfulStream &stream) {
   unsigned numBuckets = table.symbols.getNumBuckets();
   unsigned numIdentifiers = table.symbols.getNumItems();
   unsigned numEmptyBuckets = numBuckets - numIdentifiers;

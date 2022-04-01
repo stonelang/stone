@@ -42,6 +42,8 @@
 #include "llvm/Support/Casting.h"
 
 namespace stone {
+class DiagnosticEngine;
+
 namespace syn {
 
 class BlockExpr;
@@ -56,7 +58,6 @@ class Module;
 class Stmt;
 class Builtin;
 class SyntaxContext;
-class DiagnosticEngine;
 
 class SyntaxContextStats final : public Stats {
   const SyntaxContext &tc;
@@ -64,7 +65,7 @@ class SyntaxContextStats final : public Stats {
 public:
   SyntaxContextStats(const SyntaxContext &tc)
       : Stats("tree-context stats:"), tc(tc) {}
-  void Print(ColorfulStream& stream) override;
+  void Print(ColorfulStream &stream) override;
 };
 class SyntaxContext final {
   friend SyntaxContextStats;

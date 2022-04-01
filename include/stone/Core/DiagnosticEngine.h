@@ -116,7 +116,7 @@ class InFlightDiagnostic {
   friend class DiagnosticEngine;
 
   CodeFixer fixer;
-  DiagnosticEngine &de;
+  DiagnosticEngine* de;
   Tokenable *tokenable;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -130,12 +130,13 @@ class InFlightDiagnostic {
   /// call to ForceEmit.
   mutable bool isForceFlush = false;
 
-  InFlightDiagnostic() = default;
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
-
 public:
+
+  InFlightDiagnostic();
+
   InFlightDiagnostic(DiagnosticEngine &de, Tokenable *tokenable = nullptr);
 
   /// Transfer an in-flight diagnostic to a new object, which is
@@ -155,7 +156,7 @@ public:
 
 public:
   CodeFixer &WithFix() { return fixer; }
-  DiagnosticEngine &GetDiagEngine() { return de; }
+  DiagnosticEngine &GetDiagEngine() { return *de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.
   void Flush();
@@ -395,7 +396,6 @@ public:
     return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)),
                   tokenable);
   }
-
 };
 class DiagnosticStateRAII final {
   llvm::SaveAndRestore<diag::Level> prevLevel;

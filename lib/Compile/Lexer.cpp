@@ -449,15 +449,15 @@ static bool IsValidtokStart(const signed char ch) {
   }
 }
 
-static void DiagnoseEmbeddedNull(const char *locPtr, Context *ctx) {
+static void DiagnoseEmbeddedNull(const char *locPtr, DiagnosticEngine *de) {
   assert(locPtr && "invalid source location");
   assert(*locPtr == '\0' && "not an embedded null");
 
   SrcLoc nullStartLoc = SrcLoc::GetFromPtr(locPtr);
   SrcLoc nullEndLoc = SrcLoc::GetFromPtr(locPtr + 1);
 
-  if (ctx) {
-    ctx->GetDiagEngine().PrintD(nullStartLoc, diag::warn_null_character);
+  if (de) {
+    de->PrintD(nullStartLoc, diag::warn_null_character);
     // TODO: .fixItRemoveChars(nullStartLoc, nullEndLoc);
   }
 }
@@ -466,7 +466,7 @@ static void DiagnoseEmbeddedNull(const char *locPtr, Context *ctx) {
 /// if it stopped at the end of line, \c false if it stopped at the end of file.
 static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
                                const char *codeCompletionPtr = nullptr,
-                               Context *ctx = nullptr) {
+                               DiagnosticEngine *de = nullptr) {
   while (1) {
     switch (*curPtr++) {
     case '\n':
@@ -481,8 +481,8 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
         if (ValidateUTF8CharAndAdvance(curPtr, bufferEnd) == ~0U)
 
           // TODO; May not always want to call this
-          if (ctx) {
-            ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(charStart),
+          if (de) {
+            de->PrintD(SrcLoc::GetFromPtr(charStart),
                                         diag::err_invalid_utf8);
           }
       }
@@ -490,10 +490,10 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
     case 0:
 
       if ((curPtr - 1) != bufferEnd) {
-        if (ctx && (curPtr - 1) != codeCompletionPtr) {
+        if (de && (curPtr - 1) != codeCompletionPtr) {
           // If this is a random null character in the middle of a buffer,
           // skip it as whitespace.
-          DiagnoseEmbeddedNull(curPtr - 1, ctx);
+          DiagnoseEmbeddedNull(curPtr - 1, de);
         }
         continue;
       }
@@ -506,7 +506,7 @@ static bool AdvanceToEndOfLine(const char *&curPtr, const char *bufferEnd,
 static bool SkipToEndOfSlashStarComment(const char *&curPtr,
                                         const char *bufferEnd,
                                         const char *codeCompletionPtr,
-                                        Context *ctx) {
+                                        DiagnosticEngine *de) {
   const char *startPtr = curPtr - 1;
   assert(curPtr[-1] == '/' && curPtr[0] == '*' && "Not a /* comment");
   // Make sure to advance over the * so that we don't incorrectly handle /*/ as
@@ -542,28 +542,28 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
 
     default:
       // If this is a "high" UTF-8 character, validate it.
-      if (ctx && (signed char)(curPtr[-1]) < 0) {
+      if (de && (signed char)(curPtr[-1]) < 0) {
         --curPtr;
         const char *charStart = curPtr;
         if (ValidateUTF8CharAndAdvance(curPtr, bufferEnd) == ~0U) {
-          ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(charStart),
+          de->PrintD(SrcLoc::GetFromPtr(charStart),
                                       diag::err_invalid_utf8);
         }
       }
       break; // Otherwise, eat other characters.
     case 0:
       if (curPtr - 1 != bufferEnd) {
-        if (ctx && curPtr - 1 != codeCompletionPtr) {
+        if (de && curPtr - 1 != codeCompletionPtr) {
           // If this is a random nul character in the middle of a buffer, skip
           // it as whitespace.
-          DiagnoseEmbeddedNull(curPtr - 1, ctx);
+          DiagnoseEmbeddedNull(curPtr - 1, de);
         }
         continue;
       }
       // Otherwise, we have an unterminated /* comment.
       --curPtr;
 
-      if (ctx) {
+      if (de) {
         // Count how many levels deep we are.
         llvm::SmallString<8> terminator("*/");
         while (--depth != 0) {
@@ -577,7 +577,7 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
         //                diag::lex_unterminated_block_comment)
         //     .fixItInsert(Lexer::getSourceLoc(endOfLine), Terminator);
 
-        ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(startPtr),
+        de->PrintD(SrcLoc::GetFromPtr(startPtr),
                                     diag::note_comment_start);
       }
       return isMultiline;
@@ -589,7 +589,7 @@ static bool SkipToEndOfSlashStarComment(const char *&curPtr,
 /// An invisible character in the middle of a delimiter can be used to extend
 /// the literal beyond what it would appear creating potential security bugs.
 static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
-                                             Context *ctx) {
+                                             DiagnosticEngine *de) {
   // TODO: Detect, diagnose and skip over zero-width characters if required.
   // See https://bugs.swift.org/browse/SR-8678 for possible implementation.
   return *curPtr == target && curPtr++;
@@ -598,15 +598,16 @@ static bool DiagnoseZeroWidthMatchAndAdvance(char target, const char *&curPtr,
 /// Extracts/detects any custom delimiter on
 /// opening a string literal, advances curPtr if a delimiter is found and
 /// returns a non-zero delimiter length. curPtr[-1] must be '#' when called.
-static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Context *ctx) {
+static unsigned AdvanceIfCustomDelimiter(const char *&curPtr,
+                                         DiagnosticEngine *de) {
   assert(curPtr[-1] == '#');
   const char *tmpPtr = curPtr;
   unsigned customDelimiterLen = 1;
 
-  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, ctx)) {
+  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, de)) {
     customDelimiterLen++;
   }
-  if (DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, ctx)) {
+  if (DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, de)) {
     curPtr = tmpPtr;
     return customDelimiterLen;
   }
@@ -619,18 +620,18 @@ static unsigned AdvanceIfCustomDelimiter(const char *&curPtr, Context *ctx) {
 /// If delimiter matches, advances byte pointer passed in and returns true.
 /// Also used to detect the final delimiter of a string when IsClosing == true.
 static bool DelimiterMatches(unsigned customDelimiterLen, const char *&bytesPtr,
-                             Context *ctx, bool isClosing = false) {
+                             DiagnosticEngine *de, bool isClosing = false) {
   if (!customDelimiterLen) {
     return true;
   }
   const char *tmpPtr = bytesPtr;
-  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, ctx)) {
+  while (DiagnoseZeroWidthMatchAndAdvance('#', tmpPtr, de)) {
   }
   if (tmpPtr - bytesPtr < customDelimiterLen) {
     return false;
   }
   bytesPtr += customDelimiterLen;
-  if (ctx && (tmpPtr > bytesPtr)) {
+  if (de && (tmpPtr > bytesPtr)) {
 
     stone::Panic("lex_invalid_closing_delimiter");
     // TODO:
@@ -645,7 +646,8 @@ static bool DelimiterMatches(unsigned customDelimiterLen, const char *&bytesPtr,
 
 /// AdvanceIfMultilineDelimiter - Centralized check for multiline delimiter.
 static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
-                                        const char *&curPtr, Context *ctx,
+                                        const char *&curPtr,
+                                        DiagnosticEngine *de,
                                         bool isOpening = false) {
   // Test for single-line string literals that resemble multiline delimiter.
   const char *tmpPtr = curPtr + 1;
@@ -663,8 +665,8 @@ static bool AdvanceIfMultilineDelimiter(unsigned customDelimiterLen,
 
   tmpPtr = curPtr;
   if (*(tmpPtr - 1) == '"' &&
-      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, ctx) &&
-      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, ctx)) {
+      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, de) &&
+      DiagnoseZeroWidthMatchAndAdvance('"', tmpPtr, de)) {
     curPtr = tmpPtr;
     return true;
   }
@@ -695,16 +697,20 @@ static bool MaybeConsumeNewlineEscape(const char *&curPtr, ssize_t offset) {
   }
 }
 
-// TODO: Remove sm -- it is already in the ctx
+// TODO: Remove sm -- it is already in the de
 Lexer::Lexer(PrincipalCtor &, const unsigned srcID, const SrcMgr &sm,
-             Context &ctx, SyntaxListener *pipeline)
-    : srcID(srcID), sm(sm), ctx(ctx) {}
-
-Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, Context &ctx,
+             DiagnosticEngine *de, StatisticEngine *se,
              SyntaxListener *pipeline)
-    : srcID(srcID), sm(sm), ctx(ctx), pipeline(pipeline) {
-  stats = std::make_unique<LexerStats>(*this);
-  ctx.GetStatEngine().Register(stats.get());
+    : srcID(srcID), sm(sm), de(de), se(se) {}
+
+Lexer::Lexer(const unsigned srcID, const SrcMgr &sm, DiagnosticEngine *de,
+             StatisticEngine *se, SyntaxListener *pipeline)
+    : srcID(srcID), sm(sm), de(de), se(se), pipeline(pipeline) {
+
+  if (se) {
+    stats = std::make_unique<LexerStats>(*this);
+    se->Register(stats.get());
+  }
 
   unsigned endOffset = sm.getRangeForBuffer(srcID).getByteLength();
   Initialize(/*startOffset=*/0, endOffset);
@@ -867,7 +873,7 @@ void Lexer::Lex() {
 }
 
 void Lexer::SkipToEndOfLine(bool eatNewline) {
-  bool isEOL = AdvanceToEndOfLine(curPtr, bufferEnd, codeCompletionPtr, &ctx);
+  bool isEOL = AdvanceToEndOfLine(curPtr, bufferEnd, codeCompletionPtr, de);
   if (eatNewline && isEOL) {
     ++curPtr;
     nextToken.SetAtStartOfLine(true);
@@ -878,7 +884,7 @@ void Lexer::SkipSlashSlashComment(bool eatNewline) {
   SkipToEndOfLine(eatNewline);
 }
 
-unsigned Lexer::LexUnicodeEscape(const char *&curPtr, Context *ctx) {
+unsigned Lexer::LexUnicodeEscape(const char *&curPtr, DiagnosticEngine *de) {
   assert(curPtr[0] == '{' && "Invalid unicode escape");
   ++curPtr;
 
@@ -891,18 +897,17 @@ unsigned Lexer::LexUnicodeEscape(const char *&curPtr, Context *ctx) {
   //   ++curPtr;
 
   if (curPtr[0] != '}') {
-    if (ctx) {
-      ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(curPtr),
-                                  diag::err_invalid_u_escape_rbrace);
+    if (de) {
+      de->PrintD(SrcLoc::GetFromPtr(curPtr), diag::err_invalid_u_escape_rbrace);
     }
     return ~1U;
   }
   ++curPtr;
 
   if (numDigits < 1 || numDigits > 8) {
-    if (ctx) {
-      ctx->GetDiagEngine().PrintD(SrcLoc::GetFromPtr(curPtr),
-                                  diag::err_invalid_u_escape);
+    if (de) {
+      de->PrintD(SrcLoc::GetFromPtr(curPtr),
+                                 diag::err_invalid_u_escape);
     }
     return ~1U;
   }
@@ -1077,13 +1082,13 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
       auto tmpPtr = curPtr;
       if (isMultilineString &&
           !AdvanceIfMultilineDelimiter(customDelimiterLen, tmpPtr,
-                                       emitDiagnostics ? &ctx : nullptr)) {
+                                       emitDiagnostics ? de : nullptr)) {
         return '"';
       }
 
       if (customDelimiterLen &&
           !DelimiterMatches(customDelimiterLen, tmpPtr,
-                            emitDiagnostics ? &ctx : nullptr,
+                            emitDiagnostics ? de : nullptr,
                             /*IsClosing=*/true)) {
         return '"';
       }
@@ -1105,7 +1110,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
     return curPtr[-1];
   case '\\': // Escapes.
     if (!DelimiterMatches(customDelimiterLen, curPtr,
-                          emitDiagnostics ? &ctx : nullptr))
+                          emitDiagnostics ? de : nullptr))
       return '\\';
     break;
   }
@@ -1162,7 +1167,7 @@ unsigned Lexer::LexChar(const char *&curPtr, char stopQuote,
       return ~1U;
     }
 
-    charValue = LexUnicodeEscape(curPtr, emitDiagnostics ? &ctx : nullptr);
+    charValue = LexUnicodeEscape(curPtr, emitDiagnostics ? de : nullptr);
     if (charValue == ~1U)
       return ~1U;
     break;
@@ -1337,9 +1342,7 @@ void Lexer::LexHexNumber() {
   };
 
   auto ExpectedHexDigit = [&](const char *loc) {
-
     PrintD(loc, diag::lex_invalid_character);
-
 
     // stone::Panic("diagnose(loc, diag::lex_invalid_digit_in_int_literal,
     // StringRef(loc, 1),
@@ -1467,7 +1470,7 @@ void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
   assert((quoteChar == '"' || quoteChar == '\'') && "Unexpected start");
 
   bool isMultilineString =
-      AdvanceIfMultilineDelimiter(customDelimiterLen, curPtr, &ctx, true);
+      AdvanceIfMultilineDelimiter(customDelimiterLen, curPtr, de, true);
   if (isMultilineString && *curPtr != '\n' && *curPtr != '\r') {
     stone::Panic("lex_illegal_multiline_string_start");
     // diagnose(curPtr, diag::lex_illegal_multiline_string_start)
@@ -1579,7 +1582,7 @@ Token Lexer::GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) {
   // comments and normally we won't be at the beginning of a comment token
   // (making this option irrelevant), or the caller lexed comments and
   // we need to lex just the comment token.
-  Lexer lexer(srcID, sm, ctx, pipeline);
+  Lexer lexer(srcID, sm, nullptr, nullptr, pipeline);
 
   // TODO: lexer.RestoreState(LexerState(loc));
   return lexer.Peek();
@@ -1589,16 +1592,12 @@ SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) {
   return loc.getAdvancedLocOrInvalid(GetTokenAtLoc(sm, loc).GetLength());
 }
 
-
 InFlightDiagnostic Lexer::PrintD(const char *loc, Diagnostic diagnostic) {
-  // if (ctx){
-  //   return de->PrintD(getSrcLoc(loc), diagnostic);
-  // }
-  // return InFlightDiagnostic();
-return ctx.GetDiagEngine().PrintD(getSrcLoc(loc), diagnostic);
-
+  if (de){
+    return de->PrintD(getSrcLoc(loc), diagnostic);
+    }
+    return InFlightDiagnostic();
+  
 }
 
-
-
-void LexerStats::Print(ColorfulStream& stream) {}
+void LexerStats::Print(ColorfulStream &stream) {}

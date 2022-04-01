@@ -65,4 +65,4 @@ size_t SyntaxContext::GetSizeOfMemUsed() const {
   return bumpAlloc.getTotalMemory();
 }
 
-void SyntaxContextStats::Print(ColorfulStream& stream) {}
+void SyntaxContextStats::Print(ColorfulStream &stream) {}

@@ -16,4 +16,4 @@ TypeChecker::TypeChecker(SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
   sf.GetSyntaxContext().GetContext().GetStatEngine().Register(stats.get());
 }
 
-void TypeCheckerStats::Print(ColorfulStream& stream) {}
+void TypeCheckerStats::Print(ColorfulStream &stream) {}

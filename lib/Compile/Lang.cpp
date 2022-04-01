@@ -99,7 +99,7 @@ void Lang::Finish() {
   }
 }
 
-void LangStats::Print(ColorfulStream& stream) {
+void LangStats::Print(ColorfulStream &stream) {
   // if (sc.GetLangOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;
