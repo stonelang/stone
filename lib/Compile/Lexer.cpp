@@ -1502,7 +1502,6 @@ void Lexer::LexStringLiteral(unsigned customDelimiterLen) {
         return MakeTok(tok::alien, tokStart);
       }
     }
-
     // String literals cannot have \n or \r in them (unless multiline).
     if (((*curPtr == '\r' || *curPtr == '\n') && !isMultilineString) ||
         curPtr == bufferEnd) {
