@@ -115,18 +115,18 @@ public:
   /// Add a character-based replacement fix-it to the currently-active
   /// diagnostic.
   InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End, StringRef Str) {
-    return ReplaceChars(Start, End, "%0", diag::LLVMStrArgument{Str});
+    return ReplaceChars(Start, End, "%0", diag::LLVMStr{Str});
   }
 
   /// Add an insertion fix-it to the currently-active diagnostic.
   InFlightDiagnostic &Insert(SrcLoc L, StringRef Str) {
-    return ReplaceChars(L, L, "%0", diag::LLVMStrArgument{Str});
+    return ReplaceChars(L, L, "%0", diag::LLVMStr{Str});
   }
 
   /// Add an insertion fix-it to the currently-active diagnostic. The
   /// text is inserted immediately *after* the token specified.
   InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef Str) {
-    return InsertAfter(L, "%0", diag::LLVMStrArgument{Str});
+    return InsertAfter(L, "%0", diag::LLVMStr{Str});
   }
 
   /// Add a token-based removal fix-it to the currently-active

@@ -123,9 +123,10 @@ public:
   // SyntaxResult<TemplateDecl *> ParseTemplateDecl(ParsingDeclSpecifier &pds);
 private:
   void Lex(Token &result) { lexer->Lex(result); }
-  void Lex(Token &result, Trivia &leading, Trivia &trailing) {
-    lexer->Lex(result, leading, trailing);
-  }
+
+  // void Lex(Token &result, Trivia &leading, Trivia &trailing) {
+  //   lexer->Lex(result, leading, trailing);
+  // }
 
   /// isTokenParen - Return true if the cur token is '(' or ')'.
   bool IsParenTok() const { return token.IsAny(tok::l_paren, tok::r_paren); }
@@ -252,7 +253,7 @@ private:
 
 private:
   // Helpers
-  Token &Peek() { return lexer->Peek(); }
+  const Token &Peek() const { return lexer->Peek(); }
 
 private:
   //===--------------------------------------------------------------------===//

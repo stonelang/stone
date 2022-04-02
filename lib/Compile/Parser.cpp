@@ -62,7 +62,7 @@ void Parser::ExitScope() {}
 SrcLoc Parser::ConsumeTok(bool onTok) {
   SrcLoc loc = token.GetLoc();
   assert(token.IsNot(tok::eof) && "Lexing past eof!");
-  Lex(token, leadingTrivia, trailingTrivia);
+  // TODO: Lex(token, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
   return loc;
 }

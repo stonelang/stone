@@ -4,16 +4,16 @@
 
 
 ERROR(err_no_llvm_target,none,
-      "error loading LLVM target for triple '%0': %1", (diag::LLVMStrArgument, diag::LLVMStrArgument))
+      "error loading LLVM target for triple '%0': %1", (diag::LLVMStr, diag::LLVMStr))
 
 ERROR(err_codegen_init_fail,none,
       "cannot initialize code generation passes for target", ())
 
 ERROR(err_type_to_verify_not_found,none, "unable to find type '%0' to verify",
-      (diag::LLVMStrArgument))
+      (diag::LLVMStr))
       
 ERROR(err_type_to_verify_ambiguous,none, "type to verify '%0' is ambiguous",
-      (diag::LLVMStrArgument))
+      (diag::LLVMStr))
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS

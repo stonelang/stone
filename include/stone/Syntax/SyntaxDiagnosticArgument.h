@@ -17,36 +17,36 @@ namespace diag {
 
 // struct TokenArgument final : public SyntaxArgument {
 //   const syn::Token *val;
-//   DeclArgument() = delete;
+//   Decl() = delete;
 //   explicit TokenArgument(const syn::Token *val)
 //       : SyntaxArgument(SyntaxArgumentKind::Token), val(val) {}
 // };
 
-struct DeclArgument final : public SyntaxArgument {
+struct Decl final : public SyntaxArgument {
   const syn::Decl *val;
-  DeclArgument() = delete;
-  explicit DeclArgument(const syn::Decl *val)
+  Decl() = delete;
+  explicit Decl(const syn::Decl *val)
       : SyntaxArgument(SyntaxArgumentKind::Decl), val(val) {}
 };
 
-struct DeclContextArgument final : public SyntaxArgument {
+struct DeclContext final : public SyntaxArgument {
   const syn::DeclContext *val;
-  DeclContextArgument() = delete;
-  explicit DeclContextArgument(const syn::DeclContext *val)
+  DeclContext() = delete;
+  explicit DeclContext(const syn::DeclContext *val)
       : SyntaxArgument(SyntaxArgumentKind::DeclContext), val(val) {}
 };
 
-struct IdentifierArgument final : public SyntaxArgument {
+struct Identifier final : public SyntaxArgument {
   const syn::Identifier *val;
-  IdentifierArgument() = delete;
-  explicit IdentifierArgument(const syn::Identifier *val)
+  Identifier() = delete;
+  explicit Identifier(const syn::Identifier *val)
       : SyntaxArgument(SyntaxArgumentKind::Identifier), val(val) {}
 };
 
-struct TypeArgument final : public SyntaxArgument {
+struct Type final : public SyntaxArgument {
   const syn::Type *val;
-  TypeArgument() = delete;
-  explicit TypeArgument(const syn::Type *val)
+  Type() = delete;
+  explicit Type(const syn::Type *val)
       : SyntaxArgument(SyntaxArgumentKind::Type), val(val) {}
 };
 

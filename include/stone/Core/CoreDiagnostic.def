@@ -6,12 +6,12 @@ ERROR(invalid_diagnostic,none,
 
 ERROR(err_no_input_files, none, "no input files", ())
 
-ERROR(err_unknown_arg, none, "unknown argument:", (diag::LLVMStrArgument))
+ERROR(err_unknown_arg, none, "unknown argument:", (diag::LLVMStr))
 
 
-ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStrArgument, diag::LLVMStrArgument))
+ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStr, diag::LLVMStr))
 
-ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (diag::LLVMStrArgument))
+ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (diag::LLVMStr))
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

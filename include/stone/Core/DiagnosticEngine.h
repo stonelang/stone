@@ -116,7 +116,7 @@ class InFlightDiagnostic {
   friend class DiagnosticEngine;
 
   CodeFixer fixer;
-  DiagnosticEngine* de;
+  DiagnosticEngine *de;
   Tokenable *tokenable;
 
   /// Status variable indicating if this diagnostic is still active.
@@ -133,8 +133,8 @@ class InFlightDiagnostic {
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
-public:
 
+public:
   InFlightDiagnostic();
 
   InFlightDiagnostic(DiagnosticEngine &de, Tokenable *tokenable = nullptr);

@@ -180,7 +180,8 @@ diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
   return lvl;
 }
 
-InFlightDiagnostic::InFlightDiagnostic() : de(0), tokenable(0), isActive(true), fixer(*this) {}
+InFlightDiagnostic::InFlightDiagnostic()
+    : de(0), tokenable(0), isActive(true), fixer(*this) {}
 
 InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
                                        Tokenable *tokenable)
@@ -192,7 +193,7 @@ void InFlightDiagnostic::Flush() {
   // (or by a subclass, as in SemaInFlightDiagnostic).
   if (IsActive()) {
     // de.GetCurrentDiagnostic().GetContext().Flush();
-    if(de){
+    if (de) {
       de->FlushCurrentDiagnostic();
     }
     // Clear();

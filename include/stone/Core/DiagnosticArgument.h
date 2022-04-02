@@ -70,84 +70,80 @@ public:
   ArgumentKind GetKind() { return kind; }
 };
 
-struct BoolArgument final : public Argument {
+struct Bool final : public Argument {
 private:
   const bool val;
 
 public:
-  BoolArgument() = delete;
-  explicit BoolArgument(bool val) : Argument(ArgumentKind::Bool), val(val) {}
+  Bool() = delete;
+  explicit Bool(bool val) : Argument(ArgumentKind::Bool), val(val) {}
 };
 
-struct STDStrArgument final : public Argument {
+struct STDStr final : public Argument {
 private:
   const std::string val;
 
 public:
-  STDStrArgument() = delete;
+  STDStr() = delete;
 
-  explicit STDStrArgument(const std::string val)
+  explicit STDStr(const std::string val)
       : Argument(ArgumentKind::STDStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
 };
 
-struct LLVMStrArgument final : public Argument {
+struct LLVMStr final : public Argument {
 private:
   const std::string val;
 
 public:
-  LLVMStrArgument() = delete;
+  LLVMStr() = delete;
 
-  explicit LLVMStrArgument(const llvm::StringRef val)
+  explicit LLVMStr(const llvm::StringRef val)
       : Argument(ArgumentKind::LLVMStr), val(val) {}
 
 public:
   std::string GetVal() const { return val; }
 };
 
-struct CStrArgument final : public Argument {
+struct CStr final : public Argument {
   const char *val;
 
 public:
-  CStrArgument() = delete;
+  CStr() = delete;
 
-  explicit CStrArgument(const char *val)
-      : Argument(ArgumentKind::CStr), val(val) {}
+  explicit CStr(const char *val) : Argument(ArgumentKind::CStr), val(val) {}
   const char *GetVal() const { return val; }
 };
 
-struct SIntArgument final : public Argument {
+struct SInt final : public Argument {
   const int val;
 
 public:
-  SIntArgument() = delete;
+  SInt() = delete;
 
-  explicit SIntArgument(const int val)
-      : Argument(ArgumentKind::SInt), val(val) {}
+  explicit SInt(const int val) : Argument(ArgumentKind::SInt), val(val) {}
 
   int GetVal() const { return val; }
 };
 
-struct UIntArgument final : public Argument {
+struct UInt final : public Argument {
   unsigned val;
 
 public:
-  UIntArgument() = delete;
-  explicit UIntArgument(const unsigned val)
-      : Argument(ArgumentKind::UInt), val(val) {}
+  UInt() = delete;
+  explicit UInt(const unsigned val) : Argument(ArgumentKind::UInt), val(val) {}
   unsigned GetVal() const { return val; }
 };
 
-struct TokenKindArgument final : public Argument {
+struct Token final : public Argument {
   tok val;
 
 public:
-  TokenKindArgument() = delete;
+  Token() = delete;
 
-  explicit TokenKindArgument(const tok val)
-      : Argument(ArgumentKind::TokenKind), val(val) {}
+  explicit Token(const tok val) : Argument(ArgumentKind::TokenKind), val(val) {}
   tok GetVal() const { return val; }
 };
 
