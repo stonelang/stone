@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "stone/Core/LLVM.h"
+#include "stone/Core/EditorPlaceholder.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Core/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"
@@ -133,8 +134,7 @@ public:
   }
 
   static bool IsEditorPlaceholder(StringRef name) {
-    assert(false && "Not implemented");
-    // return stone::IsEditorPlaceholder(name);
+    return stone::isEditorPlaceholder(name);
   }
 
   /// If this is a source-language token (e.g. 'for'), this API

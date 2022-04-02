@@ -5,7 +5,7 @@
 #include "stone/Core/TextDiagnosticListener.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
-using stone::diag::DeclArgument;
+using stone::diag::Decl;
 
 #include "gtest/gtest.h"
 

@@ -20,6 +20,7 @@ set(stone_ctx_sources
 	DiagnosticTransaction.cpp
 	DirScanner.cpp
 	DirWatcher.cpp
+	EditorPlaceholder.cpp
 	File.cpp
 	FileEntry.cpp
 	FileMgr.cpp

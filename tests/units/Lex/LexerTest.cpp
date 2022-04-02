@@ -19,7 +19,7 @@ protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
     auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
-    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), ctx);
+    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagEngine(), &ctx.GetStatEngine());
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {
 
@@ -29,10 +29,9 @@ protected:
       syn::Token token;
       lexer->Lex(token);
       tokens.push_back(token);
-      break;
-      // if(token.GetKind() == tok::eof) {
-      //	break;
-      //}
+      if(token.GetKind() == tok::eof) {
+      	break;
+      }
     }
     return tokens;
   }
@@ -40,8 +39,12 @@ protected:
 
 TEST_F(LexerTest, GetNextToken) {
 
-  llvm::StringRef source = "fun\n";
+  llvm::StringRef source = "Main fun() -> \n";
   auto tokens = Lex(source);
 
-  ASSERT_EQ(tok::kw_fun, tokens[0].GetKind());
+  ASSERT_EQ(tok::identifier, tokens[0].GetKind());
+  ASSERT_EQ(tok::kw_fun, tokens[1].GetKind());
+  ASSERT_EQ(tok::l_paren, tokens[2].GetKind());
+  ASSERT_EQ(tok::r_paren, tokens[3].GetKind());
+  //ASSERT_EQ(tok::arrow, tokens[4].GetKind());
 }

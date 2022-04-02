@@ -8,7 +8,7 @@
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
-using stone::diag::DeclArgument;
+using stone::diag::Decl;
 using stone::syn::Syntax;
 using stone::syn::SyntaxContext;
 
@@ -43,14 +43,12 @@ TEST_F(SyntaxDiagTest, PrintD) {
   ctx.GetDiagEngine().AddListener(diagListener);
 
   syntax
-      .PrintD(SrcLoc(), diag::note_prev_decl_def,
-                      diag::DeclArgument(nullptr))
+      .PrintD(SrcLoc(), diag::note_prev_decl_def, diag::Decl(nullptr))
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 
   syntax
-      .PrintD(SrcLoc(), diag::err_case_stmt_without_body,
-                      diag::BoolArgument(false))
+      .PrintD(SrcLoc(), diag::err_case_stmt_without_body, diag::Bool(false))
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());
 }
