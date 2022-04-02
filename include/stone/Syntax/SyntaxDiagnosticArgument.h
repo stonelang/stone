@@ -27,6 +27,11 @@ struct Decl final : public SyntaxArgument {
   Decl() = delete;
   explicit Decl(const syn::Decl *val)
       : SyntaxArgument(SyntaxArgumentKind::Decl), val(val) {}
+
+public:
+  static bool classof(const SyntaxArgument *a) {
+    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Decl;
+  }
 };
 
 struct DeclContext final : public SyntaxArgument {
@@ -34,6 +39,11 @@ struct DeclContext final : public SyntaxArgument {
   DeclContext() = delete;
   explicit DeclContext(const syn::DeclContext *val)
       : SyntaxArgument(SyntaxArgumentKind::DeclContext), val(val) {}
+
+public:
+  static bool classof(const SyntaxArgument *a) {
+    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::DeclContext;
+  }
 };
 
 struct Identifier final : public SyntaxArgument {
@@ -41,6 +51,10 @@ struct Identifier final : public SyntaxArgument {
   Identifier() = delete;
   explicit Identifier(const syn::Identifier *val)
       : SyntaxArgument(SyntaxArgumentKind::Identifier), val(val) {}
+public:
+  static bool classof(const SyntaxArgument *a) {
+    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Identifier;
+  }
 };
 
 struct Type final : public SyntaxArgument {
@@ -48,6 +62,10 @@ struct Type final : public SyntaxArgument {
   Type() = delete;
   explicit Type(const syn::Type *val)
       : SyntaxArgument(SyntaxArgumentKind::Type), val(val) {}
+public:
+  static bool classof(const SyntaxArgument *a) {
+    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Type;
+  }
 };
 
 } // namespace diag

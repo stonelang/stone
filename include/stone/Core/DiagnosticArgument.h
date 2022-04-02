@@ -162,7 +162,7 @@ public:
   SyntaxArgument() = delete;
   explicit SyntaxArgument(SyntaxArgumentKind kind)
       : Argument(ArgumentKind::Syntax), kind(kind) {}
-  SyntaxArgumentKind GetSyntaxArgumentKind() { return kind; }
+  SyntaxArgumentKind GetSyntaxArgumentKind() const { return kind; }
 };
 
 } // namespace diag
