@@ -29,8 +29,7 @@ using namespace llvm;
 
 Optional<EditorPlaceholderData>
 stone::parseEditorPlaceholder(StringRef PlaceholderText) {
-  if (!PlaceholderText.startswith("<#") ||
-      !PlaceholderText.endswith("#>"))
+  if (!PlaceholderText.startswith("<#") || !PlaceholderText.endswith("#>"))
     return None;
 
   PlaceholderText = PlaceholderText.drop_front(2).drop_back(2);
@@ -52,18 +51,18 @@ stone::parseEditorPlaceholder(StringRef PlaceholderText) {
   size_t Pos = PlaceholderText.find("##");
   if (Pos == StringRef::npos) {
     PHDataTyped.Display = PHDataTyped.Type = PHDataTyped.TypeForExpansion =
-      PlaceholderText;
+        PlaceholderText;
     return PHDataTyped;
   }
   PHDataTyped.Display = PlaceholderText.substr(0, Pos);
 
-  PlaceholderText = PlaceholderText.substr(Pos+2);
+  PlaceholderText = PlaceholderText.substr(Pos + 2);
   Pos = PlaceholderText.find("##");
   if (Pos == StringRef::npos) {
     PHDataTyped.Type = PHDataTyped.TypeForExpansion = PlaceholderText;
   } else {
     PHDataTyped.Type = PlaceholderText.substr(0, Pos);
-    PHDataTyped.TypeForExpansion = PlaceholderText.substr(Pos+2);
+    PHDataTyped.TypeForExpansion = PlaceholderText.substr(Pos + 2);
   }
 
   return PHDataTyped;

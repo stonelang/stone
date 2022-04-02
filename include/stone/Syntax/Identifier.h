@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "stone/Core/LLVM.h"
 #include "stone/Core/EditorPlaceholder.h"
+#include "stone/Core/LLVM.h"
 #include "stone/Core/StatisticEngine.h"
 #include "stone/Core/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"

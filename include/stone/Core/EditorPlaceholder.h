@@ -9,8 +9,8 @@
 #ifndef STONE_CORE_EDITORPLACEHOLDER_H
 #define STONE_CORE_EDITORPLACEHOLDER_H
 
-#include "llvm/ADT/StringRef.h"
 #include "stone/Core/LLVM.h"
+#include "llvm/ADT/StringRef.h"
 
 namespace stone {
 
@@ -35,7 +35,7 @@ struct EditorPlaceholderData {
 /// Deconstructs a placeholder string and returns info about it.
 /// \returns None if the \c PlaceholderText is not a valid placeholder string.
 Optional<EditorPlaceholderData>
-  parseEditorPlaceholder(StringRef PlaceholderText);
+parseEditorPlaceholder(StringRef PlaceholderText);
 
 /// Checks if an identifier with the given text is an editor placeholder
 bool isEditorPlaceholder(StringRef IdentifierText);

@@ -1,7 +1,7 @@
 #include "stone/Compile/Lexer.h"
 #include "stone/Core/Context.h"
-#include "stone/Core/SystemOptions.h"
 #include "stone/Core/SrcMgr.h"
+#include "stone/Core/SystemOptions.h"
 
 #include "gtest/gtest.h"
 
@@ -19,7 +19,8 @@ protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
     auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
-    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagEngine(), &ctx.GetStatEngine());
+    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagEngine(),
+                                   &ctx.GetStatEngine());
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {
 
@@ -29,8 +30,8 @@ protected:
       syn::Token token;
       lexer->Lex(token);
       tokens.push_back(token);
-      if(token.GetKind() == tok::eof) {
-      	break;
+      if (token.GetKind() == tok::eof) {
+        break;
       }
     }
     return tokens;
@@ -39,12 +40,18 @@ protected:
 
 TEST_F(LexerTest, GetNextToken) {
 
-  llvm::StringRef source = "Main fun() -> \n";
+  llvm::StringRef source = "Main fun() -> int  { return 0;}\n";
   auto tokens = Lex(source);
 
   ASSERT_EQ(tok::identifier, tokens[0].GetKind());
   ASSERT_EQ(tok::kw_fun, tokens[1].GetKind());
   ASSERT_EQ(tok::l_paren, tokens[2].GetKind());
   ASSERT_EQ(tok::r_paren, tokens[3].GetKind());
-  //ASSERT_EQ(tok::arrow, tokens[4].GetKind());
+  ASSERT_EQ(tok::arrow, tokens[4].GetKind());
+  ASSERT_EQ(tok::kw_int, tokens[5].GetKind());
+  ASSERT_EQ(tok::l_brace, tokens[6].GetKind());
+  ASSERT_EQ(tok::kw_return, tokens[7].GetKind());
+  ASSERT_EQ(tok::integer_literal, tokens[8].GetKind());
+  ASSERT_EQ(tok::semi, tokens[9].GetKind());
+  ASSERT_EQ(tok::r_brace, tokens[10].GetKind());
 }

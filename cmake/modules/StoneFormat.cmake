@@ -28,8 +28,8 @@ set(stone_tests_files
 	${STONE_SOURCE_DIR}/tests/units/Driver/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Parse/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Check/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Lex/*.cpp 
-	#${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Lex/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
 )
 find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
 	if(CLANG_FORMAT)
