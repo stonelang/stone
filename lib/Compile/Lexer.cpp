@@ -2903,7 +2903,7 @@ Restart:
   return llvm::StringRef(AllTriviaStart, Length);
 }
 
-SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &SM, SrcLoc Loc) {
+SrcLoc Lexer::GetLocForEndOfTokenImpl(const SrcMgr &SM, SrcLoc Loc) {
   return Loc.getAdvancedLocOrInvalid(getTokenAtLocation(SM, Loc).GetLength());
 }
 
@@ -3063,7 +3063,7 @@ StringRef Lexer::getIndentationForLine(SrcMgr &SM, SrcLoc Loc,
       stream << "";
     }
     *ExtraIndentation = stream.str();
-    //TODO: May not need the cast -- I think type promotion handles that.
+    // TODO: May not need the cast -- I think type promotion handles that.
     assert(ExtraIndentation->size() ==
            static_cast<size_t>(Lexer::extraIndentationSize));
   }
@@ -3254,10 +3254,6 @@ Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
   return Pieces;
 }
 
-// SrcLoc Lexer::GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) {
-//   return loc.getAdvancedLocOrInvalid(GetTokenAtLoc(sm, loc).GetLength());
-// }
-
 llvm::ArrayRef<Token> stone::syn::slice_token_array(ArrayRef<Token> AllTokens,
                                                     SrcLoc StartLoc,
                                                     SrcLoc EndLoc) {
@@ -3267,4 +3263,4 @@ llvm::ArrayRef<Token> stone::syn::slice_token_array(ArrayRef<Token> AllTokens,
   assert(StartIt->GetLoc() == StartLoc && EndIt->GetLoc() == EndLoc);
   return AllTokens.slice(StartIt - AllTokens.begin(), EndIt - StartIt + 1);
 }
-void LexerStats::Print(ColorfulStream& stream) {}
+void LexerStats::Print(ColorfulStream &stream) {}

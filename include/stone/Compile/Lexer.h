@@ -85,7 +85,7 @@ public:
 };
 
 // TODO: ParsingOptions
-class Lexer final {
+class Lexer final : public Tokenable {
 
   friend class LexerStats;
 
@@ -308,7 +308,7 @@ public:
   }
 
   LexerState getStateForEndOfTokenLoc(SrcLoc Loc) const {
-    return LexerState(GetLocForEndOfToken(sm, Loc));
+    return LexerState(GetLocForEndOfTokenImpl(sm, Loc));
   }
 
   bool isStateForCurrentBuffer(LexerState state) const {
@@ -361,7 +361,7 @@ public:
   /// resides.
   ///
   /// \param Loc The source location of the beginning of a token.
-  static SrcLoc GetLocForEndOfToken(const SrcMgr &SM, SrcLoc Loc);
+  static SrcLoc GetLocForEndOfTokenImpl(const SrcMgr &SM, SrcLoc Loc);
 
   /// Convert a SrcRange to the equivalent CharSrcRange
   ///
@@ -371,7 +371,7 @@ public:
   /// \param SR The source range
   static CharSrcRange getCharSrcRangeFromSrcRange(const SrcMgr &SM,
                                                   const SrcRange &SR) {
-    return CharSrcRange(SM, SR.Start, GetLocForEndOfToken(SM, SR.End));
+    return CharSrcRange(SM, SR.Start, GetLocForEndOfTokenImpl(SM, SR.End));
   }
 
   /// Return the start location of the token that the offset in the given buffer
@@ -609,8 +609,12 @@ private:
                                         const char *TokEnd);
 
 public:
-  // Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) override;
-  // SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) override;
+  Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) override {
+    return getTokenAtLocation(sm, loc);
+  }
+  SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) override {
+    return GetLocForEndOfTokenImpl(sm, loc);
+  }
 };
 
 /// A lexer that can lex trivia into its pieces
