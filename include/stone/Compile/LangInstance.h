@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_LANG_H
 #define STONE_COMPILE_LANG_H
 
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/LangInvocation.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -20,24 +20,24 @@ class TargetMachine;
 
 namespace stone {
 
-class Lang;
+class LangInstance;
 class LangListener;
 
 class LangStats final : public Stats {
-  Lang &lang;
+  LangInstance &lang;
 
 public:
-  LangStats(Lang &lang) : Stats("Lang statistics:"), lang(lang) {}
+  LangStats(LangInstance &lang) : Stats("Lang statistics:"), lang(lang) {}
   void Print(ColorfulStream &stream) override;
 };
 
 // TODO: SmallString<128> workingDirectory;
 // llvm::sys::fs::current_path(workingDirectory);
 
-class Lang final {
+class LangInstance final {
   friend LangStats;
 
-  Frontend frontend;
+  LangInvocation langInvocation;
   LangListener *listener = nullptr;
 
   std::unique_ptr<LangStats> stats;
@@ -49,18 +49,18 @@ class Lang final {
   std::unique_ptr<ModuleSystem> moduleSystem;
 
 public:
-  Lang(const Lang &) = delete;
-  void operator=(const Lang &) = delete;
-  Lang(Lang &&) = delete;
-  void operator=(Lang &&) = delete;
+  LangInstance(const LangInstance &) = delete;
+  void operator=(const LangInstance &) = delete;
+  LangInstance(LangInstance &&) = delete;
+  void operator=(LangInstance &&) = delete;
 
-  Lang(LangListener *listener = nullptr);
-  ~Lang();
+  LangInstance(LangListener *listener = nullptr);
+  ~LangInstance();
 
 public:
   void Initialize();
   void Finish();
-  Frontend &GetFrontend() { return frontend; }
+  LangInvocation &GetLangInvocation() { return langInvocation; }
 
 public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }

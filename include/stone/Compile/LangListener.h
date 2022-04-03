@@ -1,15 +1,18 @@
 #ifndef STONE_COMPILE_LANGLISTENER_H
 #define STONE_COMPILE_LANGLISTENER_H
+
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Compile/TypeCheckerListener.h"
 #include "stone/Core/File.h"
 #include "stone/Gen/CodeGenListener.h"
+
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 
-class Lang;
-class Frontend;
+class LangInstance;
+class LangInvocation;
+
 class LangListener : public SyntaxListener,
                      public TypeCheckerListener,
                      public EmitIRListener,
@@ -22,9 +25,9 @@ public:
   virtual ~LangListener() = default;
 
 public:
-  virtual void OnCompileConfigured(Lang &lang) {}
-  virtual void OnCompileStarted(Lang &lang) {}
-  virtual void OnCompileCompleted(Lang &lang) {}
+  virtual void OnCompileConfigured(LangInstance &lang) {}
+  virtual void OnCompileStarted(LangInstance &lang) {}
+  virtual void OnCompileCompleted(LangInstance &lang) {}
 };
 
 } // namespace stone

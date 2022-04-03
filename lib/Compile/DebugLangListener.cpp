@@ -4,8 +4,8 @@ using namespace stone;
 
 DebugLangListener::DebugLangListener() {}
 
-void DebugLangListener::OnCompileConfigured(Lang &lang) {}
+void DebugLangListener::OnCompileConfigured(LangInstance &lang) {}
 
-void DebugLangListener::OnCompileStarted(Lang &lang) {}
+void DebugLangListener::OnCompileStarted(LangInstance &lang) {}
 
-void DebugLangListener::OnCompileCompleted(Lang &lang) {}
+void DebugLangListener::OnCompileCompleted(LangInstance &lang) {}

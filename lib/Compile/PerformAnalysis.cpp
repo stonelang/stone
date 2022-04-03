@@ -1,4 +1,4 @@
-#include "stone/Compile/Lang.h"
+#include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Compile/Parse.h"
 #include "stone/Compile/TypeCheck.h"
@@ -10,56 +10,56 @@
 
 using namespace stone;
 
-using stone::Lang;
+using stone::LangInstance;
 using stone::LangListener;
 using stone::ModeKind;
 using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-void Lang::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
+void LangInstance::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
   for (auto source : sources) {
     assert(source);
     PerformAnalysis(*source);
   }
-  if (frontend.GetMode().JustParse()) {
+  if (langInvocation.GetMode().JustParse()) {
     return;
   }
-  if (frontend.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
+  if (langInvocation.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
     TypeCheckModule(nullptr /*TODO: get module*/);
   }
-  if (frontend.GetMode().JustTypeCheck()) {
+  if (langInvocation.GetMode().JustTypeCheck()) {
     // Do some things
     return;
   }
 }
 
-void Lang::PerformAnalysis(SourceUnit &source) {
+void LangInstance::PerformAnalysis(SourceUnit &source) {
   auto syntaxFile = Parse(source.GetSrcID());
   assert(syntaxFile);
 
   // TODO: May not need this because we are going to add it to the main module.
   // source.SetSyntaxFile(syntaxFile);
 
-  if (frontend.GetMode().IsParse()) {
+  if (langInvocation.GetMode().IsParse()) {
     return;
   }
-  if (frontend.GetMode().IsEmitParse()) {
+  if (langInvocation.GetMode().IsEmitParse()) {
     // lang.EmitParse(syntaxFile);
     return;
   }
-  if (frontend.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
+  if (langInvocation.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
     TypeCheckSyntaxFile(*syntaxFile);
   }
-  if (frontend.GetMode().IsTypeCheck()) {
+  if (langInvocation.GetMode().IsTypeCheck()) {
     return;
   }
-  if (frontend.GetMode().IsEmitSyntax()) {
+  if (langInvocation.GetMode().IsEmitSyntax()) {
     // lang.EmitSyntax(*sntaxFile)
   }
 }
 
-SyntaxFile *Lang::Parse(const unsigned srcID) {
+SyntaxFile *LangInstance::Parse(const unsigned srcID) {
   // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
                              *GetModuleSystem().GetMainModule(),
@@ -69,14 +69,14 @@ SyntaxFile *Lang::Parse(const unsigned srcID) {
   return sf;
 }
 
-void Lang::ResolveUse() {}
+void LangInstance::ResolveUse() {}
 
-void Lang::TypeCheckSyntaxFile(SyntaxFile &sf) {
+void LangInstance::TypeCheckSyntaxFile(SyntaxFile &sf) {
   assert(sf.stage == syn::SyntaxFileStage::AtImports);
-  types::TypeCheckSyntaxFile(sf, frontend.GetTypeCheckerOptions());
+  types::TypeCheckSyntaxFile(sf, langInvocation.GetTypeCheckerOptions());
 }
 /// Perform type-checking on the entire module
-void Lang::TypeCheckModule(syn::Module *mod) {
+void LangInstance::TypeCheckModule(syn::Module *mod) {
   assert(mod && "Null 'syn::Module'");
   for (auto mf : mod->GetFiles()) {
     if (auto sf = llvm::dyn_cast<SyntaxFile>(mf))

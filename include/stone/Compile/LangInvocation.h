@@ -11,26 +11,25 @@
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
+
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
-class Frontend final : public Session {
-  friend class Lang;
-
+class LangInvocation final : public Session {
+  friend class LangInstance;
   LangOptions langOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
-
   llvm::SmallVector<SourceUnit *> sources;
 
   /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
-  Frontend();
-  ~Frontend();
+  LangInvocation();
+  ~LangInvocation();
 
 public:
   llvm::opt::InputArgList &
@@ -118,9 +117,10 @@ public:
 
 } // namespace stone
 
-inline void *operator new(size_t bytes, const stone::Frontend &frontend,
+inline void *operator new(size_t bytes,
+                          const stone::LangInvocation &langInvocation,
                           size_t alignment) {
-  return frontend.Allocate(bytes, alignment);
+  return langInvocation.Allocate(bytes, alignment);
 }
 
 /// Placement delete companion to the new above.
@@ -129,9 +129,10 @@ inline void *operator new(size_t bytes, const stone::Frontend &frontend,
 /// invoking it directly; see the new operator for more details. This operator
 /// is called implicitly by the compiler if a placement new expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete(void *Ptr, const stone::Frontend &frontend,
+inline void operator delete(void *Ptr,
+                            const stone::LangInvocation &langInvocation,
                             size_t) {
-  frontend.Deallocate(Ptr);
+  langInvocation.Deallocate(Ptr);
 }
 /// This placement form of operator new[] uses the CompilerInstance's
 /// allocator for obtaining memory.
@@ -157,9 +158,10 @@ inline void operator delete(void *Ptr, const stone::Frontend &frontend,
 /// @param Alignment The alignment of the allocated memory (if the underlying
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
-inline void *operator new[](size_t bytes, const stone::Frontend &frontend,
+inline void *operator new[](size_t bytes,
+                            const stone::LangInvocation &langInvocation,
                             size_t alignment) {
-  return frontend.Allocate(bytes, alignment);
+  return langInvocation.Allocate(bytes, alignment);
 }
 /// Placement delete[] companion to the new[] above.
 ///
@@ -167,9 +169,10 @@ inline void *operator new[](size_t bytes, const stone::Frontend &frontend,
 /// invoking it directly; see the new[] operator for more details. This operator
 /// is called implicitly by the compiler if a placement new[] expression using
 /// the CompilationInvocation throws in the object constructor.
-inline void operator delete[](void *Ptr, const stone::Frontend &frontend,
+inline void operator delete[](void *Ptr,
+                              const stone::LangInvocation &langInvocation,
                               size_t alignment) {
-  frontend.Deallocate(Ptr);
+  langInvocation.Deallocate(Ptr);
 }
 
 #endif

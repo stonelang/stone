@@ -9,9 +9,9 @@ class DebugLangListener final : public LangListener {
 public:
   DebugLangListener();
 
-  void OnCompileConfigured(Lang &lang) override;
-  void OnCompileStarted(Lang &lang) override;
-  void OnCompileCompleted(Lang &lang) override;
+  void OnCompileConfigured(LangInstance &lang) override;
+  void OnCompileStarted(LangInstance &lang) override;
+  void OnCompileCompleted(LangInstance &lang) override;
 };
 
 } // namespace stone

@@ -1,7 +1,6 @@
 #include "stone/Compile/Compile.h"
-
 #include "stone/Compile/DebugLangListener.h"
-#include "stone/Compile/Lang.h"
+#include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Compile/Parse.h"
 #include "stone/Compile/TypeCheck.h"
@@ -21,7 +20,7 @@
 
 using namespace stone;
 
-using stone::Lang;
+using stone::LangInstance;
 using stone::LangListener;
 using stone::ModeKind;
 using stone::SyntaxListener;
@@ -40,7 +39,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   std::unique_ptr<DebugLangListener> debugListener;
 
-  Lang lang;
+  LangInstance lang;
   STONE_DEFER { lang.Finish(); };
 
   lang.Initialize();
@@ -56,9 +55,9 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     debugListener = std::make_unique<DebugLangListener>();
     lang.SetListener(debugListener.get());
   }
-  auto &frontend = lang.GetFrontend();
+  auto &langInvocation = lang.GetLangInvocation();
   auto mainExecPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  frontend.SetMainExecutablePath(mainExecPath);
+  langInvocation.SetMainExecutablePath(mainExecPath);
 
   // Setup the custom formatting to be able to handle syntax diagnostics
   auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
@@ -66,19 +65,19 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
       std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
-  frontend.GetContext().GetDiagEngine().AddListener(diagListener);
+  langInvocation.GetContext().GetDiagEngine().AddListener(diagListener);
 
-  auto &ial = frontend.ParseArgs(args);
-  if (frontend.HasError()) {
+  auto &ial = langInvocation.ParseArgs(args);
+  if (langInvocation.HasError()) {
     return Finish(1);
   }
-  auto &mode = frontend.ComputeMode(ial);
+  auto &mode = langInvocation.ComputeMode(ial);
   if (mode.IsAlien()) {
     // lang.PrintD(SrcLoc(), diags::err_alien_mode)
     Finish(1);
   }
   if (mode.IsPrintHelp()) {
-    frontend.PrintHelp(frontend.GetOpts());
+    langInvocation.PrintHelp(langInvocation.GetOpts());
     return Finish();
   }
   if (mode.IsPrintVersion()) {
@@ -89,32 +88,32 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     /// lang.PrintD()
     return Finish(1);
   }
-  auto inputs = frontend.BuildInputFiles(ial);
-  if (frontend.HasError()) {
+  auto inputs = langInvocation.BuildInputFiles(ial);
+  if (langInvocation.HasError()) {
     return Finish(1);
   }
-  auto sources = frontend.BuildSources(inputs);
-  if (frontend.HasError()) {
+  auto sources = langInvocation.BuildSources(inputs);
+  if (langInvocation.HasError()) {
     return Finish(1);
   }
   if (lang.GetListener()) {
     lang.GetListener()->OnCompileConfigured(lang);
   }
   lang.Compile(sources);
-  if (frontend.HasError()) {
+  if (langInvocation.HasError()) {
     return Finish(1);
   }
 
   return Finish();
 }
 
-void Lang::Compile(llvm::ArrayRef<SourceUnit *> sources) {
+void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   if (listener) {
     listener->OnCompileStarted(*this);
   }
   // Create SyntaxFiles and perform type-checking on them
   PerformAnalysis(sources);
-  if (frontend.JustAnalysis()) {
+  if (langInvocation.JustAnalysis()) {
     // Do some things
     return;
   }

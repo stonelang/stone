@@ -2,8 +2,8 @@ set(stone_compile_sources
 	Compile.cpp
 	Confusable.cpp
 	DebugLangListener.cpp
-	Lang.cpp
-	Frontend.cpp
+	LangInstance.cpp
+	LangInvocation.cpp
 	Lexer.cpp
 	LexerCache.cpp
 	ModuleSystem.cpp
@@ -25,7 +25,6 @@ set(stone_compile_sources
 	StoneGen
 	StoneSession
 	StoneSyntax
-	
 
 	DEPENDS
 	StoneOptions

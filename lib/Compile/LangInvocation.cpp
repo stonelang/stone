@@ -1,4 +1,4 @@
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/LangInvocation.h"
 
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
@@ -8,14 +8,17 @@
 using namespace stone;
 using namespace stone::opts;
 
-Frontend::Frontend() { SetExcludedFlagsBitmask(opts::NoLangOption); }
-Frontend::~Frontend() {}
+LangInvocation::LangInvocation() {
+  SetExcludedFlagsBitmask(opts::NoLangOption);
+}
+LangInvocation::~LangInvocation() {}
 
 SourceUnit::~SourceUnit() {}
 
 SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
-                                 Frontend &frontend) {
-  auto sizePtr = Frontend::Allocate<SourceUnit>(frontend, sizeof(SourceUnit));
+                                 LangInvocation &langInvocation) {
+  auto sizePtr =
+      LangInvocation::Allocate<SourceUnit>(langInvocation, sizeof(SourceUnit));
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
@@ -25,7 +28,7 @@ static void ParseTypeCheckerArgs(llvm::opt::InputArgList &ial) {}
 static void ParseSearchPathArgs(llvm::opt::InputArgList &ial) {}
 
 llvm::opt::InputArgList &
-Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
+LangInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   auto &ial = Session::ParseArgs(args);
 
   ParseLangArgs(ial);
@@ -36,7 +39,7 @@ Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
   return ial;
 }
 
-unsigned Frontend::CreateSourceID(const file::File &input) {
+unsigned LangInvocation::CreateSourceID(const file::File &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
     // ctx.PrintD(SrcLoc(),
@@ -49,7 +52,8 @@ unsigned Frontend::CreateSourceID(const file::File &input) {
   return srcID;
 }
 
-llvm::ArrayRef<SourceUnit *> Frontend::BuildSources(const file::Files &inputs) {
+llvm::ArrayRef<SourceUnit *>
+LangInvocation::BuildSources(const file::Files &inputs) {
   for (auto &input : inputs) {
     auto source = BuildSource(input);
     assert(source);
@@ -58,11 +62,12 @@ llvm::ArrayRef<SourceUnit *> Frontend::BuildSources(const file::Files &inputs) {
   return sources;
 }
 
-SourceUnit *Frontend::BuildSource(const file::File &input) {
+SourceUnit *LangInvocation::BuildSource(const file::File &input) {
   auto srcID = CreateSourceID(input);
   return SourceUnit::Allocate(srcID, input, *this);
 }
 
-std::unique_ptr<OutputFile> Frontend::ComputeOutputFile(SourceUnit &source) {
+std::unique_ptr<OutputFile>
+LangInvocation::ComputeOutputFile(SourceUnit &source) {
   stone::Panic("ComputeSourceOutputFile not implemented");
 }

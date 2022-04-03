@@ -1,4 +1,4 @@
-#include "stone/Compile/Lang.h"
+#include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Core/Defer.h"
 #include "stone/Core/LLVMContext.h"
@@ -9,19 +9,20 @@
 #include "llvm/IR/Module.h"
 
 using namespace stone;
-using stone::Lang;
+using stone::LangInstance;
 using stone::LangListener;
 using stone::ModeKind;
 using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-void Lang::PerformCodeGen() {
+void LangInstance::PerformCodeGen() {
 
-  assert(frontend.CanCodeGen());
+  assert(langInvocation.CanCodeGen());
 
   // We are performing some low leverl code generation
-  CodeGenContext cgc(stone::GetLLVMContext(), frontend.GetCodeGenOptions());
+  CodeGenContext cgc(stone::GetLLVMContext(),
+                     langInvocation.GetCodeGenOptions());
 
   // At this point, we much generate IR for all succeeding modes
 
@@ -31,35 +32,36 @@ void Lang::PerformCodeGen() {
 
   // auto mod = stone::GenIR(GetMainModule(), cgc);
 
-  if (frontend.GetMode().IsEmitIR()) {
+  if (langInvocation.GetMode().IsEmitIR()) {
     // EmitIR()
     return;
   }
 
-  if (!frontend.GetCodeGenOptions().skipOptimization) {
+  if (!langInvocation.GetCodeGenOptions().skipOptimization) {
     /// Send the SyntaxFile to the optimizer
     // OptimizeIR(llvmMod);
   }
 
-  if (frontend.GetMode().IsNone() || frontend.GetMode().IsEmitObject()) {
+  if (langInvocation.GetMode().IsNone() ||
+      langInvocation.GetMode().IsEmitObject()) {
     // GenObject(srcID, llvmMod, cgc);
     return;
   }
 }
-llvm::Module *Lang::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
+llvm::Module *LangInstance::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
   return nullptr;
 }
 
-llvm::Module *Lang::GenIR(syn::Module &mod, CodeGenContext &cc) {
+llvm::Module *LangInstance::GenIR(syn::Module &mod, CodeGenContext &cc) {
   return nullptr;
 }
-void Lang::OptimizeIR(llvm::Module *mod) {
+void LangInstance::OptimizeIR(llvm::Module *mod) {
   // stone::OptimizeIR
 }
 
-void Lang::GenObject(const unsigned srcID, llvm::Module *mod,
-                     CodeGenContext &cc) {
+void LangInstance::GenObject(const unsigned srcID, llvm::Module *mod,
+                             CodeGenContext &cc) {
   /// TODO: This is the only time we should perform a lookup
-  // auto outputFile = frontend.ComputeOutputFile(srcID);
+  // auto outputFile = langInvocation.ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }

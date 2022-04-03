@@ -1,5 +1,4 @@
-#include "stone/Compile/Lang.h"
-
+#include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Core/CompileDiagnostic.h"
 #include "stone/Core/Defer.h"
@@ -19,7 +18,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using stone::FileMgr;
-using stone::Lang;
+using stone::LangInstance;
 using stone::LangStats;
 using stone::ModeKind;
 using stone::SrcMgr;
@@ -32,22 +31,23 @@ using stone::syn::SyntaxFileKind;
 using namespace stone;
 using namespace stone::syn;
 
-Lang::Lang(LangListener *listener) : listener(listener) {
+LangInstance::LangInstance(LangListener *listener) : listener(listener) {
   stats = std::make_unique<LangStats>(*this);
 
-  frontend.GetContext().GetStatEngine().Register(stats.get());
+  langInvocation.GetContext().GetStatEngine().Register(stats.get());
 
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
-      frontend.GetContext(), frontend.GetLangOptions().searchPathOpts);
+      langInvocation.GetContext(),
+      langInvocation.GetLangOptions().searchPathOpts);
 
   syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
 
-  moduleSystem =
-      std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetLangOptions());
+  moduleSystem = std::make_unique<ModuleSystem>(
+      *syntax.get(), langInvocation.GetLangOptions());
 }
-Lang::~Lang() {}
+LangInstance::~LangInstance() {}
 
-void Lang::Initialize() {}
+void LangInstance::Initialize() {}
 
 // // Build the session
 // void Lang::BuildSession(const llvm::opt::InputArgList &ial) {
@@ -91,9 +91,9 @@ void Lang::Initialize() {}
 // llvm::StringRef Lang::GetProgramName() { return name; }
 // llvm::StringRef Lang::GetProgramPath() { return path; }
 
-void Lang::PrintVersion() {}
+void LangInstance::PrintVersion() {}
 
-void Lang::Finish() {
+void LangInstance::Finish() {
   if (listener) {
     listener->OnCompileCompleted(*this);
   }

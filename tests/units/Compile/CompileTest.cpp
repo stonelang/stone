@@ -15,7 +15,7 @@ public:
 TEST_F(CompileTest, CompileFileVerbosely) {
   const char *args[] = {"-parse", "/var/tmp/test.stone"};
 
-  // Frontend lc;
+  // LangInvocation lc;
   // lc.ParseArguments(args);
 
   // Lang lang("stone-compile", "stone-compile");

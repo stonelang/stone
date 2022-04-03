@@ -8,9 +8,9 @@
 #include "llvm/Support/Path.h"
 
 namespace stone {
-class Frontend;
+class LangInvocation;
 class alignas(8) SourceUnit final {
-  friend class Lang;
+  friend class LangInstance;
 
   bool isPrimary;
   bool hasOutput;
@@ -48,7 +48,7 @@ public:
 
 public:
   static SourceUnit *Allocate(const unsigned srcID, const file::File &input,
-                              Frontend &frontend);
+                              LangInvocation &langInvocation);
 
   // file::File *GetOutput() { return output; }
   // void SetOutput(file::File *o) { output = o; };
@@ -56,17 +56,19 @@ public:
 
 } // namespace stone
 
-void *operator new(size_t bytes, const stone::Frontend &frontend,
+void *operator new(size_t bytes, const stone::LangInvocation &langInvocation,
                    size_t alignment = 8);
 
-void *operator new[](size_t bytes, const stone::Frontend &frontend,
+void *operator new[](size_t bytes, const stone::LangInvocation &langInvocation,
                      size_t alignment = 8);
 
 // It is good practice to pair new/delete operators.  Also, MSVC gives many
 // warnings if a matching delete overload is not declared, even though the
 // throw() spec guarantees it will not be implicitly called.
-void operator delete(void *currPtr, const stone::Frontend &frontend, size_t);
+void operator delete(void *currPtr, const stone::LangInvocation &langInvocation,
+                     size_t);
 
-void operator delete[](void *currPtr, const stone::Frontend &frontend, size_t);
+void operator delete[](void *currPtr,
+                       const stone::LangInvocation &langInvocation, size_t);
 
 #endif
