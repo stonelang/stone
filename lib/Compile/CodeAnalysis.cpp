@@ -17,6 +17,14 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
+class LangInstance::CodeAnalysis final {
+  friend LangInstance;
+
+public:
+  CodeAnalysis();
+  ~CodeAnalysis();
+};
+
 void LangInstance::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
   for (auto source : sources) {
     assert(source);

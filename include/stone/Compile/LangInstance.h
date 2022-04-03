@@ -76,6 +76,13 @@ public:
   LangListener *GetListener() { return listener; }
   void SetListener(LangListener *l) { listener = l; }
 
+private:
+  class CodeAnalysis;
+  CodeAnalysis &GetCodeAnalysis();
+
+  class CodeGeneration;
+  CodeGeneration &GetCodeGeneration();
+
 public:
   /// Perform code analysis and code generation
   void Compile(llvm::ArrayRef<SourceUnit *> sources);

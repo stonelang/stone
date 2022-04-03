@@ -16,6 +16,14 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
+class LangInstance::CodeGeneration final {
+  friend LangInstance;
+
+public:
+  CodeGeneration();
+  ~CodeGeneration();
+};
+
 void LangInstance::PerformCodeGen() {
 
   assert(langInvocation.CanCodeGen());
