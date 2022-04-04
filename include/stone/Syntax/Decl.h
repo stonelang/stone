@@ -9,10 +9,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "stone/Core/AddressSpace.h"
-#include "stone/Core/DiagnosticArgument.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Basic/AddressSpace.h"
+#include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"

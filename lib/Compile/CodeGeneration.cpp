@@ -1,7 +1,7 @@
+#include "stone/Basic/Defer.h"
+#include "stone/Basic/LLVMContext.h"
 #include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
-#include "stone/Core/Defer.h"
-#include "stone/Core/LLVMContext.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
@@ -76,11 +76,6 @@ void LangInstance::CodeGeneration::Compile(const CodeAnalysis &codeAnalysis) {
   if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
     // EmitIR()
     return;
-  }
-
-  if (!lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
-    /// Send the SyntaxFile to the optimizer
-    // OptimizeIR(llvmMod);
   }
 
   if (lang.GetLangInvocation().GetMode().IsNone() ||

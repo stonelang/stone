@@ -1,13 +1,13 @@
 #ifndef STONE_COMPILE_FRONTEND_H
 #define STONE_COMPILE_FRONTEND_H
 
+#include "stone/Basic/Context.h"
+#include "stone/Basic/FileSystemOptions.h"
+#include "stone/Basic/Mem.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Compile/TypeCheckerOptions.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/FileSystemOptions.h"
-#include "stone/Core/Mem.h"
-#include "stone/Core/SrcLoc.h"
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"

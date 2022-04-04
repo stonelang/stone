@@ -1,6 +1,6 @@
 #include "stone/Driver/Command.h"
 
-#include "stone/Core/Context.h"
+#include "stone/Basic/Context.h"
 #include "stone/Driver/ToolChain.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"

@@ -8,6 +8,6 @@ add_stone_unittest(StoneGenUnitTests
 )
 target_link_libraries(StoneGenUnitTests
   PRIVATE
-	StoneCore
+	StoneBasic
 )
 

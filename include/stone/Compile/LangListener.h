@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_LANGLISTENER_H
 #define STONE_COMPILE_LANGLISTENER_H
 
+#include "stone/Basic/File.h"
 #include "stone/Compile/SyntaxListener.h"
 #include "stone/Compile/TypeCheckerListener.h"
-#include "stone/Core/File.h"
 #include "stone/Gen/CodeGenListener.h"
 
 #include "llvm/ADT/ArrayRef.h"

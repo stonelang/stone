@@ -1,13 +1,13 @@
 #ifndef STONE_PARSE_LEXER_H
 #define STONE_PARSE_LEXER_H
 
+#include "stone/Basic/Context.h"
+#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/Token.h"
+#include "stone/Basic/Tokenable.h"
 #include "stone/Compile/LexerCache.h"
 #include "stone/Compile/Trivia.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/DiagnosticEngine.h"
-#include "stone/Core/SrcLoc.h"
-#include "stone/Core/Token.h"
-#include "stone/Core/Tokenable.h"
 
 namespace stone {
 

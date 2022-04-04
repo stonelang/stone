@@ -1,8 +1,8 @@
 #ifndef STONE_DRIVER_BUILDSYSTEM_H
 #define STONE_DRIVER_BUILDSYSTEM_H
 
-#include "stone/Core/File.h"
-#include "stone/Core/LLVM.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/LLVM.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/TinyPtrVector.h"

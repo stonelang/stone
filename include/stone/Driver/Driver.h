@@ -1,10 +1,10 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/List.h"
-#include "stone/Core/OutputFileMap.h"
-#include "stone/Core/StatisticEngine.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/OutputFileMap.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/CompilationModel.h"

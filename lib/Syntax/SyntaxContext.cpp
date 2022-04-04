@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "stone/Core/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/StringMap.h"

@@ -1,7 +1,7 @@
 #include "stone/Compile/Lexer.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/SystemOptions.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SystemOptions.h"
 
 #include "gtest/gtest.h"
 

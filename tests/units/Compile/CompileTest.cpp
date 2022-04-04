@@ -1,7 +1,7 @@
+#include "stone/Basic/Context.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SystemOptions.h"
 #include "stone/Compile/Lang.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/SystemOptions.h"
 #include "stone/Session/ModeKind.h"
 #include "gtest/gtest.h"
 

@@ -28,7 +28,7 @@ set(stone_syn_sources
 	VirtualTable.cpp
 	
 	LINK_LIBS
-	StoneCore
+	StoneBasic
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

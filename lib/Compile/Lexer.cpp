@@ -1,9 +1,9 @@
 #include "stone/Compile/Lexer.h"
+#include "stone/Basic/Char.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/Compile/Confusable.h"
 #include "stone/Compile/SyntaxListener.h"
-#include "stone/Core/Char.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/SyntaxDiagnostic.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -630,7 +630,7 @@ tok Lexer::kindOfIdentifier(llvm::StringRef tokStr) {
 #define KEYWORD(kw, S)                                                         \
   if (tokStr == #kw)                                                           \
     return tok::kw_##kw;
-#include "stone/Core/TokenKind.def"
+#include "stone/Basic/TokenKind.def"
 
   return tok::identifier;
 }
@@ -666,7 +666,7 @@ void Lexer::lexHash() {
   // Map the character sequence onto
   tok Kind = llvm::StringSwitch<tok>(StringRef(CurPtr, tmpPtr - CurPtr))
 #define POUND_KEYWORD(id) .Case(#id, tok::pound_##id)
-#include "stone/Core/TokenKind.def"
+#include "stone/Basic/TokenKind.def"
                  .Default(tok::pound);
 
   // If we didn't find a match, then just return tok::pound.  This is highly

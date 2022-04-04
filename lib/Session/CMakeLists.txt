@@ -14,7 +14,7 @@ set(stone_option_sources
 	Options.cpp
 
 	LINK_LIBS 
-	StoneCore
+	StoneBasic
 )
 add_stone_library(StoneSession
 	${stone_option_sources}

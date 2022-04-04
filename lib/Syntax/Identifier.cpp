@@ -5,10 +5,10 @@
 #include <cstring>
 #include <string>
 
-#include "stone/Core/Char.h"
-#include "stone/Core/Context.h"
-#include "stone/Core/SystemOptions.h"
-#include "stone/Core/TokenKind.h"
+#include "stone/Basic/Char.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/SystemOptions.h"
+#include "stone/Basic/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/SmallString.h"
@@ -44,7 +44,7 @@ bool Identifier::IsKeyword(const SystemOptions &systemOpts) const {
 #define KEYWORD(NAME, FLAG)                                                    \
   case tok::kw_##NAME:                                                         \
     return GetKeywordStatus(systemOpts, FLAG) == KeywordStatus::On;
-#include "stone/Core/TokenKind.def"
+#include "stone/Basic/TokenKind.def"
   default:
     return false;
   }
@@ -78,7 +78,7 @@ void IdentifierTable::AddKeywords(const SystemOptions &LangOpts) {
   // Add keywords and tokens for the current language.
 #define KEYWORD(NAME, FLAG)                                                    \
   AddKeyword(llvm::StringRef(#NAME), tok::kw_##NAME, FLAG, systemOpts, *this);
-#include "stone/Core/TokenKind.def"
+#include "stone/Basic/TokenKind.def"
 }
 
 //===----------------------------------------------------------------------===//

@@ -1,8 +1,8 @@
 #include "stone/Compile/LangInvocation.h"
 
-#include "stone/Core/CompileDiagnostic.h"
-#include "stone/Core/Defer.h"
-#include "stone/Core/SrcMgr.h"
+#include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Session/Options.h"
 
 using namespace stone;

@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILER_DARWINTASKQUEUE_H
 #define STONE_COMPILER_DARWINTASKQUEUE_H
 
-#include "stone/Core/Context.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/StatisticEngine.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/TaskQueue.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"

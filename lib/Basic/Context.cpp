@@ -1,0 +1,14 @@
+#include "stone/Basic/Context.h"
+
+#include "stone/Basic/CoreDiagnostic.h"
+#include "llvm/Support/Host.h"
+
+using namespace stone;
+
+Context::Context()
+    : fm(GetFileSystemOptions()), de(GetDiagOptions(), sm), cos(llvm::outs()) {}
+
+Context::~Context() {}
+
+void stone::Panic() { assert(false && "Compiler cannot continue!"); }
+void stone::Panic(const char *msg) { llvm_unreachable(msg); }

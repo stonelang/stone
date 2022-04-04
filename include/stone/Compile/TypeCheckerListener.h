@@ -1,7 +1,7 @@
 #ifndef STONE_CHECK_TYPECHECKERPIPELINE_H
 #define STONE_CHECK_TYPECHECKERPIPELINE_H
 
-#include "stone/Core/PipelineListener.h"
+#include "stone/Basic/PipelineListener.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {

@@ -1,4 +1,4 @@
-#include "stone/Core/SrcMgr.h"
+#include "stone/Basic/SrcMgr.h"
 #include "gtest/gtest.h"
 
 using namespace stone;

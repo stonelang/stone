@@ -7,10 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "stone/Core/Context.h"
-#include "stone/Core/File.h"
-#include "stone/Core/TextDiagnosticListener.h"
-#include "stone/Core/Timer.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Basic/Timer.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"

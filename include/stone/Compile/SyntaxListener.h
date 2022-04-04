@@ -1,8 +1,8 @@
 #ifndef STONE_PARSE_PARSERPIPELINE_H
 #define STONE_PARSE_PARSERPIPELINE_H
 
-#include "stone/Core/PipelineListener.h"
-#include "stone/Core/Token.h"
+#include "stone/Basic/PipelineListener.h"
+#include "stone/Basic/Token.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Module.h"

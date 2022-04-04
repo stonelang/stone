@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_SOURCEUNIT_H
 #define STONE_COMPILE_SOURCEUNIT_H
 
-#include "stone/Core/File.h"
-#include "stone/Core/List.h"
-#include "stone/Core/OutputFile.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/OutputFile.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 

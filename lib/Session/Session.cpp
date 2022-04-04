@@ -1,6 +1,6 @@
 #include "stone/Session/Session.h"
 
-#include "stone/Core/Context.h"
+#include "stone/Basic/Context.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 

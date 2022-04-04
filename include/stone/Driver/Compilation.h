@@ -1,9 +1,9 @@
 #ifndef STONE_DRIVER_COMPILATION_H
 #define STONE_DRIVER_COMPILATION_H
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/List.h"
-#include "stone/Core/StatisticEngine.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/TaskQueue.h"

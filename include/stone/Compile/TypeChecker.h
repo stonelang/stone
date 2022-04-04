@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "stone/Core/Context.h"
-#include "stone/Core/StatisticEngine.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 

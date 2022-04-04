@@ -1,5 +1,5 @@
-#include "stone/Core/LLVMInit.h"
-#include "stone/Core/MainExecutablePath.h"
+#include "stone/Basic/LLVMInit.h"
+#include "stone/Basic/MainExecutablePath.h"
 #include "stone/Driver/Run.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"

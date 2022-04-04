@@ -1,8 +1,8 @@
 #include "stone/Driver/Run.h"
 
-#include "stone/Core/Defer.h"
-#include "stone/Core/LLVMInit.h"
-#include "stone/Core/MainExecutablePath.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Basic/LLVMInit.h"
+#include "stone/Basic/MainExecutablePath.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DebugCompilationListener.h"
 #include "stone/Driver/Driver.h"

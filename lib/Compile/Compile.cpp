@@ -1,15 +1,15 @@
 #include "stone/Compile/Compile.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Basic/LLVMContext.h"
+#include "stone/Basic/LLVMInit.h"
+#include "stone/Basic/MainExecutablePath.h"
+#include "stone/Basic/TextDiagnosticFormatter.h"
+#include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Compile/DebugLangListener.h"
 #include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Compile/Parse.h"
 #include "stone/Compile/TypeCheck.h"
-#include "stone/Core/Defer.h"
-#include "stone/Core/LLVMContext.h"
-#include "stone/Core/LLVMInit.h"
-#include "stone/Core/MainExecutablePath.h"
-#include "stone/Core/TextDiagnosticFormatter.h"
-#include "stone/Core/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Session/ModeKind.h"
@@ -118,7 +118,7 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
     return;
   }
   // Try to optimize the code
-  // PerformCodeOptimization(GetCodeAnalysis());
+  PerformCodeOptimization(GetCodeAnalysis());
 
   // At this point, we should have a module with one or more syntax files
   PerformCodeGeneration(GetCodeAnalysis());

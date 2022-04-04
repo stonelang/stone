@@ -1,8 +1,8 @@
 #include "stone/Syntax/DeclContext.h"
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
-#include "stone/Core/SystemOptions.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/SystemOptions.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"

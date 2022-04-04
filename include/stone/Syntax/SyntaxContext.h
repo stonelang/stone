@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Core/Context.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/StatisticEngine.h"
-#include "stone/Core/SystemOptions.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/StatisticEngine.h"
+#include "stone/Basic/SystemOptions.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"

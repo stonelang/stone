@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
 

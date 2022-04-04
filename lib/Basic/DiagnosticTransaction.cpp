@@ -1,0 +1,1 @@
+#include "stone/Basic/DiagnosticTransaction.h"

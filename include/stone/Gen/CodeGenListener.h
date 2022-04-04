@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_GENPIPELINE_H
 #define STONE_GEN_GENPIPELINE_H
 
-#include "stone/Core/PipelineListener.h"
+#include "stone/Basic/PipelineListener.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace llvm {

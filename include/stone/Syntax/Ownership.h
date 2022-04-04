@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "stone/Core/LLVM.h"
+#include "stone/Basic/LLVM.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include "llvm/Support/type_traits.h"

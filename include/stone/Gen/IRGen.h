@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "stone/Core/LLVM.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRFunction.h"
 #include "stone/Gen/IRModule.h"

@@ -1,7 +1,7 @@
 #ifndef STONE_DIRVER_COMPILATIONLISTENER_H
 #define STONE_DIRVER_COMPILATIONLISTENER_H
 
-#include "stone/Core/File.h"
+#include "stone/Basic/File.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {

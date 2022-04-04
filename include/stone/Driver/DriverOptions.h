@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
-#include "stone/Core/SystemOptions.h"
+#include "stone/Basic/SystemOptions.h"
 #include "stone/Driver/OutputOptions.h"
 #include "stone/Session/BaseOptions.h"
 

@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
-#include "stone/Core/LLVM.h"
-#include "stone/Core/SrcLoc.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"

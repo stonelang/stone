@@ -1,9 +1,9 @@
 #ifndef STONE_DRIVER_COMPILATIONMODEL_H
 #define STONE_DRIVER_COMPILATIONMODEL_H
 
-#include "stone/Core/File.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/List.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/OutputOptions.h"
 

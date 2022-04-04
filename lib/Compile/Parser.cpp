@@ -1,9 +1,9 @@
 #include "stone/Compile/Parser.h"
 
-#include "stone/Core/Context.h"
-#include "stone/Core/SrcLoc.h"
-#include "stone/Core/SrcMgr.h"
-#include "stone/Core/SyntaxDiagnostic.h"
+#include "stone/Basic/Context.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 

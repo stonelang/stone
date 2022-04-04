@@ -7,10 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "stone/Core/File.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/List.h"
-#include "stone/Core/Mem.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Intent.h"
 #include "stone/Driver/Job.h"

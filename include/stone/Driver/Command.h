@@ -1,9 +1,9 @@
 #ifndef STONE_DRIVER_COMMAND_H
 #define STONE_DRIVER_COMMAND_H
 
-#include "stone/Core/File.h"
-#include "stone/Core/LLVM.h"
-#include "stone/Core/OutputFileMap.h"
+#include "stone/Basic/File.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/OutputFileMap.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"

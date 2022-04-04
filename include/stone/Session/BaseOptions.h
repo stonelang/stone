@@ -1,7 +1,7 @@
 #ifndef STONE_SESSION_BASEOPTIONS_H
 #define STONE_SESSION_BASEOPTIONS_H
 
-#include "stone/Core/File.h"
+#include "stone/Basic/File.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
 #include "llvm/ADT/Triple.h"

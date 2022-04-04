@@ -1,4 +1,4 @@
-add_subdirectory(Core)
+add_subdirectory(Basic)
 add_subdirectory(Check)
 add_subdirectory(Compile)
 add_subdirectory(Driver)

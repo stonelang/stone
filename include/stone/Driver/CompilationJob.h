@@ -1,9 +1,9 @@
 #ifndef STONE_DRIVER_COMPILATIONJOB_H
 #define STONE_DRIVER_COMPILATIONJOB_H
 
-#include "stone/Core/Color.h"
-#include "stone/Core/List.h"
-#include "stone/Core/StatisticEngine.h"
+#include "stone/Basic/Color.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/Command.h"
 #include "stone/Driver/CrashState.h"
 #include "stone/Driver/DriverOptions.h"
