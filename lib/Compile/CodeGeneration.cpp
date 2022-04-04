@@ -16,15 +16,42 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-class LangInstance::CodeGeneration final {
+struct LangInstance::CodeGeneration final {
+  
   friend LangInstance;
+  LangInstance &lang;
 
-public:
-  CodeGeneration();
+  CodeGeneration(LangInstance &lang);
   ~CodeGeneration();
+
+  /// Generate the IR for an entire module
+  llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
+
+  /// Generate IR a single SyntaxFile
+  llvm::Module *GenIR(syn::SyntaxFile &sf, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenBitCode();
+
+  /// Generates a 'test.stonem' file
+  void GenModule();
 };
 
-void LangInstance::PerformCodeGen() {
+LangInstance::CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
+
+LangInstance::CodeGeneration::~CodeGeneration() {}
+
+inline LangInstance::CodeGeneration &LangInstance::GetCodeGeneration() {
+  auto pointer = reinterpret_cast<char *>(const_cast<LangInstance *>(this));
+  auto offset = llvm::alignAddr((void *)sizeof(*this),
+                                llvm::Align(alignof(CodeGeneration)));
+  return *reinterpret_cast<LangInstance::CodeGeneration *>(pointer + offset);
+}
+
+void LangInstance::PerformCodeGeneration(const CodeAnalysis &codeAnalysis) {
 
   assert(langInvocation.CanCodeGen());
 
@@ -56,19 +83,22 @@ void LangInstance::PerformCodeGen() {
     return;
   }
 }
-llvm::Module *LangInstance::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
+llvm::Module *LangInstance::CodeGeneration::GenIR(syn::SyntaxFile &sf,
+                                                  CodeGenContext &cc) {
   return nullptr;
 }
 
-llvm::Module *LangInstance::GenIR(syn::Module &mod, CodeGenContext &cc) {
+llvm::Module *LangInstance::CodeGeneration::GenIR(syn::Module &mod,
+                                                  CodeGenContext &cc) {
   return nullptr;
 }
 void LangInstance::OptimizeIR(llvm::Module *mod) {
   // stone::OptimizeIR
 }
 
-void LangInstance::GenObject(const unsigned srcID, llvm::Module *mod,
-                             CodeGenContext &cc) {
+void LangInstance::CodeGeneration::GenObject(const unsigned srcID,
+                                             llvm::Module *mod,
+                                             CodeGenContext &cc) {
   /// TODO: This is the only time we should perform a lookup
   // auto outputFile = langInvocation.ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());

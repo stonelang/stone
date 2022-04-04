@@ -112,11 +112,14 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
     listener->OnCompileStarted(*this);
   }
   // Create SyntaxFiles and perform type-checking on them
-  PerformAnalysis(sources);
+  PerformCodeAnalysis(sources);
   if (langInvocation.JustAnalysis()) {
     // Do some things
     return;
   }
+  // Try to optimize the code 
+  PerformCodeOptimization(GetCodeAnalysis());
+
   // At this point, we should have a module with one or more syntax files
-  PerformCodeGen();
+  PerformCodeGeneration(GetCodeAnalysis());
 }

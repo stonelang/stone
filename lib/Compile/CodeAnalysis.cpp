@@ -17,77 +17,116 @@ using stone::SyntaxListener;
 using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
-class LangInstance::CodeAnalysis final {
-  friend LangInstance;
+struct LangInstance::CodeAnalysis final {
 
-public:
-  CodeAnalysis();
+  friend LangInstance;
+  LangInstance &lang;
+
+  CodeAnalysis(LangInstance &lang);
   ~CodeAnalysis();
+
+  void Compile(llvm::ArrayRef<SourceUnit *> sources);
+  void Compile(SourceUnit &source);
+
+  SyntaxFile *Parse(const unsigned srcID);
+
+  void ResolveUse();
+
+  /// Print out the syntax tree
+  void EmitParse(syn::SyntaxFile *sf);
+
+  /// Perform type-checking on the SyntaxFile
+  void TypeCheckSyntaxFile(syn::SyntaxFile &sf);
+
+  /// Perform type-checking on the entire module
+  void TypeCheckModule(syn::Module *mod);
+
+  /// Emit the syntax after performing type-checking
+  void EmitSyntax(syn::SyntaxFile *sf);
 };
 
-void LangInstance::PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
+LangInstance::CodeAnalysis::CodeAnalysis(LangInstance &lang) : lang(lang) {}
+
+inline LangInstance::CodeAnalysis &LangInstance::GetCodeAnalysis() {
+  auto pointer = reinterpret_cast<char *>(const_cast<LangInstance *>(this));
+  auto offset = llvm::alignAddr((void *)sizeof(*this),
+                                llvm::Align(alignof(CodeAnalysis)));
+  return *reinterpret_cast<LangInstance::CodeAnalysis *>(pointer + offset);
+}
+
+void LangInstance::CodeAnalysis::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   for (auto source : sources) {
     assert(source);
-    PerformAnalysis(*source);
+    Compile(*source);
   }
-  if (langInvocation.GetMode().JustParse()) {
+  if (lang.GetLangInvocation().GetMode().JustParse()) {
     return;
   }
-  if (langInvocation.GetTypeCheckMode() == types::TypeCheckMode::WholeModule) {
+  if (lang.GetLangInvocation().GetTypeCheckMode() ==
+      types::TypeCheckMode::WholeModule) {
     TypeCheckModule(nullptr /*TODO: get module*/);
   }
-  if (langInvocation.GetMode().JustTypeCheck()) {
+  if (lang.GetLangInvocation().GetMode().JustTypeCheck()) {
     // Do some things
     return;
   }
 }
 
-void LangInstance::PerformAnalysis(SourceUnit &source) {
+void LangInstance::CodeAnalysis::Compile(SourceUnit &source) {
   auto syntaxFile = Parse(source.GetSrcID());
   assert(syntaxFile);
 
   // TODO: May not need this because we are going to add it to the main module.
   // source.SetSyntaxFile(syntaxFile);
 
-  if (langInvocation.GetMode().IsParse()) {
+  if (lang.GetLangInvocation().GetMode().IsParse()) {
     return;
   }
-  if (langInvocation.GetMode().IsEmitParse()) {
+  if (lang.GetLangInvocation().GetMode().IsEmitParse()) {
     // lang.EmitParse(syntaxFile);
     return;
   }
-  if (langInvocation.GetTypeCheckMode() == types::TypeCheckMode::EachFile) {
+  if (lang.GetLangInvocation().GetTypeCheckMode() ==
+      types::TypeCheckMode::EachFile) {
     TypeCheckSyntaxFile(*syntaxFile);
   }
-  if (langInvocation.GetMode().IsTypeCheck()) {
+  if (lang.GetLangInvocation().GetMode().IsTypeCheck()) {
     return;
   }
-  if (langInvocation.GetMode().IsEmitSyntax()) {
+  if (lang.GetLangInvocation().GetMode().IsEmitSyntax()) {
     // lang.EmitSyntax(*sntaxFile)
   }
 }
 
-SyntaxFile *LangInstance::Parse(const unsigned srcID) {
+LangInstance::CodeAnalysis::~CodeAnalysis() {}
+
+void LangInstance::PerformCodeAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
+  GetCodeAnalysis().Compile(sources);
+}
+
+SyntaxFile *LangInstance::CodeAnalysis::Parse(const unsigned srcID) {
   // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
-                             *GetModuleSystem().GetMainModule(),
-                             GetSyntax().GetSyntaxContext(), srcID);
+                             *lang.GetModuleSystem().GetMainModule(),
+                             lang.GetSyntax().GetSyntaxContext(), srcID);
 
-  syn::ParseSyntaxFile(*sf, GetSyntax());
+  syn::ParseSyntaxFile(*sf, lang.GetSyntax());
   return sf;
 }
 
-void LangInstance::ResolveUse() {}
-
-void LangInstance::TypeCheckSyntaxFile(SyntaxFile &sf) {
+void LangInstance::CodeAnalysis::TypeCheckSyntaxFile(SyntaxFile &sf) {
   assert(sf.stage == syn::SyntaxFileStage::AtImports);
-  types::TypeCheckSyntaxFile(sf, langInvocation.GetTypeCheckerOptions());
+  types::TypeCheckSyntaxFile(sf,
+                             lang.GetLangInvocation().GetTypeCheckerOptions());
 }
 /// Perform type-checking on the entire module
-void LangInstance::TypeCheckModule(syn::Module *mod) {
+void LangInstance::CodeAnalysis::TypeCheckModule(syn::Module *mod) {
   assert(mod && "Null 'syn::Module'");
   for (auto mf : mod->GetFiles()) {
-    if (auto sf = llvm::dyn_cast<SyntaxFile>(mf))
+    if (auto sf = llvm::dyn_cast<SyntaxFile>(mf)) {
       TypeCheckSyntaxFile(*sf);
+    }
   }
 }
+
+void LangInstance::CodeAnalysis::ResolveUse() {}

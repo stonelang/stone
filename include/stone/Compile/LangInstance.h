@@ -77,21 +77,18 @@ public:
   void SetListener(LangListener *l) { listener = l; }
 
 private:
-  class CodeAnalysis;
+  struct CodeAnalysis;
   CodeAnalysis &GetCodeAnalysis();
 
-  class CodeGeneration;
+  struct CodeGeneration;
   CodeGeneration &GetCodeGeneration();
+
+  struct CodeOptimization;
+  CodeOptimization &GetCodeOptimization();
 
 public:
   /// Perform code analysis and code generation
   void Compile(llvm::ArrayRef<SourceUnit *> sources);
-
-  // Perform code analysis
-  void PerformAnalysis(llvm::ArrayRef<SourceUnit *> sources);
-
-  /// Perform code analysis on source code.
-  void PerformAnalysis(SourceUnit &source);
 
   /// Print the lanuage help
   void PrintHelp();
@@ -100,46 +97,21 @@ public:
   void PrintVersion();
 
 private:
-  /// Parse a single file and return a syntax tree
-  syn::SyntaxFile *Parse(unsigned srcID);
+  // Perform code analysis
+  void PerformCodeAnalysis(llvm::ArrayRef<SourceUnit *> sources);
 
-  void ResolveUse();
+  /// Perform code analysis on source code.
+  void PerformCodeAnalysis(SourceUnit &source);
 
-  /// Print out the syntax tree
-  void EmitParse(syn::SyntaxFile *sf);
-
-  /// Perform type-checking on the SyntaxFile
-  void TypeCheckSyntaxFile(syn::SyntaxFile &sf);
-
-  /// Perform type-checking on the entire module
-  void TypeCheckModule(syn::Module *mod);
-
-  /// Emit the syntax after performing type-checking
-  void EmitSyntax(syn::SyntaxFile *sf);
-
-private:
   // Peform code generation
-  void PerformCodeGen();
+  void PerformCodeOptimization(CodeAnalysis &codeAnalysis);
 
-  /// Generate the IR for an entire module
-  llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
-
-  /// Generate IR a single SyntaxFile
-  llvm::Module *GenIR(syn::SyntaxFile &sf, CodeGenContext &cc);
+  // Peform code generation
+  void PerformCodeGeneration(const CodeAnalysis &codeAnalysis);
 
   /// Perform optimzation on the SyntaxFile
   void OptimizeIR(llvm::Module *mod);
-
-  /// Generate Object file
-  void GenObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
-
-  /// Generate Object file
-  void GenBitCode();
-
-  /// Generates a 'test.stonem' file
-  void GenModule();
 };
-
 } // namespace stone
 
 #endif
