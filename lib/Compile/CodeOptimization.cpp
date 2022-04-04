@@ -1,4 +1,3 @@
-
 #include "stone/Compile/LangInstance.h"
 #include "stone/Compile/LangListener.h"
 #include "stone/Core/Defer.h"
@@ -16,6 +15,11 @@ struct LangInstance::CodeOptimization final {
   CodeOptimization(LangInstance &lang);
   ~CodeOptimization();
 };
+
+LangInstance::CodeOptimization::CodeOptimization(LangInstance &lang)
+    : lang(lang) {}
+
+LangInstance::CodeOptimization::~CodeOptimization() {}
 
 // Peform code generation
 void LangInstance::PerformCodeOptimization(CodeAnalysis &codeAnalysis) {}

@@ -17,7 +17,7 @@ using stone::syn::SyntaxFile;
 using stone::syn::SyntaxFileKind;
 
 struct LangInstance::CodeGeneration final {
-  
+
   friend LangInstance;
   LangInstance &lang;
 

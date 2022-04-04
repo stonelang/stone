@@ -117,8 +117,8 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
     // Do some things
     return;
   }
-  // Try to optimize the code 
-  PerformCodeOptimization(GetCodeAnalysis());
+  // Try to optimize the code
+  // PerformCodeOptimization(GetCodeAnalysis());
 
   // At this point, we should have a module with one or more syntax files
   PerformCodeGeneration(GetCodeAnalysis());

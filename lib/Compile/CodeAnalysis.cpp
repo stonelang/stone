@@ -54,6 +54,12 @@ inline LangInstance::CodeAnalysis &LangInstance::GetCodeAnalysis() {
   return *reinterpret_cast<LangInstance::CodeAnalysis *>(pointer + offset);
 }
 
+LangInstance::CodeAnalysis::~CodeAnalysis() {}
+
+void LangInstance::PerformCodeAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
+  GetCodeAnalysis().Compile(sources);
+}
+
 void LangInstance::CodeAnalysis::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   for (auto source : sources) {
     assert(source);
@@ -71,10 +77,10 @@ void LangInstance::CodeAnalysis::Compile(llvm::ArrayRef<SourceUnit *> sources) {
     return;
   }
 }
-
 void LangInstance::CodeAnalysis::Compile(SourceUnit &source) {
   auto syntaxFile = Parse(source.GetSrcID());
   assert(syntaxFile);
+  // Add to module
 
   // TODO: May not need this because we are going to add it to the main module.
   // source.SetSyntaxFile(syntaxFile);
@@ -97,13 +103,6 @@ void LangInstance::CodeAnalysis::Compile(SourceUnit &source) {
     // lang.EmitSyntax(*sntaxFile)
   }
 }
-
-LangInstance::CodeAnalysis::~CodeAnalysis() {}
-
-void LangInstance::PerformCodeAnalysis(llvm::ArrayRef<SourceUnit *> sources) {
-  GetCodeAnalysis().Compile(sources);
-}
-
 SyntaxFile *LangInstance::CodeAnalysis::Parse(const unsigned srcID) {
   // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
