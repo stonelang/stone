@@ -24,6 +24,8 @@ struct LangInstance::CodeGeneration final {
   CodeGeneration(LangInstance &lang);
   ~CodeGeneration();
 
+  void Compile(const CodeAnalysis &codeAnalysis);
+
   /// Generate the IR for an entire module
   llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
 
@@ -52,12 +54,16 @@ inline LangInstance::CodeGeneration &LangInstance::GetCodeGeneration() {
 }
 
 void LangInstance::PerformCodeGeneration(const CodeAnalysis &codeAnalysis) {
+  GetCodeGeneration().Compile(codeAnalysis);
+}
 
-  assert(langInvocation.CanCodeGen());
+void LangInstance::CodeGeneration::Compile(const CodeAnalysis &codeAnalysis) {
+
+  assert(lang.GetLangInvocation().CanCodeGen());
 
   // We are performing some low leverl code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
-                     langInvocation.GetCodeGenOptions());
+                     lang.GetLangInvocation().GetCodeGenOptions());
 
   // At this point, we much generate IR for all succeeding modes
 
@@ -67,18 +73,18 @@ void LangInstance::PerformCodeGeneration(const CodeAnalysis &codeAnalysis) {
 
   // auto mod = stone::GenIR(GetMainModule(), cgc);
 
-  if (langInvocation.GetMode().IsEmitIR()) {
+  if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
     // EmitIR()
     return;
   }
 
-  if (!langInvocation.GetCodeGenOptions().skipOptimization) {
+  if (!lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
     /// Send the SyntaxFile to the optimizer
     // OptimizeIR(llvmMod);
   }
 
-  if (langInvocation.GetMode().IsNone() ||
-      langInvocation.GetMode().IsEmitObject()) {
+  if (lang.GetLangInvocation().GetMode().IsNone() ||
+      lang.GetLangInvocation().GetMode().IsEmitObject()) {
     // GenObject(srcID, llvmMod, cgc);
     return;
   }
@@ -100,6 +106,6 @@ void LangInstance::CodeGeneration::GenObject(const unsigned srcID,
                                              llvm::Module *mod,
                                              CodeGenContext &cc) {
   /// TODO: This is the only time we should perform a lookup
-  // auto outputFile = langInvocation.ComputeOutputFile(srcID);
+  // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }
