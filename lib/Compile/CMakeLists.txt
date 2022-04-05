@@ -13,9 +13,6 @@ set(stone_compile_sources
 	ParseExpr.cpp
 	ParseStmt.cpp
 	SyntaxParsing.cpp
-	CodeAnalysis.cpp
-	CodeGeneration.cpp
-	CodeOptimization.cpp
 	TypeCheck.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp

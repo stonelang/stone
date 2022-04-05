@@ -77,13 +77,13 @@ public:
   void SetListener(LangListener *l) { listener = l; }
 
 private:
-  struct CodeAnalysis;
+  class CodeAnalysis;
   CodeAnalysis &GetCodeAnalysis();
 
-  struct CodeGeneration;
+  class CodeGeneration;
   CodeGeneration &GetCodeGeneration();
 
-  struct CodeOptimization;
+  class CodeOptimization;
   CodeOptimization &GetCodeOptimization();
 
 public:
@@ -95,22 +95,6 @@ public:
 
   /// Print the language version
   void PrintVersion();
-
-private:
-  // Perform code analysis
-  void PerformCodeAnalysis(llvm::ArrayRef<SourceUnit *> sources);
-
-  /// Perform code analysis on source code.
-  void PerformCodeAnalysis(SourceUnit &source);
-
-  // Peform code generation
-  void PerformCodeOptimization(CodeAnalysis &codeAnalysis);
-
-  // Peform code generation
-  void PerformCodeGeneration(const CodeAnalysis &codeAnalysis);
-
-  /// Perform optimzation on the SyntaxFile
-  void OptimizeIR(llvm::Module *mod);
 };
 } // namespace stone
 
