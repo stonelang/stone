@@ -38,11 +38,11 @@ enum class DeclNameKind : uint8_t {
 };
 class DeclName : public Dumpable, public Printable {
   friend class NamedDecl;
-  DeclNameKind ty;
+  DeclNameKind declNameKind;
 
 public:
   /// Construct a declaration name from an Identifier *.
-  DeclName(const Identifier *identifier) {
+  DeclName(const Identifier identifier) {
     // TODO: SetPtrAndType(identifier, storedIdentifier);
   }
 
@@ -51,7 +51,7 @@ public:
   bool IsIdentifier() const { return false; }
   // TODO:
   Identifier *GetAsIdentifier() const {}
-  DeclNameKind GetDeclNameKind() { return ty; }
+  DeclNameKind GetDeclNameKind() { return declNameKind; }
 
 public:
   void Print(ColorfulStream &os,
@@ -120,7 +120,7 @@ public:
   ~DeclNameTable() = default;
 
   /// Create a declaration name that is a simple identifier.
-  DeclName GetIdentifier(const Identifier *ID) { return DeclName(ID); }
+  DeclName GetIdentifier(const Identifier ID) { return DeclName(ID); }
 
   /// Returns the name of a constructor for the given Type.
   DeclName GetConstructorName(CanQualType Ty);

@@ -111,7 +111,7 @@ class Module final : public DeclContext,
                      public TypeDecl,
                      public WalkableSyntax {
 public:
-  Module(Identifier &name, SyntaxContext &tc);
+  Module(Identifier name, SyntaxContext &tc);
 
 public:
   using syn::Decl::GetSyntaxContext;
@@ -147,6 +147,17 @@ public:
   // or by doing a placement new.
   void *operator new(size_t bytes, const SyntaxContext &tc,
                      unsigned alignment = alignof(Module));
+
+public:
+  static bool classof(const DeclContext *DC) {
+    if (auto D = DC->GetAsDecl()) {
+      return classof(D);
+    }
+    return false;
+  }
+  static bool classof(const Decl *D) {
+    return D->GetKind() == DeclKind::Module;
+  }
 };
 
 inline bool DeclContext::IsModuleContext() const {

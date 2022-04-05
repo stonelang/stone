@@ -40,12 +40,13 @@ Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
   return ::new (declPtr) syn::Module(name, GetSyntaxContext());
 }
 
-FunDecl *Syntax::MakeFunDecl(SrcLoc loc, DeclContext *dc) {
+FunDecl *Syntax::MakeFunDecl(DeclName name, SrcLoc nameLoc,
+                             DeclContext *parent) {
   size_t size =
       sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetSyntaxContext(), size);
-  return ::new (declPtr) FunDecl(loc, GetSyntaxContext(), dc);
+  return ::new (declPtr) FunDecl(name, nameLoc, parent);
 }
 
 StructDecl *Syntax::MakeStructDecl(SrcLoc loc, DeclContext *dc) {

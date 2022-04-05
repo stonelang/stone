@@ -99,15 +99,14 @@ public:
 
   void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
-
-  SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier *pds = nullptr);
-  SyntaxResult<Decl *> ParseDecl(ParsingDeclSpecifier &pds,
-                                 AccessLevel al = AccessLevel::Private);
+  SyntaxResult<Decl *> ParseDecl();
+  SyntaxResult<Decl *>
+  ParseDecl(AccessLevel accessLevel = AccessLevel::Private);
+  void ParseForwardDecl();
 
 public:
   // Function
-  SyntaxResult<Decl *> ParseFunDecl(ParsingDeclSpecifier &pds,
-                                    AccessLevel accessLevel);
+  SyntaxResult<Decl *> ParseFunDecl(AccessLevel accessLevel);
   // Function
 private:
   void ParseFunctionSignature(FunDecl *funDecl);
@@ -116,7 +115,7 @@ private:
 
 public:
   // Struct
-  SyntaxResult<Decl *> ParseStructDecl(ParsingDeclSpecifier &pds);
+  SyntaxResult<Decl *> ParseStructDecl();
 
 public:
   // Template

@@ -1,7 +1,8 @@
 
+
+space ExtensionSyntax {
 // Module one 
 struct Universe {
-
 }
 
 fun Universe::Start() -> bool {
@@ -16,5 +17,7 @@ extension Planet {
 }
 // Some other module 
 extension Universe::MakeEarth() -> bool {
+
+}
 
 }

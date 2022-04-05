@@ -40,8 +40,4 @@ void *syn::Module::operator new(std::size_t bytes, const SyntaxContext &tc,
   return tc.Allocate(bytes, alignment);
 }
 
-FunctionDecl::FunctionDecl(DeclKind ty, SrcLoc loc, SyntaxContext &tc,
-                           DeclContext *dc)
-    : DeclaratorDecl(ty, loc, dc), DeclContext(DeclContextKind::Decl, ty) {}
-
 void DeclStats::Print(ColorfulStream &stream) {}

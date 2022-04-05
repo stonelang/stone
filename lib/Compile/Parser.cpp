@@ -29,12 +29,6 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
   Initialize();
 }
 void Parser::Initialize() {
-  // TODO: fishy?
-  if (Peek().Is(tok::MAX) && (token.Is(tok::MAX))) {
-    // This is an empty file
-    Stop();
-    return;
-  }
   // Create the translation unit scope.  Install it as the current scope.
   // assert(GetCurScope() == nullptr && "A scope is already active?");
 

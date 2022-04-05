@@ -20,6 +20,7 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+// #include "stone/Syntax/Redeclarable.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -61,6 +62,8 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
+using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
+
 class alignas(1 << DeclAlignInBits) Decl {
   friend DeclStats;
 
@@ -98,27 +101,7 @@ public:
 public:
   friend class DeclContext;
 
-  // struct MultipleDeclContext final {
-  //   DeclContext *semaDeclContext;
-  //   DeclContext *lexicalDeclContext;
-  // };
-
-  llvm::PointerUnion<DeclContext *, SyntaxContext *> context;
-
-  // llvm::PointerUnion<DeclContext *, MultipleDeclContext *> context;
-
-  // bool IsInSemaDeclContext() const { return context.is<DeclContext *>(); }
-  // bool IsOutOfSemaDeclContext() const {
-  //   return context.is<MultipleDeclContext *>();
-  // }
-
-  // MultipleDeclContext *GetMultipleDeclContext() const {
-  //   return context.get<MultipleDeclContext *>();
-  // }
-
-  // DeclContext *GetSemaDeclContext() const {
-  //   return context.get<DeclContext *>();
-  // }
+  UnifiedContext context;
 
   /// DeclKind - This indicates which class this is.
   // unsigned declType : 7;
@@ -141,6 +124,17 @@ public:
   DeclKind GetKind() const { return kind; }
   SrcLoc GetLoc() const { return loc; }
 
+  DeclContext *GetDeclContextForModule() const;
+
+  DeclContext *GetDeclContext() const {
+    if (auto dc = context.dyn_cast<DeclContext *>()) {
+      return dc;
+    }
+    return GetDeclContextForModule();
+  }
+
+  syn::Module *GetModuleContext() const;
+
   SyntaxContext &GetSyntaxContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
     if (dc) {
@@ -150,9 +144,10 @@ public:
   }
 
 protected:
-  Decl(DeclKind kind, SrcLoc loc,
-       llvm::PointerUnion<DeclContext *, SyntaxContext *> context)
-      : kind(kind), loc(loc), context(context) {}
+  Decl(DeclKind kind, UnifiedContext context) : kind(kind), context(context) {}
+
+protected:
+  template <typename DeclTy> friend class Redeclarable;
 
 public:
   bool Walk(SyntaxWalker &walker);
@@ -166,8 +161,9 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
-      : Decl(kind, loc, dc), name(nullptr) {}
+  NamedDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+            UnifiedContext context)
+      : Decl(kind, context), name(name), nameLoc(nameLoc) {}
 
 public:
   /// Get the identifier that names this declaration, if there is one.
@@ -214,24 +210,23 @@ class TypeDecl : public NamedDecl /*TODO: AnyDecl*/ {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
-      : NamedDecl(kind, loc, dc) {}
-
-public:
-  void SetIdentifier(Identifier *identifier) { SetDeclName(identifier); }
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
+           UnifiedContext context)
+      : NamedDecl(kind, name, nameLoc, context) {}
 };
 
 // TODO: May use this instead of using NamedDecl
 class ValueDecl : public NamedDecl {
-  QualType qTy;
+  // QualType qualTy;
 
 public:
-  ValueDecl(DeclKind ty, SrcLoc loc, DeclContext *dc)
-      : NamedDecl(ty, loc, dc) {}
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+            UnifiedContext context)
+      : NamedDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetQualType(QualType qTy) { this->qTy = qTy; }
-  QualType GetQualType() { return qTy; }
+  // void SetQualType(QualType qTy) { this->qTy = qTy; }
+  // QualType GetQualType() { return qTy; }
 };
 
 // class LabelDecl : public NamedDecl {
@@ -244,13 +239,6 @@ public:
 //       : NamedDecl(DeclKind::Space, dc, loc, name) {}
 // };
 
-/// int x = 0 => int := declaration specifier and x := declarator
-class DeclaratorDecl : public ValueDecl {
-public:
-  DeclaratorDecl(DeclKind kind, SrcLoc loc, DeclContext *dc)
-      : ValueDecl(kind, loc, dc) {}
-};
-
 class AccessControl {
   // This also belongs to struct
   AccessLevel level;
@@ -262,13 +250,16 @@ public:
 
 // This is really your function prototye
 class FunctionDecl
-    : public DeclaratorDecl,
-      public DeclContext,
-      public AccessControl /*, syn::Redeclarable<FunctionDecl> */ {
+    : public DeclContext,
+      public ValueDecl,
+      public AccessControl /*, public syn::Redeclarable<FunctionDecl>*/ {
   StorageKind storageKind;
 
 public:
-  FunctionDecl(DeclKind kind, SrcLoc loc, SyntaxContext &tc, DeclContext *dc);
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+               DeclContext *parent)
+      : DeclContext(DeclContextKind::Decl, parent),
+        ValueDecl(kind, name, nameLoc, parent) {}
 
 public:
   /// BraceStmt
@@ -289,8 +280,8 @@ public:
 class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
 public:
-  FunDecl(SrcLoc loc, SyntaxContext &tc, DeclContext *dc)
-      : FunctionDecl(DeclKind::Fun, loc, tc, dc) {}
+  FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
+      : FunctionDecl(DeclKind::Fun, name, nameLoc, parent) {}
 
 public:
   bool IsMain() const;
@@ -301,6 +292,9 @@ public:
   bool IsStatic() const;
 
   bool IsMember() const;
+
+  // TODO: Think about
+  bool IsForward() const;
 
   AccessLevel GetAccessLevel() const;
 
@@ -397,10 +391,7 @@ enum class UseDeclKind : uint8_t {
   Alias,
 };
 
-class UseDeclBase : public NamedDecl {
-public:
-};
-class UseDecl : public UseDeclBase {
+class UseDecl : public NamedDecl {
   SrcLoc useLoc;
 
 public:

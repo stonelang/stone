@@ -1,5 +1,7 @@
 
-fun F0() -> void {
-	if true {
+space IfSyntax {
+public fun F0() -> void {
+	if (true) {
 	}
+}
 }

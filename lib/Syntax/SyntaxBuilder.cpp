@@ -8,13 +8,16 @@ using namespace stone::syn;
 // Decl
 DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
 
+StmtSyntaxBuilder::StmtSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
 // Block
 BlockStmtSyntaxBuilder::BlockStmtSyntaxBuilder(Syntax &syntax)
-    : SyntaxBuilder(syntax) {}
+    : StmtSyntaxBuilder(syntax) {}
 
 // Fun
 FunDeclSyntaxBuilder::FunDeclSyntaxBuilder(Syntax &syntax)
     : DeclSyntaxBuilder(syntax), BlockStmtSyntaxBuilder(syntax) {}
+
+FunDecl *FunDeclSyntaxBuilder::Build() { return nullptr; }
 
 void FunDeclSyntaxBuilder::WithFunKeyword() {}
 

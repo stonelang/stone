@@ -1,5 +1,5 @@
 
-space Syntax {
+space CtorSyntax {
 	public struct Spin {
 	}
 	public struct Proton {

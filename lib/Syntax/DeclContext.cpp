@@ -19,17 +19,14 @@
 using namespace stone;
 using namespace stone::syn;
 
-DeclContext::DeclContext(DeclContextKind dcTy, DeclKind dTy,
-                         DeclContext *parent)
-    : dcTy(dcTy), dTy(dTy), parent(parent) {
-  // declContextBits.DeclKind = ty;
-}
+DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
+    : declContextKind(declContextKind), parent(parent) {}
 
 SyntaxContext &DeclContext::GetSyntaxContext() const {
   return GetParentModule()->GetSyntaxContext();
 }
 
-Module *DeclContext::GetParentModule() const {
+syn::Module *DeclContext::GetParentModule() const {
   const DeclContext *dc = this;
   // TODO:
   return nullptr;
@@ -37,4 +34,11 @@ Module *DeclContext::GetParentModule() const {
   //   dc = dc->GetParent();
   // }
   // return const_cast<Module *>(cast<Module>(dc));
+}
+
+DeclContext *Decl::GetDeclContextForModule() const {
+  if (auto module = dyn_cast<syn::Module>(this)) {
+    return const_cast<syn::Module *>(module);
+  }
+  return nullptr;
 }

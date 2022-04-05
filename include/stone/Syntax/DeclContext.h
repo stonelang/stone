@@ -36,7 +36,8 @@ class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
 
-enum class DeclContextKind : uint8_t { Decl, Expr, File };
+enum class DeclContextKind : uint8_t { Decl, Module, ModuleFile };
+
 class DeclContext {
   enum class TreeHierarchy : unsigned {
     Decl,
@@ -46,9 +47,9 @@ class DeclContext {
     SerializedLocal,
     // If you add a new Tree hierarchies, then update the static_assert() below.
   };
-  DeclKind dTy;
-  DeclContextKind dcTy;
+
   DeclContext *parent;
+  DeclContextKind declContextKind;
 
 protected:
   /// This anonymous union stores the bits belonging to DeclContext and classes
@@ -113,16 +114,14 @@ protected:
                                                   bool fieldsAlreadyLoaded);
 
 public:
-  DeclContext(DeclContextKind dcTy, DeclKind dTy,
-              DeclContext *parent = nullptr);
+  DeclContext(DeclContextKind kind, DeclContext *parent = nullptr);
 
 public:
-  DeclKind GetDeclKind() { return dTy; }
-  DeclContextKind GetDeclContextType() { return dcTy; }
+  DeclContextKind GetDeclContextType() { return declContextKind; }
   DeclContext *GetParent() { return parent; }
 
   Decl *GetAsDecl() {
-    switch (dcTy) {
+    switch (declContextKind) {
     case DeclContextKind::Decl:
       return reinterpret_cast<Decl *>(this + 1); // TODO: UB
     default:

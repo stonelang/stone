@@ -1,6 +1,8 @@
 #ifndef STONE_SYNTAX_SYNTAXBUILDER_H
 #define STONE_SYNTAX_SYNTAXBUILDER_H
 
+#include "stone/Syntax/Specifier.h"
+
 namespace stone {
 namespace syn {
 
@@ -23,7 +25,13 @@ public:
 public:
   Syntax &GetSyntax() { return syntax; }
 };
-class BlockStmtSyntaxBuilder : public SyntaxBuilder {
+
+class StmtSyntaxBuilder : public SyntaxBuilder {
+public:
+  StmtSyntaxBuilder(Syntax &syntax);
+};
+
+class BlockStmtSyntaxBuilder : public StmtSyntaxBuilder {
 public:
   BlockStmtSyntaxBuilder(Syntax &syntax);
 
@@ -41,7 +49,6 @@ public:
 };
 class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
                                    public BlockStmtSyntaxBuilder {
-  // FunDecl *funDecl;
 public:
   FunDeclSyntaxBuilder(const FunDeclSyntaxBuilder &) = delete;
   FunDeclSyntaxBuilder(FunDeclSyntaxBuilder &&) = delete;
@@ -50,7 +57,6 @@ public:
 
 public:
   FunDeclSyntaxBuilder(Syntax &syntax);
-  FunDecl *Build();
 
 public:
   void WithTemplate();
@@ -58,8 +64,10 @@ public:
   void WithParams();
   void WithReturnType();
   void WithReturnStmt();
+  void WithAccessLevel(AccessLevel level);
 
-  // void WithAccessLevel(AccessLevel level);
+public:
+  FunDecl *Build();
 };
 
 class StructDeclSyntaxBuilder final : public DeclSyntaxBuilder,
@@ -81,6 +89,11 @@ public:
 // class ModuleDeclSyntaxBuilder final : public SyntaxBuilder {
 // public:
 // };
+
+class ExprSyntaxBuilder : public SyntaxBuilder {
+public:
+  ExprSyntaxBuilder(Syntax &syntax);
+};
 
 } // namespace syn
 } // namespace stone

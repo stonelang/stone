@@ -1,0 +1,12 @@
+space ForwardSyntax {
+
+	// Forward declaration 
+	internal forward fun Lanuch() -> bool; 
+
+	public fun TryLaunch() -> bool {
+		auto result = Lanuch();
+	}
+
+	public fun Lanuch() -> void {
+	}
+}

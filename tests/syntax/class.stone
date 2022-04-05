@@ -1,0 +1,7 @@
+
+space ClassSyntax {
+	public class S0 {
+	}
+	public fun S0::S0() -> void {
+	}
+}

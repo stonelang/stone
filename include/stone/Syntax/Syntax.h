@@ -49,7 +49,7 @@ public:
   void VerifyDecl(Decl *d);
 
 public:
-  FunDecl *MakeFunDecl(SrcLoc loc, DeclContext *dc);
+  FunDecl *MakeFunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent);
   void VerifyFunDecl(Decl *d);
 
 public:

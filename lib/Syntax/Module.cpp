@@ -23,13 +23,11 @@ void *ModuleFile::operator new(size_t bytes, SyntaxContext &tc,
 }
 
 ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
-    : DeclContext(DeclContextKind::File, DeclKind::None, &owner), kind(kind) {}
+    : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-Module::Module(Identifier &name, SyntaxContext &tc)
-    : DeclContext(DeclContextKind::Decl, DeclKind::Module),
-      TypeDecl(DeclKind::Module, SrcLoc(), nullptr /*TODO: pass DeclContext*/) {
-  // TODO: SetDeclName(name);
-}
+Module::Module(Identifier name, SyntaxContext &sc)
+    : DeclContext(DeclContextKind::Module, nullptr),
+      TypeDecl(DeclKind::Module, name, SrcLoc(), &sc) {}
 
 void Module::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.
@@ -51,10 +49,9 @@ SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
-                                       SyntaxContext &tc, unsigned srcID,
+                                       SyntaxContext &sc, unsigned srcID,
                                        bool isPrimary) {
-  auto *syntaxFile = new (tc) SyntaxFile(kind, owner, srcID, isPrimary);
-  return syntaxFile;
+  return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 
 SyntaxFile::~SyntaxFile() {}

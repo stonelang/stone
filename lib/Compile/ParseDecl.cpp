@@ -1,5 +1,6 @@
 #include "stone/Compile/Parser.h"
 #include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxBuilder.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -61,7 +62,8 @@ static bool HasAccessLevel(const syn::Token &token) {
     return false;
   }
 }
-SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
+SyntaxResult<Decl *> Parser::ParseDecl() {
+
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
   // We always default to private
@@ -78,33 +80,24 @@ SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier *pds) {
     accessLevel = AccessLevel::Private;
     break;
   }
-  if (HasAccessLevel(token)) {
-    ConsumeTok();
-  }
-  if (pds) {
-    return ParseDecl(*pds, accessLevel);
-  }
+  // if (HasAccessLevel(token)) {
+  //   ConsumeTok();
+  // }
 
-  ParsingDeclSpecifier localPDS(*this);
-  return ParseDecl(localPDS, accessLevel);
+  return ParseDecl(accessLevel);
 }
-SyntaxResult<Decl *> Parser::ParseDecl(ParsingDeclSpecifier &pds,
-                                       AccessLevel accessLevel) {
+SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
   SyntaxResult<Decl *> syntaxResult;
 
   // TODO: ParseTemplateDecl first before you move
 
   switch (token.GetKind()) {
-  case tok::kw_any:
-    // ParseTemplateDecl();
-    break;
   case tok::kw_fun:
-    syntaxResult = ParseFunDecl(pds, accessLevel);
+    syntaxResult = ParseFunDecl(accessLevel);
     break;
   default:
     break;
   }
-  // return CreateDeclGroup(singleDecl);
   return DeclResult();
 }
 
@@ -128,6 +121,31 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
   // ConsumeTok();
 }
 
+SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
+  assert(token.GetKind() == tok::kw_fun &&
+         "Attempting to parse a 'fun' decl with incorrect token.");
+
+  FunDeclSyntaxBuilder funBuilder(syntax);
+  funBuilder.WithFunKeyword();
+
+  // TODO:
+  // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
+  // funDecl->SetAccessLevel(accessLevel);
+
+  // ConsumeTok(tok::kw_fun);
+
+  // // funDecl->SetTemplate...
+
+  // ParseFunctionSignature(funDecl);
+  // ParseFunctionBody(funDecl);
+
+  // // syntax.VerifyDecl(funDecl);
+
+  // return funDecl;
+
+  return DeclResult();
+}
+
 void Parser::ParseFunctionBody(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
   // assert(token.Is(tok::l_brace) && "Require left brace.");
@@ -135,24 +153,4 @@ void Parser::ParseFunctionBody(FunDecl *funDecl) {
 void Parser::ParseFunctionArguments(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
   // assert(token.Is(tok::l_brace) && "Require left brace.");
-}
-SyntaxResult<Decl *> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
-                                          AccessLevel accessLevel) {
-  assert(token.GetKind() == tok::kw_fun &&
-         "Attempting to parse a 'fun' decl with incorrect token.");
-
-  // TODO:
-  auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
-  funDecl->SetAccessLevel(accessLevel);
-
-  ConsumeTok(tok::kw_fun);
-
-  // funDecl->SetTemplate...
-
-  ParseFunctionSignature(funDecl);
-  ParseFunctionBody(funDecl);
-
-  // syntax.VerifyDecl(funDecl);
-
-  return funDecl;
 }
