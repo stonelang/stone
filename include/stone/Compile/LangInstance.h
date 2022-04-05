@@ -64,14 +64,10 @@ public:
 
 public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
-
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
-
-  /// TODO: Something to think about -- right now this is in Context.
-  // void AddDiagnosticListener(DiagnosticListener* listener);
 
   LangListener *GetListener() { return listener; }
   void SetListener(LangListener *l) { listener = l; }
@@ -85,9 +81,6 @@ public:
 
   /// Print the language version
   void PrintVersion();
-
-public:
-  static LangInstance *GetLangInstance(LangListener *listener);
 };
 } // namespace stone
 

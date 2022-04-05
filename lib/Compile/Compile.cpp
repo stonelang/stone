@@ -107,10 +107,16 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
+enum class CodeAnalysisResultKind : uint8_t {
+  None,
+  SyntaxFile,
+  Module,
+};
 class CodeAnalysis final {
 
   friend LangInstance;
   LangInstance &lang;
+  CodeAnalysisResultKind codeAnalysisResultKind = CodeAnalysisResultKind::None;
 
 public:
   CodeAnalysis(LangInstance &lang);
@@ -135,6 +141,13 @@ private:
 
   /// Emit the syntax after performing type-checking
   void EmitSyntax(syn::SyntaxFile *sf);
+
+public:
+  CodeAnalysisResultKind GetCodeAnalysisResultKind() const {
+    return codeAnalysisResultKind;
+  }
+  SyntaxFile *GetSyntaxFile() { return nullptr; }
+  syn::Module *GetModulde() { return nullptr; }
 };
 
 CodeAnalysis::CodeAnalysis(LangInstance &lang) : lang(lang) {}
@@ -210,80 +223,6 @@ void CodeAnalysis::TypeCheckModule(syn::Module *mod) {
 
 void CodeAnalysis::ResolveUse() {}
 
-class CodeGeneration final {
-
-  friend LangInstance;
-  LangInstance &lang;
-
-public:
-  CodeGeneration(LangInstance &lang);
-  ~CodeGeneration();
-
-private:
-  void Generate(const CodeAnalysis &codeAnalysis);
-
-  /// Generate the IR for an entire module
-  llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
-
-  /// Generate IR a single SyntaxFile
-  llvm::Module *GenIR(syn::SyntaxFile &sf, CodeGenContext &cc);
-
-  /// Generate Object file
-  void GenObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
-
-  /// Generate Object file
-  void GenBitCode();
-
-  /// Generates a 'test.stonem' file
-  void GenModule();
-};
-
-CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
-
-CodeGeneration::~CodeGeneration() {}
-
-void CodeGeneration::Generate(const CodeAnalysis &codeAnalysis) {
-
-  assert(lang.GetLangInvocation().CanCodeGen());
-
-  // We are performing some low leverl code generation
-  CodeGenContext cgc(stone::GetLLVMContext(),
-                     lang.GetLangInvocation().GetCodeGenOptions());
-
-  // At this point, we much generate IR for all succeeding modes
-
-  // TODO:
-  /// Choose what we are going to do
-  // auto llvmMod = stone::GenIR(*syntaxFile, cgc);
-
-  // auto mod = stone::GenIR(GetMainModule(), cgc);
-
-  if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
-    // EmitIR()
-    return;
-  }
-
-  if (lang.GetLangInvocation().GetMode().IsNone() ||
-      lang.GetLangInvocation().GetMode().IsEmitObject()) {
-    // GenObject(srcID, llvmMod, cgc);
-    return;
-  }
-}
-llvm::Module *CodeGeneration::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
-  return nullptr;
-}
-
-llvm::Module *CodeGeneration::GenIR(syn::Module &mod, CodeGenContext &cc) {
-  return nullptr;
-}
-
-void CodeGeneration::GenObject(const unsigned srcID, llvm::Module *mod,
-                               CodeGenContext &cc) {
-  /// TODO: This is the only time we should perform a lookup
-  // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
-  // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
-}
-
 class CodeOptimization final {
   friend LangInstance;
   LangInstance &lang;
@@ -308,6 +247,92 @@ void CodeOptimization::Optimize() {
     return;
   }
 }
+
+class CodeGeneration final {
+
+  friend LangInstance;
+  LangInstance &lang;
+
+public:
+  CodeGeneration(LangInstance &lang);
+  ~CodeGeneration();
+
+private:
+  void Generate(CodeAnalysis &codeAnalysis);
+
+  /// Generate the IR for an entire module
+  llvm::Module *GenerateIR(syn::Module &sf, CodeGenContext &cc);
+
+  /// Generate IR a single SyntaxFile
+  llvm::Module *GenerateIR(syn::SyntaxFile &sf, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenerateObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenerateBitCode();
+
+  /// Generates a 'test.stonem' file
+  void GenerateModule();
+};
+
+CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
+
+CodeGeneration::~CodeGeneration() {}
+
+void CodeGeneration::Generate(CodeAnalysis &ca) {
+
+  assert(lang.GetLangInvocation().CanCodeGen());
+  assert(ca.GetCodeAnalysisResultKind() == CodeAnalysisResultKind::None);
+
+  // We are performing some low leverl code generation
+  CodeGenContext cgc(stone::GetLLVMContext(),
+                     lang.GetLangInvocation().GetCodeGenOptions());
+
+  switch (ca.GetCodeAnalysisResultKind()) {
+  case CodeAnalysisResultKind::SyntaxFile: {
+    GenerateIR(*ca.GetSyntaxFile(), cgc);
+    break;
+  }
+  case CodeAnalysisResultKind::Module: {
+    GenerateIR(*ca.GetModulde(), cgc);
+    break;
+  }
+  default:
+    stone::Panic("Unknown code analysis result");
+  }
+
+  assert(cgc.GetLLVMModule());
+  CodeOptimization codeOptimization(lang);
+  codeOptimization.Optimize(/*cgc.GetLLVMModule()*/);
+
+  if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
+    // EmitIR()
+    return;
+  }
+
+  if (lang.GetLangInvocation().GetMode().IsNone() ||
+      lang.GetLangInvocation().GetMode().IsEmitObject()) {
+    // GenObject(srcID, llvmMod, cgc);
+    return;
+  }
+}
+llvm::Module *CodeGeneration::GenerateIR(syn::SyntaxFile &sf,
+                                         CodeGenContext &cc) {
+  return nullptr;
+}
+
+llvm::Module *CodeGeneration::GenerateIR(syn::Module &mod, CodeGenContext &cc) {
+  return nullptr;
+}
+
+void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module *mod,
+                                    CodeGenContext &cc) {
+  /// TODO: This is the only time we should perform a lookup
+  // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
+  // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
+}
+
 void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   if (listener) {
     listener->OnCompileStarted(*this);
