@@ -107,7 +107,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-class LangInstance::CodeAnalysis final {
+class CodeAnalysis final {
 
   friend LangInstance;
   LangInstance &lang;
@@ -116,10 +116,10 @@ public:
   CodeAnalysis(LangInstance &lang);
   ~CodeAnalysis();
 
+private:
   void Analyze(llvm::ArrayRef<SourceUnit *> sources);
   void Analyze(SourceUnit &source);
 
-private:
   SyntaxFile *Parse(const unsigned srcID);
 
   void ResolveUse();
@@ -137,56 +137,10 @@ private:
   void EmitSyntax(syn::SyntaxFile *sf);
 };
 
-class LangInstance::CodeOptimization final {
-  friend LangInstance;
-  LangInstance &lang;
+CodeAnalysis::CodeAnalysis(LangInstance &lang) : lang(lang) {}
+CodeAnalysis::~CodeAnalysis() {}
 
-public:
-  CodeOptimization(LangInstance &lang);
-  ~CodeOptimization();
-
-  void Optimize();
-};
-
-class LangInstance::CodeGeneration final {
-
-  friend LangInstance;
-  LangInstance &lang;
-
-public:
-  CodeGeneration(LangInstance &lang);
-  ~CodeGeneration();
-  void Generate(const CodeAnalysis &codeAnalysis);
-
-private:
-  /// Generate the IR for an entire module
-  llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
-
-  /// Generate IR a single SyntaxFile
-  llvm::Module *GenIR(syn::SyntaxFile &sf, CodeGenContext &cc);
-
-  /// Generate Object file
-  void GenObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
-
-  /// Generate Object file
-  void GenBitCode();
-
-  /// Generates a 'test.stonem' file
-  void GenModule();
-};
-
-LangInstance::CodeAnalysis::CodeAnalysis(LangInstance &lang) : lang(lang) {}
-
-inline LangInstance::CodeAnalysis &LangInstance::GetCodeAnalysis() {
-  auto pointer = reinterpret_cast<char *>(const_cast<LangInstance *>(this));
-  auto offset = llvm::alignAddr((void *)sizeof(*this),
-                                llvm::Align(alignof(CodeAnalysis)));
-  return *reinterpret_cast<LangInstance::CodeAnalysis *>(pointer + offset);
-}
-
-LangInstance::CodeAnalysis::~CodeAnalysis() {}
-
-void LangInstance::CodeAnalysis::Analyze(llvm::ArrayRef<SourceUnit *> sources) {
+void CodeAnalysis::Analyze(llvm::ArrayRef<SourceUnit *> sources) {
   for (auto source : sources) {
     assert(source);
     Analyze(*source);
@@ -203,7 +157,7 @@ void LangInstance::CodeAnalysis::Analyze(llvm::ArrayRef<SourceUnit *> sources) {
     return;
   }
 }
-void LangInstance::CodeAnalysis::Analyze(SourceUnit &source) {
+void CodeAnalysis::Analyze(SourceUnit &source) {
   auto syntaxFile = Parse(source.GetSrcID());
   assert(syntaxFile);
   // Add to module
@@ -229,7 +183,7 @@ void LangInstance::CodeAnalysis::Analyze(SourceUnit &source) {
     // lang.EmitSyntax(*sntaxFile)
   }
 }
-SyntaxFile *LangInstance::CodeAnalysis::Parse(const unsigned srcID) {
+SyntaxFile *CodeAnalysis::Parse(const unsigned srcID) {
   // TODO: You are not always creating a Library
   auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
                              *lang.GetModuleSystem().GetMainModule(),
@@ -239,13 +193,13 @@ SyntaxFile *LangInstance::CodeAnalysis::Parse(const unsigned srcID) {
   return sf;
 }
 
-void LangInstance::CodeAnalysis::TypeCheckSyntaxFile(SyntaxFile &sf) {
+void CodeAnalysis::TypeCheckSyntaxFile(SyntaxFile &sf) {
   assert(sf.stage == syn::SyntaxFileStage::AtImports);
   types::TypeCheckSyntaxFile(sf,
                              lang.GetLangInvocation().GetTypeCheckerOptions());
 }
 /// Perform type-checking on the entire module
-void LangInstance::CodeAnalysis::TypeCheckModule(syn::Module *mod) {
+void CodeAnalysis::TypeCheckModule(syn::Module *mod) {
   assert(mod && "Null 'syn::Module'");
   for (auto mf : mod->GetFiles()) {
     if (auto sf = llvm::dyn_cast<SyntaxFile>(mf)) {
@@ -254,20 +208,41 @@ void LangInstance::CodeAnalysis::TypeCheckModule(syn::Module *mod) {
   }
 }
 
-void LangInstance::CodeAnalysis::ResolveUse() {}
+void CodeAnalysis::ResolveUse() {}
 
-LangInstance::CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
+class CodeGeneration final {
 
-LangInstance::CodeGeneration::~CodeGeneration() {}
+  friend LangInstance;
+  LangInstance &lang;
 
-inline LangInstance::CodeGeneration &LangInstance::GetCodeGeneration() {
-  auto pointer = reinterpret_cast<char *>(const_cast<LangInstance *>(this));
-  auto offset = llvm::alignAddr((void *)sizeof(*this),
-                                llvm::Align(alignof(CodeGeneration)));
-  return *reinterpret_cast<LangInstance::CodeGeneration *>(pointer + offset);
-}
+public:
+  CodeGeneration(LangInstance &lang);
+  ~CodeGeneration();
 
-void LangInstance::CodeGeneration::Generate(const CodeAnalysis &codeAnalysis) {
+private:
+  void Generate(const CodeAnalysis &codeAnalysis);
+
+  /// Generate the IR for an entire module
+  llvm::Module *GenIR(syn::Module &sf, CodeGenContext &cc);
+
+  /// Generate IR a single SyntaxFile
+  llvm::Module *GenIR(syn::SyntaxFile &sf, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
+
+  /// Generate Object file
+  void GenBitCode();
+
+  /// Generates a 'test.stonem' file
+  void GenModule();
+};
+
+CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
+
+CodeGeneration::~CodeGeneration() {}
+
+void CodeGeneration::Generate(const CodeAnalysis &codeAnalysis) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
 
@@ -294,38 +269,38 @@ void LangInstance::CodeGeneration::Generate(const CodeAnalysis &codeAnalysis) {
     return;
   }
 }
-llvm::Module *LangInstance::CodeGeneration::GenIR(syn::SyntaxFile &sf,
-                                                  CodeGenContext &cc) {
+llvm::Module *CodeGeneration::GenIR(syn::SyntaxFile &sf, CodeGenContext &cc) {
   return nullptr;
 }
 
-llvm::Module *LangInstance::CodeGeneration::GenIR(syn::Module &mod,
-                                                  CodeGenContext &cc) {
+llvm::Module *CodeGeneration::GenIR(syn::Module &mod, CodeGenContext &cc) {
   return nullptr;
 }
 
-void LangInstance::CodeGeneration::GenObject(const unsigned srcID,
-                                             llvm::Module *mod,
-                                             CodeGenContext &cc) {
+void CodeGeneration::GenObject(const unsigned srcID, llvm::Module *mod,
+                               CodeGenContext &cc) {
   /// TODO: This is the only time we should perform a lookup
   // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }
 
-LangInstance::CodeOptimization::CodeOptimization(LangInstance &lang)
-    : lang(lang) {}
+class CodeOptimization final {
+  friend LangInstance;
+  LangInstance &lang;
 
-LangInstance::CodeOptimization::~CodeOptimization() {}
+public:
+  CodeOptimization(LangInstance &lang);
+  ~CodeOptimization();
 
-inline LangInstance::CodeOptimization &LangInstance::GetCodeOptimization() {
-  auto pointer = reinterpret_cast<char *>(const_cast<LangInstance *>(this));
-  auto offset = llvm::alignAddr((void *)sizeof(*this),
-                                llvm::Align(alignof(CodeOptimization)));
-  return *reinterpret_cast<LangInstance::CodeOptimization *>(pointer + offset);
-}
+  void Optimize();
+};
+
+CodeOptimization::CodeOptimization(LangInstance &lang) : lang(lang) {}
+
+CodeOptimization::~CodeOptimization() {}
 
 // Peform code generation
-void LangInstance::CodeOptimization::Optimize() {
+void CodeOptimization::Optimize() {
 
   if (lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
     /// Send the SyntaxFile to the optimizer
@@ -337,12 +312,16 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
   if (listener) {
     listener->OnCompileStarted(*this);
   }
-  // Create SyntaxFiles and perform type-checking on them
-  GetCodeAnalysis().Analyze(sources);
+  // Every case requires code-analysis
+  CodeAnalysis codeAnalysis(*this);
+  codeAnalysis.Analyze(sources);
+
   if (langInvocation.JustAnalysis()) {
     // Do some things
     return;
   }
   // At this point, we should have a module with one or more syntax files
-  GetCodeGeneration().Generate(GetCodeAnalysis());
+  CodeGeneration codeGeneration(*this);
+  // Pass codeAnalysis for now -- may just pass module or file
+  codeGeneration.Generate(codeAnalysis);
 }

@@ -76,16 +76,6 @@ public:
   LangListener *GetListener() { return listener; }
   void SetListener(LangListener *l) { listener = l; }
 
-private:
-  class CodeAnalysis;
-  CodeAnalysis &GetCodeAnalysis();
-
-  class CodeGeneration;
-  CodeGeneration &GetCodeGeneration();
-
-  class CodeOptimization;
-  CodeOptimization &GetCodeOptimization();
-
 public:
   /// Perform code analysis and code generation
   void Compile(llvm::ArrayRef<SourceUnit *> sources);
@@ -95,6 +85,9 @@ public:
 
   /// Print the language version
   void PrintVersion();
+
+public:
+  static LangInstance *GetLangInstance(LangListener *listener);
 };
 } // namespace stone
 

@@ -1,8 +1,10 @@
 #include "stone/Compile/LangInstance.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/LangListener.h"
+
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
