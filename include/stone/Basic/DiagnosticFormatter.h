@@ -17,11 +17,6 @@ public:
   DiagnosticFormatter();
   virtual ~DiagnosticFormatter();
 
-  // virtual void FormatText(
-  //       llvm::raw_ostream &result, llvm::StringRef textToFormat,
-  //       llvm::ArrayRef<DiagnosticArgument> formatArgs,
-  //       DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
-
   virtual void
   Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) {}

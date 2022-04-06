@@ -106,17 +106,19 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  // Function
+  //=fun=//
   SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
-  // Function
+  void ParseFunForwardDecl(AccessLevel accessLevel);
+
 private:
   SyntaxStatus ParseFunctionSignature(FunDeclSyntaxBuilder &builder);
   SyntaxStatus ParseFunctionArguments(FunDeclSyntaxBuilder &builder);
   SyntaxStatus ParseFunctionBody(FunDeclSyntaxBuilder &builder);
 
 public:
-  // Struct
+  //=struct=//
   SyntaxResult<Decl> ParseStructDecl();
+  void ParseStructForwardDecl();
 
 public:
   // Template
@@ -261,6 +263,16 @@ private:
 
   bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
   bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
+};
+
+/// To assist debugging parser crashes, tell us the location of the
+/// current token.
+class ParserPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+  Parser &parser;
+
+public:
+  explicit ParserPrettyStackTrace(Parser &parser) : parser(parser) {}
+  void print(llvm::raw_ostream &out) const override;
 };
 
 } // namespace syn

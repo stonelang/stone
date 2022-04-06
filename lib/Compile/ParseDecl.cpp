@@ -18,6 +18,7 @@ bool Parser::AtStartOfDecl(const Token &token) {
   case tok::kw_private:
   case tok::kw_internal:
   case tok::kw_static:
+  case tok::kw_forward:
     return true;
   default:
     return false;
@@ -142,11 +143,17 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
   // funDecl->SetReturnType();
 
   // ConsumeTok();
+  return syn::MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
+
+  // builder.WithLeftBrace();
+
+  return syn::MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
+  return syn::MakeSyntaxSuccess();
 }

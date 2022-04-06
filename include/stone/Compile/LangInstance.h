@@ -48,6 +48,13 @@ class LangInstance final {
 
   std::unique_ptr<ModuleSystem> moduleSystem;
 
+  // /// Contains buffer IDs for input source code files.
+  // std::vector<unsigned> inputSourceBufferIDs;
+
+  // /// Identifies the set of input buffers in the SourceManager that are
+  // /// considered primaries.
+  // llvm::SetVector<unsigned> primaryBufferIDs;
+
 public:
   LangInstance(const LangInstance &) = delete;
   void operator=(const LangInstance &) = delete;
@@ -73,14 +80,21 @@ public:
   void SetListener(LangListener *l) { listener = l; }
 
 public:
-  /// Perform code analysis and code generation
-  void Compile(llvm::ArrayRef<SourceUnit *> sources);
-
   /// Print the lanuage help
   void PrintHelp();
 
   /// Print the language version
   void PrintVersion();
+
+public:
+  /// Perform code analysis and code generation
+  void Compile(llvm::ArrayRef<SourceUnit *> sources);
+
+  void PerformParseOnly();
+  void PerformSemanticAnalysis();
+
+public:
+  void ForEachFileToTypeCheck();
 };
 } // namespace stone
 

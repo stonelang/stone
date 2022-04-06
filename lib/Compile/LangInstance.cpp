@@ -93,6 +93,16 @@ void LangInstance::Initialize() {}
 // llvm::StringRef Lang::GetProgramName() { return name; }
 // llvm::StringRef Lang::GetProgramPath() { return path; }
 
+// void LangInstance::RecordPrimaryInputBuffer(unsigned bufferID) {
+//   PrimaryBufferIDs.insert(bufferID);
+// }
+
+// void LangInstance::ForEachFileToTypeCheck() {
+// }
+
+// void LangInstance::FinishTypeChecking() {
+// }
+
 void LangInstance::PrintVersion() {}
 
 void LangInstance::Finish() {

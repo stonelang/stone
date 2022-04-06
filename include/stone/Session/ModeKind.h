@@ -32,6 +32,8 @@ enum class ModeKind : unsigned {
   PrintVersion,
   ///< Print help
   PrintHelp,
+
+  MergeModules,
   //< Alien
   Alien,
 };

@@ -27,6 +27,11 @@ class LangInvocation final : public Session {
   /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
+  llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
+  /// Code completion offset in bytes from the beginning of the main
+  /// source file.  Valid only if \c isCodeCompletion() == true.
+  unsigned codeCompletionOffset = ~0U;
+
 public:
   LangInvocation();
   ~LangInvocation();

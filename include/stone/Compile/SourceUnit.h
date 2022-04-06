@@ -19,6 +19,44 @@ class alignas(8) SourceUnit final {
 
   std::unique_ptr<OutputFile> outputFile;
 
+  /// The path to which we should emit a serialized module.
+  /// It is valid whenever there are any inputs.
+  ///
+  /// This binary format is used to describe the interface of a module when
+  /// imported by client source code. The swiftmodule format is described in
+  /// docs/Serialization.md.
+  ///
+  /// \sa swift::serialize
+  // std::string moduleOutputPath;
+
+  /// The path to which we should emit a module source information file.
+  /// It is valid whenever there are any inputs.
+  ///
+  /// This binary format stores source locations and other information about the
+  /// declarations in a module.
+  ///
+  /// \sa swift::serialize
+  // std::string moduleSourceInfoOutputPath;
+
+  /// The path to which we should emit a module documentation file.
+  /// It is valid whenever there are any inputs.
+  ///
+  /// This binary format stores doc comments and other information about the
+  /// declarations in a module.
+  ///
+  /// \sa swift::serialize
+  // std::string moduleDocOutputPath;
+
+  /// The path to which we should output a Make-style dependencies file.
+  /// It is valid whenever there are any inputs.
+  ///
+  /// Swift's compilation model means that Make-style dependencies aren't
+  /// well-suited to model fine-grained dependencies. See docs/Driver.md for
+  /// more information.
+  ///
+  /// \sa ReferenceDependenciesFilePath
+  // std::string mependenciesFilePath;
+
 public:
   SourceUnit(const unsigned srcID, const file::File &input)
       : srcID(srcID), input(input) {}
