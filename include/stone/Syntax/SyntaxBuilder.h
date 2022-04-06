@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXBUILDER_H
 #define STONE_SYNTAX_SYNTAXBUILDER_H
 
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Specifier.h"
 
 namespace stone {
@@ -49,6 +50,9 @@ public:
 };
 class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
                                    public BlockStmtSyntaxBuilder {
+  SrcLoc funLoc;
+  AccessLevel accessLevel; 
+
 public:
   FunDeclSyntaxBuilder(const FunDeclSyntaxBuilder &) = delete;
   FunDeclSyntaxBuilder(FunDeclSyntaxBuilder &&) = delete;
@@ -60,7 +64,7 @@ public:
 
 public:
   void WithTemplate();
-  void WithFunKeyword();
+  void WithFunKeyword(SrcLoc loc);
   void WithParams();
   void WithReturnType();
   void WithReturnStmt();

@@ -71,7 +71,7 @@ SyntaxResult<Decl *> Parser::ParseDecl() {
     break;
   }
 
-  if(token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
+  if (token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
     ConsumeTok();
   }
   return ParseDecl(accessLevel);
@@ -82,12 +82,47 @@ SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
   // TODO: ParseTemplateDecl first before you move
 
   switch (token.GetKind()) {
+  case tok::kw_forward:
+    //syntaxResult = ParseForwardDecl();
+  break;
   case tok::kw_fun:
     syntaxResult = ParseFunDecl(accessLevel);
     break;
   default:
     break;
   }
+  return DeclResult();
+}
+
+SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
+  assert(token.GetKind() == tok::kw_fun &&
+         "Attempting to parse a 'fun' decl with incorrect token.");
+
+  FunDeclSyntaxBuilder funBuilder(syntax);
+  auto funLoc = ConsumeTok(tok::kw_fun);
+  funBuilder.WithFunKeyword(funLoc);
+  funBuilder.WithAccessLevel(accessLevel);
+
+
+  // Parse function name.
+  Identifier name;
+  SrcLoc nameLoc;
+
+  // TODO:
+  // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
+  // funDecl->SetAccessLevel(accessLevel);
+
+  //
+
+  // // funDecl->SetTemplate...
+
+  // ParseFunctionSignature(funDecl);
+  // ParseFunctionBody(funDecl);
+
+  // // syntax.VerifyDecl(funDecl);
+
+  // return funDecl;
+
   return DeclResult();
 }
 
@@ -110,39 +145,12 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
 
   // ConsumeTok();
 }
-
-SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
-  assert(token.GetKind() == tok::kw_fun &&
-         "Attempting to parse a 'fun' decl with incorrect token.");
-
-  FunDeclSyntaxBuilder funBuilder(syntax);
-  funBuilder.WithFunKeyword();
-
-  ConsumeTok(tok::kw_fun);
-
-  // TODO:
-  // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
-  // funDecl->SetAccessLevel(accessLevel);
-
-  //
-
-  // // funDecl->SetTemplate...
-
-  // ParseFunctionSignature(funDecl);
-  // ParseFunctionBody(funDecl);
-
-  // // syntax.VerifyDecl(funDecl);
-
-  // return funDecl;
-
-  return DeclResult();
-}
-
-void Parser::ParseFunctionBody(FunDecl *funDecl) {
+void Parser::ParseFunctionArguments(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
-void Parser::ParseFunctionArguments(FunDecl *funDecl) {
+
+void Parser::ParseFunctionBody(FunDecl *funDecl) {
   assert(funDecl && "Null FunDecl");
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
