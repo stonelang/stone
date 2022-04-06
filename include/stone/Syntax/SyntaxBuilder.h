@@ -51,7 +51,7 @@ public:
 class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
                                    public BlockStmtSyntaxBuilder {
   SrcLoc funLoc;
-  AccessLevel accessLevel; 
+  AccessLevel accessLevel;
 
 public:
   FunDeclSyntaxBuilder(const FunDeclSyntaxBuilder &) = delete;

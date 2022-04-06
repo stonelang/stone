@@ -19,8 +19,10 @@ FunDeclSyntaxBuilder::FunDeclSyntaxBuilder(Syntax &syntax)
 
 FunDecl *FunDeclSyntaxBuilder::Build() { return nullptr; }
 
-void FunDeclSyntaxBuilder::WithFunKeyword(SrcLoc loc) { funLoc = loc;}
-void FunDeclSyntaxBuilder::WithAccessLevel(AccessLevel lvl) { accessLevel = lvl;}
+void FunDeclSyntaxBuilder::WithFunKeyword(SrcLoc loc) { funLoc = loc; }
+void FunDeclSyntaxBuilder::WithAccessLevel(AccessLevel lvl) {
+  accessLevel = lvl;
+}
 
 // Struct
 StructDeclSyntaxBuilder::StructDeclSyntaxBuilder(Syntax &syntax)

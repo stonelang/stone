@@ -83,8 +83,8 @@ SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
 
   switch (token.GetKind()) {
   case tok::kw_forward:
-    //syntaxResult = ParseForwardDecl();
-  break;
+    // syntaxResult = ParseForwardDecl();
+    break;
   case tok::kw_fun:
     syntaxResult = ParseFunDecl(accessLevel);
     break;
@@ -102,7 +102,6 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
   auto funLoc = ConsumeTok(tok::kw_fun);
   funBuilder.WithFunKeyword(funLoc);
   funBuilder.WithAccessLevel(accessLevel);
-
 
   // Parse function name.
   Identifier name;
@@ -123,11 +122,10 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   // return funDecl;
 
-  return DeclResult();
+  return SyntaxResult<Decl *>(funBuilder.Build());
 }
 
-void Parser::ParseFunctionSignature(FunDecl *funDecl) {
-  assert(funDecl && "Null FunDecl");
+void Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
 
   // TODO:
   // if(name == "Main"){
@@ -138,19 +136,17 @@ void Parser::ParseFunctionSignature(FunDecl *funDecl) {
   // Get Identifier
   // funDecl->SetIdentifier();
 
-  ParseFunctionArguments(funDecl);
+  ParseFunctionArguments(builder);
 
   // Parse the return type
   // funDecl->SetReturnType();
 
   // ConsumeTok();
 }
-void Parser::ParseFunctionArguments(FunDecl *funDecl) {
-  assert(funDecl && "Null FunDecl");
+void Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
 
-void Parser::ParseFunctionBody(FunDecl *funDecl) {
-  assert(funDecl && "Null FunDecl");
+void Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }

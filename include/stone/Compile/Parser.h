@@ -13,6 +13,8 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/SyntaxBuilder.h"
+
 
 #include "llvm/Support/Timer.h"
 
@@ -109,9 +111,9 @@ public:
   SyntaxResult<Decl *> ParseFunDecl(AccessLevel accessLevel);
   // Function
 private:
-  void ParseFunctionSignature(FunDecl *funDecl);
-  void ParseFunctionArguments(FunDecl *funDecl);
-  void ParseFunctionBody(FunDecl *funDecl);
+  void ParseFunctionSignature(FunDeclSyntaxBuilder &builder);
+  void ParseFunctionArguments(FunDeclSyntaxBuilder &builder);
+  void ParseFunctionBody(FunDeclSyntaxBuilder &builder);
 
 public:
   // Struct
