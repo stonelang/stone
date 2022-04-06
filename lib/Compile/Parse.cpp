@@ -11,24 +11,13 @@ using namespace stone::syn;
 void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
                           SyntaxListener *listener) {
   Parser parser(sf, syntax, listener);
+  llvm::SmallVector<SyntaxResult<Decl *>> results;
+  parser.ParseTopLevelDecls(results);
 
-  // SyntaxResult<SyntaxNode> nodes;
-
-  SyntaxResult<Decl *> result;
-  while (!parser.IsDone()) {
-    parser.ParseTopLevelDecl(result);
-    // Check for errors from diag and if there are then exit.
-    if (parser.HasError()) {
-      if (listener) {
-        listener->OnError();
-      }
-      break;
-    }
-    if (listener) {
-      listener->OnDecl(result.Get(), true);
-    }
+  if (parser.HasError()) {
+    return;
   }
-  if (listener) {
-    listener->OnDone();
+  for (auto result : results) {
+    sf.AddTopLevelDecl(result.Get());
   }
 }

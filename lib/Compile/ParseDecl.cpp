@@ -31,14 +31,15 @@ void Parser::ParseTopLevelDecls(
   if (token.Is(tok::MAX)) {
     ConsumeTok();
   }
-  SyntaxResult<Decl *> result;
   while (!IsDone()) {
-    ParseTopLevelDecl(result);
-    if (HasError()) {
-      if (listener) {
+    auto result = ParseTopLevelDecl();
+    if (listener) {
+      if (HasError()) {
         listener->OnError();
+        return;
+      } else {
+        listener->OnDecl(result.Get(), true);
       }
-      return;
     }
     results.push_back(result.Get());
   }
@@ -48,8 +49,9 @@ void Parser::ParseTopLevelDecls(
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
-void Parser::ParseTopLevelDecl(SyntaxResult<Decl *> &result) {
+SyntaxResult<Decl *> Parser::ParseTopLevelDecl() {
   assert(AtStartOfDecl(token) && "Invalid top-declaration");
+  return ParseDecl();
 }
 
 static bool HasAccessLevel(const syn::Token &token) {
@@ -128,11 +130,13 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
   FunDeclSyntaxBuilder funBuilder(syntax);
   funBuilder.WithFunKeyword();
 
+  ConsumeTok(tok::kw_fun);
+
   // TODO:
   // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
   // funDecl->SetAccessLevel(accessLevel);
 
-  // ConsumeTok(tok::kw_fun);
+  //
 
   // // funDecl->SetTemplate...
 

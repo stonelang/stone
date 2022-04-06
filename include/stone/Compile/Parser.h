@@ -38,14 +38,13 @@ class Parser final {
   friend ParserStats;
   friend PairDelimiterBalancer;
 
-  Syntax &syntax;
-  SyntaxFile &sf;
-
   SyntaxScopeCache scopeCache;
   SyntaxListener *listener;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
+  Syntax &syntax;
+  SyntaxFile &sf;
   DeclContext *curDC;
 
   /// This is the current token being considered by the parser.
@@ -96,13 +95,14 @@ public:
   // Decl Parsing
 
   bool AtStartOfDecl(const Token &tok);
-
-  void ParseTopLevelDecl(SyntaxResult<Decl *> &result);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
+
   SyntaxResult<Decl *> ParseDecl();
-  SyntaxResult<Decl *>
-  ParseDecl(AccessLevel accessLevel = AccessLevel::Private);
+  SyntaxResult<Decl *> ParseDecl(AccessLevel accessLevel);
   void ParseForwardDecl();
+
+private:
+  SyntaxResult<Decl *> ParseTopLevelDecl();
 
 public:
   // Function
