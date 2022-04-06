@@ -24,7 +24,7 @@ bool Parser::AtStartOfDecl(const Token &token) {
   }
 }
 void Parser::ParseTopLevelDecls(
-    llvm::SmallVector<SyntaxResult<Decl *>> &results) {
+    llvm::SmallVector<SyntaxResult<Decl>> &results) {
   // Prime the Parser's token
   // The Lexer has the first token but the Parser's token defaults to tk::MAX
   // So, update the parser's token with the first token from the Lexer
@@ -41,7 +41,7 @@ void Parser::ParseTopLevelDecls(
         listener->OnDecl(result.Get(), true);
       }
     }
-    results.push_back(result.Get());
+    results.push_back(result);
   }
 }
 // Ex: sample.stone
@@ -49,12 +49,12 @@ void Parser::ParseTopLevelDecls(
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
-SyntaxResult<Decl *> Parser::ParseTopLevelDecl() {
+SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(AtStartOfDecl(token) && "Invalid top-declaration");
   return ParseDecl();
 }
 
-SyntaxResult<Decl *> Parser::ParseDecl() {
+SyntaxResult<Decl> Parser::ParseDecl() {
 
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
@@ -76,8 +76,8 @@ SyntaxResult<Decl *> Parser::ParseDecl() {
   }
   return ParseDecl(accessLevel);
 }
-SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
-  SyntaxResult<Decl *> syntaxResult;
+SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
+  SyntaxResult<Decl> declResult;
 
   // TODO: ParseTemplateDecl first before you move
 
@@ -86,15 +86,15 @@ SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
     // syntaxResult = ParseForwardDecl();
     break;
   case tok::kw_fun:
-    syntaxResult = ParseFunDecl(accessLevel);
+    declResult = ParseFunDecl(accessLevel);
     break;
   default:
     break;
   }
-  return DeclResult();
+  return declResult;
 }
 
-SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
+SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   assert(token.GetKind() == tok::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 
@@ -122,10 +122,10 @@ SyntaxResult<Decl *> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   // return funDecl;
 
-  return SyntaxResult<Decl *>(funBuilder.Build());
+  return syn::MakeSyntaxResult<Decl>(funBuilder.Build());
 }
 
-void Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
 
   // TODO:
   // if(name == "Main"){
@@ -143,10 +143,10 @@ void Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
 
   // ConsumeTok();
 }
-void Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }
 
-void Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 }

@@ -1,186 +1,231 @@
 #ifndef STONE_SYNTAX_SYNTAXRESULT_H
 #define STONE_SYNTAX_SYNTAXRESULT_H
 
-#include "stone/Syntax/DeclGroup.h"
-#include "stone/Syntax/Expr.h"
-#include "stone/Syntax/Ownership.h"
-#include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Type.h"
+#include "llvm/ADT/PointerIntPair.h"
+#include <type_traits>
 
 namespace stone {
 namespace syn {
-class Decl;
-class FunDecl;
-class StructDecl;
-class Stmt;
-class IfStmt;
-class MatchStmt;
-class Expr;
-class InFlightDiagnostic;
+class SyntaxStatus;
+/// A wrapper for a parser AST node result (Decl, Stmt, Expr,
+/// etc.)
+///
+/// Contains the pointer to the AST node itself (or null) and additional bits
+/// that indicate:
+/// \li if there was a parse error;
+/// \li if there was a code completion token.
+///
+/// If you want to return an AST node pointer in the Syntax, consider using
+/// SyntaxResult instead.
+template <typename T> class SyntaxResult {
+  llvm::PointerIntPair<T *, 2> ptrAndBits;
+  enum {
+    isError = 0x1,
+    IsCodeCompletion = 0x2,
+  };
+  template <typename U> friend class SyntaxResult;
 
-typedef stone::OpaquePtr<syn::DeclGroupRef> DeclGroupPtrTy;
-
-// Determines whether the low bit of the result pointer for the
-// given UID is always zero. If so, SyntaxResult will use that bit
-// for it's "invalid" flag.
-template <class Ptr> struct IsResultPtrLowBitFree {
-  static const bool value = false;
-};
-
-/// SyntaxResult - This structure is used while parsing/acting on
-/// expressions, stmts, etc.  It encapsulates both the object returned by
-/// the action, plus a sense of whether or not it is valid.
-/// When CompressInvalid is true, the "invalid" flag will be
-/// stored in the low bit of the Val pointer.
-template <class PtrTy,
-          bool CompressInvalid = IsResultPtrLowBitFree<PtrTy>::value>
-class SyntaxResult final {
-  PtrTy Val;
-  bool Invalid;
+  template <typename U>
+  friend inline SyntaxResult<U> MakeSyntaxResult(SyntaxStatus Status,
+                                                 U *Result);
 
 public:
-  SyntaxResult(bool Invalid = false) : Val(PtrTy()), Invalid(Invalid) {}
-  SyntaxResult(PtrTy val) : Val(val), Invalid(false) {}
-  SyntaxResult(const InFlightDiagnostic &) : Val(PtrTy()), Invalid(true) {}
+  /// Construct a null result with error bit set.
+  SyntaxResult(std::nullptr_t = nullptr) { SetIsError(); }
 
-  // These two overloads prevent void* -> bool conversions.
-  SyntaxResult(const void *) = delete;
-  SyntaxResult(volatile void *) = delete;
+  /// Construct a null result with specified error bits set.
+  SyntaxResult(SyntaxStatus Status);
 
-  bool isInvalid() const { return Invalid; }
-  bool isUsable() const { return !Invalid && Val; }
-  bool isUnset() const { return !Invalid && !Val; }
+  /// Construct a successful parser result.
+  explicit SyntaxResult(T *Result) : ptrAndBits(Result) {
+    assert(Result && "a successful parser result cannot be null");
+  }
+  /// Convert from a different but compatible parser result.
+  template <typename U, typename Enabler = typename std::enable_if<
+                            std::is_base_of<T, U>::value>::type>
+  SyntaxResult(SyntaxResult<U> Other)
+      : ptrAndBits(Other.ptrAndBits.getPointer(), Other.ptrAndBits.getInt()) {}
 
-  PtrTy Get() const { return Val; }
-  template <typename T> T *GetAs() { return static_cast<T *>(Get()); }
+  /// Return true if this result does not have an AST node.
+  ///
+  /// If returns true, then error bit is set.
+  bool IsNull() const { return GetPtrOrNull() == nullptr; }
 
-  void Set(PtrTy V) { Val = V; }
+  /// Return true if this result has an AST node.
+  ///
+  /// Note that this does not tell us if there was a parse error or not.
+  bool IsNonNull() const { return GetPtrOrNull() != nullptr; }
 
-  const SyntaxResult &operator=(PtrTy RHS) {
-    Val = RHS;
-    Invalid = false;
-    return *this;
+  /// Return the AST node if non-null.
+  T *Get() const {
+    assert(GetPtrOrNull() && "not checked for nullptr");
+    return GetPtrOrNull();
+  }
+
+  /// Return the AST node or a null pointer.
+  T *GetPtrOrNull() const { return ptrAndBits.getPointer(); }
+
+  /// Return true if there was a parse error that the parser has not yet
+  /// recovered from.
+  ///
+  /// Note that we can still have an AST node which was constructed during
+  /// recovery.
+  bool IsError() const { return ptrAndBits.getInt() & isError; }
+
+  /// Return true if there was a parse error that the parser has not yet
+  /// recovered from, or if we found a code completion token while parsing.
+  ///
+  /// Note that we can still have an AST node which was constructed during
+  /// recovery.
+  bool IsErrorOrHasCompletion() const {
+    return ptrAndBits.getInt() & (isError | IsCodeCompletion);
+  }
+
+  /// Return true if we found a code completion token while parsing this.
+  bool hasCodeCompletion() const {
+    return ptrAndBits.getInt() & IsCodeCompletion;
+  }
+
+  void SetIsError() { ptrAndBits.setInt(ptrAndBits.getInt() | isError); }
+
+  void SetHasCodeCompletionAndIsError() {
+    ptrAndBits.setInt(ptrAndBits.getInt() | isError | IsCodeCompletion);
+  }
+
+private:
+  void SetHasCodeCompletion() {
+    ptrAndBits.setInt(ptrAndBits.getInt() | IsCodeCompletion);
   }
 };
-// This SyntaxResult partial specialization places the "invalid"
-// flag into the low bit of the pointer.
-template <typename PtrTy> class SyntaxResult<PtrTy, true> {
-  // A pointer whose low bit is 1 if this result is invalid, 0
-  // otherwise.
-  uintptr_t PtrWithInvalid;
 
-  using PtrTraits = llvm::PointerLikeTypeTraits<PtrTy>;
-
-public:
-  SyntaxResult(bool Invalid = false)
-      : PtrWithInvalid(static_cast<uintptr_t>(Invalid)) {}
-
-  SyntaxResult(PtrTy V) {
-    void *VP = PtrTraits::getAsVoidPointer(V);
-    PtrWithInvalid = reinterpret_cast<uintptr_t>(VP);
-    assert((PtrWithInvalid & 0x01) == 0 && "Badly aligned pointer");
-  }
-
-  SyntaxResult(const InFlightDiagnostic &) : PtrWithInvalid(0x01) {}
-
-  // These two overloads prevent void* -> bool conversions.
-  SyntaxResult(const void *) = delete;
-  SyntaxResult(volatile void *) = delete;
-
-  bool isInvalid() const { return PtrWithInvalid & 0x01; }
-  bool isUsable() const { return PtrWithInvalid > 0x01; }
-  bool isUnset() const { return PtrWithInvalid == 0; }
-
-  PtrTy Get() const {
-    void *VP = reinterpret_cast<void *>(PtrWithInvalid & ~0x01);
-    return PtrTraits::getFromVoidPointer(VP);
-  }
-
-  template <typename T> T *GetAs() { return static_cast<T *>(Get()); }
-
-  void Set(PtrTy V) {
-    void *VP = PtrTraits::getAsVoidPointer(V);
-    PtrWithInvalid = reinterpret_cast<uintptr_t>(VP);
-    assert((PtrWithInvalid & 0x01) == 0 && "Badly aligned pointer");
-  }
-
-  const SyntaxResult &operator=(PtrTy RHS) {
-    void *VP = PtrTraits::getAsVoidPointer(RHS);
-    PtrWithInvalid = reinterpret_cast<uintptr_t>(VP);
-    assert((PtrWithInvalid & 0x01) == 0 && "Badly aligned pointer");
-    return *this;
-  }
-
-  // For types where we can fit a flag in with the pointer, provide
-  // conversions to/from pointer type.
-  static SyntaxResult getFromOpaquePointer(void *P) {
-    SyntaxResult Result;
-    Result.PtrWithInvalid = (uintptr_t)P;
-    return Result;
-  }
-  void *getAsOpaquePointer() const { return (void *)PtrWithInvalid; }
-};
-
-/// An opaque type for threading parsed type information through the
-/// parser.
-// using ParsedType = OpaquePtr<QualType>;
-// using UnionParsedType = UnionOpaquePtr<QualType>;
-
-// We can re-use the low bit of expression, statement, base, and
-// member-initializer pointers for the "invalid" flag of
-// SyntaxResult.
-template <> struct IsResultPtrLowBitFree<Expr *> {
-  static const bool value = true;
-};
-template <> struct IsResultPtrLowBitFree<Stmt *> {
-  static const bool value = true;
-};
-
-// template<> struct IsResultPtrLowBitFree<BaseSpecifier*> {
-//  static const bool value = true;
-//};
-// template<> struct IsResultPtrLowBitFree<CtorInitializer*> {
-//  static const bool value = true;
-//};
-
-using ExprResult = SyntaxResult<Expr *>;
-using StmtResult = SyntaxResult<Stmt *>;
-// using TypeResult = SyntaxResult<ParsedType>;
-// using BaseResult = SyntaxResult<BaseSpecifier *>;
-// using MemInitResult = SyntaxResult<CtorInitializer *>;
-
-using DeclResult = SyntaxResult<Decl *>;
-// using ParsedTemplateTy = OpaquePtr<TemplateName>;
-// using UnionParsedTemplateTy = UnionOpaquePtr<TemplateName>;
-
-using MultiExprArg = MutableArrayRef<Expr *>;
-using MultiStmtArg = MutableArrayRef<Stmt *>;
-// using TreeTemplateArgsPtr = MutableArrayRef<ParsedTemplateArgument>;
-// using MultiTypeArg = MutableArrayRef<ParsedType>;
-// sing MultiTemplateParamsArg = MutableArrayRef<TemplateParameterList *>;
-
-inline DeclResult DeclError() { return DeclResult(true); }
-inline ExprResult ExprError() { return ExprResult(true); }
-inline StmtResult StmtError() { return StmtResult(true); }
-// inline TypeResult TypeError() { return TypeResult(true); }
-
-inline DeclResult DeclError(const InFlightDiagnostic &) { return DeclError(); }
-inline ExprResult ExprError(const InFlightDiagnostic &) { return ExprError(); }
-inline StmtResult StmtError(const InFlightDiagnostic &) { return StmtError(); }
-
-inline DeclResult DeclEmpty() { return DeclResult(false); }
-inline ExprResult ExprEmpty() { return ExprResult(false); }
-inline StmtResult StmtEmpty() { return StmtResult(false); }
-
-inline Expr *AssertSuccess(ExprResult R) {
-  assert(!R.isInvalid() && "operation was asserted to never fail!");
-  return R.Get();
+/// Create a successful parser result.
+template <typename T>
+static inline SyntaxResult<T> MakeSyntaxResult(T *Result) {
+  return SyntaxResult<T>(Result);
 }
 
-inline Stmt *AssertSuccess(StmtResult R) {
-  assert(!R.isInvalid() && "operation was asserted to never fail!");
-  return R.Get();
+/// Create a result (null or non-null) with error bit set.
+template <typename T>
+static inline SyntaxResult<T> MakeSyntaxErrorResult(T *Result = nullptr) {
+  SyntaxResult<T> PR;
+  if (Result) {
+    PR = SyntaxResult<T>(Result);
+  }
+  PR.SetIsError();
+  return PR;
+}
+
+/// Create a result (null or non-null) with error and code completion bits set.
+template <typename T>
+static inline SyntaxResult<T>
+MakeSyntaxCodeCompletionResult(T *Result = nullptr) {
+  SyntaxResult<T> PR;
+  if (Result) {
+    PR = SyntaxResult<T>(Result);
+  }
+  PR.SetHasCodeCompletionAndIsError();
+  return PR;
+}
+
+/// Same as \c SyntaxResult, but just the status bits without the AST
+/// node.
+///
+/// Useful when the AST node is returned by some other means (for example, in
+/// a vector out parameter).
+///
+/// If you want to use 'bool' as a result type in the Syntax, consider using
+/// SyntaxStatus instead.
+class SyntaxStatus {
+  unsigned isError : 1;
+  unsigned IsCodeCompletion : 1;
+
+public:
+  /// Construct a successful parser status.
+  SyntaxStatus() : isError(0), IsCodeCompletion(0) {}
+
+  /// Construct a parser status with specified bits.
+  template <typename T>
+  SyntaxStatus(SyntaxResult<T> Result) : isError(0), IsCodeCompletion(0) {
+    if (Result.IsError()) {
+      SetIsError();
+    }
+    if (Result.hasCodeCompletion())
+      IsCodeCompletion = true;
+  }
+
+  /// Return true if either 1) no errors were encountered while parsing this,
+  /// or 2) there were errors but the the parser already recovered from them.
+  bool IsSuccess() const { return !IsError(); }
+  bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
+
+  /// Return true if we found a code completion token while parsing this.
+  bool hasCodeCompletion() const { return IsCodeCompletion; }
+
+  /// Return true if we encountered any errors while parsing this that the
+  /// parser hasn't yet recovered from.
+  bool IsError() const { return isError; }
+
+  void SetIsError() { isError = true; }
+
+  void SetHasCodeCompletion() { IsCodeCompletion = true; }
+
+  void ClearIsError() { isError = false; }
+
+  void SetHasCodeCompletionAndIsError() {
+    isError = true;
+    IsCodeCompletion = true;
+  }
+
+  SyntaxStatus &operator|=(SyntaxStatus RHS) {
+    isError |= RHS.isError;
+    IsCodeCompletion |= RHS.IsCodeCompletion;
+    return *this;
+  }
+
+  friend SyntaxStatus operator|(SyntaxStatus LHS, SyntaxStatus RHS) {
+    SyntaxStatus Result = LHS;
+    Result |= RHS;
+    return Result;
+  }
+};
+
+/// Create a successful parser status.
+static inline SyntaxStatus MakeSyntaxSuccess() { return SyntaxStatus(); }
+
+/// Create a status with error bit set.
+static inline SyntaxStatus MakeSyntaxError() {
+  SyntaxStatus Status;
+  Status.SetIsError();
+  return Status;
+}
+
+/// Create a status with error and code completion bits set.
+static inline SyntaxStatus MakeSyntaxCodeCompletionStatus() {
+  SyntaxStatus Status;
+  Status.SetHasCodeCompletionAndIsError();
+  return Status;
+}
+
+/// Create a parser result with specified bits.
+template <typename T>
+static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
+  SyntaxResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
+                                        : MakeSyntaxResult(Result);
+
+  if (Status.hasCodeCompletion()) {
+    PR.SetHasCodeCompletion();
+  }
+  return PR;
+}
+
+template <typename T> SyntaxResult<T>::SyntaxResult(SyntaxStatus Status) {
+  assert(Status.IsError());
+  SetIsError();
+  if (Status.hasCodeCompletion()) {
+    SetHasCodeCompletion();
+  }
 }
 } // namespace syn
 } // namespace stone
+
 #endif

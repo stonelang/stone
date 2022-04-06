@@ -11,10 +11,9 @@
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxBuilder.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Syntax/SyntaxBuilder.h"
-
 
 #include "llvm/Support/Timer.h"
 
@@ -97,27 +96,27 @@ public:
   // Decl Parsing
 
   bool AtStartOfDecl(const Token &tok);
-  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl *>> &results);
+  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl *> ParseDecl();
-  SyntaxResult<Decl *> ParseDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseDecl();
+  SyntaxResult<Decl> ParseDecl(AccessLevel accessLevel);
   void ParseForwardDecl();
 
 private:
-  SyntaxResult<Decl *> ParseTopLevelDecl();
+  SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
   // Function
-  SyntaxResult<Decl *> ParseFunDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
   // Function
 private:
-  void ParseFunctionSignature(FunDeclSyntaxBuilder &builder);
-  void ParseFunctionArguments(FunDeclSyntaxBuilder &builder);
-  void ParseFunctionBody(FunDeclSyntaxBuilder &builder);
+  SyntaxStatus ParseFunctionSignature(FunDeclSyntaxBuilder &builder);
+  SyntaxStatus ParseFunctionArguments(FunDeclSyntaxBuilder &builder);
+  SyntaxStatus ParseFunctionBody(FunDeclSyntaxBuilder &builder);
 
 public:
   // Struct
-  SyntaxResult<Decl *> ParseStructDecl();
+  SyntaxResult<Decl> ParseStructDecl();
 
 public:
   // Template
@@ -187,15 +186,15 @@ public:
   // Then you call the following:
   // void ParseFunDeclDefinition();
 
-  DeclResult ParseSpaceDecl();
+  SyntaxResult<Decl> ParseSpaceDecl();
   ///
 public:
   /// Stmt
-  StmtResult ParseStmt();
+  SyntaxResult<Stmt> ParseStmt();
 
 public:
   /// Expr
-  ExprResult ParseExpr();
+  SyntaxResult<Expr> ParseExpr();
 
 public:
   /// Stop parsing now.

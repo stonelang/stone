@@ -3,4 +3,6 @@
 
 using namespace stone::syn;
 
-SyntaxResult<Expr *> Parser::ParseExpr() { return ExprEmpty(); }
+SyntaxResult<Expr> Parser::ParseExpr() {
+  return syn::MakeSyntaxResult<Expr>(nullptr);
+}

@@ -51,6 +51,7 @@ public:
 class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
                                    public BlockStmtSyntaxBuilder {
   SrcLoc funLoc;
+  bool isMain = false;
   AccessLevel accessLevel;
 
 public:
@@ -64,11 +65,13 @@ public:
 
 public:
   void WithTemplate();
-  void WithFunKeyword(SrcLoc loc);
+  void WithFunKeyword(SrcLoc funLoc);
   void WithParams();
   void WithReturnType();
   void WithReturnStmt();
   void WithAccessLevel(AccessLevel level);
+  // void WithName(DeclName name);
+  void WithNameLoc(SrcLoc nameLoc);
 
 public:
   FunDecl *Build();
