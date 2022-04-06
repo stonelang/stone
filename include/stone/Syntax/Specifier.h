@@ -34,8 +34,9 @@ enum class TypeSpecifierKind : unsigned {
 
 // TODO: All you need is Public and Local
 enum class AccessLevel : uint8_t {
+  None = 0,
   /// Limited to the scope
-  Private = 0,
+  Private,
   /// Accessible only within module
   Internal,
   /// Open outside of module with certain restrictions

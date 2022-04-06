@@ -54,23 +54,11 @@ SyntaxResult<Decl *> Parser::ParseTopLevelDecl() {
   return ParseDecl();
 }
 
-static bool HasAccessLevel(const syn::Token &token) {
-  switch (token.GetKind()) {
-  case tok::kw_public:
-  case tok::kw_internal:
-  case tok::kw_private:
-    return true;
-  default:
-    return false;
-  }
-}
 SyntaxResult<Decl *> Parser::ParseDecl() {
 
   PairDelimiterBalancer pairDelimiterBalancer(*this);
 
-  // We always default to private
-  AccessLevel accessLevel = AccessLevel::Private;
-
+  AccessLevel accessLevel = AccessLevel::None;
   switch (token.GetKind()) {
   case tok::kw_public:
     accessLevel = AccessLevel::Public;
@@ -82,10 +70,10 @@ SyntaxResult<Decl *> Parser::ParseDecl() {
     accessLevel = AccessLevel::Private;
     break;
   }
-  // if (HasAccessLevel(token)) {
-  //   ConsumeTok();
-  // }
 
+  if(token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
+    ConsumeTok();
+  }
   return ParseDecl(accessLevel);
 }
 SyntaxResult<Decl *> Parser::ParseDecl(AccessLevel accessLevel) {
