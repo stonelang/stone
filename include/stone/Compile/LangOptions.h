@@ -14,6 +14,11 @@ using namespace stone::types;
 
 namespace stone {
 
+enum class ModuleOutputMode : uint8_t {
+  None = 0,
+  Single,
+  Whole,
+};
 class LangOptions final : public BaseOptions {
 public:
   /// Options for the entire system
@@ -27,6 +32,8 @@ public:
 
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
+
+  ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 
 public:
   LangOptions() {

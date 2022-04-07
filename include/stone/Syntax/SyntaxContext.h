@@ -21,6 +21,7 @@
 #include "stone/Syntax/SearchPathOptions.h"
 #include "stone/Syntax/SyntaxAlloc.h"
 #include "stone/Syntax/Type.h"
+
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

@@ -18,6 +18,7 @@ set(stone_compile_sources
 	TypeChecker.cpp
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
+	UseResolution.cpp
 
 	LINK_LIBS
 	StoneGen

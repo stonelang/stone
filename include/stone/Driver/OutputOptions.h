@@ -14,7 +14,7 @@ enum class LTOKind {
 };
 /// This mode controls the compilation process
 /// p := -primary-file
-enum class CompilationMode : unsigned {
+enum class CompilationMode : uint8_t {
   /// n inputs, n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)

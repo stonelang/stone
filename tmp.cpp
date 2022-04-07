@@ -1,9 +1,9 @@
 
 
-enum class CompilationMode {
+enum class CompilationMode : uint8_t{
 
-  // N compile job(s) per N files => N^2 parses
-  Quadratic,
+  // N compile job(s) per N files => N^2 parses -- the default mode 
+  Quadratic = 0,
   /// Multiple compile jobs
 
   // One compile job per file, with each job having a single primary => N
@@ -18,9 +18,7 @@ enum class CompilationMode {
   Single,
 }
 
-static void
-BuildJobs() {
-
+static void BuildJobs() {
   switch (GetMode()) {
   case ModeKind::Parse:
   case ModeKind::TypeCheck:

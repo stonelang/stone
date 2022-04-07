@@ -128,8 +128,6 @@ private:
 
   SyntaxFile *Parse(const unsigned srcID);
 
-  void ResolveUse();
-
   /// Print out the syntax tree
   void EmitParse(syn::SyntaxFile *sf);
 
@@ -221,8 +219,6 @@ void CodeAnalysis::TypeCheckModule(syn::Module *mod) {
   }
 }
 
-void CodeAnalysis::ResolveUse() {}
-
 class CodeOptimization final {
   friend LangInstance;
   LangInstance &lang;
@@ -302,7 +298,6 @@ void CodeGeneration::Generate(CodeAnalysis &ca) {
     stone::Panic("Unknown code analysis result");
   }
 
-  assert(cgc.GetLLVMModule());
   CodeOptimization codeOptimization(lang);
   codeOptimization.Optimize(/*cgc.GetLLVMModule()*/);
 
@@ -333,20 +328,48 @@ void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module *mod,
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 }
 
-void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> sources) {
+static void GenerateIR(LangInstance &lang, stone::ModuleSyntaxFileUnion msf,
+                       CodeGenContext &cgc) {
+
+  // assert(cgc.GetLLVMModule());
+}
+static void CompileWithOptimization() {}
+static void CompilePostSemanticAnalysis(LangInstance &lang) {
+
+  assert(lang.GetLangInvocation().CanCodeGen());
+  // We are performing some low leverl code generation
+  CodeGenContext cgc(stone::GetLLVMContext(),
+                     lang.GetLangInvocation().GetCodeGenOptions());
+
+  switch (lang.GetLangInvocation().GetLangOptions().moduleOutputMode) {
+  case ModuleOutputMode::Single: {
+    break;
+  }
+  case ModuleOutputMode::Whole: {
+    auto *mod = lang.GetModuleSystem().GetMainModule();
+    break;
+  }
+  default:
+    stone::Panic("Unknown compile mode");
+  }
+}
+
+void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
+
+  assert(GetLangInvocation().GetMode().CanCompile() &&
+         "Unknown mode -- cannot continue with compile!");
+
   if (listener) {
     listener->OnCompileStarted(*this);
   }
-  // Every case requires code-analysis
-  CodeAnalysis codeAnalysis(*this);
-  codeAnalysis.Analyze(sources);
-
-  if (langInvocation.JustAnalysis()) {
-    // Do some things
-    return;
+  switch (GetLangInvocation().GetMode().GetKind()) {
+  case ModeKind::Parse:
+    return CompileWithSyntaxAnalysis(sources);
+  case ModeKind::TypeCheck:
+    return CompileWithSemanticAnalysis(sources);
+  default:
+    return CompileWithSemanticAnalysis(sources, [&](LangInstance &lang) {
+      return CompilePostSemanticAnalysis(*this);
+    });
   }
-  // At this point, we should have a module with one or more syntax files
-  CodeGeneration codeGeneration(*this);
-  // Pass codeAnalysis for now -- may just pass module or file
-  codeGeneration.Generate(codeAnalysis);
 }

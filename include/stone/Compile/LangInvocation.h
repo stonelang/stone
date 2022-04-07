@@ -55,6 +55,9 @@ public:
     return GetLangOptions().systemOpts.moduleName;
   }
 
+  // TODO: update LangOptions
+  void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
+
 public:
   void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
   std::string GetMainExecutablePath() const { return mainExecutablePath; }

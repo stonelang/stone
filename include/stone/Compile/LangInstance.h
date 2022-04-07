@@ -4,6 +4,9 @@
 #include "stone/Compile/LangInvocation.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/SourceUnit.h"
+#include "stone/Compile/TypeCheckerListener.h"
+#include "stone/Compile/TypeCheckerOptions.h"
+
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Session/Mode.h"
 #include "stone/Syntax/Syntax.h"
@@ -22,6 +25,9 @@ namespace stone {
 
 class LangInstance;
 class LangListener;
+
+using ModuleSyntaxFileUnion =
+    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
 class LangStats final : public Stats {
   LangInstance &lang;
@@ -88,13 +94,27 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  void Compile(llvm::ArrayRef<SourceUnit *> sources);
+  void Compile(llvm::ArrayRef<SourceUnit *> &sources);
 
-  void PerformParseOnly();
-  void PerformSemanticAnalysis();
+private:
+  void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
+
+  void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
+  void
+  CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+                              llvm::function_ref<void(LangInstance &)> client);
+
+  void ForEachSyntaxFileToTypeCheck(
+      llvm::function_ref<void(syn::SyntaxFile &, types::TypeCheckerOptions &,
+                              TypeCheckerListener *)>
+          client);
+
+  void ResolveUseDeclarations();
 
 public:
-  void ForEachFileToTypeCheck();
+  //= Utils =//
+  static std::unique_ptr<llvm::raw_fd_ostream>
+  GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
 };
 } // namespace stone
 

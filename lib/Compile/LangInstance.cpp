@@ -4,6 +4,9 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/LangListener.h"
+#include "stone/Compile/Parse.h"
+#include "stone/Compile/TypeCheck.h"
+#include "stone/Compile/UseResolution.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -18,17 +21,6 @@
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
-
-using stone::FileMgr;
-using stone::LangInstance;
-using stone::LangStats;
-using stone::ModeKind;
-using stone::SrcMgr;
-using stone::syn::Identifier;
-using stone::syn::Module;
-using stone::syn::Syntax;
-using stone::syn::SyntaxContext;
-using stone::syn::SyntaxFileKind;
 
 using namespace stone;
 using namespace stone::syn;
@@ -50,6 +42,20 @@ LangInstance::LangInstance(LangListener *listener) : listener(listener) {
 LangInstance::~LangInstance() {}
 
 void LangInstance::Initialize() {}
+
+std::unique_ptr<llvm::raw_fd_ostream>
+LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
+                                  Context &ctx) {
+  std::error_code ec;
+  auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, ec,
+                                                   llvm::sys::fs::OF_None);
+  if (ec) {
+    ctx.PrintD(SrcLoc(), diag::error_opening_output,
+               diag::LLVMStr(outputFilename), diag::LLVMStr(ec.message()));
+    return nullptr;
+  }
+  return os;
+}
 
 // // Build the session
 // void Lang::BuildSession(const llvm::opt::InputArgList &ial) {
@@ -102,6 +108,78 @@ void LangInstance::Initialize() {}
 
 // void LangInstance::FinishTypeChecking() {
 // }
+
+void LangInstance::ForEachSyntaxFileToTypeCheck(
+    llvm::function_ref<void(syn::SyntaxFile &, types::TypeCheckerOptions &,
+                            TypeCheckerListener *)>
+        client) {
+
+  if (GetLangInvocation().GetLangOptions().moduleOutputMode ==
+      ModuleOutputMode::Whole) {
+    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+      auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
+      if (syntaxFile) {
+        client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
+               GetListener());
+      }
+    }
+  } else {
+    // for (auto *syntaxFile : GetPrimarySyntaxFiles()) {
+    //   // client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
+    //   //        GetListener());
+    // }
+  }
+}
+
+llvm::StringRef LangInstance::ComputeSourceOutputFile(unsigned srcID) {
+  assert(false && "Not implemented");
+  return llvm::StringRef();
+}
+
+void LangInstance::CompileWithSyntaxAnalysis(
+    llvm::ArrayRef<SourceUnit *> &sources) {
+  for (auto source : sources) {
+    assert(source);
+
+    // TODO: You are not always creating a Library
+    auto syntaxFile = SyntaxFile::Make(
+        SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
+        GetSyntax().GetSyntaxContext(), source->GetSrcID());
+
+    syn::ParseSyntaxFile(*syntaxFile, GetSyntax(), GetListener());
+    assert(syntaxFile);
+  }
+
+  if (!GetLangInvocation().GetMode().JustParse()) {
+    ResolveUseDeclarations();
+  }
+}
+void LangInstance::ResolveUseDeclarations() {
+  // Resolve imports for all the source files.
+  for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
+      types::ResolveUseDeclarations(*syntaxFile);
+  }
+}
+void LangInstance::CompileWithSemanticAnalysis(
+    llvm::ArrayRef<SourceUnit *> &sources) {
+
+  CompileWithSyntaxAnalysis(sources);
+  ForEachSyntaxFileToTypeCheck([&](SyntaxFile &syntaxFile,
+                                   types::TypeCheckerOptions &tco,
+                                   stone::TypeCheckerListener *listener) {
+    types::TypeCheckSyntaxFile(syntaxFile, tco, listener);
+  });
+  // FinishTypeChecking();
+}
+
+void LangInstance::CompileWithSemanticAnalysis(
+    llvm::ArrayRef<SourceUnit *> &sources,
+    llvm::function_ref<void(LangInstance &)> client) {
+
+  CompileWithSemanticAnalysis(sources);
+  client(*this);
+}
 
 void LangInstance::PrintVersion() {}
 
