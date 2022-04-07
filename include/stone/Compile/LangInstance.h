@@ -9,6 +9,7 @@
 
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Session/Mode.h"
+#include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -98,6 +99,9 @@ public:
 
 private:
   void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
+  void
+  CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+                            llvm::function_ref<void(syn::SyntaxFile &)> client);
 
   void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
   void

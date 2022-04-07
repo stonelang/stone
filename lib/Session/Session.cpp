@@ -61,14 +61,14 @@ Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
     case opts::Parse:
       mode = std::make_unique<Mode>(ModeKind::Parse);
       break;
-    case opts::EmitParse:
-      mode = std::make_unique<Mode>(ModeKind::EmitParse);
+    case opts::DumpSyntax:
+      mode = std::make_unique<Mode>(ModeKind::DumpSyntax);
       break;
     case opts::TypeCheck:
       mode = std::make_unique<Mode>(ModeKind::TypeCheck);
       break;
-    case opts::EmitSyntax:
-      mode = std::make_unique<Mode>(ModeKind::EmitSyntax);
+    case opts::PrintSyntax:
+      mode = std::make_unique<Mode>(ModeKind::PrintSyntax);
       break;
     case opts::EmitIR:
       mode = std::make_unique<Mode>(ModeKind::EmitIR);

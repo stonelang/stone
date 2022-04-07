@@ -9,12 +9,14 @@ enum class ModeKind : unsigned {
   None = 0,
   ///< Parse only
   Parse,
-  ///< Parse and emit syntax
-  EmitParse,
+  ///< Parse and resolve use(s) only
+  ResolveUses,
+  ///< Parse and dump syntax tree
+  DumpSyntax,
   ///< Parse and type-check only
   TypeCheck,
-  ///< Parse, type-check, and emit syntax
-  EmitSyntax,
+  ///< Parse, type-check, and  pretty print syntax tree
+  PrintSyntax,
   //</ Parse, type-check, and emit LLVM IR
   EmitIR,
   //< Parse, type-check, and emit LLVM BC

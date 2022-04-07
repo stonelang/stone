@@ -93,6 +93,15 @@ public:
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
   // override;
 
+  // void Dump(raw_ostream &os, bool parseIfNeeded = false) const;
+
+  /// Pretty-print the contents of this source file.
+  ///
+  /// \param Printer The AST printer used for printing the contents.
+  /// \param PO Options controlling the printing process.
+  // void Print(SyntaxPrinter &printer, const SyntaxPrintOptions &PO);
+  // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
+
 public:
   static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
                                SyntaxContext &tc, unsigned srcID,

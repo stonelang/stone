@@ -129,7 +129,7 @@ private:
   SyntaxFile *Parse(const unsigned srcID);
 
   /// Print out the syntax tree
-  void EmitParse(syn::SyntaxFile *sf);
+  void DumpSyntax(syn::SyntaxFile *sf);
 
   /// Perform type-checking on the SyntaxFile
   void TypeCheckSyntaxFile(syn::SyntaxFile &sf);
@@ -138,7 +138,7 @@ private:
   void TypeCheckModule(syn::Module *mod);
 
   /// Emit the syntax after performing type-checking
-  void EmitSyntax(syn::SyntaxFile *sf);
+  void PrintSyntax(syn::SyntaxFile *sf);
 
 public:
   CodeAnalysisResultKind GetCodeAnalysisResultKind() const {
@@ -179,8 +179,8 @@ void CodeAnalysis::Analyze(SourceUnit &source) {
   if (lang.GetLangInvocation().GetMode().IsParse()) {
     return;
   }
-  if (lang.GetLangInvocation().GetMode().IsEmitParse()) {
-    // lang.EmitParse(syntaxFile);
+  if (lang.GetLangInvocation().GetMode().IsDumpSyntax()) {
+    // lang.DumpSyntax(syntaxFile);
     return;
   }
   if (lang.GetLangInvocation().GetTypeCheckMode() ==
@@ -190,8 +190,8 @@ void CodeAnalysis::Analyze(SourceUnit &source) {
   if (lang.GetLangInvocation().GetMode().IsTypeCheck()) {
     return;
   }
-  if (lang.GetLangInvocation().GetMode().IsEmitSyntax()) {
-    // lang.EmitSyntax(*sntaxFile)
+  if (lang.GetLangInvocation().GetMode().IsPrintSyntax()) {
+    // lang.PrintSyntax(*sntaxFile)
   }
 }
 SyntaxFile *CodeAnalysis::Parse(const unsigned srcID) {

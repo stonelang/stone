@@ -39,8 +39,8 @@ HelpText<"Parse input file(s)">, ModeOpt,
 Flags<[LangOption]>;
 
 
-def EmitParse : Flag<["-"], "emit-parse">,
-HelpText<"Parse and type-check input file(s) and print Syntax(s)">, ModeOpt,
+def DumpSyntax : Flag<["-"], "dump-syntax">,
+HelpText<"Parse and dump syntax tree">, ModeOpt,
 Flags<[LangOption, DriverOption]>;
 
 def TypeCheck : Flag<["-"], "type-check">,
@@ -48,8 +48,8 @@ HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[LangOption, DriverOption]>;
 
 
-def EmitSyntax : Flag<["-"], "emit-syntax">,
-HelpText<"Parse and type-check input file(s) and print Syntax(s)">, ModeOpt,
+def PrintSyntax : Flag<["-"], "print-syntax">,
+HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
 Flags<[LangOption, DriverOption]>;
 
 def EmitLibrary : Flag<["-"], "emit-library">,

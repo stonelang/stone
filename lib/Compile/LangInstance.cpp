@@ -138,9 +138,17 @@ llvm::StringRef LangInstance::ComputeSourceOutputFile(unsigned srcID) {
 
 void LangInstance::CompileWithSyntaxAnalysis(
     llvm::ArrayRef<SourceUnit *> &sources) {
+  CompileWithSyntaxAnalysis(sources, [&](syn::SyntaxFile &sf) {
+    return [&](syn::SyntaxFile &sf) -> void {}(sf);
+  });
+}
+
+void LangInstance::CompileWithSyntaxAnalysis(
+    llvm::ArrayRef<SourceUnit *> &sources,
+    llvm::function_ref<void(syn::SyntaxFile &)> client) {
+
   for (auto source : sources) {
     assert(source);
-
     // TODO: You are not always creating a Library
     auto syntaxFile = SyntaxFile::Make(
         SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
@@ -148,12 +156,14 @@ void LangInstance::CompileWithSyntaxAnalysis(
 
     syn::ParseSyntaxFile(*syntaxFile, GetSyntax(), GetListener());
     assert(syntaxFile);
+    client(*syntaxFile);
   }
 
   if (!GetLangInvocation().GetMode().JustParse()) {
     ResolveUseDeclarations();
   }
 }
+
 void LangInstance::ResolveUseDeclarations() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
@@ -164,7 +174,10 @@ void LangInstance::ResolveUseDeclarations() {
 void LangInstance::CompileWithSemanticAnalysis(
     llvm::ArrayRef<SourceUnit *> &sources) {
 
-  CompileWithSyntaxAnalysis(sources);
+  CompileWithSyntaxAnalysis(sources, [&](syn::SyntaxFile &sf) {
+    return [&](syn::SyntaxFile &sf) -> void {}(sf);
+  });
+
   ForEachSyntaxFileToTypeCheck([&](SyntaxFile &syntaxFile,
                                    types::TypeCheckerOptions &tco,
                                    stone::TypeCheckerListener *listener) {
