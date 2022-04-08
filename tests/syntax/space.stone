@@ -1,6 +1,42 @@
 
-space Syntax.Space { 
-	public fun F0() -> void {
+// project/Stone/Physics/Light.stone  ...::N => N is the file 
+module Stone::Physics::Light;
+
+space MyLight {
+	struct Speed {
 	}
+	struct Light {
+	}
+}
+
+// project/Stone/Physics/BlackHole.stone  ...::N => N is the file 
+
+
+module Stone::Physics::BlackHole;
+using Stone::Physics::Light;
+
+
+space MyBlackHole {
+	public struct BlackHole {
+	}
+	public fun BlackHole::TrapLight(const MySpace::Light* light) -> void {
+
+	}
+	public static fun PrintBlackHole(const BlackHole* bh) -> void {
+
+	}
+}
+
+// project/Main.stone 
+
+use Stone::Physics::Light;
+use Stone::Physics::BlackHole;
+
+public fun Main() -> int {
+
+	MyBlackHole::BlackHole bh; 
+	MyLight::Light light; 
+	bh.TrapLight(ref light); 
+
 }
 

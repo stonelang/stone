@@ -3,6 +3,7 @@
 
 #include "stone/Compile/LangInvocation.h"
 #include "stone/Compile/ModuleSystem.h"
+#include "stone/Compile/PackageSystem.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Compile/TypeCheckerListener.h"
 #include "stone/Compile/TypeCheckerOptions.h"
@@ -55,6 +56,8 @@ class LangInstance final {
 
   std::unique_ptr<ModuleSystem> moduleSystem;
 
+  std::unique_ptr<PackageSystem> pkgSystem;
+
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
 
@@ -79,6 +82,8 @@ public:
 public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
+
+  PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
@@ -113,7 +118,7 @@ private:
                               TypeCheckerListener *)>
           client);
 
-  void ResolveUseDeclarations();
+  void ResolveUsings();
 
 public:
   //= Utils =//

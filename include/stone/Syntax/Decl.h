@@ -373,13 +373,13 @@ enum class UseDeclKind : uint8_t {
   /// use STD.IO;
   Module = 0,
 
-  //// use STD.Time.Month;
+  //// use STD::Time::Month;
   Enum,
 
-  /// use STD.IO.OutputStream;
+  /// use STD::IO::OutputStream;
   Struct,
 
-  /// use STD.IO.Stream;
+  /// use STD::IO::Stream;
   Interface,
 
   /// fun Main() -> int { use STD.Math.Min;  auto min = Min<AnyType>(first,
@@ -387,12 +387,12 @@ enum class UseDeclKind : uint8_t {
   Fun,
 
   // use Stream = STD.IO.Stream;
-  // use Min = STD.Main.Min(first, second);  // TODO: Think
+  // use Min = STD::Main::Min(first, second);  // TODO: Think
   Alias,
 };
 
-class UseDecl : public NamedDecl {
-  SrcLoc useLoc;
+class UsingDecl : public NamedDecl {
+  SrcLoc usingLoc;
 
 public:
   // Module *mod = nullptr;

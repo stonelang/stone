@@ -1,0 +1,15 @@
+module Main;
+
+
+using Tests.Physics.Particle;
+using Tests.Physics.Accelerator;
+
+// stone -using-module ./ Main.stone => Main  
+// stone Main.stone => Main (automatically adds -M ./)
+// stone Main.stone -using-module Test.Physics.Particle -using-module Test.Physics.Accelerator 
+public fun Main() -> int {
+
+	Accelerator a; 
+	Particle p; 
+	a.Fire(ref p);
+}

@@ -1,6 +1,6 @@
 
+module Syntax.Extension;
 
-space ExtensionSyntax {
 // Module one 
 struct Universe {
 }
@@ -17,7 +17,5 @@ extension Planet {
 }
 // Some other module 
 extension Universe::MakeEarth() -> bool {
-
-}
 
 }

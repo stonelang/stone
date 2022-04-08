@@ -6,7 +6,7 @@
 #include "stone/Compile/LangListener.h"
 #include "stone/Compile/Parse.h"
 #include "stone/Compile/TypeCheck.h"
-#include "stone/Compile/UseResolution.h"
+#include "stone/Compile/UsingResolution.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -160,15 +160,15 @@ void LangInstance::CompileWithSyntaxAnalysis(
   }
 
   if (!GetLangInvocation().GetMode().JustParse()) {
-    ResolveUseDeclarations();
+    ResolveUsings();
   }
 }
 
-void LangInstance::ResolveUseDeclarations() {
+void LangInstance::ResolveUsings() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
-      types::ResolveUseDeclarations(*syntaxFile);
+      types::ResolveUsings(*syntaxFile);
   }
 }
 void LangInstance::CompileWithSemanticAnalysis(

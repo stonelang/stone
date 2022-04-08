@@ -12,13 +12,14 @@ set(stone_compile_sources
 	Parser.cpp
 	ParseExpr.cpp
 	ParseStmt.cpp
+	PackageSystem.cpp
 	SyntaxParsing.cpp
 	TypeCheck.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
-	UseResolution.cpp
+	UsingResolution.cpp
 
 	LINK_LIBS
 	StoneGen

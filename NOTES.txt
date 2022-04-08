@@ -21,6 +21,24 @@ stone -init -project  -> stone.solution and stone.project and you perform a git 
 file0.stone
 file1.stone 
 
-1. .projecta/.git ....
+1. .project/.git ....
 2. /var/stone/projecta/.git ....
+
+
+
+* Modules
+
+Modules in swift are more like c# assemblies in the sense that you have 1 or N files per 1 module as opposed to 1 module per 1 file. May take the following approach:
+
+code/
+	Compiler/
+		Package.stone => Compiler 
+		Compile/
+			Compile.stone => module Compiler.Compile.Compile 
+		Syntax/
+			Decl.stone => module Compiler.Syntax.Decl;
+		Driver/
+			Driver.stone = > module Compiler.Driver.Driver 
+
+
 

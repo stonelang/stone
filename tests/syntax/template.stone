@@ -1,23 +1,22 @@
 
-space Syntax.Template {
+module Syntax.Template;
 
-	public any<T> interface Queue {
-		fun Push(const T* t) -> void;
-		fun Pop() -> *T;
-	}
 
-	public any<T> struct PriorityQueue : Queue<T> {
-		private T[] entries; 
-	}
-	public PriorityQueue::this() {
-	}
-	public PriorityQueue::~this() {
-	}
+public any<T> interface Queue {
+	fun Push(const T* t) -> void;
+	fun Pop() -> *T;
+}
 
-	public fun PriorityQueue::Push(const T* t) -> void {
-	}
-	public fun PriorityQueue::Pop() -> T* {
-	}
+public any<T> struct PriorityQueue : Queue<T> {
+	private T[] entries; 
+}
+public PriorityQueue::PriorityQueue() {
+}
+public PriorityQueue::~PriorityQueue() {
+}
 
+public fun PriorityQueue::Push(const T* t) -> void {
+}
+public fun PriorityQueue::Pop() -> T* {
 }
 

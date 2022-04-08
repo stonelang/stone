@@ -19,6 +19,7 @@ set(stone_syn_sources
 	SyntaxContext.cpp
 	SyntaxBuilder.cpp
 	SyntaxDiagnostic.cpp
+	SyntaxFactory.cpp
 	SyntaxScope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp

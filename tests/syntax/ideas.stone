@@ -1,5 +1,5 @@
 
-space Physics.QM {
+space Physics::QM {
 	public struct Particle {
 		public bool fired = false; 
 	}
@@ -45,12 +45,13 @@ space Physics.QM {
 
 /// Forwarding maybe of great value 
 
-forward public struct Projectile; 
-forward public fun Launch(const Projectile* projectile) -> bool; 
+public forward struct Projectile; 
+public forward fun Launch(const Projectile* projectile) -> bool; 
 
 fun Main() -> int {
 	Projectile* p = new Projectile();
 	Launch(p);
+	delete p; 
 }
 public struct Projectile {
 
@@ -74,18 +75,72 @@ public class ProjectileLauncher : Launcher {
 
 
 //= Forwarding =// 
-
 public struct Quark {
 }
 
-forward Quark::Initialize() -> void; 
+public forward fun Quark::Initialize() -> void; 
 
 public Quark::Quark() {
 	Initialize();
 }
 
-public Quark::Initialize() -> void {
+public fun Quark::Initialize() -> void {
 
 }
 
+//=Modules=// 
 
+code/
+	Stone/
+		Syntax/
+			Space.stone 
+			Decl.stone
+			Expr.stone
+			Syntax.stone
+
+
+// Decl.stone 
+module Stone::Syntax::Declaration {
+	enum DeclBits {
+
+	}
+	public struct Decl {
+	}
+}
+// Expr.stone
+module Stone::Syntax::Expression {
+
+	enum DeclBits {
+	}
+	public struct Decl {
+	}
+
+}
+// Syntax.stone
+use Stone::Syntax::Declaration;
+use Stone::Syntax::Expression;
+
+module Stone::Syntax::Syntax {
+	enum DeclBits {
+	}
+	public struct Decl {
+	}
+}
+
+// OR Just
+
+// Decl.stone 
+module Stone::Syntax::Decl;
+
+public struct Decl {
+}
+
+
+// Decl.stone 
+module Stone::Syntax::Decl;
+
+space Node {
+	public struct Decl {
+	}
+
+}

@@ -1,5 +1,7 @@
 
-space Stone.Physics.QM {
+
+// project/Stone/Physics/ParticleProfile.stone 
+module Stone::Physics::ParticleProfile {
 
 	struct ParticleProfile {
 		public float32 mass; 
@@ -8,7 +10,7 @@ space Stone.Physics.QM {
 	public interface Particle {
 		fun Fire() -> auto;  
 	}	
-	struct Proton : Particle {
+	public struct Proton : Particle {
 		ParticleProfile* profile = null;
 	}
 
@@ -29,10 +31,12 @@ space Stone.Physics.QM {
 	}
 }
 
+
 // You may want to consider:
 
-// Physics.stone
-use System.Physics.QM;
+// code/Physics/Particle.stone
+module Stone.Physics.Particle (one-to-one relation to Particle.SetShowDiagnosticsAfterFatalError)
+
 
 public fun Fire(Particle* particle) -> bool {
 	if(particle == null) {
@@ -41,11 +45,32 @@ public fun Fire(Particle* particle) -> bool {
 	return false; 
 }
 
-// Main
-use Stone.Core;
-use Stone.Physics; 
+module Main; 
+using Stone.Physics.Particle; 
 
-fun Main() -> int32 {	
+public fun Main() -> int32 {	
+	auto particle = new Particle();
+	Fire(particle);
+	delete particle; 
+	return 0; 
+}
+
+// code/Particle.stone
+module Physics.Particle 
+
+public fun Fire(Particle* particle) -> bool {
+	if(particle == null) {
+		Panic("Could not create 'Particle'");
+	}
+	return false; 
+}
+
+
+// code/Main.stone
+module Main; 
+using Stone.Physics.Particle; 
+
+public fun Main() -> int32 {	
 	auto particle = new Particle();
 	Fire(particle);
 	delete particle; 

@@ -4,7 +4,18 @@
 namespace stone {
 namespace syn {
 
-class UsePath {};
+class UsingPath {};
+
+enum class UsingKind : uint8_t {
+  Module = 0,
+  Type,
+  Struct,
+  Enum,
+  Interface,
+  Auto,
+  Fun
+};
+
 } // namespace syn
 } // namespace stone
 

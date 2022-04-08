@@ -5,7 +5,13 @@
 
 namespace stone {
 namespace syn {
-class SpaceDecl final : public DeclContext, public TypeDecl {
+
+enum class SpaceUnitKind : uint8_t { Syntax, Builtin };
+
+class SpaceUnit {};
+
+class SyntaxUnit : public SpaceUnit {};
+class Space final : public DeclContext, public TypeDecl {
 public:
 };
 }

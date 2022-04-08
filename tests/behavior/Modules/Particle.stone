@@ -1,0 +1,7 @@
+
+module Tests::Physics::Particle;
+
+// stone -emit-module Particle.stone => ./Tests.Physics.Particle.stonemodule 
+public struct Particle {
+
+}

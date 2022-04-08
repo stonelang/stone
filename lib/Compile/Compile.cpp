@@ -354,6 +354,10 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
   }
 }
 
+static void DumpSyntax(syn::SyntaxFile &sf) {}
+
+static void PrintSyntax(LangInstance &lang) {}
+
 void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
 
   assert(GetLangInvocation().GetMode().CanCompile() &&
@@ -365,8 +369,14 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
   switch (GetLangInvocation().GetMode().GetKind()) {
   case ModeKind::Parse:
     return CompileWithSyntaxAnalysis(sources);
+  case ModeKind::DumpSyntax:
+    return CompileWithSyntaxAnalysis(
+        sources, [&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
   case ModeKind::TypeCheck:
     return CompileWithSemanticAnalysis(sources);
+  case ModeKind::PrintSyntax:
+    return CompileWithSemanticAnalysis(
+        sources, [&](LangInstance &lang) { return PrintSyntax(lang); });
   default:
     return CompileWithSemanticAnalysis(sources, [&](LangInstance &lang) {
       return CompilePostSemanticAnalysis(*this);

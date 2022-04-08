@@ -7,8 +7,9 @@ class SyntaxFile;
 } // namespace syn
 
 namespace types {
-void ResolveUseDeclarations(syn::SyntaxFile &syntaxFile);
-}
+// TODO: ModuleResolution
+void ResolveUsings(syn::SyntaxFile &syntaxFile);
+} // namespace types
 } // namespace stone
 
 #endif
