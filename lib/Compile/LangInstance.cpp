@@ -162,6 +162,9 @@ void LangInstance::CompileWithSyntaxAnalysis(
   if (!GetLangInvocation().GetMode().JustParse()) {
     ResolveUsings();
   }
+  if (listener) {
+    listener->OnSyntaxAnalysisCompleted(*this);
+  }
 }
 
 void LangInstance::ResolveUsings() {
@@ -184,12 +187,15 @@ void LangInstance::CompileWithSemanticAnalysis(
     types::TypeCheckSyntaxFile(syntaxFile, tco, listener);
   });
   // FinishTypeChecking();
+
+  if (listener) {
+    listener->OnSemanticAnalysisCompleted(*this);
+  }
 }
 
 void LangInstance::CompileWithSemanticAnalysis(
     llvm::ArrayRef<SourceUnit *> &sources,
     llvm::function_ref<void(LangInstance &)> client) {
-
   CompileWithSemanticAnalysis(sources);
   client(*this);
 }

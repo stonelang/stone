@@ -11,6 +11,8 @@ public:
 
   void OnCompileConfigured(LangInstance &lang) override;
   void OnCompileStarted(LangInstance &lang) override;
+  void OnSyntaxAnalysisCompleted(LangInstance &lang);
+  void OnSemanticAnalysisCompleted(LangInstance &lang);
   void OnCompileCompleted(LangInstance &lang) override;
 };
 

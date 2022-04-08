@@ -103,237 +103,224 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (langInvocation.HasError()) {
     return Finish(1);
   }
-
   return Finish();
 }
 
-enum class CodeAnalysisResultKind : uint8_t {
-  None,
-  SyntaxFile,
-  Module,
-};
-class CodeAnalysis final {
+// enum class AnalysisResultKind : uint8_t {
+//   None,
+//   SyntaxFile,
+//   Module,
+// };
 
-  friend LangInstance;
-  LangInstance &lang;
-  CodeAnalysisResultKind codeAnalysisResultKind = CodeAnalysisResultKind::None;
+// static void
+// CompileWithSyntaxAnalysis(SourceUnit &source, LangInstance& lang,
+//                           llvm::function_ref<void(SyntaxFile *sf)> client) {
+//   // TODO: You are not always creating a Library
+//   auto syntaxFile = SyntaxFile::Make(
+//       SyntaxFileKind::Library, *lang.GetModuleSystem().GetMainModule(),
+//       lang.GetSyntax().GetSyntaxContext(), source.GetSrcID());
 
-public:
-  CodeAnalysis(LangInstance &lang);
-  ~CodeAnalysis();
+//   syn::ParseSyntaxFile(*syntaxFile, lang.GetSyntax());
+//   client(syntaxFile);
+// }
 
-private:
-  void Analyze(llvm::ArrayRef<SourceUnit *> sources);
-  void Analyze(SourceUnit &source);
+// static void CompileWithSemanticAnalysis(syn::Syntax &syntaxFile,
+// LangInstance& lang) {
+//   // assert(sf.stage == syn::SyntaxFileStage::AtImports);
+//   types::TypeCheckSyntaxFile(sf,
+//                              lang.GetLangInvocation().GetTypeCheckerOptions());
+// }
 
-  SyntaxFile *Parse(const unsigned srcID);
+// static void
+// CompileWithAnalysis(llvm::ArrayRef<SourceUnit *> sources, LangInstance& lang,
+//                     llvm::function_ref<void(LangInstance &lang)> client) {
+//   for (auto source : sources) {
+//     assert(source);
+//     CompileWithAnalysis(*source);
+//   }
+//   client(lang);
 
-  /// Print out the syntax tree
-  void DumpSyntax(syn::SyntaxFile *sf);
+// if (lang.GetLangInvocation().GetMode().JustParse()) {
+//   return;
+// }
+// if (lang.GetLangInvocation().GetTypeCheckMode() ==
+//     types::TypeCheckMode::WholeModule) {
+//   TypeCheckModule(nullptr /*TODO: get module*/);
+// }
+// if (lang.GetLangInvocation().GetMode().JustTypeCheck()) {
+//   // Do some things
+//   return;
+// }
+//}
 
-  /// Perform type-checking on the SyntaxFile
-  void TypeCheckSyntaxFile(syn::SyntaxFile &sf);
+// static void CompileWithAnalysis(SourceUnit &source, LangInstance& lang) {
 
-  /// Perform type-checking on the entire module
-  void TypeCheckModule(syn::Module *mod);
+//   switch (lang.GetLangInvocation().GetMode().GetKind()) {
+//   case ModeKind::Parse:
+//     return CompileWithSyntaxAnalysis(source, lang, [&](LangInstance &lang) {
+//       return [&](syn::SyntaxFile &sf) -> void {}(sf, lang);
+//     });
+//   case ModeKind::DumpSyntax:
+//     return CompileWithSyntaxAnalysis(
+//         source, lang, [&](syn::SyntaxFile &sf) { return DumpSyntax(sf, lang);
+//         });
 
-  /// Emit the syntax after performing type-checking
-  void PrintSyntax(syn::SyntaxFile *sf);
+//   case ModeKind::TypeCheck:
+//     return CompileWithSyntaxAnalysis(source, lang, [&](syn::SyntaxFile &sf) {
+//       return CompileWithSemanticAnalysis(sf, lang);
+//     });
 
-public:
-  CodeAnalysisResultKind GetCodeAnalysisResultKind() const {
-    return codeAnalysisResultKind;
-  }
-  SyntaxFile *GetSyntaxFile() { return nullptr; }
-  syn::Module *GetModulde() { return nullptr; }
-};
+//   case ModeKind::PrintSyntax:
+//     return CompileWithSyntaxAnalysis(
+//         source, lang, [&](syn::SyntaxFile &sf) { return PrintSyntax(sf,
+//         lang); });
+//   }
+// Add to module
+// TODO: May not need this because we are going to add it to the main module.
+// source.SetSyntaxFile(syntaxFile);
 
-CodeAnalysis::CodeAnalysis(LangInstance &lang) : lang(lang) {}
-CodeAnalysis::~CodeAnalysis() {}
+// if (lang.GetLangInvocation().GetMode().IsParse()) {
+//   return;
+// }
+// if (lang.GetLangInvocation().GetMode().IsDumpSyntax()) {
+//   // lang.DumpSyntax(syntaxFile);
+//   return;
+// }
+// if (lang.GetLangInvocation().GetTypeCheckMode() ==
+//     types::TypeCheckMode::EachFile) {
+//   TypeCheckSyntaxFile(*syntaxFile);
+// }
 
-void CodeAnalysis::Analyze(llvm::ArrayRef<SourceUnit *> sources) {
-  for (auto source : sources) {
-    assert(source);
-    Analyze(*source);
-  }
-  if (lang.GetLangInvocation().GetMode().JustParse()) {
-    return;
-  }
-  if (lang.GetLangInvocation().GetTypeCheckMode() ==
-      types::TypeCheckMode::WholeModule) {
-    TypeCheckModule(nullptr /*TODO: get module*/);
-  }
-  if (lang.GetLangInvocation().GetMode().JustTypeCheck()) {
-    // Do some things
-    return;
-  }
-}
-void CodeAnalysis::Analyze(SourceUnit &source) {
-  auto syntaxFile = Parse(source.GetSrcID());
-  assert(syntaxFile);
-  // Add to module
+//}
 
-  // TODO: May not need this because we are going to add it to the main module.
-  // source.SetSyntaxFile(syntaxFile);
+// void CodeAnalysis::TypeCheckSyntaxFile(SyntaxFile &sf) {
+//   assert(sf.stage == syn::SyntaxFileStage::AtImports);
+//   types::TypeCheckSyntaxFile(sf,
+//                              lang.GetLangInvocation().GetTypeCheckerOptions());
+// }
+// /// Perform type-checking on the entire module
+// void CodeAnalysis::TypeCheckModule(syn::Module *mod) {
+//   assert(mod && "Null 'syn::Module'");
+//   for (auto mf : mod->GetFiles()) {
+//     if (auto sf = llvm::dyn_cast<SyntaxFile>(mf)) {
+//       TypeCheckSyntaxFile(*sf);
+//     }
+//   }
+// }
 
-  if (lang.GetLangInvocation().GetMode().IsParse()) {
-    return;
-  }
-  if (lang.GetLangInvocation().GetMode().IsDumpSyntax()) {
-    // lang.DumpSyntax(syntaxFile);
-    return;
-  }
-  if (lang.GetLangInvocation().GetTypeCheckMode() ==
-      types::TypeCheckMode::EachFile) {
-    TypeCheckSyntaxFile(*syntaxFile);
-  }
-  if (lang.GetLangInvocation().GetMode().IsTypeCheck()) {
-    return;
-  }
-  if (lang.GetLangInvocation().GetMode().IsPrintSyntax()) {
-    // lang.PrintSyntax(*sntaxFile)
-  }
-}
-SyntaxFile *CodeAnalysis::Parse(const unsigned srcID) {
-  // TODO: You are not always creating a Library
-  auto sf = SyntaxFile::Make(SyntaxFileKind::Library,
-                             *lang.GetModuleSystem().GetMainModule(),
-                             lang.GetSyntax().GetSyntaxContext(), srcID);
+// class CodeGeneration final {
 
-  syn::ParseSyntaxFile(*sf, lang.GetSyntax());
-  return sf;
-}
+//   friend LangInstance;
+//   LangInstance &lang;
 
-void CodeAnalysis::TypeCheckSyntaxFile(SyntaxFile &sf) {
-  assert(sf.stage == syn::SyntaxFileStage::AtImports);
-  types::TypeCheckSyntaxFile(sf,
-                             lang.GetLangInvocation().GetTypeCheckerOptions());
-}
-/// Perform type-checking on the entire module
-void CodeAnalysis::TypeCheckModule(syn::Module *mod) {
-  assert(mod && "Null 'syn::Module'");
-  for (auto mf : mod->GetFiles()) {
-    if (auto sf = llvm::dyn_cast<SyntaxFile>(mf)) {
-      TypeCheckSyntaxFile(*sf);
-    }
-  }
-}
+// public:
+//   CodeGeneration(LangInstance &lang);
+//   ~CodeGeneration();
 
-class CodeOptimization final {
-  friend LangInstance;
-  LangInstance &lang;
+// private:
+//   void Generate(CodeAnalysis &codeAnalysis);
 
-public:
-  CodeOptimization(LangInstance &lang);
-  ~CodeOptimization();
+//   /// Generate the IR for an entire module
+//   llvm::Module *GenerateIR(syn::Module &sf, CodeGenContext &cc);
 
-  void Optimize();
-};
+//   /// Generate IR a single SyntaxFile
+//   llvm::Module *GenerateIR(syn::SyntaxFile &sf, CodeGenContext &cc);
 
-CodeOptimization::CodeOptimization(LangInstance &lang) : lang(lang) {}
+//   /// Generate Object file
+//   void GenerateObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
 
-CodeOptimization::~CodeOptimization() {}
+//   /// Generate Object file
+//   void GenerateBitCode();
 
-// Peform code generation
-void CodeOptimization::Optimize() {
+//   /// Generates a 'test.stonem' file
+//   void GenerateModule();
+// };
 
-  if (lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
-    /// Send the SyntaxFile to the optimizer
-    // OptimizeIR(llvmMod);
-    return;
-  }
-}
+// void CompilePostSemanticAnalysis(LangInstance& lang) {
 
-class CodeGeneration final {
+//   assert(lang.GetLangInvocation().CanCodeGen());
+//   assert(ca.GetCodeAnalysisResultKind() == CodeAnalysisResultKind::None);
 
-  friend LangInstance;
-  LangInstance &lang;
+//   // We are performing some low leverl code generation
+//   CodeGenContext cgc(stone::GetLLVMContext(),
+//                      lang.GetLangInvocation().GetCodeGenOptions());
 
-public:
-  CodeGeneration(LangInstance &lang);
-  ~CodeGeneration();
+//   switch (ca.GetCodeAnalysisResultKind()) {
+//   case CodeAnalysisResultKind::SyntaxFile: {
+//     GenerateIR(*ca.GetSyntaxFile(), cgc);
+//     break;
+//   }
+//   case CodeAnalysisResultKind::Module: {
+//     GenerateIR(*ca.GetModulde(), cgc);
+//     break;
+//   }
+//   default:
+//     stone::Panic("Unknown code analysis result");
+//   }
 
-private:
-  void Generate(CodeAnalysis &codeAnalysis);
+//   CodeOptimization codeOptimization(lang);
+//   codeOptimization.Optimize(/*cgc.GetLLVMModule()*/);
 
-  /// Generate the IR for an entire module
-  llvm::Module *GenerateIR(syn::Module &sf, CodeGenContext &cc);
+//   if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
+//     // EmitIR()
+//     return;
+//   }
 
-  /// Generate IR a single SyntaxFile
-  llvm::Module *GenerateIR(syn::SyntaxFile &sf, CodeGenContext &cc);
+//   if (lang.GetLangInvocation().GetMode().IsNone() ||
+//       lang.GetLangInvocation().GetMode().IsEmitObject()) {
+//     // GenObject(srcID, llvmMod, cgc);
+//     return;
+//   }
+// }
+// llvm::Module *CodeGeneration::GenerateIR(syn::SyntaxFile &sf,
+//                                          CodeGenContext &cc) {
+//   return nullptr;
+// }
 
-  /// Generate Object file
-  void GenerateObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
+// llvm::Module *CodeGeneration::GenerateIR(syn::Module &mod, CodeGenContext
+// &cc) {
+//   return nullptr;
+// }
 
-  /// Generate Object file
-  void GenerateBitCode();
+// void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module *mod,
+//                                     CodeGenContext &cc) {
+//   /// TODO: This is the only time we should perform a lookup
+//   // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
+//   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
+// }
 
-  /// Generates a 'test.stonem' file
-  void GenerateModule();
-};
+static void DumpIR(LangInstance &lang, CodeGenContext &cgc) {}
 
-CodeGeneration::CodeGeneration(LangInstance &lang) : lang(lang) {}
+static void CompileWithGenIR(
+    LangInstance &lang, stone::ModuleSyntaxFileUnion msf, CodeGenContext &cgc,
+    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {
 
-CodeGeneration::~CodeGeneration() {}
-
-void CodeGeneration::Generate(CodeAnalysis &ca) {
-
-  assert(lang.GetLangInvocation().CanCodeGen());
-  assert(ca.GetCodeAnalysisResultKind() == CodeAnalysisResultKind::None);
-
-  // We are performing some low leverl code generation
-  CodeGenContext cgc(stone::GetLLVMContext(),
-                     lang.GetLangInvocation().GetCodeGenOptions());
-
-  switch (ca.GetCodeAnalysisResultKind()) {
-  case CodeAnalysisResultKind::SyntaxFile: {
-    GenerateIR(*ca.GetSyntaxFile(), cgc);
-    break;
-  }
-  case CodeAnalysisResultKind::Module: {
-    GenerateIR(*ca.GetModulde(), cgc);
-    break;
-  }
-  default:
-    stone::Panic("Unknown code analysis result");
-  }
-
-  CodeOptimization codeOptimization(lang);
-  codeOptimization.Optimize(/*cgc.GetLLVMModule()*/);
-
-  if (lang.GetLangInvocation().GetMode().IsEmitIR()) {
-    // EmitIR()
-    return;
-  }
-
-  if (lang.GetLangInvocation().GetMode().IsNone() ||
-      lang.GetLangInvocation().GetMode().IsEmitObject()) {
-    // GenObject(srcID, llvmMod, cgc);
-    return;
-  }
-}
-llvm::Module *CodeGeneration::GenerateIR(syn::SyntaxFile &sf,
-                                         CodeGenContext &cc) {
-  return nullptr;
+  // assert(cgc.GetLLVMModule());\
+  // if (lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
+  //   /// Send the SyntaxFile to the optimizer
+  //   // OptimizeIR(llvmMod);
+  //   return;
+  // }
+  // stone::GenLLVMCode();
+  // LLVMCode llvmCode;
+  // llvmCode.EmitIR();
 }
 
-llvm::Module *CodeGeneration::GenerateIR(syn::Module &mod, CodeGenContext &cc) {
-  return nullptr;
-}
+static void CompileWithGenModule(LangInstance &lang, CodeGenContext &cgc) {}
 
-void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module *mod,
-                                    CodeGenContext &cc) {
-  /// TODO: This is the only time we should perform a lookup
+static void CompileWithGenObj(LangInstance &lang, CodeGenContext &cgc) {
+
   // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
+
+  // stone::GenNativeCode();
+}
+static void CompileWithGenBC(LangInstance &lang, CodeGenContext &cgc) {
+  // stone::GenLLVMCode();
 }
 
-static void GenerateIR(LangInstance &lang, stone::ModuleSyntaxFileUnion msf,
-                       CodeGenContext &cgc) {
-
-  // assert(cgc.GetLLVMModule());
-}
 static void CompileWithOptimization() {}
+
 static void CompilePostSemanticAnalysis(LangInstance &lang) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
@@ -341,28 +328,41 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
   CodeGenContext cgc(stone::GetLLVMContext(),
                      lang.GetLangInvocation().GetCodeGenOptions());
 
+  auto *mainModule = lang.GetModuleSystem().GetMainModule();
   switch (lang.GetLangInvocation().GetLangOptions().moduleOutputMode) {
-  case ModuleOutputMode::Single: {
-    break;
-  }
-  case ModuleOutputMode::Whole: {
-    auto *mod = lang.GetModuleSystem().GetMainModule();
-    break;
-  }
-  default:
-    stone::Panic("Unknown compile mode");
+    switch (lang.GetLangInvocation().GetMode().GetKind()) {
+    case ModeKind::EmitIR:
+      return CompileWithGenIR(lang, mainModule, cgc,
+                              [&](LangInstance &lang, CodeGenContext &cgc) {
+                                return DumpIR(lang, cgc);
+                              });
+    case ModeKind::EmitObject:
+      return CompileWithGenIR(lang, mainModule, cgc,
+                              [&](LangInstance &lang, CodeGenContext &cgc) {
+                                return CompileWithGenObj(lang, cgc);
+                              });
+
+    case ModeKind::EmitBC:
+      return CompileWithGenIR(lang, mainModule, cgc,
+                              [&](LangInstance &lang, CodeGenContext &cgc) {
+                                return CompileWithGenBC(lang, cgc);
+                              });
+    case ModeKind::EmitModule:
+      return CompileWithGenIR(lang, mainModule, cgc,
+                              [&](LangInstance &lang, CodeGenContext &cgc) {
+                                return CompileWithGenModule(lang, cgc);
+                              });
+    }
   }
 }
 
 static void DumpSyntax(syn::SyntaxFile &sf) {}
-
 static void PrintSyntax(LangInstance &lang) {}
 
 void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
 
   assert(GetLangInvocation().GetMode().CanCompile() &&
          "Unknown mode -- cannot continue with compile!");
-
   if (listener) {
     listener->OnCompileStarted(*this);
   }

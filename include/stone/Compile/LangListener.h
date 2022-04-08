@@ -27,6 +27,8 @@ public:
 public:
   virtual void OnCompileConfigured(LangInstance &lang) {}
   virtual void OnCompileStarted(LangInstance &lang) {}
+  virtual void OnSyntaxAnalysisCompleted(LangInstance &lang) {}
+  virtual void OnSemanticAnalysisCompleted(LangInstance &lang) {}
   virtual void OnCompileCompleted(LangInstance &lang) {}
 };
 

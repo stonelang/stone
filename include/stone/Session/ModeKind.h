@@ -10,7 +10,7 @@ enum class ModeKind : unsigned {
   ///< Parse only
   Parse,
   ///< Parse and resolve use(s) only
-  ResolveUses,
+  ResolveUsings,
   ///< Parse and dump syntax tree
   DumpSyntax,
   ///< Parse and type-check only
