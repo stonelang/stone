@@ -316,38 +316,16 @@ static void CompileWithOptimization() {}
 
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
 
-  // case ModeKind::EmitObject:
-  //       return CompileWithGenIR(lang, mainModule, cgc,
-  //                               [&](LangInstance &lang, CodeGenContext
-  //                               &cgc)
-  //                               {
-  //                                 return CompileWithGenNative(lang, cgc);
-  //                               });
-
-  //     case ModeKind::EmitBC:
-  //       return CompileWithGenIR(lang, mainModule, cgc,
-  //                               [&](LangInstance &lang, CodeGenContext
-  //                               &cgc)
-  //                               {
-  //                                 return CompileWithGenNative(lang, cgc);
-  //                               });
-
-  // auto IsNativeModeKind = [&](ModeKind kind) -> bool {
-  //     return true;
-  // };
-  // switch(lang.GetLangInvocation().GetMode().GetKind()){
-
-  //     case ModeKind::EmitObject:
-  //     case ModeKind::EmitBC:
-
-  // }
-
-  // switch (stone::GenNative(cgc, *targetMachine, nullptr).GetStatus()) {
-  // case ErrorStatus::None:
-  //   return;
-  // case ErrorStatus::Error:
-  //   return;
-  // }
+  auto SetNativeModeKind = [&](LangInstance &lang) -> void {
+    switch (lang.GetLangInvocation().GetMode().GetKind()) {
+    case ModeKind::None:
+    case ModeKind::EmitObject:
+      lang.GetLangInvocation().GetCodeGenOptions().nativeModeKind =
+                 NativeModeKind::EmitObject;
+      break;
+    }
+  };
+  SetNativeModeKind(lang);
 }
 
 static std::unique_ptr<llvm::TargetMachine>
@@ -363,7 +341,7 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
       CreateTargetMachine(lang.GetLangInvocation().GetCodeGenOptions(),
                           lang.GetSyntax().GetSyntaxContext());
 
-  // We are performing some low leverl code generation
+  // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(), *targetMachine,
                      lang.GetLangInvocation().GetCodeGenOptions());
 

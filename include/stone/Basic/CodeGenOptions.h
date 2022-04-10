@@ -23,6 +23,24 @@ enum class LTOKind {
   Thin
 };
 
+enum class NativeModeKind : uint8_t {
+  None = 0,
+  /// Generate an LLVM module and write it out as LLVM assembly.
+  EmitAssemblyPreOptimization,
+
+  /// Generate an LLVM module and write it out as LLVM assembly.
+  EmitAssemblyPostOptimization,
+
+  /// Generate an LLVM module and write it out as LLVM bitcode.
+  EmitBitCode,
+
+  /// Generate an LLVM module and compile it to assembly.
+  EmitAssembly,
+
+  /// Generate an LLVM module, compile it, and assemble into an object file.
+  EmitObject
+};
+
 enum class LibraryKind { Library = 0, Framework };
 
 class LinkLibrary final {
@@ -45,6 +63,8 @@ public:
 class CodeGenOptions final {
 public:
   bool skipOptimization = false;
+
+  NativeModeKind nativeModeKind = NativeModeKind::None;
 
   /// The libraries and frameworks specified on the command line.
   llvm::SmallVector<LinkLibrary, 4> linkLibraries;
