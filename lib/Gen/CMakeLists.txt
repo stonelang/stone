@@ -10,7 +10,8 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_gen_sources
 
-	Gen.cpp
+	GenIR.cpp
+	GenNative.cpp
 	IRGen.cpp
 	IRBlocks.cpp
 	IRFunction.cpp

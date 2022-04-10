@@ -297,14 +297,13 @@ static void CompileWithGenIR(
   } else if (auto mod = msf.get<syn::Module *>()) {
     auto status =
         stone::GenIR(cgc, *mod, lang.GetLangInvocation().GetContext(), nullptr);
-  }else{
+  } else {
     stone::Panic("Unable to GenIR -- invalid ouput IR");
   }
   client(lang, cgc);
 }
 
 static void CompileWithGenModule(LangInstance &lang, CodeGenContext &cgc) {}
-
 
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
 

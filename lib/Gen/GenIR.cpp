@@ -1,5 +1,5 @@
-#include "stone/Gen/Gen.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Gen/Gen.h"
 #include "stone/Gen/IRGen.h"
 #include "stone/Gen/NativeGen.h"
 #include "stone/Syntax/Module.h"
@@ -119,19 +119,3 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
   // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
   return nullptr;
 }
-// TODO: Pass LLVMCore
-stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
-                              const OutputFile *output) {
-  // assert(llvmMod && "Null LLVM Module");
-  // ObjGen objGen(llvmMod, genOpts, tc);
-  // objGen.Emit();
-  return stone::Error();
-}
-
-// void stone::GenModule() {}
-
-// void stone::GenAssembly() {}
-
-// void stone::GenBitCode() {}
-
-// void stone::GenLibrary() {}
