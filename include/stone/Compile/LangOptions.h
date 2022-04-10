@@ -1,11 +1,11 @@
 #ifndef STONE_COMPILE_STCOPTIONS_H
 #define STONE_COMPILE_STCOPTIONS_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SystemOptions.h"
 #include "stone/Compile/TypeCheckerOptions.h"
-#include "stone/Gen/CodeGenOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPathOptions.h"

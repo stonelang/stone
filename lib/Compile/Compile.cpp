@@ -19,13 +19,8 @@
 #include "llvm/IR/Module.h"
 
 using namespace stone;
+using namespace stone::syn;
 
-using stone::LangInstance;
-using stone::LangListener;
-using stone::ModeKind;
-using stone::SyntaxListener;
-using stone::syn::SyntaxFile;
-using stone::syn::SyntaxFileKind;
 
 int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, LangListener *listener) {
@@ -323,11 +318,20 @@ static void CompileWithOptimization() {}
 
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {}
 
+static std::unique_ptr<llvm::TargetMachine>
+CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
+  return nullptr;
+}
+
 static void CompilePostSemanticAnalysis(LangInstance &lang) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
+
+  auto targetMachine = CreateTargetMachine(
+      lang.GetLangInvocation().GetCodeGenOptions(), lang.GetSyntax().GetSyntaxContext());
+  
   // We are performing some low leverl code generation
-  CodeGenContext cgc(stone::GetLLVMContext(),
+  CodeGenContext cgc(stone::GetLLVMContext(), *targetMachine,
                      lang.GetLangInvocation().GetCodeGenOptions());
 
   auto *mainModule = lang.GetModuleSystem().GetMainModule();

@@ -27,9 +27,6 @@ class SyntaxFile;
 class CodeGenOptions;
 class CodeGenContext;
 
-std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &genOpts, syn::SyntaxContext &tc);
-
 std::unique_ptr<llvm::Module> GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
                                     const Context &ctx,
                                     const OutputFile *output);

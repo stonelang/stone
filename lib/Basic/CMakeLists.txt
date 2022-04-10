@@ -4,9 +4,11 @@ set( LLVM_LINK_COMPONENTS
 	BinaryFormat
   BitstreamReader
   Support
-	Core
+  Core
+  IPO
+  Option
   )
-set(stone_ctx_sources
+set(stone_basic_sources
 	Context.cpp
 	BumpTable.cpp
 	Char.cpp
@@ -41,7 +43,7 @@ set(stone_ctx_sources
 	WinDirWatcher.cpp
 )
 add_stone_library(StoneBasic
-	${stone_ctx_sources}
+	${stone_basic_sources}
 )
 
 

@@ -22,6 +22,7 @@ class CodeGenOptions;
 
 class CodeGenContext final {
   const CodeGenOptions &genOpts;
+  llvm::TargetMachine &targetMachine;
   llvm::LLVMContext &llvmContext;
 
   llvm::PassBuilder pb;
@@ -32,25 +33,23 @@ class CodeGenContext final {
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
 
-  std::unique_ptr<llvm::Module> llvmModule;
-
 public:
-  CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts);
+  CodeGenContext(llvm::LLVMContext &llvmContext,
+                 llvm::TargetMachine &targetMachine,
+                 const CodeGenOptions &genOpts);
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
 
-  llvm::Module *GetLLVMModule() { return llvmModule.get(); }
-  llvm::Module *ReleaseLLVMModule() { return llvmModule.release(); }
-
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
-  llvm::LoopAnalysisManager& GetLoopAnalysisManager() { return lam; }
+  llvm::LoopAnalysisManager &GetLoopAnalysisManager() { return lam; }
   llvm::FunctionAnalysisManager &GetFunctionAnalysisManager() { return fam; }
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
+  llvm::TargetMachine &GetTargetMachine() { return targetMachine; }
 };
 } // namespace stone
 

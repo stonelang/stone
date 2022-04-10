@@ -1,7 +1,17 @@
-#ifndef STONE_GEN_CODEGENOPTIONS_H
-#define STONE_GEN_CODEGENOPTIONS_H
+#ifndef STONE_BASIC_CODEGENOPTIONS_H
+#define STONE_BASIC_CODEGENOPTIONS_H
 
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/Support/CodeGen.h"
+#include "llvm/Support/Regex.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/Transforms/Instrumentation/AddressSanitizerOptions.h"
+
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace stone {
 

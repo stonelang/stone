@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_FRONTEND_H
 #define STONE_COMPILE_FRONTEND_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
@@ -8,7 +9,6 @@
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/SourceUnit.h"
 #include "stone/Compile/TypeCheckerOptions.h"
-#include "stone/Gen/CodeGenOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
 

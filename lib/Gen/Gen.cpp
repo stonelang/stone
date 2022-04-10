@@ -1,5 +1,5 @@
 #include "stone/Gen/Gen.h"
-#include "stone/Gen/CodeGenOptions.h"
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/IRGen.h"
 #include "stone/Gen/NativeGen.h"
 #include "stone/Syntax/Module.h"
@@ -117,11 +117,6 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
   //   // }
   // }
   // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
-  return nullptr;
-}
-
-std::unique_ptr<llvm::TargetMachine>
-stone::CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
   return nullptr;
 }
 // TODO: Pass LLVMCore
