@@ -289,30 +289,22 @@ static void CompileWithGenIR(
     LangInstance &lang, stone::ModuleSyntaxFileUnion msf, CodeGenContext &cgc,
     llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {
 
-  // assert(cgc.GetLLVMModule());\
-  // if (lang.GetLangInvocation().GetCodeGenOptions().skipOptimization) {
-  //   /// Send the SyntaxFile to the optimizer
-  //   // OptimizeIR(llvmMod);
-  //   return;
-  // }
-  // stone::GenLLVMCode();
-  // IRCode llvmCode;
-  // llvmCode.EmitIR();
+  // TODO: Clean this up -- really messy
+  if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
+    auto status =
+        stone::GenIR(cgc, *sf, lang.GetLangInvocation().GetContext(), nullptr);
+
+  } else if (auto mod = msf.get<syn::Module *>()) {
+    auto status =
+        stone::GenIR(cgc, *mod, lang.GetLangInvocation().GetContext(), nullptr);
+  }else{
+    stone::Panic("Unable to GenIR -- invalid ouput IR");
+  }
+  client(lang, cgc);
 }
 
 static void CompileWithGenModule(LangInstance &lang, CodeGenContext &cgc) {}
 
-static void CompileWithGenObj(LangInstance &lang, CodeGenContext &cgc) {
-
-  // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
-  // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
-
-  // stone::GenNativeCode();
-}
-static void CompileWithGenBC(LangInstance &lang, CodeGenContext &cgc) {
-  // stone::GenLLVMCode();
-}
-static void CompileWithOptimization() {}
 
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
 
@@ -331,9 +323,13 @@ static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
       lang.GetLangInvocation().GetCodeGenOptions().nativeModeKind =
           NativeModeKind::EmitAssembly;
       break;
+    default:
+      stone::Panic("Unknown Native mode kind");
     }
   };
   ComputeNativeModeKind(lang);
+  auto status =
+      stone::GenNative(cgc, lang.GetSyntax().GetSyntaxContext(), nullptr);
 }
 
 static std::unique_ptr<llvm::TargetMachine>
