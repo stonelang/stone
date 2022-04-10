@@ -296,7 +296,7 @@ static void CompileWithGenIR(
   //   return;
   // }
   // stone::GenLLVMCode();
-  // LLVMCode llvmCode;
+  // IRCode llvmCode;
   // llvmCode.EmitIR();
 }
 
@@ -316,16 +316,24 @@ static void CompileWithOptimization() {}
 
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
 
-  auto SetNativeModeKind = [&](LangInstance &lang) -> void {
+  auto ComputeNativeModeKind = [&](LangInstance &lang) -> void {
     switch (lang.GetLangInvocation().GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitObject:
       lang.GetLangInvocation().GetCodeGenOptions().nativeModeKind =
-                 NativeModeKind::EmitObject;
+          NativeModeKind::EmitObject;
+      break;
+    case ModeKind::EmitBC:
+      lang.GetLangInvocation().GetCodeGenOptions().nativeModeKind =
+          NativeModeKind::EmitBC;
+      break;
+    case ModeKind::EmitAssembly:
+      lang.GetLangInvocation().GetCodeGenOptions().nativeModeKind =
+          NativeModeKind::EmitAssembly;
       break;
     }
   };
-  SetNativeModeKind(lang);
+  ComputeNativeModeKind(lang);
 }
 
 static std::unique_ptr<llvm::TargetMachine>

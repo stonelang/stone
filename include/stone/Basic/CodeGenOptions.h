@@ -32,7 +32,7 @@ enum class NativeModeKind : uint8_t {
   EmitAssemblyPostOptimization,
 
   /// Generate an LLVM module and write it out as LLVM bitcode.
-  EmitBitCode,
+  EmitBC,
 
   /// Generate an LLVM module and compile it to assembly.
   EmitAssembly,

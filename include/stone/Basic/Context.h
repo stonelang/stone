@@ -49,6 +49,18 @@ public:
   template <typename A> A *GetAs() { return static_cast<A *>(ty.get()); }
 };
 
+struct Error final {
+private:
+  ErrorStatus status;
+  // Not 'copy-assignable'
+  Error &operator=(const Error &other) = delete;
+
+public:
+  Error() : status(ErrorStatus::None) {}
+  Error(ErrorStatus status) : status(status) {}
+  ErrorStatus GetStatus() { return status; }
+};
+
 class Context final {
   FileMgr fm;
   SrcMgr sm;

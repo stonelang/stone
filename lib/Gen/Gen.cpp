@@ -120,12 +120,12 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
   return nullptr;
 }
 // TODO: Pass LLVMCore
-bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
-                      const OutputFile *output) {
+stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
+                              const OutputFile *output) {
   // assert(llvmMod && "Null LLVM Module");
   // ObjGen objGen(llvmMod, genOpts, tc);
   // objGen.Emit();
-  return true;
+  return stone::Error();
 }
 
 // void stone::GenModule() {}
