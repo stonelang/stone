@@ -29,6 +29,26 @@ public:
   template <typename A> A *GetAs() { return static_cast<A *>(Get()); }
 };
 
+enum class ErrorStatus : uint8_t {
+  None = 0, 
+  Error,
+};
+
+template <typename T> class SafeResult final {
+  ErrorStatus status;
+  std::unique_ptr<T> ty;
+
+public:
+  SafeResult() : status(ErrorStatus::Error) {}
+  SafeResult(std::unique_ptr<T> ty)
+      : ty(std::move(ty)), status(ErrorStatus::None) {}
+
+public:
+  ErrorStatus GetStatus() { return status; }
+  T &GetRef() const { return *ty; }
+  template <typename A> A *GetAs() { return static_cast<A *>(ty.get()); }
+};
+
 class Context final {
   FileMgr fm;
   SrcMgr sm;
