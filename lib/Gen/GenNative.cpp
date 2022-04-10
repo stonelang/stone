@@ -75,19 +75,28 @@
 using namespace stone;
 using namespace stone::syn;
 
+
+// GenWith...
+static stone::Error GenObject() {}
+
+static stone::Error GenBC() {}
+
+static stone::Error GenAssembly() {}
+
 // TODO: Pass LLVMCore
 stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
                               const OutputFile *output) {
-  // assert(llvmMod && "Null LLVM Module");
-  // ObjGen objGen(llvmMod, genOpts, tc);
-  // objGen.Emit();
-  return stone::Error();
+
+ // Do some setup and pre
+
+  switch (cgc.GetCodeGenOptions().nativeModeKind) {
+  case NativeModeKind::EmitObject:
+    return GenObject();
+  case NativeModeKind::EmitBC:
+    return GenBC();
+  case NativeModeKind::EmitAssembly:
+    return GenAssembly();
+  default:
+    stone::Panic("Unknown native mode");
+  }
 }
-
-// void stone::GenModule() {}
-
-// void stone::GenAssembly() {}
-
-// void stone::GenBitCode() {}
-
-// void stone::GenLibrary() {}
