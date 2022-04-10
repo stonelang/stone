@@ -1,17 +1,11 @@
 #ifndef STONE_DRIVER_OUTPUTOPTIONS_H
 #define STONE_DRIVER_OUTPUTOPTIONS_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Driver/Command.h"
 
 namespace stone {
 
-enum class LTOKind {
-  None,
-  ///
-  Full,
-  ///
-  Thin
-};
 /// This mode controls the compilation process
 /// p := -primary-file
 enum class CompilationMode : uint8_t {

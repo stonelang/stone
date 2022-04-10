@@ -21,7 +21,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-
 int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, LangListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
@@ -327,9 +326,10 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
 
-  auto targetMachine = CreateTargetMachine(
-      lang.GetLangInvocation().GetCodeGenOptions(), lang.GetSyntax().GetSyntaxContext());
-  
+  auto targetMachine =
+      CreateTargetMachine(lang.GetLangInvocation().GetCodeGenOptions(),
+                          lang.GetSyntax().GetSyntaxContext());
+
   // We are performing some low leverl code generation
   CodeGenContext cgc(stone::GetLLVMContext(), *targetMachine,
                      lang.GetLangInvocation().GetCodeGenOptions());

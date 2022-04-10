@@ -1,8 +1,8 @@
 #ifndef STONE_BASIC_CODEGENOPTIONS_H
 #define STONE_BASIC_CODEGENOPTIONS_H
 
-#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Target/TargetOptions.h"
@@ -14,6 +14,14 @@
 #include <vector>
 
 namespace stone {
+
+enum class LTOKind {
+  None,
+  ///
+  Full,
+  ///
+  Thin
+};
 
 enum class LibraryKind { Library = 0, Framework };
 
