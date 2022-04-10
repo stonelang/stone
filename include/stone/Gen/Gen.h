@@ -38,7 +38,7 @@ std::unique_ptr<llvm::Module> GenIR(CodeGenContext &cgc, syn::Module &mod,
                                     const Context &ctx,
                                     const OutputFile *output);
 
-bool GenObject(CodeGenContext &cgc, syn::SyntaxContext &tc,
+bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
                const OutputFile *output);
 
 // void GenModule();

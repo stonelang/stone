@@ -126,7 +126,7 @@ stone::CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
   return nullptr;
 }
 // TODO: Pass LLVMCore
-bool stone::GenObject(CodeGenContext &cgc, syn::SyntaxContext &tc,
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
                       const OutputFile *output) {
   // assert(llvmMod && "Null LLVM Module");
   // ObjGen objGen(llvmMod, genOpts, tc);
