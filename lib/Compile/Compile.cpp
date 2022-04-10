@@ -312,10 +312,43 @@ static void CompileWithGenObj(LangInstance &lang, CodeGenContext &cgc) {
 static void CompileWithGenBC(LangInstance &lang, CodeGenContext &cgc) {
   // stone::GenLLVMCode();
 }
-
 static void CompileWithOptimization() {}
 
-static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {}
+static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
+
+  // case ModeKind::EmitObject:
+  //       return CompileWithGenIR(lang, mainModule, cgc,
+  //                               [&](LangInstance &lang, CodeGenContext
+  //                               &cgc)
+  //                               {
+  //                                 return CompileWithGenNative(lang, cgc);
+  //                               });
+
+  //     case ModeKind::EmitBC:
+  //       return CompileWithGenIR(lang, mainModule, cgc,
+  //                               [&](LangInstance &lang, CodeGenContext
+  //                               &cgc)
+  //                               {
+  //                                 return CompileWithGenNative(lang, cgc);
+  //                               });
+
+  // auto IsNativeModeKind = [&](ModeKind kind) -> bool {
+  //     return true;
+  // };
+  // switch(lang.GetLangInvocation().GetMode().GetKind()){
+
+  //     case ModeKind::EmitObject:
+  //     case ModeKind::EmitBC:
+
+  // }
+
+  // switch (stone::GenNative(cgc, *targetMachine, nullptr).GetStatus()) {
+  // case ErrorStatus::None:
+  //   return;
+  // case ErrorStatus::Error:
+  //   return;
+  // }
+}
 
 static std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
@@ -335,30 +368,24 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
                      lang.GetLangInvocation().GetCodeGenOptions());
 
   auto *mainModule = lang.GetModuleSystem().GetMainModule();
-  switch (lang.GetLangInvocation().GetLangOptions().moduleOutputMode) {
-    switch (lang.GetLangInvocation().GetMode().GetKind()) {
-    case ModeKind::EmitIR:
-      return CompileWithGenIR(lang, mainModule, cgc,
-                              [&](LangInstance &lang, CodeGenContext &cgc) {
-                                return DumpIR(lang, cgc);
-                              });
-    case ModeKind::EmitObject:
-      return CompileWithGenIR(lang, mainModule, cgc,
-                              [&](LangInstance &lang, CodeGenContext &cgc) {
-                                return CompileWithGenObj(lang, cgc);
-                              });
+  // switch (lang.GetLangInvocation().GetLangOptions().moduleOutputMode)
 
-    case ModeKind::EmitBC:
-      return CompileWithGenIR(lang, mainModule, cgc,
-                              [&](LangInstance &lang, CodeGenContext &cgc) {
-                                return CompileWithGenBC(lang, cgc);
-                              });
-    case ModeKind::EmitModule:
-      return CompileWithGenIR(lang, mainModule, cgc,
-                              [&](LangInstance &lang, CodeGenContext &cgc) {
-                                return CompileWithGenModule(lang, cgc);
-                              });
-    }
+  switch (lang.GetLangInvocation().GetMode().GetKind()) {
+  case ModeKind::EmitModule:
+    return CompileWithGenIR(lang, mainModule, cgc,
+                            [&](LangInstance &lang, CodeGenContext &cgc) {
+                              return CompileWithGenModule(lang, cgc);
+                            });
+  case ModeKind::EmitIR:
+    return CompileWithGenIR(lang, mainModule, cgc,
+                            [&](LangInstance &lang, CodeGenContext &cgc) {
+                              return DumpIR(lang, cgc);
+                            });
+  default:
+    return CompileWithGenIR(lang, mainModule, cgc,
+                            [&](LangInstance &lang, CodeGenContext &cgc) {
+                              return CompileWithGenNative(lang, cgc);
+                            });
   }
 }
 
