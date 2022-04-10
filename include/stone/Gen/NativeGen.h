@@ -14,23 +14,22 @@ class TargetMachine;
 
 namespace stone {
 namespace syn {
-class SyntaxContext;
 class Module;
+class SyntaxContext;
 } // namespace syn
 
-class ObjGen final {
-  CodeGenContext &codeGenContext;
+class NativeGen final {
+  CodeGenContext &cgc;
   llvm::Module *llvmMod = nullptr;
   syn::SyntaxContext &tc;
 
 public:
-  ObjGen(const ObjGen &) = delete;
-  void operator=(const ObjGen &) = delete;
+  NativeGen(const NativeGen &) = delete;
+  void operator=(const NativeGen &) = delete;
 
 public:
-  ObjGen(CodeGenContext &codeGenContext, llvm::Module *llvmMod,
-         syn::SyntaxContext &tc);
-  ~ObjGen();
+  NativeGen(CodeGenContext &cgc, llvm::Module *llvmMod, syn::SyntaxContext &tc);
+  ~NativeGen();
 
 public:
   void Emit();

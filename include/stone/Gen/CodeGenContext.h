@@ -45,6 +45,12 @@ public:
   llvm::Module *ReleaseLLVMModule() { return llvmModule.release(); }
 
 public:
+  llvm::PassBuilder &GetPassBuilder() { return pb; }
+  llvm::LoopAnalysisManager& GetLoopAnalysisManager() { return lam; }
+  llvm::FunctionAnalysisManager &GetFunctionAnalysisManager() { return fam; }
+  llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
+  llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
+  llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
 };
 } // namespace stone
 

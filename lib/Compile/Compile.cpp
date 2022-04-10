@@ -321,9 +321,7 @@ static void CompileWithGenBC(LangInstance &lang, CodeGenContext &cgc) {
 
 static void CompileWithOptimization() {}
 
-
-static void CompileWithGenNative(LangInstance & lang, CodeGenContext & cgc) {
-}
+static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {}
 
 static void CompilePostSemanticAnalysis(LangInstance &lang) {
 

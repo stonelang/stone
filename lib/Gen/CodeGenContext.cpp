@@ -1,5 +1,4 @@
 #include "stone/Gen/CodeGenContext.h"
-
 #include "stone/Gen/CodeGenOptions.h"
 
 using namespace stone;

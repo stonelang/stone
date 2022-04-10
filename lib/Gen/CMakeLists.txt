@@ -15,7 +15,7 @@ set(stone_gen_sources
 	IRBlocks.cpp
 	IRFunction.cpp
 	IRModule.cpp
-	ObjGen.cpp
+	NativeGen.cpp
 	Optimize.cpp
 	CodeGenContext.cpp
 	

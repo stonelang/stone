@@ -1,8 +1,7 @@
 #include "stone/Gen/Gen.h"
-
 #include "stone/Gen/CodeGenOptions.h"
 #include "stone/Gen/IRGen.h"
-#include "stone/Gen/ObjGen.h"
+#include "stone/Gen/NativeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "llvm/ADT/SmallSet.h"
