@@ -1,6 +1,6 @@
 #include "stone/Gen/IRModule.h"
 
-#include "stone/Gen/IRGen.h"
+#include "stone/Gen/IRCodeGen.h"
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
@@ -9,7 +9,7 @@ using namespace stone::syn;
 // llvm::Module *IRModule::GetLLVMModule() { return llvmModule.get(); }
 // llvm::Module *IRModule::ReleaseLLVMModule() { return llvmModule.release(); }
 
-IRModuleEmitter::IRModuleEmitter(IRGen &irGen) : irGen(irGen) {}
+IRModuleEmitter::IRModuleEmitter(IRCodeGen &irCodeGen) : irCodeGen(irCodeGen) {}
 
 void IRModuleEmitter::EmitSyntaxFile(const syn::SyntaxFile &sf) {
   // Walk through the syntax file and call emit

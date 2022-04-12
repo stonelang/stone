@@ -2,6 +2,7 @@
 
 using namespace stone;
 
+static std::unique_ptr<llvm::TargetMachine> CreateTargetMachine() {}
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                llvm::TargetMachine &targetMachine,
                                const CodeGenOptions &genOpts)
@@ -16,5 +17,7 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
   // TODO: get ol from gen options
   mpm = pb.buildPerModuleDefaultPipeline(
       llvm::PassBuilder::OptimizationLevel::O2);
+
+  // targetMachine = CreateTargetMachine();
 }
 CodeGenContext::~CodeGenContext() {}

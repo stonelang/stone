@@ -17,7 +17,8 @@ class TargetMachine;
 
 namespace stone {
 
-class IRGen;
+class IRCodeGen;
+
 class IRModule {
   std::unique_ptr<llvm::Module> llvmModule;
 
@@ -35,7 +36,7 @@ public:
 };
 
 class IRModuleEmitter final {
-  IRGen &irGen;
+  IRCodeGen &irCodeGen;
   std::unique_ptr<IRModule> irModule;
 
 private:
@@ -43,7 +44,7 @@ private:
   void operator=(const IRModuleEmitter &) = delete;
 
 public:
-  IRModuleEmitter(IRGen &irGen);
+  IRModuleEmitter(IRCodeGen &irCodeGen);
   ~IRModuleEmitter();
 
 public:

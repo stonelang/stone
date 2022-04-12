@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Gen/NativeGen.h"
+#include "stone/Gen/NativeCodeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -75,27 +75,27 @@
 using namespace stone;
 using namespace stone::syn;
 
+// EmitWith...
+static stone::Error EmitObject() {}
 
-// GenWith...
-static stone::Error GenObject() {}
+static stone::Error EmitBC() {}
 
-static stone::Error GenBC() {}
-
-static stone::Error GenAssembly() {}
+static stone::Error EmitAssembly() {}
 
 // TODO: Pass LLVMCore
 stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
                               const OutputFile *output) {
 
- // Do some setup and pre
+  // Do some setup and pre
+  // NativeCodeGen  NativeCodeGen(cgc, sc, )
 
   switch (cgc.GetCodeGenOptions().nativeModeKind) {
   case NativeModeKind::EmitObject:
-    return GenObject();
+    return EmitObject();
   case NativeModeKind::EmitBC:
-    return GenBC();
+    return EmitBC();
   case NativeModeKind::EmitAssembly:
-    return GenAssembly();
+    return EmitAssembly();
   default:
     stone::Panic("Unknown native mode");
   }

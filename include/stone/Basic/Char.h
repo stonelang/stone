@@ -38,8 +38,9 @@ LLVM_READNONE inline bool isASCII(char c) {
 LLVM_READONLY inline bool isIdentifierHead(unsigned char c,
                                            bool AllowDollar = false) {
   using namespace ch;
-  if (CharTable[c] & (CHAR_UPPER | CHAR_LOWER | CHAR_UNDER))
+  if (CharTable[c] & (CHAR_UPPER | CHAR_LOWER | CHAR_UNDER)) {
     return true;
+  }
   return AllowDollar && c == '$';
 }
 
@@ -48,8 +49,9 @@ LLVM_READONLY inline bool isIdentifierHead(unsigned char c,
 LLVM_READONLY inline bool isIdentifierBody(unsigned char c,
                                            bool AllowDollar = false) {
   using namespace ch;
-  if (CharTable[c] & (CHAR_UPPER | CHAR_LOWER | CHAR_DIGIT | CHAR_UNDER))
+  if (CharTable[c] & (CHAR_UPPER | CHAR_LOWER | CHAR_DIGIT | CHAR_UNDER)) {
     return true;
+  }
   return AllowDollar && c == '$';
 }
 
@@ -153,16 +155,18 @@ LLVM_READONLY inline bool isRawStringDelimBody(unsigned char c) {
 ///
 /// If the character is not an uppercase character, it is returned as is.
 LLVM_READONLY inline char toLowercase(char c) {
-  if (isUppercase(c))
+  if (isUppercase(c)) {
     return c + 'a' - 'A';
+  }
   return c;
 }
 /// Converts the given ASCII character to its uppercase equivalent.
 ///
 /// If the character is not a lowercase character, it is returned as is.
 LLVM_READONLY inline char toUppercase(char c) {
-  if (isLowercase(c))
+  if (isLowercase(c)) {
     return c + 'A' - 'a';
+  }
   return c;
 }
 
@@ -172,12 +176,15 @@ LLVM_READONLY inline char toUppercase(char c) {
 /// identifier characters.
 LLVM_READONLY inline bool isValidIdentifier(StringRef S,
                                             bool AllowDollar = false) {
-  if (S.empty() || !isIdentifierHead(S[0], AllowDollar))
+  if (S.empty() || !isIdentifierHead(S[0], AllowDollar)) {
     return false;
+  }
 
-  for (StringRef::iterator I = S.begin(), E = S.end(); I != E; ++I)
-    if (!isIdentifierBody(*I, AllowDollar))
+  for (StringRef::iterator I = S.begin(), E = S.end(); I != E; ++I) {
+    if (!isIdentifierBody(*I, AllowDollar)) {
       return false;
+    }
+  }
 
   return true;
 }

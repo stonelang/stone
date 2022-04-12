@@ -1,9 +1,9 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Gen/IRGen.h"
-#include "stone/Gen/NativeGen.h"
+#include "stone/Gen/IRCodeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
+
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -79,8 +79,8 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc,
                                            syn::SyntaxFile &sf,
                                            const Context &ctx,
                                            const OutputFile *output) {
-  // IRGen irGen(genOpts);
-  // IRModuleEmitter modEmitter(irGen);
+  // IRCodeGen IRCodeGen(genOpts);
+  // IRModuleEmitter modEmitter(IRCodeGen);
 
   // for (auto *modFile : synMod->GetFiles()) {
   //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {
@@ -101,8 +101,8 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc,
 std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
                                            const Context &ctx,
                                            const OutputFile *output) {
-  // IRGen irGen(genOpts);
-  // IRModuleEmitter modEmitter(irGen);
+  // IRCodeGen IRCodeGen(genOpts);
+  // IRModuleEmitter modEmitter(IRCodeGen);
 
   // for (auto *modFile : synMod->GetFiles()) {
   //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {

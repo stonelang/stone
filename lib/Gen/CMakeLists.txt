@@ -12,11 +12,11 @@ set(stone_gen_sources
 
 	GenIR.cpp
 	GenNative.cpp
-	IRGen.cpp
+	IRCodeGen.cpp
 	IRBlocks.cpp
 	IRFunction.cpp
 	IRModule.cpp
-	NativeGen.cpp
+	NativeCodeGen.cpp
 	Optimize.cpp
 	CodeGenContext.cpp
 	

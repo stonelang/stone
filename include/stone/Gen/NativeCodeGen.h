@@ -18,18 +18,19 @@ class Module;
 class SyntaxContext;
 } // namespace syn
 
-class NativeGen final {
+class NativeCodeGen final {
   CodeGenContext &cgc;
   llvm::Module *llvmMod = nullptr;
   syn::SyntaxContext &tc;
 
 public:
-  NativeGen(const NativeGen &) = delete;
-  void operator=(const NativeGen &) = delete;
+  NativeCodeGen(const NativeCodeGen &) = delete;
+  void operator=(const NativeCodeGen &) = delete;
 
 public:
-  NativeGen(CodeGenContext &cgc, llvm::Module *llvmMod, syn::SyntaxContext &tc);
-  ~NativeGen();
+  NativeCodeGen(CodeGenContext &cgc, llvm::Module *llvmMod,
+                syn::SyntaxContext &tc);
+  ~NativeCodeGen();
 
 public:
   void Emit();

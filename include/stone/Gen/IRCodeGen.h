@@ -24,13 +24,17 @@ namespace stone {
 class IRLoop {};
 class IRCall {};
 
-class IRGen final {
+class IRCodeGenResult final {
+public:
+};
+
+class IRCodeGen final {
   CodeGenContext &cgc;
 
 public:
-  IRGen() = delete;
-  IRGen(CodeGenContext &cgc);
-  ~IRGen();
+  IRCodeGen() = delete;
+  IRCodeGen(CodeGenContext &cgc);
+  ~IRCodeGen();
 
 public:
   /// Return an opaque reference to the IRCodeModule object, which can
@@ -40,6 +44,7 @@ public:
   // IRFunction &GetIRFunction();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
+  void InitLLVMModule();
 };
 } // namespace stone
 
