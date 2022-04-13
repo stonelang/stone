@@ -14,6 +14,7 @@ set(stone_compile_sources
 	ParseStmt.cpp
 	PackageSystem.cpp
 	SyntaxParsing.cpp
+	TargetMachine.cpp
 	TypeCheck.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp

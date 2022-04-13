@@ -85,7 +85,6 @@ static stone::Error EmitAssembly() {}
 
 static void GenNativeWithParallelization() {}
 
-// TODO: Pass LLVMCore
 stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                               IRCodeGenResult &result,
                               const OutputFile *output) {
