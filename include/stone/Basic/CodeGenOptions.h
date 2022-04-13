@@ -23,6 +23,16 @@ enum class LTOKind {
   Thin
 };
 
+// The optimization mode specified on the command line or with function
+// attributes.
+enum class OptimizationMode : uint8_t {
+  None = 0,
+  Default = 1, // -Onone
+  Speed = 2,   // -Ospeed == -O
+  Size = 3,    // -Osize
+  LastMode = Size
+};
+
 enum class NativeModeKind : uint8_t {
   None = 0,
   /// Generate an LLVM module and write it out as LLVM assembly.
@@ -65,12 +75,16 @@ public:
   bool skipOptimization = false;
 
   NativeModeKind nativeModeKind = NativeModeKind::None;
+  OptimizationMode optimizationMode = OptimizationMode::None;
 
   /// The libraries and frameworks specified on the command line.
   llvm::SmallVector<LinkLibrary, 4> linkLibraries;
 
   /// The public dependent libraries specified on the command line.
   std::vector<std::string> publicLinkLibraries;
+
+public:
+  bool CanOptimize() { return optimizationMode > OptimizationMode::Default; }
 };
 
 } // namespace stone

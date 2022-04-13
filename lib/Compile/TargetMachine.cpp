@@ -38,6 +38,11 @@
 std::unique_ptr<llvm::TargetMachine>
 stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
                            syn::SyntaxContext &tc) {
+
+  CodeGenOpt::Level optimizationLevel = codeGenOpts.CandOptimize()
+                                            ? CodeGenOpt::Default // -Os
+                                            : CodeGenOpt::None;
+
   // Create the TargetMachine for generating code.
   // std::string error;
   // std::string Triple = TheModule->getTargetTriple();
