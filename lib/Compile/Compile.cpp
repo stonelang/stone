@@ -100,12 +100,6 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-// enum class AnalysisResultKind : uint8_t {
-//   None,
-//   SyntaxFile,
-//   Module,
-// };
-
 // static void
 // CompileWithSyntaxAnalysis(SourceUnit &source, LangInstance& lang,
 //                           llvm::function_ref<void(SyntaxFile *sf)> client) {
@@ -282,12 +276,6 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
 //   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 // }
-
-static void CompileFrontend(
-    llvm::ArrayRef<SourceUnit *> &sources, LangInstance &lang,
-    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {}
-
-static void CompileBackend(LangInstance &lang, CodeGenContext &cgc) {}
 
 static void DumpIR(LangInstance &lang, CodeGenContext &cgc,
                    IRCodeGenResult &result) {}
@@ -473,4 +461,10 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
     return CompileWithSemanticAnalysis(
         sources, [&](LangInstance &lang) { return CompileWithCodeGen(*this); });
   }
+
+  // return CompileWithFrontend(
+  //     sources, *this,
+  //     [&](LangInstance &lang, std::unique_ptr<IRCodeGenResult> result) {
+  //       return CompileWithBackend(lang, std::move(result));
+  //     });
 }

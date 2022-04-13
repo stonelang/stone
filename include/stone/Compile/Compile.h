@@ -9,7 +9,15 @@ class LangListener;
 namespace lang {
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             LangListener *listener = nullptr);
-}
+
+// using FrontendCallback = llvm::function_ref<void(
+//     LangInstance &lang, std::unique_ptr<IRCodeGenResult> result)>;
+
+// static void CompileFrontend(llvm::ArrayRef<SourceUnit *> &sources,
+//                                 LangInstance &lang, FrontendCallback fcb) {}
+// static void CompileBackend(LangInstance &lang,
+//                                std::unique_ptr<IRCodeGenResult> result) {}
+} // namespace lang
 
 } // namespace stone
 #endif
