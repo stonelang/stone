@@ -90,8 +90,7 @@ stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                               IRCodeGenResult &result,
                               const OutputFile *output) {
 
-  // Do some setup and pre
-  // NativeCodeGen  NativeCodeGen(cgc, sc, )
+  NativeCodeGen ncg(cgc, result, sc);
 
   switch (cgc.GetCodeGenOptions().nativeModeKind) {
   case NativeModeKind::EmitObject:

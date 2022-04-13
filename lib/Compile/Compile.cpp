@@ -286,6 +286,7 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 static void CompileFrontend(
     llvm::ArrayRef<SourceUnit *> &sources, LangInstance &lang,
     llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {}
+
 static void CompileBackend(LangInstance &lang, CodeGenContext &cgc) {}
 
 static void DumpIR(LangInstance &lang, CodeGenContext &cgc,

@@ -25,19 +25,6 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
 
   stats.reset(new ParserStats(*this));
   GetContext().GetStatEngine().Register(stats.get());
-
-  Initialize();
-}
-void Parser::Initialize() {
-  // Create the translation unit scope.  Install it as the current scope.
-  // assert(GetCurScope() == nullptr && "A scope is already active?");
-
-  // Prime the Parser's token
-  // The Lexer has the first token but the Parser's token defaults to tk::MAX
-  // So, update the parser's token with the first token from the Lexer
-  if (token.Is(tok::MAX)) {
-    ConsumeTok();
-  }
 }
 
 Parser::~Parser() {}

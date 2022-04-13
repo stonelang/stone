@@ -81,8 +81,6 @@ public:
 
   ~Parser();
 
-  void Initialize();
-
 public:
   ParserStats &GetStats() { return *stats.get(); }
   Lexer &GetLexer() { return *lexer.get(); }
