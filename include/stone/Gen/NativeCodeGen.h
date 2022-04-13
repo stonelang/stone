@@ -33,6 +33,10 @@ public:
                 syn::SyntaxContext &sc);
   ~NativeCodeGen();
 
+  CodeGenContext &GetCodeGenContext() { return cgc; }
+  IRCodeGenResult &GetIRCodeGenResult() { return result; }
+  syn::SyntaxContext &GetSyntaxContext() { return sc; }
+
 public:
   void Emit();
 };
