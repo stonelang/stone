@@ -1,11 +1,12 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Syntax/Module.h"
+
 #include "llvm/IR/Module.h"
 
 using namespace stone;
 
-IRCodeGen::IRCodeGen(CodeGenContext &cgc) : cgc(cgc) {}
+IRCodeGen::IRCodeGen(CodeGenContext &cgc) : cgc(cgc), irCodeGenBuilder(cgc) {}
 
 IRCodeGen::~IRCodeGen() {}
 

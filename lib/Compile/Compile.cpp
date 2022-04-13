@@ -283,29 +283,40 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   // auto result GenObject(cgc GetSyntaxContext(), outputFile.get());
 // }
 
-static void DumpIR(LangInstance &lang, CodeGenContext &cgc) {}
+static void CompileFrontend(
+    llvm::ArrayRef<SourceUnit *> &sources, LangInstance &lang,
+    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {}
+static void CompileBackend(LangInstance &lang, CodeGenContext &cgc) {}
+
+static void DumpIR(LangInstance &lang, CodeGenContext &cgc,
+                   IRCodeGenResult &result) {}
 
 static void CompileWithGenIR(
     LangInstance &lang, stone::ModuleSyntaxFileUnion msf, CodeGenContext &cgc,
-    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc)> client) {
+    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc,
+                            IRCodeGenResult &result)>
+        client) {
 
   // TODO: Clean this up -- really messy
   if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-    auto status =
+    auto result =
         stone::GenIR(cgc, *sf, lang.GetLangInvocation().GetContext(), nullptr);
+    client(lang, cgc, *result);
 
   } else if (auto mod = msf.get<syn::Module *>()) {
-    auto status =
+    auto result =
         stone::GenIR(cgc, *mod, lang.GetLangInvocation().GetContext(), nullptr);
+    client(lang, cgc, *result);
   } else {
     stone::Panic("Unable to GenIR -- invalid ouput IR");
   }
-  client(lang, cgc);
 }
 
-static void CompileWithGenModule(LangInstance &lang, CodeGenContext &cgc) {}
+static void GenModule(LangInstance &lang, CodeGenContext &cgc,
+                      IRCodeGenResult &result) {}
 
-static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
+static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc,
+                                 IRCodeGenResult &result) {
 
   auto ComputeNativeModeKind = [&](LangInstance &lang) -> void {
     switch (lang.GetLangInvocation().GetMode().GetKind()) {
@@ -327,8 +338,8 @@ static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc) {
     }
   };
   ComputeNativeModeKind(lang);
-  auto status =
-      stone::GenNative(cgc, lang.GetSyntax().GetSyntaxContext(), nullptr);
+  auto status = stone::GenNative(cgc, lang.GetSyntax().GetSyntaxContext(),
+                                 result, nullptr);
 }
 
 static std::unique_ptr<llvm::TargetMachine>
@@ -399,7 +410,7 @@ CreateTargetMachine(const CodeGenOptions &genOpts, SyntaxContext &tc) {
 //                                           Options, RM, CM, OptLevel));
 // }
 
-static void CompilePostSemanticAnalysis(LangInstance &lang) {
+static void CompileWithCodeGen(LangInstance &lang) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
 
@@ -416,20 +427,23 @@ static void CompilePostSemanticAnalysis(LangInstance &lang) {
 
   switch (lang.GetLangInvocation().GetMode().GetKind()) {
   case ModeKind::EmitModule:
-    return CompileWithGenIR(lang, mainModule, cgc,
-                            [&](LangInstance &lang, CodeGenContext &cgc) {
-                              return CompileWithGenModule(lang, cgc);
-                            });
+    return CompileWithGenIR(
+        lang, mainModule, cgc,
+        [&](LangInstance &lang, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return GenModule(lang, cgc, result);
+        });
   case ModeKind::EmitIR:
-    return CompileWithGenIR(lang, mainModule, cgc,
-                            [&](LangInstance &lang, CodeGenContext &cgc) {
-                              return DumpIR(lang, cgc);
-                            });
+    return CompileWithGenIR(
+        lang, mainModule, cgc,
+        [&](LangInstance &lang, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return DumpIR(lang, cgc, result);
+        });
   default:
-    return CompileWithGenIR(lang, mainModule, cgc,
-                            [&](LangInstance &lang, CodeGenContext &cgc) {
-                              return CompileWithGenNative(lang, cgc);
-                            });
+    return CompileWithGenIR(
+        lang, mainModule, cgc,
+        [&](LangInstance &lang, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return CompileWithGenNative(lang, cgc, result);
+        });
   }
 }
 
@@ -455,8 +469,7 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
     return CompileWithSemanticAnalysis(
         sources, [&](LangInstance &lang) { return PrintSyntax(lang); });
   default:
-    return CompileWithSemanticAnalysis(sources, [&](LangInstance &lang) {
-      return CompilePostSemanticAnalysis(*this);
-    });
+    return CompileWithSemanticAnalysis(
+        sources, [&](LangInstance &lang) { return CompileWithCodeGen(*this); });
   }
 }

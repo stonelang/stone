@@ -1,5 +1,4 @@
-#include "stone/Gen/IRModule.h"
-
+#include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Syntax/Decl.h"
 
@@ -9,16 +8,16 @@ using namespace stone::syn;
 // llvm::Module *IRModule::GetLLVMModule() { return llvmModule.get(); }
 // llvm::Module *IRModule::ReleaseLLVMModule() { return llvmModule.release(); }
 
-IRModuleEmitter::IRModuleEmitter(IRCodeGen &irCodeGen) : irCodeGen(irCodeGen) {}
+IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen) : irCodeGen(irCodeGen) {}
 
-void IRModuleEmitter::EmitSyntaxFile(const syn::SyntaxFile &sf) {
+void IRCodeGenModule::EmitSyntaxFile(const syn::SyntaxFile &sf) {
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto &topLevelDecl : sf.topLevelDecls) {
     EmitTopLevelDecl(&topLevelDecl);
   }
 }
-void IRModuleEmitter::EmitTopLevelDecl(Decl *topLevelDecl) {
+void IRCodeGenModule::EmitTopLevelDecl(Decl *topLevelDecl) {
   switch (topLevelDecl->GetKind()) {
   case DeclKind::Interface:
     return EmitInterfaceDecl(cast<InterfaceDecl>(topLevelDecl));
@@ -33,8 +32,8 @@ void IRModuleEmitter::EmitTopLevelDecl(Decl *topLevelDecl) {
   }
 }
 
-void IRModuleEmitter::EmitFunDecl(FunDecl *topLevelDecl) {}
-void IRModuleEmitter::EmitStructDecl(StructDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitFunDecl(FunDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitStructDecl(StructDecl *topLevelDecl) {}
 
-void IRModuleEmitter::EmitInterfaceDecl(InterfaceDecl *topLevelDecl) {}
-void IRModuleEmitter::EmitEnumDecl(EnumDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitEnumDecl(EnumDecl *topLevelDecl) {}

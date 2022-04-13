@@ -83,12 +83,14 @@ public:
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 
-  bool JustAnalysis() {
-    if (GetMode().JustParse() || GetMode().JustTypeCheck()) {
+  bool JustFrontend() {
+    if (GetMode().JustParse() || GetMode().JustTypeCheck() ||
+        GetMode().IsEmitIR()) {
       return true;
     }
     return false;
   }
+
   bool CanCodeGen() {
     switch (GetMode().GetKind()) {
     case ModeKind::None:

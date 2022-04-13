@@ -79,11 +79,12 @@ public:
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
   bool IsPrintSyntax() { return GetKind() == ModeKind::PrintSyntax; }
   bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
+  bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
+  bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }
+
   bool IsEmitBC() { return GetKind() == ModeKind::EmitBC; }
   bool IsEmitObject() { return GetKind() == ModeKind::EmitObject; }
   bool IsEmitAssembly() { return GetKind() == ModeKind::EmitAssembly; }
-  bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
-  bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }
   bool IsAlien() { return GetKind() == ModeKind::Alien; }
 
   bool JustParse() {

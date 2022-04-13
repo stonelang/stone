@@ -1,12 +1,11 @@
-#ifndef STONE_GEN_IRCODE_H
-#define STONE_GEN_IRCODE_H
+#ifndef STONE_GEN_IRCODEGEN_H
+#define STONE_GEN_IRCODEGEN_H
 
 #include <memory>
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Gen/IRFunction.h"
-#include "stone/Gen/IRModule.h"
+#include "stone/Gen/IRCodeGenBuilder.h"
 #include "stone/Syntax/Module.h"
 #include "llvm/IR/PassManager.h"
 
@@ -21,18 +20,20 @@ class TargetMachine;
 
 namespace stone {
 
-class IRLoop {};
-class IRCall {};
+// class IREmitterLoop {};
+// class IREmitterCall {};
 
-class IRCodeGenResult final {
-public:
-};
+// class IREmitterBlocks {
+// public:
+//   IREmitterBlocks();
+// };
 
 class IRCodeGen final {
   CodeGenContext &cgc;
+  IRCodeGenBuilder irCodeGenBuilder;
 
+  // std::unique_ptr<IRModuleResult> result;
 public:
-  IRCodeGen() = delete;
   IRCodeGen(CodeGenContext &cgc);
   ~IRCodeGen();
 
@@ -44,6 +45,7 @@ public:
   // IRFunction &GetIRFunction();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
+  IRCodeGenBuilder &GetIRCodeGenBuilder() { return irCodeGenBuilder; }
   void InitLLVMModule();
 };
 } // namespace stone

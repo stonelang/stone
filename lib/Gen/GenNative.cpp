@@ -1,5 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
+#include "stone/Gen/IRCodeGenResult.h"
 #include "stone/Gen/NativeCodeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
@@ -82,8 +83,11 @@ static stone::Error EmitBC() {}
 
 static stone::Error EmitAssembly() {}
 
+static void GenNativeWithParallelization() {}
+
 // TODO: Pass LLVMCore
-stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
+stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+                              IRCodeGenResult &result,
                               const OutputFile *output) {
 
   // Do some setup and pre

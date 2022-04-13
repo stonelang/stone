@@ -1,6 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/IRCodeGenResult.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -75,11 +76,11 @@
 using namespace stone;
 using namespace stone::syn;
 
-std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc,
-                                           syn::SyntaxFile &sf,
-                                           const Context &ctx,
-                                           const OutputFile *output) {
-  // IRCodeGen IRCodeGen(genOpts);
+std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
+                                              syn::SyntaxFile &sf,
+                                              const Context &ctx,
+                                              const OutputFile *output) {
+  // IRCodeGen irCG(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);
 
   // for (auto *modFile : synMod->GetFiles()) {
@@ -98,9 +99,10 @@ std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc,
   return nullptr;
 }
 
-std::unique_ptr<llvm::Module> stone::GenIR(CodeGenContext &cgc, syn::Module &sf,
-                                           const Context &ctx,
-                                           const OutputFile *output) {
+std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
+                                              syn::Module &sf,
+                                              const Context &ctx,
+                                              const OutputFile *output) {
   // IRCodeGen IRCodeGen(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);
 
