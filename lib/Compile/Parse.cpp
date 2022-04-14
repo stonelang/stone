@@ -8,8 +8,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-void syn::ParseSyntaxFile(SyntaxFile &sf, Syntax &syntax,
-                          SyntaxListener *listener) {
+void syn::Parse(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener) {
 
   Parser parser(sf, syntax, listener);
   llvm::SmallVector<SyntaxResult<Decl>> results;

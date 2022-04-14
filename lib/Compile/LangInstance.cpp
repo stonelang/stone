@@ -109,10 +109,7 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 // void LangInstance::FinishTypeChecking() {
 // }
 
-void LangInstance::ForEachSyntaxFileToTypeCheck(
-    llvm::function_ref<void(syn::SyntaxFile &, types::TypeCheckerOptions &,
-                            TypeCheckerListener *)>
-        client) {
+void LangInstance::TypeCheckEachSyntaxFile(TypeCheckSyntaxFileCallback client) {
 
   if (GetLangInvocation().GetLangOptions().moduleOutputMode ==
       ModuleOutputMode::Whole) {
@@ -153,7 +150,8 @@ void LangInstance::CompileWithSyntaxAnalysis(
         SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
         GetSyntax().GetSyntaxContext(), source->GetSrcID());
 
-    syn::ParseSyntaxFile(*syntaxFile, GetSyntax(), GetListener());
+    syn::Parse(*syntaxFile, GetSyntax(), GetListener());
+
     assert(syntaxFile);
     client(*syntaxFile);
   }
@@ -180,9 +178,9 @@ void LangInstance::CompileWithSemanticAnalysis(
     return [&](syn::SyntaxFile &sf) -> void {}(sf);
   });
 
-  ForEachSyntaxFileToTypeCheck([&](SyntaxFile &syntaxFile,
-                                   types::TypeCheckerOptions &tco,
-                                   stone::TypeCheckerListener *listener) {
+  TypeCheckEachSyntaxFile([&](SyntaxFile &syntaxFile,
+                              types::TypeCheckerOptions &tco,
+                              stone::TypeCheckerListener *listener) {
     types::TypeCheck(syntaxFile, tco, listener);
   });
   // FinishTypeChecking();
