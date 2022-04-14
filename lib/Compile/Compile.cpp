@@ -310,7 +310,7 @@ static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc,
 
   auto targetMachine = stone::CreateTargetMachine(
       lang.GetLangInvocation().GetCodeGenOptions(),
-      lang.GetLangInvocation().GetTargetOptions(),
+      lang.GetLangInvocation().GetLangOptions(),
       lang.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
 
   cgc.TakeTargetMachine(std::move(targetMachine));
