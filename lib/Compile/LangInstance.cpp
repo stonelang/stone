@@ -175,16 +175,22 @@ void LangInstance::CompileWithSemanticAnalysis(
     llvm::ArrayRef<SourceUnit *> &sources) {
 
   CompileWithSyntaxAnalysis(sources, [&](syn::SyntaxFile &sf) {
-    return [&](syn::SyntaxFile &sf) -> void {}(sf);
+    if (GetLangInvocation().GetTypeCheckMode() == TypeCheckMode::EachFile) {
+      return types::TypeCheck(sf, GetLangInvocation().GetTypeCheckerOptions(),
+                              GetListener());
+    } else {
+      return [&](syn::SyntaxFile &sf) -> void {}(sf);
+    }
   });
 
-  TypeCheckEachSyntaxFile([&](SyntaxFile &syntaxFile,
-                              types::TypeCheckerOptions &tco,
-                              stone::TypeCheckerListener *listener) {
-    types::TypeCheck(syntaxFile, tco, listener);
-  });
+  if (GetLangInvocation().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
+    TypeCheckEachSyntaxFile([&](SyntaxFile &syntaxFile,
+                                types::TypeCheckerOptions &typeCheckerOpts,
+                                stone::TypeCheckerListener *listener) {
+      types::TypeCheck(syntaxFile, typeCheckerOpts, listener);
+    });
+  }
   // FinishTypeChecking();
-
   if (listener) {
     listener->OnSemanticAnalysisCompleted(*this);
   }
