@@ -184,7 +184,7 @@ void LangInstance::CompileWithSemanticAnalysis(
   ForEachSyntaxFileToTypeCheck([&](SyntaxFile &syntaxFile,
                                    types::TypeCheckerOptions &tco,
                                    stone::TypeCheckerListener *listener) {
-    types::TypeCheckSyntaxFile(syntaxFile, tco, listener);
+    types::TypeCheck(syntaxFile, tco, listener);
   });
   // FinishTypeChecking();
 

@@ -13,11 +13,12 @@ class TargetMachine;
 namespace stone {
 class CodeGenOptions;
 class LangOptions;
+class DiagnosticEngine;
 namespace syn {
 class SyntaxContext;
 }
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &codeGenOpts,
+CreateTargetMachine(DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
                     const LangOptions &langOpts, syn::SyntaxContext &sc,
                     llvm::Module &llvmModule);
 

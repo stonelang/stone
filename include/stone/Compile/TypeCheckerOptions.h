@@ -7,7 +7,7 @@ namespace stone {
 namespace types {
 
 enum class TypeCheckMode : uint8_t {
-  EachFile,
+  EachFile = 0,
   WholeModule,
 };
 class TypeCheckerOptions final {

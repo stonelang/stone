@@ -20,6 +20,14 @@ enum class ModuleOutputMode : uint8_t {
   Single,
   Whole,
 };
+
+enum class ThreadModelKind {
+  /// POSIX Threads.
+  POSIX,
+  /// Single Threaded Environment.
+  Single
+};
+
 class LangOptions final : public BaseOptions {
 public:
   /// Options for the entire system
@@ -37,6 +45,8 @@ public:
   TargetOptions targetOpts;
 
   ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
+
+  ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
 
 public:
   LangOptions() {

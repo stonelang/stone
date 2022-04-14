@@ -197,34 +197,6 @@ enum class SyntaxAnalysisResultKind { None = 0, File, Module };
 //   }
 // }
 
-// class CodeGeneration final {
-
-//   friend LangInstance;
-//   LangInstance &lang;
-
-// public:
-//   CodeGeneration(LangInstance &lang);
-//   ~CodeGeneration();
-
-// private:
-//   void Generate(CodeAnalysis &codeAnalysis);
-
-//   /// Generate the IR for an entire module
-//   llvm::Module *GenerateIR(syn::Module &sf, CodeGenContext &cc);
-
-//   /// Generate IR a single SyntaxFile
-//   llvm::Module *GenerateIR(syn::SyntaxFile &sf, CodeGenContext &cc);
-
-//   /// Generate Object file
-//   void GenerateObject(unsigned srcID, llvm::Module *mod, CodeGenContext &cc);
-
-//   /// Generate Object file
-//   void GenerateBitCode();
-
-//   /// Generates a 'test.stonem' file
-//   void GenerateModule();
-// };
-
 // void CompilePostSemanticAnalysis(LangInstance& lang) {
 
 //   assert(lang.GetLangInvocation().CanCodeGen());
@@ -309,6 +281,7 @@ static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc,
                                  IRCodeGenResult &result) {
 
   auto targetMachine = stone::CreateTargetMachine(
+      lang.GetLangInvocation().GetContext().GetDiagEngine(),
       lang.GetLangInvocation().GetCodeGenOptions(),
       lang.GetLangInvocation().GetLangOptions(),
       lang.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
