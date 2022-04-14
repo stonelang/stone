@@ -8,7 +8,7 @@ class TypeCheckerListener;
 
 namespace syn {
 class SyntaxFile;
-class Module; 
+class Module;
 
 } // namespace syn
 namespace types {

@@ -8,8 +8,9 @@ using namespace stone;
 
 BaseOptions::BaseOptions() {}
 
-// BaseOptions::BaseOptions() : target(llvm::sys::getDefaultTargetTriple()) {
-// }
+// TODO:
+//  BaseOptions::BaseOptions() : target(llvm::sys::getDefaultTargetTriple()) {
+//  }
 
 // void BaseOptions::SetTargetTriple(llvm::StringRef triple) {
 //   SetTargetTriple(llvm::Triple(triple));

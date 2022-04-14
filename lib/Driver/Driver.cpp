@@ -74,9 +74,9 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   // ComputeOutputOptions(toolChain, *dal, inputs, driverOpts, batchMode);
 
   // Get the compilation mode
-  auto compilationMode = ComputeCompilationMode(*dal);
+  auto compilationModelKind = ComputeCompilationModelKind(*dal);
 
-  auto compilationModel = ComputeCompilationModel(compilationMode);
+  auto compilationModel = ComputeCompilationModel(compilationModelKind);
 
   auto compilation = compilationModel->BuildCompilation(
       toolChain, inputs, driverOpts.outputOptions);
@@ -132,16 +132,16 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
   return dal;
 }
 
-CompilationMode
-Driver::ComputeCompilationMode(const llvm::opt::DerivedArgList &dal) {
+CompilationModelKind
+Driver::ComputeCompilationModelKind(const llvm::opt::DerivedArgList &dal) {
   // Just Quad for now
-  return CompilationMode::Quadratic;
+  return CompilationModelKind::Quadratic;
 }
 
 std::unique_ptr<CompilationModel>
-Driver::ComputeCompilationModel(CompilationMode mode) {
-  switch (mode) {
-  case CompilationMode::Quadratic:
+Driver::ComputeCompilationModel(CompilationModelKind kind) {
+  switch (kind) {
+  case CompilationModelKind::Quadratic:
     return std::make_unique<QuadraticCompilationModel>();
   // case CompilationMode::Flat:
   //   return std::make_unique<FlatCompilationModel>();
@@ -150,7 +150,7 @@ Driver::ComputeCompilationModel(CompilationMode mode) {
   // case CompilationMode::Single:
   //   return std::make_unique<SingleCompilationModel>();
   default:
-    stone::Panic("Unknown Compilation Mode");
+    stone::Panic("Unknown CompilationModel kind");
   }
   return nullptr;
 }

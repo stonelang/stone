@@ -244,10 +244,6 @@ public:
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID);
   InFlightDiagnostic PrintD(const Token &token, DiagID diagID);
 
-  // InFlightDiagnostic PrintD(unsigned DiagID) {
-  //   return Diag(tok, diagID);
-  // }
-
 private:
   void PrintD();
 

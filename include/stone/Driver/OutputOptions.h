@@ -8,7 +8,7 @@ namespace stone {
 
 /// This mode controls the compilation process
 /// p := -primary-file
-enum class CompilationMode : uint8_t {
+enum class CompilationModelKind : uint8_t {
   /// n inputs, n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
@@ -50,7 +50,7 @@ public:
 
   std::string libLTOPath;
 
-  CompilationMode compilationMode = CompilationMode::Quadratic;
+  CompilationModelKind compilationModelKind = CompilationModelKind::Quadratic;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;

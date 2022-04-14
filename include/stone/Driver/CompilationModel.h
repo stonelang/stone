@@ -14,11 +14,11 @@ class ToolChain;
 
 class CompilationModel {
 
-  CompilationMode mode;
+  CompilationModelKind kind;
   std::unique_ptr<Compilation> compilation;
 
 public:
-  CompilationModel(CompilationMode mode) : mode(mode) {}
+  CompilationModel(CompilationModelKind kind) : kind(kind) {}
 
 public:
   virtual std::unique_ptr<Compilation>
@@ -31,7 +31,7 @@ public:
   virtual void BuildJobs(ToolChain &tc, IntentCache &ic,
                          const OutputOptions &outputOpts) {}
 
-  CompilationMode GetCompilationMode() { return mode; }
+  CompilationModelKind GetKind() { return kind; }
 
 protected:
   Intent *BuildLinkIntent(ToolChain &tc, IntentCache &ic,
@@ -63,7 +63,8 @@ public:
 
 class QuadraticCompilationModel final : public CompilationModel {
 public:
-  QuadraticCompilationModel() : CompilationModel(CompilationMode::Quadratic) {}
+  QuadraticCompilationModel()
+      : CompilationModel(CompilationModelKind::Quadratic) {}
 
 public:
   std::unique_ptr<Compilation>

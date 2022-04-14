@@ -19,5 +19,5 @@ void types::TypeCheck(syn::Module &m, TypeCheckerOptions &typeCheckerOpts,
   // assert(sf.stage == SyntaxFileStage::AtImports);
   // sf.stage = SyntaxFileStage::AtTypeCheck;
 
-    // Go through all the files and type-check 
+  // Go through all the files and type-check
 }

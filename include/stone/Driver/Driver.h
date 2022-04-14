@@ -105,12 +105,14 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
-  CompilationMode ComputeCompilationMode(const llvm::opt::DerivedArgList &dal);
-  std::unique_ptr<CompilationModel>
-  ComputeCompilationModel(CompilationMode mode);
+  CompilationModelKind
+  ComputeCompilationModelKind(const llvm::opt::DerivedArgList &dal);
 
-  CompilationMode GetCompilationMode() const {
-    return driverOpts.outputOptions.compilationMode;
+  std::unique_ptr<CompilationModel>
+  ComputeCompilationModel(CompilationModelKind kind);
+
+  CompilationModelKind GetCompilationModelKind() const {
+    return driverOpts.outputOptions.compilationModelKind;
   }
 
 public:
