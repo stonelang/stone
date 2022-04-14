@@ -34,7 +34,7 @@ using ModuleSyntaxFileUnion =
 using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
 using SemanticAnalysisCallback = llvm::function_ref<void(LangInstance &)>;
 
-using TypeCheckSyntaxFileCallback = llvm::function_ref<void(
+using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, types::TypeCheckerOptions &, TypeCheckerListener *)>;
 
 class LangStats final : public Stats {
@@ -117,7 +117,7 @@ private:
   void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
                                    SemanticAnalysisCallback client);
 
-  void TypeCheckEachSyntaxFile(TypeCheckSyntaxFileCallback client);
+  void ForEachSyntaxFile(EachSyntaxFileCallback client);
 
   void ResolveUsings();
 

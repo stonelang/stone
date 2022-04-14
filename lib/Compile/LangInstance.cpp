@@ -102,16 +102,13 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 //   PrimaryBufferIDs.insert(bufferID);
 // }
 
-// void LangInstance::ForEachFileToTypeCheck() {
+// void LangInstance::FinishTypeCheck() {
 // }
 
-// void LangInstance::FinishTypeChecking() {
-// }
+void LangInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
 
-void LangInstance::TypeCheckEachSyntaxFile(TypeCheckSyntaxFileCallback client) {
-
-  if (GetLangInvocation().GetLangOptions().moduleOutputMode ==
-      ModuleOutputMode::Whole) {
+  switch (GetLangInvocation().GetTypeCheckMode()) {
+  case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
       if (syntaxFile) {
@@ -119,11 +116,14 @@ void LangInstance::TypeCheckEachSyntaxFile(TypeCheckSyntaxFileCallback client) {
                GetListener());
       }
     }
-  } else {
-    // for (auto *syntaxFile : GetPrimarySyntaxFiles()) {
-    //   // client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
-    //   //        GetListener());
-    // }
+  }
+  case TypeCheckMode::EachFile: {
+    for (auto *syntaxFile :
+         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
+      client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
+             GetListener());
+    }
+  }
   }
 }
 
@@ -173,23 +173,15 @@ void LangInstance::ResolveUsings() {
 void LangInstance::CompileWithSemanticAnalysis(
     llvm::ArrayRef<SourceUnit *> &sources) {
 
-  CompileWithSyntaxAnalysis(sources, [&](syn::SyntaxFile &sf) {
-    if (GetLangInvocation().GetTypeCheckMode() == TypeCheckMode::EachFile) {
-      return types::TypeCheck(sf, GetLangInvocation().GetTypeCheckerOptions(),
-                              GetListener());
-    } else {
-      return [&](syn::SyntaxFile &sf) -> void {}(sf);
-    }
+  CompileWithSyntaxAnalysis(sources);
+
+  ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
+                        types::TypeCheckerOptions &typeCheckerOpts,
+                        stone::TypeCheckerListener *listener) {
+    types::TypeCheck(syntaxFile, typeCheckerOpts, listener);
   });
 
-  if (GetLangInvocation().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
-    TypeCheckEachSyntaxFile([&](SyntaxFile &syntaxFile,
-                                types::TypeCheckerOptions &typeCheckerOpts,
-                                stone::TypeCheckerListener *listener) {
-      types::TypeCheck(syntaxFile, typeCheckerOpts, listener);
-    });
-  }
-  // FinishTypeChecking();
+  // FinishTypeCheck();
   if (listener) {
     listener->OnSemanticAnalysisCompleted(*this);
   }

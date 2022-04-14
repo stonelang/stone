@@ -43,6 +43,13 @@ void Module::AddFile(ModuleFile &file) {
 
 bool Module::Walk(SyntaxWalker &waker) {}
 
+llvm::ArrayRef<SyntaxFile *> Module::GetPrimarySyntaxFiles() const {
+  // auto &eval = GetASTContext().evaluator;
+  // auto *mutableThis = const_cast<ModuleDecl *>(this);
+  // return evaluateOrDefault(eval, PrimarySourceFilesRequest{mutableThis}, {});
+  assert(false && "Not implemented");
+}
+
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Source, owner), kind(kind),

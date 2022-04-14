@@ -100,7 +100,6 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   return Finish();
 }
-enum class SyntaxAnalysisResultKind { None = 0, File, Module };
 // static void
 // CompileWithSyntaxAnalysis(SourceUnit &source, LangInstance& lang,
 //                           llvm::function_ref<void(SyntaxFile *sf)> client) {
@@ -253,24 +252,33 @@ enum class SyntaxAnalysisResultKind { None = 0, File, Module };
 static void DumpIR(LangInstance &lang, CodeGenContext &cgc,
                    IRCodeGenResult &result) {}
 
-static void CompileWithGenIR(
-    LangInstance &lang, stone::ModuleSyntaxFileUnion msf, CodeGenContext &cgc,
-    llvm::function_ref<void(LangInstance &lang, CodeGenContext &cgc,
-                            IRCodeGenResult &result)>
-        client) {
+using CompileWithGenIRCallback = llvm::function_ref<void(
+    LangInstance &lang, CodeGenContext &cgc, IRCodeGenResult &result)>;
 
-  // TODO: Clean this up -- really messy
-  if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-    auto result =
-        stone::GenIR(cgc, *sf, lang.GetLangInvocation().GetContext(), nullptr);
-    client(lang, cgc, *result);
+static void CompileWithGenIR(LangInstance &lang,
+                             stone::ModuleSyntaxFileUnion msf,
+                             CodeGenContext &cgc,
+                             CompileWithGenIRCallback client) {
 
-  } else if (auto mod = msf.get<syn::Module *>()) {
-    auto result =
-        stone::GenIR(cgc, *mod, lang.GetLangInvocation().GetContext(), nullptr);
-    client(lang, cgc, *result);
-  } else {
-    stone::Panic("Unable to GenIR -- invalid ouput IR");
+  switch (lang.GetLangInvocation().GetModuleOutputMode()) {
+  case ModuleOutputMode::Single: {
+    if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
+      auto result = stone::GenIR(
+          cgc, *sf, lang.GetLangInvocation().GetContext(), nullptr);
+      client(lang, cgc, *result);
+    }
+    break;
+  }
+  case ModuleOutputMode::Whole: {
+    if (auto mod = msf.get<syn::Module *>()) {
+      auto result = stone::GenIR(
+          cgc, *mod, lang.GetLangInvocation().GetContext(), nullptr);
+      client(lang, cgc, *result);
+    }
+    break;
+  }
+  default:
+    stone::Panic("Unable to GenIR -- invalid IR ouput");
   }
 }
 

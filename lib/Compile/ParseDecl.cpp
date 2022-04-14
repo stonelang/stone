@@ -108,6 +108,14 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   Identifier name;
   SrcLoc nameLoc;
 
+  // auto ParseFunctionSignature = [&]() -> SyntaxStatus {
+  // }
+  // auto ParseFunctionArguments = [&]() -> SyntaxStatus {
+  // }
+  // auto ParseFunctionBody = [&]() -> SyntaxStatus {
+
+  // }
+
   // TODO:
   // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
   // funDecl->SetAccessLevel(accessLevel);

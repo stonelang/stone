@@ -55,6 +55,12 @@ public:
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
 
+  /// Gets the set of SourceFiles which are the primary inputs for this
+  /// CompilerInstance.
+  // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+  //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
+  // }
+
   BaseOptions &GetBaseOptions() override { return langOpts; }
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
   std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);
@@ -96,6 +102,10 @@ public:
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
                                      : TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
+  }
+  ModuleOutputMode GetModuleOutputMode() {
+    // TODO: This must be computed in the future.
+    return GetLangOptions().moduleOutputMode;
   }
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
