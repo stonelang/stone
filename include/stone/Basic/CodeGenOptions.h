@@ -15,6 +15,12 @@
 
 namespace stone {
 
+enum class InlineMode {
+  Default = 0, // Use the standard function inlining pass.
+  Hint,        // Inline only (implicitly) hinted functions.
+  Always       // Only run the always inlining pass.
+};
+
 enum class LTOKind {
   None,
   ///
@@ -25,12 +31,11 @@ enum class LTOKind {
 
 // The optimization mode specified on the command line or with function
 // attributes.
-enum class OptimizationMode : uint8_t {
+enum class OptimizationLevel : uint8_t {
   None = 0,
-  Default = 1, // -Onone
-  Speed = 2,   // -Ospeed == -O
-  Size = 3,    // -Osize
-  LastMode = Size
+  Less = 1,
+  Default = 2,
+  Aggressive = 3,
 };
 
 enum class NativeModeKind : uint8_t {
@@ -78,7 +83,8 @@ public:
   std::string codeModel;
 
   NativeModeKind nativeModeKind = NativeModeKind::None;
-  OptimizationMode optimizationMode = OptimizationMode::None;
+
+  OptimizationLevel optimizationLevel = OptimizationLevel::None;
 
   /// The libraries and frameworks specified on the command line.
   llvm::SmallVector<LinkLibrary, 4> linkLibraries;
@@ -86,8 +92,15 @@ public:
   /// The public dependent libraries specified on the command line.
   std::vector<std::string> publicLinkLibraries;
 
+  /// The name of the relocation model to use.
+  llvm::Reloc::Model relocationModel;
+
+  InlineMode inlineMode = InlineMode::Default;
+
 public:
-  bool CanOptimize() { return optimizationMode > OptimizationMode::Default; }
+  bool ShouldOptimize() {
+    return optimizationLevel > OptimizationLevel::Default;
+  }
 };
 
 } // namespace stone

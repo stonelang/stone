@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_TARGETMACHINE_H
 #define STONE_COMPILE_TARGETMACHINE_H
 
+#include "llvm/ADT/StringMap.h"
 #include "llvm/Support/VersionTuple.h"
 #include "llvm/Target/TargetOptions.h"
-#include "llvm/ADT/StringMap.h"
 
 #include <string>
 #include <vector>
