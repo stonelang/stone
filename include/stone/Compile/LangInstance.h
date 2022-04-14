@@ -31,6 +31,9 @@ class LangListener;
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
+using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
+using SemanticAnalysisCallback = llvm::function_ref<void(LangInstance &)>;
+
 class LangStats final : public Stats {
   LangInstance &lang;
 
@@ -104,14 +107,12 @@ public:
 
 private:
   void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
-  void
-  CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
-                            llvm::function_ref<void(syn::SyntaxFile &)> client);
+  void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+                                 SyntaxAnalysisCallback client);
 
   void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
-  void
-  CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
-                              llvm::function_ref<void(LangInstance &)> client);
+  void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+                                   SemanticAnalysisCallback client);
 
   void ForEachSyntaxFileToTypeCheck(
       llvm::function_ref<void(syn::SyntaxFile &, types::TypeCheckerOptions &,

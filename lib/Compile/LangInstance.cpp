@@ -144,8 +144,7 @@ void LangInstance::CompileWithSyntaxAnalysis(
 }
 
 void LangInstance::CompileWithSyntaxAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources,
-    llvm::function_ref<void(syn::SyntaxFile &)> client) {
+    llvm::ArrayRef<SourceUnit *> &sources, SyntaxAnalysisCallback client) {
 
   for (auto source : sources) {
     assert(source);
@@ -194,8 +193,7 @@ void LangInstance::CompileWithSemanticAnalysis(
 }
 
 void LangInstance::CompileWithSemanticAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources,
-    llvm::function_ref<void(LangInstance &)> client) {
+    llvm::ArrayRef<SourceUnit *> &sources, SemanticAnalysisCallback client) {
   CompileWithSemanticAnalysis(sources);
   client(*this);
 }

@@ -134,10 +134,11 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
 
 CompilationModelKind
 Driver::ComputeCompilationModelKind(const llvm::opt::DerivedArgList &dal) {
-  // Just Quad for now
+  // TODO: Just Quad for now
   return CompilationModelKind::Quadratic;
 }
 
+// TODO:
 std::unique_ptr<CompilationModel>
 Driver::ComputeCompilationModel(CompilationModelKind kind) {
   switch (kind) {
