@@ -12,6 +12,7 @@
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
+#include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
@@ -22,7 +23,12 @@ class LangInvocation final : public Session {
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
-  llvm::SmallVector<SourceUnit *> sources;
+
+  // All sources
+  llvm::SmallVector<SourceUnit *, 32> sources;
+
+  // The primary Sources
+  llvm::SetVector<unsigned> primarySourceIDs;
 
   /// Allocator SourceUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
@@ -39,9 +45,15 @@ public:
 public:
   llvm::opt::InputArgList &
   ParseArgs(llvm::ArrayRef<const char *> args) override;
+
   llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
   SourceUnit *BuildSource(const file::File &input);
   unsigned CreateSourceID(const file::File &input);
+  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+  bool IsPrimarySourceID(unsigned primarySourceID) const {
+    return primarySourceIDs.count(primarySourceID) != 0;
+  }
+  void RecordPrimarySourceID(unsigned primarySourceID);
 
   BaseOptions &GetBaseOptions() override { return langOpts; }
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
@@ -81,7 +93,9 @@ public:
   }
 
   TypeCheckMode GetTypeCheckMode() {
-    return GetTypeCheckerOptions().typeCheckMode;
+    return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
+                                     : TypeCheckMode::EachFile);
+    // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }

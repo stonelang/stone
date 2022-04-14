@@ -39,19 +39,6 @@ LangInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   return ial;
 }
 
-unsigned LangInvocation::CreateSourceID(const file::File &input) {
-  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
-  if (!fb) {
-    // ctx.PrintD(SrcLoc(),
-    // diag::err_unable_to_open_buffer_for_file,
-    //          diag::LLVMStrArgument(input.GetName()));
-    stone::Panic("err_unable_to_open_buffer_for_file");
-  }
-  auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
-  assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
-  return srcID;
-}
-
 llvm::ArrayRef<SourceUnit *>
 LangInvocation::BuildSources(const file::Files &inputs) {
   for (auto &input : inputs) {
@@ -65,6 +52,20 @@ LangInvocation::BuildSources(const file::Files &inputs) {
 SourceUnit *LangInvocation::BuildSource(const file::File &input) {
   auto srcID = CreateSourceID(input);
   return SourceUnit::Allocate(srcID, input, *this);
+}
+unsigned LangInvocation::CreateSourceID(const file::File &input) {
+  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
+  if (!fb) {
+    ctx.PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+               diag::LLVMStr(input.GetName()));
+  }
+  auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
+  return srcID;
+}
+
+void LangInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
+  stone::Panic("RecordPrimarySourceID not implemented");
 }
 
 std::unique_ptr<OutputFile>

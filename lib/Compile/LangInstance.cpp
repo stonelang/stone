@@ -56,7 +56,6 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   }
   return os;
 }
-
 // // Build the session
 // void Lang::BuildSession(const llvm::opt::InputArgList &ial) {
 
