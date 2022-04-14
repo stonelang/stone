@@ -7,6 +7,16 @@
 
 namespace stone {
 
+/// The kind of module dependency we are looking for.
+enum class ModuleDependenciesKind : int8_t {
+  First = 0,
+  Interface = First,
+  Binary,
+  Placeholder,
+  Clang,
+  Source,
+  Last = Source + 1
+};
 class ModuleDependencies {
 public:
 };
