@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_TARGETMACHINE_H
-#define STONE_COMPILE_TARGETMACHINE_H
+#ifndef STONE_COMPILE_TARGETOPTIONS_H
+#define STONE_COMPILE_TARGETOPTIONS_H
 
 #include "llvm/Target/TargetMachine.h"
 #include <memory>
@@ -12,11 +12,13 @@ class TargetMachine;
 
 namespace stone {
 class CodeGenOptions;
+class TargetOptions;
 namespace syn {
 class SyntaxContext;
 }
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &codeGenOpts, syn::SyntaxContext &sc,
+CreateTargetMachine(const CodeGenOptions &codeGenOpts,
+                    const TargetOptions &targetOpts, syn::SyntaxContext &sc,
                     llvm::Module &llvmModule);
 
 } // namespace stone

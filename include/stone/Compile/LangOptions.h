@@ -6,6 +6,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SystemOptions.h"
 #include "stone/Compile/TypeCheckerOptions.h"
+#include "stone/Compile/TargetOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPathOptions.h"
@@ -32,6 +33,8 @@ public:
 
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
+
+  TargetOptions targetOpts;
 
   ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 

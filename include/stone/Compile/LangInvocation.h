@@ -70,6 +70,9 @@ public:
     return langOpts.codeGenOpts;
   }
 
+  TargetOptions &GetTargetOptions() { return langOpts.targetOpts; }
+  const TargetOptions &GetTargetOptions() const { return langOpts.targetOpts; }
+
   TypeCheckerOptions &GetTypeCheckerOptions() {
     return langOpts.typeCheckerOpts;
   }

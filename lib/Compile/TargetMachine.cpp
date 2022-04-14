@@ -1,5 +1,6 @@
 #include "stone/Compile/TargetMachine.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Compile/TargetOptions.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/Support/TargetRegistry.h"
@@ -40,7 +41,8 @@ GetCodeModel(const CodeGenOptions &cgc) {
 // }
 
 std::unique_ptr<llvm::TargetMachine>
-stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts, syn::SyntaxContext &sc,
+stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
+                           const TargetOptions &targetOpts, syn::SyntaxContext &sc,
                            llvm::Module &llvmModule) {
 
   // CodeGenOpt::Level optimizationLevel = codeGenOpts.CandOptimize()
@@ -74,9 +76,8 @@ stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts, syn::SyntaxContext
 
   llvm::Optional<llvm::CodeModel::Model> codeModel = GetCodeModel(codeGenOpts);
 
-  // std::string featuresStr =
-  //      llvm::join(targetOpts.features.begin(), targetOpts.features.end(),
-  //      ",");
+  std::string features =
+      llvm::join(targetOpts.features.begin(), targetOpts.features.end(), ",");
 
   // llvm::Reloc::Model RM = CodeGenOpts.RelocationModel;
   // CodeGenOpt::Level OptLevel = GetCodeGenOptLevel(CodeGenOpts);
