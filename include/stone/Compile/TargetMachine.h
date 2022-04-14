@@ -4,13 +4,20 @@
 #include "llvm/Target/TargetMachine.h"
 #include <memory>
 
+namespace llvm {
+class Module;
+class TargetOptions;
+class TargetMachine;
+} // namespace llvm
+
 namespace stone {
 class CodeGenOptions;
 namespace syn {
 class SyntaxContext;
 }
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &codeGenOpts, syn::SyntaxContext &tc);
+CreateTargetMachine(const CodeGenOptions &codeGenOpts, syn::SyntaxContext &sc,
+                    llvm::Module &llvmModule);
 
 } // namespace stone
 

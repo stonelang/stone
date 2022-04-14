@@ -24,8 +24,9 @@ public:
   /// will be deleted.
   ///
   /// It will also return null if the module is released.
-  llvm::Module *GetLLVMModule();
-  llvm::Module *ReleaseLLVMModule();
+
+  const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
+  llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 };
 } // namespace stone
 

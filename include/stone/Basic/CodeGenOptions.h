@@ -74,6 +74,9 @@ class CodeGenOptions final {
 public:
   bool skipOptimization = false;
 
+  /// The code model to use (-mcmodel).
+  std::string codeModel;
+
   NativeModeKind nativeModeKind = NativeModeKind::None;
   OptimizationMode optimizationMode = OptimizationMode::None;
 

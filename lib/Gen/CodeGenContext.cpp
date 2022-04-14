@@ -2,11 +2,11 @@
 
 using namespace stone;
 
-static std::unique_ptr<llvm::TargetMachine> CreateTargetMachine() {}
+// static std::unique_ptr<llvm::TargetMachine> CreateTargetMachine() {}
+
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
-                               llvm::TargetMachine &targetMachine,
                                const CodeGenOptions &genOpts)
-    : llvmContext(llvmContext), targetMachine(targetMachine), genOpts(genOpts) {
+    : llvmContext(llvmContext), genOpts(genOpts) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);

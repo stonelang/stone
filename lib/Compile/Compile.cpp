@@ -308,6 +308,12 @@ static void GenModule(LangInstance &lang, CodeGenContext &cgc,
 static void CompileWithGenNative(LangInstance &lang, CodeGenContext &cgc,
                                  IRCodeGenResult &result) {
 
+  auto targetMachine = stone::CreateTargetMachine(
+      lang.GetLangInvocation().GetCodeGenOptions(),
+      lang.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
+
+  cgc.TakeTargetMachine(std::move(targetMachine));
+
   auto ComputeNativeModeKind = [&](LangInstance &lang) -> void {
     switch (lang.GetLangInvocation().GetMode().GetKind()) {
     case ModeKind::None:
@@ -336,12 +342,8 @@ static void CompileWithCodeGen(LangInstance &lang) {
 
   assert(lang.GetLangInvocation().CanCodeGen());
 
-  auto targetMachine =
-      stone::CreateTargetMachine(lang.GetLangInvocation().GetCodeGenOptions(),
-                                 lang.GetSyntax().GetSyntaxContext());
-
   // We are performing some low level code generation
-  CodeGenContext cgc(stone::GetLLVMContext(), *targetMachine,
+  CodeGenContext cgc(stone::GetLLVMContext(),
                      lang.GetLangInvocation().GetCodeGenOptions());
 
   auto *mainModule = lang.GetModuleSystem().GetMainModule();
