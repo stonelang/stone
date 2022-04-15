@@ -2,14 +2,16 @@
 // stone -emit-module Accelerator.stone -M ./ => ./Tests.Physics.Accelerator.stonemodule
 // stone -emit-module Accelerator.stone -using-module Tests.Physics.Accelerator
 
-module Tests.Physics.Accelerator;
-using Tests.Physics.Particle;
+// module Tests.Physics.Accelerator;
+// using Tests.Physics.Particle;
 
-public struct Accelerator {
-}
 
-public fun Accelerator::Fire(const Particle* particle) -> bool {
-	return true; 
+space Tests.Behavior.Modules.Physics {
+	public struct Accelerator {
+	}
+	public fun Accelerator::Fire(const Particle* particle) -> bool {
+		return true; 
+	}
 }
 
 

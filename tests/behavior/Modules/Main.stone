@@ -1,15 +1,23 @@
 module Main;
 
 
-using Tests.Physics.Particle;
-using Tests.Physics.Accelerator;
+// using Tests.Physics.Particle;
+// using Tests.Physics.Accelerator;
 
 // stone -using-module ./ Main.stone => Main  
 // stone Main.stone => Main (automatically adds -M ./)
 // stone Main.stone -using-module Test.Physics.Particle -using-module Test.Physics.Accelerator 
+
+
+// Loads the actual module Tests.Behavior.Physics 
+// Or loads the types in the module that you passed -- whatever its name is 
+using Tests.Behavior.Physics;
+using AcceleratorAlias = Tests.Behavior.Physics.Accelerator;
+
+
 public fun Main() -> int {
 
-	Accelerator a; 
+	AcceleratorAlias a; 
 	Particle p; 
 	a.Fire(ref p);
 }

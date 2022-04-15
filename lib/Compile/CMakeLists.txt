@@ -1,13 +1,15 @@
 set(stone_compile_sources
 	Compile.cpp
 	DebugLangListener.cpp
+	LangInputsConverter.cpp
 	LangInstance.cpp
 	LangInvocation.cpp
+	LangOptionsConverter.cpp
+	LangOutputsConverter.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	PackageSystem.cpp
 	TargetMachine.cpp
-	Workspace.cpp
 
 	LINK_LIBS
 	StoneGen

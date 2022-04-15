@@ -1,0 +1,9 @@
+
+
+// This loads the actual module Syntax.Physics.stonemodule
+using Syntax.Physics;
+
+fun Main() -> i32 {	
+	return 0;
+}
+

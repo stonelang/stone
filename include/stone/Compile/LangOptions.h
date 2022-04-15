@@ -5,6 +5,7 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SystemOptions.h"
+#include "stone/Compile/LangInputsAndOutputs.h"
 #include "stone/Compile/TargetOptions.h"
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/BaseOptions.h"
@@ -29,6 +30,10 @@ enum class ThreadModelKind {
 };
 
 class LangOptions final : public BaseOptions {
+
+  /// A list of arbitrary modules to import and make implicitly visible.
+  std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
+
 public:
   /// Options for the entire system
   SystemOptions systemOpts;
@@ -47,6 +52,9 @@ public:
   ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
+
+public:
+  LangInputsAndOutputs inputsAndOutputs;
 
 public:
   LangOptions() {

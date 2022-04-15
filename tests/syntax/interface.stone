@@ -1,12 +1,12 @@
 
 
-space Syntax::interface {
-public interface I0 {
-	fun F0() -> void;
-}
-public interface I1 : I0 {
-}
-
+space Syntax.Interface {
+	
+	public interface I0 {
+		fun F0() -> void;
+	}
+	public interface I1 : I0 {
+	}
 }
 
 

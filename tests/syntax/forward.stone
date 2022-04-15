@@ -1,9 +1,7 @@
 
-module Syntax {
-module Forward
-	
-}
 
+space Syntax.Forward {
+	
 // Forward declaration 
 internal forward fun Lanuch() -> bool; 
 
@@ -12,4 +10,6 @@ public fun TryLaunch() -> bool {
 }
 
 public fun Lanuch() -> void {
+}
+
 }

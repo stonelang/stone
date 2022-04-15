@@ -1,7 +1,75 @@
 
-module Tests::Physics::Particle;
+//module Tests::Physics::Particle;
 
 // stone -emit-module Particle.stone => ./Tests.Physics.Particle.stonemodule 
-public struct Particle {
 
+
+// The is the file's space in the module Tests.Behavior.Modules.stonemodule 
+// So, stone -emit-module -module-name Tests.Physics.Particle => 
+// Tests.Behavior.Modules.stonemodule 
+// The space name does not have to match the module name. It is just preferrable to do so.
+// Suppose you do the following:  -emit-module -module-name Physics => Physics.stonemodule
+// Then, you space in the module is Tests.Behavior.Modules.Physics 
+//
+space Tests.Behavior.Modules.Physics {
+	public struct Boson {
+	}
 }
+
+// Suppose you do the following:  -emit-module -module-name Physics => Physics.stonemodule 
+// Then, you do 'using Physics' and you use Electron directly -- Physics.Electron will not work. The module
+// is just a container and not an implicit space 
+// But, do you want to enforce this where the begining of the space identifier must match the module 
+// identifier. So,
+public struct Electron {
+}
+
+// But, do you want to enforce this where the begining of the space identifier must match the module 
+// identifier. So, Physics.stonemodule  => 
+space Physics.AnythingElese {
+	public struct Proton{
+	}
+}
+// You could also make it implicit => 
+// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+space Particle {
+	public struct Proton{
+	}
+}
+
+
+// To make this simple, I am seeing a pattern here that I prefer and may be the better 
+// solution because you will ultimately want to do the following:
+// using ProtonAlias = CompanyName.Physics.Proton. So, you cannot get away from the 'real module name'
+// Hmm... not really. 
+
+
+// Explicit => 
+// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+space CompanyName.Physics.Particle {
+	public struct Quark {
+	}
+}
+
+// implicit => 
+// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+space Particle {
+	public struct Proton{
+	}
+}
+// Then, using CompanyName.Physics loads the module; 
+
+// Either way, it seems that it may not matter. Meaning,
+// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+// is just the module name and the types can create their own spaces. But, as a convention,
+// you will probably do the following: Identifier.stonemodule 
+
+space Tests.Physics {
+	public struct Proton { 
+	}
+}
+
+// Then, using CompanyName.Physics is the module name and you could do:
+// using ProtonAlias = Tests.Physics.Proton which now becomes a mess. Uless you do:
+// import CompanyName.Physics; then, using refers to spaces inside the module 
+

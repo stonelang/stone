@@ -38,6 +38,10 @@ class LangInvocation final : public Session {
   /// source file.  Valid only if \c isCodeCompletion() == true.
   unsigned codeCompletionOffset = ~0U;
 
+  // LangInputsBuilder inputsBuilder;
+  // LangOutputsBuilder outputsBuilder;
+  // LangOptionsConverter optionsConverter;
+
 public:
   LangInvocation();
   ~LangInvocation();
@@ -107,6 +111,11 @@ public:
     // TODO: This must be computed in the future.
     return GetLangOptions().moduleOutputMode;
   }
+
+  // LangInputsBuilder &GetLangInputsBuilder() { return inputsBuilder; }
+  // LangOutputsBuilder &GetLangOutputsBuilder() { return outputsBuilder; }
+  // LangOptionsConverter &GetLangOptionsConverter() { return langOptsConverter;
+  // }
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
 
