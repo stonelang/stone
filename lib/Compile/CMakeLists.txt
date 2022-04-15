@@ -22,6 +22,7 @@ set(stone_compile_sources
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
 	UsingResolution.cpp
+	Workspace.cpp
 
 	LINK_LIBS
 	StoneGen

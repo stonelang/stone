@@ -9,6 +9,7 @@ namespace syn {
 class Decl;
 class Stmt;
 class Expr;
+class Module;
 class SyntaxFile;
 
 } // namespace syn
