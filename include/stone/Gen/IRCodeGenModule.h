@@ -1,10 +1,10 @@
-#ifndef STONE_GEN_IRMODULE_H
-#define STONE_GEN_IRMODULE_H
-
-#include <memory>
+#ifndef STONE_GEN_IRCODEGENMODULE_H
+#define STONE_GEN_IRCODEGENMODULE_H
 
 #include "stone/Syntax/Module.h"
 #include "llvm/IR/Module.h"
+
+#include <memory>
 
 namespace llvm {
 class raw_pwrite_stream;

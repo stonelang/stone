@@ -1,12 +1,12 @@
-#ifndef STONE_CHECK_CHECKER_H
-#define STONE_CHECK_CHECKER_H
-
-#include <memory>
+#ifndef STONE_SEM_TYPECHECKER_H
+#define STONE_SEM_TYPECHECKER_H
 
 #include "stone/Basic/Context.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
+
+#include <memory>
 
 using namespace stone::syn;
 

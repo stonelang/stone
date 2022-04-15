@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_TARGETOPTIONS_H
-#define STONE_COMPILE_TARGETOPTIONS_H
+#ifndef STONE_COMPILE_TARGETMACHINE_H
+#define STONE_COMPILE_TARGETMACHINE_H
 
 #include "llvm/Target/TargetMachine.h"
 #include <memory>

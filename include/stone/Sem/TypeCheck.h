@@ -1,5 +1,5 @@
-#ifndef STONE_CHECK_TYPECHECK_H
-#define STONE_CHECK_TYPECHECK_H
+#ifndef STONE_SEM_TYPECHECK_H
+#define STONE_SEM_TYPECHECK_H
 
 #include "llvm/ADT/ArrayRef.h"
 
