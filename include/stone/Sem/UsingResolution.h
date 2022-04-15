@@ -6,7 +6,7 @@ namespace syn {
 class SyntaxFile;
 } // namespace syn
 
-namespace types {
+namespace sem {
 // TODO: ModuleResolution
 void ResolveUsings(syn::SyntaxFile &syntaxFile);
 } // namespace types

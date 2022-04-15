@@ -16,7 +16,7 @@ class TypeCheckerListener;
 namespace syn {
 class SyntaxFile;
 } // namespace syn
-namespace types {
+namespace sem {
 class TypeChecker;
 class TypeCheckerOptions;
 

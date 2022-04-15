@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 namespace stone {
-namespace types {
+namespace sem {
 
 enum class TypeCheckMode : uint8_t {
   EachFile = 0,
@@ -14,7 +14,7 @@ class TypeCheckerOptions final {
 public:
   TypeCheckMode typeCheckMode = TypeCheckMode::EachFile;
 };
-} // namespace types
+} // namespace sem
 } // namespace stone
 
 #endif

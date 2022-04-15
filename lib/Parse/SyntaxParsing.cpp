@@ -1,10 +1,9 @@
-#include "stone/Compile/Parser.h"
+#include "stone/Parse/Parser.h"
 
 using namespace stone;
 using namespace stone::syn;
 
 ParsingDeclSpecifier::ParsingDeclSpecifier(Parser &parser) : parser(parser) {
-  //
 }
 
 PairDelimiterBalancer::PairDelimiterBalancer(Parser &other)

@@ -5,9 +5,8 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
 #include "stone/Compile/SourceUnit.h"
-#include "stone/Compile/TypeCheckerListener.h"
-#include "stone/Compile/TypeCheckerOptions.h"
-
+#include "stone/Sem/TypeCheckerListener.h"
+#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Session/Mode.h"
 #include "stone/Syntax/Module.h"
@@ -35,7 +34,7 @@ using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
 using SemanticAnalysisCallback = llvm::function_ref<void(LangInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
-    syn::SyntaxFile &, types::TypeCheckerOptions &, TypeCheckerListener *)>;
+    syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
 
 class LangStats final : public Stats {
   LangInstance &lang;

@@ -8,7 +8,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/SourceUnit.h"
-#include "stone/Compile/TypeCheckerOptions.h"
+#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
 

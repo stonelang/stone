@@ -11,7 +11,7 @@ class SyntaxFile;
 class Module;
 
 } // namespace syn
-namespace types {
+namespace sem {
 class TypeCheckerOptions;
 /// Perform type checking
 void TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,

@@ -1,11 +1,10 @@
-#include "stone/Compile/TypeChecker.h"
-
-#include "stone/Compile/TypeCheckerListener.h"
-#include "stone/Compile/TypeCheckerOptions.h"
+#include "stone/Sem/TypeChecker.h"
+#include "stone/Sem/TypeCheckerListener.h"
+#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Syntax/Syntax.h"
 
 using namespace stone;
-using namespace stone::types;
+using namespace stone::sem;
 using namespace stone::syn;
 
 TypeChecker::TypeChecker(SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,

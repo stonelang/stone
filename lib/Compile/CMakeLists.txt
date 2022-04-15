@@ -1,34 +1,19 @@
 set(stone_compile_sources
 	Compile.cpp
-	Confusable.cpp
 	DebugLangListener.cpp
 	LangInstance.cpp
 	LangInvocation.cpp
-	Lexer.cpp
-	LexerCache.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
-	Parse.cpp
-	ParseDecl.cpp
-	Parser.cpp
-	ParseExpr.cpp
-	ParseStmt.cpp
 	PackageSystem.cpp
-	SyntaxParsing.cpp
 	TargetMachine.cpp
-	TypeCheck.cpp
-	TypeCheckDecl.cpp
-	TypeChecker.cpp
-	TypeCheckExpr.cpp
-	TypeCheckStmt.cpp
-	UsingResolution.cpp
 	Workspace.cpp
 
 	LINK_LIBS
 	StoneGen
+	StoneParse
+	StoneSem
 	StoneSession
-	StoneSyntax
-
 	DEPENDS
 	StoneOptions
 )

@@ -1,11 +1,8 @@
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // WARNING: This file is manually generated from
 // utils/UnicodeData/confusables.txt and should not be directly modified.
 // Run utils/generate_confusables.py to regenerate this file.
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // CONFUSABLE(CONFUSABLE_POINT, CONFUSABLE_NAME, BASE_POINT, BASE_NAME)
 

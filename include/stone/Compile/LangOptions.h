@@ -6,12 +6,12 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SystemOptions.h"
 #include "stone/Compile/TargetOptions.h"
-#include "stone/Compile/TypeCheckerOptions.h"
+#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPathOptions.h"
 
-using namespace stone::types;
+using namespace stone::sem;
 
 namespace stone {
 

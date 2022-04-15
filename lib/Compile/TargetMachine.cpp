@@ -1,7 +1,7 @@
-#include "stone/Compile/TargetMachine.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Context.h"
 #include "stone/Compile/LangOptions.h"
+#include "stone/Compile/TargetMachine.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/Support/TargetRegistry.h"

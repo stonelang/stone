@@ -1,4 +1,4 @@
-#include "stone/Compile/UsingResolution.h"
+#include "stone/Sem/UsingResolution.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
@@ -12,4 +12,4 @@ using namespace stone::syn;
 //   SyntaxContext &ctx;
 // };
 
-void types::ResolveUsings(SyntaxFile &syntaxFile) {}
+void sem::ResolveUsings(SyntaxFile &syntaxFile) {}

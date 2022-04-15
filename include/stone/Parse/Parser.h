@@ -4,10 +4,10 @@
 #include <memory>
 
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Compile/Lexer.h"
-#include "stone/Compile/SyntaxListener.h"
-#include "stone/Compile/SyntaxParsing.h"
-#include "stone/Compile/SyntaxScopeCache.h"
+#include "stone/Parse/Lexer.h"
+#include "stone/Parse/SyntaxListener.h"
+#include "stone/Parse/SyntaxParsing.h"
+#include "stone/Parse/SyntaxScopeCache.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"

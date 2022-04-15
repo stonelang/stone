@@ -1,7 +1,7 @@
-#include "stone/Compile/Parse.h"
 #include "stone/Basic/Context.h"
-#include "stone/Compile/Parser.h"
-#include "stone/Compile/SyntaxListener.h"
+#include "stone/Parse/Parse.h"
+#include "stone/Parse/Parser.h"
+#include "stone/Parse/SyntaxListener.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 

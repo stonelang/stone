@@ -1,12 +1,12 @@
-#include "stone/Compile/LangInstance.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/LangListener.h"
-#include "stone/Compile/Parse.h"
-#include "stone/Compile/TypeCheck.h"
-#include "stone/Compile/UsingResolution.h"
+#include "stone/Compile/LangInstance.h"
+#include "stone/Parse/Parse.h"
+#include "stone/Sem/UsingResolution.h"
+#include "stone/Sem/TypeCheck.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -167,7 +167,7 @@ void LangInstance::ResolveUsings() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
-      types::ResolveUsings(*syntaxFile);
+      sem::ResolveUsings(*syntaxFile);
   }
 }
 void LangInstance::CompileWithSemanticAnalysis(
@@ -176,9 +176,9 @@ void LangInstance::CompileWithSemanticAnalysis(
   CompileWithSyntaxAnalysis(sources);
 
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
-                        types::TypeCheckerOptions &typeCheckerOpts,
+                        sem::TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
-    types::TypeCheck(syntaxFile, typeCheckerOpts, listener);
+    sem::TypeCheck(syntaxFile, typeCheckerOpts, listener);
   });
 
   // FinishTypeCheck();

@@ -1,4 +1,4 @@
-#include "stone/Compile/LexerCache.h"
+#include "stone/Parse/LexerCache.h"
 
 using stone::syn::LexerCache;
 

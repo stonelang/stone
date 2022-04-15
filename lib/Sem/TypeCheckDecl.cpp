@@ -1,6 +1,6 @@
-#include "stone/Compile/TypeChecker.h"
+#include "stone/Sem/TypeChecker.h"
 
-using stone::types::TypeChecker;
+using stone::sem::TypeChecker;
 
 void TypeChecker::CheckDecl(Decl *d) {
   // TODO: Null check

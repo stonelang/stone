@@ -6,8 +6,8 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Compile/LexerCache.h"
-#include "stone/Compile/Trivia.h"
+#include "stone/Parse/LexerCache.h"
+#include "stone/Parse/Trivia.h"
 
 namespace stone {
 
