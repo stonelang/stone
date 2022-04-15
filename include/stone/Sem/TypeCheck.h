@@ -20,7 +20,7 @@ void TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
 /// Perform type checking
 void TypeCheck(syn::Module &sf, TypeCheckerOptions &typeCheckerOpts,
                TypeCheckerListener *pipeline = nullptr);
-} // namespace types
+} // namespace sem
 
 } // namespace stone
 #endif

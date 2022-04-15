@@ -7,14 +7,14 @@ using namespace stone;
 using namespace stone::syn;
 
 void sem::TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
-                      TypeCheckerListener *pipeline) {
+                    TypeCheckerListener *pipeline) {
   // TypeChecker checker(su, pipeline);
   // assert(sf.stage == SyntaxFileStage::AtImports);
   // sf.stage = SyntaxFileStage::AtTypeCheck;
 }
 
 void sem::TypeCheck(syn::Module &m, TypeCheckerOptions &typeCheckerOpts,
-                      TypeCheckerListener *pipeline) {
+                    TypeCheckerListener *pipeline) {
   // TypeChecker checker
   // assert(sf.stage == SyntaxFileStage::AtImports);
   // sf.stage = SyntaxFileStage::AtTypeCheck;

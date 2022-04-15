@@ -53,6 +53,6 @@ public:
 public:
   void CheckExpr();
 };
-} // namespace types
+} // namespace sem
 } // namespace stone
 #endif

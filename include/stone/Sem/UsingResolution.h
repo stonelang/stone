@@ -9,7 +9,7 @@ class SyntaxFile;
 namespace sem {
 // TODO: ModuleResolution
 void ResolveUsings(syn::SyntaxFile &syntaxFile);
-} // namespace types
+} // namespace sem
 } // namespace stone
 
 #endif

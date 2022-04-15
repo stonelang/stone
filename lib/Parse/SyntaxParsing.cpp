@@ -3,8 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-ParsingDeclSpecifier::ParsingDeclSpecifier(Parser &parser) : parser(parser) {
-}
+ParsingDeclSpecifier::ParsingDeclSpecifier(Parser &parser) : parser(parser) {}
 
 PairDelimiterBalancer::PairDelimiterBalancer(Parser &other)
     : parser(other), parenCount(other.parenCount),

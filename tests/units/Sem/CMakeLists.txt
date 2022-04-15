@@ -3,10 +3,10 @@ set(LLVM_LINK_COMPONENTS
   Support
 )
 
-add_stone_unittest(StoneCheckUnitTests
+add_stone_unittest(StoneSemUnitTests
 	TypeCheckTest.cpp
 )
-target_link_libraries(StoneCheckUnitTests
+target_link_libraries(StoneSemUnitTests
   PRIVATE
 	StoneCompile
 )
