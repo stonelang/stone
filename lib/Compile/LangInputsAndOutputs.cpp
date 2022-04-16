@@ -2,11 +2,10 @@
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/File.h"
 #include "stone/Basic/Range.h"
+#include "stone/Basic/Context.h"
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"
-#include "stone/Parse/Lexer.h"
 #include "stone/Session/Options.h"
-//#include "stone/Strings.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
