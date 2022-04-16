@@ -54,56 +54,7 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   return *ial.get();
 }
 Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {
-  auto modeArg = ial.getLastArg(opts::ModeGroup);
-  if (modeArg) {
-    // TODO: may have to claim
-    switch (modeArg->getOption().getID()) {
-    case opts::Parse:
-      mode = std::make_unique<Mode>(ModeKind::Parse);
-      break;
-    case opts::DumpSyntax:
-      mode = std::make_unique<Mode>(ModeKind::DumpSyntax);
-      break;
-    case opts::TypeCheck:
-      mode = std::make_unique<Mode>(ModeKind::TypeCheck);
-      break;
-    case opts::PrintSyntax:
-      mode = std::make_unique<Mode>(ModeKind::PrintSyntax);
-      break;
-    case opts::EmitIR:
-      mode = std::make_unique<Mode>(ModeKind::EmitIR);
-      break;
-    case opts::EmitBC:
-      mode = std::make_unique<Mode>(ModeKind::EmitBC);
-      break;
-    case opts::EmitObject:
-      mode = std::make_unique<Mode>(ModeKind::EmitObject);
-      break;
-    case opts::EmitAssembly:
-      mode = std::make_unique<Mode>(ModeKind::EmitAssembly);
-      break;
-    case opts::EmitLibrary:
-      mode = std::make_unique<Mode>(ModeKind::EmitLibrary);
-      break;
-    case opts::EmitModule:
-      mode = std::make_unique<Mode>(ModeKind::EmitModule);
-      break;
-    case opts::PrintVersion:
-      mode = std::make_unique<Mode>(ModeKind::PrintVersion);
-      break;
-    case opts::PrintHelp:
-      mode = std::make_unique<Mode>(ModeKind::PrintVersion);
-      break;
-    default:
-      mode = std::make_unique<Mode>(ModeKind::Alien);
-      break;
-    }
-    if (!mode->IsAlien()) {
-      mode->SetName(modeArg->getOption().getName());
-    }
-  } else {
-    mode = std::make_unique<Mode>(ModeKind::None);
-  }
+  mode = Mode::Create(ial);
   return *mode.get();
 }
 
@@ -111,7 +62,7 @@ file::Files &Session::BuildInputFiles(const llvm::opt::InputArgList &ial) {
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> seenFiles;
   unsigned fileID = 0;
   for (Arg *arg : ial) {
-    if (arg->getOption().getKind() == Option::InputClass) {
+    if (arg->getOption().getKind() == llvm::opt::Option::InputClass) {
       auto input = arg->getValue();
       if (file::Exists(input)) {
         fileID++;

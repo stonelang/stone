@@ -1,11 +1,14 @@
-#ifndef STONE_BASIC_ADDITIONALOUTPUTPATHS_H
-#define STONE_BASIC_ADDITIONALOUTPUTPATHS_H
+#ifndef STONE_COMPILE_ADDITIONALOUTPUTPATHS_H
+#define STONE_COMPILE_ADDITIONALOUTPUTPATHS_H
+
+#include "stone/Basic/LLVM.h"
+#include "llvm/IR/Function.h"
 
 #include <string>
 
 namespace stone {
 
-struct AdditionalOutputPaths {
+struct AdditionalOutputPaths final {
   /// The path to which we should emit a serialized module.
   /// It is valid whenever there are any inputs.
   ///

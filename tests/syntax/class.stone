@@ -1,6 +1,8 @@
-module Syntax.Class; 
 
-public class S0 {
-}
-public fun S0::S0() -> void {
+
+space Syntax.Class {
+	public class S0 {
+	}
+	public fun S0::S0() -> void {
+	}
 }

@@ -53,6 +53,7 @@ class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
   SrcLoc funLoc;
   bool isMain = false;
   AccessLevel accessLevel;
+  // BlockStmt blockStmt;
 
 public:
   FunDeclSyntaxBuilder(const FunDeclSyntaxBuilder &) = delete;

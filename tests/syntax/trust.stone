@@ -15,6 +15,5 @@ public fun S1::DoSomething() -> void {
 	if(data == 0){
 	}
 }
-
 }
 

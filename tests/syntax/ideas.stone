@@ -1,5 +1,5 @@
 
-space Physics::QM {
+space Physics.QM {
 	public struct Particle {
 		public bool fired = false; 
 	}
@@ -7,16 +7,17 @@ space Physics::QM {
 		fun Fire(const Particle* p) -> bool;
 	}
 	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
-		local string maker; 
-		own Detector* detector = null;
+		private string maker; 
+		Detector* detector = null;
 	}
 
-	LinearAcceleartor::this() : this("none") {
-			detector = new Detector(); 
+	LinearAcceleartor::LinearAcceleartor() {
+		LinearAcceleartor("none");
+		detector = new Detector(); 
 	}
-	LinearAcceleartor::this(string maker) {
+	LinearAcceleartor::LinearAcceleartor(string maker) {
 	}
-	LinearAcceleartor:::~this() {	
+	LinearAcceleartor:::~LinearAcceleartor() {	
 		if(detector){
 			delete detector;
 		}
@@ -25,7 +26,7 @@ space Physics::QM {
 		p.fired = true; 
 		return true; 
 	}
-	use max = fun(int first, int second) -> int;
+	using max = fun(int first, int second) -> int;
 	fun Main() -> i32 {
 
 		Particle* p = new Particle();
@@ -61,17 +62,17 @@ public fun Launch(const Projectile* projectile) -> bool {
 }
 
 /// Hmm... thinking outside of the box 
-public struct Projectile {
-	float64 mass; 
-}
-public interface Launcher {
-	fun Launch(Projectile* projectile) -> bool; 
-}
-public class ProjectileLauncher : Launcher {
-	// No data members 
-	public fun Launch(Projectile* projectile){
-	}
-}
+// public struct Projectile {
+// 	float64 mass; 
+// }
+// public interface Launcher {
+// 	fun Launch(Projectile* projectile) -> bool; 
+// }
+// public class ProjectileLauncher : Launcher {
+// 	// No data members 
+// 	public fun Launch(Projectile* projectile){
+// 	}
+// }
 
 
 //= Forwarding =// 
@@ -90,57 +91,57 @@ public fun Quark::Initialize() -> void {
 
 //=Modules=// 
 
-code/
-	Stone/
-		Syntax/
-			Space.stone 
-			Decl.stone
-			Expr.stone
-			Syntax.stone
+// code/
+// 	Stone/
+// 		Syntax/
+// 			Space.stone 
+// 			Decl.stone
+// 			Expr.stone
+// 			Syntax.stone
 
 
 // Decl.stone 
-module Stone::Syntax::Declaration {
-	enum DeclBits {
+// module Stone::Syntax::Declaration {
+// 	enum DeclBits {
 
-	}
-	public struct Decl {
-	}
-}
-// Expr.stone
-module Stone::Syntax::Expression {
+// 	}
+// 	public struct Decl {
+// 	}
+// }
+// // Expr.stone
+// module Stone::Syntax::Expression {
 
-	enum DeclBits {
-	}
-	public struct Decl {
-	}
+// 	enum DeclBits {
+// 	}
+// 	public struct Decl {
+// 	}
 
-}
-// Syntax.stone
-use Stone::Syntax::Declaration;
-use Stone::Syntax::Expression;
+// }
+// // Syntax.stone
+// use Stone::Syntax::Declaration;
+// use Stone::Syntax::Expression;
 
-module Stone::Syntax::Syntax {
-	enum DeclBits {
-	}
-	public struct Decl {
-	}
-}
+// module Stone::Syntax::Syntax {
+// 	enum DeclBits {
+// 	}
+// 	public struct Decl {
+// 	}
+// }
 
-// OR Just
+// // OR Just
 
-// Decl.stone 
-module Stone::Syntax::Decl;
+// // Decl.stone 
+// module Stone::Syntax::Decl;
 
-public struct Decl {
-}
+// public struct Decl {
+// }
 
 
-// Decl.stone 
-module Stone::Syntax::Decl;
+// // Decl.stone 
+// module Stone::Syntax::Decl;
 
-space Node {
-	public struct Decl {
-	}
+// space Node {
+// 	public struct Decl {
+// 	}
 
-}
+// }

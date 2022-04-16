@@ -121,7 +121,7 @@ private:
   void ResolveUsings();
 
 public:
-  //= Utils =//
+  //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
   GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
 };

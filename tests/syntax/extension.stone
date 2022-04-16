@@ -1,21 +1,24 @@
 
-module Syntax.Extension;
+space Syntax.Extension {
 
 // Module one 
-struct Universe {
+public struct Universe {
+
 }
 
-fun Universe::Start() -> bool {
+pubic fun Universe::Bang() -> bool {
 }
 enum Planet {
 	Earth,
 	Mars,
 }
 
+// Module two
 extension Planet {
 	Pluto 
 }
-// Some other module 
-extension Universe::MakeEarth() -> bool {
+
+extension fun Universe::MakeEarth() -> bool {
+}
 
 }

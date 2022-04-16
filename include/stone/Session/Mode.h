@@ -15,7 +15,8 @@ private:
   void SetName(llvm::StringRef v) { name = v; }
 
 public:
-  Mode(ModeKind kind) : kind(kind) {}
+  Mode(ModeKind kind, llvm::StringRef name = llvm::StringRef())
+      : kind(kind), name(name) {}
 
 public:
   ModeKind GetKind() const { return kind; }
@@ -105,6 +106,9 @@ public:
       return false;
     }
   }
+
+public:
+  static std::unique_ptr<Mode> Create(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace stone

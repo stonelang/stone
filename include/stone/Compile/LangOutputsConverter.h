@@ -5,7 +5,7 @@
 
 namespace stone {
 
-class LangOutputsBuilder {
+class LangOutputsConverter {
 public:
 };
 } // namespace stone

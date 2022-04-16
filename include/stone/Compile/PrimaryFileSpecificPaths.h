@@ -1,8 +1,8 @@
-#ifndef STONE_BASIC_PRIMARYSPECIFICPATHS_H
-#define STONE_BASIC_PRIMARYSPECIFICPATHS_H
+#ifndef STONE_COMPILE_PRIMARYSPECIFICPATHS_H
+#define STONE_COMPILE_PRIMARYSPECIFICPATHS_H
 
-#include "stone/Basic/AdditionalOutputPaths.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Compile/AdditionalOutputPaths.h"
 #include "llvm/ADT/StringRef.h"
 
 #include <string>

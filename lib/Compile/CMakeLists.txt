@@ -1,6 +1,7 @@
 set(stone_compile_sources
 	Compile.cpp
 	DebugLangListener.cpp
+	LangInputsAndOutputs.cpp
 	LangInputsConverter.cpp
 	LangInstance.cpp
 	LangInvocation.cpp

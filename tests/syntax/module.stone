@@ -1,7 +1,7 @@
 
 
 // project/Stone/Physics/ParticleProfile.stone 
-module Stone::Physics::ParticleProfile {
+space Stone::Physics::ParticleProfile {
 
 	struct ParticleProfile {
 		public float32 mass; 

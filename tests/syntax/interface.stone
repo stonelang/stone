@@ -1,7 +1,6 @@
 
 
 space Syntax.Interface {
-	
 	public interface I0 {
 		fun F0() -> void;
 	}

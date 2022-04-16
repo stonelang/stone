@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_LANGINPUTFILE_H
 #define STONE_COMPILE_LANGINPUTFILE_H
 
-#include "stone/Basic/AdditionalOutputPaths.h"
 #include "stone/Basic/File.h"
-#include "stone/Basic/PrimaryFileSpecificPaths.h"
+#include "stone/Compile/AdditionalOutputPaths.h"
+#include "stone/Compile/PrimaryFileSpecificPaths.h"
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/Support/MemoryBuffer.h"
