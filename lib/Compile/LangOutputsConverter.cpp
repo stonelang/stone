@@ -1,3 +1,3 @@
-//#include "stone/Compile/LangOutputsConverter.h"
+#include "stone/Compile/LangOutputsConverter.h"
 
 // using namespace stone;

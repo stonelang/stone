@@ -1,5 +1,4 @@
 #include "stone/Compile/LangInvocation.h"
-
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/SrcMgr.h"
