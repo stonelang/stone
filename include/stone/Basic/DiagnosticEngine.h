@@ -4,6 +4,7 @@
 #include "stone/Basic/Diagnostic.h"
 #include "stone/Basic/DiagnosticFormatter.h"
 #include "stone/Basic/DiagnosticListener.h"
+#include "stone/Basic/DiagnosticLocalization.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Printable.h"
 #include "stone/Basic/SystemOptions.h"
@@ -196,6 +197,19 @@ class DiagnosticEngine final : public Printable {
   DiagnosticState state;
 
   llvm::BumpPtrAllocator transactionAllocator;
+
+  /// A set of all strings involved in current transactional chain.
+  /// This is required because diagnostics are not directly emitted
+  /// but rather stored until all transactions complete.
+  //llvm::StringSet<llvm::BumpPtrAllocator &> transactionStrings;
+
+  /// Diagnostic producer to handle the logic behind retrieving a localized
+  /// diagnostic message.
+  std::unique_ptr<DiagnosticLocalizationProducer> localization;
+
+  /// The number of open diagnostic transactions. Diagnostics are only
+  /// emitted once all transactions have closed.
+  unsigned transactionCount = 0;
 
   /// All diagnostics that are no longer active but have not yet
   /// been emitted due to an open transaction.
