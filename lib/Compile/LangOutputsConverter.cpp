@@ -76,22 +76,23 @@ bool LangOutputsConverter::Convert(
   return false;
 }
 
-// Optional<std::vector<std::string>>
-// LangOutputsConverter::readOutputFileList(const StringRef filelistPath,
-//                                                    DiagnosticEngine &diags) {
-//   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
-//       llvm::MemoryBuffer::getFile(filelistPath);
-//   if (!buffer) {
-//     diags.diagnose(SourceLoc(), diag::cannot_open_file, filelistPath,
-//                    buffer.getError().message());
-//     return None;
-//   }
-//   std::vector<std::string> outputFiles;
-//   for (StringRef line : make_range(llvm::line_iterator(*buffer.get()), {})) {
-//     outputFiles.push_back(line.str());
-//   }
-//   return outputFiles;
-// }
+llvm::Optional<std::vector<std::string>>
+LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
+                                         DiagnosticEngine &de) {
+  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
+      llvm::MemoryBuffer::getFile(fileListPath);
+  if (!buffer) {
+    de.PrintD(SrcLoc(), diag::err_cannot_open_file, diag::LLVMStr(fileListPath),
+              diag::LLVMStr(buffer.getError().message()));
+    return llvm::None;
+  }
+  std::vector<std::string> outputFiles;
+  for (llvm::StringRef line :
+       make_range(llvm::line_iterator(*buffer.get()), {})) {
+    outputFiles.push_back(line.str());
+  }
+  return outputFiles;
+}
 
 // Optional<std::vector<std::string>>
 // OutputFilesComputer::getOutputFilenamesFromCommandLineOrFilelist(
