@@ -20,7 +20,7 @@ class LangInputsConverter {
   llvm::opt::Arg const *const primaryFileListPathArg;
   llvm::opt::Arg const *const badFileDescriptorRetryCountArg;
 
-  llvm::SetVector<llvm::StringRef> inputFiles;
+  llvm::SetVector<llvm::StringRef> files;
   /// A place to keep alive any buffers that are loaded as part of setting up
   /// the frontend inputs.
   llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
@@ -43,7 +43,7 @@ private:
   bool EnforceFilelistExclusion();
   bool ReadInputFilesFromCommandLine();
   bool ReadInputFilesFromFilelist();
-  bool RorAllFilesInFilelist(llvm::opt::Arg const *const pathArg,
+  bool ForAllFilesInFileList(llvm::opt::Arg const *const pathArg,
                              llvm::function_ref<void(StringRef)> caller);
 
   bool AddFile(llvm::StringRef file);

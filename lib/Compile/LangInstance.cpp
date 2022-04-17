@@ -50,7 +50,7 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, ec,
                                                    llvm::sys::fs::OF_None);
   if (ec) {
-    ctx.PrintD(SrcLoc(), diag::error_opening_output,
+    ctx.PrintD(SrcLoc(), diag::err_opening_output,
                diag::LLVMStr(outputFilename), diag::LLVMStr(ec.message()));
     return nullptr;
   }

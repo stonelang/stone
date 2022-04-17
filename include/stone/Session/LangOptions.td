@@ -19,4 +19,8 @@ def BadFileDescriptorRetryCount:
   Separate<["-"], "bad-file-descriptor-retry-count">,
   HelpText<"Number of retrying opening a file if previous open returns a bad "
            "file descriptor error.">;
+
+  def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
+    HelpText<"Bypass checks for batch-mode errors.">;
+
 }

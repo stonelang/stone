@@ -4,8 +4,9 @@
 ERROR(invalid_diagnostic,none,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
-ERROR(error_opening_output,none,
+ERROR(err_opening_output,none,
       "error opening '%0' for output: %1", (diag::LLVMStr, diag::LLVMStr))
+
 
 ERROR(err_no_input_files, none, "no input files", ())
 

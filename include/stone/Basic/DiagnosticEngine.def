@@ -7,6 +7,7 @@
 #include "CodeGenDiagnostic.def"
 #include "CompileDiagnostic.def"
 #include "DriverDiagnostic.def"
+#include "SemDiagnostic.def"
 #include "SyntaxDiagnostic.def"
 
 #undef DIAG_NO_UNDEF
