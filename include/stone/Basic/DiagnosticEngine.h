@@ -4,7 +4,6 @@
 #include "stone/Basic/Diagnostic.h"
 #include "stone/Basic/DiagnosticFormatter.h"
 #include "stone/Basic/DiagnosticListener.h"
-#include "stone/Basic/DiagnosticTransaction.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Printable.h"
 #include "stone/Basic/SystemOptions.h"
@@ -405,6 +404,8 @@ public:
 
   ~DiagnosticStateRAII() {}
 };
+
+class DiagnosticTransaction {};
 
 // class BufferIndirectlyCausingDiagnosticRAII {
 // private:

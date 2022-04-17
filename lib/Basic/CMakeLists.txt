@@ -19,7 +19,6 @@ set(stone_basic_sources
 	DiagnosticFormatter.cpp
 	DiagnosticEngine.cpp
 	DiagnosticListener.cpp
-	DiagnosticTransaction.cpp
 	DirScanner.cpp
 	DirWatcher.cpp
 	EditorPlaceholder.cpp
