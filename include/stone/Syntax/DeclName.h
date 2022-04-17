@@ -28,8 +28,7 @@ public:
 };
 
 enum class DeclNameKind : uint8_t {
-  None,
-  Basic,
+  Basic=0,
   Constructor,
   Destructor,
   Operator,
