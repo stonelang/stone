@@ -100,11 +100,12 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
     opts::OptID fileListOpt) {
   if (const Arg *A = args.getLastArg(fileListOpt)) {
 
-    assert(!args.hasArg(singleOpt) &&
-           "don't use -o with -output-filelist or -index-unit-output-path with " " -index-unit-output-filelist");
+    assert(
+        !args.hasArg(singleOpt) &&
+        "don't use -o with -output-filelist or -index-unit-output-path with" &&
+        " " && "-index-unit-output-filelist");
 
-    return LangOutputsConverter::ReadOutputFileList(A->getValue(),
-                                                              de);
+    return LangOutputsConverter::ReadOutputFileList(A->getValue(), de);
   }
   return args.getAllArgValues(singleOpt);
 }
