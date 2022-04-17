@@ -94,27 +94,27 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   return outputFiles;
 }
 
-// Optional<std::vector<std::string>>
-// OutputFilesComputer::getOutputFilenamesFromCommandLineOrFilelist(
-//     const ArgList &args, DiagnosticEngine &diags, options::ID singleOpt,
-//     options::ID filelistOpt) {
-//   if (const Arg *A = args.getLastArg(filelistOpt)) {
-//     assert(!args.hasArg(singleOpt) &&
-//            "don't use -o with -output-filelist or -index-unit-output-path
-//            with " " -index-unit-output-filelist");
-//     return LangOutputsConverter::readOutputFileList(A->getValue(),
-//                                                               diags);
-//   }
-//   return args.getAllArgValues(singleOpt);
-// }
+llvm::Optional<std::vector<std::string>>
+OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+    const ArgList &args, DiagnosticEngine &de, opts::OptID singleOpt,
+    opts::OptID fileListOpt) {
+  if (const Arg *A = args.getLastArg(fileListOpt)) {
+    assert(!args.hasArg(singleOpt) &&
+           "don't use -o with -output-filelist or -index-unit-output-path
+           with " " -index-unit-output-filelist");
+    return LangOutputsConverter::GeadOutputFileList(A->getValue(),
+                                                              de);
+  }
+  return args.getAllArgValues(singleOpt);
+}
 
 // Optional<OutputFilesComputer>
 // OutputFilesComputer::create(const llvm::opt::ArgList &args,
-//                             DiagnosticEngine &diags,
+//                             DiagnosticEngine &de,
 //                             const FrontendInputsAndOutputs &inputsAndOutputs,
 //                             OutputOptInfo optInfo) {
 //   Optional<std::vector<std::string>> outputArguments =
-//       getOutputFilenamesFromCommandLineOrFilelist(args, diags,
+//       getOutputFilenamesFromCommandLineOrFilelist(args, de,
 //       optInfo.SingleID,
 //                                                   optInfo.FilelistID);
 //   if (!outputArguments)
@@ -138,7 +138,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 //   if (!outputFileArguments.empty() &&
 //       outputFileArguments.size() !=
 //           inputsAndOutputs.countOfInputsProducingMainOutputs()) {
-//     diags.diagnose(
+//     de.diagnose(
 //         SourceLoc(),
 //         diag::error_if_any_output_files_are_specified_they_all_must_be,
 //         optInfo.PrettyName);
@@ -149,7 +149,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 //       FrontendOptions::formatForPrincipalOutputFileForAction(requestedAction);
 
 //   return OutputFilesComputer(
-//       diags, inputsAndOutputs, std::move(outputFileArguments),
+//       de, inputsAndOutputs, std::move(outputFileArguments),
 //       outputDirectoryArgument, firstInput, requestedAction,
 //       args.getLastArg(opts::module_name),
 //       file_types::getExtension(outputType),
@@ -158,14 +158,14 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 // }
 
 // OutputFilesComputer::OutputFilesComputer(
-//     DiagnosticEngine &diags,
+//     DiagnosticEngine &de,
 //     const FrontendInputsAndOutputs &inputsAndOutputs,
 //     std::vector<std::string> outputFileArguments,
 //     const StringRef outputDirectoryArgument, const StringRef firstInput,
 //     const FrontendOptions::ActionType requestedAction,
 //     const llvm::opt::Arg *moduleNameArg, const StringRef suffix,
 //     const bool hasTextualOutput, OutputOptInfo optInfo)
-//     : de(diags), InputsAndOutputs(inputsAndOutputs),
+//     : de(de), InputsAndOutputs(inputsAndOutputs),
 //       OutputFileArguments(outputFileArguments),
 //       OutputDirectoryArgument(outputDirectoryArgument),
 //       FirstInput(firstInput), RequestedAction(requestedAction),
@@ -259,10 +259,10 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 // }
 
 // SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
-//     const ArgList &args, DiagnosticEngine &diags,
+//     const ArgList &args, DiagnosticEngine &de,
 //     const FrontendInputsAndOutputs &inputsAndOutputs,
 //     ArrayRef<std::string> outputFiles, StringRef moduleName)
-//     : args(args), de(diags), InputsAndOutputs(inputsAndOutputs),
+//     : args(args), de(de), InputsAndOutputs(inputsAndOutputs),
 //       OutputFiles(outputFiles), moduleName(moduleName),
 //       RequestedAction(
 //           LangOptionsConverter::determineRequestedAction(args)) {}
@@ -381,7 +381,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 
 // Optional<std::vector<std::string>>
 // SupplementaryOutputPathsComputer::getSupplementaryFilenamesFromArguments(
-//     options::ID pathID) const {
+//     opts::OptID pathID) const {
 //   std::vector<std::string> paths = args.getAllArgValues(pathID);
 
 //   const unsigned N =
@@ -535,7 +535,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 
 // std::string
 // SupplementaryOutputPathsComputer::determineSupplementaryOutputFilename(
-//     options::ID emitOpt, std::string pathFromArguments, file_types::ID type,
+//     opts::OptID emitOpt, std::string pathFromArguments, file_types::ID type,
 //     StringRef mainOutputIfUsable,
 //     StringRef defaultSupplementaryOutputPathExcludingExtension) const {
 
@@ -556,7 +556,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 // }
 
 // void SupplementaryOutputPathsComputer::deriveModulePathParameters(
-//     StringRef mainOutputFile, options::ID &emitOption, std::string
+//     StringRef mainOutputFile, opts::OptID &emitOption, std::string
 //     &extension, std::string &mainOutputIfUsable) const {
 
 //   bool isSIB = RequestedAction == FrontendOptions::ActionType::EmitSIB ||

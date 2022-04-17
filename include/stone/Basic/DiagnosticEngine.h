@@ -201,7 +201,7 @@ class DiagnosticEngine final : public Printable {
   /// A set of all strings involved in current transactional chain.
   /// This is required because diagnostics are not directly emitted
   /// but rather stored until all transactions complete.
-  //llvm::StringSet<llvm::BumpPtrAllocator &> transactionStrings;
+  // llvm::StringSet<llvm::BumpPtrAllocator &> transactionStrings;
 
   /// Diagnostic producer to handle the logic behind retrieving a localized
   /// diagnostic message.
