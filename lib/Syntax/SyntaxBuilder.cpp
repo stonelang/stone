@@ -5,16 +5,17 @@ using namespace stone;
 using namespace stone::syn;
 
 // Decl
-DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
+//DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
 
-StmtSyntaxBuilder::StmtSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
-// Block
-BlockStmtSyntaxBuilder::BlockStmtSyntaxBuilder(Syntax &syntax)
-    : StmtSyntaxBuilder(syntax) {}
+// StmtSyntaxBuilder::StmtSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax)
+// {}
+// // Block
+// BlockStmtSyntaxBuilder::BlockStmtSyntaxBuilder(Syntax &syntax)
+//     : StmtSyntaxBuilder(syntax) {}
 
 // Fun
 FunDeclSyntaxBuilder::FunDeclSyntaxBuilder(Syntax &syntax)
-    : DeclSyntaxBuilder(syntax), BlockStmtSyntaxBuilder(syntax) {}
+    : SyntaxBuilder(syntax) {}
 
 FunDecl *FunDeclSyntaxBuilder::Build() { return nullptr; }
 
@@ -25,6 +26,8 @@ void FunDeclSyntaxBuilder::WithAccessLevel(AccessLevel lvl) {
 
 // Struct
 StructDeclSyntaxBuilder::StructDeclSyntaxBuilder(Syntax &syntax)
-    : DeclSyntaxBuilder(syntax), BlockStmtSyntaxBuilder(syntax) {}
+    : SyntaxBuilder(syntax) {}
 
 void StructDeclSyntaxBuilder::WithStructKeyword() {}
+
+StructDecl *StructDeclSyntaxBuilder::Build() { return nullptr; }

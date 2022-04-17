@@ -27,29 +27,29 @@ public:
   Syntax &GetSyntax() { return syntax; }
 };
 
-class StmtSyntaxBuilder : public SyntaxBuilder {
-public:
-  StmtSyntaxBuilder(Syntax &syntax);
-};
+// class BlockStmtSyntaxBuilder : public SyntaxBuilder {
+// public:
+//   BlockStmtSyntaxBuilder(Syntax &syntax);
+// };
 
-class BlockStmtSyntaxBuilder : public StmtSyntaxBuilder {
-public:
-  BlockStmtSyntaxBuilder(Syntax &syntax);
+// class BlockStmtSyntaxBuilder : public StmtSyntaxBuilder {
+// public:
+//   BlockStmtSyntaxBuilder(Syntax &syntax);
 
-public:
-  void WithLeftBrace();
-  void WithRightBrace();
-};
+// public:
+//   void WithLeftBrace();
+//   void WithRightBrace();
+// };
 
-class DeclSyntaxBuilder : public SyntaxBuilder {
-public:
-  DeclSyntaxBuilder(Syntax &syntax);
+// class DeclSyntaxBuilder : public SyntaxBuilder {
+// public:
+//   DeclSyntaxBuilder(Syntax &syntax);
 
-public:
-  void WithIdentifier();
-};
-class FunDeclSyntaxBuilder final : public DeclSyntaxBuilder,
-                                   public BlockStmtSyntaxBuilder {
+// public:
+//   void WithIdentifier();
+// };
+
+class FunDeclSyntaxBuilder final : public SyntaxBuilder {
   SrcLoc funLoc;
   bool isMain = false;
   AccessLevel accessLevel;
@@ -66,6 +66,7 @@ public:
 
 public:
   void WithTemplate();
+  /// Pass Identifier
   void WithFunKeyword(SrcLoc funLoc);
   void WithParams();
   void WithReturnType();
@@ -78,8 +79,7 @@ public:
   FunDecl *Build();
 };
 
-class StructDeclSyntaxBuilder final : public DeclSyntaxBuilder,
-                                      public BlockStmtSyntaxBuilder {
+class StructDeclSyntaxBuilder final : public SyntaxBuilder {
 public:
   StructDeclSyntaxBuilder(const StructDeclSyntaxBuilder &) = delete;
   StructDeclSyntaxBuilder(StructDeclSyntaxBuilder &&) = delete;
@@ -101,6 +101,9 @@ public:
 class ExprSyntaxBuilder : public SyntaxBuilder {
 public:
   ExprSyntaxBuilder(Syntax &syntax);
+
+public:
+  FunDecl *Build();
 };
 
 } // namespace syn
