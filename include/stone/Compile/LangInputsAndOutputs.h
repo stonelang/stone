@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 #define STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 
-#include "stone/Compile/AdditionalOutputPaths.h"
+#include "stone/Compile/SupplementaryOutputPaths.h"
 #include "stone/Compile/LangInputFile.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"
 
@@ -171,7 +171,7 @@ private:
 
   void SetMainAndAdditionalOutputs(
       ArrayRef<std::string> outputFiles,
-      ArrayRef<AdditionalOutputPaths> supplementaryOutputs,
+      ArrayRef<SupplementaryOutputPaths> supplementaryOutputs,
       ArrayRef<std::string> outputFilesForIndexUnits = None);
 
 public:
@@ -227,7 +227,7 @@ public:
       GetPrimaryFileSpecificPathsForPrimary(StringRef) const;
 
   bool HasAdditionalOutputPath(
-      llvm::function_ref<const std::string &(const AdditionalOutputPaths &)>
+      llvm::function_ref<const std::string &(const SupplementaryOutputPaths &)>
           extractorFn) const;
 
   bool HasDependenciesPath() const;

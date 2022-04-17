@@ -4,7 +4,7 @@
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Compile/AdditionalOutputPaths.h"
+#include "stone/Compile/SupplementaryOutputPaths.h"
 #include "stone/Compile/LangOptions.h"
 
 #include "stone/Session/Options.h"
@@ -33,7 +33,7 @@ public:
 
   bool Convert(std::vector<std::string> &mainOutputs,
                std::vector<std::string> &mainOutputsForIndexUnits,
-               std::vector<AdditionalOutputPaths> &supplementaryOutputs);
+               std::vector<SupplementaryOutputPaths> &supplementaryOutputs);
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
@@ -110,7 +110,7 @@ private:
   std::string DeriveOutputFileFromParts(StringRef dir, StringRef base) const;
 };
 
-class AdditionalOutputPathsComputer {
+class SupplementaryOutputPathsComputer {
   const llvm::opt::ArgList &args;
   DiagnosticEngine &de;
   const LangInputsAndOutputs &inputsAndOutputs;
@@ -119,13 +119,13 @@ class AdditionalOutputPathsComputer {
   const ModeKind modeKind;
 
 public:
-  AdditionalOutputPathsComputer(const llvm::opt::ArgList &args,
+  SupplementaryOutputPathsComputer(const llvm::opt::ArgList &args,
                                 DiagnosticEngine &de,
                                 const LangInputsAndOutputs &inputsAndOutputs,
                                 ArrayRef<std::string> outputFiles,
                                 StringRef moduleName);
 
-  Optional<std::vector<AdditionalOutputPaths>> ComputeOutputPaths() const;
+  Optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
 
 private:
   /// \Return a set of supplementary output paths for each input that might
@@ -140,12 +140,12 @@ private:
   /// In the future, these will also include those passed in via whatever
   /// filelist scheme gets implemented to handle cases where the command line
   /// arguments become burdensome.
-  Optional<std::vector<AdditionalOutputPaths>>
-  GetAdditionalOutputPathsFromArguments() const;
+  Optional<std::vector<SupplementaryOutputPaths>>
+  GetSupplementaryOutputPathsFromArguments() const;
 
   /// Read a supplementary output file map file.
   /// \returns `None` if it could not open the file map.
-  Optional<std::vector<AdditionalOutputPaths>>
+  Optional<std::vector<SupplementaryOutputPaths>>
   ReadAdditionalOutputFileMap() const;
 
   /// Given an ID corresponding to supplementary output argument
@@ -154,9 +154,9 @@ private:
   Optional<std::vector<std::string>>
   GetAdditionalFilenamesFromArguments(opts::OptID pathID) const;
 
-  llvm::Optional<AdditionalOutputPaths>
+  llvm::Optional<SupplementaryOutputPaths>
   ComputeOutputPathsForOneInput(StringRef outputFilename,
-                                const AdditionalOutputPaths &pathsFromFilelists,
+                                const SupplementaryOutputPaths &pathsFromFilelists,
                                 const LangInputFile &) const;
 
   llvm::StringRef DeriveDefaultAdditionalOutputPathExcludingExtension(

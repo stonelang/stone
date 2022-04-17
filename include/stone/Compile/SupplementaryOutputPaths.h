@@ -8,7 +8,7 @@
 
 namespace stone {
 
-struct AdditionalOutputPaths final {
+struct SupplementaryOutputPaths final {
   /// The path to which we should emit a serialized module.
   /// It is valid whenever there are any inputs.
   ///
@@ -133,8 +133,8 @@ struct AdditionalOutputPaths final {
   /// The output path for bitstream optimization record file.
   std::string bitstreamOptRecordPath;
 
-  AdditionalOutputPaths() = default;
-  AdditionalOutputPaths(const AdditionalOutputPaths &) = default;
+  SupplementaryOutputPaths() = default;
+  SupplementaryOutputPaths(const SupplementaryOutputPaths &) = default;
 
   /// Apply a given function for each existing (non-empty string) supplementary
   /// output

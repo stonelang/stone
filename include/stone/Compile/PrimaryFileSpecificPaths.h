@@ -2,7 +2,7 @@
 #define STONE_COMPILE_PRIMARYSPECIFICPATHS_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Compile/AdditionalOutputPaths.h"
+#include "stone/Compile/SupplementaryOutputPaths.h"
 #include "llvm/ADT/StringRef.h"
 
 #include <string>
@@ -24,7 +24,7 @@ public:
   /// was specified.
   std::string indexUnitOutputFilename;
 
-  AdditionalOutputPaths additionalOutputPaths;
+  SupplementaryOutputPaths additionalOutputPaths;
 
   /// The name of the "main" input file, used by the debug info.
   std::string mainInputFilenameForDebugInfo;
@@ -33,7 +33,7 @@ public:
       StringRef outputFilename = llvm::StringRef(),
       StringRef indexUnitOutputFilename = llvm::StringRef(),
       StringRef mainInputFilenameForDebugInfo = llvm::StringRef(),
-      AdditionalOutputPaths additionalOutputPaths = AdditionalOutputPaths())
+      SupplementaryOutputPaths additionalOutputPaths = SupplementaryOutputPaths())
       : outputFilename(outputFilename),
         indexUnitOutputFilename(indexUnitOutputFilename),
         additionalOutputPaths(additionalOutputPaths),

@@ -253,7 +253,7 @@ bool LangInputsAndOutputs::ForEachInputProducingAMainOutputFile(
 
 void LangInputsAndOutputs::SetMainAndAdditionalOutputs(
     ArrayRef<std::string> outputFiles,
-    ArrayRef<AdditionalOutputPaths> additionalOutputPaths,
+    ArrayRef<SupplementaryOutputPaths> additionalOutputPaths,
     ArrayRef<std::string> outputFilesForIndexUnits) {
 
   if (outputFilesForIndexUnits.empty()) {
@@ -301,7 +301,7 @@ void LangInputsAndOutputs::SetMainAndAdditionalOutputs(
   for (auto i : indices(inputs)) {
     inputs[i].SetPrimaryFileSpecificPaths(PrimaryFileSpecificPaths(
         outputFiles[i], outputFilesForIndexUnits[i], outputFiles[i],
-        i == 0 ? additionalOutputPaths.front() : AdditionalOutputPaths()));
+        i == 0 ? additionalOutputPaths.front() : SupplementaryOutputPaths()));
   }
 }
 
@@ -374,7 +374,7 @@ bool LangInputsAndOutputs::ForEachInputProducingAdditionalOutput(
 }
 
 bool LangInputsAndOutputs::HasAdditionalOutputPath(
-    llvm::function_ref<const std::string &(const AdditionalOutputPaths &)>
+    llvm::function_ref<const std::string &(const SupplementaryOutputPaths &)>
         extractorFn) const {
   return ForEachInputProducingAdditionalOutput(
       [&](const LangInputFile &input) -> bool {
@@ -386,85 +386,85 @@ bool LangInputsAndOutputs::HasAdditionalOutputPath(
 
 bool LangInputsAndOutputs::HasDependenciesPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.dependenciesFilePath;
       });
 }
 bool LangInputsAndOutputs::HasReferenceDependenciesPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.referenceDependenciesFilePath;
       });
 }
 bool LangInputsAndOutputs::HasLoadedModuleTracePath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.loadedModuleTracePath;
       });
 }
 bool LangInputsAndOutputs::HasModuleOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasModuleDocOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleDocOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasModuleSourceInfoOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSourceInfoOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasModuleInterfaceOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleInterfaceOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasPrivateModuleInterfaceOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.privateModuleInterfaceOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasABIDescriptorOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.abiDescriptorOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasModuleSemanticInfoOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSemanticInfoOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasModuleSummaryOutputPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSummaryOutputPath;
       });
 }
 bool LangInputsAndOutputs::HasTBDPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.tbdPath;
       });
 }
 bool LangInputsAndOutputs::HasYAMLOptRecordPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.yamlOptRecordPath;
       });
 }
 bool LangInputsAndOutputs::HasBitstreamOptRecordPath() const {
   return HasAdditionalOutputPath(
-      [](const AdditionalOutputPaths &outs) -> const std::string & {
+      [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.bitstreamOptRecordPath;
       });
 }
