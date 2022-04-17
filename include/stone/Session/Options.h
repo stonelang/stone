@@ -19,6 +19,7 @@ enum OptFlag {
   DriverOption = (1 << 6),
   NoDriverOption = (1 << 7),
   DebugOption = (1 << 8),
+  ArgumentIsPath = (1 << 9),
 };
 
 enum OptID : unsigned {

@@ -19,6 +19,11 @@ def NoDriverOption : OptionFlag;
 // The option should not be accepted by the build.
 def DebugOption : OptionFlag;
 
+// The option's argument is a file-system path that may be affected by the
+// current working directory.
+def ArgumentIsPath : OptionFlag;
+
+
 def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
 class ModeOpt : Group<ModeGroup>;
 
@@ -179,5 +184,14 @@ def MainFile : Separate<["-"], "main-file">,
 def WorkDir : Separate<["-"], "work-dir">,
   HelpText<"Resolve file paths relative to the specified directory">,
   MetaVarName<"<path>">;
+
+def IndexStorePath : Separate<["-"], "index-store-path">,
+  Flags<[LangOption, ArgumentIsPath]>, MetaVarName<"<path>">,
+  HelpText<"Store indexing data to <path>">;
+
+def IndexUnitOutputPath : Separate<["-"], "index-unit-output-path">,
+  Flags<[LangOption, ArgumentIsPath]>, MetaVarName<"<path>">,
+  HelpText<"Use <path> as the output path in the produced index data.">;
+
 
 include "LangOptions.td"

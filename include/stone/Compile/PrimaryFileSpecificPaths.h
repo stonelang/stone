@@ -33,7 +33,8 @@ public:
       StringRef outputFilename = llvm::StringRef(),
       StringRef indexUnitOutputFilename = llvm::StringRef(),
       StringRef mainInputFilenameForDebugInfo = llvm::StringRef(),
-      SupplementaryOutputPaths additionalOutputPaths = SupplementaryOutputPaths())
+      SupplementaryOutputPaths additionalOutputPaths =
+          SupplementaryOutputPaths())
       : outputFilename(outputFilename),
         indexUnitOutputFilename(indexUnitOutputFilename),
         additionalOutputPaths(additionalOutputPaths),

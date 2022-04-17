@@ -33,7 +33,8 @@ OutputFileMap::LoadFromBuffer(std::unique_ptr<llvm::MemoryBuffer> Buffer,
   return Parse(std::move(Buffer), workingDirectory);
 }
 
-const TypeToPathMap *OutputFileMap::GetOutputMapForInput(StringRef Input) const{
+const TypeToPathMap *
+OutputFileMap::GetOutputMapForInput(StringRef Input) const {
   auto iter = InputToOutputsMap.find(Input);
   if (iter == InputToOutputsMap.end())
     return nullptr;
@@ -41,8 +42,7 @@ const TypeToPathMap *OutputFileMap::GetOutputMapForInput(StringRef Input) const{
     return &iter->second;
 }
 
-TypeToPathMap &
-OutputFileMap::GetOrCreateOutputMapForInput(StringRef Input) {
+TypeToPathMap &OutputFileMap::GetOrCreateOutputMapForInput(StringRef Input) {
   return InputToOutputsMap[Input];
 }
 
@@ -50,8 +50,7 @@ const TypeToPathMap *OutputFileMap::GetOutputMapForSingleOutput() const {
   return GetOutputMapForInput(StringRef());
 }
 
-TypeToPathMap &
-OutputFileMap::GetOrCreateOutputMapForSingleOutput() {
+TypeToPathMap &OutputFileMap::GetOrCreateOutputMapForSingleOutput() {
   return InputToOutputsMap[StringRef()];
 }
 
@@ -60,8 +59,8 @@ void OutputFileMap::Dump(llvm::raw_ostream &os, bool Sort) const {
 
   auto printOutputPair = [&os](StringRef InputPath,
                                const TypePathPair &OutputPair) -> void {
-    os << InputPath << " -> " << file::GetTypeName(OutputPair.first)
-       << ": \"" << OutputPair.second << "\"\n";
+    os << InputPath << " -> " << file::GetTypeName(OutputPair.first) << ": \""
+       << OutputPair.second << "\"\n";
   };
 
   if (Sort) {
@@ -70,18 +69,18 @@ void OutputFileMap::Dump(llvm::raw_ostream &os, bool Sort) const {
     for (auto &InputPair : InputToOutputsMap) {
       Maps.emplace_back(InputPair.first(), InputPair.second);
     }
-    std::sort(Maps.begin(), Maps.end(), [] (const PathMapPair &LHS,
-                                            const PathMapPair &RHS) -> bool {
-      return LHS.first < RHS.first;
-    });
+    std::sort(Maps.begin(), Maps.end(),
+              [](const PathMapPair &LHS, const PathMapPair &RHS) -> bool {
+                return LHS.first < RHS.first;
+              });
     for (auto &InputPair : Maps) {
       const TypeToPathMap &Map = InputPair.second;
       std::vector<TypePathPair> Pairs;
       Pairs.insert(Pairs.end(), Map.begin(), Map.end());
-      std::sort(Pairs.begin(), Pairs.end(), [](const TypePathPair &LHS,
-                                               const TypePathPair &RHS) -> bool {
-        return LHS < RHS;
-      });
+      std::sort(Pairs.begin(), Pairs.end(),
+                [](const TypePathPair &LHS, const TypePathPair &RHS) -> bool {
+                  return LHS < RHS;
+                });
       for (auto &OutputPair : Pairs) {
         printOutputPair(InputPair.first, OutputPair);
       }
@@ -145,9 +144,9 @@ OutputFileMap::Parse(std::unique_ptr<llvm::MemoryBuffer> Buffer,
     return constructError("empty YAML stream");
 
   auto Root = I->getRoot();
-  if (!Root){
+  if (!Root) {
     return constructError("no root");
- }
+  }
 
   OutputFileMap OFM;
 
@@ -190,7 +189,7 @@ OutputFileMap::Parse(std::unique_ptr<llvm::MemoryBuffer> Buffer,
       return constructError("input path not a scalar node");
 
     llvm::yaml::MappingNode *OutputMapNode =
-      dyn_cast<llvm::yaml::MappingNode>(Value);
+        dyn_cast<llvm::yaml::MappingNode>(Value);
     if (!OutputMapNode)
       return constructError("output map not a MappingNode");
 
@@ -209,8 +208,7 @@ OutputFileMap::Parse(std::unique_ptr<llvm::MemoryBuffer> Buffer,
         return constructError("path not a scalar node");
 
       llvm::SmallString<16> KindStorage;
-      file::Type Kind =
-          file::GetTypeByName(KindNode->getValue(KindStorage));
+      file::Type Kind = file::GetTypeByName(KindNode->getValue(KindStorage));
 
       // Ignore unknown types, so that an older stonec can be used with a newer
       // build system.

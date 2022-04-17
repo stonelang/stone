@@ -4,8 +4,8 @@
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Compile/SupplementaryOutputPaths.h"
 #include "stone/Compile/LangOptions.h"
+#include "stone/Compile/SupplementaryOutputPaths.h"
 
 #include "stone/Session/Options.h"
 #include "llvm/Option/ArgList.h"
@@ -20,7 +20,7 @@ class OutputFileMap;
 
 class LangOutputsConverter {
   const llvm::opt::ArgList &args;
-  StringRef moduleName;
+  llvm::StringRef moduleName;
   LangInputsAndOutputs &inputsAndOutputs;
   DiagnosticEngine &de;
 
@@ -120,10 +120,10 @@ class SupplementaryOutputPathsComputer {
 
 public:
   SupplementaryOutputPathsComputer(const llvm::opt::ArgList &args,
-                                DiagnosticEngine &de,
-                                const LangInputsAndOutputs &inputsAndOutputs,
-                                ArrayRef<std::string> outputFiles,
-                                StringRef moduleName);
+                                   DiagnosticEngine &de,
+                                   const LangInputsAndOutputs &inputsAndOutputs,
+                                   ArrayRef<std::string> outputFiles,
+                                   StringRef moduleName);
 
   Optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
 
@@ -154,10 +154,10 @@ private:
   Optional<std::vector<std::string>>
   GetAdditionalFilenamesFromArguments(opts::OptID pathID) const;
 
-  llvm::Optional<SupplementaryOutputPaths>
-  ComputeOutputPathsForOneInput(StringRef outputFilename,
-                                const SupplementaryOutputPaths &pathsFromFilelists,
-                                const LangInputFile &) const;
+  llvm::Optional<SupplementaryOutputPaths> ComputeOutputPathsForOneInput(
+      StringRef outputFilename,
+      const SupplementaryOutputPaths &pathsFromFilelists,
+      const LangInputFile &) const;
 
   llvm::StringRef DeriveDefaultAdditionalOutputPathExcludingExtension(
       StringRef outputFilename, const LangInputFile &) const;

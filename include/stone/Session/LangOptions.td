@@ -23,4 +23,9 @@ def BadFileDescriptorRetryCount:
   def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
     HelpText<"Bypass checks for batch-mode errors.">;
 
+
+def IndexUnitOutputPathFileList : Separate<["-"], "index-unit-output-path-filelist">,
+  HelpText<"Specify index unit output paths in a file rather than on the command line">;
+
+
 }
