@@ -99,10 +99,11 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
     const ArgList &args, DiagnosticEngine &de, opts::OptID singleOpt,
     opts::OptID fileListOpt) {
   if (const Arg *A = args.getLastArg(fileListOpt)) {
+
     assert(!args.hasArg(singleOpt) &&
-           "don't use -o with -output-filelist or -index-unit-output-path
-           with " " -index-unit-output-filelist");
-    return LangOutputsConverter::GeadOutputFileList(A->getValue(),
+           "don't use -o with -output-filelist or -index-unit-output-path with " " -index-unit-output-filelist");
+
+    return LangOutputsConverter::ReadOutputFileList(A->getValue(),
                                                               de);
   }
   return args.getAllArgValues(singleOpt);
