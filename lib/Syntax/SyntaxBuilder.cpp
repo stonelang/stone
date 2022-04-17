@@ -5,7 +5,8 @@ using namespace stone;
 using namespace stone::syn;
 
 // Decl
-//DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax) {}
+// DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax)
+// {}
 
 // StmtSyntaxBuilder::StmtSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax)
 // {}

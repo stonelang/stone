@@ -29,15 +29,17 @@ public:
 
 enum class DeclNameKind : uint8_t {
   None,
-  Identifier,
+  Basic,
   Constructor,
   Destructor,
   Operator,
   LiteralOperator,
-  UseDirective,
+  UsingDirective,
 };
 class DeclName : public Dumpable, public Printable {
   friend class NamedDecl;
+  friend class SyntaxContext;
+
   DeclNameKind declNameKind;
 
 public:
@@ -48,7 +50,19 @@ public:
 
 public:
   // TODO:
-  bool IsIdentifier() const { return false; }
+  bool IsBasic() const { return declNameKind == DeclNameKind::Basic; }
+  bool IsConstructor() const {
+    return declNameKind == DeclNameKind::Constructor;
+  }
+  bool IsDestructor() const { return declNameKind == DeclNameKind::Destructor; }
+  bool IsOperator() const { return declNameKind == DeclNameKind::Operator; }
+  bool IsLiteralOperator() const {
+    return declNameKind == DeclNameKind::LiteralOperator;
+  }
+  bool IsUsingDirective() const {
+    return declNameKind == DeclNameKind::UsingDirective;
+  }
+
   // TODO:
   Identifier *GetAsIdentifier() const {}
   DeclNameKind GetDeclNameKind() { return declNameKind; }
@@ -63,7 +77,7 @@ public:
   static int Compare(DeclName LHS, DeclName RHS);
 };
 
-// Constructor and Destructor
+// Using, Constructor, and Destructor
 class SpecialDeclName : public DeclName {
 public:
 };
@@ -77,15 +91,18 @@ class DeclNameTable {
   /// Used to allocate elements in the FoldingSets below.
   const SyntaxContext &tc;
 
-  /// Manage the uniqued CXXSpecialNameExtra representing C++ constructors.
-  /// getCXXConstructorName and getCXXSpecialName can be used to obtain
+  /// Manage the uniqued SpecialDeclName representing stone constructors.
+  /// GetConstructorName and GetSpecialName can be used to obtain
   /// a DeclName from the corresponding type of the constructor.
-  llvm::FoldingSet<SpecialDeclName> ConstructorNames;
+  llvm::FoldingSet<SpecialDeclName> constructorNames;
 
   /// Manage the uniqued CXXSpecialNameExtra representing C++ destructors.
   /// getCXXDestructorName and getCXXSpecialName can be used to obtain
   /// a DeclName from the corresponding type of the destructor.
-  llvm::FoldingSet<SpecialDeclName> DestructorNames;
+  llvm::FoldingSet<SpecialDeclName> destructorNames;
+
+  //
+  llvm::FoldingSet<SpecialDeclName> usingNames;
 
   /// Manage the uniqued CXXSpecialNameExtra representing C++ conversion
   /// functions. getCXXConversionFunctionName and getCXXSpecialName can be
@@ -120,13 +137,18 @@ public:
   ~DeclNameTable() = default;
 
   /// Create a declaration name that is a simple identifier.
-  DeclName GetIdentifier(const Identifier ID) { return DeclName(ID); }
+  DeclName GetIdentifier(const Identifier identifier) {
+    return DeclName(identifier);
+  }
 
   /// Returns the name of a constructor for the given Type.
   DeclName GetConstructorName(CanQualType Ty);
 
   /// Returns the name of a destructor for the given Type.
   DeclName GetDestructorName(CanQualType Ty);
+
+  /// Returns the name of a destructor for the given Type.
+  // DeclName GetUsingName(CanQualType Ty);
 
   /// Returns the name of a deduction guide for the given template.
   // DeclName GDeductionGuideName(TemplateDecl *TD);
@@ -140,6 +162,7 @@ public:
   ///   * DeclName::ConstructorName,
   ///   * DeclName::DestructorName or
   ///   * DeclName::ConversionFunctionName
+  // TODO: What about using A.B.C;
   DeclName GetSpecialName(DeclNameKind declNameTy, CanQualType canQualTy);
 
   /// Get the name of the overloadable C++ operator corresponding to Op.
@@ -148,7 +171,7 @@ public:
   //}
 
   /// Get the name of the literal operator function with II as the identifier.
-  // DeclName getCXXLiteralOperatorName(Identifier *II);
+  // DeclName GetLiteralOperatorName(Identifier *identifier);
 };
 
 raw_ostream &operator<<(raw_ostream &os, DeclName name);

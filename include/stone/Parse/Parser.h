@@ -104,7 +104,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  //=fun=//
+  //==fun==//
   SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
   void ParseFunForwardDecl(AccessLevel accessLevel);
 

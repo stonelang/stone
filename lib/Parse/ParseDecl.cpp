@@ -105,7 +105,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   funBuilder.WithAccessLevel(accessLevel);
 
   // Parse function name.
-  Identifier name;
+  Identifier name; // auto Identifier = SyntaxFractory::MakeIdentifier
   SrcLoc nameLoc;
 
   // auto ParseFunctionSignature = [&]() -> SyntaxStatus {

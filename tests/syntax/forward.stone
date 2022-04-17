@@ -1,8 +1,8 @@
 
 
 space Syntax.Forward {
-	
-// Forward declaration 
+
+// Forward declaration -- only within a module for now
 internal forward fun Lanuch() -> bool; 
 
 public fun TryLaunch() -> bool {

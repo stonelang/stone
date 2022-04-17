@@ -197,7 +197,7 @@ class AnyDecl : public NamedDecl {
 public:
 };
 
-class TypeDecl : public NamedDecl /*TODO: AnyDecl*/ {
+class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
   friend class SyntaxContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
@@ -318,10 +318,10 @@ public:
 };
 
 // Member functions: fun Particle::Fire() -> bool ...
-// class MethodDecl : public FunctionDecl {
+// class MemberFunDecl : public FunDecl {
 // public:
 //   // MethodDecl(SyntaxContext &tc, DeclContext *dc, SrcLoc funLoc,
-//   //            const DeclName &dn, SrcLoc dnLoc, StorageType st)
+//   //            const DeclName &dn, SrcLoc dnLoc, StorageKind sk)
 //   //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 
 // public:
@@ -333,6 +333,7 @@ class NominalTypeDecl : public TypeDecl,
                         public DeclContext,
                         public AccessControl {
 public:
+  bool IsForward() const;
 };
 
 class StructDecl final : public NominalTypeDecl {
