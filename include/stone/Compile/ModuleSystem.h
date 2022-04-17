@@ -33,11 +33,7 @@ public:
   syn::Module *GetMainModule() const;
 
 public:
-  // void SetModuleName(llvm::StringRef name) {
-  //    // langOpts.moduleName = name.str();
-  //    // IRGenOpts.ModuleName = name.str();
-  //  }
-  llvm::StringRef GetModuleName() const {
+  const llvm::StringRef GetModuleName() const {
     return langOpts.systemOpts.moduleName;
   }
 };

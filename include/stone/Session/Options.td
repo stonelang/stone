@@ -180,4 +180,4 @@ def WorkDir : Separate<["-"], "work-dir">,
   HelpText<"Resolve file paths relative to the specified directory">,
   MetaVarName<"<path>">;
 
-
+include "LangOptions.td"

@@ -30,7 +30,6 @@ enum class ThreadModelKind {
 };
 
 class LangOptions final : public BaseOptions {
-
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
