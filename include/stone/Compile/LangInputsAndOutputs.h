@@ -169,7 +169,7 @@ private:
   friend class LangOptionsConverter;
   friend struct InterfaceSubContextDelegateImpl;
 
-  void SetMainAndAdditionalOutputs(
+  void SetMainAndSupplementaryOutputs(
       ArrayRef<std::string> outputFiles,
       ArrayRef<SupplementaryOutputPaths> supplementaryOutputs,
       ArrayRef<std::string> outputFilesForIndexUnits = None);
@@ -209,12 +209,12 @@ public:
   bool IsOutputFileDirectory() const;
   bool HasNamedOutputFile() const;
 
-  // Additional outputs
+  // Supplementary outputs
 
-  unsigned CountOfFilesProducingAdditionalOutput() const;
+  unsigned CountOfFilesProducingSupplementaryOutput() const;
 
   /// If \p fn returns true, exit early and return true.
-  bool ForEachInputProducingAdditionalOutput(
+  bool ForEachInputProducingSupplementaryOutput(
       llvm::function_ref<bool(const LangInputFile &)> fn) const;
 
   /// Assumes there is not more than one primary input file, if any.
@@ -226,7 +226,7 @@ public:
   const PrimaryFileSpecificPaths &
       GetPrimaryFileSpecificPathsForPrimary(StringRef) const;
 
-  bool HasAdditionalOutputPath(
+  bool HasSupplementaryOutputPath(
       llvm::function_ref<const std::string &(const SupplementaryOutputPaths &)>
           extractorFn) const;
 

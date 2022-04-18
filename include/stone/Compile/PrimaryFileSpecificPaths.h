@@ -24,7 +24,7 @@ public:
   /// was specified.
   std::string indexUnitOutputFilename;
 
-  SupplementaryOutputPaths additionalOutputPaths;
+  SupplementaryOutputPaths supplementaryOutputPaths;
 
   /// The name of the "main" input file, used by the debug info.
   std::string mainInputFilenameForDebugInfo;
@@ -33,19 +33,19 @@ public:
       StringRef outputFilename = llvm::StringRef(),
       StringRef indexUnitOutputFilename = llvm::StringRef(),
       StringRef mainInputFilenameForDebugInfo = llvm::StringRef(),
-      SupplementaryOutputPaths additionalOutputPaths =
+      SupplementaryOutputPaths supplementaryOutputPaths =
           SupplementaryOutputPaths())
       : outputFilename(outputFilename),
         indexUnitOutputFilename(indexUnitOutputFilename),
-        additionalOutputPaths(additionalOutputPaths),
+        supplementaryOutputPaths(supplementaryOutputPaths),
         mainInputFilenameForDebugInfo(mainInputFilenameForDebugInfo) {}
 
   bool HaveModuleOrModuleDocOutputPaths() const {
-    return !additionalOutputPaths.moduleOutputPath.empty() ||
-           !additionalOutputPaths.moduleDocOutputPath.empty();
+    return !supplementaryOutputPaths.moduleOutputPath.empty() ||
+           !supplementaryOutputPaths.moduleDocOutputPath.empty();
   }
   bool HaveModuleSummaryOutputPath() const {
-    return !additionalOutputPaths.moduleSummaryOutputPath.empty();
+    return !supplementaryOutputPaths.moduleSummaryOutputPath.empty();
   }
 };
 } // namespace stone

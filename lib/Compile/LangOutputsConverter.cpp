@@ -25,7 +25,8 @@ using namespace llvm::opt;
 bool LangOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
-    std::vector<SupplementaryOutputPaths> &supplementaryOutputs, const Mode &mode) {
+    std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
+    const Mode &mode) {
 
   Optional<LangOutputFilesComputer> ofc = LangOutputFilesComputer::Create(
       args, de, inputsAndOutputs,
@@ -263,44 +264,44 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFiles(outputFiles), moduleName(moduleName), mode(mode) {}
 
-// llvm::Optional<std::vector<SupplementaryOutputPaths>>
-// SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
-//   Optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
-//       args.hasArg(opts::supplementary_output_file_map)
-//           ? readSupplementaryOutputFileMap()
-//           : getSupplementaryOutputPathsFromArguments();
-//   if (!pathsFromUser)
-//     return None;
+llvm::Optional<std::vector<SupplementaryOutputPaths>>
+SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
+  Optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
+      args.hasArg(opts::SupplementaryOutputFileMap)
+          ? ReadSupplementaryOutputFileMap()
+          : GetSupplementaryOutputPathsFromArguments();
+  if (!pathsFromUser)
+    return None;
 
-//   if (InputsAndOutputs.hasPrimaryInputs())
-//     assert(OutputFiles.size() == pathsFromUser->size());
-//   else if (InputsAndOutputs.isSingleThreadedWMO())
-//     assert(OutputFiles.size() == pathsFromUser->size() &&
-//            pathsFromUser->size() == 1);
-//   else {
-//     // Multi-threaded WMO is the exception
-//     assert(OutputFiles.size() == InputsAndOutputs.inputCount() &&
-//                    pathsFromUser->size() == InputsAndOutputs.hasInputs()
-//                ? 1
-//                : 0);
-//   }
+  if (inputsAndOutputs.HasPrimaryInputs()) {
+    assert(OutputFiles.size() == pathsFromUser->size());
+  } else if (inputsAndOutputs.IsSingleThreadedWMO()) {
+    assert(OutputFiles.size() == pathsFromUser->size() &&
+           pathsFromUser->size() == 1);
+  } else {
+    // Multi-threaded WMO is the exception
+    assert(OutputFiles.size() == inputsAndOutputs.InputCount() &&
+                   pathsFromUser->size() == inputsAndOutputs.HasInputs()
+               ? 1
+               : 0);
+  }
 
-//   std::vector<SupplementaryOutputPaths> outputPaths;
-//   unsigned i = 0;
-//   bool hadError = inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
-//       [&](const LangInputFile &input) -> bool {
-//         if (auto suppPaths = ComputeOutputPathsForOneInput(
-//                 OutputFiles[i], (*pathsFromUser)[i], input)) {
-//           ++i;
-//           outputPaths.push_back(*suppPaths);
-//           return false;
-//         }
-//         return true;
-//       });
-//   if (hadError)
-//     return None;
-//   return outputPaths;
-// }
+  std::vector<SupplementaryOutputPaths> outputPaths;
+  unsigned i = 0;
+  bool hadError = inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
+      [&](const LangInputFile &input) -> bool {
+        if (auto suppPaths = ComputeOutputPathsForOneInput(
+                OutputFiles[i], (*pathsFromUser)[i], input)) {
+          ++i;
+          outputPaths.push_back(*suppPaths);
+          return false;
+        }
+        return true;
+      });
+  if (hadError)
+    return None;
+  return outputPaths;
+}
 
 // Optional<std::vector<SupplementaryOutputPaths>>
 // SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
@@ -348,7 +349,7 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 //   std::vector<SupplementaryOutputPaths> result;
 
 //   const unsigned N =
-//       InputsAndOutputs.countOfFilesProducingSupplementaryOutput();
+//       inputsAndOutputs.countOfFilesProducingSupplementaryOutput();
 //   for (unsigned i = 0; i < N; ++i) {
 //     SupplementaryOutputPaths sop;
 //     sop.ObjCHeaderOutputPath = (*objCHeaderOutput)[i];
@@ -381,15 +382,15 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 //   std::vector<std::string> paths = args.getAllArgValues(pathID);
 
 //   const unsigned N =
-//       InputsAndOutputs.countOfFilesProducingSupplementaryOutput();
+//       inputsAndOutputs.countOfFilesProducingSupplementaryOutput();
 
 //   if (paths.size() == N)
 //     return paths;
 //   else if (pathID == opts::emit_loaded_module_trace_path &&
 //            paths.size() < N) {
 //     // We only need one file to output the module trace file because they
-//     // are all equivalent. Add additional empty output paths for module trace
-//     to
+//     // are all equivalent. Add supplementary empty output paths for module
+//     trace to
 //     // make sure the compiler won't panic for
 //     diag::error_wrong_number_of_arguments. for(unsigned I = paths.size(); I
 //     != N; I ++)
@@ -668,7 +669,7 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 
 //   std::vector<SupplementaryOutputPaths> outputPaths;
 //   bool hadError = false;
-//   InputsAndOutputs.forEachInputProducingSupplementaryOutput(
+//   inputsAndOutputs.forEachInputProducingSupplementaryOutput(
 //       [&](const LangInputFile &input) -> bool {
 //         const TypeToPathMap *mapForInput =
 //             outputFileMap->getOutputMapForInput(input.getFileName());

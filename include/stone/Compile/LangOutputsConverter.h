@@ -150,27 +150,27 @@ private:
   /// Read a supplementary output file map file.
   /// \returns `None` if it could not open the file map.
   Optional<std::vector<SupplementaryOutputPaths>>
-  ReadAdditionalOutputFileMap() const;
+  ReadSupplementaryOutputFileMap() const;
 
   /// Given an ID corresponding to supplementary output argument
   /// (e.g. -emit-module-path), collect all such paths, and ensure
   /// there are the right number of them.
   Optional<std::vector<std::string>>
-  GetAdditionalFilenamesFromArguments(opts::OptID pathID) const;
+  GetSupplementaryFilenamesFromArguments(opts::OptID pathID) const;
 
   llvm::Optional<SupplementaryOutputPaths> ComputeOutputPathsForOneInput(
       StringRef outputFilename,
       const SupplementaryOutputPaths &pathsFromFilelists,
       const LangInputFile &) const;
 
-  llvm::StringRef DeriveDefaultAdditionalOutputPathExcludingExtension(
+  llvm::StringRef DeriveDefaultSupplementaryOutputPathExcludingExtension(
       StringRef outputFilename, const LangInputFile &) const;
 
   /// \return empty string if no output file.
-  std::string DetermineAdditionalOutputFilename(
+  std::string DetermineSupplementaryOutputFilename(
       opts::OptID emitOpt, std::string pathFromArgumentsOrFilelists,
       file::Type type, StringRef mainOutputIfUsable,
-      StringRef defaultAdditionalOutputPathExcludingExtension) const;
+      StringRef defaultSupplementaryOutputPathExcludingExtension) const;
 
   void DeriveModulePathParameters(StringRef mainOutputFile,
                                   opts::OptID &emitOption,

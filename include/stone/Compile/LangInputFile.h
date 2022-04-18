@@ -125,18 +125,19 @@ public:
 
   llvm::StringRef GetDependenciesFilePath() const {
     return GetPrimaryFileSpecificPaths()
-        .additionalOutputPaths.dependenciesFilePath;
+        .supplementaryOutputPaths.dependenciesFilePath;
   }
   llvm::StringRef GetLoadedModuleTracePath() const {
     return GetPrimaryFileSpecificPaths()
-        .additionalOutputPaths.loadedModuleTracePath;
+        .supplementaryOutputPaths.loadedModuleTracePath;
   }
   llvm::StringRef GetSerializedDiagnosticsPath() const {
     return GetPrimaryFileSpecificPaths()
-        .additionalOutputPaths.serializedDiagnosticsPath;
+        .supplementaryOutputPaths.serializedDiagnosticsPath;
   }
   llvm::StringRef GetFixItsOutputPath() const {
-    return GetPrimaryFileSpecificPaths().additionalOutputPaths.fixItsOutputPath;
+    return GetPrimaryFileSpecificPaths()
+        .supplementaryOutputPaths.fixItsOutputPath;
   }
 };
 } // namespace stone
