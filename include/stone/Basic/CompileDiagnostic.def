@@ -51,6 +51,10 @@ ERROR(err_implicit_output_file_is_directory,none,
       "the implicit output file '%0' is a directory; explicitly specify a "
       "filename using %1", (diag::LLVMStr, diag::LLVMStr))
 
+ERROR(err_wrong_number_of_arguments,none,
+      "wrong number of '%0' arguments (expected %1, got %2)",
+      (diag::LLVMStr, diag::Int, diag::Int))
+
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

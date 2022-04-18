@@ -376,36 +376,38 @@ SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
 
 // // Extend this routine for filelists if/when we have them.
 
-// Optional<std::vector<std::string>>
-// SupplementaryOutputPathsComputer::getSupplementaryFilenamesFromArguments(
-//     opts::OptID pathID) const {
-//   std::vector<std::string> paths = args.getAllArgValues(pathID);
+Optional<std::vector<std::string>>
+SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
+    opts::OptID pathID) const {
+  std::vector<std::string> paths = args.getAllArgValues(pathID);
 
-//   const unsigned N =
-//       inputsAndOutputs.countOfFilesProducingSupplementaryOutput();
+  const unsigned N =
+      inputsAndOutputs.CountOfFilesProducingSupplementaryOutput();
 
-//   if (paths.size() == N)
-//     return paths;
-//   else if (pathID == opts::emit_loaded_module_trace_path &&
-//            paths.size() < N) {
-//     // We only need one file to output the module trace file because they
-//     // are all equivalent. Add supplementary empty output paths for module
-//     trace to
-//     // make sure the compiler won't panic for
-//     diag::error_wrong_number_of_arguments. for(unsigned I = paths.size(); I
-//     != N; I ++)
-//       paths.emplace_back();
-//     return paths;
-//   }
+  if (paths.size() == N){
+    return paths;
+  }
+  else if (pathID == opts::EmitLoadedModuleTracePath &&
+           paths.size() < N) {
+    // We only need one file to output the module trace file because they
+    // are all equivalent. Add supplementary empty output paths for moduletrace to
+    // make sure the compiler won't panic for diag::err_wrong_number_of_arguments.
 
-//   if (paths.empty())
-//     return std::vector<std::string>(N, std::string());
+    for(unsigned I = paths.size(); I != N; I ++){
+      paths.emplace_back();
+    }
+    return paths;
+  }
 
-//   de.PrintD(SrcLoc(), diag::error_wrong_number_of_arguments,
-//                  args.getLastArg(pathID)->getOption().getPrefixedName(), N,
-//                  paths.size());
-//   return None;
-// }
+  if (paths.empty()){
+    return std::vector<std::string>(N, std::string());
+  }
+
+  de.PrintD(SrcLoc(), diag::err_wrong_number_of_arguments,
+                 diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()), diag::Int(N),
+                 diag::Int(paths.size()));
+  return llvm::None;
+}
 
 // Optional<SupplementaryOutputPaths>
 // SupplementaryOutputPathsComputer::computeOutputPathsForOneInput(

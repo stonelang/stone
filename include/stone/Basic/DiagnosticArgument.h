@@ -46,7 +46,7 @@ enum class ArgumentKind {
   LLVMStr,
 
   /// int
-  SInt,
+  Int,
 
   /// unsigned
   UInt,
@@ -117,13 +117,13 @@ public:
   const char *GetVal() const { return val; }
 };
 
-struct SInt final : public Argument {
+struct Int final : public Argument {
   const int val;
 
 public:
-  SInt() = delete;
+  Int() = delete;
 
-  explicit SInt(const int val) : Argument(ArgumentKind::SInt), val(val) {}
+  explicit Int(const int val) : Argument(ArgumentKind::Int), val(val) {}
 
   int GetVal() const { return val; }
 };

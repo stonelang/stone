@@ -237,4 +237,15 @@ def IndexUnitOutputPath : Separate<["-"], "index-unit-output-path">,
   HelpText<"Use <path> as the output path in the produced index data.">;
 
 
+def EmitLoadedModuleTracePath : Separate<["-"], "emit-loaded-module-trace-path">,
+  Flags<[LangOption, ArgumentIsPath,
+         SupplementaryOutput]>,
+  HelpText<"Emit the loaded module trace JSON to <path>">,
+  MetaVarName<"<path>">;
+def EmitLoadedModuleTracePathEQ : Joined<["-"], "emit-loaded-module-trace-path=">,
+  Flags<[LangOption, ArgumentIsPath,
+         SupplementaryOutput]>,
+  Alias<EmitLoadedModuleTracePath>;
+
+
 include "LangOptions.td"
