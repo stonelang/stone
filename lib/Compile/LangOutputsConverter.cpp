@@ -384,28 +384,28 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
   const unsigned N =
       inputsAndOutputs.CountOfFilesProducingSupplementaryOutput();
 
-  if (paths.size() == N){
+  if (paths.size() == N) {
     return paths;
-  }
-  else if (pathID == opts::EmitLoadedModuleTracePath &&
-           paths.size() < N) {
+  } else if (pathID == opts::EmitLoadedModuleTracePath && paths.size() < N) {
     // We only need one file to output the module trace file because they
-    // are all equivalent. Add supplementary empty output paths for moduletrace to
-    // make sure the compiler won't panic for diag::err_wrong_number_of_arguments.
+    // are all equivalent. Add supplementary empty output paths for moduletrace
+    // to make sure the compiler won't panic for
+    // diag::err_wrong_number_of_arguments.
 
-    for(unsigned I = paths.size(); I != N; I ++){
+    for (unsigned I = paths.size(); I != N; I++) {
       paths.emplace_back();
     }
     return paths;
   }
 
-  if (paths.empty()){
+  if (paths.empty()) {
     return std::vector<std::string>(N, std::string());
   }
 
-  de.PrintD(SrcLoc(), diag::err_wrong_number_of_arguments,
-                 diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()), diag::Int(N),
-                 diag::Int(paths.size()));
+  de.PrintD(
+      SrcLoc(), diag::err_wrong_number_of_arguments,
+      diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()),
+      diag::Int(N), diag::Int(paths.size()));
   return llvm::None;
 }
 
@@ -519,18 +519,19 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 //   return sop;
 // }
 
-// StringRef SupplementaryOutputPathsComputer::
-//     deriveDefaultSupplementaryOutputPathExcludingExtension(
-//         StringRef outputFilename, const LangInputFile &input) const {
-//   // Put the supplementary output file next to the output file if possible.
-//   if (!outputFilename.empty() && outputFilename != "-")
-//     return outputFilename;
+llvm::StringRef SupplementaryOutputPathsComputer::
+    DeriveDefaultSupplementaryOutputPathExcludingExtension(
+        llvm::StringRef outputFilename, const LangInputFile &input) const {
 
-//   if (input.isPrimary() && input.getFileName() != "-")
-//     return llvm::sys::path::filename(input.getFileName());
-
-//   return moduleName;
-// }
+  // Put the supplementary output file next to the output file if possible.
+  if (!outputFilename.empty() && outputFilename != LangOptions::dash) {
+    return outputFilename;
+  }
+  if (input.IsPrimary() && input.GetFileName() != LangOptions::dash) {
+    return llvm::sys::path::filename(input.GetFileName());
+  }
+  return moduleName;
+}
 
 // std::string
 // SupplementaryOutputPathsComputer::determineSupplementaryOutputFilename(
