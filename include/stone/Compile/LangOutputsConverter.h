@@ -44,7 +44,7 @@ public:
   ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
-struct OutputOptInfo {
+struct LangOutputOptInfo {
   StringRef PrettyName;
   opts::OptID SingleID;
   opts::OptID FilelistID;
@@ -61,7 +61,7 @@ class LangOutputFilesComputer {
   const llvm::opt::Arg *const moduleNameArg;
   const StringRef Suffix;
   const bool HasTextualOutput;
-  const OutputOptInfo OutputInfo;
+  const LangOutputOptInfo OutputInfo;
 
   LangOutputFilesComputer(DiagnosticEngine &de,
                           const LangInputsAndOutputs &inputsAndOutputs,
@@ -69,12 +69,12 @@ class LangOutputFilesComputer {
                           StringRef outputDirectoryArgument,
                           StringRef firstInput, const Mode &mode,
                           const llvm::opt::Arg *moduleNameArg, StringRef suffix,
-                          bool hasTextualOutput, OutputOptInfo optInfo);
+                          bool hasTextualOutput, LangOutputOptInfo optInfo);
 
 public:
   static Optional<LangOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
-         const LangInputsAndOutputs &inputsAndOutputs, OutputOptInfo optInfo,
+         const LangInputsAndOutputs &inputsAndOutputs, LangOutputOptInfo optInfo,
          Mode &mode);
 
   /// \return the output filenames on the command line or in the output

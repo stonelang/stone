@@ -116,7 +116,7 @@ llvm::Optional<LangOutputFilesComputer>
 LangOutputFilesComputer::Create(const llvm::opt::ArgList &args,
                                 DiagnosticEngine &de,
                                 const LangInputsAndOutputs &inputsAndOutputs,
-                                OutputOptInfo optInfo, Mode &mode) {
+                                LangOutputOptInfo optInfo, Mode &mode) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -160,7 +160,7 @@ LangOutputFilesComputer::LangOutputFilesComputer(
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
     const Mode &mode, const llvm::opt::Arg *moduleNameArg,
-    const StringRef suffix, const bool hasTextualOutput, OutputOptInfo optInfo)
+    const StringRef suffix, const bool hasTextualOutput, LangOutputOptInfo optInfo)
     : de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFileArguments(outputFileArguments),
       OutputDirectoryArgument(outputDirectoryArgument), FirstInput(firstInput),
