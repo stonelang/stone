@@ -160,103 +160,99 @@ LangOutputFilesComputer::LangOutputFilesComputer(
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
     const Mode &mode, const llvm::opt::Arg *moduleNameArg,
-    const StringRef suffix, const bool hasTextualOutput, LangOutputOptInfo optInfo)
+    const StringRef suffix, const bool hasTextualOutput,
+    LangOutputOptInfo optInfo)
     : de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFileArguments(outputFileArguments),
       OutputDirectoryArgument(outputDirectoryArgument), FirstInput(firstInput),
       mode(mode), moduleNameArg(moduleNameArg), Suffix(suffix),
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
-// llvm::Optional<std::vector<std::string>>
-// LangOutputFilesComputer::ComputeOutputFiles() const {
-//   std::vector<std::string> outputFiles;
-//   unsigned i = 0;
-//   bool hadError = InputsAndOutputs.forEachInputProducingAMainOutputFile(
-//       [&](const InputFile &input) -> bool {
+llvm::Optional<std::vector<std::string>>
+LangOutputFilesComputer::ComputeOutputFiles() const {
+  std::vector<std::string> outputFiles;
+  unsigned i = 0;
+  bool hadError = inputsAndOutputs.ForEachInputProducingAMainOutputFile(
+      [&](const LangInputFile &input) -> bool {
+        StringRef outputArg = OutputFileArguments.empty()
+                                  ? llvm::StringRef()
+                                  : llvm::StringRef(OutputFileArguments[i++]);
 
-//         StringRef outputArg = OutputFileArguments.empty()
-//                                   ? StringRef()
-//                                   : StringRef(OutputFileArguments[i++]);
+        llvm::Optional<std::string> outputFile =
+            ComputeOutputFile(outputArg, input);
+        if (!outputFile)
+          return true;
+        outputFiles.push_back(*outputFile);
+        return false;
+      });
+  return hadError ? llvm::None
+                  : llvm::Optional<std::vector<std::string>>(outputFiles);
+}
 
-//         Optional<std::string> outputFile = computeOutputFile(outputArg,
-//         input); if (!outputFile)
-//           return true;
-//         outputFiles.push_back(*outputFile);
-//         return false;
-//       });
-//   return hadError ? None : Optional<std::vector<std::string>>(outputFiles);
-// }
+llvm::Optional<std::string> LangOutputFilesComputer::ComputeOutputFile(
+    StringRef outputArg, const LangInputFile &input) const {
+  // Return an empty string to signify no output.
+  // The frontend does not currently produce a diagnostic
+  // if a -o argument is present for such an action
+  // for instance stonec -frontend -o foo -interpret foo.stone
+  if (!mode.CanOutput()) {
+    return std::string();
+  }
+  if (!OutputDirectoryArgument.empty()) {
+    return DeriveOutputFileForDirectory(input);
+  }
+  if (!outputArg.empty()) {
+    return outputArg.str();
+  }
 
-// llvm::Optional<std::string>
-// llvm::LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
-//                                        const InputFile &input) const {
-//   // Return an empty string to signify no output.
-//   // The frontend does not currently produce a diagnostic
-//   // if a -o argument is present for such an action
-//   // for instance stonec -frontend -o foo -interpret foo.stone
-//   if (!FrontendOptions::doesActionProduceOutput(RequestedAction)){
-//     return std::string();
-//   }
+  return DeriveOutputFileFromInput(input);
+}
 
-//   if (!OutputDirectoryArgument.empty()){
-//     return DeriveOutputFileForDirectory(input);
-//   }
+llvm::Optional<std::string> LangOutputFilesComputer::DeriveOutputFileFromInput(
+    const LangInputFile &input) const {
 
-//   if (!outputArg.empty()){
-//     return outputArg.str();
-//   }
+  if (input.GetFileName() == LangOptions::dash || HasTextualOutput) {
+    return std::string(LangOptions::dash);
+  }
 
-//   return DeriveOutputFileFromInput(input);
-// }
+  std::string baseName = DetermineBaseNameOfOutput(input);
+  if (baseName.empty()) {
+    // Assuming FrontendOptions::doesActionProduceOutput(RequestedAction)
+    de.PrintD(SrcLoc(), diag::err_no_output_filename_specified, diag::LLVMStr(OutputInfo.PrettyName));
+    return llvm::None;
+  }
+  return DeriveOutputFileFromParts("", baseName);
+}
 
-// Optional<std::string>
-// LangOutputFilesComputer::deriveOutputFileFromInput(const InputFile &input)
-// const
-// {
-//   if (input.getFileName() == "-" || HasTextualOutput)
-//     return std::string("-");
+Optional<std::string> LangOutputFilesComputer::DeriveOutputFileForDirectory(
+    const LangInputFile &input) const {
+  std::string baseName = DetermineBaseNameOfOutput(input);
+  if (baseName.empty()) {
+    de.PrintD(SrcLoc(), diag::err_implicit_output_file_is_directory,
+              diag::LLVMStr(OutputDirectoryArgument),
+              diag::LLVMStr(OutputInfo.SingleOptSpelling));
+    return None;
+  }
+  return DeriveOutputFileFromParts(OutputDirectoryArgument, baseName);
+}
 
-//   std::string baseName = determineBaseNameOfOutput(input);
-//   if (baseName.empty()) {
-//     // Assuming FrontendOptions::doesActionProduceOutput(RequestedAction)
-//     de.PrintD(SrcLoc(), diag::error_no_output_filename_specified,
-//                    OutputInfo.PrettyName);
-//     return None;
-//   }
-//   return deriveOutputFileFromParts("", baseName);
-// }
+std::string LangOutputFilesComputer::DetermineBaseNameOfOutput(
+    const LangInputFile &input) const {
+  std::string nameToStem = input.IsPrimary() ? input.GetFileName()
+                           : moduleNameArg   ? moduleNameArg->getValue()
+                                             : FirstInput;
+  return llvm::sys::path::stem(nameToStem).str();
+}
 
-// Optional<std::string> LangOutputFilesComputer::deriveOutputFileForDirectory(
-//     const InputFile &input) const {
-//   std::string baseName = determineBaseNameOfOutput(input);
-//   if (baseName.empty()) {
-//     de.PrintD(SrcLoc(), diag::error_implicit_output_file_is_directory,
-//                    OutputDirectoryArgument, OutputInfo.SingleOptSpelling);
-//     return None;
-//   }
-//   return deriveOutputFileFromParts(OutputDirectoryArgument, baseName);
-// }
-
-// std::string
-// LangOutputFilesComputer::determineBaseNameOfOutput(const InputFile &input)
-// const
-// {
-//   std::string nameToStem =
-//       input.isPrimary()
-//           ? input.getFileName()
-//           : moduleNameArg ? moduleNameArg->getValue() : FirstInput;
-//   return llvm::sys::path::stem(nameToStem).str();
-// }
-
-// std::string
-// LangOutputFilesComputer::deriveOutputFileFromParts(StringRef dir,
-//                                                StringRef base) const {
-//   assert(!base.empty());
-//   llvm::SmallString<128> path(dir);
-//   llvm::sys::path::append(path, base);
-//   llvm::sys::path::replace_extension(path, Suffix);
-//   return std::string(path.str());
-// }
+std::string
+LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
+                                                   StringRef base) const {
+  assert(!base.empty());
+  llvm::SmallString<128> path(dir);
+  llvm::sys::path::append(path, base);
+  llvm::sys::path::replace_extension(path, Suffix);
+  return std::string(path.str());
+}
 
 // SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 //     const ArgList &args, DiagnosticEngine &de,
@@ -292,7 +288,7 @@ LangOutputFilesComputer::LangOutputFilesComputer(
 //   std::vector<SupplementaryOutputPaths> outputPaths;
 //   unsigned i = 0;
 //   bool hadError = InputsAndOutputs.forEachInputProducingSupplementaryOutput(
-//       [&](const InputFile &input) -> bool {
+//       [&](const LangInputFile &input) -> bool {
 //         if (auto suppPaths = computeOutputPathsForOneInput(
 //                 OutputFiles[i], (*pathsFromUser)[i], input)) {
 //           ++i;
@@ -413,7 +409,7 @@ LangOutputFilesComputer::LangOutputFilesComputer(
 // Optional<SupplementaryOutputPaths>
 // SupplementaryOutputPathsComputer::computeOutputPathsForOneInput(
 //     StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
-//     const InputFile &input) const {
+//     const LangInputFile &input) const {
 //   StringRef defaultSupplementaryOutputPathExcludingExtension =
 //       deriveDefaultSupplementaryOutputPathExcludingExtension(outputFile,
 //       input);
@@ -522,7 +518,7 @@ LangOutputFilesComputer::LangOutputFilesComputer(
 
 // StringRef SupplementaryOutputPathsComputer::
 //     deriveDefaultSupplementaryOutputPathExcludingExtension(
-//         StringRef outputFilename, const InputFile &input) const {
+//         StringRef outputFilename, const LangInputFile &input) const {
 //   // Put the supplementary output file next to the output file if possible.
 //   if (!outputFilename.empty() && outputFilename != "-")
 //     return outputFilename;
@@ -673,7 +669,7 @@ LangOutputFilesComputer::LangOutputFilesComputer(
 //   std::vector<SupplementaryOutputPaths> outputPaths;
 //   bool hadError = false;
 //   InputsAndOutputs.forEachInputProducingSupplementaryOutput(
-//       [&](const InputFile &input) -> bool {
+//       [&](const LangInputFile &input) -> bool {
 //         const TypeToPathMap *mapForInput =
 //             outputFileMap->getOutputMapForInput(input.getFileName());
 //         if (!mapForInput) {

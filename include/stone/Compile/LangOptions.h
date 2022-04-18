@@ -34,6 +34,9 @@ class LangOptions final : public BaseOptions {
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
 public:
+  static constexpr const char* dash = "-";
+
+public:
   /// Options for the entire system
   SystemOptions systemOpts;
 

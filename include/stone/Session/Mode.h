@@ -24,7 +24,7 @@ public:
   llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
 
-  bool CanOutput() {
+  bool CanOutput() const {
     switch (GetKind()) {
     case ModeKind::DumpSyntax:
     case ModeKind::PrintSyntax:

@@ -74,8 +74,8 @@ class LangOutputFilesComputer {
 public:
   static Optional<LangOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
-         const LangInputsAndOutputs &inputsAndOutputs, LangOutputOptInfo optInfo,
-         Mode &mode);
+         const LangInputsAndOutputs &inputsAndOutputs,
+         LangOutputOptInfo optInfo, Mode &mode);
 
   /// \return the output filenames on the command line or in the output
   /// filelist. If there
