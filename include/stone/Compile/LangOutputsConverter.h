@@ -36,7 +36,7 @@ public:
   bool Convert(std::vector<std::string> &mainOutputs,
                std::vector<std::string> &mainOutputsForIndexUnits,
                std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
-               Mode &mode);
+               const Mode &mode);
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
@@ -75,7 +75,7 @@ public:
   static Optional<LangOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
          const LangInputsAndOutputs &inputsAndOutputs,
-         LangOutputOptInfo optInfo, Mode &mode);
+         LangOutputOptInfo optInfo, const Mode &mode);
 
   /// \return the output filenames on the command line or in the output
   /// filelist. If there
@@ -120,14 +120,14 @@ class SupplementaryOutputPathsComputer {
   const LangInputsAndOutputs &inputsAndOutputs;
   ArrayRef<std::string> OutputFiles;
   StringRef moduleName;
-  const ModeKind modeKind;
+  const Mode &mode;
 
 public:
   SupplementaryOutputPathsComputer(const llvm::opt::ArgList &args,
                                    DiagnosticEngine &de,
                                    const LangInputsAndOutputs &inputsAndOutputs,
                                    ArrayRef<std::string> outputFiles,
-                                   StringRef moduleName);
+                                   StringRef moduleName, const Mode &mode);
 
   Optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
 

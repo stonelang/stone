@@ -25,7 +25,7 @@ using namespace llvm::opt;
 bool LangOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
-    std::vector<SupplementaryOutputPaths> &supplementaryOutputs, Mode &mode) {
+    std::vector<SupplementaryOutputPaths> &supplementaryOutputs, const Mode &mode) {
 
   Optional<LangOutputFilesComputer> ofc = LangOutputFilesComputer::Create(
       args, de, inputsAndOutputs,
@@ -63,7 +63,7 @@ bool LangOutputsConverter::Convert(
 
   llvm::Optional<std::vector<SupplementaryOutputPaths>> supplementaries =
       SupplementaryOutputPathsComputer(args, de, inputsAndOutputs, *mains,
-                                       moduleName)
+                                       moduleName, mode)
           .ComputeOutputPaths();
 
   if (!supplementaries) {
@@ -116,7 +116,7 @@ llvm::Optional<LangOutputFilesComputer>
 LangOutputFilesComputer::Create(const llvm::opt::ArgList &args,
                                 DiagnosticEngine &de,
                                 const LangInputsAndOutputs &inputsAndOutputs,
-                                LangOutputOptInfo optInfo, Mode &mode) {
+                                LangOutputOptInfo optInfo, const Mode &mode) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -189,8 +189,9 @@ LangOutputFilesComputer::ComputeOutputFiles() const {
                   : llvm::Optional<std::vector<std::string>>(outputFiles);
 }
 
-llvm::Optional<std::string> LangOutputFilesComputer::ComputeOutputFile(
-    StringRef outputArg, const LangInputFile &input) const {
+llvm::Optional<std::string>
+LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
+                                           const LangInputFile &input) const {
   // Return an empty string to signify no output.
   // The frontend does not currently produce a diagnostic
   // if a -o argument is present for such an action
@@ -218,7 +219,8 @@ llvm::Optional<std::string> LangOutputFilesComputer::DeriveOutputFileFromInput(
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
     // Assuming FrontendOptions::doesActionProduceOutput(RequestedAction)
-    de.PrintD(SrcLoc(), diag::err_no_output_filename_specified, diag::LLVMStr(OutputInfo.PrettyName));
+    de.PrintD(SrcLoc(), diag::err_no_output_filename_specified,
+              diag::LLVMStr(OutputInfo.PrettyName));
     return llvm::None;
   }
   return DeriveOutputFileFromParts("", baseName);
@@ -254,17 +256,15 @@ LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
   return std::string(path.str());
 }
 
-// SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
-//     const ArgList &args, DiagnosticEngine &de,
-//     const LangInputsAndOutputs &inputsAndOutputs,
-//     ArrayRef<std::string> outputFiles, StringRef moduleName)
-//     : args(args), de(de), InputsAndOutputs(inputsAndOutputs),
-//       OutputFiles(outputFiles), moduleName(moduleName),
-//       RequestedAction(
-//           LangOptionsConverter::determineRequestedAction(args)) {}
+SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
+    const ArgList &args, DiagnosticEngine &de,
+    const LangInputsAndOutputs &inputsAndOutputs,
+    ArrayRef<std::string> outputFiles, StringRef moduleName, const Mode &mode)
+    : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
+      OutputFiles(outputFiles), moduleName(moduleName), mode(mode) {}
 
-// Optional<std::vector<SupplementaryOutputPaths>>
-// SupplementaryOutputPathsComputer::computeOutputPaths() const {
+// llvm::Optional<std::vector<SupplementaryOutputPaths>>
+// SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
 //   Optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
 //       args.hasArg(opts::supplementary_output_file_map)
 //           ? readSupplementaryOutputFileMap()
@@ -287,9 +287,9 @@ LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
 
 //   std::vector<SupplementaryOutputPaths> outputPaths;
 //   unsigned i = 0;
-//   bool hadError = InputsAndOutputs.forEachInputProducingSupplementaryOutput(
+//   bool hadError = inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
 //       [&](const LangInputFile &input) -> bool {
-//         if (auto suppPaths = computeOutputPathsForOneInput(
+//         if (auto suppPaths = ComputeOutputPathsForOneInput(
 //                 OutputFiles[i], (*pathsFromUser)[i], input)) {
 //           ++i;
 //           outputPaths.push_back(*suppPaths);
@@ -303,7 +303,7 @@ LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
 // }
 
 // Optional<std::vector<SupplementaryOutputPaths>>
-// SupplementaryOutputPathsComputer::getSupplementaryOutputPathsFromArguments()
+// SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
 //     const {
 
 //   auto objCHeaderOutput = getSupplementaryFilenamesFromArguments(
