@@ -181,7 +181,7 @@ LangInputsConverter::CreateInputFilesConsumingPrimaries(
 
   if (!files.empty() && !hasAnyPrimaryFiles) {
     llvm::Optional<std::vector<std::string>> userSuppliedNamesOrErr =
-        OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+        LangOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
             args, de, opts::o, opts::OutputFileList);
     if (userSuppliedNamesOrErr && userSuppliedNamesOrErr->size() == 1) {
       result.SetIsSingleThreadedWMO(true);

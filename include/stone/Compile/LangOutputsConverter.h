@@ -51,7 +51,7 @@ struct OutputOptInfo {
   StringRef SingleOptSpelling;
 };
 
-class OutputFilesComputer {
+class LangOutputFilesComputer {
   DiagnosticEngine &de;
   const LangInputsAndOutputs &inputsAndOutputs;
   const std::vector<std::string> OutputFileArguments;
@@ -63,16 +63,16 @@ class OutputFilesComputer {
   const bool HasTextualOutput;
   const OutputOptInfo OutputInfo;
 
-  OutputFilesComputer(DiagnosticEngine &de,
-                      const LangInputsAndOutputs &inputsAndOutputs,
-                      std::vector<std::string> outputFileArguments,
-                      StringRef outputDirectoryArgument, StringRef firstInput,
-                      const Mode &mode, const llvm::opt::Arg *moduleNameArg,
-                      StringRef suffix, bool hasTextualOutput,
-                      OutputOptInfo optInfo);
+  LangOutputFilesComputer(DiagnosticEngine &de,
+                          const LangInputsAndOutputs &inputsAndOutputs,
+                          std::vector<std::string> outputFileArguments,
+                          StringRef outputDirectoryArgument,
+                          StringRef firstInput, const Mode &mode,
+                          const llvm::opt::Arg *moduleNameArg, StringRef suffix,
+                          bool hasTextualOutput, OutputOptInfo optInfo);
 
 public:
-  static Optional<OutputFilesComputer>
+  static Optional<LangOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
          const LangInputsAndOutputs &inputsAndOutputs, OutputOptInfo optInfo,
          Mode &mode);

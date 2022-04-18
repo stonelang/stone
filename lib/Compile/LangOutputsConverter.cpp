@@ -27,7 +27,7 @@ bool LangOutputsConverter::Convert(
     std::vector<std::string> &mainOutputsForIndexUnits,
     std::vector<SupplementaryOutputPaths> &supplementaryOutputs, Mode &mode) {
 
-  Optional<OutputFilesComputer> ofc = OutputFilesComputer::Create(
+  Optional<LangOutputFilesComputer> ofc = LangOutputFilesComputer::Create(
       args, de, inputsAndOutputs,
       {"output", opts::o, opts::OutputFileList, "-o"}, mode);
 
@@ -43,11 +43,12 @@ bool LangOutputsConverter::Convert(
   if (args.hasArg(opts::IndexUnitOutputPath,
                   opts::IndexUnitOutputPathFileList)) {
 
-    llvm::Optional<OutputFilesComputer> iuofc = OutputFilesComputer::Create(
-        args, de, inputsAndOutputs,
-        {"index unit output path", opts::IndexUnitOutputPath,
-         opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
-        mode);
+    llvm::Optional<LangOutputFilesComputer> iuofc =
+        LangOutputFilesComputer::Create(
+            args, de, inputsAndOutputs,
+            {"index unit output path", opts::IndexUnitOutputPath,
+             opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
+            mode);
 
     if (!iuofc) {
       return true;
@@ -96,7 +97,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 }
 
 llvm::Optional<std::vector<std::string>>
-OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+LangOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
     const ArgList &args, DiagnosticEngine &de, opts::OptID singleOpt,
     opts::OptID fileListOpt) {
   if (const Arg *A = args.getLastArg(fileListOpt)) {
@@ -111,11 +112,11 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
   return args.getAllArgValues(singleOpt);
 }
 
-llvm::Optional<OutputFilesComputer>
-OutputFilesComputer::Create(const llvm::opt::ArgList &args,
-                            DiagnosticEngine &de,
-                            const LangInputsAndOutputs &inputsAndOutputs,
-                            OutputOptInfo optInfo, Mode &mode) {
+llvm::Optional<LangOutputFilesComputer>
+LangOutputFilesComputer::Create(const llvm::opt::ArgList &args,
+                                DiagnosticEngine &de,
+                                const LangInputsAndOutputs &inputsAndOutputs,
+                                OutputOptInfo optInfo, Mode &mode) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -147,14 +148,14 @@ OutputFilesComputer::Create(const llvm::opt::ArgList &args,
   const file::Type outputType =
       LangOptions::GetFileTypeByModeKind(mode.GetKind());
 
-  return OutputFilesComputer(
+  return LangOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, mode,
       args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
       mode.CanOutput(), optInfo);
 }
 
-OutputFilesComputer::OutputFilesComputer(
+LangOutputFilesComputer::LangOutputFilesComputer(
     DiagnosticEngine &de, const LangInputsAndOutputs &inputsAndOutputs,
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
@@ -167,7 +168,7 @@ OutputFilesComputer::OutputFilesComputer(
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
 // llvm::Optional<std::vector<std::string>>
-// OutputFilesComputer::ComputeOutputFiles() const {
+// LangOutputFilesComputer::ComputeOutputFiles() const {
 //   std::vector<std::string> outputFiles;
 //   unsigned i = 0;
 //   bool hadError = InputsAndOutputs.forEachInputProducingAMainOutputFile(
@@ -186,27 +187,31 @@ OutputFilesComputer::OutputFilesComputer(
 //   return hadError ? None : Optional<std::vector<std::string>>(outputFiles);
 // }
 
-// Optional<std::string>
-// OutputFilesComputer::ComputeOutputFile(StringRef outputArg,
+// llvm::Optional<std::string>
+// llvm::LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
 //                                        const InputFile &input) const {
 //   // Return an empty string to signify no output.
 //   // The frontend does not currently produce a diagnostic
 //   // if a -o argument is present for such an action
 //   // for instance stonec -frontend -o foo -interpret foo.stone
-//   if (!FrontendOptions::doesActionProduceOutput(RequestedAction))
+//   if (!FrontendOptions::doesActionProduceOutput(RequestedAction)){
 //     return std::string();
+//   }
 
-//   if (!OutputDirectoryArgument.empty())
-//     return deriveOutputFileForDirectory(input);
+//   if (!OutputDirectoryArgument.empty()){
+//     return DeriveOutputFileForDirectory(input);
+//   }
 
-//   if (!outputArg.empty())
+//   if (!outputArg.empty()){
 //     return outputArg.str();
+//   }
 
-//   return deriveOutputFileFromInput(input);
+//   return DeriveOutputFileFromInput(input);
 // }
 
 // Optional<std::string>
-// OutputFilesComputer::deriveOutputFileFromInput(const InputFile &input) const
+// LangOutputFilesComputer::deriveOutputFileFromInput(const InputFile &input)
+// const
 // {
 //   if (input.getFileName() == "-" || HasTextualOutput)
 //     return std::string("-");
@@ -221,7 +226,7 @@ OutputFilesComputer::OutputFilesComputer(
 //   return deriveOutputFileFromParts("", baseName);
 // }
 
-// Optional<std::string> OutputFilesComputer::deriveOutputFileForDirectory(
+// Optional<std::string> LangOutputFilesComputer::deriveOutputFileForDirectory(
 //     const InputFile &input) const {
 //   std::string baseName = determineBaseNameOfOutput(input);
 //   if (baseName.empty()) {
@@ -233,7 +238,8 @@ OutputFilesComputer::OutputFilesComputer(
 // }
 
 // std::string
-// OutputFilesComputer::determineBaseNameOfOutput(const InputFile &input) const
+// LangOutputFilesComputer::determineBaseNameOfOutput(const InputFile &input)
+// const
 // {
 //   std::string nameToStem =
 //       input.isPrimary()
@@ -243,7 +249,7 @@ OutputFilesComputer::OutputFilesComputer(
 // }
 
 // std::string
-// OutputFilesComputer::deriveOutputFileFromParts(StringRef dir,
+// LangOutputFilesComputer::deriveOutputFileFromParts(StringRef dir,
 //                                                StringRef base) const {
 //   assert(!base.empty());
 //   llvm::SmallString<128> path(dir);
