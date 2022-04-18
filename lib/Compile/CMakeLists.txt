@@ -5,6 +5,7 @@ set(stone_compile_sources
 	LangInputsConverter.cpp
 	LangInstance.cpp
 	LangInvocation.cpp
+	LangOptions.cpp
 	LangOptionsConverter.cpp
 	LangOutputsConverter.cpp
 	ModuleSystem.cpp

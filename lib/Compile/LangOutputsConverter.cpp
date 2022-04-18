@@ -25,11 +25,11 @@ using namespace llvm::opt;
 bool LangOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
-    std::vector<SupplementaryOutputPaths> &supplementaryOutputs) {
+    std::vector<SupplementaryOutputPaths> &supplementaryOutputs, Mode &mode) {
 
   Optional<OutputFilesComputer> ofc = OutputFilesComputer::Create(
       args, de, inputsAndOutputs,
-      {"output", opts::o, opts::OutputFileList, "-o"});
+      {"output", opts::o, opts::OutputFileList, "-o"}, mode);
 
   if (!ofc) {
     return true;
@@ -46,7 +46,8 @@ bool LangOutputsConverter::Convert(
     llvm::Optional<OutputFilesComputer> iuofc = OutputFilesComputer::Create(
         args, de, inputsAndOutputs,
         {"index unit output path", opts::IndexUnitOutputPath,
-         opts::IndexUnitOutputPathFileList, "-index-unit-output-path"});
+         opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
+        mode);
 
     if (!iuofc) {
       return true;
@@ -110,58 +111,52 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
   return args.getAllArgValues(singleOpt);
 }
 
-// Optional<OutputFilesComputer>
-// OutputFilesComputer::create(const llvm::opt::ArgList &args,
-//                             DiagnosticEngine &de,
-//                             const FrontendInputsAndOutputs &inputsAndOutputs,
-//                             OutputOptInfo optInfo) {
-//   Optional<std::vector<std::string>> outputArguments =
-//       getOutputFilenamesFromCommandLineOrFilelist(args, de,
-//       optInfo.SingleID,
-//                                                   optInfo.FilelistID);
-//   if (!outputArguments)
-//     return None;
-//   const StringRef outputDirectoryArgument =
-//       outputArguments->size() == 1 &&
-//               llvm::sys::fs::is_directory(outputArguments->front())
-//           ? StringRef(outputArguments->front())
-//           : StringRef();
-//   ArrayRef<std::string> outputFileArguments =
-//       outputDirectoryArgument.empty() ?
-//       ArrayRef<std::string>(*outputArguments)
-//                                       : ArrayRef<std::string>();
-//   const StringRef firstInput =
-//       inputsAndOutputs.hasSingleInput()
-//           ? StringRef(inputsAndOutputs.getFilenameOfFirstInput())
-//           : StringRef();
-//   const FrontendOptions::ActionType requestedAction =
-//       LangOptionsConverter::determineRequestedAction(args);
+llvm::Optional<OutputFilesComputer>
+OutputFilesComputer::Create(const llvm::opt::ArgList &args,
+                            DiagnosticEngine &de,
+                            const LangInputsAndOutputs &inputsAndOutputs,
+                            OutputOptInfo optInfo, Mode &mode) {
+  Optional<std::vector<std::string>> outputArguments =
+      GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
+                                                  optInfo.FilelistID);
+  if (!outputArguments)
+    return None;
+  const StringRef outputDirectoryArgument =
+      outputArguments->size() == 1 &&
+              llvm::sys::fs::is_directory(outputArguments->front())
+          ? llvm::StringRef(outputArguments->front())
+          : llvm::StringRef();
+  ArrayRef<std::string> outputFileArguments =
+      outputDirectoryArgument.empty()
+          ? llvm::ArrayRef<std::string>(*outputArguments)
+          : llvm::ArrayRef<std::string>();
+  const StringRef firstInput =
+      inputsAndOutputs.HasSingleInput()
+          ? llvm::StringRef(inputsAndOutputs.GetFilenameOfFirstInput())
+          : llvm::StringRef();
 
-//   if (!outputFileArguments.empty() &&
-//       outputFileArguments.size() !=
-//           inputsAndOutputs.countOfInputsProducingMainOutputs()) {
-//     de.diagnose(
-//         SourceLoc(),
-//         diag::error_if_any_output_files_are_specified_they_all_must_be,
-//         optInfo.PrettyName);
-//     return None;
-//   }
+  if (!outputFileArguments.empty() &&
+      outputFileArguments.size() !=
+          inputsAndOutputs.CountOfInputsProducingMainOutputs()) {
+    de.PrintD(SrcLoc(),
+              diag::err_if_any_output_files_are_specified_they_all_must_be,
+              diag::LLVMStr(optInfo.PrettyName));
+    return llvm::None;
+  }
 
-//   const file_types::ID outputType =
-//       FrontendOptions::formatForPrincipalOutputFileForAction(requestedAction);
+  const file::Type outputType =
+      LangOptions::GetFileTypeByModeKind(mode.GetKind());
 
-//   return OutputFilesComputer(
-//       de, inputsAndOutputs, std::move(outputFileArguments),
-//       outputDirectoryArgument, firstInput, requestedAction,
-//       args.getLastArg(opts::module_name),
-//       file_types::getExtension(outputType),
-//       FrontendOptions::doesActionProduceTextualOutput(requestedAction),
-//       optInfo);
-// }
+  return OutputFilesComputer(
+      de, inputsAndOutputs, std::move(outputFileArguments),
+      outputDirectoryArgument, firstInput, mode,
+      args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
+      mode.CanOutput(), optInfo);
+}
 
 // OutputFilesComputer::OutputFilesComputer(
 //     DiagnosticEngine &de,
-//     const FrontendInputsAndOutputs &inputsAndOutputs,
+//     const LangInputsAndOutputs &inputsAndOutputs,
 //     std::vector<std::string> outputFileArguments,
 //     const StringRef outputDirectoryArgument, const StringRef firstInput,
 //     const FrontendOptions::ActionType requestedAction,
@@ -222,7 +217,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //   std::string baseName = determineBaseNameOfOutput(input);
 //   if (baseName.empty()) {
 //     // Assuming FrontendOptions::doesActionProduceOutput(RequestedAction)
-//     de.diagnose(SourceLoc(), diag::error_no_output_filename_specified,
+//     de.PrintD(SrcLoc(), diag::error_no_output_filename_specified,
 //                    OutputInfo.PrettyName);
 //     return None;
 //   }
@@ -233,7 +228,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //     const InputFile &input) const {
 //   std::string baseName = determineBaseNameOfOutput(input);
 //   if (baseName.empty()) {
-//     de.diagnose(SourceLoc(), diag::error_implicit_output_file_is_directory,
+//     de.PrintD(SrcLoc(), diag::error_implicit_output_file_is_directory,
 //                    OutputDirectoryArgument, OutputInfo.SingleOptSpelling);
 //     return None;
 //   }
@@ -262,7 +257,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 
 // SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 //     const ArgList &args, DiagnosticEngine &de,
-//     const FrontendInputsAndOutputs &inputsAndOutputs,
+//     const LangInputsAndOutputs &inputsAndOutputs,
 //     ArrayRef<std::string> outputFiles, StringRef moduleName)
 //     : args(args), de(de), InputsAndOutputs(inputsAndOutputs),
 //       OutputFiles(outputFiles), moduleName(moduleName),
@@ -406,7 +401,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //   if (paths.empty())
 //     return std::vector<std::string>(N, std::string());
 
-//   de.diagnose(SourceLoc(), diag::error_wrong_number_of_arguments,
+//   de.PrintD(SrcLoc(), diag::error_wrong_number_of_arguments,
 //                  args.getLastArg(pathID)->getOption().getPrefixedName(), N,
 //                  paths.size());
 //   return None;
@@ -537,7 +532,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 
 // std::string
 // SupplementaryOutputPathsComputer::determineSupplementaryOutputFilename(
-//     opts::OptID emitOpt, std::string pathFromArguments, file_types::ID type,
+//     opts::OptID emitOpt, std::string pathFromArguments, file::Type type,
 //     StringRef mainOutputIfUsable,
 //     StringRef defaultSupplementaryOutputPathExcludingExtension) const {
 
@@ -590,7 +585,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //   SupplementaryOutputPaths paths;
 //   if (!map)
 //     return paths;
-//   const std::pair<file_types::ID, std::string &> typesAndStrings[] = {
+//   const std::pair<file::Type, std::string &> typesAndStrings[] = {
 //       {file_types::TY_ObjCHeader, paths.ObjCHeaderOutputPath},
 //       {file_types::TY_SwiftModuleFile, paths.ModuleOutputPath},
 //       {file_types::TY_SwiftModuleDocFile, paths.ModuleDocOutputPath},
@@ -609,7 +604,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //       {file_types::TY_BitstreamOptRecord, paths.BitstreamOptRecordPath},
 //       {file_types::TY_SwiftABIDescriptor, paths.ABIDescriptorOutputPath},
 //   };
-//   for (const std::pair<file_types::ID, std::string &> &typeAndString :
+//   for (const std::pair<file::Type, std::string &> &typeAndString :
 //        typesAndStrings) {
 //     auto const out = map->find(typeAndString.first);
 //     typeAndString.second = out == map->end() ? "" : out->second;
@@ -631,7 +626,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //         opts::emit_private_module_interface_path,
 //         opts::emit_module_source_info_path,
 //         opts::emit_tbd_path)) {
-//     de.diagnose(SourceLoc(),
+//     de.PrintD(SrcLoc(),
 //                    diag::error_cannot_have_supplementary_outputs,
 //                    A->getSpelling(), "-supplementary-output-file-map");
 //     return None;
@@ -644,7 +639,7 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //   {
 //     if (StringRef(A->getValue()).getAsInteger(10,
 //     BadFileDescriptorRetryCount)) {
-//       de.diagnose(SourceLoc(), diag::error_invalid_arg_value,
+//       de.PrintD(SrcLoc(), diag::error_invalid_arg_value,
 //                      A->getAsString(args), A->getValue());
 //       return None;
 //     }
@@ -659,14 +654,14 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //       break;
 //   }
 //   if (!buffer) {
-//     de.diagnose(SourceLoc(), diag::cannot_open_file,
+//     de.PrintD(SrcLoc(), diag::cannot_open_file,
 //                    supplementaryFileMapPath, buffer.getError().message());
 //     return None;
 //   }
 //   llvm::Expected<OutputFileMap> outputFileMap =
 //       OutputFileMap::loadFromBuffer(std::move(buffer.get()), "");
 //   if (auto Err = outputFileMap.takeError()) {
-//     de.diagnose(SourceLoc(),
+//     de.PrintD(SrcLoc(),
 //                    diag::error_unable_to_load_supplementary_output_file_map,
 //                    supplementaryFileMapPath, llvm::toString(std::move(Err)));
 //     return None;
@@ -679,8 +674,8 @@ OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 //         const TypeToPathMap *mapForInput =
 //             outputFileMap->getOutputMapForInput(input.getFileName());
 //         if (!mapForInput) {
-//           de.diagnose(
-//               SourceLoc(),
+//           de.PrintD(
+//               SrcLoc(),
 //               diag::error_missing_entry_in_supplementary_output_file_map,
 //               supplementaryFileMapPath, input.getFileName());
 //           hadError = true;

@@ -1,6 +1,7 @@
 #ifndef STONE_SESSION_MODE_H
 #define STONE_SESSION_MODE_H
 
+#include "stone/Basic/File.h"
 #include "stone/Session/ModeKind.h"
 #include "llvm/Option/ArgList.h"
 
@@ -106,6 +107,8 @@ public:
       return false;
     }
   }
+
+  file::Type GetOutputFileType();
 
 public:
   static std::unique_ptr<Mode> Create(const llvm::opt::InputArgList &ial);

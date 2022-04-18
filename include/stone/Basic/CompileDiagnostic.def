@@ -40,5 +40,9 @@ ERROR(err_primary_file_not_found,none,
       (diag::LLVMStr, diag::LLVMStr))
 
 
+ERROR(err_if_any_output_files_are_specified_they_all_must_be,none,
+      "if any %0 files are specified, they all must be", (diag::LLVMStr))
+
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

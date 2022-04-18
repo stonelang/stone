@@ -79,9 +79,7 @@ stone::CreateTargetMachine(DiagnosticEngine &de,
   llvm::CodeGenOpt::Level codeGenOptLevel = GetOptimizationLevel(codeGenOpts);
 
   llvm::TargetOptions llvmTargetOpts;
-  auto status =
-      InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts);
-  if (status.GetStatus() == stone::ErrorStatus::Error) {
+  if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has()) {
     return nullptr;
   }
 

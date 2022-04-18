@@ -9,21 +9,6 @@
 
 using namespace stone;
 
-int Compilation::RunJobs() {
-  // while (!GetQueue().IsEmpty()) {
-  //   auto job = GetQueue().Front();
-  //   if (job) {
-  //     if (job->IsAsync()) {
-  //       job->ExecuteAsync();
-  //     } else {
-  //       job->ExecuteSync();
-  //     }
-  //   }
-  //   GetQueue().Pop();
-  // }
-  return 0;
-}
-
 int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
                 void *mainAddr, CompilationListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Driver construction.");

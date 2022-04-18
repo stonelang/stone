@@ -14,7 +14,7 @@ namespace stone {
 namespace file {
 
 enum Type : uint8_t {
-#define FILE_TYPE(NAME, TYPE, TEMP_SUFFIX, FLAGS) TYPE,
+#define FILE_TYPE(NAME, TYPE, EXT, FLAGS) TYPE,
 #include "stone/Basic/File.def"
 #undef FILE_TYPE
   INVALID
@@ -24,7 +24,7 @@ llvm::StringRef GetTypeName(file::Type ty);
 
 /// Return the suffix to use when creating a temp file of this type,
 /// or null if unspecified.
-llvm::StringRef GetTypeTempSuffix(file::Type ty);
+llvm::StringRef GetTypeExt(file::Type ty);
 
 /// Lookup the type to use for the file extension \p Ext.
 /// If the extension is empty or is otherwise not recognized, return

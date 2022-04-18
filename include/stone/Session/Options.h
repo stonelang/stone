@@ -20,6 +20,11 @@ enum OptFlag {
   NoDriverOption = (1 << 7),
   DebugOption = (1 << 8),
   ArgumentIsPath = (1 << 9),
+  ModuleInterfaceOption = (1 << 10),
+  SupplementaryOutput = (1 << 11),
+  StoneAPIExtractOption = (1 << 12),
+  StoneSymbolGraphExtractOption = (1 << 13),
+  StoneAPIDigesterOption = (1 << 14),
 };
 
 enum OptID : unsigned {

@@ -93,6 +93,7 @@ public:
   }
 
   Context &GetContext() { return ctx; }
+
   Mode &GetMode() {
     assert(mode);
     return *mode.get();

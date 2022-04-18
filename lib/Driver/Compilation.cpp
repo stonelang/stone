@@ -38,6 +38,21 @@ Compilation::Compilation(Driver &driver, ToolChain &tc,
   }
 }
 
+int Compilation::RunJobs() {
+  // while (!GetQueue().IsEmpty()) {
+  //   auto job = GetQueue().Front();
+  //   if (job) {
+  //     if (job->IsAsync()) {
+  //       job->ExecuteAsync();
+  //     } else {
+  //       job->ExecuteSync();
+  //     }
+  //   }
+  //   GetQueue().Pop();
+  // }
+  return 0;
+}
+
 void Compilation::PrintJobs() {
   // driver.GetContext().Out() << '\n';
   // while (!GetQueue().IsEmpty()) {

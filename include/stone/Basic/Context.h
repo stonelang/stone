@@ -49,16 +49,15 @@ public:
   template <typename A> A *GetAs() { return static_cast<A *>(ty.get()); }
 };
 
-struct Error final {
+struct alignas(uint8_t) Error final {
 private:
-  ErrorStatus status;
-  // Not 'copy-assignable'
+  bool err;
   Error &operator=(const Error &other) = delete;
 
 public:
-  Error() : status(ErrorStatus::None) {}
-  Error(ErrorStatus status) : status(status) {}
-  ErrorStatus GetStatus() { return status; }
+  Error() : err(false) {}
+  Error(bool err) : err(err) {}
+  bool Has() { return err; }
 };
 
 class Context final {

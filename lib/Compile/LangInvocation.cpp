@@ -2,6 +2,7 @@
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Compile/LangOptionsConverter.h"
 #include "stone/Session/Options.h"
 
 using namespace stone;
@@ -21,19 +22,40 @@ SourceUnit *SourceUnit::Allocate(const unsigned srcID, const file::File &input,
   return ::new (sizePtr) SourceUnit(srcID, input);
 }
 
-static void ParseLangArgs(llvm::opt::InputArgList &ial) {}
-static void ParseCodeGenArgs(llvm::opt::InputArgList &ial) {}
-static void ParseTypeCheckerArgs(llvm::opt::InputArgList &ial) {}
-static void ParseSearchPathArgs(llvm::opt::InputArgList &ial) {}
+stone::Error ParseLangArgs(
+    llvm::opt::InputArgList &ial,
+
+    LangInvocation &langInvocation,
+    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
+
+  LangOptionsConverter converter(langInvocation.GetContext().GetDiagEngine(),
+                                 ial, langInvocation.GetMode(),
+                                 langInvocation.GetLangOptions());
+
+  return stone::Error(converter.Convert(buffers));
+}
+
+static void ParseSystemArgs(llvm::opt::InputArgList &ial,
+                            LangInvocation &langInvocation) {}
+static void ParseCodeGenArgs(llvm::opt::InputArgList &ial,
+                             LangInvocation &invocation) {}
+static void ParseTypeCheckerArgs(llvm::opt::InputArgList &ial,
+                                 LangInvocation &invocation) {}
+static void ParseSearchPathArgs(llvm::opt::InputArgList &ial,
+                                LangInvocation &invocation) {}
 
 llvm::opt::InputArgList &
 LangInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
-  auto &ial = Session::ParseArgs(args);
 
-  ParseLangArgs(ial);
-  ParseTypeCheckerArgs(ial);
-  ParseSearchPathArgs(ial);
-  ParseCodeGenArgs(ial);
+  auto &ial = Session::ParseArgs(args);
+  if (ParseLangArgs(ial, *this, nullptr /* pass null for now*/).Has()) {
+    // TODO: return stone::Error();
+    stone::Panic("Not implemented");
+  }
+  ParseSystemArgs(ial, *this);
+  ParseTypeCheckerArgs(ial, *this);
+  ParseSearchPathArgs(ial, *this);
+  ParseCodeGenArgs(ial, *this);
 
   return ial;
 }

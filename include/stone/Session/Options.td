@@ -23,6 +23,27 @@ def DebugOption : OptionFlag;
 // current working directory.
 def ArgumentIsPath : OptionFlag;
 
+// The option should be written into a .stoneinterface module interface file,
+// and read/parsed from there when reconstituting a .stonemodule from it.
+def ModuleInterfaceOption : OptionFlag;
+
+// The option should be written into a .stoneinterface module interface file,
+// and read/parsed from there when reconstituting a .stonemodule from it.
+// The option can be safely ignored by the older compiler.
+def ModuleInterfaceOptionIgnorable : OptionFlag;
+
+// The option causes the output of a supplementary output, or is the path option
+// for a supplementary output. E.g., `-emit-module` and `-emit-module-path`.
+def SupplementaryOutput : OptionFlag;
+
+// The option should be accepted by stone-api-extract.
+def StoneAPIExtractOption : OptionFlag;
+
+// The option should be accepted by stone-symbolgraph-extract.
+def StoneSymbolGraphExtractOption : OptionFlag;
+
+// The option should be accepted by stone-api-digester.
+def StoneAPIDigesterOption : OptionFlag;
 
 def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
 class ModeOpt : Group<ModeGroup>;
@@ -133,6 +154,28 @@ Flags<[DriverOption]>;
 def I : Flag<["-"], "I">,
 HelpText<"Specifies a path to search for libraries">, ModeOpt,
 Flags<[DriverOption]>;
+
+
+def ModuleName : Separate<["-"], "module-name">,
+  Flags<[LangOption, ModuleInterfaceOption, StoneAPIExtractOption,
+         StoneSymbolGraphExtractOption]>,
+  HelpText<"Name of the module to build">;
+
+def ModuleNameEQ : Joined<["-"], "module-name=">, Flags<[LangOption]>,
+  Alias<ModuleName>;
+
+def ModuleAlias : Separate<["-"], "module-alias">,
+  Flags<[LangOption, ModuleInterfaceOption]>,
+  MetaVarName<"<alias_name=underlying_name>">,
+  HelpText<"If a source file imports or references module <alias_name>, the <underlying_name> is used for the contents of the file">;
+
+def ModuleLinkName : Separate<["-"], "module-link-name">,
+  Flags<[LangOption, ModuleInterfaceOption]>,
+  HelpText<"Library to link against when using this module">;
+
+
+def ModuleLinkNameEQ : Joined<["-"], "module-link-name=">,
+  Flags<[LangOption]>, Alias<ModuleLinkName>;
 
 
 //GENERAL OPTIONS 

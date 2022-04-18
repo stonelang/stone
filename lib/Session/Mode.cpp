@@ -7,6 +7,8 @@ using namespace stone;
 using namespace stone::opts;
 using namespace llvm::opt;
 
+// static ModeKind ComputeModeKind(const llvm::opt::ArgList &args) {}
+
 static ModeKind GetModeKind(const unsigned modeID) {
   // TODO: may have to claim
   switch (modeID) {
@@ -50,3 +52,6 @@ std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
     return std::make_unique<Mode>(ModeKind::None);
   }
 }
+
+// TODO
+file::Type Mode::GetOutputFileType() { return file::Type::None; }

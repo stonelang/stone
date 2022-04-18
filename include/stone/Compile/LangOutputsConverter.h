@@ -7,14 +7,16 @@
 #include "stone/Compile/LangOptions.h"
 #include "stone/Compile/SupplementaryOutputPaths.h"
 
+#include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/ArgList.h"
 
 #include <vector>
 
 namespace stone {
-class OutputFileMap;
 
+class Mode;
+class OutputFileMap;
 /// Given the command line arguments and information about the inputs,
 /// Fill in all the information in LangInputsAndOutputs.
 
@@ -33,7 +35,8 @@ public:
 
   bool Convert(std::vector<std::string> &mainOutputs,
                std::vector<std::string> &mainOutputsForIndexUnits,
-               std::vector<SupplementaryOutputPaths> &supplementaryOutputs);
+               std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
+               Mode &mode);
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
@@ -71,7 +74,8 @@ class OutputFilesComputer {
 public:
   static Optional<OutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
-         const LangInputsAndOutputs &inputsAndOutputs, OutputOptInfo optInfo);
+         const LangInputsAndOutputs &inputsAndOutputs, OutputOptInfo optInfo,
+         Mode &mode);
 
   /// \return the output filenames on the command line or in the output
   /// filelist. If there

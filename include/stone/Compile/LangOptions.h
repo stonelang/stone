@@ -52,14 +52,13 @@ public:
 
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
 
-public:
   LangInputsAndOutputs inputsAndOutputs;
 
 public:
-  LangOptions() {
-    /// The default mode kind of the system
-    defaultModeKind = ModeKind::EmitObject;
-  }
+  LangOptions();
+
+public:
+  static file::Type GetFileTypeByModeKind(ModeKind modeKind);
 };
 
 } // namespace stone

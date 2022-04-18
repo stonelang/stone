@@ -12,11 +12,11 @@ using namespace stone::file;
 struct LocalType {
   const char *Name;
   const char *Flags;
-  const char *TempSuffix;
+  const char *Ext;
 };
 
 static const LocalType LocalTypes[] = {
-#define FILE_TYPE(NAME, TYPE, TEMP_SUFFIX, FLAGS) {NAME, FLAGS, TEMP_SUFFIX},
+#define FILE_TYPE(NAME, TYPE, EXT, FLAGS) {NAME, FLAGS, EXT},
 #include "stone/Basic/File.def"
 };
 
@@ -29,23 +29,22 @@ llvm::StringRef file::GetTypeName(file::Type ty) {
   return GetLocalType(ty).Name;
 }
 
-llvm::StringRef file::GetTypeTempSuffix(file::Type ty) {
-  return GetLocalType(ty).TempSuffix;
-}
+llvm::StringRef file::GetTypeExt(file::Type ty) { return GetLocalType(ty).Ext; }
 
 file::Type file::GetTypeByExt(llvm::StringRef Ext) {
-  if (Ext.empty())
+  if (Ext.empty()) {
     return file::INVALID;
+  }
   assert(Ext.front() == '.' && "not a file extension");
   return llvm::StringSwitch<file::Type>(Ext.drop_front())
-#define FILE_TYPE(NAME, TYPE, SUFFIX, FLAGS) .Case(SUFFIX, TYPE)
+#define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(EXT, TYPE)
 #include "stone/Basic/File.def"
       .Default(file::INVALID);
 }
 
 file::Type file::GetTypeByName(llvm::StringRef Name) {
   return llvm::StringSwitch<file::Type>(Name)
-#define FILE_TYPE(NAME, TYPE, SUFFIX, FLAGS) .Case(NAME, TYPE)
+#define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(NAME, TYPE)
 #include "stone/Basic/File.def"
       .Default(file::Type::INVALID);
 }
