@@ -533,27 +533,26 @@ llvm::StringRef SupplementaryOutputPathsComputer::
   return moduleName;
 }
 
-// std::string
-// SupplementaryOutputPathsComputer::determineSupplementaryOutputFilename(
-//     opts::OptID emitOpt, std::string pathFromArguments, file::Type type,
-//     StringRef mainOutputIfUsable,
-//     StringRef defaultSupplementaryOutputPathExcludingExtension) const {
+std::string
+SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
+    opts::OptID emitOpt, std::string pathFromArguments, file::Type type,
+    StringRef mainOutputIfUsable,
+    StringRef defaultSupplementaryOutputPathExcludingExtension) const {
 
-//   if (!pathFromArguments.empty())
-//     return pathFromArguments;
+  if (!pathFromArguments.empty())
+    return pathFromArguments;
 
-//   if (!args.hasArg(emitOpt))
-//     return std::string();
+  if (!args.hasArg(emitOpt))
+    return std::string();
 
-//   if (!mainOutputIfUsable.empty()) {
-//     return mainOutputIfUsable.str();
-//   }
+  if (!mainOutputIfUsable.empty()) {
+    return mainOutputIfUsable.str();
+  }
 
-//   llvm::SmallString<128>
-//   path(defaultSupplementaryOutputPathExcludingExtension);
-//   llvm::sys::path::replace_extension(path, file_types::getExtension(type));
-//   return path.str().str();
-// }
+  llvm::SmallString<128> path(defaultSupplementaryOutputPathExcludingExtension);
+  llvm::sys::path::replace_extension(path, file::GetTypeExt(type));
+  return path.str().str();
+}
 
 // void SupplementaryOutputPathsComputer::deriveModulePathParameters(
 //     StringRef mainOutputFile, opts::OptID &emitOption, std::string
