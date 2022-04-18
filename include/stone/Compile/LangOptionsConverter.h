@@ -16,6 +16,29 @@ class LangOptionsConverter {
   const Mode &mode;
   LangOptions &langOpts;
 
+private:
+  llvm::Optional<std::vector<std::string>>
+      CachedOutputFilenamesFromCommandLineOrFileList;
+
+  void HandleDebugCrashGroupArguments();
+  void ComputeDebugTimeOptions();
+  bool ComputeFallbackModuleName();
+  bool ComputeModuleName();
+  bool ComputeModuleAliases();
+  bool ComputeMainAndSupplementaryOutputFilenames();
+  void ComputeDumpScopeMapLocations();
+  void ComputeHelpOptions();
+  void ComputeImplicitImportModuleNames(llvm::opt::OptSpecifier id,
+                                        bool isTestable);
+
+  void ComputeLLVMArgs();
+  void ComputePrintStatsOptions();
+  void ComputeTBDOptions();
+
+  bool SetUpImmediateArgs();
+  bool CheckUnusedSupplementaryOutputPaths() const;
+  bool CheckForUnusedOutputPaths() const;
+
 public:
   LangOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
                        const Mode &mode, LangOptions &langOpts)

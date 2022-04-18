@@ -166,8 +166,8 @@ OutputFilesComputer::OutputFilesComputer(
       mode(mode), moduleNameArg(moduleNameArg), Suffix(suffix),
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
-// Optional<std::vector<std::string>>
-// OutputFilesComputer::computeOutputFiles() const {
+// llvm::Optional<std::vector<std::string>>
+// OutputFilesComputer::ComputeOutputFiles() const {
 //   std::vector<std::string> outputFiles;
 //   unsigned i = 0;
 //   bool hadError = InputsAndOutputs.forEachInputProducingAMainOutputFile(
@@ -187,7 +187,7 @@ OutputFilesComputer::OutputFilesComputer(
 // }
 
 // Optional<std::string>
-// OutputFilesComputer::computeOutputFile(StringRef outputArg,
+// OutputFilesComputer::ComputeOutputFile(StringRef outputArg,
 //                                        const InputFile &input) const {
 //   // Return an empty string to signify no output.
 //   // The frontend does not currently produce a diagnostic
