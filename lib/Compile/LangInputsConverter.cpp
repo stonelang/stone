@@ -25,6 +25,7 @@ LangInputsConverter::LangInputsConverter(DiagnosticEngine &de,
 
 llvm::Optional<LangInputsAndOutputs> LangInputsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
+
   STONE_DEFER {
     if (buffers) {
       std::move(configurationFileBuffers.begin(),

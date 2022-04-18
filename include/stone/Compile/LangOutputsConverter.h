@@ -67,7 +67,7 @@ class OutputFilesComputer {
                       const LangInputsAndOutputs &inputsAndOutputs,
                       std::vector<std::string> outputFileArguments,
                       StringRef outputDirectoryArgument, StringRef firstInput,
-                      Mode &mode, const llvm::opt::Arg *moduleNameArg,
+                      const Mode &mode, const llvm::opt::Arg *moduleNameArg,
                       StringRef suffix, bool hasTextualOutput,
                       OutputOptInfo optInfo);
 

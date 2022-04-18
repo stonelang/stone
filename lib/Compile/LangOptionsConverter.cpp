@@ -23,5 +23,12 @@ using namespace llvm::opt;
 stone::Error LangOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
+  // TODO: OK for now
+  assert(langOpts.inputsAndOutputs.HasInputs() &&
+         "Inputs and Outputs should be empty");
+
+  // llvm::Optional<LangInputsAndOutputs> inputsAndOutputs =
+  //     LangInputsConverter(de, args).Convert(buffers);
+
   return stone::Error();
 }

@@ -154,20 +154,17 @@ OutputFilesComputer::Create(const llvm::opt::ArgList &args,
       mode.CanOutput(), optInfo);
 }
 
-// OutputFilesComputer::OutputFilesComputer(
-//     DiagnosticEngine &de,
-//     const LangInputsAndOutputs &inputsAndOutputs,
-//     std::vector<std::string> outputFileArguments,
-//     const StringRef outputDirectoryArgument, const StringRef firstInput,
-//     const FrontendOptions::ActionType requestedAction,
-//     const llvm::opt::Arg *moduleNameArg, const StringRef suffix,
-//     const bool hasTextualOutput, OutputOptInfo optInfo)
-//     : de(de), InputsAndOutputs(inputsAndOutputs),
-//       OutputFileArguments(outputFileArguments),
-//       OutputDirectoryArgument(outputDirectoryArgument),
-//       FirstInput(firstInput), RequestedAction(requestedAction),
-//       moduleNameArg(moduleNameArg), Suffix(suffix),
-//       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
+OutputFilesComputer::OutputFilesComputer(
+    DiagnosticEngine &de, const LangInputsAndOutputs &inputsAndOutputs,
+    std::vector<std::string> outputFileArguments,
+    const StringRef outputDirectoryArgument, const StringRef firstInput,
+    const Mode &mode, const llvm::opt::Arg *moduleNameArg,
+    const StringRef suffix, const bool hasTextualOutput, OutputOptInfo optInfo)
+    : de(de), inputsAndOutputs(inputsAndOutputs),
+      OutputFileArguments(outputFileArguments),
+      OutputDirectoryArgument(outputDirectoryArgument), FirstInput(firstInput),
+      mode(mode), moduleNameArg(moduleNameArg), Suffix(suffix),
+      HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
 // Optional<std::vector<std::string>>
 // OutputFilesComputer::computeOutputFiles() const {
