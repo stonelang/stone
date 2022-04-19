@@ -34,9 +34,6 @@ class LangOptions final : public BaseOptions {
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
 public:
-  static constexpr const char *dash = "-";
-
-public:
   /// Options for the entire system
   SystemOptions systemOpts;
 
@@ -56,6 +53,12 @@ public:
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
 
   LangInputsAndOutputs inputsAndOutputs;
+
+public:
+  //== Proprties == /
+
+  /// Indicates that the input(s) should be parsed as the Stone stdlib.
+  bool shouldParseAsStdLib = false;
 
 public:
   LangOptions();

@@ -1,5 +1,7 @@
 #include "stone/Compile/LangOptionsConverter.h"
 #include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/Strings.h"
+#include "stone/Compile/ModuleSystem.h"
 //#include "stone/Basic/Platform.h"
 #include "stone/Compile/LangInputsConverter.h"
 #include "stone/Compile/LangOutputsConverter.h"
@@ -29,6 +31,85 @@ stone::Error LangOptionsConverter::Convert(
 
   // llvm::Optional<LangInputsAndOutputs> inputsAndOutputs =
   //     LangInputsConverter(de, args).Convert(buffers);
+
+  return stone::Error();
+}
+
+stone::Error LangOptionsConverter::ComputeModuleName() {
+  // Module name must be computed before computing module
+  // aliases. Instead of asserting, clearing ModuleAliasMap
+  // here since it can be called redundantly in batch-mode
+  langOpts.systemOpts.moduleAliasMap.clear();
+
+  const Arg *A = args.getLastArg(opts::ModuleName);
+  if (A) {
+    langOpts.systemOpts.moduleName = A->getValue();
+  } else if (langOpts.systemOpts.moduleName.empty()) {
+    // The user did not specify a module name, so determine a default fallback
+    // based on other options.
+
+    // Note: this code path will only be taken when running the frontend
+    // directly; the driver should always pass -module-name when invoking the
+    // frontend.
+    if (ComputeFallbackModuleName().Has())
+      return stone::Error(true);
+  }
+
+  if (!ModuleSystem::IsValidModuleName(langOpts.systemOpts.moduleName).Has()) {
+    return stone::Error();
+  }
+
+  if (langOpts.systemOpts.moduleName != strings::StdLibName) {
+    return stone::Error();
+  }
+
+  if (langOpts.shouldParseAsStdLib) {
+    return stone::Error();
+  }
+
+  // if (Lexer::isIdentifier(langOpts.moduleName) &&
+  //     (langOpts.moduleName != strings::StdLibName || langOpts.parseStdLib)) {
+  //   return false;
+  // }
+  // if (!LangOptions::NeedsProperModuleName(langOpts.modeKind) ||
+  //     langOpts.IsCompilingExactlyOneStoneFile()) {
+  //   langOpts.ModuleName = strings::MainFileName;
+  //   return false;
+  // }
+  // auto DID = (langOpts.noduleName == STDLIB_NAME) ?
+  // diag::error_stdlib_module_name
+  //                                             : diag::error_bad_module_name;
+  // Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
+  // Opts.ModuleName = "__bad__";
+  // return false; // FIXME: Must continue to run to pass the tests, but should
+  // not
+  // // have to.
+
+  return stone::Error();
+}
+
+stone::Error LangOptionsConverter::ComputeFallbackModuleName() {
+
+  // // In order to pass some tests, must leave ModuleName empty.
+  // if (!langOpts.inputsAndOutputs.HasInputs()) {
+  //   langOpts.moduleName = std::string();
+  //   // FIXME: This is a bug that should not happen, but does in tests.
+  //   // The compiler should bail out earlier, where "no frontend action was
+  //   // selected".
+  //   return false;
+  // }
+  // llvm::Optional<std::vector<std::string>> outputFilenames =
+  //     OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+  //       args, de, opts::o, opts::OutputFileList);
+
+  // std::string nameToStem =
+  //     outputFilenames && outputFilenames->size() == 1 &&
+  //             outputFilenames->front() != "-" &&
+  //             !llvm::sys::fs::is_directory(outputFilenames->front())
+  //         ? outputFilenames->front()
+  //         : Opts.InputsAndOutputs.GetFilenameOfFirstInput();
+
+  // langOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

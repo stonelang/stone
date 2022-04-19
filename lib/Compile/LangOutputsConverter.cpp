@@ -1,7 +1,7 @@
 
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/OutputFileMap.h"
-
+#include "stone/Basic/Strings.h"
 //#include "stone/Basic/Platform.h"
 #include "stone/Compile/LangInputsConverter.h"
 #include "stone/Compile/LangOptionsConverter.h"
@@ -213,8 +213,8 @@ LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
 llvm::Optional<std::string> LangOutputFilesComputer::DeriveOutputFileFromInput(
     const LangInputFile &input) const {
 
-  if (input.GetFileName() == LangOptions::dash || HasTextualOutput) {
-    return std::string(LangOptions::dash);
+  if (input.GetFileName() == strings::Dash || HasTextualOutput) {
+    return std::string(strings::Dash);
   }
 
   std::string baseName = DetermineBaseNameOfOutput(input);
@@ -409,8 +409,8 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
   return llvm::None;
 }
 
-// Optional<SupplementaryOutputPaths>
-// SupplementaryOutputPathsComputer::computeOutputPathsForOneInput(
+// llvm::Optional<SupplementaryOutputPaths>
+// SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 //     StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
 //     const LangInputFile &input) const {
 //   StringRef defaultSupplementaryOutputPathExcludingExtension =
@@ -421,19 +421,19 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 
 //   auto dependenciesFilePath = determineSupplementaryOutputFilename(
 //       OPT_emit_dependencies, pathsFromArguments.DependenciesFilePath,
-//       file_types::TY_Dependencies, "",
+//       file::Type::Dependencies, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto referenceDependenciesFilePath = determineSupplementaryOutputFilename(
 //       OPT_emit_reference_dependencies,
 //       pathsFromArguments.ReferenceDependenciesFilePath,
-//       file_types::TY_SwiftDeps, "",
+//       file::Type::StoneDeps, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto serializedDiagnosticsPath = determineSupplementaryOutputFilename(
 //       OPT_serialize_diagnostics,
 //       pathsFromArguments.SerializedDiagnosticsPath,
-//       file_types::TY_SerializedDiagnostics, "",
+//       file::Type::SerializedDiagnostics, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   // There is no non-path form of -emit-fixits-path
@@ -441,31 +441,31 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 
 //   auto objcHeaderOutputPath = determineSupplementaryOutputFilename(
 //       OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
-//       file_types::TY_ObjCHeader, "",
+//       file::Type::ObjCHeader, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto loadedModuleTracePath = determineSupplementaryOutputFilename(
 //       OPT_emit_loaded_module_trace, pathsFromArguments.LoadedModuleTracePath,
-//       file_types::TY_ModuleTrace, "",
+//       file::Type::ModuleTrace, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto tbdPath = determineSupplementaryOutputFilename(
-//       OPT_emit_tbd, pathsFromArguments.TBDPath, file_types::TY_TBD, "",
+//       OPT_emit_tbd, pathsFromArguments.TBDPath, file::Type::TBD, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto moduleDocOutputPath = determineSupplementaryOutputFilename(
 //       OPT_emit_module_doc, pathsFromArguments.ModuleDocOutputPath,
-//       file_types::TY_SwiftModuleDocFile, "",
+//       file::Type::StoneModuleDocFile, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto moduleSourceInfoOutputPath = determineSupplementaryOutputFilename(
 //       OPT_emit_module_source_info,
 //       pathsFromArguments.ModuleSourceInfoOutputPath,
-//       file_types::TY_SwiftSourceInfoFile, "",
+//       file::Type::StoneSourceInfoFile, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 //   auto moduleSummaryOutputPath = determineSupplementaryOutputFilename(
 //       OPT_emit_module_summary, pathsFromArguments.ModuleSummaryOutputPath,
-//       file_types::TY_SwiftModuleSummaryFile, "",
+//       file::Type::StoneModuleSummaryFile, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   // There is no non-path form of -emit-interface-path
@@ -485,17 +485,17 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 
 //   auto moduleOutputPath = determineSupplementaryOutputFilename(
 //       emitModuleOption, pathsFromArguments.ModuleOutputPath,
-//       file_types::TY_SwiftModuleFile, mainOutputIfUsableForModule,
+//       file::Type::StoneModuleFile, mainOutputIfUsableForModule,
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   auto YAMLOptRecordPath = determineSupplementaryOutputFilename(
 //       OPT_save_optimization_record_path,
-//       pathsFromArguments.YAMLOptRecordPath, file_types::TY_YAMLOptRecord, "",
+//       pathsFromArguments.YAMLOptRecordPath, file::Type::YAMLOptRecord, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 //   auto bitstreamOptRecordPath = determineSupplementaryOutputFilename(
 //       OPT_save_optimization_record_path,
 //       pathsFromArguments.BitstreamOptRecordPath,
-//       file_types::TY_BitstreamOptRecord, "",
+//       file::Type::BitstreamOptRecord, "",
 //       defaultSupplementaryOutputPathExcludingExtension);
 
 //   SupplementaryOutputPaths sop;
@@ -524,10 +524,10 @@ llvm::StringRef SupplementaryOutputPathsComputer::
         llvm::StringRef outputFilename, const LangInputFile &input) const {
 
   // Put the supplementary output file next to the output file if possible.
-  if (!outputFilename.empty() && outputFilename != LangOptions::dash) {
+  if (!outputFilename.empty() && outputFilename != strings::Dash) {
     return outputFilename;
   }
-  if (input.IsPrimary() && input.GetFileName() != LangOptions::dash) {
+  if (input.IsPrimary() && input.GetFileName() != strings::Dash) {
     return llvm::sys::path::filename(input.GetFileName());
   }
   return moduleName;
@@ -539,16 +539,17 @@ SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
     StringRef mainOutputIfUsable,
     StringRef defaultSupplementaryOutputPathExcludingExtension) const {
 
-  if (!pathFromArguments.empty())
+  if (!pathFromArguments.empty()) {
     return pathFromArguments;
+  }
 
-  if (!args.hasArg(emitOpt))
+  if (!args.hasArg(emitOpt)) {
     return std::string();
+  }
 
   if (!mainOutputIfUsable.empty()) {
     return mainOutputIfUsable.str();
   }
-
   llvm::SmallString<128> path(defaultSupplementaryOutputPathExcludingExtension);
   llvm::sys::path::replace_extension(path, file::GetTypeExt(type));
   return path.str().str();
@@ -572,9 +573,9 @@ SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
 //       RequestedAction == FrontendOptions::ActionType::EmitModuleOnly ||
 //       isSIB;
 
-//   extension = file_types::getExtension(isSIB ? file_types::TY_SIB
+//   extension = file_types::getExtension(isSIB ? file::Type::SIB
 //                                              :
-//                                              file_types::TY_SwiftModuleFile)
+//                                              file::Type::StoneModuleFile)
 //                   .str();
 
 //   mainOutputIfUsable = canUseMainOutputForModule && !OutputFiles.empty()
@@ -582,111 +583,116 @@ SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
 //                            : "";
 // }
 
-// static SupplementaryOutputPaths
-// createFromTypeToPathMap(const TypeToPathMap *map) {
-//   SupplementaryOutputPaths paths;
-//   if (!map)
-//     return paths;
-//   const std::pair<file::Type, std::string &> typesAndStrings[] = {
-//       {file_types::TY_ObjCHeader, paths.ObjCHeaderOutputPath},
-//       {file_types::TY_SwiftModuleFile, paths.ModuleOutputPath},
-//       {file_types::TY_SwiftModuleDocFile, paths.ModuleDocOutputPath},
-//       {file_types::TY_SwiftSourceInfoFile, paths.ModuleSourceInfoOutputPath},
-//       {file_types::TY_Dependencies, paths.DependenciesFilePath},
-//       {file_types::TY_SwiftDeps, paths.ReferenceDependenciesFilePath},
-//       {file_types::TY_SerializedDiagnostics,
-//       paths.SerializedDiagnosticsPath}, {file_types::TY_ModuleTrace,
-//       paths.LoadedModuleTracePath}, {file_types::TY_TBD, paths.TBDPath},
-//       {file_types::TY_SwiftModuleInterfaceFile,
-//        paths.ModuleInterfaceOutputPath},
-//       {file_types::TY_SwiftModuleSummaryFile, paths.ModuleSummaryOutputPath},
-//       {file_types::TY_PrivateSwiftModuleInterfaceFile,
-//        paths.PrivateModuleInterfaceOutputPath},
-//       {file_types::TY_YAMLOptRecord, paths.YAMLOptRecordPath},
-//       {file_types::TY_BitstreamOptRecord, paths.BitstreamOptRecordPath},
-//       {file_types::TY_SwiftABIDescriptor, paths.ABIDescriptorOutputPath},
-//   };
-//   for (const std::pair<file::Type, std::string &> &typeAndString :
-//        typesAndStrings) {
-//     auto const out = map->find(typeAndString.first);
-//     typeAndString.second = out == map->end() ? "" : out->second;
-//   }
-//   return paths;
-// }
+static SupplementaryOutputPaths
+CreateFromTypeToPathMap(const TypeToPathMap *map) {
+  SupplementaryOutputPaths paths;
+  if (!map) {
+    return paths;
+  }
+  const std::pair<file::Type, std::string &> typesAndStrings[] = {
+      {file::Type::StoneModule, paths.moduleOutputPath},
+      // {file::Type::StoneModuleDoc, paths.ModuleDocOutputPath},
+      // {file::Type::StoneSourceInfoFile, paths.ModuleSourceInfoOutputPath},
+      // {file::Type::Dependencies, paths.DependenciesFilePath},
+      // {file::Type::StoneDeps, paths.ReferenceDependenciesFilePath},
+      // {file::Type::SerializedDiagnostics,
+      // paths.SerializedDiagnosticsPath}, {file::Type::ModuleTrace,
+      // paths.LoadedModuleTracePath}, {file::Type::TBD, paths.TBDPath},
+      // {file::Type::StoneModuleInterfaceFile,
+      //  paths.ModuleInterfaceOutputPath},
+      // {file::Type::StoneModuleSummaryFile, paths.ModuleSummaryOutputPath},
+      // {file::Type::PrivateStoneModuleInterfaceFile,
+      //  paths.PrivateModuleInterfaceOutputPath},
+      // {file::Type::YAMLOptRecord, paths.YAMLOptRecordPath},
+      // {file::Type::BitstreamOptRecord, paths.BitstreamOptRecordPath},
+      // {file::Type::StoneABIDescriptor, paths.ABIDescriptorOutputPath},
+  };
+  for (const std::pair<file::Type, std::string &> &typeAndString :
+       typesAndStrings) {
+    auto const out = map->find(typeAndString.first);
+    typeAndString.second = out == map->end() ? "" : out->second;
+  }
+  return paths;
+}
 
-// Optional<std::vector<SupplementaryOutputPaths>>
-// SupplementaryOutputPathsComputer::readSupplementaryOutputFileMap() const {
-//   if (Arg *A = args.getLastArg(
-//         opts::emit_objc_header_path,
-//         opts::emit_module_path,
-//         opts::emit_module_doc_path,
-//         opts::emit_dependencies_path,
-//         opts::emit_reference_dependencies_path,
-//         opts::serialize_diagnostics_path,
-//         opts::emit_loaded_module_trace_path,
-//         opts::emit_module_interface_path,
-//         opts::emit_private_module_interface_path,
-//         opts::emit_module_source_info_path,
-//         opts::emit_tbd_path)) {
-//     de.PrintD(SrcLoc(),
-//                    diag::error_cannot_have_supplementary_outputs,
-//                    A->getSpelling(), "-supplementary-output-file-map");
-//     return None;
-//   }
-//   const StringRef supplementaryFileMapPath =
-//       args.getLastArgValue(opts::supplementary_output_file_map);
+Optional<std::vector<SupplementaryOutputPaths>>
+SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
 
-//   unsigned BadFileDescriptorRetryCount = 0;
-//   if (const Arg *A = args.getLastArg(opts::bad_file_descriptor_retry_count))
-//   {
-//     if (StringRef(A->getValue()).getAsInteger(10,
-//     BadFileDescriptorRetryCount)) {
-//       de.PrintD(SrcLoc(), diag::error_invalid_arg_value,
-//                      A->getAsString(args), A->getValue());
-//       return None;
-//     }
-//   }
+  // TODO:
+  //  if (Arg *A = args.getLastArg(
+  //        opts::emit_objc_header_path,
+  //        opts::emit_module_path,
+  //        opts::emit_module_doc_path,
+  //        opts::emit_dependencies_path,
+  //        opts::emit_reference_dependencies_path,
+  //        opts::serialize_diagnostics_path,
+  //        opts::emit_loaded_module_trace_path,
+  //        opts::emit_module_interface_path,
+  //        opts::emit_private_module_interface_path,
+  //        opts::emit_module_source_info_path,
+  //        opts::emit_tbd_path)) {
+  //    de.PrintD(SrcLoc(),
+  //                   diag::error_cannot_have_supplementary_outputs,
+  //                   A->getSpelling(), "-supplementary-output-file-map");
+  //    return llvm::None;
+  //  }
 
-//   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer = nullptr;
-//   for (unsigned I = 0; I < BadFileDescriptorRetryCount + 1; ++I) {
-//     buffer = llvm::MemoryBuffer::getFile(supplementaryFileMapPath);
-//     if (buffer)
-//       break;
-//     if (buffer.getError().value() != EBADF)
-//       break;
-//   }
-//   if (!buffer) {
-//     de.PrintD(SrcLoc(), diag::cannot_open_file,
-//                    supplementaryFileMapPath, buffer.getError().message());
-//     return None;
-//   }
-//   llvm::Expected<OutputFileMap> outputFileMap =
-//       OutputFileMap::loadFromBuffer(std::move(buffer.get()), "");
-//   if (auto Err = outputFileMap.takeError()) {
-//     de.PrintD(SrcLoc(),
-//                    diag::error_unable_to_load_supplementary_output_file_map,
-//                    supplementaryFileMapPath, llvm::toString(std::move(Err)));
-//     return None;
-//   }
+  const StringRef supplementaryFileMapPath =
+      args.getLastArgValue(opts::SupplementaryOutputFileMap);
 
-//   std::vector<SupplementaryOutputPaths> outputPaths;
-//   bool hadError = false;
-//   inputsAndOutputs.forEachInputProducingSupplementaryOutput(
-//       [&](const LangInputFile &input) -> bool {
-//         const TypeToPathMap *mapForInput =
-//             outputFileMap->getOutputMapForInput(input.getFileName());
-//         if (!mapForInput) {
-//           de.PrintD(
-//               SrcLoc(),
-//               diag::error_missing_entry_in_supplementary_output_file_map,
-//               supplementaryFileMapPath, input.getFileName());
-//           hadError = true;
-//         }
-//         outputPaths.push_back(createFromTypeToPathMap(mapForInput));
-//         return false;
-//       });
-//   if (hadError)
-//     return None;
+  unsigned BadFileDescriptorRetryCount = 0;
+  if (const Arg *A = args.getLastArg(opts::BadFileDescriptorRetryCount)) {
+    if (StringRef(A->getValue())
+            .getAsInteger(10, BadFileDescriptorRetryCount)) {
+      de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
+                diag::LLVMStr(A->getAsString(args)),
+                diag::LLVMStr(A->getValue()));
+      return llvm::None;
+    }
+  }
+  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer = nullptr;
+  for (unsigned I = 0; I < BadFileDescriptorRetryCount + 1; ++I) {
+    buffer = llvm::MemoryBuffer::getFile(supplementaryFileMapPath);
+    if (buffer) {
+      break;
+    }
+    if (buffer.getError().value() != EBADF) {
+      break;
+    }
+  }
+  if (!buffer) {
+    de.PrintD(SrcLoc(), diag::err_cannot_open_file,
+              diag::LLVMStr(supplementaryFileMapPath),
+              diag::LLVMStr(buffer.getError().message()));
+    return llvm::None;
+  }
+  llvm::Expected<OutputFileMap> outputFileMap =
+      OutputFileMap::LoadFromBuffer(std::move(buffer.get()), "");
+  if (auto Err = outputFileMap.takeError()) {
+    de.PrintD(SrcLoc(), diag::err_unable_to_load_supplementary_output_file_map,
+              diag::LLVMStr(supplementaryFileMapPath),
+              diag::LLVMStr(llvm::toString(std::move(Err))));
+    return llvm::None;
+  }
 
-//   return outputPaths;
-// }
+  std::vector<SupplementaryOutputPaths> outputPaths;
+  bool hadError = false;
+  inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
+      [&](const LangInputFile &input) -> bool {
+        const TypeToPathMap *mapForInput =
+            outputFileMap->GetOutputMapForInput(input.GetFileName());
+        if (!mapForInput) {
+          de.PrintD(SrcLoc(),
+                    diag::err_missing_entry_in_supplementary_output_file_map,
+                    diag::LLVMStr(supplementaryFileMapPath),
+                    diag::LLVMStr(input.GetFileName()));
+          hadError = true;
+        }
+        outputPaths.push_back(CreateFromTypeToPathMap(mapForInput));
+        return false;
+      });
+  if (hadError) {
+    return llvm::None;
+  }
+  return outputPaths;
+}

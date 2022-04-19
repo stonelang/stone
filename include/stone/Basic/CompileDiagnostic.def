@@ -42,7 +42,6 @@ ERROR(err_primary_file_not_found,none,
 ERROR(err_if_any_output_files_are_specified_they_all_must_be,none,
       "if any %0 files are specified, they all must be", (diag::LLVMStr))
 
-
 ERROR(err_no_output_filename_specified,none,
       "an %0 filename was not specified for a mode which requires an "
       "%0 filename", (diag::LLVMStr))
@@ -54,6 +53,16 @@ ERROR(err_implicit_output_file_is_directory,none,
 ERROR(err_wrong_number_of_arguments,none,
       "wrong number of '%0' arguments (expected %1, got %2)",
       (diag::LLVMStr, diag::Int, diag::Int))
+
+
+ERROR(err_unable_to_load_supplementary_output_file_map, none,
+      "unable to load supplementary output file map '%0': %1",
+      (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_missing_entry_in_supplementary_output_file_map, none,
+       "supplementary output file map '%0' is missing an entry for '%1' "
+       "(this likely indicates a compiler issue; " STONE_BUG_REPORT_MESSAGE ")",
+       (diag::LLVMStr, diag::LLVMStr))
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS

@@ -22,10 +22,10 @@ private:
 
   void HandleDebugCrashGroupArguments();
   void ComputeDebugTimeOptions();
-  bool ComputeFallbackModuleName();
-  bool ComputeModuleName();
-  bool ComputeModuleAliases();
-  bool ComputeMainAndSupplementaryOutputFilenames();
+  stone::Error ComputeFallbackModuleName();
+  stone::Error ComputeModuleName();
+  stone::Error ComputeModuleAliases();
+  stone::Error ComputeMainAndSupplementaryOutputFilenames();
   void ComputeDumpScopeMapLocations();
   void ComputeHelpOptions();
   void ComputeImplicitImportModuleNames(llvm::opt::OptSpecifier id,
@@ -35,9 +35,9 @@ private:
   void ComputePrintStatsOptions();
   void ComputeTBDOptions();
 
-  bool SetUpImmediateArgs();
-  bool CheckUnusedSupplementaryOutputPaths() const;
-  bool CheckForUnusedOutputPaths() const;
+  stone::Error SetUpImmediateArgs();
+  stone::Error CheckUnusedSupplementaryOutputPaths() const;
+  stone::Error CheckForUnusedOutputPaths() const;
 
 public:
   LangOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,

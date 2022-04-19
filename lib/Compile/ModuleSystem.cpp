@@ -17,3 +17,8 @@ syn::Module *ModuleSystem::GetMainModule() const {
   mainModule = syntax.MakeModuleDecl(moduleName, true);
   return mainModule;
 }
+
+// TODO: May want to move to Module
+stone::Error ModuleSystem::IsValidModuleName(llvm::StringRef moduleName) {
+  return stone::Error();
+}

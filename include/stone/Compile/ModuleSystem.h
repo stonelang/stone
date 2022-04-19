@@ -33,6 +33,9 @@ public:
   syn::Module *GetMainModule() const;
 
 public:
+  static stone::Error IsValidModuleName(llvm::StringRef moduleName);
+
+public:
   const llvm::StringRef GetModuleName() const {
     return langOpts.systemOpts.moduleName;
   }

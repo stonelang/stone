@@ -8,6 +8,7 @@
 #include "llvm/ADT/Hashing.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/Regex.h"
@@ -31,14 +32,19 @@ public:
   ///
   bool useMalloc = false;
 
-  /// The name of the module being built.
+  /// The map of aliases and underlying names of imported or referenced modules.
+  llvm::StringMap<llvm::StringRef> moduleAliasMap;
+
+  /// The name of the module that the frontend is building.
   std::string moduleName;
   bool HasModuleName() { return moduleName.size() > 0; }
 
-  /// The path to the SDK against which to build.
-  /// (If empty, this implies no SDK.)
-  std::string sdkPath;
-  bool HasSDKPath() { return sdkPath.size() > 0; }
+  /// The ABI name of the module that the compile is building, to be used in
+  /// mangling and metadata.
+  std::string moduleABIName;
+
+  /// The name of the library to link against when using this module.
+  std::string moduleLinkName;
 
 public:
   SystemOptions();

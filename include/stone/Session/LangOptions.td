@@ -20,9 +20,8 @@ def BadFileDescriptorRetryCount:
   HelpText<"Number of retrying opening a file if previous open returns a bad "
            "file descriptor error.">;
 
-  def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
+def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
     HelpText<"Bypass checks for batch-mode errors.">;
-
 
 def IndexUnitOutputPathFileList : Separate<["-"], "index-unit-output-path-filelist">,
   HelpText<"Specify index unit output paths in a file rather than on the command line">;
