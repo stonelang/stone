@@ -303,76 +303,91 @@ SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
   return outputPaths;
 }
 
-// Optional<std::vector<SupplementaryOutputPaths>>
-// SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
-//     const {
+Optional<std::vector<SupplementaryOutputPaths>>
+SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
+    const {
 
-//   auto objCHeaderOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_objc_header_path);
-//   auto moduleOutput =
-//       getSupplementaryFilenamesFromArguments(opts::emit_module_path);
-//   auto moduleDocOutput =
-//       getSupplementaryFilenamesFromArguments(opts::emit_module_doc_path);
-//   auto dependenciesFile = getSupplementaryFilenamesFromArguments(
-//       opts::emit_dependencies_path);
-//   auto referenceDependenciesFile = getSupplementaryFilenamesFromArguments(
-//       opts::emit_reference_dependencies_path);
-//   auto serializedDiagnostics = getSupplementaryFilenamesFromArguments(
-//       opts::serialize_diagnostics_path);
-//   auto fixItsOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_fixits_path);
-//   auto loadedModuleTrace = getSupplementaryFilenamesFromArguments(
-//       opts::emit_loaded_module_trace_path);
-//   auto TBD = getSupplementaryFilenamesFromArguments(opts::emit_tbd_path);
-//   auto moduleInterfaceOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_module_interface_path);
-//   auto privateModuleInterfaceOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_private_module_interface_path);
-//   auto moduleSourceInfoOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_module_source_info_path);
-//   auto moduleSummaryOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_module_summary_path);
-//   auto abiDescriptorOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_abi_descriptor_path);
-//   auto moduleSemanticInfoOutput = getSupplementaryFilenamesFromArguments(
-//       opts::emit_module_semantic_info_path);
-//   auto optRecordOutput = getSupplementaryFilenamesFromArguments(
-//       opts::save_optimization_record_path);
-//   if (!objCHeaderOutput || !moduleOutput || !moduleDocOutput ||
-//       !dependenciesFile || !referenceDependenciesFile ||
-//       !serializedDiagnostics || !fixItsOutput || !loadedModuleTrace || !TBD
-//       || !moduleInterfaceOutput || !privateModuleInterfaceOutput ||
-//       !moduleSourceInfoOutput || !moduleSummaryOutput || !abiDescriptorOutput
-//       || !moduleSemanticInfoOutput || !optRecordOutput) {
-//     return None;
-//   }
-//   std::vector<SupplementaryOutputPaths> result;
+  stone::Panic("Not implemented");
 
-//   const unsigned N =
-//       inputsAndOutputs.countOfFilesProducingSupplementaryOutput();
-//   for (unsigned i = 0; i < N; ++i) {
-//     SupplementaryOutputPaths sop;
-//     sop.ObjCHeaderOutputPath = (*objCHeaderOutput)[i];
-//     sop.ModuleOutputPath = (*moduleOutput)[i];
-//     sop.ModuleDocOutputPath = (*moduleDocOutput)[i];
-//     sop.DependenciesFilePath = (*dependenciesFile)[i];
-//     sop.ReferenceDependenciesFilePath = (*referenceDependenciesFile)[i];
-//     sop.SerializedDiagnosticsPath = (*serializedDiagnostics)[i];
-//     sop.FixItsOutputPath = (*fixItsOutput)[i];
-//     sop.LoadedModuleTracePath = (*loadedModuleTrace)[i];
-//     sop.TBDPath = (*TBD)[i];
-//     sop.ModuleInterfaceOutputPath = (*moduleInterfaceOutput)[i];
-//     sop.PrivateModuleInterfaceOutputPath =
-//     (*privateModuleInterfaceOutput)[i]; sop.ModuleSourceInfoOutputPath =
-//     (*moduleSourceInfoOutput)[i]; sop.ModuleSummaryOutputPath =
-//     (*moduleSummaryOutput)[i]; sop.ABIDescriptorOutputPath =
-//     (*abiDescriptorOutput)[i]; sop.ModuleSemanticInfoOutputPath =
-//     (*moduleSemanticInfoOutput)[i]; sop.YAMLOptRecordPath =
-//     (*optRecordOutput)[i]; sop.BitstreamOptRecordPath =
-//     (*optRecordOutput)[i]; result.push_back(sop);
-//   }
-//   return result;
-// }
+  // auto moduleOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModulePath);
+
+  // auto moduleDocOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleDocPath);
+
+  // auto dependenciesFile =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitDependenciesPath);
+
+  // auto referenceDependenciesFile = GetSupplementaryFilenamesFromArguments(
+  //     opts::EmitReferenceDependenciesPath);
+
+  // auto serializedDiagnostics =
+  //     GetSupplementaryFilenamesFromArguments(opts::SerializeDiagnosticsPath);
+
+  // auto fixItsOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitFixitsPath);
+
+  // auto loadedModuleTrace =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitLoadedModuleTracePath);
+
+  // auto TBD = GetSupplementaryFilenamesFromArguments(opts::EmitTBDPath);
+
+  // auto moduleInterfaceOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleInterfacePath);
+
+  // auto privateModuleInterfaceOutput = GetSupplementaryFilenamesFromArguments(
+  //     opts::EmitPrivateModuleInterfacePath);
+
+  // auto moduleSourceInfoOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSourceInfoPath);
+
+  // auto moduleSummaryOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSummaryPath);
+
+  // auto abiDescriptorOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitABIDescriptorPath);
+
+  // auto moduleSemanticInfoOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSemanticInfoPath);
+
+  // auto optRecordOutput =
+  //     GetSupplementaryFilenamesFromArguments(opts::SaveOptimizationRecordPath);
+
+  // if (!moduleOutput || !moduleDocOutput || !dependenciesFile ||
+  //     !referenceDependenciesFile || !serializedDiagnostics || !fixItsOutput
+  //     || !loadedModuleTrace || !TBD || !moduleInterfaceOutput ||
+  //     !privateModuleInterfaceOutput || !moduleSourceInfoOutput ||
+  //     !moduleSummaryOutput || !abiDescriptorOutput ||
+  //     !moduleSemanticInfoOutput || !optRecordOutput) {
+  //   return None;
+  // }
+  std::vector<SupplementaryOutputPaths> result;
+
+  // const unsigned N =
+  //     inputsAndOutputs.countOfFilesProducingSupplementaryOutput();
+
+  // for (unsigned i = 0; i < N; ++i) {
+  //   SupplementaryOutputPaths sop;
+  //   sop.moduleOutputPath = (*moduleOutput)[i];
+  //   sop.moduleDocOutputPath = (*moduleDocOutput)[i];
+  //   sop.dependenciesFilePath = (*dependenciesFile)[i];
+  //   sop.referenceDependenciesFilePath = (*referenceDependenciesFile)[i];
+  //   sop.serializedDiagnosticsPath = (*serializedDiagnostics)[i];
+  //   sop.fixItsOutputPath = (*fixItsOutput)[i];
+  //   sop.loadedModuleTracePath = (*loadedModuleTrace)[i];
+  //   sop.tbdPath = (*TBD)[i];
+  //   sop.moduleInterfaceOutputPath = (*moduleInterfaceOutput)[i];
+  //   sop.privateModuleInterfaceOutputPath =
+  //   (*privateModuleInterfaceOutput)[i]; sop.moduleSourceInfoOutputPath =
+  //   (*moduleSourceInfoOutput)[i]; sop.moduleSummaryOutputPath =
+  //   (*moduleSummaryOutput)[i]; sop.abiDescriptorOutputPath =
+  //   (*abiDescriptorOutput)[i]; sop.moduleSemanticInfoOutputPath =
+  //   (*moduleSemanticInfoOutput)[i]; sop.yamlOptRecordPath =
+  //   (*optRecordOutput)[i]; sop.bitstreamOptRecordPath =
+  //   (*optRecordOutput)[i]; result.push_back(sop);
+  // }
+  return result;
+}
 
 // // Extend this routine for filelists if/when we have them.
 

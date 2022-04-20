@@ -26,5 +26,31 @@ def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
 def IndexUnitOutputPathFileList : Separate<["-"], "index-unit-output-path-filelist">,
   HelpText<"Specify index unit output paths in a file rather than on the command line">;
 
+def EmitDependenciesPath
+  : Separate<["-"], "emit-dependencies-path">, MetaVarName<"<path>">,
+    HelpText<"Output basic Make-compatible dependencies file to <path>">;
+
+def EmitReferenceDependencies : Flag<["-"], "emit-reference-dependencies">,
+  HelpText<"Emit a Swift-style dependencies file">;
+
+def EmitReferenceDependenciesPath
+  : Separate<["-"], "emit-reference-dependencies-path">, MetaVarName<"<path>">,
+    HelpText<"Output Swift-style dependencies file to <path>">;
+
+def EmitFixitsPath
+  : Separate<["-"], "emit-fixits-path">, MetaVarName<"<path>">,
+    HelpText<"Output compiler fixits as source edits to <path>">;
+
+def EmitABIDescriptorPath
+  : Separate<["-"], "emit-abi-descriptor-path">, MetaVarName<"<path>">,
+    HelpText<"Output the ABI descriptor of current module to <path>">;
+
+def EmitModuleSemanticInfoPath
+  : Separate<["-"], "emit-module-semantic-info-path">, MetaVarName<"<path>">,
+    HelpText<"Output semantic info of current module to <path>">;
+
+
+
+
 
 }

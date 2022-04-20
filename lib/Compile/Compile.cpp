@@ -22,6 +22,29 @@
 using namespace stone;
 using namespace stone::syn;
 
+/// A PrettyStackTraceEntry to print compiling information
+class LangPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+  const LangInvocation &invocation;
+
+public:
+  LangPrettyStackTrace(const LangInvocation &invocation)
+      : invocation(invocation) {}
+
+  void print(llvm::raw_ostream &os) const override {
+
+    //   auto effective = invocation.GetLangOptions().effectiveLangVersion;
+    //   if (effective != version::Version::GetCurrentLangVersion()) {
+    //     os << "Compiling with effective version " << effective;
+    //   } else {
+    //     os << "Compiling with the current language version";
+    //   }
+    //   if (Invocation.GetLangOptions().allowModuleWithCompilerErrors) {
+    //     os << " while allowing modules with compiler errors";
+    //   }
+    //   os << "\n";
+  }
+};
+
 int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, LangListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
@@ -61,6 +84,10 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
   langInvocation.GetContext().GetDiagEngine().AddListener(diagListener);
+
+  // Parse arguments.
+  llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
+      configurationFileBuffers;
 
   auto &ial = langInvocation.ParseArgs(args);
   if (langInvocation.HasError()) {
@@ -102,7 +129,8 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 }
 // static void
 // CompileWithSyntaxAnalysis(SourceUnit &source, LangInstance& lang,
-//                           llvm::function_ref<void(SyntaxFile *sf)> client) {
+//                           llvm::function_ref<void(SyntaxFile *sf)> client)
+//                           {
 //   // TODO: You are not always creating a Library
 //   auto syntaxFile = SyntaxFile::Make(
 //       SyntaxFileKind::Library, *lang.GetModuleSystem().GetMainModule(),
@@ -120,7 +148,8 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 // }
 
 // static void
-// CompileWithAnalysis(llvm::ArrayRef<SourceUnit *> sources, LangInstance& lang,
+// CompileWithAnalysis(llvm::ArrayRef<SourceUnit *> sources, LangInstance&
+// lang,
 //                     llvm::function_ref<void(LangInstance &lang)> client) {
 //   for (auto source : sources) {
 //     assert(source);
@@ -145,16 +174,19 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 //   switch (lang.GetLangInvocation().GetMode().GetKind()) {
 //   case ModeKind::Parse:
-//     return CompileWithSyntaxAnalysis(source, lang, [&](LangInstance &lang) {
+//     return CompileWithSyntaxAnalysis(source, lang, [&](LangInstance &lang)
+//     {
 //       return [&](syn::SyntaxFile &sf) -> void {}(sf, lang);
 //     });
 //   case ModeKind::DumpSyntax:
 //     return CompileWithSyntaxAnalysis(
-//         source, lang, [&](syn::SyntaxFile &sf) { return DumpSyntax(sf, lang);
+//         source, lang, [&](syn::SyntaxFile &sf) { return DumpSyntax(sf,
+//         lang);
 //         });
 
 //   case ModeKind::TypeCheck:
-//     return CompileWithSyntaxAnalysis(source, lang, [&](syn::SyntaxFile &sf) {
+//     return CompileWithSyntaxAnalysis(source, lang, [&](syn::SyntaxFile &sf)
+//     {
 //       return CompileWithSemanticAnalysis(sf, lang);
 //     });
 
@@ -242,7 +274,8 @@ int lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   return nullptr;
 // }
 
-// void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module *mod,
+// void CodeGeneration::GenerateObject(const unsigned srcID, llvm::Module
+// *mod,
 //                                     CodeGenContext &cc) {
 //   /// TODO: This is the only time we should perform a lookup
 //   // auto outputFile = lang.GetLangInvocation().ComputeOutputFile(srcID);
@@ -378,10 +411,4 @@ void LangInstance::Compile(llvm::ArrayRef<SourceUnit *> &sources) {
     return CompileWithSemanticAnalysis(
         sources, [&](LangInstance &lang) { return CompileWithCodeGen(*this); });
   }
-
-  // return CompileWithFrontend(
-  //     sources, *this,
-  //     [&](LangInstance &lang, std::unique_ptr<IRCodeGenResult> result) {
-  //       return CompileWithBackend(lang, std::move(result));
-  //     });
 }

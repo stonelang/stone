@@ -45,6 +45,11 @@ def StoneSymbolGraphExtractOption : OptionFlag;
 // The option should be accepted by stone-api-digester.
 def StoneAPIDigesterOption : OptionFlag;
 
+def NoBatchOption : OptionFlag;
+
+// The option should not force a full rebuild if added, changed, or removed.
+def DoesNotAffectIncrementalBuild : OptionFlag;
+
 def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
 class ModeOpt : Group<ModeGroup>;
 
@@ -56,7 +61,6 @@ Group<InternalGroup>, HelpText<"DEBUG/DEVELOPMENT OPTIONS">;
 
 class InternalDebugOpt : Group<InternalDebugGroup>,
 Flags<[HelpHidden]>;
-
 
 //COMPILE ACTIONS
 
@@ -242,10 +246,36 @@ def EmitLoadedModuleTracePath : Separate<["-"], "emit-loaded-module-trace-path">
          SupplementaryOutput]>,
   HelpText<"Emit the loaded module trace JSON to <path>">,
   MetaVarName<"<path>">;
+
 def EmitLoadedModuleTracePathEQ : Joined<["-"], "emit-loaded-module-trace-path=">,
   Flags<[LangOption, ArgumentIsPath,
          SupplementaryOutput]>,
   Alias<EmitLoadedModuleTracePath>;
+
+
+def SerializeDiagnosticsPath : Separate<["-"], "serialize-diagnostics-path">,
+  Flags<[LangOption, StoneAPIDigesterOption, NoBatchOption,
+         ArgumentIsPath, SupplementaryOutput]>,
+  HelpText<"Emit a serialized diagnostics file to <path>">,
+  MetaVarName<"<path>">;
+
+def SerializeDiagnosticsPath_EQ: Joined<["-"], "serialize-diagnostics-path=">,
+  Flags<[LangOption, StoneAPIDigesterOption, NoBatchOption,
+         ArgumentIsPath, SupplementaryOutput]>,
+  Alias<SerializeDiagnosticsPath>;
+
+def ColorDiagnostics : Flag<["-"], "color-diagnostics">,
+  Flags<[LangOption, DoesNotAffectIncrementalBuild]>,
+  HelpText<"Print diagnostics in color">;
+
+def NoColorDiagnostics : Flag<["-"], "no-color-diagnostics">,
+  Flags<[LangOption, DoesNotAffectIncrementalBuild]>,
+  HelpText<"Do not print diagnostics in color">;
+
+def DebugDiagnosticNames : Flag<["-"], "debug-diagnostic-names">,
+  Flags<[LangOption, DoesNotAffectIncrementalBuild, HelpHidden]>,
+  HelpText<"Include diagnostic names when printing">;
+
 
 
 include "LangOptions.td"
