@@ -4,6 +4,7 @@
 #include "stone/Basic/Context.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/Driver/Task.h"
 #include "stone/Driver/TaskQueue.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
@@ -11,6 +12,12 @@
 
 namespace stone {
 namespace darwin {
+
+class DarwinTask final : public sys::Task {
+public:
+
+};
+
 class DarwinTaskQueue final : public TaskQueue {
 public:
   DarwinTaskQueue(Context &ctx) : TaskQueue(TaskQueueKind::Darwin, ctx) {}

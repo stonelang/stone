@@ -16,8 +16,7 @@
 #include "llvm/Support/Program.h"
 
 namespace stone {
-
-class Task;
+  
 class TaskQueue;
 class TaskQueueStats final : public Stats {
   const TaskQueue &queue;

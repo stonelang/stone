@@ -28,9 +28,8 @@ void TaskQueue::AddTask(const char *ExecPath, ArrayRef<const char *> Args,
 /// abnormally due to a signal
 ///
 /// \returns true if all tasks did not execute successfully
-bool TaskQueue::Execute(TaskBeganCallback Began,
-                                TaskFinishedCallback Finished,
-                                TaskSignalledCallback Signalled) {
+bool TaskQueue::Execute(TaskBeganCallback Began, TaskFinishedCallback Finished,
+                        TaskSignalledCallback Signalled) {
 
   return true;
 }

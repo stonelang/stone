@@ -1,3 +1,6 @@
+#ifndef STONE_BASIC_RUN_H
+#define STONE_BASIC_RUN_H
+
 #include "stone/Basic/Context.h"
 #include "stone/Basic/LLVM.h"
 
@@ -11,7 +14,7 @@ namespace stone {
 namespace sys {
 // Platform-independent implementation of Task,
 // a particular platform can provide its own more efficient version.
-class Task final {
+class Task {
 public:
   /// The path to the executable which this Task will execute.
   const char *execPath;
@@ -36,8 +39,8 @@ public:
 
   llvm::sys::ProcessInfo processInfo;
 
-  Task(const char *ExecPath, ArrayRef<const char *> Args,
-       ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
+  Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
+       llvm::ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
        bool SeparateErrors = false);
   /// Begins execution of this Task.
   /// \returns true on error.
@@ -46,3 +49,5 @@ public:
 
 } // namespace sys
 } // namespace stone
+
+#endif
