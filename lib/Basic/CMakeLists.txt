@@ -28,6 +28,7 @@ set(stone_basic_sources
 	FileMgr.cpp
 	FileSystem.cpp
 	FileSystemStatCache.cpp
+	JSONSerialization.cpp
 	LLVMContext.cpp
 	OutputFileMap.cpp
 	SrcMgr.cpp

@@ -1,4 +1,6 @@
+#include "stone/Basic/Context.h"
 #include "stone/Basic/LLVM.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FileSystem.h"
@@ -35,11 +37,11 @@ public:
   llvm::sys::ProcessInfo processInfo;
 
   Task(const char *ExecPath, ArrayRef<const char *> Args,
-       ArrayRef<const char *> Env = None, void *Context = nullptr,
+       ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
        bool SeparateErrors = false);
   /// Begins execution of this Task.
   /// \returns true on error.
-  bool Execute();
+  stone::Error Execute();
 };
 
 } // namespace sys

@@ -18,6 +18,7 @@
 	LinuxToolChain.cpp
 	Run.cpp
 	ToolChain.cpp
+	Task.cpp
 	UnixTaskQueue.cpp
 	UnixToolChain.cpp
 
