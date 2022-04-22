@@ -26,7 +26,9 @@ enum OptFlag {
   StoneSymbolGraphExtractOption = (1 << 13),
   StoneAPIDigesterOption = (1 << 14),
   NoBatchOption = (1 << 15),
-  DoesNotAffectIncrementalBuild = (1 << 15),
+  DoesNotAffectIncrementalBuild = (1 << 16),
+  NoInteractiveOption = (1 << 17),
+
 };
 
 enum OptID : unsigned {

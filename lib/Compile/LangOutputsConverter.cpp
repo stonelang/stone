@@ -424,115 +424,111 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
   return llvm::None;
 }
 
-// llvm::Optional<SupplementaryOutputPaths>
-// SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
-//     StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
-//     const LangInputFile &input) const {
-//   StringRef defaultSupplementaryOutputPathExcludingExtension =
-//       deriveDefaultSupplementaryOutputPathExcludingExtension(outputFile,
-//       input);
+llvm::Optional<SupplementaryOutputPaths>
+SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
+    StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
+    const LangInputFile &input) const {
+  StringRef defaultSupplementaryOutputPathExcludingExtension =
+      DeriveDefaultSupplementaryOutputPathExcludingExtension(outputFile, input);
 
-//   using namespace options;
+  auto dependenciesFilePath = DetermineSupplementaryOutputFilename(
+      opts::EmitDependenciesPath, pathsFromArguments.dependenciesFilePath,
+      file::Type::Dependencies, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto dependenciesFilePath = determineSupplementaryOutputFilename(
-//       OPT_emit_dependencies, pathsFromArguments.DependenciesFilePath,
-//       file::Type::Dependencies, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto referenceDependenciesFilePath = DetermineSupplementaryOutputFilename(
+      opts::EmitReferenceDependencies,
+      pathsFromArguments.referenceDependenciesFilePath, file::Type::StoneDeps,
+      "", defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto referenceDependenciesFilePath = determineSupplementaryOutputFilename(
-//       OPT_emit_reference_dependencies,
-//       pathsFromArguments.ReferenceDependenciesFilePath,
-//       file::Type::StoneDeps, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto serializedDiagnosticsPath = DetermineSupplementaryOutputFilename(
+      opts::SerializeDiagnosticsPath, pathsFromArguments.serializedDiagnosticsPath,
+      file::Type::SerializedDiagnostics, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto serializedDiagnosticsPath = determineSupplementaryOutputFilename(
-//       OPT_serialize_diagnostics,
-//       pathsFromArguments.SerializedDiagnosticsPath,
-//       file::Type::SerializedDiagnostics, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  // There is no non-path form of -emit-fixits-path
+  auto fixItsOutputPath = pathsFromArguments.fixItsOutputPath;
 
-//   // There is no non-path form of -emit-fixits-path
-//   auto fixItsOutputPath = pathsFromArguments.FixItsOutputPath;
+  // auto objcHeaderOutputPath = DetermineSupplementaryOutputFilename(
+  //     OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
+  //     file::Type::ObjCHeader, "",
+  //     defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto objcHeaderOutputPath = determineSupplementaryOutputFilename(
-//       OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
-//       file::Type::ObjCHeader, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  // auto loadedModuleTracePath = DetermineSupplementaryOutputFilename(
+  //     opts::EmitLoadedModuleTrace, pathsFromArguments.loadedModuleTracePath,
+  //     file::Type::ModuleTrace, "",
+  //     defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto loadedModuleTracePath = determineSupplementaryOutputFilename(
-//       OPT_emit_loaded_module_trace, pathsFromArguments.LoadedModuleTracePath,
-//       file::Type::ModuleTrace, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto tbdPath = DetermineSupplementaryOutputFilename(
+      opts::EmitTBD, pathsFromArguments.tbdPath, file::Type::TBD, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto tbdPath = determineSupplementaryOutputFilename(
-//       OPT_emit_tbd, pathsFromArguments.TBDPath, file::Type::TBD, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto moduleDocOutputPath = DetermineSupplementaryOutputFilename(
+      opts::EmitModuleDoc, pathsFromArguments.moduleDocOutputPath,
+      file::Type::StoneModuleDoc, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto moduleDocOutputPath = determineSupplementaryOutputFilename(
-//       OPT_emit_module_doc, pathsFromArguments.ModuleDocOutputPath,
-//       file::Type::StoneModuleDocFile, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto moduleSourceInfoOutputPath = DetermineSupplementaryOutputFilename(
+      opts::EmitModuleSourceInfo,
+      pathsFromArguments.moduleSourceInfoOutputPath,
+      file::Type::StoneSourceInfo, "",
+      defaultSupplementaryOutputPathExcludingExtension);
+  auto moduleSummaryOutputPath = DetermineSupplementaryOutputFilename(
+      opts::EmitModuleSummary, pathsFromArguments.moduleSummaryOutputPath,
+      file::Type::StoneModuleSummary, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto moduleSourceInfoOutputPath = determineSupplementaryOutputFilename(
-//       OPT_emit_module_source_info,
-//       pathsFromArguments.ModuleSourceInfoOutputPath,
-//       file::Type::StoneSourceInfoFile, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
-//   auto moduleSummaryOutputPath = determineSupplementaryOutputFilename(
-//       OPT_emit_module_summary, pathsFromArguments.ModuleSummaryOutputPath,
-//       file::Type::StoneModuleSummaryFile, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  // There is no non-path form of -emit-interface-path
+  auto moduleInterfaceOutputPath = pathsFromArguments.moduleInterfaceOutputPath;
+  auto privateModuleInterfaceOutputPath =
+      pathsFromArguments.privateModuleInterfaceOutputPath;
 
-//   // There is no non-path form of -emit-interface-path
-//   auto ModuleInterfaceOutputPath =
-//       pathsFromArguments.ModuleInterfaceOutputPath;
-//   auto PrivateModuleInterfaceOutputPath =
-//       pathsFromArguments.PrivateModuleInterfaceOutputPath;
+  // There is no non-path form of -emit-abi-descriptor-path
+  auto abiDescriptorOutputPath = pathsFromArguments.abiDescriptorOutputPath;
+  auto moduleSemanticInfoOutputPath =
+      pathsFromArguments.moduleSemanticInfoOutputPath;
 
-//   // There is no non-path form of -emit-abi-descriptor-path
-//   auto ABIDescriptorOutputPath = pathsFromArguments.ABIDescriptorOutputPath;
-//   auto ModuleSemanticInfoOutputPath =
-//   pathsFromArguments.ModuleSemanticInfoOutputPath; ID emitModuleOption;
-//   std::string moduleExtension;
-//   std::string mainOutputIfUsableForModule;
-//   deriveModulePathParameters(outputFile, emitModuleOption, moduleExtension,
-//                              mainOutputIfUsableForModule);
+  opts::OptID emitModuleOption;
+  std::string moduleExtension;
+  std::string mainOutputIfUsableForModule;
+  DeriveModulePathParameters(outputFile, emitModuleOption, moduleExtension,
+                             mainOutputIfUsableForModule);
 
-//   auto moduleOutputPath = determineSupplementaryOutputFilename(
-//       emitModuleOption, pathsFromArguments.ModuleOutputPath,
-//       file::Type::StoneModuleFile, mainOutputIfUsableForModule,
-//       defaultSupplementaryOutputPathExcludingExtension);
+  auto moduleOutputPath = DetermineSupplementaryOutputFilename(
+      emitModuleOption, pathsFromArguments.moduleOutputPath,
+      file::Type::StoneModule, mainOutputIfUsableForModule,
+      defaultSupplementaryOutputPathExcludingExtension);
 
-//   auto YAMLOptRecordPath = determineSupplementaryOutputFilename(
-//       OPT_save_optimization_record_path,
-//       pathsFromArguments.YAMLOptRecordPath, file::Type::YAMLOptRecord, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
-//   auto bitstreamOptRecordPath = determineSupplementaryOutputFilename(
-//       OPT_save_optimization_record_path,
-//       pathsFromArguments.BitstreamOptRecordPath,
-//       file::Type::BitstreamOptRecord, "",
-//       defaultSupplementaryOutputPathExcludingExtension);
+  // auto yamlOptRecordPath = DetermineSupplementaryOutputFilename(
+  //     opts::SaveOptimizationRecordPath, pathsFromArguments.YAMLOptRecordPath,
+  //     file::Type::yamlOptRecord, "",
+  //     defaultSupplementaryOutputPathExcludingExtension);
 
-//   SupplementaryOutputPaths sop;
-//   sop.ObjCHeaderOutputPath = objcHeaderOutputPath;
-//   sop.ModuleOutputPath = moduleOutputPath;
-//   sop.ModuleDocOutputPath = moduleDocOutputPath;
-//   sop.DependenciesFilePath = dependenciesFilePath;
-//   sop.ReferenceDependenciesFilePath = referenceDependenciesFilePath;
-//   sop.SerializedDiagnosticsPath = serializedDiagnosticsPath;
-//   sop.FixItsOutputPath = fixItsOutputPath;
-//   sop.LoadedModuleTracePath = loadedModuleTracePath;
-//   sop.TBDPath = tbdPath;
-//   sop.ModuleInterfaceOutputPath = ModuleInterfaceOutputPath;
-//   sop.PrivateModuleInterfaceOutputPath = PrivateModuleInterfaceOutputPath;
-//   sop.ModuleSourceInfoOutputPath = moduleSourceInfoOutputPath;
-//   sop.ModuleSummaryOutputPath = moduleSummaryOutputPath;
-//   sop.ABIDescriptorOutputPath = ABIDescriptorOutputPath;
-//   sop.ModuleSemanticInfoOutputPath = ModuleSemanticInfoOutputPath;
-//   sop.YAMLOptRecordPath = YAMLOptRecordPath;
-//   sop.BitstreamOptRecordPath = bitstreamOptRecordPath;
-//   return sop;
-// }
+  // auto bitstreamOptRecordPath = DetermineSupplementaryOutputFilename(
+  //     opts::SaveOptimizationRecordPath,
+  //     pathsFromArguments.BitstreamOptRecordPath, file::Type::BitstreamOptRecord,
+  //     "", defaultSupplementaryOutputPathExcludingExtension);
+
+  SupplementaryOutputPaths sop;
+  // sop.ObjCHeaderOutputPath = objcHeaderOutputPath;
+  sop.moduleOutputPath = moduleOutputPath;
+  sop.moduleDocOutputPath = moduleDocOutputPath;
+  sop.dependenciesFilePath = dependenciesFilePath;
+  sop.referenceDependenciesFilePath = referenceDependenciesFilePath;
+  sop.serializedDiagnosticsPath = serializedDiagnosticsPath;
+  sop.fixItsOutputPath = fixItsOutputPath;
+  //sop.loadedModuleTracePath = loadedModuleTracePath;
+  sop.tbdPath = tbdPath;
+  sop.moduleInterfaceOutputPath = moduleInterfaceOutputPath;
+  sop.privateModuleInterfaceOutputPath = privateModuleInterfaceOutputPath;
+  sop.moduleSourceInfoOutputPath = moduleSourceInfoOutputPath;
+  sop.moduleSummaryOutputPath = moduleSummaryOutputPath;
+  sop.abiDescriptorOutputPath = abiDescriptorOutputPath;
+  sop.moduleSemanticInfoOutputPath = moduleSemanticInfoOutputPath;
+  //sop.yamlOptRecordPath = yamlOptRecordPath;
+  //sop.bitstreamOptRecordPath = bitstreamOptRecordPath;
+  return sop;
+}
 
 llvm::StringRef SupplementaryOutputPathsComputer::
     DeriveDefaultSupplementaryOutputPathExcludingExtension(
@@ -570,33 +566,21 @@ SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
   return path.str().str();
 }
 
-// void SupplementaryOutputPathsComputer::deriveModulePathParameters(
-//     StringRef mainOutputFile, opts::OptID &emitOption, std::string
-//     &extension, std::string &mainOutputIfUsable) const {
+void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
+    StringRef mainOutputFile, opts::OptID &emitOption, std::string &extension,
+    std::string &mainOutputIfUsable) const {
 
-//   bool isSIB = RequestedAction == FrontendOptions::ActionType::EmitSIB ||
-//                RequestedAction == FrontendOptions::ActionType::EmitSIBGen;
+  emitOption = opts::EmitModule;
 
-//   emitOption = !isSIB ? opts::emit_module
-//                       : RequestedAction ==
-//                       FrontendOptions::ActionType::EmitSIB
-//                             ? opts::emit_sib
-//                             : opts::emit_sibgen;
+  bool canUseMainOutputForModule = mode.GetKind() == ModeKind::MergeModules ||
+                                   mode.GetKind() == ModeKind::EmitModule;
 
-//   bool canUseMainOutputForModule =
-//       RequestedAction == FrontendOptions::ActionType::MergeModules ||
-//       RequestedAction == FrontendOptions::ActionType::EmitModuleOnly ||
-//       isSIB;
+  extension = file::GetTypeExt(file::Type::StoneModule).str();
 
-//   extension = file_types::getExtension(isSIB ? file::Type::SIB
-//                                              :
-//                                              file::Type::StoneModuleFile)
-//                   .str();
-
-//   mainOutputIfUsable = canUseMainOutputForModule && !OutputFiles.empty()
-//                            ? mainOutputFile.str()
-//                            : "";
-// }
+  mainOutputIfUsable = canUseMainOutputForModule && !OutputFiles.empty()
+                           ? mainOutputFile.str()
+                           : "";
+}
 
 static SupplementaryOutputPaths
 CreateFromTypeToPathMap(const TypeToPathMap *map) {
@@ -608,10 +592,10 @@ CreateFromTypeToPathMap(const TypeToPathMap *map) {
       {file::Type::StoneModule, paths.moduleOutputPath},
       // {file::Type::StoneModuleDoc, paths.ModuleDocOutputPath},
       // {file::Type::StoneSourceInfoFile, paths.ModuleSourceInfoOutputPath},
-      // {file::Type::Dependencies, paths.DependenciesFilePath},
-      // {file::Type::StoneDeps, paths.ReferenceDependenciesFilePath},
-      // {file::Type::SerializedDiagnostics,
-      // paths.SerializedDiagnosticsPath}, {file::Type::ModuleTrace,
+      // {file::Type::Dependencies, paths.dependenciesFilePath},
+      // {file::Type::StoneDeps, paths.referenceDependenciesFilePath},
+      // {file::Type::SerializeDiagnostics,
+      // paths.SerializeDiagnosticsPath}, {file::Type::ModuleTrace,
       // paths.LoadedModuleTracePath}, {file::Type::TBD, paths.TBDPath},
       // {file::Type::StoneModuleInterfaceFile,
       //  paths.ModuleInterfaceOutputPath},

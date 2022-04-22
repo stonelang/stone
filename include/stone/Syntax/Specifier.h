@@ -82,9 +82,9 @@ enum class StorageDuration : uint8_t {
 };
 
 /// Describes the nullability of a particular type.
-enum class NullabilityType : uint8_t {
+enum class TypeNullabilityKind : uint8_t {
   /// Values of this type can never be null.
-  NonNull = 0,
+  NotNullable = 0,
   /// Values of this type can be null.
   Nullable,
   /// Whether values of this type can be null is (explicitly)

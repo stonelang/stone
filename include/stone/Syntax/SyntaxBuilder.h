@@ -49,6 +49,7 @@ public:
 //   void WithIdentifier();
 // };
 
+// For now, these are very dumb
 class FunDeclSyntaxBuilder final : public SyntaxBuilder {
   SrcLoc funLoc;
   bool isMain = false;

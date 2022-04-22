@@ -50,9 +50,11 @@ def NoBatchOption : OptionFlag;
 // The option should not force a full rebuild if added, changed, or removed.
 def DoesNotAffectIncrementalBuild : OptionFlag;
 
-def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
-class ModeOpt : Group<ModeGroup>;
+def NoInteractiveOption : OptionFlag;
 
+def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
+
+class ModeOpt : Group<ModeGroup>;
 
 def InternalGroup : OptionGroup<"<stone internal options>">;
 def InternalDebugGroup :
@@ -240,7 +242,6 @@ def IndexUnitOutputPath : Separate<["-"], "index-unit-output-path">,
   Flags<[LangOption, ArgumentIsPath]>, MetaVarName<"<path>">,
   HelpText<"Use <path> as the output path in the produced index data.">;
 
-
 def EmitLoadedModuleTracePath : Separate<["-"], "emit-loaded-module-trace-path">,
   Flags<[LangOption, ArgumentIsPath,
          SupplementaryOutput]>,
@@ -252,6 +253,20 @@ def EmitLoadedModuleTracePathEQ : Joined<["-"], "emit-loaded-module-trace-path="
          SupplementaryOutput]>,
   Alias<EmitLoadedModuleTracePath>;
 
+def EmitModuleSummary :
+  Flag<["-"], "emit-module-summary">,
+  Flags<[NoInteractiveOption, SupplementaryOutput]>,
+  HelpText<"Output module summary file">;
+
+def EmitModuleSummaryPath :
+  Separate<["-"], "emit-module-summary-path">,
+  Flags<[LangOption, NoInteractiveOption, ArgumentIsPath,
+         SupplementaryOutput]>,
+  MetaVarName<"<path>">, HelpText<"Output module summary file to <path>">;
+
+def SerializeDiagnostics : Flag<["-"], "serialize-diagnostics">,
+  Flags<[LangOption, NoInteractiveOption, SupplementaryOutput]>,
+  HelpText<"Serialize diagnostics in a binary format">;
 
 def SerializeDiagnosticsPath : Separate<["-"], "serialize-diagnostics-path">,
   Flags<[LangOption, StoneAPIDigesterOption, NoBatchOption,
@@ -259,10 +274,27 @@ def SerializeDiagnosticsPath : Separate<["-"], "serialize-diagnostics-path">,
   HelpText<"Emit a serialized diagnostics file to <path>">,
   MetaVarName<"<path>">;
 
-def SerializeDiagnosticsPath_EQ: Joined<["-"], "serialize-diagnostics-path=">,
+def SerializeDiagnosticsPathEQ: Joined<["-"], "serialize-diagnostics-path=">,
   Flags<[LangOption, StoneAPIDigesterOption, NoBatchOption,
          ArgumentIsPath, SupplementaryOutput]>,
   Alias<SerializeDiagnosticsPath>;
+
+def EmitTBD : Flag<["-"], "emit-tbd">,
+  HelpText<"Emit a TBD file">,
+  Flags<[LangOption, NoInteractiveOption, SupplementaryOutput]>;
+def EmitTBDPath : Separate<["-"], "emit-tbd-path">,
+  Flags<[LangOption, NoInteractiveOption, ArgumentIsPath,
+         SupplementaryOutput]>,
+  HelpText<"Emit the TBD file to <path>">,
+  MetaVarName<"<path>">;
+def EmitTBDPathEQ : Joined<["-"], "emit-tbd-path=">,
+  Flags<[LangOption, NoInteractiveOption, ArgumentIsPath,
+         SupplementaryOutput]>,
+  Alias<EmitTBDPath>;
+
+def EmbedTBDForModule : Separate<["-"], "embed-tbd-for-module">,
+  Flags<[LangOption]>,
+  HelpText<"Embed symbols from the module in the emitted tbd file">;
 
 def ColorDiagnostics : Flag<["-"], "color-diagnostics">,
   Flags<[LangOption, DoesNotAffectIncrementalBuild]>,
@@ -275,7 +307,6 @@ def NoColorDiagnostics : Flag<["-"], "no-color-diagnostics">,
 def DebugDiagnosticNames : Flag<["-"], "debug-diagnostic-names">,
   Flags<[LangOption, DoesNotAffectIncrementalBuild, HelpHidden]>,
   HelpText<"Include diagnostic names when printing">;
-
 
 
 include "LangOptions.td"

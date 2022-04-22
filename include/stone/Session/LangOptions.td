@@ -49,8 +49,21 @@ def EmitModuleSemanticInfoPath
   : Separate<["-"], "emit-module-semantic-info-path">, MetaVarName<"<path>">,
     HelpText<"Output semantic info of current module to <path>">;
 
+def EmitModuleDoc : Flag<["-"], "emit-module-doc">,
+  HelpText<"Emit a module documentation file based on documentation "
+           "comments">;
+def EmitModuleDocPath
+  : Separate<["-"], "emit-module-doc-path">, MetaVarName<"<path>">,
+    HelpText<"Output module documentation file <path>">;
 
+def EmitModuleSourceInfo : Flag<["-"], "emit-module-source-info">,
+  HelpText<"Output module source info file">;
 
+def IgnoreModuleSourceInfo : Flag<["-"], "ignore-module-source-info">,
+  HelpText<"Avoid getting source location from .stonesourceinfo files">;
 
+def MergeModules
+  : Flag<["-"], "merge-modules">, ModeOpt,
+    HelpText<"Merge the input modules without otherwise processing them">;
 
 }
