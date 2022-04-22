@@ -10,6 +10,7 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_basic_sources
 	Context.cpp
+	Cache.cpp
 	BumpTable.cpp
 	Char.cpp
 	DarwinDirWatcher.cpp
