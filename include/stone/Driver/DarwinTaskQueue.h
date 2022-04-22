@@ -15,7 +15,6 @@ namespace darwin {
 
 class DarwinTask final : public sys::Task {
 public:
-
 };
 
 class DarwinTaskQueue final : public TaskQueue {

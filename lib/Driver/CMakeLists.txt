@@ -10,6 +10,7 @@
 	DarwinToolChain.cpp
 	DebugCompilationListener.cpp
 	Driver.cpp
+	DriverUtil.cpp
 	Job.cpp
 	TaskQueue.cpp
 	Intent.cpp

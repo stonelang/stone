@@ -1,11 +1,11 @@
-#ifndef STONE_COMPILER_DARWINTASKQUEUE_H
-#define STONE_COMPILER_DARWINTASKQUEUE_H
+#ifndef STONE_COMPILER_UNIXTASKQUEUE_H
+#define STONE_COMPILER_UNIXTASKQUEUE_H
 
 #include "stone/Basic/Context.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/Task.h"
+#include "stone/Driver/TaskQueue.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
@@ -16,7 +16,6 @@ namespace unix {
 
 class UnixTask final : public sys::Task {
 public:
-
 };
 
 class UnixTaskQueue final : public TaskQueue {
