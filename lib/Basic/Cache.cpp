@@ -17,7 +17,7 @@ struct DefaultCacheKey {
   void *Key = nullptr;
   CacheImpl::CallBacks *CBs = nullptr;
 
-  //DefaultCacheKey() = default;
+  // DefaultCacheKey() = default;
   DefaultCacheKey(void *Key, CacheImpl::CallBacks *CBs) : Key(Key), CBs(CBs) {}
 };
 
@@ -26,17 +26,17 @@ struct DefaultCache {
   CacheImpl::CallBacks CBs;
   llvm::DenseMap<DefaultCacheKey, void *> Entries;
 
-  explicit DefaultCache(CacheImpl::CallBacks CBs) : CBs(std::move(CBs)) { }
+  explicit DefaultCache(CacheImpl::CallBacks CBs) : CBs(std::move(CBs)) {}
 };
 } // end anonymous namespace
 
 namespace llvm {
-template<> struct DenseMapInfo<DefaultCacheKey> {
+template <> struct DenseMapInfo<DefaultCacheKey> {
   static inline DefaultCacheKey getEmptyKey() {
-    return { DenseMapInfo<void*>::getEmptyKey(), nullptr };
+    return {DenseMapInfo<void *>::getEmptyKey(), nullptr};
   }
   static inline DefaultCacheKey getTombstoneKey() {
-    return { DenseMapInfo<void*>::getTombstoneKey(), nullptr };
+    return {DenseMapInfo<void *>::getTombstoneKey(), nullptr};
   }
   static unsigned getHashValue(const DefaultCacheKey &Val) {
     uintptr_t Hash = Val.CBs->keyHashCB(Val.Key, nullptr);
@@ -45,10 +45,10 @@ template<> struct DenseMapInfo<DefaultCacheKey> {
   static bool isEqual(const DefaultCacheKey &LHS, const DefaultCacheKey &RHS) {
     if (LHS.Key == RHS.Key)
       return true;
-    if (LHS.Key == DenseMapInfo<void*>::getEmptyKey() ||
-        LHS.Key == DenseMapInfo<void*>::getTombstoneKey() ||
-        RHS.Key == DenseMapInfo<void*>::getEmptyKey() ||
-        RHS.Key == DenseMapInfo<void*>::getTombstoneKey())
+    if (LHS.Key == DenseMapInfo<void *>::getEmptyKey() ||
+        LHS.Key == DenseMapInfo<void *>::getTombstoneKey() ||
+        RHS.Key == DenseMapInfo<void *>::getEmptyKey() ||
+        RHS.Key == DenseMapInfo<void *>::getTombstoneKey())
       return false;
     return LHS.CBs->keyIsEqualCB(LHS.Key, RHS.Key, nullptr);
   }
@@ -60,7 +60,7 @@ CacheImpl::ImplTy CacheImpl::create(StringRef Name, const CallBacks &CBs) {
 }
 
 void CacheImpl::setAndRetain(void *Key, void *Value, size_t Cost) {
-  DefaultCache &DCache = *static_cast<DefaultCache*>(Impl);
+  DefaultCache &DCache = *static_cast<DefaultCache *>(Impl);
   llvm::sys::ScopedLock L(DCache.Mux);
 
   DefaultCacheKey CKey(Key, &DCache.CBs);
@@ -90,10 +90,10 @@ void CacheImpl::setAndRetain(void *Key, void *Value, size_t Cost) {
 }
 
 bool CacheImpl::getAndRetain(const void *Key, void **Value_out) {
-  DefaultCache &DCache = *static_cast<DefaultCache*>(Impl);
+  DefaultCache &DCache = *static_cast<DefaultCache *>(Impl);
   llvm::sys::ScopedLock L(DCache.Mux);
 
-  DefaultCacheKey CKey(const_cast<void*>(Key), &DCache.CBs);
+  DefaultCacheKey CKey(const_cast<void *>(Key), &DCache.CBs);
   auto Entry = DCache.Entries.find(CKey);
   if (Entry != DCache.Entries.end()) {
     // FIXME: Not thread-safe! It should avoid deleting the value until
@@ -109,10 +109,10 @@ void CacheImpl::releaseValue(void *Value) {
 }
 
 bool CacheImpl::remove(const void *Key) {
-  DefaultCache &DCache = *static_cast<DefaultCache*>(Impl);
+  DefaultCache &DCache = *static_cast<DefaultCache *>(Impl);
   llvm::sys::ScopedLock L(DCache.Mux);
 
-  DefaultCacheKey CKey(const_cast<void*>(Key), &DCache.CBs);
+  DefaultCacheKey CKey(const_cast<void *>(Key), &DCache.CBs);
   auto Entry = DCache.Entries.find(CKey);
   if (Entry != DCache.Entries.end()) {
     DCache.CBs.keyDestroyCB(Entry->first.Key, nullptr);
@@ -124,7 +124,7 @@ bool CacheImpl::remove(const void *Key) {
 }
 
 void CacheImpl::removeAll() {
-  DefaultCache &DCache = *static_cast<DefaultCache*>(Impl);
+  DefaultCache &DCache = *static_cast<DefaultCache *>(Impl);
   llvm::sys::ScopedLock L(DCache.Mux);
 
   for (auto Entry : DCache.Entries) {
@@ -136,7 +136,7 @@ void CacheImpl::removeAll() {
 
 void CacheImpl::destroy() {
   removeAll();
-  delete static_cast<DefaultCache*>(Impl);
+  delete static_cast<DefaultCache *>(Impl);
 }
 
 #endif // finish default implementation

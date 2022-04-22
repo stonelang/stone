@@ -442,7 +442,8 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
       "", defaultSupplementaryOutputPathExcludingExtension);
 
   auto serializedDiagnosticsPath = DetermineSupplementaryOutputFilename(
-      opts::SerializeDiagnosticsPath, pathsFromArguments.serializedDiagnosticsPath,
+      opts::SerializeDiagnosticsPath,
+      pathsFromArguments.serializedDiagnosticsPath,
       file::Type::SerializedDiagnostics, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
@@ -469,8 +470,7 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto moduleSourceInfoOutputPath = DetermineSupplementaryOutputFilename(
-      opts::EmitModuleSourceInfo,
-      pathsFromArguments.moduleSourceInfoOutputPath,
+      opts::EmitModuleSourceInfo, pathsFromArguments.moduleSourceInfoOutputPath,
       file::Type::StoneSourceInfo, "",
       defaultSupplementaryOutputPathExcludingExtension);
   auto moduleSummaryOutputPath = DetermineSupplementaryOutputFilename(
@@ -506,7 +506,8 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 
   // auto bitstreamOptRecordPath = DetermineSupplementaryOutputFilename(
   //     opts::SaveOptimizationRecordPath,
-  //     pathsFromArguments.BitstreamOptRecordPath, file::Type::BitstreamOptRecord,
+  //     pathsFromArguments.BitstreamOptRecordPath,
+  //     file::Type::BitstreamOptRecord,
   //     "", defaultSupplementaryOutputPathExcludingExtension);
 
   SupplementaryOutputPaths sop;
@@ -517,7 +518,7 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
   sop.referenceDependenciesFilePath = referenceDependenciesFilePath;
   sop.serializedDiagnosticsPath = serializedDiagnosticsPath;
   sop.fixItsOutputPath = fixItsOutputPath;
-  //sop.loadedModuleTracePath = loadedModuleTracePath;
+  // sop.loadedModuleTracePath = loadedModuleTracePath;
   sop.tbdPath = tbdPath;
   sop.moduleInterfaceOutputPath = moduleInterfaceOutputPath;
   sop.privateModuleInterfaceOutputPath = privateModuleInterfaceOutputPath;
@@ -525,8 +526,8 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
   sop.moduleSummaryOutputPath = moduleSummaryOutputPath;
   sop.abiDescriptorOutputPath = abiDescriptorOutputPath;
   sop.moduleSemanticInfoOutputPath = moduleSemanticInfoOutputPath;
-  //sop.yamlOptRecordPath = yamlOptRecordPath;
-  //sop.bitstreamOptRecordPath = bitstreamOptRecordPath;
+  // sop.yamlOptRecordPath = yamlOptRecordPath;
+  // sop.bitstreamOptRecordPath = bitstreamOptRecordPath;
   return sop;
 }
 

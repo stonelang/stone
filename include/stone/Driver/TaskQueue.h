@@ -8,17 +8,14 @@
 #include "stone/Basic/Context.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Driver/Job.h"
+#include "stone/Driver/Task.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"
 
 namespace stone {
 
-/// TODO:
-class Task {};
-class TaskDetail;
-
+class Task;
 class TaskQueue;
 class TaskQueueStats final : public Stats {
   const TaskQueue &queue;
@@ -41,25 +38,24 @@ protected:
   Context &ctx;
 
   /// Jobs which have not begun execution.
-  std::queue<std::unique_ptr<Task>> runQueue;
+  std::queue<std::unique_ptr<sys::Task>> runQueue;
 
   mutable std::mutex taskQueueMutext;
   std::condition_variable taskQueueCondition;
 
   /// The number of tasks to execute in parallel.
-  unsigned parallelJobCount;
+  unsigned parallelTaskCount;
 
 public:
   TaskQueue(TaskQueueKind kind, Context &ctx);
 
 public:
-  ProcID Push(const TaskDetail *taskDetail);
-  Job *Front();
+  // ProcID Push(const JobDetail *jobDetail);
+  sys::Task *Front();
   void Pop();
   void Print();
 
-  ProcID CreateTask(const TaskDetail &td);
-
+  //ProcID CreateTask(const TaskDetail &td);
   // void Remove(ProcID procID);
 
 public:

@@ -3,38 +3,34 @@
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
-#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Optional.h"
+#include "llvm/ADT/StringRef.h"
 
 namespace stone {
 namespace sys {
 
-template <typename T>
-struct CacheKeyHashInfo {
+template <typename T> struct CacheKeyHashInfo {
   static uintptr_t getHashValue(const T &Val) {
     return llvm::DenseMapInfo<T>::getHashValue(Val);
   }
   static bool isEqual(void *LHS, void *RHS) {
-    return llvm::DenseMapInfo<T>::isEqual(*static_cast<T*>(LHS),
-                                          *static_cast<T*>(RHS));
+    return llvm::DenseMapInfo<T>::isEqual(*static_cast<T *>(LHS),
+                                          *static_cast<T *>(RHS));
   }
 };
 
-template <typename T>
-struct CacheKeyInfo : public CacheKeyHashInfo<T> {
+template <typename T> struct CacheKeyInfo : public CacheKeyHashInfo<T> {
   static void *enterCache(const T &Val) { return new T(Val); }
-  static void exitCache(void *Ptr) { delete static_cast<T*>(Ptr); }
+  static void exitCache(void *Ptr) { delete static_cast<T *>(Ptr); }
   static const void *getLookupKey(const T *Val) { return Val; }
-  static const T &getFromCache(void *Ptr) { return *static_cast<T*>(Ptr); }
+  static const T &getFromCache(void *Ptr) { return *static_cast<T *>(Ptr); }
 };
 
-template <typename T>
-struct CacheValueCostInfo {
+template <typename T> struct CacheValueCostInfo {
   static size_t getCost(const T &Val) { return sizeof(Val); }
 };
 
-template <typename T>
-struct CacheValueInfo : public CacheValueCostInfo<T> {
+template <typename T> struct CacheValueInfo : public CacheValueCostInfo<T> {
   static void *enterCache(const T &Val) { return new T(Val); }
   static void retain(void *Ptr) {}
   static void release(void *Ptr) { delete static_cast<T *>(Ptr); }
@@ -132,24 +128,18 @@ protected:
 /// memory usage of the data structures it owns.
 template <typename KeyT, typename ValueT,
           typename KeyInfoT = CacheKeyInfo<KeyT>,
-          typename ValueInfoT = CacheValueInfo<ValueT> >
+          typename ValueInfoT = CacheValueInfo<ValueT>>
 class Cache : CacheImpl {
 public:
   explicit Cache(llvm::StringRef Name) {
     CallBacks CBs = {
-      /*UserData=*/nullptr,
-      keyHash,
-      keyIsEqual,
-      keyDestroy,
-      valueRetain,
-      valueRelease,
+        /*UserData=*/nullptr, keyHash,     keyIsEqual,
+        keyDestroy,           valueRetain, valueRelease,
     };
     Impl = create(Name, CBs);
   }
 
-  ~Cache() {
-    destroy();
-  }
+  ~Cache() { destroy(); }
 
   void set(const KeyT &Key, const ValueT &Value) {
     void *CacheKeyPtr = KeyInfoT::enterCache(Key);
@@ -176,13 +166,11 @@ public:
     return CacheImpl::remove(CacheKeyPtr);
   }
 
-  void clear() {
-    removeAll();
-  }
+  void clear() { removeAll(); }
 
 private:
   static uintptr_t keyHash(void *Key, void *UserData) {
-    return KeyInfoT::getHashValue(*static_cast<KeyT*>(Key));
+    return KeyInfoT::getHashValue(*static_cast<KeyT *>(Key));
   }
   static bool keyIsEqual(void *Key1, void *Key2, void *UserData) {
     return KeyInfoT::isEqual(Key1, Key2);
@@ -199,19 +187,14 @@ private:
   }
 };
 
-template <typename T>
-struct CacheValueInfo<llvm::IntrusiveRefCntPtr<T>>{
+template <typename T> struct CacheValueInfo<llvm::IntrusiveRefCntPtr<T>> {
   static void *enterCache(const llvm::IntrusiveRefCntPtr<T> &Val) {
     return const_cast<T *>(Val.get());
   }
-  static void retain(void *Ptr) {
-    static_cast<T*>(Ptr)->Retain();
-  }
-  static void release(void *Ptr) {
-    static_cast<T*>(Ptr)->Release();
-  }
+  static void retain(void *Ptr) { static_cast<T *>(Ptr)->Retain(); }
+  static void release(void *Ptr) { static_cast<T *>(Ptr)->Release(); }
   static llvm::IntrusiveRefCntPtr<T> getFromCache(void *Ptr) {
-    return static_cast<T*>(Ptr);
+    return static_cast<T *>(Ptr);
   }
   static size_t getCost(const llvm::IntrusiveRefCntPtr<T> &Val) {
     return CacheValueCostInfo<T>::getCost(*Val);
@@ -222,4 +205,3 @@ struct CacheValueInfo<llvm::IntrusiveRefCntPtr<T>>{
 } // end namespace stone
 
 #endif // STONE_BASIC_CACHE_H
-

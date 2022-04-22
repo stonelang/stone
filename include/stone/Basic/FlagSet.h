@@ -1,8 +1,8 @@
 #ifndef STONE_BASIC_FLAGSET_H
 #define STONE_BASIC_FLAGSET_H
 
-#include <type_traits>
 #include <assert.h>
+#include <type_traits>
 
 namespace stone {
 
@@ -12,15 +12,13 @@ namespace stone {
 /// Unfortunately, this doesn't currently support functional-style
 /// building patterns, which means this can't practically be used for
 /// types that need to be used in constant expressions.
-template <typename IntType>
-class FlagSet {
+template <typename IntType> class FlagSet {
   static_assert(std::is_integral<IntType>::value,
                 "storage type for FlagSet must be an integral type");
   IntType Bits;
 
 protected:
-  template <unsigned BitWidth>
-  static constexpr IntType lowMaskFor() {
+  template <unsigned BitWidth> static constexpr IntType lowMaskFor() {
     return IntType((1 << BitWidth) - 1);
   }
 
@@ -32,14 +30,10 @@ protected:
   constexpr FlagSet(IntType bits = 0) : Bits(bits) {}
 
   /// Read a single-bit flag.
-  template <unsigned Bit>
-  bool getFlag() const {
-    return Bits & maskFor<Bit>();
-  }
+  template <unsigned Bit> bool getFlag() const { return Bits & maskFor<Bit>(); }
 
   /// Set a single-bit flag.
-  template <unsigned Bit>
-  void setFlag(bool value) {
+  template <unsigned Bit> void setFlag(bool value) {
     if (value) {
       Bits |= maskFor<Bit>();
     } else {
@@ -58,47 +52,37 @@ protected:
   void setField(typename std::enable_if<true, FieldType>::type value) {
     // Note that we suppress template argument deduction for FieldType.
     assert(IntType(value) <= lowMaskFor<BitWidth>() && "value out of range");
-    Bits = (Bits & ~maskFor<FirstBit, BitWidth>())
-         | (IntType(value) << FirstBit);
+    Bits =
+        (Bits & ~maskFor<FirstBit, BitWidth>()) | (IntType(value) << FirstBit);
   }
 
   // A convenient macro for defining a getter and setter for a flag.
   // Intended to be used in the body of a subclass of FlagSet.
-#define FLAGSET_DEFINE_FLAG_ACCESSORS(BIT, GETTER, SETTER) \
-  bool GETTER() const {                                    \
-    return this->template getFlag<BIT>();                  \
-  }                                                        \
-  void SETTER(bool value) {                                \
-    this->template setFlag<BIT>(value);                    \
-  }
+#define FLAGSET_DEFINE_FLAG_ACCESSORS(BIT, GETTER, SETTER)                     \
+  bool GETTER() const { return this->template getFlag<BIT>(); }                \
+  void SETTER(bool value) { this->template setFlag<BIT>(value); }
 
   // A convenient macro for defining a getter and setter for a field.
   // Intended to be used in the body of a subclass of FlagSet.
-#define FLAGSET_DEFINE_FIELD_ACCESSORS(BIT, WIDTH, TYPE, GETTER, SETTER) \
-  TYPE GETTER() const {                                                  \
-    return this->template getField<BIT, WIDTH, TYPE>();                  \
-  }                                                                      \
-  void SETTER(TYPE value) {                                              \
-    this->template setField<BIT, WIDTH, TYPE>(value);                    \
-  }
+#define FLAGSET_DEFINE_FIELD_ACCESSORS(BIT, WIDTH, TYPE, GETTER, SETTER)       \
+  TYPE GETTER() const { return this->template getField<BIT, WIDTH, TYPE>(); }  \
+  void SETTER(TYPE value) { this->template setField<BIT, WIDTH, TYPE>(value); }
 
   // A convenient macro to expose equality operators.
   // These can't be provided directly by FlagSet because that would allow
   // different flag sets to be compared if they happen to have the same
   // underlying type.
-#define FLAGSET_DEFINE_EQUALITY(TYPENAME)                                \
-  friend bool operator==(TYPENAME lhs, TYPENAME rhs) {                   \
-    return lhs.getOpaqueValue() == rhs.getOpaqueValue();                 \
-  }                                                                      \
-  friend bool operator!=(TYPENAME lhs, TYPENAME rhs) {                   \
-    return lhs.getOpaqueValue() != rhs.getOpaqueValue();                 \
+#define FLAGSET_DEFINE_EQUALITY(TYPENAME)                                      \
+  friend bool operator==(TYPENAME lhs, TYPENAME rhs) {                         \
+    return lhs.getOpaqueValue() == rhs.getOpaqueValue();                       \
+  }                                                                            \
+  friend bool operator!=(TYPENAME lhs, TYPENAME rhs) {                         \
+    return lhs.getOpaqueValue() != rhs.getOpaqueValue();                       \
   }
 
 public:
   /// Get the bits as an opaque integer value.
-  IntType getOpaqueValue() const {
-    return Bits;
-  }
+  IntType getOpaqueValue() const { return Bits; }
 };
 
 } // end namespace stone
