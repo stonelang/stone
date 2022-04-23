@@ -17,6 +17,11 @@ class alignas(8) FrontendUnit final {
   const unsigned srcID;
   const file::File &input;
 
+  // const FrontendInputFile &fif;
+
+  // Something to think about
+  List<FrontendUnit> deps;
+
   std::unique_ptr<OutputFile> outputFile;
 
   /// The path to which we should emit a serialized module.

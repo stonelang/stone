@@ -1,7 +1,7 @@
 #include "stone/Compile/FrontendInputsAndOutputs.h"
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/File.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Range.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"

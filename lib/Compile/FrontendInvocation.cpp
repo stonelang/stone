@@ -1,6 +1,6 @@
 #include "stone/Compile/FrontendInvocation.h"
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/FrontendOptionsConverter.h"
 #include "stone/Session/Options.h"

@@ -1,5 +1,6 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
@@ -64,7 +65,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   frontendInstance.Initialize();
 
   if (args.empty()) {
-    // frontendInstance.PrintD(SrcLoc(), diag::err_no_compile_args);
+    frontendInstance.GetFrontendInvocation().GetContext().PrintD(
+        SrcLoc(), diag::err_no_frontend_args);
     return Finish(1);
   }
 
@@ -96,7 +98,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   auto &mode = frontendInvocation.ComputeMode(ial);
   if (mode.IsAlien()) {
-    // frontendInstance.PrintD(SrcLoc(), diags::err_alien_mode)
+    frontendInstance.GetFrontendInvocation().GetContext().PrintD(
+        SrcLoc(), diag::err_alien_mode);
     Finish(1);
   }
   if (mode.IsPrintHelp()) {

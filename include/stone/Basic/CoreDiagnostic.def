@@ -7,6 +7,8 @@ ERROR(invalid_diagnostic,none,
 ERROR(err_opening_output,none,
       "error opening '%0' for output: %1", (diag::LLVMStr, diag::LLVMStr))
 
+ERROR(err_alien_mode,none,
+      "invalid mode: type -help for a list of the compiler modes.", ())
 
 ERROR(err_no_input_files, none, "no input files", ())
 

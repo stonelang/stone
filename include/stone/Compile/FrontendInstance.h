@@ -48,6 +48,8 @@ public:
 // TODO: SmallString<128> workingDirectory;
 // llvm::sys::fs::current_path(workingDirectory);
 
+// class FrontendBase : public Session {};
+
 class FrontendInstance final {
   friend FrontendStats;
 
