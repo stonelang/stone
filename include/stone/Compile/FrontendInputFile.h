@@ -11,7 +11,6 @@
 #include <string>
 
 namespace stone {
-
 /// An \c FrontendInputFile encapsulates information about an input passed to
 /// the frontend.
 ///
