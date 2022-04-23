@@ -16,7 +16,7 @@ using namespace stone::syn;
 
 SyntaxContext::SyntaxContext(stone::Context &ctx,
                              const SearchPathOptions &spOpts)
-    : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetSystemOptions()) {
+    : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetLangOptions()) {
   stats = std::make_unique<SyntaxContextStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
 

@@ -9,11 +9,11 @@ class DebugFrontendListener final : public FrontendListener {
 public:
   DebugFrontendListener();
 
-  void OnCompileConfigured(FrontendInstance &frontendInstance) override;
-  void OnCompileStarted(FrontendInstance &frontendInstance) override;
-  void OnSyntaxAnalysisCompleted(FrontendInstance &frontendInstance);
-  void OnSemanticAnalysisCompleted(FrontendInstance &frontendInstance);
-  void OnCompileCompleted(FrontendInstance &frontendInstance) override;
+  void OnCompileConfigured(Frontend &frontendInstance) override;
+  void OnCompileStarted(Frontend &frontendInstance) override;
+  void OnSyntaxAnalysisCompleted(Frontend &frontendInstance);
+  void OnSemanticAnalysisCompleted(Frontend &frontendInstance);
+  void OnCompileCompleted(Frontend &frontendInstance) override;
 };
 
 } // namespace stone

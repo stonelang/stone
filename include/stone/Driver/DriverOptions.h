@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
-#include "stone/Basic/SystemOptions.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Driver/OutputOptions.h"
 #include "stone/Session/BaseOptions.h"
 
@@ -13,7 +13,7 @@ class DriverOptions final : public BaseOptions {
 
 public:
   // TODO: Move to base
-  SystemOptions systemOpts;
+  LangOptions systemOpts;
 
   /// Print the jobs in the TaskQueue
   bool printJobs = false;
@@ -42,7 +42,7 @@ public:
   OutputOptions outputOptions;
 
 public:
-  DriverOptions() { defaultModeKind = ModeKind::None; }
+  DriverOptions(const Mode &mode) : BaseOptions(mode) {}
 };
 } // namespace stone
 

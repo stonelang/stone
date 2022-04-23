@@ -10,6 +10,8 @@
 namespace stone {
 
 class BaseOptions {
+
+  const Mode &mode;
   // /// The target platform that we are running on.
   // llvm::Triple target;
 
@@ -42,10 +44,10 @@ public:
   /// The output file type which should be used for the sc
   file::Type outputFileType = file::Type::None;
 
-  ModeKind defaultModeKind = ModeKind::None;
+  const Mode &GetMode() { return mode; }
 
 public:
-  BaseOptions();
+  BaseOptions(const Mode &mode);
 
   // public:
   //   void SetTargetTriple(const llvm::Triple &triple);

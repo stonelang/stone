@@ -21,7 +21,7 @@
 #include "llvm/Support/type_traits.h"
 
 namespace stone {
-class SystemOptions;
+class LangOptions;
 class SrcLoc;
 namespace syn {
 
@@ -163,7 +163,7 @@ public:
   bool isOperatorKeyword() const { return IsOperatorKeyword; }
 
   /// Return true if this token is a keyword in the specified language.
-  bool IsKeyword(const SystemOptions &LangOpts) const;
+  bool IsKeyword(const LangOptions &LangOpts) const;
 
   /// Return true if this identifier is an editor placeholder.
   ///
@@ -230,7 +230,7 @@ public:
 /// piece of the code, as each occurrence of every identifier goes through
 /// here when lexed.
 class IdentifierTable final {
-  const SystemOptions &systemOpts;
+  const LangOptions &systemOpts;
   friend IdentifierTableStats;
 
   using Symbols = llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>;
@@ -239,7 +239,7 @@ class IdentifierTable final {
 public:
   /// Create the identifier table, populating it with info about the
   /// language keywords for the language specified by \p LangOpts.
-  explicit IdentifierTable(const SystemOptions &systemOpts);
+  explicit IdentifierTable(const LangOptions &systemOpts);
 
   llvm::BumpPtrAllocator &GetAllocator() { return symbols.getAllocator(); }
 
@@ -299,7 +299,7 @@ public:
 
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.
-  void AddKeywords(const SystemOptions &LangOpts);
+  void AddKeywords(const LangOptions &LangOpts);
 };
 
 namespace detail {

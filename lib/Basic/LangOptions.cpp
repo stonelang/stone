@@ -1,16 +1,16 @@
-#include "stone/Basic/SystemOptions.h"
+#include "stone/Basic/LangOptions.h"
 
 #include "llvm/Support/Host.h"
 
 using namespace stone;
 
-SystemOptions::SystemOptions() : target(llvm::sys::getDefaultTargetTriple()) {}
+LangOptions::LangOptions() : target(llvm::sys::getDefaultTargetTriple()) {}
 
-void SystemOptions::SetTargetTriple(llvm::StringRef triple) {
+void LangOptions::SetTargetTriple(llvm::StringRef triple) {
   SetTargetTriple(llvm::Triple(triple));
 }
 
-void SystemOptions::SetTargetTriple(const llvm::Triple &triple) {
+void LangOptions::SetTargetTriple(const llvm::Triple &triple) {
   /// TODO: Messy -- think of a cleaner way
   // if (triple.getOS() == llvm::Triple::Darwin &&
   //     triple.getVendor() == llvm::Triple::Apple) {

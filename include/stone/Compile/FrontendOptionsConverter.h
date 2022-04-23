@@ -13,8 +13,8 @@ namespace stone {
 class FrontendOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
-  const Mode &mode;
-  FrontendOptions &langOpts;
+  LangOptions &langOpts;
+  FrontendOptions &frontendOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -41,8 +41,8 @@ private:
 
 public:
   FrontendOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                           const Mode &mode, FrontendOptions &langOpts)
-      : de(de), args(args), mode(mode), langOpts(langOpts) {}
+                           LangOptions &langOpts, FrontendOptions &frontendOpts)
+      : de(de), args(args), langOpts(langOpts), frontendOpts(frontendOpts) {}
 
 public:
   stone::Error

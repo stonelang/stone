@@ -11,7 +11,7 @@ using namespace stone;
 static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
                                           llvm::TargetOptions &llvmTargetOpts,
                                           const CodeGenOptions &codeGenOpts,
-                                          const FrontendOptions &langOpts) {
+                                          const LangOptions &langOpts) {
 
   // switch (langOpts.GetThreadModel()) {
   // case FrontendOptions::ThreadModelKind::POSIX:
@@ -59,11 +59,10 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
   }
 }
 
-std::unique_ptr<llvm::TargetMachine>
-stone::CreateTargetMachine(DiagnosticEngine &de,
-                           const CodeGenOptions &codeGenOpts,
-                           const FrontendOptions &langOpts,
-                           syn::SyntaxContext &sc, llvm::Module &llvmModule) {
+std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
+    DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
+    const TargetOptions &targetOpts, const LangOptions &langOpts,
+    syn::SyntaxContext &sc, llvm::Module &llvmModule) {
 
   // Create the TargetMachine for generating code.
   std::string error;
@@ -72,8 +71,8 @@ stone::CreateTargetMachine(DiagnosticEngine &de,
       llvm::TargetRegistry::lookupTarget(triple, error);
 
   llvm::Optional<llvm::CodeModel::Model> codeModel = GetCodeModel(codeGenOpts);
-  std::string features = llvm::join(langOpts.targetOpts.features.begin(),
-                                    langOpts.targetOpts.features.end(), ",");
+  std::string features =
+      llvm::join(targetOpts.features.begin(), targetOpts.features.end(), ",");
 
   llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
   llvm::CodeGenOpt::Level codeGenOptLevel = GetOptimizationLevel(codeGenOpts);
@@ -84,9 +83,9 @@ stone::CreateTargetMachine(DiagnosticEngine &de,
   }
 
   std::unique_ptr<llvm::TargetMachine> tm;
-  tm.reset(llvmTarget->createTargetMachine(
-      triple, langOpts.targetOpts.cpu, features, llvmTargetOpts,
-      relocationModel, codeModel, codeGenOptLevel));
+  tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
+                                           llvmTargetOpts, relocationModel,
+                                           codeModel, codeGenOptLevel));
 
   return tm;
 }

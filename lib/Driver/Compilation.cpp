@@ -67,7 +67,7 @@ void Compilation::PrintJobs() {
 }
 
 void CompilationStats::Print(ColorfulStream &stream) {
-  if (compilation.GetDriver().GetContext().GetSystemOptions().printStatistics) {
+  if (compilation.GetDriver().GetContext().GetLangOptions().printStatistics) {
     // GetContext().Out() << compilation.GetSessionName() << '\n';
   }
 }

@@ -5,9 +5,9 @@
 #include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Basic/SystemOptions.h"
 
 #include "llvm/Support/Debug.h"
 
@@ -63,7 +63,7 @@ public:
 class Context final {
   FileMgr fm;
   SrcMgr sm;
-  SystemOptions systemOpts;
+  LangOptions langOpts;
   DiagnosticOptions diagOpts;
   DiagnosticEngine de;
   StatisticEngine se;
@@ -86,8 +86,8 @@ public:
   StatisticEngine &GetStatEngine() { return se; }
   const StatisticEngine &GeStatEngine() const { return se; }
 
-  SystemOptions &GetSystemOptions() { return systemOpts; }
-  const SystemOptions &GetSystemOptions() const { return systemOpts; }
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
 
   DiagnosticOptions &GetDiagOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }

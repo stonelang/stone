@@ -4,17 +4,12 @@ using namespace stone;
 
 DebugFrontendListener::DebugFrontendListener() {}
 
-void DebugFrontendListener::OnCompileConfigured(
-    FrontendInstance &frontendInstance) {}
+void DebugFrontendListener::OnCompileConfigured(Frontend &frontend) {}
 
-void DebugFrontendListener::OnCompileStarted(
-    FrontendInstance &frontendInstance) {}
+void DebugFrontendListener::OnCompileStarted(Frontend &frontend) {}
 
-void DebugFrontendListener::OnSyntaxAnalysisCompleted(
-    FrontendInstance &frontendInstance) {}
+void DebugFrontendListener::OnSyntaxAnalysisCompleted(Frontend &frontend) {}
 
-void DebugFrontendListener::OnSemanticAnalysisCompleted(
-    FrontendInstance &frontendInstance) {}
+void DebugFrontendListener::OnSemanticAnalysisCompleted(Frontend &frontend) {}
 
-void DebugFrontendListener::OnCompileCompleted(
-    FrontendInstance &frontendInstance) {}
+void DebugFrontendListener::OnCompileCompleted(Frontend &frontend) {}

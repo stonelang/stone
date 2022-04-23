@@ -33,7 +33,7 @@ class Driver final : public Session {
   llvm::StringRef name;
   llvm::StringRef path;
 
-  DriverOptions driverOpts;
+  std::unique_ptr<DriverOptions> driverOpts;
 
   std::unique_ptr<ToolChain> toolChain;
   std::unique_ptr<BuildSystem> buildSystem;
@@ -81,21 +81,23 @@ public:
                         llvm::StringRef workDir);
 
   void ComputeLinkMode(const llvm::opt::InputArgList &ial);
-  LinkMode GetLinkMode() const { return driverOpts.outputOptions.linkMode; }
+  LinkMode GetLinkMode() const {
+    return GetDriverOptions().outputOptions.linkMode;
+  }
 
   bool JustLink() const {
     return (!GetMode().CanCompile() &&
-            (driverOpts.outputOptions.linkMode != LinkMode::None));
+            (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool CanLink() const {
     return (GetMode().CanCompile() &&
-            (driverOpts.outputOptions.linkMode != LinkMode::None));
+            (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool JustCompile() const {
     return (GetMode().CanCompile() &&
-            (driverOpts.outputOptions.linkMode == LinkMode::None));
+            (GetDriverOptions().outputOptions.linkMode == LinkMode::None));
   }
 
   void ComputeOptions(const llvm::opt::InputArgList &ial);
@@ -112,7 +114,7 @@ public:
   ComputeCompilationModel(CompilationModelKind kind);
 
   CompilationModelKind GetCompilationModelKind() const {
-    return driverOpts.outputOptions.compilationModelKind;
+    return GetDriverOptions().outputOptions.compilationModelKind;
   }
 
 public:
@@ -134,14 +136,16 @@ public:
   // void PrintJobs(HotCache &hc);
 
 public:
-  BaseOptions &GetBaseOptions() override { return driverOpts; }
-  file::Type GetInputFileType() const { return driverOpts.inputFileType; }
+  BaseOptions &GetBaseOptions() override { return *driverOpts; }
+  file::Type GetInputFileType() const {
+    return GetDriverOptions().inputFileType;
+  }
   file::Type GetOutputFileType() const {
-    return driverOpts.outputOptions.outputFileType;
+    return GetDriverOptions().outputOptions.outputFileType;
   }
 
-  DriverOptions &GetDriverOptions() { return driverOpts; }
-  const DriverOptions &GetDriverOptions() const { return driverOpts; }
+  DriverOptions &GetDriverOptions() { return *driverOpts; }
+  const DriverOptions &GetDriverOptions() const { return *driverOpts; }
 
   OutputFileMap &GetOutputFileMap() { return outputFileMap; }
   const OutputFileMap &GetOutputFileMap() const { return outputFileMap; }

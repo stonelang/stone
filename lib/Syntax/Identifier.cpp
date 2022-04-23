@@ -7,7 +7,7 @@
 
 #include "stone/Basic/Char.h"
 #include "stone/Basic/Context.h"
-#include "stone/Basic/SystemOptions.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
@@ -28,7 +28,7 @@ enum class KeywordStatus {
   Off,
   Reserved,
 };
-static KeywordStatus GetKeywordStatus(const SystemOptions &systemOpts,
+static KeywordStatus GetKeywordStatus(const LangOptions &systemOpts,
                                       unsigned flag) {
   if (flag & TOKON) {
     return KeywordStatus::On;
@@ -39,7 +39,7 @@ static KeywordStatus GetKeywordStatus(const SystemOptions &systemOpts,
   return KeywordStatus::Off;
 }
 /// Returns true if the identifier is a keyword
-bool Identifier::IsKeyword(const SystemOptions &systemOpts) const {
+bool Identifier::IsKeyword(const LangOptions &systemOpts) const {
   switch (ty) {
 #define KEYWORD(NAME, FLAG)                                                    \
   case tok::kw_##NAME:                                                         \
@@ -56,14 +56,13 @@ bool Identifier::IsIdentifier(llvm::StringRef identifier) {
   return false;
 }
 
-IdentifierTable::IdentifierTable(const SystemOptions &systemOpts)
+IdentifierTable::IdentifierTable(const LangOptions &systemOpts)
     : systemOpts(systemOpts) {
   AddKeywords(systemOpts);
 }
 
 static void AddKeyword(llvm::StringRef keyword, tok kind, unsigned flag,
-                       const SystemOptions &systemOpts,
-                       IdentifierTable &table) {
+                       const LangOptions &systemOpts, IdentifierTable &table) {
   auto status = GetKeywordStatus(systemOpts, flag);
   if (status == KeywordStatus::Off) {
     return;
@@ -74,7 +73,7 @@ static void AddKeyword(llvm::StringRef keyword, tok kind, unsigned flag,
   identifier.SetIsKeywordReserved(status == KeywordStatus::Reserved);
 }
 
-void IdentifierTable::AddKeywords(const SystemOptions &LangOpts) {
+void IdentifierTable::AddKeywords(const LangOptions &LangOpts) {
   // Add keywords and tokens for the current language.
 #define KEYWORD(NAME, FLAG)                                                    \
   AddKeyword(llvm::StringRef(#NAME), tok::kw_##NAME, FLAG, systemOpts, *this);

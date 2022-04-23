@@ -1,11 +1,10 @@
 set(stone_compile_sources
 	Compile.cpp
 	DebugFrontendListener.cpp
+	Frontend.cpp
+	FrontendArguments.cpp
 	FrontendInputsAndOutputs.cpp
 	FrontendInputsConverter.cpp
-	FrontendInstance.cpp
-	FrontendInvocation.cpp
-	FrontendOptions.cpp
 	FrontendOptionsConverter.cpp
 	FrontendOutputsConverter.cpp
 	ModuleSystem.cpp

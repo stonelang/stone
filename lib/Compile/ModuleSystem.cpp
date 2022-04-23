@@ -1,10 +1,11 @@
 #include "stone/Compile/ModuleSystem.h"
+#include "stone/Compile/Frontend.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Syntax &syntax, const FrontendOptions &langOpts)
-    : syntax(syntax), langOpts(langOpts) {}
+ModuleSystem::ModuleSystem(Syntax &syntax, Context &ctx)
+    : syntax(syntax), ctx(ctx) {}
 
 ModuleSystem::~ModuleSystem() {}
 
@@ -18,7 +19,18 @@ syn::Module *ModuleSystem::GetMainModule() const {
   return mainModule;
 }
 
+// TODO: Move to the module system
+void ModuleSystem::SetModuleName(llvm::StringRef name) {
+  ctx.GetLangOptions().moduleName = name.data();
+}
+
+const llvm::StringRef ModuleSystem::ModuleSystem::GetModuleName() const {
+  return ctx.GetLangOptions().moduleName;
+}
+
 // TODO: May want to move to Module
 stone::Error ModuleSystem::IsValidModuleName(llvm::StringRef moduleName) {
+
+  // TODO: 1. Lexer::IsIdentifier() -- keep in mind that this is special
   return stone::Error();
 }

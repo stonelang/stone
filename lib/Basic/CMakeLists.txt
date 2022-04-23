@@ -32,7 +32,7 @@ set(stone_basic_sources
 	LLVMContext.cpp
 	OutputFileMap.cpp
 	SrcMgr.cpp
-	SystemOptions.cpp
+	LangOptions.cpp
 	StatisticEngine.cpp
 	TextDiagnosticEmitter.cpp
 	TextDiagnosticFormatter.cpp

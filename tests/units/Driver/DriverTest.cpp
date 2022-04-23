@@ -1,7 +1,7 @@
 #include "stone/Driver/Driver.h"
 #include "stone/Basic/Context.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/SystemOptions.h"
 #include "stone/Driver/CompilationJob.h"
 #include "stone/Driver/Intent.h"
 #include "gtest/gtest.h"

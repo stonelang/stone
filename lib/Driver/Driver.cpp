@@ -34,6 +34,8 @@ Driver::~Driver() {}
 
 llvm::opt::InputArgList &Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
   auto &ial = Session::ParseArgs(args);
+
+  driverOpts = std::make_unique<DriverOptions>(GetMode());
   return ial;
 }
 
@@ -48,7 +50,7 @@ std::unique_ptr<Compilation>
 Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   llvm::PrettyStackTraceString crashInfo("Building compilation");
 
-  if (driverOpts.cleanBuild) {
+  if (GetDriverOptions().cleanBuild) {
     GetBuildSystem().Clean();
   }
   GetBuildSystem().StartBuild();
@@ -79,10 +81,10 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   auto compilationModel = ComputeCompilationModel(compilationModelKind);
 
   auto compilation = compilationModel->BuildCompilation(
-      toolChain, inputs, driverOpts.outputOptions);
+      toolChain, inputs, GetDriverOptions().outputOptions);
 
   // A quick -print-requests check
-  if (driverOpts.printJobs) {
+  if (GetDriverOptions().printJobs) {
     compilation->PrintJobs();
     compilation.reset();
   }
@@ -159,11 +161,11 @@ Driver::ComputeCompilationModel(CompilationModelKind kind) {
 std::unique_ptr<ToolChain>
 Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
-    ctx.GetSystemOptions().SetTargetTriple(
+    ctx.GetLangOptions().SetTargetTriple(
         llvm::Triple::normalize(arg->getValue()));
   }
 
-  switch (ctx.GetSystemOptions().target.getOS()) {
+  switch (ctx.GetLangOptions().target.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX: {
     llvm::Optional<llvm::Triple> targetVariant;
@@ -171,7 +173,7 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
     return std::make_unique<stone::darwin::DarwinToolChain>(
-        *this, ctx.GetSystemOptions().target, targetVariant);
+        *this, ctx.GetLangOptions().target, targetVariant);
   }
   // case llvm::Triple::Linux:
   //   toolChain = std::make_unique<stone::linux::LinuxToolChain>(*this,
@@ -193,21 +195,21 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
 void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
   // Since the mode has already been created
   // switch(GetMode().GetKind().)
-  driverOpts.outputFileType = file::Type::Object;
+  GetDriverOptions().outputFileType = file::Type::Object;
 
   // TODO:
-  // driverOpts.compileModel = ComputeCompilationMode(
-  //     *tal, driverOpts.inputFiles);
+  // GetDriverOptions().compileModel = ComputeCompilationMode(
+  //     *tal, GetDriverOptions().inputFiles);
 
   // auto scPathResult = GetEQValue(opts::LangPathEQ);
   // if (!stPathResult.IsErr()) {
-  //   driverOpts.scPath = stPathResult.Get();
+  //   GetDriverOptions().scPath = stPathResult.Get();
   // }
 
-  driverOpts.printRequests = ial.hasArg(opts::PrintDriverRequests);
-  driverOpts.printJobs = ial.hasArg(opts::PrintDriverJobs);
-  driverOpts.printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
-  driverOpts.systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
+  GetDriverOptions().printRequests = ial.hasArg(opts::PrintDriverRequests);
+  GetDriverOptions().printJobs = ial.hasArg(opts::PrintDriverJobs);
+  GetDriverOptions().printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
+  GetDriverOptions().systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
 }
 
 llvm::StringRef Driver::ComputeOutputFilename() {}

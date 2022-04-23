@@ -5,9 +5,9 @@
 #include "stone/Basic/DiagnosticFormatter.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticLocalization.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Printable.h"
-#include "stone/Basic/SystemOptions.h"
 #include "stone/Basic/Version.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -25,7 +25,7 @@ class SrcMgr;
 class DiagnosticEngine;
 class InFlightDiagnostic;
 class DiagnosticListener;
-class SystemOptions;
+class LangOptions;
 class Version;
 class SavedDiagnostic;
 class DiagnosticState;

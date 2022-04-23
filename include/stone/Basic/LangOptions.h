@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_SYSTEMOPTIONS_H
-#define STONE_BASIC_SYSTEMOPTIONS_H
+#ifndef STONE_BASIC_LANGOPTIONS_H
+#define STONE_BASIC_LANGOPTIONS_H
 
 #include <string>
 #include <vector>
@@ -16,8 +16,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
-
-class SystemOptions final {
+class LangOptions final {
 public:
   /// The target platform that we are running on.
   llvm::Triple target;
@@ -47,7 +46,7 @@ public:
   std::string moduleLinkName;
 
 public:
-  SystemOptions();
+  LangOptions();
 
 public:
   void SetTargetTriple(const llvm::Triple &triple);

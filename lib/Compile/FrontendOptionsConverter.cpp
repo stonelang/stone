@@ -26,7 +26,7 @@ stone::Error FrontendOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
-  assert(langOpts.inputsAndOutputs.HasInputs() &&
+  assert(frontendOpts.inputsAndOutputs.HasInputs() &&
          "Inputs and Outputs should be empty");
 
   // llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
@@ -39,12 +39,12 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
-  langOpts.systemOpts.moduleAliasMap.clear();
+  langOpts.moduleAliasMap.clear();
 
   const Arg *A = args.getLastArg(opts::ModuleName);
   if (A) {
-    langOpts.systemOpts.moduleName = A->getValue();
-  } else if (langOpts.systemOpts.moduleName.empty()) {
+    langOpts.moduleName = A->getValue();
+  } else if (langOpts.moduleName.empty()) {
     // The user did not specify a module name, so determine a default fallback
     // based on other options.
 
@@ -55,28 +55,29 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(langOpts.systemOpts.moduleName).Has()) {
+  if (!ModuleSystem::IsValidModuleName(langOpts.moduleName).Has()) {
     return stone::Error();
   }
 
-  if (langOpts.systemOpts.moduleName != strings::StdLibName) {
+  if (langOpts.moduleName != strings::StdLibName) {
     return stone::Error();
   }
 
-  if (langOpts.shouldParseAsStdLib) {
+  if (frontendOpts.shouldParseAsStdLib) {
     return stone::Error();
   }
 
-  // if (Lexer::isIdentifier(langOpts.moduleName) &&
-  //     (langOpts.moduleName != strings::StdLibName || langOpts.parseStdLib)) {
+  // if (Lexer::isIdentifier(frontendOpts.moduleName) &&
+  //     (frontendOpts.moduleName != strings::StdLibName ||
+  //     frontendOpts.parseStdLib)) {
   //   return false;
   // }
-  // if (!FrontendOptions::NeedsProperModuleName(langOpts.modeKind) ||
-  //     langOpts.IsCompilingExactlyOneStoneFile()) {
-  //   langOpts.ModuleName = strings::MainFileName;
+  // if (!FrontendOptions::NeedsProperModuleName(frontendOpts.modeKind) ||
+  //     frontendOpts.IsCompilingExactlyOneStoneFile()) {
+  //   frontendOpts.ModuleName = strings::MainFileName;
   //   return false;
   // }
-  // auto DID = (langOpts.noduleName == STDLIB_NAME) ?
+  // auto DID = (frontendOpts.noduleName == STDLIB_NAME) ?
   // diag::error_stdlib_module_name
   //                                             : diag::error_bad_module_name;
   // Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
@@ -91,8 +92,8 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
 stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
 
   // // In order to pass some tests, must leave ModuleName empty.
-  // if (!langOpts.inputsAndOutputs.HasInputs()) {
-  //   langOpts.moduleName = std::string();
+  // if (!frontendOpts.inputsAndOutputs.HasInputs()) {
+  //   frontendOpts.moduleName = std::string();
   //   // FIXME: This is a bug that should not happen, but does in tests.
   //   // The compiler should bail out earlier, where "no frontend action was
   //   // selected".
@@ -109,7 +110,7 @@ stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
   //         ? outputFilenames->front()
   //         : Opts.InputsAndOutputs.GetFilenameOfFirstInput();
 
-  // langOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
+  // frontendOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

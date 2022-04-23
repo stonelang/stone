@@ -8,9 +8,9 @@
 #include "llvm/Support/Path.h"
 
 namespace stone {
-class FrontendInvocation;
+class Frontend;
 class alignas(8) FrontendUnit final {
-  friend class FrontendInstance;
+  friend class Frontend;
 
   bool isPrimary;
   bool hasOutput;
@@ -91,7 +91,7 @@ public:
 
 public:
   static FrontendUnit *Allocate(const unsigned srcID, const file::File &input,
-                                FrontendInvocation &frontendInvocation);
+                                Frontend &frontend);
 
   // file::File *GetOutput() { return output; }
   // void SetOutput(file::File *o) { output = o; };
@@ -99,23 +99,16 @@ public:
 
 } // namespace stone
 
-void *operator new(size_t bytes,
-                   const stone::FrontendInvocation &frontendInvocation,
+void *operator new(size_t bytes, const stone::Frontend &frontend,
                    size_t alignment = 8);
 
-void *operator new[](size_t bytes,
-                     const stone::FrontendInvocation &frontendInvocation,
+void *operator new[](size_t bytes, const stone::Frontend &frontend,
                      size_t alignment = 8);
 
 // It is good practice to pair new/delete operators.  Also, MSVC gives many
 // warnings if a matching delete overload is not declared, even though the
 // throw() spec guarantees it will not be implicitly called.
-void operator delete(void *currPtr,
-                     const stone::FrontendInvocation &frontendInvocation,
-                     size_t);
-
-void operator delete[](void *currPtr,
-                       const stone::FrontendInvocation &frontendInvocation,
-                       size_t);
+void operator delete(void *currPtr, const stone::Frontend &frontend, size_t);
+void operator delete[](void *currPtr, const stone::Frontend &frontend, size_t);
 
 #endif

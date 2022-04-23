@@ -58,10 +58,22 @@ public:
       return false;
     }
   }
-  bool IsValid() {
-    if (CanCompile()) {
+
+  bool CanCodeGen() const {
+    switch (GetKind()) {
+    case ModeKind::None:
+    case ModeKind::EmitIR:
+    case ModeKind::EmitBC:
+    case ModeKind::EmitObject:
+    case ModeKind::EmitAssembly:
+    case ModeKind::EmitModule:
+    case ModeKind::EmitLibrary:
       return true;
+    default:
+      return false;
     }
+  }
+  bool IsImmediate() {
     switch (GetKind()) {
     case ModeKind::PrintHelp:
     case ModeKind::PrintVersion:
@@ -69,6 +81,15 @@ public:
     default:
       return false;
     }
+  }
+  bool IsValid() {
+    if (CanCompile()) {
+      return true;
+    }
+    if (IsImmediate()) {
+      return true;
+    }
+    return false;
   }
   bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
   bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }

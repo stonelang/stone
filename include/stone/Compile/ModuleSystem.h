@@ -19,26 +19,23 @@ public:
 };
 class ModuleSystem final {
   // We need built-in information
-  syn::Syntax &syntax;
 
-  const FrontendOptions &langOpts;
+  syn::Syntax &syntax;
+  Context &ctx;
   /// This is the main module that will be created
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(syn::Syntax &syntax, const FrontendOptions &langOpts);
-
+  ModuleSystem(syn::Syntax &syntax, Context &ctx);
   ~ModuleSystem();
 
+public:
   syn::Module *GetMainModule() const;
+  const llvm::StringRef GetModuleName() const;
+  void SetModuleName(llvm::StringRef name);
 
 public:
   static stone::Error IsValidModuleName(llvm::StringRef moduleName);
-
-public:
-  const llvm::StringRef GetModuleName() const {
-    return langOpts.systemOpts.moduleName;
-  }
 };
 
 } // namespace stone

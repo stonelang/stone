@@ -3,8 +3,8 @@
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/SystemOptions.h"
 #include "stone/Compile/FrontendInputsAndOutputs.h"
 #include "stone/Compile/TargetOptions.h"
 #include "stone/Sem/TypeCheckerOptions.h"
@@ -30,24 +30,11 @@ enum class ThreadModelKind {
 };
 
 class FrontendOptions final : public BaseOptions {
+  friend class Frontend;
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
 public:
-  /// Options for the entire system
-  SystemOptions systemOpts;
-
-  /// Options for generating code
-  CodeGenOptions codeGenOpts;
-
-  /// The options for searching libs
-  SearchPathOptions searchPathOpts;
-
-  /// The options for type-checking
-  TypeCheckerOptions typeCheckerOpts;
-
-  TargetOptions targetOpts;
-
   ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
@@ -61,7 +48,7 @@ public:
   bool shouldParseAsStdLib = false;
 
 public:
-  FrontendOptions();
+  FrontendOptions(const Mode &mode);
 
 public:
   static file::Type GetFileTypeByModeKind(ModeKind modeKind);

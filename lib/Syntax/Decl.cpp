@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/SystemOptions.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
