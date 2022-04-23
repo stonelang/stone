@@ -1,5 +1,5 @@
 #include "stone/Compile/FrontendOptionsConverter.h"
-#include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Strings.h"
 #include "stone/Compile/ModuleSystem.h"
 //#include "stone/Basic/Platform.h"

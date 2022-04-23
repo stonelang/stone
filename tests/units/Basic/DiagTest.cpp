@@ -1,4 +1,4 @@
-#include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/SyntaxDiagnostic.h"

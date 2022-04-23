@@ -1,5 +1,5 @@
 #include "stone/Compile/FrontendInstance.h"
-#include "stone/Basic/CompileDiagnostic.h"
+#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
