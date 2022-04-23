@@ -91,6 +91,8 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
 
 stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
 
+  stone::Panic("Not implemented");
+
   // // In order to pass some tests, must leave ModuleName empty.
   // if (!frontendOpts.inputsAndOutputs.HasInputs()) {
   //   frontendOpts.moduleName = std::string();

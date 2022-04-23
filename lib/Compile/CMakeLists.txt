@@ -2,7 +2,7 @@ set(stone_compile_sources
 	Compile.cpp
 	DebugFrontendListener.cpp
 	Frontend.cpp
-	FrontendArguments.cpp
+	ParseFrontendArgs.cpp
 	FrontendInputsAndOutputs.cpp
 	FrontendInputsConverter.cpp
 	FrontendOptionsConverter.cpp

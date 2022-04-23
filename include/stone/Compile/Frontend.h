@@ -1,10 +1,11 @@
-#ifndef STONE_COMPILE_LANG_H
-#define STONE_COMPILE_LANG_H
+#ifndef STONE_COMPILE_FRONTEND_H
+#define STONE_COMPILE_FRONTEND_H
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
+#include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/FrontendUnit.h"
@@ -70,6 +71,8 @@ protected:
 
   TargetOptions targetOpts;
 
+  ModuleOptions moduleOpts;
+
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
@@ -134,6 +137,9 @@ public:
   const TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
   }
+
+  ModuleOptions &GetModuleOptions() { return moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
   TypeCheckMode GetTypeCheckMode() {
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule

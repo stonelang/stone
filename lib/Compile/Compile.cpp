@@ -95,43 +95,48 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (frontend.HasError()) {
     return Finish(1);
   }
-  auto &mode = frontend.ComputeMode(ial);
-  if (mode.IsAlien()) {
+  // auto &mode = frontend.ComputeMode(ial);
+
+  if (frontend.GetMode().IsAlien()) {
     frontend.GetContext().PrintD(SrcLoc(), diag::err_alien_mode);
     Finish(1);
   }
-  if (mode.IsPrintHelp()) {
+  if (frontend.GetMode().IsPrintHelp()) {
     frontend.PrintHelp();
     return Finish();
   }
-  if (mode.IsPrintVersion()) {
+  if (frontend.GetMode().IsPrintVersion()) {
     frontend.PrintVersion();
     return Finish();
   }
-  if (!mode.CanCompile()) {
+  if (!frontend.GetMode().CanCompile()) {
     /// frontend.PrintD()
     return Finish(1);
   }
-  auto inputs = frontend.BuildInputFiles(ial);
-  if (frontend.HasError()) {
-    return Finish(1);
-  }
-  auto sources = frontend.BuildSources(inputs);
-  if (frontend.HasError()) {
-    return Finish(1);
-  }
+  // auto inputs = frontend.BuildInputFiles(ial);
+  // if (frontend.HasError()) {
+  //   return Finish(1);
+  // }
+  // auto sources = frontend.BuildSources(inputs);
+  // if (frontend.HasError()) {
+  //   return Finish(1);
+  // }
+
   if (frontend.GetListener()) {
     frontend.GetListener()->OnCompileConfigured(frontend);
   }
-  frontend.Compile(sources);
-  if (frontend.HasError()) {
-    return Finish(1);
-  }
+  //  frontend.Compile(sources);
+  //  if (frontend.HasError()) {
+  //    return Finish(1);
+  //  }
   return Finish();
 }
 
 static void DumpIR(Frontend &frontend, CodeGenContext &cgc,
                    IRCodeGenResult &result) {}
+
+static void PrintIR(Frontend &frontend, CodeGenContext &cgc,
+                    IRCodeGenResult &result) {}
 
 using CompileWithGenIRCallback = llvm::function_ref<void(
     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
@@ -219,6 +224,12 @@ static void CompileWithCodeGen(Frontend &frontend) {
         frontend, mainModule, cgc,
         [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
           return DumpIR(frontend, cgc, result);
+        });
+  case ModeKind::PrintIR:
+    return CompileWithGenIR(
+        frontend, mainModule, cgc,
+        [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return PrintIR(frontend, cgc, result);
         });
   default:
     return CompileWithGenIR(
