@@ -1,9 +1,9 @@
-#include "stone/Compile/LangInstance.h"
+#include "stone/Compile/FrontendInstance.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/LangListener.h"
+#include "stone/Compile/FrontendListener.h"
 #include "stone/Parse/Parse.h"
 #include "stone/Sem/TypeCheck.h"
 #include "stone/Sem/UsingResolution.h"
@@ -25,27 +25,28 @@
 using namespace stone;
 using namespace stone::syn;
 
-LangInstance::LangInstance(LangListener *listener) : listener(listener) {
-  stats = std::make_unique<LangStats>(*this);
+FrontendInstance::FrontendInstance(FrontendListener *listener)
+    : listener(listener) {
+  stats = std::make_unique<FrontendStats>(*this);
 
   langInvocation.GetContext().GetStatEngine().Register(stats.get());
 
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
       langInvocation.GetContext(),
-      langInvocation.GetLangOptions().searchPathOpts);
+      langInvocation.GetFrontendOptions().searchPathOpts);
 
   syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
 
   moduleSystem = std::make_unique<ModuleSystem>(
-      *syntax.get(), langInvocation.GetLangOptions());
+      *syntax.get(), langInvocation.GetFrontendOptions());
 }
-LangInstance::~LangInstance() {}
+FrontendInstance::~FrontendInstance() {}
 
-void LangInstance::Initialize() {}
+void FrontendInstance::Initialize() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
-LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
-                                  Context &ctx) {
+FrontendInstance::GetFileOutputStream(llvm::StringRef outputFilename,
+                                      Context &ctx) {
   std::error_code ec;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, ec,
                                                    llvm::sys::fs::OF_None);
@@ -57,10 +58,10 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   return os;
 }
 // // Build the session
-// void Lang::BuildSession(const llvm::opt::InputArgList &ial) {
+// void Frontend::BuildSession(const llvm::opt::InputArgList &ial) {
 
-//   llvm::PrettyStackTraceString crashInfo("Lang Initialization");
-//   assert(GetSessionKind() == SessionKind::Lang && "Invalid SessionKind");
+//   llvm::PrettyStackTraceString crashInfo("Frontend Initialization");
+//   assert(GetSessionKind() == SessionKind::Frontend && "Invalid SessionKind");
 
 //   auto &tal = TranslateInputArgList(ial);
 //   ComputeModeKind(tal);
@@ -71,8 +72,8 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 //   BuildInputFiles(tal);
 // }
 
-// void Lang::BuildUnits() {
-//   for (auto &input : GetLangOptions().inputFiles) {
+// void Frontend::BuildUnits() {
+//   for (auto &input : GetFrontendOptions().inputFiles) {
 //     assert(file::Exists(input.GetName()) && "Input file does not exist.");
 
 //     auto fileBuffer =
@@ -87,32 +88,32 @@ LangInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 //     assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
 
 //     /// TODO: optimize
-//     auto unit = std::make_unique<LangUnit>(input, srcID);
+//     auto unit = std::make_unique<FrontendUnit>(input, srcID);
 //     units.Add(std::move(unit));
 //   }
 // }
 
-// ModeKind Lang::GetDefaultMode() { return ModeKind::EmitObject; }
-// void Lang::BuildOptions() {}
+// ModeKind Frontend::GetDefaultMode() { return ModeKind::EmitObject; }
+// void Frontend::BuildOptions() {}
 
-// llvm::StringRef Lang::GetProgramName() { return name; }
-// llvm::StringRef Lang::GetProgramPath() { return path; }
+// llvm::StringRef Frontend::GetProgramName() { return name; }
+// llvm::StringRef Frontend::GetProgramPath() { return path; }
 
-// void LangInstance::RecordPrimaryInputBuffer(unsigned bufferID) {
+// void FrontendInstance::RecordPrimaryInputBuffer(unsigned bufferID) {
 //   PrimaryBufferIDs.insert(bufferID);
 // }
 
-// void LangInstance::FinishTypeCheck() {
+// void FrontendInstance::FinishTypeCheck() {
 // }
 
-void LangInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+void FrontendInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
 
-  switch (GetLangInvocation().GetTypeCheckMode()) {
+  switch (GetFrontendInvocation().GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
       if (syntaxFile) {
-        client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
+        client(*syntaxFile, GetFrontendInvocation().GetTypeCheckerOptions(),
                GetListener());
       }
     }
@@ -120,27 +121,27 @@ void LangInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   case TypeCheckMode::EachFile: {
     for (auto *syntaxFile :
          GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      client(*syntaxFile, GetLangInvocation().GetTypeCheckerOptions(),
+      client(*syntaxFile, GetFrontendInvocation().GetTypeCheckerOptions(),
              GetListener());
     }
   }
   }
 }
 
-llvm::StringRef LangInstance::ComputeSourceOutputFile(unsigned srcID) {
+llvm::StringRef FrontendInstance::ComputeSourceOutputFile(unsigned srcID) {
   assert(false && "Not implemented");
   return llvm::StringRef();
 }
 
-void LangInstance::CompileWithSyntaxAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources) {
+void FrontendInstance::CompileWithSyntaxAnalysis(
+    llvm::ArrayRef<FrontendUnit *> &sources) {
   CompileWithSyntaxAnalysis(sources, [&](syn::SyntaxFile &sf) {
     return [&](syn::SyntaxFile &sf) -> void {}(sf);
   });
 }
 
-void LangInstance::CompileWithSyntaxAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources, SyntaxAnalysisCallback client) {
+void FrontendInstance::CompileWithSyntaxAnalysis(
+    llvm::ArrayRef<FrontendUnit *> &sources, SyntaxAnalysisCallback client) {
 
   for (auto source : sources) {
     assert(source);
@@ -155,7 +156,7 @@ void LangInstance::CompileWithSyntaxAnalysis(
     client(*syntaxFile);
   }
 
-  if (!GetLangInvocation().GetMode().JustParse()) {
+  if (!GetFrontendInvocation().GetMode().JustParse()) {
     ResolveUsings();
   }
   if (listener) {
@@ -163,15 +164,15 @@ void LangInstance::CompileWithSyntaxAnalysis(
   }
 }
 
-void LangInstance::ResolveUsings() {
+void FrontendInstance::ResolveUsings() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
       sem::ResolveUsings(*syntaxFile);
   }
 }
-void LangInstance::CompileWithSemanticAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources) {
+void FrontendInstance::CompileWithSemanticAnalysis(
+    llvm::ArrayRef<FrontendUnit *> &sources) {
 
   CompileWithSyntaxAnalysis(sources);
 
@@ -187,22 +188,22 @@ void LangInstance::CompileWithSemanticAnalysis(
   }
 }
 
-void LangInstance::CompileWithSemanticAnalysis(
-    llvm::ArrayRef<SourceUnit *> &sources, SemanticAnalysisCallback client) {
+void FrontendInstance::CompileWithSemanticAnalysis(
+    llvm::ArrayRef<FrontendUnit *> &sources, SemanticAnalysisCallback client) {
   CompileWithSemanticAnalysis(sources);
   client(*this);
 }
 
-void LangInstance::PrintVersion() {}
+void FrontendInstance::PrintVersion() {}
 
-void LangInstance::Finish() {
+void FrontendInstance::Finish() {
   if (listener) {
     listener->OnCompileCompleted(*this);
   }
 }
 
-void LangStats::Print(ColorfulStream &stream) {
-  // if (sc.GetLangOpts().printStats) {
+void FrontendStats::Print(ColorfulStream &stream) {
+  // if (sc.GetFrontendOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;
   // }

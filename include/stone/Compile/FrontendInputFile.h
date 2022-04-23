@@ -12,26 +12,27 @@
 
 namespace stone {
 
-/// An \c LangInputFile encapsulates information about an input passed to the
-/// frontend.
+/// An \c FrontendInputFile encapsulates information about an input passed to
+/// the frontend.
 ///
 /// Compiler inputs are usually passed on the command line without a leading
 /// flag. However, there are clients that use the \c CompilerInvocation as
-/// a library like LLDB and SourceKit that generate their own \c LangInputFile
-/// instances programmatically. Note that an \c LangInputFile need not actually
-/// be backed by a physical file, nor does its file name actually reflect its
-/// contents. \c LangInputFile has a constructor that will try to figure out the
-/// file type from the file name if none is provided, but many clients that
-/// construct \c LangInputFile instances themselves may provide bogus file names
-/// with pre-computed kinds. It is imperative that \c LangInputFile::GetType be
-/// used as a source of truth for this information.
+/// a library like LLDB and SourceKit that generate their own \c
+/// FrontendInputFile instances programmatically. Note that an \c
+/// FrontendInputFile need not actually be backed by a physical file, nor does
+/// its file name actually reflect its contents. \c FrontendInputFile has a
+/// constructor that will try to figure out the file type from the file name if
+/// none is provided, but many clients that construct \c FrontendInputFile
+/// instances themselves may provide bogus file names with pre-computed kinds.
+/// It is imperative that \c FrontendInputFile::GetType be used as a source of
+/// truth for this information.
 ///
-/// \warning \c LangInputFile takes an unfortunately lax view of the ownership
-/// of its primary data. It currently only owns the file name and a copy of any
-/// assigned \c PrimaryFileSpecificPaths outright. It is the responsibility of
-/// the caller to ensure that an associated memory buffer outlives the \c
-/// LangInputFile.
-class LangInputFile final {
+/// \warning \c FrontendInputFile takes an unfortunately lax view of the
+/// ownership of its primary data. It currently only owns the file name and a
+/// copy of any assigned \c PrimaryFileSpecificPaths outright. It is the
+/// responsibility of the caller to ensure that an associated memory buffer
+/// outlives the \c FrontendInputFile.
+class FrontendInputFile final {
   std::string filename;
   file::Type fileTy;
   llvm::PointerIntPair<llvm::MemoryBuffer *, 1, bool> bufferAndIsPrimary;
@@ -44,14 +45,15 @@ public:
   /// and is therefore not suitable for most clients that use files synthesized
   /// from memory buffers. Use the overload of this constructor accepting a
   /// memory buffer and an explicit \c file_types::ID instead.
-  LangInputFile(llvm::StringRef name, bool isPrimary,
-                llvm::MemoryBuffer *buffer = nullptr)
-      : LangInputFile(name, isPrimary, buffer,
-                      file::GetTypeByExt(llvm::sys::path::extension(name))) {}
+  FrontendInputFile(llvm::StringRef name, bool isPrimary,
+                    llvm::MemoryBuffer *buffer = nullptr)
+      : FrontendInputFile(
+            name, isPrimary, buffer,
+            file::GetTypeByExt(llvm::sys::path::extension(name))) {}
 
   /// Constructs an input file from the provided data.
-  LangInputFile(llvm::StringRef name, bool isPrimary,
-                llvm::MemoryBuffer *buffer, file::Type fileTy)
+  FrontendInputFile(llvm::StringRef name, bool isPrimary,
+                    llvm::MemoryBuffer *buffer, file::Type fileTy)
       : filename(
             ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(name)),
         fileTy(fileTy), bufferAndIsPrimary(buffer, isPrimary),
@@ -71,8 +73,8 @@ public:
     return bufferAndIsPrimary.getPointer();
   }
 
-  /// The name of this \c LangInputFile, or `-` if this input corresponds to the
-  /// standard input stream.
+  /// The name of this \c FrontendInputFile, or `-` if this input corresponds to
+  /// the standard input stream.
   ///
   /// The returned file name is guaranteed not to be the empty string.
   const std::string &GetFileName() const {
@@ -119,7 +121,7 @@ public:
   }
 
   // The next set of functions provides access to those primary-specific paths
-  // accessed directly from an LangInputFile, as opposed to via
+  // accessed directly from an FrontendInputFile, as opposed to via
   // FrontendInputsAndOutputs. They merely make the call sites
   // a bit shorter. Add more forwarding methods as needed.
 
@@ -142,4 +144,4 @@ public:
 };
 } // namespace stone
 
-#endif // stone_FRONTEND_LangInputFile_H
+#endif // stone_FRONTEND_FrontendInputFile_H

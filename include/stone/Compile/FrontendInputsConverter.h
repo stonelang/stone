@@ -2,7 +2,7 @@
 #define STONE_COMPILE_LANINPUTSSBUILDER_H
 
 #include "stone/Basic/Context.h"
-#include "stone/Compile/LangOptions.h"
+#include "stone/Compile/FrontendOptions.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -12,7 +12,7 @@ namespace stone {
 
 class DiagnosticEngine;
 
-class LangInputsConverter {
+class FrontendInputsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
 
@@ -27,16 +27,16 @@ class LangInputsConverter {
       configurationFileBuffers;
 
 public:
-  LangInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args);
+  FrontendInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args);
 
 public:
-  /// Produces a LangInputsAndOutputs object with the inputs populated from
+  /// Produces a FrontendInputsAndOutputs object with the inputs populated from
   /// the arguments the converter was initialized with.
   ///
   /// \param buffers If present, buffers read in the processing of the frontend
   /// inputs will be saved here. These should only be used for debugging
   /// purposes.
-  llvm::Optional<LangInputsAndOutputs>
+  llvm::Optional<FrontendInputsAndOutputs>
   Convert(SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 
 private:
@@ -51,7 +51,7 @@ private:
 
   /// Returns the newly set-up FrontendInputsAndOutputs, as well as a set of
   /// any unused primary files (those that do not correspond to an input).
-  std::pair<LangInputsAndOutputs, std::set<llvm::StringRef>>
+  std::pair<FrontendInputsAndOutputs, std::set<llvm::StringRef>>
   CreateInputFilesConsumingPrimaries(std::set<llvm::StringRef> primaryFiles);
 
   /// Emits an error for each file in \p unusedPrimaryFiles.
@@ -59,7 +59,8 @@ private:
   /// \returns true if \p unusedPrimaryFiles is non-empty.
   bool DiagnoseUnusedPrimaryFiles(std::set<llvm::StringRef> unusedPrimaryFiles);
 
-  bool IsSingleThreadedWMO(const LangInputsAndOutputs &inputsAndOutputs) const;
+  bool
+  IsSingleThreadedWMO(const FrontendInputsAndOutputs &inputsAndOutputs) const;
 };
 } // namespace stone
 #endif

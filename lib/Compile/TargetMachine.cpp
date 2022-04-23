@@ -1,7 +1,7 @@
 #include "stone/Compile/TargetMachine.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Context.h"
-#include "stone/Compile/LangOptions.h"
+#include "stone/Compile/FrontendOptions.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/Support/TargetRegistry.h"
@@ -11,13 +11,13 @@ using namespace stone;
 static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
                                           llvm::TargetOptions &llvmTargetOpts,
                                           const CodeGenOptions &codeGenOpts,
-                                          const LangOptions &langOpts) {
+                                          const FrontendOptions &langOpts) {
 
   // switch (langOpts.GetThreadModel()) {
-  // case LangOptions::ThreadModelKind::POSIX:
+  // case FrontendOptions::ThreadModelKind::POSIX:
   //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
   //   break;
-  // case LangOptions::ThreadModelKind::Single:
+  // case FrontendOptions::ThreadModelKind::Single:
   //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
   //   break;
   // }
@@ -62,8 +62,8 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 std::unique_ptr<llvm::TargetMachine>
 stone::CreateTargetMachine(DiagnosticEngine &de,
                            const CodeGenOptions &codeGenOpts,
-                           const LangOptions &langOpts, syn::SyntaxContext &sc,
-                           llvm::Module &llvmModule) {
+                           const FrontendOptions &langOpts,
+                           syn::SyntaxContext &sc, llvm::Module &llvmModule) {
 
   // Create the TargetMachine for generating code.
   std::string error;

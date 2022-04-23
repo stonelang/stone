@@ -29,7 +29,7 @@ int main(int argc, const char **args) {
       argsToExpand);
 
   llvm::ArrayRef<const char *> argv(argsToExpand);
-  return lang::Compile(
+  return stone::Compile(
       llvm::makeArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
       (void *)(intptr_t)stone::GetMainExecutablePath, nullptr);
 }

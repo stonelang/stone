@@ -1,13 +1,13 @@
 set(stone_compile_sources
 	Compile.cpp
-	DebugLangListener.cpp
-	LangInputsAndOutputs.cpp
-	LangInputsConverter.cpp
-	LangInstance.cpp
-	LangInvocation.cpp
-	LangOptions.cpp
-	LangOptionsConverter.cpp
-	LangOutputsConverter.cpp
+	DebugFrontendListener.cpp
+	FrontendInputsAndOutputs.cpp
+	FrontendInputsConverter.cpp
+	FrontendInstance.cpp
+	FrontendInvocation.cpp
+	FrontendOptions.cpp
+	FrontendOptionsConverter.cpp
+	FrontendOutputsConverter.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	PackageSystem.cpp

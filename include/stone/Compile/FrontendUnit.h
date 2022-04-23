@@ -8,9 +8,9 @@
 #include "llvm/Support/Path.h"
 
 namespace stone {
-class LangInvocation;
-class alignas(8) SourceUnit final {
-  friend class LangInstance;
+class FrontendInvocation;
+class alignas(8) FrontendUnit final {
+  friend class FrontendInstance;
 
   bool isPrimary;
   bool hasOutput;
@@ -58,9 +58,9 @@ class alignas(8) SourceUnit final {
   // std::string mependenciesFilePath;
 
 public:
-  SourceUnit(const unsigned srcID, const file::File &input)
+  FrontendUnit(const unsigned srcID, const file::File &input)
       : srcID(srcID), input(input) {}
-  ~SourceUnit();
+  ~FrontendUnit();
 
 public:
   bool IsPrimary() { return isPrimary; }
@@ -82,11 +82,11 @@ public:
   // Only allow allocation of Decls using the allocator in ASTContext
   // or by doing a placement new.
   void *operator new(std::size_t bytes,
-                     unsigned alignment = alignof(SourceUnit));
+                     unsigned alignment = alignof(FrontendUnit));
 
 public:
-  static SourceUnit *Allocate(const unsigned srcID, const file::File &input,
-                              LangInvocation &langInvocation);
+  static FrontendUnit *Allocate(const unsigned srcID, const file::File &input,
+                                FrontendInvocation &frontendInvocation);
 
   // file::File *GetOutput() { return output; }
   // void SetOutput(file::File *o) { output = o; };
@@ -94,19 +94,23 @@ public:
 
 } // namespace stone
 
-void *operator new(size_t bytes, const stone::LangInvocation &langInvocation,
+void *operator new(size_t bytes,
+                   const stone::FrontendInvocation &frontendInvocation,
                    size_t alignment = 8);
 
-void *operator new[](size_t bytes, const stone::LangInvocation &langInvocation,
+void *operator new[](size_t bytes,
+                     const stone::FrontendInvocation &frontendInvocation,
                      size_t alignment = 8);
 
 // It is good practice to pair new/delete operators.  Also, MSVC gives many
 // warnings if a matching delete overload is not declared, even though the
 // throw() spec guarantees it will not be implicitly called.
-void operator delete(void *currPtr, const stone::LangInvocation &langInvocation,
+void operator delete(void *currPtr,
+                     const stone::FrontendInvocation &frontendInvocation,
                      size_t);
 
 void operator delete[](void *currPtr,
-                       const stone::LangInvocation &langInvocation, size_t);
+                       const stone::FrontendInvocation &frontendInvocation,
+                       size_t);
 
 #endif

@@ -1,9 +1,9 @@
-#include "stone/Compile/LangInputsConverter.h"
+#include "stone/Compile/FrontendInputsConverter.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Compile/LangOptions.h"
-#include "stone/Compile/LangOutputsConverter.h"
+#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/FrontendOutputsConverter.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
@@ -16,14 +16,14 @@
 using namespace stone;
 using namespace llvm::opt;
 
-LangInputsConverter::LangInputsConverter(DiagnosticEngine &de,
-                                         const llvm::opt::ArgList &args)
+FrontendInputsConverter::FrontendInputsConverter(DiagnosticEngine &de,
+                                                 const llvm::opt::ArgList &args)
     : de(de), args(args), fileListPathArg(args.getLastArg(opts::FileList)),
       primaryFileListPathArg(args.getLastArg(opts::PrimaryFileList)),
       badFileDescriptorRetryCountArg(
           args.getLastArg(opts::BadFileDescriptorRetryCount)) {}
 
-llvm::Optional<LangInputsAndOutputs> LangInputsConverter::Convert(
+llvm::Optional<FrontendInputsAndOutputs> FrontendInputsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   STONE_DEFER {
@@ -49,7 +49,7 @@ llvm::Optional<LangInputsAndOutputs> LangInputsConverter::Convert(
     return llvm::None;
   }
 
-  LangInputsAndOutputs result;
+  FrontendInputsAndOutputs result;
   std::set<llvm::StringRef> unusedPrimaryFiles;
   std::tie(result, unusedPrimaryFiles) =
       CreateInputFilesConsumingPrimaries(*primaryFiles);
@@ -64,7 +64,7 @@ llvm::Optional<LangInputsAndOutputs> LangInputsConverter::Convert(
   return std::move(result);
 }
 
-bool LangInputsConverter::EnforceFilelistExclusion() {
+bool FrontendInputsConverter::EnforceFilelistExclusion() {
   if (args.hasArg(opts::INPUT) && fileListPathArg) {
     de.PrintD(SrcLoc(), diag::err_cannot_have_input_files_with_file_list);
     return true;
@@ -79,7 +79,7 @@ bool LangInputsConverter::EnforceFilelistExclusion() {
   return false;
 }
 
-bool LangInputsConverter::ReadInputFilesFromCommandLine() {
+bool FrontendInputsConverter::ReadInputFilesFromCommandLine() {
   bool hadDuplicates = false;
   for (const Arg *A : args.filtered(opts::INPUT, opts::PrimaryFile)) {
     hadDuplicates = AddFile(A->getValue()) || hadDuplicates;
@@ -88,7 +88,7 @@ bool LangInputsConverter::ReadInputFilesFromCommandLine() {
   // on it.
 }
 
-bool LangInputsConverter::ReadInputFilesFromFilelist() {
+bool FrontendInputsConverter::ReadInputFilesFromFilelist() {
   bool hadDuplicates = false;
   bool hadError =
       ForAllFilesInFileList(fileListPathArg, [&](llvm::StringRef file) -> void {
@@ -101,7 +101,7 @@ bool LangInputsConverter::ReadInputFilesFromFilelist() {
                 // on it.
 }
 
-bool LangInputsConverter::ForAllFilesInFileList(
+bool FrontendInputsConverter::ForAllFilesInFileList(
     Arg const *const pathArg, llvm::function_ref<void(StringRef)> fn) {
   if (!pathArg) {
     return false;
@@ -144,7 +144,7 @@ bool LangInputsConverter::ForAllFilesInFileList(
   return false;
 }
 
-bool LangInputsConverter::AddFile(StringRef file) {
+bool FrontendInputsConverter::AddFile(StringRef file) {
   if (files.insert(file)) {
     return false;
   }
@@ -152,7 +152,7 @@ bool LangInputsConverter::AddFile(StringRef file) {
   return true;
 }
 
-Optional<std::set<StringRef>> LangInputsConverter::ReadPrimaryFiles() {
+Optional<std::set<StringRef>> FrontendInputsConverter::ReadPrimaryFiles() {
   std::set<StringRef> primaryFiles;
   for (const Arg *A : args.filtered(opts::PrimaryFile)) {
     primaryFiles.insert(A->getValue());
@@ -165,15 +165,15 @@ Optional<std::set<StringRef>> LangInputsConverter::ReadPrimaryFiles() {
   return primaryFiles;
 }
 
-std::pair<LangInputsAndOutputs, std::set<llvm::StringRef>>
-LangInputsConverter::CreateInputFilesConsumingPrimaries(
+std::pair<FrontendInputsAndOutputs, std::set<llvm::StringRef>>
+FrontendInputsConverter::CreateInputFilesConsumingPrimaries(
     std::set<llvm::StringRef> primaryFiles) {
 
   bool hasAnyPrimaryFiles = !primaryFiles.empty();
-  LangInputsAndOutputs result;
+  FrontendInputsAndOutputs result;
   for (auto &file : files) {
     bool isPrimary = primaryFiles.count(file) > 0;
-    result.AddInput(LangInputFile(file, isPrimary));
+    result.AddInput(FrontendInputFile(file, isPrimary));
     if (isPrimary) {
       primaryFiles.erase(file);
     }
@@ -181,8 +181,9 @@ LangInputsConverter::CreateInputFilesConsumingPrimaries(
 
   if (!files.empty() && !hasAnyPrimaryFiles) {
     llvm::Optional<std::vector<std::string>> userSuppliedNamesOrErr =
-        LangOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
-            args, de, opts::o, opts::OutputFileList);
+        FrontendOutputFilesComputer::
+            GetOutputFilenamesFromCommandLineOrFileList(args, de, opts::o,
+                                                        opts::OutputFileList);
     if (userSuppliedNamesOrErr && userSuppliedNamesOrErr->size() == 1) {
       result.SetIsSingleThreadedWMO(true);
     }
@@ -191,7 +192,7 @@ LangInputsConverter::CreateInputFilesConsumingPrimaries(
   return {std::move(result), std::move(primaryFiles)};
 }
 
-bool LangInputsConverter::DiagnoseUnusedPrimaryFiles(
+bool FrontendInputsConverter::DiagnoseUnusedPrimaryFiles(
     std::set<StringRef> primaryFiles) {
   for (auto &file : primaryFiles) {
     // Catch "stone-compile  -c -filelist foo -primary-file

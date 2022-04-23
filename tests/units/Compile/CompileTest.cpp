@@ -49,7 +49,7 @@ TEST_F(CompileTest, CompileFileVerbosely) {
 
   // lang.ParseFile(file);
 
-  // lang.GetLangOptions().AddFile("test.stone");
+  // lang.GetFrontendOptions().AddFile("test.stone");
   // lang.Build();
   // lang.Run();
 }

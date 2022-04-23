@@ -1,10 +1,10 @@
-#include "stone/Compile/LangOptionsConverter.h"
+#include "stone/Compile/FrontendOptionsConverter.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Strings.h"
 #include "stone/Compile/ModuleSystem.h"
 //#include "stone/Basic/Platform.h"
-#include "stone/Compile/LangInputsConverter.h"
-#include "stone/Compile/LangOutputsConverter.h"
+#include "stone/Compile/FrontendInputsConverter.h"
+#include "stone/Compile/FrontendOutputsConverter.h"
 #include "stone/Session/Options.h"
 //#include "stone/Session/SanitizerOptions.h"
 #include "stone/Parse/Lexer.h"
@@ -22,20 +22,20 @@
 using namespace stone;
 using namespace llvm::opt;
 
-stone::Error LangOptionsConverter::Convert(
+stone::Error FrontendOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
   assert(langOpts.inputsAndOutputs.HasInputs() &&
          "Inputs and Outputs should be empty");
 
-  // llvm::Optional<LangInputsAndOutputs> inputsAndOutputs =
-  //     LangInputsConverter(de, args).Convert(buffers);
+  // llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
+  //     FrontendInputsConverter(de, args).Convert(buffers);
 
   return stone::Error();
 }
 
-stone::Error LangOptionsConverter::ComputeModuleName() {
+stone::Error FrontendOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
@@ -71,7 +71,7 @@ stone::Error LangOptionsConverter::ComputeModuleName() {
   //     (langOpts.moduleName != strings::StdLibName || langOpts.parseStdLib)) {
   //   return false;
   // }
-  // if (!LangOptions::NeedsProperModuleName(langOpts.modeKind) ||
+  // if (!FrontendOptions::NeedsProperModuleName(langOpts.modeKind) ||
   //     langOpts.IsCompilingExactlyOneStoneFile()) {
   //   langOpts.ModuleName = strings::MainFileName;
   //   return false;
@@ -88,7 +88,7 @@ stone::Error LangOptionsConverter::ComputeModuleName() {
   return stone::Error();
 }
 
-stone::Error LangOptionsConverter::ComputeFallbackModuleName() {
+stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
 
   // // In order to pass some tests, must leave ModuleName empty.
   // if (!langOpts.inputsAndOutputs.HasInputs()) {

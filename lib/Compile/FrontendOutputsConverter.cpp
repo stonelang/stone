@@ -3,9 +3,9 @@
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/Strings.h"
 //#include "stone/Basic/Platform.h"
-#include "stone/Compile/LangInputsConverter.h"
-#include "stone/Compile/LangOptionsConverter.h"
-#include "stone/Compile/LangOutputsConverter.h"
+#include "stone/Compile/FrontendInputsConverter.h"
+#include "stone/Compile/FrontendOptionsConverter.h"
+#include "stone/Compile/FrontendOutputsConverter.h"
 
 #include "stone/Session/Options.h"
 //#include "stone/Session/SanitizerOptions.h"
@@ -22,15 +22,16 @@
 using namespace stone;
 using namespace llvm::opt;
 
-bool LangOutputsConverter::Convert(
+bool FrontendOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
     std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
     const Mode &mode) {
 
-  Optional<LangOutputFilesComputer> ofc = LangOutputFilesComputer::Create(
-      args, de, inputsAndOutputs,
-      {"output", opts::o, opts::OutputFileList, "-o"}, mode);
+  Optional<FrontendOutputFilesComputer> ofc =
+      FrontendOutputFilesComputer::Create(
+          args, de, inputsAndOutputs,
+          {"output", opts::o, opts::OutputFileList, "-o"}, mode);
 
   if (!ofc) {
     return true;
@@ -44,8 +45,8 @@ bool LangOutputsConverter::Convert(
   if (args.hasArg(opts::IndexUnitOutputPath,
                   opts::IndexUnitOutputPathFileList)) {
 
-    llvm::Optional<LangOutputFilesComputer> iuofc =
-        LangOutputFilesComputer::Create(
+    llvm::Optional<FrontendOutputFilesComputer> iuofc =
+        FrontendOutputFilesComputer::Create(
             args, de, inputsAndOutputs,
             {"index unit output path", opts::IndexUnitOutputPath,
              opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
@@ -80,8 +81,8 @@ bool LangOutputsConverter::Convert(
 }
 
 llvm::Optional<std::vector<std::string>>
-LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
-                                         DiagnosticEngine &de) {
+FrontendOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
+                                             DiagnosticEngine &de) {
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
       llvm::MemoryBuffer::getFile(fileListPath);
   if (!buffer) {
@@ -98,7 +99,7 @@ LangOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
 }
 
 llvm::Optional<std::vector<std::string>>
-LangOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+FrontendOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
     const ArgList &args, DiagnosticEngine &de, opts::OptID singleOpt,
     opts::OptID fileListOpt) {
   if (const Arg *A = args.getLastArg(fileListOpt)) {
@@ -108,16 +109,15 @@ LangOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
         "don't use -o with -output-filelist or -index-unit-output-path with" &&
         " " && "-index-unit-output-filelist");
 
-    return LangOutputsConverter::ReadOutputFileList(A->getValue(), de);
+    return FrontendOutputsConverter::ReadOutputFileList(A->getValue(), de);
   }
   return args.getAllArgValues(singleOpt);
 }
 
-llvm::Optional<LangOutputFilesComputer>
-LangOutputFilesComputer::Create(const llvm::opt::ArgList &args,
-                                DiagnosticEngine &de,
-                                const LangInputsAndOutputs &inputsAndOutputs,
-                                LangOutputOptInfo optInfo, const Mode &mode) {
+llvm::Optional<FrontendOutputFilesComputer> FrontendOutputFilesComputer::Create(
+    const llvm::opt::ArgList &args, DiagnosticEngine &de,
+    const FrontendInputsAndOutputs &inputsAndOutputs,
+    FrontendOutputOptInfo optInfo, const Mode &mode) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -147,22 +147,22 @@ LangOutputFilesComputer::Create(const llvm::opt::ArgList &args,
   }
 
   const file::Type outputType =
-      LangOptions::GetFileTypeByModeKind(mode.GetKind());
+      FrontendOptions::GetFileTypeByModeKind(mode.GetKind());
 
-  return LangOutputFilesComputer(
+  return FrontendOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, mode,
       args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
       mode.CanOutput(), optInfo);
 }
 
-LangOutputFilesComputer::LangOutputFilesComputer(
-    DiagnosticEngine &de, const LangInputsAndOutputs &inputsAndOutputs,
+FrontendOutputFilesComputer::FrontendOutputFilesComputer(
+    DiagnosticEngine &de, const FrontendInputsAndOutputs &inputsAndOutputs,
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
     const Mode &mode, const llvm::opt::Arg *moduleNameArg,
     const StringRef suffix, const bool hasTextualOutput,
-    LangOutputOptInfo optInfo)
+    FrontendOutputOptInfo optInfo)
     : de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFileArguments(outputFileArguments),
       OutputDirectoryArgument(outputDirectoryArgument), FirstInput(firstInput),
@@ -170,11 +170,11 @@ LangOutputFilesComputer::LangOutputFilesComputer(
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
 llvm::Optional<std::vector<std::string>>
-LangOutputFilesComputer::ComputeOutputFiles() const {
+FrontendOutputFilesComputer::ComputeOutputFiles() const {
   std::vector<std::string> outputFiles;
   unsigned i = 0;
   bool hadError = inputsAndOutputs.ForEachInputProducingAMainOutputFile(
-      [&](const LangInputFile &input) -> bool {
+      [&](const FrontendInputFile &input) -> bool {
         StringRef outputArg = OutputFileArguments.empty()
                                   ? llvm::StringRef()
                                   : llvm::StringRef(OutputFileArguments[i++]);
@@ -190,9 +190,8 @@ LangOutputFilesComputer::ComputeOutputFiles() const {
                   : llvm::Optional<std::vector<std::string>>(outputFiles);
 }
 
-llvm::Optional<std::string>
-LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
-                                           const LangInputFile &input) const {
+llvm::Optional<std::string> FrontendOutputFilesComputer::ComputeOutputFile(
+    StringRef outputArg, const FrontendInputFile &input) const {
   // Return an empty string to signify no output.
   // The frontend does not currently produce a diagnostic
   // if a -o argument is present for such an action
@@ -210,8 +209,9 @@ LangOutputFilesComputer::ComputeOutputFile(StringRef outputArg,
   return DeriveOutputFileFromInput(input);
 }
 
-llvm::Optional<std::string> LangOutputFilesComputer::DeriveOutputFileFromInput(
-    const LangInputFile &input) const {
+llvm::Optional<std::string>
+FrontendOutputFilesComputer::DeriveOutputFileFromInput(
+    const FrontendInputFile &input) const {
 
   if (input.GetFileName() == strings::Dash || HasTextualOutput) {
     return std::string(strings::Dash);
@@ -227,8 +227,8 @@ llvm::Optional<std::string> LangOutputFilesComputer::DeriveOutputFileFromInput(
   return DeriveOutputFileFromParts("", baseName);
 }
 
-Optional<std::string> LangOutputFilesComputer::DeriveOutputFileForDirectory(
-    const LangInputFile &input) const {
+Optional<std::string> FrontendOutputFilesComputer::DeriveOutputFileForDirectory(
+    const FrontendInputFile &input) const {
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
     de.PrintD(SrcLoc(), diag::err_implicit_output_file_is_directory,
@@ -239,8 +239,8 @@ Optional<std::string> LangOutputFilesComputer::DeriveOutputFileForDirectory(
   return DeriveOutputFileFromParts(OutputDirectoryArgument, baseName);
 }
 
-std::string LangOutputFilesComputer::DetermineBaseNameOfOutput(
-    const LangInputFile &input) const {
+std::string FrontendOutputFilesComputer::DetermineBaseNameOfOutput(
+    const FrontendInputFile &input) const {
   std::string nameToStem = input.IsPrimary() ? input.GetFileName()
                            : moduleNameArg   ? moduleNameArg->getValue()
                                              : FirstInput;
@@ -248,8 +248,8 @@ std::string LangOutputFilesComputer::DetermineBaseNameOfOutput(
 }
 
 std::string
-LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
-                                                   StringRef base) const {
+FrontendOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
+                                                       StringRef base) const {
   assert(!base.empty());
   llvm::SmallString<128> path(dir);
   llvm::sys::path::append(path, base);
@@ -259,7 +259,7 @@ LangOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
 
 SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     const ArgList &args, DiagnosticEngine &de,
-    const LangInputsAndOutputs &inputsAndOutputs,
+    const FrontendInputsAndOutputs &inputsAndOutputs,
     ArrayRef<std::string> outputFiles, StringRef moduleName, const Mode &mode)
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFiles(outputFiles), moduleName(moduleName), mode(mode) {}
@@ -289,7 +289,7 @@ SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
   std::vector<SupplementaryOutputPaths> outputPaths;
   unsigned i = 0;
   bool hadError = inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
-      [&](const LangInputFile &input) -> bool {
+      [&](const FrontendInputFile &input) -> bool {
         if (auto suppPaths = ComputeOutputPathsForOneInput(
                 OutputFiles[i], (*pathsFromUser)[i], input)) {
           ++i;
@@ -427,7 +427,7 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 llvm::Optional<SupplementaryOutputPaths>
 SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
     StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
-    const LangInputFile &input) const {
+    const FrontendInputFile &input) const {
   StringRef defaultSupplementaryOutputPathExcludingExtension =
       DeriveDefaultSupplementaryOutputPathExcludingExtension(outputFile, input);
 
@@ -533,7 +533,7 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 
 llvm::StringRef SupplementaryOutputPathsComputer::
     DeriveDefaultSupplementaryOutputPathExcludingExtension(
-        llvm::StringRef outputFilename, const LangInputFile &input) const {
+        llvm::StringRef outputFilename, const FrontendInputFile &input) const {
 
   // Put the supplementary output file next to the output file if possible.
   if (!outputFilename.empty() && outputFilename != strings::Dash) {
@@ -678,7 +678,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   std::vector<SupplementaryOutputPaths> outputPaths;
   bool hadError = false;
   inputsAndOutputs.ForEachInputProducingSupplementaryOutput(
-      [&](const LangInputFile &input) -> bool {
+      [&](const FrontendInputFile &input) -> bool {
         const TypeToPathMap *mapForInput =
             outputFileMap->GetOutputMapForInput(input.GetFileName());
         if (!mapForInput) {

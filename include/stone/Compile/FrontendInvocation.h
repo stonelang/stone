@@ -6,8 +6,8 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/LangOptions.h"
-#include "stone/Compile/SourceUnit.h"
+#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/FrontendUnit.h"
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/SearchPathOptions.h"
@@ -17,20 +17,20 @@
 
 namespace stone {
 
-class LangInvocation final : public Session {
-  friend class LangInstance;
-  LangOptions langOpts;
+class FrontendInvocation final : public Session {
+  friend class FrontendInstance;
+  FrontendOptions langOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
   // All sources
-  llvm::SmallVector<SourceUnit *, 32> sources;
+  llvm::SmallVector<FrontendUnit *, 32> sources;
 
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceIDs;
 
-  /// Allocator SourceUnit
+  /// Allocator FrontendUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
@@ -38,20 +38,20 @@ class LangInvocation final : public Session {
   /// source file.  Valid only if \c isCodeCompletion() == true.
   unsigned codeCompletionOffset = ~0U;
 
-  // LangInputsBuilder inputsBuilder;
-  // LangOutputsBuilder outputsBuilder;
-  // LangOptionsConverter optionsConverter;
+  // FrontendInputsBuilder inputsBuilder;
+  // FrontendOutputsBuilder outputsBuilder;
+  // FrontendOptionsConverter optionsConverter;
 
 public:
-  LangInvocation();
-  ~LangInvocation();
+  FrontendInvocation();
+  ~FrontendInvocation();
 
 public:
   llvm::opt::InputArgList &
   ParseArgs(llvm::ArrayRef<const char *> args) override;
 
-  llvm::ArrayRef<SourceUnit *> BuildSources(const file::Files &inputs);
-  SourceUnit *BuildSource(const file::File &input);
+  llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
+  FrontendUnit *BuildSource(const file::File &input);
   unsigned CreateSourceID(const file::File &input);
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -67,25 +67,25 @@ public:
 
   BaseOptions &GetBaseOptions() override { return langOpts; }
   file::Files &GetInputFiles() { return langOpts.inputFiles; }
-  std::unique_ptr<OutputFile> ComputeOutputFile(SourceUnit &source);
+  std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
 
   // TODO: Move to the module system
   void SetModuleName(llvm::StringRef name) {
-    GetLangOptions().systemOpts.moduleName = name.data();
+    GetFrontendOptions().systemOpts.moduleName = name.data();
   }
   const llvm::StringRef GetModuleName() const {
-    return GetLangOptions().systemOpts.moduleName;
+    return GetFrontendOptions().systemOpts.moduleName;
   }
 
-  // TODO: update LangOptions
+  // TODO: update FrontendOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
   void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
   std::string GetMainExecutablePath() const { return mainExecutablePath; }
 
-  LangOptions &GetLangOptions() { return langOpts; }
-  const LangOptions &GetLangOptions() const { return langOpts; }
+  FrontendOptions &GetFrontendOptions() { return langOpts; }
+  const FrontendOptions &GetFrontendOptions() const { return langOpts; }
 
   CodeGenOptions &GetCodeGenOptions() { return langOpts.codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const {
@@ -109,12 +109,13 @@ public:
   }
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.
-    return GetLangOptions().moduleOutputMode;
+    return GetFrontendOptions().moduleOutputMode;
   }
 
-  // LangInputsBuilder &GetLangInputsBuilder() { return inputsBuilder; }
-  // LangOutputsBuilder &GetLangOutputsBuilder() { return outputsBuilder; }
-  // LangOptionsConverter &GetLangOptionsConverter() { return langOptsConverter;
+  // FrontendInputsBuilder &GetFrontendInputsBuilder() { return inputsBuilder; }
+  // FrontendOutputsBuilder &GetFrontendOutputsBuilder() { return
+  // outputsBuilder; } FrontendOptionsConverter &GetFrontendOptionsConverter() {
+  // return langOptsConverter;
   // }
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
@@ -164,7 +165,7 @@ public:
 } // namespace stone
 
 inline void *operator new(size_t bytes,
-                          const stone::LangInvocation &langInvocation,
+                          const stone::FrontendInvocation &langInvocation,
                           size_t alignment) {
   return langInvocation.Allocate(bytes, alignment);
 }
@@ -176,7 +177,7 @@ inline void *operator new(size_t bytes,
 /// is called implicitly by the compiler if a placement new expression using
 /// the CompilationInvocation throws in the object constructor.
 inline void operator delete(void *Ptr,
-                            const stone::LangInvocation &langInvocation,
+                            const stone::FrontendInvocation &langInvocation,
                             size_t) {
   langInvocation.Deallocate(Ptr);
 }
@@ -205,7 +206,7 @@ inline void operator delete(void *Ptr,
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
 inline void *operator new[](size_t bytes,
-                            const stone::LangInvocation &langInvocation,
+                            const stone::FrontendInvocation &langInvocation,
                             size_t alignment) {
   return langInvocation.Allocate(bytes, alignment);
 }
@@ -216,7 +217,7 @@ inline void *operator new[](size_t bytes,
 /// is called implicitly by the compiler if a placement new[] expression using
 /// the CompilationInvocation throws in the object constructor.
 inline void operator delete[](void *Ptr,
-                              const stone::LangInvocation &langInvocation,
+                              const stone::FrontendInvocation &langInvocation,
                               size_t alignment) {
   langInvocation.Deallocate(Ptr);
 }

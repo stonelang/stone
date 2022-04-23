@@ -9,8 +9,8 @@
 
 using namespace stone;
 
-int driver::Run(llvm::ArrayRef<const char *> args, const char *arg0,
-                void *mainAddr, CompilationListener *listener) {
+int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
+               void *mainAddr, CompilationListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
   FINISH_LLVM_INIT();
 

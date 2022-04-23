@@ -1,10 +1,10 @@
 #ifndef STONE_COMPILE_LANG_H
 #define STONE_COMPILE_LANG_H
 
-#include "stone/Compile/LangInvocation.h"
+#include "stone/Compile/FrontendInvocation.h"
+#include "stone/Compile/FrontendUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
-#include "stone/Compile/SourceUnit.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
 #include "stone/Sem/TypeCheckerOptions.h"
@@ -24,36 +24,37 @@ class TargetMachine;
 
 namespace stone {
 
-class LangInstance;
-class LangListener;
+class FrontendInstance;
+class FrontendListener;
 
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
 using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
-using SemanticAnalysisCallback = llvm::function_ref<void(LangInstance &)>;
+using SemanticAnalysisCallback = llvm::function_ref<void(FrontendInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
 
-class LangStats final : public Stats {
-  LangInstance &lang;
+class FrontendStats final : public Stats {
+  FrontendInstance &lang;
 
 public:
-  LangStats(LangInstance &lang) : Stats("Lang statistics:"), lang(lang) {}
+  FrontendStats(FrontendInstance &lang)
+      : Stats("Frontend statistics:"), lang(lang) {}
   void Print(ColorfulStream &stream) override;
 };
 
 // TODO: SmallString<128> workingDirectory;
 // llvm::sys::fs::current_path(workingDirectory);
 
-class LangInstance final {
-  friend LangStats;
+class FrontendInstance final {
+  friend FrontendStats;
 
-  LangInvocation langInvocation;
-  LangListener *listener = nullptr;
+  FrontendInvocation langInvocation;
+  FrontendListener *listener = nullptr;
 
-  std::unique_ptr<LangStats> stats;
+  std::unique_ptr<FrontendStats> stats;
   std::unique_ptr<syn::Syntax> syntax;
 
   llvm::StringRef name;
@@ -71,18 +72,18 @@ class LangInstance final {
   // llvm::SetVector<unsigned> primaryBufferIDs;
 
 public:
-  LangInstance(const LangInstance &) = delete;
-  void operator=(const LangInstance &) = delete;
-  LangInstance(LangInstance &&) = delete;
-  void operator=(LangInstance &&) = delete;
+  FrontendInstance(const FrontendInstance &) = delete;
+  void operator=(const FrontendInstance &) = delete;
+  FrontendInstance(FrontendInstance &&) = delete;
+  void operator=(FrontendInstance &&) = delete;
 
-  LangInstance(LangListener *listener = nullptr);
-  ~LangInstance();
+  FrontendInstance(FrontendListener *listener = nullptr);
+  ~FrontendInstance();
 
 public:
   void Initialize();
   void Finish();
-  LangInvocation &GetLangInvocation() { return langInvocation; }
+  FrontendInvocation &GetFrontendInvocation() { return langInvocation; }
 
 public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
@@ -93,8 +94,8 @@ public:
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
-  LangListener *GetListener() { return listener; }
-  void SetListener(LangListener *l) { listener = l; }
+  FrontendListener *GetListener() { return listener; }
+  void SetListener(FrontendListener *l) { listener = l; }
 
 public:
   /// Print the lanuage help
@@ -105,15 +106,15 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  void Compile(llvm::ArrayRef<SourceUnit *> &sources);
+  void Compile(llvm::ArrayRef<FrontendUnit *> &sources);
 
 private:
-  void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
-  void CompileWithSyntaxAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+  void CompileWithSyntaxAnalysis(llvm::ArrayRef<FrontendUnit *> &sources);
+  void CompileWithSyntaxAnalysis(llvm::ArrayRef<FrontendUnit *> &sources,
                                  SyntaxAnalysisCallback client);
 
-  void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources);
-  void CompileWithSemanticAnalysis(llvm::ArrayRef<SourceUnit *> &sources,
+  void CompileWithSemanticAnalysis(llvm::ArrayRef<FrontendUnit *> &sources);
+  void CompileWithSemanticAnalysis(llvm::ArrayRef<FrontendUnit *> &sources,
                                    SemanticAnalysisCallback client);
 
   void ForEachSyntaxFile(EachSyntaxFileCallback client);

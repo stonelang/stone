@@ -3,7 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Syntax &syntax, const LangOptions &langOpts)
+ModuleSystem::ModuleSystem(Syntax &syntax, const FrontendOptions &langOpts)
     : syntax(syntax), langOpts(langOpts) {}
 
 ModuleSystem::~ModuleSystem() {}

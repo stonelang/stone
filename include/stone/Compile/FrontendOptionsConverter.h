@@ -4,17 +4,17 @@
 #include "stone/Basic/Context.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/DiagnosticListener.h"
-#include "stone/Compile/LangOptions.h"
+#include "stone/Compile/FrontendOptions.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
 
-class LangOptionsConverter {
+class FrontendOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
   const Mode &mode;
-  LangOptions &langOpts;
+  FrontendOptions &langOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -40,8 +40,8 @@ private:
   stone::Error CheckForUnusedOutputPaths() const;
 
 public:
-  LangOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                       const Mode &mode, LangOptions &langOpts)
+  FrontendOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
+                           const Mode &mode, FrontendOptions &langOpts)
       : de(de), args(args), mode(mode), langOpts(langOpts) {}
 
 public:

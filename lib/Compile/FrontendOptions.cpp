@@ -1,14 +1,14 @@
-#include "stone/Compile/LangOptions.h"
+#include "stone/Compile/FrontendOptions.h"
 #include "stone/Basic/Context.h"
 
 using namespace stone;
 
-LangOptions::LangOptions() {
+FrontendOptions::FrontendOptions() {
   /// The default mode kind of the system
   defaultModeKind = ModeKind::EmitObject;
 }
 
-file::Type LangOptions::GetFileTypeByModeKind(ModeKind kind) {
+file::Type FrontendOptions::GetFileTypeByModeKind(ModeKind kind) {
   switch (kind) {
   case ModeKind::None:
   case ModeKind::Parse:
