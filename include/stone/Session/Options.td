@@ -116,6 +116,10 @@ def EmitBC : Flag<["-"], "emit-bc">,
 HelpText<"Emit LLVM BC file(s)">, ModeOpt,
 Flags<[FrontendOption, DriverOption]>;
 
+def PrintIR : Flag<["-"], "print-ir">,
+HelpText<"Print LLVM IR file(s)">, ModeOpt,
+Flags<[FrontendOption, DriverOption]>;
+
 def EmitIR : Flag<["-"], "emit-ir">,
 HelpText<"Emit LLVM IR file(s)">, ModeOpt,
 Flags<[FrontendOption, DriverOption]>;

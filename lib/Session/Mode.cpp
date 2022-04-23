@@ -20,6 +20,8 @@ static ModeKind GetModeKind(const unsigned modeID) {
     return ModeKind::TypeCheck;
   case opts::PrintSyntax:
     return ModeKind::PrintSyntax;
+  case opts::PrintIR:
+    return ModeKind::PrintIR;
   case opts::EmitIR:
     return ModeKind::EmitIR;
   case opts::EmitBC:
@@ -67,6 +69,7 @@ file::Type Mode::GetOutputFileType(ModeKind kind) {
   case ModeKind::DumpSyntax:
   // case ModeKind::DumpInterfaceHash:
   case ModeKind::PrintSyntax:
+  case ModeKind::PrintIR:
   // case ModeKind::DumpScopeMaps:
   // case ModeKind::DumpTypeRefinementContexts:
   // case ModeKind::DumpTypeInfo:

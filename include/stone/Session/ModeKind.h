@@ -17,6 +17,8 @@ enum class ModeKind : unsigned {
   TypeCheck,
   ///< Parse, type-check, and  pretty print syntax tree
   PrintSyntax,
+  //</ Parse, type-check, and pretty print llvm-ir
+  PrintIR,
   //</ Parse, type-check, and emit LLVM IR
   EmitIR,
   //< Parse, type-check, and emit LLVM BC

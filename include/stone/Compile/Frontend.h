@@ -1,31 +1,27 @@
 #ifndef STONE_COMPILE_LANG_H
 #define STONE_COMPILE_LANG_H
 
-
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Context.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/FrontendUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
-#include "stone/Compile/FrontendOptions.h"
-#include "stone/Compile/FrontendUnit.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
+#include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/SearchPathOptions.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Session/Session.h"
-#include "stone/Syntax/SearchPathOptions.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
-
-
 
 namespace llvm {
 class raw_pwrite_stream;
