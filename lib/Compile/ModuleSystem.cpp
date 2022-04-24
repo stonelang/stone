@@ -19,15 +19,13 @@ syn::Module *ModuleSystem::GetMainModule() const {
   return mainModule;
 }
 
-// TODO: Move to the module system
 void ModuleSystem::SetModuleName(llvm::StringRef name) {
-  ctx.GetLangOptions().moduleName = name.data();
+  moduleOpts.moduleName = name.data();
 }
 
 const llvm::StringRef ModuleSystem::ModuleSystem::GetModuleName() const {
-  return ctx.GetLangOptions().moduleName;
+  return moduleOpts.moduleName;
 }
-
 // TODO: May want to move to Module
 stone::Error ModuleSystem::IsValidModuleName(llvm::StringRef moduleName) {
 
