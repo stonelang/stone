@@ -6,7 +6,7 @@
 #include <string>
 
 #include "stone/Basic/Char.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenKind.h"
 #include "llvm/ADT/DenseMapInfo.h"

@@ -30,6 +30,7 @@ set(stone_syn_sources
 	
 	LINK_LIBS
 	StoneBasic
+	StoneDiag
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

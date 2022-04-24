@@ -1,8 +1,8 @@
 #ifndef STONE_PARSE_LEXER_H
 #define STONE_PARSE_LEXER_H
 
-#include "stone/Basic/Context.h"
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Context.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"

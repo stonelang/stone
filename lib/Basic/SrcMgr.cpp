@@ -1,5 +1,4 @@
 #include "stone/Basic/SrcMgr.h"
-
 #include "stone/Basic/Token.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/PrettyStackTrace.h"

@@ -19,7 +19,8 @@ public:
   void AddDep(llvm::StringRef depFile, bool isSystem);
 };
 class ModuleSystem final {
-  // We need built-in information
+  // TODO: We need built-in information
+  friend class Frontend;
 
   Context &ctx;
   syn::Syntax &syntax;

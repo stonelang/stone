@@ -1,8 +1,8 @@
-#ifndef STONE_BASIC_DIAGNOSTICEMITTER_H
-#define STONE_BASIC_DIAGNOSTICEMITTER_H
+#ifndef STONE_DIAG_DIAGNOSTICEMITTER_H
+#define STONE_DIAG_DIAGNOSTICEMITTER_H
 
 #include "stone/Basic/Color.h"
-#include "stone/Basic/DiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticFormatter.h"
 
 #include <assert.h>
 

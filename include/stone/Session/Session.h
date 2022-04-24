@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/File.h"
-#include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Basic/Timer.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
@@ -130,7 +130,7 @@ public:
   void SetVFS(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fs) { vfs = fs; }
   llvm::vfs::FileSystem &GetVFS() const { return *vfs; }
 
-  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
+  bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
 public:
   void AddInputFile(llvm::StringRef name, unsigned fileID = 0);

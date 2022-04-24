@@ -1,9 +1,9 @@
 #include "stone/Compile/FrontendInputsConverter.h"
-#include "stone/Basic/Context.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/FrontendOutputsConverter.h"
+#include "stone/Context.h"
+#include "stone/Diag/FrontendDiagnostic.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

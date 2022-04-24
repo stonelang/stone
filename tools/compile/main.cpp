@@ -1,4 +1,4 @@
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/File.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"

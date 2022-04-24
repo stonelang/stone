@@ -5,7 +5,7 @@
 #include <memory>
 #include <queue>
 
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/JSONSerialization.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"

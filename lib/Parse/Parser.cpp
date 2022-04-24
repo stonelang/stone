@@ -1,8 +1,8 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/SyntaxDiagnostic.h"
+#include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
@@ -13,7 +13,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
     : Parser(sf, syntax,
              std::unique_ptr<Lexer>(new Lexer(
                  sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
-                 &syntax.GetSyntaxContext().GetContext().GetDiagEngine(),
+                 &syntax.GetSyntaxContext().GetContext().GetDiagUnit().GetDiagEngine(),
                  &syntax.GetSyntaxContext().GetContext().GetStatEngine())),
              listener) {}
 
@@ -33,7 +33,7 @@ SyntaxScope *Parser::GetCurScope() const {
   return nullptr;
 }
 
-bool Parser::HasError() { return GetContext().HasError(); }
+bool Parser::HasError() { return GetContext().GetDiagUnit().HasError(); }
 Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 
 void Parser::EnterScope(SyntaxScopeKind scopeKind) {}

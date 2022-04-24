@@ -1,8 +1,8 @@
-#ifndef STONE_BASIC_DIAGNOSTICFORMATTER_H
-#define STONE_BASIC_DIAGNOSTICFORMATTER_H
+#ifndef STONE_DIAG_DIAGNOSTICFORMATTER_H
+#define STONE_DIAG_DIAGNOSTICFORMATTER_H
 
-#include "stone/Basic/Diagnostic.h"
-#include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Diag/Diagnostic.h"
+#include "stone/Diag/DiagnosticArgument.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"

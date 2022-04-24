@@ -1,6 +1,6 @@
-#include "stone/Basic/TextDiagnosticListener.h"
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 using stone::Diagnostic;
 using stone::TextDiagnosticListener;

@@ -1,9 +1,9 @@
 #include "stone/Compile/Frontend.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/FrontendListener.h"
+#include "stone/Diag/FrontendDiagnostic.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -55,8 +55,8 @@ FrontendUnit *FrontendBase::BuildSource(const file::File &input) {
 unsigned FrontendBase::CreateSourceID(const file::File &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
-    ctx.PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-               diag::LLVMStr(input.GetName()));
+    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+                             diag::LLVMStr(input.GetName()));
   }
   auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
@@ -94,8 +94,9 @@ Frontend::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, ec,
                                                    llvm::sys::fs::OF_None);
   if (ec) {
-    ctx.PrintD(SrcLoc(), diag::err_opening_output,
-               diag::LLVMStr(outputFilename), diag::LLVMStr(ec.message()));
+    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_opening_output,
+                             diag::LLVMStr(outputFilename),
+                             diag::LLVMStr(ec.message()));
     return nullptr;
   }
   return os;

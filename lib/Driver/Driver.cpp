@@ -1,5 +1,5 @@
 #include "stone/Driver/Driver.h"
-#include "stone/Basic/CoreDiagnostic.h"
+#include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DarwinToolChain.h"
 #include "stone/Driver/Job.h"
@@ -61,7 +61,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   if (inputs.empty()) {
-    GetContext().PrintD(SrcLoc(), diag::err_no_input_files);
+    GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
 

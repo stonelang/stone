@@ -1,5 +1,5 @@
 #include "stone/Session/Mode.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 

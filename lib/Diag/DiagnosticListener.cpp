@@ -1,4 +1,4 @@
-#include "stone/Basic/DiagnosticListener.h"
+#include "stone/Diag/DiagnosticListener.h"
 
 using stone::DiagnosticListener;
 
@@ -9,7 +9,7 @@ DiagnosticListener::~DiagnosticListener() {}
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
 void DiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
-  // TODO: Basic stuff there like warnnings and errors
+  // TODO: Diag stuff there like warnnings and errors
 }
 
 /// Callback to inform the diagnostic client that processing of all

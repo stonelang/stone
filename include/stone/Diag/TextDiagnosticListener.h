@@ -1,10 +1,10 @@
-#ifndef STONE_BASIC_TEXTDIAGNOSTICLISTENER_H
-#define STONE_BASIC_TEXTDIAGNOSTICLISTENER_H
+#ifndef STONE_DIAG_TEXTDIAGNOSTICLISTENER_H
+#define STONE_DIAG_TEXTDIAGNOSTICLISTENER_H
 
 #include <memory>
 
-#include "stone/Basic/DiagnosticListener.h"
-#include "stone/Basic/TextDiagnosticEmitter.h"
+#include "stone/Diag/DiagnosticListener.h"
+#include "stone/Diag/TextDiagnosticEmitter.h"
 
 namespace stone {
 class DiagnosticEvent;

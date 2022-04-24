@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_DIAGNOSTIC_H
-#define STONE_BASIC_DIAGNOSTIC_H
+#ifndef STONE_DIAG_DIAGNOSTIC_H
+#define STONE_DIAG_DIAGNOSTIC_H
 
 #include <cassert>
 #include <cstdint>
@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Basic/DiagnosticArgument.h"
-#include "stone/Basic/DiagnosticOptions.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Diag/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "stone/Basic/AddressSpace.h"
-#include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Diag/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclContext.h"

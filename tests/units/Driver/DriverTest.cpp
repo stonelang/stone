@@ -1,5 +1,5 @@
 #include "stone/Driver/Driver.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Driver/CompilationJob.h"

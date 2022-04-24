@@ -16,6 +16,7 @@ set(stone_option_sources
 
 	LINK_LIBS 
 	StoneBasic
+	StoneDiag
 )
 add_stone_library(StoneSession
 	${stone_option_sources}

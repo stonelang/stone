@@ -9,17 +9,10 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_basic_sources
-	Context.cpp
 	Cache.cpp
 	BumpTable.cpp
 	Char.cpp
 	DarwinDirWatcher.cpp
-	DiagIDList.cpp
-	Diagnostic.cpp
-	DiagnosticEmitter.cpp
-	DiagnosticFormatter.cpp
-	DiagnosticEngine.cpp
-	DiagnosticListener.cpp
 	DirScanner.cpp
 	DirWatcher.cpp
 	EditorPlaceholder.cpp
@@ -34,9 +27,6 @@ set(stone_basic_sources
 	SrcMgr.cpp
 	LangOptions.cpp
 	StatisticEngine.cpp
-	TextDiagnosticEmitter.cpp
-	TextDiagnosticFormatter.cpp
-	TextDiagnosticListener.cpp
 	Timer.cpp
 	TokenKind.cpp
 	UnixDirWatcher.cpp

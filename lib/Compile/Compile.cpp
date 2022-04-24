@@ -1,15 +1,15 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Basic/TextDiagnosticFormatter.h"
-#include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Compile/DebugFrontendListener.h"
 #include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendListener.h"
 #include "stone/Compile/TargetMachine.h"
+#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Parse/Parse.h"
@@ -65,7 +65,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   frontend.Initialize();
 
   if (args.empty()) {
-    frontend.GetContext().PrintD(SrcLoc(), diag::err_no_frontend_args);
+    frontend.GetContext().GetDiagUnit().PrintD(SrcLoc(),
+                                               diag::err_no_frontend_args);
     return Finish(1);
   }
 
@@ -85,7 +86,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
       std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
-  frontend.GetContext().GetDiagEngine().AddListener(diagListener);
+  frontend.GetContext().GetDiagUnit().GetDiagEngine().AddListener(diagListener);
 
   // Parse arguments.
   llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
@@ -98,7 +99,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // auto &mode = frontend.ComputeMode(ial);
 
   if (frontend.GetMode().IsAlien()) {
-    frontend.GetContext().PrintD(SrcLoc(), diag::err_alien_mode);
+    frontend.GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_alien_mode);
     Finish(1);
   }
   if (frontend.GetMode().IsPrintHelp()) {
@@ -173,8 +174,9 @@ static void CompileWithGenNative(Frontend &frontend, CodeGenContext &cgc,
                                  IRCodeGenResult &result) {
 
   auto targetMachine = stone::CreateTargetMachine(
-      frontend.GetContext().GetDiagEngine(), frontend.GetCodeGenOptions(),
-      frontend.GetTargetOptions(), frontend.GetContext().GetLangOptions(),
+      frontend.GetContext().GetDiagUnit().GetDiagEngine(),
+      frontend.GetCodeGenOptions(), frontend.GetTargetOptions(),
+      frontend.GetContext().GetLangOptions(),
       frontend.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
 
   cgc.TakeTargetMachine(std::move(targetMachine));
@@ -197,8 +199,8 @@ static void CompileWithGenNative(Frontend &frontend, CodeGenContext &cgc,
     }
   };
   ComputeNativeModeKind(frontend);
-  auto status = stone::GenNative(cgc, frontend.GetSyntax().GetSyntaxContext(),
-                                 result, nullptr);
+  auto err = stone::GenNative(cgc, frontend.GetSyntax().GetSyntaxContext(),
+                              result, nullptr);
 }
 
 static void CompileWithCodeGen(Frontend &frontend) {

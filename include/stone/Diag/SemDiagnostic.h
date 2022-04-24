@@ -1,7 +1,7 @@
-#ifndef STONE_BASIC_SEMDIAGNOSTIC_H
-#define STONE_BASIC_SEMDIAGNOSTIC_H
+#ifndef STONE_DIAG_SEMDIAGNOSTIC_H
+#define STONE_DIAG_SEMDIAGNOSTIC_H
 
-#include "stone/Basic/CoreDiagnostic.h"
+#include "stone/Diag/CoreDiagnostic.h"
 
 namespace stone {
 namespace diag {

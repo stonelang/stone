@@ -1,6 +1,6 @@
 #include "stone/Driver/Intent.h"
 #include "stone/Basic/Color.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 
 using namespace stone;
 

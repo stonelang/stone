@@ -1,6 +1,6 @@
 #include "stone/Session/Session.h"
 
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 
@@ -33,7 +33,7 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   // Check for missing argument error.
   if (missingArgCount) {
     // TODO:
-    // GetContext().PrintD << "D(SrcLoc(),"
+    // GetContext().GetDiagUnit().PrintD << "D(SrcLoc(),"
     //     << "msg::error_missing_arg_value,"
     //     << "argList->getArgString(missingArgIndex),"
     //     << "missingArgCount" << '\n';
@@ -43,7 +43,7 @@ llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    /// TODO: GetContext().PrintD
+    /// TODO: GetContext().GetDiagUnit().PrintD
     // cos << "D(SourceLoc(), "
     //     << "msg::error_unknown_arg,"
     //     << "arg->getAsString(*ArgList));" << '\n';

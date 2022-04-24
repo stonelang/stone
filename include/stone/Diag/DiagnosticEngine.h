@@ -1,14 +1,14 @@
-#ifndef STONE_BASIC_DIAGNOSTICENGINE_H
-#define STONE_BASIC_DIAGNOSTICENGINE_H
+#ifndef STONE_DIAG_DIAGNOSTICENGINE_H
+#define STONE_DIAG_DIAGNOSTICENGINE_H
 
-#include "stone/Basic/Diagnostic.h"
-#include "stone/Basic/DiagnosticFormatter.h"
-#include "stone/Basic/DiagnosticListener.h"
-#include "stone/Basic/DiagnosticLocalization.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Printable.h"
 #include "stone/Basic/Version.h"
+#include "stone/Diag/Diagnostic.h"
+#include "stone/Diag/DiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticListener.h"
+#include "stone/Diag/DiagnosticLocalization.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
@@ -156,7 +156,7 @@ public:
 
 public:
   CodeFixer &WithFix() { return fixer; }
-  DiagnosticEngine &GetDiagEngine() { return *de; }
+  DiagnosticEngine &GetDiagUnit() { return *de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.
   void Flush();

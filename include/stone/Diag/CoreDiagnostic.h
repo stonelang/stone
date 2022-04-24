@@ -1,8 +1,8 @@
-#ifndef STONE_BASIC_BASICDIAGNOSTIC_H
-#define STONE_BASIC_BASICDIAGNOSTIC_H
+#ifndef STONE_DIAG_BASICDIAGNOSTIC_H
+#define STONE_DIAG_BASICDIAGNOSTIC_H
 
-#include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Diag/DiagnosticArgument.h"
 
 namespace stone {
 template <typename... argTypes> struct Diag;

@@ -1,9 +1,9 @@
-#ifndef STONE_BASIC_DIAGNOSTICLISTENER_H
-#define STONE_BASIC_DIAGNOSTICLISTENER_H
+#ifndef STONE_DIAG_DIAGNOSTICLISTENER_H
+#define STONE_DIAG_DIAGNOSTICLISTENER_H
 
 #include "stone/Basic/Color.h"
-#include "stone/Basic/DiagnosticFormatter.h"
-#include "stone/Basic/DiagnosticOptions.h"
+#include "stone/Diag/DiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticOptions.h"
 
 namespace stone {
 

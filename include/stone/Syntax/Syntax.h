@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAX_H
 #define STONE_SYNTAX_SYNTAX_H
 
-#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
@@ -56,7 +56,7 @@ public:
   StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
 
 public:
-  bool HasError() { return GetSyntaxContext().GetContext().HasError(); }
+  bool HasError() { return GetSyntaxContext().GetContext().GetDiagUnit().HasError(); }
   Context &GetContext() { return GetSyntaxContext().GetContext(); }
 
 public:
@@ -65,13 +65,13 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
+    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(
                  DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
+    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(DiagnosticDetail(diagID, args)));
   }
 
@@ -79,7 +79,7 @@ public:
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetSyntaxContext().GetContext().GetDiagEngine().PrintD(
+    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(DiagnosticDetail(id, std::move(args)...)));
   }
 

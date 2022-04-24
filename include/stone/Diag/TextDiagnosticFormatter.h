@@ -1,9 +1,9 @@
-#ifndef STONE_BASIC_TEXTDIAGNOSTICFORMATTER_H
-#define STONE_BASIC_TEXTDIAGNOSTICFORMATTER_H
+#ifndef STONE_DIAG_TEXTDIAGNOSTICFORMATTER_H
+#define STONE_DIAG_TEXTDIAGNOSTICFORMATTER_H
 
 #include <assert.h>
 
-#include "stone/Basic/DiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticFormatter.h"
 
 namespace stone {
 

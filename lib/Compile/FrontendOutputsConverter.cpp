@@ -1,7 +1,7 @@
 
-#include "stone/Basic/FrontendDiagnostic.h"
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/Strings.h"
+#include "stone/Diag/FrontendDiagnostic.h"
 //#include "stone/Basic/Platform.h"
 #include "stone/Compile/FrontendInputsConverter.h"
 #include "stone/Compile/FrontendOptionsConverter.h"

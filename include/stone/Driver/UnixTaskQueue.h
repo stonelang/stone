@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILER_UNIXTASKQUEUE_H
 #define STONE_COMPILER_UNIXTASKQUEUE_H
 
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/Task.h"

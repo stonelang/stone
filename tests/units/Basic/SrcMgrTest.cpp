@@ -1,7 +1,7 @@
 #include <cstddef>
 
-#include "stone/Basic/DiagnosticEngine.h"
-#include "stone/Basic/DiagnosticOptions.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/SrcMgr.h"

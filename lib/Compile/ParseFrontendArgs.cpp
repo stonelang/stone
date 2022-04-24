@@ -1,7 +1,7 @@
-#include "stone/Basic/Context.h"
 #include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/FrontendOptionsConverter.h"
+#include "stone/Context.h"
 
 using namespace stone;
 
@@ -43,21 +43,21 @@ Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
   // TODO: Check for Alien mode here.
   frontendOpts = std::make_unique<FrontendOptions>(ComputeMode(ial));
 
-  auto err = ParseFrontendArgs(ial, GetContext().GetDiagEngine(),
+  auto err = ParseFrontendArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                                GetContext().GetLangOptions(), *frontendOpts,
                                nullptr /* pass null for now*/);
   if (err.Has()) {
     // TODO:
   }
-  ParseLangArgs(ial, GetContext().GetDiagEngine(), *frontendOpts,
+  ParseLangArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(), *frontendOpts,
                 GetContext().GetLangOptions());
 
-  ParseTypeCheckerArgs(ial, GetContext().GetDiagEngine(), *frontendOpts,
-                       typeCheckerOpts);
-  ParseSearchPathArgs(ial, GetContext().GetDiagEngine(), *frontendOpts,
-                      searchPathOpts);
-  ParseCodeGenArgs(ial, GetContext().GetDiagEngine(), *frontendOpts,
-                   codeGenOpts);
+  ParseTypeCheckerArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+                       *frontendOpts, typeCheckerOpts);
+  ParseSearchPathArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+                      *frontendOpts, searchPathOpts);
+  ParseCodeGenArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+                   *frontendOpts, codeGenOpts);
 
   return ial;
 }

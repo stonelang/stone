@@ -1,5 +1,5 @@
 #include "stone/Compile/Lexer.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 
@@ -19,7 +19,7 @@ protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
     auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
-    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagEngine(),
+    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagUnit(),
                                    &ctx.GetStatEngine());
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {

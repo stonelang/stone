@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_NATIVECODEGEN_H
 #define STONE_GEN_NATIVECODEGEN_H
 
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
 
 namespace llvm {

@@ -2,7 +2,7 @@
 #define STONE_COMPILE_FRONTEND_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Context.h"
+#include "stone/Context.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
@@ -142,7 +142,7 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  bool HasError() { return GetContext().GetDiagEngine().HasError(); }
+  bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
   bool JustFrontend() {
     if (GetMode().JustParse() || GetMode().JustTypeCheck() ||

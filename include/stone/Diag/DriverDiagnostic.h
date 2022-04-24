@@ -1,14 +1,14 @@
-#ifndef STONE_BASIC_SYNTAXDIAGNOSTIC_H
-#define STONE_BASIC_SYNTAXDIAGNOSTIC_H
+#ifndef STONE_DIAG_DRIVERDIAGNOSTIC_H
+#define STONE_CPRE_DRIVERDIAGNOSTIC_H
 
-#include "stone/Basic/CoreDiagnostic.h"
+#include "stone/Diag/CoreDiagnostic.h"
 
 namespace stone {
 namespace diag {
 // Declare common diagnostics objects with their appropriate types.
 #define DIAG(KIND, ID, Options, Text, Signature)                               \
   extern detail::DiagWithArguments<void Signature>::type ID;
-#include "SyntaxDiagnostic.def"
+#include "DriverDiagnostic.def"
 } // namespace diag
 } // namespace stone
 
