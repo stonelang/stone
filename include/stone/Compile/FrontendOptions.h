@@ -1,7 +1,6 @@
 #ifndef STONE_COMPILE_LANGOPTIONS_H
 #define STONE_COMPILE_LANGOPTIONS_H
 
-#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
@@ -16,12 +15,6 @@ using namespace stone::sem;
 
 namespace stone {
 
-enum class ModuleOutputMode : uint8_t {
-  None = 0,
-  Single,
-  Whole,
-};
-
 enum class ThreadModelKind {
   /// POSIX Threads.
   POSIX,
@@ -35,14 +28,8 @@ class FrontendOptions final : public BaseOptions {
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
 public:
-  ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
-
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
-
   FrontendInputsAndOutputs inputsAndOutputs;
-
-public:
-  //== Proprties == /
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;

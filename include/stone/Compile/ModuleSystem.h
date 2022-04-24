@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_MODULESYSTEM_H
 #define STONE_COMPILE_MODULESYSTEM_H
 
+#include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/FrontendOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
 #include "stone/Syntax/Module.h"
@@ -20,8 +21,11 @@ public:
 class ModuleSystem final {
   // We need built-in information
 
-  syn::Syntax &syntax;
   Context &ctx;
+  syn::Syntax &syntax;
+
+  ModuleOptions moduleOpts;
+
   /// This is the main module that will be created
   mutable syn::Module *mainModule = nullptr;
 
@@ -33,6 +37,9 @@ public:
   syn::Module *GetMainModule() const;
   const llvm::StringRef GetModuleName() const;
   void SetModuleName(llvm::StringRef name);
+
+  ModuleOptions &GetModuleOptions() { return moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
 public:
   static stone::Error IsValidModuleName(llvm::StringRef moduleName);

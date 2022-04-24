@@ -16,6 +16,13 @@
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
+
+enum class ModuleOutputMode : uint8_t {
+  None = 0,
+  Single,
+  Whole,
+};
+
 class ModuleOptions final {
 public:
   /// The map of aliases and underlying names of imported or referenced modules.
@@ -31,6 +38,8 @@ public:
 
   /// The name of the library to link against when using this module.
   std::string moduleLinkName;
+
+  ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 };
 
 } // namespace stone

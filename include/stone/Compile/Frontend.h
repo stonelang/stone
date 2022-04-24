@@ -71,8 +71,6 @@ protected:
 
   TargetOptions targetOpts;
 
-  ModuleOptions moduleOpts;
-
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
@@ -138,17 +136,10 @@ public:
     return typeCheckerOpts;
   }
 
-  ModuleOptions &GetModuleOptions() { return moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
-
   TypeCheckMode GetTypeCheckMode() {
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
                                      : TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
-  }
-  ModuleOutputMode GetModuleOutputMode() {
-    // TODO: This must be computed in the future.
-    return GetFrontendOptions().moduleOutputMode;
   }
 
   bool HasError() { return GetContext().GetDiagEngine().HasError(); }
@@ -236,6 +227,12 @@ private:
   void ForEachSyntaxFile(EachSyntaxFileCallback client);
 
   void ResolveUsings();
+
+public:
+  ModuleOutputMode GetModuleOutputMode() {
+    // TODO: This must be computed in the future.
+    return GetModuleSystem().GetModuleOptions().moduleOutputMode;
+  }
 
 public:
   //== Utils ==//
