@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_SYNTAXFACTORY_H
 #define STONE_SYNTAX_SYNTAXFACTORY_H
 
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"

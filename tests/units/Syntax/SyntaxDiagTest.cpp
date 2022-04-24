@@ -1,5 +1,5 @@
-#include "stone/Context.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Context.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/FrontendDiagnostic.h"
 #include "stone/Diag/SyntaxDiagnostic.h"

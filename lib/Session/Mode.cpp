@@ -55,11 +55,11 @@ std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
   }
 }
 
-file::Type Mode::GetOutputFileType() {
-  return Mode::GetOutputFileType(GetKind());
+file::Type Mode::GetOutputFileType() const {
+  return Mode::GetOutputFileTypeByModeKind(GetKind());
 }
 
-file::Type Mode::GetOutputFileType(ModeKind kind) {
+file::Type Mode::GetOutputFileTypeByModeKind(ModeKind kind) {
   switch (kind) {
   case ModeKind::None:
   case ModeKind::Parse:

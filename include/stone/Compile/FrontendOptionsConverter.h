@@ -1,10 +1,10 @@
 #ifndef STONE_COMPILE_LANGOPTIONSBUILDER_H
 #define STONE_COMPILE_LANGOPTIONSBUILDER_H
 
+#include "stone/Compile/FrontendOptions.h"
 #include "stone/Context.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
-#include "stone/Compile/FrontendOptions.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/ArgList.h"
 

@@ -146,8 +146,7 @@ llvm::Optional<FrontendOutputFilesComputer> FrontendOutputFilesComputer::Create(
     return llvm::None;
   }
 
-  const file::Type outputType =
-      FrontendOptions::GetFileTypeByModeKind(mode.GetKind());
+  auto outputType = mode.GetOutputFileType();
 
   return FrontendOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),

@@ -29,8 +29,8 @@ stone::Error FrontendOptionsConverter::Convert(
   assert(frontendOpts.inputsAndOutputs.HasInputs() &&
          "Inputs and Outputs should be empty");
 
-  // llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
-  //     FrontendInputsConverter(de, args).Convert(buffers);
+  llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
+      FrontendInputsConverter(de, args).Convert(buffers);
 
   return stone::Error();
 }

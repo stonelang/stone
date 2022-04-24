@@ -6,9 +6,9 @@
 #include <string>
 
 #include "stone/Basic/Char.h"
-#include "stone/Context.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenKind.h"
+#include "stone/Context.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/SmallString.h"

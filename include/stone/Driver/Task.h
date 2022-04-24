@@ -1,8 +1,8 @@
 #ifndef STONE_BASIC_RUN_H
 #define STONE_BASIC_RUN_H
 
-#include "stone/Context.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Context.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringExtras.h"

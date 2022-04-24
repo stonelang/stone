@@ -2,7 +2,6 @@
 #define STONE_COMPILE_FRONTEND_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Context.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
@@ -11,6 +10,7 @@
 #include "stone/Compile/FrontendUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
+#include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
 #include "stone/Sem/TypeCheckerOptions.h"

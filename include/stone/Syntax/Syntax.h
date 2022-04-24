@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_SYNTAX_H
 #define STONE_SYNTAX_SYNTAX_H
 
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
@@ -56,7 +56,9 @@ public:
   StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
 
 public:
-  bool HasError() { return GetSyntaxContext().GetContext().GetDiagUnit().HasError(); }
+  bool HasError() {
+    return GetSyntaxContext().GetContext().GetDiagUnit().HasError();
+  }
   Context &GetContext() { return GetSyntaxContext().GetContext(); }
 
 public:

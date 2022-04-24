@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_LANINPUTSSBUILDER_H
 #define STONE_COMPILE_LANINPUTSSBUILDER_H
 
-#include "stone/Context.h"
 #include "stone/Compile/FrontendOptions.h"
+#include "stone/Context.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"

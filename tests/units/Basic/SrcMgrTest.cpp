@@ -1,10 +1,10 @@
 #include <cstddef>
 
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticOptions.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Config/llvm-config.h"
 #include "llvm/Support/Process.h"

@@ -128,10 +128,10 @@ public:
       return false;
     }
   }
-  file::Type GetOutputFileType();
+  file::Type GetOutputFileType() const;
 
 public:
-  static file::Type GetOutputFileType(ModeKind kind);
+  static file::Type GetOutputFileTypeByModeKind(ModeKind kind);
   static std::unique_ptr<Mode> Create(const llvm::opt::InputArgList &ial);
 };
 

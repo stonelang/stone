@@ -1,7 +1,7 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Context.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Context.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
@@ -13,7 +13,10 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
     : Parser(sf, syntax,
              std::unique_ptr<Lexer>(new Lexer(
                  sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
-                 &syntax.GetSyntaxContext().GetContext().GetDiagUnit().GetDiagEngine(),
+                 &syntax.GetSyntaxContext()
+                      .GetContext()
+                      .GetDiagUnit()
+                      .GetDiagEngine(),
                  &syntax.GetSyntaxContext().GetContext().GetStatEngine())),
              listener) {}
 
