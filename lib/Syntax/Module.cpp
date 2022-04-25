@@ -17,11 +17,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-void *ModuleFile::operator new(size_t bytes, SyntaxContext &tc,
-                               unsigned alignment) {
-  return tc.Allocate(bytes, alignment);
-}
-
 ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 

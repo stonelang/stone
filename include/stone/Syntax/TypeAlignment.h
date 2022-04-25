@@ -11,6 +11,8 @@ class Expr;
 class Stmt;
 class SyntaxContext;
 class DeclContext;
+class ModuleFile;
+
 } // namespace syn
 
 /// We frequently use three tag bits on all of these types.
@@ -51,8 +53,11 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Expr, stone::ExprAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::SyntaxContext,
                             stone::SyntaxContextAlignInBits)
+
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
                             stone::DeclContextAlignInBits)
+
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ModuleFile, stone::SyntaxContextAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 

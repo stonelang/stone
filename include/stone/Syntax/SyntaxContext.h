@@ -18,8 +18,8 @@
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/SearchPathOptions.h"
-#include "stone/Syntax/NodeAllocation.h"
 #include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/APSInt.h"
@@ -102,7 +102,6 @@ class SyntaxContext final {
   Detail &GetDetail() const;
 
 public:
-
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAXCTX_NODEALLOCATION_H
-#define STONE_SYNTAXCTX_NODEALLOCATION_H
+#ifndef STONE_SYNTAXCTX_SYNTAXALLOCATION_H
+#define STONE_SYNTAXCTX_SYNTAXALLOCATION_H
 
 #include <cassert>
 #include <cstddef>
@@ -29,7 +29,6 @@ void *AllocateInSyntaxContext(size_t bytes, const syn::SyntaxContext &ctx,
                               AllocationArena arena, unsigned alignment);
 }
 
-
 namespace syn {
 /// Types inheriting from this class are intended to be allocated in an
 /// \c ASTContext allocator; you cannot allocate them by using a normal \c new,
@@ -38,7 +37,7 @@ namespace syn {
 ///
 /// The template parameter is a type with the desired alignment. It is usually,
 /// but not always, the type that is inheriting \c ASTAllocated.
-template <typename AlignTy> class NodeAllocation {
+template <typename AlignTy> class SyntaxAllocation {
 public:
   // Make vanilla new/delete illegal.
   void *operator new(size_t bytes) throw() = delete;
@@ -58,7 +57,7 @@ public:
   }
 };
 
-}
+} // namespace syn
 
 } // namespace stone
 

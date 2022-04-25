@@ -9,10 +9,10 @@
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
-#include "stone/Syntax/NodeAllocation.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -64,7 +64,7 @@ public:
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
 
-class alignas(1 << DeclAlignInBits) Decl : public syn::NodeAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;

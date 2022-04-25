@@ -20,7 +20,7 @@ static inline unsigned AlignOfModuleFile();
 
 enum class ModuleFileKind : uint8_t { Source, Builtin };
 
-class ModuleFile : public DeclContext {
+class ModuleFile : public DeclContext, public SyntaxAllocation<ModuleFile> {
 private:
   ModuleFileKind kind;
 
@@ -29,18 +29,6 @@ public:
 
 public:
   ModuleFileKind GetKind() const { return kind; }
-
-private:
-  // MAKE placement new and vanilla new/delete ILLEGAL for ModuleFiles
-  void *operator new(size_t bytes) throw() = delete;
-  void *operator new(size_t bytes, void *mem) throw() = delete;
-  void operator delete(void *data) throw() = delete;
-
-public:
-  // Only allow allocation of FileUnits using the allocator in ASTContext
-  // or by doing a placement new.
-  void *operator new(size_t bytes, SyntaxContext &tc,
-                     unsigned alignment = AlignOfModuleFile());
 };
 
 enum class SyntaxFileKind : uint8_t { None, Library };
@@ -118,7 +106,8 @@ public:
 
 class Module final : public DeclContext,
                      public TypeDecl,
-                     public WalkableSyntax {
+                     public WalkableSyntax,
+                     public SyntaxAllocation<Module> {
 public:
   Module(Identifier name, SyntaxContext &tc);
 
@@ -148,18 +137,6 @@ public:
   bool IsBuiltin() const;
 
   bool Walk(SyntaxWalker &waker) override;
-
-private:
-  // Make placement new and vanilla new/delete illegal for Modules.
-  void *operator new(size_t bytes) throw() = delete;
-  void operator delete(void *data) throw() = delete;
-  void *operator new(size_t bytes, void *mem) throw() = delete;
-
-public:
-  // Only allow allocation of Modules using the allocator in ASTContext
-  // or by doing a placement new.
-  void *operator new(size_t bytes, const SyntaxContext &tc,
-                     unsigned alignment = alignof(Module));
 
 public:
   static bool classof(const DeclContext *DC) {
