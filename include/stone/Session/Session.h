@@ -70,7 +70,6 @@ protected:
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
 
-  llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> vfs;
 
 protected:
   unsigned includedFlagsBitmask = 0;
@@ -80,10 +79,12 @@ protected:
 
 public:
   Session();
+  ~Session();
   void CreateTimer();
 
 public:
   virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
+
   virtual BaseOptions &GetBaseOptions() = 0;
 
 public:
@@ -107,11 +108,7 @@ public:
     assert(ial);
     return *ial.get();
   }
-  // llvm::opt::DerivedArgList &GetDerivedArgList() {
-  //   assert(dal);
-  //   return *dal.get();
-  // }
-
+  
   llvm::TimerGroup &GetTimerGroup() {
     assert(timerGroup);
     return *timerGroup.get();
@@ -127,8 +124,6 @@ public:
   unsigned GetMissingArgIndex() const { return missingArgIndex; }
   unsigned GetMissingArgCount() const { return missingArgCount; }
 
-  void SetVFS(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> fs) { vfs = fs; }
-  llvm::vfs::FileSystem &GetVFS() const { return *vfs; }
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
@@ -141,11 +136,12 @@ public:
   file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 
   llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);
+
   stone::Result<std::string>
   GetOptEqualValue(opts::OptID optID, const llvm::opt::InputArgList &ial);
 
 public:
-  void PrintHelp(const llvm::opt::OptTable &optst);
+  void PrintVersion();
   void PrintTimer();
   void PrintDiagnostics();
   void PrintStatistics();

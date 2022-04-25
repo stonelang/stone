@@ -27,10 +27,9 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   Driver driver(name, path);
   STONE_DEFER { driver.Finish(); };
 
-  driver.Initialize();
-
   if (args.empty()) {
-    // driver.GetContext().GetDiagUnit().PrintD(diag::err_no_input_args);
+    //driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
+    //                                           diag::err_no_driver_args);
     return Finish(1);
   }
   if (listener) {

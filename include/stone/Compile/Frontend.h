@@ -204,12 +204,6 @@ public:
   FrontendListener *GetListener() { return listener; }
   void SetListener(FrontendListener *l) { listener = l; }
 
-public:
-  /// Print the lanuage help
-  void PrintHelp();
-
-  /// Print the language version
-  void PrintVersion();
 
 public:
   /// Perform code analysis and code generation
@@ -234,6 +228,8 @@ public:
     return GetModuleSystem().GetModuleOptions().moduleOutputMode;
   }
 
+void PrintHelp(const llvm::opt::OptTable& opts);
+
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
@@ -257,6 +253,8 @@ public:
     return (void *)A.Allocate(BaseSize, alignof(ProfileTy));
   }
 };
+
+
 
 } // namespace stone
 

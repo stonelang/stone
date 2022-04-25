@@ -61,9 +61,7 @@ public:
   Driver(llvm::StringRef name, llvm::StringRef path);
   ~Driver();
 
-  void Initialize();
   void Finish();
-  void PrintVersion();
 
 public:
   template <typename T, typename... Args> T *MakeIntent(Args &&...args) {
@@ -168,6 +166,9 @@ public:
       // StringRef PrimaryInput,
       // llvm::SmallString<128> &Buffer
   );
+
+  void PrintHelp(const llvm::opt::OptTable& opts);
+  void PrintVersion();
 };
 
 } // namespace stone

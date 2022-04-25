@@ -116,9 +116,11 @@ llvm::StringRef Frontend::ComputeSourceOutputFile(unsigned srcID) {
   return llvm::StringRef();
 }
 
-void Frontend::PrintVersion() {}
 
-void Frontend::PrintHelp() {}
+void Frontend::PrintHelp(const llvm::opt::OptTable& opts) {
+
+}
+
 void Frontend::Finish() {
   if (listener) {
     listener->OnCompileCompleted(*this);

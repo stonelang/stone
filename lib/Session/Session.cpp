@@ -10,10 +10,11 @@ using namespace stone::opts;
 using namespace llvm::opt;
 
 Session::Session()
-    : optst(stone::opts::CreateOptTable()),
-      vfs(llvm::vfs::getRealFileSystem()) {
+    : optst(stone::opts::CreateOptTable()) {
   CreateTimer();
 }
+
+Session::~Session(){}
 
 void Session::CreateTimer() {
   // timerGroup =
@@ -145,10 +146,7 @@ Session::GetOptEqualValue(opts::OptID optID,
   return stone::Result<std::string>();
 }
 
-void Session::PrintHelp(const llvm::opt::OptTable &optst) {}
-
+void Session::PrintVersion() {}
 void Session::PrintTimer() {}
-
 void Session::PrintDiagnostics() {}
-
 void Session::PrintStatistics() {}

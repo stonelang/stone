@@ -62,8 +62,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   Frontend frontend;
   STONE_DEFER { frontend.Finish(); };
 
-  frontend.Initialize();
-
   if (args.empty()) {
     frontend.GetContext().GetDiagUnit().PrintD(SrcLoc(),
                                                diag::err_no_frontend_args);
@@ -103,7 +101,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     Finish(1);
   }
   if (frontend.GetMode().IsPrintHelp()) {
-    frontend.PrintHelp();
+    frontend.PrintHelp(frontend.GetOpts());
     return Finish();
   }
   if (frontend.GetMode().IsPrintVersion()) {

@@ -39,8 +39,6 @@ llvm::opt::InputArgList &Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
   return ial;
 }
 
-void Driver::Initialize() {}
-
 void Driver::ComputeOutputOptions(const ToolChain &toolChain,
                                   const llvm::opt::InputArgList &ial,
                                   const file::Files &inputs,
@@ -252,5 +250,8 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //   hc.AddTopLevelRequest(linkRequest);
 // }
 //}
+void Driver::PrintHelp(const llvm::opt::OptTable& opts){
+
+}
 void Driver::PrintVersion() {}
 void Driver::Finish() {}
