@@ -1,14 +1,6 @@
 #ifndef STONE_SYNTAX_DECL_H
 #define STONE_SYNTAX_DECL_H
 
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <iterator>
-#include <string>
-#include <type_traits>
-#include <utility>
-
 #include "stone/Basic/AddressSpace.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
@@ -20,6 +12,8 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/NodeAllocation.h"
+
 // #include "stone/Syntax/Redeclarable.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -30,6 +24,12 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/VersionTuple.h"
+
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 namespace stone {
 class DiagnosticEngine;
@@ -64,28 +64,13 @@ public:
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
 
-class alignas(1 << DeclAlignInBits) Decl {
+class alignas(1 << DeclAlignInBits) Decl : public syn::NodeAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
   /// The location of the decl
   SrcLoc loc;
   DeclContext *dc;
-
-public:
-  // Make vanilla new/delete illegal for Decls.
-  void *operator new(size_t bytes) = delete;
-  void operator delete(void *data) = delete;
-
-  // Only allow allocation of Decls using the allocator in ASTContext
-  // or by doing a placement new.
-  void *operator new(size_t bytes, const SyntaxContext &tc,
-                     unsigned alignment = alignof(Decl));
-
-  void *operator new(size_t bytes, void *mem) {
-    assert(mem);
-    return mem;
-  }
 
   // TODO: UB
   // void *operator new(std::size_t size, const SyntaxContext &ctx,

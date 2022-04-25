@@ -19,7 +19,7 @@
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPathOptions.h"
-#include "stone/Syntax/SyntaxAlloc.h"
+#include "stone/Syntax/NodeAllocation.h"
 #include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/APSInt.h"
@@ -68,6 +68,7 @@ public:
       : Stats("tree-context stats:"), tc(tc) {}
   void Print(ColorfulStream &stream) override;
 };
+
 class SyntaxContext final {
   friend SyntaxContextStats;
   std::unique_ptr<SyntaxContextStats> stats;
@@ -101,11 +102,15 @@ class SyntaxContext final {
   Detail &GetDetail() const;
 
 public:
-  SyntaxContext(Context &ctx, const SearchPathOptions &spOpts);
-  ~SyntaxContext();
 
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
+
+  SyntaxContext(Context &ctx, const SearchPathOptions &spOpts);
+  ~SyntaxContext();
+
+  /// Add a cleanup function to be called when the SyntaxContext is deallocated.
+  void AddCleanup(std::function<void(void)> cleanup);
 
 public:
   ///
@@ -171,10 +176,10 @@ public:
 /// @param Alignment The alignment of the allocated memory (if the underlying
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
-inline void *operator new(size_t bytes, const stone::syn::SyntaxContext &tc,
-                          size_t alignment /* = 8 */) {
-  return tc.Allocate(bytes, alignment);
-}
+// inline void *operator new(size_t bytes, const stone::syn::SyntaxContext &tc,
+//                           size_t alignment /* = 8 */) {
+//   return tc.Allocate(bytes, alignment);
+// }
 
 /// Placement delete companion to the new above.
 ///
@@ -182,10 +187,10 @@ inline void *operator new(size_t bytes, const stone::syn::SyntaxContext &tc,
 /// invoking it directly; see the new operator for more details. This operator
 /// is called implicitly by the sc if a placement new expression using
 /// the SyntaxContext throws in the object constructor.
-inline void operator delete(void *Ptr, const stone::syn::SyntaxContext &tc,
-                            size_t) {
-  tc.Deallocate(Ptr);
-}
+// inline void operator delete(void *Ptr, const stone::syn::SyntaxContext &tc,
+//                             size_t) {
+//   tc.Deallocate(Ptr);
+// }
 
 /// This placement form of operator new[] uses the SyntaxContext's allocator for
 /// obtaining memory.
@@ -211,10 +216,11 @@ inline void operator delete(void *Ptr, const stone::syn::SyntaxContext &tc,
 /// @param Alignment The alignment of the allocated memory (if the underlying
 ///                  allocator supports it).
 /// @return The allocated memory. Could be nullptr.
-inline void *operator new[](size_t bytes, const stone::syn::SyntaxContext &tc,
-                            size_t alignment /* = 8 */) {
-  return tc.Allocate(bytes, alignment);
-}
+// inline void *operator new[](size_t bytes, const stone::syn::SyntaxContext
+// &tc,
+//                             size_t alignment /* = 8 */) {
+//   return tc.Allocate(bytes, alignment);
+// }
 
 /// Placement delete[] companion to the new[] above.
 ///
@@ -222,9 +228,9 @@ inline void *operator new[](size_t bytes, const stone::syn::SyntaxContext &tc,
 /// invoking it directly; see the new[] operator for more details. This operator
 /// is called implicitly by the sc if a placement new[] expression using
 /// the SyntaxContext throws in the object constructor.
-inline void operator delete[](void *Ptr, const stone::syn::SyntaxContext &tc,
-                              size_t) {
-  tc.Deallocate(Ptr);
-}
+// inline void operator delete[](void *Ptr, const stone::syn::SyntaxContext &tc,
+//                               size_t) {
+//   tc.Deallocate(Ptr);
+// }
 
 #endif

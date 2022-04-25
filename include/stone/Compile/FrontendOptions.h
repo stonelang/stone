@@ -36,9 +36,6 @@ public:
 
 public:
   FrontendOptions(const Mode &mode);
-
-public:
-  static file::Type GetFileTypeByModeKind(ModeKind modeKind);
 };
 
 } // namespace stone

@@ -28,16 +28,16 @@
 using namespace stone;
 using namespace stone::syn;
 
-// Only allow allocation of Decls using the allocator in ASTContext.
-void *syn::Decl::operator new(std::size_t bytes, const SyntaxContext &tc,
-                              unsigned alignment) {
-  return tc.Allocate(bytes, alignment);
-}
+// // Only allow allocation of Decls using the allocator in ASTContext.
+// void *syn::Decl::operator new(std::size_t bytes, const SyntaxContext &tc,
+//                               unsigned alignment) {
+//   return tc.Allocate(bytes, alignment);
+// }
 
-// Only allow allocation of Modules using the allocator in ASTContext.
-void *syn::Module::operator new(std::size_t bytes, const SyntaxContext &tc,
-                                unsigned alignment) {
-  return tc.Allocate(bytes, alignment);
-}
+// // Only allow allocation of Modules using the allocator in ASTContext.
+// void *syn::Module::operator new(std::size_t bytes, const SyntaxContext &tc,
+//                                 unsigned alignment) {
+//   return tc.Allocate(bytes, alignment);
+// }
 
 void DeclStats::Print(ColorfulStream &stream) {}
