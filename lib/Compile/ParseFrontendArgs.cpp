@@ -7,7 +7,7 @@ using namespace stone;
 
 FrontendOptions::FrontendOptions(const Mode &mode) : BaseOptions(mode) {}
 
-static stone::Error ParseFrontendArgs(
+static stone::Error ComputeFrontendOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
     FrontendOptions &frontendOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
@@ -17,20 +17,20 @@ static stone::Error ParseFrontendArgs(
   return stone::Error(converter.Convert(buffers));
 }
 
-static void ParseLangArgs(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
+static void ComputeLangOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
                           FrontendOptions &frontendOpts,
                           LangOptions &langOpts) {}
 
-static void ParseCodeGenArgs(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
+static void ComputeCodeGenOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
                              FrontendOptions &frontendOpts,
                              CodeGenOptions &codeGenOpts) {}
 
-static void ParseTypeCheckerArgs(llvm::opt::InputArgList &ial,
+static void ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
                                  DiagnosticEngine &de,
                                  FrontendOptions &frontendOpts,
                                  TypeCheckerOptions &typeCheckerOpts) {}
 
-static void ParseSearchPathArgs(llvm::opt::InputArgList &ial,
+static void ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
                                 DiagnosticEngine &de,
                                 FrontendOptions &frontendOpts,
                                 SearchPathOptions &searchPathOpts) {}
@@ -43,20 +43,20 @@ Frontend::ParseArgs(llvm::ArrayRef<const char *> args) {
   // TODO: Check for Alien mode here.
   frontendOpts = std::make_unique<FrontendOptions>(ComputeMode(ial));
 
-  auto err = ParseFrontendArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  auto err = ComputeFrontendOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                                GetContext().GetLangOptions(), *frontendOpts,
                                nullptr /* pass null for now*/);
   if (err.Has()) {
     // TODO:
   }
-  ParseLangArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(), *frontendOpts,
+  ComputeLangOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(), *frontendOpts,
                 GetContext().GetLangOptions());
 
-  ParseTypeCheckerArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeTypeCheckerOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                        *frontendOpts, typeCheckerOpts);
-  ParseSearchPathArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeSearchPathOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                       *frontendOpts, searchPathOpts);
-  ParseCodeGenArgs(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeCodeGenOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                    *frontendOpts, codeGenOpts);
 
   return ial;
