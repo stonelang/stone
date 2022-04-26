@@ -57,7 +57,8 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::SyntaxContext,
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
                             stone::DeclContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ModuleFile, stone::SyntaxContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ModuleFile,
+                            stone::SyntaxContextAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 

@@ -204,7 +204,6 @@ public:
   FrontendListener *GetListener() { return listener; }
   void SetListener(FrontendListener *l) { listener = l; }
 
-
 public:
   /// Perform code analysis and code generation
   void Compile(llvm::ArrayRef<FrontendUnit *> &sources);
@@ -228,7 +227,7 @@ public:
     return GetModuleSystem().GetModuleOptions().moduleOutputMode;
   }
 
-void PrintHelp(const llvm::opt::OptTable& opts);
+  void PrintHelp(const llvm::opt::OptTable &opts);
 
 public:
   //== Utils ==//
@@ -253,8 +252,6 @@ public:
     return (void *)A.Allocate(BaseSize, alignof(ProfileTy));
   }
 };
-
-
 
 } // namespace stone
 

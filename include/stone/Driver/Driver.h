@@ -167,7 +167,7 @@ public:
       // llvm::SmallString<128> &Buffer
   );
 
-  void PrintHelp(const llvm::opt::OptTable& opts);
+  void PrintHelp(const llvm::opt::OptTable &opts);
   void PrintVersion();
 };
 

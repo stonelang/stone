@@ -1,5 +1,5 @@
 #include "stone/Session/Session.h"
-
+#include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Context.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
@@ -9,12 +9,9 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-Session::Session()
-    : optst(stone::opts::CreateOptTable()) {
-  CreateTimer();
-}
+Session::Session() : optst(stone::opts::CreateOptTable()) { CreateTimer(); }
 
-Session::~Session(){}
+Session::~Session() {}
 
 void Session::CreateTimer() {
   // timerGroup =
@@ -25,33 +22,23 @@ void Session::CreateTimer() {
 }
 
 llvm::opt::InputArgList &Session::ParseArgs(llvm::ArrayRef<const char *> args) {
+
   ial = std::make_unique<llvm::opt::InputArgList>(
       GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
                           includedFlagsBitmask, excludedFlagsBitmask));
 
   assert(ial && "No input argument list.");
-
   // Check for missing argument error.
   if (missingArgCount) {
-    // TODO:
-    // GetContext().GetDiagUnit().PrintD << "D(SrcLoc(),"
-    //     << "msg::error_missing_arg_value,"
-    //     << "argList->getArgString(missingArgIndex),"
-    //     << "missingArgCount" << '\n';
-    /// TODO: return stone::Err
-    stone::Panic("error_missing_arg_value");
+    GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_missing_arg_value,
+                                      diag::LLVMStr(ial->getArgString(missingArgIndex)),
+                                      diag::UInt(missingArgCount));
   }
-
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    /// TODO: GetContext().GetDiagUnit().PrintD
-    // cos << "D(SourceLoc(), "
-    //     << "msg::error_unknown_arg,"
-    //     << "arg->getAsString(*ArgList));" << '\n';
-    // TODO: return stone::Err
-    stone::Panic("error_unknown_arg");
+    GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_unknown_arg,
+                                      diag::LLVMStr(arg->getAsString(*ial)));
   }
-
   return *ial.get();
 }
 Mode &Session::ComputeMode(const llvm::opt::InputArgList &ial) {

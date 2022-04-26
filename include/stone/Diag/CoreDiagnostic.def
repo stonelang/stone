@@ -14,6 +14,9 @@ ERROR(err_no_input_files, none, "no input files", ())
 
 ERROR(err_unknown_arg, none, "unknown argument:", (diag::LLVMStr))
 
+ERROR(err_missing_arg_value,none,
+      "missing argument value for '%0', expected %1 argument(s)",
+      (diag::LLVMStr, diag::UInt))
 
 ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStr, diag::LLVMStr))
 

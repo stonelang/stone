@@ -28,8 +28,8 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { driver.Finish(); };
 
   if (args.empty()) {
-    //driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
-    //                                           diag::err_no_driver_args);
+    // driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
+    //                                            diag::err_no_driver_args);
     return Finish(1);
   }
   if (listener) {

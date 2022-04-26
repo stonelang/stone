@@ -70,7 +70,6 @@ protected:
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
 
-
 protected:
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
@@ -108,7 +107,7 @@ public:
     assert(ial);
     return *ial.get();
   }
-  
+
   llvm::TimerGroup &GetTimerGroup() {
     assert(timerGroup);
     return *timerGroup.get();
@@ -123,7 +122,6 @@ public:
   void SetExcludedFlagsBitmask(unsigned flag) { excludedFlagsBitmask = flag; }
   unsigned GetMissingArgIndex() const { return missingArgIndex; }
   unsigned GetMissingArgCount() const { return missingArgCount; }
-
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 

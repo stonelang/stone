@@ -27,10 +27,6 @@ ERROR(err_cannot_open_file,none,
 ERROR(err_open_input_file,none,
       "error opening input file '%0' (%1)", (diag::LLVMStr, diag::LLVMStr))
 
-ERROR(err_missing_arg_value,none,
-      "missing argument value for '%0', expected %1 argument(s)",
-      (diag::LLVMStr, diag::UInt))
-
 
 ERROR(err_invalid_arg_value,none,
       "invalid value '%1' in '%0'", (diag::LLVMStr, diag::LLVMStr))

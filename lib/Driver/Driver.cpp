@@ -250,8 +250,6 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //   hc.AddTopLevelRequest(linkRequest);
 // }
 //}
-void Driver::PrintHelp(const llvm::opt::OptTable& opts){
-
-}
+void Driver::PrintHelp(const llvm::opt::OptTable &opts) {}
 void Driver::PrintVersion() {}
 void Driver::Finish() {}
