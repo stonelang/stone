@@ -24,20 +24,13 @@ using stone::ModeKind;
 
 using namespace stone;
 
-Driver::Driver(llvm::StringRef name, llvm::StringRef path)
-    : name(name), path(path) {
+Driver::Driver(llvm::StringRef programName, llvm::StringRef programPath)
+    : Session(programName, programPath) {
   buildSystem = std::make_unique<BuildSystem>(*this);
-  SetExcludedFlagsBitmask(opts::NoFrontendOption);
+  excludedFlagsBitmask = opts::NoFrontendOption;
 }
 
 Driver::~Driver() {}
-
-llvm::opt::InputArgList &Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
-  auto &ial = Session::ParseArgs(args);
-
-  driverOpts = std::make_unique<DriverOptions>(GetMode());
-  return ial;
-}
 
 void Driver::ComputeOutputOptions(const ToolChain &toolChain,
                                   const llvm::opt::InputArgList &ial,
@@ -188,26 +181,6 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   default:
     stone::Panic("OS not found!");
   }
-}
-
-void Driver::ComputeOptions(const llvm::opt::InputArgList &ial) {
-  // Since the mode has already been created
-  // switch(GetMode().GetKind().)
-  GetDriverOptions().outputFileType = file::Type::Object;
-
-  // TODO:
-  // GetDriverOptions().compileModel = ComputeCompilationMode(
-  //     *tal, GetDriverOptions().inputFiles);
-
-  // auto scPathResult = GetEQValue(opts::LangPathEQ);
-  // if (!stPathResult.IsErr()) {
-  //   GetDriverOptions().scPath = stPathResult.Get();
-  // }
-
-  GetDriverOptions().printRequests = ial.hasArg(opts::PrintDriverRequests);
-  GetDriverOptions().printJobs = ial.hasArg(opts::PrintDriverJobs);
-  GetDriverOptions().printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
-  GetDriverOptions().systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
 }
 
 llvm::StringRef Driver::ComputeOutputFilename() {}

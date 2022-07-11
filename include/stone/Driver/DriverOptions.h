@@ -42,7 +42,7 @@ public:
   OutputOptions outputOptions;
 
 public:
-  DriverOptions(const Mode &mode) : BaseOptions(mode) {}
+  DriverOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode) {}
 };
 } // namespace stone
 

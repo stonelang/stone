@@ -34,8 +34,10 @@ public:
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
 
+  bool shouldProcessDuplicateInputFile = false;
+
 public:
-  FrontendOptions(const Mode &mode);
+  FrontendOptions(std::unique_ptr<Mode> mode);
 };
 
 } // namespace stone

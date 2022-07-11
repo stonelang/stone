@@ -28,8 +28,8 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { driver.Finish(); };
 
   if (args.empty()) {
-    // driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
-    //                                            diag::err_no_driver_args);
+    driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
+                                             diag::err_no_input_files);
     return Finish(1);
   }
   if (listener) {
@@ -38,20 +38,25 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     debugListener = std::make_unique<DebugCompilationListener>();
     driver.SetListener(debugListener.get());
   }
-  auto &ial = driver.ParseArgs(args);
+  auto ial = driver.ParseArgs(args);
+  if (!ial) {
+    return Finish(1);
+  }
   if (driver.HasError()) {
     return Finish(1);
   }
-  auto &mode = driver.ComputeMode(ial);
-  if (mode.IsAlien()) {
-    // driver.GetContext().GetDiagUnit().PrintD(diags::err_alien_mode)
-    Finish(1);
+  if (driver.ComputeOptions(*ial).Has()) {
+    return Finish(1);
   }
-  if (mode.IsPrintHelp()) {
+
+  if (driver.GetMode().IsAlien()) {
+    driver.GetContext().GetDiagUnit().PrintD(diags::err_alien_mode) Finish(1);
+  }
+  if (driver.GetMode().IsPrintHelp()) {
     driver.PrintHelp(driver.GetOpts());
     return Finish();
   }
-  if (mode.IsPrintVersion()) {
+  if (driver.GetMode().IsPrintVersion()) {
     driver.PrintVersion();
     return Finish();
   }

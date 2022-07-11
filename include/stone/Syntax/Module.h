@@ -31,7 +31,14 @@ public:
   ModuleFileKind GetKind() const { return kind; }
 };
 
-enum class SyntaxFileKind : uint8_t { None, Library };
+enum class SyntaxFileKind : uint8_t {
+  None,
+  // .stone file without 'Main'
+  Library,
+  // .stone file with 'Main entry'
+  Main
+};
+
 enum class SyntaxFileStage : uint8_t { None, AtImports, AtTypeCheck };
 
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {

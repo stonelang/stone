@@ -30,8 +30,6 @@ public:
 };
 
 class Driver final : public Session {
-  llvm::StringRef name;
-  llvm::StringRef path;
 
   std::unique_ptr<DriverOptions> driverOpts;
 
@@ -58,7 +56,7 @@ public:
   Driver() = delete;
 
 public:
-  Driver(llvm::StringRef name, llvm::StringRef path);
+  Driver(llvm::StringRef programName, llvm::StringRef programPath);
   ~Driver();
 
   void Finish();
@@ -71,9 +69,6 @@ public:
   }
 
 public:
-  llvm::opt::InputArgList &
-  ParseArgs(llvm::ArrayRef<const char *> args) override;
-
   std::unique_ptr<llvm::opt::DerivedArgList>
   TranslateInputArgList(const llvm::opt::InputArgList &ial,
                         llvm::StringRef workDir);
@@ -84,17 +79,17 @@ public:
   }
 
   bool JustLink() const {
-    return (!GetMode().CanCompile() &&
+    return (!GetDriverOptions().GetMode().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool CanLink() const {
-    return (GetMode().CanCompile() &&
+    return (GetDriverOptions().GetMode().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool JustCompile() const {
-    return (GetMode().CanCompile() &&
+    return (GetDriverOptions().GetMode().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode == LinkMode::None));
   }
 
@@ -134,13 +129,14 @@ public:
   // void PrintJobs(HotCache &hc);
 
 public:
-  BaseOptions &GetBaseOptions() override { return *driverOpts; }
   file::Type GetInputFileType() const {
     return GetDriverOptions().inputFileType;
   }
   file::Type GetOutputFileType() const {
     return GetDriverOptions().outputOptions.outputFileType;
   }
+
+  stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
 
   DriverOptions &GetDriverOptions() { return *driverOpts; }
   const DriverOptions &GetDriverOptions() const { return *driverOpts; }
@@ -169,6 +165,11 @@ public:
 
   void PrintHelp(const llvm::opt::OptTable &opts);
   void PrintVersion();
+
+public:
+  void AddInputFile(llvm::StringRef name, unsigned fileID = 0);
+  void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID = 0);
+  file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 
 } // namespace stone

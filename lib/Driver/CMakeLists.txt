@@ -6,11 +6,11 @@
 	CompileJob.cpp
 	CompilationJob.cpp
 	CompilationModel.cpp
+	ComputeDriverOptions.cpp
 	DarwinTaskQueue.cpp
 	DarwinToolChain.cpp
 	DebugCompilationListener.cpp
 	Driver.cpp
-	ParseDriverArgs.cpp
 	DriverUtil.cpp
 	Job.cpp
 	TaskQueue.cpp

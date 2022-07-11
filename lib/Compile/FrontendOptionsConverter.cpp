@@ -67,24 +67,25 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
     return stone::Error();
   }
 
-  // if (Lexer::isIdentifier(frontendOpts.moduleName) &&
-  //     (frontendOpts.moduleName != strings::StdLibName ||
-  //     frontendOpts.parseStdLib)) {
-  //   return false;
-  // }
-  // if (!FrontendOptions::NeedsProperModuleName(frontendOpts.modeKind) ||
-  //     frontendOpts.IsCompilingExactlyOneStoneFile()) {
-  //   frontendOpts.ModuleName = strings::MainFileName;
-  //   return false;
-  // }
-  // auto DID = (frontendOpts.noduleName == STDLIB_NAME) ?
-  // diag::error_stdlib_module_name
-  //                                             : diag::error_bad_module_name;
-  // Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
-  // Opts.ModuleName = "__bad__";
-  // return false; // FIXME: Must continue to run to pass the tests, but should
-  // not
-  // // have to.
+  // TODO:
+  //  if (Lexer::isIdentifier(frontendOpts.moduleName) &&
+  //      (frontendOpts.moduleName != strings::StdLibName ||
+  //      frontendOpts.parseStdLib)) {
+  //    return false;
+  //  }
+  //  if (!FrontendOptions::NeedsProperModuleName(frontendOpts.modeKind) ||
+  //      frontendOpts.IsCompilingExactlyOneStoneFile()) {
+  //    frontendOpts.ModuleName = strings::MainFileName;
+  //    return false;
+  //  }
+  //  auto DID = (frontendOpts.noduleName == STDLIB_NAME) ?
+  //  diag::error_stdlib_module_name
+  //                                              : diag::error_bad_module_name;
+  //  Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
+  //  Opts.ModuleName = "__bad__";
+  //  return false; // FIXME: Must continue to run to pass the tests, but should
+  //  not
+  //  // have to.
 
   return stone::Error();
 }

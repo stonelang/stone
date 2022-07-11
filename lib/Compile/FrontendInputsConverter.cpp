@@ -80,25 +80,29 @@ bool FrontendInputsConverter::EnforceFilelistExclusion() {
 }
 
 bool FrontendInputsConverter::ReadInputFilesFromCommandLine() {
-  bool hadDuplicates = false;
+  bool hasDuplicate = false;
   for (const Arg *A : args.filtered(opts::INPUT, opts::PrimaryFile)) {
-    hadDuplicates = AddFile(A->getValue()) || hadDuplicates;
+    hasDuplicate = AddFile(A->getValue());
+    if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
+      return true;
+    }
   }
-  return false; // FIXME: Don't bail out for duplicates, too many tests depend
-  // on it.
+  return false;
 }
 
 bool FrontendInputsConverter::ReadInputFilesFromFilelist() {
-  bool hadDuplicates = false;
+  bool hasDuplicate = false;
   bool hadError =
       ForAllFilesInFileList(fileListPathArg, [&](llvm::StringRef file) -> void {
-        hadDuplicates = AddFile(file) || hadDuplicates;
+        hasDuplicate = AddFile(file);
+        if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
+          return true;
+        }
       });
   if (hadError) {
     return true;
   }
-  return false; // FIXME: Don't bail out for duplicates, too many tests depend
-                // on it.
+  return false;
 }
 
 bool FrontendInputsConverter::ForAllFilesInFileList(
@@ -144,7 +148,7 @@ bool FrontendInputsConverter::ForAllFilesInFileList(
   return false;
 }
 
-bool FrontendInputsConverter::AddFile(StringRef file) {
+bool FrontendInputsConverter::AddFile(llvm::StringRef file) {
   if (files.insert(file)) {
     return false;
   }

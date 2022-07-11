@@ -47,6 +47,9 @@ using SemanticAnalysisCallback = llvm::function_ref<void(Frontend &)>;
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
 
+// using CompileWithGenIRCallback = llvm::function_ref<void(
+//     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
+
 class FrontendStats final : public Stats {
   Frontend &frontend;
 
@@ -74,11 +77,11 @@ protected:
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
-  // All sources
-  llvm::SmallVector<FrontendUnit *, 32> sources;
+  /// Contains buffer IDs for input source code files.
+  std::vector<unsigned> sourceBufferIDs;
 
   // The primary Sources
-  llvm::SetVector<unsigned> primarySourceIDs;
+  llvm::SetVector<unsigned> primarySourceBufferIDs;
 
   /// Allocator FrontendUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
@@ -89,13 +92,15 @@ protected:
   unsigned codeCompletionOffset = ~0U;
 
 public:
-  FrontendBase();
+  FrontendBase(llvm::StringRef programName, llvm::StringRef programPath);
   ~FrontendBase();
 
 public:
-  llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
-  FrontendUnit *BuildSource(const file::File &input);
-  unsigned CreateSourceID(const file::File &input);
+  // llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
+  // FrontendUnit *BuildSource(const file::File &input);
+
+  Error CreateSourceBuffers();
+  unsigned CreateSourceBuffer(const FrontendInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -103,25 +108,21 @@ public:
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
 
+  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
   // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
 
-  BaseOptions &GetBaseOptions() override { return *frontendOpts; }
-
-  file::Files &GetInputFiles() { return GetBaseOptions().inputFiles; }
-
+  stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
   std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
 
   // TODO: update FrontendOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
-  void SetMainExecutablePath(std::string path) { mainExecutablePath = path; }
-  std::string GetMainExecutablePath() const { return mainExecutablePath; }
-
   FrontendOptions &GetFrontendOptions() { return *frontendOpts; }
   const FrontendOptions &GetFrontendOptions() const { return *frontendOpts; }
 
@@ -145,8 +146,9 @@ public:
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
   bool JustFrontend() {
-    if (GetMode().JustParse() || GetMode().JustTypeCheck() ||
-        GetMode().IsEmitIR()) {
+    if (GetFrontendOptions().GetMode().JustParse() ||
+        GetFrontendOptions().GetMode().JustTypeCheck() ||
+        GetFrontendOptions().GetMode().IsEmitIR()) {
       return true;
     }
     return false;
@@ -180,42 +182,38 @@ public:
   Frontend(Frontend &&) = delete;
   void operator=(Frontend &&) = delete;
 
-  Frontend(FrontendListener *listener = nullptr);
+  Frontend(llvm::StringRef programName, llvm::StringRef programPath,
+           FrontendListener *listener = nullptr);
   ~Frontend();
 
 public:
-  void Initialize();
   void Finish();
-
-  llvm::opt::InputArgList &
-  ParseArgs(llvm::ArrayRef<const char *> args) override;
-
-  stone::Error ParseArguments(llvm::ArrayRef<const char *> args);
 
 public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
-
   PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
-  llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
+  // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
   FrontendListener *GetListener() { return listener; }
   void SetListener(FrontendListener *l) { listener = l; }
 
 public:
   /// Perform code analysis and code generation
-  void Compile(llvm::ArrayRef<FrontendUnit *> &sources);
+  void Compile();
 
 private:
-  void CompileWithSyntaxAnalysis(llvm::ArrayRef<FrontendUnit *> &sources);
-  void CompileWithSyntaxAnalysis(llvm::ArrayRef<FrontendUnit *> &sources,
-                                 SyntaxAnalysisCallback client);
+  void CompileWithSyntaxAnalysis();
+  void CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client);
 
-  void CompileWithSemanticAnalysis(llvm::ArrayRef<FrontendUnit *> &sources);
-  void CompileWithSemanticAnalysis(llvm::ArrayRef<FrontendUnit *> &sources,
-                                   SemanticAnalysisCallback client);
+  void CompileWithSemanticAnalysis();
+  void CompileWithSemanticAnalysis(SemanticAnalysisCallback client);
+
+  // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
+  // &cgc,
+  //                       CompileWithGenIRCallback client);
 
   void ForEachSyntaxFile(EachSyntaxFileCallback client);
 
@@ -233,80 +231,8 @@ public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
   GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
-
-public:
-  void *Allocate(size_t Size, unsigned Align) const {
-    return bumpAlloc.Allocate(Size, Align);
-  }
-  template <typename T> T *Allocate(size_t Num = 1) const {
-    return static_cast<T *>(Allocate(Num * sizeof(T), alignof(T)));
-  }
-  void Deallocate(void *ptr) const {}
-
-public:
-  template <typename ProfileTy, typename AllocatorTy>
-  static void *Allocate(AllocatorTy &A, size_t BaseSize) {
-    static_assert(alignof(ProfileTy) >= sizeof(void *),
-                  "A pointer must fit in the alignment of the ModeUnit!");
-
-    return (void *)A.Allocate(BaseSize, alignof(ProfileTy));
-  }
 };
 
 } // namespace stone
-
-inline void *operator new(size_t bytes, const stone::Frontend &frontend,
-                          size_t alignment) {
-  return frontend.Allocate(bytes, alignment);
-}
-
-/// Placement delete companion to the new above.
-///
-/// This operator is just a companion to the new above. There is no way of
-/// invoking it directly; see the new operator for more details. This operator
-/// is called implicitly by the compiler if a placement new expression using
-/// the CompilationInvocation throws in the object constructor.
-inline void operator delete(void *Ptr, const stone::Frontend &frontend,
-                            size_t) {
-  frontend.Deallocate(Ptr);
-}
-/// This placement form of operator new[] uses the CompilerInstance's
-/// allocator for obtaining memory.
-///
-/// We intentionally avoid using a nothrow specification here so that the calls
-/// to this operator will not perform a null check on the result -- the
-/// underlying allocator never returns null pointers.
-///
-/// Usage looks like this (assuming there's an CompilationInvocation
-/// 'Invocation' in scope):
-/// @code
-/// // Default alignment (8)
-/// char *data = new (Invocation) char[10];
-/// // Specific alignment
-/// char *data = new (Invocation, 4) char[10];
-/// @endcode
-/// Memory allocated through this placement new[] operator does not need to be
-/// explicitly freed, as CompilationInvocation will free all of this memory when
-/// it gets destroyed. Please note that you cannot use delete on the pointer.
-///
-/// @param Bytes The number of bytes to allocate. Calculated by the compiler.
-/// @param C The CompilationInvocation that provides the allocator.
-/// @param Alignment The alignment of the allocated memory (if the underlying
-///                  allocator supports it).
-/// @return The allocated memory. Could be nullptr.
-inline void *operator new[](size_t bytes, const stone::Frontend &frontend,
-                            size_t alignment) {
-  return frontend.Allocate(bytes, alignment);
-}
-/// Placement delete[] companion to the new[] above.
-///
-/// This operator is just a companion to the new[] above. There is no way of
-/// invoking it directly; see the new[] operator for more details. This operator
-/// is called implicitly by the compiler if a placement new[] expression using
-/// the CompilationInvocation throws in the object constructor.
-inline void operator delete[](void *Ptr, const stone::Frontend &frontend,
-                              size_t alignment) {
-  frontend.Deallocate(Ptr);
-}
 
 #endif

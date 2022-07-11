@@ -53,92 +53,50 @@ class TimerGroup;
 namespace stone {
 
 class Session {
+
+  llvm::StringRef programName;
+  llvm::StringRef programPath;
+
 protected:
   Context ctx;
-
-  std::unique_ptr<Mode> mode;
-
-  /// The options table
   std::unique_ptr<llvm::opt::OptTable> optst;
-
-  /// The input argument list
-  std::unique_ptr<llvm::opt::InputArgList> ial;
-
-  /// The translated arguments.
-  // TODO? std::unique_ptr<llvm::opt::DerivedArgList> dal;
-
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
 
-protected:
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
 public:
-  Session();
+  Session(llvm::StringRef programName, llvm::StringRef programPath);
   ~Session();
+
+private:
   void CreateTimer();
 
 public:
-  virtual llvm::opt::InputArgList &ParseArgs(llvm::ArrayRef<const char *> args);
-
-  virtual BaseOptions &GetBaseOptions() = 0;
+  std::unique_ptr<llvm::opt::InputArgList>
+  ParseArgs(llvm::ArrayRef<const char *> args);
+  virtual stone::Error ComputeOptions(llvm::opt::InputArgList &args) = 0;
 
 public:
-  llvm::opt::OptTable &GetOpts() const {
-    assert(optst);
-    return *optst.get();
-  }
-
+  llvm::opt::OptTable &GetOpts() const { return *optst.get(); }
   Context &GetContext() { return ctx; }
-
-  Mode &GetMode() {
-    assert(mode);
-    return *mode.get();
-  }
-
-  const Mode &GetMode() const {
-    assert(mode);
-    return *mode.get();
-  }
-  llvm::opt::InputArgList &GetInputArgList() {
-    assert(ial);
-    return *ial.get();
-  }
-
-  llvm::TimerGroup &GetTimerGroup() {
-    assert(timerGroup);
-    return *timerGroup.get();
-  }
-  llvm::Timer &GetTimer() {
-    assert(timer);
-    return *timer.get();
-  }
-
-public:
-  void SetIncludedFlagsBitmask(unsigned flag) { includedFlagsBitmask = flag; }
-  void SetExcludedFlagsBitmask(unsigned flag) { excludedFlagsBitmask = flag; }
-  unsigned GetMissingArgIndex() const { return missingArgIndex; }
-  unsigned GetMissingArgCount() const { return missingArgCount; }
-
+  llvm::TimerGroup &GetTimerGroup() { return *timerGroup.get(); }
+  llvm::Timer &GetTimer() { return *timer.get(); }
+  llvm::StringRef GetProgramName() { return programName; }
+  llvm::StringRef GetProgramPath() { return programPath; }
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
 public:
-  void AddInputFile(llvm::StringRef name, unsigned fileID = 0);
-  void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID = 0);
-
-public:
-  Mode &ComputeMode(const llvm::opt::InputArgList &ial);
-  file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
-
   llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);
-
   stone::Result<std::string>
   GetOptEqualValue(opts::OptID optID, const llvm::opt::InputArgList &ial);
 
 public:
+  void PrintHelp(raw_ostream &stream, const llvm::opt::OptTable &opts);
+  void PrintArg(raw_ostream &stream, const char *arg, llvm::StringRef tempDir);
   void PrintVersion();
   void PrintTimer();
   void PrintDiagnostics();
