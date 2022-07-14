@@ -167,8 +167,10 @@ public:
   void PrintVersion();
 
 public:
-  void AddInputFile(llvm::StringRef name, unsigned fileID = 0);
-  void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID = 0);
+  // void AddInputFile(llvm::StringRef name, unsigned fileID = 0);
+  // void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID =
+  // 0);
+
   file::Files &BuildInputFiles(const llvm::opt::InputArgList &ial);
 };
 

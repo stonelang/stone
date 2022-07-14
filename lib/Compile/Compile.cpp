@@ -3,6 +3,7 @@
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
+#include "stone/Compile/Compiler.h"
 #include "stone/Compile/DebugFrontendListener.h"
 #include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendListener.h"
@@ -57,12 +58,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status ? status : err;
   };
 
-  std::unique_ptr<DebugFrontendListener> debugListener;
-
   auto programPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  auto programName = file::GetStem(path);
+  auto programName = file::GetStem(programPath);
 
-  Frontend frontend(programName, programPath);
+  Frontend frontend(programName, programPath, listener);
   STONE_DEFER { frontend.Finish(); };
 
   if (args.empty()) {
@@ -70,14 +69,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                                                diag::err_no_input_files);
     return Finish(1);
   }
-
-  if (listener) {
-    frontend.SetListener(listener);
-  } else {
-    debugListener = std::make_unique<DebugFrontendListener>();
-    frontend.SetListener(debugListener.get());
-  }
-
   // Setup the custom formatting to be able to handle syntax diagnostics
   auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
   auto diagEmitter =
@@ -105,7 +96,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     Finish(1);
   }
   if (frontend.GetFrontendOptions().GetMode().IsPrintHelp()) {
-    frontend.PrintHelp(frontend.GetOpts());
+    // TODO: frontend.PrintHelp(frontend.GetOpts());
     return Finish();
   }
   if (frontend.GetFrontendOptions().GetMode().IsPrintVersion()) {
@@ -122,39 +113,44 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (frontend.CreateSourceBuffers().Has()) {
     return Finish(1);
   }
-  frontend.Compile();
+
+  Compiler compiler(frontend);
+  compiler.Compile();
+
   if (frontend.HasError()) {
     return Finish(1);
   }
   return Finish();
 }
 
-static void DumpIR(Frontend &frontend, CodeGenContext &cgc,
+static void DumpIR(Compiler &compiler, CodeGenContext &cgc,
                    IRCodeGenResult &result) {}
 
-static void PrintIR(Frontend &frontend, CodeGenContext &cgc,
+static void PrintIR(Compiler &compiler, CodeGenContext &cgc,
                     IRCodeGenResult &result) {}
 
 using CompileWithGenIRCallback = llvm::function_ref<void(
-    Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
+    Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
 
-static void CompileWithGenIR(Frontend &frontend,
+static void CompileWithGenIR(Compiler &compiler,
                              stone::ModuleSyntaxFileUnion msf,
                              CodeGenContext &cgc,
                              CompileWithGenIRCallback client) {
 
-  switch (frontend.GetModuleOutputMode()) {
+  switch (compiler.GetModuleOutputMode()) {
   case ModuleOutputMode::Single: {
     if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-      auto result = stone::GenIR(cgc, *sf, frontend.GetContext(), nullptr);
-      client(frontend, cgc, *result);
+      auto result =
+          stone::GenIR(cgc, *sf, compiler.GetFrontend().GetContext(), nullptr);
+      client(compiler, cgc, *result);
     }
     break;
   }
   case ModuleOutputMode::Whole: {
     if (auto mod = msf.get<syn::Module *>()) {
-      auto result = stone::GenIR(cgc, *mod, frontend.GetContext(), nullptr);
-      client(frontend, cgc, *result);
+      auto result =
+          stone::GenIR(cgc, *mod, compiler.GetFrontend().GetContext(), nullptr);
+      client(compiler, cgc, *result);
     }
     break;
   }
@@ -163,110 +159,117 @@ static void CompileWithGenIR(Frontend &frontend,
   }
 }
 
-static void GenModule(Frontend &frontend, CodeGenContext &cgc,
+static void GenModule(Compiler &compiler, CodeGenContext &cgc,
                       IRCodeGenResult &result) {}
 
-static void CompileWithGenNative(Frontend &frontend, CodeGenContext &cgc,
+static void CompileWithGenNative(Compiler &compiler, CodeGenContext &cgc,
                                  IRCodeGenResult &result) {
 
   auto targetMachine = stone::CreateTargetMachine(
-      frontend.GetContext().GetDiagUnit().GetDiagEngine(),
-      frontend.GetCodeGenOptions(), frontend.GetTargetOptions(),
-      frontend.GetContext().GetLangOptions(),
-      frontend.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
+      compiler.GetFrontend().GetContext().GetDiagUnit().GetDiagEngine(),
+      compiler.GetFrontend().GetCodeGenOptions(),
+      compiler.GetFrontend().GetTargetOptions(),
+      compiler.GetFrontend().GetContext().GetLangOptions(),
+      compiler.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
 
   cgc.TakeTargetMachine(std::move(targetMachine));
 
-  auto ComputeNativeModeKind = [&](Frontend &frontend) -> void {
-    switch (frontend.GetFrontendOptions().GetMode().GetKind()) {
+  auto ComputeNativeModeKind = [&](Compiler &compiler) -> void {
+    switch (compiler.GetFrontend().GetFrontendOptions().GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitObject:
-      frontend.GetCodeGenOptions().nativeModeKind = NativeModeKind::EmitObject;
+      compiler.GetFrontend().GetCodeGenOptions().nativeModeKind =
+          NativeModeKind::EmitObject;
       break;
     case ModeKind::EmitBC:
-      frontend.GetCodeGenOptions().nativeModeKind = NativeModeKind::EmitBC;
+      compiler.GetFrontend().GetCodeGenOptions().nativeModeKind =
+          NativeModeKind::EmitBC;
       break;
     case ModeKind::EmitAssembly:
-      frontend.GetCodeGenOptions().nativeModeKind =
+      compiler.GetFrontend().GetCodeGenOptions().nativeModeKind =
           NativeModeKind::EmitAssembly;
       break;
     default:
       stone::Panic("Unknown Native mode kind");
     }
   };
-  ComputeNativeModeKind(frontend);
-  auto err = stone::GenNative(cgc, frontend.GetSyntax().GetSyntaxContext(),
+  ComputeNativeModeKind(compiler);
+  auto err = stone::GenNative(cgc, compiler.GetSyntax().GetSyntaxContext(),
                               result, nullptr);
 }
 
-static void CompileWithCodeGen(Frontend &frontend) {
+static void CompileWithCodeGen(Compiler &compiler) {
 
-  assert(frontend.GetFrontendOptions().GetMode().CanCodeGen());
+  assert(compiler.GetFrontend().GetFrontendOptions().GetMode().CanCodeGen());
 
   // We are performing some low level code generation
-  CodeGenContext cgc(stone::GetLLVMContext(), frontend.GetCodeGenOptions());
+  CodeGenContext cgc(stone::GetLLVMContext(),
+                     compiler.GetFrontend().GetCodeGenOptions());
 
-  auto *mainModule = frontend.GetModuleSystem().GetMainModule();
+  auto *mainModule = compiler.GetModuleSystem().GetMainModule();
   // switch
   // (frontend.GetFrontendOptions().moduleOutputMode)
 
-  switch (frontend.GetFrontendOptions().GetMode().GetKind()) {
+  switch (compiler.GetFrontend().GetFrontendOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(
-        frontend, mainModule, cgc,
-        [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
-          return GenModule(frontend, cgc, result);
+        compiler, mainModule, cgc,
+        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return GenModule(compiler, cgc, result);
         });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
-        frontend, mainModule, cgc,
-        [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
-          return DumpIR(frontend, cgc, result);
+        compiler, mainModule, cgc,
+        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return DumpIR(compiler, cgc, result);
         });
   case ModeKind::PrintIR:
     return CompileWithGenIR(
-        frontend, mainModule, cgc,
-        [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
-          return PrintIR(frontend, cgc, result);
+        compiler, mainModule, cgc,
+        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return PrintIR(compiler, cgc, result);
         });
   default:
     return CompileWithGenIR(
-        frontend, mainModule, cgc,
-        [&](Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result) {
-          return CompileWithGenNative(frontend, cgc, result);
+        compiler, mainModule, cgc,
+        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+          return CompileWithGenNative(compiler, cgc, result);
         });
   }
 }
 
 static void DumpSyntax(syn::SyntaxFile &sf) {}
-static void PrintSyntax(Frontend &frontend) {}
 
-void Frontend::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+static void PrintSyntax(Compiler &compiler) {}
 
-  switch (GetTypeCheckMode()) {
+void Compiler::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+
+  switch (frontend.GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
       if (syntaxFile) {
-        client(*syntaxFile, GetTypeCheckerOptions(), GetListener());
+        client(*syntaxFile, frontend.GetTypeCheckerOptions(),
+               frontend.GetListener());
       }
     }
   }
   case TypeCheckMode::EachFile: {
     for (auto *syntaxFile :
          GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      client(*syntaxFile, GetTypeCheckerOptions(), GetListener());
+      client(*syntaxFile, frontend.GetTypeCheckerOptions(),
+             frontend.GetListener());
     }
   }
   }
 }
-void Frontend::CompileWithSyntaxAnalysis() {
+void Compiler::CompileWithSyntaxAnalysis() {
   CompileWithSyntaxAnalysis([&](syn::SyntaxFile &sf) {
     return [&](syn::SyntaxFile &sf) -> void {}(sf);
   });
 }
 
-void Frontend::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
+void Compiler::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
 
   // TODO:
   //  for (auto source : sources) {
@@ -282,22 +285,22 @@ void Frontend::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
   //   client(*syntaxFile);
   // }
 
-  if (!GetFrontendOptions().GetMode().JustParse()) {
+  if (!frontend.GetFrontendOptions().GetMode().JustParse()) {
     ResolveUsings();
   }
-  if (listener) {
-    listener->OnSyntaxAnalysisCompleted(*this);
+  if (frontend.GetListener()) {
+    frontend.GetListener()->OnSyntaxAnalysisCompleted(frontend);
   }
 }
 
-void Frontend::ResolveUsings() {
+void Compiler::ResolveUsings() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
       sem::ResolveUsings(*syntaxFile);
   }
 }
-void Frontend::CompileWithSemanticAnalysis() {
+void Compiler::CompileWithSemanticAnalysis() {
 
   CompileWithSyntaxAnalysis();
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
@@ -307,27 +310,26 @@ void Frontend::CompileWithSemanticAnalysis() {
   });
 
   // TODO: FinishTypeCheck();
-  if (listener) {
-    listener->OnSemanticAnalysisCompleted(*this);
+  if (frontend.GetListener()) {
+    frontend.GetListener()->OnSemanticAnalysisCompleted(frontend);
   }
 }
 
-void Frontend::CompileWithSemanticAnalysis(SemanticAnalysisCallback client) {
+void Compiler::CompileWithSemanticAnalysis(SemanticAnalysisCallback client) {
   CompileWithSemanticAnalysis();
   client(*this);
 }
 
-void Frontend::Compile() {
+void Compiler::Compile() {
 
-  assert(GetFrontendOptions().GetMode().CanCompile() &&
-         "Unknown mode -- cannot continue with compile!");
-  if (listener) {
-    listener->OnCompileStarted(*this);
-  }
+  assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
 
+  // if (GetFrontend().GetListener()) {
+  //   GetFrontend().GetListener()->OnCompileStarted(*this);
+  // }
   // TODO: Future CreateSyntax();
 
-  switch (GetFrontendOptions().GetMode().GetKind()) {
+  switch (GetFrontend().GetFrontendOptions().GetMode().GetKind()) {
   case ModeKind::Parse:
     return CompileWithSyntaxAnalysis();
   case ModeKind::DumpSyntax:
@@ -337,9 +339,9 @@ void Frontend::Compile() {
     return CompileWithSemanticAnalysis();
   case ModeKind::PrintSyntax:
     return CompileWithSemanticAnalysis(
-        [&](Frontend &frontend) { return PrintSyntax(frontend); });
+        [&](Compiler &compiler) { return PrintSyntax(*this); });
   default:
     return CompileWithSemanticAnalysis(
-        [&](Frontend &frontend) { return CompileWithCodeGen(*this); });
+        [&](Compiler &compiler) { return CompileWithCodeGen(*this); });
   }
 }

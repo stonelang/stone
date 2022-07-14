@@ -13,6 +13,7 @@ namespace stone {
 class DiagnosticEngine;
 
 class FrontendInputsConverter {
+  FrontendOptions &frontendOpts;
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
 
@@ -27,7 +28,8 @@ class FrontendInputsConverter {
       configurationFileBuffers;
 
 public:
-  FrontendInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args);
+  FrontendInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
+                          FrontendOptions &frontendOpts);
 
 public:
   /// Produces a FrontendInputsAndOutputs object with the inputs populated from
@@ -43,6 +45,7 @@ private:
   bool EnforceFilelistExclusion();
   bool ReadInputFilesFromCommandLine();
   bool ReadInputFilesFromFilelist();
+
   bool ForAllFilesInFileList(llvm::opt::Arg const *const pathArg,
                              llvm::function_ref<void(StringRef)> caller);
 

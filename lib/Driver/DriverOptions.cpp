@@ -1,8 +1,11 @@
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Basic/Error.h"
 #include "stone/Driver/Driver.h"
-#include "stone/Driver/DriverOptions.h"
+
+#include "llvm/Option/Arg.h"
 
 using namespace stone;
+using namespace llvm::opt;
 
 // TODO: There is a potential to add duplicate files here.
 static void AddInputFile(llvm::StringRef name, file::Type ty, unsigned fileID,
@@ -39,7 +42,7 @@ file::Files &Driver::BuildInputFiles(const llvm::opt::InputArgList &ial) {
         case file::Type::Object: {
           if (GetDriverOptions().inputFileType == file::Type::None) {
             GetDriverOptions().inputFileType = file::Type::Object;
-          } else if (GetBaseOptions().inputFileType != file::Type::Object) {
+          } else if (GetDriverOptions().inputFileType != file::Type::Object) {
             // TODO: Different file types
             stone::Panic("Different file types"); // TODO: PrintD
           }
@@ -97,11 +100,12 @@ static Error ComputeDriverOptions(llvm::opt::InputArgList &ial,
 }
 
 Error Driver::ComputeOptions(llvm::opt::InputArgList &ial) {
+
   driverOpts = std::make_unique<DriverOptions>(Mode::Create(ial));
-  if (driverOpts.GetMode().IsAlien()) {
+  if (driverOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  if (ComputeDriverOptions(ial, driverOpts).Has()) {
+  if (ComputeDriverOptions(ial, *driverOpts.get()).Has()) {
     return Error(true);
   }
   return Error();

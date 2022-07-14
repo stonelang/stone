@@ -105,7 +105,8 @@ void QuadraticCompilationModel::BuildIntents(ToolChain &tc,
                                              const file::Files &inputs,
                                              IntentCache &ic,
                                              const OutputOptions &outputOpts) {
-  if (tc.GetDriver().GetMode().CanCompile()) {
+
+  if (tc.GetDriver().GetDriverOptions().GetMode().CanCompile()) {
     BuildCompileIntents(tc, inputs, ic, outputOpts);
     if (tc.GetDriver().JustCompile()) {
       return;

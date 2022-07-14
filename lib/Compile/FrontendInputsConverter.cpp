@@ -17,8 +17,10 @@ using namespace stone;
 using namespace llvm::opt;
 
 FrontendInputsConverter::FrontendInputsConverter(DiagnosticEngine &de,
-                                                 const llvm::opt::ArgList &args)
-    : de(de), args(args), fileListPathArg(args.getLastArg(opts::FileList)),
+                                                 const llvm::opt::ArgList &args,
+                                                 FrontendOptions &frontendOpts)
+    : de(de), args(args), frontendOpts(frontendOpts),
+      fileListPathArg(args.getLastArg(opts::FileList)),
       primaryFileListPathArg(args.getLastArg(opts::PrimaryFileList)),
       badFileDescriptorRetryCountArg(
           args.getLastArg(opts::BadFileDescriptorRetryCount)) {}
@@ -92,16 +94,22 @@ bool FrontendInputsConverter::ReadInputFilesFromCommandLine() {
 
 bool FrontendInputsConverter::ReadInputFilesFromFilelist() {
   bool hasDuplicate = false;
-  bool hadError =
-      ForAllFilesInFileList(fileListPathArg, [&](llvm::StringRef file) -> void {
-        hasDuplicate = AddFile(file);
-        if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
-          return true;
-        }
-      });
-  if (hadError) {
-    return true;
-  }
+
+  // TODO: HIGH
+
+  // bool hadError =
+  //     ForAllFilesInFileList(fileListPathArg, [&](llvm::StringRef file) ->
+  //     bool {
+  //       hasDuplicate = AddFile(file);
+  //       if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
+  //         return true;
+  //       }
+  //       return false;
+  //     });
+
+  // if (hadError) {
+  //   return true;
+  // }
   return false;
 }
 

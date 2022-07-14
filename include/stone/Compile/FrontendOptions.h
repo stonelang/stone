@@ -37,7 +37,7 @@ public:
   bool shouldProcessDuplicateInputFile = false;
 
 public:
-  FrontendOptions(std::unique_ptr<Mode> mode);
+  FrontendOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {}
 };
 
 } // namespace stone

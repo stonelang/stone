@@ -1,12 +1,9 @@
-#include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendOptionsConverter.h"
 #include "stone/Context.h"
 
 using namespace stone;
-
-FrontendOptions::FrontendOptions(std::unique_ptr<Mode> mode)
-    : BaseOptions(mode) {}
 
 static Error ComputeFrontendOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
@@ -49,9 +46,10 @@ static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
-Error FrontendBase::ComputeOptions(llvm::opt::InputArgList &ial) {
+Error Frontend::ComputeOptions(llvm::opt::InputArgList &ial) {
 
   frontendOpts = std::make_unique<FrontendOptions>(Mode::Create(ial));
+
   if (frontendOpts->GetMode().IsAlien()) {
     return Error(true);
   }

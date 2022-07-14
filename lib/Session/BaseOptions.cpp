@@ -6,7 +6,7 @@
 
 using namespace stone;
 
-BaseOptions::BaseOptions(Mode&& mode) : mode(mode) {}
+BaseOptions::BaseOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {}
 
 // TODO:
 //  BaseOptions::BaseOptions() : target(llvm::sys::getDefaultTargetTriple()) {

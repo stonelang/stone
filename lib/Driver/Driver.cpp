@@ -91,7 +91,7 @@ Driver::BuildTaskQueue(const Compilation &compilation) {
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
-  switch (GetMode().GetKind()) {
+  switch (GetDriverOptions().GetMode().GetKind()) {
   case ModeKind::None:
     GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
     break;

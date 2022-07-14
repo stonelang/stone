@@ -38,18 +38,6 @@ namespace stone {
 class Frontend;
 class FrontendListener;
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
-
-using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
-using SemanticAnalysisCallback = llvm::function_ref<void(Frontend &)>;
-
-using EachSyntaxFileCallback = llvm::function_ref<void(
-    syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
-
-// using CompileWithGenIRCallback = llvm::function_ref<void(
-//     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
-
 class FrontendStats final : public Stats {
   Frontend &frontend;
 
@@ -59,9 +47,30 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
-class FrontendBase : public Session {
-protected:
+struct ModuleBuffers {
+
+  std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
+  std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
+  std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
+
+  // Constructor
+  ModuleBuffers(
+      std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
+      std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer = nullptr,
+      std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer = nullptr)
+      : moduleBuffer(std::move(moduleBuffer)),
+        moduleDocBuffer(std::move(moduleDocBuffer)),
+        moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
+};
+
+class Frontend final : public Session {
+
+  FrontendListener *listener = nullptr;
+  llvm::StringRef programName;
+  llvm::StringRef programPath;
+
   std::unique_ptr<FrontendOptions> frontendOpts;
+  std::unique_ptr<FrontendStats> stats;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -81,7 +90,7 @@ protected:
   std::vector<unsigned> sourceBufferIDs;
 
   // The primary Sources
-  llvm::SetVector<unsigned> primarySourceBufferIDs;
+  llvm::SetVector<unsigned> primarySourceIDs;
 
   /// Allocator FrontendUnit
   mutable llvm::BumpPtrAllocator bumpAlloc;
@@ -92,22 +101,24 @@ protected:
   unsigned codeCompletionOffset = ~0U;
 
 public:
-  FrontendBase(llvm::StringRef programName, llvm::StringRef programPath);
-  ~FrontendBase();
+  Frontend(llvm::StringRef programName, llvm::StringRef programPath,
+           FrontendListener *listener = nullptr);
+  ~Frontend();
 
 public:
   // llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
   // FrontendUnit *BuildSource(const file::File &input);
 
   Error CreateSourceBuffers();
-  unsigned CreateSourceBuffer(const FrontendInputFile &input);
+
+  // TODO: You may not need this anymore
+  unsigned CreateSourceBuffer(const file::File &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
     return primarySourceIDs.count(primarySourceID) != 0;
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
-
   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
 
   /// Gets the set of SourceFiles which are the primary inputs for this
@@ -118,6 +129,8 @@ public:
 
   stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
   std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
+
+  void Finish() override;
 
   // TODO: update FrontendOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
@@ -137,11 +150,25 @@ public:
     return typeCheckerOpts;
   }
 
+  SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
+  const SearchPathOptions &GetSearchPathOptions() const {
+    return searchPathOpts;
+  }
+
   TypeCheckMode GetTypeCheckMode() {
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
                                      : TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
+
+  FrontendListener *GetListener() { return listener; }
+  void SetListener(FrontendListener *l) { listener = l; }
+
+  Optional<ModuleBuffers>
+  GetInputBuffersIfPresent(const FrontendInputFile &input);
+  Optional<unsigned> GetRecordedBufferID(const FrontendInputFile &input,
+                                         const bool shouldRecover,
+                                         bool &failed);
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
@@ -153,84 +180,6 @@ public:
     }
     return false;
   }
-};
-
-class Frontend final : public FrontendBase {
-  friend FrontendStats;
-
-  FrontendListener *listener = nullptr;
-
-  std::unique_ptr<FrontendStats> stats;
-  std::unique_ptr<syn::Syntax> syntax;
-
-  llvm::StringRef name;
-  llvm::StringRef path;
-
-  std::unique_ptr<ModuleSystem> moduleSystem;
-  std::unique_ptr<PackageSystem> pkgSystem;
-
-  // /// Contains buffer IDs for input source code files.
-  // std::vector<unsigned> inputSourceBufferIDs;
-
-  // /// Identifies the set of input buffers in the SourceManager that are
-  // /// considered primaries.
-  // llvm::SetVector<unsigned> primaryBufferIDs;
-
-public:
-  Frontend(const Frontend &) = delete;
-  void operator=(const Frontend &) = delete;
-  Frontend(Frontend &&) = delete;
-  void operator=(Frontend &&) = delete;
-
-  Frontend(llvm::StringRef programName, llvm::StringRef programPath,
-           FrontendListener *listener = nullptr);
-  ~Frontend();
-
-public:
-  void Finish();
-
-public:
-  syn::Syntax &GetSyntax() { return *syntax.get(); }
-  ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
-  PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
-
-  // llvm::StringRef CreateOutputFile(unsigned srcID);
-  // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
-
-  FrontendListener *GetListener() { return listener; }
-  void SetListener(FrontendListener *l) { listener = l; }
-
-public:
-  /// Perform code analysis and code generation
-  void Compile();
-
-private:
-  void CompileWithSyntaxAnalysis();
-  void CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client);
-
-  void CompileWithSemanticAnalysis();
-  void CompileWithSemanticAnalysis(SemanticAnalysisCallback client);
-
-  // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
-  // &cgc,
-  //                       CompileWithGenIRCallback client);
-
-  void ForEachSyntaxFile(EachSyntaxFileCallback client);
-
-  void ResolveUsings();
-
-public:
-  ModuleOutputMode GetModuleOutputMode() {
-    // TODO: This must be computed in the future.
-    return GetModuleSystem().GetModuleOptions().moduleOutputMode;
-  }
-
-  void PrintHelp(const llvm::opt::OptTable &opts);
-
-public:
-  //== Utils ==//
-  static std::unique_ptr<llvm::raw_fd_ostream>
-  GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
 };
 
 } // namespace stone

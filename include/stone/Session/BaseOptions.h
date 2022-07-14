@@ -47,7 +47,7 @@ public:
   const Mode &GetMode() const { return *mode; }
 
 public:
-  BaseOptions(Mode&& mode);
+  BaseOptions(std::unique_ptr<Mode> mode);
 
   // public:
   //   void SetTargetTriple(const llvm::Triple &triple);

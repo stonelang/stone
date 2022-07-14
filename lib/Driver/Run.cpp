@@ -3,6 +3,8 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
+#include "stone/Diag/DiagUnit.h"
+#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DebugCompilationListener.h"
 #include "stone/Driver/Driver.h"
@@ -49,23 +51,24 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
 
-  if (driver.GetMode().IsAlien()) {
-    driver.GetContext().GetDiagUnit().PrintD(diags::err_alien_mode) Finish(1);
+  if (driver.GetDriverOptions().GetMode().IsAlien()) {
+    driver.GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_alien_mode);
+    Finish(1);
   }
-  if (driver.GetMode().IsPrintHelp()) {
+  if (driver.GetDriverOptions().GetMode().IsPrintHelp()) {
     driver.PrintHelp(driver.GetOpts());
     return Finish();
   }
-  if (driver.GetMode().IsPrintVersion()) {
+  if (driver.GetDriverOptions().GetMode().IsPrintVersion()) {
     driver.PrintVersion();
     return Finish();
   }
 
-  auto toolChain = driver.BuildToolChain(ial);
+  auto toolChain = driver.BuildToolChain(*ial.get());
   if (driver.HasError()) {
     return Finish(1);
   }
-  auto compilation = driver.BuildCompilation(*toolChain, ial);
+  auto compilation = driver.BuildCompilation(*toolChain, *ial.get());
   if (driver.HasError()) {
     return Finish(1);
   }

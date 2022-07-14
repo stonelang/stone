@@ -1,13 +1,13 @@
 set(stone_compile_sources
 	Compile.cpp
+	Compiler.cpp
 	DebugFrontendListener.cpp
 	Frontend.cpp
-	ComputeFrontendOptions.cpp
+	FrontendOptions.cpp
 	FrontendInputsAndOutputs.cpp
 	FrontendInputsConverter.cpp
 	FrontendOptionsConverter.cpp
 	FrontendOutputsConverter.cpp
-	Lang.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	PackageSystem.cpp

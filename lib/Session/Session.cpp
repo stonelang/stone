@@ -71,6 +71,7 @@ Session::GetOptEqualValue(opts::OptID optID,
 }
 
 void Session::PrintHelp(raw_ostream &stream, const llvm::opt::OptTable &opts) {}
+
 void Session::PrintArg(raw_ostream &OS, const char *Arg, StringRef TempDir) {
   const bool Escape = std::strpbrk(Arg, "\"\\$ ");
 

@@ -80,6 +80,8 @@ public:
   ParseArgs(llvm::ArrayRef<const char *> args);
   virtual stone::Error ComputeOptions(llvm::opt::InputArgList &args) = 0;
 
+  virtual void Finish() { assert(false && "Cannot call directly"); }
+
 public:
   llvm::opt::OptTable &GetOpts() const { return *optst.get(); }
   Context &GetContext() { return ctx; }

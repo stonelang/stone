@@ -23,14 +23,17 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-FrontendBase::FrontendBase(llvm::StringRef programName,
-                           llvm::StringRef programPath)
-    : Session(programName, programPath) {
+Frontend::Frontend(llvm::StringRef programName, llvm::StringRef programPath,
+                   FrontendListener *listener)
+    : Session(programName, programPath), listener(listener) {
   excludedFlagsBitmask = opts::NoFrontendOption;
-}
-FrontendBase::~FrontendBase() {}
 
-llvm::Optional<unsigned> FrontendBase::CreateCodeCompletionBuffer() {
+  stats = std::make_unique<FrontendStats>(*this);
+  GetContext().GetStatEngine().Register(stats.get());
+}
+Frontend::~Frontend() {}
+
+llvm::Optional<unsigned> Frontend::CreateCodeCompletionBuffer() {
   llvm::Optional<unsigned> codeCompletionBufferID;
   // auto codeCompletePoint = GetCodeCompletionPoint();
   // if (codeCompletePoint.first) {
@@ -44,7 +47,7 @@ llvm::Optional<unsigned> FrontendBase::CreateCodeCompletionBuffer() {
   return codeCompletionBufferID;
 }
 
-Error FrontendBase::CreateSourceBuffers() {
+Error Frontend::CreateSourceBuffers() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
@@ -63,19 +66,56 @@ Error FrontendBase::CreateSourceBuffers() {
         GetRecordedBufferID(input, shouldRecover, failed);
     hasFailed |= failed;
 
-    if (!bufferID.hasValue() || !input.isPrimary()) {
+    if (!bufferID.hasValue() || !input.IsPrimary()) {
       continue;
     }
-    RecordPrimaryInputBuffer(*bufferID);
+    RecordPrimarySourceID(*bufferID);
   }
   if (hasFailed) {
     return true;
   }
 }
 
-Optional<unsigned>
-FrontendBase::GetRecordedBufferID(const FrontendInputFile &input,
-                                  const bool shouldRecover, bool &failed) {
+// TODO:
+Optional<ModuleBuffers>
+Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
+
+  // if (auto b = input.getBuffer()) {
+  //   return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(b->getBuffer(),
+  //                                                             b->getBufferIdentifier()));
+  // }
+  // FIXME: Working with filenames is fragile, maybe use the real path
+  // or have some kind of FileManager.
+  // using FileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
+  // FileOrError inputFileOrErr =
+  //   swift::vfs::getFileOrSTDIN(getFileSystem(), input.getFileName(),
+  //                             /*FileSize*/-1,
+  //                             /*RequiresNullTerminator*/true,
+  //                             /*IsVolatile*/false,
+  //     /*Bad File Descriptor Retry*/getInvocation().getFrontendOptions()
+  //                              .BadFileDescriptorRetryCount);
+  // if (!inputFileOrErr) {
+  //   Diagnostics.diagnose(SourceLoc(), diag::error_open_input_file,
+  //                        input.getFileName(),
+  //                        inputFileOrErr.getError().message());
+  //   return None;
+  // }
+  // if (!serialization::isSerializedAST((*inputFileOrErr)->getBuffer()))
+  //   return ModuleBuffers(std::move(*inputFileOrErr));
+
+  // auto swiftdoc = openModuleDoc(input);
+  // auto sourceinfo = openModuleSourceInfo(input);
+  // return ModuleBuffers(std::move(*inputFileOrErr),
+  //                      swiftdoc.hasValue() ? std::move(swiftdoc.getValue()) :
+  //                      nullptr, sourceinfo.hasValue() ?
+  //                      std::move(sourceinfo.getValue()) : nullptr);
+
+  return llvm::None;
+}
+
+Optional<unsigned> Frontend::GetRecordedBufferID(const FrontendInputFile &input,
+                                                 const bool shouldRecover,
+                                                 bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
             ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
@@ -86,9 +126,9 @@ FrontendBase::GetRecordedBufferID(const FrontendInputFile &input,
 
   // Recover by dummy buffer if requested.
   if (!buffers.hasValue() && shouldRecover &&
-      input.getType() == file::Type::Stone) {
+      input.GetType() == file::Type::Stone) {
     buffers = ModuleBuffers(llvm::MemoryBuffer::getMemBuffer(
-        "// missing file\n", input.getFileName()));
+        "// missing file\n", input.GetFileName()));
   }
 
   if (!buffers.hasValue()) {
@@ -98,20 +138,23 @@ FrontendBase::GetRecordedBufferID(const FrontendInputFile &input,
 
   // FIXME: The fact that this test happens twice, for some cases,
   // suggests that setupInputs could use another round of refactoring.
-  if (serialization::isSerializedAST(buffers->ModuleBuffer->getBuffer())) {
-    PartialModules.push_back(std::move(*buffers));
-    return None;
-  }
-  assert(buffers->ModuleDocBuffer.get() == nullptr);
-  assert(buffers->ModuleSourceInfoBuffer.get() == nullptr);
+  // TODO:
+  // if (serialization::isSerializedAST(buffers->ModuleBuffer->getBuffer())) {
+  //   PartialModules.push_back(std::move(*buffers));
+  //   return None;
+  // }
+
+  assert(buffers->moduleDocBuffer.get() == nullptr);
+  assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
   // Transfer ownership of the MemoryBuffer to the SourceMgr.
   unsigned bufferID =
-      SourceMgr.addNewSourceBuffer(std::move(buffers->ModuleBuffer));
+      ctx.GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
 
   sourceBufferIDs.push_back(bufferID);
   return bufferID;
 }
-unsigned FrontendBase::CreateSourceBuffer(const file::File &input) {
+
+unsigned Frontend::CreateSourceBuffer(const file::File &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
   if (!fb) {
     ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
@@ -122,57 +165,20 @@ unsigned FrontendBase::CreateSourceBuffer(const file::File &input) {
   return srcID;
 }
 
-void FrontendBase::RecordPrimarySourceID(unsigned primarySourceID) {
-  primarySourceBufferIDs.insert(primarySourceID);
+void Frontend::RecordPrimarySourceID(unsigned primarySourceID) {
+  primarySourceIDs.insert(primarySourceID);
 }
 
 // std::unique_ptr<OutputFile>
-// FrontendBase::ComputeOutputFile(FrontendUnit &source) {
+// Frontend::ComputeOutputFile(FrontendUnit &source) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
-
-Frontend::Frontend(llvm::StringRef programName, llvm::StringRef programPath,
-                   FrontendListener *listener)
-    : FrontendBase(programName, programPath), listener(listener) {
-  stats = std::make_unique<FrontendStats>(*this);
-
-  GetContext().GetStatEngine().Register(stats.get());
-  auto syntaxContext =
-      std::make_unique<syn::SyntaxContext>(GetContext(), searchPathOpts);
-
-  syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
-  moduleSystem = std::make_unique<ModuleSystem>(*syntax.get(), GetContext());
-}
-Frontend::~Frontend() {}
-
-std::unique_ptr<llvm::raw_fd_ostream>
-Frontend::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
-  std::error_code errCode;
-  auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
-                                                   llvm::sys::fs::OF_None);
-  if (errCode) {
-    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_opening_output,
-                             diag::LLVMStr(outputFilename),
-                             diag::LLVMStr(errCode.message()));
-    return nullptr;
-  }
-  return os;
-}
-// void Frontend::FinishTypeCheck() {
-// }
-
-// llvm::StringRef Frontend::ComputeSourceOutputFile(unsigned srcID) {
-//   assert(false && "Not implemented");
-//   return llvm::StringRef();
-// }
-
-
-void Frontend::PrintHelp(const llvm::opt::OptTable &opts) {}
 
 void Frontend::Finish() {
   if (listener) {
     listener->OnCompileCompleted(*this);
   }
+  // TODO: Print stats here.
 }
 
 void FrontendStats::Print(ColorfulStream &stream) {

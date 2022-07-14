@@ -165,5 +165,3 @@ SyntaxStatus Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
   return syn::MakeSyntaxSuccess();
 }
-
-
