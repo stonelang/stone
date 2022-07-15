@@ -56,8 +56,9 @@ FileMgr::FileMgr(const FileSystemOptions &FSO,
       SeenFileEntries(64), NextFileUID(0) {
   // If the caller doesn't provide a virtual file system, just grab the real
   // file system.
-  if (!this->FS)
+  if (!this->FS){
     this->FS = llvm::vfs::getRealFileSystem();
+  }
 }
 
 FileMgr::~FileMgr() = default;

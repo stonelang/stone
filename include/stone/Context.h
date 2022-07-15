@@ -23,7 +23,7 @@ class Context final {
 
 public:
   
-  Context() : fm(GetFileSystemOptions()), du(sm), cos(llvm::outs()) {}
+  Context() : fm(fsOpts), du(sm), cos(llvm::outs()) {}
   ~Context() {}
   
 public:
