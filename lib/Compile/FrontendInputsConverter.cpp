@@ -94,27 +94,23 @@ bool FrontendInputsConverter::ReadInputFilesFromCommandLine() {
 
 bool FrontendInputsConverter::ReadInputFilesFromFilelist() {
   bool hasDuplicate = false;
+  bool hadError =
+      ForAllFilesInFileList(fileListPathArg, [&](StringRef file) -> void {
+        hasDuplicate = AddFile(file) || hasDuplicate;
+      });
 
-  // TODO: HIGH
-
-  // bool hadError =
-  //     ForAllFilesInFileList(fileListPathArg, [&](llvm::StringRef file) ->
-  //     bool {
-  //       hasDuplicate = AddFile(file);
-  //       if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-
-  // if (hadError) {
-  //   return true;
-  // }
+  if (hadError) {
+    return true;
+  }
+  if (hasDuplicate && frontendOpts.shouldProcessDuplicateInputFile) {
+    return true;
+  }
   return false;
 }
 
 bool FrontendInputsConverter::ForAllFilesInFileList(
     Arg const *const pathArg, llvm::function_ref<void(StringRef)> fn) {
+
   if (!pathArg) {
     return false;
   }
