@@ -231,6 +231,10 @@ def PrintDriverLifecycle : Flag<["-"], "print-lifecycle">,
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Print the lifecycle of activities and jobs">;
 
+def ParseAsLibrary : Flag<["-"], "parse-as-library">,
+  Flags<[FrontendOption]>,
+  HelpText<"Parse the input file(s) as libraries, not scripts">;
+
 def MainFile : Separate<["-"], "main-file">,
   HelpText<"Produce output for this file, not the whole module">;
 

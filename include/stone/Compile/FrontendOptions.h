@@ -51,15 +51,15 @@ public:
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool DowngradeInterfaceVerificationError = false;
 
-  enum class LibOutputKind { Default, Static };
-  LibOutputKind LibOutputKind = LibOutputKind::Default;
+  enum class LibOutputMode { Dynamic, Static };
+  LibOutputMode libOutputMode = LibOutputMode::Dynamic;
 
-  // enum class ParseInputKind {
-  //   Stone,
-  //   StoneLibrary,
-  //   StoneModuleInterface,
-  // };
-  // ParseInputMode parseInputMode = ParseInputMode::Stone;
+  enum class InputFileMode {
+    Stone,
+    StoneLibrary,
+    StoneModuleInterface,
+  };
+  InputFileMode inputFileMode = InputFileMode::Stone;
 
 public:
   FrontendOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {}

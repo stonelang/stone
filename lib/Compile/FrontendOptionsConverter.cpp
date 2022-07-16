@@ -47,14 +47,18 @@ stone::Error FrontendOptionsConverter::Convert(
       frontendOpts.inputsAndOutputs.SetShouldRecoverMissingInputs();
   }
 
-  // if (frontendOpts.inputsAndOutputs.ShouldTreatAsModuleInterface()) {
-  //   frontendOpts.InputMode =
-  //       FrontendOptions::ParseInputMode::StoneModuleInterface;
-  // } else if (args.hasArg(opts::parse_as_library)) {
-  //   frontendOpts.InputMode = FrontendOptions::ParseInputMode::StoneLibrary;
-  // } else {
-  //   frontendOpts.InputMode = FrontendOptions::ParseInputMode::Stone;
-  // }
+  if (frontendOpts.inputsAndOutputs.ShouldTreatAsModuleInterface()) {
+    frontendOpts.inputFileMode =
+        FrontendOptions::InputFileMode::StoneModuleInterface;
+  } else if (args.hasArg(opts::ParseAsLibrary)) {
+    frontendOpts.inputFileMode = FrontendOptions::InputFileMode::StoneLibrary;
+  } else {
+    frontendOpts.inputFileMode = FrontendOptions::InputFileMode::Stone;
+  }
+
+  if (ComputeModuleName().Has()) {
+    return stone::Error(true);
+  }
 
   return stone::Error();
 }
