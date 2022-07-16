@@ -49,11 +49,9 @@ static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
 Error Frontend::ComputeOptions(llvm::opt::InputArgList &ial) {
 
   frontendOpts = std::make_unique<FrontendOptions>(Mode::Create(ial));
-
   if (frontendOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-
   auto frontendOptsErr =
       ComputeFrontendOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
                              GetContext().GetLangOptions(), *frontendOpts,

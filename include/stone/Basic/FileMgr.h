@@ -39,9 +39,9 @@ class FileSystemStatCache;
 /// as a single file.
 ///
 class FileMgr : public RefCountedBase<FileMgr> {
-  
+
   IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS;
-  const FileSystemOptions& FileSystemOpts;
+  const FileSystemOptions &FileSystemOpts;
 
   /// Cache for existing real directories.
   std::map<llvm::sys::fs::UniqueID, DirEntry> UniqueRealDirs;
@@ -226,7 +226,7 @@ public:
   }
 
   /// Returns the current file system options
-  //FileSystemOptions &getFileSystemOpts() { return FileSystemOpts; }
+  // FileSystemOptions &getFileSystemOpts() { return FileSystemOpts; }
   const FileSystemOptions &getFileSystemOpts() const { return FileSystemOpts; }
 
   llvm::vfs::FileSystem &getVirtualFileSystem() const { return *FS; }

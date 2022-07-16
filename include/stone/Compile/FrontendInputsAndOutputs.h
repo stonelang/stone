@@ -70,7 +70,7 @@ public:
 
   unsigned InputCount() const { return inputs.size(); }
 
-  bool HasInputs() const { return !inputs.empty(); }
+  bool HasInputs() const { return inputs.empty(); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
   const FrontendInputFile &FirstInput() const { return inputs[0]; }

@@ -26,11 +26,35 @@ stone::Error FrontendOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
-  assert(frontendOpts.inputsAndOutputs.HasInputs() &&
-         "Inputs and Outputs should be empty");
+  // assert(frontendOpts.inputsAndOutputs.HasInputs() &&
+  //       "Inputs and Outputs should be empty");
 
   llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
       FrontendInputsConverter(de, args, frontendOpts).Convert(buffers);
+
+  // None here means error, not just "no inputs". Propagage unconditionally.
+  if (!inputsAndOutputs) {
+    return stone::Error(true);
+  }
+
+  bool haveNewInputsAndOutputs = false;
+  if (frontendOpts.inputsAndOutputs.HasInputs()) {
+    assert(!inputsAndOutputs->HasInputs());
+  } else {
+    haveNewInputsAndOutputs = true;
+    frontendOpts.inputsAndOutputs = std::move(inputsAndOutputs).getValue();
+    if (frontendOpts.allowModuleWithCompilerErrors)
+      frontendOpts.inputsAndOutputs.SetShouldRecoverMissingInputs();
+  }
+
+  // if (frontendOpts.inputsAndOutputs.ShouldTreatAsModuleInterface()) {
+  //   frontendOpts.InputMode =
+  //       FrontendOptions::ParseInputMode::StoneModuleInterface;
+  // } else if (args.hasArg(opts::parse_as_library)) {
+  //   frontendOpts.InputMode = FrontendOptions::ParseInputMode::StoneLibrary;
+  // } else {
+  //   frontendOpts.InputMode = FrontendOptions::ParseInputMode::Stone;
+  // }
 
   return stone::Error();
 }

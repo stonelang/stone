@@ -53,6 +53,7 @@ public Boson::Boson(ref const Boson copy) {this.mass = copy.mass; }
 
 Boson::~Boson() {
 }
+
 public Boson::Fire() -> bool {
 
 }
