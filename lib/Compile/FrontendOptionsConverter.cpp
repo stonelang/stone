@@ -120,28 +120,18 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
 
 stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
 
-  stone::Panic("Not implemented");
+  llvm::Optional<std::vector<std::string>> outputFilenames =
+      FrontendOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+          args, de, opts::o, opts::OutputFileList);
 
-  // // In order to pass some tests, must leave ModuleName empty.
-  // if (!frontendOpts.inputsAndOutputs.HasInputs()) {
-  //   frontendOpts.moduleName = std::string();
-  //   // FIXME: This is a bug that should not happen, but does in tests.
-  //   // The compiler should bail out earlier, where "no frontend action was
-  //   // selected".
-  //   return false;
-  // }
-  // llvm::Optional<std::vector<std::string>> outputFilenames =
-  //     OutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
-  //       args, de, opts::o, opts::OutputFileList);
+  std::string nameToStem =
+      outputFilenames && outputFilenames->size() == 1 &&
+              outputFilenames->front() != "-" &&
+              !llvm::sys::fs::is_directory(outputFilenames->front())
+          ? outputFilenames->front()
+          : frontendOpts.inputsAndOutputs.GetFilenameOfFirstInput();
 
-  // std::string nameToStem =
-  //     outputFilenames && outputFilenames->size() == 1 &&
-  //             outputFilenames->front() != "-" &&
-  //             !llvm::sys::fs::is_directory(outputFilenames->front())
-  //         ? outputFilenames->front()
-  //         : Opts.InputsAndOutputs.GetFilenameOfFirstInput();
-
-  // frontendOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
+  frontendOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

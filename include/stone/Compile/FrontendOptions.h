@@ -34,6 +34,9 @@ public:
   ///
   FrontendInputsAndOutputs inputsAndOutputs;
 
+  /// The name of the module that the frontend is building.
+  std::string moduleName;
+
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
 
