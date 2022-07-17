@@ -33,26 +33,20 @@ public:
   bool useMalloc = false;
 
 public:
-  enum class ModuleOutputMode : uint8_t {
-    None = 0,
-    Single,
-    Whole,
+  /// Access or distribution level of a library.
+  enum class LibraryLevel : uint8_t {
+    /// Application Programming Interface that is publicly distributed so
+    /// public decls are really public and only @_spi decls are SPI.
+    API,
+
+    /// System Programming Interface that has restricted distribution
+    /// all decls in the module are considered to be SPI including public ones.
+    SPI,
+
+    /// The library has some other undefined distribution.
+    Other
   };
-  ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
-
-  /// The map of aliases and underlying names of imported or referenced modules.
-  llvm::StringMap<llvm::StringRef> moduleAliasMap;
-
-  /// The name of the module that the frontend is building.
-  std::string moduleName;
-  bool HasModuleName() { return moduleName.size() > 0; }
-
-  /// The ABI name of the module that the compile is building, to be used in
-  /// mangling and metadata.
-  std::string moduleABIName;
-
-  /// The name of the library to link against when using this module.
-  std::string moduleLinkName;
+  LibraryLevel libraryLevel = LibraryLevel::API;
 
 public:
   LangOptions();

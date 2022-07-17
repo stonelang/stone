@@ -3,6 +3,7 @@
 
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/FrontendInputsAndOutputs.h"
 #include "stone/Compile/TargetOptions.h"
@@ -34,8 +35,7 @@ public:
   ///
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
 
-  /// The name of the module that the frontend is building.
-  std::string moduleName;
+  ModuleOptions moduleOpts;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;

@@ -24,26 +24,23 @@ class ModuleSystem final {
 
   Context &ctx;
   syn::Syntax &syntax;
-
-  ModuleOptions moduleOpts;
+  ModuleOptions &moduleOpts;
 
   /// This is the main module that will be created
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(syn::Syntax &syntax, Context &ctx);
+  ModuleSystem(syn::Syntax &syntax, Context &ctx, ModuleOptions &moduleOpts);
   ~ModuleSystem();
 
 public:
   syn::Module *GetMainModule() const;
-  const llvm::StringRef GetModuleName() const;
-  void SetModuleName(llvm::StringRef name);
 
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
 public:
-  static stone::Error IsValidModuleName(llvm::StringRef moduleName);
+  static stone::Error IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

@@ -73,12 +73,12 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
-  langOpts.moduleAliasMap.clear();
+  frontendOpts.moduleOpts.moduleAliasMap.clear();
 
   const Arg *A = args.getLastArg(opts::ModuleName);
   if (A) {
-    langOpts.moduleName = A->getValue();
-  } else if (langOpts.moduleName.empty()) {
+    frontendOpts.moduleOpts.moduleName = A->getValue();
+  } else if (frontendOpts.moduleOpts.moduleName.empty()) {
     // The user did not specify a module name, so determine a default fallback
     // based on other options.
 
@@ -89,11 +89,12 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(langOpts.moduleName).Has()) {
+  if (!ModuleSystem::IsValidModuleName(frontendOpts.moduleOpts.moduleName)
+           .Has()) {
     return stone::Error();
   }
 
-  if (langOpts.moduleName != strings::StdLibName) {
+  if (frontendOpts.moduleOpts.moduleName != strings::StdLibName) {
     return stone::Error();
   }
 
@@ -138,7 +139,7 @@ stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
           : frontendOpts.GetFrontendInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
-  frontendOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
+  frontendOpts.moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

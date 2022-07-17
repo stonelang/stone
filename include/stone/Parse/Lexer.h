@@ -412,16 +412,16 @@ public:
 
   /// Determines if the given string is a valid non-operator
   /// identifier, without escaping characters.
-  static bool isIdentifier(StringRef identifier);
+  static bool isIdentifier(llvm::StringRef identifier);
 
   /// Determine the token kind of the string, given that it is a valid
   /// non-operator identifier. Return tok::identifier if the string is not a
   /// reserved word.
-  static tok kindOfIdentifier(llvm::StringRef Str);
+  static tok kindOfIdentifier(llvm::StringRef identifier);
 
   /// Determines if the given string is a valid operator identifier,
   /// without escaping characters.
-  static bool isOperator(StringRef string);
+  static bool isOperator(llvm::StringRef operatorStr);
 
   SrcLoc GetLocForStartOfBuffer() const {
     return SrcLoc(SrcLoc::GetFromPtr(BufferStart));

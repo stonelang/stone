@@ -8,8 +8,10 @@ Compiler::Compiler(Frontend &frontend) : frontend(frontend) {
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
       frontend.GetContext(), frontend.GetSearchPathOptions());
   syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
+
   moduleSystem =
-      std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetContext());
+      std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetContext(),
+                                     frontend.GetFrontendOptions().moduleOpts);
 }
 Compiler::~Compiler() {}
 

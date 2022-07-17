@@ -70,6 +70,7 @@ class Frontend final : public Session {
   llvm::StringRef programPath;
 
   std::unique_ptr<FrontendOptions> frontendOpts;
+
   std::unique_ptr<FrontendStats> stats;
 
   /// Options for generating code
@@ -136,8 +137,10 @@ public:
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
-  FrontendOptions &GetFrontendOptions() { return *frontendOpts; }
-  const FrontendOptions &GetFrontendOptions() const { return *frontendOpts; }
+  FrontendOptions &GetFrontendOptions() { return *frontendOpts.get(); }
+  const FrontendOptions &GetFrontendOptions() const {
+    return *frontendOpts.get();
+  }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }

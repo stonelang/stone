@@ -1,11 +1,13 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/Frontend.h"
+#include "stone/Parse/Lexer.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Syntax &syntax, Context &ctx)
-    : syntax(syntax), ctx(ctx) {}
+ModuleSystem::ModuleSystem(Syntax &syntax, Context &ctx,
+                           ModuleOptions &moduleOpts)
+    : syntax(syntax), ctx(ctx), moduleOpts(moduleOpts) {}
 
 ModuleSystem::~ModuleSystem() {}
 
@@ -13,22 +15,16 @@ syn::Module *ModuleSystem::GetMainModule() const {
   if (mainModule) {
     return mainModule;
   }
-  Identifier &moduleName =
-      syntax.GetSyntaxContext().GetIdentifier(GetModuleName());
-  mainModule = syntax.MakeModuleDecl(moduleName, true);
+  Identifier &moduleIdentifier =
+      syntax.GetSyntaxContext().GetIdentifier(moduleOpts.moduleName);
+  mainModule = syntax.MakeModuleDecl(moduleIdentifier, true);
   return mainModule;
 }
 
-void ModuleSystem::SetModuleName(llvm::StringRef name) {
-  moduleOpts.moduleName = name.data();
-}
-
-const llvm::StringRef ModuleSystem::ModuleSystem::GetModuleName() const {
-  return moduleOpts.moduleName;
-}
 // TODO: May want to move to Module
-stone::Error ModuleSystem::IsValidModuleName(llvm::StringRef moduleName) {
-
-  // TODO: 1. Lexer::IsIdentifier() -- keep in mind that this is special
+stone::Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
+  if (!Lexer::isIdentifier(moduleName)) {
+    return stone::Error(true);
+  }
   return stone::Error();
 }
