@@ -38,16 +38,22 @@ stone::Error FrontendOptionsConverter::Convert(
   }
 
   bool haveNewInputsAndOutputs = false;
-  if (frontendOpts.inputsAndOutputs.HasInputs()) {
+  if (frontendOpts.GetFrontendInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
+
     haveNewInputsAndOutputs = true;
-    frontendOpts.inputsAndOutputs = std::move(inputsAndOutputs).getValue();
-    if (frontendOpts.allowModuleWithCompilerErrors)
-      frontendOpts.inputsAndOutputs.SetShouldRecoverMissingInputs();
+    frontendOpts.GetFrontendInputsAndOutputs() =
+        std::move(inputsAndOutputs).getValue();
+
+    if (frontendOpts.allowModuleWithCompilerErrors) {
+      frontendOpts.GetFrontendInputsAndOutputs()
+          .SetShouldRecoverMissingInputs();
+    }
   }
 
-  if (frontendOpts.inputsAndOutputs.ShouldTreatAsModuleInterface()) {
+  if (frontendOpts.GetFrontendInputsAndOutputs()
+          .ShouldTreatAsModuleInterface()) {
     frontendOpts.inputFileMode =
         FrontendOptions::InputFileMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
@@ -129,7 +135,8 @@ stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
               outputFilenames->front() != "-" &&
               !llvm::sys::fs::is_directory(outputFilenames->front())
           ? outputFilenames->front()
-          : frontendOpts.inputsAndOutputs.GetFilenameOfFirstInput();
+          : frontendOpts.GetFrontendInputsAndOutputs()
+                .GetFilenameOfFirstInput();
 
   frontendOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 

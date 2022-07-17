@@ -57,7 +57,7 @@ public:
             ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(name)),
         fileTy(fileTy), bufferAndIsPrimary(buffer, isPrimary),
         primaryFileSpecificPaths(PrimaryFileSpecificPaths()) {
-    assert(!name.empty());
+    assert(!filename.empty());
   }
 
 public:
@@ -86,7 +86,10 @@ public:
   static llvm::StringRef
   ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
       llvm::StringRef filename) {
-    return filename.equals("<stdin>") ? "-" : filename;
+    if (filename.equals("<stdin>")) {
+      return "-";
+    }
+    return filename;
   }
 
   /// Retrieves the name of the output file corresponding to this input.

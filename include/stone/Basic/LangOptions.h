@@ -17,6 +17,7 @@
 
 namespace stone {
 class LangOptions final {
+
 public:
   /// The target platform that we are running on.
   llvm::Triple target;
@@ -30,6 +31,14 @@ public:
   bool showTimer = false;
   ///
   bool useMalloc = false;
+
+public:
+  enum class ModuleOutputMode : uint8_t {
+    None = 0,
+    Single,
+    Whole,
+  };
+  ModuleOutputMode moduleOutputMode = ModuleOutputMode::None;
 
   /// The map of aliases and underlying names of imported or referenced modules.
   llvm::StringMap<llvm::StringRef> moduleAliasMap;

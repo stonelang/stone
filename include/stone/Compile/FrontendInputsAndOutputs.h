@@ -24,6 +24,7 @@ class FrontendInputsAndOutputs {
   friend class FrontendInputsConverter;
 
   std::vector<FrontendInputFile> inputs;
+
   llvm::StringMap<unsigned> primaryInputsByName;
   std::vector<unsigned> primaryInputsInOrder;
 
@@ -69,8 +70,7 @@ public:
   const FrontendInputFile *PrimaryInputNamed(StringRef name) const;
 
   unsigned InputCount() const { return inputs.size(); }
-
-  bool HasInputs() const { return inputs.empty(); }
+  bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
   const FrontendInputFile &FirstInput() const { return inputs[0]; }

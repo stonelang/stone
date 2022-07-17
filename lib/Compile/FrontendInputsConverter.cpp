@@ -43,17 +43,18 @@ llvm::Optional<FrontendInputsAndOutputs> FrontendInputsConverter::Convert(
   }
 
   if (fileListPathArg ? ReadInputFilesFromFilelist()
-                      : ReadInputFilesFromCommandLine())
-    return None;
+                      : ReadInputFilesFromCommandLine()) {
+    return llvm::None;
+  }
 
   llvm::Optional<std::set<llvm::StringRef>> primaryFiles = ReadPrimaryFiles();
   if (!primaryFiles) {
     return llvm::None;
   }
 
-  FrontendInputsAndOutputs result;
+  FrontendInputsAndOutputs frontendInputsAndOutputs;
   std::set<llvm::StringRef> unusedPrimaryFiles;
-  std::tie(result, unusedPrimaryFiles) =
+  std::tie(frontendInputsAndOutputs, unusedPrimaryFiles) =
       CreateInputFilesConsumingPrimaries(*primaryFiles);
 
   if (DiagnoseUnusedPrimaryFiles(unusedPrimaryFiles)) {
@@ -61,9 +62,10 @@ llvm::Optional<FrontendInputsAndOutputs> FrontendInputsConverter::Convert(
   }
 
   // Must be set before iterating over inputs needing outputs.
-  result.SetBypassBatchModeChecks(args.hasArg(opts::BypassBatchModeChecks));
+  frontendInputsAndOutputs.SetBypassBatchModeChecks(
+      args.hasArg(opts::BypassBatchModeChecks));
 
-  return std::move(result);
+  return std::move(frontendInputsAndOutputs);
 }
 
 bool FrontendInputsConverter::EnforceFilelistExclusion() {
@@ -178,10 +180,10 @@ FrontendInputsConverter::CreateInputFilesConsumingPrimaries(
     std::set<llvm::StringRef> primaryFiles) {
 
   bool hasAnyPrimaryFiles = !primaryFiles.empty();
-  FrontendInputsAndOutputs result;
+  FrontendInputsAndOutputs frontendInputsAndOutputs;
   for (auto &file : files) {
     bool isPrimary = primaryFiles.count(file) > 0;
-    result.AddInput(FrontendInputFile(file, isPrimary));
+    frontendInputsAndOutputs.AddInput(FrontendInputFile(file, isPrimary));
     if (isPrimary) {
       primaryFiles.erase(file);
     }
@@ -193,11 +195,11 @@ FrontendInputsConverter::CreateInputFilesConsumingPrimaries(
             GetOutputFilenamesFromCommandLineOrFileList(args, de, opts::o,
                                                         opts::OutputFileList);
     if (userSuppliedNamesOrErr && userSuppliedNamesOrErr->size() == 1) {
-      result.SetIsSingleThreadedWMO(true);
+      frontendInputsAndOutputs.SetIsSingleThreadedWMO(true);
     }
   }
 
-  return {std::move(result), std::move(primaryFiles)};
+  return {std::move(frontendInputsAndOutputs), std::move(primaryFiles)};
 }
 
 bool FrontendInputsConverter::DiagnoseUnusedPrimaryFiles(

@@ -57,8 +57,8 @@ bool FrontendInputsAndOutputs::IsReadingFromStdin() const {
 
 const std::string &FrontendInputsAndOutputs::GetFilenameOfFirstInput() const {
   assert(HasInputs());
-  const FrontendInputFile &inp = inputs[0];
-  const std::string &f = inp.GetFileName();
+  const FrontendInputFile &firstInput = inputs[0];
+  const std::string &f = firstInput.GetFileName();
   assert(!f.empty());
   return f;
 }

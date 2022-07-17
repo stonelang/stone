@@ -20,6 +20,9 @@ class FrontendOptions final : public BaseOptions {
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
+  ///
+  FrontendInputsAndOutputs inputsAndOutputs;
+
 public:
   enum class ThreadModelKind {
     /// POSIX Threads.
@@ -30,9 +33,6 @@ public:
 
   ///
   ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
-
-  ///
-  FrontendInputsAndOutputs inputsAndOutputs;
 
   /// The name of the module that the frontend is building.
   std::string moduleName;
@@ -65,7 +65,14 @@ public:
   InputFileMode inputFileMode = InputFileMode::Stone;
 
 public:
-  FrontendOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {}
+  FrontendOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
+    GetFrontendInputsAndOutputs().ClearInputs();
+  }
+
+public:
+  FrontendInputsAndOutputs &GetFrontendInputsAndOutputs() {
+    return inputsAndOutputs;
+  }
 };
 
 } // namespace stone
