@@ -38,7 +38,6 @@ public:
   void Disable() { enabled = false; }
   void AddDep(const Stats *stats) { deps.Add(stats); }
   ConstList<Stats> GetDeps() { return deps; }
-
   stone::Timer &GetTimer() { return *timer.get(); }
 
 public:

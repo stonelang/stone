@@ -113,7 +113,7 @@ public:
   Error CreateSourceBuffers();
 
   // TODO: You may not need this anymore
-  unsigned CreateSourceBuffer(const file::File &input);
+  unsigned CreateSourceBuffer(const FrontendInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -183,6 +183,8 @@ public:
     }
     return false;
   }
+
+  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
 };
 
 } // namespace stone

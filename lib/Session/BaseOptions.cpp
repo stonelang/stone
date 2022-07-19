@@ -2,11 +2,14 @@
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
 
 using namespace stone;
 
-BaseOptions::BaseOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {}
+BaseOptions::BaseOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {
+  llvm::sys::fs::current_path(currentPath);
+}
 
 // TODO:
 //  BaseOptions::BaseOptions() : target(llvm::sys::getDefaultTargetTriple()) {

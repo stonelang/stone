@@ -29,6 +29,7 @@ Frontend::Frontend(llvm::StringRef programName, llvm::StringRef programPath,
   excludedFlagsBitmask = opts::NoFrontendOption;
 
   stats = std::make_unique<FrontendStats>(*this);
+
   GetContext().GetStatEngine().Register(stats.get());
 }
 Frontend::~Frontend() {}
@@ -55,7 +56,6 @@ Error Frontend::CreateSourceBuffers() {
       CreateCodeCompletionBuffer();
 
   const auto &inputs = GetFrontendOptions().inputsAndOutputs.GetInputs();
-
   const bool shouldRecover =
       GetFrontendOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
 
@@ -72,21 +72,88 @@ Error Frontend::CreateSourceBuffers() {
     RecordPrimarySourceID(*bufferID);
   }
   if (hasFailed) {
-    return true;
+    return stone::Error(true);
   }
+
+  return stone::Error();
+}
+
+llvm::Optional<unsigned>
+Frontend::GetRecordedBufferID(const FrontendInputFile &input,
+                              const bool shouldRecover, bool &failed) {
+  if (!input.GetBuffer()) {
+    if (llvm::Optional<unsigned> existingBufferID =
+            ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
+      return existingBufferID;
+    }
+  }
+  auto buffers = GetInputBuffersIfPresent(input);
+
+  // Recover by dummy buffer if requested.
+  if (!buffers.hasValue() && shouldRecover &&
+      input.GetType() == file::Type::Stone) {
+    buffers = ModuleBuffers(llvm::MemoryBuffer::getMemBuffer(
+        "// missing file\n", input.GetFileName()));
+  }
+
+  if (!buffers.hasValue()) {
+    failed = true;
+    return llvm::None;
+  }
+
+  // FIXME: The fact that this test happens twice, for some cases,
+  // suggests that setupInputs could use another round of refactoring.
+  // TODO:
+  // if (serialization::isSerializedAST(buffers->ModuleBuffer->getBuffer())) {
+  //   PartialModules.push_back(std::move(*buffers));
+  //   return None;
+  // }
+
+  // TODO
+  // assert(buffers->moduleDocBuffer.get() == nullptr);
+  // assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
+
+  // Transfer ownership of the MemoryBuffer to the SourceMgr.
+  unsigned bufferID =
+      ctx.GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
+
+  sourceBufferIDs.push_back(bufferID);
+  return bufferID;
 }
 
 // TODO:
-Optional<ModuleBuffers>
+llvm::Optional<ModuleBuffers>
 Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
 
-  // if (auto b = input.getBuffer()) {
-  //   return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(b->getBuffer(),
-  //                                                             b->getBufferIdentifier()));
-  // }
+  if (auto b = input.GetBuffer()) {
+    return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
+        b->getBuffer(), b->getBufferIdentifier()));
+  }
+
   // FIXME: Working with filenames is fragile, maybe use the real path
   // or have some kind of FileManager.
-  // using FileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
+
+  using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
+  InputFileOrError inputFileOrError =
+      ctx.GetFileMgr().getBufferForFile(input.GetFileName());
+
+  if (!inputFileOrError) {
+    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+                             diag::LLVMStr(input.GetFileName()));
+    return llvm::None;
+  }
+
+  // Just return the file buffer for now
+  return ModuleBuffers(std::move(*inputFileOrError));
+  // if (!fb) {
+  //   ctx.GetDiagUnit().PrintD(SrcLoc(),
+  //   diag::err_unable_to_open_buffer_for_file,
+  //                            diag::LLVMStr(input.GetFileName()));
+  // }
+  // auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  // assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
+  // return srcID;
+
   // FileOrError inputFileOrErr =
   //   swift::vfs::getFileOrSTDIN(getFileSystem(), input.getFileName(),
   //                             /*FileSize*/-1,
@@ -110,55 +177,14 @@ Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
   //                      nullptr, sourceinfo.hasValue() ?
   //                      std::move(sourceinfo.getValue()) : nullptr);
 
-  return llvm::None;
+  // return llvm::None;
 }
 
-Optional<unsigned> Frontend::GetRecordedBufferID(const FrontendInputFile &input,
-                                                 const bool shouldRecover,
-                                                 bool &failed) {
-  if (!input.GetBuffer()) {
-    if (llvm::Optional<unsigned> existingBufferID =
-            ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
-      return existingBufferID;
-    }
-  }
-  auto buffers = GetInputBuffersIfPresent(input);
-
-  // Recover by dummy buffer if requested.
-  if (!buffers.hasValue() && shouldRecover &&
-      input.GetType() == file::Type::Stone) {
-    buffers = ModuleBuffers(llvm::MemoryBuffer::getMemBuffer(
-        "// missing file\n", input.GetFileName()));
-  }
-
-  if (!buffers.hasValue()) {
-    failed = true;
-    return None;
-  }
-
-  // FIXME: The fact that this test happens twice, for some cases,
-  // suggests that setupInputs could use another round of refactoring.
-  // TODO:
-  // if (serialization::isSerializedAST(buffers->ModuleBuffer->getBuffer())) {
-  //   PartialModules.push_back(std::move(*buffers));
-  //   return None;
-  // }
-
-  assert(buffers->moduleDocBuffer.get() == nullptr);
-  assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
-  // Transfer ownership of the MemoryBuffer to the SourceMgr.
-  unsigned bufferID =
-      ctx.GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
-
-  sourceBufferIDs.push_back(bufferID);
-  return bufferID;
-}
-
-unsigned Frontend::CreateSourceBuffer(const file::File &input) {
-  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetName());
+unsigned Frontend::CreateSourceBuffer(const FrontendInputFile &input) {
+  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
     ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                             diag::LLVMStr(input.GetName()));
+                             diag::LLVMStr(input.GetFileName()));
   }
   auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");

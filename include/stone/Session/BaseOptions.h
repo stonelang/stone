@@ -11,6 +11,9 @@ namespace stone {
 
 class BaseOptions {
   std::unique_ptr<Mode> mode;
+
+  llvm::SmallString<128> currentPath;
+
   // /// The target platform that we are running on.
   // llvm::Triple target;
 
@@ -42,6 +45,8 @@ public:
 
   /// The output file type which should be used for the sc
   file::Type outputFileType = file::Type::None;
+
+  llvm::StringRef GetCurrentPath() { return currentPath.data(); }
 
   Mode &GetMode() { return *mode; }
   const Mode &GetMode() const { return *mode; }

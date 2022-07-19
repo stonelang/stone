@@ -21,7 +21,6 @@ syn::Module *ModuleSystem::GetMainModule() const {
   return mainModule;
 }
 
-// TODO: May want to move to Module
 stone::Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   if (!Lexer::isIdentifier(moduleName)) {
     return stone::Error(true);

@@ -271,19 +271,15 @@ void Compiler::CompileWithSyntaxAnalysis() {
 
 void Compiler::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
 
-  // TODO:
-  //  for (auto source : sources) {
-  //    assert(source);
-  //    // TODO: You are not always creating a Library
-  //    auto syntaxFile = SyntaxFile::Make(
-  //        SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
-  //        GetSyntax().GetSyntaxContext(), source->GetSrcID());
+  for (auto sourceBufferID : frontend.GetSourceBufferIDs()) {
+    auto syntaxFile = SyntaxFile::Make(
+        SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
+        GetSyntax().GetSyntaxContext(), sourceBufferID);
 
-  //   syn::Parse(*syntaxFile, GetSyntax(), GetListener());
-
-  //   assert(syntaxFile);
-  //   client(*syntaxFile);
-  // }
+    syn::Parse(*syntaxFile, GetSyntax(), frontend.GetListener());
+    assert(syntaxFile);
+    client(*syntaxFile);
+  }
 
   if (!frontend.GetFrontendOptions().GetMode().JustParse()) {
     ResolveUsings();
