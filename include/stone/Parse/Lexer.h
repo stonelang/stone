@@ -235,7 +235,7 @@ public:
   }
 
   void Lex(Token &Result) {
-    StringRef LeadingTrivia, TrailingTrivia;
+    llvm::StringRef LeadingTrivia, TrailingTrivia;
     Lex(Result, LeadingTrivia, TrailingTrivia);
   }
 
@@ -243,7 +243,6 @@ public:
   /// start.
   void resetToOffset(size_t Offset) {
     assert(BufferStart + Offset <= BufferEnd && "Offset after buffer end");
-
     CurPtr = BufferStart + Offset;
     Lex();
   }

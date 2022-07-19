@@ -53,11 +53,19 @@ class Parser final {
 
   /// leading trivias for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
-  Trivia leadingTrivia;
+  // Trivia leadingTrivia;
 
   /// trailing trivias for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
-  Trivia trailingTrivia;
+  // Trivia trailingTrivia;
+
+  /// Leading trivia for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  llvm::StringRef leadingTrivia;
+
+  /// Trailing trivia for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  llvm::StringRef trailingTrivia;
 
   /// The location of the previous token.
   SrcLoc prevTokLoc;
@@ -124,10 +132,9 @@ public:
 private:
   void Lex(Token &result) { lexer->Lex(result); }
 
-  // void Lex(Token &result, Trivia &leading, Trivia &trailing) {
-  //   lexer->Lex(result, leading, trailing);
-  // }
-
+  void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
+    lexer->Lex(result, leading, trailing);
+  }
   /// isTokenParen - Return true if the cur token is '(' or ')'.
   bool IsParenTok() const { return token.IsAny(tok::l_paren, tok::r_paren); }
   /// isTokenBracket - Return true if the cur token is '[' or ']'.
@@ -261,7 +268,7 @@ private:
 
 /// To assist debugging parser crashes, tell us the location of the
 /// current token.
-class ParserPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+class ParserPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
   Parser &parser;
 
 public:
