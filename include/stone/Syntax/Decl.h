@@ -264,6 +264,8 @@ public:
 /// Standalone function: fun F0() -> void {}
 class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
+  SrcLoc funLoc;
+
 public:
   FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
       : FunctionDecl(DeclKind::Fun, name, nameLoc, parent) {}
@@ -282,6 +284,9 @@ public:
   bool IsForward() const;
 
   bool HasReturn() const;
+
+  void SetFunLoc(SrcLoc funLoc);
+  SrcLoc GetFunLoc() { return funLoc; }
 
 public:
   // void SetReturnType(TypeDecl* returnTy);

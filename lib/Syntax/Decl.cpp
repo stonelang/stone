@@ -40,4 +40,20 @@ using namespace stone::syn;
 //   return tc.Allocate(bytes, alignment);
 // }
 
+bool FunDecl::IsMain() const { return false; }
+
+/// True if the function is a defer body.
+bool FunDecl::IsDeferBody() const {}
+
+bool FunDecl::IsStatic() const { return false; }
+
+bool FunDecl::IsMember() const { return false; }
+
+// TODO: Think about
+bool FunDecl::IsForward() const { return false; }
+
+bool FunDecl::HasReturn() const { return false; }
+
+void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
+
 void DeclStats::Print(ColorfulStream &stream) {}

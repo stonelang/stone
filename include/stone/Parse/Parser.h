@@ -117,9 +117,9 @@ public:
   void ParseFunForwardDecl(AccessLevel accessLevel);
 
 private:
-  SyntaxStatus ParseFunctionSignature(FunDeclSyntaxBuilder &builder);
-  SyntaxStatus ParseFunctionArguments(FunDeclSyntaxBuilder &builder);
-  SyntaxStatus ParseFunctionBody(FunDeclSyntaxBuilder &builder);
+  SyntaxStatus ParseFunctionSignature(FunDecl &funDecl);
+  SyntaxStatus ParseFunctionArguments(FunDecl &funDecl);
+  SyntaxStatus ParseFunctionBody(FunDecl &funDecl);
 
 public:
   //=struct=//

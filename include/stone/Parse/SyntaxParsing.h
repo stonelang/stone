@@ -13,8 +13,6 @@ enum class SyntaxScopeKind : uint8_t;
 
 class ParsingDeclContext {
 public:
-
-
 };
 
 /// A class for parsing a DeclSpecifier.
@@ -72,6 +70,7 @@ class ParsingDeclarator final : public Declarator {
 /// after declaration/statement parsing, even when there's a parsing error.
 class PairDelimiterBalancer final {
   Parser &parser;
+
 public:
   unsigned short parenCount, bracketCount, braceCount;
 

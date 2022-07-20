@@ -1,5 +1,5 @@
-#include "stone/Syntax/SyntaxBuilder.h"
 #include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxBuilder.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -7,7 +7,6 @@ using namespace stone::syn;
 // Decl
 // DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax)
 // {}
-
 
 // Fun
 FunDeclSyntaxBuilder::FunDeclSyntaxBuilder(Syntax &syntax)
@@ -19,7 +18,6 @@ void FunDeclSyntaxBuilder::WithFunKeyword(SrcLoc loc) { funLoc = loc; }
 void FunDeclSyntaxBuilder::WithAccessLevel(AccessLevel lvl) {
   accessLevel = lvl;
 }
-
 
 // Struct
 StructDeclSyntaxBuilder::StructDeclSyntaxBuilder(Syntax &syntax)

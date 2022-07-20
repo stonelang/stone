@@ -96,17 +96,19 @@ SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
 }
 
 SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
+
   assert(token.GetKind() == tok::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
-
-  FunDeclSyntaxBuilder funBuilder(syntax);
+  
   auto funLoc = ConsumeTok(tok::kw_fun);
-  funBuilder.WithFunKeyword(funLoc);
-  funBuilder.WithAccessLevel(accessLevel);
 
   // Parse function name.
   Identifier name; // auto Identifier = SyntaxFractory::MakeIdentifier
   SrcLoc nameLoc;
+
+  FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
+  funDecl->SetAccessLevel(accessLevel);
+  funDecl->SetFunLoc(funLoc);
 
   // auto ParseFunctionSignature = [&]() -> SyntaxStatus {
   // }
@@ -115,12 +117,6 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   // auto ParseFunctionBody = [&]() -> SyntaxStatus {
 
   // }
-
-  // TODO:
-  // auto funDecl = syntax.MakeFunDecl(token.GetLoc(), nullptr);
-  // funDecl->SetAccessLevel(accessLevel);
-
-  //
 
   // // funDecl->SetTemplate...
 
@@ -131,10 +127,10 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   // return funDecl;
 
-  return syn::MakeSyntaxResult<Decl>(funBuilder.Build());
+  return syn::MakeSyntaxResult<Decl>(funDecl);
 }
 
-SyntaxStatus Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
 
   // TODO:
   // if(name == "Main"){
@@ -145,7 +141,7 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
   // Get Identifier
   // funDecl->SetIdentifier();
 
-  ParseFunctionArguments(builder);
+  ParseFunctionArguments(funDecl);
 
   // Parse the return type
   // funDecl->SetReturnType();
@@ -153,7 +149,7 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDeclSyntaxBuilder &builder) {
   // ConsumeTok();
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
 
   // builder.WithLeftBrace();
@@ -161,7 +157,7 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDeclSyntaxBuilder &builder) {
   return syn::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::ParseFunctionBody(FunDeclSyntaxBuilder &builder) {
+SyntaxStatus Parser::ParseFunctionBody(FunDecl &funDecl) {
   // assert(token.Is(tok::l_brace) && "Require left brace.");
   return syn::MakeSyntaxSuccess();
 }

@@ -7,7 +7,6 @@
 
 using namespace stone;
 using namespace stone::syn;
- 
 
 void syn::Parse(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener) {
 
