@@ -99,7 +99,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   assert(token.GetKind() == tok::kw_fun &&
          "Attempting to parse a 'fun' decl with incorrect token.");
-  
+
   auto funLoc = ConsumeTok(tok::kw_fun);
 
   // Parse function name.
@@ -120,12 +120,14 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   // // funDecl->SetTemplate...
 
-  // ParseFunctionSignature(funDecl);
-  // ParseFunctionBody(funDecl);
+  if (ParseFunctionSignature(*funDecl).IsError()) {
+    return syn::MakeSyntaxError();
+  }
+  if (ParseFunctionBody(*funDecl).IsError()) {
+    return syn::MakeSyntaxError();
+  }
 
-  // // syntax.VerifyDecl(funDecl);
-
-  // return funDecl;
+  // syntax.VerifyDecl(funDecl);
 
   return syn::MakeSyntaxResult<Decl>(funDecl);
 }
