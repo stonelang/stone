@@ -97,4 +97,9 @@ SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
   return ConsumeTok();
 }
 
+// This is there because you may want to strip certain things from the
+// identifier name -- something to think about.
+Identifier &Parser::GetIdentifierOnly(llvm::StringRef text) {
+  return syntax.MakeIdentifier(text);
+}
 void ParserStats::Print(ColorfulStream &stream) {}

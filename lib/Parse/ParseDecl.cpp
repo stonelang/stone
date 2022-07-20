@@ -97,28 +97,20 @@ SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
 
 SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
-  assert(token.GetKind() == tok::kw_fun &&
+  assert(token.Is(tok::kw_fun) &&
          "Attempting to parse a 'fun' decl with incorrect token.");
 
   auto funLoc = ConsumeTok(tok::kw_fun);
-
   // Parse function name.
-  Identifier name; // auto Identifier = SyntaxFractory::MakeIdentifier
-  SrcLoc nameLoc;
+  Identifier name = GetIdentifierOnly(token.GetText());
+  // very simple for now.
+  SrcLoc nameLoc = ConsumeTok(tok::identifier);
 
   FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
   funDecl->SetAccessLevel(accessLevel);
   funDecl->SetFunLoc(funLoc);
 
-  // auto ParseFunctionSignature = [&]() -> SyntaxStatus {
-  // }
-  // auto ParseFunctionArguments = [&]() -> SyntaxStatus {
-  // }
-  // auto ParseFunctionBody = [&]() -> SyntaxStatus {
-
-  // }
-
-  // // funDecl->SetTemplate...
+  // funDecl->SetTemplate...
 
   if (ParseFunctionSignature(*funDecl).IsError()) {
     return syn::MakeSyntaxError();
@@ -126,7 +118,6 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   if (ParseFunctionBody(*funDecl).IsError()) {
     return syn::MakeSyntaxError();
   }
-
   // syntax.VerifyDecl(funDecl);
 
   return syn::MakeSyntaxResult<Decl>(funDecl);
@@ -152,14 +143,26 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
   return syn::MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
-  // assert(token.Is(tok::l_brace) && "Require left brace.");
 
-  // builder.WithLeftBrace();
+  assert(token.Is(tok::l_paren) && "Require '(' brace.");
+  auto lParenLoc = ConsumeTok(tok::l_paren);
+
+  assert(token.Is(tok::r_paren) && "Require ')' brace.");
+  auto rParenLoc = ConsumeTok(tok::r_paren);
+
+  assert(token.Is(tok::arrow) && "Require '->'");
+  auto arrowLoc = ConsumeTok(tok::arrow);
 
   return syn::MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::ParseFunctionBody(FunDecl &funDecl) {
-  // assert(token.Is(tok::l_brace) && "Require left brace.");
+
+  assert(token.Is(tok::l_brace) && "Require '{' brace.");
+  auto lParenLoc = ConsumeTok(tok::l_brace);
+
+  assert(token.Is(tok::r_brace) && "Require '}' brace.");
+  auto rParenLoc = ConsumeTok(tok::r_brace);
+
   return syn::MakeSyntaxSuccess();
 }

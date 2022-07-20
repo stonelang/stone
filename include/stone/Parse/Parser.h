@@ -264,6 +264,9 @@ private:
 
   bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
   bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
+
+public:
+  Identifier &GetIdentifierOnly(llvm::StringRef text);
 };
 
 /// To assist debugging parser crashes, tell us the location of the

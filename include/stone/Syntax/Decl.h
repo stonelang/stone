@@ -265,6 +265,7 @@ public:
 class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
   SrcLoc funLoc;
+  bool hasLeftBrace;
 
 public:
   FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
@@ -287,6 +288,9 @@ public:
 
   void SetFunLoc(SrcLoc funLoc);
   SrcLoc GetFunLoc() { return funLoc; }
+
+  void WithLeftBrace();
+  bool HasLeftBrace();
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
