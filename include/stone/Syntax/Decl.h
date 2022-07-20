@@ -281,8 +281,6 @@ public:
   // TODO: Think about
   bool IsForward() const;
 
-  AccessLevel GetAccessLevel() const;
-
   bool HasReturn() const;
 
 public:

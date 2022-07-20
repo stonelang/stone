@@ -11,10 +11,13 @@ set(stone_syn_sources
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp
+	DeclSyntaxBuilder.cpp
 	Expr.cpp
+	ExprSyntaxBuilder.cpp
 	Identifier.cpp
 	Module.cpp
 	Stmt.cpp
+	StmtSyntaxBuilder.cpp
 	Syntax.cpp
 	SyntaxContext.cpp
 	SyntaxBuilder.cpp

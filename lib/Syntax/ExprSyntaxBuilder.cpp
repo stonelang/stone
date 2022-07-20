@@ -3,5 +3,3 @@
 
 using namespace stone;
 using namespace stone::syn;
-
-//TODO: Basic stuff 

@@ -73,7 +73,6 @@ public:
   void WithReturnType();
   void WithReturnStmt();
   void WithAccessLevel(AccessLevel level);
-  // void WithName(DeclName name);
   void WithNameLoc(SrcLoc nameLoc);
 
 public:

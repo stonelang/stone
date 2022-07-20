@@ -1,0 +1,30 @@
+#include "stone/Syntax/SyntaxBuilder.h"
+#include "stone/Syntax/Syntax.h"
+
+using namespace stone;
+using namespace stone::syn;
+
+// Decl
+// DeclSyntaxBuilder::DeclSyntaxBuilder(Syntax &syntax) : SyntaxBuilder(syntax)
+// {}
+
+
+// Fun
+FunDeclSyntaxBuilder::FunDeclSyntaxBuilder(Syntax &syntax)
+    : SyntaxBuilder(syntax) {}
+
+FunDecl *FunDeclSyntaxBuilder::Build() { return nullptr; }
+
+void FunDeclSyntaxBuilder::WithFunKeyword(SrcLoc loc) { funLoc = loc; }
+void FunDeclSyntaxBuilder::WithAccessLevel(AccessLevel lvl) {
+  accessLevel = lvl;
+}
+
+
+// Struct
+StructDeclSyntaxBuilder::StructDeclSyntaxBuilder(Syntax &syntax)
+    : SyntaxBuilder(syntax) {}
+
+void StructDeclSyntaxBuilder::WithStructKeyword() {}
+
+StructDecl *StructDeclSyntaxBuilder::Build() { return nullptr; }
