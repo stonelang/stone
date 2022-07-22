@@ -112,6 +112,11 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
+  // == Type Parsing ==// 
+SyntaxResult<TypeRepr>  ParseType();
+SyntaxResult<TypeRepr>  ParseDeclResultType();
+
+public:
   //==fun==//
   SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
   void ParseFunForwardDecl(AccessLevel accessLevel);

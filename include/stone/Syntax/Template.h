@@ -1,14 +1,6 @@
 #ifndef STONE_SYNTAX_TEMPLATEDECL_H
 #define STONE_SYNTAX_TEMPLATEDECL_H
 
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <iterator>
-#include <string>
-#include <type_traits>
-#include <utility>
-
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Decl.h"
@@ -23,6 +15,17 @@
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/VersionTuple.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/Compiler.h"
+#include "llvm/Support/TrailingObjects.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <iterator>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 namespace stone {
 namespace syn {
@@ -74,15 +77,29 @@ class TemplateName {
 public:
 };
 
-class TemplateParameterList {
+class TemplateParameterList final
+    : private llvm::TrailingObjects<TemplateParameterList, NamedDecl *> {
+      
+  SrcRange brackets;
+
+  /// The location of the 'any' keyword.
+  SrcLoc templateLoc;
+
+
 public:
+  // NO copying
+  TemplateParameterList(const TemplateParameterList &) = delete;
+  TemplateParameterList &operator=(const TemplateParameterList &) = delete;
+
+public:
+  SrcLoc GetLAngleLoc() const { return brackets.Start; }
+  SrcLoc GetRAngleLoc() const { return brackets.End; }
+
+  SrcRange GetSrcRange() const { return brackets; }
 };
 
 class TemplateContext {};
 
-class TemplateDecl : public NamedDecl {
-public:
-};
 } // namespace syn
 } // namespace stone
 

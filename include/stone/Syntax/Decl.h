@@ -178,10 +178,6 @@ class ForwardDecl : public NamedDecl {
 public:
 };
 
-class AnyDecl : public NamedDecl {
-public:
-};
-
 class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
   friend class SyntaxContext;
   /// This indicates the Type object that represents
@@ -382,6 +378,10 @@ enum class UseDeclKind : uint8_t {
   // use Stream = STD.IO.Stream;
   // use Min = STD::Main::Min(first, second);  // TODO: Think
   Alias,
+};
+
+class TemplateDecl : public NamedDecl {
+public:
 };
 
 class UsingDecl : public NamedDecl {
