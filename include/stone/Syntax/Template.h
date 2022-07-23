@@ -14,10 +14,8 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/PrettyStackTrace.h"
-#include "llvm/Support/VersionTuple.h"
-#include "llvm/Support/Casting.h"
-#include "llvm/Support/Compiler.h"
 #include "llvm/Support/TrailingObjects.h"
+#include "llvm/Support/VersionTuple.h"
 
 #include <algorithm>
 #include <cassert>
@@ -33,10 +31,10 @@ namespace syn {
 class TemplateArgument final {
 public:
   /// The kind of template argument we're storing.
-  enum TemplateArgumentKind {
+  enum Kind {
     /// Represents an empty template argument, e.g., one that has not
     /// been deduced.
-    Null = 0,
+    Empty = 0,
 
     /// The template argument is a type.
     Type,
@@ -79,12 +77,11 @@ public:
 
 class TemplateParameterList final
     : private llvm::TrailingObjects<TemplateParameterList, NamedDecl *> {
-      
+
   SrcRange brackets;
 
   /// The location of the 'any' keyword.
   SrcLoc templateLoc;
-
 
 public:
   // NO copying
@@ -97,6 +94,8 @@ public:
 
   SrcRange GetSrcRange() const { return brackets; }
 };
+
+using TemplateParameterLists = llvm::SmallVector<TemplateParameterList *, 4>;
 
 class TemplateContext {};
 

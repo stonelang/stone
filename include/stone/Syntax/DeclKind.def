@@ -6,16 +6,16 @@
 #define CONTEXT_BASE_DECL(Id, Parent)
 #endif
 
-#ifndef NAMING_DECL
-#define NAMING_DECL(Id, Parent) DECL(Id, Parent)
+#ifndef NAMED_DECL
+#define NAMED_DECL(Id, Parent) DECL(Id, Parent)
 #endif
 
 #ifndef NOMINAL_TYPE_DECL
-#define NOMINAL_TYPE_DECL(Id, Parent) NAMING_DECL(Id, Parent)
+#define NOMINAL_TYPE_DECL(Id, Parent) NAMED_DECL(Id, Parent)
 #endif
 
 #ifndef TEMPLATE_DECL
-#define TEMPLATE_DECL(Id, Parent) NAMING_DECL(Id, Parent)
+#define TEMPLATE_DECL(Id, Parent) NAMED_DECL(Id, Parent)
 #endif
 
 /// CONTEXT_DECL(Id, Parent)
@@ -128,11 +128,11 @@
 #define LAST_DECL(Id)
 #endif
 
-BASE_DECL(Naming, Decl)
-	NAMING_DECL(Space, NamedDecl)
-	NAMING_DECL(Use, NamedDecl)
-	NAMING_DECL(Label, NamedDecl) // break, continue, and goto
-	DECL_RANGE(Naming, Space, Label)
+BASE_DECL(Named, Decl)
+	NAMED_DECL(Space, NamedDecl)
+	NAMED_DECL(Use, NamedDecl)
+	NAMED_DECL(Label, NamedDecl) // break, continue, and goto
+	DECL_RANGE(Named, Space, Label)
 	BASE_DECL(Value, NamedDecl)
 		BASE_DECL(Type, ValueDecl)
 			CONTEXT_BASE_DECL(NominalType, TypeDecl)
@@ -167,7 +167,7 @@ DECL(IfConfig, Decl)
 DECL(Block, Decl)
 LAST_DECL(Block)
 
-#undef NAMING_DECL
+#undef NAMED_DECL
 #undef NOMINAL_TYPE_DECL
 #undef CONTEXT_DECL
 #undef ITERABLE_NONGENERIC_DECL

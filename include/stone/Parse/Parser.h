@@ -112,9 +112,9 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  // == Type Parsing ==// 
-SyntaxResult<TypeRepr>  ParseType();
-SyntaxResult<TypeRepr>  ParseDeclResultType();
+  // == Type Parsing ==//
+  // SyntaxResult<TypeRepr> ParseType();
+  // SyntaxResult<TypeRepr> ParseDeclResultType();
 
 public:
   //==fun==//

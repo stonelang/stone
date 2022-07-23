@@ -6,12 +6,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-
-
-// Similar to ParseDeclSpecifiers 
-SyntaxResult<TypeRepr> Parser::ParseType() {
-
-}
-SyntaxResult<TypeRepr> Parser::ParseDeclResultType() {
-
-}
+// Similar to ParseDeclSpecifiers
+// SyntaxResult<TypeRepr> Parser::ParseType() {}
+// SyntaxResult<TypeRepr> Parser::ParseDeclResultType() {}

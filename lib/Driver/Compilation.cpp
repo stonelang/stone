@@ -37,8 +37,7 @@ Compilation::Compilation(Driver &driver, ToolChain &tc,
     stone::Panic("Unknown ToolChain Kind -- cannot create TaskQueue");
   }
 }
-
-int Compilation::RunJobs() {
+stone::Error Compilation::RunJobs() {
   // while (!GetQueue().IsEmpty()) {
   //   auto job = GetQueue().Front();
   //   if (job) {
@@ -50,7 +49,7 @@ int Compilation::RunJobs() {
   //   }
   //   GetQueue().Pop();
   // }
-  return 0;
+  return stone::Error();
 }
 
 void Compilation::PrintJobs() {

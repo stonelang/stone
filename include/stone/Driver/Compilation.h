@@ -56,7 +56,7 @@ public:
   // void PruneJob();
 
   void PrintJobs();
-  int RunJobs();
+  stone::Error RunJobs();
 
   TaskQueue &GetQueue() { return *tq.get(); }
 

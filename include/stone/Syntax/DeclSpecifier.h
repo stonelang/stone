@@ -6,11 +6,7 @@
 namespace stone {
 namespace syn {
 
-
-
-class ScopeSpecifier {
-
-};
+class ScopeSpecifier {};
 
 class Declarator {
 public:

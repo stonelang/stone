@@ -3,11 +3,13 @@
 
 namespace stone {
 namespace syn {
-class VirtualTable {
+
+class VirtualTable final {
 public:
   VirtualTable();
   ~VirtualTable();
 };
+
 } // namespace syn
 } // namespace stone
 #endif

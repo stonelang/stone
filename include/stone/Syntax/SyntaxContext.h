@@ -71,6 +71,7 @@ public:
 
 class SyntaxContext final {
   friend SyntaxContextStats;
+
   std::unique_ptr<SyntaxContextStats> stats;
 
   /// The language options used to create the AST associated with

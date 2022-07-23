@@ -16,10 +16,7 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
   FINISH_LLVM_INIT();
 
-  auto Finish = [&](int status = 0) -> int {
-    int err = 1;
-    return status ? status : err;
-  };
+  auto Error = [&](bool err = false) -> int { return 1 ? err : 0; };
 
   std::unique_ptr<DebugCompilationListener> debugListener;
 
@@ -32,7 +29,7 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   if (args.empty()) {
     driver.GetContext().GetDiagUnit().PrintD(SrcLoc(),
                                              diag::err_no_input_files);
-    return Finish(1);
+    return Error(true);
   }
   if (listener) {
     driver.SetListener(listener);
@@ -42,38 +39,40 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   auto ial = driver.ParseArgs(args);
   if (!ial) {
-    return Finish(1);
+    return Error(true);
   }
   if (driver.HasError()) {
-    return Finish(1);
+    return Error(true);
   }
   if (driver.ComputeOptions(*ial).Has()) {
-    return Finish(1);
+    return Error(true);
   }
 
   if (driver.GetDriverOptions().GetMode().IsAlien()) {
     driver.GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_alien_mode);
-    Finish(1);
+    return Error(true);
   }
   if (driver.GetDriverOptions().GetMode().IsPrintHelp()) {
     driver.PrintHelp(driver.GetOpts());
-    return Finish();
+    return Error();
   }
   if (driver.GetDriverOptions().GetMode().IsPrintVersion()) {
     driver.PrintVersion();
-    return Finish();
+    return Error();
   }
 
   auto toolChain = driver.BuildToolChain(*ial.get());
   if (driver.HasError()) {
-    return Finish(1);
+    return Error(true);
   }
   auto compilation = driver.BuildCompilation(*toolChain, *ial.get());
   if (driver.HasError()) {
-    return Finish(1);
+    return Error(true);
   }
   if (compilation) {
-    return Finish(compilation->RunJobs());
+    if(compilation->RunJobs().Has()){
+      return Error(true);
+    }
   }
-  return Finish();
+  return Error();
 }

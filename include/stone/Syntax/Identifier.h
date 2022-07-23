@@ -163,7 +163,7 @@ public:
   bool isOperatorKeyword() const { return IsOperatorKeyword; }
 
   /// Return true if this token is a keyword in the specified language.
-  bool IsKeyword(const LangOptions &LangOpts) const;
+  bool IsKeyword(const LangOptions &langOpts) const;
 
   /// Return true if this identifier is an editor placeholder.
   ///
