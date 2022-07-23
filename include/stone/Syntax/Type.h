@@ -10,29 +10,35 @@
 namespace stone {
 namespace syn {
 
-class TypeContext final {
-public:
-};
-
 // Extended Qualifiers
 class ExtQuals;
+// Qualified Types
 
 class QualType;
-
 // class ConceptDecl;
 class StructDecl;
 class Type;
+
+class TypeContext final {
+public:
+};
 
 class TypeLoc {};
 
 class alignas(1 << TypeAlignInBits) Type
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
 
-
 // QualifierType
 class QualType {
 public:
   QualType() = default;
+};
+
+class FunctionType : public Type {
+  // The type returned by the function.
+  QualType resultType;
+
+public:
 };
 
 } // namespace syn

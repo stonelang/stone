@@ -70,7 +70,7 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
     return Error(true);
   }
   if (compilation) {
-    if(compilation->RunJobs().Has()){
+    if (compilation->RunJobs().Has()) {
       return Error(true);
     }
   }

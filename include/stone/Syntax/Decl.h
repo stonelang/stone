@@ -198,7 +198,7 @@ protected:
 
 // TODO: May use this instead of using NamedDecl
 class ValueDecl : public NamedDecl {
-  // QualType qualTy;
+  QualType qualType;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -206,8 +206,8 @@ public:
       : NamedDecl(kind, name, nameLoc, context) {}
 
 public:
-  // void SetQualType(QualType qTy) { this->qTy = qTy; }
-  // QualType GetQualType() { return qTy; }
+  void SetQualType(QualType qt) { this->qualType = qt; }
+  QualType GetQualType() { return qualType; }
 };
 
 // class LabelDecl : public NamedDecl {
@@ -234,6 +234,7 @@ class FunctionDecl
     : public DeclContext,
       public ValueDecl,
       public AccessControl /*, public syn::Redeclarable<FunctionDecl>*/ {
+
   StorageKind storageKind;
 
 public:
@@ -261,7 +262,7 @@ public:
 class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
   SrcLoc funLoc;
-  bool hasLeftBrace;
+  bool hasLBrace;
 
 public:
   FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
@@ -288,6 +289,8 @@ public:
   void WithLeftBrace();
   bool HasLeftBrace();
 
+  QualType GetReturnType() const;
+
 public:
   // void SetReturnType(TypeDecl* returnTy);
 
@@ -308,9 +311,9 @@ public:
 // Member functions: fun Particle::Fire() -> bool ...
 // class MemberFunDecl : public FunDecl {
 // public:
-//   // MethodDecl(SyntaxContext &tc, DeclContext *dc, SrcLoc funLoc,
-//   //            const DeclName &dn, SrcLoc dnLoc, StorageKind sk)
-//   //     : FunctionDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
+//   MemberFunDecl(SyntaxContext &tc, DeclContext *dc, SrcLoc funLoc,
+//               DeclName name, SrcLoc nameLoc, StorageKind sk)
+//        : FunDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
 
 // public:
 //   bool IsStatic() const;
@@ -349,46 +352,47 @@ class ConstructorInitializer final {
 public:
 };
 
-// class ConstructorDecl : public MethodDecl {
+// class ConstructorDecl : public MemberDecl {
 // public:
 // };
 
-// class DestructorDecl : public MethodDecl {
+// class DestructorDecl : public MemberDecl {
 // public:
 // };
-
-// TODO: Maybe Enum, Struct, ... can be replaced with Member
-enum class UseDeclKind : uint8_t {
-  /// use STD.IO;
-  Module = 0,
-
-  //// use STD::Time::Month;
-  Enum,
-
-  /// use STD::IO::OutputStream;
-  Struct,
-
-  /// use STD::IO::Stream;
-  Interface,
-
-  /// fun Main() -> int { use STD.Math.Min;  auto min = Min<AnyType>(first,
-  /// second); }
-  Fun,
-
-  // use Stream = STD.IO.Stream;
-  // use Min = STD::Main::Min(first, second);  // TODO: Think
-  Alias,
-};
 
 class TemplateDecl : public NamedDecl {
 public:
 };
 
+// TODO: Maybe Enum, Struct, ... can be replaced with Member
+enum class UsingDeclKind : uint8_t {
+  /// use STD.IO;
+  Module = 0,
+
+  //// using STD::Time::Month;
+  Enum,
+
+  /// using STD::IO::OutputStream;
+  Struct,
+
+  /// using STD::IO::Stream;
+  Interface,
+
+  /// fun Main() -> int { using STD.Math.Min;
+  // auto min = Min<AnyType>(first, second); }
+  Fun,
+
+  // using Stream = STD.IO.Stream;
+  // using Min = STD::Main::Min;
+  Alias,
+};
+
 class UsingDecl : public NamedDecl {
   SrcLoc usingLoc;
+  UsingDeclKind usingDeclKind;
 
 public:
-  // Module *mod = nullptr;
+  // syn::Module *mod = nullptr;
 };
 
 } // namespace syn
