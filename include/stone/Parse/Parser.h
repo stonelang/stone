@@ -108,6 +108,8 @@ public:
   SyntaxResult<Decl> ParseDecl(AccessLevel accessLevel);
   void ParseForwardDecl();
 
+  void ParseInheritance();
+
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
@@ -134,6 +136,16 @@ public:
 public:
   // Template
   // SyntaxResult<TemplateDecl *> ParseTemplateDecl(ParsingDeclSpecifier &pds);
+
+  // SyntaxResult<TempateParameterList> ParseTemplateParameters();
+  // SyntaxResult<TempateParameterList> ParseTemplateParameters(SrcLoc
+  // lAngleLoc);
+
+  // SyntaxResult ParseTemplateParametersBeforeWhere(SrcLoc lAngleLoc,
+  //                       llvm::SmallVectorImpl<GenericTypeParamDecl *>
+  //                       &GenericParams);
+  // SyntaxResult<GenericParamList> maybeParseGenericParams();
+
 private:
   void Lex(Token &result) { lexer->Lex(result); }
 

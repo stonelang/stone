@@ -9,7 +9,7 @@ namespace builtin {
 
 enum BuiltinID {};
 
-struct Profile {
+struct BuiltinProfile {
   const char *name;
   const char *ty;
   const char *attributes;

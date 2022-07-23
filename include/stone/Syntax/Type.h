@@ -4,6 +4,7 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
+#include "stone/Syntax/TypeLoc.h"
 
 #include <string>
 
@@ -23,8 +24,6 @@ class TypeContext final {
 public:
 };
 
-class TypeLoc {};
-
 class alignas(1 << TypeAlignInBits) Type
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
 
@@ -36,7 +35,7 @@ public:
 
 class FunctionType : public Type {
   // The type returned by the function.
-  QualType resultType;
+  QualType returnType;
 
 public:
 };
