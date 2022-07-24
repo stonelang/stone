@@ -40,29 +40,30 @@ public:
   ~Syntax();
 
 public:
-  SyntaxContext &GetSyntaxContext() { return *sc.get(); }
-
-public:
-  Module *MakeModuleDecl(Identifier &name, bool isMainModule);
+  Identifier &MakeIdentifier(llvm::StringRef name);
 
 public:
   void VerifyDecl(Decl *d);
+  Module *MakeModuleDecl(Identifier &name, bool isMainModule);
 
-public:
   FunDecl *MakeFunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent);
   void VerifyFunDecl(Decl *d);
 
+  StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc);
+  StructDecl *MakeInterfaceDecl(DeclName name, SrcLoc loc, DeclContext *dc);
+
 public:
-  StructDecl *MakeStructDecl(SrcLoc loc, DeclContext *dc);
+  BraceStmt *MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
+                           SrcLoc rbloc,
+                           llvm::Optional<bool> implicit = llvm::None);
 
 public:
   bool HasError() {
     return GetSyntaxContext().GetContext().GetDiagUnit().HasError();
   }
   Context &GetContext() { return GetSyntaxContext().GetContext(); }
+  SyntaxContext &GetSyntaxContext() { return *sc.get(); }
 
-public:
-  Identifier &MakeIdentifier(llvm::StringRef name);
   DeclName MakeDeclName();
 
 public:

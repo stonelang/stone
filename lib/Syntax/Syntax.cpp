@@ -49,10 +49,26 @@ FunDecl *Syntax::MakeFunDecl(DeclName name, SrcLoc nameLoc,
   return ::new (declPtr) FunDecl(name, nameLoc, parent);
 }
 
-StructDecl *Syntax::MakeStructDecl(SrcLoc loc, DeclContext *dc) {
+StructDecl *Syntax::MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc) {
   size_t size = sizeof(StructDecl);
 
   auto declPtr = Syntax::AllocateDeclMem<StructDecl>(GetSyntaxContext(), size);
   // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
+  return nullptr;
+}
+
+
+
+BraceStmt *Syntax::MakeBraceStmt(SrcLoc lbloc,
+                                 llvm::ArrayRef<SyntaxNode> elements,
+                                 SrcLoc rbloc, llvm::Optional<bool> implicit) {
+
+
+  // void *stmtPtr = ctx.Allocate(TotalSizeToAlloc<SyntaxNode>(elements.size()),
+  //                             alignof(BraceStmt));
+
+  // return ::new(stmtPtr) BraceStmt(lbloc, elements, rbloc, implicit);
+
+
   return nullptr;
 }

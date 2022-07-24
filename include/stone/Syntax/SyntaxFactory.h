@@ -35,6 +35,37 @@ public:
   SyntaxFactory();
   ~SyntaxFactory();
 };
+
+class DeclSyntaxFactory final {
+public:
+  DeclSyntaxFactory(const DeclSyntaxFactory &) = delete;
+  DeclSyntaxFactory(DeclSyntaxFactory &&) = delete;
+  DeclSyntaxFactory &operator=(const DeclSyntaxFactory &) = delete;
+  DeclSyntaxFactory &operator=(DeclSyntaxFactory &&) = delete;
+
+public:
+};
+
+class StmtSyntaxFactory final {
+public:
+  StmtSyntaxFactory(const StmtSyntaxFactory &) = delete;
+  StmtSyntaxFactory(StmtSyntaxFactory &&) = delete;
+  StmtSyntaxFactory &operator=(const StmtSyntaxFactory &) = delete;
+  StmtSyntaxFactory &operator=(StmtSyntaxFactory &&) = delete;
+
+public:
+};
+
+class ExprSyntaxFactory final {
+public:
+  ExprSyntaxFactory(const ExprSyntaxFactory &) = delete;
+  ExprSyntaxFactory(ExprSyntaxFactory &&) = delete;
+  ExprSyntaxFactory &operator=(const ExprSyntaxFactory &) = delete;
+  ExprSyntaxFactory &operator=(ExprSyntaxFactory &&) = delete;
+
+public:
+};
+
 } // namespace syn
 } // namespace stone
 #endif
