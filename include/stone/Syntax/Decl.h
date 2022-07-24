@@ -179,13 +179,14 @@ public:
 };
 
 class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
+
   friend class SyntaxContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
   /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
 
-  // mutable const Type *typeForDecl = nullptr;
+  mutable const Type *typeForDecl = nullptr;
 
   /// The start of the source range for this declaration.
   SrcLoc startLoc;
@@ -194,6 +195,17 @@ protected:
   TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
            UnifiedContext context)
       : NamedDecl(kind, name, nameLoc, context) {}
+
+public:
+  // Low-level accessor. If you just want the type defined by this node,
+  // check out ASTContext::getTypeDeclType or one of
+  // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
+  // already know the specific kind of node this is.
+  const Type *GetTypeForDecl() const { return typeForDecl; }
+  void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
+
+  // SourceLocation GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
+  // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
 // TODO: May use this instead of using NamedDecl

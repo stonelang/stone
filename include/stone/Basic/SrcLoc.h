@@ -85,7 +85,9 @@ public:
   SrcLoc Start, End;
 
   SrcRange() {}
+
   SrcRange(SrcLoc Loc) : Start(Loc), End(Loc) {}
+
   SrcRange(SrcLoc Start, SrcLoc End) : Start(Start), End(End) {
     assert(Start.isValid() == End.isValid() &&
            "Start and end should either both be valid or both be invalid!");

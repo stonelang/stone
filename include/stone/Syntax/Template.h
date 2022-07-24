@@ -27,44 +27,48 @@
 
 namespace stone {
 namespace syn {
+
+/// The kind of template argument we're storing.
+enum class TemplateArgumentKind : uint8_t {
+  /// Represents an empty template argument, e.g., one that has not
+  /// been deduced.
+  None = 0,
+
+  /// The template argument is a type.
+  Type,
+
+  /// The template argument is a declaration that was provided for a pointer,
+  /// reference, or pointer to member non-type template parameter.
+  Declaration,
+
+  /// The template argument is an integral value stored in an llvm::APSInt
+  /// that was provided for an integral non-type template parameter.
+  Integral,
+
+  /// The template argument is a template name that was provided for a
+  /// template template parameter.
+  Any,
+
+  /// The template argument is a pack expansion of a template name that was
+  /// provided for a template template parameter.
+  Expansion,
+
+  /// The template argument is an expression, and we've not resolved it to one
+  /// of the other forms yet, either because it's dependent or because we're
+  /// representing a non-canonical template argument (for instance, in a
+  /// TemplateSpecializationType). Also used to represent a non-dependent
+  Expression,
+
+  /// The template argument is actually a parameter pack. Arguments are stored
+  /// in the Args struct.
+  Pack
+};
+
 /// Represents a template argument.
 class TemplateArgument final {
+  TemplateArgumentKind kind;
+
 public:
-  /// The kind of template argument we're storing.
-  enum Kind {
-    /// Represents an empty template argument, e.g., one that has not
-    /// been deduced.
-    Empty = 0,
-
-    /// The template argument is a type.
-    Type,
-
-    /// The template argument is a declaration that was provided for a pointer,
-    /// reference, or pointer to member non-type template parameter.
-    Declaration,
-
-    /// The template argument is an integral value stored in an llvm::APSInt
-    /// that was provided for an integral non-type template parameter.
-    Integral,
-
-    /// The template argument is a template name that was provided for a
-    /// template template parameter.
-    Any,
-
-    /// The template argument is a pack expansion of a template name that was
-    /// provided for a template template parameter.
-    Expansion,
-
-    /// The template argument is an expression, and we've not resolved it to one
-    /// of the other forms yet, either because it's dependent or because we're
-    /// representing a non-canonical template argument (for instance, in a
-    /// TemplateSpecializationType). Also used to represent a non-dependent
-    Expression,
-
-    /// The template argument is actually a parameter pack. Arguments are stored
-    /// in the Args struct.
-    Pack
-  };
 };
 
 class TemplateArgumentLoc final {
