@@ -12,6 +12,8 @@ enum class DeclKind : uint8_t {
   First##Id##Decl = FirstId, Last##Id##Decl = LastId,
 #include "stone/Syntax/DeclKind.def"
 };
+
+// llvm::StringRef GetDeclKindName(DeclKind kind);
 } // namespace syn
 
 } // namespace stone

@@ -46,7 +46,9 @@ public:
   QualType() = default;
 };
 
-class FunctionType : public Type {
+class FunctionTypeBase : public Type {};
+
+class FunctionType : public FunctionTypeBase {
   // The type returned by the function.
   QualType returnType;
 

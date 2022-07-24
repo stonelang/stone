@@ -79,26 +79,26 @@ public:
   ~PairDelimiterBalancer();
 };
 
-class ParsingScope final {
+class SyntaxParsingScope final {
   Parser *self;
-  ParsingScope(const ParsingScope &) = delete;
-  void operator=(const ParsingScope &) = delete;
+  SyntaxParsingScope(const SyntaxParsingScope &) = delete;
+  void operator=(const SyntaxParsingScope &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass SyntaxScope
-  ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-               bool enteredScope = true, bool beforeCompoundStmt = false);
+  SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+                     bool enteredScope = true, bool beforeCompoundStmt = false);
 
-  ~ParsingScope();
+  ~SyntaxParsingScope();
 
 public:
   void Exit();
 };
 
-class MultiParsingScope final {
+class MultiSyntaxParsingScope final {
 public:
 };
 
@@ -147,8 +147,7 @@ struct SyntaxParsingTemplate {
         templateParameterLists(templateParameterLists),
         lastParameterListWasEmpty(lastParameterListWasEmpty) {}
 
-  explicit SyntaxParsingTemplate(SrcLoc externLoc,
-                                 SrcLoc templateLoc)
+  explicit SyntaxParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
       : kind(SyntaxParsingTemplateKind::ExplicitInstantiation),
         templateParameterLists(nullptr), externLoc(externLoc),
         templateLoc(templateLoc), lastParameterListWasEmpty(false) {}

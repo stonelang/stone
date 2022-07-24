@@ -59,10 +59,52 @@ class DeclStmt : public Stmt {
 
 /// This is equivalent to the CompoundStmt (c/c++) that
 /// represents a group of statements like { stmt stmt }.
-class BlockStmt final : public Stmt,
-                        private llvm::TrailingObjects<BlockStmt, Stmt *> {
+class BraceStmt final : public Stmt,
+                        private llvm::TrailingObjects<BraceStmt, Stmt *> {
 public:
 };
+
+/// BraceStmt - A brace enclosed sequence of expressions, stmts, or decls, like
+/// { var x = 10; print(10) }.
+// class BraceStmt final : public Stmt,
+//     private llvm::TrailingObjects<BraceStmt, SyntaxNode> {
+//   friend TrailingObjects;
+
+//   SourceLoc LBLoc;
+//   SourceLoc RBLoc;
+
+//   BraceStmt(SourceLoc lbloc, llvm::ArrayRef<SyntaxNode> elements, SourceLoc
+//   rbloc;);
+
+// public:
+
+//   SourceLoc getLBraceLoc() const { return LBLoc; }
+//   SourceLoc getRBraceLoc() const { return RBLoc; }
+
+//   SourceRange getSourceRange() const { return SourceRange(LBLoc, RBLoc); }
+
+//   bool empty() const { return getNumElements() == 0; }
+//   unsigned getNumElements() const { return Bits.BraceStmt.NumElements; }
+
+//   SyntaxNode getFirstElement() const { return getElements().front(); }
+//   SyntaxNode getLastElement() const { return getElements().back(); }
+
+//   void setFirstElement(SyntaxNode node) { getElements().front() = node; }
+//   void setLastElement(SyntaxNode node) { getElements().back() = node; }
+
+//   /// The elements contained within the BraceStmt.
+//   llvm::MutableArrayRef<SyntaxNode> getElements() {
+//     return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
+//   }
+
+//   /// The elements contained within the BraceStmt (const version).
+//   llvm::ArrayRef<SyntaxNode> getElements() const {
+//     return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
+//   }
+
+//   static bool classof(const Stmt *S) { return S->getKind() ==
+//   StmtKind::Brace; }
+// };
 
 class SwitchCase : public Stmt {
 protected:

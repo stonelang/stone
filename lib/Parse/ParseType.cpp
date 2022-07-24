@@ -7,5 +7,12 @@ using namespace stone;
 using namespace stone::syn;
 
 // Similar to ParseDeclSpecifiers
-// SyntaxResult<TypeRepr> Parser::ParseType() {}
-// SyntaxResult<TypeRepr> Parser::ParseDeclResultType() {}
+// SyntaxResult<QualType> Parser::ParseType() {
+
+//  return syn::MakeSyntaxResult<QualType>(funDecl);
+
+// }
+// SyntaxResult<QualType> Parser::ParseDeclResultType() {
+
+// 	return ParseType();
+// }

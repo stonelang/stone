@@ -128,6 +128,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
 
 SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
 
+  // SyntaxParsingScope syntaxScope(SyntaxKind::FunctionSignature);
+
   // TODO:
   // if(name == "Main"){
   //   sf.SetHasMainFun(true)
@@ -138,6 +140,8 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
   // funDecl->SetIdentifier();
 
   ParseFunctionArguments(funDecl);
+
+  // ParseReturnType();
 
   // Parse the return type
   // funDecl->SetReturnType();
@@ -155,6 +159,8 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
 
   assert(token.Is(tok::arrow) && "Require '->'");
   auto arrowLoc = ConsumeTok(tok::arrow);
+
+  // auto result = ParseDeclResultType();
 
   return syn::MakeSyntaxSuccess();
 }

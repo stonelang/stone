@@ -247,6 +247,10 @@ class FunctionDecl
       public ValueDecl,
       public AccessControl /*, public syn::Redeclarable<FunctionDecl>*/ {
 
+  /// This enum member is active if GetBodyKind() is BodyKind::Parsed or
+  /// BodyKind::TypeChecked.
+  BraceStmt *body;
+
   StorageSpecifierKind storageSpecifierKind;
 
 public:
@@ -256,9 +260,9 @@ public:
         ValueDecl(kind, name, nameLoc, parent) {}
 
 public:
-  /// BraceStmt
-  Stmt *GetBody();
-  // void SetBody(Stmt body) {}
+  BraceStmt *GetBody(bool canSynthesize = true) const;
+  /// Set a new body for the function.
+  void SetBody(BraceStmt *body);
 
   void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
     this->storageSpecifierKind = ssk;

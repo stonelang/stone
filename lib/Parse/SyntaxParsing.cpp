@@ -18,8 +18,9 @@ PairDelimiterBalancer::~PairDelimiterBalancer() {
 }
 
 //=Scope=//
-ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-                           bool enteredScope, bool beforeCompoundStmt)
+SyntaxParsingScope::SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+                                       bool enteredScope,
+                                       bool beforeCompoundStmt)
     : self(self) {
   if (enteredScope && !beforeCompoundStmt) {
     self->EnterScope(scopeKind);
@@ -33,12 +34,12 @@ ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
 
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void ParsingScope::Exit() {
+void SyntaxParsingScope::Exit() {
   if (self) {
     self->ExitScope();
     self = nullptr;
   }
 }
-ParsingScope::~ParsingScope() { Exit(); }
+SyntaxParsingScope::~SyntaxParsingScope() { Exit(); }
 
 SyntaxParsing::SyntaxParsing() {}

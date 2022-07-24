@@ -53,7 +53,6 @@
 //= STMT(s) =/
 STMT(Brace, Stmt)
 STMT(Return, Stmt)
-STMT(Block, Stmt)
 STMT(Yield, Stmt)
 STMT(Defer, Stmt)
 STMT(Case, Stmt)
