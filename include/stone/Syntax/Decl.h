@@ -247,7 +247,7 @@ class FunctionDecl
       public ValueDecl,
       public AccessControl /*, public syn::Redeclarable<FunctionDecl>*/ {
 
-  StorageKind storageKind;
+  StorageSpecifierKind storageSpecifierKind;
 
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -260,10 +260,10 @@ public:
   Stmt *GetBody();
   // void SetBody(Stmt body) {}
 
-  void SetStorageKind(StorageKind storageTy) {
-    this->storageKind = storageKind;
+  void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
+    this->storageSpecifierKind = ssk;
   }
-  StorageKind GetStorageKind() { return storageKind; }
+  StorageSpecifierKind GetStorageSpecifierKind() { return storageSpecifierKind; }
 
   // void SetReturnType(TypeDecl* tyDecl);
 

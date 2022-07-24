@@ -40,3 +40,5 @@ void ParsingScope::Exit() {
   }
 }
 ParsingScope::~ParsingScope() { Exit(); }
+
+SyntaxParsing::SyntaxParsing() {}

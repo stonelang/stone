@@ -71,6 +71,9 @@ public:
 
 class DeclSpecifier {
 
+  TypeSpecifierKind typeSpecifierKind;
+  StorageSpecifierKind storageSpecifierKind;
+
   AttributeFactory &attributeFactory;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
@@ -79,6 +82,10 @@ class DeclSpecifier {
 public:
   DeclSpecifier(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
+
+public:
+  StorageSpecifierKind GetStorageSpeciferKind() { return storageSpecifierKind; }
+  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
 };
 
 class Declarator {
@@ -105,6 +112,11 @@ class Declarator {
 public:
   Declarator(const DeclSpecifier &declSpecifier)
       : declSpecifier(declSpecifier) {}
+
+public:
+  /// getDeclSpec - Return the declaration-specifier that this declarator was
+  /// declared with.
+  const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

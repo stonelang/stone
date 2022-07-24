@@ -64,7 +64,7 @@ enum class ExprValueType : uint8_t {
 
 /// Storage classes.
 /// These are legal on both functions and variables
-enum class StorageKind : uint8_t {
+enum class StorageSpecifierKind : uint8_t {
   None = 0,
   Extern,
   Static,

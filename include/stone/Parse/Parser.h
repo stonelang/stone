@@ -26,12 +26,14 @@ class Parser;
 class SyntaxScope;
 class PairDelimiterBalancer;
 class ParsingDeclSpecifier;
+class ParsingDeclarator;
 
 class ParserStats final : public Stats {
-  Parser &parser;
+  const Parser &parser;
 
 public:
-  ParserStats(Parser &parser) : Stats("parser statistics:"), parser(parser) {}
+  ParserStats(const Parser &parser)
+      : Stats("parser statistics:"), parser(parser) {}
   void Print(ColorfulStream &stream) override;
 };
 
@@ -78,6 +80,8 @@ class Parser final {
 
   /// Factory object for creating ParsedAttribute objects.
   AttributeFactory attributeFactory;
+
+  SyntaxParsing syntaxParsing;
 
 private:
   // Identifiers

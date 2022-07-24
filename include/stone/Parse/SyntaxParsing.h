@@ -102,6 +102,23 @@ class MultiParsingScope final {
 public:
 };
 
+class SyntaxParsing {
+
+  // SyntaxScope *curScope;
+
+public:
+  SyntaxParsing();
+
+public:
+  // /// EnterScope - start a new scope.
+  // void EnterScope(SyntaxScopeKind scopeKind);
+
+  // /// ExitScope - pop a scope off the scope stack.
+  // void ExitScope();
+
+  // SyntaxScope *GetCurScope() const;
+};
+
 } // namespace syn
 } // namespace stone
 #endif
