@@ -76,16 +76,19 @@ class Parser final {
 
   SyntaxScope *curScope;
 
+  /// Factory object for creating ParsedAttribute objects.
+  AttributeFactory attributeFactory;
+
 private:
   // Identifiers
   mutable Identifier *importIdentifier;
   mutable Identifier *moduleIdentifier;
 
-public:
-  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
-
   Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
+
+public:
+  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
 
   ~Parser();
 
@@ -96,6 +99,8 @@ public:
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
+
+  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
 
 public:
   //===--------------------------------------------------------------------===//

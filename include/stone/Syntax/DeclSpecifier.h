@@ -1,9 +1,10 @@
 #ifndef STONE_SYNTAX_DECLSPECIFIER_H
 #define STONE_SYNTAX_DECLSPECIFIER_H
 
-#include "llvm/ADT/ArrayRef.h"
-
+#include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Template.h"
+
+#include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 namespace syn {
@@ -70,7 +71,14 @@ public:
 
 class DeclSpecifier {
 
+  AttributeFactory &attributeFactory;
+
+  DeclSpecifier(const DeclSpecifier &) = delete;
+  void operator=(const DeclSpecifier &) = delete;
+
 public:
+  DeclSpecifier(AttributeFactory &attributeFactory)
+      : attributeFactory(attributeFactory) {}
 };
 
 class Declarator {
@@ -95,6 +103,8 @@ class Declarator {
   llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
+  Declarator(const DeclSpecifier &declSpecifier)
+      : declSpecifier(declSpecifier) {}
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

@@ -31,9 +31,10 @@ public:
   SrcRange GetRange() const { return range; }
 
   SrcRange GetRangeWithLLBracket() const {
-    if (AtLoc.isValid())
-      return {AtLoc, Range.End};
-    return Range;
+    if (llBracketLoc.isValid()) {
+      return {llBracketLoc, range.End};
+    }
+    return range;
   }
 
   Attribute(const Attribute &) = delete;
@@ -41,6 +42,10 @@ public:
 protected:
   Attribute(SrcLoc llBracketLoc, SrcRange range)
       : llBracketLoc(llBracketLoc), range(range) {}
+};
+
+class AttributeFactory {
+public:
 };
 
 } // namespace syn

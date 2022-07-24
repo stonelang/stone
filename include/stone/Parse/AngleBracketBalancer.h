@@ -41,7 +41,7 @@ struct AngleBracketBalancer final {
     }
   };
 
-  SmallVector<AngleBracketLoc, 8> angleBracketLocs;
+  llvm::SmallVector<AngleBracketLoc, 8> angleBracketLocs;
 
   /// Add an expression that might have been intended to be a template name.
   /// In the case of ambiguity, we arbitrarily select the innermost such

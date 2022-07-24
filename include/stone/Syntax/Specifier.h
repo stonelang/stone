@@ -7,7 +7,7 @@
 namespace stone {
 namespace syn {
 
-enum class TypeSpecifierKind : unsigned {
+enum class TypeSpecifierKind : uint8_t {
   None = 0,
   Auto,
   Bool,
@@ -23,7 +23,8 @@ enum class TypeSpecifierKind : unsigned {
   Int64,
   UInt,
   UInt8,
-  Byte, // Alias for Uint8
+  // Alias for Uint8
+  Byte,
   UInt16,
   UInt32,
   UInt64,
