@@ -129,7 +129,8 @@ public:
 
 public:
   //==fun==//
-  SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &pds,
+                                  AccessLevel accessLevel);
   void ParseFunForwardDecl(AccessLevel accessLevel);
 
 private:

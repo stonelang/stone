@@ -263,7 +263,9 @@ public:
   void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
     this->storageSpecifierKind = ssk;
   }
-  StorageSpecifierKind GetStorageSpecifierKind() { return storageSpecifierKind; }
+  StorageSpecifierKind GetStorageSpecifierKind() {
+    return storageSpecifierKind;
+  }
 
   // void SetReturnType(TypeDecl* tyDecl);
 

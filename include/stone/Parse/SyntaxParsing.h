@@ -102,6 +102,60 @@ class MultiParsingScope final {
 public:
 };
 
+/// The kind of template we are parsing.
+enum class SyntaxParsingTemplateKind : uint8_t {
+  /// We are not parsing a template at all.
+  None = 0,
+  /// We are parsing a template declaration.
+  Template,
+  /// We are parsing an explicit specialization.
+  ExplicitSpecialization,
+  /// We are parsing an explicit instantiation.
+  ExplicitInstantiation
+};
+/// Contains information about any template-specific
+/// information that has been parsed prior to parsing declaration
+/// specifiers.
+struct SyntaxParsingTemplate {
+
+  SyntaxParsingTemplateKind kind;
+
+  /// The template parameter lists, for template declarations
+  /// and explicit specializations.
+  TemplateParameterLists *templateParameterLists;
+
+  /// The location of the 'extern' keyword, if any, for an explicit
+  /// instantiation
+  SrcLoc externLoc;
+
+  /// The location of the 'template' keyword, for an explicit
+  /// instantiation.
+  SrcLoc templateLoc;
+
+  /// Whether the last template parameter list was empty.
+  bool lastParameterListWasEmpty;
+
+  SyntaxParsingTemplate()
+      : kind(SyntaxParsingTemplateKind::None), templateParameterLists(nullptr) {
+  }
+  SyntaxParsingTemplate(TemplateParameterLists *templateParameterLists,
+                        bool isSpecialization,
+                        bool lastParameterListWasEmpty = false)
+      : kind(isSpecialization
+                 ? SyntaxParsingTemplateKind::ExplicitSpecialization
+                 : SyntaxParsingTemplateKind::Template),
+        templateParameterLists(templateParameterLists),
+        lastParameterListWasEmpty(lastParameterListWasEmpty) {}
+
+  explicit SyntaxParsingTemplate(SrcLoc externLoc,
+                                 SrcLoc templateLoc)
+      : kind(SyntaxParsingTemplateKind::ExplicitInstantiation),
+        templateParameterLists(nullptr), externLoc(externLoc),
+        templateLoc(templateLoc), lastParameterListWasEmpty(false) {}
+
+  SrcRange GetSrcRange() const;
+};
+
 class SyntaxParsing {
 
   // SyntaxScope *curScope;

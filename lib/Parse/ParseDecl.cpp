@@ -82,12 +82,14 @@ SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
 
   // TODO: ParseTemplateDecl first before you move
 
+  ParsingDeclSpecifier pds(*this);
+
   switch (token.GetKind()) {
   case tok::kw_forward:
     // syntaxResult = ParseForwardDecl();
     break;
   case tok::kw_fun:
-    declResult = ParseFunDecl(accessLevel);
+    declResult = ParseFunDecl(pds, accessLevel);
     break;
   default:
     break;
@@ -95,7 +97,8 @@ SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
   return declResult;
 }
 
-SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
+SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
+                                        AccessLevel accessLevel) {
 
   assert(token.Is(tok::kw_fun) &&
          "Attempting to parse a 'fun' decl with incorrect token.");
