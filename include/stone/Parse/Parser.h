@@ -115,8 +115,8 @@ private:
 
 public:
   // == Type Parsing ==//
-  // SyntaxResult<TypeRepr> ParseType();
-  // SyntaxResult<TypeRepr> ParseDeclResultType();
+  SyntaxResult<QualType> ParseType();
+  SyntaxResult<QualType> ParseDeclResultType();
 
 public:
   //==fun==//

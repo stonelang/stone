@@ -11,6 +11,19 @@
 namespace stone {
 namespace syn {
 
+enum class GC : uint8_t { None = 0, Weak, Strong };
+
+enum class TypeQualifer : uint8_t {
+  None = 0,
+  Const = 1,
+  Restrict = 2,
+  Volatile = 4,
+  Unaligned = 8,
+  // This has no corresponding Qualifiers::TQ value, because it's not treated
+  // as a qualifier in our type system.
+  Atomic = 16
+};
+
 // Extended Qualifiers
 class ExtQuals;
 // Qualified Types
@@ -38,6 +51,7 @@ class FunctionType : public Type {
   QualType returnType;
 
 public:
+  QualType GetReturnType() { return returnType; }
 };
 
 } // namespace syn

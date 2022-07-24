@@ -8,6 +8,22 @@ namespace syn {
 
 class ScopeSpecifier {};
 
+struct DeclaratorChunk final {
+
+  DeclaratorChunk(){};
+
+  enum DeclaratorChunkKind {
+    Pointer,
+    Reference,
+    Array,
+    Function,
+    BlockPointer,
+    MemberPointer,
+    Paren,
+    Pipe,
+  };
+};
+
 class Declarator {
 public:
 };
