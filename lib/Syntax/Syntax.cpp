@@ -61,9 +61,8 @@ BraceStmt *Syntax::MakeBraceStmt(SrcLoc lbloc,
                                  llvm::ArrayRef<SyntaxNode> elements,
                                  SrcLoc rbloc, llvm::Optional<bool> implicit) {
 
-  // void *stmtPtr = GetSyntaxContext().Allocate(
-  //     TotalSizeToAlloc<SyntaxNode>(elements.size()), alignof(BraceStmt));
-  // return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
+  void *stmtPtr = GetSyntaxContext().Allocate(
+      BraceStmt::totalSizeToAlloc<SyntaxNode>(elements.size()), alignof(BraceStmt));
 
-  return nullptr;
+  return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }

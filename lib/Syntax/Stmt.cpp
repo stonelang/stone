@@ -13,6 +13,6 @@ BraceStmt::BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<SyntaxNode> elements,
 
   // Bits.BraceStmt.NumElements = elts.size();
 
-  // std::uninitialized_copy(elements.begin(), elements.end(),
-  //                         getTrailingObjects<SyntaxNode>());
+  std::uninitialized_copy(elements.begin(), elements.end(),
+                          getTrailingObjects<SyntaxNode>());
 }

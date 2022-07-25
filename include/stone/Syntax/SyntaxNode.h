@@ -1,7 +1,6 @@
 #ifndef STONE_SYNTAX_SYNTAXNODE_H
 #define STONE_SYNTAX_SYNTAXNODE_H
 
-
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {

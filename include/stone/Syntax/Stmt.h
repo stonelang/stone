@@ -58,17 +58,10 @@ class DeclStmt : public Stmt {
   SrcLoc startLoc, endLoc;
 };
 
-/// This is equivalent to the CompoundStmt (c/c++) that
-/// represents a group of statements like { stmt stmt }.
-// class BraceStmt final : public Stmt,
-//                         private llvm::TrailingObjects<BraceStmt, Stmt *> {
-// public:
-// };
-
 /// BraceStmt - A brace enclosed sequence of expressions, stmts, or decls, like
 /// { var x = 10; print(10) }.
 class BraceStmt final : public Stmt,
-                        private llvm::TrailingObjects<BraceStmt, SyntaxNode> {
+                        public llvm::TrailingObjects<BraceStmt, SyntaxNode> {
   friend TrailingObjects;
 
   SrcLoc lbLoc;
@@ -107,7 +100,7 @@ public:
   }
 };
 
-class SwitchCase : public Stmt {
+class SwitchCaseStmt : public Stmt {
 protected:
   /// The location of the ":".
   SrcLoc colonLoc;
@@ -115,12 +108,12 @@ protected:
 
 /// CaseStmt - Represent a case statement. It can optionally be a GNU case
 /// statement of the form LHS ... RHS representing a range of cases.
-class CaseStmt final : public SwitchCase,
+class CaseStmt final : public SwitchCaseStmt,
                        private llvm::TrailingObjects<CaseStmt, Stmt *, SrcLoc> {
   friend TrailingObjects;
 };
 
-class DefaultStmt : public SwitchCase {
+class DefaultStmt : public SwitchCaseStmt {
   Stmt *subStmt;
 };
 
@@ -164,6 +157,33 @@ class DeferStmt : public Stmt {
   Expr *callExpr;
 
 public:
+};
+
+class ReturnStmt : public Stmt {
+
+  Expr *result;
+  SrcLoc returnLoc;
+
+public:
+  ReturnStmt(SrcLoc ReturnLoc, Expr *result)
+      : Stmt(StmtKind::Return), returnLoc(returnLoc), result(result) {}
+
+  SrcLoc GetReturnLoc() const { return returnLoc; }
+
+  SrcLoc GetStartLoc() const;
+  SrcLoc GetEndLoc() const;
+
+  bool HasResult() const { return result != 0; }
+
+  Expr *GetResult() const {
+    assert(result && "ReturnStmt doesn't have a result");
+    return result;
+  }
+  void SetResult(Expr *e) { result = e; }
+
+  static bool classof(const Stmt *stmt) {
+    return stmt->GetKind() == StmtKind::Return;
+  }
 };
 
 } // namespace syn

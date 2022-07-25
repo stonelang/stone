@@ -92,14 +92,6 @@ public:
   template <typename DeclTy, typename AllocatorTy>
   static void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                                bool extraSpace = false);
-
-  template <typename DeclTy, typename AllocatorTy>
-  static void *AllocateStmtMem(AllocatorTy &allocatorTy, size_t baseSize,
-                               bool extraSpace = false);
-
-  template <typename DeclTy, typename AllocatorTy>
-  static void *AllocateExprMem(AllocatorTy &allocatorTy, size_t baseSize,
-                               bool extraSpace = false);
 };
 
 } // namespace syn
