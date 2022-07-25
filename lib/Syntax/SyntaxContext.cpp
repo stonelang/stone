@@ -66,8 +66,7 @@ Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
 }
 
 size_t SyntaxContext::GetSizeOfMemUsed() const {
-  // TODO: use ctx.GetBumpAlloc()
-  return bumpAlloc.getTotalMemory();
+  return GetAllocator().getTotalMemory();
 }
 
 void SyntaxContextStats::Print(ColorfulStream &stream) {}

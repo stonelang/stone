@@ -13,6 +13,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
+#include "stone/Syntax/SyntaxNode.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -50,7 +51,7 @@ public:
   Stmt(StmtKind kind) : kind(kind) {}
 
 public:
-  StmtKind GetKind() { return kind; }
+  StmtKind GetKind() const { return kind; }
 };
 
 class DeclStmt : public Stmt {
@@ -59,52 +60,52 @@ class DeclStmt : public Stmt {
 
 /// This is equivalent to the CompoundStmt (c/c++) that
 /// represents a group of statements like { stmt stmt }.
-class BraceStmt final : public Stmt,
-                        private llvm::TrailingObjects<BraceStmt, Stmt *> {
-public:
-};
+// class BraceStmt final : public Stmt,
+//                         private llvm::TrailingObjects<BraceStmt, Stmt *> {
+// public:
+// };
 
 /// BraceStmt - A brace enclosed sequence of expressions, stmts, or decls, like
 /// { var x = 10; print(10) }.
-// class BraceStmt final : public Stmt,
-//     private llvm::TrailingObjects<BraceStmt, SyntaxNode> {
-//   friend TrailingObjects;
+class BraceStmt final : public Stmt,
+                        private llvm::TrailingObjects<BraceStmt, SyntaxNode> {
+  friend TrailingObjects;
 
-//   SourceLoc LBLoc;
-//   SourceLoc RBLoc;
+  SrcLoc lbLoc;
+  SrcLoc rbLoc;
 
-//   BraceStmt(SourceLoc lbloc, llvm::ArrayRef<SyntaxNode> elements, SourceLoc
-//   rbloc;);
+public:
+  BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<SyntaxNode> elements, SrcLoc rbLoc);
 
-// public:
+public:
+  SrcLoc GetLBraceLoc() const { return lbLoc; }
+  SrcLoc GetRBraceLoc() const { return rbLoc; }
 
-//   SourceLoc getLBraceLoc() const { return LBLoc; }
-//   SourceLoc getRBraceLoc() const { return RBLoc; }
+  // SourceRange getSourceRange() const { return SourceRange(LBLoc, RBLoc); }
 
-//   SourceRange getSourceRange() const { return SourceRange(LBLoc, RBLoc); }
+  // bool empty() const { return getNumElements() == 0; }
+  // unsigned getNumElements() const { return Bits.BraceStmt.NumElements; }
 
-//   bool empty() const { return getNumElements() == 0; }
-//   unsigned getNumElements() const { return Bits.BraceStmt.NumElements; }
+  // // SyntaxNode getFirstElement() const { return getElements().front(); }
+  // SyntaxNode getLastElement() const { return getElements().back(); }
 
-//   SyntaxNode getFirstElement() const { return getElements().front(); }
-//   SyntaxNode getLastElement() const { return getElements().back(); }
+  // void setFirstElement(SyntaxNode node) { getElements().front() = node; }
+  // void setLastElement(SyntaxNode node) { getElements().back() = node; }
 
-//   void setFirstElement(SyntaxNode node) { getElements().front() = node; }
-//   void setLastElement(SyntaxNode node) { getElements().back() = node; }
+  /// The elements contained within the BraceStmt.
+  // llvm::MutableArrayRef<SyntaxNode> getElements() {
+  //   return {getTrailingObjects<SyntaxNode>(), Bits.BraceStmt.NumElements};
+  // }
 
-//   /// The elements contained within the BraceStmt.
-//   llvm::MutableArrayRef<SyntaxNode> getElements() {
-//     return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
-//   }
+  /// The elements contained within the BraceStmt (const version).
+  // llvm::ArrayRef<SyntaxNode> getElements() const {
+  //   return {getTrailingObjects<SyntaxNode>(), Bits.BraceStmt.NumElements};
+  // }
 
-//   /// The elements contained within the BraceStmt (const version).
-//   llvm::ArrayRef<SyntaxNode> getElements() const {
-//     return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
-//   }
-
-//   static bool classof(const Stmt *S) { return S->getKind() ==
-//   StmtKind::Brace; }
-// };
+  static bool classof(const Stmt *stmt) {
+    return stmt->GetKind() == StmtKind::Brace;
+  }
+};
 
 class SwitchCase : public Stmt {
 protected:
@@ -158,8 +159,8 @@ class DeferStmt : public Stmt {
   /// This is the bound temp function.
   FunDecl *tempDecl;
 
-  /// This is the invocation of the closure, which is to be emitted on any error
-  /// paths.
+  /// This is the invocation of the closure, which is to be emitted on any
+  /// error paths.
   Expr *callExpr;
 
 public:

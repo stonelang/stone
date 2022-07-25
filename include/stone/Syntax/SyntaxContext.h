@@ -126,7 +126,7 @@ public:
   SrcMgr &GetSrcMgr() { return ctx.GetSrcMgr(); }
 
   /// Retrieve the allocator for the given arena.
-  llvm::BumpPtrAllocator &GetAllocator() const;
+  llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
 
   SyntaxContextStats &GetStats() { return *stats.get(); }
 
@@ -136,7 +136,7 @@ public:
   size_t GetSizeOfMemUsed() const;
 
   void *Allocate(size_t size, unsigned align = 8) const {
-    return bumpAlloc.Allocate(size, align);
+    return GetAllocator().Allocate(size, align);
   }
   template <typename T> T *Allocate(size_t num = 1) const {
     return static_cast<T *>(Allocate(num * sizeof(T), alignof(T)));

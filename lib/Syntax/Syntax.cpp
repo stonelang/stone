@@ -57,18 +57,13 @@ StructDecl *Syntax::MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc) {
   return nullptr;
 }
 
-
-
 BraceStmt *Syntax::MakeBraceStmt(SrcLoc lbloc,
                                  llvm::ArrayRef<SyntaxNode> elements,
                                  SrcLoc rbloc, llvm::Optional<bool> implicit) {
 
-
-  // void *stmtPtr = ctx.Allocate(TotalSizeToAlloc<SyntaxNode>(elements.size()),
-  //                             alignof(BraceStmt));
-
-  // return ::new(stmtPtr) BraceStmt(lbloc, elements, rbloc, implicit);
-
+  // void *stmtPtr = GetSyntaxContext().Allocate(
+  //     TotalSizeToAlloc<SyntaxNode>(elements.size()), alignof(BraceStmt));
+  // return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 
   return nullptr;
 }
