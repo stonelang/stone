@@ -23,8 +23,8 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/PrettyStackTrace.h"
-#include "llvm/Support/VersionTuple.h"
 #include "llvm/Support/TrailingObjects.h"
+#include "llvm/Support/VersionTuple.h"
 
 #include <algorithm>
 #include <iterator>
@@ -54,7 +54,6 @@ class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
 class TemplateParameterList;
-
 
 class DeclStats final : public Stats {
   const Decl &declaration;

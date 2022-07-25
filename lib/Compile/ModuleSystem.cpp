@@ -22,8 +22,14 @@ syn::Module *ModuleSystem::GetMainModule() const {
 }
 
 stone::Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
-  if (!Lexer::isIdentifier(moduleName)) {
-    return stone::Error(true);
+
+  llvm::SmallVector<llvm::StringRef, 4> results;
+  moduleName.split(results, ".");
+
+  for (auto identifier : results) {
+    if (!Lexer::isIdentifier(identifier)) {
+      return stone::Error(true);
+    }
   }
   return stone::Error();
 }
