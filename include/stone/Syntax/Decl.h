@@ -24,6 +24,7 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/VersionTuple.h"
+#include "llvm/Support/TrailingObjects.h"
 
 #include <algorithm>
 #include <iterator>
@@ -52,6 +53,8 @@ class TypeAliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
+class TemplateParameterList;
+
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -405,13 +408,17 @@ enum class UsingDeclKind : uint8_t {
   Alias,
 };
 
-class UsingDecl : public NamedDecl {
+class UsingDecl final : public NamedDecl {
   SrcLoc usingLoc;
   UsingDeclKind usingDeclKind;
 
 public:
   // syn::Module *mod = nullptr;
 };
+
+class TrustDecl final
+    : public Decl,
+      public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
 
 } // namespace syn
 } // namespace stone

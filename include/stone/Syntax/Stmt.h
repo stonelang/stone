@@ -95,6 +95,7 @@ public:
   //   return {getTrailingObjects<SyntaxNode>(), Bits.BraceStmt.NumElements};
   // }
 
+public:
   static bool classof(const Stmt *stmt) {
     return stmt->GetKind() == StmtKind::Brace;
   }
