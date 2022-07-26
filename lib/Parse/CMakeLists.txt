@@ -7,6 +7,7 @@ set(stone_parse_sources
 	ParseExpr.cpp
 	Parser.cpp
 	ParseStmt.cpp
+	ParseType.cpp
 	SyntaxParsing.cpp
 
 	LINK_LIBS
