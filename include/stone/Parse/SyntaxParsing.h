@@ -66,13 +66,30 @@ class ParsingDeclarator final : public Declarator {
 
   // void Complete(Decl *D) { ParsingRAII.complete(D); }
 };
+
+class PairDelimiterCount final {
+public:
+  unsigned short parenCount;
+  unsigned short bracketCount;
+  unsigned short braceCount;
+
+public:
+  PairDelimiterCount() : parenCount(0), bracketCount(0), braceCount(0) {}
+
+  ~PairDelimiterCount() {
+    parenCount = 0;
+    bracketCount = 0;
+    braceCount = 0;
+  }
+};
+
 /// RAII object that makes sure paren/bracket/brace count is correct
 /// after declaration/statement parsing, even when there's a parsing error.
 class PairDelimiterBalancer final {
   Parser &parser;
 
 public:
-  unsigned short parenCount, bracketCount, braceCount;
+  PairDelimiterCount pairDelimiterCount;
 
 public:
   PairDelimiterBalancer(Parser &other);

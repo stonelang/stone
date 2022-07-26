@@ -6,15 +6,16 @@ using namespace stone::syn;
 ParsingDeclSpecifier::ParsingDeclSpecifier(Parser &parser)
     : DeclSpecifier(parser.GetAttributeFactory()), parser(parser) {}
 
-PairDelimiterBalancer::PairDelimiterBalancer(Parser &other)
-    : parser(other), parenCount(other.parenCount),
-      bracketCount(other.bracketCount), braceCount(other.braceCount) {}
-
+PairDelimiterBalancer::PairDelimiterBalancer(Parser &other) : parser(other) {
+  pairDelimiterCount.parenCount = other.pairDelimiterCount.parenCount;
+  pairDelimiterCount.bracketCount = other.pairDelimiterCount.bracketCount;
+  pairDelimiterCount.braceCount = other.pairDelimiterCount.braceCount;
+}
 PairDelimiterBalancer::~PairDelimiterBalancer() {
   // parser.AngleBrackets.clear(parser);
-  parser.parenCount = parenCount;
-  parser.bracketCount = bracketCount;
-  parser.braceCount = braceCount;
+  parser.pairDelimiterCount.parenCount = pairDelimiterCount.parenCount;
+  parser.pairDelimiterCount.bracketCount = pairDelimiterCount.bracketCount;
+  parser.pairDelimiterCount.braceCount = pairDelimiterCount.braceCount;
 }
 
 //=Scope=//

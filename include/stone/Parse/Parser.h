@@ -72,9 +72,7 @@ class Parser final {
   /// The location of the previous token.
   SrcLoc prevTokLoc;
 
-  unsigned short parenCount = 0;
-  unsigned short bracketCount = 0;
-  unsigned short braceCount = 0;
+  PairDelimiterCount pairDelimiterCount;
 
   SyntaxScope *curScope;
 
@@ -244,11 +242,13 @@ public:
 
   SrcLoc ConsumeParen() {
     assert(IsParenTok() && "Wrong consume method");
-    if (token.GetKind() == tok::l_paren)
-      ++parenCount;
-    else if (parenCount) {
+
+    if (token.GetKind() == tok::l_paren) {
+      ++pairDelimiterCount.parenCount;
+    } else if (pairDelimiterCount.parenCount) {
       // TODO: angleBrackets.clear(*this);
-      --parenCount; // Don't let unbalanced )'s drive the count negative.
+      // Don't let unbalanced )'s drive the count negative.
+      --pairDelimiterCount.parenCount;
     }
     prevTokLoc = token.GetLoc();
     Lex(token);
