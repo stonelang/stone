@@ -96,8 +96,13 @@ public:
   ~PairDelimiterBalancer();
 };
 
+using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
+
 class SyntaxParsingScope final {
   Parser *self;
+
+  SyntaxScopeCache syntaxScopeCache;
+
   SyntaxParsingScope(const SyntaxParsingScope &) = delete;
   void operator=(const SyntaxParsingScope &) = delete;
 

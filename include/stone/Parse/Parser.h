@@ -7,7 +7,6 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Parse/SyntaxParsing.h"
-#include "stone/Parse/SyntaxScopeCache.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
@@ -41,7 +40,6 @@ class Parser final {
   friend ParserStats;
   friend PairDelimiterBalancer;
 
-  SyntaxScopeCache scopeCache;
   SyntaxListener *listener;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
