@@ -35,12 +35,12 @@ SyntaxParsingScope::SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
 
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void SyntaxParsingScope::Exit() {
+void SyntaxParsingScope::ExitScope() {
   if (self) {
     self->ExitScope();
     self = nullptr;
   }
 }
-SyntaxParsingScope::~SyntaxParsingScope() { Exit(); }
+SyntaxParsingScope::~SyntaxParsingScope() { ExitScope(); }
 
 SyntaxParsing::SyntaxParsing() {}

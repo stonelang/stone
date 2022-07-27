@@ -9,4 +9,4 @@ enum class AttributeKind {};
 }
 } // namespace stone
 
-#endif if
+#endif

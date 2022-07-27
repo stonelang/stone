@@ -202,8 +202,11 @@ ERROR(err_case_stmt_without_body,none,
 // Parsing Function types
 //==============================================================================
 
-ERROR(expected_type_function_result,PointsToFirstBadToken,
+ERROR(err_expected_type_for_function_result,PointsToFirstBadToken,
       "expected type for function result", ())
+
+ERROR(err_expected_arrow_after_function_param,none,
+      "expected '->' after function parameter tuple", ())
 
 //==============================================================================
 // MARK: Type checking

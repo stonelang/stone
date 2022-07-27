@@ -2,17 +2,16 @@
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxBuilder.h"
 #include "stone/Syntax/SyntaxNode.h"
+#include "stone/Syntax/Type.h"
 
 using namespace stone;
 using namespace stone::syn;
 
 // Similar to ParseDeclSpecifiers
-// SyntaxResult<QualType> Parser::ParseType() {
+SyntaxResult<QualType> Parser::ParseType() {
+  return syn::MakeSyntaxResult<QualType>(nullptr);
+}
 
-//  return syn::MakeSyntaxResult<QualType>(funDecl);
-
-// }
-// SyntaxResult<QualType> Parser::ParseDeclResultType() {
-
-// 	return ParseType();
-// }
+SyntaxResult<QualType> Parser::ParseDeclResultType(Diag<> diagID) {
+  return ParseType();
+}

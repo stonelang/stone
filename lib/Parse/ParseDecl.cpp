@@ -1,3 +1,4 @@
+#include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxBuilder.h"
@@ -141,10 +142,27 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
 
   ParseFunctionArguments(funDecl);
 
+  SrcLoc arrowLoc;
+
+  if (!ConsumeIf(tok::arrow, arrowLoc)) {
+    // FixIt ':' to '->'.
+    PrintD(token, diag::err_expected_arrow_after_function_param)
+        .WithFix()
+        .Replace(token.GetLoc(), llvm::StringRef("->"));
+
+    // arrowLoc = ConsumeTok(tok::colon);
+  }
+
+  // assert(token.Is(tok::arrow) && "Require '->'");
+  // auto arrowLoc = ConsumeTok(tok::arrow);
+
   // ParseReturnType();
 
   // Parse the return type
   // funDecl->SetReturnType();
+
+  SyntaxResult<QualType> resultType =
+      ParseDeclResultType(diag::err_expected_type_for_function_result);
 
   // ConsumeTok();
   return syn::MakeSyntaxSuccess();
@@ -156,9 +174,6 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
 
   assert(token.Is(tok::r_paren) && "Require ')' brace.");
   auto rParenLoc = ConsumeTok(tok::r_paren);
-
-  assert(token.Is(tok::arrow) && "Require '->'");
-  auto arrowLoc = ConsumeTok(tok::arrow);
 
   // auto result = ParseDeclResultType();
 

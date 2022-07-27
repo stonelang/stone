@@ -40,10 +40,21 @@ public:
 class alignas(1 << TypeAlignInBits) Type
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
 
-// QualifierType
-class QualType {
+class alignas(1 << QualTypeAlignInBits) QualType
+    : public SyntaxAllocation<QualType> {
 public:
   QualType() = default;
+  QualType(const Type *ty, unsigned quals) {}
+
+public:
+
+  /// Retrieves a pointer to the underlying (unqualified) type.
+  ///
+  /// This function requires that the type not be NULL. If the type might be
+  /// NULL, use the (slightly less efficient) \c getTypePtrOrNull().
+  const Type *GetTypePtr() const;
+
+  const Type *GetTypePtrOrNull() const;
 };
 
 class FunctionTypeBase : public Type {};

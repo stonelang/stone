@@ -102,6 +102,8 @@ public:
 
   AttributeFactory &GetAttributeFactory() { return attributeFactory; }
 
+  Context &GetContext();
+
 public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
@@ -121,7 +123,7 @@ private:
 public:
   // == Type Parsing ==//
   SyntaxResult<QualType> ParseType();
-  SyntaxResult<QualType> ParseDeclResultType();
+  SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
 
 public:
   //==fun==//
@@ -229,11 +231,22 @@ public:
 public:
   /// Stop parsing now.
   void Stop() { token.SetKind(tok::eof); }
-
   /// Is at end of file.
   bool IsDone() { return token.GetKind() == tok::eof; }
-
   bool HasError();
+
+public:
+  // template <typename V>
+  // V Lookahead(unsigned char k,
+  //               llvm::function_ref<Val(CancellableBacktrackingScope &)>
+  //               client) {
+  //   CancellableBacktrackingScope backtrackScope(*this);
+
+  //   for (unsigned char i = 0; i < k; ++i){
+  //     ConsumeToken();
+  //   }
+  //   return client(backtrackScope);
+  // }
 
   SrcLoc ConsumeBracket() { return SrcLoc(); }
   SrcLoc ConsumeBrace() { return SrcLoc(); }
@@ -255,13 +268,33 @@ public:
 
   /// Consume the token and update OnToken from SCPipeline
   SrcLoc ConsumeTok(bool onTok = true);
+
   SrcLoc ConsumeTok(tok kind) {
     assert(token.Is(kind) && "Consuming wrong token type");
     return ConsumeTok(false);
   }
   SrcLoc ConsumeAnyTok(bool consumeCodeCompletionTok = false);
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
-  Context &GetContext();
+
+  /// If the current token is the specified kind, consume it and
+  /// return true.  Otherwise, return false without consuming it.
+  bool ConsumeIf(tok kind) {
+    if (token.IsNot(kind)) {
+      return false;
+    }
+    ConsumeTok(kind);
+    return true;
+  }
+
+  /// If the current token is the specified kind, consume it and
+  /// return true.  Otherwise, return false without consuming it.
+  bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
+    if (token.IsNot(kind)) {
+      return false;
+    }
+    consumedLoc = ConsumeTok(kind);
+    return true;
+  }
 
 public:
   /// EnterScope - start a new scope.
@@ -273,11 +306,8 @@ public:
   SyntaxScope *GetCurScope() const;
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID);
-  InFlightDiagnostic PrintD(const Token &token, DiagID diagID);
-
-private:
-  void PrintD();
+  InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
+  InFlightDiagnostic PrintD(Token &token, Diag<> diagID);
 
 private:
   // Helpers

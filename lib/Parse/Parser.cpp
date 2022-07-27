@@ -102,4 +102,13 @@ SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
 Identifier &Parser::GetIdentifierOnly(llvm::StringRef text) {
   return syntax.MakeIdentifier(text);
 }
+
+InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
+  return GetContext().GetDiagUnit().PrintD(loc, diagID);
+}
+
+InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
+  return PrintD(token.GetLoc(), diagID);
+}
+
 void ParserStats::Print(ColorfulStream &stream) {}

@@ -21,6 +21,7 @@ constexpr size_t DeclAlignInBits = 3;
 constexpr size_t ExprAlignInBits = 3;
 constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
+constexpr size_t QualTypeAlignInBits = 3;
 constexpr size_t SyntaxContextAlignInBits = 2;
 constexpr size_t DeclContextAlignInBits = 3;
 

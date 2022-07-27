@@ -97,11 +97,12 @@ public:
 };
 
 using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
-
 class SyntaxParsingScope final {
   Parser *self;
-
   SyntaxScopeCache syntaxScopeCache;
+
+  bool enteredScope;
+  bool beforeCompoundStmt;
 
   SyntaxParsingScope(const SyntaxParsingScope &) = delete;
   void operator=(const SyntaxParsingScope &) = delete;
@@ -117,7 +118,16 @@ public:
   ~SyntaxParsingScope();
 
 public:
-  void Exit();
+  /// EnterScope - start a new scope.
+  void EnterScope(SyntaxScopeKind scopeKind);
+
+  /// ExitScope - pop a scope off the scope stack.
+  void ExitScope();
+
+  SyntaxScope *GetCurScope() const;
+  // size_t GetSyntaxScopeCacheSize() {
+  //   return syntaxScopeCache.size();
+  // }
 };
 
 class MultiSyntaxParsingScope final {
@@ -177,21 +187,12 @@ struct SyntaxParsingTemplate {
   SrcRange GetSrcRange() const;
 };
 
-class SyntaxParsing {
+class SyntaxParsing final {
 
-  // SyntaxScope *curScope;
+  // SyntaxParsingScope syntaxParsingScope;
 
 public:
   SyntaxParsing();
-
-public:
-  // /// EnterScope - start a new scope.
-  // void EnterScope(SyntaxScopeKind scopeKind);
-
-  // /// ExitScope - pop a scope off the scope stack.
-  // void ExitScope();
-
-  // SyntaxScope *GetCurScope() const;
 };
 
 } // namespace syn
