@@ -42,6 +42,8 @@ public:
 class alignas(1 << TypeAlignInBits) Type
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
 
+
+//TODO: QualType to TypeRep 
 class alignas(1 << QualTypeAlignInBits) QualType
     : public SyntaxAllocation<QualType> {
 public:

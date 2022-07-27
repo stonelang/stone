@@ -4,6 +4,8 @@ set(stone_sem_sources
 	TypeChecker.cpp
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
+	TypeCheckType.cpp
+	
 	UsingResolution.cpp
 	
 	LINK_LIBS
