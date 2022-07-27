@@ -5,6 +5,8 @@
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeLoc.h"
+#include "stone/Syntax/Ownership.h"
+
 
 #include <string>
 
@@ -47,7 +49,6 @@ public:
   QualType(const Type *ty, unsigned quals) {}
 
 public:
-
   /// Retrieves a pointer to the underlying (unqualified) type.
   ///
   /// This function requires that the type not be NULL. If the type might be
@@ -66,6 +67,9 @@ class FunctionType : public FunctionTypeBase {
 public:
   QualType GetReturnType() { return returnType; }
 };
+
+using TypeRep = OpaquePtr<QualType>;
+using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 } // namespace syn
 } // namespace stone
