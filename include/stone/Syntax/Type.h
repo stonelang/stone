@@ -1,12 +1,11 @@
 #ifndef STONE_SYNTAX_TYPE_H
 #define STONE_SYNTAX_TYPE_H
 
+#include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeLoc.h"
-#include "stone/Syntax/Ownership.h"
-
 
 #include <string>
 
@@ -42,8 +41,7 @@ public:
 class alignas(1 << TypeAlignInBits) Type
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
 
-
-//TODO: QualType to TypeRep 
+// TODO: QualType to TypeRep
 class alignas(1 << QualTypeAlignInBits) QualType
     : public SyntaxAllocation<QualType> {
 public:

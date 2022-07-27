@@ -103,6 +103,41 @@ Identifier &Parser::GetIdentifierOnly(llvm::StringRef text) {
   return syntax.MakeIdentifier(text);
 }
 
+SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
+  // Consumes prefix of token and returns its location.
+  // (like '?', '<', '>' or '!' immediately followed by '<')
+  assert(len >= 1);
+
+  // Current token can be either one-character token we want to consume...
+  // if (Tok.getLength() == Len) {
+  //   Tok.setKind(Kind);
+  //   return consumeToken();
+  // }
+
+  // auto Loc = Tok.getLoc();
+
+  // // ... or a multi-character token with the first N characters being the one
+  // // that we want to consume as a separate token.
+  // assert(Tok.getLength() > Len);
+  // markSplitToken(Kind, Tok.getText().substr(0, Len));
+
+  // auto NewState = L->getStateForBeginningOfTokenLoc(Loc.getAdvancedLoc(Len));
+  // restoreParserPosition(ParserPosition(NewState, Loc),
+  //                       /*enableDiagnostics=*/true);
+  // return PreviousLoc;
+  SrcLoc();
+}
+
+SrcLoc Parser::ConsumeStartingLess() {
+  assert(StartsWithLess(token) && "Token does not start with '<'");
+  return ConsumeStartingCharOfCurToken(tok::l_angle);
+}
+
+SrcLoc Parser::ConsumeStartingGreater() {
+  assert(StartsWithGreater(token) && "Token does not start with '>'");
+  return ConsumeStartingCharOfCurToken(tok::r_angle);
+}
+
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetContext().GetDiagUnit().PrintD(loc, diagID);
 }

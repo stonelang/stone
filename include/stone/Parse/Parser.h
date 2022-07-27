@@ -295,6 +295,18 @@ public:
     consumedLoc = ConsumeTok(kind);
     return true;
   }
+  /// Consume the starting '<' of the current token, which may either
+  /// be a complete '<' token or some kind of operator token starting with '<',
+  /// e.g., '<>'.
+  SrcLoc ConsumeStartingLess();
+
+  /// Consume the starting '>' of the current token, which may either
+  /// be a complete '>' token or some kind of operator token starting with '>',
+  /// e.g., '>>'.
+  SrcLoc ConsumeStartingGreater();
+
+  SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
+                                       size_t len = 1);
 
 public:
   /// EnterScope - start a new scope.
@@ -319,6 +331,15 @@ private:
 
   bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
   bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
+
+  bool StartsWithSymbol(Token tok, char symbol) {
+    return (tok.IsAnyOperator() || tok.IsPunctuation()) &&
+           tok.GetText()[0] == symbol;
+  }
+  /// Check whether the current token starts with '<'.
+  bool StartsWithLess(Token tok) { return StartsWithSymbol(tok, '<'); }
+  /// Check whether the current token starts with '>'.
+  bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
 
 public:
   Identifier &GetIdentifierOnly(llvm::StringRef text);
