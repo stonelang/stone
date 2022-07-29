@@ -13,6 +13,7 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/Using.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -384,32 +385,9 @@ class TemplateDecl : public NamedDecl {
 public:
 };
 
-// TODO: Maybe Enum, Struct, ... can be replaced with Member
-enum class UsingDeclKind : uint8_t {
-  /// use STD.IO;
-  Module = 0,
-
-  //// using STD::Time::Month;
-  Enum,
-
-  /// using STD::IO::OutputStream;
-  Struct,
-
-  /// using STD::IO::Stream;
-  Interface,
-
-  /// fun Main() -> int { using STD.Math.Min;
-  // auto min = Min<AnyType>(first, second); }
-  Fun,
-
-  // using Stream = STD.IO.Stream;
-  // using Min = STD::Main::Min;
-  Alias,
-};
-
 class UsingDecl final : public NamedDecl {
   SrcLoc usingLoc;
-  UsingDeclKind usingDeclKind;
+  UsingKind usingKind;
 
 public:
   // syn::Module *mod = nullptr;

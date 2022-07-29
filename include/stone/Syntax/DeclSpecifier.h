@@ -86,6 +86,18 @@ public:
 public:
   StorageSpecifierKind GetStorageSpeciferKind() { return storageSpecifierKind; }
   TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
+
+public:
+  bool SetTypeSpeciferType(TypeSpecifierKind kind, SrcLoc loc,
+                           const char *&prevTypeSpecifier, Diag<> diagID,
+                           Decl *rep, bool owned);
+
+  // bool SetFunctionSpecifierInline(SourceLocation Loc, const char *&PrevSpec,
+  //                            unsigned &DiagID);
+
+  // bool setFunctionSpecifierForceInline(SourceLocation Loc, const char
+  // *&PrevSpec,
+  //                                 unsigned &DiagID);
 };
 
 class Declarator {
