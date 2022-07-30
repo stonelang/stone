@@ -68,6 +68,12 @@ public:
   QualType GetReturnType() { return returnType; }
 };
 
+class DeducedType : public Type {};
+
+class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
+  friend class SyntaxContext; // SyntaxContext creates these
+};
+
 using TypeRep = OpaquePtr<QualType>;
 using UnionTypeRep = UnionOpaquePtr<QualType>;
 

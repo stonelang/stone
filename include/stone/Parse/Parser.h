@@ -124,6 +124,7 @@ public:
   // == Type Parsing ==//
   SyntaxResult<QualType> ParseType();
   SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
+  SyntaxResult<QualType> ParseSimpleType(Diag<> diagID);
 
 public:
   //==fun==//
@@ -153,6 +154,9 @@ public:
   //                       llvm::SmallVectorImpl<GenericTypeParamDecl *>
   //                       &GenericParams);
   // SyntaxResult<GenericParamList> maybeParseGenericParams();
+
+public:
+  bool AtStartOfStmt();
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }

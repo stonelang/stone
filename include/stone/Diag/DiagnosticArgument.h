@@ -20,14 +20,14 @@ enum class FixID : uint32_t;
 /// diagnostic, which provide both the set of argument types (used to
 /// check/convert the arguments at each call site) and the diagnostic ID
 /// (for other information about the diagnostic).
-template <typename... argTypes> struct Diag {
+template <typename... ArgTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   DiagID diagID;
 };
 
 template <typename... ArgTypes> struct Fix {
   /// The code fix ID corresponding to this fix.
-  FixID ID;
+  FixID fixID;
 };
 
 namespace diag {
@@ -35,6 +35,7 @@ enum class ArgumentKind {
   /// No argument
   None,
 
+  /// bool
   Bool,
   /// std::string
   STDStr,

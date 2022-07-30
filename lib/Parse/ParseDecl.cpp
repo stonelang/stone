@@ -116,6 +116,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &pds,
 
   // funDecl->SetTemplate...
 
+  // QualType *returnType = nullptr;
+  // DeclName fullName;
+
   if (ParseFunctionSignature(*funDecl).IsError()) {
     return syn::MakeSyntaxError();
   }

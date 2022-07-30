@@ -32,6 +32,12 @@ enum class TypeSpecifierKind : uint8_t {
   Complex64,
 
 };
+enum class FunctionSpecifierKind : uint8_t {
+  None,
+  Inline,
+  ForcedInline,
+  NoReturn,
+};
 
 // TODO: All you need is Public and Local
 enum class AccessLevel : uint8_t {
@@ -93,6 +99,26 @@ enum class TypeNullabilityKind : uint8_t {
   /// can't conclude anything about the nullability of the type even
   /// though it has been considered.
   Unspecified
+};
+
+/// Describes the kind of template specialization that a
+/// particular template specialization declaration represents.
+enum class TemplateSpecializationKind : uint8_t {
+  /// This template specialization was formed from a template-id but
+  /// has not yet been declared, defined, or instantiated.
+  Undeclared = 0,
+  /// This template specialization was implicitly instantiated from a
+  /// template.
+  ImplicitInstantiation,
+  /// This template specialization was declared or defined by an
+  /// explicit specialization
+  ExplicitSpecialization,
+  /// This template specialization was instantiated from a template
+  /// due to an explicit instantiation declaration request
+  ExplicitInstantiationDeclaration,
+  /// This template specialization was instantiated from a template
+  /// due to an explicit instantiation definition request
+  ExplicitInstantiationDefinition
 };
 
 } // namespace syn
