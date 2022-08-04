@@ -1,5 +1,5 @@
 
-space Syntax.Extension {
+space Syntax.Partial {
 
 // Module one 
 public struct Universe {
@@ -14,11 +14,11 @@ enum Planet {
 }
 
 // Module two
-extension Planet {
+partial Planet {
 	Pluto 
 }
 
-extension fun Universe::MakeEarth() -> bool {
+partial fun Universe::MakeEarth() -> bool {
 }
 
 }

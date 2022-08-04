@@ -1,0 +1,7 @@
+
+public struct Particle {
+	public uint8 mass = 0; 
+}
+public fun Particle::Fire() -> bool {
+	return false;
+}

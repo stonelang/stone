@@ -176,10 +176,9 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-class ForwardDecl : public NamedDecl {
-
-public:
-};
+// class ForwardDecl : public NamedDecl {
+// public:
+// };
 
 class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
 

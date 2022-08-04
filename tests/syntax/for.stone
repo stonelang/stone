@@ -1,4 +1,5 @@
 space Syntax.For {
+	
 fun F0() -> void {
 	for (int i = 0; i< 10; ++i) {
 	}

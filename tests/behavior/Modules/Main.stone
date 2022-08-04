@@ -14,8 +14,7 @@
 using Tests.Behavior.Physics;
 using AcceleratorAlias = Tests.Behavior.Physics.Accelerator;
 
-
-public fun Main() -> int {
+fun Main() -> int32 {
 
 	AcceleratorAlias a; 
 	Particle p; 

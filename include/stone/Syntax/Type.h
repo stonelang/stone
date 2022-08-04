@@ -7,6 +7,31 @@
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeLoc.h"
 
+#include "llvm/ADT/APInt.h"
+#include "llvm/ADT/APSInt.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/FoldingSet.h"
+#include "llvm/ADT/None.h"
+#include "llvm/ADT/Optional.h"
+#include "llvm/ADT/PointerIntPair.h"
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/Twine.h"
+#include "llvm/ADT/iterator_range.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/Compiler.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/PointerLikeTypeTraits.h"
+#include "llvm/Support/TrailingObjects.h"
+#include "llvm/Support/type_traits.h"
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 #include <string>
 
 namespace stone {
@@ -68,11 +93,19 @@ public:
   QualType GetReturnType() { return returnType; }
 };
 
+class NominalType : public Type {};
+
+class StructType : public NominalType {};
+
+class EnumType : public NominalType {};
+
 class DeducedType : public Type {};
 
 class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
   friend class SyntaxContext; // SyntaxContext creates these
 };
+
+class BuiltinType : public Type {};
 
 using TypeRep = OpaquePtr<QualType>;
 using UnionTypeRep = UnionOpaquePtr<QualType>;

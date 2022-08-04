@@ -1,10 +1,17 @@
 
 
 space Syntax.Interface {
+
 	public interface I0 {
 		fun F0() -> void;
 	}
 	public interface I1 : I0 {
+	}
+
+	public struct S0 : I1 {
+	}
+
+	public fun S0::F0() -> void {
 	}
 }
 
