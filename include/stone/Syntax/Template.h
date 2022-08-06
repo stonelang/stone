@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TEMPLATEDECL_H
-#define STONE_SYNTAX_TEMPLATEDECL_H
+#ifndef STONE_SYNTAX_TEMPLATE_H
+#define STONE_SYNTAX_TEMPLATE_H
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"

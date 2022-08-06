@@ -20,7 +20,7 @@ SyntaxResult<QualType> Parser::ParseSimpleType(Diag<> diagID) {
 
   switch (token.GetKind()) {
   case tok::identifier: {
-    //ty = ParseIdentifierType();
+    // ty = ParseIdentifierType();
     break;
   }
   default:

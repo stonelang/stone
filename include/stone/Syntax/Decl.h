@@ -234,6 +234,51 @@ public:
 //       : NamedDecl(DeclKind::Space, dc, loc, name) {}
 // };
 
+/// Abstract class describing generic type parameters and associated types,
+/// whose common purpose is to anchor the abstract type parameter and specify
+/// requirements for any corresponding type argument.
+// class AbstractTypeParamDecl : public NamedDecl {
+// protected:
+//   AbstractTypeParamDecl(DeclKind kind, DeclContext *dc, Identifier name,
+//                         SourceLoc NameLoc)
+//     : NamedDecl(kind, dc, name, NameLoc, { }) { }
+
+// public:
+//   /// Retrieve the set of protocols to which this abstract type
+//   /// parameter conforms.
+//   llvm::ArrayRef<ProtocolDecl *> GetConformingInterfacess() const;
+
+//   static bool classof(const Decl *D) {
+//     return D->getKind() >= DeclKind::First_AbstractTypeParamDecl &&
+//            D->getKind() <= DeclKind::Last_AbstractTypeParamDecl;
+//   }
+// };
+
+// A private class for forcing exact field layout.
+// class alignas(8) GenericContextBase {
+//   // Not really public. See GenericContext.
+// public:
+//   llvm::PointerIntPair<GenericParamList *, 1, bool> genericParamsAndBit;
+
+//   /// The trailing where clause.
+//   ///
+//   /// Note that this is not currently serialized, because semantic analysis
+//   /// moves the trailing where clause into the generic parameter list.
+//   TrailingWhereClause *trailingWhere = nullptr;
+
+//   /// The generic signature of this declaration.
+//   llvm::PointerIntPair<GenericSignature, 1, bool> genericSigAndBit;
+// };
+
+// class GenericContext : private GenericContextBase, public DeclContext {
+//   // friend class GenericParamListRequest;
+//   // friend class GenericSignatureRequest;
+
+// protected:
+//   GenericContext(DeclContextKind declContextKind, DeclContext *parentDC,
+//                  GenericParamList *genericParams);
+// };
+
 class AccessControl {
   // This also belongs to struct
   AccessLevel level;
