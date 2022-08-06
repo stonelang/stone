@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-ClangDecl::ClangDecl() {}
+ClangNode::ClangNode() {}
