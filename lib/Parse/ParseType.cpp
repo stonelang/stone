@@ -15,3 +15,16 @@ SyntaxResult<QualType> Parser::ParseType() {
 SyntaxResult<QualType> Parser::ParseDeclResultType(Diag<> diagID) {
   return ParseType();
 }
+
+SyntaxResult<QualType> Parser::ParseSimpleType(Diag<> diagID) {
+
+  switch (token.GetKind()) {
+  case tok::identifier: {
+    //ty = ParseIdentifierType();
+    break;
+  }
+  default:
+    break;
+  }
+  return syn::MakeSyntaxResult<QualType>(nullptr);
+}
