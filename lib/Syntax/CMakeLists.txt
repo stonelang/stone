@@ -33,6 +33,7 @@ set(stone_syn_sources
 	
 	LINK_LIBS
 	StoneBasic
+	StoneClang
 	StoneDiag
 )
 add_stone_library(StoneSyntax

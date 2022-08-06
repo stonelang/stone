@@ -1,4 +1,5 @@
 add_subdirectory(Basic)
+add_subdirectory(Clang)
 add_subdirectory(Compile)
 add_subdirectory(Diag)
 add_subdirectory(Driver)
