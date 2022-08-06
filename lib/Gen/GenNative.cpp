@@ -76,30 +76,36 @@
 using namespace stone;
 using namespace stone::syn;
 
-// EmitWith...
-stone::Error NativeCodeGen::EmitObject() { return stone::Error(); }
-
-stone::Error NativeCodeGen::EmitBC() { return stone::Error(); }
-
-stone::Error NativeCodeGen::EmitAssembly() { return stone::Error(); }
-
 static void GenNativeWithParallelization() {}
 
 stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                               IRCodeGenResult &result,
                               const OutputFile *output) {
 
-  NativeCodeGen ncg(cgc, result, sc);
+  NativeCodeGen ncg(cgc, sc);
   switch (cgc.GetCodeGenOptions().nativeModeKind) {
   case NativeModeKind::EmitObject:
-    return ncg.EmitObject();
+    return ncg.EmitObject(result);
   case NativeModeKind::EmitBC:
-    return ncg.EmitBC();
+    return ncg.EmitBC(result);
   case NativeModeKind::EmitAssembly:
-    return ncg.EmitAssembly();
+    return ncg.EmitAssembly(result);
   default:
     stone::Panic("Unknown native mode");
   }
 
+  return stone::Error();
+}
+
+// EmitWith...
+stone::Error NativeCodeGen::EmitObject(const IRCodeGenResult &result) {
+  return stone::Error();
+}
+
+stone::Error NativeCodeGen::EmitBC(const IRCodeGenResult &result) {
+  return stone::Error();
+}
+
+stone::Error NativeCodeGen::EmitAssembly(const IRCodeGenResult &result) {
   return stone::Error();
 }

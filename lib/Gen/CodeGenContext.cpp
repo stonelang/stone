@@ -1,12 +1,14 @@
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/Context.h"
 
 using namespace stone;
 
 // static std::unique_ptr<llvm::TargetMachine> CreateTargetMachine() {}
 
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
-                               const CodeGenOptions &genOpts)
-    : llvmContext(llvmContext), genOpts(genOpts) {
+                               const CodeGenOptions &genOpts,
+                               const Context &langContext)
+    : llvmContext(llvmContext), genOpts(genOpts), langContext(langContext) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);

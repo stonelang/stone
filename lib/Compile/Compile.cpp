@@ -204,7 +204,8 @@ static void CompileWithCodeGen(Compiler &compiler) {
 
   // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
-                     compiler.GetFrontend().GetCodeGenOptions());
+                     compiler.GetFrontend().GetCodeGenOptions(),
+                     compiler.GetFrontend().GetContext());
 
   auto *mainModule = compiler.GetModuleSystem().GetMainModule();
   // switch

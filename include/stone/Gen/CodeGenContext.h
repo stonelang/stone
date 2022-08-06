@@ -18,9 +18,11 @@ class TargetMachine;
 
 namespace stone {
 
+class Context;
 class CodeGenOptions;
 
 class CodeGenContext final {
+  const Context &langContext;
   const CodeGenOptions &genOpts;
   llvm::LLVMContext &llvmContext;
   llvm::PassBuilder pb;
@@ -34,11 +36,13 @@ class CodeGenContext final {
   std::unique_ptr<llvm::TargetMachine> targetMachine;
 
 public:
-  CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts);
+  CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
+                 const Context &langContext);
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
+  const Context &GetLangContext() const { return langContext; }
 
 public:
   void TakeTargetMachine(std::unique_ptr<llvm::TargetMachine> &&tm) {

@@ -4,8 +4,7 @@
 
 using namespace stone;
 
-NativeCodeGen::NativeCodeGen(CodeGenContext &cgc, IRCodeGenResult &result,
-                             syn::SyntaxContext &sc)
-    : cgc(cgc), result(result), sc(sc) {}
+NativeCodeGen::NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc)
+    : cgc(cgc), sc(sc) {}
 
 NativeCodeGen::~NativeCodeGen() {}

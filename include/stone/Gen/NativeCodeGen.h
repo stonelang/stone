@@ -22,7 +22,6 @@ class SyntaxContext;
 
 class NativeCodeGen final {
   CodeGenContext &cgc;
-  IRCodeGenResult &result;
   syn::SyntaxContext &sc;
 
 public:
@@ -30,18 +29,16 @@ public:
   void operator=(const NativeCodeGen &) = delete;
 
 public:
-  NativeCodeGen(CodeGenContext &cgc, IRCodeGenResult &result,
-                syn::SyntaxContext &sc);
+  NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
   ~NativeCodeGen();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  IRCodeGenResult &GetIRCodeGenResult() { return result; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }
 
 public:
-  stone::Error EmitObject();
-  stone::Error EmitBC();
-  stone::Error EmitAssembly();
+  stone::Error EmitObject(const IRCodeGenResult &result);
+  stone::Error EmitBC(const IRCodeGenResult &result);
+  stone::Error EmitAssembly(const IRCodeGenResult &result);
 };
 } // namespace stone
 
