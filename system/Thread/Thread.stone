@@ -1,0 +1,12 @@
+
+
+space System.Thread {
+
+	public enum Priority {
+		Normal,
+		Low,
+		High,
+	}
+	public struct Thread {
+	}
+}
