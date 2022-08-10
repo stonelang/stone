@@ -1,0 +1,6 @@
+
+space System {
+
+	public struct String {
+	}
+}

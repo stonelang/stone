@@ -1,0 +1,5 @@
+
+space System.Reflect {
+	public struct Reflect {
+	}
+}
