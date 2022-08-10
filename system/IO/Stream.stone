@@ -1,6 +1,5 @@
 
 
-
 space System.IO {
 
 	public interface Stream {

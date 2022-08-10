@@ -1,0 +1,14 @@
+
+
+space System.Format {
+
+	public fun Print() -> int {
+		return 0;
+	}
+	public fun Printf() int {
+		return 0;
+	}
+	public fun Sprintf() int {
+		return 0;
+	}
+}
