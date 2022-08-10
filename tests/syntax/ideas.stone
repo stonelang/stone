@@ -3,7 +3,7 @@ space Physics.QM {
 	public struct Particle {
 		public bool fired = false; 
 	}
-	public any<T> interface Accelerator {
+	public interface Accelerator<T> {
 		fun Fire(const Particle* p) -> bool;
 	}
 	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
@@ -27,7 +27,32 @@ space Physics.QM {
 		return true; 
 	}
 	using max = fun(int first, int second) -> int;
-	fun Main() -> i32 {
+
+}
+public struct Detector {
+}
+public struct Particle {
+		public bool fired = false; 
+}
+public interface Accelerator<T> {
+	fun Fire(const Particle* p) -> bool;
+}
+public struct LinearAccelerator : Accelerator<LinearAccelerator> {
+	private string maker; 
+	Detector* detector = null;
+}
+LinearAcceleartor::this() : Init("none") {
+}
+LinearAcceleartor::this(string maker) {
+	this.maker = maker; 
+	detector = new Detector(); {
+}
+LinearAcceleartor::~this() {	
+	if(detector){
+		delete detector;
+	}
+}
+fun Main() -> i32 {
 
 		Particle* p = new Particle();
 		auto a = new LinearAcceleartor(); 
@@ -39,9 +64,6 @@ space Physics.QM {
 		// 	auto p = new Particle();
 		// 	p.Fire(); 
 		// }
-
-	}
-
 }
 
 /// Forwarding maybe of great value 

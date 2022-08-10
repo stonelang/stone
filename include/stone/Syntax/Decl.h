@@ -279,6 +279,13 @@ public:
 //                  GenericParamList *genericParams);
 // };
 
+
+class GenericTypeDecl : public TypeDecl {
+
+};
+
+
+
 class AccessControl {
   // This also belongs to struct
   AccessLevel level;
