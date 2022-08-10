@@ -1,5 +1,8 @@
 
 
+import System.IO; 
+import System.OS; 
+
 space System.Format {
 
 	public fun Print() -> int {
