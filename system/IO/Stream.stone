@@ -1,9 +1,9 @@
 
+	
 
-space System.IO {
 
-	public interface Stream {
-
-	}
+public interface Stream {
 
 }
+
+

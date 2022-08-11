@@ -1,5 +1,4 @@
 
-space System.Reflect {
-	public struct Reflect {
-	}
+public struct Reflect {
+	
 }

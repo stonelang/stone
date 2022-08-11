@@ -1,12 +1,15 @@
 
+public enum Priority {
+	Normal,
+	Low,
+	High,
+}
+public struct Thread {
 
-space System.Thread {
+}
 
-	public enum Priority {
-		Normal,
-		Low,
-		High,
-	}
-	public struct Thread {
-	}
+public Thread::Thread(fun work(...) -> void) {
+}
+
+public Thread::~Thread() {
 }

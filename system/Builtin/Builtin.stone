@@ -1,10 +1,12 @@
 
-space System.Builtin {
 
-	public fun SizeOf() -> int {
+public fun SizeOf() -> int {
 		return 0; 
-	}
-	public fun TypeOf() -> T {
-		return null;
-	}
 }
+public fun TypeOf() -> T {
+		return null;
+}
+
+
+
+
