@@ -1,5 +1,8 @@
 
-space System {
-	public struct String {
-	}
+
+/// Belongs to System module 
+
+
+public struct String {
+
 }
