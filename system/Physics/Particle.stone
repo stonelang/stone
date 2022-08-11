@@ -1,0 +1,8 @@
+
+
+
+/// Belongs to System.Physics module 
+
+public struct Particle {
+
+}
