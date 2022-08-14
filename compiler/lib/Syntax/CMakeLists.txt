@@ -16,6 +16,7 @@ set(stone_syn_sources
 	ExprSyntaxBuilder.cpp
 	Identifier.cpp
 	Module.cpp
+	SearchPath.cpp
 	Stmt.cpp
 	StmtSyntaxBuilder.cpp
 	Syntax.cpp
