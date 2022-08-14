@@ -1,5 +1,4 @@
-
-
+space Ref; 
 
 public struct S0 {
 }

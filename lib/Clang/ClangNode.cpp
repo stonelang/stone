@@ -1,4 +1,4 @@
-#include "stone/Clang/ClangDecl.h"
+#include "stone/Clang/ClangNode.h"
 
 using namespace stone;
 

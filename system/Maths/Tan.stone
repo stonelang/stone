@@ -2,6 +2,10 @@
 
 /// System.Maths.Geometry 
 
+
+module System.Maths.Tan; 
+
+
 space Geometry; 
 
 

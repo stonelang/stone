@@ -1,6 +1,7 @@
 set(stone_compile_sources
 	Compile.cpp
 	Compiler.cpp
+	Deserialization.cpp
 	DebugFrontendListener.cpp
 	Frontend.cpp
 	FrontendOptions.cpp
@@ -11,6 +12,7 @@ set(stone_compile_sources
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	PackageSystem.cpp
+	Serialization.cpp
 	TargetMachine.cpp
 
 	LINK_LIBS

@@ -11,12 +11,16 @@
 
 // Loads the actual module Tests.Behavior.Physics 
 // Or loads the types in the module that you passed -- whatever its name is 
-using Tests.Behavior.Physics;
-using AcceleratorAlias = Tests.Behavior.Physics.Accelerator;
+import Tests.Behavior.Modules; 
 
-fun Main() -> int32 {
+fun Main() -> int {
 
-	AcceleratorAlias a; 
-	Particle p; 
-	a.Fire(ref p);
+	Physics::LinearAcceleartor* la = new Physics::LinearAcceleartor();
+	Physics::Electron* electron = new Physics::Electron();
+
+	defer{
+		delete electron;
+		delete la; 
+	}
+	la.Fire(electron);
 }

@@ -5,14 +5,23 @@
 // module Tests.Physics.Accelerator;
 // using Tests.Physics.Particle;
 
+space Physics;
 
-space Tests.Behavior.Modules.Physics {
-	public struct Accelerator {
-	}
-	public fun Accelerator::Fire(const Particle* particle) -> bool {
-		return true; 
-	}
+public interface Accelerator {
+	Fire(const Particle* particle) -> bool;
 }
+public struct LinearAccelerator : Accelerator {
+}
+LinearAccelerator::LinearAccelerator() {
+}
+LinearAccelerator::~LinearAccelerator() {
+
+}
+public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
+	return true; 
+}
+
+
 
 
 

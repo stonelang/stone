@@ -10,6 +10,7 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_clang_sources
 	ClangModuleImporter.cpp
+	ClangNode.cpp
 
 	LINK_LIBS
 	StoneBasic

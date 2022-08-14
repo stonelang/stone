@@ -1,5 +1,4 @@
-
-space Syntax.Constructor {
+space Constructor; 
 
 
 public struct Boson {

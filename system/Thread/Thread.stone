@@ -1,4 +1,5 @@
 
+/// System.Thread module 
 public enum Priority {
 	Normal,
 	Low,

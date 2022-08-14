@@ -3,6 +3,11 @@
 
 namespace stone {
 
+enum class SearchPathKind : uint8_t {
+  Using,
+  Framework,
+  RuntimeLibrary,
+};
 /// Options for controlling diagnostics.
 class SearchPathOptions final {
 public:

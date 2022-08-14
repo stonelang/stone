@@ -1,7 +1,9 @@
 
-
-struct S0 {
+// pure => will not support interfaces 
+public pure struct S0 {
 }
 
 
-
+fun Main() -> int {
+	
+}
