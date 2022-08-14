@@ -1,6 +1,5 @@
-import System.IO; 
-import System.OS; 
-
+using IO; 
+using OS; 
 
 public fun Print() -> int {
 	return 0;
