@@ -10,7 +10,7 @@
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
-#include "stone/Syntax/SearchPathOptions.h"
+#include "stone/Syntax/SearchPath.h"
 
 using namespace stone::sem;
 

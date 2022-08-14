@@ -13,11 +13,9 @@
 #include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
-#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SearchPathOptions.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 
