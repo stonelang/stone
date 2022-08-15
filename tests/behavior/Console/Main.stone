@@ -1,7 +1,5 @@
-
-
+using Core; 
 using Console; 
-
 
 fun Main() -> int {
 

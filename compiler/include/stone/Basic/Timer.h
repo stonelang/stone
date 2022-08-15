@@ -11,11 +11,12 @@ namespace stone {
 class Timer final {
 public:
   enum class TimeKind {
-    None,
-    Seconds,
-    Minutes,
+    Nanoseconds, 
     Microseconds,
     Milliseconds,
+    Seconds,
+    Minutes,
+    Hours,
   };
   TimeKind timeKind = TimeKind::Milliseconds;
 

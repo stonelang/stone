@@ -1,12 +1,17 @@
 using IO; 
 using OS; 
 
-public fun Print() -> int {
-	return 0;
+public static fun Print(string value) -> void {
+	
 }
-public fun Printf() int {
-	return 0;
+public static fun Print(int32 value) -> void {
+
 }
-public fun Sprintf() int {
-	return 0;
+public static fun Print(int64 value) -> void  {
+	
+}
+
+
+public static fun Print(any value) -> void  {
+	
 }
