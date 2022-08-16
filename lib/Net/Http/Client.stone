@@ -1,2 +1,7 @@
+space Net.Http;
 
-/// using Net.Http 
+
+public struct Client {
+
+
+}
