@@ -1,0 +1,6 @@
+space Core;
+
+
+public fun Panic() -> void {
+
+}

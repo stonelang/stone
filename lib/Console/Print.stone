@@ -1,3 +1,5 @@
+space Console;
+
 using IO; 
 using OS; 
 
