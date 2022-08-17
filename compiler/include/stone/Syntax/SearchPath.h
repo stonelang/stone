@@ -13,13 +13,11 @@ class SearchPathOptions final {
 public:
 };
 
-
 class SearchPath final {
 public:
   SearchPath();
   ~SearchPath();
 };
-
 
 } // namespace stone
 

@@ -24,6 +24,7 @@
 
 using namespace stone;
 using namespace stone::syn;
+using namespace stone::sem;
 
 /// A PrettyStackTraceEntry to print compiling information
 class FrontendPrettyStackTrace : public llvm::PrettyStackTraceEntry {

@@ -7,12 +7,9 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/FrontendInputsAndOutputs.h"
 #include "stone/Compile/TargetOptions.h"
-#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPath.h"
-
-using namespace stone::sem;
 
 namespace stone {
 

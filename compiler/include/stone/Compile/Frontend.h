@@ -13,6 +13,7 @@
 #include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
+#include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
@@ -78,7 +79,7 @@ class Frontend final : public Session {
   SearchPathOptions searchPathOpts;
 
   /// The options for type-checking
-  TypeCheckerOptions typeCheckerOpts;
+  sem::TypeCheckerOptions typeCheckerOpts;
 
   TargetOptions targetOpts;
 
@@ -146,8 +147,8 @@ public:
   TargetOptions &GetTargetOptions() { return targetOpts; }
   const TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
-  const TypeCheckerOptions &GetTypeCheckerOptions() const {
+  sem::TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+  const sem::TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
   }
 
@@ -156,9 +157,9 @@ public:
     return searchPathOpts;
   }
 
-  TypeCheckMode GetTypeCheckMode() {
-    return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
-                                     : TypeCheckMode::EachFile);
+  sem::TypeCheckMode GetTypeCheckMode() {
+    return (primarySourceIDs.empty() ? sem::TypeCheckMode::WholeModule
+                                     : sem::TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 

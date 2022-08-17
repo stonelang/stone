@@ -11,7 +11,7 @@ namespace stone {
 class Timer final {
 public:
   enum class TimeKind {
-    Nanoseconds, 
+    Nanoseconds,
     Microseconds,
     Milliseconds,
     Seconds,
