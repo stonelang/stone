@@ -1,4 +1,5 @@
 
+space Collections;
 
 public struct Array<T> : List<T> {
 }

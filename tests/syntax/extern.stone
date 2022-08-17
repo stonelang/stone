@@ -1,0 +1,5 @@
+
+
+[extern(c)]
+public fun Printf() -> void {
+}

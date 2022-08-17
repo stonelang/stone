@@ -1,6 +1,5 @@
 
-
-/// using Collections; 
+space Collections;
 
 public struct Queue<T> : Collection <T> {
 	

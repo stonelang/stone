@@ -1,3 +1,4 @@
+space Thread; 
 
 /// System.Thread module 
 public enum Priority {
