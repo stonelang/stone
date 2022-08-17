@@ -1,28 +1,27 @@
 set(stone_include_files
-	${STONE_SOURCE_DIR}/include/stone/Basic/*.h
-	${STONE_SOURCE_DIR}/include/stone/Diag/*.h
-	${STONE_SOURCE_DIR}/include/stone/Clang/*.h
-	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
-	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
-	${STONE_SOURCE_DIR}/include/stone/Gen/*.h
-	${STONE_SOURCE_DIR}/include/stone/Parse/*.h
-	${STONE_SOURCE_DIR}/include/stone/Sem/*.h
-	${STONE_SOURCE_DIR}/include/stone/Session/*.h
-	${STONE_SOURCE_DIR}/include/stone/Syntax/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Diag/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Clang/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Gen/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Parse/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Sem/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Session/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Syntax/*.h
 	
 )
 set(stone_lib_files
-	${STONE_SOURCE_DIR}/lib/Basic/*.cpp
-	${STONE_SOURCE_DIR}/lib/Diag/*.cpp
-	${STONE_SOURCE_DIR}/lib/Clang/*.cpp
-	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
-	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
-	${STONE_SOURCE_DIR}/lib/Gen/*.cpp
-	${STONE_SOURCE_DIR}/lib/Parse/*.cpp
-	${STONE_SOURCE_DIR}/lib/Sem/*.cpp
-	${STONE_SOURCE_DIR}/lib/Session/*.cpp		
-	${STONE_SOURCE_DIR}/lib/Syntax/*.cpp
-	${STONE_SOURCE_DIR}/tmp.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Clang/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Gen/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Parse/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Sem/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Session/*.cpp		
+	${STONE_SOURCE_DIR}/compiler/lib/Syntax/*.cpp
 	
 )
 set(stone_tools_files
