@@ -10,8 +10,10 @@
 
 namespace stone {
 namespace fm {
+
 template <class RefTy> class MapEntryOptionalStorage;
-}
+
+} // end namespace fm
 
 /// Cached information about one directory (either on disk or in
 /// the virtual file system).
@@ -94,6 +96,7 @@ private:
 };
 
 namespace fm {
+
 /// Customized storage for refs derived from map entires in FileMgr, using
 /// the private optional_none_tag to keep it to the size of a single pointer.
 template <class RefTy> class MapEntryOptionalStorage {
@@ -135,7 +138,8 @@ public:
     return *this;
   }
 };
-} // namespace fm
+
+} // end namespace fm
 } // end namespace stone
 
 namespace llvm {
@@ -146,7 +150,8 @@ namespace optional_detail {
 template <>
 class OptionalStorage<stone::DirEntryRef>
     : public stone::fm::MapEntryOptionalStorage<stone::DirEntryRef> {
-  using StorageImpl = stone::fm::MapEntryOptionalStorage<stone::DirEntryRef>;
+  using StorageImpl =
+      stone::fm::MapEntryOptionalStorage<stone::DirEntryRef>;
 
 public:
   OptionalStorage() = default;
@@ -161,30 +166,34 @@ public:
   }
 };
 
-static_assert(sizeof(Optional<stone::DirEntryRef>) ==
+static_assert(sizeof(llvm::Optional<stone::DirEntryRef>) ==
                   sizeof(stone::DirEntryRef),
-              "Optional<DirEntryRef> must avoid size overhead");
+              "llvm::Optional<DirEntryRef> must avoid size overhead");
 
-static_assert(std::is_trivially_copyable<Optional<stone::DirEntryRef>>::value,
-              "Optional<DirEntryRef> should be trivially copyable");
+static_assert(
+    std::is_trivially_copyable<llvm::Optional<stone::DirEntryRef>>::value,
+    "llvm::Optional<DirEntryRef> should be trivially copyable");
 
 } // end namespace optional_detail
 
 /// Specialisation of DenseMapInfo for DirEntryRef.
 template <> struct DenseMapInfo<stone::DirEntryRef> {
   static inline stone::DirEntryRef getEmptyKey() {
-    return stone::DirEntryRef(stone::DirEntryRef::dense_map_empty_tag());
+    return stone::DirEntryRef(
+        stone::DirEntryRef::dense_map_empty_tag());
   }
 
   static inline stone::DirEntryRef getTombstoneKey() {
-    return stone::DirEntryRef(stone::DirEntryRef::dense_map_tombstone_tag());
+    return stone::DirEntryRef(
+        stone::DirEntryRef::dense_map_tombstone_tag());
   }
 
   static unsigned getHashValue(stone::DirEntryRef Val) {
     return hash_value(Val);
   }
 
-  static bool isEqual(stone::DirEntryRef LHS, stone::DirEntryRef RHS) {
+  static bool isEqual(stone::DirEntryRef LHS,
+                      stone::DirEntryRef RHS) {
     // Catch the easy cases: both empty, both tombstone, or the same ref.
     if (LHS.isSameRef(RHS))
       return true;
@@ -201,19 +210,20 @@ template <> struct DenseMapInfo<stone::DirEntryRef> {
 } // end namespace llvm
 
 namespace stone {
-/// Wrapper around Optional<DirEntryRef> that degrades to 'const
+
+/// Wrapper around llvm::Optional<DirEntryRef> that degrades to 'const
 /// DirEntry*', facilitating incremental patches to propagate
 /// DirEntryRef.
 ///
 /// This class can be used as return value or field where it's convenient for
-/// an Optional<DirEntryRef> to degrade to a 'const DirEntry*'. The
+/// an llvm::Optional<DirEntryRef> to degrade to a 'const DirEntry*'. The
 /// purpose is to avoid code churn due to dances like the following:
 /// \code
 /// // Old code.
 /// lvalue = rvalue;
 ///
 /// // Temporary code from an incremental patch.
-/// Optional<DirEntryRef> MaybeF = rvalue;
+/// llvm::Optional<DirEntryRef> MaybeF = rvalue;
 /// lvalue = MaybeF ? &MaybeF.getDirEntry() : nullptr;
 ///
 /// // Final code.
@@ -222,8 +232,9 @@ namespace stone {
 ///
 /// FIXME: Once DirEntryRef is "everywhere" and DirEntry::LastRef
 /// and DirEntry::getName have been deleted, delete this class and
-/// replace instances with Optional<DirEntryRef>.
-class OptionalDirEntryRefDegradesToDirEntryPtr : public Optional<DirEntryRef> {
+/// replace instances with llvm::Optional<DirEntryRef>.
+class OptionalDirEntryRefDegradesToDirEntryPtr
+    : public llvm::Optional<DirEntryRef> {
 public:
   OptionalDirEntryRefDegradesToDirEntryPtr() = default;
   OptionalDirEntryRefDegradesToDirEntryPtr(
@@ -237,36 +248,36 @@ public:
 
   OptionalDirEntryRefDegradesToDirEntryPtr(llvm::NoneType) {}
   OptionalDirEntryRefDegradesToDirEntryPtr(DirEntryRef Ref)
-      : Optional<DirEntryRef>(Ref) {}
-  OptionalDirEntryRefDegradesToDirEntryPtr(Optional<DirEntryRef> MaybeRef)
-      : Optional<DirEntryRef>(MaybeRef) {}
+      : llvm::Optional<DirEntryRef>(Ref) {}
+  OptionalDirEntryRefDegradesToDirEntryPtr(llvm::Optional<DirEntryRef> MaybeRef)
+      : llvm::Optional<DirEntryRef>(MaybeRef) {}
 
   OptionalDirEntryRefDegradesToDirEntryPtr &operator=(llvm::NoneType) {
-    Optional<DirEntryRef>::operator=(None);
+    llvm::Optional<DirEntryRef>::operator=(None);
     return *this;
   }
   OptionalDirEntryRefDegradesToDirEntryPtr &operator=(DirEntryRef Ref) {
-    Optional<DirEntryRef>::operator=(Ref);
+    llvm::Optional<DirEntryRef>::operator=(Ref);
     return *this;
   }
   OptionalDirEntryRefDegradesToDirEntryPtr &
-  operator=(Optional<DirEntryRef> MaybeRef) {
-    Optional<DirEntryRef>::operator=(MaybeRef);
+  operator=(llvm::Optional<DirEntryRef> MaybeRef) {
+    llvm::Optional<DirEntryRef>::operator=(MaybeRef);
     return *this;
   }
 
   /// Degrade to 'const DirEntry *' to allow  DirEntry::LastRef and
   /// DirEntry::getName have been deleted, delete this class and replace
-  /// instances with Optional<DirEntryRef>
+  /// instances with llvm::Optional<DirEntryRef>
   operator const DirEntry *() const {
     return hasValue() ? &getValue().getDirEntry() : nullptr;
   }
 };
 
-static_assert(
-    std::is_trivially_copyable<OptionalDirEntryRefDegradesToDirEntryPtr>::value,
-    "OptionalDirEntryRefDegradesToDirEntryPtr should be "
-    "trivially copyable");
+static_assert(std::is_trivially_copyable<
+                  OptionalDirEntryRefDegradesToDirEntryPtr>::value,
+              "OptionalDirEntryRefDegradesToDirEntryPtr should be "
+              "trivially copyable");
 
 } // end namespace stone
 
