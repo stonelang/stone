@@ -1,4 +1,4 @@
-#include "stone/Clang/ClangModuleImporter.h"
+#include "stone/Foreign/ClangModuleImporter.h"
 
 using namespace stone;
 

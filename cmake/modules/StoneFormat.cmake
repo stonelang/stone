@@ -1,7 +1,7 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Diag/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Clang/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Foreign/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Gen/*.h
@@ -14,7 +14,7 @@ set(stone_include_files
 set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/Clang/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Foreign/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Gen/*.cpp

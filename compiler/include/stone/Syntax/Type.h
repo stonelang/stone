@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_TYPE_H
 #define STONE_SYNTAX_TYPE_H
 
+#include "stone/Foreign/ForeignLangKind.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
@@ -55,8 +56,8 @@ class ExtQuals;
 // Qualified Types
 
 class QualType;
-// class ConceptDecl;
 class StructDecl;
+
 class Type;
 
 class TypeContext final {
@@ -108,6 +109,7 @@ class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
 class BuiltinType : public Type {};
 
 using TypeRep = OpaquePtr<QualType>;
+
 using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 } // namespace syn

@@ -1,4 +1,4 @@
-#include "stone/Clang/ClangNode.h"
+#include "stone/Foreign/ClangNode.h"
 
 using namespace stone;
 
