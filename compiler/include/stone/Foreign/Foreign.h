@@ -12,7 +12,3 @@ enum class ForeignLangKind {
 
 } // namespace stone
 #endif
-
-
-
-

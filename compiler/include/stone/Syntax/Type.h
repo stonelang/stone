@@ -9,6 +9,7 @@
 #include "stone/Syntax/TypeLoc.h"
 
 #include "llvm/ADT/APInt.h"
+#include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/FoldingSet.h"
@@ -25,7 +26,6 @@
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/type_traits.h"
-
 
 #include <cassert>
 #include <cstddef>
@@ -99,8 +99,51 @@ class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
 
 class BuiltinType : public Type {};
 
-using TypeRep = OpaquePtr<QualType>;
+class FloatBuiltinType : public BuiltinType {
+  friend class SyntaxContext;
 
+public:
+  /// IEEE floating point types.
+  enum IEEEKind {
+    IEEE16,
+    IEEE32,
+    IEEE64,
+    IEEE80,
+    IEEE128,
+  };
+
+private:
+  IEEEKind kind;
+
+  // BuiltinFloatType(IEEEKind Kind, const SyntaxContext &C)
+  //   : BuiltinType(TypeKind::BuiltinFloat, C), Kind(Kind) {}
+
+public:
+  IEEEKind GetIEEEKind() const { return kind; }
+
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
+
+  unsigned GetBitWidth() const {
+    switch (kind) {
+    case IEEE16:
+      return 16;
+    case IEEE32:
+      return 32;
+    case IEEE64:
+      return 64;
+    case IEEE80:
+      return 80;
+    case IEEE128:
+      return 128;
+    }
+    llvm_unreachable("Invalid IEEEKind");
+  }
+  // static bool classof(const TypeBase *T) {
+  //   return T->getKind() == TypeKind::BuiltinFloat;
+  // }
+};
+
+using TypeRep = OpaquePtr<QualType>;
 using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 } // namespace syn
