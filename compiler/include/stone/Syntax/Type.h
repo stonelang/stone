@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_TYPE_H
 #define STONE_SYNTAX_TYPE_H
 
-#include "stone/Foreign/ForeignLangKind.h"
+#include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
@@ -25,6 +25,8 @@
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/type_traits.h"
+
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -38,9 +40,9 @@
 namespace stone {
 namespace syn {
 
-enum class GC : uint8_t { None = 0, Weak, Strong };
+enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
-enum class TypeQualifer : uint8_t {
+enum class TypeQualKind : uint8_t {
   None = 0,
   Const = 1,
   Restrict = 2,
@@ -48,7 +50,7 @@ enum class TypeQualifer : uint8_t {
   Unaligned = 8,
   // This has no corresponding Qualifiers::TQ value, because it's not treated
   // as a qualifier in our type system.
-  Atomic = 16
+  Fixed = 16
 };
 
 // Extended Qualifiers
