@@ -13,13 +13,17 @@ enum class TypeRepKind : uint8_t {
 #include "TypeRepKind.def"
 };
 
-// class TypeRep {
-// 	Qualifier qualifier;
+class TypeRep {};
 
-// };
+class QualTypeRep : public TypeRep {
+public:
+};
+
+class FunctionTypeRep : public TypeRep {
+public:
+};
 
 } // namespace syn
-
 } // namespace stone
 
 #endif

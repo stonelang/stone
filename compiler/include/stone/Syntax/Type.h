@@ -42,6 +42,18 @@ namespace syn {
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
+enum class ScalarTypeKind {
+  Pointer,
+  BlockPointer,
+  MemberPointer,
+  Bool,
+  Integral,
+  Floating,
+  ntegralComplex,
+  FloatingComplex,
+  FixedPoint
+};
+
 class ExtQuals; // Extended Qualifiers
 class QualType; // Qualified Types
 class StructDecl;
@@ -158,6 +170,166 @@ public:
   }
   // static bool classof(const TypeBase *T) {
   //   return T->getKind() == TypeKind::BuiltinFloat;
+  // }
+};
+
+class PointerType : public Type, public llvm::FoldingSetNode {
+  friend class SyntaxContext; // SyntaxContext creates these.
+
+  // QualType PointeeType;
+
+  // PointerType(QualType Pointee, QualType CanonicalPtr)
+  //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
+  //       PointeeType(Pointee) {}
+
+public:
+  // QualType getPointeeType() const { return PointeeType; }
+
+  // bool isSugared() const { return false; }
+  // QualType desugar() const { return QualType(this, 0); }
+
+  // void Profile(llvm::FoldingSetNodeID &ID) {
+  //   Profile(ID, getPointeeType());
+  // }
+
+  // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee) {
+  //   ID.AddPointer(Pointee.getAsOpaquePtr());
+  // }
+
+  // static bool classof(const Type *T) { return T->getTypeClass() == Pointer; }
+};
+
+/// Base for LValueReferenceType and RValueReferenceType
+class ReferenceType : public Type, public llvm::FoldingSetNode {
+  //   QualType PointeeType;
+
+  // protected:
+  //   ReferenceType(TypeClass tc, QualType Referencee, QualType CanonicalRef,
+  //                 bool SpelledAsLValue)
+  //       : Type(tc, CanonicalRef, Referencee->getDependence()),
+  //         PointeeType(Referencee) {
+  //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
+  //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
+  //   }
+
+  // public:
+  //   bool isSpelledAsLValue() const { return
+  //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const { return
+  //   ReferenceTypeBits.InnerRef; }
+
+  //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
+
+  //   QualType getPointeeType() const {
+  //     // FIXME: this might strip inner qualifiers; okay?
+  //     const ReferenceType *T = this;
+  //     while (T->isInnerRef())
+  //       T = T->PointeeType->castAs<ReferenceType>();
+  //     return T->PointeeType;
+  //   }
+
+  //   void Profile(llvm::FoldingSetNodeID &ID) {
+  //     Profile(ID, PointeeType, isSpelledAsLValue());
+  //   }
+
+  //   static void Profile(llvm::FoldingSetNodeID &ID,
+  //                       QualType Referencee,
+  //                       bool SpelledAsLValue) {
+  //     ID.AddPointer(Referencee.getAsOpaquePtr());
+  //     ID.AddBoolean(SpelledAsLValue);
+  //   }
+
+  //   static bool classof(const Type *T) {
+  //     return T->getTypeClass() == LValueReference ||
+  //            T->getTypeClass() == RValueReference;
+  //   }
+};
+
+/// An lvalue reference type, per C++11 [dcl.ref].
+class LeftValueReferenceType : public ReferenceType {
+  //   friend class ASTContext; // ASTContext creates these
+
+  //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
+  //                       bool SpelledAsLValue)
+  //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
+  //                       SpelledAsLValue) {}
+
+  // public:
+  //   bool isSugared() const { return false; }
+  //   QualType desugar() const { return QualType(this, 0); }
+
+  //   static bool classof(const Type *T) {
+  //     return T->getTypeClass() == LValueReference;
+  //   }
+};
+
+/// An rvalue reference type, per C++11 [dcl.ref].
+class RightValueReferenceType : public ReferenceType {
+  //   friend class ASTContext; // ASTContext creates these
+
+  //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
+  //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false) {}
+
+  // public:
+  //   bool isSugared() const { return false; }
+  //   QualType desugar() const { return QualType(this, 0); }
+
+  //   static bool classof(const Type *T) {
+  //     return T->getTypeClass() == RValueReference;
+  //   }
+};
+
+/// A pointer to member type per C++ 8.3.3 - Pointers to members.
+///
+/// This includes both pointers to data members and pointer to member functions.
+class MemberPointerType : public Type, public llvm::FoldingSetNode {
+  //   friend class ASTContext; // ASTContext creates these.
+
+  //   QualType PointeeType;
+
+  //   /// The class of which the pointee is a member. Must ultimately be a
+  //   /// RecordType, but could be a typedef or a template parameter too.
+  //   const Type *Class;
+
+  //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
+  //   CanonicalPtr)
+  //       : Type(MemberPointer, CanonicalPtr,
+  //              (Cls->getDependence() & ~TypeDependence::VariablyModified) |
+  //                  Pointee->getDependence()),
+  //         PointeeType(Pointee), Class(Cls) {}
+
+  // public:
+  //   QualType getPointeeType() const { return PointeeType; }
+
+  //   /// Returns true if the member type (i.e. the pointee type) is a
+  //   /// function type rather than a data-member type.
+  //   bool isMemberFunctionPointer() const {
+  //     return PointeeType->isFunctionProtoType();
+  //   }
+
+  /// Returns true if the member type (i.e. the pointee type) is a
+  /// data type rather than a function type.
+  // bool isMemberDataPointer() const {
+  //   return !PointeeType->isFunctionProtoType();
+  // }
+
+  // const Type *getClass() const { return Class; }
+  // CXXRecordDecl *getMostRecentCXXRecordDecl() const;
+
+  // bool isSugared() const { return false; }
+  // QualType desugar() const { return QualType(this, 0); }
+
+  // void Profile(llvm::FoldingSetNodeID &ID) {
+  //   Profile(ID, getPointeeType(), getClass());
+  // }
+
+  // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee,
+  //                     const Type *Class) {
+  //   ID.AddPointer(Pointee.getAsOpaquePtr());
+  //   ID.AddPointer(Class);
+  // }
+
+  // static bool classof(const Type *T) {
+  //   return T->getTypeClass() == MemberPointer;
   // }
 };
 
