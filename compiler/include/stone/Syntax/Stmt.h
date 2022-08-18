@@ -11,6 +11,7 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
 #include "stone/Syntax/SyntaxNode.h"

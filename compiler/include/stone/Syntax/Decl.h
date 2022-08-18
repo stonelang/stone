@@ -9,6 +9,7 @@
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
@@ -442,6 +443,58 @@ public:
 class TrustDecl final
     : public Decl,
       public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
+
+/// IfConfigDecl - This class represents #if/#else/#endif blocks.
+/// Active and inactive block members are stored separately, with the intention
+/// being that active members will be handed back to the enclosing context.
+class IfConfigDecl : public Decl {
+
+  friend class Decl;
+
+  SrcLoc endLoc;
+
+  /// An array of clauses controlling each of the #if/#elseif/#else conditions.
+  /// The array is SyntaxContext allocated.
+  llvm::ArrayRef<IfConfigClause> clauses;
+
+  SrcLoc GetLocFromSource() const {
+    assert(clauses.size() > 0);
+    return clauses[0].loc;
+  }
+
+public:
+  // IfConfigDecl(DeclContext *parent, llvm::ArrayRef<IfConfigClause> clauses,
+  //              SourceLoc endLoc, bool hadMissingEnd)
+  //   : Decl(DeclKind::IfConfig, Parent), Clauses(Clauses), EndLoc(EndLoc)
+  // {
+  //   Bits.IfConfigDecl.HadMissingEnd = HadMissingEnd;
+  // }
+
+  // ArrayRef<IfConfigClause> getClauses() const { return Clauses; }
+
+  // /// Return the active clause, or null if there is no active one.
+  // const IfConfigClause *getActiveClause() const {
+  //   for (auto &Clause : Clauses)
+  //     if (Clause.isActive) return &Clause;
+  //   return nullptr;
+  // }
+
+  // const ArrayRef<ASTNode> getActiveClauseElements() const {
+  //   if (auto *Clause = getActiveClause())
+  //     return Clause->Elements;
+  //   return {};
+  // }
+
+  // SourceLoc getEndLoc() const { return EndLoc; }
+
+  // bool hadMissingEnd() const { return Bits.IfConfigDecl.HadMissingEnd; }
+
+  // SourceRange getSourceRange() const;
+
+  // static bool classof(const Decl *D) {
+  //   return D->getKind() == DeclKind::IfConfig;
+  // }
+};
 
 } // namespace syn
 } // namespace stone
