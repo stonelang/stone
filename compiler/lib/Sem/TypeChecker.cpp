@@ -7,12 +7,12 @@ using namespace stone;
 using namespace stone::sem;
 using namespace stone::syn;
 
-TypeChecker::TypeChecker(SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
+TypeChecker::TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)
-    : sf(sf), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
+    : sc(sc), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
 
   stats.reset(new TypeCheckerStats(*this));
-  sf.GetSyntaxContext().GetContext().GetStatEngine().Register(stats.get());
+  sc.GetContext().GetStatEngine().Register(stats.get());
 }
 
 void TypeCheckerStats::Print(ColorfulStream &stream) {}

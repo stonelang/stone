@@ -12,14 +12,16 @@ namespace syn {
 class Expr;
 class Stmt;
 class Decl;
-
+class QualType;
+class DeclContext;
 class SyntaxWalker;
 
 enum class ExprKind : uint8_t;
 enum class DeclKind : uint8_t;
 enum class StmtKind : uint8_t; // TODO: May not want uint8_t
 
-struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *> {
+struct SyntaxNode
+    : public llvm::PointerUnion<Expr *, Stmt *, Decl *, QualType *> {
   // Inherit the constructors from PointerUnion.
   using PointerUnion::PointerUnion;
 

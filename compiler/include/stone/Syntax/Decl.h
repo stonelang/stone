@@ -369,7 +369,7 @@ public:
     return classof(static_cast<const Decl *>(d));
   }
   static bool classof(const DeclContext *dc) {
-    if (auto d = dc->GetAsDecl())
+    if (auto d = dc->CastToDecl())
       return classof(d);
     return false;
   }

@@ -67,8 +67,7 @@ public:
   SyntaxFileKind kind = SyntaxFileKind::None;
   SyntaxFileStage stage = SyntaxFileStage::None;
 
-  // TODO: You may want const list
-  List<Decl> topLevelDecls;
+  llvm::Optional<std::vector<Decl *>> allDecls;
 
 public:
   SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
@@ -83,7 +82,14 @@ public:
   bool HasMainFun() { return hasMainFun; }
   void SetHasMainFun(bool status = false) { status = hasMainFun; }
 
-  void AddTopLevelDecl(Decl *topLvelDecl) { topLevelDecls.Add(topLvelDecl); }
+  void AddTopLevelDecl(Decl *d) {
+    // Force decl parsing if we haven't already.
+    //(void)GetTopLevelDecls();
+    allDecls->push_back(d);
+  }
+
+  /// Retrieves an immutable view of the list of top-level decls in this file.
+  // llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
   // override;
@@ -113,8 +119,11 @@ public:
 
 class Module final : public DeclContext,
                      public TypeDecl,
-                     public WalkableSyntax,
                      public SyntaxAllocation<Module> {
+
+  /// The ABI name of the module, if it differs from the module name.
+  mutable Identifier moduleABIName;
+
 public:
   Module(Identifier name, SyntaxContext &tc);
 
@@ -143,11 +152,27 @@ public:
   /// \returns true if this module is the "builtin" module.
   bool IsBuiltin() const;
 
-  bool Walk(SyntaxWalker &waker) override;
+  bool Walk(SyntaxWalker &waker);
+
+  /// Retrieve the ABI name of the module, which is used for metadata and
+  /// mangling.
+  Identifier GetABIName() const;
+  // /// Set the ABI name of the module;
+  // void SetABIName(Identifier name) {
+  //   moduleABIName = name;
+  //}
+  /// Retrieve the actual module name of an alias used for this module (if any).
+  ///
+  /// For example, if '-module-alias Foo=Bar' is passed in when building the
+  /// main module, and this module is (a) not the main module and (b) is named
+  /// Foo, then it returns the real (physically on-disk) module name Bar.
+  ///
+  /// If no module aliasing is set, it will return getName(), i.e. Foo.
+  Identifier GetRealName() const;
 
 public:
   static bool classof(const DeclContext *DC) {
-    if (auto D = DC->GetAsDecl()) {
+    if (auto D = DC->CastToDecl()) {
       return classof(D);
     }
     return false;

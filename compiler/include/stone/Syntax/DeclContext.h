@@ -120,7 +120,7 @@ public:
   DeclContextKind GetDeclContextType() { return declContextKind; }
   DeclContext *GetParent() { return parent; }
 
-  Decl *GetAsDecl() {
+  Decl *CastToDecl() {
     switch (declContextKind) {
     case DeclContextKind::Decl:
       return reinterpret_cast<Decl *>(this + 1); // TODO: UB
@@ -128,8 +128,8 @@ public:
       return nullptr;
     }
   }
-  const Decl *GetAsDecl() const {
-    return const_cast<DeclContext *>(this)->GetAsDecl();
+  const Decl *CastToDecl() const {
+    return const_cast<DeclContext *>(this)->CastToDecl();
   }
 
   // Return the SyntaxContext for a specified DeclContext by

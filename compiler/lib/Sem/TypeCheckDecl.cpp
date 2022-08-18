@@ -3,14 +3,16 @@
 using stone::sem::TypeChecker;
 
 void TypeChecker::CheckDecl(Decl *d) {
-  // TODO: Null check
+  // TODO:
   switch (d->GetKind()) {
   case DeclKind::Fun:
-    CheckFunDecl();
+    CheckFunDecl(d);
     break;
   default:
     break;
   }
 }
 
-void TypeChecker::CheckFunDecl() {}
+void TypeChecker::CheckFunDecl(Decl *d) {
+  // TODO: Valid cast
+}
