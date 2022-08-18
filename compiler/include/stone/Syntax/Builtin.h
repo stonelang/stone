@@ -5,6 +5,7 @@
 
 namespace stone {
 namespace syn {
+class Type;
 class SyntaxContext;
 
 namespace builtin {
@@ -44,6 +45,7 @@ public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
 
+public:
   void InitType(SyntaxContext &tc);
   void InitTypes(SyntaxContext &tc);
 

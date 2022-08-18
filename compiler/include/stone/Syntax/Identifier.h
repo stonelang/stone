@@ -49,6 +49,7 @@ class alignas(IdentifierAlignment) Identifier {
   // Front-end token ID or tok::identifier.
   tok ty;
 
+  /// FIXME:
   unsigned BuiltinID;
 
   // True if the identifier is a keyword in a newer or proposed Standard.

@@ -23,42 +23,15 @@ SyntaxContext::SyntaxContext(stone::Context &ctx,
   builtin.Init(*this);
 }
 
-SyntaxContext::~SyntaxContext() {}
-
-void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
-                                   AllocationArena arena, unsigned alignment) {
-  return ctx.Allocate(bytes, alignment /*, arena*/);
-}
-
-struct SyntaxContext::Detail final {
-  Detail();
-  ~Detail();
-
-  llvm::BumpPtrAllocator Allocator; // used in later initializations
-
-  /// The set of cleanups to be called when the SyntaxContext is destroyed.
-  std::vector<std::function<void(void)>> cleanups;
-
-  /// The set of top-level modules we have loaded.
-  /// This map is used for iteration, therefore it's a MapVector and not a
-  /// DenseMap.
-  llvm::MapVector<Identifier *, syn::Module *> loadedModules;
-};
-
-SyntaxContext::Detail::Detail() {}
-
-SyntaxContext::Detail::~Detail() {
+SyntaxContext::~SyntaxContext() {
   for (auto &cleanup : cleanups) {
     cleanup();
   }
 }
 
-// TODO:
-inline SyntaxContext::Detail &SyntaxContext::GetDetail() const {
-  auto pointer = reinterpret_cast<char *>(const_cast<SyntaxContext *>(this));
-  auto offset =
-      llvm::alignAddr((void *)sizeof(*this), llvm::Align(alignof(Detail)));
-  return *reinterpret_cast<Detail *>(pointer + offset);
+void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
+                                   AllocationArena arena, unsigned alignment) {
+  return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 
 Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {

@@ -21,6 +21,7 @@
 #include "stone/Syntax/SearchPath.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/Using.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -99,8 +100,14 @@ class SyntaxContext final {
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
 
-  struct Detail;
-  Detail &GetDetail() const;
+  /// The set of top-level modules we have loaded.
+  /// This map is used for iteration, therefore it's a MapVector and not a
+  /// DenseMap.
+  llvm::MapVector<Identifier *, syn::Module *> loadedModules;
+
+public:
+  /// The set of cleanups to be called when the SyntaxContext is destroyed.
+  std::vector<std::function<void(void)>> cleanups;
 
 public:
   SyntaxContext(const SyntaxContext &) = delete;
@@ -129,6 +136,29 @@ public:
   llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
 
   SyntaxContextStats &GetStats() { return *stats.get(); }
+
+public:
+  //==Module stuff==//
+  // Module *GetModule(UsingPath::Module modulePath);
+
+  /// Attempts to load the matching overlay module for the given clang
+  /// module into this ASTContext.
+  ///
+  /// \returns The Swift overlay module corresponding to the given clang module,
+  /// or NULL if the overlay module cannot be found.
+  // TODO: Module *GetOverlayModule(const ModuleFile *clangModule);
+
+  Module *GetModuleByName(llvm::StringRef moduleName);
+  Module *GetModuleByIdentifier(Identifier moduleID);
+
+  /// Returns the standard library module, or null if the library isn't present.
+  ///
+  /// If \p loadIfAbsent is true, the ASTContext will attempt to load the module
+  /// if it hasn't been set yet.
+  // Module *GetSTDLibModule(bool loadIfAbsent = false);
+  // Module *GetSTDLibModule() const {
+  //   return const_cast<SyntaxContext *>(this)->GetStdlibModule(false);
+  // }
 
 public:
   /// Return the total amount of physical memory allocated for representing
