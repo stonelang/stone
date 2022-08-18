@@ -9,6 +9,19 @@
 namespace stone {
 namespace syn {
 
+
+enum class TypeQualKind : uint8_t {
+  None = 0,
+  Const = 1,
+  Restrict = 2,
+  Volatile = 4,
+  Unaligned = 8,
+  // This has no corresponding Qualifiers::TQ value, because it's not treated
+  // as a qualifier in our type system.
+  Fixed = 16
+};
+
+
 enum DeclaratorChunkKind {
   Pointer,
   Reference,

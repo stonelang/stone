@@ -42,17 +42,6 @@ namespace syn {
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
-enum class TypeQualKind : uint8_t {
-  None = 0,
-  Const = 1,
-  Restrict = 2,
-  Volatile = 4,
-  Unaligned = 8,
-  // This has no corresponding Qualifiers::TQ value, because it's not treated
-  // as a qualifier in our type system.
-  Fixed = 16
-};
-
 // Extended Qualifiers
 class ExtQuals;
 // Qualified Types
