@@ -12,11 +12,11 @@ enum class UsingKind : uint8_t {
 
   ///
   Type,
-  /// using STD.IO.OutputStream;
+  /// using STD.Core.IO.OutputStream;
   Struct,
   ///
   Enum,
-  /// using STD.IO.Stream;
+  /// using STD.Core.IO.Stream;
   Interface,
 
   //

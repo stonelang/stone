@@ -8,8 +8,8 @@
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeLoc.h"
 
-#include "llvm/ADT/APInt.h"
 #include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/APInt.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/FoldingSet.h"
@@ -99,6 +99,24 @@ class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
 
 class BuiltinType : public Type {};
 
+/// An abstract base class for the two integer types.
+class BuiltinIntegerTypeBase : public BuiltinType {
+  // protected:
+  //   BuiltinIntegerTypeBase(TypeKind kind, const ASTContext &C)
+  //     : BuiltinType(kind, C) {}
+
+  // public:
+  //   static bool classof(const TypeBase *T) {
+  //     return T->getKind() >= TypeKind::First_AnyBuiltinIntegerType &&
+  //            T->getKind() <= TypeKind::Last_AnyBuiltinIntegerType;
+  //   }
+
+  // defined inline below
+  // BuiltinIntegerWidth GetWidth() const;
+};
+
+class BuiltinIntegerType : public BuiltinIntegerTypeBase {};
+
 class FloatBuiltinType : public BuiltinType {
   friend class SyntaxContext;
 
@@ -136,7 +154,7 @@ public:
     case IEEE128:
       return 128;
     }
-    llvm_unreachable("Invalid IEEEKind");
+    llvm_unreachable("Invalid IEEE");
   }
   // static bool classof(const TypeBase *T) {
   //   return T->getKind() == TypeKind::BuiltinFloat;
