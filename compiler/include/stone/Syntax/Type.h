@@ -55,8 +55,10 @@ class TypeContext final {
 public:
 };
 
-class alignas(1 << TypeAlignInBits) Type
+class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
+
+class Type : public TypeBase {};
 
 // TODO: QualType to TypeRep
 class alignas(1 << QualTypeAlignInBits) QualType
@@ -84,6 +86,8 @@ class FunctionType : public FunctionTypeBase {
 public:
   QualType GetReturnType() { return returnType; }
 };
+
+class FunctionSignatureType : FunctionType {};
 
 class NominalType : public Type {};
 
