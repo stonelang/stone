@@ -18,6 +18,7 @@ enum class TypeQualKind : uint8_t {
   Fixed = 16
 };
 
+
 enum DeclaratorChunkKind {
   Pointer,
   Reference,

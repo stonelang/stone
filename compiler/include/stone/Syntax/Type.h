@@ -42,13 +42,9 @@ namespace syn {
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
-// Extended Qualifiers
-class ExtQuals;
-// Qualified Types
-
-class QualType;
+class ExtQuals; // Extended Qualifiers
+class QualType; // Qualified Types
 class StructDecl;
-
 class Type;
 
 class TypeContext final {
