@@ -16,23 +16,23 @@ using namespace stone;
 // /// Print a nice summary of this job
 // void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
 
-  // stream() << std::to_string(GetQueueID()) << ":";
-  // stream().UseGreen();
-  // stream() << GetName();
-  // stream().Reset();
-  // stream() << "(";
-  // int inputSize = inputs.size();
-  // for (auto &input : inputs) {
-  //   --inputSize;
-  //   stream() << input.GetName();
-  //   if (inputSize != 0) {
-  //     stream() << ",";
-  //   }
-  // }
-  // stream() << ")"
-  //          << " -> "
-  //          << "object" << '\n';
-  // stream() << '\n';
+// stream() << std::to_string(GetQueueID()) << ":";
+// stream().UseGreen();
+// stream() << GetName();
+// stream().Reset();
+// stream() << "(";
+// int inputSize = inputs.size();
+// for (auto &input : inputs) {
+//   --inputSize;
+//   stream() << input.GetName();
+//   if (inputSize != 0) {
+//     stream() << ",";
+//   }
+// }
+// stream() << ")"
+//          << " -> "
+//          << "object" << '\n';
+// stream() << '\n';
 //}
 
 /// Perform a complete dump of this job.

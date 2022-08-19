@@ -1,36 +1,20 @@
-#include "stone/Driver/Job.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Driver/Intent.h"
+#include "stone/Driver/Job.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
 
-const char *Job::GetNameByKind(JobKind jobKind) const {
-  switch (jobKind) {
-  case JobKind::Compile:
-    return "compile";
-  case JobKind::Backend:
-    return "backend";
-  case JobKind::Assemble:
-    return "assemble";
-  case JobKind::DynamicLink:
-    return "dynamic-link";
-  case JobKind::StaticLink:
-    return "static-link";
-  case JobKind::ExecutableLink:
-    return "executable-link";
-  default:
-    stone::Panic("Invalid JobKind");
-  }
-}
-
-Job::Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
-         file::Type outputFileType)
-    : tool(tool), kind(kind), ctx(ctx), inputs(inputs),
+Job::Job(Intent &intent, Context &ctx, const Tool &tool,
+         llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
+    : intent(intent), ctx(ctx), tool(tool), inputs(std::move(inputs)),
       outputFileType(outputFileType) {
+
   stats = std::make_unique<JobStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
 }
+
 Job::~Job() {}
 
 /// -print-jobs

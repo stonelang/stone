@@ -21,6 +21,7 @@
 namespace stone {
 class Tool;
 class Job;
+class Intent;
 class TaskQueue;
 class Compilation;
 
@@ -39,7 +40,8 @@ enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
 namespace job {
 using Input = llvm::PointerUnion<stone::file::File *, Job *>;
-using InputList = llvm::ArrayRef<job::Input>;
+using InputList = llvm::SmallVector<job::Input, 4>;
+
 } // namespace job
 
 class JobDetail final {
@@ -59,17 +61,36 @@ public:
   llvm::ArrayRef<llvm::StringRef> GetEnv() { return env; }
 };
 
+enum class JobCondition {
+  // There was no information about the previous build (i.e., an input map),
+  // or the map marked this Job as dirty or needing a cascading build.
+  // Be maximally conservative with dependencies.
+  Always,
+  // The input changed, or this job was scheduled as non-cascading in the last
+  // build but didn't get to run.
+  RunWithoutCascading,
+  // The best case: input didn't change, output exists.
+  // Only run if it depends on some other thing that changed.
+  CheckDependencies,
+  // Run no matter what (but may or may not cascade).
+  NewlyAdded
+};
+
 class Job {
+
   friend TaskQueue;
   friend Compilation;
 
-  JobKind kind;
   const Tool &tool;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
-  llvm::TinyPtrVector<job::Input> inputs;
 
-  const char *GetNameByKind(JobKind kind) const;
+  // The intent of this job
+  Intent &intent;
+  /// The list of other Jobs which are inputs to this Job.
+  job::InputList inputs;
+
+  JobCondition jobCondition;
 
 public:
   using size_type = llvm::ArrayRef<job::Input>::size_type;
@@ -88,16 +109,14 @@ public:
 
 public:
   Job() = delete;
-  Job(JobKind kind, Context &ctx, const Tool &tool, job::InputList inputs,
-      file::Type outputFileType);
+  Job(Intent &intent, Context &ctx, const Tool &tool,
+      llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
 public:
   JobID GetID() { return jobID; }
-  const char *GetName() const { return Job::GetNameByKind(kind); }
-
   job::InputList GetInputs() { return inputs; }
-  JobKind GetKind() const { return kind; }
+  Intent &GetIntent() const { return intent; }
   void AddInput(job::Input input) { inputs.push_back(input); }
 
 public:
@@ -114,13 +133,6 @@ public:
   iterator end() { return inputs.end(); }
   const_iterator begin() const { return inputs.begin(); }
   const_iterator end() const { return inputs.end(); }
-
-public:
-  // Required for llvm::dyn_cast
-  static bool classof(const Job *job) {
-    return (job->GetKind() >= JobKind::First &&
-            job->GetKind() <= JobKind::Last);
-  }
 };
 
 // class CompileJob final : public Job {
@@ -137,7 +149,8 @@ public:
 //   // void SetPrimaryInput(job::Input input) { primaryInput = input; }
 
 //   /// Print a nice summary of this job
-//   void Print(ColorfulStream &stream, CrashState *crashState = nullptr) override;
+//   void Print(ColorfulStream &stream, CrashState *crashState = nullptr)
+//   override;
 
 //   /// Perform a complete dump of this job.
 //   void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",

@@ -28,8 +28,8 @@ enum class ModeKind : unsigned {
   ///< Parse, type-check, and emit a library.
   ///< Default => platform specific. But, with -static => 'any.a'
   EmitLibrary,
-  ///< Create a module fule 
-  InitModule, 
+  ///< Create a module fule
+  InitModule,
   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
   EmitModule,
   //< Parse, type-check, and emit assembly
