@@ -4,17 +4,17 @@
 
 using namespace stone;
 
-CompileJob::CompileJob(Context &ctx, const Tool &tool,
-                       file::Type outputFileType)
-    : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
+// CompileJob::CompileJob(Context &ctx, const Tool &tool,
+//                        file::Type outputFileType)
+//     : Job(JobKind::Compile, ctx, tool, {}, outputFileType) {}
 
-CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
-                       file::Type outputFileType)
-    : Job(JobKind::Compile, ctx, tool, input, outputFileType),
-      primaryInput(input) {}
+// CompileJob::CompileJob(Context &ctx, const Tool &tool, job::Input input,
+//                        file::Type outputFileType)
+//     : Job(JobKind::Compile, ctx, tool, input, outputFileType),
+//       primaryInput(input) {}
 
-/// Print a nice summary of this job
-void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
+// /// Print a nice summary of this job
+// void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
 
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
@@ -33,11 +33,11 @@ void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
   //          << " -> "
   //          << "object" << '\n';
   // stream() << '\n';
-}
+//}
 
 /// Perform a complete dump of this job.
-void CompileJob::Dump(ColorfulStream &stream, llvm::StringRef terminator,
-                      CrashState *crashState) {}
+// void CompileJob::Dump(ColorfulStream &stream, llvm::StringRef terminator,
+//                       CrashState *crashState) {}
 
 // std::unique_ptr<TaskDetail> CompileJob::ToTaskDetail(ToolChain &tc) const {
 //   return tc.ToTaskDetail(*this);

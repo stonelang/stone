@@ -123,73 +123,73 @@ public:
   }
 };
 
-class CompileJob final : public Job {
-  job::Input primaryInput;
+// class CompileJob final : public Job {
+//   job::Input primaryInput;
 
-public:
-  CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType);
+// public:
+//   CompileJob(Context &ctx, const Tool &tool, file::Type outputFileType);
 
-  CompileJob(Context &ctx, const Tool &tool, job::Input input,
-             file::Type outputFileType);
+//   CompileJob(Context &ctx, const Tool &tool, job::Input input,
+//              file::Type outputFileType);
 
-public:
-  job::Input GetPrimaryInput() { return primaryInput; }
-  // void SetPrimaryInput(job::Input input) { primaryInput = input; }
+// public:
+//   job::Input GetPrimaryInput() { return primaryInput; }
+//   // void SetPrimaryInput(job::Input input) { primaryInput = input; }
 
-  /// Print a nice summary of this job
-  void Print(ColorfulStream &stream, CrashState *crashState = nullptr) override;
+//   /// Print a nice summary of this job
+//   void Print(ColorfulStream &stream, CrashState *crashState = nullptr) override;
 
-  /// Perform a complete dump of this job.
-  void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
-            CrashState *crashState = nullptr) override;
+//   /// Perform a complete dump of this job.
+//   void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
+//             CrashState *crashState = nullptr) override;
 
-public:
-  static bool classof(const Job *job) {
-    return job->GetKind() == JobKind::Compile;
-  }
-};
+// public:
+//   static bool classof(const Job *job) {
+//     return job->GetKind() == JobKind::Compile;
+//   }
+// };
 
-class DynamicLinkJob final : public Job {
-  bool withLTO;
+// class DynamicLinkJob final : public Job {
+//   bool withLTO;
 
-public:
-  DynamicLinkJob(Context &ctx, const Tool &tool, job::InputList inputs,
-                 bool withLTO = false)
-      : Job(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
-        withLTO(withLTO) {}
+// public:
+//   DynamicLinkJob(Context &ctx, const Tool &tool, job::InputList inputs,
+//                  bool withLTO = false)
+//       : Job(JobKind::DynamicLink, ctx, tool, inputs, file::Type::Image),
+//         withLTO(withLTO) {}
 
-  bool WithLTO() { return withLTO; }
+//   bool WithLTO() { return withLTO; }
 
-public:
-  static bool classof(const Job *job) {
-    return job->GetKind() == JobKind::DynamicLink;
-  }
-};
-class StaticLinkJob final : public Job {
-public:
-  StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
-      : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
+// public:
+//   static bool classof(const Job *job) {
+//     return job->GetKind() == JobKind::DynamicLink;
+//   }
+// };
+// class StaticLinkJob final : public Job {
+// public:
+//   StaticLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
+//       : Job(JobKind::StaticLink, ctx, tool, inputs, file::Type::Image) {}
 
-public:
-  static bool classof(const Job *job) {
-    return job->GetKind() == JobKind::StaticLink;
-  }
-};
+// public:
+//   static bool classof(const Job *job) {
+//     return job->GetKind() == JobKind::StaticLink;
+//   }
+// };
 
-class ExecutableLinkJob final : public Job {
-public:
-  ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
-      : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
+// class ExecutableLinkJob final : public Job {
+// public:
+//   ExecutableLinkJob(Context &ctx, const Tool &tool, job::InputList inputs)
+//       : Job(JobKind::ExecutableLink, ctx, tool, inputs, file::Type::Image) {}
 
-public:
-  static bool classof(const Job *job) {
-    return job->GetKind() == JobKind::ExecutableLink;
-  }
-};
+// public:
+//   static bool classof(const Job *job) {
+//     return job->GetKind() == JobKind::ExecutableLink;
+//   }
+// };
 
-class CPUJob final : public Job {
-public:
-};
+// class CPUJob final : public Job {
+// public:
+// };
 
 class Compilation;
 class JobCache final {
@@ -205,14 +205,14 @@ public:
   llvm::SmallVector<job::Input, 16> forTop;
 
 public:
-  bool ForCompile() { return forCompile.size(); }
+  bool HasCompile() { return forCompile.size(); }
   void CacheForCompile(job::Input input) { forCompile.push_back(input); }
 
   // TODO: The approach that you are taking, this is not needed.
-  bool ForLink() { return forLink.size(); }
+  bool HasLink() { return forLink.size(); }
   void CacheForLink(job::Input input) { forLink.push_back(input); }
 
-  bool ForTop() { return forTop.size(); }
+  bool HasTop() { return forTop.size(); }
   void CacheForTop(job::Input input) { forTop.push_back(input); }
 
 public:

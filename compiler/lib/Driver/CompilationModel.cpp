@@ -159,6 +159,7 @@ std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
     ToolChain &tc, const file::Files &inputs, const OutputOptions &outputOpts) {
   IntentCache ic;
   BuildIntents(tc, inputs, ic, outputOpts);
+  
   BuildJobs(tc, ic, outputOpts);
 
   // TODO: if print ....
