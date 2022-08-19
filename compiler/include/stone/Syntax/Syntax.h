@@ -43,6 +43,7 @@ public:
   Identifier &MakeIdentifier(llvm::StringRef name);
 
 public:
+  //== Declarations ==/
   void VerifyDecl(Decl *d);
   Module *MakeModuleDecl(Identifier &name, bool isMainModule);
 
@@ -53,9 +54,13 @@ public:
   StructDecl *MakeInterfaceDecl(DeclName name, SrcLoc loc, DeclContext *dc);
 
 public:
+  //== Statements ==/
   BraceStmt *MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
                            SrcLoc rbloc,
                            llvm::Optional<bool> implicit = llvm::None);
+
+public:
+  //== Expressions ==/
 
 public:
   bool HasError() {

@@ -27,7 +27,7 @@ struct DeclaratorChunk final {
 };
 
 enum class DeclaratorScopeKind {
-  File,                // File scope declaration.
+  SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
   TypeName,            // Abstract declarator for types.
   FunctionalCast,      // Type in a C++ functional cast expression.

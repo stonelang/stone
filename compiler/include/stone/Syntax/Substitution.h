@@ -37,7 +37,8 @@ namespace syn {
 
 //   SubstitutionOptions(SubstFlags flags) : OptionSet(flags) { }
 
-//   SubstitutionOptions(llvm::OptionSet<SubstitutionFlags> options) : llvm::OptionSet(options) { }
+//   SubstitutionOptions(llvm::OptionSet<SubstitutionFlags> options) :
+//   llvm::OptionSet(options) { }
 // };
 
 // inline SubstOptions operator|(SubstFlags lhs, SubstFlags rhs) {
