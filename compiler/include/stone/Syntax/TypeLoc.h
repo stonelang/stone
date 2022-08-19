@@ -1,13 +1,67 @@
-#ifndef STONE_SYNTAX_TYPE_H
-#define STONE_SYNTAX_TYPE_H
+#ifndef STONE_SYNTAX_TYPELOC_H
+#define STONE_SYNTAX_TYPELOC_H
+
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/Type.h"
+#include "stone/Syntax/TypeAlignment.h"
+
+#include "llvm/ADT/PointerIntPair.h"
 
 namespace stone {
 namespace syn {
 
-class TypeLoc {
+class TypeRep;
+class SyntaxContext;
+
+/// TypeLoc - Provides source location information for a parsed type.
+/// A TypeLoc is stored in AST nodes which use an explicitly written type.
+class alignas(1 << TypeRepAlignInBits) TypeLoc {
+  Type ty;
+  TypeRep *tyRep = nullptr;
+
 public:
+  TypeLoc() {}
+  TypeLoc(TypeRep *tyRep) : tyRep(tyRep) {}
+  TypeLoc(TypeRep *tyRep, Type ty) : tyRep(tyRep) { SetType(ty); }
+
+  bool WasValidated() const { return !ty.IsNull(); }
+  bool IsError() const;
+
+  // FIXME: We generally shouldn't need to build TypeLocs without a location.
+  static TypeLoc WithoutLoc(Type ty) {
+    TypeLoc result;
+    result.ty = ty;
+    return result;
+  }
+
+  /// Get the representative location of this type, for diagnostic
+  /// purposes.
+  /// This location is not necessarily the start location of the type repr.
+  SrcLoc GetLoc() const;
+  SrcRange GetSrcRange() const;
+
+  bool HasLoc() const { return tyRep != nullptr; }
+  TypeRep *GetTypeRep() const { return tyRep; }
+  Type GetType() const { return ty; }
+
+  bool IsNull() const { return GetType().IsNull() && tyRep == nullptr; }
+
+  void SetType(Type ty);
+
+  friend llvm::hash_code hash_value(const TypeLoc &owner) {
+    return llvm::hash_combine(owner.ty.GetPointer(), owner.tyRep);
+  }
+
+  friend bool operator==(const TypeLoc &lhs, const TypeLoc &rhs) {
+    return lhs.ty.GetPointer() == rhs.ty.GetPointer() && lhs.tyRep == rhs.tyRep;
+  }
+
+  friend bool operator!=(const TypeLoc &lhs, const TypeLoc &rhs) {
+    return !(lhs == rhs);
+  }
 };
 
 } // namespace syn
 } // namespace stone
+
 #endif

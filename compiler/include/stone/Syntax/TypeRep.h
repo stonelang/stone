@@ -1,6 +1,18 @@
 #ifndef STONE_SYNTAX_TYPEREP_H
 #define STONE_SYNTAX_TYPEREP_H
 
+#include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/DeclContext.h"
+#include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Type.h"
+#include "stone/Syntax/TypeAlignment.h"
+
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/TrailingObjects.h"
+
 namespace stone {
 namespace syn {
 class QualType;
@@ -13,7 +25,14 @@ enum class TypeRepKind : uint8_t {
 #include "TypeRepKind.def"
 };
 
-class TypeRep {};
+class alignas(1 << TypeRepAlignInBits) TypeRep
+    : public SyntaxAllocation<TypeRep> {
+
+  TypeRep(const TypeRep &) = delete;
+  void operator=(const TypeRep &) = delete;
+
+public:
+};
 
 class QualTypeRep : public TypeRep {
 public:

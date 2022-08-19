@@ -6,7 +6,6 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
-#include "stone/Syntax/TypeLoc.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -42,6 +41,27 @@ namespace syn {
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
+enum class TypeQualKind : uint8_t {
+  None = 0,
+  Const = 1,
+  Restrict = 2,
+  Volatile = 4,
+  Unaligned = 8,
+  Fixed = 16
+};
+
+/// ref-qualifier associated with a function type.
+/// This determines whether a member function's "this" object can be an
+/// lvalue, rvalue, or neither.
+enum class RefQualKind : uint8_t {
+  /// No ref-qualifier was provided.
+  None = 0,
+  /// An lvalue ref-qualifier was provided (\c &).
+  LValue,
+
+  /// An rvalue ref-qualifier was provided (\c &&).
+  RValue
+};
 enum class ScalarTypeKind {
   Pointer,
   BlockPointer,
@@ -64,11 +84,20 @@ public:
 };
 
 class alignas(1 << TypeAlignInBits) TypeBase
-    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {};
+    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
 
-class Type : public TypeBase {};
+public:
+};
 
-// TODO: QualType to TypeRep
+class Type {
+  TypeBase *tyBase = nullptr;
+
+public:
+  bool IsNull() const { return tyBase == nullptr; }
+  TypeBase *GetPointer() const { return tyBase; }
+};
+
+/// const int a = 10; volatile int a = 10;
 class alignas(1 << QualTypeAlignInBits) QualType
     : public SyntaxAllocation<QualType> {
 public:
@@ -81,8 +110,14 @@ public:
   /// This function requires that the type not be NULL. If the type might be
   /// NULL, use the (slightly less efficient) \c getTypePtrOrNull().
   const Type *GetTypePtr() const;
-
   const Type *GetTypePtrOrNull() const;
+};
+
+// CanType - This is a Type that is statically known to be canonical.  To get
+/// one of these, use Type->GetCononicalType().  Since all CanType's can be used
+/// as 'Type' (they just don't have sugar) we derive from Type.
+class CanType : public Type {
+public:
 };
 
 class FunctionTypeBase : public Type {};
@@ -333,8 +368,8 @@ class MemberPointerType : public Type, public llvm::FoldingSetNode {
   // }
 };
 
-using TypeRep = OpaquePtr<QualType>;
-using UnionTypeRep = UnionOpaquePtr<QualType>;
+// using TypeRep = OpaquePtr<QualType>;
+// using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 } // namespace syn
 } // namespace stone
