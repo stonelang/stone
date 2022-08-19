@@ -3,6 +3,8 @@
 
 using namespace stone::syn;
 
+bool Type::Walk(TypeWalker &walker) const {}
+
 // SrcLoc TypeLoc::GetLoc() const {
 
 // }

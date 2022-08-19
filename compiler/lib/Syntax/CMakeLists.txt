@@ -11,19 +11,15 @@ set(stone_syn_sources
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp
-	DeclSyntaxBuilder.cpp
 	Expr.cpp
-	ExprSyntaxBuilder.cpp
 	Identifier.cpp
 	Module.cpp
 	SearchPath.cpp
 	Stmt.cpp
-	StmtSyntaxBuilder.cpp
+	Substituion.cpp
 	Syntax.cpp
 	SyntaxContext.cpp
-	SyntaxBuilder.cpp
 	SyntaxDiagnostic.cpp
-	SyntaxFactory.cpp
 	SyntaxScope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp

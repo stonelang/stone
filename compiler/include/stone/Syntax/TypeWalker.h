@@ -8,5 +8,11 @@
 #include <string>
 
 namespace stone {
-namespace syn {}
+namespace syn {
+
+class TypeWalker {
+
+public:
+};
+} // namespace syn
 } // namespace stone

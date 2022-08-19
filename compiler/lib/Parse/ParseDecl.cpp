@@ -1,7 +1,6 @@
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/Syntax.h"
-#include "stone/Syntax/SyntaxBuilder.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
