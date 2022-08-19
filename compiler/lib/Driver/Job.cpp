@@ -1,15 +1,15 @@
-#include "stone/Basic/Defer.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/Job.h"
+#include "stone/Basic/Defer.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
+#include "stone/Driver/Intent.h"
 
 using namespace stone;
 
-Job::Job(Intent &intent, Context &ctx, const Tool &tool,
+Job::Job(const Intent &intent, Context &ctx, const Tool &tool,
          llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
-    : intent(intent), ctx(ctx), tool(tool), inputs(std::move(inputs)),
-      outputFileType(outputFileType) {
+    : intentAndCondition(&intent, JobCondition::Always), ctx(ctx), tool(tool),
+      inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);
   ctx.GetStatEngine().Register(stats.get());
