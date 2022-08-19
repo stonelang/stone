@@ -4,8 +4,8 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/AttributeKind.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/TypeAlignment.h"
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"

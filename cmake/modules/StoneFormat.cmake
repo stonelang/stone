@@ -41,7 +41,7 @@ set(stone_tests_files
 find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
 	if(CLANG_FORMAT)
 	add_custom_target(
-		code-fmt
+		stone-fmt
 		clang-format
 		-i
 		-style=llvm
