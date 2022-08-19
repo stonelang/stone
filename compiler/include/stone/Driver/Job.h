@@ -9,21 +9,20 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/JobKind.h"
 
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/SmallSet.h"
+#include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
-#include "llvm/Support/StringSaver.h"
-#include "llvm/Support/Timer.h"
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/PointerIntPair.h"
-#include "llvm/ADT/SmallSet.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Option/Option.h"
 #include "llvm/Support/Chrono.h"
 #include "llvm/Support/Program.h"
+#include "llvm/Support/StringSaver.h"
+#include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
@@ -89,7 +88,6 @@ class Job {
   friend TaskQueue;
   friend Compilation;
 
-  const Tool &tool;
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
 
@@ -98,7 +96,7 @@ class Job {
 
   /// The intent which caused the creation of this Job, and the conditions
   /// under which it must be run.
-  llvm::PointerIntPair<const Intent*, 2, JobCondition> intentAndCondition;
+  llvm::PointerIntPair<const Intent *, 2, JobCondition> intentAndCondition;
 
 public:
   using size_type = llvm::ArrayRef<job::Input>::size_type;
@@ -117,7 +115,7 @@ public:
 
 public:
   Job() = delete;
-  Job(const Intent &intent, Context &ctx, const Tool &tool,
+  Job(const Intent &intent, Context &ctx,
       llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
@@ -129,7 +127,6 @@ public:
   const Intent &GetIntent() const { return *intentAndCondition.getPointer(); }
   JobCondition GetJobCondition() const { return intentAndCondition.getInt(); }
   void SetJobCondition(JobCondition jc) { intentAndCondition.setInt(jc); }
-
 
 public:
   /// Print a nice summary of this job

@@ -37,14 +37,14 @@ using InputList = llvm::ArrayRef<intent::Input>;
 
 class Intent {
 
+  friend class Driver;
+
   IntentKind kind;
   const Tool &tool;
   file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<intent::Input> inputs;
 
   const char *GetNameByKind(IntentKind kind) const;
-
-  friend class Driver;
   /// Itents must be created through Driver::MakeIntent(...)
   void *operator new(size_t size) { return ::operator new(size); };
 
@@ -57,6 +57,7 @@ public:
   Intent() = delete;
   Intent(IntentKind kind, const Tool &tool, intent::InputList inputs,
          file::Type outputFileType);
+
   virtual ~Intent();
 
 public:

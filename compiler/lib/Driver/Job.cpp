@@ -6,7 +6,7 @@
 
 using namespace stone;
 
-Job::Job(const Intent &intent, Context &ctx, const Tool &tool,
+Job::Job(const Intent &intent, Context &ctx,
          llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
     : intentAndCondition(&intent, JobCondition::Always), ctx(ctx), tool(tool),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
