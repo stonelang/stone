@@ -1,8 +1,8 @@
 #include "stone/Driver/Job.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Driver/Phase.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
+#include "stone/Driver/Phase.h"
 
 using namespace stone;
 

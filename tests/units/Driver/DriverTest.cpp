@@ -2,8 +2,8 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Context.h"
-#include "stone/Driver/Phase.h"
 #include "stone/Driver/CompilationJob.h"
+#include "stone/Driver/Phase.h"
 #include "gtest/gtest.h"
 
 using namespace stone;

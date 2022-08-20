@@ -26,18 +26,21 @@ public:
                    const OutputOptions &outputOpts) {}
 
   virtual void BuildPhases(ToolChain &tc, const file::Files &inputs,
-                            PhaseCache &ic, const OutputOptions &outputOpts) {}
+                           PhaseCache &ic, const OutputOptions &outputOpts) {}
 
-  virtual void BuildJobs(ToolChain &tc, PhaseCache &ic, JobCache &jc,
+  virtual void BuildJobs(ToolChain &tc, PhaseCache &pc, JobCache &jc,
+                         const OutputOptions &outputOpts) {}
+
+  virtual void BuildJobs(ToolChain &tc, const Phase &phase, JobCache &jc,
                          const OutputOptions &outputOpts) {}
 
   CompilationModelKind GetKind() { return kind; }
 
 protected:
   Phase *BuildLinkPhase(ToolChain &tc, PhaseCache &ic,
-                          const OutputOptions &outputOpts);
+                        const OutputOptions &outputOpts);
   Phase *BuildLinkPhase(ToolChain &tc, const file::Files &inputs,
-                          const OutputOptions &outputOpts);
+                        const OutputOptions &outputOpts);
 
 protected:
   file::File *InputToFile(PhaseInput input) const {
@@ -49,16 +52,16 @@ protected:
 
 public:
   Phase *ConstructCompilePhase(ToolChain &tc, PhaseInput input,
-                                 const OutputOptions &outputOpts);
+                               const OutputOptions &outputOpts);
 
   Phase *ConstructStaticLinkPhase(ToolChain &tc, PhaseInputList inputs,
-                                    const OutputOptions &outputOpts);
-
-  Phase *ConstructExecLinkPhase(ToolChain &tc, PhaseInputList inputs,
                                   const OutputOptions &outputOpts);
 
+  Phase *ConstructExecLinkPhase(ToolChain &tc, PhaseInputList inputs,
+                                const OutputOptions &outputOpts);
+
   Phase *ConstructDynamicLinkPhase(ToolChain &tc, PhaseInputList inputs,
-                                     const OutputOptions &outputOpts);
+                                   const OutputOptions &outputOpts);
 };
 
 class QuadraticCompilationModel final : public CompilationModel {
@@ -72,67 +75,71 @@ public:
                    const OutputOptions &outputOpts) override;
 
   void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
-                    const OutputOptions &outputOpts) override;
+                   const OutputOptions &outputOpts) override;
 
   void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
+                 const OutputOptions &outputOpts) override;
+
+  void BuildJobs(ToolChain &tc, const Phase &phase, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
   void BuildCompilePhases(ToolChain &tc, const file::Files &inputs,
-                           PhaseCache &ic, const OutputOptions &outputOpts);
+                          PhaseCache &ic, const OutputOptions &outputOpts);
 };
 
-class FlatCompilationModel final : public CompilationModel {
-public:
-  FlatCompilationModel() : CompilationModel(CompilationModelKind::Flat) {}
+// class FlatCompilationModel final : public CompilationModel {
+// public:
+//   FlatCompilationModel() : CompilationModel(CompilationModelKind::Flat) {}
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(ToolChain &tc, const file::Files &inputs,
-                   const OutputOptions &outputOpts) override;
+// public:
+//   std::unique_ptr<Compilation>
+//   BuildCompilation(ToolChain &tc, const file::Files &inputs,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
-                    const OutputOptions &outputOpts) override;
+//   void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
-                 const OutputOptions &outputOpts) override;
-};
+//   void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
+//                  const OutputOptions &outputOpts) override;
+// };
 
-class CPUCountCompilationModel final : public CompilationModel {
-public:
-  CPUCountCompilationModel()
-      : CompilationModel(CompilationModelKind::CPUCount) {}
+// class CPUCountCompilationModel final : public CompilationModel {
+// public:
+//   CPUCountCompilationModel()
+//       : CompilationModel(CompilationModelKind::CPUCount) {}
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(ToolChain &tc, const file::Files &inputs,
-                   const OutputOptions &outputOpts) override;
+// public:
+//   std::unique_ptr<Compilation>
+//   BuildCompilation(ToolChain &tc, const file::Files &inputs,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ic,
-                    const OutputOptions &outputOpts) override;
+//   void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ic,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
-                 const OutputOptions &outputOpts) override;
+//   void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
+//                  const OutputOptions &outputOpts) override;
 
-private:
-  int ComputeCPUCount() const;
-};
+// private:
+//   int ComputeCPUCount() const;
+// };
 
-class SingleCompilationModel final : public CompilationModel {
-public:
-  SingleCompilationModel() : CompilationModel(CompilationModelKind::Single) {}
+// class SingleCompilationModel final : public CompilationModel {
+// public:
+//   SingleCompilationModel() : CompilationModel(CompilationModelKind::Single)
+//   {}
 
-public:
-  std::unique_ptr<Compilation>
-  BuildCompilation(ToolChain &tc, const file::Files &inputs,
-                   const OutputOptions &outputOpts) override;
+// public:
+//   std::unique_ptr<Compilation>
+//   BuildCompilation(ToolChain &tc, const file::Files &inputs,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
-                    const OutputOptions &outputOpts) override;
+//   void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
+//                    const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, PhaseCache &ic, JobCache &jc,
-                 const OutputOptions &outputOpts) override;
-};
+//   void BuildJobs(ToolChain &tc, PhaseCache &ic, JobCache &jc,
+//                  const OutputOptions &outputOpts) override;
+// };
 
 } // namespace stone
 

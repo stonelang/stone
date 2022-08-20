@@ -6,46 +6,48 @@ using namespace stone;
 
 Phase *
 CompilationModel::ConstructCompilePhase(ToolChain &tc, PhaseInput input,
-                                         const OutputOptions &outputOpts) {
-  Phase *action = nullptr;
+                                        const OutputOptions &outputOpts) {
+  Phase *phase = nullptr;
   auto tool = tc.GetSC();
-  action = tc.GetDriver().MakePhase<CompilePhase>(*tool, input,
-                                                    outputOpts.outputFileType);
-  assert(action);
-  return action;
+  phase = tc.GetDriver().MakePhase<CompilePhase>(*tool, input,
+                                                 outputOpts.outputFileType);
+  assert(phase);
+  return phase;
 }
-Phase *CompilationModel::ConstructStaticLinkPhase(
-    ToolChain &tc, PhaseInputList inputs, const OutputOptions &outputOpts) {
+Phase *
+CompilationModel::ConstructStaticLinkPhase(ToolChain &tc, PhaseInputList inputs,
+                                           const OutputOptions &outputOpts) {
 
-  Phase *action = nullptr;
+  Phase *phase = nullptr;
   auto tool = tc.GetLD();
-  action = tc.GetDriver().MakePhase<StaticLinkPhase>(*tool, inputs);
-  assert(action);
-  return action;
+  phase = tc.GetDriver().MakePhase<StaticLinkPhase>(*tool, inputs);
+  assert(phase);
+  return phase;
 }
 
-Phase *CompilationModel::ConstructExecLinkPhase(
-    ToolChain &tc, PhaseInputList inputs, const OutputOptions &outputOpts) {
+Phase *
+CompilationModel::ConstructExecLinkPhase(ToolChain &tc, PhaseInputList inputs,
+                                         const OutputOptions &outputOpts) {
 
-  Phase *action = nullptr;
+  Phase *phase = nullptr;
   auto tool = tc.GetLD();
-  return action;
+  return phase;
 }
 
 Phase *CompilationModel::ConstructDynamicLinkPhase(
     ToolChain &tc, PhaseInputList inputs, const OutputOptions &outputOpts) {
 
-  Phase *action = nullptr;
+  Phase *phase = nullptr;
   auto ld = tc.GetLD();
-  return action;
+  return phase;
 }
 
 //  TODO: Look into the PhaseCache instead of the PhaseInput
-/// GOAL: Build the link action and CacheForTopLevel(..)
+/// GOAL: Build the link phase and CacheForTopLevel(..)
 Phase *CompilationModel::BuildLinkPhase(ToolChain &tc, PhaseCache &ac,
-                                          const OutputOptions &outputOpts) {
+                                        const OutputOptions &outputOpts) {
 
-  Phase *action = nullptr;
+  Phase *phase = nullptr;
   // Make sure that we can link
   assert(tc.GetDriver().CanLink() &&
          "The current mode does not allow linking.");
@@ -55,25 +57,25 @@ Phase *CompilationModel::BuildLinkPhase(ToolChain &tc, PhaseCache &ac,
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    action = ConstructExecLinkPhase(tc, ac.forCompile, outputOpts);
+    phase = ConstructExecLinkPhase(tc, ac.forCompile, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    action = ConstructStaticLinkPhase(tc, ac.forCompile, outputOpts);
+    phase = ConstructStaticLinkPhase(tc, ac.forCompile, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    action = ConstructDynamicLinkPhase(tc, ac.forCompile, outputOpts);
+    phase = ConstructDynamicLinkPhase(tc, ac.forCompile, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
   }
-  assert(action);
-  return action;
+  assert(phase);
+  return phase;
 }
 
 Phase *CompilationModel::BuildLinkPhase(ToolChain &tc,
-                                          const file::Files &inputs,
-                                          const OutputOptions &outputOpts) {
-  Phase *action = nullptr;
+                                        const file::Files &inputs,
+                                        const OutputOptions &outputOpts) {
+  Phase *phase = nullptr;
   assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
   return nullptr;
 }
@@ -83,27 +85,27 @@ void QuadraticCompilationModel::BuildCompilePhases(
     const OutputOptions &outputOpts) {
 
   auto BuildCompilePhase = [&](const file::File &primaryInput,
-                                const file::Files &inputs,
-                                const OutputOptions &outputOpts) -> Phase * {
-    auto action = ConstructCompilePhase(
+                               const file::Files &inputs,
+                               const OutputOptions &outputOpts) -> Phase * {
+    auto phase = ConstructCompilePhase(
         tc, const_cast<file::File *>(&primaryInput), outputOpts);
-    assert(action);
+    assert(phase);
     for (auto &input : inputs) {
-      /// The tool chain stores the actions that it created.
-      action->AddInput(const_cast<file::File *>(&input));
+      /// The tool chain stores the phases that it created.
+      phase->AddInput(const_cast<file::File *>(&input));
     }
-    return action;
+    return phase;
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
-    auto action = BuildCompilePhase(input, inputs, outputOpts);
-    ac.CacheForCompile(action);
+    auto phase = BuildCompilePhase(input, inputs, outputOpts);
+    ac.CacheForCompile(phase);
   }
 }
 void QuadraticCompilationModel::BuildPhases(ToolChain &tc,
-                                             const file::Files &inputs,
-                                             PhaseCache &ac,
-                                             const OutputOptions &outputOpts) {
+                                            const file::Files &inputs,
+                                            PhaseCache &ac,
+                                            const OutputOptions &outputOpts) {
 
   if (tc.GetDriver().GetDriverOptions().GetMode().CanCompile()) {
     BuildCompilePhases(tc, inputs, ac, outputOpts);
@@ -113,11 +115,11 @@ void QuadraticCompilationModel::BuildPhases(ToolChain &tc,
   }
   if (tc.GetDriver().CanLink()) {
     if (tc.GetDriver().JustLink()) {
-      auto action = BuildLinkPhase(tc, inputs, outputOpts);
+      auto phase = BuildLinkPhase(tc, inputs, outputOpts);
     } else {
       // May want to check that you have compile
-      auto action = BuildLinkPhase(tc, ac, outputOpts);
-      ac.CacheForTopLevel(action);
+      auto phase = BuildLinkPhase(tc, ac, outputOpts);
+      ac.CacheForTopLevel(phase);
     }
   }
 }
@@ -133,6 +135,14 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, PhaseCache &ac,
   // for (auto topInput : ic.forTop) {
   //   BuildJobsForPhase(topPhase);
   // }
+}
+
+
+// TODO: This may actually be generic 
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc, const Phase &phase,
+                                          JobCache &jc,
+                                          const OutputOptions &outputOpts) {
+
 }
 
 // auto BuildCompileTaskDetails = [&]() -> void {
@@ -161,10 +171,10 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, PhaseCache &ac,
 //   return nullptr;
 // }
 // for (auto input : ic.forCompile) {
-//   auto action = InputToPhase(input);
-//   assert(action);
+//   auto phase = InputToPhase(input);
+//   assert(phase);
 //   auto taskDetail =
-//   tc.ConstructTaskDetail(llvm::cast<CompilePhase>(*action));
+//   tc.ConstructTaskDetail(llvm::cast<CompilePhase>(*phase));
 // }
 // }
 
@@ -181,10 +191,10 @@ std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
 
   // TODO: it seems that we can skip these steps if we create the compilation
   // ahead of time and just do
-  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompilePhase>(*action)))
+  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompilePhase>(*phase)))
 
   // TODO: Check input size
-  // Now, build the action system since we have a toolchain
+  // Now, build the phase system since we have a toolchain
   // auto compilation =
   //     std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 

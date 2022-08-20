@@ -5,7 +5,7 @@
 using namespace stone;
 
 Phase::Phase(PhaseKind kind, const Tool &tool, PhaseInputList inputs,
-               file::Type outputFileType)
+             file::Type outputFileType)
     : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
 
 Phase::~Phase() {}
@@ -14,12 +14,12 @@ CompilePhase::CompilePhase(const Tool &tool, file::Type outputFileType)
     : Phase(PhaseKind::Compile, tool, {}, outputFileType) {}
 
 CompilePhase::CompilePhase(const Tool &tool, PhaseInput input,
-                             file::Type outputFileType)
+                           file::Type outputFileType)
     : Phase(PhaseKind::Compile, tool, input, outputFileType),
       primaryInput(input) {}
 
 DynamicLinkPhase::DynamicLinkPhase(const Tool &tool, PhaseInputList inputs,
-                                     bool withLTO)
+                                   bool withLTO)
     : Phase(PhaseKind::DynamicLink, tool, inputs, file::Type::Image),
       withLTO(withLTO) {}
 
@@ -27,7 +27,7 @@ StaticLinkPhase::StaticLinkPhase(const Tool &tool, PhaseInputList inputs)
     : Phase(PhaseKind::StaticLink, tool, inputs, file::Type::Image) {}
 
 ExecutableLinkPhase::ExecutableLinkPhase(const Tool &tool,
-                                           PhaseInputList inputs)
+                                         PhaseInputList inputs)
     : Phase(PhaseKind::ExecutableLink, tool, inputs, file::Type::Image) {}
 
 const char *Phase::GetNameByKind(PhaseKind kind) const {
@@ -50,7 +50,7 @@ const char *Phase::GetNameByKind(PhaseKind kind) const {
 }
 
 static void PrintPhase(ColorfulStream &stream, llvm::StringRef terminator,
-                        const PhaseInput) {
+                       const PhaseInput) {
   //   /// TODO: PhaseFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();

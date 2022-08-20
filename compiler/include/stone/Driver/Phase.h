@@ -55,7 +55,7 @@ public:
 public:
   Phase() = delete;
   Phase(PhaseKind kind, const Tool &tool, PhaseInputList inputs,
-         file::Type outputFileType);
+        file::Type outputFileType);
 
   virtual ~Phase();
 
@@ -90,8 +90,7 @@ class CompilePhase final : public Phase {
 
 public:
   CompilePhase(const Tool &tool, file::Type outputFileType);
-  CompilePhase(const Tool &tool, PhaseInput input,
-                file::Type outputFileType);
+  CompilePhase(const Tool &tool, PhaseInput input, file::Type outputFileType);
 
 public:
   PhaseInput GetPrimaryInput() { return primaryInput; }
@@ -108,7 +107,7 @@ class DynamicLinkPhase final : public Phase {
 
 public:
   DynamicLinkPhase(const Tool &tool, PhaseInputList inputs,
-                    bool withLTO = false);
+                   bool withLTO = false);
 
   bool WithLTO() { return withLTO; }
 

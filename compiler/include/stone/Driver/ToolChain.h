@@ -11,9 +11,9 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Mem.h"
-#include "stone/Driver/Phase.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
+#include "stone/Driver/Phase.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/ArrayRef.h"
