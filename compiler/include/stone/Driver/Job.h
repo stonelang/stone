@@ -225,7 +225,10 @@ public:
   llvm::SmallVector<job::Input, 16> forLink;
 
   /// These are the top-level jobs -- we use them recursively to build
-  llvm::SmallVector<job::Input, 16> forTop;
+  llvm::SmallVector<job::Input, 16> forTopLevel;
+
+  // llvm::DenseMap<std::pair<const action::Input *, const ToolChain *>,
+  // job::Input *>;
 
 public:
   bool HasCompile() { return forCompile.size(); }
@@ -235,8 +238,8 @@ public:
   bool HasLink() { return forLink.size(); }
   void CacheForLink(job::Input input) { forLink.push_back(input); }
 
-  bool HasTop() { return forTop.size(); }
-  void CacheForTop(job::Input input) { forTop.push_back(input); }
+  bool HasTopLevel() { return forTopLevel.size(); }
+  void CacheForTopLevel(job::Input input) { forTopLevel.push_back(input); }
 
 public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);

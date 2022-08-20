@@ -41,7 +41,7 @@ Action *CompilationModel::ConstructDynamicLinkAction(
 }
 
 //  TODO: Look into the ActionCache instead of the action::Input
-/// GOAL: Build the link action and CacheTopp(..)
+/// GOAL: Build the link action and CacheForTopLevel(..)
 Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ac,
                                           const OutputOptions &outputOpts) {
 
@@ -55,13 +55,13 @@ Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ac,
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    action = ConstructExecLinkAction(tc, ac.compileActions, outputOpts);
+    action = ConstructExecLinkAction(tc, ac.forCompile, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    action = ConstructStaticLinkAction(tc, ac.compileActions, outputOpts);
+    action = ConstructStaticLinkAction(tc, ac.forCompile, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    action = ConstructDynamicLinkAction(tc, ac.compileActions, outputOpts);
+    action = ConstructDynamicLinkAction(tc, ac.forCompile, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
@@ -96,9 +96,8 @@ void QuadraticCompilationModel::BuildCompileActions(
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
-
     auto action = BuildCompileAction(input, inputs, outputOpts);
-    ac.CacheCompile(action);
+    ac.CacheForCompile(action);
   }
 }
 void QuadraticCompilationModel::BuildActions(ToolChain &tc,
@@ -116,8 +115,9 @@ void QuadraticCompilationModel::BuildActions(ToolChain &tc,
     if (tc.GetDriver().JustLink()) {
       auto action = BuildLinkAction(tc, inputs, outputOpts);
     } else {
+      // May want to check that you have compile
       auto action = BuildLinkAction(tc, ac, outputOpts);
-      ac.CacheTop(action);
+      ac.CacheForTopLevel(action);
     }
   }
 }
@@ -160,7 +160,7 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, ActionCache &ac,
 // if (ic.ForCompile()) {
 //   return nullptr;
 // }
-// for (auto input : ic.compileActions) {
+// for (auto input : ic.forCompile) {
 //   auto action = InputToAction(input);
 //   assert(action);
 //   auto taskDetail =

@@ -142,22 +142,24 @@ class ActionCache final {
 public:
   /// We keep track of the Action(s) that we are building for the module. Ex:
   /// CompileAction
-  llvm::SmallVector<action::Input, 16> compileActions;
+  llvm::SmallVector<action::Input, 16> forCompile;
+
+  llvm::SmallVector<action::Input, 16> forLink;
 
   /// These are the top-level actions -- we use them recursively to build the
   /// jobs
-  llvm::SmallVector<action::Input, 16> topActions;
+  llvm::SmallVector<action::Input, 16> forTopLevel;
 
 public:
-  bool HasCompile() { return compileActions.size(); }
-  void CacheCompile(action::Input input) { compileActions.push_back(input); }
+  bool HasCompile() { return forCompile.size(); }
+  void CacheForCompile(action::Input input) { forCompile.push_back(input); }
 
   // TODO: The approach that you are taking, this is not needed.
   // bool ForLink() { return forLink.size(); }
   // void CacheForLink(action::Input input) { forLink.push_back(input); }
 
-  bool HasTop() { return topActions.size(); }
-  void CacheTop(action::Input input) { topActions.push_back(input); }
+  bool HasTopLevel() { return forTopLevel.size(); }
+  void CacheForTopLevel(action::Input input) { forTopLevel.push_back(input); }
 };
 
 } // namespace stone
