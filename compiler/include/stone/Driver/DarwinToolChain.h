@@ -56,10 +56,10 @@ protected:
   std::unique_ptr<Tool> BuildGit() override;
 
 public:
-  JobDetail ConstructDetail(const CompileAction &action) override;
-  JobDetail ConstructDetail(const DynamicLinkAction &action) override;
-  JobDetail ConstructDetail(const StaticLinkAction &action) override;
-  JobDetail ConstructDetail(const ExecutableLinkAction &action) override;
+  JobDetail ConstructDetail(const CompilePhase &action) override;
+  JobDetail ConstructDetail(const DynamicLinkPhase &action) override;
+  JobDetail ConstructDetail(const StaticLinkPhase &action) override;
+  JobDetail ConstructDetail(const ExecutableLinkPhase &action) override;
 };
 } // namespace darwin
 } // namespace stone

@@ -218,7 +218,7 @@ FrontendOutputFilesComputer::DeriveOutputFileFromInput(
 
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
-    // Assuming FrontendOptions::doesActionProduceOutput(RequestedAction)
+    // Assuming FrontendOptions::doesPhaseProduceOutput(RequestedPhase)
     de.PrintD(SrcLoc(), diag::err_no_output_filename_specified,
               diag::LLVMStr(OutputInfo.PrettyName));
     return llvm::None;

@@ -1,57 +1,57 @@
-#include "stone/Driver/Action.h"
+#include "stone/Driver/Phase.h"
 #include "stone/Basic/Color.h"
 #include "stone/Context.h"
 
 using namespace stone;
 
-Action::Action(ActionKind kind, const Tool &tool, action::InputList inputs,
+Phase::Phase(PhaseKind kind, const Tool &tool, PhaseInputList inputs,
                file::Type outputFileType)
     : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
 
-Action::~Action() {}
+Phase::~Phase() {}
 
-CompileAction::CompileAction(const Tool &tool, file::Type outputFileType)
-    : Action(ActionKind::Compile, tool, {}, outputFileType) {}
+CompilePhase::CompilePhase(const Tool &tool, file::Type outputFileType)
+    : Phase(PhaseKind::Compile, tool, {}, outputFileType) {}
 
-CompileAction::CompileAction(const Tool &tool, action::Input input,
+CompilePhase::CompilePhase(const Tool &tool, PhaseInput input,
                              file::Type outputFileType)
-    : Action(ActionKind::Compile, tool, input, outputFileType),
+    : Phase(PhaseKind::Compile, tool, input, outputFileType),
       primaryInput(input) {}
 
-DynamicLinkAction::DynamicLinkAction(const Tool &tool, action::InputList inputs,
+DynamicLinkPhase::DynamicLinkPhase(const Tool &tool, PhaseInputList inputs,
                                      bool withLTO)
-    : Action(ActionKind::DynamicLink, tool, inputs, file::Type::Image),
+    : Phase(PhaseKind::DynamicLink, tool, inputs, file::Type::Image),
       withLTO(withLTO) {}
 
-StaticLinkAction::StaticLinkAction(const Tool &tool, action::InputList inputs)
-    : Action(ActionKind::StaticLink, tool, inputs, file::Type::Image) {}
+StaticLinkPhase::StaticLinkPhase(const Tool &tool, PhaseInputList inputs)
+    : Phase(PhaseKind::StaticLink, tool, inputs, file::Type::Image) {}
 
-ExecutableLinkAction::ExecutableLinkAction(const Tool &tool,
-                                           action::InputList inputs)
-    : Action(ActionKind::ExecutableLink, tool, inputs, file::Type::Image) {}
+ExecutableLinkPhase::ExecutableLinkPhase(const Tool &tool,
+                                           PhaseInputList inputs)
+    : Phase(PhaseKind::ExecutableLink, tool, inputs, file::Type::Image) {}
 
-const char *Action::GetNameByKind(ActionKind kind) const {
+const char *Phase::GetNameByKind(PhaseKind kind) const {
   switch (kind) {
-  case ActionKind::Compile:
+  case PhaseKind::Compile:
     return "compile";
-  case ActionKind::Backend:
+  case PhaseKind::Backend:
     return "backend";
-  case ActionKind::Assemble:
+  case PhaseKind::Assemble:
     return "assemble";
-  case ActionKind::DynamicLink:
+  case PhaseKind::DynamicLink:
     return "dynamic-link";
-  case ActionKind::StaticLink:
+  case PhaseKind::StaticLink:
     return "static-link";
-  case ActionKind::ExecutableLink:
+  case PhaseKind::ExecutableLink:
     return "executable-link";
   default:
-    stone::Panic("Invalid ActionKind");
+    stone::Panic("Invalid PhaseKind");
   }
 }
 
-static void PrintAction(ColorfulStream &stream, llvm::StringRef terminator,
-                        const action::Input) {
-  //   /// TODO: ActionFormatter
+static void PrintPhase(ColorfulStream &stream, llvm::StringRef terminator,
+                        const PhaseInput) {
+  //   /// TODO: PhaseFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();
   //   OS() << GetName();
@@ -72,9 +72,9 @@ static void PrintAction(ColorfulStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
+void Phase::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
   for (auto input : *this) {
-    PrintAction(stream, terminator, input);
+    PrintPhase(stream, terminator, input);
   }
 }
 
@@ -87,7 +87,7 @@ void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //                                       const OutputOptions &outputOptions) {
 //   // Create a single CompileJobRequest to handl all InputRequest(s)
 //   auto *compileRequest =
-//   compilation.GetDriver().MakeAction<CompileJobRequest>(
+//   compilation.GetDriver().MakePhase<CompileJobRequest>(
 //       compilation.GetDriver().GetOutputFileType());
 //   for (auto &input : inputs) {
 //     if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
@@ -96,11 +96,11 @@ void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 
 //       assert(file::IsPartOfCompilation(input.GetType()));
 //       compileRequest->AddInput(
-//           compilation.GetDriver().MakeAction<InputRequest>(input));
+//           compilation.GetDriver().MakePhase<InputRequest>(input));
 
-//       hc.GetActionCache().CacheForModule(compileRequest);
+//       hc.GetPhaseCache().CacheForModule(compileRequest);
 //       if (outputOptions.CanLink()) {
-//         hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
+//         hc.GetPhaseCache().CacheForLink(hc.GetPhaseCache().currentRequest);
 //       }
 //     }
 //   }
@@ -120,21 +120,21 @@ void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //              "Incompatible input file types");
 //       assert(file::IsPartOfCompilation(input.GetType()));
 
-//       hc.GetActionCache().currentRequest =
-//       driver.MakeAction<InputRequest>(input); switch (input.GetType()) {
+//       hc.GetPhaseCache().currentRequest =
+//       driver.MakePhase<InputRequest>(input); switch (input.GetType()) {
 //       case file::Type::Stone: {
-//         hc.GetActionCache().currentRequest =
-//         driver.MakeAction<CompileJobRequest>(
-//             hc.GetActionCache().currentRequest, driver.GetOutputFileType());
-//         hc.GetActionCache().CacheForModule(hc.GetActionCache().currentRequest);
+//         hc.GetPhaseCache().currentRequest =
+//         driver.MakePhase<CompileJobRequest>(
+//             hc.GetPhaseCache().currentRequest, driver.GetOutputFileType());
+//         hc.GetPhaseCache().CacheForModule(hc.GetPhaseCache().currentRequest);
 //         if (outputOptions.CanLink()) {
-//           hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
+//           hc.GetPhaseCache().CacheForLink(hc.GetPhaseCache().currentRequest);
 //         }
 //         break;
 //       }
 //       case file::Type::Object:
 //         if (outputOptions.CanLink()) {
-//           hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
+//           hc.GetPhaseCache().CacheForLink(hc.GetPhaseCache().currentRequest);
 //           break;
 //         }
 //       default:
@@ -165,22 +165,22 @@ void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //   }
 
 //   // Now, do we need any top-level JobRequests
-//   if (outputOptions.CanLink() && hc.GetActionCache().ForLink()) {
+//   if (outputOptions.CanLink() && hc.GetPhaseCache().ForLink()) {
 //     Request *linkRequest = nullptr;
 //     switch (GetLinkMode()) {
 //     case LinkMode::EmitExecutable: {
-//       linkRequest = MakeAction<LinkJobRequest>(hc.GetActionCache().forLink,
+//       linkRequest = MakePhase<LinkJobRequest>(hc.GetPhaseCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }
 //     case LinkMode::EmitDynamicLibrary: {
-//       linkRequest = MakeAction<LinkJobRequest>(
-//           hc.GetActionCache().forLink, GetLinkMode(),
+//       linkRequest = MakePhase<LinkJobRequest>(
+//           hc.GetPhaseCache().forLink, GetLinkMode(),
 //           outputOptions.WithLTO());
 //       break;
 //     }
 //     case LinkMode::EmitStaticLibrary: {
-//       linkRequest = MakeAction<LinkJobRequest>(hc.GetActionCache().forLink,
+//       linkRequest = MakePhase<LinkJobRequest>(hc.GetPhaseCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }
@@ -188,14 +188,14 @@ void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //       stone::Panic("Invalid linking mode");
 //     }
 //     assert(linkRequest);
-//     hc.GetActionCache().CacheForTop(linkRequest);
+//     hc.GetPhaseCache().CacheForTop(linkRequest);
 //   }
 // }
 
 // void Driver::PrintJobRequests(HotCache &hc) {
 //   // Let just handle top level
-//   if (hc.GetActionCache().ForTop()) {
-//     for (auto &request : hc.GetActionCache().forTop) {
+//   if (hc.GetPhaseCache().ForTop()) {
+//     for (auto &request : hc.GetPhaseCache().forTop) {
 //       request->Print(GetContext().Out());
 //     }
 //   }

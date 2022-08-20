@@ -11,7 +11,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Mem.h"
-#include "stone/Driver/Action.h"
+#include "stone/Driver/Phase.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 
@@ -94,7 +94,7 @@ public:
 };
 
 class OutputOptions;
-/// A map for caching Jobs for a given Action/ToolChain pair
+/// A map for caching Jobs for a given Phase/ToolChain pair
 // using ToolGroupCache = llvm::DenseMap<ToolKind, std::unique_ptr<ToolGroup>>;
 enum class ToolChainKind { None, Darwin, Unix, Win };
 
@@ -188,13 +188,13 @@ public:
   FindProgramRelativeToStoneImpl(llvm::StringRef executableName) const;
 
 protected:
-  virtual JobDetail ConstructDetail(const CompileAction &action);
-  virtual JobDetail ConstructDetail(const DynamicLinkAction &action) = 0;
-  virtual JobDetail ConstructDetail(const StaticLinkAction &action) = 0;
-  virtual JobDetail ConstructDetail(const ExecutableLinkAction &action) = 0;
+  virtual JobDetail ConstructDetail(const CompilePhase &action);
+  virtual JobDetail ConstructDetail(const DynamicLinkPhase &action) = 0;
+  virtual JobDetail ConstructDetail(const StaticLinkPhase &action) = 0;
+  virtual JobDetail ConstructDetail(const ExecutableLinkPhase &action) = 0;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const Action &action,
+  std::unique_ptr<Job> ConstructJob(const Phase &action,
                                     Compilation &compilation,
                                     std::unique_ptr<CommandOutput> output,
                                     const OutputOptions &outputOptions);

@@ -14,7 +14,7 @@ namespace stone {
 
 struct CommandInputPair final {
   /// A filename provided from the user, either on the command line or in an
-  /// input file map. Feeds into a Job graph, from InputActions, and is
+  /// input file map. Feeds into a Job graph, from InputPhases, and is
   /// _associated_ with a PrimaryInput for a given Job, but may be upstream of
   /// the Job (and its PrimaryInput) and thus not necessarily passed as a
   /// filename to the job. Used as a key into the user-provided OutputFileMap

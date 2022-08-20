@@ -25,39 +25,39 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) {}
 
-  virtual void BuildActions(ToolChain &tc, const file::Files &inputs,
-                            ActionCache &ic, const OutputOptions &outputOpts) {}
+  virtual void BuildPhases(ToolChain &tc, const file::Files &inputs,
+                            PhaseCache &ic, const OutputOptions &outputOpts) {}
 
-  virtual void BuildJobs(ToolChain &tc, ActionCache &ic, JobCache &jc,
+  virtual void BuildJobs(ToolChain &tc, PhaseCache &ic, JobCache &jc,
                          const OutputOptions &outputOpts) {}
 
   CompilationModelKind GetKind() { return kind; }
 
 protected:
-  Action *BuildLinkAction(ToolChain &tc, ActionCache &ic,
+  Phase *BuildLinkPhase(ToolChain &tc, PhaseCache &ic,
                           const OutputOptions &outputOpts);
-  Action *BuildLinkAction(ToolChain &tc, const file::Files &inputs,
+  Phase *BuildLinkPhase(ToolChain &tc, const file::Files &inputs,
                           const OutputOptions &outputOpts);
 
 protected:
-  file::File *InputToFile(action::Input input) const {
+  file::File *InputToFile(PhaseInput input) const {
     return input.dyn_cast<file::File *>();
   }
-  Action *InputToAction(action::Input input) const {
-    return input.dyn_cast<Action *>();
+  Phase *InputToPhase(PhaseInput input) const {
+    return input.dyn_cast<Phase *>();
   }
 
 public:
-  Action *ConstructCompileAction(ToolChain &tc, action::Input input,
+  Phase *ConstructCompilePhase(ToolChain &tc, PhaseInput input,
                                  const OutputOptions &outputOpts);
 
-  Action *ConstructStaticLinkAction(ToolChain &tc, action::InputList inputs,
+  Phase *ConstructStaticLinkPhase(ToolChain &tc, PhaseInputList inputs,
                                     const OutputOptions &outputOpts);
 
-  Action *ConstructExecLinkAction(ToolChain &tc, action::InputList inputs,
+  Phase *ConstructExecLinkPhase(ToolChain &tc, PhaseInputList inputs,
                                   const OutputOptions &outputOpts);
 
-  Action *ConstructDynamicLinkAction(ToolChain &tc, action::InputList inputs,
+  Phase *ConstructDynamicLinkPhase(ToolChain &tc, PhaseInputList inputs,
                                      const OutputOptions &outputOpts);
 };
 
@@ -71,15 +71,15 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
+  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
+  void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
-  void BuildCompileActions(ToolChain &tc, const file::Files &inputs,
-                           ActionCache &ic, const OutputOptions &outputOpts);
+  void BuildCompilePhases(ToolChain &tc, const file::Files &inputs,
+                           PhaseCache &ic, const OutputOptions &outputOpts);
 };
 
 class FlatCompilationModel final : public CompilationModel {
@@ -91,10 +91,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
+  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
+  void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 };
 
@@ -108,10 +108,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ic,
+  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ic,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
+  void BuildJobs(ToolChain &tc, PhaseCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
@@ -127,10 +127,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
+  void BuildPhases(ToolChain &tc, const file::Files &inputs, PhaseCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, ActionCache &ic, JobCache &jc,
+  void BuildJobs(ToolChain &tc, PhaseCache &ic, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 };
 

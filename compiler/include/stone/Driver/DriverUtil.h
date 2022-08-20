@@ -22,20 +22,20 @@ void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
 /// \param ArgList The driver arguments (i.e. normal arguments for \c stonec).
 /// \param Diags The DiagnosticEngine used to report any errors parsing the
 /// arguments.
-/// \param Action Called with the list of frontend arguments if there were no
+/// \param Phase Called with the list of frontend arguments if there were no
 /// errors in processing \p ArgList. This is a callback rather than a return
 /// value to avoid copying the arguments more than necessary.
 /// \param ForceNoOutputs If true, override the output mode to "-typecheck" and
 /// produce no outputs. For example, this disables "-emit-module" and "-c" and
 /// prevents the creation of temporary files.
 ///
-/// \returns True on error, or if \p Action returns true.
+/// \returns True on error, or if \p Phase returns true.
 ///
 /// \note This function is not intended to create invocations which are
 /// suitable for use in REPL or immediate modes.
 bool GetSingleFrontendInvocationFromDriverArguments(
     ArrayRef<const char *> ArgList, DiagnosticEngine &Diags,
-    llvm::function_ref<bool(ArrayRef<const char *> FrontendArgs)> Action,
+    llvm::function_ref<bool(ArrayRef<const char *> FrontendArgs)> Phase,
     bool ForceNoOutputs = false);
 
 } // end namespace stone

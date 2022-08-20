@@ -1,12 +1,12 @@
 #include "stone/Driver/Job.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Driver/Action.h"
+#include "stone/Driver/Phase.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
 
-Job::Job(const Action &action, Context &ctx,
+Job::Job(const Phase &action, Context &ctx,
          llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType)
     : actionAndCondition(&action, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
