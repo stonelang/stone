@@ -112,21 +112,9 @@ public:
 
 public:
   std::unique_ptr<ToolChain> BuildToolChain(const llvm::opt::InputArgList &ial);
-
   std::unique_ptr<Compilation> BuildCompilation(ToolChain &toolChain,
                                                 llvm::opt::InputArgList &ial);
-
   std::unique_ptr<TaskQueue> BuildTaskQueue(const Compilation &compilation);
-
-  void BuildJobRequests(Compilation &c, HotCache &hc, const file::Files &inputs,
-                        const OutputOptions &outputOptions);
-
-  void PrintJobRequests(HotCache &hc);
-
-  void BuildJobs(Compilation &compilation, HotCache &hc,
-                 const file::Files &inputs, const OutputOptions &outputOptions);
-
-  // void PrintJobs(HotCache &hc);
 
 public:
   file::Type GetInputFileType() const {
