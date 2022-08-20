@@ -19,10 +19,11 @@ namespace stone {
 class Tool;
 class Action;
 
-enum class ActionKind {
+enum class ActionKind : uint8_t {
   Compile = 0,
   Backend,
   MergeModule,
+  ModuleWrap,
   DynamicLink,
   StaticLink,
   ExecutableLink,
@@ -139,26 +140,24 @@ public:
 
 class ActionCache final {
 public:
-  /// We keep track of the actions for the module that we are building.
-  /// These are CompileAction
-  llvm::SmallVector<action::Input, 16> forCompile;
+  /// We keep track of the Action(s) that we are building for the module. Ex:
+  /// CompileAction
+  llvm::SmallVector<action::Input, 16> compileActions;
 
-  /// When are building the Actions(s), keep track of the linker dependecies
-  llvm::SmallVector<action::Input, 16> forLink;
-
-  /// These are the top-level actions -- we use them recursively to build
-  llvm::SmallVector<action::Input, 16> forTop;
+  /// These are the top-level actions -- we use them recursively to build the
+  /// jobs
+  llvm::SmallVector<action::Input, 16> topActions;
 
 public:
-  bool ForCompile() { return forCompile.size(); }
-  void CacheForCompile(action::Input input) { forCompile.push_back(input); }
+  bool HasCompile() { return compileActions.size(); }
+  void CacheCompile(action::Input input) { compileActions.push_back(input); }
 
   // TODO: The approach that you are taking, this is not needed.
-  bool ForLink() { return forLink.size(); }
-  void CacheForLink(action::Input input) { forLink.push_back(input); }
+  // bool ForLink() { return forLink.size(); }
+  // void CacheForLink(action::Input input) { forLink.push_back(input); }
 
-  bool ForTop() { return forTop.size(); }
-  void CacheForTop(action::Input input) { forTop.push_back(input); }
+  bool HasTop() { return topActions.size(); }
+  void CacheTop(action::Input input) { topActions.push_back(input); }
 };
 
 } // namespace stone

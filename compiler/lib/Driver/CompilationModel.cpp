@@ -8,8 +8,8 @@ Action *
 CompilationModel::ConstructCompileAction(ToolChain &tc, action::Input input,
                                          const OutputOptions &outputOpts) {
   Action *action = nullptr;
-  auto sc = tc.GetSC();
-  action = tc.GetDriver().MakeAction<CompileAction>(*sc, input,
+  auto tool = tc.GetSC();
+  action = tc.GetDriver().MakeAction<CompileAction>(*tool, input,
                                                     outputOpts.outputFileType);
   assert(action);
   return action;
@@ -18,28 +18,31 @@ Action *CompilationModel::ConstructStaticLinkAction(
     ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
   Action *action = nullptr;
-  auto ld = tc.GetLD();
-
-  return nullptr;
+  auto tool = tc.GetLD();
+  action = tc.GetDriver().MakeAction<StaticLinkAction>(*tool, inputs);
+  assert(action);
+  return action;
 }
 
 Action *CompilationModel::ConstructExecLinkAction(
     ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
-  auto ld = tc.GetLD();
-  return nullptr;
+  Action *action = nullptr;
+  auto tool = tc.GetLD();
+  return action;
 }
 
 Action *CompilationModel::ConstructDynamicLinkAction(
     ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
+  Action *action = nullptr;
   auto ld = tc.GetLD();
-  return nullptr;
+  return action;
 }
 
 //  TODO: Look into the ActionCache instead of the action::Input
-/// GOAL: Build the link action and CacheForTop(..)
-Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ic,
+/// GOAL: Build the link action and CacheTopp(..)
+Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ac,
                                           const OutputOptions &outputOpts) {
 
   Action *action = nullptr;
@@ -48,23 +51,22 @@ Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ic,
          "The current mode does not allow linking.");
 
   // Make sure that there is stuff to link
-  assert(ic.ForCompile() && "There is nothing to link");
+  assert(ac.HasCompile() && "There is nothing to link");
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    action = ConstructExecLinkAction(tc, ic.forCompile, outputOpts);
+    action = ConstructExecLinkAction(tc, ac.compileActions, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    action = ConstructStaticLinkAction(tc, ic.forCompile, outputOpts);
+    action = ConstructStaticLinkAction(tc, ac.compileActions, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    action = ConstructDynamicLinkAction(tc, ic.forCompile, outputOpts);
+    action = ConstructDynamicLinkAction(tc, ac.compileActions, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
   }
   assert(action);
-  ic.CacheForTop(action);
   return action;
 }
 
@@ -72,14 +74,12 @@ Action *CompilationModel::BuildLinkAction(ToolChain &tc,
                                           const file::Files &inputs,
                                           const OutputOptions &outputOpts) {
   Action *action = nullptr;
-
   assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
-
   return nullptr;
 }
 
 void QuadraticCompilationModel::BuildCompileActions(
-    ToolChain &tc, const file::Files &inputs, ActionCache &ic,
+    ToolChain &tc, const file::Files &inputs, ActionCache &ac,
     const OutputOptions &outputOpts) {
 
   auto BuildCompileAction = [&](const file::File &primaryInput,
@@ -98,25 +98,26 @@ void QuadraticCompilationModel::BuildCompileActions(
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
 
     auto action = BuildCompileAction(input, inputs, outputOpts);
-    ic.CacheForCompile(action);
+    ac.CacheCompile(action);
   }
 }
 void QuadraticCompilationModel::BuildActions(ToolChain &tc,
                                              const file::Files &inputs,
-                                             ActionCache &ic,
+                                             ActionCache &ac,
                                              const OutputOptions &outputOpts) {
 
   if (tc.GetDriver().GetDriverOptions().GetMode().CanCompile()) {
-    BuildCompileActions(tc, inputs, ic, outputOpts);
+    BuildCompileActions(tc, inputs, ac, outputOpts);
     if (tc.GetDriver().JustCompile()) {
       return;
     }
   }
   if (tc.GetDriver().CanLink()) {
     if (tc.GetDriver().JustLink()) {
-      BuildLinkAction(tc, inputs, outputOpts);
+      auto action = BuildLinkAction(tc, inputs, outputOpts);
     } else {
-      BuildLinkAction(tc, ic, outputOpts);
+      auto action = BuildLinkAction(tc, ac, outputOpts);
+      ac.CacheTop(action);
     }
   }
 }
@@ -159,7 +160,7 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, ActionCache &ac,
 // if (ic.ForCompile()) {
 //   return nullptr;
 // }
-// for (auto input : ic.forCompile) {
+// for (auto input : ic.compileActions) {
 //   auto action = InputToAction(input);
 //   assert(action);
 //   auto taskDetail =

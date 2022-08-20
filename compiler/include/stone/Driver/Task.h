@@ -34,14 +34,12 @@ public:
   bool separateErrors;
 
   llvm::SmallString<64> stdOutPath;
-
   llvm::SmallString<64> stdErrPath;
-
   llvm::sys::ProcessInfo processInfo;
 
-  Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
-       llvm::ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
-       bool SeparateErrors = false);
+  Task(const char *execPath, llvm::ArrayRef<const char *> args,
+       llvm::ArrayRef<const char *> env = llvm::None, void *context = nullptr,
+       bool separateErrors = false);
   /// Begins execution of this Task.
   /// \returns true on error.
   stone::Error Execute();
