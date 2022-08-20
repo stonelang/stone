@@ -35,6 +35,10 @@ void ToolChain::Initialize() {
   if (gcc) {
     tools.Add(std::move(gcc));
   }
+  auto git = BuildGit();
+  if(git){
+    tools.Add(std::move(git));
+  }
 }
 
 std::unique_ptr<Tool> ToolChain::BuildTool(ToolKind kind, const char *fullName,

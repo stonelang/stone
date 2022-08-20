@@ -8,7 +8,7 @@ using namespace stone;
 
 Job::Job(const Intent &intent, Context &ctx,
          llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
-    : intentAndCondition(&intent, JobCondition::Always), ctx(ctx), tool(tool),
+    : intentAndCondition(&intent, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);

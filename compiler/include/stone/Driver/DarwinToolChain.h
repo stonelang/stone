@@ -53,6 +53,7 @@ protected:
   std::unique_ptr<Tool> BuildLLD() override;
   std::unique_ptr<Tool> BuildClang() override;
   std::unique_ptr<Tool> BuildGCC() override;
+  std::unique_ptr<Tool> BuildGit() override;
 
 public:
   JobDetail ConstructDetail(const CompileIntent &intent) override;

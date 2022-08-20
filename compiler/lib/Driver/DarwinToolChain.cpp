@@ -82,6 +82,19 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGCC() {
   return nullptr;
 }
 
+std::unique_ptr<Tool> DarwinToolChain::BuildGit() {
+  auto tool = BuildTool(ToolKind::Git, "/usr/bin/git", ToolName::Git, true);
+  if (tool) {
+    return tool;
+  }
+  tool = BuildTool(ToolKind::Git, "/usr/local/bin/git", ToolName::Git, false);
+  if (tool) {
+    return tool;
+  }
+  return nullptr;
+}
+
+
 JobDetail DarwinToolChain::ConstructDetail(const CompileIntent &intent) {
   return ToolChain::ConstructDetail(intent);
 }

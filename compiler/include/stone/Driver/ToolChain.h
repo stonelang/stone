@@ -49,10 +49,20 @@ struct ToolName final {
   constexpr static const char *LLD = "lld";
   constexpr static const char *Clang = "clang++";
   constexpr static const char *GCC = "g++";
+  constexpr static const char *Git = "git";
 };
 
 /// The tool types that are supported
-enum class ToolKind { None, Assemble, Clang, GCC, LD, LLD, SC };
+enum class ToolKind {
+  None,
+  Assemble,
+  Clang,
+  GCC,
+  Git,
+  LD,
+  LLD,
+  SC,
+};
 
 class Tool final {
   ToolKind kind;
@@ -130,6 +140,7 @@ protected:
   virtual std::unique_ptr<Tool> BuildLLD() = 0;
   virtual std::unique_ptr<Tool> BuildClang() = 0;
   virtual std::unique_ptr<Tool> BuildGCC() = 0;
+  virtual std::unique_ptr<Tool> BuildGit() = 0;
 
   std::unique_ptr<Tool> BuildTool(ToolKind kind, const char *fullName,
                                   const char *shortName, bool isDefault);
@@ -141,6 +152,7 @@ public:
   Tool *GetLLD() { return FindTool(ToolKind::LLD); }
   Tool *GetClang() { return FindTool(ToolKind::Clang); }
   Tool *GetGCC() { return FindTool(ToolKind::GCC); }
+  Tool *GetGit() { return FindTool(ToolKind::Git); }
 
 public:
   Driver &GetDriver() { return driver; }
