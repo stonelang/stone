@@ -46,12 +46,6 @@ using JobID = int64_t;
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
 enum class ThreadMode : uint8_t { None = 0, Sync, Async };
 
-namespace job {
-using Input = llvm::PointerUnion<stone::file::File *, Job *>;
-using InputList = llvm::SmallVector<job::Input, 4>;
-
-} // namespace job
-
 class JobDetail final {
   llvm::StringRef execPath;
   llvm::ArrayRef<llvm::StringRef> args;
@@ -92,17 +86,10 @@ class Job {
   std::unique_ptr<JobStats> stats;
   file::Type outputFileType = file::Type::None;
 
-  /// The list of other Jobs which are inputs to this Job.
-  job::InputList inputs;
-
+  llvm::SmallVector<const Job *> inputs;
   /// The action which caused the creation of this Job, and the conditions
   /// under which it must be run.
   llvm::PointerIntPair<const Action *, 2, JobCondition> actionAndCondition;
-
-public:
-  using size_type = llvm::ArrayRef<job::Input>::size_type;
-  using iterator = llvm::ArrayRef<job::Input>::iterator;
-  using const_iterator = llvm::ArrayRef<job::Input>::const_iterator;
 
 protected:
   Context &ctx;
@@ -117,13 +104,15 @@ public:
 public:
   Job() = delete;
   Job(const Action &action, Context &ctx,
-      llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType);
+      llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
 public:
   JobID GetID() { return jobID; }
-  job::InputList GetInputs() { return inputs; }
-  void AddInput(job::Input input) { inputs.push_back(input); }
+  llvm::ArrayRef<const Job *> GetInputs() { return inputs; }
+
+  // TODO: Think about
+  void AddInput(const Job *input) { inputs.push_back(input); }
 
   const Action &GetAction() const { return *actionAndCondition.getPointer(); }
   JobCondition GetJobCondition() const { return actionAndCondition.getInt(); }
@@ -136,13 +125,6 @@ public:
   /// Perform a complete dump of this job.
   virtual void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
-
-public:
-  size_type size() const { return inputs.size(); }
-  iterator begin() { return inputs.begin(); }
-  iterator end() { return inputs.end(); }
-  const_iterator begin() const { return inputs.begin(); }
-  const_iterator end() const { return inputs.end(); }
 };
 
 // class CompileJob final : public Job {
@@ -219,27 +201,27 @@ class JobCache final {
 public:
   /// We keep track of the jobs for the module that we are building.
   /// These are CompileJob
-  llvm::SmallVector<job::Input, 16> forCompile;
+  llvm::SmallVector<const Job *, 16> forCompile;
 
   /// When are building the Jobs(s), keep track of the linker dependecies
-  llvm::SmallVector<job::Input, 16> forLink;
+  llvm::SmallVector<const Job *, 16> forLink;
 
   /// These are the top-level jobs -- we use them recursively to build
-  llvm::SmallVector<job::Input, 16> forTopLevel;
+  llvm::SmallVector<const Job *, 16> forTopLevel;
 
   // llvm::DenseMap<std::pair<const action::Input *, const ToolChain *>,
   // job::Input *>;
 
 public:
   bool HasCompile() { return forCompile.size(); }
-  void CacheForCompile(job::Input input) { forCompile.push_back(input); }
+  void CacheForCompile(const Job *input) { forCompile.push_back(input); }
 
   // TODO: The approach that you are taking, this is not needed.
   bool HasLink() { return forLink.size(); }
-  void CacheForLink(job::Input input) { forLink.push_back(input); }
+  void CacheForLink(const Job *input) { forLink.push_back(input); }
 
   bool HasTopLevel() { return forTopLevel.size(); }
-  void CacheForTopLevel(job::Input input) { forTopLevel.push_back(input); }
+  void CacheForTopLevel(const Job *input) { forTopLevel.push_back(input); }
 
 public:
   void Finish(Compilation &compilation, const OutputOptions &outputOpts);

@@ -7,7 +7,7 @@
 using namespace stone;
 
 Job::Job(const Action &action, Context &ctx,
-         llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
+         llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType)
     : actionAndCondition(&action, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
