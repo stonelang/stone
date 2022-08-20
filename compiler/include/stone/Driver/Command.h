@@ -165,6 +165,7 @@ public:
 
 class Tool;
 class Context;
+
 class Command {
 private:
   /// The tool that this command will use

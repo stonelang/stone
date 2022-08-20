@@ -82,53 +82,57 @@ private:
                            IntentCache &ic, const OutputOptions &outputOpts);
 };
 
-// class FlatCompilationModel final : public CompilationModel {
-// public:
-//   FlatCompilationModel() : CompilationModel(CompilationMode::Flat) {}
+class FlatCompilationModel final : public CompilationModel {
+public:
+  FlatCompilationModel() : CompilationModel(CompilationModelKind::Flat) {}
 
-// public:
-//   void BuildIntents(Driver &driver, const file::Files &inputs, IntentCache
-//   &ic,
-//                  const OutputOptions &outputOpts) override;
+public:
+  std::unique_ptr<Compilation>
+  BuildCompilation(ToolChain &tc, const file::Files &inputs,
+                   const OutputOptions &outputOpts) override;
 
-//   // public:
-//   //   std::unique_ptr<Compilation>
-//   //   BuildCompilation(Driver &driver, const file::Files &inputs,
-//   IntentCache &ic,
-//   //                    const OutputOptions &outputOpts) override;
-// };
+  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+                    const OutputOptions &outputOpts) override;
 
-// class CPUCompilationModel final : public CompilationModel {
+  void BuildJobs(ToolChain &tc, IntentCache &ic,
+                 const OutputOptions &outputOpts) override;
+};
 
-// public:
-//   CPUCompilationModel() : CompilationModel(CompilationMode::CPU) {}
+class CPUCountCompilationModel final : public CompilationModel {
+public:
+  CPUCountCompilationModel()
+      : CompilationModel(CompilationModelKind::CPUCount) {}
 
-// public:
-//   void BuildIntents(Driver &driver, const file::Files &inputs, IntentCache
-//   &ic,
-//                  const OutputOptions &outputOpts) override;
+public:
+  std::unique_ptr<Compilation>
+  BuildCompilation(ToolChain &tc, const file::Files &inputs,
+                   const OutputOptions &outputOpts) override;
 
-//   // public:
-//   //   std::unique_ptr<Compilation>
-//   //   BuildCompilation(Driver &driver, const file::Files &inputs,
-//   IntentCache &ic,
-//   //                    const OutputOptions &outputOpts) override;
-// };
-// class SingleCompilationModel final : public CompilationModel {
-// public:
-//   SingleCompilationModel() : CompilationModel(CompilationMode::Single) {}
+  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+                    const OutputOptions &outputOpts) override;
 
-// public:
-//   void BuildIntents(Compilation& compilation, const file::Files &inputs,
-//   IntentCache &ic,
-//                  const OutputOptions &outputOpts) override;
+  void BuildJobs(ToolChain &tc, IntentCache &ic,
+                 const OutputOptions &outputOpts) override;
 
-//   // public:
-//   //   std::unique_ptr<Compilation>
-//   //   BuildCompilation(Driver &driver, const file::Files &inputs,
-//   IntentCache &ic,
-//   //                    const OutputOptions &outputOpts) override;
-// };
+private:
+  int ComputeCPUCount() const;
+};
+
+class SingleCompilationModel final : public CompilationModel {
+public:
+  SingleCompilationModel() : CompilationModel(CompilationModelKind::Single) {}
+
+public:
+  std::unique_ptr<Compilation>
+  BuildCompilation(ToolChain &tc, const file::Files &inputs,
+                   const OutputOptions &outputOpts) override;
+
+  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+                    const OutputOptions &outputOpts) override;
+
+  void BuildJobs(ToolChain &tc, IntentCache &ic,
+                 const OutputOptions &outputOpts) override;
+};
 
 } // namespace stone
 

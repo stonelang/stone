@@ -94,7 +94,6 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGit() {
   return nullptr;
 }
 
-
 JobDetail DarwinToolChain::ConstructDetail(const CompileIntent &intent) {
   return ToolChain::ConstructDetail(intent);
 }

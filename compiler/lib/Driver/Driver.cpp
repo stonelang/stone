@@ -111,7 +111,7 @@ void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 std::unique_ptr<llvm::opt::DerivedArgList>
 Driver::TranslateInputArgList(const llvm::opt::InputArgList &ial,
                               llvm::StringRef workDir) {
-  
+
   auto dal = std::make_unique<llvm::opt::DerivedArgList>(ial);
 
   // auto addPath = [workingDirectory, DAL](Arg *A) {

@@ -31,6 +31,7 @@ class Job;
 class Intent;
 class TaskQueue;
 class Compilation;
+class ToolChain;
 
 class JobStats final : public Stats {
   const Job &job;
@@ -251,6 +252,10 @@ public:
   ImageBaseName() {}
   ~ImageBaseName() = delete;
 };
+
+/// A map for caching Jobs for a given Intent/ToolChain pair
+using JobCacheMap =
+    llvm::DenseMap<std::pair<const Intent *, const ToolChain *>, Job *>;
 
 } // namespace stone
 

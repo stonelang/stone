@@ -36,7 +36,7 @@ void ToolChain::Initialize() {
     tools.Add(std::move(gcc));
   }
   auto git = BuildGit();
-  if(git){
+  if (git) {
     tools.Add(std::move(git));
   }
 }
