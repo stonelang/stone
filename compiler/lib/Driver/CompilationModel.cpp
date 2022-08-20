@@ -104,46 +104,60 @@ void QuadraticCompilationModel::BuildCompilePhases(
 }
 void QuadraticCompilationModel::BuildPhases(ToolChain &tc,
                                             const file::Files &inputs,
-                                            PhaseCache &ac,
+                                            PhaseCache &pc,
                                             const OutputOptions &outputOpts) {
 
-  if (tc.GetDriver().GetDriverOptions().GetMode().CanCompile()) {
-    BuildCompilePhases(tc, inputs, ac, outputOpts);
+  if (tc.GetDriver().CanCompile()) {
+    BuildCompilePhases(tc, inputs, pc, outputOpts);
     if (tc.GetDriver().JustCompile()) {
+      pc.forTopLevel.append(pc.forCompile.begin(), pc.forCompile.end());
       return;
     }
   }
-  if (tc.GetDriver().CanLink()) {
-    if (tc.GetDriver().JustLink()) {
-      auto phase = BuildLinkPhase(tc, inputs, outputOpts);
-    } else {
-      // May want to check that you have compile
-      auto phase = BuildLinkPhase(tc, ac, outputOpts);
-      ac.CacheForTopLevel(phase);
-    }
-  }
-}
-void QuadraticCompilationModel::BuildJobs(ToolChain &tc, PhaseCache &ac,
-                                          JobCache &jc,
-                                          const OutputOptions &outputOpts) {
+  // TODO:  We will get back to this part -- just get compile to work.
+  //  if (tc.GetDriver().CanLink()) {
+  //    if (tc.GetDriver().JustLink()) {
+  //      auto phase = BuildLinkPhase(tc, inputs, outputOpts);
+  //    } else {
+  //      // May want to check that you have compile
+  //      auto phase = BuildLinkPhase(tc, pc, outputOpts);
+  //      ac.CacheForTopLevel(phase);
+  //    }
+  //  }
 
-  // auto BuildJobsForPhase = [&](const Phase *topPhase) -> void {
-  //   for (auto input : *topPhase) {
+  // if (tc.GetDriver().CanLink()) {
+  //     auto linkPhase = BuildLinkPhase(tc, pc, outputOpts);
+  //     ac.CacheForTopLevel(phase);
   //   }
-  // };
-
-  // for (auto topInput : ic.forTop) {
-  //   BuildJobsForPhase(topPhase);
   // }
 }
-
-
-// TODO: This may actually be generic 
-void QuadraticCompilationModel::BuildJobs(ToolChain &tc, const Phase &phase,
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc, PhaseCache &pc,
                                           JobCache &jc,
                                           const OutputOptions &outputOpts) {
 
+  if (tc.GetDriver().CanCompile()) {
+    assert(pc.HasCompile());
+    BuildCompileJobs(tc, pc, jc, outputOpts);
+  }
 }
+
+void QuadraticCompilationModel::BuildCompileJobs(
+    ToolChain &tc, PhaseCache &pc, JobCache &jc,
+    const OutputOptions &outputOpts) {
+
+  auto BuildCompileJob = [&](ToolChain &tc, const Phase &phase,
+                             const OutputOptions &outputOpts) -> Job * {
+
+  };
+  for (auto input : pc.forCompile) {
+    jc.CacheForCompile(BuildCompileJob(tc, *InputToPhase(input), outputOpts));
+  }
+}
+
+// TODO: This may actually be generic
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc, const Phase &phase,
+                                          JobCache &jc,
+                                          const OutputOptions &outputOpts) {}
 
 // auto BuildCompileTaskDetails = [&]() -> void {
 
@@ -181,11 +195,11 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, const Phase &phase,
 std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
     ToolChain &tc, const file::Files &inputs, const OutputOptions &outputOpts) {
 
-  PhaseCache ac;
-  BuildPhases(tc, inputs, ac, outputOpts);
+  PhaseCache pc;
+  BuildPhases(tc, inputs, pc, outputOpts);
 
   JobCache jc;
-  BuildJobs(tc, ac, jc, outputOpts);
+  BuildJobs(tc, pc, jc, outputOpts);
 
   // TODO: if print ....
 

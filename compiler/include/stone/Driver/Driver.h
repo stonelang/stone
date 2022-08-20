@@ -93,6 +93,8 @@ public:
             (GetDriverOptions().outputOptions.linkMode == LinkMode::None));
   }
 
+  bool CanCompile() const { return GetDriverOptions().GetMode().CanCompile(); }
+
   void ComputeOptions(const llvm::opt::InputArgList &ial);
 
   void ComputeOutputOptions(const ToolChain &toolChain,

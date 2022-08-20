@@ -86,6 +86,9 @@ public:
 private:
   void BuildCompilePhases(ToolChain &tc, const file::Files &inputs,
                           PhaseCache &ic, const OutputOptions &outputOpts);
+
+  void BuildCompileJobs(ToolChain &tc, PhaseCache &pc, JobCache &jc,
+                        const OutputOptions &outputOpts);
 };
 
 // class FlatCompilationModel final : public CompilationModel {

@@ -142,7 +142,7 @@ public:
   /// CompilePhase
   llvm::SmallVector<PhaseInput, 16> forCompile;
 
-  llvm::SmallVector<PhaseInput, 16> forLink;
+  // llvm::SmallVector<PhaseInput, 16> forLink;
 
   /// These are the top-level actions -- we use them recursively to build the
   /// jobs
@@ -156,8 +156,8 @@ public:
   // bool ForLink() { return forLink.size(); }
   // void CacheForLink(PhaseInput input) { forLink.push_back(input); }
 
-  bool HasTopLevel() { return forTopLevel.size(); }
-  void CacheForTopLevel(PhaseInput input) { forTopLevel.push_back(input); }
+  // bool HasTopLevel() { return forTopLevel.size(); }
+  // void CacheForTopLevel(PhaseInput input) { forTopLevel.push_back(input); }
 };
 
 } // namespace stone
