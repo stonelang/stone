@@ -58,7 +58,7 @@ void Compilation::PrintJobs() {
   //   auto job = GetQueue().Front();
   //   if (job) {
   //     if (driver.GetDriverOptions().printJobs) {
-  //       job->PrintIntent();
+  //       job->PrintAction();
   //     }
   //   }
   //   GetQueue().Pop();

@@ -1,57 +1,57 @@
-#include "stone/Driver/Intent.h"
+#include "stone/Driver/Action.h"
 #include "stone/Basic/Color.h"
 #include "stone/Context.h"
 
 using namespace stone;
 
-Intent::Intent(IntentKind kind, const Tool &tool, intent::InputList inputs,
+Action::Action(ActionKind kind, const Tool &tool, action::InputList inputs,
                file::Type outputFileType)
     : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
 
-Intent::~Intent() {}
+Action::~Action() {}
 
-CompileIntent::CompileIntent(const Tool &tool, file::Type outputFileType)
-    : Intent(IntentKind::Compile, tool, {}, outputFileType) {}
+CompileAction::CompileAction(const Tool &tool, file::Type outputFileType)
+    : Action(ActionKind::Compile, tool, {}, outputFileType) {}
 
-CompileIntent::CompileIntent(const Tool &tool, intent::Input input,
+CompileAction::CompileAction(const Tool &tool, action::Input input,
                              file::Type outputFileType)
-    : Intent(IntentKind::Compile, tool, input, outputFileType),
+    : Action(ActionKind::Compile, tool, input, outputFileType),
       primaryInput(input) {}
 
-DynamicLinkIntent::DynamicLinkIntent(const Tool &tool, intent::InputList inputs,
+DynamicLinkAction::DynamicLinkAction(const Tool &tool, action::InputList inputs,
                                      bool withLTO)
-    : Intent(IntentKind::DynamicLink, tool, inputs, file::Type::Image),
+    : Action(ActionKind::DynamicLink, tool, inputs, file::Type::Image),
       withLTO(withLTO) {}
 
-StaticLinkIntent::StaticLinkIntent(const Tool &tool, intent::InputList inputs)
-    : Intent(IntentKind::StaticLink, tool, inputs, file::Type::Image) {}
+StaticLinkAction::StaticLinkAction(const Tool &tool, action::InputList inputs)
+    : Action(ActionKind::StaticLink, tool, inputs, file::Type::Image) {}
 
-ExecutableLinkIntent::ExecutableLinkIntent(const Tool &tool,
-                                           intent::InputList inputs)
-    : Intent(IntentKind::ExecutableLink, tool, inputs, file::Type::Image) {}
+ExecutableLinkAction::ExecutableLinkAction(const Tool &tool,
+                                           action::InputList inputs)
+    : Action(ActionKind::ExecutableLink, tool, inputs, file::Type::Image) {}
 
-const char *Intent::GetNameByKind(IntentKind kind) const {
+const char *Action::GetNameByKind(ActionKind kind) const {
   switch (kind) {
-  case IntentKind::Compile:
+  case ActionKind::Compile:
     return "compile";
-  case IntentKind::Backend:
+  case ActionKind::Backend:
     return "backend";
-  case IntentKind::Assemble:
+  case ActionKind::Assemble:
     return "assemble";
-  case IntentKind::DynamicLink:
+  case ActionKind::DynamicLink:
     return "dynamic-link";
-  case IntentKind::StaticLink:
+  case ActionKind::StaticLink:
     return "static-link";
-  case IntentKind::ExecutableLink:
+  case ActionKind::ExecutableLink:
     return "executable-link";
   default:
-    stone::Panic("Invalid IntentKind");
+    stone::Panic("Invalid ActionKind");
   }
 }
 
-static void PrintIntent(ColorfulStream &stream, llvm::StringRef terminator,
-                        const intent::Input) {
-  //   /// TODO: IntentFormatter
+static void PrintAction(ColorfulStream &stream, llvm::StringRef terminator,
+                        const action::Input) {
+  //   /// TODO: ActionFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();
   //   OS() << GetName();
@@ -72,9 +72,9 @@ static void PrintIntent(ColorfulStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
+void Action::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
   for (auto input : *this) {
-    PrintIntent(stream, terminator, input);
+    PrintAction(stream, terminator, input);
   }
 }
 
@@ -87,7 +87,7 @@ void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //                                       const OutputOptions &outputOptions) {
 //   // Create a single CompileJobRequest to handl all InputRequest(s)
 //   auto *compileRequest =
-//   compilation.GetDriver().MakeIntent<CompileJobRequest>(
+//   compilation.GetDriver().MakeAction<CompileJobRequest>(
 //       compilation.GetDriver().GetOutputFileType());
 //   for (auto &input : inputs) {
 //     if (compilation.GetDriver().GetBuildSystem().IsDirty(input)) {
@@ -96,11 +96,11 @@ void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 
 //       assert(file::IsPartOfCompilation(input.GetType()));
 //       compileRequest->AddInput(
-//           compilation.GetDriver().MakeIntent<InputRequest>(input));
+//           compilation.GetDriver().MakeAction<InputRequest>(input));
 
-//       hc.GetIntentCache().CacheForModule(compileRequest);
+//       hc.GetActionCache().CacheForModule(compileRequest);
 //       if (outputOptions.CanLink()) {
-//         hc.GetIntentCache().CacheForLink(hc.GetIntentCache().currentRequest);
+//         hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
 //       }
 //     }
 //   }
@@ -120,21 +120,21 @@ void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //              "Incompatible input file types");
 //       assert(file::IsPartOfCompilation(input.GetType()));
 
-//       hc.GetIntentCache().currentRequest =
-//       driver.MakeIntent<InputRequest>(input); switch (input.GetType()) {
+//       hc.GetActionCache().currentRequest =
+//       driver.MakeAction<InputRequest>(input); switch (input.GetType()) {
 //       case file::Type::Stone: {
-//         hc.GetIntentCache().currentRequest =
-//         driver.MakeIntent<CompileJobRequest>(
-//             hc.GetIntentCache().currentRequest, driver.GetOutputFileType());
-//         hc.GetIntentCache().CacheForModule(hc.GetIntentCache().currentRequest);
+//         hc.GetActionCache().currentRequest =
+//         driver.MakeAction<CompileJobRequest>(
+//             hc.GetActionCache().currentRequest, driver.GetOutputFileType());
+//         hc.GetActionCache().CacheForModule(hc.GetActionCache().currentRequest);
 //         if (outputOptions.CanLink()) {
-//           hc.GetIntentCache().CacheForLink(hc.GetIntentCache().currentRequest);
+//           hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
 //         }
 //         break;
 //       }
 //       case file::Type::Object:
 //         if (outputOptions.CanLink()) {
-//           hc.GetIntentCache().CacheForLink(hc.GetIntentCache().currentRequest);
+//           hc.GetActionCache().CacheForLink(hc.GetActionCache().currentRequest);
 //           break;
 //         }
 //       default:
@@ -165,22 +165,22 @@ void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //   }
 
 //   // Now, do we need any top-level JobRequests
-//   if (outputOptions.CanLink() && hc.GetIntentCache().ForLink()) {
+//   if (outputOptions.CanLink() && hc.GetActionCache().ForLink()) {
 //     Request *linkRequest = nullptr;
 //     switch (GetLinkMode()) {
 //     case LinkMode::EmitExecutable: {
-//       linkRequest = MakeIntent<LinkJobRequest>(hc.GetIntentCache().forLink,
+//       linkRequest = MakeAction<LinkJobRequest>(hc.GetActionCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }
 //     case LinkMode::EmitDynamicLibrary: {
-//       linkRequest = MakeIntent<LinkJobRequest>(
-//           hc.GetIntentCache().forLink, GetLinkMode(),
+//       linkRequest = MakeAction<LinkJobRequest>(
+//           hc.GetActionCache().forLink, GetLinkMode(),
 //           outputOptions.WithLTO());
 //       break;
 //     }
 //     case LinkMode::EmitStaticLibrary: {
-//       linkRequest = MakeIntent<LinkJobRequest>(hc.GetIntentCache().forLink,
+//       linkRequest = MakeAction<LinkJobRequest>(hc.GetActionCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }
@@ -188,14 +188,14 @@ void Intent::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //       stone::Panic("Invalid linking mode");
 //     }
 //     assert(linkRequest);
-//     hc.GetIntentCache().CacheForTop(linkRequest);
+//     hc.GetActionCache().CacheForTop(linkRequest);
 //   }
 // }
 
 // void Driver::PrintJobRequests(HotCache &hc) {
 //   // Let just handle top level
-//   if (hc.GetIntentCache().ForTop()) {
-//     for (auto &request : hc.GetIntentCache().forTop) {
+//   if (hc.GetActionCache().ForTop()) {
+//     for (auto &request : hc.GetActionCache().forTop) {
 //       request->Print(GetContext().Out());
 //     }
 //   }

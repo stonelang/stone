@@ -2177,7 +2177,7 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
             findEndOfCurlyQuoteStringLiteral(Tmp, EmitDiagnosticsIfToken))
       Tmp = Tmp2;
 
-    // Note, we intentionally diagnose the end quote before the start quote,
+    // Note, we actionionally diagnose the end quote before the start quote,
     // so that the IDE suggests fixing the end quote before the start quote.
     // This, in turn, works better with our error recovery because we won't
     // diagnose an end curly quote in the middle of a straight quoted

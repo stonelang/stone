@@ -73,7 +73,7 @@ using namespace stone;
 
 //   // toolChain.ConstructCompileJob()
 //   //       hc.currentRequest =
-//   //           compilation.GetDriver().MakeIntent<CompileJobRequest>(
+//   //           compilation.GetDriver().MakeAction<CompileJobRequest>(
 //   //               hc.currentRequest,
 //   //               compilation.GetDriver().GetOutputFileType());
 //   //       hc.AddModuleInput(hc.currentRequest);
@@ -97,7 +97,7 @@ using namespace stone;
 
 //   // toolChain.ConstructCompileJob()
 //   //       hc.currentRequest =
-//   //           compilation.GetDriver().MakeIntent<CompileJobRequest>(
+//   //           compilation.GetDriver().MakeAction<CompileJobRequest>(
 //   //               hc.currentRequest,
 //   //               compilation.GetDriver().GetOutputFileType());
 //   //       hc.AddModuleInput(hc.currentRequest);
@@ -122,7 +122,7 @@ using namespace stone;
 
 // // Create a single CompileJobRequest to handl all InputRequest(s)
 // auto *compileRequest =
-// compilation.GetDriver().MakeIntent<CompileJobRequest>(
+// compilation.GetDriver().MakeAction<CompileJobRequest>(
 //     compilation.GetDriver().GetOutputFileType());
 // for (auto &input : inputs) {
 
@@ -132,7 +132,7 @@ using namespace stone;
 
 //     assert(file::IsPartOfCompilation(input.GetType()));
 
-//     // compileRequest->AddInput(.MakeIntent<InputRequest>(input));
+//     // compileRequest->AddInput(.MakeAction<InputRequest>(input));
 
 //     // hc.AddModuleInput(compileRequest);
 //     // if (outputOptions.CanLink()) {

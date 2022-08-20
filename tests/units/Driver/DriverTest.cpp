@@ -2,8 +2,8 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Context.h"
+#include "stone/Driver/Action.h"
 #include "stone/Driver/CompilationJob.h"
-#include "stone/Driver/Intent.h"
 #include "gtest/gtest.h"
 
 using namespace stone;
@@ -23,14 +23,14 @@ public:
 //   CompileJob cj(*tool, file.get());
 // }
 
-TEST_F(DriverTest, IntentTest) {
+TEST_F(DriverTest, ActionTest) {
   auto file = std::make_unique<file::File>("test", file::Type::Stone);
 
-  // auto cjr = Driver::MakeIntent<CompileIntentt>(file.get());
+  // auto cjr = Driver::MakeAction<CompileActiont>(file.get());
   // cjr->Print(ctx.Out());
 
-  // auto djrd = Driver::MakeIntent<DynamicLinkIntent>(cjr.get());
-  // auto djri = Driver::MakeIntent<DynamicLinkJobRequest>(file.get());
+  // auto djrd = Driver::MakeAction<DynamicLinkAction>(cjr.get());
+  // auto djri = Driver::MakeAction<DynamicLinkJobRequest>(file.get());
 
   // Compilation compilation;
   // auto job = toolChain.MakeJob(JobRequest& jobRequest, Compilation& c)
@@ -42,7 +42,7 @@ TEST_F(DriverTest, IntentTest) {
 
   // CompileJob cj(*tool, file.get());
 }
-// TEST_F(DriverTest, ProcessIntent) {
+// TEST_F(DriverTest, ProcessAction) {
 
 // Driver driver("stone", "stone");
 // driver.Initialize();
@@ -62,5 +62,5 @@ TEST_F(DriverTest, IntentTest) {
 // auto c = driver.BuildCompilation(*tc.get(), parsedArgs);
 //}
 
-// TEST_F(DriverTest, CompileIntent) {}
-// TEST_F(DriverTest, LinkIntent) {}
+// TEST_F(DriverTest, CompileAction) {}
+// TEST_F(DriverTest, LinkAction) {}

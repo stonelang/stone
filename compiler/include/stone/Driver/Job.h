@@ -28,7 +28,7 @@
 namespace stone {
 class Tool;
 class Job;
-class Intent;
+class Action;
 class TaskQueue;
 class Compilation;
 class ToolChain;
@@ -95,9 +95,9 @@ class Job {
   /// The list of other Jobs which are inputs to this Job.
   job::InputList inputs;
 
-  /// The intent which caused the creation of this Job, and the conditions
+  /// The action which caused the creation of this Job, and the conditions
   /// under which it must be run.
-  llvm::PointerIntPair<const Intent *, 2, JobCondition> intentAndCondition;
+  llvm::PointerIntPair<const Action *, 2, JobCondition> actionAndCondition;
 
 public:
   using size_type = llvm::ArrayRef<job::Input>::size_type;
@@ -116,7 +116,7 @@ public:
 
 public:
   Job() = delete;
-  Job(const Intent &intent, Context &ctx,
+  Job(const Action &action, Context &ctx,
       llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
@@ -125,9 +125,9 @@ public:
   job::InputList GetInputs() { return inputs; }
   void AddInput(job::Input input) { inputs.push_back(input); }
 
-  const Intent &GetIntent() const { return *intentAndCondition.getPointer(); }
-  JobCondition GetJobCondition() const { return intentAndCondition.getInt(); }
-  void SetJobCondition(JobCondition jc) { intentAndCondition.setInt(jc); }
+  const Action &GetAction() const { return *actionAndCondition.getPointer(); }
+  JobCondition GetJobCondition() const { return actionAndCondition.getInt(); }
+  void SetJobCondition(JobCondition jc) { actionAndCondition.setInt(jc); }
 
 public:
   /// Print a nice summary of this job
@@ -253,9 +253,9 @@ public:
   ~ImageBaseName() = delete;
 };
 
-/// A map for caching Jobs for a given Intent/ToolChain pair
+/// A map for caching Jobs for a given Action/ToolChain pair
 using JobCacheMap =
-    llvm::DenseMap<std::pair<const Intent *, const ToolChain *>, Job *>;
+    llvm::DenseMap<std::pair<const Action *, const ToolChain *>, Job *>;
 
 } // namespace stone
 

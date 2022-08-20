@@ -4,45 +4,45 @@
 
 using namespace stone;
 
-Intent *
-CompilationModel::ConstructCompileIntent(ToolChain &tc, intent::Input input,
+Action *
+CompilationModel::ConstructCompileAction(ToolChain &tc, action::Input input,
                                          const OutputOptions &outputOpts) {
-  Intent *intent = nullptr;
+  Action *action = nullptr;
   auto sc = tc.GetSC();
-  intent = tc.GetDriver().MakeIntent<CompileIntent>(*sc, input,
+  action = tc.GetDriver().MakeAction<CompileAction>(*sc, input,
                                                     outputOpts.outputFileType);
-  assert(intent);
-  return intent;
+  assert(action);
+  return action;
 }
-Intent *CompilationModel::ConstructStaticLinkIntent(
-    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+Action *CompilationModel::ConstructStaticLinkAction(
+    ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
-  Intent *intent = nullptr;
+  Action *action = nullptr;
   auto ld = tc.GetLD();
 
   return nullptr;
 }
 
-Intent *CompilationModel::ConstructExecLinkIntent(
-    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+Action *CompilationModel::ConstructExecLinkAction(
+    ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
   auto ld = tc.GetLD();
   return nullptr;
 }
 
-Intent *CompilationModel::ConstructDynamicLinkIntent(
-    ToolChain &tc, intent::InputList inputs, const OutputOptions &outputOpts) {
+Action *CompilationModel::ConstructDynamicLinkAction(
+    ToolChain &tc, action::InputList inputs, const OutputOptions &outputOpts) {
 
   auto ld = tc.GetLD();
   return nullptr;
 }
 
-// TODO: Look into the IntentCache instead of the intent::Input
-/// Goal: Build the link intent and CacheForTop(..)
-Intent *CompilationModel::BuildLinkIntent(ToolChain &tc, IntentCache &ic,
+//  TODO: Look into the ActionCache instead of the action::Input
+/// GOAL: Build the link action and CacheForTop(..)
+Action *CompilationModel::BuildLinkAction(ToolChain &tc, ActionCache &ic,
                                           const OutputOptions &outputOpts) {
 
-  Intent *intent = nullptr;
+  Action *action = nullptr;
   // Make sure that we can link
   assert(tc.GetDriver().CanLink() &&
          "The current mode does not allow linking.");
@@ -52,170 +52,183 @@ Intent *CompilationModel::BuildLinkIntent(ToolChain &tc, IntentCache &ic,
 
   switch (tc.GetDriver().GetLinkMode()) {
   case LinkMode::EmitExecutable:
-    intent = ConstructExecLinkIntent(tc, ic.forCompile, outputOpts);
+    action = ConstructExecLinkAction(tc, ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitStaticLibrary:
-    intent = ConstructStaticLinkIntent(tc, ic.forCompile, outputOpts);
+    action = ConstructStaticLinkAction(tc, ic.forCompile, outputOpts);
     break;
   case LinkMode::EmitDynamicLibrary:
-    intent = ConstructDynamicLinkIntent(tc, ic.forCompile, outputOpts);
+    action = ConstructDynamicLinkAction(tc, ic.forCompile, outputOpts);
     break;
   default:
     stone::Panic("Alien link mode");
   }
-  assert(intent);
-  ic.CacheForTop(intent);
-  return intent;
+  assert(action);
+  ic.CacheForTop(action);
+  return action;
 }
 
-Intent *CompilationModel::BuildLinkIntent(ToolChain &tc,
+Action *CompilationModel::BuildLinkAction(ToolChain &tc,
                                           const file::Files &inputs,
                                           const OutputOptions &outputOpts) {
-  Intent *intent = nullptr;
+  Action *action = nullptr;
 
   assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
 
   return nullptr;
 }
 
-void QuadraticCompilationModel::BuildCompileIntents(
-    ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+void QuadraticCompilationModel::BuildCompileActions(
+    ToolChain &tc, const file::Files &inputs, ActionCache &ic,
     const OutputOptions &outputOpts) {
 
-  auto BuildCompileIntent = [&](const file::File &primaryInput,
+  auto BuildCompileAction = [&](const file::File &primaryInput,
                                 const file::Files &inputs,
-                                const OutputOptions &outputOpts) -> Intent * {
-    auto intent = ConstructCompileIntent(
+                                const OutputOptions &outputOpts) -> Action * {
+    auto action = ConstructCompileAction(
         tc, const_cast<file::File *>(&primaryInput), outputOpts);
-    assert(intent);
+    assert(action);
     for (auto &input : inputs) {
-      /// The tool chain stores the intents that it created.
-      intent->AddInput(const_cast<file::File *>(&input));
+      /// The tool chain stores the actions that it created.
+      action->AddInput(const_cast<file::File *>(&input));
     }
-    return intent;
+    return action;
   };
   for (auto &input : inputs) {
     assert(input.GetType() == file::Type::Stone); // Only file-type for now
 
-    auto intent = BuildCompileIntent(input, inputs, outputOpts);
-    ic.CacheForCompile(intent);
+    auto action = BuildCompileAction(input, inputs, outputOpts);
+    ic.CacheForCompile(action);
   }
 }
-void QuadraticCompilationModel::BuildIntents(ToolChain &tc,
+void QuadraticCompilationModel::BuildActions(ToolChain &tc,
                                              const file::Files &inputs,
-                                             IntentCache &ic,
+                                             ActionCache &ic,
                                              const OutputOptions &outputOpts) {
 
   if (tc.GetDriver().GetDriverOptions().GetMode().CanCompile()) {
-    BuildCompileIntents(tc, inputs, ic, outputOpts);
+    BuildCompileActions(tc, inputs, ic, outputOpts);
     if (tc.GetDriver().JustCompile()) {
       return;
     }
   }
   if (tc.GetDriver().CanLink()) {
     if (tc.GetDriver().JustLink()) {
-      BuildLinkIntent(tc, inputs, outputOpts);
+      BuildLinkAction(tc, inputs, outputOpts);
     } else {
-      BuildLinkIntent(tc, ic, outputOpts);
+      BuildLinkAction(tc, ic, outputOpts);
     }
   }
 }
-void QuadraticCompilationModel::BuildJobs(ToolChain &tc, IntentCache &ic,
+void QuadraticCompilationModel::BuildJobs(ToolChain &tc, ActionCache &ac,
+                                          JobCache &jc,
                                           const OutputOptions &outputOpts) {
 
-  // auto BuildCompileTaskDetails = [&]() -> void {
-
+  // auto BuildJobsForAction = [&](const Action *topAction) -> void {
+  //   for (auto input : *topAction) {
+  //   }
   // };
 
-  // if(tc.GetDriver().JustCompile()){
-
-  // }
-  // if (tc.GetDriver().GetMode().CanCompile()) {
-  //   BuildCompileIntents(driver, tc, inputs, ic, outputOpts);
-  //   if (tc.GetDriver().JustCompile()) {
-  //     return;
-  //   }
-  // }
-  // if (tc.GetDriver().CanLink()) {
-  //   if (tc.GetDriver().JustLink()) {
-  //     BuildLinkIntent(driver, tc, inputs, outputOpts);
-  //   } else {
-  //     BuildLinkIntent(driver, tc, ic, outputOpts);
-  //   }
-  // }
-
-  // // if we have nothing to do, we return
-  // if (ic.ForCompile()) {
-  //   return nullptr;
-  // }
-  // for (auto input : ic.forCompile) {
-  //   auto intent = InputToIntent(input);
-  //   assert(intent);
-  //   auto taskDetail =
-  //   tc.ConstructTaskDetail(llvm::cast<CompileIntent>(*intent));
+  // for (auto topInput : ic.forTop) {
+  //   BuildJobsForAction(topAction);
   // }
 }
+
+// auto BuildCompileTaskDetails = [&]() -> void {
+
+// };
+
+// if(tc.GetDriver().JustCompile()){
+
+// }
+// if (tc.GetDriver().GetMode().CanCompile()) {
+//   BuildCompileActions(driver, tc, inputs, ic, outputOpts);
+//   if (tc.GetDriver().JustCompile()) {
+//     return;
+//   }
+// }
+// if (tc.GetDriver().CanLink()) {
+//   if (tc.GetDriver().JustLink()) {
+//     BuildLinkAction(driver, tc, inputs, outputOpts);
+//   } else {
+//     BuildLinkAction(driver, tc, ic, outputOpts);
+//   }
+// }
+
+// // if we have nothing to do, we return
+// if (ic.ForCompile()) {
+//   return nullptr;
+// }
+// for (auto input : ic.forCompile) {
+//   auto action = InputToAction(input);
+//   assert(action);
+//   auto taskDetail =
+//   tc.ConstructTaskDetail(llvm::cast<CompileAction>(*action));
+// }
+// }
+
 std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
     ToolChain &tc, const file::Files &inputs, const OutputOptions &outputOpts) {
 
-  IntentCache ic;
-  BuildIntents(tc, inputs, ic, outputOpts);
+  ActionCache ac;
+  BuildActions(tc, inputs, ac, outputOpts);
 
-  BuildJobs(tc, ic, outputOpts);
+  JobCache jc;
+  BuildJobs(tc, ac, jc, outputOpts);
 
   // TODO: if print ....
 
   // TODO: it seems that we can skip these steps if we create the compilation
   // ahead of time and just do
-  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileIntent>(*intent)))
+  /// compilation.AddTaskDetail(tc.ConstructTaskDetail(llvm::cast<CompileAction>(*action)))
 
   // TODO: Check input size
-  // Now, build the intent system since we have a toolchain
+  // Now, build the action system since we have a toolchain
   // auto compilation =
   //     std::make_unique<Compilation>(*this, toolChain, std::move(dal));
 
   return nullptr;
 }
 
-// void FlatCompilationModel::BuildIntents(Compilation& compilation, const
+// void FlatCompilationModel::BuildActions(Compilation& compilation, const
 // file::Files &inputs,
-//                                      IntentCache &ic,
+//                                      ActionCache &ic,
 //                                      const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // FlatCompilationModel::BuildCompilation(Driver &driver,
-//                                        const file::Files &inputs, IntentCache
+//                                        const file::Files &inputs, ActionCache
 //                                        &ic, const OutputOptions &outputOpts)
 //                                        {
 
-//   BuildIntents(driver, inputs, ic, outputOpts);
+//   BuildActions(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }
 
-// void CPUCompilationModel::BuildIntents(Compilation& compilation, const
+// void CPUCompilationModel::BuildActions(Compilation& compilation, const
 // file::Files &inputs,
-//                                     IntentCache &ic,
+//                                     ActionCache &ic,
 //                                     const OutputOptions &outputOpts) {}
 
 // std::unique_ptr<Compilation>
 // CPUCompilationModel::BuildCompilation(Driver &driver, const file::Files
 // &inputs,
-//                                       IntentCache &ic,
+//                                       ActionCache &ic,
 //                                       const OutputOptions &outputOpts) {
 
-//   BuildIntents(driver, inputs, ic, outputOpts);
+//   BuildActions(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }
 
-// void SingleCompilationModel::BuildIntents(Compilation& compilation,
-//                                        const file::Files &inputs, IntentCache
+// void SingleCompilationModel::BuildActions(Compilation& compilation,
+//                                        const file::Files &inputs, ActionCache
 //                                        &ic, const OutputOptions &outputOpts)
 //                                        {}
 
 // std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(
-//     Driver &driver, const file::Files &inputs, IntentCache &ic,
+//     Driver &driver, const file::Files &inputs, ActionCache &ic,
 //     const OutputOptions &outputOpts) {
 
-//   BuildIntents(driver, inputs, ic, outputOpts);
+//   BuildActions(driver, inputs, ic, outputOpts);
 //   return nullptr;
 // }

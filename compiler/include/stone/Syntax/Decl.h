@@ -445,7 +445,7 @@ class TrustDecl final
       public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
 
 /// IfConfigDecl - This class represents #if/#else/#endif blocks.
-/// Active and inactive block members are stored separately, with the intention
+/// Active and inactive block members are stored separately, with the actionion
 /// being that active members will be handed back to the enclosing context.
 class IfConfigDecl : public Decl {
 

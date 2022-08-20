@@ -30,7 +30,7 @@ public:
   /// Clean the build before compilation
   bool cleanBuild = false;
 
-  /// Print the driver intentions
+  /// Print the driver actionions
   bool printRequests = false;
 
   // True if temporary files should not be deleted.

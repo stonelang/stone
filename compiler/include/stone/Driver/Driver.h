@@ -5,11 +5,11 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/Driver/Action.h"
 #include "stone/Driver/BuildSystem.h"
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/CompilationModel.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Session/Session.h"
 
@@ -21,11 +21,11 @@ class TaskQueue;
 class Compilation;
 
 class HotCache final {
-  IntentCache intentCache;
+  ActionCache actionCache;
   JobCache jobCache;
 
 public:
-  IntentCache &GetIntentCache() { return intentCache; }
+  ActionCache &GetActionCache() { return actionCache; }
   JobCache &GetJobCache() { return jobCache; }
 };
 
@@ -48,7 +48,7 @@ class Driver final : public Session {
   // llvm::SmallVector<std::function<void(Compilation &compilation,
   //  HotCache &hc,const Request *input)>,32> listeners;
 
-  llvm::SmallVector<std::unique_ptr<const Intent>, 32> intentions;
+  llvm::SmallVector<std::unique_ptr<const Action>, 32> actionions;
 
 public:
   Driver(const Driver &) = delete;
@@ -62,9 +62,9 @@ public:
   void Finish();
 
 public:
-  template <typename T, typename... Args> T *MakeIntent(Args &&...args) {
+  template <typename T, typename... Args> T *MakeAction(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
-    intentions.emplace_back(result);
+    actionions.emplace_back(result);
     return result;
   }
 

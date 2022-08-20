@@ -59,7 +59,7 @@ public:
   inline bool isNamedPipe() const;
   inline void closeFile() const;
 
-  /// Check if the underlying FileEntry is the same, intentially ignoring
+  /// Check if the underlying FileEntry is the same, actionially ignoring
   /// whether the file was referenced with the same spelling of the filename.
   friend bool operator==(const FileEntryRef &LHS, const FileEntryRef &RHS) {
     return &LHS.getFileEntry() == &RHS.getFileEntry();

@@ -25,39 +25,39 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) {}
 
-  virtual void BuildIntents(ToolChain &tc, const file::Files &inputs,
-                            IntentCache &ic, const OutputOptions &outputOpts) {}
+  virtual void BuildActions(ToolChain &tc, const file::Files &inputs,
+                            ActionCache &ic, const OutputOptions &outputOpts) {}
 
-  virtual void BuildJobs(ToolChain &tc, IntentCache &ic,
+  virtual void BuildJobs(ToolChain &tc, ActionCache &ic, JobCache &jc,
                          const OutputOptions &outputOpts) {}
 
   CompilationModelKind GetKind() { return kind; }
 
 protected:
-  Intent *BuildLinkIntent(ToolChain &tc, IntentCache &ic,
+  Action *BuildLinkAction(ToolChain &tc, ActionCache &ic,
                           const OutputOptions &outputOpts);
-  Intent *BuildLinkIntent(ToolChain &tc, const file::Files &inputs,
+  Action *BuildLinkAction(ToolChain &tc, const file::Files &inputs,
                           const OutputOptions &outputOpts);
 
 protected:
-  file::File *InputToFile(intent::Input input) const {
+  file::File *InputToFile(action::Input input) const {
     return input.dyn_cast<file::File *>();
   }
-  Intent *InputToIntent(intent::Input input) const {
-    return input.dyn_cast<Intent *>();
+  Action *InputToAction(action::Input input) const {
+    return input.dyn_cast<Action *>();
   }
 
 public:
-  Intent *ConstructCompileIntent(ToolChain &tc, intent::Input input,
+  Action *ConstructCompileAction(ToolChain &tc, action::Input input,
                                  const OutputOptions &outputOpts);
 
-  Intent *ConstructStaticLinkIntent(ToolChain &tc, intent::InputList inputs,
+  Action *ConstructStaticLinkAction(ToolChain &tc, action::InputList inputs,
                                     const OutputOptions &outputOpts);
 
-  Intent *ConstructExecLinkIntent(ToolChain &tc, intent::InputList inputs,
+  Action *ConstructExecLinkAction(ToolChain &tc, action::InputList inputs,
                                   const OutputOptions &outputOpts);
 
-  Intent *ConstructDynamicLinkIntent(ToolChain &tc, intent::InputList inputs,
+  Action *ConstructDynamicLinkAction(ToolChain &tc, action::InputList inputs,
                                      const OutputOptions &outputOpts);
 };
 
@@ -71,15 +71,15 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, IntentCache &ic,
+  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
-  void BuildCompileIntents(ToolChain &tc, const file::Files &inputs,
-                           IntentCache &ic, const OutputOptions &outputOpts);
+  void BuildCompileActions(ToolChain &tc, const file::Files &inputs,
+                           ActionCache &ic, const OutputOptions &outputOpts);
 };
 
 class FlatCompilationModel final : public CompilationModel {
@@ -91,10 +91,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, IntentCache &ic,
+  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 };
 
@@ -108,10 +108,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ic,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, IntentCache &ic,
+  void BuildJobs(ToolChain &tc, ActionCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 
 private:
@@ -127,10 +127,10 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildIntents(ToolChain &tc, const file::Files &inputs, IntentCache &ic,
+  void BuildActions(ToolChain &tc, const file::Files &inputs, ActionCache &ac,
                     const OutputOptions &outputOpts) override;
 
-  void BuildJobs(ToolChain &tc, IntentCache &ic,
+  void BuildJobs(ToolChain &tc, ActionCache &ic, JobCache &jc,
                  const OutputOptions &outputOpts) override;
 };
 

@@ -106,27 +106,27 @@ std::string ToolChain::FindProgramRelativeToStoneImpl(
   return {};
 }
 
-JobDetail ToolChain::ConstructDetail(const CompileIntent &intent) {
+JobDetail ToolChain::ConstructDetail(const CompileAction &action) {
   return JobDetail();
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructJob(const Intent &intent, Compilation &compilation,
+ToolChain::ConstructJob(const Action &action, Compilation &compilation,
                         std::unique_ptr<CommandOutput> output,
                         const OutputOptions &outputOptions) {
 
   auto jobDetail = [&]() -> JobDetail {
-    switch (intent.GetKind()) {
-    case IntentKind::Compile:
-      return ConstructDetail(llvm::cast<CompileIntent>(intent));
-    case IntentKind::StaticLink:
-      return ConstructDetail(llvm::cast<StaticLinkIntent>(intent));
-    case IntentKind::DynamicLink:
-      return ConstructDetail(llvm::cast<DynamicLinkIntent>(intent));
-    case IntentKind::ExecutableLink:
-      return ConstructDetail(llvm::cast<ExecutableLinkIntent>(intent));
+    switch (action.GetKind()) {
+    case ActionKind::Compile:
+      return ConstructDetail(llvm::cast<CompileAction>(action));
+    case ActionKind::StaticLink:
+      return ConstructDetail(llvm::cast<StaticLinkAction>(action));
+    case ActionKind::DynamicLink:
+      return ConstructDetail(llvm::cast<DynamicLinkAction>(action));
+    case ActionKind::ExecutableLink:
+      return ConstructDetail(llvm::cast<ExecutableLinkAction>(action));
     default:
-      stone::Panic("No 'Intent' to build Job");
+      stone::Panic("No 'Action' to build Job");
     }
   }();
 

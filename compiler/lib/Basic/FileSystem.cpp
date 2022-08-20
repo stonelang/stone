@@ -58,7 +58,7 @@ static llvm::ErrorOr<bool> canUseTemporaryForWrite(const StringRef outputPath) {
   return fs::is_regular_file(status);
 }
 
-/// Attempts to open a temporary file next to \p outputPath, with the intent
+/// Attempts to open a temporary file next to \p outputPath, with the action
 /// that once the file has been written it will be renamed into place.
 ///
 /// Helper for stone::atomicallyWritingToFile.

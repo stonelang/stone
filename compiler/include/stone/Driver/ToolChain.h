@@ -11,8 +11,8 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Mem.h"
+#include "stone/Driver/Action.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Intent.h"
 #include "stone/Driver/Job.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -188,13 +188,13 @@ public:
   FindProgramRelativeToStoneImpl(llvm::StringRef executableName) const;
 
 protected:
-  virtual JobDetail ConstructDetail(const CompileIntent &intent);
-  virtual JobDetail ConstructDetail(const DynamicLinkIntent &intent) = 0;
-  virtual JobDetail ConstructDetail(const StaticLinkIntent &intent) = 0;
-  virtual JobDetail ConstructDetail(const ExecutableLinkIntent &intent) = 0;
+  virtual JobDetail ConstructDetail(const CompileAction &action);
+  virtual JobDetail ConstructDetail(const DynamicLinkAction &action) = 0;
+  virtual JobDetail ConstructDetail(const StaticLinkAction &action) = 0;
+  virtual JobDetail ConstructDetail(const ExecutableLinkAction &action) = 0;
 
 public:
-  std::unique_ptr<Job> ConstructJob(const Intent &intent,
+  std::unique_ptr<Job> ConstructJob(const Action &action,
                                     Compilation &compilation,
                                     std::unique_ptr<CommandOutput> output,
                                     const OutputOptions &outputOptions);

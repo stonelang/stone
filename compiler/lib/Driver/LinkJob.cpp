@@ -5,12 +5,12 @@
 using namespace stone;
 
 // Some jobs only consume inputs -- For example, LinkJob
-// LinkJob::LinkJob(Intent &intent, Context &ctx, Tool &tool, bool requiresLTO,
+// LinkJob::LinkJob(Action &action, Context &ctx, Tool &tool, bool requiresLTO,
 //                  LinkMode linkMode)
-//     : Job(intent, ctx, tool), requiresLTO(requiresLTO), linkMode(linkMode)
+//     : Job(action, ctx, tool), requiresLTO(requiresLTO), linkMode(linkMode)
 //     {}
 
-// void LinkJob::PrintIntent() {
+// void LinkJob::PrintAction() {
 
 //   OS() << std::to_string(GetQueueID()) << ":";
 //   OS().UseGreen();
@@ -32,9 +32,9 @@ using namespace stone;
 // }
 
 // // Some jobs only consume inputs -- For example, LinkJob
-// StaticLinkJob::StaticLinkJob(Intent &intent, Context &ctx, Tool &tool,
+// StaticLinkJob::StaticLinkJob(Action &action, Context &ctx, Tool &tool,
 //                              bool requiresLTO)
-//     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitStaticLibrary)
+//     : LinkJob(action, ctx, tool, requiresLTO, LinkMode::EmitStaticLibrary)
 //     {}
 
 // int StaticLinkJob::ExecuteAsync() { return Job::ExecuteAsync(); }
@@ -43,7 +43,7 @@ using namespace stone;
 // // void StaticLinkJob::BuildCmdOutput() {}
 
 // // Some jobs only consume inputs -- For example, LinkJob
-// DynamicLinkJob::DynamicLinkJob(Intent &intent, Context &ctx, Tool &tool,
+// DynamicLinkJob::DynamicLinkJob(Action &action, Context &ctx, Tool &tool,
 //                                bool requiresLTO)
-//     : LinkJob(intent, ctx, tool, requiresLTO, LinkMode::EmitDynamicLibrary)
+//     : LinkJob(action, ctx, tool, requiresLTO, LinkMode::EmitDynamicLibrary)
 //     {}

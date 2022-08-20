@@ -43,15 +43,15 @@ using namespace stone;
 //   return tc.ToTaskDetail(*this);
 // }
 
-// CompileJob::CompileJob(Intent &intent, Context &ctx, Tool &tool)
-//     : Job(intent, ctx, tool) {}
+// CompileJob::CompileJob(Action &action, Context &ctx, Tool &tool)
+//     : Job(action, ctx, tool) {}
 
 // int CompileJob::ExecuteAsync() { return Job::ExecuteAsync(); }
 // int CompileJob::ExecuteSync() { return Job::ExecuteSync(); }
 
-// void CompileJob::PrintIntent() {
+// void CompileJob::PrintAction() {
 
-//   /// TODO: IntentFormatter
+//   /// TODO: ActionFormatter
 //   OS() << std::to_string(GetQueueID()) << ":";
 //   OS().UseGreen();
 //   OS() << GetName();

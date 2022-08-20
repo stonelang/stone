@@ -1,14 +1,14 @@
 #include "stone/Driver/Job.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Driver/Action.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
-#include "stone/Driver/Intent.h"
 
 using namespace stone;
 
-Job::Job(const Intent &intent, Context &ctx,
+Job::Job(const Action &action, Context &ctx,
          llvm::SmallVectorImpl<job::Input> &&inputs, file::Type outputFileType)
-    : intentAndCondition(&intent, JobCondition::Always), ctx(ctx),
+    : actionAndCondition(&action, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);

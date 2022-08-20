@@ -204,17 +204,17 @@ llvm::StringRef Driver::ComputeOutputFilename() {}
 //   switch (GetLinkMode()) {
 //   case LinkMode::EmitExecutable: {
 //     linkRequest =
-//         MakeIntent<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
+//         MakeAction<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
 //     break;
 //   }
 //   case LinkMode::EmitDynamicLibrary: {
-//     linkRequest = MakeIntent<LinkJobRequest>(hc.forLink, GetLinkMode(),
+//     linkRequest = MakeAction<LinkJobRequest>(hc.forLink, GetLinkMode(),
 //                                               outputOptions.RequiresLTO());
 //     break;
 //   }
 //   case LinkMode::EmitStaticLibrary: {
 //     linkRequest =
-//         MakeIntent<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
+//         MakeAction<LinkJobRequest>(hc.forLink, GetLinkMode(), false);
 //     break;
 //   }
 //   default:

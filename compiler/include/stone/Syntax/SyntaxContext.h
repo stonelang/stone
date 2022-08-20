@@ -185,7 +185,7 @@ public:
 /// IMPORTANT: These are also declared in stone/Syntax/SyntaxContextAllocate.h!
 /// Any changes here need to also be made there.
 ///
-/// We intentionally avoid using a nothrow specification here so that the calls
+/// We actionionally avoid using a nothrow specification here so that the calls
 /// to this operator will not perform a null check on the result -- the
 /// underlying allocator never returns null pointers.
 ///
@@ -225,7 +225,7 @@ public:
 /// This placement form of operator new[] uses the SyntaxContext's allocator for
 /// obtaining memory.
 ///
-/// We intentionally avoid using a nothrow specification here so that the calls
+/// We actionionally avoid using a nothrow specification here so that the calls
 /// to this operator will not perform a null check on the result -- the
 /// underlying allocator never returns null pointers.
 ///
