@@ -6,9 +6,9 @@
 
 using namespace stone;
 
-Job::Job(const Phase &action, Context &ctx,
+Job::Job(const Phase &phase, Context &ctx,
          llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType)
-    : actionAndCondition(&action, JobCondition::Always), ctx(ctx),
+    : phaseAndCondition(&phase, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);

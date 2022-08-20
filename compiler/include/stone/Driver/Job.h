@@ -87,9 +87,9 @@ class Job {
   file::Type outputFileType = file::Type::None;
 
   llvm::SmallVector<const Job *> inputs;
-  /// The action which caused the creation of this Job, and the conditions
+  /// The phase which caused the creation of this Job, and the conditions
   /// under which it must be run.
-  llvm::PointerIntPair<const Phase *, 2, JobCondition> actionAndCondition;
+  llvm::PointerIntPair<const Phase *, 2, JobCondition> phaseAndCondition;
 
 protected:
   Context &ctx;
@@ -103,7 +103,7 @@ public:
 
 public:
   Job() = delete;
-  Job(const Phase &action, Context &ctx,
+  Job(const Phase &phase, Context &ctx,
       llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
@@ -114,9 +114,9 @@ public:
   // TODO: Think about
   void AddInput(const Job *input) { inputs.push_back(input); }
 
-  const Phase &GetPhase() const { return *actionAndCondition.getPointer(); }
-  JobCondition GetJobCondition() const { return actionAndCondition.getInt(); }
-  void SetJobCondition(JobCondition jc) { actionAndCondition.setInt(jc); }
+  const Phase &GetPhase() const { return *phaseAndCondition.getPointer(); }
+  JobCondition GetJobCondition() const { return phaseAndCondition.getInt(); }
+  void SetJobCondition(JobCondition jc) { phaseAndCondition.setInt(jc); }
 
 public:
   /// Print a nice summary of this job
