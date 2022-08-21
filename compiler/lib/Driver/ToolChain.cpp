@@ -6,9 +6,7 @@ using namespace stone;
 
 ToolChain::ToolChain(ToolChainKind kind, Driver &driver,
                      const llvm::Triple &triple)
-    : kind(kind), driver(driver), triple(triple) {
-  Initialize();
-}
+    : kind(kind), driver(driver), triple(triple) {}
 
 void ToolChain::Initialize() {
   // TODO: Clean this up -- works for now
@@ -71,20 +69,19 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
     if (tool) {
       return tool;
     }
-    // Try to find relative to running path
-    // std::string relativeToStone =
-    //     FindProgramRelativeToStone(invocationInfo.ExecutableName);
-
-    // tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC,
-    // true); if (tool) {
-    //   return tool;
-    // }
   }
+  // Try to find relative to running path
+  std::string relativeToStone = FindProgramRelativeToStone(ToolName::SC);
+  auto tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC, true);
+  if (tool) {
+    return tool;
+  }
+
   return nullptr;
 }
 
 std::string
-ToolChain::FindProgramRelativeToStone(llvm::StringRef executableName) const {
+ToolChain::FindProgramRelativeToStone(llvm::StringRef executableName) {
   // auto insertionResult =
   //     ProgramLookupCache.insert(std::make_pair(executableName, ""));
   // if (insertionResult.second) {
@@ -92,17 +89,19 @@ ToolChain::FindProgramRelativeToStone(llvm::StringRef executableName) const {
   //   insertionResult.first->setValue(std::move(path));
   // }
   // return insertionResult.first->getValue();
-  return {};
+  // return {};
+  // TODO: Cache this
+  return FindProgramRelativeToStoneImpl(executableName);
 }
 
 std::string ToolChain::FindProgramRelativeToStoneImpl(
-    llvm::StringRef executableName) const {
-  // llvm::StringRef stonePath = GetDriver().GetSwiftProgramPath();
-  // llvm::StringRef stoneBinDir = llvm::sys::path::parent_path(stonePath);
-  // auto result = llvm::sys::findProgramByName(executableName, {stoneBinDir});
-  // if (result) {
-  //   return result.get();
-  // }
+    llvm::StringRef executableName) {
+  llvm::StringRef stonePath = GetDriver().GetProgramPath();
+  llvm::StringRef stoneBinDir = llvm::sys::path::parent_path(stonePath);
+  auto result = llvm::sys::findProgramByName(executableName, {stoneBinDir});
+  if (result) {
+    return result.get();
+  }
   return {};
 }
 

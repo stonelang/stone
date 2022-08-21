@@ -148,7 +148,7 @@ Flags<[FrontendOption, DriverOption]>,
 HelpText<"Compiles only and skips the linking phase.">;
 
 
-def LangPathEQ : Joined<["--"], "sc-path=">, 
+def SCPathEQ : Joined<["--"], "sc-path=">, 
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Override the default paths for 'stone-compile'">;
 

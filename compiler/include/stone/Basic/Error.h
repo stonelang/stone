@@ -20,11 +20,7 @@ public:
   bool Has() { return err; }
 };
 
-inline void Panic(const char *msg) {
-  assert(false && msg);
-  (void)msg;
-  abort();
-}
+inline void Panic(const char *msg) { llvm_unreachable(msg); }
 
 } // namespace stone
 #endif

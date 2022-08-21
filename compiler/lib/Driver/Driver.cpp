@@ -180,7 +180,7 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   //   toolChain = std::make_unique<stone::win::WinToolChain>(*this, target);
   //   break;
   default:
-    stone::Panic("OS not found!");
+    assert(false && "OS not found!");
   }
 }
 

@@ -87,8 +87,8 @@ public:
   Context &GetContext() { return ctx; }
   llvm::TimerGroup &GetTimerGroup() { return *timerGroup.get(); }
   llvm::Timer &GetTimer() { return *timer.get(); }
-  llvm::StringRef GetProgramName() { return programName; }
-  llvm::StringRef GetProgramPath() { return programPath; }
+  llvm::StringRef GetProgramName() const { return programName; }
+  llvm::StringRef GetProgramPath() const { return programPath; }
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
 public:

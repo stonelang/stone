@@ -143,8 +143,9 @@ llvm::StringRef file::GetExt(llvm::StringRef name) {
   return llvm::sys::path::extension(name);
 }
 llvm::StringRef file::GetPath(llvm::StringRef name) {
-  return llvm::sys::path::filename(name);
+  return llvm::sys::path::root_name(name);
 }
+
 llvm::StringRef file::GetStem(llvm::StringRef path) {
   return llvm::sys::path::stem(path);
 }

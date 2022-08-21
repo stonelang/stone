@@ -12,8 +12,10 @@ DarwinToolChain::DarwinToolChain(
     : ToolChain(ToolChainKind::Darwin, driver, triple),
       targetVariant(targetVariant) {}
 
-void DarwinToolChain::Initialize() { libPaths.push_back("/usr/lib/"); }
-
+void DarwinToolChain::Initialize() {
+  libPaths.push_back("/usr/lib/");
+  ToolChain::Initialize();
+}
 std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
 
   // Check to see if the SC path was given by the user.
@@ -30,7 +32,7 @@ std::unique_ptr<Tool> DarwinToolChain::BuildSC() {
   if (tool) {
     return tool;
   }
-  stone::Panic("Could not find 'stone-compile'");
+  assert(false && "Could not find 'stone-compile'");
 }
 
 std::unique_ptr<Tool> DarwinToolChain::BuildLD() {

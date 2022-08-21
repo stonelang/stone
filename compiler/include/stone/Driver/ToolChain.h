@@ -132,8 +132,6 @@ public:
   virtual ~ToolChain() = default;
 
 protected:
-  virtual void Initialize();
-
   // Build tools and add to the tools
   virtual std::unique_ptr<Tool> BuildSC();
   virtual std::unique_ptr<Tool> BuildLD() = 0;
@@ -147,6 +145,8 @@ protected:
   Tool *FindTool(ToolKind tk) const;
 
 public:
+  virtual void Initialize();
+
   Tool *GetSC() { return FindTool(ToolKind::SC); }
   Tool *GetLD() { return FindTool(ToolKind::LD); }
   Tool *GetLLD() { return FindTool(ToolKind::LLD); }
@@ -178,14 +178,14 @@ public:
   /// This method caches its results.
   ///
   /// \sa PerformFindProgramRelativeToStone
-  std::string FindProgramRelativeToStone(llvm::StringRef executableName) const;
+  std::string FindProgramRelativeToStone(llvm::StringRef executableName);
 
   /// An override point for platform-specific subclasses to customize how to
   /// do relative searches for programs.
   ///
   /// This method is invoked by FindProgramRelativeToStone().
   virtual std::string
-  FindProgramRelativeToStoneImpl(llvm::StringRef executableName) const;
+  FindProgramRelativeToStoneImpl(llvm::StringRef executableName);
 
 protected:
   virtual JobDetail ConstructDetail(const CompilePhase &action);

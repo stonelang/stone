@@ -20,7 +20,7 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
 
   std::unique_ptr<DebugCompilationListener> debugListener;
 
-  auto path = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  auto path = stone::GetMainExecutablePath(arg0);
   auto name = file::GetStem(path);
 
   Driver driver(name, path);
@@ -65,6 +65,12 @@ int stone::Run(llvm::ArrayRef<const char *> args, const char *arg0,
   if (driver.HasError()) {
     return Error(true);
   }
+  toolChain->Initialize();
+
+  if (driver.HasError()) {
+    return Error(true);
+  }
+
   auto compilation = driver.BuildCompilation(*toolChain, *ial.get());
   if (driver.HasError()) {
     return Error(true);
