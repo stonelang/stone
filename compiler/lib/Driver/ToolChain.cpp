@@ -72,7 +72,8 @@ std::unique_ptr<Tool> ToolChain::BuildSC() {
   }
   // Try to find relative to running path
   std::string relativeToStone = FindProgramRelativeToStone(ToolName::SC);
-  auto tool = BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC, true);
+  auto tool =
+      BuildTool(ToolKind::SC, relativeToStone.c_str(), ToolName::SC, true);
   if (tool) {
     return tool;
   }
@@ -94,8 +95,8 @@ ToolChain::FindProgramRelativeToStone(llvm::StringRef executableName) {
   return FindProgramRelativeToStoneImpl(executableName);
 }
 
-std::string ToolChain::FindProgramRelativeToStoneImpl(
-    llvm::StringRef executableName) {
+std::string
+ToolChain::FindProgramRelativeToStoneImpl(llvm::StringRef executableName) {
   llvm::StringRef stonePath = GetDriver().GetProgramPath();
   llvm::StringRef stoneBinDir = llvm::sys::path::parent_path(stonePath);
   auto result = llvm::sys::findProgramByName(executableName, {stoneBinDir});

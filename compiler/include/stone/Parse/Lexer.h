@@ -169,7 +169,6 @@ class Lexer final : public Tokenable {
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
-  
 
 public:
   //=Lexer options goes here=/
@@ -564,7 +563,6 @@ private:
 
   void skipSlashStarComment();
 
-  
   void lexHash();
   void lexIdentifier();
   void lexDollarIdent();

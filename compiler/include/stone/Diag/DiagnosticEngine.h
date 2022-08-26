@@ -167,6 +167,23 @@ public:
   bool IsForceFlush() const { return isForceFlush; }
 };
 
+class DiagnosticListener;
+class DiagnosticEngine;
+
+/// RAII class that suppresses diagnostics by temporarily disabling all of
+/// the diagnostic consumers.
+class DiagnosticSuppression {
+  DiagnosticEngine &diags;
+  std::vector<DiagnosticListener *> listeners;
+
+  DiagnosticSuppression(const DiagnosticSuppression &) = delete;
+  DiagnosticSuppression &operator=(const DiagnosticSuppression &) = delete;
+
+public:
+  explicit DiagnosticSuppression(DiagnosticEngine &diags);
+  ~DiagnosticSuppression();
+  static bool isEnabled(const DiagnosticEngine &diags);
+};
 /// Concrete class used by the front-end to report problems and issues.
 ///
 /// This massages the diagnostics (e.g. handling things like "report warnings

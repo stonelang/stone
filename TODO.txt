@@ -15,3 +15,11 @@ jobs:
 /path/file.stone 'last-build-date' -build-clean 
 
 * Driver/Git.h => git.Diff(input)
+
+class CompilationRequest {
+
+} 
+
+class CompileRequest : CompilationRequest {
+	
+}
