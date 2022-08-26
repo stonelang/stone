@@ -23,11 +23,10 @@ namespace diag {
   detail::DiagWithArguments<void Signature>::type ID = {DiagID::ID};
 #include "stone/Diag/DiagnosticEngine.def"
 
-
-//TODO: 
-// #define FIX(ID, Text, Signature)                                               \
+// TODO:
+//  #d efine FIX(ID, Text, Signature) \
 //   detail::FixWithArguments<void Signature>::type ID = {FixID::ID};
-// #include "stone/Diag/DiagnosticEngine.def"
+//  #include "stone/Diag/DiagnosticEngine.def"
 
 } // end namespace diag
 } // end namespace stone

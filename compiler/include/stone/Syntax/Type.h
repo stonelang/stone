@@ -44,7 +44,7 @@ namespace stone {
 namespace syn {
 
 class Type;
-class TypeBase;
+class SyntaxType;
 class TypeWalker;
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
@@ -91,28 +91,23 @@ class TypeContext final {
 public:
 };
 
-class alignas(1 << TypeAlignInBits) TypeBase
-    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
-
-public:
-};
 
 class Type {
-  TypeBase *tyBase = nullptr;
+  SyntaxType *syntaxType = nullptr;
 
 public:
-  Type(TypeBase *tyBase = 0) : tyBase(tyBase) {}
+  Type(SyntaxType *syntaxType = 0) : syntaxType(syntaxType) {}
 
 public:
-  bool IsNull() const { return tyBase == nullptr; }
-  TypeBase *GetPointer() const { return tyBase; }
+  bool IsNull() const { return syntaxType == nullptr; }
+  SyntaxType *GetPointer() const { return syntaxType; }
 
-  TypeBase *operator->() const {
-    assert(tyBase && "Cannot dereference a null Type!");
-    return tyBase;
+  SyntaxType *operator->() const {
+    assert(syntaxType && "Cannot dereference a null Type!");
+    return syntaxType;
   }
 
-  explicit operator bool() const { return tyBase != 0; }
+  explicit operator bool() const { return syntaxType != 0; }
 
   /// Walk this type.
   ///
@@ -171,7 +166,7 @@ public:
   ///
   /// \returns the result of transforming the type.
   Type
-  TransformRec(llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
+  TransformRec(llvm::function_ref<llvm::Optional<Type>(SyntaxType*)> fn) const;
 
   /// Look through the given type and its children and apply fn to them.
   void Visit(llvm::function_ref<void(Type)> fn) const {
@@ -209,6 +204,16 @@ public:
   //                 SubstOptions options = None) const;
 };
 
+
+
+// CanType - This is a Type that is statically known to be canonical.  To get
+/// one of these, use Type->GetCononicalType().  Since all CanType's can be used
+/// as 'Type' (they just don't have sugar) we derive from Type.
+class CanType : public Type {
+public:
+};
+
+
 /// const int a = 10; volatile int a = 10;
 class alignas(1 << QualTypeAlignInBits) QualType
     : public SyntaxAllocation<QualType> {
@@ -225,12 +230,6 @@ public:
   const Type *GetTypePtrOrNull() const;
 };
 
-// CanType - This is a Type that is statically known to be canonical.  To get
-/// one of these, use Type->GetCononicalType().  Since all CanType's can be used
-/// as 'Type' (they just don't have sugar) we derive from Type.
-class CanType : public Type {
-public:
-};
 
 class FunctionTypeBase : public Type {};
 
