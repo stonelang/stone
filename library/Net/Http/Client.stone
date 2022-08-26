@@ -1,0 +1,7 @@
+space Net.Http;
+
+
+public struct Client {
+
+
+}

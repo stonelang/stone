@@ -1,0 +1,17 @@
+space Thread; 
+
+/// System.Thread module 
+public enum Priority {
+	Normal,
+	Low,
+	High,
+}
+public struct Thread {
+
+}
+
+public Thread::Thread(fun work(...) -> void) {
+}
+
+public Thread::~Thread() {
+}

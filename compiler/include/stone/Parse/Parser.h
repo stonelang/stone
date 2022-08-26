@@ -1,0 +1,363 @@
+#ifndef STONE_PARSE_PARSER_H
+#define STONE_PARSE_PARSER_H
+
+#include <memory>
+
+#include "stone/Basic/StatisticEngine.h"
+#include "stone/Parse/Lexer.h"
+#include "stone/Parse/SyntaxListener.h"
+#include "stone/Parse/SyntaxParsing.h"
+#include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Module.h"
+#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxResult.h"
+
+#include "llvm/Support/Timer.h"
+
+namespace stone {
+class SyntaxListener;
+namespace syn {
+
+class Syntax;
+class Parser;
+class SyntaxScope;
+class PairDelimiterBalancer;
+class ParsingDeclSpecifier;
+class ParsingDeclarator;
+
+class ParserStats final : public Stats {
+  const Parser &parser;
+
+public:
+  ParserStats(const Parser &parser)
+      : Stats("parser statistics:"), parser(parser) {}
+  void Print(ColorfulStream &stream) override;
+};
+
+class Parser final {
+  friend ParserStats;
+  friend PairDelimiterBalancer;
+
+  SyntaxListener *listener;
+  std::unique_ptr<Lexer> lexer;
+  std::unique_ptr<ParserStats> stats;
+
+  Syntax &syntax;
+  SyntaxFile &sf;
+  DeclContext *curDC;
+
+  /// This is the current token being considered by the parser.
+  Token token;
+
+  /// leading trivias for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  // Trivia leadingTrivia;
+
+  /// trailing trivias for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  // Trivia trailingTrivia;
+
+  /// Leading trivia for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  llvm::StringRef leadingTrivia;
+
+  /// Trailing trivia for \c Tok.
+  /// Always empty if !SF.shouldBuildSyntaxTree().
+  llvm::StringRef trailingTrivia;
+
+  /// The location of the previous token.
+  SrcLoc prevTokLoc;
+
+  PairDelimiterCount pairDelimiterCount;
+
+  SyntaxScope *curScope;
+
+  /// Factory object for creating ParsedAttribute objects.
+  AttributeFactory attributeFactory;
+
+  SyntaxParsing syntaxParsing;
+
+private:
+  // Identifiers
+  mutable Identifier *importIdentifier;
+  mutable Identifier *moduleIdentifier;
+
+  Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
+         SyntaxListener *listener = nullptr);
+
+public:
+  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
+
+  ~Parser();
+
+public:
+  ParserStats &GetStats() { return *stats.get(); }
+  Lexer &GetLexer() { return *lexer.get(); }
+  const Token &GetCurTok() const { return token; }
+
+  void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
+  DeclContext *GetCurDeclContext() { return curDC; }
+
+  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
+
+  Context &GetContext();
+
+public:
+  //===--------------------------------------------------------------------===//
+  // Decl Parsing
+
+  bool AtStartOfDecl(const Token &tok);
+  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
+
+  SyntaxResult<Decl> ParseDecl();
+  SyntaxResult<Decl> ParseDecl(AccessLevel accessLevel);
+  void ParseForwardDecl();
+
+  void ParseInheritance();
+
+private:
+  SyntaxResult<Decl> ParseTopLevelDecl();
+
+public:
+  // == Type Parsing ==//
+  SyntaxResult<QualType> ParseType();
+  SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
+  SyntaxResult<QualType> ParseSimpleType(Diag<> diagID);
+
+public:
+  //==fun==//
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &pds,
+                                  AccessLevel accessLevel);
+  void ParseFunForwardDecl(AccessLevel accessLevel);
+
+private:
+  SyntaxStatus ParseFunctionSignature(FunDecl &funDecl);
+  SyntaxStatus ParseFunctionArguments(FunDecl &funDecl);
+  SyntaxStatus ParseFunctionBody(FunDecl &funDecl);
+
+public:
+  //=struct=//
+  SyntaxResult<Decl> ParseStructDecl();
+  void ParseStructForwardDecl();
+
+public:
+  // Template
+  // SyntaxResult<TemplateDecl *> ParseTemplateDecl(ParsingDeclSpecifier &pds);
+
+  // SyntaxResult<TempateParameterList> ParseTemplateParameters();
+  // SyntaxResult<TempateParameterList> ParseTemplateParameters(SrcLoc
+  // lAngleLoc);
+
+  // SyntaxResult ParseTemplateParametersBeforeWhere(SrcLoc lAngleLoc,
+  //                       llvm::SmallVectorImpl<GenericTypeParamDecl *>
+  //                       &GenericParams);
+  // SyntaxResult<GenericParamList> maybeParseGenericParams();
+
+public:
+  bool AtStartOfStmt();
+
+private:
+  void Lex(Token &result) { lexer->Lex(result); }
+
+  void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
+    lexer->Lex(result, leading, trailing);
+  }
+  /// isTokenParen - Return true if the cur token is '(' or ')'.
+  bool IsParenTok() const { return token.IsAny(tok::l_paren, tok::r_paren); }
+  /// isTokenBracket - Return true if the cur token is '[' or ']'.
+  bool IsBracketTok() const {
+    return token.IsAny(tok::l_square, tok::r_square);
+  }
+  /// isTokenBrace - Return true if the cur token is '{' or '}'.
+  bool IsBraceTok() const { return token.IsAny(tok::l_brace, tok::r_brace); }
+  /// isTokenStringLiteral - True if this token is a string-literal.
+  // bool IsTokStringLiteral() const {
+  //  return tok::isStringLiteral(Tok.getKind());
+  //}
+
+public:
+  /// Control flags for SkipUntil functions.
+  enum SkipToFlags {
+    ///< Stop skipping at semicolon
+    StopAtSemi = 1 << 0,
+    /// Stop skipping at specified token, but don't skip the token itself
+    StopBeforeMatch = 1 << 1,
+    ///< Stop at code completion
+    StopAtCodeCompletion = 1 << 2
+  };
+
+  friend constexpr SkipToFlags operator|(SkipToFlags L, SkipToFlags R) {
+    return static_cast<SkipToFlags>(static_cast<unsigned>(L) |
+                                    static_cast<unsigned>(R));
+  }
+
+  /// SkipUntil - Read tokens until we get to the specified token, then consume
+  /// it (unless StopBeforeMatch is specified).  Because we cannot guarantee
+  /// that the token will ever occur, this skips to the next token, or to some
+  /// likely good stopping point.  If Flags has StopAtSemi flag, skipping will
+  /// stop at a ';' character.
+  ///
+  /// If SkipTo finds the specified token, it returns true, otherwise it
+  /// returns false.
+  bool SkipTo(tok ty, SkipToFlags flags = static_cast<SkipToFlags>(0)) {
+    return SkipTo(llvm::makeArrayRef(ty), flags);
+  }
+  bool SkipTo(tok ty1, tok ty2,
+              SkipToFlags flags = static_cast<SkipToFlags>(0)) {
+    tok tokArray[] = {ty1, ty2};
+    return SkipTo(tokArray, flags);
+  }
+  bool SkipTo(tok ty1, tok ty2, tok ty3,
+              SkipToFlags flags = static_cast<SkipToFlags>(0)) {
+    tok tokArray[] = {ty1, ty2, ty3};
+    return SkipTo(tokArray, flags);
+  }
+  bool SkipTo(llvm::ArrayRef<tok> toks,
+              SkipToFlags flags = static_cast<SkipToFlags>(0));
+
+public:
+  // First, call ParseFunDecl -- this is your fun prototype
+  // Then you call the following:
+  // void ParseFunDeclDefinition();
+
+  SyntaxResult<Decl> ParseSpaceDecl();
+  ///
+public:
+  /// Stmt
+  SyntaxResult<Stmt> ParseStmt();
+
+public:
+  /// Expr
+  SyntaxResult<Expr> ParseExpr();
+
+public:
+  /// Stop parsing now.
+  void Stop() { token.SetKind(tok::eof); }
+  /// Is at end of file.
+  bool IsDone() { return token.GetKind() == tok::eof; }
+  bool HasError();
+
+public:
+  // template <typename V>
+  // V Lookahead(unsigned char k,
+  //               llvm::function_ref<Val(CancellableBacktrackingScope &)>
+  //               client) {
+  //   CancellableBacktrackingScope backtrackScope(*this);
+
+  //   for (unsigned char i = 0; i < k; ++i){
+  //     ConsumeToken();
+  //   }
+  //   return client(backtrackScope);
+  // }
+
+  SrcLoc ConsumeBracket() { return SrcLoc(); }
+  SrcLoc ConsumeBrace() { return SrcLoc(); }
+
+  SrcLoc ConsumeParen() {
+    assert(IsParenTok() && "Wrong consume method");
+
+    if (token.GetKind() == tok::l_paren) {
+      ++pairDelimiterCount.parenCount;
+    } else if (pairDelimiterCount.parenCount) {
+      // TODO: angleBrackets.clear(*this);
+      // Don't let unbalanced )'s drive the count negative.
+      --pairDelimiterCount.parenCount;
+    }
+    prevTokLoc = token.GetLoc();
+    Lex(token);
+    return prevTokLoc;
+  }
+
+  /// Consume the token and update OnToken from SCPipeline
+  SrcLoc ConsumeTok(bool onTok = true);
+
+  SrcLoc ConsumeTok(tok kind) {
+    assert(token.Is(kind) && "Consuming wrong token type");
+    return ConsumeTok(false);
+  }
+  SrcLoc ConsumeAnyTok(bool consumeCodeCompletionTok = false);
+  SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
+
+  /// If the current token is the specified kind, consume it and
+  /// return true.  Otherwise, return false without consuming it.
+  bool ConsumeIf(tok kind) {
+    if (token.IsNot(kind)) {
+      return false;
+    }
+    ConsumeTok(kind);
+    return true;
+  }
+
+  /// If the current token is the specified kind, consume it and
+  /// return true.  Otherwise, return false without consuming it.
+  bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
+    if (token.IsNot(kind)) {
+      return false;
+    }
+    consumedLoc = ConsumeTok(kind);
+    return true;
+  }
+  /// Consume the starting '<' of the current token, which may either
+  /// be a complete '<' token or some kind of operator token starting with '<',
+  /// e.g., '<>'.
+  SrcLoc ConsumeStartingLess();
+
+  /// Consume the starting '>' of the current token, which may either
+  /// be a complete '>' token or some kind of operator token starting with '>',
+  /// e.g., '>>'.
+  SrcLoc ConsumeStartingGreater();
+
+  SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
+                                       size_t len = 1);
+
+public:
+  /// EnterScope - start a new scope.
+  void EnterScope(SyntaxScopeKind scopeKind);
+
+  /// ExitScope - pop a scope off the scope stack.
+  void ExitScope();
+
+  SyntaxScope *GetCurScope() const;
+
+public:
+  InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
+  InFlightDiagnostic PrintD(Token &token, Diag<> diagID);
+
+private:
+  // Helpers
+  const Token &Peek() const { return lexer->Peek(); }
+
+private:
+  //===--------------------------------------------------------------------===//
+  // Helpers
+
+  bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
+  bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
+
+  bool StartsWithSymbol(Token tok, char symbol) {
+    return (tok.IsAnyOperator() || tok.IsPunctuation()) &&
+           tok.GetText()[0] == symbol;
+  }
+  /// Check whether the current token starts with '<'.
+  bool StartsWithLess(Token tok) { return StartsWithSymbol(tok, '<'); }
+  /// Check whether the current token starts with '>'.
+  bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
+
+public:
+  Identifier &GetIdentifierOnly(llvm::StringRef text);
+};
+
+/// To assist debugging parser crashes, tell us the location of the
+/// current token.
+class ParserPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
+  Parser &parser;
+
+public:
+  explicit ParserPrettyStackTrace(Parser &parser) : parser(parser) {}
+  void print(llvm::raw_ostream &out) const override;
+};
+
+} // namespace syn
+} // namespace stone
+#endif

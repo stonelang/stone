@@ -1,0 +1,104 @@
+#ifndef STONE_COMPILE_COMPILER_H
+#define STONE_COMPILE_COMPILER_H
+
+#include "stone/Compile/Frontend.h"
+
+#include "llvm/ADT/ArrayRef.h"
+
+namespace stone {
+
+class Compiler;
+
+using ModuleSyntaxFileUnion =
+    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
+
+using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
+using SemanticAnalysisCallback = llvm::function_ref<void(Compiler &)>;
+
+// using IRCodeGenCallback = llvm::function_ref<void(Compiler &)>;
+// using NativeCodeGenCallback = llvm::function_ref<void(Compiler &)>;
+
+using EachSyntaxFileCallback = llvm::function_ref<void(
+    syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
+
+// using CompileWithGenIRCallback = llvm::function_ref<void(
+//     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
+
+class Compiler final {
+
+  Frontend &frontend;
+  std::unique_ptr<syn::Syntax> syntax;
+  std::unique_ptr<ModuleSystem> moduleSystem;
+  std::unique_ptr<PackageSystem> pkgSystem;
+
+  // /// Contains buffer IDs for input source code files.
+  // std::vector<unsigned> inputSourceBufferIDs;
+
+  // /// Identifies the set of input buffers in the SourceManager that are
+  // /// considered primaries.
+  // llvm::SetVector<unsigned> primaryBufferIDs;
+
+public:
+  Compiler(const Compiler &) = delete;
+  void operator=(const Compiler &) = delete;
+  Compiler(Compiler &&) = delete;
+  void operator=(Compiler &&) = delete;
+
+  Compiler(Frontend &frontend);
+  ~Compiler();
+
+public:
+  void Finish();
+
+public:
+  syn::Syntax &GetSyntax() { return *syntax.get(); }
+  ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
+  PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
+  Frontend &GetFrontend() { return frontend; }
+
+  bool CanCompile() {
+    return GetFrontend().GetFrontendOptions().GetMode().CanCompile();
+  }
+
+  // llvm::StringRef CreateOutputFile(unsigned srcID);
+  // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
+
+public:
+  /// Perform code analysis and code generation
+  void Compile();
+
+private:
+  void CompileWithSyntaxAnalysis();
+  void CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client);
+
+  void CompileWithSemanticAnalysis();
+  void CompileWithSemanticAnalysis(SemanticAnalysisCallback client);
+
+  // TODO: Some things to think about
+  void CompileWithIRCodeGen();
+  void CompileWithNativeCodeGen();
+
+  // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
+  // &cgc,
+  //                       CompileWithGenIRCallback client);
+
+  void ForEachSyntaxFile(EachSyntaxFileCallback client);
+  void ResolveUsings();
+
+public:
+  // TODO: Consider moving to the Frontend
+  ModuleOutputMode GetModuleOutputMode() {
+    // TODO: This must be computed in the future.
+    return GetModuleSystem().GetModuleOptions().moduleOutputMode;
+  }
+
+  void PrintHelp(const llvm::opt::OptTable &opts);
+
+public:
+  //== Utils ==//
+  static std::unique_ptr<llvm::raw_fd_ostream>
+  GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
+};
+
+} // namespace stone
+#endif

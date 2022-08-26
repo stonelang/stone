@@ -1,6 +1,4 @@
 
-
-
 space Syntax.Trust{
 
 forward struct S1; 
@@ -15,5 +13,6 @@ public fun S1::DoSomething() -> void {
 	if(data == 0){
 	}
 }
+
 }
 

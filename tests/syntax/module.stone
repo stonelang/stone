@@ -1,9 +1,9 @@
 
 
 // project/Stone/Physics/ParticleProfile.stone 
-space Stone::Physics::ParticleProfile {
+space Stone::Physics {
 
-	struct ParticleProfile {
+	public struct ParticleDetail {
 		public float32 mass; 
 		public string name; 
 	}
@@ -11,17 +11,20 @@ space Stone::Physics::ParticleProfile {
 		fun Fire() -> auto;  
 	}	
 	public struct Proton : Particle {
-		ParticleProfile* profile = null;
+		ParticleDetail* particleDetail = null;
 	}
 
-	public Proton::this(const ParticleProfile* profile) {
-			this.profile = profile; 
+	public Proton::Proton(const ParticleDetail* particleDetail) {
+			this.particleDetail = particleDetail; 
 	 }
-	public Proton::~this() {
-		free profile;
+	public Proton::~Proton() {
+		if(particleDetail){
+			delete particleDetail; 
+
+		}
 	}
-	public fun Proton::GetProfile() -> ParticleProfile* {
-		return profile;  
+	public fun Proton::GetParticleDetail() -> ParticleDetail* {
+		return particleDetail;  
 	}
 	public fun Proton::Fire() -> auto {
 		int* result = null;
@@ -35,7 +38,7 @@ space Stone::Physics::ParticleProfile {
 // You may want to consider:
 
 // code/Physics/Particle.stone
-module Stone.Physics.Particle (one-to-one relation to Particle.SetShowDiagnosticsAfterFatalError)
+//module Stone.Physics.Particle (one-to-one relation to Particle.SetShowDiagnosticsAfterFatalError)
 
 
 public fun Fire(Particle* particle) -> bool {
@@ -71,9 +74,15 @@ module Main;
 using Stone.Physics.Particle; 
 
 public fun Main() -> int32 {	
-	auto particle = new Particle();
-	Fire(particle);
-	delete particle; 
+
+	ParticleDetail* particleDetail = new ParticleDetail();
+	Proton* proton = new Proton(particleDetail);
+
+	Fire(proton);
+	defer {
+		delete proton; 
+	}; 
+
 	return 0; 
 }
 

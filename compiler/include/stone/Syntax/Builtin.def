@@ -1,0 +1,39 @@
+
+
+#ifndef BUILTIN_OPERATION
+#define BUILTIN_OPERATION(ID, Name, Attrs) BUILTIN(ID, Name, Attrs)
+#endif
+
+
+#undef BUILTIN_OPERATION
+
+
+#ifndef BUILTIN_MISC_OPERATION
+#define BUILTIN_MISC_OPERATION(ID, Name, Attrs, Overload) \
+          BUILTIN(Id, Name, Attrs)
+#endif
+
+/// Sizeof has type T.Type -> Int
+BUILTIN_MISC_OPERATION(SizeOf, "sizeof", "n", Special)
+
+
+#undef BUILTIN_OPERATION
+
+
+#ifndef BUILTIN_TYPE
+#define BUILTIN_TYPE(ID, Name, Attrs) BUILTIN(ID, Name, Attrs)
+#endif
+
+#undef BUILTIN_TYPE
+
+
+#ifndef BUILTIN_IDENTIFIER
+#define BUILTIN_IDENTIFIER(ID, Name, Attrs) BUILTIN(ID, Name, Attrs)
+#endif
+
+
+#undef BUILTIN_IDENTIFIER
+
+
+
+

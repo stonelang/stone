@@ -1,0 +1,24 @@
+
+space Syntax.Partial {
+
+// Module one 
+public struct Universe {
+
+}
+
+pubic fun Universe::Bang() -> bool {
+}
+enum Planet {
+	Earth,
+	Mars,
+}
+
+// Module two
+partial Planet {
+	Pluto 
+}
+
+partial fun Universe::MakeEarth() -> bool {
+}
+
+}

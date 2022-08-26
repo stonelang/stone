@@ -1,9 +1,9 @@
 #include "stone/Driver/Driver.h"
-#include "stone/Basic/Context.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/SystemOptions.h"
+#include "stone/Context.h"
 #include "stone/Driver/CompilationJob.h"
-#include "stone/Driver/Intent.h"
+#include "stone/Driver/Phase.h"
 #include "gtest/gtest.h"
 
 using namespace stone;
@@ -23,14 +23,14 @@ public:
 //   CompileJob cj(*tool, file.get());
 // }
 
-TEST_F(DriverTest, IntentTest) {
+TEST_F(DriverTest, PhaseTest) {
   auto file = std::make_unique<file::File>("test", file::Type::Stone);
 
-  // auto cjr = Driver::MakeIntent<CompileIntentt>(file.get());
+  // auto cjr = Driver::MakePhase<CompilePhaset>(file.get());
   // cjr->Print(ctx.Out());
 
-  // auto djrd = Driver::MakeIntent<DynamicLinkIntent>(cjr.get());
-  // auto djri = Driver::MakeIntent<DynamicLinkJobRequest>(file.get());
+  // auto djrd = Driver::MakePhase<DynamicLinkPhase>(cjr.get());
+  // auto djri = Driver::MakePhase<DynamicLinkJobRequest>(file.get());
 
   // Compilation compilation;
   // auto job = toolChain.MakeJob(JobRequest& jobRequest, Compilation& c)
@@ -42,7 +42,7 @@ TEST_F(DriverTest, IntentTest) {
 
   // CompileJob cj(*tool, file.get());
 }
-// TEST_F(DriverTest, ProcessIntent) {
+// TEST_F(DriverTest, ProcessPhase) {
 
 // Driver driver("stone", "stone");
 // driver.Initialize();
@@ -62,5 +62,5 @@ TEST_F(DriverTest, IntentTest) {
 // auto c = driver.BuildCompilation(*tc.get(), parsedArgs);
 //}
 
-// TEST_F(DriverTest, CompileIntent) {}
-// TEST_F(DriverTest, LinkIntent) {}
+// TEST_F(DriverTest, CompilePhase) {}
+// TEST_F(DriverTest, LinkPhase) {}

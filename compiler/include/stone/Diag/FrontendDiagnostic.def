@@ -1,0 +1,65 @@
+#define DEFINE_DIAGNOSTIC_MACROS
+#include "DefineDiagnostic.h"
+
+
+ERROR(err_no_compile_mode, none, "no compile mode", ())
+
+ERROR(err_cannot_have_input_files_with_file_list,none,
+      "cannot have input files with file list", ())
+
+ERROR(err_cannot_have_primary_files_with_primary_file_list,none,
+      "cannot have primary input files with primary file list", ())
+
+ERROR(err_cannot_have_supplementary_outputs,none,
+      "cannot have '%0' with '%1'", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_duplicate_input_file,none,
+      "duplicate input file '%0'", (diag::LLVMStr))
+
+
+ERROR(err_cannot_open_file,none,
+      "cannot open file '%0' (%1)", (diag::LLVMStr, diag::LLVMStr))
+
+
+ERROR(err_open_input_file,none,
+      "error opening input file '%0' (%1)", (diag::LLVMStr, diag::LLVMStr))
+
+
+ERROR(err_invalid_arg_value,none,
+      "invalid value '%1' in '%0'", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_invalid_arg_combination,none,
+      "unsupported argument combination: '%0' and '%1'", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_primary_file_not_found,none,
+      "primary file '%0' was not found in file list '%1'",
+      (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_if_any_output_files_are_specified_they_all_must_be,none,
+      "if any %0 files are specified, they all must be", (diag::LLVMStr))
+
+ERROR(err_no_output_filename_specified,none,
+      "an %0 filename was not specified for a mode which requires an "
+      "%0 filename", (diag::LLVMStr))
+
+ERROR(err_implicit_output_file_is_directory,none,
+      "the implicit output file '%0' is a directory; explicitly specify a "
+      "filename using %1", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_wrong_number_of_arguments,none,
+      "wrong number of '%0' arguments (expected %1, got %2)",
+      (diag::LLVMStr, diag::Int, diag::Int))
+
+
+ERROR(err_unable_to_load_supplementary_output_file_map, none,
+      "unable to load supplementary output file map '%0': %1",
+      (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_missing_entry_in_supplementary_output_file_map, none,
+       "supplementary output file map '%0' is missing an entry for '%1' "
+       "(this likely indicates a compiler issue; " STONE_BUG_REPORT_MESSAGE ")",
+       (diag::LLVMStr, diag::LLVMStr))
+
+
+#define UNDEFINE_DIAGNOSTIC_MACROS
+#include "DefineDiagnostic.h"

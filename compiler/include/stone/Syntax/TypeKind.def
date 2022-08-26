@@ -1,0 +1,225 @@
+
+// def Type : TypeNode<?, 1>;
+// def BuiltinType : TypeNode<Type>, LeafType;
+// def ComplexType : TypeNode<Type>;
+// def PointerType : TypeNode<Type>;
+// def BlockPointerType : TypeNode<Type>;
+// def ReferenceType : TypeNode<Type, 1>;
+// def LValueReferenceType : TypeNode<ReferenceType>;
+// def RValueReferenceType : TypeNode<ReferenceType>;
+// def MemberPointerType : TypeNode<Type>;
+// def ArrayType : TypeNode<Type, 1>;
+// def ConstantArrayType : TypeNode<ArrayType>;
+// def IncompleteArrayType : TypeNode<ArrayType>;
+// def VariableArrayType : TypeNode<ArrayType>;
+// def DependentSizedArrayType : TypeNode<ArrayType>, AlwaysDependent;
+// def DependentSizedExtVectorType : TypeNode<Type>, AlwaysDependent;
+// def DependentAddressSpaceType : TypeNode<Type>, AlwaysDependent;
+// def VectorType : TypeNode<Type>;
+// def DependentVectorType : TypeNode<Type>, AlwaysDependent;
+// def ExtVectorType : TypeNode<VectorType>;
+// def MatrixType : TypeNode<Type, 1>;
+// def ConstantMatrixType : TypeNode<MatrixType>;
+// def DependentSizedMatrixType : TypeNode<MatrixType>, AlwaysDependent;
+// def FunctionType : TypeNode<Type, 1>;
+// def FunctionProtoType : TypeNode<FunctionType>;
+// def FunctionNoProtoType : TypeNode<FunctionType>;
+// def UsingType : TypeNode<Type>, NeverCanonical;
+// def UnresolvedUsingType : TypeNode<Type>, AlwaysDependent;
+// def ParenType : TypeNode<Type>, NeverCanonical;
+// def TypedefType : TypeNode<Type>, NeverCanonical;
+// def MacroQualifiedType : TypeNode<Type>, NeverCanonical;
+// def AdjustedType : TypeNode<Type>, NeverCanonical;
+// def DecayedType : TypeNode<AdjustedType>, NeverCanonical;
+// def TypeOfExprType : TypeNode<Type>, NeverCanonicalUnlessDependent;
+// def TypeOfType : TypeNode<Type>, NeverCanonicalUnlessDependent;
+// def DecltypeType : TypeNode<Type>, NeverCanonicalUnlessDependent;
+// def UnaryTransformType : TypeNode<Type>, NeverCanonicalUnlessDependent;
+// def TagType : TypeNode<Type, 1>;
+// def RecordType : TypeNode<TagType>, LeafType;
+// def EnumType : TypeNode<TagType>, LeafType;
+// def ElaboratedType : TypeNode<Type>, NeverCanonical;
+// def AttributedType : TypeNode<Type>, NeverCanonical;
+// def TemplateTypeParmType : TypeNode<Type>, AlwaysDependent, LeafType;
+// def SubstTemplateTypeParmType : TypeNode<Type>, NeverCanonical;
+// def SubstTemplateTypeParmPackType : TypeNode<Type>, AlwaysDependent;
+// def TemplateSpecializationType : TypeNode<Type>, NeverCanonicalUnlessDependent;
+// def DeducedType : TypeNode<Type, 1>;
+// def AutoType : TypeNode<DeducedType>;
+// def DeducedTemplateSpecializationType : TypeNode<DeducedType>;
+// def InjectedClassNameType : TypeNode<Type>, AlwaysDependent, LeafType;
+// def DependentNameType : TypeNode<Type>, AlwaysDependent;
+// def DependentTemplateSpecializationType : TypeNode<Type>, AlwaysDependent;
+// def PackExpansionType : TypeNode<Type>, AlwaysDependent;
+// def ObjCTypeParamType : TypeNode<Type>, NeverCanonical;
+// def ObjCObjectType : TypeNode<Type>;
+// def ObjCInterfaceType : TypeNode<ObjCObjectType>, LeafType;
+// def ObjCObjectPointerType : TypeNode<Type>;
+// def PipeType : TypeNode<Type>;
+// def AtomicType : TypeNode<Type>;
+// def BitIntType : TypeNode<Type>;
+// def DependentBitIntType : TypeNode<Type>, AlwaysDependent;
+
+
+/// TYPE(id, parent)
+///   If the type node is not abstract, its enumerator value is
+///   TypeKind::id.  The node's class name is 'id##Type', and the name of
+///   its base class (in the Type hierarchy) is 'parent' (including
+///   the 'Type' suffix).
+
+/// CANONICAL_TYPE(id, parent)
+///   This type is always canonical.  The default behavior is TYPE(id, parent).
+
+/// BUILTIN_TYPE(id, parent)
+///   This type is a builtin type. The default behavior is
+///   CANONICAL_TYPE(id, parent).
+
+/// SUGARED_TYPE(id, parent)
+///   This type is never canonical.  It provides an efficient accessor,
+///   getSinglyDesugaredType(), which removes one level of sugar.  This
+///   process does not necessarily converge to the canonical type, however.
+///   The default behavior is TYPE(id, parent).
+//
+// If you add a new sugared type, be sure to test it in PrintAsObjC!
+
+/// UNCHECKED_TYPE(id, parent)
+///   This type is not present in valid, type-checked programs.
+///   The default behavior is TYPE(id, parent).
+
+/// ARTIFICIAL_TYPE(id, parent)
+///   This type is not part of the user-facing type system. It may be
+///   used freely in SIL, and it may appear as the type of a
+///   declaration in the AST (due to e.g. the application of the
+///   [weak] attribute), but it cannot be written directly in normal
+///   programs and it cannot be the type of an expression.
+///   The default behavior is TYPE(id, parent).
+
+/// SINGLETON_TYPE(SHORT_ID, id)
+///   This type is a singleton, i.e. there is exactly one instance of
+///   it, which can be found as ASTContext.The#SHORT_ID#Type.
+///   This is only expanded if SINGLETON_TYPE is defined, and in this
+///   case no other macros are expanded.
+
+#ifndef CANONICAL_TYPE
+#define CANONICAL_TYPE(id, parent) TYPE(id, parent)
+#endif
+
+#ifndef BUILTIN_TYPE
+#define BUILTIN_TYPE(id, parent) CANONICAL_TYPE(id, parent)
+#endif
+
+#ifndef SUGARED_TYPE
+#define SUGARED_TYPE(id, parent) TYPE(id, parent)
+#endif
+
+#ifndef UNCHECKED_TYPE
+#define UNCHECKED_TYPE(id, parent) TYPE(id, parent)
+#endif
+
+#ifndef ARTIFICIAL_TYPE
+#define ARTIFICIAL_TYPE(id, parent) TYPE(id, parent)
+#endif
+
+/// Most metaprograms do not care about abstract types, so the default
+/// is to ignore them.
+#ifndef ABSTRACT_TYPE
+#define ABSTRACT_TYPE(Id, Parent)
+#endif
+
+#ifndef ABSTRACT_SUGARED_TYPE
+#define ABSTRACT_SUGARED_TYPE(Id, Parent) ABSTRACT_TYPE(Id, Parent)
+#endif
+
+/// A convenience for determining the range of types.  These will always
+/// appear immediately after the last member.
+#ifndef TYPE_RANGE
+#define TYPE_RANGE(Id, First, Last)
+#endif
+
+#ifndef LAST_TYPE
+#define LAST_TYPE(Id)
+#endif
+
+TYPE(Error, Type)
+TYPE(LValue, Type)
+TYPE(RValue, Type)
+TYPE(Tuple, Type)
+ABSTRACT_TYPE(Builtin, Type)
+  ABSTRACT_TYPE(AnyBuiltinInteger, BuiltinType)
+    BUILTIN_TYPE(BuiltinInteger, AnyBuiltinIntegerType)
+    BUILTIN_TYPE(BuiltinIntegerLiteral, AnyBuiltinIntegerType)
+    TYPE_RANGE(AnyBuiltinInteger, BuiltinInteger, BuiltinIntegerLiteral)
+  BUILTIN_TYPE(BuiltinFloat, BuiltinType)
+  BUILTIN_TYPE(BuiltinPointer, BuiltinType)
+  BUILTIN_TYPE(BuiltinMemberPointerType, BuiltinType)
+  BUILTIN_TYPE(BuiltinBlockPointerType, BuiltinType)
+  BUILTIN_TYPE(BuiltinVector, BuiltinType)
+  TYPE_RANGE(Builtin, BuiltinInteger, BuiltinVector)
+
+ABSTRACT_TYPE(AnyGeneric, Type)
+  ABSTRACT_TYPE(NominalOrBoundGenericNominal, Type)
+    ABSTRACT_TYPE(Nominal, Type)
+      TYPE(Enum, NominalType)
+      TYPE(Struct, NominalType)
+      TYPE(Interface, NominalType)
+      TYPE_RANGE(Nominal, Enum, Interface)
+
+// ABSTRACT_TYPE(AnyMetatype, Type)
+//   TYPE(Metatype, AnyMetatypeType)
+//   TYPE(ExistentialMetatype, AnyMetatypeType)
+
+CANONICAL_TYPE(Module, Type)
+
+//TYPE(DynamicThis, Type)
+
+// ABSTRACT_TYPE(Substitutable, Type)
+//   ABSTRACT_TYPE(Archetype, SubstitutableType)
+//     CANONICAL_TYPE(PrimaryArchetype, ArchetypeType)
+//     CANONICAL_TYPE(OpaqueTypeArchetype, ArchetypeType)
+//     CANONICAL_TYPE(OpenedArchetype, ArchetypeType)
+//     CANONICAL_TYPE(NestedArchetype, ArchetypeType)
+//     CANONICAL_TYPE(SequenceArchetype, ArchetypeType)
+//     TYPE_RANGE(Archetype, PrimaryArchetype, SequenceArchetype)
+//   TYPE(GenericTypeParam, SubstitutableType)
+//   TYPE_RANGE(Substitutable, PrimaryArchetype, GenericTypeParam)
+// TYPE(DependentMember, Type)
+
+ABSTRACT_TYPE(AnyFunction, Type)
+  TYPE(Function, AnyFunctionType)
+  TYPE(GenericFunction, AnyFunctionType)
+  TYPE_RANGE(AnyFunction, Function, GenericFunction)
+
+ABSTRACT_SUGARED_TYPE(Sugar, Type)
+  SUGARED_TYPE(Paren, SugarType)
+  SUGARED_TYPE(TypeAlias, SugarType)
+  ABSTRACT_SUGARED_TYPE(SyntaxSugar, SugarType)
+    // ABSTRACT_SUGARED_TYPE(UnarySyntaxSugar, SyntaxSugarType)
+    //   SUGARED_TYPE(ArraySlice, UnarySyntaxSugarType)
+    //   SUGARED_TYPE(Optional, UnarySyntaxSugarType)
+    //   SUGARED_TYPE(VariadicSequence, UnarySyntaxSugarType)
+    //   TYPE_RANGE(UnarySyntaxSugar, ArraySlice, VariadicSequence)
+    SUGARED_TYPE(Dictionary, SyntaxSugarType)
+    //TYPE_RANGE(SyntaxSugar, ArraySlice, Dictionary)
+  TYPE_RANGE(Sugar, Paren, Dictionary)
+LAST_TYPE(Dictionary) // Sugared types are last to make isa<SugarType>() fast.
+
+
+
+#undef TYPE_RANGE
+#undef ABSTRACT_SUGARED_TYPE
+#undef ABSTRACT_TYPE
+#undef UNCHECKED_TYPE
+#undef ARTIFICIAL_TYPE
+#undef SUGARED_TYPE
+#undef BUILTIN_TYPE
+#undef CANONICAL_TYPE
+#undef TYPE
+#undef LAST_TYPE
+
+
+
+
+
+
+
+

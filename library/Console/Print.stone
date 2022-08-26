@@ -1,0 +1,19 @@
+space Console;
+
+using IO; 
+using OS; 
+
+public static fun Print(string value) -> void {
+	
+}
+public static fun Print(int32 value) -> void {
+
+}
+public static fun Print(int64 value) -> void  {
+	
+}
+
+
+public static fun Print(any value) -> void  {
+	
+}

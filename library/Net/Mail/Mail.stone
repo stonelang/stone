@@ -1,0 +1,7 @@
+
+
+space Net.Mail; 
+
+
+public struct Mail {
+}

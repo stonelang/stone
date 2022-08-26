@@ -1,0 +1,12 @@
+
+
+public fun SizeOf() -> int {
+		return 0; 
+}
+public fun TypeOf() -> T {
+		return null;
+}
+
+
+
+

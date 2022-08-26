@@ -1,0 +1,5 @@
+space Time;
+
+public struct Tick {
+
+}

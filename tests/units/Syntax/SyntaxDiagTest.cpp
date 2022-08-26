@@ -1,9 +1,9 @@
-#include "stone/Basic/Context.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/DiagnosticEngine.h"
-#include "stone/Basic/FrontendDiagnostic.h"
-#include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Context.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
@@ -29,7 +29,7 @@ public:
 
 TEST_F(SyntaxDiagTest, PrintD) {
 
-  STONE_DEFER { ctx.GetDiagEngine().Finish(); };
+  STONE_DEFER { ctx.GetDiagUnit().Finish(); };
 
   ctx.GetDiagOptions().useColor = true;
 
@@ -40,7 +40,7 @@ TEST_F(SyntaxDiagTest, PrintD) {
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
 
-  ctx.GetDiagEngine().AddListener(diagListener);
+  ctx.GetDiagUnit().AddListener(diagListener);
 
   syntax.PrintD(SrcLoc(), diag::note_prev_decl_def, diag::Decl(nullptr))
       .WithFix()

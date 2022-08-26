@@ -11,65 +11,72 @@
 // Suppose you do the following:  -emit-module -module-name Physics => Physics.stonemodule
 // Then, you space in the module is Tests.Behavior.Modules.Physics 
 //
-space Tests.Behavior.Modules.Physics {
-	public struct Boson {
-	}
+space Physics;
+
+public struct Boson {
 }
 
+public struct Electron {
+
+}
+
+public struct Proton {
+
+}
 // Suppose you do the following:  -emit-module -module-name Physics => Physics.stonemodule 
 // Then, you do 'using Physics' and you use Electron directly -- Physics.Electron will not work. The module
 // is just a container and not an implicit space 
 // But, do you want to enforce this where the begining of the space identifier must match the module 
 // identifier. So,
-public struct Electron {
-}
+// public struct Electron {
+// }
 
-// But, do you want to enforce this where the begining of the space identifier must match the module 
-// identifier. So, Physics.stonemodule  => 
-space Physics.AnythingElese {
-	public struct Proton{
-	}
-}
-// You could also make it implicit => 
-// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
-space Particle {
-	public struct Proton{
-	}
-}
-
-
-// To make this simple, I am seeing a pattern here that I prefer and may be the better 
-// solution because you will ultimately want to do the following:
-// using ProtonAlias = CompanyName.Physics.Proton. So, you cannot get away from the 'real module name'
-// Hmm... not really. 
+// // But, do you want to enforce this where the begining of the space identifier must match the module 
+// // identifier. So, Physics.stonemodule  => 
+// space Physics.AnythingElese {
+// 	public struct Proton{
+// 	}
+// }
+// // You could also make it implicit => 
+// // -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+// space Particle {
+// 	public struct Proton{
+// 	}
+// }
 
 
-// Explicit => 
-// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
-space CompanyName.Physics.Particle {
-	public struct Quark {
-	}
-}
+// // To make this simple, I am seeing a pattern here that I prefer and may be the better 
+// // solution because you will ultimately want to do the following:
+// // using ProtonAlias = CompanyName.Physics.Proton. So, you cannot get away from the 'real module name'
+// // Hmm... not really. 
 
-// implicit => 
-// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
-space Particle {
-	public struct Proton{
-	}
-}
-// Then, using CompanyName.Physics loads the module; 
 
-// Either way, it seems that it may not matter. Meaning,
-// -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
-// is just the module name and the types can create their own spaces. But, as a convention,
-// you will probably do the following: Identifier.stonemodule 
+// // Explicit => 
+// // -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+// space CompanyName.Physics.Particle {
+// 	public struct Quark {
+// 	}
+// }
 
-space Tests.Physics {
-	public struct Proton { 
-	}
-}
+// // implicit => 
+// // -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+// space Particle {
+// 	public struct Proton{
+// 	}
+// }
+// // Then, using CompanyName.Physics loads the module; 
 
-// Then, using CompanyName.Physics is the module name and you could do:
-// using ProtonAlias = Tests.Physics.Proton which now becomes a mess. Uless you do:
-// import CompanyName.Physics; then, using refers to spaces inside the module 
+// // Either way, it seems that it may not matter. Meaning,
+// // -emit-module -module-name CompanyName.Physics => CompanyName.Physics.stonemodule
+// // is just the module name and the types can create their own spaces. But, as a convention,
+// // you will probably do the following: Identifier.stonemodule 
+
+// space Tests.Physics {
+// 	public struct Proton { 
+// 	}
+// }
+
+// // Then, using CompanyName.Physics is the module name and you could do:
+// // using ProtonAlias = Tests.Physics.Proton which now becomes a mess. Uless you do:
+// // import CompanyName.Physics; then, using refers to spaces inside the module 
 

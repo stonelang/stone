@@ -1,0 +1,10 @@
+
+
+/// Belongs to STD.Core module 
+
+space Core; 
+
+	
+public struct Assert {
+	
+}

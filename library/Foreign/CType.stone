@@ -1,0 +1,6 @@
+
+
+public using CChar = int8;
+
+
+public using CInt = int32;

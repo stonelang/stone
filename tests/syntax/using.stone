@@ -5,7 +5,7 @@
 // expensive
 using Syntax.Physics;
 
-fun Main() -> i32 {	
+fun Main() -> uint32 {	
 	return 0;
 }
 

@@ -1,0 +1,26 @@
+#define DEFINE_DIAGNOSTIC_MACROS
+#include "DefineDiagnostic.h"
+
+ERROR(invalid_diagnostic,none,
+      "INTERNAL ERROR: this diagnostic should not be produced", ())
+
+ERROR(err_opening_output,none,
+      "error opening '%0' for output: %1", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_alien_mode,none,
+      "invalid mode: type -help for a list of the compiler modes.", ())
+
+ERROR(err_no_input_files, none, "no input files", ())
+
+ERROR(err_unknown_arg, none, "unknown argument:", (diag::LLVMStr))
+
+ERROR(err_missing_arg_value,none,
+      "missing argument value for '%0', expected %1 argument(s)",
+      (diag::LLVMStr, diag::UInt))
+
+ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStr, diag::LLVMStr))
+
+ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (diag::LLVMStr))
+
+#define UNDEFINE_DIAGNOSTIC_MACROS
+#include "DefineDiagnostic.h"

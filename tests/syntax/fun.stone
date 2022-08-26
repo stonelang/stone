@@ -1,6 +1,6 @@
 
 
-fun F0() -> void {
+fun Main() -> void {
 }
 
 

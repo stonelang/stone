@@ -1,8 +1,8 @@
-#include "stone/Basic/Context.h"
-#include "stone/Basic/DiagnosticEngine.h"
-#include "stone/Basic/FrontendDiagnostic.h"
-#include "stone/Basic/SyntaxDiagnostic.h"
-#include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/Context.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
 using stone::diag::Decl;
@@ -22,9 +22,9 @@ TEST_F(DiagTest, DiagnoseCompile) {
   ctx.GetDiagOptions().useColor = true;
 
   TextDiagnosticListener textListener;
-  ctx.GetDiagEngine().AddListener(textListener);
+  ctx.GetDiagUnit().AddListener(textListener);
 
-  ctx.GetDiagEngine()
+  ctx.GetDiagUnit()
       .PrintD(SrcLoc(), diag::err_no_input_files)
       .WithFix()
       .Replace(SrcLoc(), llvm::StringRef());

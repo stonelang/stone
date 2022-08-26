@@ -1,0 +1,9 @@
+using Core; 
+using Console; 
+
+fun Main() -> int {
+
+	Print("Hello world");
+
+	return 0;
+}

@@ -1,0 +1,9 @@
+
+space Collections;
+
+public struct Queue<T> : Collection <T> {
+	
+}
+
+public fun Queue::Push(T* item) -> void {
+}

@@ -20,8 +20,8 @@ include(StoneUnitTests)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(BEFORE
-  ${CMAKE_CURRENT_BINARY_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_BINARY_DIR}/compiler/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
 )
 
 set_stone_version()
@@ -35,8 +35,7 @@ add_definitions( -D_GNU_SOURCE )
 option(STONE_BUILD_TOOLS
   "Build the stone tools. If OFF, just generate build targets." ON)
 
-add_subdirectory(include)
-add_subdirectory(lib)
+add_subdirectory(compiler)
 add_subdirectory(tools)
 add_subdirectory(tests)
 
