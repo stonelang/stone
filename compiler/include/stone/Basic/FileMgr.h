@@ -39,7 +39,6 @@ class FileSystemStatCache;
 /// as a single file.
 ///
 class FileMgr : public RefCountedBase<FileMgr> {
-
   IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS;
   const FileSystemOptions &FileSystemOpts;
 

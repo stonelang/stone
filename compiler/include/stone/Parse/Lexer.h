@@ -167,7 +167,9 @@ class Lexer final : public Tokenable {
         TriviaRetentionMode TriviaRetention,
         SyntaxListener *listener = nullptr);
 
+  void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
+  
 
 public:
   //=Lexer options goes here=/
@@ -562,7 +564,7 @@ private:
 
   void skipSlashStarComment();
 
-  void Lex();
+  
   void lexHash();
   void lexIdentifier();
   void lexDollarIdent();

@@ -62,6 +62,9 @@ public:
 
   Phase *ConstructDynamicLinkPhase(ToolChain &tc, PhaseInputList inputs,
                                    const OutputOptions &outputOpts);
+  Phase *ConstructBackendPhase();
+  Phase *ConstructMergeModulePhase();
+  Phase *ConstructModuleWrapPhase();
 };
 
 class QuadraticCompilationModel final : public CompilationModel {
