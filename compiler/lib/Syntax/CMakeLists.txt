@@ -28,7 +28,6 @@ set(stone_syn_sources
 	SyntaxWalker.cpp
 	Template.cpp
 	Type.cpp
-	TypeRep.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	
