@@ -9,6 +9,7 @@
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Parse/SyntaxParsing.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
@@ -99,6 +100,7 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetCurTok() const { return curTok; }
+  SyntaxContext& GetSyntaxContext() { return syntax.GetSyntaxContext();}
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }

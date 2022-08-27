@@ -56,4 +56,8 @@ SyntaxParsing::SyntaxParsing() {}
 SyntaxParsingPrettyStackTrace::SyntaxParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 
-void SyntaxParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {}
+void SyntaxParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
+  out << "With parser at source location: ";
+  parser.GetCurTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
+  out << '\n';
+}

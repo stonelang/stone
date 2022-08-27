@@ -11,7 +11,7 @@ namespace stone {
 namespace syn {
 
 class Parser;
-enum class SyntaxScopeKind : uint8_t;
+enum class SyntaxScopeKind : UInt8;
 
 // class ParsingDeclContext {
 // public:
