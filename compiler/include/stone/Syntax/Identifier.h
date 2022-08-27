@@ -60,6 +60,8 @@ class alignas(IdentifierAlignment) Identifier {
 
   llvm::StringMapEntry<Identifier *> *entry = nullptr;
 
+  struct alignas(uint64_t) Aligner {};
+
 public:
   explicit Identifier()
       : ty(tok::identifier), BuiltinID(0), isKeywordReserved(false),
@@ -185,34 +187,6 @@ public:
   }
 
   bool static IsIdentifier(llvm::StringRef identifier);
-};
-
-/// An iterator that walks over all of the known identifiers
-/// in the lookup table.
-///
-/// Since this iterator uses an abstract interface via virtual
-/// functions, it uses an object-oriented interface rather than the
-/// more standard C++ STL iterator interface. In this OO-style
-/// iteration, the single function \c Next() provides dereference,
-/// advance, and end-of-sequence checking in a single
-/// operation. Subclasses of this iterator type will provide the
-/// actual functionality.
-class IdentifierIterator {
-protected:
-  IdentifierIterator() = default;
-
-public:
-  IdentifierIterator(const IdentifierIterator &) = delete;
-  IdentifierIterator &operator=(const IdentifierIterator &) = delete;
-
-  virtual ~IdentifierIterator();
-
-  /// Retrieve the next string in the identifier table and
-  /// advances the iterator for the following string.
-  ///
-  /// \returns The next string in the identifier table. If there is
-  /// no such string, returns an empty \c StringRef.
-  virtual StringRef Next() = 0;
 };
 
 class IdentifierTable;

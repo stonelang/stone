@@ -183,8 +183,8 @@ public:
 
 public:
   // == Token consumption ==//
-  SrcLoc
-  ConsumeToken(Parser::Notification notification = Parser::Notification::TokenConsumed);
+  SrcLoc ConsumeToken(
+      Parser::Notification notification = Parser::Notification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
     assert(token.Is(kind) && "Consuming wrong token type");

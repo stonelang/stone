@@ -74,7 +74,6 @@ class SyntaxContext final {
   friend SyntaxContextStats;
 
   std::unique_ptr<SyntaxContextStats> stats;
-
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
   Context &ctx;
@@ -120,6 +119,10 @@ public:
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
+  // Members that should only be used by ASTContext.cpp.
+  struct Extension;
+  Extension &GetExtension() const;
+
   ///
   Identifier &GetIdentifier(llvm::StringRef name);
   ///
