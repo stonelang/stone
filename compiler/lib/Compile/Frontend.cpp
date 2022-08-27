@@ -28,9 +28,6 @@ Frontend::Frontend(llvm::StringRef programName, llvm::StringRef programPath,
     : Session(programName, programPath), listener(listener) {
   excludedFlagsBitmask = opts::NoFrontendOption;
 
-  stats = std::make_unique<FrontendStats>(*this);
-
-  GetContext().GetStatEngine().Register(stats.get());
 }
 Frontend::~Frontend() {}
 
@@ -205,11 +202,4 @@ void Frontend::Finish() {
     listener->OnCompileCompleted(*this);
   }
   // TODO: Print stats here.
-}
-
-void FrontendStats::Print(ColorfulStream &stream) {
-  // if (sc.GetFrontendOpts().printStats) {
-  //   // GetContext().Out() << GetName() << '\n';
-  //   return;
-  // }
 }

@@ -37,14 +37,6 @@ namespace stone {
 class Frontend;
 class FrontendListener;
 
-class FrontendStats final : public Stats {
-  Frontend &frontend;
-
-public:
-  FrontendStats(Frontend &frontend)
-      : Stats("Frontend statistics:"), frontend(frontend) {}
-  void Print(ColorfulStream &stream) override;
-};
 
 struct ModuleBuffers {
 
@@ -70,8 +62,7 @@ class Frontend final : public Session {
 
   std::unique_ptr<FrontendOptions> frontendOpts;
 
-  std::unique_ptr<FrontendStats> stats;
-
+ 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
 
@@ -92,13 +83,13 @@ class Frontend final : public Session {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceIDs;
 
-  /// Allocator FrontendUnit
-  mutable llvm::BumpPtrAllocator bumpAlloc;
 
   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
   /// Code completion offset in bytes from the beginning of the main
   /// source file.  Valid only if \c isCodeCompletion() == true.
   unsigned codeCompletionOffset = ~0U;
+
+  mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
   Frontend(llvm::StringRef programName, llvm::StringRef programPath,
@@ -171,6 +162,8 @@ public:
   Optional<unsigned> GetRecordedBufferID(const FrontendInputFile &input,
                                          const bool shouldRecover,
                                          bool &failed);
+
+  llvm::BumpPtrAllocator& GetMemAllocator() { return bumpAlloc; }
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 

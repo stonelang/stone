@@ -12,6 +12,10 @@ Compiler::Compiler(Frontend &frontend) : frontend(frontend) {
   moduleSystem =
       std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetContext(),
                                      frontend.GetFrontendOptions().moduleOpts);
+
+  stats = std::make_unique<CompilerStats>(*this);
+  frontend.GetContext().GetStatEngine().Register(stats.get());
+
 }
 Compiler::~Compiler() {}
 
@@ -35,3 +39,11 @@ Compiler::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
 //   assert(false && "Not implemented");
 //   return llvm::StringRef();
 // }
+
+
+void CompilerStats::Print(ColorfulStream &stream) {
+  // if (sc.GetFrontendOpts().printStats) {
+  //   // GetContext().Out() << GetName() << '\n';
+  //   return;
+  // }
+}

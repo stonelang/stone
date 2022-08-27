@@ -24,12 +24,22 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 // using CompileWithGenIRCallback = llvm::function_ref<void(
 //     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
 
+class CompilerStats final : public Stats {
+  Compiler &compiler;
+
+public:
+  CompilerStats(Compiler &compiler)
+      : Stats("Frontend statistics:"), compiler(compiler) {}
+  void Print(ColorfulStream &stream) override;
+};
+
 class Compiler final {
 
   Frontend &frontend;
   std::unique_ptr<syn::Syntax> syntax;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<PackageSystem> pkgSystem;
+  std::unique_ptr<CompilerStats> stats;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
