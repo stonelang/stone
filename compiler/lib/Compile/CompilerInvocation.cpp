@@ -1,4 +1,4 @@
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"

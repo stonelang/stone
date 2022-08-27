@@ -1,5 +1,5 @@
 #include "stone/Compile/FrontendOptions.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/FrontendOptionsConverter.h"
 #include "stone/Context.h"
 

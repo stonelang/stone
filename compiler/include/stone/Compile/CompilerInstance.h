@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

@@ -1,5 +1,5 @@
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
 
 using namespace stone;

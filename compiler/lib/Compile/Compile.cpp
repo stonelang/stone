@@ -5,7 +5,7 @@
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/DebugFrontendListener.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/FrontendListener.h"
 #include "stone/Compile/TargetMachine.h"
 #include "stone/Diag/FrontendDiagnostic.h"
