@@ -55,15 +55,13 @@ public:
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
-  Type *GetPointer() const { return typePtr; }
+  Type *GetPtr() const { return typePtr; }
 
   Type *operator->() const {
     assert(typePtr && "Cannot dereference a null SyntaxType!");
     return typePtr;
   }
-
   explicit operator bool() const { return typePtr != 0; }
-
   /// Walk this SyntaxType.
   ///
   /// Returns true if the walk was aborted.

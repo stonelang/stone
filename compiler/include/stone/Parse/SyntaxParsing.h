@@ -11,95 +11,97 @@ namespace syn {
 class Parser;
 enum class SyntaxScopeKind : uint8_t;
 
-class ParsingDeclContext {
-public:
-};
+// class ParsingDeclContext {
+// public:
+// };
 
-/// A class for parsing a DeclSpecifier.
-class ParsingDeclSpecifier final : public DeclSpecifier {
-  //   ParsingDeclRAII parsingDeclRAII;
-  Parser &parser;
+// /// A class for parsing a DeclSpecifier.
+// class ParsingDeclSpecifier final : public DeclSpecifier {
+//   //   ParsingDeclRAII parsingDeclRAII;
+//   Parser &parser;
 
-public:
-  // TODO: There is more to this
-  ParsingDeclSpecifier(Parser &parser);
+// public:
+//   // TODO: There is more to this
+//   ParsingDeclSpecifier(Parser &parser);
 
-  //   ParsingDeclSpecifier(Parser &P, ParsingDeclRAIIObject *RAII)
-  //     : DeclSpecifier(P.getAttrFactory()),
-  //       ParsingDeclRAII(P, RAII) {}
+//   //   ParsingDeclSpecifier(Parser &P, ParsingDeclRAIIObject *RAII)
+//   //     : DeclSpecifier(P.getAttrFactory()),
+//   //       ParsingDeclRAII(P, RAII) {}
 
-  //   const sema::DelayedDiagnosticPool &getDelayedDiagnosticPool() const {
-  //     return ParsingDeclRAII.GetDelayedDiagnosticPool();
-  //   }
+//   //   const sema::DelayedDiagnosticPool &getDelayedDiagnosticPool() const {
+//   //     return ParsingDeclRAII.GetDelayedDiagnosticPool();
+//   //   }
 
-  //   void Complete(Decl *D) {
-  //     ParsingDeclRAII.complete(D);
-  //   }
+//   //   void Complete(Decl *D) {
+//   //     ParsingDeclRAII.complete(D);
+//   //   }
 
-  //   void Abort() {
-  //     ParsingDeclRAII.abort();
-  //   }
-};
+//   //   void Abort() {
+//   //     ParsingDeclRAII.abort();
+//   //   }
+// };
 
-/// A class for parsing a declarator.
-class ParsingDeclarator final : public Declarator {
-  // ParsingDeclRAIIObject ParsingRAII;
+// /// A class for parsing a declarator.
+// class ParsingDeclarator final : public Declarator {
+//   // ParsingDeclRAIIObject ParsingRAII;
 
-  // public:
-  //   ParsingDeclarator(Parser &P, const ParsingDeclSpecifier &ds,
-  //   DeclaratorContext dc)
-  //       : Declarator(DS, C), ParsingRAII(P, &DS.getDelayedDiagnosticPool())
-  //       {}
+//   // public:
+//   //   ParsingDeclarator(Parser &P, const ParsingDeclSpecifier &ds,
+//   //   DeclaratorContext dc)
+//   //       : Declarator(DS, C), ParsingRAII(P,
+//   &DS.getDelayedDiagnosticPool())
+//   //       {}
 
-  //   const ParsingDeclSpec &GetDeclSpecifier() const {
-  //     return static_cast<const ParsingDeclSpec &>(Declarator::getDeclSpec());
-  //   }
+//   //   const ParsingDeclSpec &GetDeclSpecifier() const {
+//   //     return static_cast<const ParsingDeclSpec
+//   &>(Declarator::getDeclSpec());
+//   //   }
 
-  //   ParsingDeclSpec &getMutableDeclSpecifier() const {
-  //     return const_cast<ParsingDeclSpec &>(getDeclSpec());
-  //   }
+//   //   ParsingDeclSpec &getMutableDeclSpecifier() const {
+//   //     return const_cast<ParsingDeclSpec &>(getDeclSpec());
+//   //   }
 
-  //   void Clear() {
-  //     //Declarator::Clear();
-  //     //ParsingRAII.Reset();
-  //   }
+//   //   void Clear() {
+//   //     //Declarator::Clear();
+//   //     //ParsingRAII.Reset();
+//   //   }
 
-  // void Complete(Decl *D) { ParsingRAII.complete(D); }
-};
+//   // void Complete(Decl *D) { ParsingRAII.complete(D); }
+// };
 
-class PairDelimiterCount final {
-public:
-  unsigned short parenCount;
-  unsigned short bracketCount;
-  unsigned short braceCount;
+// class PairDelimiterCount final {
+// public:
+//   unsigned short parenCount;
+//   unsigned short bracketCount;
+//   unsigned short braceCount;
 
-public:
-  PairDelimiterCount() : parenCount(0), bracketCount(0), braceCount(0) {}
+// public:
+//   PairDelimiterCount() : parenCount(0), bracketCount(0), braceCount(0) {}
 
-  ~PairDelimiterCount() {
-    parenCount = 0;
-    bracketCount = 0;
-    braceCount = 0;
-  }
-};
+//   ~PairDelimiterCount() {
+//     parenCount = 0;
+//     bracketCount = 0;
+//     braceCount = 0;
+//   }
+// };
 
-/// RAII object that makes sure paren/bracket/brace count is correct
-/// after declaration/statement parsing, even when there's a parsing error.
-class PairDelimiterBalancer final {
-  Parser &parser;
+// /// RAII object that makes sure paren/bracket/brace count is correct
+// /// after declaration/statement parsing, even when there's a parsing error.
+// class PairDelimiterBalancer final {
+//   Parser &parser;
 
-public:
-  PairDelimiterCount pairDelimiterCount;
+// public:
+//   PairDelimiterCount pairDelimiterCount;
 
-public:
-  PairDelimiterBalancer(Parser &other);
-  ~PairDelimiterBalancer();
-};
+// public:
+//   PairDelimiterBalancer(Parser &other);
+//   ~PairDelimiterBalancer();
+// };
 
 using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
 class SyntaxParsingScope final {
   Parser *self;
-  SyntaxScopeCache syntaxScopeCache;
+  SyntaxScopeCache scopeCache;
 
   bool enteredScope;
   bool beforeCompoundStmt;
@@ -130,62 +132,63 @@ public:
   // }
 };
 
-class MultiSyntaxParsingScope final {
-public:
-};
+// class MultiSyntaxParsingScope final {
+// public:
+// };
 
-/// The kind of template we are parsing.
-enum class SyntaxParsingTemplateKind : uint8_t {
-  /// We are not parsing a template at all.
-  None = 0,
-  /// We are parsing a template declaration.
-  Template,
-  /// We are parsing an explicit specialization.
-  ExplicitSpecialization,
-  /// We are parsing an explicit instantiation.
-  ExplicitInstantiation
-};
-/// Contains information about any template-specific
-/// information that has been parsed prior to parsing declaration
-/// specifiers.
-struct SyntaxParsingTemplate {
+// /// The kind of template we are parsing.
+// enum class SyntaxParsingTemplateKind : uint8_t {
+//   /// We are not parsing a template at all.
+//   None = 0,
+//   /// We are parsing a template declaration.
+//   Template,
+//   /// We are parsing an explicit specialization.
+//   ExplicitSpecialization,
+//   /// We are parsing an explicit instantiation.
+//   ExplicitInstantiation
+// };
+// /// Contains information about any template-specific
+// /// information that has been parsed prior to parsing declaration
+// /// specifiers.
+// struct SyntaxParsingTemplate {
 
-  SyntaxParsingTemplateKind kind;
+//   SyntaxParsingTemplateKind kind;
 
-  /// The template parameter lists, for template declarations
-  /// and explicit specializations.
-  TemplateParameterLists *templateParameterLists;
+//   /// The template parameter lists, for template declarations
+//   /// and explicit specializations.
+//   TemplateParameterLists *templateParameterLists;
 
-  /// The location of the 'extern' keyword, if any, for an explicit
-  /// instantiation
-  SrcLoc externLoc;
+//   /// The location of the 'extern' keyword, if any, for an explicit
+//   /// instantiation
+//   SrcLoc externLoc;
 
-  /// The location of the 'template' keyword, for an explicit
-  /// instantiation.
-  SrcLoc templateLoc;
+//   /// The location of the 'template' keyword, for an explicit
+//   /// instantiation.
+//   SrcLoc templateLoc;
 
-  /// Whether the last template parameter list was empty.
-  bool lastParameterListWasEmpty;
+//   /// Whether the last template parameter list was empty.
+//   bool lastParameterListWasEmpty;
 
-  SyntaxParsingTemplate()
-      : kind(SyntaxParsingTemplateKind::None), templateParameterLists(nullptr) {
-  }
-  SyntaxParsingTemplate(TemplateParameterLists *templateParameterLists,
-                        bool isSpecialization,
-                        bool lastParameterListWasEmpty = false)
-      : kind(isSpecialization
-                 ? SyntaxParsingTemplateKind::ExplicitSpecialization
-                 : SyntaxParsingTemplateKind::Template),
-        templateParameterLists(templateParameterLists),
-        lastParameterListWasEmpty(lastParameterListWasEmpty) {}
+//   SyntaxParsingTemplate()
+//       : kind(SyntaxParsingTemplateKind::None),
+//       templateParameterLists(nullptr) {
+//   }
+//   SyntaxParsingTemplate(TemplateParameterLists *templateParameterLists,
+//                         bool isSpecialization,
+//                         bool lastParameterListWasEmpty = false)
+//       : kind(isSpecialization
+//                  ? SyntaxParsingTemplateKind::ExplicitSpecialization
+//                  : SyntaxParsingTemplateKind::Template),
+//         templateParameterLists(templateParameterLists),
+//         lastParameterListWasEmpty(lastParameterListWasEmpty) {}
 
-  explicit SyntaxParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
-      : kind(SyntaxParsingTemplateKind::ExplicitInstantiation),
-        templateParameterLists(nullptr), externLoc(externLoc),
-        templateLoc(templateLoc), lastParameterListWasEmpty(false) {}
+//   explicit SyntaxParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
+//       : kind(SyntaxParsingTemplateKind::ExplicitInstantiation),
+//         templateParameterLists(nullptr), externLoc(externLoc),
+//         templateLoc(templateLoc), lastParameterListWasEmpty(false) {}
 
-  SrcRange GetSrcRange() const;
-};
+//   SrcRange GetSrcRange() const;
+// };
 
 class SyntaxParsing final {
 
