@@ -19,6 +19,8 @@ namespace stone {
 class SyntaxListener;
 namespace syn {
 
+class BraceStmt;
+
 class Syntax;
 class Parser;
 class SyntaxScope;
@@ -111,6 +113,17 @@ public:
     TokenConsumed,
   };
 
+  /// The current token hash, or \c None if the parser isn't computing a hash
+  /// for the token stream.
+  llvm::Optional<StableHasher> currentTokenHash;
+
+public:
+  void RecordTokenHash(const Token Tok) {
+    if (!Tok.GetText().empty())
+      RecordTokenHash(Tok.GetText());
+  }
+  void RecordTokenHash(StringRef token);
+
 public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
@@ -142,7 +155,8 @@ public:
 private:
   SyntaxStatus ParseFunctionSignature(FunDecl &funDecl);
   SyntaxStatus ParseFunctionArguments(FunDecl &funDecl);
-  SyntaxStatus ParseFunctionBody(FunDecl &funDecl);
+  SyntaxStatus ParseFunctionBody(FunctionDecl &funDecl);
+  BraceStmt *ParseFunctionBodyImpl(FunctionDecl &funDecl);
 
   //==End Function==//
 public:

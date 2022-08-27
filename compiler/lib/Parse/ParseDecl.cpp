@@ -73,6 +73,8 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
   if (token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
     ConsumeToken();
   }
+  // TODO:
+  // ParseDeclModifierList(Attributes, StaticLoc, StaticSpelling);
   return ParseDecl(flags, accessLevel);
 }
 SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
@@ -182,7 +184,7 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
   return syn::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::ParseFunctionBody(FunDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionBody(FunctionDecl &funDecl) {
 
   assert(token.Is(tok::l_brace) && "Require '{' brace.");
   auto lParenLoc = ConsumeToken(tok::l_brace);
@@ -191,4 +193,8 @@ SyntaxStatus Parser::ParseFunctionBody(FunDecl &funDecl) {
   auto rParenLoc = ConsumeToken(tok::r_brace);
 
   return syn::MakeSyntaxSuccess();
+}
+
+BraceStmt *Parser::ParseFunctionBodyImpl(FunctionDecl &funDecl) {
+  return nullptr;
 }
