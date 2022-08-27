@@ -103,6 +103,14 @@ public:
 
   Context &GetContext();
 
+  enum class Notification {
+    None,
+    DeclCreated,
+    StmtCreated,
+    ExprCreated,
+    TokenConsumed,
+  };
+
 public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
@@ -175,10 +183,12 @@ public:
 
 public:
   // == Token consumption ==//
-  SrcLoc ConsumeToken(bool onTok = true);
+  SrcLoc
+  ConsumeToken(Parser::Notification notification = Parser::Notification::TokenConsumed);
+
   SrcLoc ConsumeToken(tok kind) {
     assert(token.Is(kind) && "Consuming wrong token type");
-    return ConsumeToken(false);
+    return ConsumeToken(Parser::Notification::None);
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 

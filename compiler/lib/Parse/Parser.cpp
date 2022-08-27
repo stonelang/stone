@@ -42,10 +42,13 @@ Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 // void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
-SrcLoc Parser::ConsumeToken(bool onTok) {
-  SrcLoc loc = token.GetLoc();
+SrcLoc Parser::ConsumeToken(Parser::Notification notification) {
+  auto loc = token.GetLoc();
   assert(token.IsNot(tok::eof) && "Lexing past eof!");
 
+  if ((notification == Parser::Notification::TokenConsumed) && listener) {
+    listener->OnToken(&token);
+  }
   Lex(token, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
   return loc;

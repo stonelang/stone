@@ -23,7 +23,7 @@ SyntaxParsingScope::SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
                                        bool enteredScope,
                                        bool beforeCompoundStmt)
     : self(self) {
-      
+
   // if (enteredScope && !beforeCompoundStmt) {
   //   self->EnterScope(scopeKind);
   // } else {
