@@ -27,7 +27,7 @@ struct SyntaxContext::Extension final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  //llvm::MapVector<Identifier, ModuleDecl *> loadedModules;
+  // llvm::MapVector<Identifier, ModuleDecl *> loadedModules;
 
   /// The set of cleanups to be called when the ASTContext is destroyed.
   std::vector<std::function<void(void)>> cleanups;

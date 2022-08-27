@@ -118,8 +118,9 @@ public:
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl();
-  SyntaxResult<Decl> ParseDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOpts flags);
+  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOpts flags,
+                               AccessLevel accessLevel);
   void ParseForwardDecl();
 
   void ParseInheritance();

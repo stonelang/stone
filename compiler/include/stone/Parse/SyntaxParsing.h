@@ -6,7 +6,6 @@
 
 #include "llvm/ADT/ArrayRef.h"
 
-
 namespace stone {
 namespace syn {
 

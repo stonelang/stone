@@ -19,9 +19,9 @@
 
 #include "llvm/ADT/None.h"
 
-#include <type_traits>
 #include <cstdint>
 #include <initializer_list>
+#include <type_traits>
 
 namespace stone {
 
@@ -42,10 +42,8 @@ using llvm::None;
 /// \tparam StorageType The unsigned integral type to use to store the flags
 /// enabled within this option set. This defaults to the unsigned form of the
 /// underlying type of the enumeration.
-template<typename Flags,
-         typename StorageType = typename std::make_unsigned<
-                                  typename std::underlying_type<Flags>::type
-                                 >::type>
+template <typename Flags, typename StorageType = typename std::make_unsigned<
+                              typename std::underlying_type<Flags>::type>::type>
 class OptionSet {
   StorageType Storage;
 
@@ -137,7 +135,9 @@ public:
 
 private:
   template <typename T>
-  static auto _checkResultTypeOperatorOr(T t) -> decltype(t | t) { return T(); }
+  static auto _checkResultTypeOperatorOr(T t) -> decltype(t | t) {
+    return T();
+  }
 
   static void _checkResultTypeOperatorOr(...) {}
 
@@ -156,4 +156,4 @@ private:
 
 } // end namespace stone
 
-#endif 
+#endif

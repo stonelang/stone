@@ -52,13 +52,12 @@ void Parser::ParseTopLevelDecls(
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(IsStartOfDecl(token) && "Invalid top-declaration");
-  return ParseDecl();
+  return ParseDecl(DeclSyntaxParsingFlags::AllowTopLevel);
 }
 
-SyntaxResult<Decl> Parser::ParseDecl() {
+SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
 
   // PairDelimiterBalancer pairDelimiterBalancer(*this);
-
   AccessLevel accessLevel = AccessLevel::None;
   switch (token.GetKind()) {
   case tok::kw_public:
@@ -74,9 +73,10 @@ SyntaxResult<Decl> Parser::ParseDecl() {
   if (token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
     ConsumeToken();
   }
-  return ParseDecl(accessLevel);
+  return ParseDecl(flags, accessLevel);
 }
-SyntaxResult<Decl> Parser::ParseDecl(AccessLevel accessLevel) {
+SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
+                                     AccessLevel accessLevel) {
   SyntaxResult<Decl> declResult;
 
   // TODO: ParseTemplateDecl first before you move
