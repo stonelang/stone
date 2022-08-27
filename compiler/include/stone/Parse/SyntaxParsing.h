@@ -259,6 +259,7 @@ public:
 /// current curTok.
 class SyntaxParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
   Parser &parser;
+
 public:
   explicit SyntaxParsingPrettyStackTrace(Parser &parser);
   void print(llvm::raw_ostream &out) const override;

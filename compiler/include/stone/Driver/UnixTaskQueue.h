@@ -3,9 +3,9 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Context.h"
 #include "stone/Driver/Task.h"
 #include "stone/Driver/TaskQueue.h"
+#include "stone/LangContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
@@ -20,7 +20,7 @@ public:
 
 class UnixTaskQueue final : public TaskQueue {
 public:
-  UnixTaskQueue(Context &ctx) : TaskQueue(TaskQueueKind::Unix, ctx) {}
+  UnixTaskQueue(LangContext &ctx) : TaskQueue(TaskQueueKind::Unix, ctx) {}
 };
 } // namespace unix
 } // namespace stone

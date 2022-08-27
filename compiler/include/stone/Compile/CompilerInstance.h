@@ -107,7 +107,7 @@ public:
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
-  GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx);
+  GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
 };
 
 } // namespace stone

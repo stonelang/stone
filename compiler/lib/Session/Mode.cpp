@@ -1,5 +1,5 @@
 #include "stone/Session/Mode.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 
@@ -110,5 +110,5 @@ file::Type Mode::GetOutputFileTypeByModeKind(ModeKind kind) {
     // case ModeKind::PrintFeature:
     //   return file::Type::JSONFeatures;
   }
-  stone::Panic("No file-type found for this particular mode-kind");
+  assert(false && "No file-type found for this particular mode-kind");
 }

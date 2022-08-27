@@ -64,22 +64,22 @@ public:
 
 public:
   bool HasError() {
-    return GetSyntaxContext().GetContext().GetDiagUnit().HasError();
+    return GetSyntaxContext().GetLangContext().GetDiagUnit().HasError();
   }
-  Context &GetContext() { return GetSyntaxContext().GetContext(); }
+  LangContext &GetLangContext() { return GetSyntaxContext().GetLangContext(); }
   SyntaxContext &GetSyntaxContext() { return *sc.get(); }
 
   DeclName MakeDeclName();
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
+    return GetSyntaxContext().GetLangContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(
                  DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
+    return GetSyntaxContext().GetLangContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(DiagnosticDetail(diagID, args)));
   }
 
@@ -87,7 +87,7 @@ public:
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetSyntaxContext().GetContext().GetDiagUnit().PrintD(
+    return GetSyntaxContext().GetLangContext().GetDiagUnit().PrintD(
         loc, SyntaxDiagnostic(DiagnosticDetail(id, std::move(args)...)));
   }
 

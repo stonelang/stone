@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_NATIVECODEGEN_H
 #define STONE_GEN_NATIVECODEGEN_H
 
-#include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/LangContext.h"
 
 namespace llvm {
 class raw_pwrite_stream;

@@ -9,9 +9,9 @@
 #include "stone/Parse/SyntaxListener.h"
 #include "stone/Parse/SyntaxParsing.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
@@ -100,7 +100,7 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetCurTok() const { return curTok; }
-  SyntaxContext& GetSyntaxContext() { return syntax.GetSyntaxContext();}
+  SyntaxContext &GetSyntaxContext() { return syntax.GetSyntaxContext(); }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
@@ -108,7 +108,9 @@ public:
   SyntaxParsing &GetSyntaxParsing() { return syntaxParsing; }
 
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
-  Context &GetContext();
+  LangContext &GetLangContext() {
+    return syntax.GetSyntaxContext().GetLangContext();
+  }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
@@ -190,7 +192,7 @@ public:
   void Stop() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
-  bool HasError();
+  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
 public:
   //===--------------------------------------------------------------------===//

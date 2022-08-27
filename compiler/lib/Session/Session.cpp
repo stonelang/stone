@@ -1,6 +1,6 @@
 #include "stone/Session/Session.h"
-#include "stone/Context.h"
 #include "stone/Diag/CoreDiagnostic.h"
+#include "stone/LangContext.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 
@@ -33,7 +33,7 @@ Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   assert(ial && "No input argument list.");
   // Check for missing argument error.
   if (missingArgCount) {
-    GetContext().GetDiagUnit().PrintD(
+    GetLangContext().GetDiagUnit().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
         diag::LLVMStr(ial->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
@@ -41,8 +41,8 @@ Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_unknown_arg,
-                                      diag::LLVMStr(arg->getAsString(*ial)));
+    GetLangContext().GetDiagUnit().PrintD(
+        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
     return nullptr;
   }
   return ial;

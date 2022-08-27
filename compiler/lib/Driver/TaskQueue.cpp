@@ -2,7 +2,8 @@
 
 using stone::TaskQueue;
 
-TaskQueue::TaskQueue(TaskQueueKind kind, Context &ctx) : kind(kind), ctx(ctx) {}
+TaskQueue::TaskQueue(TaskQueueKind kind, LangContext &ctx)
+    : kind(kind), ctx(ctx) {}
 
 // stone::ProcID TaskQueue::Push(TaskDetail *job) {
 //   //runQueue.push(job);

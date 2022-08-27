@@ -2,9 +2,9 @@
 #define STONE_COMPILE_LANGOPTIONSBUILDER_H
 
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Context.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
+#include "stone/LangContext.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/ArgList.h"
 

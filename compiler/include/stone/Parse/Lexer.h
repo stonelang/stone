@@ -3,8 +3,8 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Context.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/LangContext.h"
 #include "stone/Parse/SyntaxLexing.h"
 #include "stone/Parse/Trivia.h"
 

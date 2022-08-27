@@ -1,8 +1,8 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Context.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/LangContext.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
@@ -14,10 +14,10 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
              std::unique_ptr<Lexer>(new Lexer(
                  sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
                  &syntax.GetSyntaxContext()
-                      .GetContext()
+                      .GetLangContext()
                       .GetDiagUnit()
                       .GetDiagEngine(),
-                 &syntax.GetSyntaxContext().GetContext().GetStatEngine())),
+                 &syntax.GetSyntaxContext().GetLangContext().GetStatEngine())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
@@ -26,7 +26,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
       listener(listener) {
 
   stats.reset(new ParserStats(*this));
-  GetContext().GetStatEngine().Register(stats.get());
+  GetLangContext().GetStatEngine().Register(stats.get());
 }
 
 Parser::~Parser() {}
@@ -35,9 +35,6 @@ Parser::~Parser() {}
 //   assert(false && "Not implemented");
 //   return nullptr;
 // }
-
-bool Parser::HasError() { return GetContext().GetDiagUnit().HasError(); }
-Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 
 // void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
@@ -129,7 +126,7 @@ SrcLoc Parser::ConsumeStartingGreater() {
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetContext().GetDiagUnit().PrintD(loc, diagID);
+  return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

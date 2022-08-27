@@ -192,7 +192,7 @@ void InFlightDiagnostic::Flush() {
   // If this diagnostic is inactive, then its soul was stolen by the copy ctor
   // (or by a subclass, as in SemaInFlightDiagnostic).
   if (IsActive()) {
-    // de.GetCurrentDiagnostic().GetContext().Flush();
+    // de.GetCurrentDiagnostic().GetLangContext().Flush();
     if (de) {
       de->FlushCurrentDiagnostic();
     }

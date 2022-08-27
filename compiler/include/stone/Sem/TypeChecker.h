@@ -2,7 +2,7 @@
 #define STONE_SEM_TYPECHECKER_H
 
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 

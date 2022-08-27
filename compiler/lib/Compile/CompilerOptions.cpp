@@ -1,7 +1,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 
 using namespace stone;
 
@@ -52,20 +52,20 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
   if (invocationOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  auto invocationOptsErr =
-      ComputeCompilerOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                             GetContext().GetLangOptions(), *invocationOpts,
-                             nullptr /* pass null for now*/);
+  auto invocationOptsErr = ComputeCompilerOptions(
+      ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+      GetLangContext().GetLangOptions(), *invocationOpts,
+      nullptr /* pass null for now*/);
   if (invocationOptsErr.Has()) {
   }
-  ComputeLangOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                     *invocationOpts, GetContext().GetLangOptions());
+  ComputeLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                     *invocationOpts, GetLangContext().GetLangOptions());
 
-  ComputeTypeCheckerOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                             *invocationOpts, typeCheckerOpts);
-  ComputeSearchPathOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                            *invocationOpts, searchPathOpts);
-  ComputeCodeGenOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
+  ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                         *invocationOpts, codeGenOpts);
 
   return Error();

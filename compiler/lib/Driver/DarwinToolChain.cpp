@@ -133,15 +133,18 @@ JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkPhase &action) {
 //   switch (driver.GetLinkMode()) {
 //   case LinkMode::EmitExecutable: {
 //     return driver.GetCompilation().CreateJob<ExecutableLinkJob>(
-//         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
+//         driver.GetLangContext(), *tool,
+//         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   case LinkMode::EmitDynamicLibrary: {
 //     return driver.GetCompilation().CreateJob<DynamicLinkJob>(
-//         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
+//         driver.GetLangContext(), *tool,
+//         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   case LinkMode::EmitStaticLibrary: {
 //     return driver.GetCompilation().CreateJob<StaticLinkJob>(
-//         driver.GetContext(), *tool, driver.GetDriverOptions().RequiresLTO());
+//         driver.GetLangContext(), *tool,
+//         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   default:
 //     assert(false && "Invalid linking kind");

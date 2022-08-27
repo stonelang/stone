@@ -67,8 +67,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { invocation.Finish(); };
 
   if (args.empty()) {
-    invocation.GetContext().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_no_input_files);
+    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+                                                     diag::err_no_input_files);
     return Finish(1);
   }
   // Setup the custom formatting to be able to handle syntax diagnostics
@@ -77,7 +77,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
       std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
-  invocation.GetContext().GetDiagUnit().GetDiagEngine().AddListener(
+  invocation.GetLangContext().GetDiagUnit().GetDiagEngine().AddListener(
       diagListener);
 
   // Parse arguments.
@@ -95,8 +95,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
-    invocation.GetContext().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_alien_mode);
+    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+                                                     diag::err_alien_mode);
     Finish(1);
   }
   if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
@@ -145,7 +145,7 @@ static void CompileWithGenIR(CompilerInstance &compiler,
   case ModuleOutputMode::Single: {
     if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
       auto result = stone::GenIR(
-          cgc, *sf, compiler.GetInvocation().GetContext(), nullptr);
+          cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
       client(compiler, cgc, *result);
     }
     break;
@@ -153,7 +153,7 @@ static void CompileWithGenIR(CompilerInstance &compiler,
   case ModuleOutputMode::Whole: {
     if (auto mod = msf.get<syn::Module *>()) {
       auto result = stone::GenIR(
-          cgc, *mod, compiler.GetInvocation().GetContext(), nullptr);
+          cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
       client(compiler, cgc, *result);
     }
     break;
@@ -170,10 +170,10 @@ static void CompileWithGenNative(CompilerInstance &compiler,
                                  CodeGenContext &cgc, IRCodeGenResult &result) {
 
   auto targetMachine = stone::CreateTargetMachine(
-      compiler.GetInvocation().GetContext().GetDiagUnit().GetDiagEngine(),
+      compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
       compiler.GetInvocation().GetCodeGenOptions(),
       compiler.GetInvocation().GetTargetOptions(),
-      compiler.GetInvocation().GetContext().GetLangOptions(),
+      compiler.GetInvocation().GetLangContext().GetLangOptions(),
       compiler.GetSyntax().GetSyntaxContext(), *result.GetLLVMModule());
 
   cgc.TakeTargetMachine(std::move(targetMachine));
@@ -209,7 +209,7 @@ static void CompileWithCodeGen(CompilerInstance &compiler) {
   // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
                      compiler.GetInvocation().GetCodeGenOptions(),
-                     compiler.GetInvocation().GetContext());
+                     compiler.GetInvocation().GetLangContext());
 
   auto *mainModule = compiler.GetModuleSystem().GetMainModule();
   // switch

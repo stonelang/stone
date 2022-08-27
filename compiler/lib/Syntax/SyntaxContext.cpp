@@ -43,7 +43,7 @@ SyntaxContext::Extension::Extension() : identifiers(allocator) {}
 
 SyntaxContext::Extension::~Extension() {}
 
-SyntaxContext::SyntaxContext(stone::Context &ctx,
+SyntaxContext::SyntaxContext(stone::LangContext &ctx,
                              const SearchPathOptions &spOpts)
     : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetLangOptions()) {
   stats = std::make_unique<SyntaxContextStats>(*this);

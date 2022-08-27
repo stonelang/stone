@@ -10,8 +10,8 @@
 #include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
-#include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/LangContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
@@ -19,6 +19,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxOptions.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -68,6 +69,8 @@ class CompilerInvocation final : public Session {
   sem::TypeCheckerOptions typeCheckerOpts;
 
   TargetOptions targetOpts;
+
+  SyntaxOptions syntaxOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -133,6 +136,9 @@ public:
   TargetOptions &GetTargetOptions() { return targetOpts; }
   const TargetOptions &GetTargetOptions() const { return targetOpts; }
 
+  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
+  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+
   sem::TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const sem::TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
@@ -160,7 +166,7 @@ public:
 
   llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
   bool JustCompiler() {
     if (GetCompilerOptions().GetMode().JustParse() ||

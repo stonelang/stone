@@ -7,21 +7,21 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation) {
 
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
-      invocation.GetContext(), invocation.GetSearchPathOptions());
+      invocation.GetLangContext(), invocation.GetSearchPathOptions());
   syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
 
   moduleSystem = std::make_unique<ModuleSystem>(
-      *syntax.get(), invocation.GetContext(),
+      *syntax.get(), invocation.GetLangContext(),
       invocation.GetCompilerOptions().moduleOpts);
 
   stats = std::make_unique<CompilerInstanceStats>(*this);
-  invocation.GetContext().GetStatEngine().Register(stats.get());
+  invocation.GetLangContext().GetStatEngine().Register(stats.get());
 }
 CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
 CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
-                                      Context &ctx) {
+                                      LangContext &ctx) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
@@ -43,7 +43,7 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
-  //   // GetContext().Out() << GetName() << '\n';
+  //   // GetLangContext().Out() << GetName() << '\n';
   //   return;
   // }
 }

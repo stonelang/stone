@@ -21,8 +21,9 @@ public:
 class ModuleSystem final {
   // TODO: We need built-in information
   friend class CompilerInvocation;
+  friend class CompilerInstance;
 
-  Context &ctx;
+  LangContext &ctx;
   syn::Syntax &syntax;
   ModuleOptions &moduleOpts;
 
@@ -30,7 +31,8 @@ class ModuleSystem final {
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(syn::Syntax &syntax, Context &ctx, ModuleOptions &moduleOpts);
+  ModuleSystem(syn::Syntax &syntax, LangContext &ctx,
+               ModuleOptions &moduleOpts);
   ~ModuleSystem();
 
 public:

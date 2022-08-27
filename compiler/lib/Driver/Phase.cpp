@@ -1,6 +1,6 @@
 #include "stone/Driver/Phase.h"
 #include "stone/Basic/Color.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 
 using namespace stone;
 
@@ -196,7 +196,7 @@ void Phase::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
 //   // Let just handle top level
 //   if (hc.GetPhaseCache().ForTop()) {
 //     for (auto &request : hc.GetPhaseCache().forTop) {
-//       request->Print(GetContext().Out());
+//       request->Print(GetLangContext().Out());
 //     }
 //   }
 // }
