@@ -12,8 +12,8 @@
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/SyntaxType.h"
+#include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/Using.h"
 
