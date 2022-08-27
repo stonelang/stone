@@ -17,7 +17,7 @@ SyntaxResult<QualType> Parser::ParseDeclResultType(Diag<> diagID) {
 
 SyntaxResult<QualType> Parser::ParseSimpleType(Diag<> diagID) {
 
-  switch (token.GetKind()) {
+  switch (curTok.GetKind()) {
   case tok::identifier: {
     // ty = ParseIdentifierType();
     break;

@@ -7,8 +7,8 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsStartOfDecl(const Token &token) {
-  switch (token.GetKind()) {
+bool Parser::IsStartOfDecl(const Token &curTok) {
+  switch (curTok.GetKind()) {
   case tok::kw_interface:
   case tok::kw_fun:
   case tok::kw_any:
@@ -27,10 +27,10 @@ bool Parser::IsStartOfDecl(const Token &token) {
 }
 void Parser::ParseTopLevelDecls(
     llvm::SmallVector<SyntaxResult<Decl>> &results) {
-  // Prime the Parser's token
-  // The Lexer has the first token but the Parser's token defaults to tk::MAX
-  // So, update the parser's token with the first token from the Lexer
-  if (token.Is(tok::MAX)) {
+  // Prime the Parser's curTok
+  // The Lexer has the first curTok but the Parser's curTok defaults to tk::MAX
+  // So, update the parser's curTok with the first curTok from the Lexer
+  if (curTok.Is(tok::MAX)) {
     ConsumeToken();
   }
   while (!IsDone()) {
@@ -52,7 +52,7 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsStartOfDecl(token) && "Invalid top-declaration");
+  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
   return ParseDecl(DeclSyntaxParsingFlags::AllowTopLevel);
 }
 
@@ -60,7 +60,7 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
 
   // PairDelimiterBalancer pairDelimiterBalancer(*this);
   AccessLevel accessLevel = AccessLevel::None;
-  switch (token.GetKind()) {
+  switch (curTok.GetKind()) {
   case tok::kw_public:
     accessLevel = AccessLevel::Public;
     break;
@@ -71,7 +71,7 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
     accessLevel = AccessLevel::Private;
     break;
   }
-  if (token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
+  if (curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
     ConsumeToken();
   }
   // TODO:
@@ -85,7 +85,7 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
   // TODO: ParseTemplateDecl first before you move
   // ParsingDeclSpecifier pds(*this);
 
-  switch (token.GetKind()) {
+  switch (curTok.GetKind()) {
   case tok::kw_forward:
     // syntaxResult = ParseForwardDecl();
     break;
@@ -100,12 +100,12 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
 
 SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
-  assert(token.Is(tok::kw_fun) &&
-         "Attempting to parse a 'fun' decl with incorrect token.");
+  assert(curTok.Is(tok::kw_fun) &&
+         "Attempting to parse a 'fun' decl with incorrect curTok.");
 
   auto funLoc = ConsumeToken(tok::kw_fun);
   // Parse function name.
-  Identifier name = GetIdentifierOnly(token.GetText());
+  Identifier name = GetIdentifierOnly(curTok.GetText());
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 
@@ -151,14 +151,14 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
 
   if (!ConsumeIf(tok::arrow, arrowLoc)) {
     // FixIt ':' to '->'.
-    PrintD(token, diag::err_expected_arrow_after_function_param)
+    PrintD(curTok, diag::err_expected_arrow_after_function_param)
         .WithFix()
-        .Replace(token.GetLoc(), llvm::StringRef("->"));
+        .Replace(curTok.GetLoc(), llvm::StringRef("->"));
 
     // arrowLoc = ConsumeToken(tok::colon);
   }
 
-  // assert(token.Is(tok::arrow) && "Require '->'");
+  // assert(curTok.Is(tok::arrow) && "Require '->'");
   // auto arrowLoc = ConsumeToken(tok::arrow);
 
   // ParseReturnType();
@@ -174,10 +174,10 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
 }
 SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
 
-  assert(token.Is(tok::l_paren) && "Require '(' brace.");
+  assert(curTok.Is(tok::l_paren) && "Require '(' brace.");
   auto lParenLoc = ConsumeToken(tok::l_paren);
 
-  assert(token.Is(tok::r_paren) && "Require ')' brace.");
+  assert(curTok.Is(tok::r_paren) && "Require ')' brace.");
   auto rParenLoc = ConsumeToken(tok::r_paren);
 
   // auto result = ParseDeclResultType();
@@ -187,10 +187,10 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
 
 SyntaxStatus Parser::ParseFunctionBody(FunctionDecl &funDecl) {
 
-  assert(token.Is(tok::l_brace) && "Require '{' brace.");
+  assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
   auto lParenLoc = ConsumeToken(tok::l_brace);
 
-  assert(token.Is(tok::r_brace) && "Require '}' brace.");
+  assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
   auto rParenLoc = ConsumeToken(tok::r_brace);
 
   return syn::MakeSyntaxSuccess();

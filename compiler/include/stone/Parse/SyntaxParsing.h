@@ -211,9 +211,18 @@ struct DeclSyntaxParsingFlags {
 /// Options that control the parsing of declarations.
 using DeclSyntaxParsingOpts = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
 
+enum class SyntaxParsingNotification : UInt8 {
+  None,
+  DeclCreated,
+  StmtCreated,
+  ExprCreated,
+  TokenConsumed,
+};
+
 class SyntaxParsingPosition final {
   friend class Parser;
   SyntaxLexingState lexingState;
+  /// TODO: prevTokLoc
   SrcLoc prevLoc;
 
   SyntaxParsingPosition(SyntaxLexingState lexingState, SrcLoc prevLoc)
@@ -224,6 +233,18 @@ public:
   SyntaxParsingPosition &operator=(const SyntaxParsingPosition &) = default;
 
   bool isValid() const { return lexingState.IsValid(); }
+};
+
+/// RAII object that, when it is destructed, restores the parser and lexer to
+/// their positions at the time the object was constructed.
+struct SyntaxParsingPositionRAII {
+private:
+  Parser &parser;
+  SyntaxParsingPosition parsingPos;
+
+public:
+  SyntaxParsingPositionRAII(Parser &parser);
+  ~SyntaxParsingPositionRAII();
 };
 
 class SyntaxParsingContext {

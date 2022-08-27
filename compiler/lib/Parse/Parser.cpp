@@ -42,14 +42,14 @@ Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
 // void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
-SrcLoc Parser::ConsumeToken(Parser::Notification notification) {
-  auto loc = token.GetLoc();
-  assert(token.IsNot(tok::eof) && "Lexing past eof!");
+SrcLoc Parser::ConsumeToken(SyntaxParsingNotification notification) {
+  auto loc = curTok.GetLoc();
+  assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
-  if ((notification == Parser::Notification::TokenConsumed) && listener) {
-    listener->OnToken(&token);
+  if ((notification == SyntaxParsingNotification::TokenConsumed) && listener) {
+    listener->OnToken(&curTok);
   }
-  Lex(token, leadingTrivia, trailingTrivia);
+  Lex(curTok, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
   return loc;
 }
@@ -119,12 +119,12 @@ void Parser::RecordTokenHash(llvm::StringRef tokText) {
   }
 }
 SrcLoc Parser::ConsumeStartingLess() {
-  assert(StartsWithLess(token) && "Token does not start with '<'");
+  assert(StartsWithLess(curTok) && "Token does not start with '<'");
   return ConsumeStartingCharOfCurToken(tok::l_angle);
 }
 
 SrcLoc Parser::ConsumeStartingGreater() {
-  assert(StartsWithGreater(token) && "Token does not start with '>'");
+  assert(StartsWithGreater(curTok) && "Token does not start with '>'");
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 

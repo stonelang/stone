@@ -12,6 +12,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/Support/Timer.h"
@@ -50,8 +51,8 @@ class Parser final {
   SyntaxFile &sf;
   DeclContext *curDC;
 
-  /// This is the current token being considered by the parser.
-  Token token;
+  /// This is the current curTok being considered by the parser.
+  Token curTok;
 
   /// leading trivias for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
@@ -69,7 +70,7 @@ class Parser final {
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef trailingTrivia;
 
-  /// The location of the previous token.
+  /// The location of the previous tok.
   SrcLoc prevTokLoc;
 
   // PairDelimiterCount pairDelimiterCount;
@@ -95,9 +96,9 @@ public:
   ~Parser();
 
 public:
-  ParserStats &GetStats() { return *stats.get(); }
-  Lexer &GetLexer() { return *lexer.get(); }
-  const Token &GetCurTok() const { return token; }
+  ParserStats &GetStats() { return *stats; }
+  Lexer &GetLexer() { return *lexer; }
+  const Token &GetCurTok() const { return curTok; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
@@ -106,15 +107,9 @@ public:
 
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   Context &GetContext();
-  enum class Notification {
-    None,
-    DeclCreated,
-    StmtCreated,
-    ExprCreated,
-    TokenConsumed,
-  };
-  /// The current token hash, or \c None if the parser isn't computing a hash
-  /// for the token stream.
+
+  /// The current curTok hash, or \c None if the parser isn't computing a hash
+  /// for the curTok stream.
   llvm::Optional<StableHasher> currentTokenHash;
 
 public:
@@ -122,7 +117,7 @@ public:
     if (!Tok.GetText().empty())
       RecordTokenHash(Tok.GetText());
   }
-  void RecordTokenHash(StringRef token);
+  void RecordTokenHash(StringRef curTok);
 
 public:
   //===--------------------------------------------------------------------===//
@@ -191,47 +186,77 @@ public:
 
 public:
   /// Stop parsing now.
-  void Stop() { token.SetKind(tok::eof); }
+  void Stop() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
-  bool IsDone() { return token.GetKind() == tok::eof; }
+  bool IsDone() { return curTok.GetKind() == tok::eof; }
   bool HasError();
+
+public:
+  //===--------------------------------------------------------------------===//
+  // Routines to save and restore parser state.
+
+  SyntaxParsingPosition GetSyntaxParsingPosition() {
+    return SyntaxParsingPosition(
+        GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
+        prevTokLoc);
+  }
+
+  SyntaxParsingPosition GetSyntaxParsingPosition(SrcLoc loc,
+                                                 SrcLoc previousLoc) {
+    return SyntaxParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
+                                 previousLoc);
+  }
+
+  void RestoreSyntaxParsingPosition(SyntaxParsingPosition parsingPos,
+                                    bool enableDiagnostics = false) {
+    GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
+    GetLexer().Lex(curTok, leadingTrivia, trailingTrivia);
+    prevTokLoc = parsingPos.prevLoc;
+  }
+
+  // void backtrackToPosition(SyntaxParsingPosition parsingPos) {
+  //   assert(PP.isValid());
+  //   L->backtrackToState(PP.LS);
+  //   L->lex(Tok, LeadingTrivia, TrailingTrivia);
+  //   PreviousLoc = PP.PreviousLoc;
+  // }
 
 public:
   // == Token consumption ==//
   SrcLoc ConsumeToken(
-      Parser::Notification notification = Parser::Notification::TokenConsumed);
+      SyntaxParsingNotification notification = SyntaxParsingNotification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
-    assert(token.Is(kind) && "Consuming wrong token type");
-    return ConsumeToken(Parser::Notification::None);
+    assert(curTok.Is(kind) && "Consuming wrong curTok type");
+    return ConsumeToken(SyntaxParsingNotification::None);
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
-  /// If the current token is the specified kind, consume it and
+  /// If the current curTok is the specified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind) {
-    if (token.IsNot(kind)) {
+    if (curTok.IsNot(kind)) {
       return false;
     }
     ConsumeToken(kind);
     return true;
   }
-  /// If the current token is the specified kind, consume it and
+  /// If the current curTok is the specified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
-    if (token.IsNot(kind)) {
+    if (curTok.IsNot(kind)) {
       return false;
     }
     consumedLoc = ConsumeToken(kind);
     return true;
   }
-  /// Consume the starting '<' of the current token, which may either
-  /// be a complete '<' token or some kind of operator token starting with '<',
-  /// e.g., '<>'.
+  /// Consume the starting '<' of the current curTok, which may either
+  /// be a complete '<' curTok or some kind of operator curTok starting with
+  /// '<', e.g., '<>'.
   SrcLoc ConsumeStartingLess();
-  /// Consume the starting '>' of the current token, which may either
-  /// be a complete '>' token or some kind of operator token starting with '>',
-  /// e.g., '>>'.
+  /// Consume the starting '>' of the current curTok, which may either
+  /// be a complete '>' curTok or some kind of operator curTok starting with
+  /// '>', e.g., '>>'.
   SrcLoc ConsumeStartingGreater();
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
@@ -242,7 +267,7 @@ public:
   SyntaxStatus SkipUntil(tok T1, tok T2 = tok::MAX);
   void SkipUntilAnyOperator();
 
-  /// Skip until a token that starts with '>', and consume it if found.
+  /// Skip until a curTok that starts with '>', and consume it if found.
   /// Applies heuristics that are suitable when trying to find the end of a list
   /// of generic parameters, generic arguments, or list of types in a protocol
   /// composition.
@@ -256,13 +281,13 @@ public:
   void SkipUntilDeclRBrace(tok T1, tok T2);
   void SkipListUntilDeclRBrace(SrcLoc startLoc, tok T1, tok T2);
 
-  /// Skip a single token, but match parentheses, braces, and square brackets.
+  /// Skip a single curTok, but match parentheses, braces, and square brackets.
   ///
   /// Note: this does \em not match angle brackets ("<" and ">")! These are
   /// matched in the source when they refer to a generic type,
   /// but not when used as comparison operators.
   ///
-  /// Returns a parser status that can capture whether a code completion token
+  /// Returns a parser status that can capture whether a code completion curTok
   /// was returned.
   SyntaxStatus SkipSingle();
   /// Skip until the next '#else', '#endif' or until eof.
@@ -280,10 +305,10 @@ public:
   /// plain Tok.is(T1) check).
   bool SkipUntilTokenOrEndOfLine(tok T1, tok T2 = tok::MAX);
 
-  /// Skip a braced block (e.g. function body). The current token must be '{'.
+  /// Skip a braced block (e.g. function body). The current curTok must be '{'.
   /// Returns \c true if the parser hit the eof before finding matched '}'.
   ///
-  /// Set \c HasNestedTypeDeclarations to true if a token for a type
+  /// Set \c HasNestedTypeDeclarations to true if a curTok for a type
   /// declaration is detected in the skipped block.
   bool SkipBracedBlock(bool &hasNestedTypeDeclarations);
 
@@ -301,7 +326,7 @@ public:
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
-  InFlightDiagnostic PrintD(Token &token, Diag<> diagID);
+  InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
   // Helpers
@@ -311,23 +336,23 @@ private:
   //===--------------------------------------------------------------------===//
   // Helpers
 
-  bool IsRightBrace() { return (token.GetKind() == tok::r_brace); }
-  bool IsLeftBrace() { return (token.GetKind() == tok::l_brace); }
+  bool IsRightBrace() { return (curTok.GetKind() == tok::r_brace); }
+  bool IsLeftBrace() { return (curTok.GetKind() == tok::l_brace); }
 
   bool StartsWithSymbol(Token tok, char symbol) {
     return (tok.IsAnyOperator() || tok.IsPunctuation()) &&
            tok.GetText()[0] == symbol;
   }
-  /// Check whether the current token starts with '<'.
+  /// Check whether the current curTok starts with '<'.
   bool StartsWithLess(Token tok) { return StartsWithSymbol(tok, '<'); }
-  /// Check whether the current token starts with '>'.
+  /// Check whether the current curTok starts with '>'.
   bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
 
 public:
   Identifier &GetIdentifierOnly(llvm::StringRef text);
 };
 /// To assist debugging parser crashes, tell us the location of the
-/// current token.
+/// current curTok.
 class ParserPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
   Parser &parser;
 

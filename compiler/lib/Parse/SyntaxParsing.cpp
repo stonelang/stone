@@ -44,4 +44,11 @@ void SyntaxParsingScope::ExitScope() {
 }
 SyntaxParsingScope::~SyntaxParsingScope() { ExitScope(); }
 
+SyntaxParsingPositionRAII::SyntaxParsingPositionRAII(Parser &parser)
+    : parser(parser), parsingPos(parser.GetSyntaxParsingPosition()) {}
+
+SyntaxParsingPositionRAII::~SyntaxParsingPositionRAII() {
+  parser.RestoreSyntaxParsingPosition(parsingPos);
+}
+
 SyntaxParsing::SyntaxParsing() {}
