@@ -3,24 +3,25 @@
 
 using namespace stone;
 
-CompilerInstance::CompilerInstance(Frontend &frontend) : frontend(frontend) {
+CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
+    : invocation(invocation) {
 
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
-      frontend.GetContext(), frontend.GetSearchPathOptions());
+      invocation.GetContext(), invocation.GetSearchPathOptions());
   syntax = std::make_unique<syn::Syntax>(std::move(syntaxContext));
 
-  moduleSystem =
-      std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetContext(),
-                                     frontend.GetFrontendOptions().moduleOpts);
+  moduleSystem = std::make_unique<ModuleSystem>(
+      *syntax.get(), invocation.GetContext(),
+      invocation.GetFrontendOptions().moduleOpts);
 
   stats = std::make_unique<CompilerInstanceStats>(*this);
-  frontend.GetContext().GetStatEngine().Register(stats.get());
-
+  invocation.GetContext().GetStatEngine().Register(stats.get());
 }
 CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
-CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
+CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
+                                      Context &ctx) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
@@ -39,7 +40,6 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename, Context &c
 //   assert(false && "Not implemented");
 //   return llvm::StringRef();
 // }
-
 
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetFrontendOpts().printStats) {

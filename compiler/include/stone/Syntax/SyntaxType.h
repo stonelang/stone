@@ -50,7 +50,6 @@ class alignas(1 << TypeAlignInBits) SyntaxType
 public:
 };
 
-
 /// const int a = 10; volatile int a = 10;
 class alignas(1 << QualTypeAlignInBits) QualType
     : public SyntaxAllocation<QualType> {
@@ -178,7 +177,8 @@ public:
 //   //   ID.AddPointer(Pointee.getAsOpaquePtr());
 //   // }
 
-//   // static bool classof(const Type *T) { return T->getTypeClass() == Pointer; }
+//   // static bool classof(const Type *T) { return T->getTypeClass() ==
+//   Pointer; }
 // };
 
 // /// Base for LValueReferenceType and RValueReferenceType
@@ -186,7 +186,8 @@ public:
 //   //   QualType PointeeType;
 
 //   // protected:
-//   //   ReferenceType(TypeClass tc, QualType Referencee, QualType CanonicalRef,
+//   //   ReferenceType(TypeClass tc, QualType Referencee, QualType
+//   CanonicalRef,
 //   //                 bool SpelledAsLValue)
 //   //       : Type(tc, CanonicalRef, Referencee->getDependence()),
 //   //         PointeeType(Referencee) {
@@ -249,7 +250,8 @@ public:
 //   //   friend class ASTContext; // ASTContext creates these
 
 //   //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false) {}
+//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false)
+//   {}
 
 //   // public:
 //   //   bool isSugared() const { return false; }
@@ -262,8 +264,9 @@ public:
 
 // /// A pointer to member type per C++ 8.3.3 - Pointers to members.
 // ///
-// /// This includes both pointers to data members and pointer to member functions.
-// class MemberPointerType : public Type, public llvm::FoldingSetNode {
+// /// This includes both pointers to data members and pointer to member
+// functions. class MemberPointerType : public Type, public llvm::FoldingSetNode
+// {
 //   //   friend class ASTContext; // ASTContext creates these.
 
 //   //   QualType PointeeType;
@@ -275,7 +278,8 @@ public:
 //   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
 //   //   CanonicalPtr)
 //   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() & ~TypeDependence::VariablyModified) |
+//   //              (Cls->getDependence() & ~TypeDependence::VariablyModified)
+//   |
 //   //                  Pointee->getDependence()),
 //   //         PointeeType(Pointee), Class(Cls) {}
 

@@ -35,8 +35,7 @@ class TargetMachine;
 namespace stone {
 
 class Frontend;
-class FrontendListener;
-
+class CompilerListener;
 
 struct ModuleBuffers {
 
@@ -54,15 +53,14 @@ struct ModuleBuffers {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-class Frontend final : public Session {
+class CompilerInvocation final : public Session {
 
-  FrontendListener *listener = nullptr;
+  CompilerListener *listener = nullptr;
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<FrontendOptions> frontendOpts;
+  std::unique_ptr<FrontendOptions> invocationOpts;
 
- 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
 
@@ -83,7 +81,6 @@ class Frontend final : public Session {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceIDs;
 
-
   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
   /// Code completion offset in bytes from the beginning of the main
   /// source file.  Valid only if \c isCodeCompletion() == true.
@@ -92,9 +89,9 @@ class Frontend final : public Session {
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
-  Frontend(llvm::StringRef programName, llvm::StringRef programPath,
-           FrontendListener *listener = nullptr);
-  ~Frontend();
+  CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
+                     CompilerListener *listener = nullptr);
+  ~CompilerInvocation();
 
 public:
   // llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
@@ -119,7 +116,8 @@ public:
   // }
 
   stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
-  std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
+
+  // std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
 
   void Finish() override;
 
@@ -127,9 +125,9 @@ public:
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
-  FrontendOptions &GetFrontendOptions() { return *frontendOpts.get(); }
+  FrontendOptions &GetFrontendOptions() { return *invocationOpts.get(); }
   const FrontendOptions &GetFrontendOptions() const {
-    return *frontendOpts.get();
+    return *invocationOpts.get();
   }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
@@ -154,8 +152,8 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  FrontendListener *GetListener() { return listener; }
-  void SetListener(FrontendListener *l) { listener = l; }
+  CompilerListener *GetListener() { return listener; }
+  void SetListener(CompilerListener *l) { listener = l; }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const FrontendInputFile &input);
@@ -163,7 +161,7 @@ public:
                                          const bool shouldRecover,
                                          bool &failed);
 
-  llvm::BumpPtrAllocator& GetMemAllocator() { return bumpAlloc; }
+  llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 

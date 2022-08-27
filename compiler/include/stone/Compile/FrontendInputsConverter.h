@@ -13,7 +13,7 @@ namespace stone {
 class DiagnosticEngine;
 
 class FrontendInputsConverter {
-  FrontendOptions &frontendOpts;
+  FrontendOptions &invocationOpts;
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
 
@@ -23,21 +23,21 @@ class FrontendInputsConverter {
 
   llvm::SetVector<llvm::StringRef> files;
   /// A place to keep alive any buffers that are loaded as part of setting up
-  /// the frontend inputs.
+  /// the invocation inputs.
   llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
       configurationFileBuffers;
 
 public:
   FrontendInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                          FrontendOptions &frontendOpts);
+                          FrontendOptions &invocationOpts);
 
 public:
   /// Produces a FrontendInputsAndOutputs object with the inputs populated from
   /// the arguments the converter was initialized with.
   ///
-  /// \param buffers If present, buffers read in the processing of the frontend
-  /// inputs will be saved here. These should only be used for debugging
-  /// purposes.
+  /// \param buffers If present, buffers read in the processing of the
+  /// invocation inputs will be saved here. These should only be used for
+  /// debugging purposes.
   llvm::Optional<FrontendInputsAndOutputs>
   Convert(SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 

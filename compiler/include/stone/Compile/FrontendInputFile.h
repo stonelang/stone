@@ -12,11 +12,11 @@
 
 namespace stone {
 /// An \c FrontendInputFile encapsulates information about an input passed to
-/// the frontend.
+/// the invocation.
 ///
-/// CompilerInstance inputs are usually passed on the command line without a leading
-/// flag. However, there are clients that use the \c CompilerInvocation as
-/// a library like LLDB and SourceKit that generate their own \c
+/// CompilerInstance inputs are usually passed on the command line without a
+/// leading flag. However, there are clients that use the \c CompilerInvocation
+/// as a library like LLDB and SourceKit that generate their own \c
 /// FrontendInputFile instances programmatically. Note that an \c
 /// FrontendInputFile need not actually be backed by a physical file, nor does
 /// its file name actually reflect its contents. \c FrontendInputFile has a
@@ -64,7 +64,8 @@ public:
   /// Retrieves the type of this input file.
   file::Type GetType() const { return fileTy; };
 
-  /// Retrieves whether this input file was passed as a primary to the frontend.
+  /// Retrieves whether this input file was passed as a primary to the
+  /// invocation.
   bool IsPrimary() const { return bufferAndIsPrimary.getInt(); }
 
   /// Retrieves the backing buffer for this input file, if any.

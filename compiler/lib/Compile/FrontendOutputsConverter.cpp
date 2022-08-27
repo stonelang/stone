@@ -192,9 +192,9 @@ FrontendOutputFilesComputer::ComputeOutputFiles() const {
 llvm::Optional<std::string> FrontendOutputFilesComputer::ComputeOutputFile(
     StringRef outputArg, const FrontendInputFile &input) const {
   // Return an empty string to signify no output.
-  // The frontend does not currently produce a diagnostic
+  // The invocation does not currently produce a diagnostic
   // if a -o argument is present for such an action
-  // for instance stonec -frontend -o foo -interpret foo.stone
+  // for instance stonec -invocation -o foo -interpret foo.stone
   if (!mode.CanOutput()) {
     return std::string();
   }

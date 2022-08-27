@@ -18,10 +18,10 @@ class MemoryBuffer;
 namespace stone {
 
 class DiagnosticEngine;
-/// Information about all the inputs and outputs to the frontend.
+/// Information about all the inputs and outputs to the invocation.
 
 class FrontendInputsAndOutputs {
-  friend class FrontendInputsConverter;
+  friend class CompilerInvocationInputsConverter;
 
   std::vector<FrontendInputFile> inputs;
 
@@ -169,7 +169,7 @@ public:
 
   // Outputs
 private:
-  friend class FrontendOptionsConverter;
+  friend class CompilerInvocationOptionsConverter;
   friend struct InterfaceSubContextDelegateImpl;
 
   void SetMainAndSupplementaryOutputs(

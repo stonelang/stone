@@ -3,9 +3,7 @@
 
 #include <stdint>
 
-
 namespace stone {
-
 
 using UInt32 = uint32_t;
 using UInt64 = uint64_t;

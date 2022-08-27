@@ -7,17 +7,17 @@ using namespace stone;
 
 static Error ComputeFrontendOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
-    FrontendOptions &frontendOpts,
+    FrontendOptions &invocationOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
-  FrontendOptionsConverter converter(de, ial, langOpts, frontendOpts);
+  FrontendOptionsConverter converter(de, ial, langOpts, invocationOpts);
 
   return Error(converter.Convert(buffers));
 }
 
 static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
                                 DiagnosticEngine &de,
-                                FrontendOptions &frontendOpts,
+                                FrontendOptions &invocationOpts,
                                 LangOptions &langOpts) {
 
   return Error();
@@ -25,7 +25,7 @@ static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
 
 static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
                                    DiagnosticEngine &de,
-                                   FrontendOptions &frontendOpts,
+                                   FrontendOptions &invocationOpts,
                                    CodeGenOptions &codeGenOpts) {
 
   return Error();
@@ -33,7 +33,7 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
 
 static Error
 ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
-                          FrontendOptions &frontendOpts,
+                          FrontendOptions &invocationOpts,
                           sem::TypeCheckerOptions &typeCheckerOpts) {
 
   return Error();
@@ -41,32 +41,32 @@ ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
 
 static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
                                       DiagnosticEngine &de,
-                                      FrontendOptions &frontendOpts,
+                                      FrontendOptions &invocationOpts,
                                       SearchPathOptions &searchPathOpts) {
   return Error();
 }
 
-Error Frontend::ComputeOptions(llvm::opt::InputArgList &ial) {
+Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
 
-  frontendOpts = std::make_unique<FrontendOptions>(Mode::Create(ial));
-  if (frontendOpts->GetMode().IsAlien()) {
+  invocationOpts = std::make_unique<FrontendOptions>(Mode::Create(ial));
+  if (invocationOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  auto frontendOptsErr =
+  auto invocationOptsErr =
       ComputeFrontendOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                             GetContext().GetLangOptions(), *frontendOpts,
+                             GetContext().GetLangOptions(), *invocationOpts,
                              nullptr /* pass null for now*/);
-  if (frontendOptsErr.Has()) {
+  if (invocationOptsErr.Has()) {
   }
   ComputeLangOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                     *frontendOpts, GetContext().GetLangOptions());
+                     *invocationOpts, GetContext().GetLangOptions());
 
   ComputeTypeCheckerOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                            *frontendOpts, typeCheckerOpts);
+                            *invocationOpts, typeCheckerOpts);
   ComputeSearchPathOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                           *frontendOpts, searchPathOpts);
+                           *invocationOpts, searchPathOpts);
   ComputeCodeGenOptions(ial, GetContext().GetDiagUnit().GetDiagEngine(),
-                        *frontendOpts, codeGenOpts);
+                        *invocationOpts, codeGenOpts);
 
   return Error();
 }

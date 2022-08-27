@@ -95,7 +95,7 @@ private:
 
   /// \return the correct output filename when none was specified.
   ///
-  /// Such an absence should only occur when invoking the frontend
+  /// Such an absence should only occur when invoking the invocation
   /// without the driver,
   /// because the driver will always pass -o with an appropriate filename
   /// if output is required for the requested action.
@@ -104,7 +104,7 @@ private:
 
   /// \return the correct output filename when a directory was specified.
   ///
-  /// Such a specification should only occur when invoking the frontend
+  /// Such a specification should only occur when invoking the invocation
   /// directly, because the driver will always pass -o with an appropriate
   /// filename if output is required for the requested action.
   Optional<std::string>

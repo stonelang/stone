@@ -210,7 +210,6 @@ class CanType : public Type {
 public:
 };
 
-
 } // namespace syn
 } // namespace stone
 #endif

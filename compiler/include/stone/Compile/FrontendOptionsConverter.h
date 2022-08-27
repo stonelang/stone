@@ -14,7 +14,7 @@ class FrontendOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
   LangOptions &langOpts;
-  FrontendOptions &frontendOpts;
+  FrontendOptions &invocationOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -41,8 +41,10 @@ private:
 
 public:
   FrontendOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                           LangOptions &langOpts, FrontendOptions &frontendOpts)
-      : de(de), args(args), langOpts(langOpts), frontendOpts(frontendOpts) {}
+                           LangOptions &langOpts,
+                           FrontendOptions &invocationOpts)
+      : de(de), args(args), langOpts(langOpts), invocationOpts(invocationOpts) {
+  }
 
 public:
   stone::Error

@@ -26,11 +26,11 @@ stone::Error FrontendOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
-  // assert(frontendOpts.inputsAndOutputs.HasInputs() &&
+  // assert(invocationOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
 
   llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
-      FrontendInputsConverter(de, args, frontendOpts).Convert(buffers);
+      FrontendInputsConverter(de, args, invocationOpts).Convert(buffers);
 
   // None here means error, not just "no inputs". Propagage unconditionally.
   if (!inputsAndOutputs) {
@@ -38,28 +38,28 @@ stone::Error FrontendOptionsConverter::Convert(
   }
 
   bool haveNewInputsAndOutputs = false;
-  if (frontendOpts.GetFrontendInputsAndOutputs().HasInputs()) {
+  if (invocationOpts.GetFrontendInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
 
     haveNewInputsAndOutputs = true;
-    frontendOpts.GetFrontendInputsAndOutputs() =
+    invocationOpts.GetFrontendInputsAndOutputs() =
         std::move(inputsAndOutputs).getValue();
 
-    if (frontendOpts.allowModuleWithCompilerErrors) {
-      frontendOpts.GetFrontendInputsAndOutputs()
+    if (invocationOpts.allowModuleWithCompilerErrors) {
+      invocationOpts.GetFrontendInputsAndOutputs()
           .SetShouldRecoverMissingInputs();
     }
   }
 
-  if (frontendOpts.GetFrontendInputsAndOutputs()
+  if (invocationOpts.GetFrontendInputsAndOutputs()
           .ShouldTreatAsModuleInterface()) {
-    frontendOpts.inputFileMode =
+    invocationOpts.inputFileMode =
         FrontendOptions::InputFileMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
-    frontendOpts.inputFileMode = FrontendOptions::InputFileMode::StoneLibrary;
+    invocationOpts.inputFileMode = FrontendOptions::InputFileMode::StoneLibrary;
   } else {
-    frontendOpts.inputFileMode = FrontendOptions::InputFileMode::Stone;
+    invocationOpts.inputFileMode = FrontendOptions::InputFileMode::Stone;
   }
 
   if (ComputeModuleName().Has()) {
@@ -73,47 +73,47 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
-  frontendOpts.moduleOpts.moduleAliasMap.clear();
+  invocationOpts.moduleOpts.moduleAliasMap.clear();
 
   const Arg *A = args.getLastArg(opts::ModuleName);
   if (A) {
-    frontendOpts.moduleOpts.moduleName = A->getValue();
-  } else if (frontendOpts.moduleOpts.moduleName.empty()) {
+    invocationOpts.moduleOpts.moduleName = A->getValue();
+  } else if (invocationOpts.moduleOpts.moduleName.empty()) {
     // The user did not specify a module name, so determine a default fallback
     // based on other options.
 
-    // Note: this code path will only be taken when running the frontend
+    // Note: this code path will only be taken when running the invocation
     // directly; the driver should always pass -module-name when invoking the
-    // frontend.
+    // invocation.
     if (ComputeFallbackModuleName().Has())
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(frontendOpts.moduleOpts.moduleName)
+  if (!ModuleSystem::IsValidModuleName(invocationOpts.moduleOpts.moduleName)
            .Has()) {
     return stone::Error();
   }
 
-  if (frontendOpts.moduleOpts.moduleName != strings::StdLibName) {
+  if (invocationOpts.moduleOpts.moduleName != strings::StdLibName) {
     return stone::Error();
   }
 
-  if (frontendOpts.shouldParseAsStdLib) {
+  if (invocationOpts.shouldParseAsStdLib) {
     return stone::Error();
   }
 
   // TODO:
-  //  if (Lexer::isIdentifier(frontendOpts.moduleName) &&
-  //      (frontendOpts.moduleName != strings::StdLibName ||
-  //      frontendOpts.parseStdLib)) {
+  //  if (Lexer::isIdentifier(invocationOpts.moduleName) &&
+  //      (invocationOpts.moduleName != strings::StdLibName ||
+  //      invocationOpts.parseStdLib)) {
   //    return false;
   //  }
-  //  if (!FrontendOptions::NeedsProperModuleName(frontendOpts.modeKind) ||
-  //      frontendOpts.IsCompilingExactlyOneStoneFile()) {
-  //    frontendOpts.ModuleName = strings::MainFileName;
+  //  if (!FrontendOptions::NeedsProperModuleName(invocationOpts.modeKind) ||
+  //      invocationOpts.IsCompilingExactlyOneStoneFile()) {
+  //    invocationOpts.ModuleName = strings::MainFileName;
   //    return false;
   //  }
-  //  auto DID = (frontendOpts.noduleName == STDLIB_NAME) ?
+  //  auto DID = (invocationOpts.noduleName == STDLIB_NAME) ?
   //  diag::error_stdlib_module_name
   //                                              : diag::error_bad_module_name;
   //  Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
@@ -136,10 +136,11 @@ stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
               outputFilenames->front() != "-" &&
               !llvm::sys::fs::is_directory(outputFilenames->front())
           ? outputFilenames->front()
-          : frontendOpts.GetFrontendInputsAndOutputs()
+          : invocationOpts.GetFrontendInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
-  frontendOpts.moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
+  invocationOpts.moduleOpts.moduleName =
+      llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

@@ -17,12 +17,12 @@ void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
                                   llvm::SmallVectorImpl<const char *> &Args);
 
 /// Generates the list of arguments that would be passed to the compiler
-/// frontend from the given driver arguments.
+/// invocation from the given driver arguments.
 ///
 /// \param ArgList The driver arguments (i.e. normal arguments for \c stonec).
 /// \param Diags The DiagnosticEngine used to report any errors parsing the
 /// arguments.
-/// \param Phase Called with the list of frontend arguments if there were no
+/// \param Phase Called with the list of invocation arguments if there were no
 /// errors in processing \p ArgList. This is a callback rather than a return
 /// value to avoid copying the arguments more than necessary.
 /// \param ForceNoOutputs If true, override the output mode to "-typecheck" and

@@ -16,10 +16,10 @@
 using namespace stone;
 using namespace llvm::opt;
 
-FrontendInputsConverter::FrontendInputsConverter(DiagnosticEngine &de,
-                                                 const llvm::opt::ArgList &args,
-                                                 FrontendOptions &frontendOpts)
-    : de(de), args(args), frontendOpts(frontendOpts),
+FrontendInputsConverter::FrontendInputsConverter(
+    DiagnosticEngine &de, const llvm::opt::ArgList &args,
+    FrontendOptions &invocationOpts)
+    : de(de), args(args), invocationOpts(invocationOpts),
       fileListPathArg(args.getLastArg(opts::FileList)),
       primaryFileListPathArg(args.getLastArg(opts::PrimaryFileList)),
       badFileDescriptorRetryCountArg(
@@ -52,9 +52,9 @@ llvm::Optional<FrontendInputsAndOutputs> FrontendInputsConverter::Convert(
     return llvm::None;
   }
 
-  FrontendInputsAndOutputs frontendInputsAndOutputs;
+  FrontendInputsAndOutputs invocationInputsAndOutputs;
   std::set<llvm::StringRef> unusedPrimaryFiles;
-  std::tie(frontendInputsAndOutputs, unusedPrimaryFiles) =
+  std::tie(invocationInputsAndOutputs, unusedPrimaryFiles) =
       CreateInputFilesConsumingPrimaries(*primaryFiles);
 
   if (DiagnoseUnusedPrimaryFiles(unusedPrimaryFiles)) {
@@ -62,10 +62,10 @@ llvm::Optional<FrontendInputsAndOutputs> FrontendInputsConverter::Convert(
   }
 
   // Must be set before iterating over inputs needing outputs.
-  frontendInputsAndOutputs.SetBypassBatchModeChecks(
+  invocationInputsAndOutputs.SetBypassBatchModeChecks(
       args.hasArg(opts::BypassBatchModeChecks));
 
-  return std::move(frontendInputsAndOutputs);
+  return std::move(invocationInputsAndOutputs);
 }
 
 bool FrontendInputsConverter::EnforceFilelistExclusion() {
@@ -87,7 +87,7 @@ bool FrontendInputsConverter::ReadInputFilesFromCommandLine() {
   bool hasDuplicate = false;
   for (const Arg *A : args.filtered(opts::INPUT, opts::PrimaryFile)) {
     hasDuplicate = AddFile(A->getValue());
-    if (hasDuplicate && !frontendOpts.shouldProcessDuplicateInputFile) {
+    if (hasDuplicate && !invocationOpts.shouldProcessDuplicateInputFile) {
       return true;
     }
   }
@@ -104,7 +104,7 @@ bool FrontendInputsConverter::ReadInputFilesFromFilelist() {
   if (hadError) {
     return true;
   }
-  if (hasDuplicate && frontendOpts.shouldProcessDuplicateInputFile) {
+  if (hasDuplicate && invocationOpts.shouldProcessDuplicateInputFile) {
     return true;
   }
   return false;
@@ -180,10 +180,10 @@ FrontendInputsConverter::CreateInputFilesConsumingPrimaries(
     std::set<llvm::StringRef> primaryFiles) {
 
   bool hasAnyPrimaryFiles = !primaryFiles.empty();
-  FrontendInputsAndOutputs frontendInputsAndOutputs;
+  FrontendInputsAndOutputs invocationInputsAndOutputs;
   for (auto &file : files) {
     bool isPrimary = primaryFiles.count(file) > 0;
-    frontendInputsAndOutputs.AddInput(FrontendInputFile(file, isPrimary));
+    invocationInputsAndOutputs.AddInput(FrontendInputFile(file, isPrimary));
     if (isPrimary) {
       primaryFiles.erase(file);
     }
@@ -195,11 +195,11 @@ FrontendInputsConverter::CreateInputFilesConsumingPrimaries(
             GetOutputFilenamesFromCommandLineOrFileList(args, de, opts::o,
                                                         opts::OutputFileList);
     if (userSuppliedNamesOrErr && userSuppliedNamesOrErr->size() == 1) {
-      frontendInputsAndOutputs.SetIsSingleThreadedWMO(true);
+      invocationInputsAndOutputs.SetIsSingleThreadedWMO(true);
     }
   }
 
-  return {std::move(frontendInputsAndOutputs), std::move(primaryFiles)};
+  return {std::move(invocationInputsAndOutputs), std::move(primaryFiles)};
 }
 
 bool FrontendInputsConverter::DiagnoseUnusedPrimaryFiles(

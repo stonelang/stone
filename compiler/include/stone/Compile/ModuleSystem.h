@@ -20,7 +20,7 @@ public:
 };
 class ModuleSystem final {
   // TODO: We need built-in information
-  friend class Frontend;
+  friend class CompilerInvocation;
 
   Context &ctx;
   syn::Syntax &syntax;

@@ -21,20 +21,21 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
 
 // using CompileWithGenIRCallback = llvm::function_ref<void(
-//     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
+//     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
+//     &result)>;
 
 class CompilerInstanceStats final : public Stats {
   CompilerInstance &compiler;
 
 public:
   CompilerInstanceStats(CompilerInstance &compiler)
-      : Stats("Frontend statistics:"), compiler(compiler) {}
+      : Stats("CompilerInvocationstatistics:"), compiler(compiler) {}
   void Print(ColorfulStream &stream) override;
 };
 
 class CompilerInstance final {
 
-  Frontend &frontend;
+  CompilerInvocation &invocation;
   std::unique_ptr<syn::Syntax> syntax;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<PackageSystem> pkgSystem;
@@ -53,7 +54,7 @@ public:
   CompilerInstance(CompilerInstance &&) = delete;
   void operator=(CompilerInstance &&) = delete;
 
-  CompilerInstance(Frontend &frontend);
+  CompilerInstance(CompilerInvocation &invocation);
   ~CompilerInstance();
 
 public:
@@ -63,10 +64,10 @@ public:
   syn::Syntax &GetSyntax() { return *syntax.get(); }
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
   PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
-  Frontend &GetFrontend() { return frontend; }
+  CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
-    return GetFrontend().GetFrontendOptions().GetMode().CanCompile();
+    return GetInvocation().GetFrontendOptions().GetMode().CanCompile();
   }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
