@@ -7,16 +7,15 @@
 
 namespace stone {
 
-class Compiler;
-
+class CompilerInstance;
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
 using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
-using SemanticAnalysisCallback = llvm::function_ref<void(Compiler &)>;
+using SemanticAnalysisCallback = llvm::function_ref<void(CompilerInstance &)>;
 
-// using IRCodeGenCallback = llvm::function_ref<void(Compiler &)>;
-// using NativeCodeGenCallback = llvm::function_ref<void(Compiler &)>;
+// using IRCodeGenCallback = llvm::function_ref<void(CompilerInstance &)>;
+// using NativeCodeGenCallback = llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
@@ -24,22 +23,22 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 // using CompileWithGenIRCallback = llvm::function_ref<void(
 //     Frontend &frontend, CodeGenContext &cgc, IRCodeGenResult &result)>;
 
-class CompilerStats final : public Stats {
-  Compiler &compiler;
+class CompilerInstanceStats final : public Stats {
+  CompilerInstance &compiler;
 
 public:
-  CompilerStats(Compiler &compiler)
+  CompilerInstanceStats(CompilerInstance &compiler)
       : Stats("Frontend statistics:"), compiler(compiler) {}
   void Print(ColorfulStream &stream) override;
 };
 
-class Compiler final {
+class CompilerInstance final {
 
   Frontend &frontend;
   std::unique_ptr<syn::Syntax> syntax;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<PackageSystem> pkgSystem;
-  std::unique_ptr<CompilerStats> stats;
+  std::unique_ptr<CompilerInstanceStats> stats;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -49,13 +48,13 @@ class Compiler final {
   // llvm::SetVector<unsigned> primaryBufferIDs;
 
 public:
-  Compiler(const Compiler &) = delete;
-  void operator=(const Compiler &) = delete;
-  Compiler(Compiler &&) = delete;
-  void operator=(Compiler &&) = delete;
+  CompilerInstance(const CompilerInstance &) = delete;
+  void operator=(const CompilerInstance &) = delete;
+  CompilerInstance(CompilerInstance &&) = delete;
+  void operator=(CompilerInstance &&) = delete;
 
-  Compiler(Frontend &frontend);
-  ~Compiler();
+  CompilerInstance(Frontend &frontend);
+  ~CompilerInstance();
 
 public:
   void Finish();

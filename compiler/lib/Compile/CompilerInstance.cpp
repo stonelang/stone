@@ -1,9 +1,9 @@
-#include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerInstance.h"
 #include "stone/Diag/FrontendDiagnostic.h"
 
 using namespace stone;
 
-Compiler::Compiler(Frontend &frontend) : frontend(frontend) {
+CompilerInstance::CompilerInstance(Frontend &frontend) : frontend(frontend) {
 
   auto syntaxContext = std::make_unique<syn::SyntaxContext>(
       frontend.GetContext(), frontend.GetSearchPathOptions());
@@ -13,14 +13,14 @@ Compiler::Compiler(Frontend &frontend) : frontend(frontend) {
       std::make_unique<ModuleSystem>(*syntax.get(), frontend.GetContext(),
                                      frontend.GetFrontendOptions().moduleOpts);
 
-  stats = std::make_unique<CompilerStats>(*this);
+  stats = std::make_unique<CompilerInstanceStats>(*this);
   frontend.GetContext().GetStatEngine().Register(stats.get());
 
 }
-Compiler::~Compiler() {}
+CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
-Compiler::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
+CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
@@ -32,16 +32,16 @@ Compiler::GetFileOutputStream(llvm::StringRef outputFilename, Context &ctx) {
   }
   return os;
 }
-// void Compiler::FinishTypeCheck() {
+// void CompilerInstance::FinishTypeCheck() {
 // }
 
-// llvm::StringRef Compiler::ComputeSourceOutputFile(unsigned srcID) {
+// llvm::StringRef CompilerInstance::ComputeSourceOutputFile(unsigned srcID) {
 //   assert(false && "Not implemented");
 //   return llvm::StringRef();
 // }
 
 
-void CompilerStats::Print(ColorfulStream &stream) {
+void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetFrontendOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;

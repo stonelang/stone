@@ -3,7 +3,7 @@
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/DebugFrontendListener.h"
 #include "stone/Compile/Frontend.h"
 #include "stone/Compile/FrontendListener.h"
@@ -115,7 +115,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(1);
   }
 
-  Compiler compiler(frontend);
+  CompilerInstance compiler(frontend);
   compiler.Compile();
 
   if (frontend.HasError()) {
@@ -124,16 +124,16 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-static void DumpIR(Compiler &compiler, CodeGenContext &cgc,
+static void DumpIR(CompilerInstance &compiler, CodeGenContext &cgc,
                    IRCodeGenResult &result) {}
 
-static void PrintIR(Compiler &compiler, CodeGenContext &cgc,
+static void PrintIR(CompilerInstance &compiler, CodeGenContext &cgc,
                     IRCodeGenResult &result) {}
 
 using CompileWithGenIRCallback = llvm::function_ref<void(
-    Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
+    CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
 
-static void CompileWithGenIR(Compiler &compiler,
+static void CompileWithGenIR(CompilerInstance &compiler,
                              stone::ModuleSyntaxFileUnion msf,
                              CodeGenContext &cgc,
                              CompileWithGenIRCallback client) {
@@ -160,10 +160,10 @@ static void CompileWithGenIR(Compiler &compiler,
   }
 }
 
-static void GenModule(Compiler &compiler, CodeGenContext &cgc,
+static void GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
                       IRCodeGenResult &result) {}
 
-static void CompileWithGenNative(Compiler &compiler, CodeGenContext &cgc,
+static void CompileWithGenNative(CompilerInstance &compiler, CodeGenContext &cgc,
                                  IRCodeGenResult &result) {
 
   auto targetMachine = stone::CreateTargetMachine(
@@ -175,7 +175,7 @@ static void CompileWithGenNative(Compiler &compiler, CodeGenContext &cgc,
 
   cgc.TakeTargetMachine(std::move(targetMachine));
 
-  auto ComputeNativeModeKind = [&](Compiler &compiler) -> void {
+  auto ComputeNativeModeKind = [&](CompilerInstance &compiler) -> void {
     switch (compiler.GetFrontend().GetFrontendOptions().GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitObject:
@@ -199,7 +199,7 @@ static void CompileWithGenNative(Compiler &compiler, CodeGenContext &cgc,
                               result, nullptr);
 }
 
-static void CompileWithCodeGen(Compiler &compiler) {
+static void CompileWithCodeGen(CompilerInstance &compiler) {
 
   assert(compiler.GetFrontend().GetFrontendOptions().GetMode().CanCodeGen());
 
@@ -216,25 +216,25 @@ static void CompileWithCodeGen(Compiler &compiler) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(
         compiler, mainModule, cgc,
-        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+        [&](CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
           return GenModule(compiler, cgc, result);
         });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
         compiler, mainModule, cgc,
-        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+        [&](CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
           return DumpIR(compiler, cgc, result);
         });
   case ModeKind::PrintIR:
     return CompileWithGenIR(
         compiler, mainModule, cgc,
-        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+        [&](CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
           return PrintIR(compiler, cgc, result);
         });
   default:
     return CompileWithGenIR(
         compiler, mainModule, cgc,
-        [&](Compiler &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
+        [&](CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result) {
           return CompileWithGenNative(compiler, cgc, result);
         });
   }
@@ -242,9 +242,9 @@ static void CompileWithCodeGen(Compiler &compiler) {
 
 static void DumpSyntax(syn::SyntaxFile &sf) {}
 
-static void PrintSyntax(Compiler &compiler) {}
+static void PrintSyntax(CompilerInstance &compiler) {}
 
-void Compiler::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
 
   switch (frontend.GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
@@ -265,13 +265,13 @@ void Compiler::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   }
   }
 }
-void Compiler::CompileWithSyntaxAnalysis() {
+void CompilerInstance::CompileWithSyntaxAnalysis() {
   CompileWithSyntaxAnalysis([&](syn::SyntaxFile &sf) {
     return [&](syn::SyntaxFile &sf) -> void {}(sf);
   });
 }
 
-void Compiler::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
+void CompilerInstance::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
 
   for (auto sourceBufferID : frontend.GetSourceBufferIDs()) {
     auto syntaxFile = SyntaxFile::Make(
@@ -291,14 +291,14 @@ void Compiler::CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client) {
   }
 }
 
-void Compiler::ResolveUsings() {
+void CompilerInstance::ResolveUsings() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
       sem::ResolveUsings(*syntaxFile);
   }
 }
-void Compiler::CompileWithSemanticAnalysis() {
+void CompilerInstance::CompileWithSemanticAnalysis() {
 
   CompileWithSyntaxAnalysis();
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
@@ -313,12 +313,12 @@ void Compiler::CompileWithSemanticAnalysis() {
   }
 }
 
-void Compiler::CompileWithSemanticAnalysis(SemanticAnalysisCallback client) {
+void CompilerInstance::CompileWithSemanticAnalysis(SemanticAnalysisCallback client) {
   CompileWithSemanticAnalysis();
   client(*this);
 }
 
-void Compiler::Compile() {
+void CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
 
@@ -337,9 +337,9 @@ void Compiler::Compile() {
     return CompileWithSemanticAnalysis();
   case ModeKind::PrintSyntax:
     return CompileWithSemanticAnalysis(
-        [&](Compiler &compiler) { return PrintSyntax(*this); });
+        [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
   default:
     return CompileWithSemanticAnalysis(
-        [&](Compiler &compiler) { return CompileWithCodeGen(*this); });
+        [&](CompilerInstance &compiler) { return CompileWithCodeGen(*this); });
   }
 }

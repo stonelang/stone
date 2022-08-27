@@ -14,7 +14,7 @@ namespace stone {
 /// An \c FrontendInputFile encapsulates information about an input passed to
 /// the frontend.
 ///
-/// Compiler inputs are usually passed on the command line without a leading
+/// CompilerInstance inputs are usually passed on the command line without a leading
 /// flag. However, there are clients that use the \c CompilerInvocation as
 /// a library like LLDB and SourceKit that generate their own \c
 /// FrontendInputFile instances programmatically. Note that an \c

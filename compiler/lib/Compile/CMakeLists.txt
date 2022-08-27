@@ -1,6 +1,6 @@
 set(stone_compile_sources
 	Compile.cpp
-	Compiler.cpp
+	CompilerInstance.cpp
 	Deserialization.cpp
 	DebugFrontendListener.cpp
 	Frontend.cpp
