@@ -255,6 +255,15 @@ class SyntaxParsingCache {
 public:
 };
 
+/// To assist debugging parser crashes, tell us the location of the
+/// current curTok.
+class SyntaxParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
+  Parser &parser;
+public:
+  explicit SyntaxParsingPrettyStackTrace(Parser &parser);
+  void print(llvm::raw_ostream &out) const override;
+};
+
 class SyntaxParsing final {
 
   // SyntaxParsingScope syntaxParsingScope;

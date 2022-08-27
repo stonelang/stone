@@ -164,7 +164,6 @@ public:
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
-
   void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
     lexer->Lex(result, leading, trailing);
   }
@@ -208,14 +207,14 @@ public:
   void RestoreSyntaxParsingPosition(SyntaxParsingPosition parsingPos,
                                     bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
-    GetLexer().Lex(curTok, leadingTrivia, trailingTrivia);
+    Lex(curTok, leadingTrivia, trailingTrivia);
     prevTokLoc = parsingPos.prevLoc;
   }
 
   void BackTrackSyntaxParsingPosition(SyntaxParsingPosition parsingPos) {
     assert(parsingPos.isValid());
     GetLexer().backtrackToState(parsingPos.lexingState);
-    GetLexer().Lex(curTok, leadingTrivia, trailingTrivia);
+    Lex(curTok, leadingTrivia, trailingTrivia);
     prevTokLoc = parsingPos.prevLoc;
   }
 
@@ -348,15 +347,6 @@ private:
 
 public:
   Identifier &GetIdentifierOnly(llvm::StringRef text);
-};
-/// To assist debugging parser crashes, tell us the location of the
-/// current curTok.
-class ParserPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
-  Parser &parser;
-
-public:
-  explicit ParserPrettyStackTrace(Parser &parser) : parser(parser) {}
-  void print(llvm::raw_ostream &out) const override;
 };
 
 } // namespace syn

@@ -52,3 +52,8 @@ SyntaxParsingPositionRAII::~SyntaxParsingPositionRAII() {
 }
 
 SyntaxParsing::SyntaxParsing() {}
+
+SyntaxParsingPrettyStackTrace::SyntaxParsingPrettyStackTrace(Parser &parser)
+    : parser(parser) {}
+
+void SyntaxParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {}
