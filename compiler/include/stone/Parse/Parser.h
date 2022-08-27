@@ -12,6 +12,7 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
+#include "stone/Basic/StableHasher.h"
 
 #include "llvm/Support/Timer.h"
 
