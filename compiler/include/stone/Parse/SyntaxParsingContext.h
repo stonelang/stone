@@ -1,5 +1,0 @@
-
-
-class SyntaxParsingContext {
-public:
-};

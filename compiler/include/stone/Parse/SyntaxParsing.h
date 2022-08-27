@@ -1,7 +1,8 @@
-#ifndef STONE_PARSE_PARSINGSUPPORT_H
-#define STONE_PARSE_PARSINGSUPPORT_H
+#ifndef STONE_PARSE_SYNTAXPARSING_H
+#define STONE_PARSE_SYNTAXPARSING_H
 
 #include "stone/Basic/OptionSet.h"
+#include "stone/Parse/SyntaxLexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -210,9 +211,34 @@ struct DeclSyntaxParsingFlags {
 /// Options that control the parsing of declarations.
 using DeclSyntaxParsingOpts = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
 
+class SyntaxParsingPosition final {
+  friend class Parser;
+  SyntaxLexingState lexingState;
+  SrcLoc prevLoc;
+
+  SyntaxParsingPosition(SyntaxLexingState lexingState, SrcLoc prevLoc)
+      : lexingState(lexingState), prevLoc(prevLoc) {}
+
+public:
+  SyntaxParsingPosition() = default;
+  SyntaxParsingPosition &operator=(const SyntaxParsingPosition &) = default;
+
+  bool isValid() const { return lexingState.IsValid(); }
+};
+
+class SyntaxParsingContext {
+public:
+};
+
+class SyntaxParsingCache {
+public:
+};
+
 class SyntaxParsing final {
 
   // SyntaxParsingScope syntaxParsingScope;
+  SyntaxParsingCache cache;
+  SyntaxParsingPosition *curPosition;
 
 public:
   SyntaxParsing();

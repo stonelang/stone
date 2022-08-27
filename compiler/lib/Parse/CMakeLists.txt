@@ -1,13 +1,13 @@
 set(stone_parse_sources
 	Confusable.cpp
 	Lexer.cpp
-	LexerCache.cpp
 	Parse.cpp
 	ParseDecl.cpp
 	ParseExpr.cpp
 	Parser.cpp
 	ParseStmt.cpp
 	ParseType.cpp
+	SyntaxLexing.cpp
 	SyntaxParsing.cpp
 
 	LINK_LIBS

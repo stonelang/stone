@@ -102,6 +102,8 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
+  SyntaxParsing &GetSyntaxParsing() { return syntaxParsing; }
+
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   Context &GetContext();
   enum class Notification {
