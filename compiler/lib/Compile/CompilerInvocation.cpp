@@ -3,7 +3,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CompilerListener.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -27,7 +27,7 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : Session(programName, programPath), listener(listener) {
-  excludedFlagsBitmask = opts::NoFrontendOption;
+  excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
 
@@ -52,12 +52,12 @@ Error CompilerInvocation::CreateSourceBuffers() {
   const llvm::Optional<unsigned> codeCompletionBufferID =
       CreateCodeCompletionBuffer();
 
-  const auto &inputs = GetFrontendOptions().inputsAndOutputs.GetInputs();
+  const auto &inputs = GetCompilerOptions().inputsAndOutputs.GetInputs();
   const bool shouldRecover =
-      GetFrontendOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
+      GetCompilerOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
 
   bool hasFailed = false;
-  for (const FrontendInputFile &input : inputs) {
+  for (const CompilerInputFile &input : inputs) {
     bool failed = false;
     llvm::Optional<unsigned> bufferID =
         GetRecordedBufferID(input, shouldRecover, failed);
@@ -76,7 +76,7 @@ Error CompilerInvocation::CreateSourceBuffers() {
 }
 
 llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
-    const FrontendInputFile &input, const bool shouldRecover, bool &failed) {
+    const CompilerInputFile &input, const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
             ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
@@ -119,7 +119,7 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
 
 // TODO:
 llvm::Optional<ModuleBuffers>
-CompilerInvocation::GetInputBuffersIfPresent(const FrontendInputFile &input) {
+CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (auto b = input.GetBuffer()) {
     return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
@@ -155,7 +155,7 @@ CompilerInvocation::GetInputBuffersIfPresent(const FrontendInputFile &input) {
   //                             /*FileSize*/-1,
   //                             /*RequiresNullTerminator*/true,
   //                             /*IsVolatile*/false,
-  //     /*Bad File Descriptor Retry*/getInvocation().getFrontendOptions()
+  //     /*Bad File Descriptor Retry*/getInvocation().getCompilerOptions()
   //                              .BadFileDescriptorRetryCount);
   // if (!inputFileOrErr) {
   //   Diagnostics.diagnose(SourceLoc(), diag::error_open_input_file,
@@ -177,7 +177,7 @@ CompilerInvocation::GetInputBuffersIfPresent(const FrontendInputFile &input) {
 }
 
 unsigned
-CompilerInvocation::CreateSourceBuffer(const FrontendInputFile &input) {
+CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
     ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
@@ -193,7 +193,7 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 }
 
 // std::unique_ptr<OutputFile>
-// CompilerInvocation::ComputeOutputFile(FrontendUnit &source) {
+// CompilerInvocation::ComputeOutputFile(CompilerUnit &source) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 

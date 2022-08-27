@@ -27,7 +27,7 @@ using namespace stone;
 Driver::Driver(llvm::StringRef programName, llvm::StringRef programPath)
     : Session(programName, programPath) {
   buildSystem = std::make_unique<BuildSystem>(*this);
-  excludedFlagsBitmask = opts::NoFrontendOption;
+  excludedFlagsBitmask = opts::NoCompilerOption;
 }
 
 Driver::~Driver() {}

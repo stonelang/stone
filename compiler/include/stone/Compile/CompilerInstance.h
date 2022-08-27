@@ -67,7 +67,7 @@ public:
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
-    return GetInvocation().GetFrontendOptions().GetMode().CanCompile();
+    return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
 
   // llvm::StringRef CreateOutputFile(unsigned srcID);
@@ -96,7 +96,7 @@ private:
   void ResolveUsings();
 
 public:
-  // TODO: Consider moving to the Frontend
+  // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.
     return GetModuleSystem().GetModuleOptions().moduleOutputMode;

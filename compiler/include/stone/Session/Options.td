@@ -5,10 +5,10 @@ include "llvm/Option/OptParser.td"
 // Flags
 
 // The option should be accepted by cram 
-def FrontendOption : OptionFlag;
+def CompilerOption : OptionFlag;
 
 // The option should not be accepted by the build.
-def NoFrontendOption : OptionFlag;
+def NoCompilerOption : OptionFlag;
 
 // The option should not be accepted by the build.
 def DriverOption : OptionFlag;
@@ -68,83 +68,83 @@ Flags<[HelpHidden]>;
 
 def Parse: Flag<["-"], "parse">,
 HelpText<"Parse input file(s)">, ModeOpt,
-Flags<[FrontendOption]>;
+Flags<[CompilerOption]>;
 
 
 def DumpSyntax : Flag<["-"], "dump-syntax">,
 HelpText<"Parse and dump syntax tree">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def TypeCheck : Flag<["-"], "type-check">,
 HelpText<"Parse and type-check input file(s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 
 def PrintSyntax : Flag<["-"], "print-syntax">,
 HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def EmitLibrary : Flag<["-"], "emit-library">,
 HelpText<"Emit a linked library">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def Static : Flag<["-"], "static">,
-  Flags<[FrontendOption, DriverOption]>,
+  Flags<[CompilerOption, DriverOption]>,
   HelpText<"Make this module statically linkable and make the output of -emit-library a static library.">;
 
 
 def EmitObject : Flag<["-"], "emit-object">,
 HelpText<"Emit object file(s) (-c)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def c : Flag<["-"], "c">, Alias<EmitObject>,
-Flags<[FrontendOption, DriverOption]>, ModeOpt;
+Flags<[CompilerOption, DriverOption]>, ModeOpt;
 
 
 def EmitModule : Flag<["-"], "emit-module">,
 HelpText<"Emit module file(s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def EmitAssembly : Flag<["-"], "emit-assembly">,
 HelpText<"Emit assembly file(s) (-s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def s: Flag<["-"], "S">, Alias<EmitAssembly>,
-Flags<[FrontendOption, DriverOption]>, ModeOpt;
+Flags<[CompilerOption, DriverOption]>, ModeOpt;
 
 def EmitBC : Flag<["-"], "emit-bc">,
 HelpText<"Emit LLVM BC file(s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def PrintIR : Flag<["-"], "print-ir">,
 HelpText<"Print LLVM IR file(s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def EmitIR : Flag<["-"], "emit-ir">,
 HelpText<"Emit LLVM IR file(s)">, ModeOpt,
-Flags<[FrontendOption, DriverOption]>;
+Flags<[CompilerOption, DriverOption]>;
 
 def PrintHelp : Flag<["-", "--"], "help">, 
-Flags<[FrontendOption, DriverOption]>,
+Flags<[CompilerOption, DriverOption]>,
 HelpText<"Display available options">, ModeOpt;
 
 def h : Flag<["-"], "h">, Alias<PrintHelp>;
 
 def HelpSecrete : Flag<["-", "--"], "help-hidden">,
-Flags<[FrontendOption]>,
+Flags<[CompilerOption]>,
 HelpText<"Display available options, including hidden options">;
 
 
 def PrintVersion : Flag<["-", "--"], "version">,
-Flags<[FrontendOption, DriverOption]>,
+Flags<[CompilerOption, DriverOption]>,
 HelpText<"Print version information and exit">, ModeOpt;
 
 def v : Flag<["-"], "v">, 
-Flags<[FrontendOption, DriverOption]>,
+Flags<[CompilerOption, DriverOption]>,
 HelpText<"Show commands to run and use verbose output">;
 
 def Lang : Flag<["-"], "st">, 
-Flags<[FrontendOption, DriverOption]>,
+Flags<[CompilerOption, DriverOption]>,
 HelpText<"Compiles only and skips the linking phase.">;
 
 
@@ -167,38 +167,38 @@ Flags<[DriverOption]>;
 
 
 def ModuleName : Separate<["-"], "module-name">,
-  Flags<[FrontendOption, ModuleInterfaceOption, StoneAPIExtractOption,
+  Flags<[CompilerOption, ModuleInterfaceOption, StoneAPIExtractOption,
          StoneSymbolGraphExtractOption]>,
   HelpText<"Name of the module to build">;
 
-def ModuleNameEQ : Joined<["-"], "module-name=">, Flags<[FrontendOption]>,
+def ModuleNameEQ : Joined<["-"], "module-name=">, Flags<[CompilerOption]>,
   Alias<ModuleName>;
 
 def ModuleAlias : Separate<["-"], "module-alias">,
-  Flags<[FrontendOption, ModuleInterfaceOption]>,
+  Flags<[CompilerOption, ModuleInterfaceOption]>,
   MetaVarName<"<alias_name=underlying_name>">,
   HelpText<"If a source file imports or references module <alias_name>, the <underlying_name> is used for the contents of the file">;
 
 def ModuleLinkName : Separate<["-"], "module-link-name">,
-  Flags<[FrontendOption, ModuleInterfaceOption]>,
+  Flags<[CompilerOption, ModuleInterfaceOption]>,
   HelpText<"Library to link against when using this module">;
 
 
 def ModuleLinkNameEQ : Joined<["-"], "module-link-name=">,
-  Flags<[FrontendOption]>, Alias<ModuleLinkName>;
+  Flags<[CompilerOption]>, Alias<ModuleLinkName>;
 
 
 //GENERAL OPTIONS 
 def Target : Separate<["-"], "target">,
-Flags<[FrontendOption, DriverOption]>,
+Flags<[CompilerOption, DriverOption]>,
 HelpText<"Generate code for the given target">;
 
 def TargetVariant : Separate<["-"], "target-variant">,
-  Flags<[FrontendOption, DriverOption]>,
+  Flags<[CompilerOption, DriverOption]>,
   HelpText<"Generate 'zippered' code for macCatalyst that can run on the specified"
            " variant target triple in addition to the main -target triple">;
 
-def TargetCPU : Separate<["-"], "target-cpu">, Flags<[FrontendOption, DriverOption]>,
+def TargetCPU : Separate<["-"], "target-cpu">, Flags<[CompilerOption, DriverOption]>,
 HelpText<"Generate code for a particular CPU variant">;
 
 // DEV OPTIONS 
@@ -232,7 +232,7 @@ Flags<[DebugOption, DriverOption]>,
 HelpText<"Print the lifecycle of activities and jobs">;
 
 def ParseAsLibrary : Flag<["-"], "parse-as-library">,
-  Flags<[FrontendOption]>,
+  Flags<[CompilerOption]>,
   HelpText<"Parse the input file(s) as libraries, not scripts">;
 
 def MainFile : Separate<["-"], "main-file">,
@@ -243,21 +243,21 @@ def WorkDir : Separate<["-"], "work-dir">,
   MetaVarName<"<path>">;
 
 def IndexStorePath : Separate<["-"], "index-store-path">,
-  Flags<[FrontendOption, ArgumentIsPath]>, MetaVarName<"<path>">,
+  Flags<[CompilerOption, ArgumentIsPath]>, MetaVarName<"<path>">,
   HelpText<"Store indexing data to <path>">;
 
 def IndexUnitOutputPath : Separate<["-"], "index-unit-output-path">,
-  Flags<[FrontendOption, ArgumentIsPath]>, MetaVarName<"<path>">,
+  Flags<[CompilerOption, ArgumentIsPath]>, MetaVarName<"<path>">,
   HelpText<"Use <path> as the output path in the produced index data.">;
 
 def EmitLoadedModuleTracePath : Separate<["-"], "emit-loaded-module-trace-path">,
-  Flags<[FrontendOption, ArgumentIsPath,
+  Flags<[CompilerOption, ArgumentIsPath,
          SupplementaryOutput]>,
   HelpText<"Emit the loaded module trace JSON to <path>">,
   MetaVarName<"<path>">;
 
 def EmitLoadedModuleTracePathEQ : Joined<["-"], "emit-loaded-module-trace-path=">,
-  Flags<[FrontendOption, ArgumentIsPath,
+  Flags<[CompilerOption, ArgumentIsPath,
          SupplementaryOutput]>,
   Alias<EmitLoadedModuleTracePath>;
 
@@ -268,53 +268,53 @@ def EmitModuleSummary :
 
 def EmitModuleSummaryPath :
   Separate<["-"], "emit-module-summary-path">,
-  Flags<[FrontendOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
          SupplementaryOutput]>,
   MetaVarName<"<path>">, HelpText<"Output module summary file to <path>">;
 
 def SerializeDiagnostics : Flag<["-"], "serialize-diagnostics">,
-  Flags<[FrontendOption, NoInteractiveOption, SupplementaryOutput]>,
+  Flags<[CompilerOption, NoInteractiveOption, SupplementaryOutput]>,
   HelpText<"Serialize diagnostics in a binary format">;
 
 def SerializeDiagnosticsPath : Separate<["-"], "serialize-diagnostics-path">,
-  Flags<[FrontendOption, StoneAPIDigesterOption, NoBatchOption,
+  Flags<[CompilerOption, StoneAPIDigesterOption, NoBatchOption,
          ArgumentIsPath, SupplementaryOutput]>,
   HelpText<"Emit a serialized diagnostics file to <path>">,
   MetaVarName<"<path>">;
 
 def SerializeDiagnosticsPathEQ: Joined<["-"], "serialize-diagnostics-path=">,
-  Flags<[FrontendOption, StoneAPIDigesterOption, NoBatchOption,
+  Flags<[CompilerOption, StoneAPIDigesterOption, NoBatchOption,
          ArgumentIsPath, SupplementaryOutput]>,
   Alias<SerializeDiagnosticsPath>;
 
 def EmitTBD : Flag<["-"], "emit-tbd">,
   HelpText<"Emit a TBD file">,
-  Flags<[FrontendOption, NoInteractiveOption, SupplementaryOutput]>;
+  Flags<[CompilerOption, NoInteractiveOption, SupplementaryOutput]>;
 def EmitTBDPath : Separate<["-"], "emit-tbd-path">,
-  Flags<[FrontendOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
          SupplementaryOutput]>,
   HelpText<"Emit the TBD file to <path>">,
   MetaVarName<"<path>">;
 def EmitTBDPathEQ : Joined<["-"], "emit-tbd-path=">,
-  Flags<[FrontendOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
          SupplementaryOutput]>,
   Alias<EmitTBDPath>;
 
 def EmbedTBDForModule : Separate<["-"], "embed-tbd-for-module">,
-  Flags<[FrontendOption]>,
+  Flags<[CompilerOption]>,
   HelpText<"Embed symbols from the module in the emitted tbd file">;
 
 def ColorDiagnostics : Flag<["-"], "color-diagnostics">,
-  Flags<[FrontendOption, DoesNotAffectIncrementalBuild]>,
+  Flags<[CompilerOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Print diagnostics in color">;
 
 def NoColorDiagnostics : Flag<["-"], "no-color-diagnostics">,
-  Flags<[FrontendOption, DoesNotAffectIncrementalBuild]>,
+  Flags<[CompilerOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Do not print diagnostics in color">;
 
 def DebugDiagnosticNames : Flag<["-"], "debug-diagnostic-names">,
-  Flags<[FrontendOption, DoesNotAffectIncrementalBuild, HelpHidden]>,
+  Flags<[CompilerOption, DoesNotAffectIncrementalBuild, HelpHidden]>,
   HelpText<"Include diagnostic names when printing">;
 
 
-include "FrontendOptions.td"
+include "CompilerOptions.td"

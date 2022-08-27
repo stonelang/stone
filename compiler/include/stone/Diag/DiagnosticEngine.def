@@ -5,7 +5,7 @@
 
 #include "CoreDiagnostic.def"
 #include "CodeGenDiagnostic.def"
-#include "FrontendDiagnostic.def"
+#include "CompilerDiagnostic.def"
 #include "DriverDiagnostic.def"
 #include "SemDiagnostic.def"
 #include "SyntaxDiagnostic.def"

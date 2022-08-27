@@ -2,7 +2,7 @@
 #define STONE_COMPILE_LANGOUTPUTSCONVERTER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/SupplementaryOutputPaths.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
@@ -18,17 +18,17 @@ namespace stone {
 class Mode;
 class OutputFileMap;
 /// Given the command line arguments and information about the inputs,
-/// Fill in all the information in FrontendInputsAndOutputs.
+/// Fill in all the information in CompilerInputsAndOutputs.
 
-class FrontendOutputsConverter {
+class CompilerOutputsConverter {
   const llvm::opt::ArgList &args;
   llvm::StringRef moduleName;
-  FrontendInputsAndOutputs &inputsAndOutputs;
+  CompilerInputsAndOutputs &inputsAndOutputs;
   DiagnosticEngine &de;
 
 public:
-  FrontendOutputsConverter(const llvm::opt::ArgList &args, StringRef moduleName,
-                           FrontendInputsAndOutputs &inputsAndOutputs,
+  CompilerOutputsConverter(const llvm::opt::ArgList &args, StringRef moduleName,
+                           CompilerInputsAndOutputs &inputsAndOutputs,
                            DiagnosticEngine &de)
       : args(args), moduleName(moduleName), inputsAndOutputs(inputsAndOutputs),
         de(de) {}
@@ -44,16 +44,16 @@ public:
   ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
-struct FrontendOutputOptInfo {
+struct CompilerOutputOptInfo {
   StringRef PrettyName;
   opts::OptID SingleID;
   opts::OptID FilelistID;
   StringRef SingleOptSpelling;
 };
 
-class FrontendOutputFilesComputer {
+class CompilerOutputFilesComputer {
   DiagnosticEngine &de;
-  const FrontendInputsAndOutputs &inputsAndOutputs;
+  const CompilerInputsAndOutputs &inputsAndOutputs;
   const std::vector<std::string> OutputFileArguments;
   const std::string OutputDirectoryArgument;
   const std::string FirstInput;
@@ -61,22 +61,22 @@ class FrontendOutputFilesComputer {
   const llvm::opt::Arg *const moduleNameArg;
   const StringRef Suffix;
   const bool HasTextualOutput;
-  const FrontendOutputOptInfo OutputInfo;
+  const CompilerOutputOptInfo OutputInfo;
 
-  FrontendOutputFilesComputer(DiagnosticEngine &de,
-                              const FrontendInputsAndOutputs &inputsAndOutputs,
+  CompilerOutputFilesComputer(DiagnosticEngine &de,
+                              const CompilerInputsAndOutputs &inputsAndOutputs,
                               std::vector<std::string> outputFileArguments,
                               StringRef outputDirectoryArgument,
                               StringRef firstInput, const Mode &mode,
                               const llvm::opt::Arg *moduleNameArg,
                               StringRef suffix, bool hasTextualOutput,
-                              FrontendOutputOptInfo optInfo);
+                              CompilerOutputOptInfo optInfo);
 
 public:
-  static Optional<FrontendOutputFilesComputer>
+  static Optional<CompilerOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
-         const FrontendInputsAndOutputs &inputsAndOutputs,
-         FrontendOutputOptInfo optInfo, const Mode &mode);
+         const CompilerInputsAndOutputs &inputsAndOutputs,
+         CompilerOutputOptInfo optInfo, const Mode &mode);
 
   /// \return the output filenames on the command line or in the output
   /// filelist. If there
@@ -91,7 +91,7 @@ public:
 
 private:
   Optional<std::string> ComputeOutputFile(StringRef outputArg,
-                                          const FrontendInputFile &input) const;
+                                          const CompilerInputFile &input) const;
 
   /// \return the correct output filename when none was specified.
   ///
@@ -100,7 +100,7 @@ private:
   /// because the driver will always pass -o with an appropriate filename
   /// if output is required for the requested action.
   Optional<std::string>
-  DeriveOutputFileFromInput(const FrontendInputFile &input) const;
+  DeriveOutputFileFromInput(const CompilerInputFile &input) const;
 
   /// \return the correct output filename when a directory was specified.
   ///
@@ -108,9 +108,9 @@ private:
   /// directly, because the driver will always pass -o with an appropriate
   /// filename if output is required for the requested action.
   Optional<std::string>
-  DeriveOutputFileForDirectory(const FrontendInputFile &input) const;
+  DeriveOutputFileForDirectory(const CompilerInputFile &input) const;
 
-  std::string DetermineBaseNameOfOutput(const FrontendInputFile &input) const;
+  std::string DetermineBaseNameOfOutput(const CompilerInputFile &input) const;
 
   std::string DeriveOutputFileFromParts(StringRef dir, StringRef base) const;
 };
@@ -118,7 +118,7 @@ private:
 class SupplementaryOutputPathsComputer {
   const llvm::opt::ArgList &args;
   DiagnosticEngine &de;
-  const FrontendInputsAndOutputs &inputsAndOutputs;
+  const CompilerInputsAndOutputs &inputsAndOutputs;
   ArrayRef<std::string> OutputFiles;
   StringRef moduleName;
   const Mode &mode;
@@ -126,7 +126,7 @@ class SupplementaryOutputPathsComputer {
 public:
   SupplementaryOutputPathsComputer(
       const llvm::opt::ArgList &args, DiagnosticEngine &de,
-      const FrontendInputsAndOutputs &inputsAndOutputs,
+      const CompilerInputsAndOutputs &inputsAndOutputs,
       ArrayRef<std::string> outputFiles, StringRef moduleName,
       const Mode &mode);
 
@@ -162,10 +162,10 @@ private:
   llvm::Optional<SupplementaryOutputPaths> ComputeOutputPathsForOneInput(
       StringRef outputFilename,
       const SupplementaryOutputPaths &pathsFromFilelists,
-      const FrontendInputFile &) const;
+      const CompilerInputFile &) const;
 
   llvm::StringRef DeriveDefaultSupplementaryOutputPathExcludingExtension(
-      StringRef outputFilename, const FrontendInputFile &) const;
+      StringRef outputFilename, const CompilerInputFile &) const;
 
   /// \return empty string if no output file.
   std::string DetermineSupplementaryOutputFilename(

@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_LANGOPTIONSBUILDER_H
 #define STONE_COMPILE_LANGOPTIONSBUILDER_H
 
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Context.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
@@ -10,11 +10,11 @@
 
 namespace stone {
 
-class FrontendOptionsConverter {
+class CompilerOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
   LangOptions &langOpts;
-  FrontendOptions &invocationOpts;
+  CompilerOptions &invocationOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -40,9 +40,9 @@ private:
   stone::Error CheckForUnusedOutputPaths() const;
 
 public:
-  FrontendOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
+  CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
                            LangOptions &langOpts,
-                           FrontendOptions &invocationOpts)
+                           CompilerOptions &invocationOpts)
       : de(de), args(args), langOpts(langOpts), invocationOpts(invocationOpts) {
   }
 

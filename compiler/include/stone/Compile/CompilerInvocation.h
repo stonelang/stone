@@ -6,8 +6,8 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/FrontendOptions.h"
-#include "stone/Compile/FrontendUnit.h"
+#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
 #include "stone/Context.h"
@@ -34,7 +34,7 @@ class TargetMachine;
 
 namespace stone {
 
-class Frontend;
+class Compiler;
 class CompilerListener;
 
 struct ModuleBuffers {
@@ -59,7 +59,7 @@ class CompilerInvocation final : public Session {
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<FrontendOptions> invocationOpts;
+  std::unique_ptr<CompilerOptions> invocationOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -94,13 +94,13 @@ public:
   ~CompilerInvocation();
 
 public:
-  // llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
-  // FrontendUnit *BuildSource(const file::File &input);
+  // llvm::ArrayRef<CompilerUnit *> BuildSources(const file::Files &inputs);
+  // CompilerUnit *BuildSource(const file::File &input);
 
   Error CreateSourceBuffers();
 
   // TODO: You may not need this anymore
-  unsigned CreateSourceBuffer(const FrontendInputFile &input);
+  unsigned CreateSourceBuffer(const CompilerInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -117,16 +117,16 @@ public:
 
   stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
 
-  // std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
+  // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
   void Finish() override;
 
-  // TODO: update FrontendOptions
+  // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
-  FrontendOptions &GetFrontendOptions() { return *invocationOpts.get(); }
-  const FrontendOptions &GetFrontendOptions() const {
+  CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
+  const CompilerOptions &GetCompilerOptions() const {
     return *invocationOpts.get();
   }
 
@@ -156,8 +156,8 @@ public:
   void SetListener(CompilerListener *l) { listener = l; }
 
   Optional<ModuleBuffers>
-  GetInputBuffersIfPresent(const FrontendInputFile &input);
-  Optional<unsigned> GetRecordedBufferID(const FrontendInputFile &input,
+  GetInputBuffersIfPresent(const CompilerInputFile &input);
+  Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
                                          const bool shouldRecover,
                                          bool &failed);
 
@@ -165,10 +165,10 @@ public:
 
   bool HasError() { return GetContext().GetDiagUnit().HasError(); }
 
-  bool JustFrontend() {
-    if (GetFrontendOptions().GetMode().JustParse() ||
-        GetFrontendOptions().GetMode().JustTypeCheck() ||
-        GetFrontendOptions().GetMode().IsEmitIR()) {
+  bool JustCompiler() {
+    if (GetCompilerOptions().GetMode().JustParse() ||
+        GetCompilerOptions().GetMode().JustTypeCheck() ||
+        GetCompilerOptions().GetMode().IsEmitIR()) {
       return true;
     }
     return false;

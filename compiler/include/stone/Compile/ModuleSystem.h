@@ -2,7 +2,7 @@
 #define STONE_COMPILE_MODULESYSTEM_H
 
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"

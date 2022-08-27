@@ -1,10 +1,10 @@
-#include "stone/Compile/FrontendOptionsConverter.h"
+#include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Basic/Strings.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 //#include "stone/Basic/Platform.h"
-#include "stone/Compile/FrontendInputsConverter.h"
-#include "stone/Compile/FrontendOutputsConverter.h"
+#include "stone/Compile/CompilerInputsConverter.h"
+#include "stone/Compile/CompilerOutputsConverter.h"
 #include "stone/Session/Options.h"
 //#include "stone/Session/SanitizerOptions.h"
 #include "stone/Parse/Lexer.h"
@@ -22,15 +22,15 @@
 using namespace stone;
 using namespace llvm::opt;
 
-stone::Error FrontendOptionsConverter::Convert(
+stone::Error CompilerOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
   // assert(invocationOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
 
-  llvm::Optional<FrontendInputsAndOutputs> inputsAndOutputs =
-      FrontendInputsConverter(de, args, invocationOpts).Convert(buffers);
+  llvm::Optional<CompilerInputsAndOutputs> inputsAndOutputs =
+      CompilerInputsConverter(de, args, invocationOpts).Convert(buffers);
 
   // None here means error, not just "no inputs". Propagage unconditionally.
   if (!inputsAndOutputs) {
@@ -38,28 +38,28 @@ stone::Error FrontendOptionsConverter::Convert(
   }
 
   bool haveNewInputsAndOutputs = false;
-  if (invocationOpts.GetFrontendInputsAndOutputs().HasInputs()) {
+  if (invocationOpts.GetCompilerInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
 
     haveNewInputsAndOutputs = true;
-    invocationOpts.GetFrontendInputsAndOutputs() =
+    invocationOpts.GetCompilerInputsAndOutputs() =
         std::move(inputsAndOutputs).getValue();
 
     if (invocationOpts.allowModuleWithCompilerErrors) {
-      invocationOpts.GetFrontendInputsAndOutputs()
+      invocationOpts.GetCompilerInputsAndOutputs()
           .SetShouldRecoverMissingInputs();
     }
   }
 
-  if (invocationOpts.GetFrontendInputsAndOutputs()
+  if (invocationOpts.GetCompilerInputsAndOutputs()
           .ShouldTreatAsModuleInterface()) {
     invocationOpts.inputFileMode =
-        FrontendOptions::InputFileMode::StoneModuleInterface;
+        CompilerOptions::InputFileMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
-    invocationOpts.inputFileMode = FrontendOptions::InputFileMode::StoneLibrary;
+    invocationOpts.inputFileMode = CompilerOptions::InputFileMode::StoneLibrary;
   } else {
-    invocationOpts.inputFileMode = FrontendOptions::InputFileMode::Stone;
+    invocationOpts.inputFileMode = CompilerOptions::InputFileMode::Stone;
   }
 
   if (ComputeModuleName().Has()) {
@@ -69,7 +69,7 @@ stone::Error FrontendOptionsConverter::Convert(
   return stone::Error();
 }
 
-stone::Error FrontendOptionsConverter::ComputeModuleName() {
+stone::Error CompilerOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
@@ -108,7 +108,7 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
   //      invocationOpts.parseStdLib)) {
   //    return false;
   //  }
-  //  if (!FrontendOptions::NeedsProperModuleName(invocationOpts.modeKind) ||
+  //  if (!CompilerOptions::NeedsProperModuleName(invocationOpts.modeKind) ||
   //      invocationOpts.IsCompilingExactlyOneStoneFile()) {
   //    invocationOpts.ModuleName = strings::MainFileName;
   //    return false;
@@ -125,10 +125,10 @@ stone::Error FrontendOptionsConverter::ComputeModuleName() {
   return stone::Error();
 }
 
-stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
+stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
 
   llvm::Optional<std::vector<std::string>> outputFilenames =
-      FrontendOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
+      CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
           args, de, opts::o, opts::OutputFileList);
 
   std::string nameToStem =
@@ -136,7 +136,7 @@ stone::Error FrontendOptionsConverter::ComputeFallbackModuleName() {
               outputFilenames->front() != "-" &&
               !llvm::sys::fs::is_directory(outputFilenames->front())
           ? outputFilenames->front()
-          : invocationOpts.GetFrontendInputsAndOutputs()
+          : invocationOpts.GetCompilerInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
   invocationOpts.moduleOpts.moduleName =

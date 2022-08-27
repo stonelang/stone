@@ -33,9 +33,9 @@ void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
 ///
 /// \note This function is not intended to create invocations which are
 /// suitable for use in REPL or immediate modes.
-bool GetSingleFrontendInvocationFromDriverArguments(
+bool GetSingleCompilerInvocationFromDriverArguments(
     ArrayRef<const char *> ArgList, DiagnosticEngine &Diags,
-    llvm::function_ref<bool(ArrayRef<const char *> FrontendArgs)> Phase,
+    llvm::function_ref<bool(ArrayRef<const char *> CompilerArgs)> Phase,
     bool ForceNoOutputs = false);
 
 } // end namespace stone

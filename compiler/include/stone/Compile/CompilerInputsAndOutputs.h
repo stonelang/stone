@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 #define STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 
-#include "stone/Compile/FrontendInputFile.h"
+#include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"
 #include "stone/Compile/SupplementaryOutputPaths.h"
 
@@ -20,10 +20,10 @@ namespace stone {
 class DiagnosticEngine;
 /// Information about all the inputs and outputs to the invocation.
 
-class FrontendInputsAndOutputs {
+class CompilerInputsAndOutputs {
   friend class CompilerInvocationInputsConverter;
 
-  std::vector<FrontendInputFile> inputs;
+  std::vector<CompilerInputFile> inputs;
 
   llvm::StringMap<unsigned> primaryInputsByName;
   std::vector<unsigned> primaryInputsInOrder;
@@ -42,9 +42,9 @@ public:
   bool AreBatchModeChecksBypassed() const { return areBatchModeChecksBypassed; }
   void SetBypassBatchModeChecks(bool bbc) { areBatchModeChecksBypassed = bbc; }
 
-  FrontendInputsAndOutputs() = default;
-  FrontendInputsAndOutputs(const FrontendInputsAndOutputs &other);
-  FrontendInputsAndOutputs &operator=(const FrontendInputsAndOutputs &other);
+  CompilerInputsAndOutputs() = default;
+  CompilerInputsAndOutputs(const CompilerInputsAndOutputs &other);
+  CompilerInputsAndOutputs &operator=(const CompilerInputsAndOutputs &other);
 
   // Whole-module-optimization (WMO) routines:
 
@@ -63,20 +63,20 @@ public:
 
   // Readers:
   // All inputs:
-  ArrayRef<FrontendInputFile> GetInputs() const { return inputs; }
-  std::vector<std::string> GetFrontendInputFilenames() const;
+  ArrayRef<CompilerInputFile> GetInputs() const { return inputs; }
+  std::vector<std::string> GetCompilerInputFilenames() const;
 
   /// \return nullptr if not a primary input file.
-  const FrontendInputFile *PrimaryInputNamed(StringRef name) const;
+  const CompilerInputFile *PrimaryInputNamed(StringRef name) const;
 
   unsigned InputCount() const { return inputs.size(); }
   bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
-  const FrontendInputFile &FirstInput() const { return inputs[0]; }
-  FrontendInputFile &FirstInput() { return inputs[0]; }
+  const CompilerInputFile &FirstInput() const { return inputs[0]; }
+  CompilerInputFile &FirstInput() { return inputs[0]; }
 
-  const FrontendInputFile &LastInput() const { return inputs.back(); }
+  const CompilerInputFile &LastInput() const { return inputs.back(); }
 
   const std::string &GetFilenameOfFirstInput() const;
 
@@ -84,26 +84,26 @@ public:
 
   /// If \p fn returns true, exits early and returns true.
   bool
-  ForEachInput(llvm::function_ref<bool(const FrontendInputFile &)> fn) const;
+  ForEachInput(llvm::function_ref<bool(const CompilerInputFile &)> fn) const;
 
   // Primaries:
 
-  const FrontendInputFile &FirstPrimaryInput() const;
-  const FrontendInputFile &LastPrimaryInput() const;
+  const CompilerInputFile &FirstPrimaryInput() const;
+  const CompilerInputFile &LastPrimaryInput() const;
 
   /// If \p fn returns true, exit early and return true.
   bool ForEachPrimaryInput(
-      llvm::function_ref<bool(const FrontendInputFile &)> fn) const;
+      llvm::function_ref<bool(const CompilerInputFile &)> fn) const;
 
   /// Iterates over primary inputs, exposing their unique ordered index
   /// If \p fn returns true, exit early and return true.
   bool ForEachPrimaryInputWithIndex(
-      llvm::function_ref<bool(const FrontendInputFile &, unsigned index)> fn)
+      llvm::function_ref<bool(const CompilerInputFile &, unsigned index)> fn)
       const;
 
   /// If \p fn returns true, exit early and return true.
   bool ForEachNonPrimaryInput(
-      llvm::function_ref<bool(const FrontendInputFile &)> fn) const;
+      llvm::function_ref<bool(const CompilerInputFile &)> fn) const;
 
   unsigned PrimaryInputCount() const { return primaryInputsInOrder.size(); }
 
@@ -131,9 +131,8 @@ public:
   // Count-dependend readers:
 
   /// \return the unique primary input, if one exIsts.
-  const FrontendInputFile *GetUniquePrimaryInput() const;
-
-  const FrontendInputFile &GetRequiredUniquePrimaryInput() const;
+  const CompilerInputFile *GetUniquePrimaryInput() const;
+  const CompilerInputFile &GetRequiredUniquePrimaryInput() const;
 
   /// FIXME: Should combine all primaries for the result
   /// instead of just answering "batch" if there is more than one primary.
@@ -161,10 +160,10 @@ public:
 
 public:
   void ClearInputs();
-  void AddInput(const FrontendInputFile &input);
-  void AddFrontendInputFile(StringRef file,
+  void AddInput(const CompilerInputFile &input);
+  void AddCompilerInputFile(StringRef file,
                             llvm::MemoryBuffer *buffer = nullptr);
-  void AddPrimaryFrontendInputFile(StringRef file,
+  void AddPrimaryCompilerInputFile(StringRef file,
                                    llvm::MemoryBuffer *buffer = nullptr);
 
   // Outputs
@@ -184,8 +183,8 @@ public:
     return CountOfInputsProducingMainOutputs() != 0;
   }
 
-  const FrontendInputFile &FirstInputProducingOutput() const;
-  const FrontendInputFile &LastInputProducingOutput() const;
+  const CompilerInputFile &FirstInputProducingOutput() const;
+  const CompilerInputFile &LastInputProducingOutput() const;
 
   /// Under single-threaded WMO, we pretend that the first input
   /// generates the main output, even though it will include code
@@ -193,7 +192,7 @@ public:
   ///
   /// If \p fn returns true, return early and return true.
   bool ForEachInputProducingAMainOutputFile(
-      llvm::function_ref<bool(const FrontendInputFile &)> fn) const;
+      llvm::function_ref<bool(const CompilerInputFile &)> fn) const;
 
   std::vector<std::string> CopyOutputFilenames() const;
   std::vector<std::string> CopyIndexUnitOutputFilenames() const;
@@ -218,7 +217,7 @@ public:
 
   /// If \p fn returns true, exit early and return true.
   bool ForEachInputProducingSupplementaryOutput(
-      llvm::function_ref<bool(const FrontendInputFile &)> fn) const;
+      llvm::function_ref<bool(const CompilerInputFile &)> fn) const;
 
   /// Assumes there is not more than one primary input file, if any.
   /// Otherwise, you would need to call GetPrimaryFileSpecificPathsForPrimary

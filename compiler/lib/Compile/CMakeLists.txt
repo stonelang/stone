@@ -4,11 +4,11 @@ set(stone_compile_sources
 	Deserialization.cpp
 	DebugCompilerListener.cpp
 	CompilerInvocation.cpp
-	FrontendOptions.cpp
-	FrontendInputsAndOutputs.cpp
-	FrontendInputsConverter.cpp
-	FrontendOptionsConverter.cpp
-	FrontendOutputsConverter.cpp
+	CompilerOptions.cpp
+	CompilerInputsAndOutputs.cpp
+	CompilerInputsConverter.cpp
+	CompilerOptionsConverter.cpp
+	CompilerOutputsConverter.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	PackageSystem.cpp

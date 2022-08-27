@@ -8,8 +8,8 @@
 #include "llvm/Support/Path.h"
 
 namespace stone {
-// class Frontend;
-// class alignas(8) FrontendUnit final {
+// class Compiler;
+// class alignas(8) CompilerUnit final {
 //   friend class CompilerInvocation;
 
 //   bool isPrimary;
@@ -17,10 +17,10 @@ namespace stone {
 //   const unsigned srcID;
 //   const file::File &input;
 
-//   // const FrontendInputFile &fif;
+//   // const CompilerInputFile &fif;
 
 //   // Something to think about
-//   List<FrontendUnit> deps;
+//   List<CompilerUnit> deps;
 
 //   std::unique_ptr<OutputFile> outputFile;
 
@@ -64,9 +64,9 @@ namespace stone {
 //   // std::string mependenciesFilePath;
 
 // public:
-//   FrontendUnit(const unsigned srcID, const file::File &input)
+//   CompilerUnit(const unsigned srcID, const file::File &input)
 //       : srcID(srcID), input(input) {}
-//   ~FrontendUnit();
+//   ~CompilerUnit();
 
 // public:
 //   bool IsPrimary() { return isPrimary; }
@@ -88,10 +88,10 @@ namespace stone {
 //   // Only allow allocation of Decls using the allocator in ASTContext
 //   // or by doing a placement new.
 //   void *operator new(std::size_t bytes,
-//                      unsigned alignment = alignof(FrontendUnit));
+//                      unsigned alignment = alignof(CompilerUnit));
 
 // public:
-//   static FrontendUnit *Allocate(const unsigned srcID, const file::File
+//   static CompilerUnit *Allocate(const unsigned srcID, const file::File
 //   &input,
 //                                 CompilerInvocation &invocation);
 

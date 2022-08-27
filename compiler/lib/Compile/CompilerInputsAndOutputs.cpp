@@ -1,10 +1,10 @@
-#include "stone/Compile/FrontendInputsAndOutputs.h"
+#include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Basic/File.h"
 #include "stone/Basic/Range.h"
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"
 #include "stone/Context.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Session/Options.h"
 
 #include "llvm/Option/Arg.h"
@@ -20,19 +20,19 @@ using namespace llvm::opt;
 
 // Constructors
 
-FrontendInputsAndOutputs::FrontendInputsAndOutputs(
-    const FrontendInputsAndOutputs &other) {
-  for (FrontendInputFile input : other.inputs) {
+CompilerInputsAndOutputs::CompilerInputsAndOutputs(
+    const CompilerInputsAndOutputs &other) {
+  for (CompilerInputFile input : other.inputs) {
     AddInput(input);
   }
   isSingleThreadedWMO = other.isSingleThreadedWMO;
   shouldRecoverMissingInputs = other.shouldRecoverMissingInputs;
 }
 
-FrontendInputsAndOutputs &
-FrontendInputsAndOutputs::operator=(const FrontendInputsAndOutputs &other) {
+CompilerInputsAndOutputs &
+CompilerInputsAndOutputs::operator=(const CompilerInputsAndOutputs &other) {
   ClearInputs();
-  for (FrontendInputFile input : other.inputs) {
+  for (CompilerInputFile input : other.inputs) {
     AddInput(input);
   }
   isSingleThreadedWMO = other.isSingleThreadedWMO;
@@ -43,7 +43,7 @@ FrontendInputsAndOutputs::operator=(const FrontendInputsAndOutputs &other) {
 // All inputs:
 
 std::vector<std::string>
-FrontendInputsAndOutputs::GetFrontendInputFilenames() const {
+CompilerInputsAndOutputs::GetCompilerInputFilenames() const {
   std::vector<std::string> filenames;
   for (auto &input : inputs) {
     filenames.push_back(input.GetFileName());
@@ -51,21 +51,21 @@ FrontendInputsAndOutputs::GetFrontendInputFilenames() const {
   return filenames;
 }
 
-bool FrontendInputsAndOutputs::IsReadingFromStdin() const {
+bool CompilerInputsAndOutputs::IsReadingFromStdin() const {
   return HasSingleInput() && GetFilenameOfFirstInput() == "-";
 }
 
-const std::string &FrontendInputsAndOutputs::GetFilenameOfFirstInput() const {
+const std::string &CompilerInputsAndOutputs::GetFilenameOfFirstInput() const {
   assert(HasInputs());
-  const FrontendInputFile &firstInput = inputs[0];
+  const CompilerInputFile &firstInput = inputs[0];
   const std::string &f = firstInput.GetFileName();
   assert(!f.empty());
   return f;
 }
 
-bool FrontendInputsAndOutputs::ForEachInput(
-    llvm::function_ref<bool(const FrontendInputFile &)> fn) const {
-  for (const FrontendInputFile &input : inputs) {
+bool CompilerInputsAndOutputs::ForEachInput(
+    llvm::function_ref<bool(const CompilerInputFile &)> fn) const {
+  for (const CompilerInputFile &input : inputs) {
     if (fn(input)) {
       return true;
     }
@@ -75,18 +75,18 @@ bool FrontendInputsAndOutputs::ForEachInput(
 
 // Primaries:
 
-const FrontendInputFile &FrontendInputsAndOutputs::FirstPrimaryInput() const {
+const CompilerInputFile &CompilerInputsAndOutputs::FirstPrimaryInput() const {
   assert(!primaryInputsInOrder.empty());
   return inputs[primaryInputsInOrder.front()];
 }
 
-const FrontendInputFile &FrontendInputsAndOutputs::LastPrimaryInput() const {
+const CompilerInputFile &CompilerInputsAndOutputs::LastPrimaryInput() const {
   assert(!primaryInputsInOrder.empty());
   return inputs[primaryInputsInOrder.back()];
 }
 
-bool FrontendInputsAndOutputs::ForEachPrimaryInput(
-    llvm::function_ref<bool(const FrontendInputFile &)> fn) const {
+bool CompilerInputsAndOutputs::ForEachPrimaryInput(
+    llvm::function_ref<bool(const CompilerInputFile &)> fn) const {
   for (unsigned i : primaryInputsInOrder) {
     if (fn(inputs[i])) {
       return true;
@@ -95,8 +95,8 @@ bool FrontendInputsAndOutputs::ForEachPrimaryInput(
   return false;
 }
 
-bool FrontendInputsAndOutputs::ForEachPrimaryInputWithIndex(
-    llvm::function_ref<bool(const FrontendInputFile &, unsigned index)> fn)
+bool CompilerInputsAndOutputs::ForEachPrimaryInputWithIndex(
+    llvm::function_ref<bool(const CompilerInputFile &, unsigned index)> fn)
     const {
   for (unsigned i : primaryInputsInOrder) {
     if (fn(inputs[i], i)) {
@@ -106,19 +106,19 @@ bool FrontendInputsAndOutputs::ForEachPrimaryInputWithIndex(
   return false;
 }
 
-bool FrontendInputsAndOutputs::ForEachNonPrimaryInput(
-    llvm::function_ref<bool(const FrontendInputFile &)> fn) const {
-  return ForEachInput([&](const FrontendInputFile &f) -> bool {
+bool CompilerInputsAndOutputs::ForEachNonPrimaryInput(
+    llvm::function_ref<bool(const CompilerInputFile &)> fn) const {
+  return ForEachInput([&](const CompilerInputFile &f) -> bool {
     return f.IsPrimary() ? false : fn(f);
   });
 }
 
-void FrontendInputsAndOutputs::AssertMustNotBeMoreThanOnePrimaryInput() const {
+void CompilerInputsAndOutputs::AssertMustNotBeMoreThanOnePrimaryInput() const {
   assert(!HasMultiplePrimaryInputs() &&
          "have not implemented >1 primary input yet");
 }
 
-void FrontendInputsAndOutputs::
+void CompilerInputsAndOutputs::
     AssertMustNotBeMoreThanOnePrimaryInputUnlessBatchModeChecksHaveBeenBypassed()
         const {
   if (!AreBatchModeChecksBypassed()) {
@@ -126,35 +126,35 @@ void FrontendInputsAndOutputs::
   }
 }
 
-const FrontendInputFile *
-FrontendInputsAndOutputs::GetUniquePrimaryInput() const {
+const CompilerInputFile *
+CompilerInputsAndOutputs::GetUniquePrimaryInput() const {
   AssertMustNotBeMoreThanOnePrimaryInput();
   return primaryInputsInOrder.empty() ? nullptr
                                       : &inputs[primaryInputsInOrder.front()];
 }
 
-const FrontendInputFile &
-FrontendInputsAndOutputs::GetRequiredUniquePrimaryInput() const {
+const CompilerInputFile &
+CompilerInputsAndOutputs::GetRequiredUniquePrimaryInput() const {
   if (const auto *input = GetUniquePrimaryInput()) {
     return *input;
   }
   llvm_unreachable("No primary when one is required");
 }
 
-std::string FrontendInputsAndOutputs::GetStatsFileMangledInputName() const {
+std::string CompilerInputsAndOutputs::GetStatsFileMangledInputName() const {
   // Use the first primary, even if there are multiple primaries.
   // That's enough to keep the file names unique.
   return IsWholeModule() ? "all" : FirstPrimaryInput().GetFileName();
 }
 
-bool FrontendInputsAndOutputs::IsInputPrimary(StringRef file) const {
+bool CompilerInputsAndOutputs::IsInputPrimary(StringRef file) const {
   return PrimaryInputNamed(file) != nullptr;
 }
 
-unsigned FrontendInputsAndOutputs::NumberOfPrimaryInputsEndingWith(
+unsigned CompilerInputsAndOutputs::NumberOfPrimaryInputsEndingWith(
     StringRef extension) const {
   unsigned n = 0;
-  (void)ForEachPrimaryInput([&](const FrontendInputFile &input) -> bool {
+  (void)ForEachPrimaryInput([&](const CompilerInputFile &input) -> bool {
     if (llvm::sys::path::extension(input.GetFileName()).endswith(extension))
       ++n;
     return false;
@@ -164,7 +164,7 @@ unsigned FrontendInputsAndOutputs::NumberOfPrimaryInputsEndingWith(
 
 // Input queries
 
-bool FrontendInputsAndOutputs::ShouldTreatAsLLVM() const {
+bool CompilerInputsAndOutputs::ShouldTreatAsLLVM() const {
   if (HasSingleInput()) {
     StringRef inputExt = llvm::sys::path::extension(GetFilenameOfFirstInput());
     switch (file::GetTypeByExt(inputExt)) {
@@ -178,7 +178,7 @@ bool FrontendInputsAndOutputs::ShouldTreatAsLLVM() const {
   return false;
 }
 
-bool FrontendInputsAndOutputs::ShouldTreatAsModuleInterface() const {
+bool CompilerInputsAndOutputs::ShouldTreatAsModuleInterface() const {
   if (!HasSingleInput()) {
     return false;
   }
@@ -188,7 +188,7 @@ bool FrontendInputsAndOutputs::ShouldTreatAsModuleInterface() const {
   return InputType == file::Type::StoneModuleInterface;
 }
 
-bool FrontendInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
+bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
                                             bool isNoneRequested) const {
   stone::Panic("TODO: VerifyInputs");
 
@@ -202,13 +202,13 @@ bool FrontendInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
 
 // Changing inputs
 
-void FrontendInputsAndOutputs::ClearInputs() {
+void CompilerInputsAndOutputs::ClearInputs() {
   inputs.clear();
   primaryInputsByName.clear();
   primaryInputsInOrder.clear();
 }
 
-void FrontendInputsAndOutputs::AddInput(const FrontendInputFile &input) {
+void CompilerInputsAndOutputs::AddInput(const CompilerInputFile &input) {
   const unsigned index = inputs.size();
   inputs.push_back(input);
   if (input.IsPrimary()) {
@@ -217,47 +217,47 @@ void FrontendInputsAndOutputs::AddInput(const FrontendInputFile &input) {
   }
 }
 
-void FrontendInputsAndOutputs::AddFrontendInputFile(
+void CompilerInputsAndOutputs::AddCompilerInputFile(
     StringRef file, llvm::MemoryBuffer *buffer) {
-  AddInput(FrontendInputFile(file, false, buffer));
+  AddInput(CompilerInputFile(file, false, buffer));
 }
 
-void FrontendInputsAndOutputs::AddPrimaryFrontendInputFile(
+void CompilerInputsAndOutputs::AddPrimaryCompilerInputFile(
     StringRef file, llvm::MemoryBuffer *buffer) {
-  AddInput(FrontendInputFile(file, true, buffer));
+  AddInput(CompilerInputFile(file, true, buffer));
 }
 
-unsigned FrontendInputsAndOutputs::CountOfInputsProducingMainOutputs() const {
+unsigned CompilerInputsAndOutputs::CountOfInputsProducingMainOutputs() const {
 
   return IsSingleThreadedWMO() ? 1
          : HasPrimaryInputs()  ? PrimaryInputCount()
                                : InputCount();
 }
 
-const FrontendInputFile &
-FrontendInputsAndOutputs::FirstInputProducingOutput() const {
+const CompilerInputFile &
+CompilerInputsAndOutputs::FirstInputProducingOutput() const {
 
   return IsSingleThreadedWMO() ? FirstInput()
          : HasPrimaryInputs()  ? FirstPrimaryInput()
                                : FirstInput();
 }
 
-const FrontendInputFile &
-FrontendInputsAndOutputs::LastInputProducingOutput() const {
+const CompilerInputFile &
+CompilerInputsAndOutputs::LastInputProducingOutput() const {
   return IsSingleThreadedWMO() ? FirstInput()
          : HasPrimaryInputs()  ? LastPrimaryInput()
                                : LastInput();
 }
 
-bool FrontendInputsAndOutputs::ForEachInputProducingAMainOutputFile(
-    llvm::function_ref<bool(const FrontendInputFile &)> fn) const {
+bool CompilerInputsAndOutputs::ForEachInputProducingAMainOutputFile(
+    llvm::function_ref<bool(const CompilerInputFile &)> fn) const {
 
   return IsSingleThreadedWMO() ? fn(FirstInput())
          : HasPrimaryInputs()  ? ForEachPrimaryInput(fn)
                                : ForEachInput(fn);
 }
 
-void FrontendInputsAndOutputs::SetMainAndSupplementaryOutputs(
+void CompilerInputsAndOutputs::SetMainAndSupplementaryOutputs(
     ArrayRef<std::string> outputFiles,
     ArrayRef<SupplementaryOutputPaths> supplementaryOutputPaths,
     ArrayRef<std::string> outputFilesForIndexUnits) {
@@ -312,10 +312,10 @@ void FrontendInputsAndOutputs::SetMainAndSupplementaryOutputs(
   }
 }
 
-std::vector<std::string> FrontendInputsAndOutputs::CopyOutputFilenames() const {
+std::vector<std::string> CompilerInputsAndOutputs::CopyOutputFilenames() const {
   std::vector<std::string> outputs;
   (void)ForEachInputProducingAMainOutputFile(
-      [&](const FrontendInputFile &input) -> bool {
+      [&](const CompilerInputFile &input) -> bool {
         outputs.push_back(input.OutputFilename());
         return false;
       });
@@ -323,167 +323,167 @@ std::vector<std::string> FrontendInputsAndOutputs::CopyOutputFilenames() const {
 }
 
 std::vector<std::string>
-FrontendInputsAndOutputs::CopyIndexUnitOutputFilenames() const {
+CompilerInputsAndOutputs::CopyIndexUnitOutputFilenames() const {
   std::vector<std::string> outputs;
   (void)ForEachInputProducingAMainOutputFile(
-      [&](const FrontendInputFile &input) -> bool {
+      [&](const CompilerInputFile &input) -> bool {
         outputs.push_back(input.IndexUnitOutputFilename());
         return false;
       });
   return outputs;
 }
 
-void FrontendInputsAndOutputs::ForEachOutputFilename(
+void CompilerInputsAndOutputs::ForEachOutputFilename(
     llvm::function_ref<void(StringRef)> fn) const {
   (void)ForEachInputProducingAMainOutputFile(
-      [&](const FrontendInputFile &input) -> bool {
+      [&](const CompilerInputFile &input) -> bool {
         fn(input.OutputFilename());
         return false;
       });
 }
 
-std::string FrontendInputsAndOutputs::GetSingleOutputFilename() const {
+std::string CompilerInputsAndOutputs::GetSingleOutputFilename() const {
   AssertMustNotBeMoreThanOnePrimaryInputUnlessBatchModeChecksHaveBeenBypassed();
   return HasInputs() ? LastInputProducingOutput().OutputFilename()
                      : std::string();
 }
 
-std::string FrontendInputsAndOutputs::GetSingleIndexUnitOutputFilename() const {
+std::string CompilerInputsAndOutputs::GetSingleIndexUnitOutputFilename() const {
   AssertMustNotBeMoreThanOnePrimaryInputUnlessBatchModeChecksHaveBeenBypassed();
   return HasInputs() ? LastInputProducingOutput().IndexUnitOutputFilename()
                      : std::string();
 }
 
-bool FrontendInputsAndOutputs::IsOutputFilenameStdout() const {
+bool CompilerInputsAndOutputs::IsOutputFilenameStdout() const {
   return GetSingleOutputFilename() == "-";
 }
 
-bool FrontendInputsAndOutputs::IsOutputFileDirectory() const {
+bool CompilerInputsAndOutputs::IsOutputFileDirectory() const {
   return HasNamedOutputFile() &&
          llvm::sys::fs::is_directory(GetSingleOutputFilename());
 }
 
-bool FrontendInputsAndOutputs::HasNamedOutputFile() const {
+bool CompilerInputsAndOutputs::HasNamedOutputFile() const {
   return HasInputs() && !IsOutputFilenameStdout();
 }
 
 // Supplementary outputs
 
 unsigned
-FrontendInputsAndOutputs::CountOfFilesProducingSupplementaryOutput() const {
+CompilerInputsAndOutputs::CountOfFilesProducingSupplementaryOutput() const {
   return HasPrimaryInputs() ? PrimaryInputCount() : HasInputs() ? 1 : 0;
 }
 
-bool FrontendInputsAndOutputs::ForEachInputProducingSupplementaryOutput(
-    llvm::function_ref<bool(const FrontendInputFile &)> fn) const {
+bool CompilerInputsAndOutputs::ForEachInputProducingSupplementaryOutput(
+    llvm::function_ref<bool(const CompilerInputFile &)> fn) const {
   return HasPrimaryInputs() ? ForEachPrimaryInput(fn)
          : HasInputs()      ? fn(FirstInput())
                             : false;
 }
 
-bool FrontendInputsAndOutputs::HasSupplementaryOutputPath(
+bool CompilerInputsAndOutputs::HasSupplementaryOutputPath(
     llvm::function_ref<const std::string &(const SupplementaryOutputPaths &)>
         extractorFn) const {
   return ForEachInputProducingSupplementaryOutput(
-      [&](const FrontendInputFile &input) -> bool {
+      [&](const CompilerInputFile &input) -> bool {
         return !extractorFn(input.GetPrimaryFileSpecificPaths()
                                 .supplementaryOutputPaths)
                     .empty();
       });
 }
 
-bool FrontendInputsAndOutputs::HasDependenciesPath() const {
+bool CompilerInputsAndOutputs::HasDependenciesPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.dependenciesFilePath;
       });
 }
-bool FrontendInputsAndOutputs::HasReferenceDependenciesPath() const {
+bool CompilerInputsAndOutputs::HasReferenceDependenciesPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.referenceDependenciesFilePath;
       });
 }
-bool FrontendInputsAndOutputs::HasLoadedModuleTracePath() const {
+bool CompilerInputsAndOutputs::HasLoadedModuleTracePath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.loadedModuleTracePath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleDocOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleDocOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleDocOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleSourceInfoOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleSourceInfoOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSourceInfoOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleInterfaceOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleInterfaceOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleInterfaceOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasPrivateModuleInterfaceOutputPath() const {
+bool CompilerInputsAndOutputs::HasPrivateModuleInterfaceOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.privateModuleInterfaceOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasABIDescriptorOutputPath() const {
+bool CompilerInputsAndOutputs::HasABIDescriptorOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.abiDescriptorOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleSemanticInfoOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleSemanticInfoOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSemanticInfoOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasModuleSummaryOutputPath() const {
+bool CompilerInputsAndOutputs::HasModuleSummaryOutputPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.moduleSummaryOutputPath;
       });
 }
-bool FrontendInputsAndOutputs::HasTBDPath() const {
+bool CompilerInputsAndOutputs::HasTBDPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.tbdPath;
       });
 }
-bool FrontendInputsAndOutputs::HasYAMLOptRecordPath() const {
+bool CompilerInputsAndOutputs::HasYAMLOptRecordPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.yamlOptRecordPath;
       });
 }
-bool FrontendInputsAndOutputs::HasBitstreamOptRecordPath() const {
+bool CompilerInputsAndOutputs::HasBitstreamOptRecordPath() const {
   return HasSupplementaryOutputPath(
       [](const SupplementaryOutputPaths &outs) -> const std::string & {
         return outs.bitstreamOptRecordPath;
       });
 }
 
-bool FrontendInputsAndOutputs::HasDependencyTrackerPath() const {
+bool CompilerInputsAndOutputs::HasDependencyTrackerPath() const {
   return HasDependenciesPath() || HasReferenceDependenciesPath() ||
          HasLoadedModuleTracePath();
 }
 
 const PrimaryFileSpecificPaths &
-FrontendInputsAndOutputs::GetPrimaryFileSpecificPathsForAtMostOnePrimary()
+CompilerInputsAndOutputs::GetPrimaryFileSpecificPathsForAtMostOnePrimary()
     const {
   AssertMustNotBeMoreThanOnePrimaryInputUnlessBatchModeChecksHaveBeenBypassed();
   static auto emptyPaths = PrimaryFileSpecificPaths();
@@ -492,21 +492,21 @@ FrontendInputsAndOutputs::GetPrimaryFileSpecificPathsForAtMostOnePrimary()
 }
 
 const PrimaryFileSpecificPaths &
-FrontendInputsAndOutputs::GetPrimaryFileSpecificPathsForPrimary(
+CompilerInputsAndOutputs::GetPrimaryFileSpecificPathsForPrimary(
     StringRef filename) const {
-  const FrontendInputFile *f = PrimaryInputNamed(filename);
+  const CompilerInputFile *f = PrimaryInputNamed(filename);
   return f->GetPrimaryFileSpecificPaths();
 }
 
-const FrontendInputFile *
-FrontendInputsAndOutputs::PrimaryInputNamed(StringRef name) const {
+const CompilerInputFile *
+CompilerInputsAndOutputs::PrimaryInputNamed(StringRef name) const {
   assert(!name.empty() && "input files have names");
-  StringRef correctedFile = FrontendInputFile::
+  StringRef correctedFile = CompilerInputFile::
       ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(name);
   auto iterator = primaryInputsByName.find(correctedFile);
   if (iterator == primaryInputsByName.end())
     return nullptr;
-  const FrontendInputFile *f = &inputs[iterator->second];
+  const CompilerInputFile *f = &inputs[iterator->second];
   assert(f->IsPrimary() && "primaryInputsByName should only include primries");
   return f;
 }

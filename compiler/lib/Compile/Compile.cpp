@@ -8,7 +8,7 @@
 #include "stone/Compile/CompilerListener.h"
 #include "stone/Compile/DebugCompilerListener.h"
 #include "stone/Compile/TargetMachine.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -27,23 +27,23 @@ using namespace stone::syn;
 using namespace stone::sem;
 
 /// A PrettyStackTraceEntry to print compiling information
-class FrontendPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
   const CompilerInvocation &invocation;
 
 public:
-  FrontendPrettyStackTrace(const CompilerInvocation &invocation)
+  CompilerPrettyStackTrace(const CompilerInvocation &invocation)
       : invocation(invocation) {}
 
   void print(llvm::raw_ostream &os) const override {
 
     //   auto effective =
-    //   invocation.GetFrontendOptions().effectiveFrontendVersion; if (effective
-    //   != version::Version::GetCurrentFrontendVersion()) {
+    //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
+    //   != version::Version::GetCurrentCompilerVersion()) {
     //     os << "Compiling with effective version " << effective;
     //   } else {
     //     os << "Compiling with the current invocationuage version";
     //   }
-    //   if (Invocation.GetFrontendOptions().allowModuleWithCompilerErrors) {
+    //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
     //     os << " while allowing modules with compiler errors";
     //   }
     //   os << "\n";
@@ -94,20 +94,20 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (invocation.ComputeOptions(*ial).Has()) {
     return Finish(1);
   }
-  if (invocation.GetFrontendOptions().GetMode().IsAlien()) {
+  if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
     invocation.GetContext().GetDiagUnit().PrintD(SrcLoc(),
                                                  diag::err_alien_mode);
     Finish(1);
   }
-  if (invocation.GetFrontendOptions().GetMode().IsPrintHelp()) {
+  if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
     // TODO: invocation.PrintHelp(invocation.GetOpts());
     return Finish();
   }
-  if (invocation.GetFrontendOptions().GetMode().IsPrintVersion()) {
+  if (invocation.GetCompilerOptions().GetMode().IsPrintVersion()) {
     invocation.PrintVersion();
     return Finish();
   }
-  if (!invocation.GetFrontendOptions().GetMode().CanCompile()) {
+  if (!invocation.GetCompilerOptions().GetMode().CanCompile()) {
     /// invocation.PrintD()
     return Finish(1);
   }
@@ -179,7 +179,7 @@ static void CompileWithGenNative(CompilerInstance &compiler,
   cgc.TakeTargetMachine(std::move(targetMachine));
 
   auto ComputeNativeModeKind = [&](CompilerInstance &compiler) -> void {
-    switch (compiler.GetInvocation().GetFrontendOptions().GetMode().GetKind()) {
+    switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitObject:
       compiler.GetInvocation().GetCodeGenOptions().nativeModeKind =
@@ -204,7 +204,7 @@ static void CompileWithGenNative(CompilerInstance &compiler,
 
 static void CompileWithCodeGen(CompilerInstance &compiler) {
 
-  assert(compiler.GetInvocation().GetFrontendOptions().GetMode().CanCodeGen());
+  assert(compiler.GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
 
   // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
@@ -213,9 +213,9 @@ static void CompileWithCodeGen(CompilerInstance &compiler) {
 
   auto *mainModule = compiler.GetModuleSystem().GetMainModule();
   // switch
-  // (invocation.GetFrontendOptions().moduleOutputMode)
+  // (invocation.GetCompilerOptions().moduleOutputMode)
 
-  switch (compiler.GetInvocation().GetFrontendOptions().GetMode().GetKind()) {
+  switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(compiler, mainModule, cgc,
                             [&](CompilerInstance &compiler, CodeGenContext &cgc,
@@ -287,7 +287,7 @@ void CompilerInstance::CompileWithSyntaxAnalysis(
     client(*syntaxFile);
   }
 
-  if (!invocation.GetFrontendOptions().GetMode().JustParse()) {
+  if (!invocation.GetCompilerOptions().GetMode().JustParse()) {
     ResolveUsings();
   }
   if (invocation.GetListener()) {
@@ -332,7 +332,7 @@ void CompilerInstance::Compile() {
   // }
   // TODO: Future CreateSyntax();
 
-  switch (GetInvocation().GetFrontendOptions().GetMode().GetKind()) {
+  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::Parse:
     return CompileWithSyntaxAnalysis();
   case ModeKind::DumpSyntax:

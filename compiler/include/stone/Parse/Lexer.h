@@ -184,7 +184,7 @@ public:
   ///   and/or the exact token kind produced (e.g. keyword or
   ///   identifier), but not things like how many characters are
   ///   consumed.  If that changes, APIs like GetLocForEndOfToken will
-  ///   need to take a FrontendOptions explicitly.
+  ///   need to take a CompilerOptions explicitly.
   /// \param LexMode - the kind of source file we're lexing.
   ///   Unlike language options, this does affect primitive lexing, which
   ///   means that APIs like GetLocForEndOfToken really ought to take

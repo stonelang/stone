@@ -1,5 +1,5 @@
 #include "stone/Compile/CompilerInstance.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 
 using namespace stone;
 
@@ -12,7 +12,7 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
 
   moduleSystem = std::make_unique<ModuleSystem>(
       *syntax.get(), invocation.GetContext(),
-      invocation.GetFrontendOptions().moduleOpts);
+      invocation.GetCompilerOptions().moduleOpts);
 
   stats = std::make_unique<CompilerInstanceStats>(*this);
   invocation.GetContext().GetStatEngine().Register(stats.get());
@@ -42,7 +42,7 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 // }
 
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
-  // if (sc.GetFrontendOpts().printStats) {
+  // if (sc.GetCompilerOpts().printStats) {
   //   // GetContext().Out() << GetName() << '\n';
   //   return;
   // }
