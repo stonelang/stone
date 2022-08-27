@@ -200,13 +200,11 @@ public:
         GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
         prevTokLoc);
   }
-
   SyntaxParsingPosition GetSyntaxParsingPosition(SrcLoc loc,
                                                  SrcLoc previousLoc) {
     return SyntaxParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
                                  previousLoc);
   }
-
   void RestoreSyntaxParsingPosition(SyntaxParsingPosition parsingPos,
                                     bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
@@ -214,17 +212,17 @@ public:
     prevTokLoc = parsingPos.prevLoc;
   }
 
-  // void backtrackToPosition(SyntaxParsingPosition parsingPos) {
-  //   assert(PP.isValid());
-  //   L->backtrackToState(PP.LS);
-  //   L->lex(Tok, LeadingTrivia, TrailingTrivia);
-  //   PreviousLoc = PP.PreviousLoc;
-  // }
+  void BackTrackSyntaxParsingPosition(SyntaxParsingPosition parsingPos) {
+    assert(parsingPos.isValid());
+    GetLexer().backtrackToState(parsingPos.lexingState);
+    GetLexer().Lex(curTok, leadingTrivia, trailingTrivia);
+    prevTokLoc = parsingPos.prevLoc;
+  }
 
 public:
   // == Token consumption ==//
-  SrcLoc ConsumeToken(
-      SyntaxParsingNotification notification = SyntaxParsingNotification::TokenConsumed);
+  SrcLoc ConsumeToken(SyntaxParsingNotification notification =
+                          SyntaxParsingNotification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
     assert(curTok.Is(kind) && "Consuming wrong curTok type");
