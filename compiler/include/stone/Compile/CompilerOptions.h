@@ -14,6 +14,7 @@
 namespace stone {
 
 class CompilerOptions final : public BaseOptions {
+
   friend class CompilerInvocation;
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;

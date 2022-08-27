@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXTYPE_H
-#define STONE_SYNTAX_SYNTAXTYPE_H
+#ifndef STONE_SYNTAX_SyntaxType_H
+#define STONE_SYNTAX_SyntaxType_H
 
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
@@ -44,286 +44,134 @@
 namespace stone {
 namespace syn {
 
-class alignas(1 << TypeAlignInBits) SyntaxType
-    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
+class Type;
+class TypeWalker;
+
+class SyntaxType {
+  Type *typePtr = nullptr;
 
 public:
-};
-
-/// const int a = 10; volatile int a = 10;
-class alignas(1 << QualTypeAlignInBits) QualType
-    : public SyntaxAllocation<QualType> {
-public:
-  QualType() = default;
-  QualType(const Type *ty, unsigned quals) {}
+  SyntaxType(Type *typePtr = 0) : typePtr(typePtr) {}
 
 public:
-  /// Retrieves a pointer to the underlying (unqualified) type.
+  bool IsNull() const { return typePtr == nullptr; }
+  Type *GetPointer() const { return typePtr; }
+
+  Type *operator->() const {
+    assert(typePtr && "Cannot dereference a null SyntaxType!");
+    return typePtr;
+  }
+
+  explicit operator bool() const { return typePtr != 0; }
+
+  /// Walk this SyntaxType.
   ///
-  /// This function requires that the type not be NULL. If the type might be
-  /// NULL, use the (slightly less efficient) \c getTypePtrOrNull().
-  const Type *GetTypePtr() const;
-  const Type *GetTypePtrOrNull() const;
+  /// Returns true if the walk was aborted.
+  bool Walk(TypeWalker &walker) const;
+  bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+
+public:
+  /// Look through the given SyntaxType and its children to find a SyntaxType
+  /// for which the given predicate returns true.
+  ///
+  /// \param pred A predicate function object. It should return true if the give
+  /// SyntaxType node satisfies the criteria.
+  ///
+  /// \returns true if the predicate returns true for the given SyntaxType or
+  /// any of its children.
+  bool FindIf(llvm::function_ref<bool(SyntaxType)> pred) const;
+
+  /// Transform the given SyntaxType by applying the user-provided function to
+  /// each SyntaxType.
+  ///
+  /// This routine applies the given function to transform one SyntaxType into
+  /// another. If the function leaves the SyntaxType unchanged, recurse into the
+  /// child SyntaxType nodes and transform those. If any child SyntaxType node
+  /// changes, the parent SyntaxType node will be rebuilt.
+  ///
+  /// If at any time the function returns a null SyntaxType, the null will be
+  /// propagated out.
+  ///
+  /// \param fn A function object with the signature \c SyntaxType(SyntaxType),
+  /// which accepts a SyntaxType and returns either a transformed SyntaxType or
+  /// a null SyntaxType.
+  ///
+  /// \returns the result of transforming the SyntaxType.
+  SyntaxType Transform(llvm::function_ref<SyntaxType(SyntaxType)> fn) const;
+
+  /// Transform the given SyntaxType by applying the user-provided function to
+  /// each SyntaxType.
+  ///
+  /// This routine applies the given function to transform one SyntaxType into
+  /// another. If the function leaves the SyntaxType unchanged, recurse into the
+  /// child SyntaxType nodes and transform those. If any child SyntaxType node
+  /// changes, the parent SyntaxType node will be rebuilt.
+  ///
+  /// If at any time the function returns a null SyntaxType, the null will be
+  /// propagated out.
+  ///
+  /// If the function returns \c None, the transform operation will
+  ///
+  /// \param fn A function object with the signature
+  /// \c Optional<SyntaxType>(SyntaxTypeBase *), which accepts a SyntaxType
+  /// pointer and returns a transformed SyntaxType, a null SyntaxType (which
+  /// will propagate the null SyntaxType to the outermost \c transform() call),
+  /// or None (to indicate that the transform operation should recursively
+  /// transform the subSyntaxTypes). The function object should use \c dyn_cast
+  /// rather \c getAs, because the transform itself handles desugaring.
+  ///
+  /// \returns the result of transforming the SyntaxType.
+  SyntaxType
+  TransformRec(llvm::function_ref<llvm::Optional<SyntaxType>(Type *)> fn) const;
+
+  /// Look through the given SyntaxType and its children and apply fn to them.
+  void Visit(llvm::function_ref<void(SyntaxType)> fn) const {
+    FindIf([&fn](SyntaxType t) -> bool {
+      fn(t);
+      return false;
+    });
+  }
+
+  /// Replace references to substitutable SyntaxTypes with new, concrete
+  /// SyntaxTypes and return the substituted result.
+  ///
+  /// \param substitutions The mapping from substitutable SyntaxTypes to their
+  /// replacements and conformances.
+  ///
+  /// \param options Options that affect the substitutions.
+  ///
+  /// \returns the substituted SyntaxType, or a null SyntaxType if an error
+  /// occurred.
+  // SyntaxType Substitute(SubstitutionMap substitutions,
+  //                 SubstitutionOptions options = None) const;
+
+  // /// Replace references to substitutable SyntaxTypes with new, concrete
+  // SyntaxTypes and
+  /// return the substituted result.
+  ///
+  /// \param substitutions A function mapping from substitutable SyntaxTypes to
+  /// their replacements.
+  ///
+  /// \param conformances A function for looking up conformances.
+  ///
+  /// \param options Options that affect the substitutions.
+  ///
+  /// \returns the substituted SyntaxType, or a null SyntaxType if an error
+  /// occurred.
+  // SyntaxType Substitute(SyntaxTypeSubstitutionFn substitutions,
+  //                 LookupConformanceFn conformances,
+  //                 SubstOptions options = None) const;
 };
 
-// class FunctionTypeBase : public Type {};
+// CanSyntaxType - This is a SyntaxType that is statically known to be
+// canonical.  To get
+/// one of these, use SyntaxType->GetCononicalSyntaxType().  Since all
+/// CanSyntaxType's can be used as 'SyntaxType' (they just don't have sugar) we
+/// derive from SyntaxType.
+class CanType : public SyntaxType {
 
-// class FunctionType : public FunctionTypeBase {
-//   // The type returned by the function.
-//   QualType returnType;
-
-// public:
-//   QualType GetReturnType() { return returnType; }
-// };
-
-// class FunctionSignatureType : FunctionType {};
-
-// class NominalType : public Type {};
-
-// class StructType : public NominalType {};
-
-// class EnumType : public NominalType {};
-
-// class DeducedType : public Type {};
-
-// class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these
-// };
-
-// class BuiltinType : public Type {};
-
-// /// An abstract base class for the two integer types.
-// class BuiltinIntegerTypeBase : public BuiltinType {
-//   // protected:
-//   //   BuiltinIntegerTypeBase(TypeKind kind, const ASTContext &C)
-//   //     : BuiltinType(kind, C) {}
-
-//   // public:
-//   //   static bool classof(const TypeBase *T) {
-//   //     return T->getKind() >= TypeKind::First_AnyBuiltinIntegerType &&
-//   //            T->getKind() <= TypeKind::Last_AnyBuiltinIntegerType;
-//   //   }
-
-//   // defined inline below
-//   // BuiltinIntegerWidth GetWidth() const;
-// };
-
-// class BuiltinIntegerType : public BuiltinIntegerTypeBase {};
-
-// class FloatBuiltinType : public BuiltinType {
-//   friend class SyntaxContext;
-
-// public:
-//   /// IEEE floating point types.
-//   enum IEEEKind {
-//     IEEE16,
-//     IEEE32,
-//     IEEE64,
-//     IEEE80,
-//     IEEE128,
-//   };
-
-// private:
-//   IEEEKind kind;
-
-//   // BuiltinFloatType(IEEEKind Kind, const SyntaxContext &C)
-//   //   : BuiltinType(TypeKind::BuiltinFloat, C), Kind(Kind) {}
-
-// public:
-//   IEEEKind GetIEEEKind() const { return kind; }
-
-//   const llvm::fltSemantics &GetAPFloatSemantics() const;
-
-//   unsigned GetBitWidth() const {
-//     switch (kind) {
-//     case IEEE16:
-//       return 16;
-//     case IEEE32:
-//       return 32;
-//     case IEEE64:
-//       return 64;
-//     case IEEE80:
-//       return 80;
-//     case IEEE128:
-//       return 128;
-//     }
-//     llvm_unreachable("Invalid IEEE");
-//   }
-//   // static bool classof(const TypeBase *T) {
-//   //   return T->getKind() == TypeKind::BuiltinFloat;
-//   // }
-// };
-
-// class PointerType : public Type, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these.
-
-//   // QualType PointeeType;
-
-//   // PointerType(QualType Pointee, QualType CanonicalPtr)
-//   //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
-//   //       PointeeType(Pointee) {}
-
-// public:
-//   // QualType getPointeeType() const { return PointeeType; }
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   // }
-
-//   // static bool classof(const Type *T) { return T->getTypeClass() ==
-//   Pointer; }
-// };
-
-// /// Base for LValueReferenceType and RValueReferenceType
-// class ReferenceType : public Type, public llvm::FoldingSetNode {
-//   //   QualType PointeeType;
-
-//   // protected:
-//   //   ReferenceType(TypeClass tc, QualType Referencee, QualType
-//   CanonicalRef,
-//   //                 bool SpelledAsLValue)
-//   //       : Type(tc, CanonicalRef, Referencee->getDependence()),
-//   //         PointeeType(Referencee) {
-//   //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
-//   //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
-//   //   }
-
-//   // public:
-//   //   bool isSpelledAsLValue() const { return
-//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const { return
-//   //   ReferenceTypeBits.InnerRef; }
-
-//   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
-
-//   //   QualType getPointeeType() const {
-//   //     // FIXME: this might strip inner qualifiers; okay?
-//   //     const ReferenceType *T = this;
-//   //     while (T->isInnerRef())
-//   //       T = T->PointeeType->castAs<ReferenceType>();
-//   //     return T->PointeeType;
-//   //   }
-
-//   //   void Profile(llvm::FoldingSetNodeID &ID) {
-//   //     Profile(ID, PointeeType, isSpelledAsLValue());
-//   //   }
-
-//   //   static void Profile(llvm::FoldingSetNodeID &ID,
-//   //                       QualType Referencee,
-//   //                       bool SpelledAsLValue) {
-//   //     ID.AddPointer(Referencee.getAsOpaquePtr());
-//   //     ID.AddBoolean(SpelledAsLValue);
-//   //   }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference ||
-//   //            T->getTypeClass() == RValueReference;
-//   //   }
-// };
-
-// /// An lvalue reference type, per C++11 [dcl.ref].
-// class LeftValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
-
-//   //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
-//   //                       bool SpelledAsLValue)
-//   //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
-//   //                       SpelledAsLValue) {}
-
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference;
-//   //   }
-// };
-
-// /// An rvalue reference type, per C++11 [dcl.ref].
-// class RightValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
-
-//   //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false)
-//   {}
-
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == RValueReference;
-//   //   }
-// };
-
-// /// A pointer to member type per C++ 8.3.3 - Pointers to members.
-// ///
-// /// This includes both pointers to data members and pointer to member
-// functions. class MemberPointerType : public Type, public llvm::FoldingSetNode
-// {
-//   //   friend class ASTContext; // ASTContext creates these.
-
-//   //   QualType PointeeType;
-
-//   //   /// The class of which the pointee is a member. Must ultimately be a
-//   //   /// RecordType, but could be a typedef or a template parameter too.
-//   //   const Type *Class;
-
-//   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
-//   //   CanonicalPtr)
-//   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() & ~TypeDependence::VariablyModified)
-//   |
-//   //                  Pointee->getDependence()),
-//   //         PointeeType(Pointee), Class(Cls) {}
-
-//   // public:
-//   //   QualType getPointeeType() const { return PointeeType; }
-
-//   //   /// Returns true if the member type (i.e. the pointee type) is a
-//   //   /// function type rather than a data-member type.
-//   //   bool isMemberFunctionPointer() const {
-//   //     return PointeeType->isFunctionProtoType();
-//   //   }
-
-//   /// Returns true if the member type (i.e. the pointee type) is a
-//   /// data type rather than a function type.
-//   // bool isMemberDataPointer() const {
-//   //   return !PointeeType->isFunctionProtoType();
-//   // }
-
-//   // const Type *getClass() const { return Class; }
-//   // CXXRecordDecl *getMostRecentCXXRecordDecl() const;
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType(), getClass());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee,
-//   //                     const Type *Class) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   //   ID.AddPointer(Class);
-//   // }
-
-//   // static bool classof(const Type *T) {
-//   //   return T->getTypeClass() == MemberPointer;
-//   // }
-// };
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
+public:
+};
 
 } // namespace syn
 } // namespace stone

@@ -33,10 +33,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-
-class Compiler;
 class CompilerListener;
-
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;

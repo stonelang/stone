@@ -1,9 +1,10 @@
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/SyntaxType.h"
 #include "stone/Syntax/TypeLoc.h"
 
 using namespace stone::syn;
 
-bool Type::Walk(TypeWalker &walker) const {}
+bool SyntaxType::Walk(TypeWalker &walker) const {}
 
 // SrcLoc TypeLoc::GetLoc() const {
 
