@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/SyntaxListener.h"
@@ -12,7 +13,6 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Basic/StableHasher.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -103,9 +103,7 @@ public:
   DeclContext *GetCurDeclContext() { return curDC; }
 
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
-
   Context &GetContext();
-
   enum class Notification {
     None,
     DeclCreated,
@@ -113,7 +111,6 @@ public:
     ExprCreated,
     TokenConsumed,
   };
-
   /// The current token hash, or \c None if the parser isn't computing a hash
   /// for the token stream.
   llvm::Optional<StableHasher> currentTokenHash;

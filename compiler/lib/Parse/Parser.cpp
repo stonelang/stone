@@ -110,6 +110,14 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
+vvoid Parser::recordTokenHash(llvm::StringRef tokText) {
+  assert(!tokText.empty());
+  if (currentTokenHash) {
+    currentTokenHash->combine(tokText);
+    // Add null byte to separate tokens.
+    currentTokenHash->combine(uint8_t{0});
+  }
+}
 SrcLoc Parser::ConsumeStartingLess() {
   assert(StartsWithLess(token) && "Token does not start with '<'");
   return ConsumeStartingCharOfCurToken(tok::l_angle);
