@@ -1,9 +1,11 @@
 #ifndef STONE_PARSE_PARSINGSUPPORT_H
 #define STONE_PARSE_PARSINGSUPPORT_H
 
+#include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/DeclSpecifier.h"
 
 #include "llvm/ADT/ArrayRef.h"
+
 
 namespace stone {
 namespace syn {
@@ -189,6 +191,25 @@ public:
 
 //   SrcRange GetSrcRange() const;
 // };
+
+struct DeclSyntaxParsingFlags {
+  /// Flags that control the parsing of declarations.
+  enum ID {
+    Default = 0,
+    AllowTopLevel = 1 << 1,
+    HasContainerType = 1 << 2,
+    DisallowInit = 1 << 3,
+    AllowDestructor = 1 << 4,
+    AllowEnumElement = 1 << 5,
+    InInterface = 1 << 6,
+    In = 1 << 7,
+    InExtension = 1 << 8,
+    InStruct = 1 << 9,
+    InEnum = 1 << 10,
+  };
+};
+/// Options that control the parsing of declarations.
+using DeclSyntaxParsingOpts = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
 
 class SyntaxParsing final {
 

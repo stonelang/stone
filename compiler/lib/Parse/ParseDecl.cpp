@@ -71,7 +71,6 @@ SyntaxResult<Decl> Parser::ParseDecl() {
     accessLevel = AccessLevel::Private;
     break;
   }
-
   if (token.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
     ConsumeToken();
   }
