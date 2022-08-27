@@ -110,12 +110,12 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
-vvoid Parser::recordTokenHash(llvm::StringRef tokText) {
+void Parser::RecordTokenHash(llvm::StringRef tokText) {
   assert(!tokText.empty());
   if (currentTokenHash) {
     currentTokenHash->combine(tokText);
     // Add null byte to separate tokens.
-    currentTokenHash->combine(uint8_t{0});
+    currentTokenHash->combine(UInt8{0});
   }
 }
 SrcLoc Parser::ConsumeStartingLess() {
