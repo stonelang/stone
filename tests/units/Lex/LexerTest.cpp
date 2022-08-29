@@ -41,11 +41,11 @@ protected:
 
 TEST_F(LexerTest, GetNextToken) {
 
-  llvm::StringRef source = "Main fun() -> int  { return 0;}\n";
+  llvm::StringRef source = "fun Main() -> int  { return 0;}\n";
   auto tokens = Lex(source);
 
-  ASSERT_EQ(tok::identifier, tokens[0].GetKind());
-  ASSERT_EQ(tok::kw_fun, tokens[1].GetKind());
+  ASSERT_EQ(tok::kw_fun, tokens[0].GetKind());
+  ASSERT_EQ(tok::identifier, tokens[1].GetKind());
   ASSERT_EQ(tok::l_paren, tokens[2].GetKind());
   ASSERT_EQ(tok::r_paren, tokens[3].GetKind());
   ASSERT_EQ(tok::arrow, tokens[4].GetKind());
