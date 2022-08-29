@@ -6,18 +6,28 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsBasicType(Token &anyTok) const {
-
-  if (!anyTok.IsKeyword()) {
+bool Parser::IsBasicType(tok kind) const {
+  // TODO: A switch may be better for perf?
+  switch (kind) {
+  case tok::kw_int8:
+  case tok::kw_int16:
+  case tok::kw_int32:
+  case tok::kw_int64:
+  case tok::kw_int:
+  case tok::kw_uint:
+  case tok::kw_uint8:
+  case tok::kw_byte:
+  case tok::kw_ubyte:
+  case tok::kw_uint16:
+  case tok::kw_uint32:
+  case tok::kw_uint64:
+  case tok::kw_float32:
+  case tok::kw_float64:
+    return true;
+  default:
     return false;
   }
-  // TODO: A switch may be better for perf?
-  return anyTok.IsAny(tok::kw_int8, tok::kw_int16, tok::kw_int32, tok::kw_int64,
-                      tok::kw_int, tok::kw_uint, tok::kw_uint8, tok::kw_byte,
-                      tok::kw_ubyte, tok::kw_uint16, tok::kw_uint32,
-                      tok::kw_uint64, tok::kw_float32, tok::kw_float64);
 }
-
 // Similar to ParseDeclSpecifiers
 SyntaxResult<QualType> Parser::ParseType() {
   return syn::MakeSyntaxResult<QualType>(nullptr);

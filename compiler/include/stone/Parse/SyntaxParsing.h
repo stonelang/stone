@@ -25,8 +25,6 @@ public:
   void print(llvm::raw_ostream &out) const override;
 };
 
-
-
 // class ParsingDeclContext {
 // public:
 // };
@@ -269,11 +267,13 @@ public:
 class SyntaxParsingDeclSpecifier final : public DeclSpecifier {
 
 public:
-  SyntaxParsingDeclSpecifier(AttributeFactory &attributeFactory) : DeclSpecifier(attributeFactory) {}
+  SyntaxParsingDeclSpecifier(AttributeFactory &attributeFactory)
+      : DeclSpecifier(attributeFactory) {}
 };
 
 class SyntaxParsingDeclarator final : public Declarator {
   Parser &parser;
+
 public:
   SyntaxParsingDeclarator(Parser &parser,
                           const SyntaxParsingDeclSpecifier &specifier,
@@ -293,13 +293,22 @@ public:
   SyntaxParsing(Parser &parser) : parser(parser) {}
 };
 
+enum class DeclSyntaxParsingStatus : UInt8 { None = 0, Parsing, Error, Done };
+
 class DeclSyntaxParsing final : public SyntaxParsing {
   SyntaxParsingDeclSpecifier *syntaxParsingDeclSpecifier;
+
+public:
+  AccessLevel level;
+  DeclSyntaxParsingStatus status;
+  DeclSyntaxParsingOptions flags;
+
 public:
   DeclSyntaxParsing(Parser &parser) : SyntaxParsing(parser) {}
+
+public:
+  TypeSpecifierContext &GetTypeSpecifierContext();
 };
-
-
 
 } // namespace syn
 } // namespace stone

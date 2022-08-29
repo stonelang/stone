@@ -20,12 +20,6 @@ enum class DeclaratorChunkKind {
   Paren,
   Pipe,
 };
-struct DeclaratorChunk final {
-
-  DeclaratorChunkKind kind;
-
-  DeclaratorChunk(){};
-};
 
 enum class DeclaratorScopeKind {
   SyntaxFile,          // File scope declaration.
@@ -50,6 +44,17 @@ enum class DeclaratorScopeKind {
   AliasDecl,           // Alias-declaration.
   AliasTemplate,       // Alias-declaration template.
   RequiresExpr         // Requires-expression.
+};
+
+struct DeclaratorChunk final {
+public:
+  DeclaratorChunk(){};
+  DeclaratorChunkKind kind;
+
+public:
+  static DeclaratorChunk CreatePointer();
+  static DeclaratorChunk CreateReference();
+  static DeclaratorChunk CreateFunction();
 };
 
 class ScopeSpecifier {

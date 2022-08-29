@@ -81,7 +81,7 @@ class Parser final {
   // /// Factory object for creating ParsedAttribute objects.
   // AttributeFactory attributeFactory;
 
-  DeclSyntaxParsing declParsing;
+  DeclSyntaxParsing syntaxParsing;
 
 private:
   // Identifiers
@@ -105,7 +105,7 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  DeclSyntaxParsing &GetDeclSyntaxParsing() { return declParsing; }
+  DeclSyntaxParsing &GetDeclSyntaxParsing() { return syntaxParsing; }
 
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() {
@@ -130,9 +130,11 @@ public:
   bool IsTopLevelDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOptions flags);
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOptions flags,
-                               AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing &declSyntaxParsing);
+
+  // SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing flags,
+  //                              AccessLevel accessLevel);
+
   void ParseForwardDecl();
 
   void ParseInheritance();
@@ -142,14 +144,14 @@ private:
 
 public:
   // == Type Parsing ==//
-  bool IsBasicType(Token &anyTok) const;
+  bool IsBasicType(tok kind) const;
   SyntaxResult<QualType> ParseType();
   SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
   SyntaxResult<QualType> ParseBasicType(Diag<> diagID);
 
 public:
   //==Begin Function==//
-  SyntaxResult<Decl> ParseFunDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseFunDecl(DeclSyntaxParsing &syntaxParsing);
   // void ParseFunForwardDecl(AccessLevel accessLevel);
 
 private:
@@ -193,6 +195,9 @@ public:
   void Stop() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
+  bool IsParsing() {
+    (syntaxParsing.status == DeclSyntaxParsingStatus::Parsing) && !IsDone();
+  }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
 public:

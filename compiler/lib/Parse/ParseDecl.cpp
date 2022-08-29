@@ -53,54 +53,92 @@ void Parser::ParseTopLevelDecls(
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(IsTopLevelDecl(curTok) && "Invalid top-declaration");
-  return ParseDecl(DeclSyntaxParsingFlags::AllowTopLevel);
+
+  DeclSyntaxParsing syntaxParsing(*this);
+  syntaxParsing.status = DeclSyntaxParsingStatus::Parsing;
+  syntaxParsing.flags = DeclSyntaxParsingFlags::AllowTopLevel;
+
+  // May want to
+  return ParseDecl(syntaxParsing);
 }
 
-SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags) {
-
-  // PairDelimiterBalancer pairDelimiterBalancer(*this);
-  AccessLevel accessLevel = AccessLevel::None;
-  switch (curTok.GetKind()) {
-  case tok::kw_public:
-    accessLevel = AccessLevel::Public;
-    break;
-  case tok::kw_internal:
-    accessLevel = AccessLevel::Internal;
-    break;
-  default:
-    accessLevel = AccessLevel::Private;
-    break;
-  }
-  if (curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
-    ConsumeToken();
-  }
-  // TODO:
-  // ParseDeclModifierList(Attributes, StaticLoc, StaticSpelling);
-  return ParseDecl(flags, accessLevel);
-}
-
-// This is your ParseDeclSpec
-SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags,
-                                     AccessLevel accessLevel) {
+// NOTE: This is ripe for recursion.
+SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsing &syntaxParsing) {
   SyntaxResult<Decl> declResult;
 
-  // TODO: ParseTemplateDecl first before you move
-  // ParsingDeclSpecifier pds(*this);
-
-  switch (curTok.GetKind()) {
-
-  case tok::kw_fun:
-    declResult = ParseFunDecl(accessLevel);
-    break;
-  default:
-    // if (IsBasicType(curTok.GetKind())) {
-    // }
-    break;
+  while (IsParsing()) {
+    switch (curTok.GetKind()) {
+    case tok::kw_public:
+      syntaxParsing.level = AccessLevel::Public;
+      break;
+    case tok::kw_internal:
+      syntaxParsing.level = AccessLevel::Internal;
+      break;
+    case tok::kw_private:
+      syntaxParsing.level = AccessLevel::Private;
+      break;
+    case tok::kw_fun:
+      declResult = ParseFunDecl(syntaxParsing);
+      break;
+    default:
+      // We only handle basic types here
+      if (IsBasicType(curTok.GetKind())) {
+      }
+      break;
+    }
+    ConsumeToken();
+    if (IsDone()) {
+      syntaxParsing.status = DeclSyntaxParsingStatus::Done;
+    }
   }
   return declResult;
 }
 
-SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
+// PairDelimiterBalancer pairDelimiterBalancer(*this);
+// AccessLevel accessLevel = AccessLevel::None;
+// switch (curTok.GetKind()) {
+// case tok::kw_public:
+//   accessLevel = AccessLevel::Public;
+//   break;
+// case tok::kw_internal:
+//   accessLevel = AccessLevel::Internal;
+//   break;
+// default:
+//   accessLevel = AccessLevel::Private;
+//   break;
+// }
+// if (curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
+//   ConsumeToken();
+// }
+// // TODO:
+// // ParseDeclModifierList(Attributes, StaticLoc, StaticSpelling);
+// return ParseDecl(flags, accessLevel);
+
+// return declResult;
+// }
+
+// This is your ParseDeclSpec
+// SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags,
+//                                      AccessLevel accessLevel) {
+//   SyntaxResult<Decl> declResult;
+
+//   // TODO: ParseTemplateDecl first before you move
+//   // ParsingDeclSpecifier pds(*this);
+
+//   switch (curTok.GetKind()) {
+
+//   case tok::kw_fun:
+//     declResult = ParseFunDecl(accessLevel);
+//     break;
+//   default:
+//     // if (IsBasicType(curTok.GetKind())) {
+//     // }
+//     break;
+//   }
+//   return declResult;
+// }
+
+SyntaxResult<Decl> Parser::ParseFunDecl(DeclSyntaxParsing &syntaxParsing) {
 
   assert(curTok.Is(tok::kw_fun) &&
          "Attempting to parse a 'fun' decl with incorrect curTok.");
@@ -112,7 +150,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 
   FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
-  funDecl->SetAccessLevel(accessLevel);
+  funDecl->SetAccessLevel(syntaxParsing.level);
   funDecl->SetFunLoc(funLoc);
 
   // funDecl->SetTemplate...
