@@ -81,7 +81,7 @@ class Parser final {
   // /// Factory object for creating ParsedAttribute objects.
   // AttributeFactory attributeFactory;
 
-  SyntaxParsing syntaxParsing;
+  DeclSyntaxParsing declParsing;
 
 private:
   // Identifiers
@@ -105,7 +105,7 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  SyntaxParsing &GetSyntaxParsing() { return syntaxParsing; }
+  DeclSyntaxParsing &GetDeclSyntaxParsing() { return declParsing; }
 
   // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() {

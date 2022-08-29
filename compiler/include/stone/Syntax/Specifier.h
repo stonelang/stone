@@ -14,6 +14,7 @@ enum class TypeSpecifierKind : uint8_t {
   Float,
   Float32,
   Float64,
+  Enum,
   Interface,
   Struct,
   Void,
@@ -24,8 +25,7 @@ enum class TypeSpecifierKind : uint8_t {
   Int64,
   UInt,
   UInt8,
-  // Alias for Uint8
-  Byte,
+  Byte, // Alias for Uint8
   UInt16,
   UInt32,
   UInt64,

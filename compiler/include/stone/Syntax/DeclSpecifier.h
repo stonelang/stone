@@ -92,6 +92,7 @@ public:
   TypeSpecifierKind GetKind() { return kind; }
 
   bool IsBasicType();
+  bool IsNominalType();
 };
 
 class StorageSpecifierContext final {
@@ -133,9 +134,8 @@ class Declarator {
 
   const DeclSpecifier &declSpecifier;
   ScopeSpecifier scopeSpecifier;
-
   /// Where we are parsing this declarator.
-  DeclaratorScopeKind declaratorScopeKind;
+  DeclaratorScopeKind scopeKind;
 
   // /// The C++17 structured binding, if any. This is an alternative to a Name.
   // DecompositionDeclarator bindingGroup;
@@ -151,13 +151,14 @@ class Declarator {
   llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
-  Declarator(const DeclSpecifier &declSpecifier)
+  Declarator(const DeclSpecifier &declSpecifier, DeclaratorScopeKind scopeKind)
       : declSpecifier(declSpecifier) {}
 
 public:
   /// getDeclSpec - Return the declaration-specifier that this declarator was
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
+  DeclaratorScopeKind GetScopeKind() { return scopeKind; }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

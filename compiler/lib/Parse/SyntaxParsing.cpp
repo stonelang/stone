@@ -51,8 +51,6 @@ SyntaxParsingPositionRAII::~SyntaxParsingPositionRAII() {
   parser.RestoreSyntaxParsingPosition(parsingPos);
 }
 
-SyntaxParsing::SyntaxParsing() {}
-
 SyntaxParsingPrettyStackTrace::SyntaxParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 

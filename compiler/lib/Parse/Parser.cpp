@@ -22,7 +22,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
-    : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
+    : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf), declParsing(*this),
       listener(listener) {
 
   stats.reset(new ParserStats(*this));

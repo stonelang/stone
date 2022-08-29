@@ -11,7 +11,21 @@ namespace stone {
 namespace syn {
 
 class Parser;
+class AttributeFactory;
+
 enum class SyntaxScopeKind : UInt8;
+
+/// To assist debugging parser crashes, tell us the location of the
+/// current curTok.
+class SyntaxParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
+  Parser &parser;
+
+public:
+  explicit SyntaxParsingPrettyStackTrace(Parser &parser);
+  void print(llvm::raw_ostream &out) const override;
+};
+
+
 
 // class ParsingDeclContext {
 // public:
@@ -198,14 +212,11 @@ struct DeclSyntaxParsingFlags {
     Default = 0,
     AllowTopLevel = 1 << 1,
     HasContainerType = 1 << 2,
-    DisallowInit = 1 << 3,
-    AllowDestructor = 1 << 4,
-    AllowEnumElement = 1 << 5,
-    InInterface = 1 << 6,
-    In = 1 << 7,
-    InExtension = 1 << 8,
-    InStruct = 1 << 9,
-    InEnum = 1 << 10,
+    AllowDestructor = 1 << 3,
+    AllowEnumElement = 1 << 4,
+    InInterface = 1 << 5,
+    InStruct = 1 << 6,
+    InEnum = 1 << 7,
   };
 };
 /// Options that control the parsing of declarations.
@@ -247,33 +258,48 @@ public:
   ~SyntaxParsingPositionRAII();
 };
 
-class SyntaxParsingContext {
+// class SyntaxParsingContext {
+// public:
+// };
+
+// class SyntaxParsingCache {
+// public:
+// };
+
+class SyntaxParsingDeclSpecifier final : public DeclSpecifier {
+
 public:
+  SyntaxParsingDeclSpecifier(AttributeFactory &attributeFactory) : DeclSpecifier(attributeFactory) {}
 };
 
-class SyntaxParsingCache {
-public:
-};
-
-/// To assist debugging parser crashes, tell us the location of the
-/// current curTok.
-class SyntaxParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
+class SyntaxParsingDeclarator final : public Declarator {
   Parser &parser;
-
 public:
-  explicit SyntaxParsingPrettyStackTrace(Parser &parser);
-  void print(llvm::raw_ostream &out) const override;
+  SyntaxParsingDeclarator(Parser &parser,
+                          const SyntaxParsingDeclSpecifier &specifier,
+                          DeclaratorScopeKind scopeKind)
+      : Declarator(specifier, scopeKind), parser(parser) {}
 };
 
-class SyntaxParsing final {
+class SyntaxParsing {
 
+protected:
+  Parser &parser;
   // SyntaxParsingScope syntaxParsingScope;
-  SyntaxParsingCache cache;
-  SyntaxParsingPosition *curPosition;
+  // SyntaxParsingCache cache;
+  // SyntaxParsingPosition *curPosition;
 
 public:
-  SyntaxParsing();
+  SyntaxParsing(Parser &parser) : parser(parser) {}
 };
+
+class DeclSyntaxParsing final : public SyntaxParsing {
+  SyntaxParsingDeclSpecifier *syntaxParsingDeclSpecifier;
+public:
+  DeclSyntaxParsing(Parser &parser) : SyntaxParsing(parser) {}
+};
+
+
 
 } // namespace syn
 } // namespace stone

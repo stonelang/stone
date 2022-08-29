@@ -27,3 +27,13 @@ bool TypeSpecifierContext::IsBasicType() {
     return false;
   }
 }
+bool TypeSpecifierContext::IsNominalType() {
+  switch (kind) {
+  case TypeSpecifierKind::Struct:
+  case TypeSpecifierKind::Interface:
+  case TypeSpecifierKind::Enum:
+    return true;
+  default:
+    return false;
+  }
+}
