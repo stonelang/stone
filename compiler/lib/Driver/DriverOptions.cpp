@@ -59,11 +59,11 @@ file::Files &Driver::BuildInputFiles(const llvm::opt::InputArgList &ial) {
           if (!seenFiles.insert({baseName, input}).second) {
             stone::Panic("error_two_files_same_name");
 
-            // GetContext().Out()
+            // GetLangContext().Out()
             //     << "de.D(SourceLoc(),"
             //     << "diag::error_two_files_same_name,"
             //     << "basename, seenFiles[basename], argValue);" << '\n';
-            // GetContext().Out() << " de.D(SourceLoc(), "
+            // GetLangContext().Out() << " de.D(SourceLoc(), "
             //                  << "diag::note_explain_two_files_"
             //                     "same_name);"
             //                  << '\n';

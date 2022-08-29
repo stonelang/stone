@@ -1,8 +1,8 @@
 #ifndef STONE_COMPILE_LANINPUTSSBUILDER_H
 #define STONE_COMPILE_LANINPUTSSBUILDER_H
 
-#include "stone/Compile/FrontendOptions.h"
-#include "stone/Context.h"
+#include "stone/Compile/CompilerOptions.h"
+#include "stone/LangContext.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -12,8 +12,8 @@ namespace stone {
 
 class DiagnosticEngine;
 
-class FrontendInputsConverter {
-  FrontendOptions &frontendOpts;
+class CompilerInputsConverter {
+  CompilerOptions &invocationOpts;
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
 
@@ -23,22 +23,22 @@ class FrontendInputsConverter {
 
   llvm::SetVector<llvm::StringRef> files;
   /// A place to keep alive any buffers that are loaded as part of setting up
-  /// the frontend inputs.
+  /// the invocation inputs.
   llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
       configurationFileBuffers;
 
 public:
-  FrontendInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                          FrontendOptions &frontendOpts);
+  CompilerInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
+                          CompilerOptions &invocationOpts);
 
 public:
-  /// Produces a FrontendInputsAndOutputs object with the inputs populated from
+  /// Produces a CompilerInputsAndOutputs object with the inputs populated from
   /// the arguments the converter was initialized with.
   ///
-  /// \param buffers If present, buffers read in the processing of the frontend
-  /// inputs will be saved here. These should only be used for debugging
-  /// purposes.
-  llvm::Optional<FrontendInputsAndOutputs>
+  /// \param buffers If present, buffers read in the processing of the
+  /// invocation inputs will be saved here. These should only be used for
+  /// debugging purposes.
+  llvm::Optional<CompilerInputsAndOutputs>
   Convert(SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 
 private:
@@ -52,9 +52,9 @@ private:
   bool AddFile(llvm::StringRef file);
   llvm::Optional<std::set<StringRef>> ReadPrimaryFiles();
 
-  /// Returns the newly set-up FrontendInputsAndOutputs, as well as a set of
+  /// Returns the newly set-up CompilerInputsAndOutputs, as well as a set of
   /// any unused primary files (those that do not correspond to an input).
-  std::pair<FrontendInputsAndOutputs, std::set<llvm::StringRef>>
+  std::pair<CompilerInputsAndOutputs, std::set<llvm::StringRef>>
   CreateInputFilesConsumingPrimaries(std::set<llvm::StringRef> primaryFiles);
 
   /// Emits an error for each file in \p unusedPrimaryFiles.
@@ -63,7 +63,7 @@ private:
   bool DiagnoseUnusedPrimaryFiles(std::set<llvm::StringRef> unusedPrimaryFiles);
 
   bool
-  IsSingleThreadedWMO(const FrontendInputsAndOutputs &inputsAndOutputs) const;
+  IsSingleThreadedWMO(const CompilerInputsAndOutputs &inputsAndOutputs) const;
 };
 } // namespace stone
 #endif

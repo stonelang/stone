@@ -30,11 +30,11 @@ class CodeGenContext;
 class IRCodeGenResult;
 
 std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
-                                       const Context &ctx,
+                                       const LangContext &ctx,
                                        const OutputFile *output);
 
 std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc, syn::Module &mod,
-                                       const Context &ctx,
+                                       const LangContext &ctx,
                                        const OutputFile *output);
 
 stone::Error GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,

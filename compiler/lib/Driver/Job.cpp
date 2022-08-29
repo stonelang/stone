@@ -6,7 +6,7 @@
 
 using namespace stone;
 
-Job::Job(const Phase &phase, Context &ctx,
+Job::Job(const Phase &phase, LangContext &ctx,
          llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType)
     : phaseAndCondition(&phase, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {

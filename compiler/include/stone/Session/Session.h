@@ -9,8 +9,8 @@
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/Timer.h"
-#include "stone/Context.h"
 #include "stone/Diag/TextDiagnosticListener.h"
+#include "stone/LangContext.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
@@ -58,7 +58,7 @@ class Session {
   llvm::StringRef programPath;
 
 protected:
-  Context ctx;
+  LangContext ctx;
   std::unique_ptr<llvm::opt::OptTable> optst;
   std::unique_ptr<llvm::Timer> timer;
   std::unique_ptr<llvm::TimerGroup> timerGroup;
@@ -84,12 +84,12 @@ public:
 
 public:
   llvm::opt::OptTable &GetOpts() const { return *optst.get(); }
-  Context &GetContext() { return ctx; }
+  LangContext &GetLangContext() { return ctx; }
   llvm::TimerGroup &GetTimerGroup() { return *timerGroup.get(); }
   llvm::Timer &GetTimer() { return *timer.get(); }
   llvm::StringRef GetProgramName() const { return programName; }
   llvm::StringRef GetProgramPath() const { return programPath; }
-  bool HasError() { return GetContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
 public:
   llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);

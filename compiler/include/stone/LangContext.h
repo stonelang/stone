@@ -12,7 +12,7 @@
 
 namespace stone {
 
-class Context final {
+class LangContext final {
   FileMgr fm;
   SrcMgr sm;
   DiagUnit du; 
@@ -23,8 +23,8 @@ class Context final {
 
 public:
   
-  Context() : fm(fsOpts), du(sm), cos(llvm::outs()) {}
-  ~Context() {}
+  LangContext() : fm(fsOpts), du(sm), cos(llvm::outs()) {}
+  ~LangContext() {}
   
 public:
   ColorfulStream &Out() { return cos; }

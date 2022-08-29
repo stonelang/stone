@@ -27,7 +27,7 @@ using namespace stone;
 Driver::Driver(llvm::StringRef programName, llvm::StringRef programPath)
     : Session(programName, programPath) {
   buildSystem = std::make_unique<BuildSystem>(*this);
-  excludedFlagsBitmask = opts::NoFrontendOption;
+  excludedFlagsBitmask = opts::NoCompilerOption;
 }
 
 Driver::~Driver() {}
@@ -52,7 +52,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   if (inputs.empty()) {
-    GetContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
+    GetLangContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
 

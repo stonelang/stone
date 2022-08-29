@@ -10,8 +10,10 @@
 
 namespace stone {
 
-class Frontend;
-class FrontendListener : public SyntaxListener,
+class CompilerInvocation;
+class CompilerInstance;
+
+class CompilerListener : public SyntaxListener,
                          public TypeCheckerListener,
                          public EmitIRListener,
                          public EmitObjectListener,
@@ -19,15 +21,15 @@ class FrontendListener : public SyntaxListener,
                          public EmitBitCodeListener,
                          public EmitModuleListener {
 public:
-  FrontendListener() {}
-  virtual ~FrontendListener() = default;
+  CompilerListener() {}
+  virtual ~CompilerListener() = default;
 
 public:
-  virtual void OnCompileConfigured(Frontend &frontend) {}
-  virtual void OnCompileStarted(Frontend &frontend) {}
-  virtual void OnSyntaxAnalysisCompleted(Frontend &frontend) {}
-  virtual void OnSemanticAnalysisCompleted(Frontend &frontend) {}
-  virtual void OnCompileCompleted(Frontend &frontend) {}
+  virtual void OnCompileConfigured(CompilerInvocation &invocation) {}
+  virtual void OnCompileStarted(CompilerInstance &instance) {}
+  virtual void OnSyntaxAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnSemanticAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnCompileCompleted(CompilerInstance &instance) {}
 };
 
 } // namespace stone

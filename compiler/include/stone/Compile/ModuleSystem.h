@@ -2,7 +2,7 @@
 #define STONE_COMPILE_MODULESYSTEM_H
 
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/Compile/FrontendOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
@@ -20,9 +20,10 @@ public:
 };
 class ModuleSystem final {
   // TODO: We need built-in information
-  friend class Frontend;
+  friend class CompilerInvocation;
+  friend class CompilerInstance;
 
-  Context &ctx;
+  LangContext &ctx;
   syn::Syntax &syntax;
   ModuleOptions &moduleOpts;
 
@@ -30,7 +31,8 @@ class ModuleSystem final {
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(syn::Syntax &syntax, Context &ctx, ModuleOptions &moduleOpts);
+  ModuleSystem(syn::Syntax &syntax, LangContext &ctx,
+               ModuleOptions &moduleOpts);
   ~ModuleSystem();
 
 public:

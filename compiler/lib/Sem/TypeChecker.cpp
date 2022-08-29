@@ -12,7 +12,7 @@ TypeChecker::TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
     : sc(sc), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
 
   stats.reset(new TypeCheckerStats(*this));
-  sc.GetContext().GetStatEngine().Register(stats.get());
+  sc.GetLangContext().GetStatEngine().Register(stats.get());
 }
 
 void TypeCheckerStats::Print(ColorfulStream &stream) {}

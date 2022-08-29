@@ -8,6 +8,7 @@ set(stone_syn_sources
 	Builtin.cpp
 	Comment.cpp
 	Decl.cpp
+	DeclSpecifier.cpp
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp
@@ -28,7 +29,6 @@ set(stone_syn_sources
 	SyntaxWalker.cpp
 	Template.cpp
 	Type.cpp
-	TypeRep.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	

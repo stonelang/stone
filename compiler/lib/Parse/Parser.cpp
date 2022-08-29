@@ -1,8 +1,8 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Context.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/LangContext.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
@@ -14,92 +14,71 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
              std::unique_ptr<Lexer>(new Lexer(
                  sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
                  &syntax.GetSyntaxContext()
-                      .GetContext()
+                      .GetLangContext()
                       .GetDiagUnit()
                       .GetDiagEngine(),
-                 &syntax.GetSyntaxContext().GetContext().GetStatEngine())),
+                 &syntax.GetSyntaxContext().GetLangContext().GetStatEngine())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
-      listener(listener) {
+      syntaxParsing(*this), listener(listener) {
 
   stats.reset(new ParserStats(*this));
-  GetContext().GetStatEngine().Register(stats.get());
+  GetLangContext().GetStatEngine().Register(stats.get());
 }
 
 Parser::~Parser() {}
 
-SyntaxScope *Parser::GetCurScope() const {
-  assert(false && "Not implemented");
-  return nullptr;
-}
+// SyntaxScope *Parser::GetCurScope() const {
+//   assert(false && "Not implemented");
+//   return nullptr;
+// }
 
-bool Parser::HasError() { return GetContext().GetDiagUnit().HasError(); }
-Context &Parser::GetContext() { return syntax.GetSyntaxContext().GetContext(); }
+// void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
+// void Parser::ExitScope() {}
 
-void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
-void Parser::ExitScope() {}
+SrcLoc Parser::ConsumeToken(SyntaxParsingNotification notification) {
+  auto loc = curTok.GetLoc();
+  assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
-SrcLoc Parser::ConsumeTok(bool onTok) {
-  SrcLoc loc = token.GetLoc();
-  assert(token.IsNot(tok::eof) && "Lexing past eof!");
-
-  Lex(token, leadingTrivia, trailingTrivia);
+  if ((notification == SyntaxParsingNotification::TokenConsumed) && listener) {
+    listener->OnToken(&curTok);
+  }
+  Lex(curTok, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
   return loc;
 }
 
-static bool HasFlagsSet(Parser::SkipToFlags L, Parser::SkipToFlags R) {
-  return (static_cast<unsigned>(L) & static_cast<unsigned>(R)) != 0;
-}
-bool Parser::SkipTo(llvm::ArrayRef<tok> toks, SkipToFlags flags) {
-  // We always want this function to skip at least one token if the first token
-  // isn't T and if not at EOF.
-  bool isFirstTokenSkipped = true;
-  while (true) {
-    // If we found one of the tokens, stop and return true.
-    for (unsigned i = 0, numToks = toks.size(); i != numToks; ++i) {
-      if (token.Is(toks[i])) {
-        if (HasFlagsSet(flags, StopBeforeMatch)) {
-          // Noop, don't consume the token.
-        } else {
-          ConsumeAnyTok();
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-}
+// static bool HasFlagsSet(Parser::SkipToFlags L, Parser::SkipToFlags R) {
+//   return (static_cast<unsigned>(L) & static_cast<unsigned>(R)) != 0;
+// }
 
-SrcLoc Parser::ConsumeAnyTok(bool consumeCodeCompletionTok) {
-  if (IsParenTok()) {
-    return ConsumeParen();
-  }
-  if (IsBracketTok()) {
-    return ConsumeBracket();
-  }
-  if (IsBraceTok()) {
-    return ConsumeBrace();
-  }
-  // if (IsTokenStringLiteral())
-  //  return ConsumeStringTok();
-
-  // if (token.Is(tok::code_completion))
-  //  return ConsumeCodeCompletionTok ? ConsumeCodeCompletionToken()
-  //                                 : handleUnexpectedCodeCompletionToken();
-
-  // if (Tok.isAnnotation())
-  //  return ConsumeAnnotationToken();
-
-  return ConsumeTok();
-}
+// bool Parser::SkipTo(llvm::ArrayRef<tok> toks, SkipToFlags flags) {
+//   // We always want this function to skip at least one token if the first
+//   token
+//   // isn't T and if not at EOF.
+//   bool isFirstTokenSkipped = true;
+//   while (true) {
+//     // If we found one of the tokens, stop and return true.
+//     for (unsigned i = 0, numToks = toks.size(); i != numToks; ++i) {
+//       if (token.Is(toks[i])) {
+//         if (HasFlagsSet(flags, StopBeforeMatch)) {
+//           // Noop, don't consume the token.
+//         } else {
+//           ConsumeAnyTok();
+//         }
+//         return true;
+//       }
+//     }
+//     return false;
+//   }
+// }
 
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
-Identifier &Parser::GetIdentifierOnly(llvm::StringRef text) {
+Identifier &Parser::GetIdentifier(llvm::StringRef text) {
   return syntax.MakeIdentifier(text);
 }
 
@@ -128,18 +107,26 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
+void Parser::RecordTokenHash(llvm::StringRef tokText) {
+  assert(!tokText.empty());
+  if (currentTokenHash) {
+    currentTokenHash->combine(tokText);
+    // Add null byte to separate tokens.
+    currentTokenHash->combine(UInt8{0});
+  }
+}
 SrcLoc Parser::ConsumeStartingLess() {
-  assert(StartsWithLess(token) && "Token does not start with '<'");
+  assert(StartsWithLess(curTok) && "Token does not start with '<'");
   return ConsumeStartingCharOfCurToken(tok::l_angle);
 }
 
 SrcLoc Parser::ConsumeStartingGreater() {
-  assert(StartsWithGreater(token) && "Token does not start with '>'");
+  assert(StartsWithGreater(curTok) && "Token does not start with '>'");
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetContext().GetDiagUnit().PrintD(loc, diagID);
+  return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

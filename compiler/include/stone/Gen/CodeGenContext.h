@@ -18,13 +18,14 @@ class TargetMachine;
 
 namespace stone {
 
-class Context;
+class LangContext;
 class CodeGenOptions;
 
 class CodeGenContext final {
-  const Context &langContext;
-  const CodeGenOptions &genOpts;
   llvm::LLVMContext &llvmContext;
+  const CodeGenOptions &genOpts;
+  const LangContext &langContext;
+
   llvm::PassBuilder pb;
   // Create the analysis managers.
   llvm::LoopAnalysisManager lam;
@@ -37,12 +38,12 @@ class CodeGenContext final {
 
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
-                 const Context &langContext);
+                 const LangContext &langContext);
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
-  const Context &GetLangContext() const { return langContext; }
+  const LangContext &GetLangContext() const { return langContext; }
 
 public:
   void TakeTargetMachine(std::unique_ptr<llvm::TargetMachine> &&tm) {

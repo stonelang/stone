@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_DECLSPECIFIER_H
 
 #include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -9,7 +10,7 @@
 namespace stone {
 namespace syn {
 
-enum DeclaratorChunkKind {
+enum class DeclaratorChunkKind {
   Pointer,
   Reference,
   Array,
@@ -18,12 +19,6 @@ enum DeclaratorChunkKind {
   MemberPointer,
   Paren,
   Pipe,
-};
-struct DeclaratorChunk final {
-
-  DeclaratorChunkKind kind;
-
-  DeclaratorChunk(){};
 };
 
 enum class DeclaratorScopeKind {
@@ -51,6 +46,17 @@ enum class DeclaratorScopeKind {
   RequiresExpr         // Requires-expression.
 };
 
+struct DeclaratorChunk final {
+public:
+  DeclaratorChunk(){};
+  DeclaratorChunkKind kind;
+
+public:
+  static DeclaratorChunk CreatePointer();
+  static DeclaratorChunk CreateReference();
+  static DeclaratorChunk CreateFunction();
+};
+
 class ScopeSpecifier {
   SrcRange range;
   // NestedNameSpecifierLocBuilder builder;
@@ -69,12 +75,49 @@ public:
   // }
 };
 
+class TypeSpecifierContext final {
+  TypeSpecifierKind kind;
+
+public:
+  TypeSpecifierContext() : kind(TypeSpecifierKind::None) {}
+
+public:
+  bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
+                           const char *&prevTypeSpecifier, Diag<> diagID,
+                           Decl *rep, bool owned);
+
+  // bool SetFunctionSpecifierInline(SourceLocation Loc, const char *&prevSpec,
+  //                            unsigned &DiagID);
+
+  // bool setFunctionSpecifierForceInline(SourceLocation Loc, const char
+  // *&PrevSpec,
+  //                                 unsigned &DiagID);
+
+public:
+  TypeSpecifierKind GetKind() { return kind; }
+
+  bool IsBasicType();
+  bool IsNominalType();
+};
+
+class StorageSpecifierContext final {
+  StorageSpecifierKind kind;
+
+public:
+  StorageSpecifierContext() : kind(StorageSpecifierKind::None) {}
+
+public:
+  void SetKind(StorageSpecifierKind anyKind) { kind = anyKind; }
+
+  StorageSpecifierKind GetKind() { return kind; }
+};
+
 class DeclSpecifier {
 
-  TypeSpecifierKind typeSpecifierKind;
-  StorageSpecifierKind storageSpecifierKind;
-
   AttributeFactory &attributeFactory;
+
+  TypeSpecifierContext typeSpecifierContext;
+  StorageSpecifierContext storageSpecifierContext;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -84,29 +127,20 @@ public:
       : attributeFactory(attributeFactory) {}
 
 public:
-  StorageSpecifierKind GetStorageSpeciferKind() { return storageSpecifierKind; }
-  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
-
-public:
-  bool SetTypeSpeciferType(TypeSpecifierKind kind, SrcLoc loc,
-                           const char *&prevTypeSpecifier, Diag<> diagID,
-                           Decl *rep, bool owned);
-
-  // bool SetFunctionSpecifierInline(SourceLocation Loc, const char *&PrevSpec,
-  //                            unsigned &DiagID);
-
-  // bool setFunctionSpecifierForceInline(SourceLocation Loc, const char
-  // *&PrevSpec,
-  //                                 unsigned &DiagID);
+  StorageSpecifierContext &GetStorageSpeciferContext() {
+    return storageSpecifierContext;
+  }
+  TypeSpecifierContext &GetTypeSpecifierContext() {
+    return typeSpecifierContext;
+  }
 };
 
 class Declarator {
 
   const DeclSpecifier &declSpecifier;
   ScopeSpecifier scopeSpecifier;
-
   /// Where we are parsing this declarator.
-  DeclaratorScopeKind declaratorScopeKind;
+  DeclaratorScopeKind scopeKind;
 
   // /// The C++17 structured binding, if any. This is an alternative to a Name.
   // DecompositionDeclarator bindingGroup;
@@ -122,19 +156,20 @@ class Declarator {
   llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
-  Declarator(const DeclSpecifier &declSpecifier)
+  Declarator(const DeclSpecifier &declSpecifier, DeclaratorScopeKind scopeKind)
       : declSpecifier(declSpecifier) {}
 
 public:
   /// getDeclSpec - Return the declaration-specifier that this declarator was
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
+  DeclaratorScopeKind GetScopeKind() { return scopeKind; }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this
 // /// out, there are other significant restrictions on specifiers than
 // /// would be best implemented in the parser.
-// enum class DeclSpecifierContext {
+// enum class DeclSpecifierContextKind {
 //   Normal,         // normal context
 //   Fun,
 //   Struct,          // struct context, enables 'friend'

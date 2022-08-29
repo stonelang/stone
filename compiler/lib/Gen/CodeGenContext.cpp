@@ -1,5 +1,5 @@
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 
 using namespace stone;
 
@@ -7,7 +7,7 @@ using namespace stone;
 
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                const CodeGenOptions &genOpts,
-                               const Context &langContext)
+                               const LangContext &langContext)
     : llvmContext(llvmContext), genOpts(genOpts), langContext(langContext) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);

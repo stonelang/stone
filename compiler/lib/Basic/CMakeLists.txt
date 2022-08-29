@@ -27,6 +27,7 @@ set(stone_basic_sources
 	SrcMgr.cpp
 	LangOptions.cpp
 	StatisticEngine.cpp
+	StableHasher.cpp
 	Timer.cpp
 	TokenKind.cpp
 	UnixDirWatcher.cpp

@@ -1,14 +1,14 @@
 #ifndef STONE_SYNTAX_SYNTAXSCOPE_H
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
-#include <stdint.h>
+#include "stone/Basic/STDTypeAlias.h"
 
 namespace stone {
 namespace syn {
 
 // TODO: Think about
-enum class SyntaxScopeKind : uint8_t {
-
+enum class SyntaxScopeKind : UInt8 {
+  None = 0,
   /// A synta file , which is the root of a scope.
   SyntaxFile,
 
@@ -65,6 +65,9 @@ enum class SyntaxScopeKind : uint8_t {
   /// scope. TypeDeclaration?
   Interface,
 
+  Constructor,
+
+  Destructor,
 };
 
 class SyntaxScope final {

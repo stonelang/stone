@@ -5,7 +5,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/FrontendInputsAndOutputs.h"
+#include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/TargetOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
@@ -13,13 +13,14 @@
 
 namespace stone {
 
-class FrontendOptions final : public BaseOptions {
-  friend class Frontend;
+class CompilerOptions final : public BaseOptions {
+
+  friend class CompilerInvocation;
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
   ///
-  FrontendInputsAndOutputs inputsAndOutputs;
+  CompilerInputsAndOutputs inputsAndOutputs;
 
 public:
   enum class ThreadModelKind {
@@ -62,12 +63,12 @@ public:
   InputFileMode inputFileMode = InputFileMode::Stone;
 
 public:
-  FrontendOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
-    GetFrontendInputsAndOutputs().ClearInputs();
+  CompilerOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
+    GetCompilerInputsAndOutputs().ClearInputs();
   }
 
 public:
-  FrontendInputsAndOutputs &GetFrontendInputsAndOutputs() {
+  CompilerInputsAndOutputs &GetCompilerInputsAndOutputs() {
     return inputsAndOutputs;
   }
 };

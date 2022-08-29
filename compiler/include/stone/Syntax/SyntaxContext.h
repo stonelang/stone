@@ -14,7 +14,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
@@ -74,10 +74,9 @@ class SyntaxContext final {
   friend SyntaxContextStats;
 
   std::unique_ptr<SyntaxContextStats> stats;
-
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
-  Context &ctx;
+  LangContext &ctx;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;
@@ -113,20 +112,24 @@ public:
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
 
-  SyntaxContext(Context &ctx, const SearchPathOptions &spOpts);
+  SyntaxContext(LangContext &ctx, const SearchPathOptions &spOpts);
   ~SyntaxContext();
 
   /// Add a cleanup function to be called when the SyntaxContext is deallocated.
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
+  // Members that should only be used by ASTContext.cpp.
+  struct Extension;
+  Extension &GetExtension() const;
+
   ///
   Identifier &GetIdentifier(llvm::StringRef name);
   ///
   Builtin &GetBuiltin() const;
 
-  Context &GetContext() { return ctx; }
-  const Context &GetContext() const { return ctx; }
+  LangContext &GetLangContext() { return ctx; }
+  const LangContext &GetLangContext() const { return ctx; }
   ///
   LangABI *GetLangABI() const;
   //

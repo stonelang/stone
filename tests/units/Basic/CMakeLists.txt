@@ -12,5 +12,6 @@ add_stone_unittest(StoneBasicUnitTests
 target_link_libraries(StoneBasicUnitTests
   PRIVATE
 	StoneBasic
+	StoneDiag
 )
 

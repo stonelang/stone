@@ -6,12 +6,12 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/FrontendOptions.h"
-#include "stone/Compile/FrontendUnit.h"
+#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
-#include "stone/Context.h"
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/LangContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
 #include "stone/Sem/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
@@ -19,6 +19,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxOptions.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -33,19 +34,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-
-class Frontend;
-class FrontendListener;
-
-class FrontendStats final : public Stats {
-  Frontend &frontend;
-
-public:
-  FrontendStats(Frontend &frontend)
-      : Stats("Frontend statistics:"), frontend(frontend) {}
-  void Print(ColorfulStream &stream) override;
-};
-
+class CompilerListener;
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -62,15 +51,13 @@ struct ModuleBuffers {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-class Frontend final : public Session {
+class CompilerInvocation final : public Session {
 
-  FrontendListener *listener = nullptr;
+  CompilerListener *listener = nullptr;
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<FrontendOptions> frontendOpts;
-
-  std::unique_ptr<FrontendStats> stats;
+  std::unique_ptr<CompilerOptions> invocationOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -83,6 +70,8 @@ class Frontend final : public Session {
 
   TargetOptions targetOpts;
 
+  SyntaxOptions syntaxOpts;
+
   /// The main executable path of the running program
   std::string mainExecutablePath;
 
@@ -92,27 +81,26 @@ class Frontend final : public Session {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceIDs;
 
-  /// Allocator FrontendUnit
-  mutable llvm::BumpPtrAllocator bumpAlloc;
-
   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
   /// Code completion offset in bytes from the beginning of the main
   /// source file.  Valid only if \c isCodeCompletion() == true.
   unsigned codeCompletionOffset = ~0U;
 
-public:
-  Frontend(llvm::StringRef programName, llvm::StringRef programPath,
-           FrontendListener *listener = nullptr);
-  ~Frontend();
+  mutable llvm::BumpPtrAllocator bumpAlloc;
 
 public:
-  // llvm::ArrayRef<FrontendUnit *> BuildSources(const file::Files &inputs);
-  // FrontendUnit *BuildSource(const file::File &input);
+  CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
+                     CompilerListener *listener = nullptr);
+  ~CompilerInvocation();
+
+public:
+  // llvm::ArrayRef<CompilerUnit *> BuildSources(const file::Files &inputs);
+  // CompilerUnit *BuildSource(const file::File &input);
 
   Error CreateSourceBuffers();
 
   // TODO: You may not need this anymore
-  unsigned CreateSourceBuffer(const FrontendInputFile &input);
+  unsigned CreateSourceBuffer(const CompilerInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -128,17 +116,18 @@ public:
   // }
 
   stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
-  std::unique_ptr<OutputFile> ComputeOutputFile(FrontendUnit &source);
+
+  // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
   void Finish() override;
 
-  // TODO: update FrontendOptions
+  // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
-  FrontendOptions &GetFrontendOptions() { return *frontendOpts.get(); }
-  const FrontendOptions &GetFrontendOptions() const {
-    return *frontendOpts.get();
+  CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
+  const CompilerOptions &GetCompilerOptions() const {
+    return *invocationOpts.get();
   }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
@@ -146,6 +135,9 @@ public:
 
   TargetOptions &GetTargetOptions() { return targetOpts; }
   const TargetOptions &GetTargetOptions() const { return targetOpts; }
+
+  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
+  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
 
   sem::TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const sem::TypeCheckerOptions &GetTypeCheckerOptions() const {
@@ -163,21 +155,23 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  FrontendListener *GetListener() { return listener; }
-  void SetListener(FrontendListener *l) { listener = l; }
+  CompilerListener *GetListener() { return listener; }
+  void SetListener(CompilerListener *l) { listener = l; }
 
   Optional<ModuleBuffers>
-  GetInputBuffersIfPresent(const FrontendInputFile &input);
-  Optional<unsigned> GetRecordedBufferID(const FrontendInputFile &input,
+  GetInputBuffersIfPresent(const CompilerInputFile &input);
+  Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
                                          const bool shouldRecover,
                                          bool &failed);
 
-  bool HasError() { return GetContext().GetDiagUnit().HasError(); }
+  llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool JustFrontend() {
-    if (GetFrontendOptions().GetMode().JustParse() ||
-        GetFrontendOptions().GetMode().JustTypeCheck() ||
-        GetFrontendOptions().GetMode().IsEmitIR()) {
+  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+
+  bool JustCompiler() {
+    if (GetCompilerOptions().GetMode().JustParse() ||
+        GetCompilerOptions().GetMode().JustTypeCheck() ||
+        GetCompilerOptions().GetMode().IsEmitIR()) {
       return true;
     }
     return false;

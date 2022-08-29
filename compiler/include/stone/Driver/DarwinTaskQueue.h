@@ -3,9 +3,9 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Context.h"
 #include "stone/Driver/Task.h"
 #include "stone/Driver/TaskQueue.h"
+#include "stone/LangContext.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"
@@ -19,7 +19,7 @@ public:
 
 class DarwinTaskQueue final : public TaskQueue {
 public:
-  DarwinTaskQueue(Context &ctx) : TaskQueue(TaskQueueKind::Darwin, ctx) {}
+  DarwinTaskQueue(LangContext &ctx) : TaskQueue(TaskQueueKind::Darwin, ctx) {}
 };
 } // namespace darwin
 } // namespace stone

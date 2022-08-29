@@ -62,7 +62,7 @@ struct SupplementaryOutputPaths final {
   std::string referenceDependenciesFilePath;
 
   /// Path to a file which should contain serialized diagnostics for this
-  /// frontend invocation.
+  /// invocation invocation.
   ///
   /// This uses the same serialized diagnostics format as Clang, for tools that
   /// want machine-parseable diagnostics. There's a bit more information on

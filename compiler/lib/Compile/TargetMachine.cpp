@@ -1,7 +1,7 @@
 #include "stone/Compile/TargetMachine.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Compile/FrontendOptions.h"
-#include "stone/Context.h"
+#include "stone/Compile/CompilerOptions.h"
+#include "stone/LangContext.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/Support/TargetRegistry.h"
@@ -14,10 +14,10 @@ static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
                                           const LangOptions &langOpts) {
 
   // switch (langOpts.GetThreadModel()) {
-  // case FrontendOptions::ThreadModelKind::POSIX:
+  // case CompilerOptions::ThreadModelKind::POSIX:
   //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
   //   break;
-  // case FrontendOptions::ThreadModelKind::Single:
+  // case CompilerOptions::ThreadModelKind::Single:
   //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
   //   break;
   // }

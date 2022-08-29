@@ -1,4 +1,4 @@
-let Flags = [FrontendOption, NoDriverOption] in {
+let Flags = [CompilerOption, NoDriverOption] in {
 
 def PrimaryFile : Separate<["-"], "primary-file">,
   HelpText<"Produce output for this file, not the whole module">;

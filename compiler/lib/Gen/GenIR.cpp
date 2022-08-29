@@ -78,7 +78,7 @@ using namespace stone::syn;
 
 std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
                                               syn::SyntaxFile &sf,
-                                              const Context &ctx,
+                                              const LangContext &ctx,
                                               const OutputFile *output) {
   // IRCodeGen irCG(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);
@@ -101,7 +101,7 @@ std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
 
 std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
                                               syn::Module &sf,
-                                              const Context &ctx,
+                                              const LangContext &ctx,
                                               const OutputFile *output) {
   // IRCodeGen IRCodeGen(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);

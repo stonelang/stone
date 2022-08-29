@@ -1,9 +1,9 @@
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/FrontendListener.h"
-#include "stone/Diag/FrontendDiagnostic.h"
+#include "stone/Compile/CompilerListener.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -23,18 +23,15 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-Frontend::Frontend(llvm::StringRef programName, llvm::StringRef programPath,
-                   FrontendListener *listener)
+CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
+                                       llvm::StringRef programPath,
+                                       CompilerListener *listener)
     : Session(programName, programPath), listener(listener) {
-  excludedFlagsBitmask = opts::NoFrontendOption;
-
-  stats = std::make_unique<FrontendStats>(*this);
-
-  GetContext().GetStatEngine().Register(stats.get());
+  excludedFlagsBitmask = opts::NoCompilerOption;
 }
-Frontend::~Frontend() {}
+CompilerInvocation::~CompilerInvocation() {}
 
-llvm::Optional<unsigned> Frontend::CreateCodeCompletionBuffer() {
+llvm::Optional<unsigned> CompilerInvocation::CreateCodeCompletionBuffer() {
   llvm::Optional<unsigned> codeCompletionBufferID;
   // auto codeCompletePoint = GetCodeCompletionPoint();
   // if (codeCompletePoint.first) {
@@ -48,19 +45,19 @@ llvm::Optional<unsigned> Frontend::CreateCodeCompletionBuffer() {
   return codeCompletionBufferID;
 }
 
-Error Frontend::CreateSourceBuffers() {
+Error CompilerInvocation::CreateSourceBuffers() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
   const llvm::Optional<unsigned> codeCompletionBufferID =
       CreateCodeCompletionBuffer();
 
-  const auto &inputs = GetFrontendOptions().inputsAndOutputs.GetInputs();
+  const auto &inputs = GetCompilerOptions().inputsAndOutputs.GetInputs();
   const bool shouldRecover =
-      GetFrontendOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
+      GetCompilerOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
 
   bool hasFailed = false;
-  for (const FrontendInputFile &input : inputs) {
+  for (const CompilerInputFile &input : inputs) {
     bool failed = false;
     llvm::Optional<unsigned> bufferID =
         GetRecordedBufferID(input, shouldRecover, failed);
@@ -78,9 +75,8 @@ Error Frontend::CreateSourceBuffers() {
   return stone::Error();
 }
 
-llvm::Optional<unsigned>
-Frontend::GetRecordedBufferID(const FrontendInputFile &input,
-                              const bool shouldRecover, bool &failed) {
+llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
+    const CompilerInputFile &input, const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
             ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
@@ -123,7 +119,7 @@ Frontend::GetRecordedBufferID(const FrontendInputFile &input,
 
 // TODO:
 llvm::Optional<ModuleBuffers>
-Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
+CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (auto b = input.GetBuffer()) {
     return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
@@ -159,7 +155,7 @@ Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
   //                             /*FileSize*/-1,
   //                             /*RequiresNullTerminator*/true,
   //                             /*IsVolatile*/false,
-  //     /*Bad File Descriptor Retry*/getInvocation().getFrontendOptions()
+  //     /*Bad File Descriptor Retry*/getInvocation().getCompilerOptions()
   //                              .BadFileDescriptorRetryCount);
   // if (!inputFileOrErr) {
   //   Diagnostics.diagnose(SourceLoc(), diag::error_open_input_file,
@@ -180,7 +176,8 @@ Frontend::GetInputBuffersIfPresent(const FrontendInputFile &input) {
   // return llvm::None;
 }
 
-unsigned Frontend::CreateSourceBuffer(const FrontendInputFile &input) {
+unsigned
+CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
     ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
@@ -191,25 +188,18 @@ unsigned Frontend::CreateSourceBuffer(const FrontendInputFile &input) {
   return srcID;
 }
 
-void Frontend::RecordPrimarySourceID(unsigned primarySourceID) {
+void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
   primarySourceIDs.insert(primarySourceID);
 }
 
 // std::unique_ptr<OutputFile>
-// Frontend::ComputeOutputFile(FrontendUnit &source) {
+// CompilerInvocation::ComputeOutputFile(CompilerUnit &source) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-void Frontend::Finish() {
+void CompilerInvocation::Finish() {
   if (listener) {
-    listener->OnCompileCompleted(*this);
+    // listener->OnCompileCompleted(*this);
   }
   // TODO: Print stats here.
-}
-
-void FrontendStats::Print(ColorfulStream &stream) {
-  // if (sc.GetFrontendOpts().printStats) {
-  //   // GetContext().Out() << GetName() << '\n';
-  //   return;
-  // }
 }

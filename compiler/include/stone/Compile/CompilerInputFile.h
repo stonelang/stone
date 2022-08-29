@@ -11,27 +11,27 @@
 #include <string>
 
 namespace stone {
-/// An \c FrontendInputFile encapsulates information about an input passed to
-/// the frontend.
+/// An \c CompilerInputFile encapsulates information about an input passed to
+/// the invocation.
 ///
-/// Compiler inputs are usually passed on the command line without a leading
-/// flag. However, there are clients that use the \c CompilerInvocation as
-/// a library like LLDB and SourceKit that generate their own \c
-/// FrontendInputFile instances programmatically. Note that an \c
-/// FrontendInputFile need not actually be backed by a physical file, nor does
-/// its file name actually reflect its contents. \c FrontendInputFile has a
+/// CompilerInstance inputs are usually passed on the command line without a
+/// leading flag. However, there are clients that use the \c CompilerInvocation
+/// as a library like LLDB and SourceKit that generate their own \c
+/// CompilerInputFile instances programmatically. Note that an \c
+/// CompilerInputFile need not actually be backed by a physical file, nor does
+/// its file name actually reflect its contents. \c CompilerInputFile has a
 /// constructor that will try to figure out the file type from the file name if
-/// none is provided, but many clients that construct \c FrontendInputFile
+/// none is provided, but many clients that construct \c CompilerInputFile
 /// instances themselves may provide bogus file names with pre-computed kinds.
-/// It is imperative that \c FrontendInputFile::GetType be used as a source of
+/// It is imperative that \c CompilerInputFile::GetType be used as a source of
 /// truth for this information.
 ///
-/// \warning \c FrontendInputFile takes an unfortunately lax view of the
+/// \warning \c CompilerInputFile takes an unfortunately lax view of the
 /// ownership of its primary data. It currently only owns the file name and a
 /// copy of any assigned \c PrimaryFileSpecificPaths outright. It is the
 /// responsibility of the caller to ensure that an associated memory buffer
-/// outlives the \c FrontendInputFile.
-class FrontendInputFile final {
+/// outlives the \c CompilerInputFile.
+class CompilerInputFile final {
   std::string filename;
   file::Type fileTy;
   llvm::PointerIntPair<llvm::MemoryBuffer *, 1, bool> bufferAndIsPrimary;
@@ -44,14 +44,14 @@ public:
   /// and is therefore not suitable for most clients that use files synthesized
   /// from memory buffers. Use the overload of this constructor accepting a
   /// memory buffer and an explicit \c file_types::ID instead.
-  FrontendInputFile(llvm::StringRef name, bool isPrimary,
+  CompilerInputFile(llvm::StringRef name, bool isPrimary,
                     llvm::MemoryBuffer *buffer = nullptr)
-      : FrontendInputFile(
+      : CompilerInputFile(
             name, isPrimary, buffer,
             file::GetTypeByExt(llvm::sys::path::extension(name))) {}
 
   /// Constructs an input file from the provided data.
-  FrontendInputFile(llvm::StringRef name, bool isPrimary,
+  CompilerInputFile(llvm::StringRef name, bool isPrimary,
                     llvm::MemoryBuffer *buffer, file::Type fileTy)
       : filename(
             ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(name)),
@@ -64,7 +64,8 @@ public:
   /// Retrieves the type of this input file.
   file::Type GetType() const { return fileTy; };
 
-  /// Retrieves whether this input file was passed as a primary to the frontend.
+  /// Retrieves whether this input file was passed as a primary to the
+  /// invocation.
   bool IsPrimary() const { return bufferAndIsPrimary.getInt(); }
 
   /// Retrieves the backing buffer for this input file, if any.
@@ -72,7 +73,7 @@ public:
     return bufferAndIsPrimary.getPointer();
   }
 
-  /// The name of this \c FrontendInputFile, or `-` if this input corresponds to
+  /// The name of this \c CompilerInputFile, or `-` if this input corresponds to
   /// the standard input stream.
   ///
   /// The returned file name is guaranteed not to be the empty string.
@@ -123,8 +124,8 @@ public:
   }
 
   // The next set of functions provides access to those primary-specific paths
-  // accessed directly from an FrontendInputFile, as opposed to via
-  // FrontendInputsAndOutputs. They merely make the call sites
+  // accessed directly from an CompilerInputFile, as opposed to via
+  // CompilerInputsAndOutputs. They merely make the call sites
   // a bit shorter. Add more forwarding methods as needed.
 
   llvm::StringRef GetDependenciesFilePath() const {
@@ -146,4 +147,4 @@ public:
 };
 } // namespace stone
 
-#endif // stone_FRONTEND_FrontendInputFile_H
+#endif // stone_FRONTEND_CompilerInputFile_H

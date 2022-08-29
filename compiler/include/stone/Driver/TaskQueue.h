@@ -8,8 +8,8 @@
 #include "stone/Basic/JSONSerialization.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Context.h"
 #include "stone/Driver/Task.h"
+#include "stone/LangContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
@@ -84,7 +84,7 @@ class TaskQueue {
 protected:
   std::unique_ptr<TaskQueueStats> stats;
   TaskQueueKind kind;
-  Context &ctx;
+  LangContext &ctx;
 
   /// Jobs which have not begun execution.
   std::queue<std::unique_ptr<sys::Task>> runQueue;
@@ -96,7 +96,7 @@ protected:
   unsigned parallelTaskCount;
 
 public:
-  TaskQueue(TaskQueueKind kind, Context &ctx);
+  TaskQueue(TaskQueueKind kind, LangContext &ctx);
 
 public:
   /// A callback which will be executed when each task begins execution

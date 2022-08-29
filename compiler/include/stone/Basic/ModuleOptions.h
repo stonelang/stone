@@ -28,7 +28,7 @@ public:
   /// The map of aliases and underlying names of imported or referenced modules.
   llvm::StringMap<llvm::StringRef> moduleAliasMap;
 
-  /// The name of the module that the frontend is building.
+  /// The name of the module that the invocation is building.
   std::string moduleName;
   bool HasModuleName() { return moduleName.size() > 0; }
 

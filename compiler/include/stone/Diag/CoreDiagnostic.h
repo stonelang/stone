@@ -6,13 +6,20 @@
 
 namespace stone {
 template <typename... argTypes> struct Diag;
+template <typename... argTypes> struct Fix;
+
 namespace detail {
 // These templates are used to help extract the type arguments of the
 // DIAG/ERROR/WARNING/NOTE/REMARK/FIXIT macros.
-template <typename T> struct DiagWithArguments;
 
+template <typename T> struct DiagWithArguments;
 template <typename... argTypes> struct DiagWithArguments<void(argTypes...)> {
   typedef Diag<argTypes...> type;
+};
+
+template <typename T> struct FixWithArguments;
+template <typename... ArgTypes> struct FixWithArguments<void(ArgTypes...)> {
+  typedef Fix<ArgTypes...> type;
 };
 
 } // end namespace detail

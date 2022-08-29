@@ -1,7 +1,7 @@
-#include "stone/Compile/Lexer.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 
 #include "gtest/gtest.h"
 
@@ -10,7 +10,7 @@ using namespace stone::syn;
 
 class LexerTest : public ::testing::Test {
 protected:
-  Context ctx;
+  LangContext ctx;
 
 protected:
   LexerTest() {}
@@ -19,7 +19,8 @@ protected:
   std::unique_ptr<Lexer> CreateLexer(llvm::StringRef source) {
 
     auto srcID = ctx.GetSrcMgr().addMemBufferCopy(source);
-    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(), &ctx.GetDiagUnit(),
+    return std::make_unique<Lexer>(srcID, ctx.GetSrcMgr(),
+                                   &ctx.GetDiagUnit().GetDiagEngine(),
                                    &ctx.GetStatEngine());
   }
   std::vector<syn::Token> Lex(llvm::StringRef source) {
@@ -40,11 +41,11 @@ protected:
 
 TEST_F(LexerTest, GetNextToken) {
 
-  llvm::StringRef source = "Main fun() -> int  { return 0;}\n";
+  llvm::StringRef source = "fun Main() -> int  { return 0;}\n";
   auto tokens = Lex(source);
 
-  ASSERT_EQ(tok::identifier, tokens[0].GetKind());
-  ASSERT_EQ(tok::kw_fun, tokens[1].GetKind());
+  ASSERT_EQ(tok::kw_fun, tokens[0].GetKind());
+  ASSERT_EQ(tok::identifier, tokens[1].GetKind());
   ASSERT_EQ(tok::l_paren, tokens[2].GetKind());
   ASSERT_EQ(tok::r_paren, tokens[3].GetKind());
   ASSERT_EQ(tok::arrow, tokens[4].GetKind());

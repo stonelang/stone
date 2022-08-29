@@ -1,11 +1,11 @@
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Syntax &syntax, Context &ctx,
+ModuleSystem::ModuleSystem(Syntax &syntax, LangContext &ctx,
                            ModuleOptions &moduleOpts)
     : syntax(syntax), ctx(ctx), moduleOpts(moduleOpts) {}
 
@@ -25,7 +25,6 @@ stone::Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
 
   llvm::SmallVector<llvm::StringRef, 4> results;
   moduleName.split(results, ".");
-
   for (auto identifier : results) {
     if (!Lexer::isIdentifier(identifier)) {
       return stone::Error(true);

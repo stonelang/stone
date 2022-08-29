@@ -2,7 +2,7 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/Compile/Compile.h"
-#include "stone/Context.h"
+#include "stone/LangContext.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
