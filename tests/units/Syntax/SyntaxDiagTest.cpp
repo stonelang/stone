@@ -1,6 +1,6 @@
 #include "stone/Basic/Defer.h"
+#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/FrontendDiagnostic.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/LangContext.h"
@@ -18,7 +18,7 @@ using namespace stone;
 
 class SyntaxDiagTest : public ::testing::Test {
 protected:
-  Context ctx;
+  LangContext ctx;
   SearchPathOptions pathOpts;
   Syntax syntax;
   SrcMgr sm;
@@ -29,9 +29,9 @@ public:
 
 TEST_F(SyntaxDiagTest, PrintD) {
 
-  STONE_DEFER { ctx.GetDiagUnit().Finish(); };
+  STONE_DEFER { ctx.GetDiagUnit().GetDiagEngine().Finish(); };
 
-  ctx.GetDiagOptions().useColor = true;
+  ctx.GetDiagUnit().GetDiagOptions().useColor = true;
 
   // Setup the custom formatting to be able to handle syntax diagnostics
   auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
@@ -40,7 +40,7 @@ TEST_F(SyntaxDiagTest, PrintD) {
 
   TextDiagnosticListener diagListener(std::move(diagEmitter));
 
-  ctx.GetDiagUnit().AddListener(diagListener);
+  ctx.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
 
   syntax.PrintD(SrcLoc(), diag::note_prev_decl_def, diag::Decl(nullptr))
       .WithFix()

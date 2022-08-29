@@ -10,7 +10,7 @@ using namespace stone;
 
 class DriverTest : public ::testing::Test {
 public:
-  Context ctx;
+  LangContext ctx;
   const ToolChain *GetToolChain() const { return nullptr; }
 };
 
