@@ -209,7 +209,7 @@ struct DeclSyntaxParsingFlags {
   };
 };
 /// Options that control the parsing of declarations.
-using DeclSyntaxParsingOpts = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
+using DeclSyntaxParsingOptions = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
 
 enum class SyntaxParsingNotification : UInt8 {
   None,

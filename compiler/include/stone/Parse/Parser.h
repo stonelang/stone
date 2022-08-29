@@ -127,11 +127,11 @@ public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
 
-  bool IsStartOfDecl(const Token &tok);
+  bool IsTopLevelDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOpts flags);
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOpts flags,
+  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOptions flags);
+  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsingOptions flags,
                                AccessLevel accessLevel);
   void ParseForwardDecl();
 
@@ -142,9 +142,10 @@ private:
 
 public:
   // == Type Parsing ==//
+  bool IsBasicType(Token &anyTok) const;
   SyntaxResult<QualType> ParseType();
   SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
-  SyntaxResult<QualType> ParseSimpleType(Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(Diag<> diagID);
 
 public:
   //==Begin Function==//
@@ -350,7 +351,7 @@ private:
   bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
 
 public:
-  Identifier &GetIdentifierOnly(llvm::StringRef text);
+  Identifier &GetIdentifier(llvm::StringRef text);
 };
 
 } // namespace syn

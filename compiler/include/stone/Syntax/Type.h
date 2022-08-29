@@ -80,7 +80,7 @@ enum class ScalarTypeKind {
   Bool,
   Integral,
   Floating,
-  ntegralComplex,
+  IntegralComplex,
   FloatingComplex,
   FixedPoint
 };

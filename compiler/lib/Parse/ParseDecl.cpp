@@ -7,7 +7,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsStartOfDecl(const Token &curTok) {
+bool Parser::IsTopLevelDecl(const Token &curTok) {
   switch (curTok.GetKind()) {
   case tok::kw_interface:
   case tok::kw_fun:
@@ -52,11 +52,11 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
+  assert(IsTopLevelDecl(curTok) && "Invalid top-declaration");
   return ParseDecl(DeclSyntaxParsingFlags::AllowTopLevel);
 }
 
-SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
+SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags) {
 
   // PairDelimiterBalancer pairDelimiterBalancer(*this);
   AccessLevel accessLevel = AccessLevel::None;
@@ -78,7 +78,9 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags) {
   // ParseDeclModifierList(Attributes, StaticLoc, StaticSpelling);
   return ParseDecl(flags, accessLevel);
 }
-SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
+
+// This is your ParseDeclSpec
+SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags,
                                      AccessLevel accessLevel) {
   SyntaxResult<Decl> declResult;
 
@@ -86,13 +88,13 @@ SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOpts flags,
   // ParsingDeclSpecifier pds(*this);
 
   switch (curTok.GetKind()) {
-  case tok::kw_forward:
-    // syntaxResult = ParseForwardDecl();
-    break;
+
   case tok::kw_fun:
     declResult = ParseFunDecl(accessLevel);
     break;
   default:
+    // if (IsBasicType(curTok.GetKind())) {
+    // }
     break;
   }
   return declResult;
@@ -105,7 +107,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(AccessLevel accessLevel) {
 
   auto funLoc = ConsumeToken(tok::kw_fun);
   // Parse function name.
-  Identifier name = GetIdentifierOnly(curTok.GetText());
+  Identifier name = GetIdentifier(curTok.GetText());
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 

@@ -11,6 +11,7 @@ enum class TypeSpecifierKind : uint8_t {
   None = 0,
   Auto,
   Bool,
+  Float,
   Float32,
   Float64,
   Interface,
@@ -30,6 +31,8 @@ enum class TypeSpecifierKind : uint8_t {
   UInt64,
   Complex32,
   Complex64,
+  Imaginary32,
+  Iimaginary64,
 
 };
 enum class FunctionSpecifierKind : uint8_t {
@@ -54,6 +57,8 @@ enum class AccessLevel : uint8_t {
 
 /// The categorization of expression values, currently following the
 enum class ExprValueType : uint8_t {
+
+  None = 0,
   /// An r-value expression (a pr-value in the C++11 taxonomy)
   /// produces a temporary value.
   RValue,

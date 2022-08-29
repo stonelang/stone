@@ -78,7 +78,7 @@ SrcLoc Parser::ConsumeToken(SyntaxParsingNotification notification) {
 
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
-Identifier &Parser::GetIdentifierOnly(llvm::StringRef text) {
+Identifier &Parser::GetIdentifier(llvm::StringRef text) {
   return syntax.MakeIdentifier(text);
 }
 
