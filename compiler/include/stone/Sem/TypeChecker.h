@@ -20,7 +20,6 @@ class SyntaxFile;
 namespace sem {
 class TypeChecker;
 
-
 class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;
 

@@ -6,7 +6,7 @@
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Parse/Lexer.h"
-#include "stone/Parse/SyntaxListener.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Parse/SyntaxParsing.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"

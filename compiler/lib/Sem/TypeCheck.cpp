@@ -1,12 +1,13 @@
 #include "stone/Sem/TypeCheck.h"
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Sem/TypeCheckerListener.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void sem::TypeCheck(syn::SyntaxFile &sf, stone::TypeCheckerOptions &typeCheckerOpts,
+void sem::TypeCheck(syn::SyntaxFile &sf,
+                    stone::TypeCheckerOptions &typeCheckerOpts,
                     TypeCheckerListener *listener) {
 
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);

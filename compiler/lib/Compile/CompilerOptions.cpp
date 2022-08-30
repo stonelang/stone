@@ -31,10 +31,10 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
-static Error
-ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
-                          CompilerOptions &invocationOpts,
-                          TypeCheckerOptions &typeCheckerOpts) {
+static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
+                                       DiagnosticEngine &de,
+                                       CompilerOptions &invocationOpts,
+                                       TypeCheckerOptions &typeCheckerOpts) {
 
   return Error();
 }

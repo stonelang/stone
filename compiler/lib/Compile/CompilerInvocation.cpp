@@ -2,7 +2,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/CompilerListener.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
 #include "llvm/Support/BuryPointer.h"

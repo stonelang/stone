@@ -4,6 +4,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Parse/SyntaxLexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
+#include "stone/Syntax/SyntaxScope.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -12,8 +13,6 @@ namespace syn {
 
 class Parser;
 class AttributeFactory;
-
-enum class SyntaxScopeKind : UInt8;
 
 /// To assist debugging parser crashes, tell us the location of the
 /// current curTok.

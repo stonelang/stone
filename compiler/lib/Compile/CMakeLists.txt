@@ -2,7 +2,6 @@ set(stone_compile_sources
 	Compile.cpp
 	CompilerInstance.cpp
 	Deserialization.cpp
-	DebugCompilerListener.cpp
 	CompilerInvocation.cpp
 	CompilerOptions.cpp
 	CompilerInputsAndOutputs.cpp

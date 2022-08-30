@@ -3,7 +3,8 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Confusable.h"
-#include "stone/Parse/SyntaxListener.h"
+#include "stone/CodeCompletionListener.h"
+#include "stone/Syntax/Identifier.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"
