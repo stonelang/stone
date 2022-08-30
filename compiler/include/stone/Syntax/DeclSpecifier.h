@@ -91,10 +91,11 @@ public:
   //                          Decl *rep, bool owned);
 
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-  bool SetTypeQualiferKind(TypeQualifierKind kind, SrcLoc loc);
+  bool SetTypeQualifierKind(TypeQualifierKind kind, SrcLoc loc);
 
 public:
   TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
+  TypeQualifierKind GetTypeQualifierKind() { return typeQualifierKind; }
 
   bool IsBasicType();
   bool IsNominalType();

@@ -43,8 +43,8 @@ bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
   return true;
 }
 
-bool TypeSpecifierContext::SetTypeQualiferKind(TypeQualifierKind kind,
-                                               SrcLoc loc) {
+bool TypeSpecifierContext::SetTypeQualifierKind(TypeQualifierKind kind,
+                                                SrcLoc loc) {
   typeQualifierKind = kind;
   return true;
 }

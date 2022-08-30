@@ -23,8 +23,8 @@ bool Parser::IsBasicType(tok kind) const {
   case tok::kw_uint64:
   case tok::kw_float32:
   case tok::kw_float64:
-  case tok::kw_float64:
-  case tok::kw_complex32; case tok::kw_complex64:
+  case tok::kw_complex32:
+  case tok::kw_complex64:
     return true;
   default:
     return false;
