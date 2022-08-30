@@ -13,7 +13,7 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/LangContext.h"
 #include "stone/Sem/TypeCheckerListener.h"
-#include "stone/Sem/TypeCheckerOptions.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
@@ -66,7 +66,7 @@ class CompilerInvocation final : public Session {
   SearchPathOptions searchPathOpts;
 
   /// The options for type-checking
-  sem::TypeCheckerOptions typeCheckerOpts;
+  TypeCheckerOptions typeCheckerOpts;
 
   TargetOptions targetOpts;
 
@@ -139,8 +139,8 @@ public:
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
 
-  sem::TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
-  const sem::TypeCheckerOptions &GetTypeCheckerOptions() const {
+  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+  const TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
   }
 
@@ -149,9 +149,9 @@ public:
     return searchPathOpts;
   }
 
-  sem::TypeCheckMode GetTypeCheckMode() {
-    return (primarySourceIDs.empty() ? sem::TypeCheckMode::WholeModule
-                                     : sem::TypeCheckMode::EachFile);
+  TypeCheckMode GetTypeCheckMode() {
+    return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
+                                     : TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 

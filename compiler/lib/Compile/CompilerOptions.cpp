@@ -34,7 +34,7 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
 static Error
 ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
                           CompilerOptions &invocationOpts,
-                          sem::TypeCheckerOptions &typeCheckerOpts) {
+                          TypeCheckerOptions &typeCheckerOpts) {
 
   return Error();
 }

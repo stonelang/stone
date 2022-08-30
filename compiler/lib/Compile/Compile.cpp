@@ -306,7 +306,7 @@ void CompilerInstance::CompileWithSemanticAnalysis() {
 
   CompileWithSyntaxAnalysis();
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
-                        sem::TypeCheckerOptions &typeCheckerOpts,
+                        TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
     sem::TypeCheck(syntaxFile, typeCheckerOpts, listener);
   });

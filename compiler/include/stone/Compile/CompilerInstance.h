@@ -18,7 +18,7 @@ using SemanticAnalysisCallback = llvm::function_ref<void(CompilerInstance &)>;
 // using NativeCodeGenCallback = llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
-    syn::SyntaxFile &, sem::TypeCheckerOptions &, TypeCheckerListener *)>;
+    syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 // using CompileWithGenIRCallback = llvm::function_ref<void(
 //     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult

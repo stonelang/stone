@@ -11,6 +11,7 @@
 using namespace stone::syn;
 
 namespace stone {
+class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
@@ -18,7 +19,7 @@ class SyntaxFile;
 } // namespace syn
 namespace sem {
 class TypeChecker;
-class TypeCheckerOptions;
+
 
 class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;

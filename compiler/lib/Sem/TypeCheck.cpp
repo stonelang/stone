@@ -1,12 +1,12 @@
 #include "stone/Sem/TypeCheck.h"
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Sem/TypeCheckerListener.h"
-#include "stone/Sem/TypeCheckerOptions.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void sem::TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
+void sem::TypeCheck(syn::SyntaxFile &sf, stone::TypeCheckerOptions &typeCheckerOpts,
                     TypeCheckerListener *listener) {
 
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
@@ -19,7 +19,7 @@ void sem::TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
   // sf.stage = SyntaxFileStage::AtTypeCheck;
 }
 
-void sem::TypeCheck(syn::Module &m, TypeCheckerOptions &typeCheckerOpts,
+void sem::TypeCheck(syn::Module &m, stone::TypeCheckerOptions &typeCheckerOpts,
                     TypeCheckerListener *pipeline) {
   // TypeChecker checker
   // assert(sf.stage == SyntaxFileStage::AtImports);

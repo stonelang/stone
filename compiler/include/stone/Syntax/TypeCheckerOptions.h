@@ -1,12 +1,11 @@
-#ifndef STONE_SEM_TYPECHECKEROPTIONS_H
-#define STONE_SEM_TYPECHECKEROPTIONS_H
+#ifndef STONE_SYNTAX_TYPECHECKEROPTIONS_H
+#define STONE_SYNTAX_TYPECHECKEROPTIONS_H
 
-#include <stdint.h>
+#include "stone/Basic/STDTypeAlias.h"
 
 namespace stone {
-namespace sem {
 
-enum class TypeCheckMode : uint8_t {
+enum class TypeCheckMode : UInt8 {
   EachFile = 0,
   WholeModule,
 };
@@ -14,7 +13,6 @@ class TypeCheckerOptions final {
 public:
   TypeCheckMode typeCheckMode = TypeCheckMode::EachFile;
 };
-} // namespace sem
 } // namespace stone
 
 #endif
