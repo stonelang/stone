@@ -9,19 +9,16 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/SyntaxParsing.h"
 #include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Expr.h"
-#include "stone/Syntax/Stmt.h"
-
-
-
 
 #include "llvm/Support/Timer.h"
 

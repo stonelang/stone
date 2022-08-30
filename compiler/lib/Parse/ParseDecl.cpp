@@ -117,13 +117,20 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       ConsumeToken();
       continue;
     case tok::identifier:
-      // if (specifier.HasTypeSpecifier()) {
-      // }
+      if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        declResult = ParseVarDecl(specifier);
+      }else{
+        // This is just some random variable 
+      }
+      break;
+    case tok::kw_auto:
+      if (!specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+              TypeSpecifierKind::Auto, loc)) {
+      }
       break;
     case tok::kw_int8:
       if (!specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
               TypeSpecifierKind::Int8, loc)) {
-        parsingContext.SetError();
       }
       break;
     case tok::kw_int16:
@@ -195,6 +202,10 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
 
 SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclSpecifier &specifier) {
 
+  assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
+
+  if (specifier.GetTypeSpecifierContext().IsBasicType()) {
+  }
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }
 // void Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,

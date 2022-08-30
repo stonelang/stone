@@ -4,6 +4,7 @@ using namespace stone::syn;
 
 bool TypeSpecifierContext::IsBasicType() {
   switch (typeSpecifierKind) {
+  case TypeSpecifierKind::Auto:
   case TypeSpecifierKind::Float:
   case TypeSpecifierKind::Float32:
   case TypeSpecifierKind::Float64:

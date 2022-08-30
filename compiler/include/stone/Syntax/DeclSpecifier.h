@@ -91,7 +91,14 @@ public:
   //                          Decl *rep, bool owned);
 
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool HasTypeSpecifierKind() {
+    return typeSpecifierKind != TypeSpecifierKind::None;
+  }
+
   bool SetTypeQualifierKind(TypeQualifierKind kind, SrcLoc loc);
+  bool HasTypeQualifierKind() {
+    return typeQualifierKind != TypeQualifierKind::None;
+  }
 
 public:
   TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
