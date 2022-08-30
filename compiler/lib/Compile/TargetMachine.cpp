@@ -8,6 +8,8 @@
 
 using namespace stone;
 
+// TODO: This is something you can get from clang
+
 static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
                                           llvm::TargetOptions &llvmTargetOpts,
                                           const CodeGenOptions &codeGenOpts,

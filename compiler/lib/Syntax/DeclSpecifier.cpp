@@ -3,7 +3,7 @@
 using namespace stone::syn;
 
 bool TypeSpecifierContext::IsBasicType() {
-  switch (kind) {
+  switch (typeSpecifierKind) {
   case TypeSpecifierKind::Float:
   case TypeSpecifierKind::Float32:
   case TypeSpecifierKind::Float64:
@@ -28,7 +28,7 @@ bool TypeSpecifierContext::IsBasicType() {
   }
 }
 bool TypeSpecifierContext::IsNominalType() {
-  switch (kind) {
+  switch (typeSpecifierKind) {
   case TypeSpecifierKind::Struct:
   case TypeSpecifierKind::Interface:
   case TypeSpecifierKind::Enum:
@@ -36,4 +36,15 @@ bool TypeSpecifierContext::IsNominalType() {
   default:
     return false;
   }
+}
+bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
+                                                SrcLoc loc) {
+  typeSpecifierKind = kind;
+  return true;
+}
+
+bool TypeSpecifierContext::SetTypeQualiferKind(TypeQualifierKind kind,
+                                               SrcLoc loc) {
+  typeQualifierKind = kind;
+  return true;
 }

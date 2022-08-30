@@ -4,6 +4,7 @@
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
+#include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -76,25 +77,24 @@ public:
 };
 
 class TypeSpecifierContext final {
-  TypeSpecifierKind kind;
+  TypeQualifierKind typeQualifierKind;
+  TypeSpecifierKind typeSpecifierKind;
 
 public:
-  TypeSpecifierContext() : kind(TypeSpecifierKind::None) {}
+  TypeSpecifierContext()
+      : typeQualifierKind(TypeQualifierKind::None),
+        typeSpecifierKind(TypeSpecifierKind::None) {}
 
 public:
-  bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
-                           const char *&prevTypeSpecifier, Diag<> diagID,
-                           Decl *rep, bool owned);
+  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
+  //                          const char *&prevTypeSpecifier, Diag<> diagID,
+  //                          Decl *rep, bool owned);
 
-  // bool SetFunctionSpecifierInline(SourceLocation Loc, const char *&prevSpec,
-  //                            unsigned &DiagID);
-
-  // bool setFunctionSpecifierForceInline(SourceLocation Loc, const char
-  // *&PrevSpec,
-  //                                 unsigned &DiagID);
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool SetTypeQualiferKind(TypeQualifierKind kind, SrcLoc loc);
 
 public:
-  TypeSpecifierKind GetKind() { return kind; }
+  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
 
   bool IsBasicType();
   bool IsNominalType();

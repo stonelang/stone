@@ -52,7 +52,7 @@ class SyntaxType;
 
 enum class GCKind : uint8_t { None = 0, Weak, Strong };
 
-enum class TypeQualKind : uint8_t {
+enum class TypeQualifierKind : uint8_t {
   None = 0,
   Const = 1,
   Restrict = 2,
@@ -64,7 +64,7 @@ enum class TypeQualKind : uint8_t {
 /// ref-qualifier associated with a function SyntaxType.
 /// This determines whether a member function's "this" object can be an
 /// lvalue, rvalue, or neither.
-enum class RefQualKind : uint8_t {
+enum class RefQualifierKind : uint8_t {
   /// No ref-qualifier was provided.
   None = 0,
   /// An lvalue ref-qualifier was provided (\c &).

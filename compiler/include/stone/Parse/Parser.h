@@ -5,9 +5,10 @@
 
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Parse/Lexer.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/Parse/SyntaxParsing.h"
+#include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
@@ -79,9 +80,7 @@ class Parser final {
   SyntaxScope *curScope;
 
   // /// Factory object for creating ParsedAttribute objects.
-  // AttributeFactory attributeFactory;
-
-  DeclSyntaxParsing syntaxParsing;
+  AttributeFactory attributeFactory;
 
 private:
   // Identifiers
@@ -105,9 +104,7 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  DeclSyntaxParsing &GetDeclSyntaxParsing() { return syntaxParsing; }
-
-  // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
+  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() {
     return syntax.GetSyntaxContext().GetLangContext();
   }
@@ -130,10 +127,11 @@ public:
   bool IsTopLevelDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing &declSyntaxParsing);
+  SyntaxResult<Decl> ParseDecl(SyntaxParsingDeclOptions flags,
+                               llvm::function_ref<void(Decl *)> handler);
 
-  // SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing flags,
-  //                              AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseDecl(SyntaxParsingDeclSpecifier &specifier,
+                               llvm::function_ref<void(Decl *)> handler);
 
   void ParseForwardDecl();
 
@@ -145,25 +143,30 @@ private:
 public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
-  SyntaxResult<QualType> ParseType();
-  SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
-  SyntaxResult<QualType> ParseBasicType(Diag<> diagID);
+  SyntaxResult<QualType> ParseType(TypeSpecifierContext &specifierContext);
+  SyntaxResult<QualType>
+  ParseDeclResultType(TypeSpecifierContext &specifierContext, Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
+                                        Diag<> diagID);
 
 public:
   //==Begin Function==//
-  SyntaxResult<Decl> ParseFunDecl(DeclSyntaxParsing &syntaxParsing);
-  // void ParseFunForwardDecl(AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseFunDecl(SyntaxParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(FunDecl &funDecl);
-  SyntaxStatus ParseFunctionArguments(FunDecl &funDecl);
-  SyntaxStatus ParseFunctionBody(FunctionDecl &funDecl);
-  BraceStmt *ParseFunctionBodyImpl(FunctionDecl &funDecl);
+  SyntaxStatus ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier,
+                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionArguments(SyntaxParsingDeclSpecifier &specifier,
+                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionBody(SyntaxParsingDeclSpecifier &specifier,
+                                 FunctionDecl &funDecl);
+  BraceStmt *ParseFunctionBodyImpl(SyntaxParsingDeclSpecifier &specifier,
+                                   FunctionDecl &funDecl);
 
   //==End Function==//
 public:
   //=struct=//
-  SyntaxResult<Decl> ParseStructDecl();
+  SyntaxResult<Decl> ParseStructDecl(SyntaxParsingDeclSpecifier &specifier);
   void ParseStructForwardDecl();
 
 public:
@@ -195,9 +198,6 @@ public:
   void Stop() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
-  bool IsParsing() {
-    (syntaxParsing.status == DeclSyntaxParsingStatus::Parsing) && !IsDone();
-  }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
 public:

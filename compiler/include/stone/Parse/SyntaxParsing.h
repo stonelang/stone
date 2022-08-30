@@ -203,22 +203,6 @@ public:
 //   SrcRange GetSrcRange() const;
 // };
 
-struct DeclSyntaxParsingFlags {
-  /// Flags that control the parsing of declarations.
-  enum ID {
-    Default = 0,
-    AllowTopLevel = 1 << 1,
-    HasContainerType = 1 << 2,
-    AllowDestructor = 1 << 3,
-    AllowEnumElement = 1 << 4,
-    InInterface = 1 << 5,
-    InStruct = 1 << 6,
-    InEnum = 1 << 7,
-  };
-};
-/// Options that control the parsing of declarations.
-using DeclSyntaxParsingOptions = stone::OptionSet<DeclSyntaxParsingFlags::ID>;
-
 enum class SyntaxParsingNotification : UInt8 {
   None,
   DeclCreated,
@@ -255,58 +239,68 @@ public:
   ~SyntaxParsingPositionRAII();
 };
 
-// class SyntaxParsingContext {
-// public:
-// };
-
-// class SyntaxParsingCache {
-// public:
-// };
+struct SyntaxParsingDeclFlags {
+  /// Flags that control the parsing of declarations.
+  enum ID {
+    Default = 0,
+    AllowTopLevel = 1 << 1,
+    HasContainerType = 1 << 2,
+    AllowDestructor = 1 << 3,
+    AllowEnumElement = 1 << 4,
+    InInterface = 1 << 5,
+    InStruct = 1 << 6,
+    InEnum = 1 << 7,
+  };
+};
+/// Options that control the parsing of declarations.
+using SyntaxParsingDeclOptions = stone::OptionSet<SyntaxParsingDeclFlags::ID>;
 
 class SyntaxParsingDeclSpecifier final : public DeclSpecifier {
+  Parser &parser;
 
 public:
-  SyntaxParsingDeclSpecifier(AttributeFactory &attributeFactory)
-      : DeclSpecifier(attributeFactory) {}
+  SyntaxParsingDeclOptions flags;
+  AccessLevel level = AccessLevel::Private;
+
+public:
+  SyntaxParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
+      : parser(parser), DeclSpecifier(attributeFactory) {}
+
+public:
+  Parser &GetParser() { return parser; }
 };
 
 class SyntaxParsingDeclarator final : public Declarator {
-  Parser &parser;
-
 public:
-  SyntaxParsingDeclarator(Parser &parser,
-                          const SyntaxParsingDeclSpecifier &specifier,
+  SyntaxParsingDeclarator(const SyntaxParsingDeclSpecifier &specifier,
                           DeclaratorScopeKind scopeKind)
-      : Declarator(specifier, scopeKind), parser(parser) {}
+      : Declarator(specifier, scopeKind) {}
 };
 
-class SyntaxParsing {
-
-protected:
-  Parser &parser;
-  // SyntaxParsingScope syntaxParsingScope;
-  // SyntaxParsingCache cache;
-  // SyntaxParsingPosition *curPosition;
-
-public:
-  SyntaxParsing(Parser &parser) : parser(parser) {}
+enum class SyntaxParsingContextKind : UInt8 {
+  None = 0,
+  Decl,
+  Stmt,
+  Expr,
+  Type,
+};
+enum class SyntaxParsingContextStatus : UInt8 {
+  None = 0,
+  Parsing,
+  Error,
+  Done
 };
 
-enum class DeclSyntaxParsingStatus : UInt8 { None = 0, Parsing, Error, Done };
-
-class DeclSyntaxParsing final : public SyntaxParsing {
-  SyntaxParsingDeclSpecifier *syntaxParsingDeclSpecifier;
-
-public:
-  AccessLevel level;
-  DeclSyntaxParsingStatus status;
-  DeclSyntaxParsingOptions flags;
+constexpr size_t SyntaxParsingAlignInBits = 3;
+class alignas(1 << SyntaxParsingAlignInBits) SyntaxParsingContext final {
+  SyntaxParsingContextKind kind;
 
 public:
-  DeclSyntaxParsing(Parser &parser) : SyntaxParsing(parser) {}
+  SyntaxParsingContextStatus status;
 
 public:
-  TypeSpecifierContext &GetTypeSpecifierContext();
+  SyntaxParsingContext(SyntaxParsingContextKind kind) : kind(kind) {}
+  SyntaxParsingContextKind GetKind() { return kind; }
 };
 
 } // namespace syn

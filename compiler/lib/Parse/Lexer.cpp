@@ -1,9 +1,9 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Confusable.h"
-#include "stone/CodeCompletionListener.h"
 #include "stone/Syntax/Identifier.h"
 
 #include "llvm/ADT/SmallString.h"

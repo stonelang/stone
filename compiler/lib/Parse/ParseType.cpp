@@ -23,22 +23,31 @@ bool Parser::IsBasicType(tok kind) const {
   case tok::kw_uint64:
   case tok::kw_float32:
   case tok::kw_float64:
+  case tok::kw_float64:
+  case tok::kw_complex32; case tok::kw_complex64:
     return true;
   default:
     return false;
   }
 }
+
 // Similar to ParseDeclSpecifiers
-SyntaxResult<QualType> Parser::ParseType() {
+SyntaxResult<QualType> Parser::ParseType(TypeSpecifierContext &specContext) {
   return syn::MakeSyntaxResult<QualType>(nullptr);
 }
 
-SyntaxResult<QualType> Parser::ParseDeclResultType(Diag<> diagID) {
-  return ParseType();
+SyntaxResult<QualType>
+Parser::ParseDeclResultType(TypeSpecifierContext &specContext, Diag<> diagID) {
+  return ParseType(specContext);
 }
 
-SyntaxResult<QualType> Parser::ParseBasicType(Diag<> diagID) {
+SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
+                                              Diag<> diagID) {
 
+  assert(IsBasicType(curTok.GetKind()) &&
+         "The current token is not a basic type");
+
+  /// Maybe parse ParseDeclarator -- or just take a look at the code
   switch (curTok.GetKind()) {
   case tok::identifier: {
     // ty = ParseIdentifierType();
