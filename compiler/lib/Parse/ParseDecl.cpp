@@ -73,52 +73,58 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
                                      llvm::function_ref<void(Decl *)> handler) {
 
   SyntaxResult<Decl> declResult;
-  SyntaxParsingContext declParsingContext(SyntaxParsingContextKind::Decl);
-  declParsingContext.status = SyntaxParsingContextStatus::Parsing;
+  SyntaxParsingContext parsingContext(SyntaxParsingContextKind::Decl);
+  parsingContext.SetParsing();
 
-  auto IsParsing = [&]() -> bool {
-    return (declParsingContext.status == SyntaxParsingContextStatus::Parsing) &&
-           !IsDone();
-  };
-
-  while (IsParsing()) {
+  while (parsingContext.IsParsing() && !IsDone()) {
     SrcLoc loc = curTok.GetLoc();
-
     switch (curTok.GetKind()) {
     case tok::kw_public:
       specifier.level = AccessLevel::Public;
-      break;
+      ConsumeToken();
+      continue;
     case tok::kw_internal:
       specifier.level = AccessLevel::Internal;
-      break;
+      ConsumeToken();
+      continue;
     case tok::kw_private:
       specifier.level = AccessLevel::Private;
-      break;
+      ConsumeToken();
+      continue;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);
+      parsingContext.SetDone();
       break;
     case tok::kw_struct:
       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
           TypeSpecifierKind::Struct, loc);
       declResult = ParseStructDecl(specifier);
+      parsingContext.SetDone();
       break;
     case tok::kw_const:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Const, loc);
-      break;
+      ConsumeToken();
+      continue;
     case tok::kw_volatile:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Volatile, loc);
-      break;
+      ConsumeToken();
+      continue;
     case tok::kw_restrict:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Restrict, loc);
-      break;
+      ConsumeToken();
+      continue;
     case tok::identifier:
+      // if (specifier.HasTypeSpecifier()) {
+      // }
       break;
     case tok::kw_int8:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Int8, loc);
+      if (!specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+              TypeSpecifierKind::Int8, loc)) {
+        parsingContext.SetError();
+      }
       break;
     case tok::kw_int16:
       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
@@ -179,14 +185,101 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
           TypeSpecifierKind::Complex64, loc);
       break;
+
     default:
       break;
     }
-    ConsumeToken();
   }
   return declResult;
 }
 
+// void Parser::ParseAccessLevel(SyntaxParsingDeclSpecifier &specifier, SrcLoc
+// loc){
+
+//   // TODO: call SetAccessLevel(level sour location)
+//   switch (curTok.GetKind()) {
+//     case tok::kw_public:
+//       specifier.level = AccessLevel::Public;
+//       break;
+//     case tok::kw_internal:
+//       specifier.level = AccessLevel::Internal;
+//       break;
+//     case tok::kw_private:
+//       specifier.level = AccessLevel::Private;
+//       break;
+//   }
+// }
+// void Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
+// SrcLoc loc) {
+
+//   switch (curTok.GetKind()) {
+//     case tok::kw_int8:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Int8, loc);
+//       break;
+//     case tok::kw_int16:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Int16, loc);
+//       break;
+//     case tok::kw_int32:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Int32, loc);
+//       break;
+//     case tok::kw_int64:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Int64, loc);
+//       break;
+//     case tok::kw_int:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Int, loc);
+//       break;
+//     case tok::kw_uint:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::UInt, loc);
+//       break;
+//     case tok::kw_uint8:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::UInt8, loc);
+//       break;
+//     case tok::kw_byte:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Byte, loc);
+//       break;
+//     case tok::kw_uint16:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::UInt16, loc);
+//       break;
+//     case tok::kw_uint32:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::UInt32, loc);
+//       break;
+//     case tok::kw_uint64:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::UInt64, loc);
+//       break;
+//     case tok::kw_float:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Float, loc);
+//     case tok::kw_float32:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Float32, loc);
+//       break;
+//     case tok::kw_float64:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Float64, loc);
+//       break;
+//     case tok::kw_complex32:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Complex32, loc);
+//       break;
+//     case tok::kw_complex64:
+//       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
+//           TypeSpecifierKind::Complex64, loc);
+//       break;
+//     default:
+//       break;
+//     }
+// }
 SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
 
   assert(curTok.Is(tok::kw_fun) &&

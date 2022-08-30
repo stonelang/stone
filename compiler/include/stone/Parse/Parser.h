@@ -143,6 +143,10 @@ private:
 public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
+
+  void ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
+                               SrcLoc loc);
+
   SyntaxResult<QualType> ParseType(TypeSpecifierContext &specifierContext);
   SyntaxResult<QualType>
   ParseDeclResultType(TypeSpecifierContext &specifierContext, Diag<> diagID);
