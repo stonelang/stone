@@ -193,22 +193,10 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   return declResult;
 }
 
-// void Parser::ParseAccessLevel(SyntaxParsingDeclSpecifier &specifier, SrcLoc
-// loc){
+SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclSpecifier &specifier) {
 
-//   // TODO: call SetAccessLevel(level sour location)
-//   switch (curTok.GetKind()) {
-//     case tok::kw_public:
-//       specifier.level = AccessLevel::Public;
-//       break;
-//     case tok::kw_internal:
-//       specifier.level = AccessLevel::Internal;
-//       break;
-//     case tok::kw_private:
-//       specifier.level = AccessLevel::Private;
-//       break;
-//   }
-// }
+  return syn::MakeSyntaxResult<Decl>(nullptr);
+}
 // void Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
 // SrcLoc loc) {
 

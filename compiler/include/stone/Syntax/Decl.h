@@ -414,6 +414,12 @@ public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
 };
 
+class StorageDecl : public ValueDecl {};
+
+class DeclaratorDecl : public StorageDecl {};
+
+class VarDecl : public DeclaratorDecl {};
+
 class BlockDecl : public Decl, public DeclContext {};
 
 class ConstructorInitializer final {

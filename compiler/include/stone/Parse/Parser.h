@@ -16,6 +16,12 @@
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/SyntaxNode.h"
+#include "stone/Syntax/Expr.h"
+#include "stone/Syntax/Stmt.h"
+
+
+
 
 #include "llvm/Support/Timer.h"
 
@@ -24,7 +30,6 @@ class SyntaxListener;
 namespace syn {
 
 class BraceStmt;
-
 class Syntax;
 class Parser;
 class SyntaxScope;
@@ -139,6 +144,9 @@ public:
 
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
+
+public:
+  SyntaxResult<Decl> ParseVarDecl(SyntaxParsingDeclSpecifier &specifier);
 
 public:
   // == Type Parsing ==//
