@@ -158,6 +158,9 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
+  llvm::Optional<bool>
+  ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext);
+
 public:
   //==Begin Function==//
   SyntaxResult<Decl> ParseFunDecl(SyntaxParsingDeclSpecifier &specifier);
@@ -192,8 +195,7 @@ public:
   SyntaxResult<Decl> ParseSpaceDecl();
   ///
 public:
-
-   bool IsStartOfStmt();
+  bool IsStartOfStmt();
   /// Stmt
   SyntaxResult<Stmt> ParseStmt();
 

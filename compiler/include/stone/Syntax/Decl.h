@@ -419,9 +419,7 @@ class StorageDecl : public ValueDecl {};
 
 class VarDecl : public StorageDecl {};
 
-
-class ParamDecl  : public VarDecl {
-};
+class ParamDecl : public VarDecl {};
 
 class BlockDecl : public Decl, public DeclContext {};
 

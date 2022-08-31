@@ -270,7 +270,6 @@ public:
   Parser &GetParser() { return parser; }
 };
 
-
 class SyntaxParsingDeclarator final : public Declarator {
 public:
   SyntaxParsingDeclarator(const SyntaxParsingDeclSpecifier &specifier,
