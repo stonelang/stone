@@ -111,23 +111,25 @@ public:
 
 class FunctionSpecifierContext final {
 public:
-  enum Flags {
-    None = 0,
+  enum Flags : unsigned {
+    None = 1 << 0,
     Inline = 1 << 1,
     ForcedInline = 1 << 2,
     Virtual = 1 << 3,
     NoReturn = 1 << 4
   };
-  /// Options that control the parsing of declarations.
-  using FunctionSpecifierOptions =
-      stone::OptionSet<FunctionSpecifierContext::Flags>;
 
 private:
-  FunctionSpecifierOptions flags;
+  unsigned flags;
 
 public:
-  void SetFlags(FunctionSpecifierOptions inputFlags) { flags = inputFlags; }
-  bool HasInline() { return flags.contains(FunctionSpecifierContext::Inline); }
+  void SetFlag(unsigned flag) { flags |= flag; }
+  bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
+  bool HasForcedInline() {
+    return flags & FunctionSpecifierContext::ForcedInline;
+  }
+  bool HasVirtual() { return flags & FunctionSpecifierContext::Virtual; }
+  bool HasNoReturn() { return flags & FunctionSpecifierContext::NoReturn; }
 };
 
 class StorageSpecifierContext final {

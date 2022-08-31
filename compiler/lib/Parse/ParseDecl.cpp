@@ -200,7 +200,6 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       break;
     } // End of switch
 
-
     // ConsumeToken();
   } // End of while
   return declResult;
