@@ -3,6 +3,7 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/SrcLoc.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -33,7 +34,7 @@ enum class TypeSpecifierKind : uint8_t {
   Complex32,
   Complex64,
   Imaginary32,
-  Iimaginary64,
+  Imaginary64,
 
 };
 
@@ -56,6 +57,7 @@ public:
 
 private:
   void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+
 public:
   void AddAuto(SrcLoc loc);
   void AddBool(SrcLoc loc);

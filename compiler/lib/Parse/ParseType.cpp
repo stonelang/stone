@@ -61,56 +61,55 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
 
 llvm::Optional<bool>
 Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
-
+  SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
   case tok::kw_int8:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Int8, curTok.GetLoc());
+    specifier.AddInt8(loc);
     break;
   case tok::kw_int16:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Int16, curTok.GetLoc());
+    specifier.AddInt16(loc);
     break;
   case tok::kw_int32:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Int32, curTok.GetLoc());
-    goto Found;
+    specifier.AddInt32(loc);
+    break;
   case tok::kw_int64:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Int64, curTok.GetLoc());
+    specifier.AddInt64(loc);
     break;
   case tok::kw_int:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Int, curTok.GetLoc());
+    specifier.AddInt(loc);
     break;
   case tok::kw_uint:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::UInt, curTok.GetLoc());
+    specifier.AddUInt(loc);
     break;
   case tok::kw_uint8:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::UInt8, curTok.GetLoc());
+    specifier.AddUInt8(loc);
     break;
   case tok::kw_byte:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Byte, curTok.GetLoc());
+    specifier.AddByte(loc);
     break;
   case tok::kw_uint16:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::UInt16, curTok.GetLoc());
+    specifier.AddUInt16(loc);
     break;
   case tok::kw_uint32:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::UInt32, curTok.GetLoc());
+    specifier.AddUInt32(loc);
     break;
   case tok::kw_uint64:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::UInt64, curTok.GetLoc());
+    specifier.AddUInt64(loc);
     break;
   case tok::kw_float:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Float, curTok.GetLoc());
+    specifier.AddFloat(loc);
   case tok::kw_float32:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Float32, curTok.GetLoc());
+    specifier.AddFloat32(loc);
     break;
   case tok::kw_float64:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Float64, curTok.GetLoc());
+    specifier.AddFloat64(loc);
     break;
   case tok::kw_complex32:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Complex32,
-                                   curTok.GetLoc());
+    specifier.AddComplex32(loc);
     break;
   case tok::kw_complex64:
-    specifier.SetTypeSpecifierKind(TypeSpecifierKind::Complex64,
-                                   curTok.GetLoc());
+    specifier.AddComplex64(loc);
+    break;
     break;
   default:
     return llvm::None;

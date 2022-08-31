@@ -1,6 +1,9 @@
 #include "stone/Syntax/Specifier.h"
 
-static bool IsValidTypeSpecifier(TypeSpecifierKind kind) {
+using namespace stone;
+using namespace stone::syn;
+
+static bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
   switch (kind) {
   case TypeSpecifierKind::Auto:
   case TypeSpecifierKind::Float:
@@ -20,14 +23,14 @@ static bool IsValidTypeSpecifier(TypeSpecifierKind kind) {
   case TypeSpecifierKind::Complex32:
   case TypeSpecifierKind::Complex64:
   case TypeSpecifierKind::Imaginary32:
-  case TypeSpecifierKind::Iimaginary64:
+  case TypeSpecifierKind::Imaginary64:
     return true;
   default:
     return false;
   }
 }
 bool TypeSpecifierContext::IsBasicType() {
-  return IsValidTypeSpecifier(typeSpecifierKind);
+  return IsValidTypeSpecifierKind(typeSpecifierKind);
 }
 bool TypeSpecifierContext::IsNominalType() {
   switch (typeSpecifierKind) {
@@ -39,19 +42,20 @@ bool TypeSpecifierContext::IsNominalType() {
     return false;
   }
 }
-bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
-                                                SrcLoc loc) {
-  if (!IsValidTypeSpecifier(kind)) {
-    return false;
-  }
-  typeSpecifierKind = kind;
-  return true;
-}
+// bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
+//                                                 SrcLoc loc) {
+//   if (!IsValidTypeSpecifierKind(kind)) {
+//     return false;
+//   }
+//   typeSpecifierKind = kind;
+//   return true;
+// }
 
-void TypeSpecifierContext::AddTypeSpecifierKind(
-    TypeSpecifierKind kind SrcLoc loc) {
-  assert((typeSpecifierKind == TypeSpecifierKind::None) && "can only have one 'type specifier type'");
-  assert(IsValidTypeSpecifier(kind) && "alien specifier type");
+void TypeSpecifierContext::AddTypeSpecifierKind(TypeSpecifierKind kind,
+                                                SrcLoc loc) {
+  assert((typeSpecifierKind == TypeSpecifierKind::None) &&
+         "can only have one 'type specifier type'");
+  assert(IsValidTypeSpecifierKind(kind) && "alien specifier type");
 
   typeSpecifierKind = kind;
   typeSpecifierLoc = loc;
@@ -111,39 +115,39 @@ void TypeSpecifierContext::AddInt64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int64, loc);
 }
-void TypeSpecifierContext::UInt(SrcLoc loc) {
+void TypeSpecifierContext::AddUInt(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt, loc);
 }
-void TypeSpecifierContext::UInt8(SrcLoc loc) {
+void TypeSpecifierContext::AddUInt8(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt, loc);
 }
-void TypeSpecifierContext::Byte(SrcLoc loc) {
+void TypeSpecifierContext::AddByte(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Byte, loc);
 }
-void TypeSpecifierContext::UInt16(SrcLoc loc) {
+void TypeSpecifierContext::AddUInt16(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::UInt16, loc);
 }
-void TypeSpecifierContext::UInt32(SrcLoc loc) {
+void TypeSpecifierContext::AddUInt32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt32, loc);
 }
-void TypeSpecifierContext::UInt64(SrcLoc loc) {
+void TypeSpecifierContext::AddUInt64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt64, loc);
 }
-void TypeSpecifierContext::Complex32(SrcLoc loc) {
+void TypeSpecifierContext::AddComplex32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Complex32, loc);
 }
-void TypeSpecifierContext::Complex64(SrcLoc loc) {
+void TypeSpecifierContext::AddComplex64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Complex64, loc);
 }
-void TypeSpecifierContext::Imaginary32(SrcLoc loc) {
+void TypeSpecifierContext::AddImaginary32(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Imaginary32, loc);
 }
-void TypeSpecifierContext::Imaginary64(SrcLoc loc) {
+void TypeSpecifierContext::AddImaginary64(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Imaginary64, loc);
 }

@@ -164,7 +164,7 @@ public:
 public:
   //==Begin Function==//
 
-  //TODO: Pass FunctionSpecifierContext 
+  // TODO: Pass FunctionSpecifierContext
   SyntaxResult<Decl> ParseFunDecl(SyntaxParsingDeclSpecifier &specifier);
 
 private:
