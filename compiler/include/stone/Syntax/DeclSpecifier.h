@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_DECLSPECIFIER_H
 #define STONE_SYNTAX_DECLSPECIFIER_H
 
+#include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
@@ -108,6 +109,27 @@ public:
   bool IsNominalType();
 };
 
+class FunctionSpecifierContext final {
+public:
+  enum Flags {
+    None = 0,
+    Inline = 1 << 1,
+    ForcedInline = 1 << 2,
+    Virtual = 1 << 3,
+    NoReturn = 1 << 4
+  };
+  /// Options that control the parsing of declarations.
+  using FunctionSpecifierOptions =
+      stone::OptionSet<FunctionSpecifierContext::Flags>;
+
+private:
+  FunctionSpecifierOptions flags;
+
+public:
+  void SetFlags(FunctionSpecifierOptions inputFlags) { flags = inputFlags; }
+  bool HasInline() { return flags.contains(FunctionSpecifierContext::Inline); }
+};
+
 class StorageSpecifierContext final {
   StorageSpecifierKind kind;
 
@@ -125,6 +147,7 @@ class DeclSpecifier {
   AttributeFactory &attributeFactory;
   TypeSpecifierContext typeSpecifierContext;
   StorageSpecifierContext storageSpecifierContext;
+  FunctionSpecifierContext functionSpecifierContext;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -139,6 +162,9 @@ public:
   }
   TypeSpecifierContext &GetTypeSpecifierContext() {
     return typeSpecifierContext;
+  }
+  FunctionSpecifierContext &GetFunctionSpecifierContext() {
+    return functionSpecifierContext;
   }
 };
 

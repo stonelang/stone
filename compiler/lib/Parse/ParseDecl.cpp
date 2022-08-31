@@ -91,6 +91,9 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       specifier.level = AccessLevel::Private;
       ConsumeToken();
       continue;
+    case tok::kw_inline:
+      // specifier.Set
+      break;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);
       parsingContext.SetDone();
@@ -193,11 +196,10 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
           TypeSpecifierKind::Complex64, loc);
       break;
-
     default:
-
       break;
     } // End of switch
+
 
     // ConsumeToken();
   } // End of while

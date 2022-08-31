@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_SPECIFIER_H
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDTypeAlias.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -35,15 +36,14 @@ enum class TypeSpecifierKind : uint8_t {
   Iimaginary64,
 
 };
-enum class FunctionSpecifierKind : uint8_t {
-  None,
+enum class FunctionInlineSpecifierKind : UInt8 {
+  None = 0,
   Inline,
   ForcedInline,
-  NoReturn,
 };
 
 // TODO: All you need is Public and Local
-enum class AccessLevel : uint8_t {
+enum class AccessLevel : UInt8 {
   None = 0,
   /// Limited to the scope
   Private,
@@ -56,7 +56,7 @@ enum class AccessLevel : uint8_t {
 };
 
 /// The categorization of expression values, currently following the
-enum class ExprValueType : uint8_t {
+enum class ExprValueType : UInt8 {
 
   None = 0,
   /// An r-value expression (a pr-value in the C++11 taxonomy)
@@ -75,7 +75,7 @@ enum class ExprValueType : uint8_t {
 
 /// Storage classes.
 /// These are legal on both functions and variables
-enum class StorageSpecifierKind : uint8_t {
+enum class StorageSpecifierKind : UInt8 {
   None = 0,
   Extern,
   Static,
@@ -85,7 +85,7 @@ enum class StorageSpecifierKind : uint8_t {
 };
 
 /// The storage duration for an object (per C++ [ctx.stc]).
-enum class StorageDuration : uint8_t {
+enum class StorageDuration : UInt8 {
   FullExpression, ///< Full-expression storage duration (for temporaries).
   Automatic,      ///< Automatic storage duration (most local variables).
   Thread,         ///< Thread storage duration.
@@ -94,7 +94,7 @@ enum class StorageDuration : uint8_t {
 };
 
 /// Describes the nullability of a particular type.
-enum class TypeNullabilityKind : uint8_t {
+enum class TypeNullabilityKind : UInt8 {
   /// Values of this type can never be null.
   NotNullable = 0,
   /// Values of this type can be null.
@@ -108,7 +108,7 @@ enum class TypeNullabilityKind : uint8_t {
 
 /// Describes the kind of template specialization that a
 /// particular template specialization declaration represents.
-enum class TemplateSpecializationKind : uint8_t {
+enum class TemplateSpecializationKind : UInt8 {
   /// This template specialization was formed from a template-id but
   /// has not yet been declared, defined, or instantiated.
   Undeclared = 0,
