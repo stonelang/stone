@@ -260,7 +260,6 @@ class SyntaxParsingDeclSpecifier final : public DeclSpecifier {
 
 public:
   SyntaxParsingDeclOptions flags;
-  AccessLevel level = AccessLevel::Private;
 
 public:
   SyntaxParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)

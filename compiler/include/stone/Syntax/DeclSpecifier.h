@@ -77,60 +77,31 @@ public:
   // }
 };
 
-class TypeSpecifierContext final {
-  TypeQualifierKind typeQualifierKind;
-  TypeSpecifierKind typeSpecifierKind;
-
-public:
-  TypeSpecifierContext()
-      : typeQualifierKind(TypeQualifierKind::None),
-        typeSpecifierKind(TypeSpecifierKind::None) {}
-
-public:
-  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
-  //                          const char *&prevTypeSpecifier, Diag<> diagID,
-  //                          Decl *rep, bool owned);
-
-  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-  bool HasTypeSpecifierKind() const {
-    return typeSpecifierKind != TypeSpecifierKind::None;
-  }
-
-  bool SetTypeQualifierKind(TypeQualifierKind kind, SrcLoc loc);
-  bool HasTypeQualifierKind() const {
-    return typeQualifierKind != TypeQualifierKind::None;
-  }
-
-public:
-  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
-  TypeQualifierKind GetTypeQualifierKind() { return typeQualifierKind; }
-
-  bool IsBasicType();
-  bool IsNominalType();
-};
-
 class FunctionSpecifierContext final {
   SrcLoc inlineLoc;
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
 
-  enum Kind : unsigned {
+  enum Flags : unsigned {
     None = 1 << 0,
-    Inline = 1 << 1,
-    ForcedInline = 1 << 2,
-    Virtual = 1 << 3,
-    NoReturn = 1 << 4
+    FunctionDef = 1 << 1,
+    Inline = 1 << 2,
+    ForcedInline = 1 << 3,
+    Virtual = 1 << 4,
+    NoReturn = 1 << 5
   };
 
 private:
   unsigned flags;
 
 public:
-  void SetInlineSpecifier(SrcLoc loc) { flags |= Inline; }
-  void SetForcedInlineSpecifier(SrcLoc loc) { flags |= ForcedInline; }
-  void SetVirtualSpecifier(SrcLoc loc) { flags |= Virtual; }
-  void SetNoRetureSpecifier(SrcLoc loc) { flags |= NoReturn; }
+  void AddFunction(SrcLoc loc) { flags |= FunctionDef; }
+  void AddInline(SrcLoc loc) { flags |= Inline; }
+  void AddForcedInline(SrcLoc loc) { flags |= ForcedInline; }
+  void AddVirtual(SrcLoc loc) { flags |= Virtual; }
+  void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
 
+  bool HasFunction() { return flags && FunctionSpecifierContext::FunctionDef; }
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
   bool HasForcedInline() {
     return flags & FunctionSpecifierContext::ForcedInline;
@@ -155,8 +126,12 @@ class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
   TypeSpecifierContext typeSpecifierContext;
+  TypeQualifierContext typeQualifierContext;
   StorageSpecifierContext storageSpecifierContext;
   FunctionSpecifierContext functionSpecifierContext;
+
+  SrcLoc accessLevelLoc;
+  AccessLevel accessLevel = AccessLevel::Private;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -164,6 +139,12 @@ class DeclSpecifier {
 public:
   DeclSpecifier(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
+
+private:
+  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+    accessLevel = inputLevel;
+    accessLevelLoc = inputLoc;
+  }
 
 public:
   StorageSpecifierContext &GetStorageSpeciferContext() {
@@ -174,6 +155,21 @@ public:
   }
   FunctionSpecifierContext &GetFunctionSpecifierContext() {
     return functionSpecifierContext;
+  }
+  TypeQualifierContext &GetTypeQualifireContext() {
+    return typeQualifierContext;
+  }
+  AccessLevel GetAccessLevel() { return accessLevel; }
+  SrcLoc GetAccessLevelLoc() { return accessLevelLoc; }
+
+  void AddPublicAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Public, loc);
+  }
+  void AddPrivateAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Private, loc);
+  }
+  void AddInternalAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Internal, loc);
   }
 };
 

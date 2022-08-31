@@ -19,6 +19,7 @@ set(stone_syn_sources
 	MakeStmt.cpp
 	Module.cpp
 	SearchPath.cpp
+	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp
 	Syntax.cpp

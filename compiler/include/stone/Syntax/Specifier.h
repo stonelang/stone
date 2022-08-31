@@ -36,6 +36,58 @@ enum class TypeSpecifierKind : uint8_t {
   Iimaginary64,
 
 };
+
+class TypeSpecifierContext final {
+  TypeSpecifierKind typeSpecifierKind;
+  SrcLoc typeSpecifierLoc;
+
+public:
+  TypeSpecifierContext() : typeSpecifierKind(TypeSpecifierKind::None) {}
+
+public:
+  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
+  //                          const char *&prevTypeSpecifier, Diag<> diagID,
+  //                          Decl *rep, bool owned);
+
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool HasTypeSpecifierKind() const {
+    return typeSpecifierKind != TypeSpecifierKind::None;
+  }
+
+private:
+  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+public:
+  void AddAuto(SrcLoc loc);
+  void AddBool(SrcLoc loc);
+  void AddFloat(SrcLoc loc);
+  void AddFloat32(SrcLoc loc);
+  void AddFloat64(SrcLoc loc);
+  void AddEnum(SrcLoc loc);
+  void AddInterface(SrcLoc loc);
+  void AddStruct(SrcLoc loc);
+  void AddVoid(SrcLoc loc);
+  void AddInt(SrcLoc loc);
+  void AddInt8(SrcLoc loc);
+  void AddInt16(SrcLoc loc);
+  void AddInt32(SrcLoc loc);
+  void AddInt64(SrcLoc loc);
+  void AddUInt(SrcLoc loc);
+  void AddUInt8(SrcLoc loc);
+  void AddByte(SrcLoc loc);
+  void AddUInt16(SrcLoc loc);
+  void AddUInt32(SrcLoc loc);
+  void AddUInt64(SrcLoc loc);
+  void AddComplex32(SrcLoc loc);
+  void AddComplex64(SrcLoc loc);
+  void AddImaginary32(SrcLoc loc);
+  void AddImaginary64(SrcLoc loc);
+
+public:
+  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
+  bool IsBasicType();
+  bool IsNominalType();
+};
+
 enum class FunctionInlineSpecifierKind : UInt8 {
   None = 0,
   Inline,

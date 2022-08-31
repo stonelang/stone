@@ -82,43 +82,40 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
     case tok::kw_public:
-      specifier.level = AccessLevel::Public;
+      specifier.AddPublicAccessLevel(loc);
       ConsumeToken();
       continue;
     case tok::kw_internal:
-      specifier.level = AccessLevel::Internal;
+      specifier.AddInternalAccessLevel(loc);
       ConsumeToken();
       continue;
     case tok::kw_private:
-      specifier.level = AccessLevel::Private;
+      specifier.AddPrivateAccessLevel(loc);
       ConsumeToken();
       continue;
     case tok::kw_fun:
+      specifier.GetFunctionSpecifierContext().AddFunction(loc);
       declResult = ParseFunDecl(specifier);
       parsingContext.SetDone();
       break;
     case tok::kw_struct:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Struct, loc);
+      specifier.GetTypeSpecifierContext().AddStruct(loc);
       declResult = ParseStructDecl(specifier);
       parsingContext.SetDone();
       break;
+    case tok::kw_inline:
+      specifier.GetFunctionSpecifierContext().AddInline(loc);
+      break;
     case tok::kw_const:
-      specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
-          TypeQualifierKind::Const, loc);
+      specifier.GetTypeQualifireContext().AddConst(loc);
       // We do not consume the token because the QualType that we create
       // will be of the following const int i = ....
       break;
-    case tok::kw_inline:
-      specifier.GetFunctionSpecifierContext().SetInlineSpecifier(loc);
-      break;
     case tok::kw_volatile:
-      specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
-          TypeQualifierKind::Volatile, loc);
+      specifier.GetTypeQualifireContext().AddVolatile(loc);
       break;
     case tok::kw_restrict:
-      specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
-          TypeQualifierKind::Restrict, loc);
+      specifier.GetTypeQualifireContext().AddRestrict(loc);
       break;
     case tok::identifier:
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
@@ -130,73 +127,54 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       }
       break;
     case tok::kw_auto:
-      if (!specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-              TypeSpecifierKind::Auto, loc)) {
-      }
+      specifier.GetTypeSpecifierContext().AddAuto(loc);
       break;
     case tok::kw_int8:
-      if (!specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-              TypeSpecifierKind::Int8, loc)) {
-      }
+      specifier.GetTypeSpecifierContext().AddInt8(loc);
       break;
     case tok::kw_int16:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Int16, loc);
+      specifier.GetTypeSpecifierContext().AddInt16(loc);
       break;
     case tok::kw_int32:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Int32, loc);
+      specifier.GetTypeSpecifierContext().AddInt32(loc);
       break;
     case tok::kw_int64:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Int64, loc);
+      specifier.GetTypeSpecifierContext().AddInt64(loc);
       break;
     case tok::kw_int:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Int, loc);
+      specifier.GetTypeSpecifierContext().AddInt(loc);
       break;
     case tok::kw_uint:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::UInt, loc);
+      specifier.GetTypeSpecifierContext().AddUInt(loc);
       break;
     case tok::kw_uint8:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::UInt8, loc);
+      specifier.GetTypeSpecifierContext().AddUInt8(loc);
       break;
     case tok::kw_byte:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Byte, loc);
+      specifier.GetTypeSpecifierContext().AddByte(loc);
       break;
     case tok::kw_uint16:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::UInt16, loc);
+      specifier.GetTypeSpecifierContext().AddUInt16(loc);
       break;
     case tok::kw_uint32:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::UInt32, loc);
+      specifier.GetTypeSpecifierContext().AddUInt32(loc);
       break;
     case tok::kw_uint64:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::UInt64, loc);
+      specifier.GetTypeSpecifierContext().AddUInt64(loc);
       break;
     case tok::kw_float:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Float, loc);
+      specifier.GetTypeSpecifierContext().AddFloat(loc);
     case tok::kw_float32:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Float32, loc);
+      specifier.GetTypeSpecifierContext().AddFloat32(loc);
       break;
     case tok::kw_float64:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Float64, loc);
+      specifier.GetTypeSpecifierContext().AddFloat64(loc);
       break;
     case tok::kw_complex32:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Complex32, loc);
+      specifier.GetTypeSpecifierContext().AddComplex32(loc);
       break;
     case tok::kw_complex64:
-      specifier.GetTypeSpecifierContext().SetTypeSpecifierKind(
-          TypeSpecifierKind::Complex64, loc);
+      specifier.GetTypeSpecifierContext().AddComplex64(loc);
       break;
     default:
       break;
@@ -236,7 +214,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 
   FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
-  funDecl->SetAccessLevel(specifier.level);
+  funDecl->SetAccessLevel(specifier.GetAccessLevel());
   funDecl->SetFunLoc(funLoc);
 
   // funDecl->SetTemplate...

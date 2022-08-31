@@ -1,6 +1,8 @@
 #ifndef STONE_SYNTAX_RealType_H
 #define STONE_SYNTAX_RealType_H
 
+#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
@@ -50,21 +52,93 @@ class QualType; // Qualified SyntaxTypes
 class StructDecl;
 class SyntaxType;
 
-enum class GCKind : uint8_t { None = 0, Weak, Strong };
+enum class GCKind : UInt8 { None = 0, Weak, Strong };
 
-enum class TypeQualifierKind : uint8_t {
-  None = 0,
-  Const = 1,
-  Restrict = 2,
-  Volatile = 4,
-  Unaligned = 8,
-  Fixed = 16
+struct TypeQualifierFlags {
+  enum ID : UInt8 {
+    None = 0x0,
+    Const = 0x1,
+    Restrict = 0x2,
+    Volatile = 0x4,
+    Unaligned = 0x8,
+    CVRMask = Const | Volatile | Restrict,
+    CVRUMask = Const | Volatile | Restrict | Unaligned
+  };
+};
+
+class TypeQualifierContext final {
+
+  // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
+  //           |C R V|U|GCAttr|Lifetime|AddressSpace|
+  UInt32 mask = 0;
+  // static const uint32_t uMask = 0x8;
+  // static const uint32_t uShift = 3;
+  // static const uint32_t GCAttrMask = 0x30;
+  // static const uint32_t GCAttrShift = 4;
+  // static const uint32_t lifetimeMask = 0x1C0;
+  // static const uint32_t lifetimeShift = 6;
+  // static const uint32_t addressSpaceMask =
+  //     ~(CVRMask | UMask | GCAttrMask | LifetimeMask);
+  // static const uint32_t AddressSpaceShift = 9;
+
+  SrcLoc constLoc;
+  SrcLoc restrictLoc;
+  SrcLoc volatileLoc;
+
+public:
+  bool HasConst() const { return mask & TypeQualifierFlags::Const; }
+  bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
+  void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }
+  void AddConst(SrcLoc loc = SrcLoc()) {
+    constLoc = loc;
+    mask |= TypeQualifierFlags::Const;
+  }
+  SrcLoc GetConstLoc() { return constLoc; }
+
+  bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
+  bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
+  void RemoveRestrict() { mask &= ~TypeQualifierFlags::Restrict; }
+  void AddRestrict(SrcLoc loc = SrcLoc()) {
+    restrictLoc = loc;
+    mask |= TypeQualifierFlags::Restrict;
+  }
+  SrcLoc GetRestrictLoc() { return restrictLoc; }
+
+  bool HasVolatile() const { return mask & TypeQualifierFlags::Volatile; }
+  bool HasVolatileOnly() const { return mask == TypeQualifierFlags::Volatile; }
+  void RemoveVolatile() { mask &= ~TypeQualifierFlags::Volatile; }
+  void AddVolatile(SrcLoc loc = SrcLoc()) {
+    volatileLoc = loc;
+    mask |= TypeQualifierFlags::Volatile;
+  }
+  SrcLoc GetVolatileLoc() { return volatileLoc; }
+
+  // bool HasCVR() const { return getCVRQualifiers(); }
+  // unsigned GetCVR() const { return mask & CVRmask; }
+
+  // unsigned GetCVRU() const { return mask & (CVRMask | UMask); }
+
+  // void setCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask = (Mask & ~CVRMask) | mask;
+  // }
+  // void removeCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask &= ~mask;
+  // }
+  // void removeCVRQualifiers() {
+  //   removeCVRQualifiers(CVRMask);
+  // }
+  // void addCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask |= mask;
+  // }
 };
 
 /// ref-qualifier associated with a function SyntaxType.
 /// This determines whether a member function's "this" object can be an
 /// lvalue, rvalue, or neither.
-enum class RefQualifierKind : uint8_t {
+enum class RefQualifierKind : UInt8 {
   /// No ref-qualifier was provided.
   None = 0,
   /// An lvalue ref-qualifier was provided (\c &).
