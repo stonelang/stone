@@ -76,6 +76,8 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   SyntaxParsingContext parsingContext(SyntaxParsingContextKind::Decl);
   parsingContext.SetParsing();
 
+  //auto syntaxActinKind  = GetDeclSyntaxActionKind(specifier)
+
   while (parsingContext.IsParsing() && !IsDone()) {
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
@@ -91,9 +93,6 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       specifier.level = AccessLevel::Private;
       ConsumeToken();
       continue;
-    case tok::kw_inline:
-      // specifier.Set
-      break;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);
       parsingContext.SetDone();
@@ -110,6 +109,9 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       // We do not consume the token because the QualType that we create
       // will be of the following const int i = ....
       break;
+    case tok::kw_inline:
+      specifier.GetFunctionSpecifierContext().SetInlineSpecifier(loc);
+      break;
     case tok::kw_volatile:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Volatile, loc);
@@ -124,7 +126,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
                                            DeclaratorContextKind::SyntaxFile);
         declResult = ParseVarDecl(declarator);
       } else {
-        // This is just some random variable
+        // This is just some random variable with no type -- error message.
       }
       break;
     case tok::kw_auto:

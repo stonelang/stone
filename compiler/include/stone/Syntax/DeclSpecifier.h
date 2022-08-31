@@ -110,8 +110,11 @@ public:
 };
 
 class FunctionSpecifierContext final {
-public:
-  enum Flags : unsigned {
+  SrcLoc inlineLoc;
+  SrcLoc forcedInlineLoc;
+  SrcLoc virtualLoc;
+
+  enum Kind : unsigned {
     None = 1 << 0,
     Inline = 1 << 1,
     ForcedInline = 1 << 2,
@@ -123,7 +126,11 @@ private:
   unsigned flags;
 
 public:
-  void SetFlag(unsigned flag) { flags |= flag; }
+  void SetInlineSpecifier(SrcLoc loc) { flags |= Inline; }
+  void SetForcedInlineSpecifier(SrcLoc loc) { flags |= ForcedInline; }
+  void SetVirtualSpecifier(SrcLoc loc) { flags |= Virtual; }
+  void SetNoRetureSpecifier(SrcLoc loc) { flags |= NoReturn; }
+
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
   bool HasForcedInline() {
     return flags & FunctionSpecifierContext::ForcedInline;

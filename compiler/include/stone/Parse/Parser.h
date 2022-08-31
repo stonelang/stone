@@ -178,9 +178,6 @@ public:
   SyntaxResult<Decl> ParseStructDecl(SyntaxParsingDeclSpecifier &specifier);
   void ParseStructForwardDecl();
 
-public:
-  bool IsStartOfStmt();
-
 private:
   void Lex(Token &result) { lexer->Lex(result); }
   void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
@@ -195,6 +192,8 @@ public:
   SyntaxResult<Decl> ParseSpaceDecl();
   ///
 public:
+
+   bool IsStartOfStmt();
   /// Stmt
   SyntaxResult<Stmt> ParseStmt();
 
