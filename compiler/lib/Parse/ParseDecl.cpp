@@ -90,7 +90,6 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
     case tok::kw_private:
       specifier.level = AccessLevel::Private;
       ConsumeToken();
-      goto Continue;
       continue;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);

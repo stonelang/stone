@@ -27,45 +27,46 @@ static bool IsValidBasicType(TypeSpecifierKind kind) {
   default:
     return false;
   }
-  bool TypeSpecifierContext::IsBasicType() {
-    return IsValidBasicType(typeSpecifierKind);
-  }
-  bool TypeSpecifierContext::IsNominalType() {
-    switch (typeSpecifierKind) {
-    case TypeSpecifierKind::Struct:
-    case TypeSpecifierKind::Interface:
-    case TypeSpecifierKind::Enum:
-      return true;
-    default:
-      return false;
-    }
-  }
-  bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
-                                                  SrcLoc loc) {
-    if (!IsValidBasicType(kind)) {
-      return false;
-    }
-    typeSpecifierKind = kind;
+}
+bool TypeSpecifierContext::IsBasicType() {
+  return IsValidBasicType(typeSpecifierKind);
+}
+bool TypeSpecifierContext::IsNominalType() {
+  switch (typeSpecifierKind) {
+  case TypeSpecifierKind::Struct:
+  case TypeSpecifierKind::Interface:
+  case TypeSpecifierKind::Enum:
     return true;
+  default:
+    return false;
   }
+}
+bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
+                                                SrcLoc loc) {
+  if (!IsValidBasicType(kind)) {
+    return false;
+  }
+  typeSpecifierKind = kind;
+  return true;
+}
 
-  static bool IsValidQualifierKind(TypeQualifierKind kind) {
-    switch (kind) {
-    case TypeQualifierKind::Const:
-    case TypeQualifierKind::Restrict:
-    case TypeQualifierKind::Volatile:
-    case TypeQualifierKind::Unaligned:
-    case TypeQualifierKind::Fixed:
-      return true;
-    default:
-      return fasel;
-    }
-  }
-  bool TypeSpecifierContext::SetTypeQualifierKind(TypeQualifierKind kind,
-                                                  SrcLoc loc) {
-    if (!IsValidQualifierKind(kind)) {
-      return false;
-    }
-    typeQualifierKind = kind;
+static bool IsValidQualifierKind(TypeQualifierKind kind) {
+  switch (kind) {
+  case TypeQualifierKind::Const:
+  case TypeQualifierKind::Restrict:
+  case TypeQualifierKind::Volatile:
+  case TypeQualifierKind::Unaligned:
+  case TypeQualifierKind::Fixed:
     return true;
+  default:
+    return false;
   }
+}
+bool TypeSpecifierContext::SetTypeQualifierKind(TypeQualifierKind kind,
+                                                SrcLoc loc) {
+  if (!IsValidQualifierKind(kind)) {
+    return false;
+  }
+  typeQualifierKind = kind;
+  return true;
+}
