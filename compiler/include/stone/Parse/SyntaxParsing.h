@@ -273,8 +273,14 @@ public:
 class SyntaxParsingDeclarator final : public Declarator {
 public:
   SyntaxParsingDeclarator(const SyntaxParsingDeclSpecifier &specifier,
-                          DeclaratorScopeKind scopeKind)
-      : Declarator(specifier, scopeKind) {}
+                          DeclaratorContextKind contextKind)
+      : Declarator(specifier, contextKind) {}
+
+public:
+  const SyntaxParsingDeclSpecifier &GetSyntaxParsingDeclSpecifier() const {
+    return static_cast<const SyntaxParsingDeclSpecifier &>(
+        Declarator::GetDeclSpecifier());
+  }
 };
 
 enum class SyntaxParsingContextKind : UInt8 {

@@ -77,6 +77,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   parsingContext.SetParsing();
 
   while (parsingContext.IsParsing() && !IsDone()) {
+  Continue:
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
     case tok::kw_public:
@@ -90,6 +91,8 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
     case tok::kw_private:
       specifier.level = AccessLevel::Private;
       ConsumeToken();
+      goto Continue;
+
       continue;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);
@@ -118,9 +121,11 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       continue;
     case tok::identifier:
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        declResult = ParseVarDecl(specifier);
-      }else{
-        // This is just some random variable 
+        SyntaxParsingDeclarator declarator(specifier,
+                                           DeclaratorContextKind::SyntaxFile);
+        declResult = ParseVarDecl(declarator);
+      } else {
+        // This is just some random variable
       }
       break;
     case tok::kw_auto:
@@ -200,13 +205,24 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   return declResult;
 }
 
-SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclSpecifier &specifier) {
+SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclarator &declarator) {
 
-  assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
+  // const SyntaxParsingDeclSpecifier &specifier =
+  //     declarator.GetSyntaxParsingDeclSpecifier();
+  // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
 
-  if (specifier.GetTypeSpecifierContext().IsBasicType()) {
+  SyntaxResult<Decl> result;
+
+  if (!curTok.IsPointerOperator()) {
+
+    return result;
   }
-  return syn::MakeSyntaxResult<Decl>(nullptr);
+
+  if (curTok.IsPointerOperator()) {
+  }
+  // We are dealing with a pointer operator and:
+
+  return result;
 }
 // void Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
 // SrcLoc loc) {

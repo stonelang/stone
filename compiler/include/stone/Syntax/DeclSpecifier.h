@@ -22,7 +22,7 @@ enum class DeclaratorChunkKind {
   Pipe,
 };
 
-enum class DeclaratorScopeKind {
+enum class DeclaratorContextKind {
   SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
   TypeName,            // Abstract declarator for types.
@@ -91,12 +91,12 @@ public:
   //                          Decl *rep, bool owned);
 
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-  bool HasTypeSpecifierKind() {
+  bool HasTypeSpecifierKind() const {
     return typeSpecifierKind != TypeSpecifierKind::None;
   }
 
   bool SetTypeQualifierKind(TypeQualifierKind kind, SrcLoc loc);
-  bool HasTypeQualifierKind() {
+  bool HasTypeQualifierKind() const {
     return typeQualifierKind != TypeQualifierKind::None;
   }
 
@@ -123,7 +123,6 @@ public:
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
-
   TypeSpecifierContext typeSpecifierContext;
   StorageSpecifierContext storageSpecifierContext;
 
@@ -148,7 +147,7 @@ class Declarator {
   const DeclSpecifier &declSpecifier;
   ScopeSpecifier scopeSpecifier;
   /// Where we are parsing this declarator.
-  DeclaratorScopeKind scopeKind;
+  DeclaratorContextKind contextKind;
 
   // /// The C++17 structured binding, if any. This is an alternative to a Name.
   // DecompositionDeclarator bindingGroup;
@@ -164,14 +163,15 @@ class Declarator {
   llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
-  Declarator(const DeclSpecifier &declSpecifier, DeclaratorScopeKind scopeKind)
-      : declSpecifier(declSpecifier) {}
+  Declarator(const DeclSpecifier &declSpecifier,
+             DeclaratorContextKind scopeKind)
+      : declSpecifier(declSpecifier), contextKind(contextKind) {}
 
 public:
   /// getDeclSpec - Return the declaration-specifier that this declarator was
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
-  DeclaratorScopeKind GetScopeKind() { return scopeKind; }
+  DeclaratorContextKind GetContextKind() { return contextKind; }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

@@ -143,7 +143,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  SyntaxResult<Decl> ParseVarDecl(SyntaxParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseVarDecl(SyntaxParsingDeclarator &declarator);
 
 public:
   // == Type Parsing ==//

@@ -882,8 +882,9 @@ void Lexer::lexOperatorIdentifier() {
       return formToken(tok::alien, TokStart);
     }
     case '?':
-      if (leftBound)
+      if (leftBound){
         return formToken(tok::question_postfix, TokStart);
+      }
       return formToken(tok::question_infix, TokStart);
     }
   } else if (CurPtr - TokStart == 2) {

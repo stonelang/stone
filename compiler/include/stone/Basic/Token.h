@@ -76,6 +76,9 @@ public:
     return kind == tok::oper_binary_spaced || kind == tok::oper_binary_unspaced;
   }
 
+  // This is good for now.
+  bool IsPointerOperator() { return kind == tok::star; }
+
   bool IsAnyOperator() const {
     return IsBinaryOperator() || kind == tok::oper_postfix ||
            kind == tok::oper_prefix;
@@ -150,6 +153,21 @@ public:
       return false;
     }
   }
+  bool IsPeriod() { return kind == tok::period; }
+  bool IsDoublePipe() { return kind == tok::doublepipe; }
+  bool IsPipe() { return kind == tok::pipe; }
+  bool IsPipeEqual() { return kind == tok::pipeequal; }
+  bool IsEllipsis() { return kind == tok::ellipsis; }
+  bool IsSemi() { return kind == tok::semi; }
+  bool IsEquality() { return kind == tok::equal; }
+  bool IsDoubleEquality() { return kind == tok::doubleequal; }
+  bool IsPound() { return kind == tok::pound; }
+  bool IsAmp() { return kind == tok::amp; }
+  bool IsArrow() { return kind == tok::arrow; }
+  bool IsBackTick() { return kind == tok::backtick; }
+  bool IsExcliam() { return kind == tok::exclaim; }
+  bool IsDoubleColon() { return kind == tok::doublecolon; }
+  bool IsTilde() { return kind == tok::tilde; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

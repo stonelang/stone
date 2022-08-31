@@ -414,11 +414,10 @@ public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
 };
 
+// Declarators and the like
 class StorageDecl : public ValueDecl {};
 
-class DeclaratorDecl : public StorageDecl {};
-
-class VarDecl : public DeclaratorDecl {};
+class VarDecl : public StorageDecl {};
 
 class BlockDecl : public Decl, public DeclContext {};
 
