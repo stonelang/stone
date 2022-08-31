@@ -77,7 +77,6 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   parsingContext.SetParsing();
 
   while (parsingContext.IsParsing() && !IsDone()) {
-  Continue:
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
     case tok::kw_public:
@@ -92,7 +91,6 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       specifier.level = AccessLevel::Private;
       ConsumeToken();
       goto Continue;
-
       continue;
     case tok::kw_fun:
       declResult = ParseFunDecl(specifier);
@@ -107,18 +105,17 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
     case tok::kw_const:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Const, loc);
-      ConsumeToken();
-      continue;
+      // We do not consume the token because the QualType that we create
+      // will be of the following const int i = ....
+      break;
     case tok::kw_volatile:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Volatile, loc);
-      ConsumeToken();
-      continue;
+      break;
     case tok::kw_restrict:
       specifier.GetTypeSpecifierContext().SetTypeQualifierKind(
           TypeQualifierKind::Restrict, loc);
-      ConsumeToken();
-      continue;
+      break;
     case tok::identifier:
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         SyntaxParsingDeclarator declarator(specifier,
@@ -199,9 +196,12 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       break;
 
     default:
+
       break;
-    }
-  }
+    } // End of switch
+
+    // ConsumeToken();
+  } // End of while
   return declResult;
 }
 
@@ -210,14 +210,11 @@ SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclarator &declarator) {
   // const SyntaxParsingDeclSpecifier &specifier =
   //     declarator.GetSyntaxParsingDeclSpecifier();
   // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
-
   SyntaxResult<Decl> result;
 
   if (!curTok.IsPointerOperator()) {
-
     return result;
   }
-
   if (curTok.IsPointerOperator()) {
   }
   // We are dealing with a pointer operator and:
