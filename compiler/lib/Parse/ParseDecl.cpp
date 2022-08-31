@@ -72,13 +72,12 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclOptions flags,
 SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
                                      llvm::function_ref<void(Decl *)> handler) {
 
-  SyntaxResult<Decl> declResult;
+  SyntaxResult<Decl> result;
+
+  // TODO: Replace with SyntaxParsingScope 
   SyntaxParsingContext parsingContext(SyntaxParsingContextKind::Decl);
-  parsingContext.SetParsing();
 
-  // auto syntaxActinKind  = GetDeclSyntaxActionKind(specifier)
-
-  while (parsingContext.IsParsing() && !IsDone()) {
+  while (result.IsNull() && !IsDone()) {
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
     case tok::kw_public:
@@ -95,13 +94,11 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       continue;
     case tok::kw_fun:
       specifier.GetFunctionSpecifierContext().AddFunction(loc);
-      declResult = ParseFunDecl(specifier);
-      parsingContext.SetDone();
+      result = ParseFunDecl(specifier);
       break;
     case tok::kw_struct:
       specifier.GetTypeSpecifierContext().AddStruct(loc);
-      declResult = ParseStructDecl(specifier);
-      parsingContext.SetDone();
+      result = ParseStructDecl(specifier);
       break;
     case tok::kw_inline:
       specifier.GetFunctionSpecifierContext().AddInline(loc);
@@ -121,7 +118,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         SyntaxParsingDeclarator declarator(specifier,
                                            DeclaratorContextKind::SyntaxFile);
-        declResult = ParseVarDecl(declarator);
+        result = ParseVarDecl(declarator);
       } else {
         // This is just some random variable with no type -- error message.
       }
@@ -182,7 +179,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
 
     // ConsumeToken();
   } // End of while
-  return declResult;
+  return result;
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclarator &declarator) {

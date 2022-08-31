@@ -289,30 +289,30 @@ enum class SyntaxParsingContextKind : UInt8 {
   Expr,
   Type,
 };
-enum class SyntaxParsingContextStatus : UInt8 {
-  None = 0,
-  Parsing,
-  Error,
-  Done
+// enum class SyntaxParsingContextStatus : UInt8 {
+//   None = 0,
+//   Parsing,
+//   Error,
+//   Done
 };
 
 constexpr size_t SyntaxParsingAlignInBits = 3;
 class alignas(1 << SyntaxParsingAlignInBits) SyntaxParsingContext final {
   SyntaxParsingContextKind kind;
-  SyntaxParsingContextStatus status;
+  // SyntaxParsingContextStatus status;
 
 public:
   SyntaxParsingContext(SyntaxParsingContextKind kind) : kind(kind) {}
   SyntaxParsingContextKind GetKind() { return kind; }
 
 public:
-  bool IsParsing() { return status == SyntaxParsingContextStatus::Parsing; }
-  bool IsError() { return status == SyntaxParsingContextStatus::Error; }
-  bool IsDone() { return status == SyntaxParsingContextStatus::Done; }
+  // bool IsParsing() { return status == SyntaxParsingContextStatus::Parsing; }
+  // bool IsError() { return status == SyntaxParsingContextStatus::Error; }
+  // bool IsDone() { return status == SyntaxParsingContextStatus::Done; }
 
-  void SetError() { status = SyntaxParsingContextStatus::Error; }
-  void SetParsing() { status = SyntaxParsingContextStatus::Parsing; }
-  void SetDone() { status = SyntaxParsingContextStatus::Done; }
+  // void SetError() { status = SyntaxParsingContextStatus::Error; }
+  // void SetParsing() { status = SyntaxParsingContextStatus::Parsing; }
+  // void SetDone() { status = SyntaxParsingContextStatus::Done; }
 };
 
 } // namespace syn
