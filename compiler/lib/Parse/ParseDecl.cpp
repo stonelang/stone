@@ -93,7 +93,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
       ConsumeToken();
       continue;
     case tok::kw_fun:
-      specifier.GetFunctionSpecifierContext().AddFunction(loc);
+      specifier.GetFunctionSpecifierContext().AddFunctionDef(loc);
       result = ParseFunDecl(specifier);
       break;
     case tok::kw_struct:
