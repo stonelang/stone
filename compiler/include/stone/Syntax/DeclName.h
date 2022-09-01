@@ -58,6 +58,55 @@ enum class DeclNameKind : uint8_t {
 //   DeclNameBase(Identifier identifier) : identifier(identifier) {}
 // };
 
+namespace detail {
+// Using, Constructor, and Destructor
+class alignas(IdentifierAlignment) SpecialDeclNameExtra
+    : public llvm::FoldingSetNode {
+  friend class DeclName;
+  friend class DeclNameTable;
+
+  /// The type associated with this declaration name.
+  QualType ty;
+
+public:
+  SpecialDeclNameExtra(QualType inputTy) : ty(inputTy) {}
+  void Profile(llvm::FoldingSetNodeID &ID) {
+    // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
+  }
+};
+
+/// Contains extra information for the name of an overloaded operator
+/// in C++, such as "operator+. This do not includes literal or conversion
+/// operators. For literal operators see LiteralOperatorIdName and for
+/// conversion operators see CXXSpecialNameExtra.
+class alignas(IdentifierAlignment) OperatorIdName
+    : public detail::SpecialDeclName {
+  friend class DeclName;
+  friend class DeclNameTable;
+
+  /// The kind of this operator.
+  opr::OverloadedOperatorKind Kind = opr::None;
+};
+
+/// Contains the actual identifier that makes up the
+/// name of a C++ literal operator.
+class alignas(IdentifierAlignment) LiteralOperatorIdName
+    : public detail::SpecialDeclName,
+      public llvm::FoldingSetNode {
+  friend class DeclName;
+  friend class DeclNameTable;
+
+  Identifier *ID;
+
+  LiteralOperatorIdName(Identifier *II)
+      : SpecialDeclName(LiteralOperatorName), ID(II) {}
+
+public:
+  void Profile(llvm::FoldingSetNodeID &FSID) { FSID.AddPointer(ID); }
+};
+
+} // namespace detail
+
 class DeclName {
   friend class NamedDecl;
   friend class SyntaxContext;
@@ -98,55 +147,27 @@ public:
   static int Compare(DeclName LHS, DeclName RHS);
 };
 
-// Using, Constructor, and Destructor
-class alignas(IdentifierAlignment) SpecialDeclName
-    : public llvm::FoldingSetNode {
-  friend class DeclName;
-  friend class DeclNameTable;
-
-  /// The type associated with this declaration name.
-  QualType ty;
-
-public:
-  SpecialDeclName(QualType inputTy) : ty(inputTy) {}
-  void Profile(llvm::FoldingSetNodeID &ID) {
-    // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
-  }
-};
-
-/// Contains extra information for the name of an overloaded operator
-/// in C++, such as "operator+. This do not includes literal or conversion
-/// operators. For literal operators see LiteralOperatorIdName and for
-/// conversion operators see CXXSpecialNameExtra.
-class alignas(IdentifierAlignment) OperatorIdName {
-  friend class DeclName;
-  friend class DeclNameTable;
-
-  /// The kind of this operator.
-  opr::OverloadedOperatorKind Kind = opr::None;
-};
-
 /// DeclNameTable is used to store and retrieve DeclName
 /// instances for the various kinds of declaration names, e.g., normal
 /// identifiers, constructor names, etc. This class contains
 /// uniqued versions of each of the special names, which can be
 /// retrieved using its member functions (e.g., GetConstructorName).
-class DeclNameTable {
+class DeclNameTable final {
   /// Used to allocate elements in the FoldingSets below.
   const SyntaxContext &tc;
 
   /// Manage the uniqued SpecialDeclName representing stone constructors.
   /// GetConstructorName and GetSpecialName can be used to obtain
   /// a DeclName from the corresponding type of the constructor.
-  llvm::FoldingSet<SpecialDeclName> constructorNames;
+  llvm::FoldingSet<detail::SpecialDeclNameExtra> constructorNames;
 
   /// Manage the uniqued CXXSpecialNameExtra representing C++ destructors.
   /// getCXXDestructorName and getCXXSpecialName can be used to obtain
   /// a DeclName from the corresponding type of the destructor.
-  llvm::FoldingSet<SpecialDeclName> destructorNames;
+  llvm::FoldingSet<detail::SpecialDeclNameExtra> destructorNames;
 
   //
-  llvm::FoldingSet<SpecialDeclName> usingNames;
+  llvm::FoldingSet<detail::SpecialDeclNameExtra> usingNames;
 
   /// Manage the uniqued CXXSpecialNameExtra representing C++ conversion
   /// functions. getCXXConversionFunctionName and getCXXSpecialName can be
