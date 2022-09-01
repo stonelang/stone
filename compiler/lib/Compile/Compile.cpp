@@ -167,14 +167,13 @@ static void GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
 static void CompileWithGenNative(CompilerInstance &compiler,
                                  CodeGenContext &cgc, IRCodeGenResult &result) {
 
-  // TODO: Move to CompilerInstance 
+  // TODO: Move to CompilerInstance
   auto targetMachine = stone::CreateTargetMachine(
       compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
       compiler.GetInvocation().GetCodeGenOptions(),
       compiler.GetInvocation().GetTargetOptions(),
       compiler.GetInvocation().GetLangContext().GetLangOptions(),
       compiler.GetSyntax().GetSyntaxContext());
-  
 
   cgc.TakeTargetMachine(std::move(targetMachine));
 

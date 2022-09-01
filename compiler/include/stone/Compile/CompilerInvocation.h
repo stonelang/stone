@@ -70,6 +70,8 @@ class CompilerInvocation final : public Session {
 
   TargetOptions targetOpts;
 
+  LangOptions langOpts;
+
   SyntaxOptions syntaxOpts;
 
   /// The main executable path of the running program
@@ -125,6 +127,9 @@ public:
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
+  void SetTargetTriple(llvm::StringRef triple);
+  void SetTargetTriple(const llvm::Triple &Triple);
+
   CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {
     return *invocationOpts.get();

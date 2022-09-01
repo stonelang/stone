@@ -4,9 +4,9 @@
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Public.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Parse/Trivia.h"
+#include "stone/Public.h"
 
 namespace stone {
 

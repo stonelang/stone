@@ -176,6 +176,14 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   // return llvm::None;
 }
 
+void CompilerInvocation::SetTargetTriple(StringRef Triple) {
+  SetTargetTriple(llvm::Triple(Triple));
+}
+void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
+  langOpts.SetTarget(triple);
+  // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
+}
+
 unsigned
 CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());

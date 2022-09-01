@@ -2,7 +2,6 @@
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/Compile/Compile.h"
 
-
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Host.h"

@@ -20,7 +20,18 @@ class LangOptions final {
 
 public:
   /// The target platform that we are running on.
-  llvm::Triple target;
+  llvm::Triple Target;
+
+  /// \brief The second target for a zippered build
+  ///
+  /// This represents the target and minimum deployment version for the
+  /// second ('variant') target when performing a zippered build.
+  /// For example, if the target is x86_64-apple-macosx10.14 then
+  /// a target-variant of x86_64-apple-ios12.0-macabi will produce
+  /// a zippered binary that can be loaded into both macCatalyst and
+  /// macOS processes. A value of 'None' means no zippering will be
+  /// performed.
+  llvm::Optional<llvm::Triple> TargetVariant;
 
   /// This represents the statistics generated
   bool printStatistics = true;
@@ -52,8 +63,13 @@ public:
   LangOptions();
 
 public:
-  void SetTargetTriple(const llvm::Triple &triple);
-  void SetTargetTriple(llvm::StringRef Triple);
+  /// Sets the target we are building for and updates platform conditions
+  /// to match.
+  ///
+  /// \returns A pair - the first element is true if the OS was invalid.
+  /// The second element is true if the Arch was invalid.
+  std::pair<bool, bool> SetTarget(llvm::Triple triple);
+  std::pair<bool, bool> SetTarget(llvm::StringRef triple);
 };
 
 } // namespace stone

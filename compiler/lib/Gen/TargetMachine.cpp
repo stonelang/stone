@@ -1,8 +1,10 @@
-#include "stone/Public.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Public.h"
 #include "stone/Syntax/SyntaxContext.h"
+
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
 
@@ -64,28 +66,35 @@ std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
     const TargetOptions &targetOpts, const LangOptions &langOpts,
     syn::SyntaxContext &sc) {
 
+  llvm::TargetOptions targetOptions;
+  std::unique_ptr<llvm::TargetMachine> targetMachine;
+
+  llvm::Triple Triple(langOpts.Target);
+
   // Create the TargetMachine for generating code.
   // std::string error;
   // std::string triple = llvmModule.getTargetTriple();
   // const llvm::Target *llvmTarget =
   //     llvm::TargetRegistry::lookupTarget(triple, error);
 
-  // llvm::Optional<llvm::CodeModel::Model> codeModel = GetCodeModel(codeGenOpts);
-  // std::string features =
-  //     llvm::join(targetOpts.features.begin(), targetOpts.features.end(), ",");
+  // llvm::Optional<llvm::CodeModel::Model> codeModel =
+  // GetCodeModel(codeGenOpts); std::string features =
+  //     llvm::join(targetOpts.features.begin(), targetOpts.features.end(),
+  //     ",");
 
   // llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
-  // llvm::CodeGenOpt::Level codeGenOptLevel = GetOptimizationLevel(codeGenOpts);
+  // llvm::CodeGenOpt::Level codeGenOptLevel =
+  // GetOptimizationLevel(codeGenOpts);
 
   // llvm::TargetOptions llvmTargetOpts;
-  // if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has()) {
+  // if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has())
+  // {
   //   return nullptr;
   // }
 
-  std::unique_ptr<llvm::TargetMachine> tm;
   // tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
   //                                          llvmTargetOpts, relocationModel,
   //                                          codeModel, codeGenOptLevel));
 
-  return tm;
+  return targetMachine;
 }

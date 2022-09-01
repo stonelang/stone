@@ -4,13 +4,12 @@
 
 using namespace stone;
 
-LangOptions::LangOptions() : target(llvm::sys::getDefaultTargetTriple()) {}
+LangOptions::LangOptions() : Target(llvm::sys::getDefaultTargetTriple()) {}
 
-void LangOptions::SetTargetTriple(llvm::StringRef triple) {
-  SetTargetTriple(llvm::Triple(triple));
+std::pair<bool, bool> LangOptions::SetTarget(llvm::StringRef triple) {
+  return SetTarget(llvm::Triple(triple));
 }
-
-void LangOptions::SetTargetTriple(const llvm::Triple &triple) {
+std::pair<bool, bool> LangOptions::SetTarget(const llvm::Triple triple) {
   /// TODO: Messy -- think of a cleaner way
   // if (triple.getOS() == llvm::Triple::Darwin &&
   //     triple.getVendor() == llvm::Triple::Apple) {
@@ -28,5 +27,5 @@ void LangOptions::SetTargetTriple(const llvm::Triple &triple) {
   //   }
   //   triple.setOSName(osx.str());
   // }
-  target = std::move(triple);
+  return std::make_pair<bool, bool>(true, true);
 }

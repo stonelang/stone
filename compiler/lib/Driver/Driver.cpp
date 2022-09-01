@@ -153,11 +153,10 @@ Driver::ComputeCompilationModel(CompilationModelKind kind) {
 std::unique_ptr<ToolChain>
 Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   if (const llvm::opt::Arg *arg = argList.getLastArg(opts::Target)) {
-    ctx.GetLangOptions().SetTargetTriple(
-        llvm::Triple::normalize(arg->getValue()));
+    ctx.GetLangOptions().SetTarget(llvm::Triple::normalize(arg->getValue()));
   }
 
-  switch (ctx.GetLangOptions().target.getOS()) {
+  switch (ctx.GetLangOptions().Target.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX: {
     llvm::Optional<llvm::Triple> targetVariant;
@@ -165,7 +164,7 @@ Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
       targetVariant = llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
     return std::make_unique<stone::darwin::DarwinToolChain>(
-        *this, ctx.GetLangOptions().target, targetVariant);
+        *this, ctx.GetLangOptions().Target, targetVariant);
   }
   // case llvm::Triple::Linux:
   //   toolChain = std::make_unique<stone::linux::LinuxToolChain>(*this,
