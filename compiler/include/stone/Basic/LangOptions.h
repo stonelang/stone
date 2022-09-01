@@ -80,7 +80,8 @@ public:
 
 public:
   /// Sets an implicit platform condition.
-  void AddPlatformConditionValue(PlatformConditionKind Kind, llvm::StringRef Value) {
+  void AddPlatformConditionValue(PlatformConditionKind Kind,
+                                 llvm::StringRef Value) {
     assert(!Value.empty());
     PlatformConditionValues.emplace_back(Kind, Value.str());
   }
