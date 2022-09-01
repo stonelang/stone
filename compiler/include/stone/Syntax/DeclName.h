@@ -113,6 +113,24 @@ class DeclName {
 
   DeclNameKind declNameKind;
 
+  struct StoredNameKind {
+    enum Flags : unsigned {
+      Identifier = 0,
+      ConstructorName = 1,
+      DestructorName = 2,
+      ConversionFunctionName = 3,
+      OperatorName = 4,
+      DeclarationNameExtra = 5, // TODO: Think about 
+      PtrMask = 6,
+      UncommonNameKindOffset = 7,
+    };
+  };
+  UIntPtr opaquePtr = 0;
+
+  unsigned GetStoredNameKind() const {
+    return static_cast<StoredNameKind::Flags>(opaquePtr & StoredNameKind::PtrMask);
+  }
+
 public:
   /// Construct a declaration name from an Identifier *.
   DeclName(const Identifier identifier) {
