@@ -19,7 +19,7 @@ using namespace stone::syn;
 // }
 
 //=Scope=//
-SyntaxParsingScope::SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
                                        bool enteredScope,
                                        bool beforeCompoundStmt)
     : self(self) {
@@ -36,25 +36,25 @@ SyntaxParsingScope::SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
 
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void SyntaxParsingScope::ExitScope() {
+void ParsingScope::ExitScope() {
   // if (self) {
   //   self->ExitScope();
   //   self = nullptr;
   // }
 }
-SyntaxParsingScope::~SyntaxParsingScope() { ExitScope(); }
+ParsingScope::~ParsingScope() { ExitScope(); }
 
-SyntaxParsingPositionRAII::SyntaxParsingPositionRAII(Parser &parser)
-    : parser(parser), parsingPos(parser.GetSyntaxParsingPosition()) {}
+ParsingPositionRAII::ParsingPositionRAII(Parser &parser)
+    : parser(parser), parsingPos(parser.GetParsingPosition()) {}
 
-SyntaxParsingPositionRAII::~SyntaxParsingPositionRAII() {
-  parser.RestoreSyntaxParsingPosition(parsingPos);
+ParsingPositionRAII::~ParsingPositionRAII() {
+  parser.RestoreParsingPosition(parsingPos);
 }
 
-SyntaxParsingPrettyStackTrace::SyntaxParsingPrettyStackTrace(Parser &parser)
+ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 
-void SyntaxParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
+void ParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
   out << "With parser at source location: ";
   parser.GetCurTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
   out << '\n';

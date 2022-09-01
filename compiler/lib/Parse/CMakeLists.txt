@@ -7,8 +7,8 @@ set(stone_parse_sources
 	Parser.cpp
 	ParseStmt.cpp
 	ParseType.cpp
-	SyntaxLexing.cpp
-	SyntaxParsing.cpp
+	Lexing.cpp
+	Parsing.cpp
 
 	LINK_LIBS
 	StoneSyntax

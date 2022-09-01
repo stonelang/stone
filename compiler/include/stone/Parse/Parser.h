@@ -7,7 +7,7 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Parse/Lexer.h"
-#include "stone/Parse/SyntaxParsing.h"
+#include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
@@ -129,10 +129,10 @@ public:
   bool IsTopLevelDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl(SyntaxParsingDeclOptions flags,
+  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                llvm::function_ref<void(Decl *)> handler);
 
-  SyntaxResult<Decl> ParseDecl(SyntaxParsingDeclSpecifier &specifier,
+  SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
                                llvm::function_ref<void(Decl *)> handler);
 
   void ParseForwardDecl();
@@ -143,7 +143,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  SyntaxResult<Decl> ParseVarDecl(SyntaxParsingDeclarator &declarator);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
 
 public:
   // == Type Parsing ==//
@@ -165,10 +165,10 @@ public:
   //==Begin Function==//
 
   // TODO: Pass FunctionSpecifierContext
-  SyntaxResult<Decl> ParseFunDecl(SyntaxParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier,
+  SyntaxStatus ParseFunctionSignature(ParsingDeclSpecifier &specifier,
                                       FunDecl &funDecl);
 
   // Identifier functionName,
@@ -181,17 +181,17 @@ private:
   //                                       bool &rethrows,
   //                                       TypeRepr *&retType);
 
-  SyntaxStatus ParseFunctionArguments(SyntaxParsingDeclSpecifier &specifier,
+  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier,
                                       FunDecl &funDecl);
-  SyntaxStatus ParseFunctionBody(SyntaxParsingDeclSpecifier &specifier,
+  SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
                                  FunctionDecl &funDecl);
-  BraceStmt *ParseFunctionBodyImpl(SyntaxParsingDeclSpecifier &specifier,
+  BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
                                    FunctionDecl &funDecl);
 
   //==End Function==//
 public:
   //=struct=//
-  SyntaxResult<Decl> ParseStructDecl(SyntaxParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
   void ParseStructForwardDecl();
 
 private:
@@ -227,24 +227,24 @@ public:
   //===--------------------------------------------------------------------===//
   // Routines to save and restore parser state.
 
-  SyntaxParsingPosition GetSyntaxParsingPosition() {
-    return SyntaxParsingPosition(
+  ParsingPosition GetParsingPosition() {
+    return ParsingPosition(
         GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
         prevTokLoc);
   }
-  SyntaxParsingPosition GetSyntaxParsingPosition(SrcLoc loc,
+  ParsingPosition GetParsingPosition(SrcLoc loc,
                                                  SrcLoc previousLoc) {
-    return SyntaxParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
+    return ParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
                                  previousLoc);
   }
-  void RestoreSyntaxParsingPosition(SyntaxParsingPosition parsingPos,
+  void RestoreParsingPosition(ParsingPosition parsingPos,
                                     bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
     Lex(curTok, leadingTrivia, trailingTrivia);
     prevTokLoc = parsingPos.prevLoc;
   }
 
-  void BackTrackSyntaxParsingPosition(SyntaxParsingPosition parsingPos) {
+  void BackTrackParsingPosition(ParsingPosition parsingPos) {
     assert(parsingPos.isValid());
     GetLexer().backtrackToState(parsingPos.lexingState);
     Lex(curTok, leadingTrivia, trailingTrivia);
@@ -253,12 +253,12 @@ public:
 
 public:
   // == Token consumption ==//
-  SrcLoc ConsumeToken(SyntaxParsingNotification notification =
-                          SyntaxParsingNotification::TokenConsumed);
+  SrcLoc ConsumeToken(ParsingNotification notification =
+                          ParsingNotification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
     assert(curTok.Is(kind) && "Consuming wrong curTok type");
-    return ConsumeToken(SyntaxParsingNotification::None);
+    return ConsumeToken(ParsingNotification::None);
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 

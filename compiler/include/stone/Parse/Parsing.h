@@ -2,7 +2,7 @@
 #define STONE_PARSE_SYNTAXPARSING_H
 
 #include "stone/Basic/OptionSet.h"
-#include "stone/Parse/SyntaxLexing.h"
+#include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/SyntaxScope.h"
 
@@ -16,11 +16,11 @@ class AttributeFactory;
 
 /// To assist debugging parser crashes, tell us the location of the
 /// current curTok.
-class SyntaxParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
+class ParsingPrettyStackTrace final : public llvm::PrettyStackTraceEntry {
   Parser &parser;
 
 public:
-  explicit SyntaxParsingPrettyStackTrace(Parser &parser);
+  explicit ParsingPrettyStackTrace(Parser &parser);
   void print(llvm::raw_ostream &out) const override;
 };
 
@@ -112,25 +112,25 @@ public:
 // };
 
 using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
-class SyntaxParsingScope final {
+class ParsingScope final {
   Parser *self;
   SyntaxScopeCache scopeCache;
 
   bool enteredScope;
   bool beforeCompoundStmt;
 
-  SyntaxParsingScope(const SyntaxParsingScope &) = delete;
-  void operator=(const SyntaxParsingScope &) = delete;
+  ParsingScope(const ParsingScope &) = delete;
+  void operator=(const ParsingScope &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass SyntaxScope
-  SyntaxParsingScope(Parser *self, SyntaxScopeKind scopeKind,
+  ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
                      bool enteredScope = true, bool beforeCompoundStmt = false);
 
-  ~SyntaxParsingScope();
+  ~ParsingScope();
 
 public:
   /// EnterScope - start a new scope.
@@ -145,12 +145,12 @@ public:
   // }
 };
 
-// class MultiSyntaxParsingScope final {
+// class MultiParsingScope final {
 // public:
 // };
 
 // /// The kind of template we are parsing.
-// enum class SyntaxParsingTemplateKind : uint8_t {
+// enum class ParsingTemplateKind : uint8_t {
 //   /// We are not parsing a template at all.
 //   None = 0,
 //   /// We are parsing a template declaration.
@@ -163,9 +163,9 @@ public:
 // /// Contains information about any template-specific
 // /// information that has been parsed prior to parsing declaration
 // /// specifiers.
-// struct SyntaxParsingTemplate {
+// struct ParsingTemplate {
 
-//   SyntaxParsingTemplateKind kind;
+//   ParsingTemplateKind kind;
 
 //   /// The template parameter lists, for template declarations
 //   /// and explicit specializations.
@@ -182,28 +182,28 @@ public:
 //   /// Whether the last template parameter list was empty.
 //   bool lastParameterListWasEmpty;
 
-//   SyntaxParsingTemplate()
-//       : kind(SyntaxParsingTemplateKind::None),
+//   ParsingTemplate()
+//       : kind(ParsingTemplateKind::None),
 //       templateParameterLists(nullptr) {
 //   }
-//   SyntaxParsingTemplate(TemplateParameterLists *templateParameterLists,
+//   ParsingTemplate(TemplateParameterLists *templateParameterLists,
 //                         bool isSpecialization,
 //                         bool lastParameterListWasEmpty = false)
 //       : kind(isSpecialization
-//                  ? SyntaxParsingTemplateKind::ExplicitSpecialization
-//                  : SyntaxParsingTemplateKind::Template),
+//                  ? ParsingTemplateKind::ExplicitSpecialization
+//                  : ParsingTemplateKind::Template),
 //         templateParameterLists(templateParameterLists),
 //         lastParameterListWasEmpty(lastParameterListWasEmpty) {}
 
-//   explicit SyntaxParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
-//       : kind(SyntaxParsingTemplateKind::ExplicitInstantiation),
+//   explicit ParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
+//       : kind(ParsingTemplateKind::ExplicitInstantiation),
 //         templateParameterLists(nullptr), externLoc(externLoc),
 //         templateLoc(templateLoc), lastParameterListWasEmpty(false) {}
 
 //   SrcRange GetSrcRange() const;
 // };
 
-enum class SyntaxParsingNotification : UInt8 {
+enum class ParsingNotification : UInt8 {
   None,
   DeclCreated,
   StmtCreated,
@@ -211,35 +211,35 @@ enum class SyntaxParsingNotification : UInt8 {
   TokenConsumed,
 };
 
-class SyntaxParsingPosition final {
+class ParsingPosition final {
   friend class Parser;
-  SyntaxLexingState lexingState;
+  LexingState lexingState;
   /// TODO: prevTokLoc
   SrcLoc prevLoc;
 
-  SyntaxParsingPosition(SyntaxLexingState lexingState, SrcLoc prevLoc)
+  ParsingPosition(LexingState lexingState, SrcLoc prevLoc)
       : lexingState(lexingState), prevLoc(prevLoc) {}
 
 public:
-  SyntaxParsingPosition() = default;
-  SyntaxParsingPosition &operator=(const SyntaxParsingPosition &) = default;
+  ParsingPosition() = default;
+  ParsingPosition &operator=(const ParsingPosition &) = default;
 
   bool isValid() const { return lexingState.IsValid(); }
 };
 
 /// RAII object that, when it is destructed, restores the parser and lexer to
 /// their positions at the time the object was constructed.
-struct SyntaxParsingPositionRAII {
+struct ParsingPositionRAII {
 private:
   Parser &parser;
-  SyntaxParsingPosition parsingPos;
+  ParsingPosition parsingPos;
 
 public:
-  SyntaxParsingPositionRAII(Parser &parser);
-  ~SyntaxParsingPositionRAII();
+  ParsingPositionRAII(Parser &parser);
+  ~ParsingPositionRAII();
 };
 
-struct SyntaxParsingDeclFlags {
+struct ParsingDeclFlags {
   /// Flags that control the parsing of declarations.
   enum ID {
     Default = 0,
@@ -253,66 +253,66 @@ struct SyntaxParsingDeclFlags {
   };
 };
 /// Options that control the parsing of declarations.
-using SyntaxParsingDeclOptions = stone::OptionSet<SyntaxParsingDeclFlags::ID>;
+using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 
-class SyntaxParsingDeclSpecifier final : public DeclSpecifier {
+class ParsingDeclSpecifier final : public DeclSpecifier {
   Parser &parser;
 
 public:
-  SyntaxParsingDeclOptions flags;
+  ParsingDeclOptions flags;
 
 public:
-  SyntaxParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
+  ParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
       : parser(parser), DeclSpecifier(attributeFactory) {}
 
 public:
   Parser &GetParser() { return parser; }
 };
 
-class SyntaxParsingDeclarator final : public Declarator {
+class ParsingDeclarator final : public Declarator {
 public:
-  SyntaxParsingDeclarator(const SyntaxParsingDeclSpecifier &specifier,
+  ParsingDeclarator(const ParsingDeclSpecifier &specifier,
                           DeclaratorContextKind contextKind)
       : Declarator(specifier, contextKind) {}
 
 public:
-  const SyntaxParsingDeclSpecifier &GetSyntaxParsingDeclSpecifier() const {
-    return static_cast<const SyntaxParsingDeclSpecifier &>(
+  const ParsingDeclSpecifier &GetParsingDeclSpecifier() const {
+    return static_cast<const ParsingDeclSpecifier &>(
         Declarator::GetDeclSpecifier());
   }
 };
 
-enum class SyntaxParsingContextKind : UInt8 {
+enum class ParsingContextKind : UInt8 {
   None = 0,
   Decl,
   Stmt,
   Expr,
   Type,
 };
-enum class SyntaxParsingContextStatus : UInt8 {
+enum class ParsingContextStatus : UInt8 {
   None = 0,
   Parsing,
   Error,
   Done
 };
 
-constexpr size_t SyntaxParsingAlignInBits = 3;
-class alignas(1 << SyntaxParsingAlignInBits) SyntaxParsingContext final {
-  SyntaxParsingContextKind kind;
-  // SyntaxParsingContextStatus status;
+constexpr size_t ParsingAlignInBits = 3;
+class alignas(1 << ParsingAlignInBits) ParsingContext final {
+  ParsingContextKind kind;
+  // ParsingContextStatus status;
 
 public:
-  SyntaxParsingContext(SyntaxParsingContextKind kind) : kind(kind) {}
-  SyntaxParsingContextKind GetKind() { return kind; }
+  ParsingContext(ParsingContextKind kind) : kind(kind) {}
+  ParsingContextKind GetKind() { return kind; }
 
 public:
-  // bool IsParsing() { return status == SyntaxParsingContextStatus::Parsing; }
-  // bool IsError() { return status == SyntaxParsingContextStatus::Error; }
-  // bool IsDone() { return status == SyntaxParsingContextStatus::Done; }
+  // bool IsParsing() { return status == ParsingContextStatus::Parsing; }
+  // bool IsError() { return status == ParsingContextStatus::Error; }
+  // bool IsDone() { return status == ParsingContextStatus::Done; }
 
-  // void SetError() { status = SyntaxParsingContextStatus::Error; }
-  // void SetParsing() { status = SyntaxParsingContextStatus::Parsing; }
-  // void SetDone() { status = SyntaxParsingContextStatus::Done; }
+  // void SetError() { status = ParsingContextStatus::Error; }
+  // void SetParsing() { status = ParsingContextStatus::Parsing; }
+  // void SetDone() { status = ParsingContextStatus::Done; }
 };
 
 } // namespace syn

@@ -39,11 +39,11 @@ Parser::~Parser() {}
 // void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
-SrcLoc Parser::ConsumeToken(SyntaxParsingNotification notification) {
+SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
   auto loc = curTok.GetLoc();
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
-  if ((notification == SyntaxParsingNotification::TokenConsumed) && listener) {
+  if ((notification == ParsingNotification::TokenConsumed) && listener) {
     listener->OnToken(&curTok);
   }
   Lex(curTok, leadingTrivia, trailingTrivia);

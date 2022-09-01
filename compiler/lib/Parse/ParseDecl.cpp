@@ -54,28 +54,28 @@ void Parser::ParseTopLevelDecls(
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(IsTopLevelDecl(curTok) && "Invalid top-declaration");
 
-  return ParseDecl(SyntaxParsingDeclFlags::AllowTopLevel,
+  return ParseDecl(ParsingDeclFlags::AllowTopLevel,
                    [&](Decl *d) { /* Do nothing for now*/ });
 }
 
 // NOTE: This is ripe for recursion.
-SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclOptions flags,
+SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
                                      llvm::function_ref<void(Decl *)> handler) {
 
-  SyntaxParsingDeclSpecifier specifier(*this, GetAttributeFactory());
+  ParsingDeclSpecifier specifier(*this, GetAttributeFactory());
   specifier.flags = flags;
 
   return ParseDecl(specifier, handler);
 }
 
 /// Parse declaration specifiers
-SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
+SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
                                      llvm::function_ref<void(Decl *)> handler) {
 
   SyntaxResult<Decl> result;
 
-  // TODO: Replace with SyntaxParsingScope
-  SyntaxParsingContext parsingContext(SyntaxParsingContextKind::Decl);
+  // TODO: Replace with ParsingScope
+  ParsingContext parsingContext(ParsingContextKind::Decl);
 
   while (result.IsNull() && !IsDone()) {
     SrcLoc loc = curTok.GetLoc();
@@ -116,7 +116,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
       break;
     case tok::identifier:
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        SyntaxParsingDeclarator declarator(specifier,
+        ParsingDeclarator declarator(specifier,
                                            DeclaratorContextKind::SyntaxFile);
         result = ParseVarDecl(declarator);
       } else {
@@ -182,10 +182,10 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
   return result;
 }
 
-SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclarator &declarator) {
+SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
-  // const SyntaxParsingDeclSpecifier &specifier =
-  //     declarator.GetSyntaxParsingDeclSpecifier();
+  // const ParsingDeclSpecifier &specifier =
+  //     declarator.GetParsingDeclSpecifier();
   // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
   SyntaxResult<Decl> result;
 
@@ -199,7 +199,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(SyntaxParsingDeclarator &declarator) {
   return result;
 }
 
-SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
+SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
 
   assert(curTok.Is(tok::kw_fun) &&
          "Attempting to parse a 'fun' decl with incorrect curTok.");
@@ -215,6 +215,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 
   FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
+
+  //TODO: Think about this part 
+  
   funDecl->SetAccessLevel(specifier.GetAccessLevel());
   funDecl->SetFunLoc(funLoc);
 
@@ -237,10 +240,10 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
 }
 
 SyntaxStatus
-Parser::ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier,
+Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,
                                FunDecl &funDecl) {
 
-  // SyntaxParsingScope syntaxScope(SyntaxKind::FunctionSignature);
+  // ParsingScope syntaxScope(SyntaxKind::FunctionSignature);
 
   // TODO:
   // if(name == "Main"){
@@ -280,7 +283,7 @@ Parser::ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier,
   return syn::MakeSyntaxSuccess();
 }
 SyntaxStatus
-Parser::ParseFunctionArguments(SyntaxParsingDeclSpecifier &specifier,
+Parser::ParseFunctionArguments(ParsingDeclSpecifier &specifier,
                                FunDecl &funDecl) {
 
   assert(curTok.Is(tok::l_paren) && "Require '(' brace.");
@@ -294,7 +297,7 @@ Parser::ParseFunctionArguments(SyntaxParsingDeclSpecifier &specifier,
   return syn::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::ParseFunctionBody(SyntaxParsingDeclSpecifier &specifier,
+SyntaxStatus Parser::ParseFunctionBody(ParsingDeclSpecifier &specifier,
                                        FunctionDecl &funDecl) {
 
   assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
@@ -306,13 +309,13 @@ SyntaxStatus Parser::ParseFunctionBody(SyntaxParsingDeclSpecifier &specifier,
   return syn::MakeSyntaxSuccess();
 }
 
-BraceStmt *Parser::ParseFunctionBodyImpl(SyntaxParsingDeclSpecifier &specifier,
+BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
                                          FunctionDecl &funDecl) {
   return nullptr;
 }
 
 SyntaxResult<Decl>
-Parser::ParseStructDecl(SyntaxParsingDeclSpecifier &specifier) {
+Parser::ParseStructDecl(ParsingDeclSpecifier &specifier) {
 
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }
