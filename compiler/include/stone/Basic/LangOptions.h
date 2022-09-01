@@ -16,6 +16,13 @@
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
+
+/// Kind of implicit platform conditions.
+enum class PlatformConditionKind {
+#define PLATFORM_CONDITION(LABEL, IDENTIFIER) LABEL,
+#include "stone/Basic/PlatformConditionKind.def"
+};
+
 class LangOptions final {
 
 public:
@@ -43,6 +50,15 @@ public:
   ///
   bool useMalloc = false;
 
+  /// Enable 'availability' restrictions for App Extensions.
+  bool EnableAppExtensionRestrictions = false;
+
+private:
+  llvm::SmallVector<std::pair<PlatformConditionKind, std::string>, 6>
+      PlatformConditionValues;
+
+  llvm::SmallVector<std::string, 2> CustomConditionalCompilationFlags;
+
 public:
   /// Access or distribution level of a library.
   enum class LibraryLevel : uint8_t {
@@ -61,6 +77,23 @@ public:
 
 public:
   LangOptions();
+
+public:
+  /// Sets an implicit platform condition.
+  void AddPlatformConditionValue(PlatformConditionKind Kind, llvm::StringRef Value) {
+    assert(!Value.empty());
+    PlatformConditionValues.emplace_back(Kind, Value.str());
+  }
+
+  /// Removes all values added with addPlatformConditionValue.
+  void ClearAllPlatformConditionValues() { PlatformConditionValues.clear(); }
+
+  /// Returns the value for the given platform condition or an empty string.
+  llvm::StringRef GetPlatformConditionValue(PlatformConditionKind Kind) const;
+
+  /// Check whether the given platform condition matches the given value.
+  bool CheckPlatformCondition(PlatformConditionKind Kind,
+                              llvm::StringRef Value) const;
 
 public:
   /// Sets the target we are building for and updates platform conditions

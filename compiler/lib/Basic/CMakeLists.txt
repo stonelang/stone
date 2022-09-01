@@ -24,9 +24,11 @@ set(stone_basic_sources
 	JSONSerialization.cpp
 	LLVMContext.cpp
 	OutputFileMap.cpp
+	PlatformKind.cpp
 	SrcMgr.cpp
 	LangOptions.cpp
 	OperatorKind.cpp
+	PlatformKind.cpp
 	StatisticEngine.cpp
 	StableHasher.cpp
 	Timer.cpp
