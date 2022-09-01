@@ -26,6 +26,7 @@ set(stone_basic_sources
 	OutputFileMap.cpp
 	SrcMgr.cpp
 	LangOptions.cpp
+	OperatorKind.cpp
 	StatisticEngine.cpp
 	StableHasher.cpp
 	Timer.cpp

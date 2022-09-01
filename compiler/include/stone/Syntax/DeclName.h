@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Dumpable.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/OperatorKind.h"
 #include "stone/Basic/Printable.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Type.h"
@@ -36,29 +37,28 @@ enum class DeclNameKind : uint8_t {
   UsingDirective,
 };
 
-class DeclNameBase {
+// class DeclNameBase {
+// private:
+//   /// As above, for special constructor DeclNames.
+//   static const Identifier::Aligner ConstructorIdentifierData;
+//   /// As above, for special destructor DeclNames.
+//   static const Identifier::Aligner DestructorIdentifierData;
 
-private:
-  /// As above, for special constructor DeclNames.
-  static const Identifier::Aligner ConstructorIdentifierData;
-  /// As above, for special destructor DeclNames.
-  static const Identifier::Aligner DestructorIdentifierData;
+//   static const Identifier::Aligner OperatorIdentifierData;
 
-  static const Identifier::Aligner OperatorIdentifierData;
+//   static const Identifier::Aligner LiteraldentifierData;
 
-  static const Identifier::Aligner LiteraldentifierData;
+//   static const Identifier::Aligner UsingIdentifierData;
 
-  static const Identifier::Aligner UsingIdentifierData;
+//   Identifier identifier;
 
-  Identifier identifier;
+// public:
+//   DeclNameBase() : DeclNameBase(Identifier()) {}
 
-public:
-  DeclNameBase() : DeclNameBase(Identifier()) {}
+//   DeclNameBase(Identifier identifier) : identifier(identifier) {}
+// };
 
-  DeclNameBase(Identifier identifier) : identifier(identifier) {}
-};
-
-class DeclName : public Dumpable, public Printable {
+class DeclName {
   friend class NamedDecl;
   friend class SyntaxContext;
 
@@ -90,18 +90,40 @@ public:
   DeclNameKind GetDeclNameKind() { return declNameKind; }
 
 public:
-  void Print(ColorfulStream &os,
-             const PrintingPolicy *policy = nullptr) const override;
+  void Print(ColorfulStream &os, const PrintingPolicy *policy = nullptr) const;
 
-  void Dump() const override;
+  void Dump() const;
 
 public:
   static int Compare(DeclName LHS, DeclName RHS);
 };
 
 // Using, Constructor, and Destructor
-class SpecialDeclName : public DeclName {
+class alignas(IdentifierAlignment) SpecialDeclName
+    : public llvm::FoldingSetNode {
+  friend class DeclName;
+  friend class DeclNameTable;
+
+  /// The type associated with this declaration name.
+  QualType ty;
+
 public:
+  SpecialDeclName(QualType inputTy) : ty(inputTy) {}
+  void Profile(llvm::FoldingSetNodeID &ID) {
+    // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
+  }
+};
+
+/// Contains extra information for the name of an overloaded operator
+/// in C++, such as "operator+. This do not includes literal or conversion
+/// operators. For literal operators see LiteralOperatorIdName and for
+/// conversion operators see CXXSpecialNameExtra.
+class alignas(IdentifierAlignment) OperatorIdName {
+  friend class DeclName;
+  friend class DeclNameTable;
+
+  /// The kind of this operator.
+  opr::OverloadedOperatorKind Kind = opr::None;
 };
 
 /// DeclNameTable is used to store and retrieve DeclName
