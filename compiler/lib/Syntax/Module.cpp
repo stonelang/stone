@@ -20,7 +20,7 @@ using namespace stone::syn;
 ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-Module::Module(Identifier name, SyntaxContext &sc)
+Module::Module(Identifier *name, SyntaxContext &sc)
     : DeclContext(DeclContextKind::Module, nullptr),
       TypeDecl(DeclKind::Module, name, SrcLoc(), &sc) {}
 

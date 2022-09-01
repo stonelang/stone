@@ -120,7 +120,7 @@ class DeclName {
       DestructorName = 2,
       ConversionFunctionName = 3,
       OperatorName = 4,
-      DeclarationNameExtra = 5, // TODO: Think about 
+      DeclarationNameExtra = 5, // TODO: Think about
       PtrMask = 6,
       UncommonNameKindOffset = 7,
     };
@@ -128,13 +128,29 @@ class DeclName {
   UIntPtr opaquePtr = 0;
 
   unsigned GetStoredNameKind() const {
-    return static_cast<StoredNameKind::Flags>(opaquePtr & StoredNameKind::PtrMask);
+    return static_cast<StoredNameKind::Flags>(opaquePtr &
+                                              StoredNameKind::PtrMask);
+  }
+  void *GetPtr() const {
+    return reinterpret_cast<void *>(opaquePtr & ~StoredNameKind::PtrMask);
+  }
+
+  void SetPtrAndKind(const void *anyPtr, StoredNameKind::Flags kind) {
+    uintptr_t intPtr = reinterpret_cast<uintptr_t>(anyPtr);
+
+    assert((kind & ~StoredNameKind::PtrMask) == 0 &&
+           "Invalid StoredNameKind in SetPtrAndKind!");
+
+    assert((intPtr & StoredNameKind::PtrMask) == 0 &&
+           "Improperly aligned pointer in setPtrAndKind!");
+
+    opaquePtr = intPtr | kind;
   }
 
 public:
   /// Construct a declaration name from an Identifier *.
-  DeclName(const Identifier identifier) {
-    // TODO: SetPtrAndType(identifier, storedIdentifier);
+  DeclName(const Identifier *identifier) {
+    SetPtrAndKind(identifier, StoredNameKind::Identifier);
   }
 
 public:
@@ -220,7 +236,7 @@ public:
   ~DeclNameTable() = default;
 
   /// Create a declaration name that is a simple identifier.
-  DeclName GetIdentifier(const Identifier identifier) {
+  DeclName GetIdentifier(const Identifier *identifier) {
     return DeclName(identifier);
   }
 

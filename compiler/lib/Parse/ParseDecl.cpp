@@ -214,7 +214,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
 
-  FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
+  FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
   funDecl->SetAccessLevel(specifier.GetAccessLevel());
   funDecl->SetFunLoc(funLoc);
 

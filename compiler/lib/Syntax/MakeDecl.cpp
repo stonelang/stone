@@ -20,7 +20,7 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
+Module *Syntax::MakeModuleDecl(Identifier *name, bool isMainModule) {
   auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetSyntaxContext(),
                                                       sizeof(syn::Module));
   return ::new (declPtr) syn::Module(name, GetSyntaxContext());

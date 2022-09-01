@@ -195,7 +195,7 @@ class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
+  TypeDecl(DeclKind kind, Identifier *name, SrcLoc nameLoc,
            UnifiedContext context)
       : NamedDecl(kind, name, nameLoc, context) {}
 

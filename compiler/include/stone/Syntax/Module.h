@@ -125,7 +125,7 @@ class Module final : public DeclContext,
   mutable Identifier moduleABIName;
 
 public:
-  Module(Identifier name, SyntaxContext &tc);
+  Module(Identifier *name, SyntaxContext &tc);
 
 public:
   using syn::Decl::GetSyntaxContext;
