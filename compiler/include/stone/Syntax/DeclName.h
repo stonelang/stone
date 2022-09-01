@@ -35,6 +35,29 @@ enum class DeclNameKind : uint8_t {
   LiteralOperator,
   UsingDirective,
 };
+
+class DeclNameBase {
+
+private:
+  /// As above, for special constructor DeclNames.
+  static const Identifier::Aligner ConstructorIdentifierData;
+  /// As above, for special destructor DeclNames.
+  static const Identifier::Aligner DestructorIdentifierData;
+
+  static const Identifier::Aligner OperatorIdentifierData;
+
+  static const Identifier::Aligner LiteraldentifierData;
+
+  static const Identifier::Aligner UsingIdentifierData;
+
+  Identifier identifier;
+
+public:
+  DeclNameBase() : DeclNameBase(Identifier()) {}
+
+  DeclNameBase(Identifier identifier) : identifier(identifier) {}
+};
+
 class DeclName : public Dumpable, public Printable {
   friend class NamedDecl;
   friend class SyntaxContext;

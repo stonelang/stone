@@ -196,27 +196,6 @@ public:
   void Deallocate(void *Ptr) const {}
 
 public:
-  // Diagnostics
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLangContext().GetDiagUnit().PrintD(
-        loc, SyntaxDiagnostic(
-                 DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
-  }
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                                   llvm::ArrayRef<diag::Argument> args) {
-    return GetLangContext().GetDiagUnit().PrintD(
-        loc, SyntaxDiagnostic(DiagnosticDetail(diagID, args)));
-  }
-
-  template <typename... ArgTypes>
-  stone::InFlightDiagnostic
-  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
-         typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLangContext().GetDiagUnit().PrintD(
-        loc, SyntaxDiagnostic(DiagnosticDetail(id, std::move(args)...)));
-  }
-
-public:
 };
 } // namespace syn
 } // namespace stone
