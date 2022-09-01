@@ -289,11 +289,11 @@ enum class SyntaxParsingContextKind : UInt8 {
   Expr,
   Type,
 };
-// enum class SyntaxParsingContextStatus : UInt8 {
-//   None = 0,
-//   Parsing,
-//   Error,
-//   Done
+enum class SyntaxParsingContextStatus : UInt8 {
+  None = 0,
+  Parsing,
+  Error,
+  Done
 };
 
 constexpr size_t SyntaxParsingAlignInBits = 3;

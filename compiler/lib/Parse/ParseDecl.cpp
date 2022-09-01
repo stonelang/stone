@@ -74,7 +74,7 @@ SyntaxResult<Decl> Parser::ParseDecl(SyntaxParsingDeclSpecifier &specifier,
 
   SyntaxResult<Decl> result;
 
-  // TODO: Replace with SyntaxParsingScope 
+  // TODO: Replace with SyntaxParsingScope
   SyntaxParsingContext parsingContext(SyntaxParsingContextKind::Decl);
 
   while (result.IsNull() && !IsDone()) {
@@ -203,8 +203,12 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
 
   assert(curTok.Is(tok::kw_fun) &&
          "Attempting to parse a 'fun' decl with incorrect curTok.");
-
   auto funLoc = ConsumeToken(tok::kw_fun);
+
+  // const FunctionSpecifierContext &functionContext =
+  //     specifier.GetFunctionSpecifierContext();
+  // assert(functionContext.HasFunction());
+
   // Parse function name.
   Identifier name = GetIdentifier(curTok.GetText());
   // very simple for now.
@@ -215,7 +219,6 @@ SyntaxResult<Decl> Parser::ParseFunDecl(SyntaxParsingDeclSpecifier &specifier) {
   funDecl->SetFunLoc(funLoc);
 
   // funDecl->SetTemplate...
-
   // QualType *returnType = nullptr;
   // DeclName fullName;
 

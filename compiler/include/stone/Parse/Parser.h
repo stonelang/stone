@@ -168,8 +168,20 @@ public:
   SyntaxResult<Decl> ParseFunDecl(SyntaxParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier,
-                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionSignature(SyntaxParsingDeclSpecifier &specifier, FunDecl& funDecl);
+
+  
+
+  // Identifier functionName,
+  //                                       DeclName &fullName,
+  //                                       ParameterList *&bodyParams,
+  //                                       DefaultArgumentInfo &defaultArgs,
+  //                                       SourceLoc &asyncLoc,
+  //                                       bool &reasync,
+  //                                       SourceLoc &throws,
+  //                                       bool &rethrows,
+  //                                       TypeRepr *&retType);
+
   SyntaxStatus ParseFunctionArguments(SyntaxParsingDeclSpecifier &specifier,
                                       FunDecl &funDecl);
   SyntaxStatus ParseFunctionBody(SyntaxParsingDeclSpecifier &specifier,

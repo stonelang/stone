@@ -23,6 +23,16 @@
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/Using.h"
 
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/Expr.h"
+#include "stone/Syntax/Ownership.h"
+#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxDiagnosticArgument.h"
+#include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/Type.h"
+
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -55,11 +65,20 @@ class ConstructorDecl;
 class MethodDecl;
 class RecordDecl;
 class Expr;
-class MangleCtx;
+class MangleContext;
 class Module;
 class Stmt;
 class Builtin;
 class SyntaxContext;
+class Decl;
+class DeclContext;
+class FunDecl;
+class StructDecl;
+class Stmt;
+class IfStmt;
+class SwitchStmt;
+class Expr;
+class SyntaxFile;
 
 class SyntaxContextStats final : public Stats {
   const SyntaxContext &tc;
@@ -175,6 +194,27 @@ public:
     return static_cast<T *>(Allocate(num * sizeof(T), alignof(T)));
   }
   void Deallocate(void *Ptr) const {}
+
+public:
+  // Diagnostics
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+    return GetLangContext().GetDiagUnit().PrintD(
+        loc, SyntaxDiagnostic(
+                 DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
+  }
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+                                   llvm::ArrayRef<diag::Argument> args) {
+    return GetLangContext().GetDiagUnit().PrintD(
+        loc, SyntaxDiagnostic(DiagnosticDetail(diagID, args)));
+  }
+
+  template <typename... ArgTypes>
+  stone::InFlightDiagnostic
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
+         typename stone::detail::PassArgument<ArgTypes>::type... args) {
+    return GetLangContext().GetDiagUnit().PrintD(
+        loc, SyntaxDiagnostic(DiagnosticDetail(id, std::move(args)...)));
+  }
 
 public:
 };
