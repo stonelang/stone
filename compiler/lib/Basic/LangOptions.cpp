@@ -5,14 +5,15 @@ using namespace stone;
 
 LangOptions::LangOptions() : Target(llvm::sys::getDefaultTargetTriple()) {}
 
-std::pair<bool, bool> LangOptions::SetTarget(llvm::StringRef triple) {
+LangOptions::TargetResult LangOptions::SetTarget(llvm::StringRef triple) {
   return SetTarget(llvm::Triple(triple));
 }
 
 static bool CanSupportOS() { return false; }
 static bool CanSupportArch() { return false; }
-std::pair<bool, bool> LangOptions::SetTarget(llvm::Triple triple) {
+LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
 
+  LangOptions::TargetResult result;
   if (triple.getOS() == llvm::Triple::Darwin &&
       triple.getVendor() == llvm::Triple::Apple) {
     // Rewrite darwinX.Y triples to macosx10.X'.Y ones.
@@ -30,8 +31,6 @@ std::pair<bool, bool> LangOptions::SetTarget(llvm::Triple triple) {
     triple.setOSName(osx.str());
   }
   Target = std::move(triple);
-
-  bool UnsupportedOS = false;
   // Set the "os" platform condition.
   switch (Target.getOS()) {
   case llvm::Triple::Darwin:
@@ -55,11 +54,10 @@ std::pair<bool, bool> LangOptions::SetTarget(llvm::Triple triple) {
     AddPlatformConditionValue(PlatformConditionKind::OS, "OpenBSD");
     break;
   default:
-    UnsupportedOS = true;
+    result.UnsupportedOS = true;
     break;
   }
 
-  bool UnsupportedArch = false;
   // Set the "arch" platform condition.
   switch (Target.getArch()) {
   case llvm::Triple::ArchType::arm:
@@ -93,11 +91,37 @@ std::pair<bool, bool> LangOptions::SetTarget(llvm::Triple triple) {
     AddPlatformConditionValue(PlatformConditionKind::Arch, "wasm32");
     break;
   default:
-    UnsupportedArch = true;
+    result.UnsupportedArch = true;
+  }
+  if (result.IsUnsupported()) {
+    return result;
+  }
+  // Set the "_endian" platform condition.
+  switch (Target.getArch()) {
+  default:
+    llvm_unreachable("undefined architecture endianness");
+  case llvm::Triple::ArchType::arm:
+  case llvm::Triple::ArchType::thumb:
+  case llvm::Triple::ArchType::aarch64:
+  case llvm::Triple::ArchType::aarch64_32:
+  case llvm::Triple::ArchType::ppc64le:
+  case llvm::Triple::ArchType::wasm32:
+  case llvm::Triple::ArchType::x86:
+  case llvm::Triple::ArchType::x86_64:
+    AddPlatformConditionValue(PlatformConditionKind::Endianness, "little");
+    break;
+  case llvm::Triple::ArchType::ppc64:
+  case llvm::Triple::ArchType::systemz:
+    AddPlatformConditionValue(PlatformConditionKind::Endianness, "big");
+    break;
   }
 
-  if (UnsupportedOS || UnsupportedArch)
-    return {UnsupportedOS, UnsupportedArch};
+  // Set the pointer authentication scheme.
+  if (Target.getArchName() == "arm64e") {
+    AddPlatformConditionValue(PlatformConditionKind::PtrAuth, "_arm64e");
+  } else {
+    AddPlatformConditionValue(PlatformConditionKind::PtrAuth, "_none");
+  }
 
-  return std::make_pair<bool, bool>(true, true);
+  return result;
 }

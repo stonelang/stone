@@ -97,13 +97,19 @@ public:
                               llvm::StringRef Value) const;
 
 public:
-  /// Sets the target we are building for and updates platform conditions
-  /// to match.
-  ///
-  /// \returns A pair - the first element is true if the OS was invalid.
-  /// The second element is true if the Arch was invalid.
-  std::pair<bool, bool> SetTarget(llvm::Triple triple);
-  std::pair<bool, bool> SetTarget(llvm::StringRef triple);
+  class TargetResult final {
+    friend LangOptions;
+
+  private:
+    bool UnsupportedOS;
+    bool UnsupportedArch;
+    TargetResult() : UnsupportedOS(false), UnsupportedArch(false) {}
+
+  public:
+    bool IsUnsupported() { return UnsupportedOS || UnsupportedArch; }
+  };
+  TargetResult SetTarget(llvm::Triple triple);
+  TargetResult SetTarget(llvm::StringRef triple);
 };
 
 } // namespace stone
