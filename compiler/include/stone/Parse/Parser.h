@@ -232,13 +232,12 @@ public:
         GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
         prevTokLoc);
   }
-  ParsingPosition GetParsingPosition(SrcLoc loc,
-                                                 SrcLoc previousLoc) {
+  ParsingPosition GetParsingPosition(SrcLoc loc, SrcLoc previousLoc) {
     return ParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
-                                 previousLoc);
+                           previousLoc);
   }
   void RestoreParsingPosition(ParsingPosition parsingPos,
-                                    bool enableDiagnostics = false) {
+                              bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
     Lex(curTok, leadingTrivia, trailingTrivia);
     prevTokLoc = parsingPos.prevLoc;
@@ -253,8 +252,8 @@ public:
 
 public:
   // == Token consumption ==//
-  SrcLoc ConsumeToken(ParsingNotification notification =
-                          ParsingNotification::TokenConsumed);
+  SrcLoc ConsumeToken(
+      ParsingNotification notification = ParsingNotification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
     assert(curTok.Is(kind) && "Consuming wrong curTok type");

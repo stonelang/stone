@@ -12,7 +12,6 @@ set(stone_compile_sources
 	ModuleDependencies.cpp
 	PackageSystem.cpp
 	Serialization.cpp
-	TargetMachine.cpp
 
 	LINK_LIBS
 	StoneGen

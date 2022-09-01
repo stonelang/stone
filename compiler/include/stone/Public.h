@@ -1,5 +1,5 @@
-#ifndef STONE_CONTEXT_H
-#define STONE_CONTEXT_H
+#ifndef STONE_PUBLIC_H
+#define STONE_PUBLIC_H
 
 #include "stone/Basic/Error.h"
 #include "stone/Basic/Result.h"
@@ -10,7 +10,22 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Diag/DiagUnit.h"
 
+
+namespace llvm {
+class Module;
+class TargetOptions;
+class TargetMachine;
+} // namespace llvm
+
 namespace stone {
+class CodeGenOptions;
+class TargetOptions;
+class LangOptions;
+class DiagnosticEngine;
+
+namespace syn {
+class SyntaxContext;
+}
 
 class LangContext final {
   FileMgr fm;
@@ -43,5 +58,10 @@ public:
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
 };
+
+std::unique_ptr<llvm::TargetMachine>
+CreateTargetMachine(DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
+                    const TargetOptions &targetOpts,
+                    const LangOptions &langOpts, syn::SyntaxContext &sc);
 } // namespace stone
 #endif

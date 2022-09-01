@@ -6,7 +6,7 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Compile/TargetOptions.h"
+#include "stone/Basic/TargetOptions.h"
 #include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
 #include "stone/Syntax/SearchPath.h"

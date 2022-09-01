@@ -4,7 +4,7 @@
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Parse/Trivia.h"
 
@@ -195,8 +195,7 @@ public:
   /// \param Parent the parent lexer that scans the whole buffer
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
-  Lexer(Lexer &Parent, LexingState BeginState,
-        LexingState EndState);
+  Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState);
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }

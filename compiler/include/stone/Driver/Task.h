@@ -2,7 +2,7 @@
 #define STONE_BASIC_RUN_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringExtras.h"

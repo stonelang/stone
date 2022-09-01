@@ -1,7 +1,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 using namespace stone;
 

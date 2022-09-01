@@ -1,5 +1,5 @@
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 using namespace stone;
 

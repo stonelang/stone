@@ -1,6 +1,6 @@
 #include "stone/Driver/Phase.h"
 #include "stone/Basic/Color.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 using namespace stone;
 

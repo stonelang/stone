@@ -1,10 +1,8 @@
-#include "stone/Compile/TargetMachine.h"
+#include "stone/Public.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Compile/CompilerOptions.h"
-#include "stone/LangContext.h"
 #include "stone/Syntax/SyntaxContext.h"
-
 #include "llvm/Support/TargetRegistry.h"
+#include "llvm/Target/TargetMachine.h"
 
 using namespace stone;
 
@@ -64,30 +62,30 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
     DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
     const TargetOptions &targetOpts, const LangOptions &langOpts,
-    syn::SyntaxContext &sc, llvm::Module &llvmModule) {
+    syn::SyntaxContext &sc) {
 
   // Create the TargetMachine for generating code.
-  std::string error;
-  std::string triple = llvmModule.getTargetTriple();
-  const llvm::Target *llvmTarget =
-      llvm::TargetRegistry::lookupTarget(triple, error);
+  // std::string error;
+  // std::string triple = llvmModule.getTargetTriple();
+  // const llvm::Target *llvmTarget =
+  //     llvm::TargetRegistry::lookupTarget(triple, error);
 
-  llvm::Optional<llvm::CodeModel::Model> codeModel = GetCodeModel(codeGenOpts);
-  std::string features =
-      llvm::join(targetOpts.features.begin(), targetOpts.features.end(), ",");
+  // llvm::Optional<llvm::CodeModel::Model> codeModel = GetCodeModel(codeGenOpts);
+  // std::string features =
+  //     llvm::join(targetOpts.features.begin(), targetOpts.features.end(), ",");
 
-  llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
-  llvm::CodeGenOpt::Level codeGenOptLevel = GetOptimizationLevel(codeGenOpts);
+  // llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
+  // llvm::CodeGenOpt::Level codeGenOptLevel = GetOptimizationLevel(codeGenOpts);
 
-  llvm::TargetOptions llvmTargetOpts;
-  if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has()) {
-    return nullptr;
-  }
+  // llvm::TargetOptions llvmTargetOpts;
+  // if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has()) {
+  //   return nullptr;
+  // }
 
   std::unique_ptr<llvm::TargetMachine> tm;
-  tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
-                                           llvmTargetOpts, relocationModel,
-                                           codeModel, codeGenOptLevel));
+  // tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
+  //                                          llvmTargetOpts, relocationModel,
+  //                                          codeModel, codeGenOptLevel));
 
   return tm;
 }

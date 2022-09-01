@@ -12,7 +12,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"

@@ -14,7 +14,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"

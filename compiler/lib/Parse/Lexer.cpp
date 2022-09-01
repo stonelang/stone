@@ -220,8 +220,7 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
   initialize(Offset, EndOffset);
 }
 
-Lexer::Lexer(Lexer &Parent, LexingState BeginState,
-             LexingState EndState)
+Lexer::Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState)
     : Lexer(PrincipalCtor(), Parent.BufferID, Parent.sm, Parent.de, Parent.se,
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed

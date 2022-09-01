@@ -20,8 +20,7 @@ using namespace stone::syn;
 
 //=Scope=//
 ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-                                       bool enteredScope,
-                                       bool beforeCompoundStmt)
+                           bool enteredScope, bool beforeCompoundStmt)
     : self(self) {
 
   // if (enteredScope && !beforeCompoundStmt) {

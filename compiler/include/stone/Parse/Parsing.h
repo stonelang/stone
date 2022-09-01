@@ -128,7 +128,7 @@ public:
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass SyntaxScope
   ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-                     bool enteredScope = true, bool beforeCompoundStmt = false);
+               bool enteredScope = true, bool beforeCompoundStmt = false);
 
   ~ParsingScope();
 
@@ -272,7 +272,7 @@ public:
 class ParsingDeclarator final : public Declarator {
 public:
   ParsingDeclarator(const ParsingDeclSpecifier &specifier,
-                          DeclaratorContextKind contextKind)
+                    DeclaratorContextKind contextKind)
       : Declarator(specifier, contextKind) {}
 
 public:
@@ -289,12 +289,7 @@ enum class ParsingContextKind : UInt8 {
   Expr,
   Type,
 };
-enum class ParsingContextStatus : UInt8 {
-  None = 0,
-  Parsing,
-  Error,
-  Done
-};
+enum class ParsingContextStatus : UInt8 { None = 0, Parsing, Error, Done };
 
 constexpr size_t ParsingAlignInBits = 3;
 class alignas(1 << ParsingAlignInBits) ParsingContext final {

@@ -9,7 +9,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Driver/Task.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"

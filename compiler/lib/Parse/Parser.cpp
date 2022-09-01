@@ -2,7 +2,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 

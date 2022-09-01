@@ -117,7 +117,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
     case tok::identifier:
       if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         ParsingDeclarator declarator(specifier,
-                                           DeclaratorContextKind::SyntaxFile);
+                                     DeclaratorContextKind::SyntaxFile);
         result = ParseVarDecl(declarator);
       } else {
         // This is just some random variable with no type -- error message.
@@ -216,8 +216,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
 
   FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
 
-  //TODO: Think about this part 
-  
+  // TODO: Think about this part
+
   funDecl->SetAccessLevel(specifier.GetAccessLevel());
   funDecl->SetFunLoc(funLoc);
 
@@ -239,9 +239,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
   return syn::MakeSyntaxResult<Decl>(funDecl);
 }
 
-SyntaxStatus
-Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,
-                               FunDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,
+                                            FunDecl &funDecl) {
 
   // ParsingScope syntaxScope(SyntaxKind::FunctionSignature);
 
@@ -282,9 +281,8 @@ Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,
   // ConsumeToken();
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus
-Parser::ParseFunctionArguments(ParsingDeclSpecifier &specifier,
-                               FunDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclSpecifier &specifier,
+                                            FunDecl &funDecl) {
 
   assert(curTok.Is(tok::l_paren) && "Require '(' brace.");
   auto lParenLoc = ConsumeToken(tok::l_paren);
@@ -314,8 +312,7 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
   return nullptr;
 }
 
-SyntaxResult<Decl>
-Parser::ParseStructDecl(ParsingDeclSpecifier &specifier) {
+SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclSpecifier &specifier) {
 
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }
