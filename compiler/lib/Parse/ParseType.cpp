@@ -121,7 +121,7 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
 }
 
 llvm::Optional<bool>
-Parser::ParsTypeQualifiers(TypeQualifierContext &qualifier) {
+Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
   SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
   case tok::kw_const:

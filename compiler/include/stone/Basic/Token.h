@@ -166,12 +166,13 @@ public:
   bool IsArrow() { return kind == tok::arrow; }
   bool IsBackTick() { return kind == tok::backtick; }
   bool IsExcliam() { return kind == tok::exclaim; }
-  bool IsDoubleColon() { return kind == tok::doublecolon; }
+  bool IsDoubleColon() const { return kind == tok::doublecolon; }
   bool IsTilde() { return kind == tok::tilde; }
   bool IsFun() { return kind == tok::kw_fun; }
   bool IsStruct() { return kind == tok::kw_struct; }
   bool IsInterface() { return kind == tok::kw_interface; }
   bool IsPure() { return kind == tok::kw_pure; }
+  bool IsInline() { return kind == tok::kw_pure; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

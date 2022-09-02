@@ -310,6 +310,35 @@ public:
   // void SetDone() { status = ParsingContextStatus::Done; }
 };
 
+class ParsingToken final {
+  Token &token;
+
+public:
+  ParsingToken(Token &token) : token(token) {}
+
+public:
+  bool IsPeriod() const { return token.GetKind() == tok::period; }
+  bool IsDoublePipe() const { return token.GetKind() == tok::doublepipe; }
+  bool IsPipe() const { return token.GetKind() == tok::pipe; }
+  bool IsPipeEqual() const { return token.GetKind() == tok::pipeequal; }
+  bool IsEllipsis() const { return token.GetKind() == tok::ellipsis; }
+  bool IsSemi() const { return token.GetKind() == tok::semi; }
+  bool IsEquality() const { return token.GetKind() == tok::equal; }
+  bool IsDoubleEquality() const{ return token.GetKind() == tok::doubleequal; }
+  bool IsPound() { return token.GetKind() == tok::pound; }
+  bool IsAmp() { return token.GetKind() == tok::amp; }
+  bool IsArrow() { return token.GetKind() == tok::arrow; }
+  bool IsBackTick() { return token.GetKind() == tok::backtick; }
+  bool IsExcliam() { return token.GetKind() == tok::exclaim; }
+  bool IsDoubleColon() const { return token.GetKind() == tok::doublecolon; }
+  bool IsTilde() { return token.GetKind() == tok::tilde; }
+  bool IsFun() { return token.GetKind() == tok::kw_fun; }
+  bool IsStruct() { return token.GetKind() == tok::kw_struct; }
+  bool IsInterface() { return token.GetKind() == tok::kw_interface; }
+  bool IsPure() { return token.GetKind() == tok::kw_pure; }
+  bool IsInline() { return token.GetKind() == tok::kw_pure; }
+};
+
 } // namespace syn
 } // namespace stone
 #endif

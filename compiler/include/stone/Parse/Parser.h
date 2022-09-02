@@ -157,7 +157,7 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
-  llvm::Optional<bool> ParsTypeQualifiers(TypeQualifierContext &qualifier);
+  llvm::Optional<bool> ParseTypeQualifiers(TypeQualifierContext &qualifier);
   llvm::Optional<bool> ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:
@@ -362,7 +362,8 @@ public:
 
 private:
   // Helpers
-  const Token &Peek() const { return lexer->Peek(); }
+  const Token &PeekNextToken() const { return lexer->Peek(); }
+  SrcLoc GetLoc() { return curTok.GetLoc(); }
 
 private:
   //===--------------------------------------------------------------------===//

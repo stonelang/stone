@@ -73,28 +73,26 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
                                      llvm::function_ref<void(Decl *)> handler) {
 
   SyntaxResult<Decl> result;
-
   // TODO: Replace with ParsingScope
   ParsingContext parsingContext(ParsingContextKind::Decl);
 
+  // The ordering does not matter becuase the compiler will eventuall
+  // order things in a nice way -- type is just the build up of the decl
+
   while (result.IsNull() && !IsDone()) {
-
-    // The ordering does not matter becuase the compiler will eventuall
-    // order things in a nice way -- type is just the build up of the decl
-
     /// Look for any access specifier: public, internal, or private. Default to
     /// private.
     if (ParseAccessLevel(specifier)) {
       ConsumeToken();
       continue;
     } else {
-      specifier.AddPrivateAccessLevel();
+      specifier.AddPrivateAccessLevel(GetLoc());
       ConsumeToken();
       continue;
     }
 
     /// Look for any type qualifiers: const, volatile, restrict, etc.
-    if (ParseTypeQualifires(specifier.GetTypeQualifireContext())) {
+    if (ParseTypeQualifiers(specifier.GetTypeQualifireContext())) {
       ConsumeToken();
       continue;
     }
@@ -119,26 +117,26 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
     }
     /// Check for function specifiers
     if (curTok.IsInline()) {
-      specifier.GetFunctionSpecifierContext().AddInline(curTok.loc);
+      specifier.GetFunctionSpecifierContext().AddInline(GetLoc());
       ConsumeToken();
       continue;
     }
     if (curTok.IsFun()) {
-      specifier.GetFunctionSpecifierContext().AddFunctionDef(curTok.loc);
-      if (Peek().IsDoubleColon()) {
+      specifier.GetFunctionSpecifierContext().AddFunctionDef(GetLoc());
+      if (PeekNextToken().IsDoubleColon()) {
         // specifier.GetFunctionSpecifierContext().SetIsMember();
       }
       result = ParseFunDecl(specifier);
       break;
     }
     if (curTok.IsStruct()) {
-      specifier.GetTypeSpecifierContext().AddStruct(curTok.loc);
+      specifier.GetTypeSpecifierContext().AddStruct(GetLoc());
       result = ParseStructDecl(specifier);
       ConsumeToken();
       break;
     }
     if (curTok.IsInterface()) {
-      specifier.GetTypeSpecifierContext().AddInterface(loc);
+      specifier.GetTypeSpecifierContext().AddInterface(GetLoc());
       // result = ParseInterfaceDecl(specifier);
       ConsumeToken();
       break;
