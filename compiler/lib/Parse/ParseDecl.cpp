@@ -7,11 +7,11 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsTopLevelDecl(const Token &curTok) {
+bool Parser::IsStartOfDecl(const Token &curTok) {
   switch (curTok.GetKind()) {
   case tok::kw_interface:
   case tok::kw_fun:
-  case tok::kw_any:
+  case tok::kw_inline:
   case tok::kw_struct:
   case tok::kw_space:
   case tok::kw_const:
@@ -52,7 +52,7 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsTopLevelDecl(curTok) && "Invalid top-declaration");
+  assert(IsStartOfDecl(curTok) && "Invalid start of or top level declaration");
 
   return ParseDecl(ParsingDeclFlags::AllowTopLevel,
                    [&](Decl *d) { /* Do nothing for now*/ });
@@ -79,60 +79,71 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
 
   while (result.IsNull() && !IsDone()) {
 
+    // The ordering does not matter becuase the compiler will eventuall
+    // order things in a nice way -- type is just the build up of the decl
+
+    /// Look for any access specifier: public, internal, or private. Default to
+    /// private.
     if (ParseAccessLevel(specifier)) {
       ConsumeToken();
       continue;
     } else {
-      // specifier.GetAccessLevelContext().AddPrivate();
+      specifier.AddPrivateAccessLevel();
+      ConsumeToken();
+      continue;
     }
 
-    // SrcLoc loc = curTok.GetLoc();
-    // switch (curTok.GetKind()) {
-    // case tok::kw_public:
-    //   specifier.AddPublicAccessLevel(loc);
-    //   ConsumeToken();
-    //   continue;
-    // case tok::kw_internal:
-    //   specifier.AddInternalAccessLevel(loc);
-    //   ConsumeToken();
-    //   continue;
-    // case tok::kw_private:
-    //   specifier.AddPrivateAccessLevel(loc);
-    //   ConsumeToken();
-    //   continue;
-    // case tok::kw_fun:
-    //   specifier.GetFunctionSpecifierContext().AddFunctionDef(loc);
-    //   result = ParseFunDecl(specifier);
-    //   break;
-    // case tok::kw_struct:
-    //   specifier.GetTypeSpecifierContext().AddStruct(loc);
-    //   result = ParseStructDecl(specifier);
-    //   break;
-    // case tok::kw_inline:
-    //   specifier.GetFunctionSpecifierContext().AddInline(loc);
-    //   break;
-    // case tok::identifier:
-    //   if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-    //     ParsingDeclarator declarator(specifier,
-    //                                  DeclaratorContextKind::SyntaxFile);
-    //     result = ParseVarDecl(declarator);
-    //   } else {
-    //     // This is just some random variable with no type -- error message.
-    //   }
-    //   break;
-    // default:
-    //   if (ParseTypeQualifires(specifier.GetTypeQualifireContext())) {
-    //     break;
-    //   }
-    //   if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
-    //     break;
-    //   }
-    //   if(ParseAccessLevel(specifier)){
-    //     break;
-    //   }
-    // } // End of switch
+    /// Look for any type qualifiers: const, volatile, restrict, etc.
+    if (ParseTypeQualifires(specifier.GetTypeQualifireContext())) {
+      ConsumeToken();
+      continue;
+    }
 
-    // ConsumeToken();
+    /// Look for any basic type specifiers : int, float, ..., etc.
+    if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
+      ConsumeToken();
+      continue;
+    }
+
+    /// Look for identifiers. If we find one, there must be a corresponding
+    /// type.
+    if (curTok.IsIdentifierOrUnderscore()) {
+      if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        ParsingDeclarator declarator(specifier,
+                                     DeclaratorContextKind::SyntaxFile);
+        result = ParseVarDecl(declarator);
+      } else {
+        // This is just some random variable with no type -- error message.
+      }
+      break;
+    }
+    /// Check for function specifiers
+    if (curTok.IsInline()) {
+      specifier.GetFunctionSpecifierContext().AddInline(curTok.loc);
+      ConsumeToken();
+      continue;
+    }
+    if (curTok.IsFun()) {
+      specifier.GetFunctionSpecifierContext().AddFunctionDef(curTok.loc);
+      if (Peek().IsDoubleColon()) {
+        // specifier.GetFunctionSpecifierContext().SetIsMember();
+      }
+      result = ParseFunDecl(specifier);
+      break;
+    }
+    if (curTok.IsStruct()) {
+      specifier.GetTypeSpecifierContext().AddStruct(curTok.loc);
+      result = ParseStructDecl(specifier);
+      ConsumeToken();
+      break;
+    }
+    if (curTok.IsInterface()) {
+      specifier.GetTypeSpecifierContext().AddInterface(loc);
+      // result = ParseInterfaceDecl(specifier);
+      ConsumeToken();
+      break;
+    }
+    ConsumeToken();
   } // End of while
   return result;
 }

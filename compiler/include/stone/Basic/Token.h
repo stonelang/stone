@@ -168,6 +168,10 @@ public:
   bool IsExcliam() { return kind == tok::exclaim; }
   bool IsDoubleColon() { return kind == tok::doublecolon; }
   bool IsTilde() { return kind == tok::tilde; }
+  bool IsFun() { return kind == tok::kw_fun; }
+  bool IsStruct() { return kind == tok::kw_struct; }
+  bool IsInterface() { return kind == tok::kw_interface; }
+  bool IsPure() { return kind == tok::kw_pure; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

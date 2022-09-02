@@ -135,6 +135,9 @@ Parser::ParsTypeQualifiers(TypeQualifierContext &qualifier) {
   case tok::kw_restrict:
     qualifier.AddRestrict(loc);
     break;
+  case tok::kw_pure:
+    qualifier.AddPure(loc);
+    break;
   default:
     return llvm::None;
   }

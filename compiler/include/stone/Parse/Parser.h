@@ -126,7 +126,7 @@ public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
 
-  bool IsTopLevelDecl(const Token &tok);
+  bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,

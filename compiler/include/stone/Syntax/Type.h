@@ -61,6 +61,7 @@ struct TypeQualifierFlags {
     Restrict = 0x2,
     Volatile = 0x4,
     Unaligned = 0x8,
+    Pure = 0x18,
     CVRMask = Const | Volatile | Restrict,
     CVRUMask = Const | Volatile | Restrict | Unaligned
   };
@@ -84,6 +85,7 @@ class TypeQualifierContext final {
   SrcLoc constLoc;
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;
+  SrcLoc pureLoc;
 
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
@@ -111,6 +113,15 @@ public:
     volatileLoc = loc;
     mask |= TypeQualifierFlags::Volatile;
   }
+
+  bool HasPure() const { return mask & TypeQualifierFlags::Pure; }
+  bool HasPureOnly() const { return mask == TypeQualifierFlags::Pure; }
+  void RemovePure() { mask &= ~TypeQualifierFlags::Pure; }
+  void AddPure(SrcLoc loc = SrcLoc()) {
+    pureLoc = loc;
+    mask |= TypeQualifierFlags::Pure;
+  }
+
   SrcLoc GetVolatileLoc() { return volatileLoc; }
 
   // bool HasCVR() const { return getCVRQualifiers(); }
