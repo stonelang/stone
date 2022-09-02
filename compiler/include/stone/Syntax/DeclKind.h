@@ -11,6 +11,7 @@ enum class DeclKind : uint8_t {
 #define DECL_RANGE(Id, FirstId, LastId)                                        \
   First##Id##Decl = FirstId, Last##Id##Decl = LastId,
 #include "stone/Syntax/DeclKind.def"
+  Max
 };
 
 // llvm::StringRef GetDeclKindName(DeclKind kind);

@@ -10,6 +10,7 @@
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
+#include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/SyntaxType.h"
@@ -68,6 +69,10 @@ public:
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
 
+enum : unsigned {
+  NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Max))
+};
+
 class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   friend DeclStats;
 
@@ -79,6 +84,11 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   // TODO: UB
   // void *operator new(std::size_t size, const SyntaxContext &ctx,
   //                    DeclContext *parent, std::size_t extra = 0);
+
+protected:
+  union {
+    uint64_t OpaqueBits;
+  } Bits;
 
 public:
   Decl() = delete;
