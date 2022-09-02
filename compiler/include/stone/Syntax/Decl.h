@@ -88,6 +88,33 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
 protected:
   union {
     uint64_t OpaqueBits;
+
+    STONE_INLINE_BITFIELD_BASE(Decl, BitMax(NumDeclKindBits,8)+1+1+1+1+1,
+    Kind : BitMax(NumDeclKindBits,8),
+
+    /// Whether this declaration is invalid.
+    Invalid : 1,
+
+    /// Whether this declaration was implicitly created, e.g.,
+    /// an implicit constructor in a struct.
+    Implicit : 1,
+
+    /// Whether this declaration was mapped directly from a Clang AST.
+    ///
+    /// Use getClangNode() to retrieve the corresponding Clang AST.
+    FromClang : 1,
+
+    /// Whether this declaration was added to the surrounding
+    /// DeclContext of an active #if config clause.
+    EscapedFromIfConfig : 1,
+
+    /// Whether this declaration is syntactically scoped inside of
+    /// a local context, but should behave like a top-level
+    /// declaration for name lookup purposes. This is used by
+    /// lldb.
+    Hoisted : 1
+  );
+    
   } Bits;
 
 public:
