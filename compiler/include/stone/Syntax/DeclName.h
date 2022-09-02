@@ -197,6 +197,8 @@ private:
   DeclNameLoc specialNameLoc;
 
 public:
+  DeclNameInfo() : name(nullptr), nameLoc(SrcLoc()), specialNameLoc(nullptr) {}
+
   DeclNameInfo(DeclName name, SrcLoc nameLoc)
       : name(name), nameLoc(nameLoc), specialNameLoc(name) {}
 

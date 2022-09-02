@@ -174,34 +174,41 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
   //     specifier.GetFunctionSpecifierContext();
   // assert(functionContext.HasFunction());
 
+  // Build the DeclName
+  DeclNameInfo nameInfo;
+
   // Parse function name.
-  Identifier name = GetIdentifier(curTok.GetText());
+  auto name = GetIdentifier(curTok.GetText());
+  DeclName fullName(&name);
+  nameInfo.SetName(fullName);
+
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
+  nameInfo.SetNameLoc(nameLoc);
 
-  FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
+  // FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
 
-  // TODO: Think about this part
+  // // TODO: Think about this part
 
-  funDecl->SetAccessLevel(specifier.GetAccessLevel());
-  funDecl->SetFunLoc(funLoc);
+  // funDecl->SetAccessLevel(specifier.GetAccessLevel());
+  // funDecl->SetFunLoc(funLoc);
 
-  // funDecl->SetTemplate...
-  // QualType *returnType = nullptr;
-  // DeclName fullName;
+  // // funDecl->SetTemplate...
+  // // QualType *returnType = nullptr;
+  // // DeclName fullName;
 
-  // Scope is functin signaure
-  if (ParseFunctionSignature(specifier, *funDecl).IsError()) {
-    return syn::MakeSyntaxError();
-  }
+  // // Scope is functin signaure
+  // if (ParseFunctionSignature(specifier, *funDecl).IsError()) {
+  //   return syn::MakeSyntaxError();
+  // }
 
-  // Scope is now function body
-  if (ParseFunctionBody(specifier, *funDecl).IsError()) {
-    return syn::MakeSyntaxError();
-  }
-  // syntax.VerifyDecl(funDecl);
+  // // Scope is now function body
+  // if (ParseFunctionBody(specifier, *funDecl).IsError()) {
+  //   return syn::MakeSyntaxError();
+  // }
+  // // syntax.VerifyDecl(funDecl);
 
-  return syn::MakeSyntaxResult<Decl>(funDecl);
+  return syn::MakeSyntaxResult<Decl>(nullptr);
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,

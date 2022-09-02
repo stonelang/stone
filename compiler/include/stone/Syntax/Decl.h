@@ -221,8 +221,15 @@ public:
       : NamedDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetQualType(QualType qt) { this->qualType = qt; }
+  void SetQualType(QualType inputQualType) { qualType = inputQualType; }
   QualType GetQualType() { return qualType; }
+};
+
+class DeclaratorDecl : public ValueDecl {
+public:
+  DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+                 UnifiedContext context)
+      : ValueDecl(kind, name, nameLoc, context) {}
 };
 
 // class LabelDecl : public NamedDecl {
@@ -303,11 +310,15 @@ class FunctionDecl
 
   StorageSpecifierKind storageSpecifierKind;
 
+  /// Info - Further source/type location info for special kinds of names.
+  DeclNameLoc specialNameLoc;
+
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-               DeclContext *parent)
+               DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent) {}
+        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
+  }
 
 public:
   BraceStmt *GetBody(bool canSynthesize = true) const;
@@ -321,6 +332,7 @@ public:
     return storageSpecifierKind;
   }
 
+  DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
   // void SetReturnType(TypeDecl* tyDecl);
 
 public:
@@ -333,8 +345,9 @@ class FunDecl : public FunctionDecl {
   bool hasLBrace;
 
 public:
-  FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
-      : FunctionDecl(DeclKind::Fun, name, nameLoc, parent) {}
+  FunDecl(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc,
+          DeclContext *parent)
+      : FunctionDecl(DeclKind::Fun, name, nameLoc, specialNameLoc, parent) {}
 
 public:
   bool IsMain() const;
