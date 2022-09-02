@@ -24,10 +24,6 @@ class UseDecl;
 template <typename> class CanQual;
 using CanQualType = CanQual<syn::Type>;
 
-class DeclNameLoc {
-public:
-};
-
 enum class DeclNameKind : uint8_t {
   Basic = 0,
   Constructor,
@@ -120,7 +116,7 @@ class DeclName {
       DestructorName = 2,
       ConversionFunctionName = 3,
       OperatorName = 4,
-      DeclarationNameExtra = 5, // TODO: Think about
+      DeclNameExtra = 5, // TODO: Think about
       PtrMask = 6,
       UncommonNameKindOffset = 7,
     };
@@ -179,6 +175,128 @@ public:
 
 public:
   static int Compare(DeclName LHS, DeclName RHS);
+};
+
+class DeclNameLoc {
+  DeclName name;
+
+public:
+public:
+  DeclNameLoc(DeclName name) : name(name) {}
+};
+
+struct DeclNameInfo final {
+private:
+  /// Name - The declaration name, also encoding name kind.
+  DeclName name;
+
+  /// Loc - The main source location for the declaration name.
+  SrcLoc nameLoc;
+
+  /// Info - Further source/type location info for special kinds of names.
+  DeclNameLoc specialNameLoc;
+
+public:
+  DeclNameInfo(DeclName name, SrcLoc nameLoc)
+      : name(name), nameLoc(nameLoc), specialNameLoc(name) {}
+
+  DeclNameInfo(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc)
+      : name(name), nameLoc(nameLoc), specialNameLoc(specialNameLoc) {}
+
+  /// getName - Returns the embedded declaration name.
+  DeclName GetName() const { return name; }
+
+  /// setName - Sets the embedded declaration name.
+  void SetName(DeclName n) { name = n; }
+
+  /// getLoc - Returns the main location of the declaration name.
+  SrcLoc GetNameLoc() const { return nameLoc; }
+
+  /// setLoc - Sets the main location of the declaration name.
+  void SetNameLoc(SrcLoc loc) { nameLoc = loc; }
+
+  const DeclNameLoc &GetSpecialNameLoc() const { return specialNameLoc; }
+  void SetSpecialNameLoc(const DeclNameLoc &info) { specialNameLoc = info; }
+
+  // /// getNamedTypeInfo - Returns the source type info associated to
+  // /// the name. Assumes it is a constructor, destructor or conversion.
+  // TypeSourceInfo *getNamedTypeInfo() const {
+  //   if (Name.getNameKind() != DeclName::CXXConstructorName &&
+  //       Name.getNameKind() != DeclName::CXXDestructorName &&
+  //       Name.getNameKind() != DeclName::CXXConversionFunctionName)
+  //     return nullptr;
+  //   return LocInfo.getNamedTypeInfo();
+  // }
+
+  // /// setNamedTypeInfo - Sets the source type info associated to
+  // /// the name. Assumes it is a constructor, destructor or conversion.
+  // void setNamedTypeInfo(TypeSourceInfo *TInfo) {
+  //   assert(Name.getNameKind() == DeclName::CXXConstructorName ||
+  //          Name.getNameKind() == DeclName::CXXDestructorName ||
+  //          Name.getNameKind() == DeclName::CXXConversionFunctionName);
+  //   LocInfo = DeclNameLoc::makeNamedTypeLoc(TInfo);
+  // }
+
+  // /// getCXXOperatorNameRange - Gets the range of the operator name
+  // /// (without the operator keyword). Assumes it is a (non-literal) operator.
+  // SourceRange getCXXOperatorNameRange() const {
+  //   if (Name.getNameKind() != DeclName::CXXOperatorName)
+  //     return SourceRange();
+  //   return LocInfo.getCXXOperatorNameRange();
+  // }
+
+  // /// setCXXOperatorNameRange - Sets the range of the operator name
+  // /// (without the operator keyword). Assumes it is a C++ operator.
+  // void setCXXOperatorNameRange(SourceRange R) {
+  //   assert(Name.getNameKind() == DeclName::CXXOperatorName);
+  //   LocInfo = DeclNameLoc::makeCXXOperatorNameLoc(R);
+  // }
+
+  // /// getCXXLiteralOperatorNameLoc - Returns the location of the literal
+  // /// operator name (not the operator keyword).
+  // /// Assumes it is a literal operator.
+  // SrcLoc GetLiteralOperatorNameLoc() const {
+  //   if (Name.getNameKind() != DeclName::CXXLiteralOperatorName)
+  //     return SrcLoc();
+  //   return LocInfo.getCXXLiteralOperatorNameLoc();
+  // }
+
+  // /// setCXXLiteralOperatorNameLoc - Sets the location of the literal
+  // /// operator name (not the operator keyword).
+  // /// Assumes it is a literal operator.
+  // void setCXXLiteralOperatorNameLoc(SrcLoc Loc) {
+  //   assert(Name.getNameKind() == DeclName::CXXLiteralOperatorName);
+  //   LocInfo = DeclNameLoc::makeCXXLiteralOperatorNameLoc(Loc);
+  // }
+
+  // /// Determine whether this name involves a template parameter.
+  // bool isInstantiationDependent() const;
+
+  // /// Determine whether this name contains an unexpanded
+  // /// parameter pack.
+  // bool containsUnexpandedParameterPack() const;
+
+  // /// getAsString - Retrieve the human-readable string for this name.
+  // std::string getAsString() const;
+
+  // /// printName - Print the human-readable name to a stream.
+  // void printName(raw_ostream &OS, PrintingPolicy Policy) const;
+
+  // /// getBeginLoc - Retrieve the location of the first token.
+  // SrcLoc getBeginLoc() const { return NameLoc; }
+
+  // /// getSourceRange - The range of the declaration name.
+  // SourceRange getSourceRange() const LLVM_READONLY {
+  //   return SourceRange(getBeginLoc(), getEndLoc());
+  // }
+
+  // SrcLoc getEndLoc() const LLVM_READONLY {
+  //   SrcLoc EndLoc = getEndLocPrivate();
+  //   return EndLoc.isValid() ? EndLoc : getBeginLoc();
+  // }
+
+private:
+  // SrcLoc getEndLocPrivate() const;
 };
 
 /// DeclNameTable is used to store and retrieve DeclName

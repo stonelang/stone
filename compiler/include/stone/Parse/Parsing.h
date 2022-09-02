@@ -324,7 +324,7 @@ public:
   bool IsEllipsis() const { return token.GetKind() == tok::ellipsis; }
   bool IsSemi() const { return token.GetKind() == tok::semi; }
   bool IsEquality() const { return token.GetKind() == tok::equal; }
-  bool IsDoubleEquality() const{ return token.GetKind() == tok::doubleequal; }
+  bool IsDoubleEquality() const { return token.GetKind() == tok::doubleequal; }
   bool IsPound() { return token.GetKind() == tok::pound; }
   bool IsAmp() { return token.GetKind() == tok::amp; }
   bool IsArrow() { return token.GetKind() == tok::arrow; }

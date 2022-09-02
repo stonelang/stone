@@ -34,6 +34,7 @@ void Parser::ParseTopLevelDecls(
     ConsumeToken();
   }
   while (!IsDone()) {
+    // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
     if (listener) {
       if (HasError()) {
@@ -75,34 +76,33 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
   SyntaxResult<Decl> result;
   // TODO: Replace with ParsingScope
   ParsingContext parsingContext(ParsingContextKind::Decl);
-
   // The ordering does not matter becuase the compiler will eventuall
   // order things in a nice way -- type is just the build up of the decl
+  while (true) {
+  BeginParse:
 
-  while (result.IsNull() && !IsDone()) {
+    if (IsDone()) {
+      goto EndParse;
+    }
     /// Look for any access specifier: public, internal, or private. Default to
     /// private.
     if (ParseAccessLevel(specifier)) {
       ConsumeToken();
-      continue;
+      goto BeginParse;
     } else {
       specifier.AddPrivateAccessLevel(GetLoc());
-      ConsumeToken();
-      continue;
+      goto BeginParse;
     }
-
     /// Look for any type qualifiers: const, volatile, restrict, etc.
     if (ParseTypeQualifiers(specifier.GetTypeQualifireContext())) {
       ConsumeToken();
-      continue;
+      goto BeginParse;
     }
-
     /// Look for any basic type specifiers : int, float, ..., etc.
     if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
       ConsumeToken();
-      continue;
+      goto BeginParse;
     }
-
     /// Look for identifiers. If we find one, there must be a corresponding
     /// type.
     if (curTok.IsIdentifierOrUnderscore()) {
@@ -113,13 +113,13 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
       } else {
         // This is just some random variable with no type -- error message.
       }
-      break;
+      goto EndParse;
     }
     /// Check for function specifiers
     if (curTok.IsInline()) {
       specifier.GetFunctionSpecifierContext().AddInline(GetLoc());
       ConsumeToken();
-      continue;
+      goto BeginParse;
     }
     if (curTok.IsFun()) {
       specifier.GetFunctionSpecifierContext().AddFunctionDef(GetLoc());
@@ -127,30 +127,31 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
         // specifier.GetFunctionSpecifierContext().SetIsMember();
       }
       result = ParseFunDecl(specifier);
-      break;
+      goto EndParse;
     }
     if (curTok.IsStruct()) {
       specifier.GetTypeSpecifierContext().AddStruct(GetLoc());
       result = ParseStructDecl(specifier);
-      ConsumeToken();
-      break;
+      goto EndParse;
     }
     if (curTok.IsInterface()) {
       specifier.GetTypeSpecifierContext().AddInterface(GetLoc());
       // result = ParseInterfaceDecl(specifier);
-      ConsumeToken();
-      break;
+      goto EndParse;
     }
     ConsumeToken();
   } // End of while
+
+EndParse:
   return result;
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
+  // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
   // const ParsingDeclSpecifier &specifier =
   //     declarator.GetParsingDeclSpecifier();
-  // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
+
   SyntaxResult<Decl> result;
 
   if (!curTok.IsPointerOperator()) {
@@ -165,7 +166,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
 
-  assert(curTok.Is(tok::kw_fun) &&
+  assert(curTok.IsFun() &&
          "Attempting to parse a 'fun' decl with incorrect curTok.");
   auto funLoc = ConsumeToken(tok::kw_fun);
 

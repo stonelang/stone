@@ -101,6 +101,7 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
     break;
   case tok::kw_float:
     specifier.AddFloat(loc);
+    break;
   case tok::kw_float32:
     specifier.AddFloat32(loc);
     break;
@@ -115,7 +116,6 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
     break;
   default:
     return llvm::None;
-    break;
   }
   return true;
 }
