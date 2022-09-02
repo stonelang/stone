@@ -15,6 +15,9 @@ public:
 
 class SearchPath final {
 public:
+  SearchPathOptions SearchPathOpts;
+
+public:
   SearchPath();
   ~SearchPath();
 };

@@ -136,7 +136,6 @@ public:
                                llvm::function_ref<void(Decl *)> handler);
 
   void ParseForwardDecl();
-
   void ParseInheritance();
 
 private:
@@ -158,8 +157,8 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
-  llvm::Optional<bool>
-  ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext);
+  llvm::Optional<bool> ParsTypeQualifiers(TypeQualifierContext &qualifier);
+  llvm::Optional<bool> ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:
   //==Begin Function==//
@@ -189,6 +188,10 @@ private:
                                    FunctionDecl &funDecl);
 
   //==End Function==//
+
+public:
+  llvm::Optional<bool> ParseAccessLevel(ParsingDeclSpecifier &specifier);
+
 public:
   //=struct=//
   SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);

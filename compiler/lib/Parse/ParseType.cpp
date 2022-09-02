@@ -63,6 +63,12 @@ llvm::Optional<bool>
 Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
   SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
+  case tok::kw_auto:
+    specifier.AddAuto(loc);
+    break;
+  case tok::kw_int:
+    specifier.AddInt(loc);
+    break;
   case tok::kw_int8:
     specifier.AddInt8(loc);
     break;
@@ -74,9 +80,6 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
     break;
   case tok::kw_int64:
     specifier.AddInt64(loc);
-    break;
-  case tok::kw_int:
-    specifier.AddInt(loc);
     break;
   case tok::kw_uint:
     specifier.AddUInt(loc);
@@ -110,11 +113,30 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
   case tok::kw_complex64:
     specifier.AddComplex64(loc);
     break;
-    break;
   default:
     return llvm::None;
     break;
   }
-Found:
+  return true;
+}
+
+llvm::Optional<bool>
+Parser::ParsTypeQualifiers(TypeQualifierContext &qualifier) {
+  SrcLoc loc = curTok.GetLoc();
+  switch (curTok.GetKind()) {
+  case tok::kw_const:
+    qualifier.AddConst(loc);
+    // We do not consume the token because the QualType that we create
+    // will be of the following const int i = ....
+    break;
+  case tok::kw_volatile:
+    qualifier.AddVolatile(loc);
+    break;
+  case tok::kw_restrict:
+    qualifier.AddRestrict(loc);
+    break;
+  default:
+    return llvm::None;
+  }
   return true;
 }

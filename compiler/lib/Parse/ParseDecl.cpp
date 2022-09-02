@@ -78,104 +78,59 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
   ParsingContext parsingContext(ParsingContextKind::Decl);
 
   while (result.IsNull() && !IsDone()) {
-    SrcLoc loc = curTok.GetLoc();
-    switch (curTok.GetKind()) {
-    case tok::kw_public:
-      specifier.AddPublicAccessLevel(loc);
+
+    if (ParseAccessLevel(specifier)) {
       ConsumeToken();
       continue;
-    case tok::kw_internal:
-      specifier.AddInternalAccessLevel(loc);
-      ConsumeToken();
-      continue;
-    case tok::kw_private:
-      specifier.AddPrivateAccessLevel(loc);
-      ConsumeToken();
-      continue;
-    case tok::kw_fun:
-      specifier.GetFunctionSpecifierContext().AddFunctionDef(loc);
-      result = ParseFunDecl(specifier);
-      break;
-    case tok::kw_struct:
-      specifier.GetTypeSpecifierContext().AddStruct(loc);
-      result = ParseStructDecl(specifier);
-      break;
-    case tok::kw_inline:
-      specifier.GetFunctionSpecifierContext().AddInline(loc);
-      break;
-    case tok::kw_const:
-      specifier.GetTypeQualifireContext().AddConst(loc);
-      // We do not consume the token because the QualType that we create
-      // will be of the following const int i = ....
-      break;
-    case tok::kw_volatile:
-      specifier.GetTypeQualifireContext().AddVolatile(loc);
-      break;
-    case tok::kw_restrict:
-      specifier.GetTypeQualifireContext().AddRestrict(loc);
-      break;
-    case tok::identifier:
-      if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        ParsingDeclarator declarator(specifier,
-                                     DeclaratorContextKind::SyntaxFile);
-        result = ParseVarDecl(declarator);
-      } else {
-        // This is just some random variable with no type -- error message.
-      }
-      break;
-    case tok::kw_auto:
-      specifier.GetTypeSpecifierContext().AddAuto(loc);
-      break;
-    case tok::kw_int8:
-      specifier.GetTypeSpecifierContext().AddInt8(loc);
-      break;
-    case tok::kw_int16:
-      specifier.GetTypeSpecifierContext().AddInt16(loc);
-      break;
-    case tok::kw_int32:
-      specifier.GetTypeSpecifierContext().AddInt32(loc);
-      break;
-    case tok::kw_int64:
-      specifier.GetTypeSpecifierContext().AddInt64(loc);
-      break;
-    case tok::kw_int:
-      specifier.GetTypeSpecifierContext().AddInt(loc);
-      break;
-    case tok::kw_uint:
-      specifier.GetTypeSpecifierContext().AddUInt(loc);
-      break;
-    case tok::kw_uint8:
-      specifier.GetTypeSpecifierContext().AddUInt8(loc);
-      break;
-    case tok::kw_byte:
-      specifier.GetTypeSpecifierContext().AddByte(loc);
-      break;
-    case tok::kw_uint16:
-      specifier.GetTypeSpecifierContext().AddUInt16(loc);
-      break;
-    case tok::kw_uint32:
-      specifier.GetTypeSpecifierContext().AddUInt32(loc);
-      break;
-    case tok::kw_uint64:
-      specifier.GetTypeSpecifierContext().AddUInt64(loc);
-      break;
-    case tok::kw_float:
-      specifier.GetTypeSpecifierContext().AddFloat(loc);
-    case tok::kw_float32:
-      specifier.GetTypeSpecifierContext().AddFloat32(loc);
-      break;
-    case tok::kw_float64:
-      specifier.GetTypeSpecifierContext().AddFloat64(loc);
-      break;
-    case tok::kw_complex32:
-      specifier.GetTypeSpecifierContext().AddComplex32(loc);
-      break;
-    case tok::kw_complex64:
-      specifier.GetTypeSpecifierContext().AddComplex64(loc);
-      break;
-    default:
-      break;
-    } // End of switch
+    } else {
+      // specifier.GetAccessLevelContext().AddPrivate();
+    }
+
+    // SrcLoc loc = curTok.GetLoc();
+    // switch (curTok.GetKind()) {
+    // case tok::kw_public:
+    //   specifier.AddPublicAccessLevel(loc);
+    //   ConsumeToken();
+    //   continue;
+    // case tok::kw_internal:
+    //   specifier.AddInternalAccessLevel(loc);
+    //   ConsumeToken();
+    //   continue;
+    // case tok::kw_private:
+    //   specifier.AddPrivateAccessLevel(loc);
+    //   ConsumeToken();
+    //   continue;
+    // case tok::kw_fun:
+    //   specifier.GetFunctionSpecifierContext().AddFunctionDef(loc);
+    //   result = ParseFunDecl(specifier);
+    //   break;
+    // case tok::kw_struct:
+    //   specifier.GetTypeSpecifierContext().AddStruct(loc);
+    //   result = ParseStructDecl(specifier);
+    //   break;
+    // case tok::kw_inline:
+    //   specifier.GetFunctionSpecifierContext().AddInline(loc);
+    //   break;
+    // case tok::identifier:
+    //   if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+    //     ParsingDeclarator declarator(specifier,
+    //                                  DeclaratorContextKind::SyntaxFile);
+    //     result = ParseVarDecl(declarator);
+    //   } else {
+    //     // This is just some random variable with no type -- error message.
+    //   }
+    //   break;
+    // default:
+    //   if (ParseTypeQualifires(specifier.GetTypeQualifireContext())) {
+    //     break;
+    //   }
+    //   if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
+    //     break;
+    //   }
+    //   if(ParseAccessLevel(specifier)){
+    //     break;
+    //   }
+    // } // End of switch
 
     // ConsumeToken();
   } // End of while
