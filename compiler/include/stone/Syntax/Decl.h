@@ -88,34 +88,144 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
 protected:
   union {
     uint64_t OpaqueBits;
+    STONE_INLINE_BITFIELD_BASE(
+        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1, Kind
+        : BitMax(NumDeclKindBits, 8),
 
-    STONE_INLINE_BITFIELD_BASE(Decl, BitMax(NumDeclKindBits,8)+1+1+1+1+1,
-    Kind : BitMax(NumDeclKindBits,8),
+          /// Whether this declaration is invalid.
+          Invalid : 1,
 
-    /// Whether this declaration is invalid.
-    Invalid : 1,
+          /// Whether this declaration was implicitly created, e.g.,
+          /// an implicit constructor in a struct.
+          Implicit : 1,
 
-    /// Whether this declaration was implicitly created, e.g.,
-    /// an implicit constructor in a struct.
-    Implicit : 1,
+          /// Whether this declaration was mapped directly from a Clang AST.
+          ///
+          /// Use getClangNode() to retrieve the corresponding Clang AST.
+          FromClang : 1,
 
-    /// Whether this declaration was mapped directly from a Clang AST.
-    ///
-    /// Use getClangNode() to retrieve the corresponding Clang AST.
-    FromClang : 1,
+          /// Whether this declaration was added to the surrounding
+          /// DeclContext of an active #if config clause.
+          EscapedFromIfConfig : 1,
 
-    /// Whether this declaration was added to the surrounding
-    /// DeclContext of an active #if config clause.
-    EscapedFromIfConfig : 1,
+          /// Whether this declaration is syntactically scoped inside of
+          /// a local context, but should behave like a top-level
+          /// declaration for name lookup purposes. This is used by
+          /// lldb.
+          Hoisted : 1
 
-    /// Whether this declaration is syntactically scoped inside of
-    /// a local context, but should behave like a top-level
-    /// declaration for name lookup purposes. This is used by
-    /// lldb.
-    Hoisted : 1
-  );
-    
+      );
+
+    // STONE_INLINE_BITFIELD(
+    //     FunctionDecl, ValueDecl, 3 + 1,
+    //     /// \see AbstractFunctionDecl::BodyKind
+    //     BodyKind : 3,
+
+    //     /// \see AbstractFunctionDecl::SILSynthesizeKind
+    //     // SILSynthesizeKind : 2,
+
+    //     /// Import as member status.
+    //     // IAMStatus : 8,
+
+    //     /// Whether the function has an implicit 'self' parameter.
+    //     // HasImplicitSelfDecl : 1,
+
+    //     /// Whether we are overridden later.
+    //     // Overridden : 1,
+
+    //     IsMember : 1,
+
+    //     /// Whether this member's body consists of a single expression.
+    //     // HasSingleExpressionBody : 1,
+
+    //     /// Whether peeking into this function detected nested type
+    //     /// declarations. This is set when skipping over the decl at parsing.
+    //     // HasNestedTypeDeclarations : 1
+    // );
+
+    // STONE_INLINE_BITFIELD(
+    //     FunDecl, FunctionDecl, 1,
+    //     /// Whether we've computed the 'static' flag yet.
+    //     // IsStaticComputed : 1,
+
+    //     /// Whether this function is a 'static' method.
+    //     IsStatic : 1,
+
+    //     /// Whether 'static' or 'class' was used.
+    //     // StaticSpelling : 2,
+
+    //     /// Whether we are statically dispatched even if overridable
+    //     // ForcedStaticDispatch : 1,
+
+    //     /// Whether we've computed the 'self' access kind yet.
+    //     // SelfAccessComputed : 1,
+
+    //     /// Backing bits for 'self' access kind.
+    //     // SelfAccess : 2,
+
+    //     /// Whether this is a top-level function which should be treated
+    //     /// as if it were in local context for the purposes of capture
+    //     /// analysis.
+    //     // HasTopLevelLocalContextCaptures : 1
+    // );
+
+    // STONE_INLINE_BITFIELD(
+    //     Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+    //     /// If the module is compiled as static library.
+    //     StaticLibrary : 1,
+
+    //     /// If the module was or is being compiled with `-enable-testing`.
+    //     TestingEnabled : 1,
+
+    //     /// If the module failed to load
+    //     FailedToLoad : 1,
+
+    //     /// Whether the module is resilient.
+    //     ///
+    //     /// \sa ResilienceStrategy
+    //     RawResilienceStrategy : 1,
+
+    //     /// Whether all imports have been resolved. Used to detect circular
+    //     /// imports.
+    //     HasResolvedImports : 1,
+
+    //     /// If the module was or is being compiled with
+    //     /// `-enable-private-imports`.
+    //     PrivateImportsEnabled : 1,
+
+    //     /// If the module is compiled with `-enable-implicit-dynamic`.
+    //     ImplicitDynamicEnabled : 1,
+
+    //     /// Whether the module is a system module.
+    //     IsSystemModule : 1,
+
+    //     /// Whether the module was imported from Clang (or, someday, maybe
+    //     /// another language).
+    //     IsNonStoneModule : 1,
+
+    //     /// Whether this module is the main module.
+    //     IsMainModule : 1,
+
+    //     /// Whether this module has incremental dependency information
+    //     /// available.
+    //     HasIncrementalInfo : 1,
+
+    //     /// Whether this module was built with
+    //     /// -experimental-hermetic-seal-at-link.
+    //     HasHermeticSealAtLink : 1,
+
+    //     /// Whether this module has been compiled with comprehensive checking
+    //     /// for concurrency, e.g., Sendable checking.
+    //     IsConcurrencyChecked : 1,
+
+    // );
+    // SWIFT_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
+
   } Bits;
+
+  /// The next declaration in the list of declarations within this
+  /// member context.
+  Decl *nextDecl = nullptr;
 
 public:
   Decl() = delete;
