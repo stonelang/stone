@@ -253,7 +253,6 @@ public:
 
 public:
   friend class DeclContext;
-
   UnifiedContext context;
 
   /// DeclKind - This indicates which class this is.
