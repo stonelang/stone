@@ -186,57 +186,57 @@ protected:
         // HasTopLevelLocalContextCaptures : 1
     );
 
-    // STONE_INLINE_BITFIELD(
-    //     Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
-    //     /// If the module is compiled as static library.
-    //     StaticLibrary : 1,
+    STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
 
-    //     /// If the module was or is being compiled with `-enable-testing`.
-    //     TestingEnabled : 1,
+    STONE_INLINE_BITFIELD(
+        Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+        /// If the module is compiled as static library.
+        IsStaticLibrary : 1,
 
-    //     /// If the module failed to load
-    //     FailedToLoad : 1,
+        /// If the module was or is being compiled with `-enable-testing`.
+        IsTestingEnabled : 1,
 
-    //     /// Whether the module is resilient.
-    //     ///
-    //     /// \sa ResilienceStrategy
-    //     RawResilienceStrategy : 1,
+        /// If the module failed to load
+        FailedToLoad : 1,
 
-    //     /// Whether all imports have been resolved. Used to detect circular
-    //     /// imports.
-    //     HasResolvedImports : 1,
+        /// Whether the module is resilient.
+        ///
+        /// \sa ResilienceStrategy
+        RawResilienceStrategy : 1,
 
-    //     /// If the module was or is being compiled with
-    //     /// `-enable-private-imports`.
-    //     PrivateImportsEnabled : 1,
+        /// Whether all imports have been resolved. Used to detect circular
+        /// imports.
+        HasResolvedImports : 1,
 
-    //     /// If the module is compiled with `-enable-implicit-dynamic`.
-    //     ImplicitDynamicEnabled : 1,
+        /// If the module was or is being compiled with
+        /// `-enable-private-imports`.
+        PrivateImportsEnabled : 1,
 
-    //     /// Whether the module is a system module.
-    //     IsSystemModule : 1,
+        /// If the module is compiled with `-enable-implicit-dynamic`.
+        ImplicitDynamicEnabled : 1,
 
-    //     /// Whether the module was imported from Clang (or, someday, maybe
-    //     /// another language).
-    //     IsNonStoneModule : 1,
+        /// Whether the module is a system module.
+        IsSystemModule : 1,
 
-    //     /// Whether this module is the main module.
-    //     IsMainModule : 1,
+        /// Whether the module was imported from Clang (or, someday, maybe
+        /// another language).
+        IsNonStoneModule : 1,
 
-    //     /// Whether this module has incremental dependency information
-    //     /// available.
-    //     HasIncrementalInfo : 1,
+        /// Whether this module is the main module.
+        IsMainModule : 1,
 
-    //     /// Whether this module was built with
-    //     /// -experimental-hermetic-seal-at-link.
-    //     HasHermeticSealAtLink : 1,
+        /// Whether this module has incremental dependency information
+        /// available.
+        HasIncrementalInfo : 1,
 
-    //     /// Whether this module has been compiled with comprehensive checking
-    //     /// for concurrency, e.g., Sendable checking.
-    //     IsConcurrencyChecked : 1,
+        /// Whether this module was built with
+        /// -experimental-hermetic-seal-at-link.
+        HasHermeticSealAtLink : 1,
 
-    // );
-    // SWIFT_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
+        /// Whether this module has been compiled with comprehensive checking
+        /// for concurrency, e.g., Sendable checking.
+        IsConcurrencyChecked : 1);
+    // STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
 
   } Bits;
 
