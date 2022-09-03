@@ -70,7 +70,7 @@ public:
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
 
 enum : unsigned {
-  NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Max))
+  NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
 };
 
 class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
@@ -93,81 +93,98 @@ protected:
         : BitMax(NumDeclKindBits, 8),
 
           /// Whether this declaration is invalid.
-          Invalid : 1,
+          IsValid : 1,
 
           /// Whether this declaration was implicitly created, e.g.,
           /// an implicit constructor in a struct.
-          Implicit : 1,
+          IsImplicit : 1,
 
           /// Whether this declaration was mapped directly from a Clang AST.
           ///
           /// Use getClangNode() to retrieve the corresponding Clang AST.
-          FromClang : 1,
+          IsFromClang : 1,
 
           /// Whether this declaration was added to the surrounding
           /// DeclContext of an active #if config clause.
-          EscapedFromIfConfig : 1,
+          IsEscapedFromIfConfig : 1,
 
           /// Whether this declaration is syntactically scoped inside of
           /// a local context, but should behave like a top-level
           /// declaration for name lookup purposes. This is used by
           /// lldb.
-          Hoisted : 1
+          IsHoisted : 1
 
-      );
+    );
 
-    // STONE_INLINE_BITFIELD(
-    //     FunctionDecl, ValueDecl, 3 + 1,
-    //     /// \see AbstractFunctionDecl::BodyKind
-    //     BodyKind : 3,
+    STONE_INLINE_BITFIELD(
+        ValueDecl, Decl, 1 + 1 + 1 + 1,
 
-    //     /// \see AbstractFunctionDecl::SILSynthesizeKind
-    //     // SILSynthesizeKind : 2,
+        IsInLookupTable : 1,
 
-    //     /// Import as member status.
-    //     // IAMStatus : 8,
+        /// Whether we have already checked whether this declaration is a
+        /// redeclaration.
+        CheckedRedeclaration : 1,
 
-    //     /// Whether the function has an implicit 'self' parameter.
-    //     // HasImplicitSelfDecl : 1,
+        /// Whether the decl can be accessed by swift users; for instance,
+        /// a.storage for lazy var a is a decl that cannot be accessed.
+        IsUserAccessible : 1,
 
-    //     /// Whether we are overridden later.
-    //     // Overridden : 1,
+        /// Whether this member was synthesized as part of a derived
+        /// protocol conformance.
+        IsSynthesized : 1);
 
-    //     IsMember : 1,
+    STONE_INLINE_BITFIELD(
+        FunctionDecl, ValueDecl, 1,
+        /// \see AbstractFunctionDecl::BodyKind
+        // BodyKind : 3,
 
-    //     /// Whether this member's body consists of a single expression.
-    //     // HasSingleExpressionBody : 1,
+        /// \see AbstractFunctionDecl::SILSynthesizeKind
+        // SILSynthesizeKind : 2,
 
-    //     /// Whether peeking into this function detected nested type
-    //     /// declarations. This is set when skipping over the decl at parsing.
-    //     // HasNestedTypeDeclarations : 1
-    // );
+        /// Import as member status.
+        // IAMStatus : 8,
 
-    // STONE_INLINE_BITFIELD(
-    //     FunDecl, FunctionDecl, 1,
-    //     /// Whether we've computed the 'static' flag yet.
-    //     // IsStaticComputed : 1,
+        /// Whether the function has an implicit 'self' parameter.
+        // HasImplicitSelfDecl : 1,
 
-    //     /// Whether this function is a 'static' method.
-    //     IsStatic : 1,
+        /// Whether we are overridden later.
+        // Overridden : 1,
 
-    //     /// Whether 'static' or 'class' was used.
-    //     // StaticSpelling : 2,
+        IsMember : 1
 
-    //     /// Whether we are statically dispatched even if overridable
-    //     // ForcedStaticDispatch : 1,
+        /// Whether this member's body consists of a single expression.
+        // HasSingleExpressionBody : 1,
 
-    //     /// Whether we've computed the 'self' access kind yet.
-    //     // SelfAccessComputed : 1,
+        /// Whether peeking into this function detected nested type
+        /// declarations. This is set when skipping over the decl at parsing.
+        // HasNestedTypeDeclarations : 1
+    );
 
-    //     /// Backing bits for 'self' access kind.
-    //     // SelfAccess : 2,
+    STONE_INLINE_BITFIELD(
+        FunDecl, FunctionDecl, 1,
+        /// Whether we've computed the 'static' flag yet.
+        // IsStaticComputed : 1,
 
-    //     /// Whether this is a top-level function which should be treated
-    //     /// as if it were in local context for the purposes of capture
-    //     /// analysis.
-    //     // HasTopLevelLocalContextCaptures : 1
-    // );
+        /// Whether this function is a 'static' method.
+        IsStatic : 1
+
+        /// Whether 'static' or 'class' was used.
+        // StaticSpelling : 2,
+
+        /// Whether we are statically dispatched even if overridable
+        // ForcedStaticDispatch : 1,
+
+        /// Whether we've computed the 'self' access kind yet.
+        // SelfAccessComputed : 1,
+
+        /// Backing bits for 'self' access kind.
+        // SelfAccess : 2,
+
+        /// Whether this is a top-level function which should be treated
+        /// as if it were in local context for the purposes of capture
+        /// analysis.
+        // HasTopLevelLocalContextCaptures : 1
+    );
 
     // STONE_INLINE_BITFIELD(
     //     Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,

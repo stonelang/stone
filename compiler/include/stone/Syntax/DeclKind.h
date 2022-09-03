@@ -7,11 +7,10 @@ namespace syn {
 enum class DeclKind : uint8_t {
   None,
 #define DECL(Id, Parent) Id,
-#define LAST_DECL(Id) LastDecl = Id,
+#define LAST_DECL(Id) Count = Id,
 #define DECL_RANGE(Id, FirstId, LastId)                                        \
   First##Id##Decl = FirstId, Last##Id##Decl = LastId,
 #include "stone/Syntax/DeclKind.def"
-  Max
 };
 
 // llvm::StringRef GetDeclKindName(DeclKind kind);
