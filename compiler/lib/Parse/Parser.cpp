@@ -3,29 +3,25 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxScope.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
-    : Parser(sf, syntax,
-             std::unique_ptr<Lexer>(new Lexer(
-                 sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
-                 &syntax.GetSyntaxContext()
-                      .GetLangContext()
-                      .GetDiagUnit()
-                      .GetDiagEngine(),
-                 &syntax.GetSyntaxContext().GetLangContext().GetStatEngine())),
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
+    : Parser(sf, sc,
+             std::unique_ptr<Lexer>(
+                 new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
+                           &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
+                           &sc.GetLangContext().GetStatEngine())),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
-    : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
-      listener(listener) {
+    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
+      stats(new ParserStats(*this)) {
 
-  stats.reset(new ParserStats(*this));
   GetLangContext().GetStatEngine().Register(stats.get());
 }
 
@@ -79,7 +75,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
 Identifier &Parser::GetIdentifier(llvm::StringRef text) {
-  return syntax.MakeIdentifier(text);
+  return sc.GetIdentifier(text);
 }
 
 SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {

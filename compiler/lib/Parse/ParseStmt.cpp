@@ -1,5 +1,5 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxResult.h"
 
 using namespace stone::syn;

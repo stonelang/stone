@@ -3,14 +3,14 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void syn::Parse(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener) {
+void syn::Parse(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener) {
 
-  Parser parser(sf, syntax, listener);
+  Parser parser(sf, sc, listener);
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 

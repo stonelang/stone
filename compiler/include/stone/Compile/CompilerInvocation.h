@@ -16,7 +16,6 @@
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"

@@ -1,4 +1,5 @@
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/SyntaxFactory.h"
 
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/SyntaxContext.h"
@@ -53,6 +54,12 @@ SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
                                        SyntaxContext &sc, unsigned srcID,
                                        bool isPrimary) {
+  return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
+}
+
+syn::SyntaxFile *syn::MakeSyntaxFile(SyntaxFileKind kind, unsigned srcID,
+                                     syn::Module &owner, SyntaxContext &sc,
+                                     bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 

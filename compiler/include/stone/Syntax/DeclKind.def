@@ -163,8 +163,7 @@ BASE_DECL(Named, Decl)
 		DECL_RANGE(Template, FunctionTemplate, BuiltinTemplate)
 
 DECL(IfConfig, Decl)
-DECL(Block, Decl)
-LAST_DECL(Block)
+LAST_DECL(IfConfig)
 
 #undef NAMED_DECL
 #undef NOMINAL_TYPE_DECL

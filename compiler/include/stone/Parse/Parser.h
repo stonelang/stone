@@ -14,7 +14,6 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/SyntaxOptions.h"
@@ -51,7 +50,7 @@ class Parser final {
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  Syntax &syntax;
+  SyntaxContext &sc;
   SyntaxFile &sf;
   DeclContext *curDC;
 
@@ -89,11 +88,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
+  Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
+  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener = nullptr);
 
   ~Parser();
 
@@ -101,15 +100,13 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetCurTok() const { return curTok; }
-  SyntaxContext &GetSyntaxContext() { return syntax.GetSyntaxContext(); }
+  SyntaxContext &GetSyntaxContext() { return sc; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
   AttributeFactory &GetAttributeFactory() { return attributeFactory; }
-  LangContext &GetLangContext() {
-    return syntax.GetSyntaxContext().GetLangContext();
-  }
+  LangContext &GetLangContext() { return sc.GetLangContext(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.

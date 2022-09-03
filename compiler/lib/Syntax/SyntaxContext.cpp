@@ -1,15 +1,15 @@
 #include "stone/Syntax/SyntaxContext.h"
-
-#include <algorithm>
-#include <memory>
-
 #include "stone/Diag/DiagnosticEngine.h"
+
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Compiler.h"
+
+#include <algorithm>
+#include <memory>
 
 using namespace stone;
 using namespace stone::syn;
@@ -43,11 +43,12 @@ SyntaxContext::Extension::Extension() : identifiers(allocator) {}
 
 SyntaxContext::Extension::~Extension() {}
 
-SyntaxContext::SyntaxContext(stone::LangContext &ctx,
+SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
-    : ctx(ctx), searchPathOpts(spOpts), identifiers(ctx.GetLangOptions()) {
-  stats = std::make_unique<SyntaxContextStats>(*this);
-  ctx.GetStatEngine().Register(stats.get());
+    : lc(lc), searchPathOpts(spOpts), identifiers(lc.GetLangOptions()),
+      stats(new SyntaxContextStats(*this)) {
+
+  lc.GetStatEngine().Register(stats.get());
 
   builtin.Init(*this);
 }

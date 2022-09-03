@@ -17,6 +17,7 @@
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
+#include "stone/Syntax/SyntaxFactory.h"
 
 #include "llvm/IR/Module.h"
 
@@ -173,7 +174,7 @@ static void CompileWithGenNative(CompilerInstance &compiler,
       compiler.GetInvocation().GetCodeGenOptions(),
       compiler.GetInvocation().GetTargetOptions(),
       compiler.GetInvocation().GetLangContext().GetLangOptions(),
-      compiler.GetSyntax().GetSyntaxContext());
+      compiler.GetSyntaxContext());
 
   cgc.TakeTargetMachine(std::move(targetMachine));
 
@@ -197,8 +198,8 @@ static void CompileWithGenNative(CompilerInstance &compiler,
     }
   };
   ComputeNativeModeKind(compiler);
-  auto err = stone::GenNative(cgc, compiler.GetSyntax().GetSyntaxContext(),
-                              result, nullptr);
+  auto err =
+      stone::GenNative(cgc, compiler.GetSyntaxContext(), result, nullptr);
 }
 
 static void CompileWithCodeGen(CompilerInstance &compiler) {
@@ -277,11 +278,11 @@ void CompilerInstance::CompileWithSyntaxAnalysis(
     SyntaxAnalysisCallback client) {
 
   for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
-    auto syntaxFile = SyntaxFile::Make(
-        SyntaxFileKind::Library, *GetModuleSystem().GetMainModule(),
-        GetSyntax().GetSyntaxContext(), sourceBufferID);
+    auto syntaxFile = syn::MakeSyntaxFile(
+        SyntaxFileKind::Library, sourceBufferID,
+        *GetModuleSystem().GetMainModule(), GetSyntaxContext());
 
-    syn::Parse(*syntaxFile, GetSyntax(), invocation.GetListener());
+    syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
     assert(syntaxFile);
     client(*syntaxFile);
   }

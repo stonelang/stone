@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -36,7 +37,7 @@ public:
 class CompilerInstance final {
 
   CompilerInvocation &invocation;
-  std::unique_ptr<syn::Syntax> syntax;
+  std::unique_ptr<syn::SyntaxContext> sc;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<PackageSystem> pkgSystem;
   std::unique_ptr<CompilerInstanceStats> stats;
@@ -61,7 +62,7 @@ public:
   void Finish();
 
 public:
-  syn::Syntax &GetSyntax() { return *syntax.get(); }
+  syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
   PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
   CompilerInvocation &GetInvocation() { return invocation; }

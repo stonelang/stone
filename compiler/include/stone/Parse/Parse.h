@@ -7,10 +7,10 @@ namespace stone {
 class SyntaxListener;
 
 namespace syn {
-class Syntax;
 class SyntaxFile;
+class SyntaxContext;
 
-void Parse(SyntaxFile &sf, Syntax &syntax, SyntaxListener *sp = nullptr);
+void Parse(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *sp = nullptr);
 
 } // namespace syn
 } // namespace stone

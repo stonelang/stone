@@ -1,6 +1,6 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/CodeCompletionListener.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;

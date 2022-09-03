@@ -3,7 +3,7 @@
 
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 namespace stone {
 class PackageOptions {
