@@ -79,17 +79,17 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
   ParseDeclSpecifier(spec);
 
-  if (spec.GetFunctionSpecifierContext().HasFunctionDef()) {
+  if (spec.GetFunctionSpecifierContext().HasFunctionDefinition()) {
     return (result = ParseFunDecl(spec));
   }
 
   switch (spec.GetTypeSpecifierContext().GetTypeSpecifierKind()) {
   case TypeSpecifierKind::Enum:
-    return result;
+    return (result = ParseEnumDecl(spec));
   case TypeSpecifierKind::Struct:
-    return result;
+    return (result = ParseStructDecl(spec));
   case TypeSpecifierKind::Interface:
-    return result;
+    return (result = ParseInterfaceDecl(spec));
   default:
     break;
   }
@@ -113,124 +113,122 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
 void Parser::ParseDeclSpecifier(ParsingDeclSpecifier &spec) {
 
-  //   // The ordering does not matter becuase the compiler will eventuall
-  //   // order things in a nice way -- type is just the build up of the decl
-  //   while (true) {
+  // The ordering does not matter becuase the compiler will eventually
+  // order things in a nice way -- we are building up the DecInfo
+  while (true) {
 
-  //     if (IsDone()) {
-  //       goto EndParse;
-  //     }
+    if (IsDone()) {
+      break;
+    }
 
-  //     SrcLoc loc = curTok.GetLoc();
-  //     switch (curTok.GetKind()) {
+    SrcLoc loc = curTok.GetLoc();
+    switch (curTok.GetKind()) {
 
-  //     // Access levels
-  //     case tok::kw_public:
-  //       spec.AddPublicAccessLevel(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_internal:
-  //       spec.AddInternalAccessLevel(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_private:
-  //       spec.AddInternalAccessLevel(loc);
-  //       goto ConsumeTok;
+    // Access levels
+    case tok::kw_public:
+      spec.AddPublicAccessLevel(loc);
+      goto ConsumeTok;
+    case tok::kw_internal:
+      spec.AddInternalAccessLevel(loc);
+      goto ConsumeTok;
+    case tok::kw_private:
+      spec.AddInternalAccessLevel(loc);
+      goto ConsumeTok;
 
-  //       /// CRV
-  //     case tok::kw_const:
-  //       spec.GetTypeQualifireContext().AddConst(loc);
-  //       // We do not consume the token because the QualType that we create
-  //       // will be of the following const int i = ....
-  //       goto ConsumeTok;
-  //     case tok::kw_restrict:
-  //       spec.GetTypeQualifireContext().AddRestrict(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_volatile:
-  //       spec.GetTypeQualifireContext().AddVolatile(loc);
-  //       goto ConsumeTok;
+      /// CRV
+    case tok::kw_const:
+      spec.GetTypeQualifireContext().AddConst(loc);
+      // We do not consume the token because the QualType that we create
+      // will be of the following const int i = ....
+      goto ConsumeTok;
+    case tok::kw_restrict:
+      spec.GetTypeQualifireContext().AddRestrict(loc);
+      goto ConsumeTok;
+    case tok::kw_volatile:
+      spec.GetTypeQualifireContext().AddVolatile(loc);
+      goto ConsumeTok;
 
-  //     // Functions
-  //     case tok::kw_inline:
-  //       spec.GetFunctionSpecifierContext().AddInline(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_fun:
-  //       spec.GetFunctionSpecifierContext().AddFunctionDef(loc);
-  //       goto ConsumeTok;
+    // Functions
+    case tok::kw_inline:
+      spec.GetFunctionSpecifierContext().AddInline(loc);
+      goto ConsumeTok;
+    case tok::kw_fun:
+      spec.GetFunctionSpecifierContext().AddFunctionDefinition(loc);
+      goto ConsumeTok;
 
-  //       // Nominals
-  //     case tok::kw_struct:
-  //       spec.GetTypeSpecifierContext().AddStruct(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_enum:
-  //       spec.GetTypeSpecifierContext().AddEnum(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_interface:
-  //       spec.GetTypeSpecifierContext().AddInterface(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_auto:
-  //       spec.GetTypeSpecifierContext().AddAuto(loc);
-  //       goto ConsumeTok;
+      // Nominals
+    case tok::kw_struct:
+      spec.GetTypeSpecifierContext().AddStruct(loc);
+      goto ConsumeTok;
+    case tok::kw_enum:
+      spec.GetTypeSpecifierContext().AddEnum(loc);
+      goto ConsumeTok;
+    case tok::kw_interface:
+      spec.GetTypeSpecifierContext().AddInterface(loc);
+      goto ConsumeTok;
+    case tok::kw_auto:
+      spec.GetTypeSpecifierContext().AddAuto(loc);
+      goto ConsumeTok;
 
-  //       // Basic types
-  //     case tok::kw_int:
-  //       spec.GetTypeSpecifierContext().AddInt(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_int8:
-  //       spec.GetTypeSpecifierContext().AddInt8(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_int16:
-  //       spec.GetTypeSpecifierContext().AddInt16(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_int32:
-  //       spec.GetTypeSpecifierContext().AddInt32(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_int64:
-  //       spec.GetTypeSpecifierContext().AddInt64(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_uint:
-  //       spec.GetTypeSpecifierContext().AddUInt(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_uint8:
-  //       spec.GetTypeSpecifierContext().AddUInt8(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_byte:
-  //       spec.GetTypeSpecifierContext().AddByte(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_uint16:
-  //       spec.GetTypeSpecifierContext().AddUInt16(loc);
-  //       break;
-  //     case tok::kw_uint32:
-  //       spec.GetTypeSpecifierContext().AddUInt32(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_uint64:
-  //       spec.GetTypeSpecifierContext().AddUInt64(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_float:
-  //       spec.GetTypeSpecifierContext().AddFloat(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_float32:
-  //       spec.GetTypeSpecifierContext().AddFloat32(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_float64:
-  //       spec.GetTypeSpecifierContext().AddFloat64(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_complex32:
-  //       spec.GetTypeSpecifierContext().AddComplex32(loc);
-  //       goto ConsumeTok;
-  //     case tok::kw_complex64:
-  //       spec.GetTypeSpecifierContext().AddComplex64(loc);
-  //       goto ConsumeTok;
+      // Basic types
+    case tok::kw_int:
+      spec.GetTypeSpecifierContext().AddInt(loc);
+      goto ConsumeTok;
+    case tok::kw_int8:
+      spec.GetTypeSpecifierContext().AddInt8(loc);
+      goto ConsumeTok;
+    case tok::kw_int16:
+      spec.GetTypeSpecifierContext().AddInt16(loc);
+      goto ConsumeTok;
+    case tok::kw_int32:
+      spec.GetTypeSpecifierContext().AddInt32(loc);
+      goto ConsumeTok;
+    case tok::kw_int64:
+      spec.GetTypeSpecifierContext().AddInt64(loc);
+      goto ConsumeTok;
+    case tok::kw_uint:
+      spec.GetTypeSpecifierContext().AddUInt(loc);
+      goto ConsumeTok;
+    case tok::kw_uint8:
+      spec.GetTypeSpecifierContext().AddUInt8(loc);
+      goto ConsumeTok;
+    case tok::kw_byte:
+      spec.GetTypeSpecifierContext().AddByte(loc);
+      goto ConsumeTok;
+    case tok::kw_uint16:
+      spec.GetTypeSpecifierContext().AddUInt16(loc);
+      break;
+    case tok::kw_uint32:
+      spec.GetTypeSpecifierContext().AddUInt32(loc);
+      goto ConsumeTok;
+    case tok::kw_uint64:
+      spec.GetTypeSpecifierContext().AddUInt64(loc);
+      goto ConsumeTok;
+    case tok::kw_float:
+      spec.GetTypeSpecifierContext().AddFloat(loc);
+      goto ConsumeTok;
+    case tok::kw_float32:
+      spec.GetTypeSpecifierContext().AddFloat32(loc);
+      goto ConsumeTok;
+    case tok::kw_float64:
+      spec.GetTypeSpecifierContext().AddFloat64(loc);
+      goto ConsumeTok;
+    case tok::kw_complex32:
+      spec.GetTypeSpecifierContext().AddComplex32(loc);
+      goto ConsumeTok;
+    case tok::kw_complex64:
+      spec.GetTypeSpecifierContext().AddComplex64(loc);
+      goto ConsumeTok;
 
-  //     // Identifier marks the end
-  //     case tok::identifier:
-  //       goto EndParse;
-  //     default:
-  //       break;
-  //     }
-  //   ConsumeTok:
-  //     ConsumeToken();
-
-  //   } // End of while
-  // EndParse:
+    // Identifier marks the end
+    case tok::identifier:
+      // goto EndParse;
+    default:
+      break;
+    }
+  ConsumeTok:
+    ConsumeToken();
+  }
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
@@ -378,6 +376,14 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclSpecifier &spec,
 }
 
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclSpecifier &spec) {
+
+  return syn::MakeSyntaxResult<Decl>(nullptr);
+}
+
+SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclSpecifier &specifier) {
+  return syn::MakeSyntaxResult<Decl>(nullptr);
+}
+SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclSpecifier &specifier) {
 
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }

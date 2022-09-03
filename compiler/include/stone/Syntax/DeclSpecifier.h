@@ -95,13 +95,13 @@ private:
   unsigned flags;
 
 public:
-  void AddFunctionDef(SrcLoc loc) { flags |= FunctionDef; }
+  void AddFunctionDefinition(SrcLoc loc) { flags |= FunctionDef; }
   void AddInline(SrcLoc loc) { flags |= Inline; }
   void AddForcedInline(SrcLoc loc) { flags |= ForcedInline; }
   void AddVirtual(SrcLoc loc) { flags |= Virtual; }
   void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
 
-  bool HasFunctionDef() {
+  bool HasFunctionDefinition() {
     return flags && FunctionSpecifierContext::FunctionDef;
   }
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }

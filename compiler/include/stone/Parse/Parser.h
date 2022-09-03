@@ -199,6 +199,9 @@ public:
   SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
   void ParseStructForwardDecl();
 
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclSpecifier &specifier);
+
 private:
   void Lex(Token &result) { lexer->Lex(result); }
   void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
