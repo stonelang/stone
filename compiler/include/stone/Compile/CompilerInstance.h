@@ -38,8 +38,7 @@ class CompilerInstance final {
 
   CompilerInvocation &invocation;
   std::unique_ptr<syn::SyntaxContext> sc;
-  std::unique_ptr<ModuleSystem> moduleSystem;
-  std::unique_ptr<PackageSystem> pkgSystem;
+  std::unique_ptr<ModuleSystem> ms;
   std::unique_ptr<CompilerInstanceStats> stats;
 
   // /// Contains buffer IDs for input source code files.
@@ -63,8 +62,7 @@ public:
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
-  ModuleSystem &GetModuleSystem() { return *moduleSystem.get(); }
-  PackageSystem &GetPackageSystem() { return *pkgSystem.get(); }
+  ModuleSystem &GetModuleSystem() { return *ms.get(); }
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {

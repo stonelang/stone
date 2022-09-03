@@ -10,7 +10,6 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/PackageSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Session/Mode.h"

@@ -10,7 +10,6 @@ set(stone_compile_sources
 	CompilerOutputsConverter.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
-	PackageSystem.cpp
 	Serialization.cpp
 
 	LINK_LIBS
