@@ -116,117 +116,116 @@ void Parser::ParseDeclSpecifier(ParsingDeclSpecifier &spec) {
   // The ordering does not matter becuase the compiler will eventually
   // order things in a nice way -- we are building up the DecInfo
   while (true) {
+  ParseSpec:
 
-    if (IsDone()) {
-      break;
+    if (IsDone() || curTok.IsIdentifierOrUnderscore()) {
+      return;
     }
-
     SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
 
     // Access levels
     case tok::kw_public:
       spec.AddPublicAccessLevel(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_internal:
       spec.AddInternalAccessLevel(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_private:
       spec.AddInternalAccessLevel(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
 
       /// CRV
     case tok::kw_const:
       spec.GetTypeQualifireContext().AddConst(loc);
       // We do not consume the token because the QualType that we create
       // will be of the following const int i = ....
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_restrict:
       spec.GetTypeQualifireContext().AddRestrict(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_volatile:
       spec.GetTypeQualifireContext().AddVolatile(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
 
     // Functions
     case tok::kw_inline:
       spec.GetFunctionSpecifierContext().AddInline(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_fun:
       spec.GetFunctionSpecifierContext().AddFunctionDefinition(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
 
       // Nominals
     case tok::kw_struct:
       spec.GetTypeSpecifierContext().AddStruct(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_enum:
       spec.GetTypeSpecifierContext().AddEnum(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_interface:
       spec.GetTypeSpecifierContext().AddInterface(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_auto:
       spec.GetTypeSpecifierContext().AddAuto(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
 
       // Basic types
     case tok::kw_int:
       spec.GetTypeSpecifierContext().AddInt(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_int8:
       spec.GetTypeSpecifierContext().AddInt8(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_int16:
       spec.GetTypeSpecifierContext().AddInt16(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_int32:
       spec.GetTypeSpecifierContext().AddInt32(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_int64:
       spec.GetTypeSpecifierContext().AddInt64(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_uint:
       spec.GetTypeSpecifierContext().AddUInt(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_uint8:
       spec.GetTypeSpecifierContext().AddUInt8(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_byte:
       spec.GetTypeSpecifierContext().AddByte(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_uint16:
       spec.GetTypeSpecifierContext().AddUInt16(loc);
       break;
     case tok::kw_uint32:
       spec.GetTypeSpecifierContext().AddUInt32(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_uint64:
       spec.GetTypeSpecifierContext().AddUInt64(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_float:
       spec.GetTypeSpecifierContext().AddFloat(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_float32:
       spec.GetTypeSpecifierContext().AddFloat32(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_float64:
       spec.GetTypeSpecifierContext().AddFloat64(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_complex32:
       spec.GetTypeSpecifierContext().AddComplex32(loc);
-      goto ConsumeTok;
+      goto ConsumeSpec;
     case tok::kw_complex64:
       spec.GetTypeSpecifierContext().AddComplex64(loc);
-      goto ConsumeTok;
-
+      goto ConsumeSpec;
     // Identifier marks the end
     case tok::identifier:
-      // goto EndParse;
+      goto ParseSpec;
     default:
       break;
     }
-  ConsumeTok:
+  ConsumeSpec:
     ConsumeToken();
   }
 }
