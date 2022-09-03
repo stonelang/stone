@@ -79,29 +79,29 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
   ParseDeclSpecifier(spec);
 
-  // if (spec.GetFunctionSpecifierContext().HasFunctionDef()) {
-  //   return result;
-  // }
+  if (spec.GetFunctionSpecifierContext().HasFunctionDef()) {
+    return result;
+  }
 
-  // switch(spec.GetTypeSpecifierContext().GetTypeSpecifierKind()){
+  switch(spec.GetTypeSpecifierContext().GetTypeSpecifierKind()){
 
-  // }
+  }
 
-  // if (spec.GetTypeSpecifierContext().IsEnum()) {
-  //   return result;
-  // }
-  // if (spec.GetTypeSpecifierContext().IsStruct()) {
-  //   return result;
-  // }
+  if (spec.GetTypeSpecifierContext().IsEnum()) {
+    return result;
+  }
+  if (spec.GetTypeSpecifierContext().IsStruct()) {
+    return result;
+  }
 
-  // if (spec.GetTypeSpecifierContext().IsInterface()) {
-  //   return result;
-  // }
+  if (spec.GetTypeSpecifierContext().IsInterface()) {
+    return result;
+  }
 
-  // if(spec.GetTypeSpecifierContext().IsBasicType()){
+  if(spec.GetTypeSpecifierContext().IsBasicType()){
 
-  //   return result;
-  // }
+    return result;
+  }
 
   // The ordering does not matter becuase the compiler will eventuall
   // order things in a nice way -- type is just the build up of the decl
