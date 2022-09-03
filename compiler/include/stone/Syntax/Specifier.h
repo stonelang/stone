@@ -64,9 +64,6 @@ public:
   void AddFloat(SrcLoc loc);
   void AddFloat32(SrcLoc loc);
   void AddFloat64(SrcLoc loc);
-  void AddEnum(SrcLoc loc);
-  void AddInterface(SrcLoc loc);
-  void AddStruct(SrcLoc loc);
   void AddVoid(SrcLoc loc);
   void AddInt(SrcLoc loc);
   void AddInt8(SrcLoc loc);
@@ -84,10 +81,19 @@ public:
   void AddImaginary32(SrcLoc loc);
   void AddImaginary64(SrcLoc loc);
 
+  void AddEnum(SrcLoc loc);
+  void AddInterface(SrcLoc loc);
+  void AddStruct(SrcLoc loc);
+
 public:
   TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
   bool IsBasicType();
   bool IsNominalType();
+  bool IsEnum() { return typeSpecifierKind == TypeSpecifierKind::Enum; }
+  bool IsStruct() { return typeSpecifierKind == TypeSpecifierKind::Struct; }
+  bool IsInterface() {
+    return typeSpecifierKind == TypeSpecifierKind::Interface;
+  }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {

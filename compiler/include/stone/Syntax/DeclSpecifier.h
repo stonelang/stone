@@ -124,6 +124,13 @@ public:
   StorageSpecifierKind GetKind() { return kind; }
 };
 
+// enum class DescriptiveDeclSpecifier {
+//   None,
+//   FuncitonDefinition,
+//   NominalType,
+//   BasicType
+// }
+
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
@@ -134,6 +141,8 @@ class DeclSpecifier {
 
   SrcLoc accessLevelLoc;
   AccessLevel accessLevel = AccessLevel::Private;
+
+  //DescriptiveDeclSpecifier descriptiveDeclSpecifier = DescriptiveDeclSpecifier::None;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -173,6 +182,11 @@ public:
   void AddInternalAccessLevel(SrcLoc loc) {
     AddAccessLevel(AccessLevel::Internal, loc);
   }
+
+  // void SetDescriptiveDeclSpecifier(DescriptiveDeclSpecifier descriptive){
+  //   descriptiveDeclSpecifier = descriptive;
+
+  // }
 };
 
 class Declarator {

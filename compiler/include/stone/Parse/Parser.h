@@ -126,11 +126,14 @@ public:
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
+  //TODO: We only need on ParseDecl 
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                llvm::function_ref<void(Decl *)> handler);
 
   SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
                                llvm::function_ref<void(Decl *)> handler);
+
+  void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
 
   void ParseForwardDecl();
   void ParseInheritance();
@@ -139,6 +142,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
+  //TODO: Param should be constant 
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
 
 public:
@@ -164,8 +168,8 @@ public:
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDeclSpecifier &specifier,
-                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
+                                      ParsingDeclSpecifier &specifier);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -177,10 +181,11 @@ private:
   //                                       bool &rethrows,
   //                                       TypeRepr *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier,
-                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier);
+
   SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
-                                 FunctionDecl &funDecl);
+                                 FunctionDecl &functionDecl);
+
   BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
                                    FunctionDecl &funDecl);
 

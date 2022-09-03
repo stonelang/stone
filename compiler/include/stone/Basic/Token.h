@@ -173,6 +173,8 @@ public:
   bool IsInterface() { return kind == tok::kw_interface; }
   bool IsPure() { return kind == tok::kw_pure; }
   bool IsInline() { return kind == tok::kw_pure; }
+  bool IsLeftParen() { return kind == tok::l_paren; }
+  bool IsRightParen() { return kind == tok::r_paren; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
