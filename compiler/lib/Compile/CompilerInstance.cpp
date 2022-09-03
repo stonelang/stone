@@ -8,10 +8,9 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
       sc(new syn::SyntaxContext(invocation.GetLangContext(),
                                 invocation.GetSearchPathOptions())) {
 
-  // stats(new CompilerInstanceStats(*this)))
-        // moduleSystem(
-        //      new ModuleSystem(invocation.GetLangContext(), *sc,
-        //                       invocation.GetCompilerOptions().moduleOpts)))
+  ms = std::make_unique<ModuleSystem>(
+      invocation.GetLangContext(), *sc,
+      invocation.GetCompilerOptions().moduleOpts);
 
   invocation.GetLangContext().GetStatEngine().Register(stats.get());
 }

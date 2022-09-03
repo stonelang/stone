@@ -70,6 +70,8 @@ class CompilerInvocation final : public Session {
 
   LangOptions langOpts;
 
+  ModuleOptions moduleOpts;
+
   SyntaxOptions syntaxOpts;
 
   /// The main executable path of the running program
@@ -147,10 +149,14 @@ public:
     return typeCheckerOpts;
   }
 
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
   }
+  ModuleOptions &GetModuleOptions() { return moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
   TypeCheckMode GetTypeCheckMode() {
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule

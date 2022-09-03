@@ -31,7 +31,8 @@ class ModuleSystem final {
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc, ModuleOptions &moduleOpts);
+  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
+               ModuleOptions &moduleOpts);
   ~ModuleSystem();
 
 public:
