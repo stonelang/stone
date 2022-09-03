@@ -116,7 +116,6 @@ void Parser::ParseDeclSpecifier(ParsingDeclSpecifier &spec) {
   // The ordering does not matter becuase the compiler will eventually
   // order things in a nice way -- we are building up the DecInfo
   while (true) {
-  ParseSpec:
 
     if (IsDone() || curTok.IsIdentifierOrUnderscore()) {
       return;
@@ -221,13 +220,14 @@ void Parser::ParseDeclSpecifier(ParsingDeclSpecifier &spec) {
       goto ConsumeSpec;
     // Identifier marks the end
     case tok::identifier:
-      goto ParseSpec;
+      goto EndParse;
     default:
       break;
     }
   ConsumeSpec:
     ConsumeToken();
   }
+EndParse : {}
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
