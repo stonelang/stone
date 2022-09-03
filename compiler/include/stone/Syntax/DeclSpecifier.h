@@ -142,7 +142,8 @@ class DeclSpecifier {
   SrcLoc accessLevelLoc;
   AccessLevel accessLevel = AccessLevel::Private;
 
-  //DescriptiveDeclSpecifier descriptiveDeclSpecifier = DescriptiveDeclSpecifier::None;
+  // DescriptiveDeclSpecifier descriptiveDeclSpecifier =
+  // DescriptiveDeclSpecifier::None;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;

@@ -94,6 +94,7 @@ public:
   bool IsInterface() {
     return typeSpecifierKind == TypeSpecifierKind::Interface;
   }
+  bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {

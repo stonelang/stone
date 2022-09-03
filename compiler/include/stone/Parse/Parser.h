@@ -126,7 +126,7 @@ public:
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  //TODO: We only need on ParseDecl 
+  // TODO: We only need on ParseDecl
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                llvm::function_ref<void(Decl *)> handler);
 
@@ -142,7 +142,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
-  //TODO: Param should be constant 
+  // TODO: Param should be constant
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
 
 public:
