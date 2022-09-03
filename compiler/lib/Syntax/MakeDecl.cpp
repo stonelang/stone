@@ -31,8 +31,9 @@ FunDecl *Syntax::MakeFunDecl(DeclNameInfo &nameInfo, DeclContext *parent) {
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetSyntaxContext(), size);
-  return ::new (declPtr) FunDecl(nameInfo.GetName(), nameInfo.GetNameLoc(),
-                                 nameInfo.GetSpecialNameLoc(), parent);
+  return ::new (declPtr)
+      FunDecl(DeclKind::Fun, nameInfo.GetName(), nameInfo.GetNameLoc(),
+              nameInfo.GetSpecialNameLoc(), parent);
 }
 
 StructDecl *Syntax::MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc) {

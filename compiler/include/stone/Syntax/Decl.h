@@ -340,40 +340,6 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-// class ForwardDecl : public NamedDecl {
-// public:
-// };
-
-class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
-
-  friend class SyntaxContext;
-  /// This indicates the Type object that represents
-  /// this TypeDecl.  It is a cache maintained by
-  /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
-  /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
-
-  mutable const Type *typeForDecl = nullptr;
-
-  /// The start of the source range for this declaration.
-  SrcLoc startLoc;
-
-protected:
-  TypeDecl(DeclKind kind, Identifier *name, SrcLoc nameLoc,
-           UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context) {}
-
-public:
-  // Low-level accessor. If you just want the type defined by this node,
-  // check out ASTContext::getTypeDeclType or one of
-  // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
-  // already know the specific kind of node this is.
-  const Type *GetTypeForDecl() const { return typeForDecl; }
-  void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
-
-  // SourceLocation GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
-  // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
-};
-
 // TODO: May use this instead of using NamedDecl
 class ValueDecl : public NamedDecl {
   QualType qualType;
@@ -386,6 +352,37 @@ public:
 public:
   void SetQualType(QualType inputQualType) { qualType = inputQualType; }
   QualType GetQualType() { return qualType; }
+};
+
+class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
+
+  friend class SyntaxContext;
+  /// This indicates the Type object that represents
+  /// this TypeDecl.  It is a cache maintained by
+  /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
+  /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
+  mutable const Type *typeForDecl = nullptr;
+
+  /// The start of the source range for this declaration.
+  // SrcLoc startLoc;
+  // DeclName name;
+  // SrcLoc nameLoc;
+
+protected:
+  TypeDecl(DeclKind kind, Identifier *name, SrcLoc nameLoc,
+           UnifiedContext context)
+      : ValueDecl(kind, name, nameLoc, context) {}
+
+public:
+  // Low-level accessor. If you just want the type defined by this node,
+  // check out ASTContext::getTypeDeclType or one of
+  // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
+  // already know the specific kind of node this is.
+  const Type *GetTypeForDecl() const { return typeForDecl; }
+  void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
+
+  // SourceLocation GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
+  // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
 class DeclaratorDecl : public ValueDecl {
@@ -452,20 +449,10 @@ public:
 
 class GenericTypeDecl : public TypeDecl {};
 
-class AccessControl {
-  // This also belongs to struct
-  AccessLevel level;
-
-public:
-  void SetAccessLevel(AccessLevel level) { this->level = level; }
-  AccessLevel GetAccessLevel() { return level; }
-};
-
 // This is really your function prototye
 class FunctionDecl
     : public DeclContext,
-      public ValueDecl,
-      public AccessControl /*, public syn::Redeclarable<FunctionDecl>*/ {
+      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
 
   /// This enum member is active if GetBodyKind() is BodyKind::Parsed or
   /// BodyKind::TypeChecked.
@@ -475,6 +462,29 @@ class FunctionDecl
 
   /// Info - Further source/type location info for special kinds of names.
   DeclNameLoc specialNameLoc;
+
+public:
+  enum class BodyStatus {
+    None,
+
+    /// Function body is delayed, to be parsed later.
+    Unparsed,
+
+    /// Function body is parsed and available as an AST subtree.
+    Parsed,
+
+    /// Function body is not available, although it was written in the source.
+    Skipped,
+
+    /// Function body will be synthesized on demand.
+    Synthesize,
+
+    /// Function body is present and type-checked.
+    TypeChecked,
+
+    /// Function body text was deserialized from a .swiftmodule.
+    Deserialized
+  };
 
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -508,9 +518,9 @@ class FunDecl : public FunctionDecl {
   bool hasLBrace;
 
 public:
-  FunDecl(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc,
-          DeclContext *parent)
-      : FunctionDecl(DeclKind::Fun, name, nameLoc, specialNameLoc, parent) {}
+  FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+          DeclNameLoc specialNameLoc, DeclContext *parent)
+      : FunctionDecl(kind, name, nameLoc, specialNameLoc, parent) {}
 
 public:
   bool IsMain() const;
@@ -529,9 +539,6 @@ public:
 
   void SetFunLoc(SrcLoc funLoc);
   SrcLoc GetFunLoc() { return funLoc; }
-
-  void WithLeftBrace();
-  bool HasLeftBrace();
 
   QualType GetReturnType() const;
 
@@ -552,23 +559,29 @@ public:
   }
 };
 
-// Member functions: fun Particle::Fire() -> bool ...
-// class MemberFunDecl : public FunDecl {
-// public:
-//   MemberFunDecl(SyntaxContext &tc, DeclContext *dc, SrcLoc funLoc,
-//               DeclName name, SrcLoc nameLoc, StorageKind sk)
-//        : FunDecl(DeclKind::Fun, tc, dc, dn, dnLoc, st) {}
-
-// public:
-//   bool IsStatic() const;
-//   bool IsInstance() const { return !IsStatic(); }
-// };
-
-class NominalTypeDecl : public TypeDecl,
-                        public DeclContext,
-                        public AccessControl {
+/// Member functions: fun Particle::Fire() -> bool ...
+class MemberFunDecl : public FunDecl {
 public:
-  bool IsForward() const;
+  MemberFunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+                DeclNameLoc specialNameLoc, DeclContext *parent)
+      : FunDecl(kind, name, nameLoc, specialNameLoc, parent) {}
+
+public:
+  /// Add to Bits
+  bool IsStatic() const;
+  bool IsInstance() const;
+};
+
+class ConstructorDecl : public MemberFunDecl {
+public:
+};
+
+class DestructorDecl : public MemberFunDecl {
+public:
+};
+
+class NominalTypeDecl : public TypeDecl, public DeclContext {
+public:
 };
 
 class StructDecl final : public NominalTypeDecl {
@@ -591,25 +604,17 @@ public:
 };
 
 // Declarators and the like
-class StorageDecl : public ValueDecl {};
-
-class VarDecl : public StorageDecl {};
-
-class ParamDecl : public VarDecl {};
-
-class BlockDecl : public Decl, public DeclContext {};
-
-class ConstructorInitializer final {
+class StorageDecl : public ValueDecl {
 public:
 };
 
-// class ConstructorDecl : public MemberDecl {
-// public:
-// };
+class VarDecl : public StorageDecl {
+public:
+};
 
-// class DestructorDecl : public MemberDecl {
-// public:
-// };
+class ParamDecl : public VarDecl {
+public:
+};
 
 class TemplateDecl : public NamedDecl {
 public:
