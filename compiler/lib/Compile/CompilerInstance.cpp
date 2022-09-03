@@ -6,11 +6,9 @@ using namespace stone;
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
       sc(new syn::SyntaxContext(invocation.GetLangContext(),
-                                invocation.GetSearchPathOptions())) {
-
-  ms = std::make_unique<ModuleSystem>(
-      invocation.GetLangContext(), *sc,
-      invocation.GetCompilerOptions().moduleOpts);
+                                invocation.GetSearchPathOptions())),
+      ms(new ModuleSystem(invocation.GetLangContext(), GetSyntaxContext(),
+                          invocation.GetCompilerOptions().moduleOpts)) {
 
   invocation.GetLangContext().GetStatEngine().Register(stats.get());
 }
