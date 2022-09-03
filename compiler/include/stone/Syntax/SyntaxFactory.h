@@ -38,7 +38,7 @@ FunDecl *MakeFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
                      DeclContext *parent);
 
 StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
-                           DeclContext *parent);
+                           DeclContext *parent = nullptr);
 
 Module *MakeModuleDecl(Identifier *name, SyntaxContext &sc,
                        bool isMainModule = false);

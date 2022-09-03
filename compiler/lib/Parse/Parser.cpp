@@ -121,7 +121,7 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
-llvm::Optional<bool> Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
+SyntaxStatus Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
   SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
   case tok::kw_public:
@@ -134,9 +134,9 @@ llvm::Optional<bool> Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
     specifier.AddPrivateAccessLevel(loc);
     break;
   default:
-    return llvm::None;
+    return syn::MakeSyntaxError();
   }
-  return true;
+  return syn::MakeSyntaxSuccess();
 }
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetLangContext().GetDiagUnit().PrintD(loc, diagID);

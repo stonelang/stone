@@ -59,8 +59,7 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
   return syn::MakeSyntaxResult<QualType>(nullptr);
 }
 
-llvm::Optional<bool>
-Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
+SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
   SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
   case tok::kw_auto:
@@ -115,13 +114,12 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
     specifier.AddComplex64(loc);
     break;
   default:
-    return llvm::None;
+    return syn::MakeSyntaxError();
   }
-  return true;
+  return syn::MakeSyntaxSuccess();
 }
 
-llvm::Optional<bool>
-Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
+SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
   SrcLoc loc = curTok.GetLoc();
   switch (curTok.GetKind()) {
   case tok::kw_const:
@@ -139,7 +137,7 @@ Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
     qualifier.AddPure(loc);
     break;
   default:
-    return llvm::None;
+    return syn::MakeSyntaxError();
   }
-  return true;
+  return syn::MakeSyntaxSuccess();
 }

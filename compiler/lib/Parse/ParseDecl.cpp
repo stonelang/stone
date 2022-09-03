@@ -86,7 +86,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
     }
     /// Look for any access specifier: public, internal, or private. Default to
     /// private.
-    if (ParseAccessLevel(specifier)) {
+    if (ParseAccessLevel(specifier).IsSuccess()) {
       ConsumeToken();
       goto BeginParse;
     } else {
@@ -94,12 +94,13 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
       goto BeginParse;
     }
     /// Look for any type qualifiers: const, volatile, restrict, etc.
-    if (ParseTypeQualifiers(specifier.GetTypeQualifireContext())) {
+    if (ParseTypeQualifiers(specifier.GetTypeQualifireContext()).IsSuccess()) {
       ConsumeToken();
       goto BeginParse;
     }
     /// Look for any basic type specifiers : int, float, ..., etc.
-    if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
+    if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())
+            .IsSuccess()) {
       ConsumeToken();
       goto BeginParse;
     }
@@ -186,7 +187,12 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
   nameInfo.SetNameLoc(nameLoc);
 
-  // FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
+  // Now, parse the function signature
+  // if (ParseFunctionSignature(specifier, *funDecl).IsError()) {
+  //   return syn::MakeSyntaxError();
+  // }
+
+  // FunDecl *funDecl = syn.MakeFunDecl(nameInfo, sc);
 
   // // TODO: Think about this part
 

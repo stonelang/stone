@@ -154,8 +154,8 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
-  llvm::Optional<bool> ParseTypeQualifiers(TypeQualifierContext &qualifier);
-  llvm::Optional<bool> ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
+  SyntaxStatus ParseTypeQualifiers(TypeQualifierContext &qualifier);
+  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:
   //==Begin Function==//
@@ -187,7 +187,7 @@ private:
   //==End Function==//
 
 public:
-  llvm::Optional<bool> ParseAccessLevel(ParsingDeclSpecifier &specifier);
+  SyntaxStatus ParseAccessLevel(ParsingDeclSpecifier &specifier);
 
 public:
   //=struct=//
