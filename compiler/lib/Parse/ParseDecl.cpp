@@ -97,16 +97,18 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
   if (spec.GetTypeSpecifierContext().IsBasicType() ||
       spec.GetTypeSpecifierContext().IsAuto()) {
 
-    // We are expecting an identifier
-    //   case tok::identifier:
-    // //       if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-    // //         ParsingDeclarator declarator(spec,
-    // //         DeclaratorContextKind::SyntaxFile); result =
-    // //         ParseVarDecl(declarator);
-    // //       } else {
-    // //         // This is just some random variable with no type -- error
-    // message.
-    // //       }
+    if (!curTok.IsIdentifierOrUnderscore()) {
+      // Error -- type declaration is missing a declarator/identifier
+      return result;
+    } else {
+      ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
+      return (result = ParseVarDecl(declarator));
+    }
+  }
+
+  // Ok, it sesms that we have a random identifier
+  if (curTok.IsIdentifierOrUnderscore()) {
+    // Error -- declarator/identifier is missing a type 
   }
   return result;
 }
