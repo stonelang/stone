@@ -5,14 +5,18 @@
 
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Parse/Lexer.h"
-#include "stone/Parse/SyntaxListener.h"
-#include "stone/Parse/SyntaxParsing.h"
+#include "stone/Parse/Parsing.h"
+#include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
 
@@ -23,7 +27,6 @@ class SyntaxListener;
 namespace syn {
 
 class BraceStmt;
-
 class Syntax;
 class Parser;
 class SyntaxScope;
@@ -79,9 +82,7 @@ class Parser final {
   SyntaxScope *curScope;
 
   // /// Factory object for creating ParsedAttribute objects.
-  // AttributeFactory attributeFactory;
-
-  DeclSyntaxParsing syntaxParsing;
+  AttributeFactory attributeFactory;
 
 private:
   // Identifiers
@@ -105,9 +106,7 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  DeclSyntaxParsing &GetDeclSyntaxParsing() { return syntaxParsing; }
-
-  // AttributeFactory &GetAttributeFactory() { return attributeFactory; }
+  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() {
     return syntax.GetSyntaxContext().GetLangContext();
   }
@@ -127,47 +126,76 @@ public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
 
-  bool IsTopLevelDecl(const Token &tok);
+  bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
-  SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing &declSyntaxParsing);
+  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
+                               llvm::function_ref<void(Decl *)> handler);
 
-  // SyntaxResult<Decl> ParseDecl(DeclSyntaxParsing flags,
-  //                              AccessLevel accessLevel);
+  SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
+                               llvm::function_ref<void(Decl *)> handler);
 
   void ParseForwardDecl();
-
   void ParseInheritance();
 
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
+  SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
+
+public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
-  SyntaxResult<QualType> ParseType();
-  SyntaxResult<QualType> ParseDeclResultType(Diag<> diagID);
-  SyntaxResult<QualType> ParseBasicType(Diag<> diagID);
+
+  void ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
+                               SrcLoc loc);
+
+  SyntaxResult<QualType> ParseType(TypeSpecifierContext &specifierContext);
+  SyntaxResult<QualType>
+  ParseDeclResultType(TypeSpecifierContext &specifierContext, Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
+                                        Diag<> diagID);
+
+  llvm::Optional<bool> ParseTypeQualifiers(TypeQualifierContext &qualifier);
+  llvm::Optional<bool> ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:
   //==Begin Function==//
-  SyntaxResult<Decl> ParseFunDecl(DeclSyntaxParsing &syntaxParsing);
-  // void ParseFunForwardDecl(AccessLevel accessLevel);
+
+  // TODO: Pass FunctionSpecifierContext
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(FunDecl &funDecl);
-  SyntaxStatus ParseFunctionArguments(FunDecl &funDecl);
-  SyntaxStatus ParseFunctionBody(FunctionDecl &funDecl);
-  BraceStmt *ParseFunctionBodyImpl(FunctionDecl &funDecl);
+  SyntaxStatus ParseFunctionSignature(ParsingDeclSpecifier &specifier,
+                                      FunDecl &funDecl);
+
+  // Identifier functionName,
+  //                                       DeclName &fullName,
+  //                                       ParameterList *&bodyParams,
+  //                                       DefaultArgumentInfo &defaultArgs,
+  //                                       SourceLoc &asyncLoc,
+  //                                       bool &reasync,
+  //                                       SourceLoc &throws,
+  //                                       bool &rethrows,
+  //                                       TypeRepr *&retType);
+
+  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier,
+                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
+                                 FunctionDecl &funDecl);
+  BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
+                                   FunctionDecl &funDecl);
 
   //==End Function==//
-public:
-  //=struct=//
-  SyntaxResult<Decl> ParseStructDecl();
-  void ParseStructForwardDecl();
 
 public:
-  bool IsStartOfStmt();
+  llvm::Optional<bool> ParseAccessLevel(ParsingDeclSpecifier &specifier);
+
+public:
+  //=struct=//
+  SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
+  void ParseStructForwardDecl();
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -183,6 +211,7 @@ public:
   SyntaxResult<Decl> ParseSpaceDecl();
   ///
 public:
+  bool IsStartOfStmt();
   /// Stmt
   SyntaxResult<Stmt> ParseStmt();
 
@@ -195,33 +224,29 @@ public:
   void Stop() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
-  bool IsParsing() {
-    (syntaxParsing.status == DeclSyntaxParsingStatus::Parsing) && !IsDone();
-  }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
 public:
   //===--------------------------------------------------------------------===//
   // Routines to save and restore parser state.
 
-  SyntaxParsingPosition GetSyntaxParsingPosition() {
-    return SyntaxParsingPosition(
+  ParsingPosition GetParsingPosition() {
+    return ParsingPosition(
         GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
         prevTokLoc);
   }
-  SyntaxParsingPosition GetSyntaxParsingPosition(SrcLoc loc,
-                                                 SrcLoc previousLoc) {
-    return SyntaxParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
-                                 previousLoc);
+  ParsingPosition GetParsingPosition(SrcLoc loc, SrcLoc previousLoc) {
+    return ParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
+                           previousLoc);
   }
-  void RestoreSyntaxParsingPosition(SyntaxParsingPosition parsingPos,
-                                    bool enableDiagnostics = false) {
+  void RestoreParsingPosition(ParsingPosition parsingPos,
+                              bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
     Lex(curTok, leadingTrivia, trailingTrivia);
     prevTokLoc = parsingPos.prevLoc;
   }
 
-  void BackTrackSyntaxParsingPosition(SyntaxParsingPosition parsingPos) {
+  void BackTrackParsingPosition(ParsingPosition parsingPos) {
     assert(parsingPos.isValid());
     GetLexer().backtrackToState(parsingPos.lexingState);
     Lex(curTok, leadingTrivia, trailingTrivia);
@@ -230,12 +255,12 @@ public:
 
 public:
   // == Token consumption ==//
-  SrcLoc ConsumeToken(SyntaxParsingNotification notification =
-                          SyntaxParsingNotification::TokenConsumed);
+  SrcLoc ConsumeToken(
+      ParsingNotification notification = ParsingNotification::TokenConsumed);
 
   SrcLoc ConsumeToken(tok kind) {
     assert(curTok.Is(kind) && "Consuming wrong curTok type");
-    return ConsumeToken(SyntaxParsingNotification::None);
+    return ConsumeToken(ParsingNotification::None);
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
@@ -337,7 +362,8 @@ public:
 
 private:
   // Helpers
-  const Token &Peek() const { return lexer->Peek(); }
+  const Token &PeekNextToken() const { return lexer->Peek(); }
+  SrcLoc GetLoc() { return curTok.GetLoc(); }
 
 private:
   //===--------------------------------------------------------------------===//

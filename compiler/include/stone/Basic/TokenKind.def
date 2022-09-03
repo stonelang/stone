@@ -117,6 +117,7 @@ DECL_KEYWORD(interface, TOKON)
 DECL_KEYWORD(enum, TOKON)
 DECL_KEYWORD(error, TOKRSV)
 DECL_KEYWORD(module, TOKRSV)
+DECL_KEYWORD(pure, TOKON)
 DECL_KEYWORD(struct, TOKON)
 DECL_KEYWORD(private, TOKON)
 DECL_KEYWORD(local, TOKRSV)
@@ -153,10 +154,14 @@ DECL_KEYWORD(uint16, TOKON)
 DECL_KEYWORD(uint32, TOKON)
 DECL_KEYWORD(uint64, TOKON)
 
+
+DECL_KEYWORD(float, TOKON)
 DECL_KEYWORD(float32, TOKON)
 DECL_KEYWORD(float64, TOKON)
 DECL_KEYWORD(complex32, TOKON)
 DECL_KEYWORD(complex64, TOKON)
+DECL_KEYWORD(imaginary32, TOKON)
+DECL_KEYWORD(imaginary64, TOKON)
 
 DECL_KEYWORD(string, TOKON)
 DECL_KEYWORD(type, TOKON)
@@ -207,9 +212,9 @@ PUNCTUATOR(l_square, "[")
 PUNCTUATOR(r_square, "]")
 PUNCTUATOR(l_angle, "<")
 PUNCTUATOR(r_angle, ">")
-
 PUNCTUATOR(period, ".")
 PUNCTUATOR(star, "*")
+PUNCTUATOR(starequal,   "*=")
 PUNCTUATOR(period_prefix, ".")
 PUNCTUATOR(pipe,                "|")
 PUNCTUATOR(doublepipe,           "||")
@@ -223,18 +228,24 @@ PUNCTUATOR(equal, "=")
 PUNCTUATOR(doubleequal, "==")
 PUNCTUATOR(at_sign, "@")
 PUNCTUATOR(pound, "#")
-
-PUNCTUATOR(amp_prefix, "&")
+PUNCTUATOR(amp, "&")
+PUNCTUATOR(amp_prefix, "&") //TODO: remove 
 PUNCTUATOR(arrow, "->")
-
 PUNCTUATOR(backtick, "`")
-
 PUNCTUATOR(backslash, "\\")
-
+PUNCTUATOR(slash,      "/")
+PUNCTUATOR(exclaim, "!") // if left-bound
 PUNCTUATOR(exclaim_postfix, "!") // if left-bound
-
+PUNCTUATOR(exclaimequal,  "!=")
 PUNCTUATOR(question_postfix, "?") // if left-bound
 PUNCTUATOR(question_infix, "?")   // if not left-bound
+PUNCTUATOR(tilde,"~")
+PUNCTUATOR(minus,  "-")
+PUNCTUATOR(doubleminus,  "--")
+PUNCTUATOR(minusequal,  "-=")
+PUNCTUATOR(plus,         "+")
+PUNCTUATOR(doubleplus,   "++")
+PUNCTUATOR(plusequal,    "+=")
 
 // Keywords prefixed with a '#'.  "if" becomes "tok::pound_if".
 POUND_KEYWORD(if)

@@ -4,9 +4,9 @@
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/LangContext.h"
-#include "stone/Parse/SyntaxLexing.h"
+#include "stone/Parse/Lexing.h"
 #include "stone/Parse/Trivia.h"
+#include "stone/Public.h"
 
 namespace stone {
 
@@ -75,7 +75,7 @@ class Lexer final : public Tokenable {
   stone::DiagnosticEngine *de;
   StatisticEngine *se;
   SyntaxListener *listener;
-  SyntaxLexingState state;
+  LexingState state;
 
   std::unique_ptr<LexerStats> stats;
 
@@ -133,8 +133,6 @@ class Lexer final : public Tokenable {
   /// Used to cut off lexing early when we detect that the nesting level is too
   /// deep.
   const char *LexerCutOffPoint = nullptr;
-
-  SyntaxLexing syntaxLexing;
 
   Lexer(const Lexer &) = delete;
   void operator=(const Lexer &) = delete;
@@ -197,13 +195,10 @@ public:
   /// \param Parent the parent lexer that scans the whole buffer
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
-  Lexer(Lexer &Parent, SyntaxLexingState BeginState,
-        SyntaxLexingState EndState);
+  Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState);
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }
-
-  SyntaxLexing &GetSyntaxLexing() { return syntaxLexing; }
 
   /// Whether we are lexing a Swift interface file.
   bool IsStoneInterface() const { return LexMode == LexerMode::StoneInterface; }
@@ -269,12 +264,12 @@ public:
   /// Returns the lexer state for the beginning of the given token
   /// location. After restoring the state, lexer will return this token and
   /// continue from there.
-  SyntaxLexingState getStateForBeginningOfTokenLoc(SrcLoc Loc) const;
+  LexingState getStateForBeginningOfTokenLoc(SrcLoc Loc) const;
 
   /// Returns the lexer state for the beginning of the given token.
   /// After restoring the state, lexer will return this token and continue from
   /// there.
-  SyntaxLexingState
+  LexingState
   getStateForBeginningOfToken(const Token &Tok,
                               const StringRef &LeadingTrivia = {}) const {
 
@@ -293,17 +288,17 @@ public:
     return S;
   }
 
-  SyntaxLexingState getStateForEndOfTokenLoc(SrcLoc Loc) const {
-    return SyntaxLexingState(GetLocForEndOfTokenImpl(sm, Loc));
+  LexingState getStateForEndOfTokenLoc(SrcLoc Loc) const {
+    return LexingState(GetLocForEndOfTokenImpl(sm, Loc));
   }
 
-  bool isStateForCurrentBuffer(SyntaxLexingState state) const {
+  bool isStateForCurrentBuffer(LexingState state) const {
     return sm.findBufferContainingLoc(state.loc) == getBufferID();
   }
 
   /// Restore the lexer state to a given one, that can be located either
   /// before or after the current position.
-  void restoreState(SyntaxLexingState S, bool enableDiagnostics = false) {
+  void restoreState(LexingState S, bool enableDiagnostics = false) {
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
     // Don't reemit diagnostics while readvancing the lexer.
@@ -317,7 +312,7 @@ public:
 
   /// Restore the lexer state to a given state that is located before
   /// current position.
-  void backtrackToState(SyntaxLexingState S) {
+  void backtrackToState(LexingState S) {
     assert(getBufferPtrForSrcLoc(S.loc) <= CurPtr && "can't backtrack forward");
     restoreState(S);
   }

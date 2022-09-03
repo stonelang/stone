@@ -2,6 +2,8 @@
 #define STONE_SYNTAX_SPECIFIER_H
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/SrcLoc.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -32,18 +34,70 @@ enum class TypeSpecifierKind : uint8_t {
   Complex32,
   Complex64,
   Imaginary32,
-  Iimaginary64,
+  Imaginary64,
 
 };
-enum class FunctionSpecifierKind : uint8_t {
-  None,
+
+class TypeSpecifierContext final {
+  TypeSpecifierKind typeSpecifierKind;
+  SrcLoc typeSpecifierLoc;
+
+public:
+  TypeSpecifierContext() : typeSpecifierKind(TypeSpecifierKind::None) {}
+
+public:
+  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
+  //                          const char *&prevTypeSpecifier, Diag<> diagID,
+  //                          Decl *rep, bool owned);
+
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool HasTypeSpecifierKind() const {
+    return typeSpecifierKind != TypeSpecifierKind::None;
+  }
+
+private:
+  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+
+public:
+  void AddAuto(SrcLoc loc);
+  void AddBool(SrcLoc loc);
+  void AddFloat(SrcLoc loc);
+  void AddFloat32(SrcLoc loc);
+  void AddFloat64(SrcLoc loc);
+  void AddEnum(SrcLoc loc);
+  void AddInterface(SrcLoc loc);
+  void AddStruct(SrcLoc loc);
+  void AddVoid(SrcLoc loc);
+  void AddInt(SrcLoc loc);
+  void AddInt8(SrcLoc loc);
+  void AddInt16(SrcLoc loc);
+  void AddInt32(SrcLoc loc);
+  void AddInt64(SrcLoc loc);
+  void AddUInt(SrcLoc loc);
+  void AddUInt8(SrcLoc loc);
+  void AddByte(SrcLoc loc);
+  void AddUInt16(SrcLoc loc);
+  void AddUInt32(SrcLoc loc);
+  void AddUInt64(SrcLoc loc);
+  void AddComplex32(SrcLoc loc);
+  void AddComplex64(SrcLoc loc);
+  void AddImaginary32(SrcLoc loc);
+  void AddImaginary64(SrcLoc loc);
+
+public:
+  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
+  bool IsBasicType();
+  bool IsNominalType();
+};
+
+enum class FunctionInlineSpecifierKind : UInt8 {
+  None = 0,
   Inline,
   ForcedInline,
-  NoReturn,
 };
 
 // TODO: All you need is Public and Local
-enum class AccessLevel : uint8_t {
+enum class AccessLevel : UInt8 {
   None = 0,
   /// Limited to the scope
   Private,
@@ -56,7 +110,7 @@ enum class AccessLevel : uint8_t {
 };
 
 /// The categorization of expression values, currently following the
-enum class ExprValueType : uint8_t {
+enum class ExprValueType : UInt8 {
 
   None = 0,
   /// An r-value expression (a pr-value in the C++11 taxonomy)
@@ -75,7 +129,7 @@ enum class ExprValueType : uint8_t {
 
 /// Storage classes.
 /// These are legal on both functions and variables
-enum class StorageSpecifierKind : uint8_t {
+enum class StorageSpecifierKind : UInt8 {
   None = 0,
   Extern,
   Static,
@@ -85,7 +139,7 @@ enum class StorageSpecifierKind : uint8_t {
 };
 
 /// The storage duration for an object (per C++ [ctx.stc]).
-enum class StorageDuration : uint8_t {
+enum class StorageDuration : UInt8 {
   FullExpression, ///< Full-expression storage duration (for temporaries).
   Automatic,      ///< Automatic storage duration (most local variables).
   Thread,         ///< Thread storage duration.
@@ -94,7 +148,7 @@ enum class StorageDuration : uint8_t {
 };
 
 /// Describes the nullability of a particular type.
-enum class TypeNullabilityKind : uint8_t {
+enum class TypeNullabilityKind : UInt8 {
   /// Values of this type can never be null.
   NotNullable = 0,
   /// Values of this type can be null.
@@ -108,7 +162,7 @@ enum class TypeNullabilityKind : uint8_t {
 
 /// Describes the kind of template specialization that a
 /// particular template specialization declaration represents.
-enum class TemplateSpecializationKind : uint8_t {
+enum class TemplateSpecializationKind : UInt8 {
   /// This template specialization was formed from a template-id but
   /// has not yet been declared, defined, or instantiated.
   Undeclared = 0,

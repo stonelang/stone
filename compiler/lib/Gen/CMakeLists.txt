@@ -23,6 +23,7 @@ set(stone_gen_sources
 	IRCodegenModule.cpp
 	NativeCodeGen.cpp
 	Optimize.cpp
+	TargetMachine.cpp
 	
 	
 	LINK_LIBS

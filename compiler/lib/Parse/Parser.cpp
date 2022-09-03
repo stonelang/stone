@@ -2,7 +2,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxScope.h"
 
@@ -23,7 +23,7 @@ Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
 Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
-      syntaxParsing(*this), listener(listener) {
+      listener(listener) {
 
   stats.reset(new ParserStats(*this));
   GetLangContext().GetStatEngine().Register(stats.get());
@@ -39,11 +39,11 @@ Parser::~Parser() {}
 // void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
-SrcLoc Parser::ConsumeToken(SyntaxParsingNotification notification) {
+SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
   auto loc = curTok.GetLoc();
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
-  if ((notification == SyntaxParsingNotification::TokenConsumed) && listener) {
+  if ((notification == ParsingNotification::TokenConsumed) && listener) {
     listener->OnToken(&curTok);
   }
   Lex(curTok, leadingTrivia, trailingTrivia);
@@ -125,6 +125,23 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
+llvm::Optional<bool> Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
+  SrcLoc loc = curTok.GetLoc();
+  switch (curTok.GetKind()) {
+  case tok::kw_public:
+    specifier.AddPublicAccessLevel(loc);
+    break;
+  case tok::kw_internal:
+    specifier.AddInternalAccessLevel(loc);
+    break;
+  case tok::kw_private:
+    specifier.AddPrivateAccessLevel(loc);
+    break;
+  default:
+    return llvm::None;
+  }
+  return true;
+}
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
 }

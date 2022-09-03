@@ -17,7 +17,7 @@ syn::Module *ModuleSystem::GetMainModule() const {
   }
   Identifier &moduleIdentifier =
       syntax.GetSyntaxContext().GetIdentifier(moduleOpts.moduleName);
-  mainModule = syntax.MakeModuleDecl(moduleIdentifier, true);
+  mainModule = syntax.MakeModuleDecl(&moduleIdentifier, true);
   return mainModule;
 }
 

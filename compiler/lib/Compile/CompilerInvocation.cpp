@@ -2,7 +2,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/CompilerListener.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -174,6 +174,14 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   //                      std::move(sourceinfo.getValue()) : nullptr);
 
   // return llvm::None;
+}
+
+void CompilerInvocation::SetTargetTriple(StringRef Triple) {
+  SetTargetTriple(llvm::Triple(Triple));
+}
+void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
+  langOpts.SetTarget(triple);
+  // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
 unsigned

@@ -1,7 +1,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 
 using namespace stone;
 
@@ -31,10 +31,10 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
-static Error
-ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial, DiagnosticEngine &de,
-                          CompilerOptions &invocationOpts,
-                          sem::TypeCheckerOptions &typeCheckerOpts) {
+static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
+                                       DiagnosticEngine &de,
+                                       CompilerOptions &invocationOpts,
+                                       TypeCheckerOptions &typeCheckerOpts) {
 
   return Error();
 }

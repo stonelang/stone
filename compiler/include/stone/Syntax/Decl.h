@@ -10,6 +10,7 @@
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
+#include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/SyntaxType.h"
@@ -68,6 +69,10 @@ public:
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
 
+enum : unsigned {
+  NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
+};
+
 class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   friend DeclStats;
 
@@ -80,6 +85,165 @@ class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   // void *operator new(std::size_t size, const SyntaxContext &ctx,
   //                    DeclContext *parent, std::size_t extra = 0);
 
+protected:
+  union {
+    uint64_t OpaqueBits;
+    STONE_INLINE_BITFIELD_BASE(
+        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1, Kind
+        : BitMax(NumDeclKindBits, 8),
+
+          /// Whether this declaration is invalid.
+          IsValid : 1,
+
+          /// Whether this declaration was implicitly created, e.g.,
+          /// an implicit constructor in a struct.
+          IsImplicit : 1,
+
+          /// Whether this declaration was mapped directly from a Clang AST.
+          ///
+          /// Use getClangNode() to retrieve the corresponding Clang AST.
+          IsFromClang : 1,
+
+          /// Whether this declaration was added to the surrounding
+          /// DeclContext of an active #if config clause.
+          IsEscapedFromIfConfig : 1,
+
+          /// Whether this declaration is syntactically scoped inside of
+          /// a local context, but should behave like a top-level
+          /// declaration for name lookup purposes. This is used by
+          /// lldb.
+          IsHoisted : 1
+
+    );
+
+    STONE_INLINE_BITFIELD(
+        ValueDecl, Decl, 1 + 1 + 1 + 1,
+
+        IsInLookupTable : 1,
+
+        /// Whether we have already checked whether this declaration is a
+        /// redeclaration.
+        CheckedRedeclaration : 1,
+
+        /// Whether the decl can be accessed by swift users; for instance,
+        /// a.storage for lazy var a is a decl that cannot be accessed.
+        IsUserAccessible : 1,
+
+        /// Whether this member was synthesized as part of a derived
+        /// protocol conformance.
+        IsSynthesized : 1);
+
+    STONE_INLINE_BITFIELD(
+        FunctionDecl, ValueDecl, 1,
+        /// \see AbstractFunctionDecl::BodyKind
+        // BodyKind : 3,
+
+        /// \see AbstractFunctionDecl::SILSynthesizeKind
+        // SILSynthesizeKind : 2,
+
+        /// Import as member status.
+        // IAMStatus : 8,
+
+        /// Whether the function has an implicit 'self' parameter.
+        // HasImplicitSelfDecl : 1,
+
+        /// Whether we are overridden later.
+        // Overridden : 1,
+
+        IsMember : 1
+
+        /// Whether this member's body consists of a single expression.
+        // HasSingleExpressionBody : 1,
+
+        /// Whether peeking into this function detected nested type
+        /// declarations. This is set when skipping over the decl at parsing.
+        // HasNestedTypeDeclarations : 1
+    );
+
+    STONE_INLINE_BITFIELD(
+        FunDecl, FunctionDecl, 1,
+        /// Whether we've computed the 'static' flag yet.
+        // IsStaticComputed : 1,
+
+        /// Whether this function is a 'static' method.
+        IsStatic : 1
+
+        /// Whether 'static' or 'class' was used.
+        // StaticSpelling : 2,
+
+        /// Whether we are statically dispatched even if overridable
+        // ForcedStaticDispatch : 1,
+
+        /// Whether we've computed the 'self' access kind yet.
+        // SelfAccessComputed : 1,
+
+        /// Backing bits for 'self' access kind.
+        // SelfAccess : 2,
+
+        /// Whether this is a top-level function which should be treated
+        /// as if it were in local context for the purposes of capture
+        /// analysis.
+        // HasTopLevelLocalContextCaptures : 1
+    );
+
+    STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
+
+    STONE_INLINE_BITFIELD(
+        Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+        /// If the module is compiled as static library.
+        IsStaticLibrary : 1,
+
+        /// If the module was or is being compiled with `-enable-testing`.
+        IsTestingEnabled : 1,
+
+        /// If the module failed to load
+        FailedToLoad : 1,
+
+        /// Whether the module is resilient.
+        ///
+        /// \sa ResilienceStrategy
+        RawResilienceStrategy : 1,
+
+        /// Whether all imports have been resolved. Used to detect circular
+        /// imports.
+        HasResolvedImports : 1,
+
+        /// If the module was or is being compiled with
+        /// `-enable-private-imports`.
+        PrivateImportsEnabled : 1,
+
+        /// If the module is compiled with `-enable-implicit-dynamic`.
+        ImplicitDynamicEnabled : 1,
+
+        /// Whether the module is a system module.
+        IsSystemModule : 1,
+
+        /// Whether the module was imported from Clang (or, someday, maybe
+        /// another language).
+        IsNonStoneModule : 1,
+
+        /// Whether this module is the main module.
+        IsMainModule : 1,
+
+        /// Whether this module has incremental dependency information
+        /// available.
+        HasIncrementalInfo : 1,
+
+        /// Whether this module was built with
+        /// -experimental-hermetic-seal-at-link.
+        HasHermeticSealAtLink : 1,
+
+        /// Whether this module has been compiled with comprehensive checking
+        /// for concurrency, e.g., Sendable checking.
+        IsConcurrencyChecked : 1);
+    // STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
+
+  } Bits;
+
+  /// The next declaration in the list of declarations within this
+  /// member context.
+  Decl *nextDecl = nullptr;
+
 public:
   Decl() = delete;
   Decl(const Decl &) = delete;
@@ -89,7 +253,6 @@ public:
 
 public:
   friend class DeclContext;
-
   UnifiedContext context;
 
   /// DeclKind - This indicates which class this is.
@@ -195,7 +358,7 @@ class TypeDecl : public NamedDecl /*TODO: AnyDecl, ForwardDecl*/ {
   SrcLoc startLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
+  TypeDecl(DeclKind kind, Identifier *name, SrcLoc nameLoc,
            UnifiedContext context)
       : NamedDecl(kind, name, nameLoc, context) {}
 
@@ -221,8 +384,15 @@ public:
       : NamedDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetQualType(QualType qt) { this->qualType = qt; }
+  void SetQualType(QualType inputQualType) { qualType = inputQualType; }
   QualType GetQualType() { return qualType; }
+};
+
+class DeclaratorDecl : public ValueDecl {
+public:
+  DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+                 UnifiedContext context)
+      : ValueDecl(kind, name, nameLoc, context) {}
 };
 
 // class LabelDecl : public NamedDecl {
@@ -303,11 +473,15 @@ class FunctionDecl
 
   StorageSpecifierKind storageSpecifierKind;
 
+  /// Info - Further source/type location info for special kinds of names.
+  DeclNameLoc specialNameLoc;
+
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-               DeclContext *parent)
+               DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent) {}
+        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
+  }
 
 public:
   BraceStmt *GetBody(bool canSynthesize = true) const;
@@ -321,6 +495,7 @@ public:
     return storageSpecifierKind;
   }
 
+  DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
   // void SetReturnType(TypeDecl* tyDecl);
 
 public:
@@ -333,8 +508,9 @@ class FunDecl : public FunctionDecl {
   bool hasLBrace;
 
 public:
-  FunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent)
-      : FunctionDecl(DeclKind::Fun, name, nameLoc, parent) {}
+  FunDecl(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc,
+          DeclContext *parent)
+      : FunctionDecl(DeclKind::Fun, name, nameLoc, specialNameLoc, parent) {}
 
 public:
   bool IsMain() const;
@@ -413,6 +589,13 @@ class EnumDecl final : public NominalTypeDecl {
 public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
 };
+
+// Declarators and the like
+class StorageDecl : public ValueDecl {};
+
+class VarDecl : public StorageDecl {};
+
+class ParamDecl : public VarDecl {};
 
 class BlockDecl : public Decl, public DeclContext {};
 

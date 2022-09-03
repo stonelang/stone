@@ -1,6 +1,6 @@
 #include "stone/Session/Session.h"
 #include "stone/Diag/CoreDiagnostic.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Session/Options.h"
 #include "llvm/Option/Option.h"
 

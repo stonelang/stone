@@ -60,6 +60,7 @@ class alignas(IdentifierAlignment) Identifier {
 
   llvm::StringMapEntry<Identifier *> *entry = nullptr;
 
+public:
   struct alignas(uint64_t) Aligner {};
 
 public:

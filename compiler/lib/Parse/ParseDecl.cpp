@@ -7,11 +7,11 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsTopLevelDecl(const Token &curTok) {
+bool Parser::IsStartOfDecl(const Token &curTok) {
   switch (curTok.GetKind()) {
   case tok::kw_interface:
   case tok::kw_fun:
-  case tok::kw_any:
+  case tok::kw_inline:
   case tok::kw_struct:
   case tok::kw_space:
   case tok::kw_const:
@@ -34,6 +34,7 @@ void Parser::ParseTopLevelDecls(
     ConsumeToken();
   }
   while (!IsDone()) {
+    // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
     if (listener) {
       if (HasError()) {
@@ -52,129 +53,168 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsTopLevelDecl(curTok) && "Invalid top-declaration");
+  assert(IsStartOfDecl(curTok) && "Invalid start of or top level declaration");
 
-  DeclSyntaxParsing syntaxParsing(*this);
-  syntaxParsing.status = DeclSyntaxParsingStatus::Parsing;
-  syntaxParsing.flags = DeclSyntaxParsingFlags::AllowTopLevel;
-
-  // May want to
-  return ParseDecl(syntaxParsing);
+  return ParseDecl(ParsingDeclFlags::AllowTopLevel,
+                   [&](Decl *d) { /* Do nothing for now*/ });
 }
 
 // NOTE: This is ripe for recursion.
-SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsing &syntaxParsing) {
-  SyntaxResult<Decl> declResult;
+SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
+                                     llvm::function_ref<void(Decl *)> handler) {
 
-  while (IsParsing()) {
-    switch (curTok.GetKind()) {
-    case tok::kw_public:
-      syntaxParsing.level = AccessLevel::Public;
-      break;
-    case tok::kw_internal:
-      syntaxParsing.level = AccessLevel::Internal;
-      break;
-    case tok::kw_private:
-      syntaxParsing.level = AccessLevel::Private;
-      break;
-    case tok::kw_fun:
-      declResult = ParseFunDecl(syntaxParsing);
-      break;
-    default:
-      // We only handle basic types here
-      if (IsBasicType(curTok.GetKind())) {
+  ParsingDeclSpecifier specifier(*this, GetAttributeFactory());
+  specifier.flags = flags;
+
+  return ParseDecl(specifier, handler);
+}
+
+/// Parse declaration specifiers
+SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &specifier,
+                                     llvm::function_ref<void(Decl *)> handler) {
+
+  SyntaxResult<Decl> result;
+  // TODO: Replace with ParsingScope
+  ParsingContext parsingContext(ParsingContextKind::Decl);
+  // The ordering does not matter becuase the compiler will eventuall
+  // order things in a nice way -- type is just the build up of the decl
+  while (true) {
+  BeginParse:
+
+    if (IsDone()) {
+      goto EndParse;
+    }
+    /// Look for any access specifier: public, internal, or private. Default to
+    /// private.
+    if (ParseAccessLevel(specifier)) {
+      ConsumeToken();
+      goto BeginParse;
+    } else {
+      specifier.AddPrivateAccessLevel(GetLoc());
+      goto BeginParse;
+    }
+    /// Look for any type qualifiers: const, volatile, restrict, etc.
+    if (ParseTypeQualifiers(specifier.GetTypeQualifireContext())) {
+      ConsumeToken();
+      goto BeginParse;
+    }
+    /// Look for any basic type specifiers : int, float, ..., etc.
+    if (ParseBasicTypeSpecifier(specifier.GetTypeSpecifierContext())) {
+      ConsumeToken();
+      goto BeginParse;
+    }
+    /// Look for identifiers. If we find one, there must be a corresponding
+    /// type.
+    if (curTok.IsIdentifierOrUnderscore()) {
+      if (specifier.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        ParsingDeclarator declarator(specifier,
+                                     DeclaratorContextKind::SyntaxFile);
+        result = ParseVarDecl(declarator);
+      } else {
+        // This is just some random variable with no type -- error message.
       }
-      break;
+      goto EndParse;
+    }
+    /// Check for function specifiers
+    if (curTok.IsInline()) {
+      specifier.GetFunctionSpecifierContext().AddInline(GetLoc());
+      ConsumeToken();
+      goto BeginParse;
+    }
+    if (curTok.IsFun()) {
+      specifier.GetFunctionSpecifierContext().AddFunctionDef(GetLoc());
+      if (PeekNextToken().IsDoubleColon()) {
+        // specifier.GetFunctionSpecifierContext().SetIsMember();
+      }
+      result = ParseFunDecl(specifier);
+      goto EndParse;
+    }
+    if (curTok.IsStruct()) {
+      specifier.GetTypeSpecifierContext().AddStruct(GetLoc());
+      result = ParseStructDecl(specifier);
+      goto EndParse;
+    }
+    if (curTok.IsInterface()) {
+      specifier.GetTypeSpecifierContext().AddInterface(GetLoc());
+      // result = ParseInterfaceDecl(specifier);
+      goto EndParse;
     }
     ConsumeToken();
-    if (IsDone()) {
-      syntaxParsing.status = DeclSyntaxParsingStatus::Done;
-    }
-  }
-  return declResult;
+  } // End of while
+
+EndParse:
+  return result;
 }
 
-// PairDelimiterBalancer pairDelimiterBalancer(*this);
-// AccessLevel accessLevel = AccessLevel::None;
-// switch (curTok.GetKind()) {
-// case tok::kw_public:
-//   accessLevel = AccessLevel::Public;
-//   break;
-// case tok::kw_internal:
-//   accessLevel = AccessLevel::Internal;
-//   break;
-// default:
-//   accessLevel = AccessLevel::Private;
-//   break;
-// }
-// if (curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private)) {
-//   ConsumeToken();
-// }
-// // TODO:
-// // ParseDeclModifierList(Attributes, StaticLoc, StaticSpelling);
-// return ParseDecl(flags, accessLevel);
+SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
-// return declResult;
-// }
+  // assert(specifier.GetTypeSpecifierContext().HasTypeSpecifierKind());
+  // const ParsingDeclSpecifier &specifier =
+  //     declarator.GetParsingDeclSpecifier();
 
-// This is your ParseDeclSpec
-// SyntaxResult<Decl> Parser::ParseDecl(DeclSyntaxParsingOptions flags,
-//                                      AccessLevel accessLevel) {
-//   SyntaxResult<Decl> declResult;
+  SyntaxResult<Decl> result;
 
-//   // TODO: ParseTemplateDecl first before you move
-//   // ParsingDeclSpecifier pds(*this);
+  if (!curTok.IsPointerOperator()) {
+    return result;
+  }
+  if (curTok.IsPointerOperator()) {
+  }
+  // We are dealing with a pointer operator and:
 
-//   switch (curTok.GetKind()) {
+  return result;
+}
 
-//   case tok::kw_fun:
-//     declResult = ParseFunDecl(accessLevel);
-//     break;
-//   default:
-//     // if (IsBasicType(curTok.GetKind())) {
-//     // }
-//     break;
-//   }
-//   return declResult;
-// }
+SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &specifier) {
 
-SyntaxResult<Decl> Parser::ParseFunDecl(DeclSyntaxParsing &syntaxParsing) {
-
-  assert(curTok.Is(tok::kw_fun) &&
+  assert(curTok.IsFun() &&
          "Attempting to parse a 'fun' decl with incorrect curTok.");
-
   auto funLoc = ConsumeToken(tok::kw_fun);
+
+  // const FunctionSpecifierContext &functionContext =
+  //     specifier.GetFunctionSpecifierContext();
+  // assert(functionContext.HasFunction());
+
+  // Build the DeclName
+  DeclNameInfo nameInfo;
+
   // Parse function name.
-  Identifier name = GetIdentifier(curTok.GetText());
+  auto name = GetIdentifier(curTok.GetText());
+  DeclName fullName(&name);
+  nameInfo.SetName(fullName);
+
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
+  nameInfo.SetNameLoc(nameLoc);
 
-  FunDecl *funDecl = syntax.MakeFunDecl(name, nameLoc, nullptr);
-  funDecl->SetAccessLevel(syntaxParsing.level);
-  funDecl->SetFunLoc(funLoc);
+  // FunDecl *funDecl = syntax.MakeFunDecl(&name, nameLoc, nullptr);
 
-  // funDecl->SetTemplate...
+  // // TODO: Think about this part
 
-  // QualType *returnType = nullptr;
-  // DeclName fullName;
+  // funDecl->SetAccessLevel(specifier.GetAccessLevel());
+  // funDecl->SetFunLoc(funLoc);
 
-  // Scope is functin signaure
-  if (ParseFunctionSignature(*funDecl).IsError()) {
-    return syn::MakeSyntaxError();
-  }
+  // // funDecl->SetTemplate...
+  // // QualType *returnType = nullptr;
+  // // DeclName fullName;
 
-  // Scope is now function body
-  if (ParseFunctionBody(*funDecl).IsError()) {
-    return syn::MakeSyntaxError();
-  }
-  // syntax.VerifyDecl(funDecl);
+  // // Scope is functin signaure
+  // if (ParseFunctionSignature(specifier, *funDecl).IsError()) {
+  //   return syn::MakeSyntaxError();
+  // }
 
-  return syn::MakeSyntaxResult<Decl>(funDecl);
+  // // Scope is now function body
+  // if (ParseFunctionBody(specifier, *funDecl).IsError()) {
+  //   return syn::MakeSyntaxError();
+  // }
+  // // syntax.VerifyDecl(funDecl);
+
+  return syn::MakeSyntaxResult<Decl>(nullptr);
 }
 
-SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclSpecifier &specifier,
+                                            FunDecl &funDecl) {
 
-  // SyntaxParsingScope syntaxScope(SyntaxKind::FunctionSignature);
+  // ParsingScope syntaxScope(SyntaxKind::FunctionSignature);
 
   // TODO:
   // if(name == "Main"){
@@ -185,7 +225,7 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
   // Get Identifier
   // funDecl->SetIdentifier();
 
-  ParseFunctionArguments(funDecl);
+  ParseFunctionArguments(specifier, funDecl);
 
   SrcLoc arrowLoc;
 
@@ -207,12 +247,14 @@ SyntaxStatus Parser::ParseFunctionSignature(FunDecl &funDecl) {
   // funDecl->SetReturnType();
 
   SyntaxResult<QualType> resultType =
-      ParseDeclResultType(diag::err_expected_type_for_function_result);
+      ParseDeclResultType(specifier.GetTypeSpecifierContext(),
+                          diag::err_expected_type_for_function_result);
 
   // ConsumeToken();
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclSpecifier &specifier,
+                                            FunDecl &funDecl) {
 
   assert(curTok.Is(tok::l_paren) && "Require '(' brace.");
   auto lParenLoc = ConsumeToken(tok::l_paren);
@@ -225,7 +267,8 @@ SyntaxStatus Parser::ParseFunctionArguments(FunDecl &funDecl) {
   return syn::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::ParseFunctionBody(FunctionDecl &funDecl) {
+SyntaxStatus Parser::ParseFunctionBody(ParsingDeclSpecifier &specifier,
+                                       FunctionDecl &funDecl) {
 
   assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
   auto lParenLoc = ConsumeToken(tok::l_brace);
@@ -236,6 +279,12 @@ SyntaxStatus Parser::ParseFunctionBody(FunctionDecl &funDecl) {
   return syn::MakeSyntaxSuccess();
 }
 
-BraceStmt *Parser::ParseFunctionBodyImpl(FunctionDecl &funDecl) {
+BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
+                                         FunctionDecl &funDecl) {
   return nullptr;
+}
+
+SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclSpecifier &specifier) {
+
+  return syn::MakeSyntaxResult<Decl>(nullptr);
 }

@@ -1,9 +1,11 @@
 #ifndef STONE_SYNTAX_DECLSPECIFIER_H
 #define STONE_SYNTAX_DECLSPECIFIER_H
 
+#include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
+#include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -21,7 +23,7 @@ enum class DeclaratorChunkKind {
   Pipe,
 };
 
-enum class DeclaratorScopeKind {
+enum class DeclaratorContextKind {
   SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
   TypeName,            // Abstract declarator for types.
@@ -75,29 +77,39 @@ public:
   // }
 };
 
-class TypeSpecifierContext final {
-  TypeSpecifierKind kind;
+class FunctionSpecifierContext final {
+  SrcLoc inlineLoc;
+  SrcLoc forcedInlineLoc;
+  SrcLoc virtualLoc;
+
+  enum Flags : unsigned {
+    None = 1 << 0,
+    FunctionDef = 1 << 1,
+    Inline = 1 << 2,
+    ForcedInline = 1 << 3,
+    Virtual = 1 << 4,
+    NoReturn = 1 << 5
+  };
+
+private:
+  unsigned flags;
 
 public:
-  TypeSpecifierContext() : kind(TypeSpecifierKind::None) {}
+  void AddFunctionDef(SrcLoc loc) { flags |= FunctionDef; }
+  void AddInline(SrcLoc loc) { flags |= Inline; }
+  void AddForcedInline(SrcLoc loc) { flags |= ForcedInline; }
+  void AddVirtual(SrcLoc loc) { flags |= Virtual; }
+  void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
 
-public:
-  bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
-                           const char *&prevTypeSpecifier, Diag<> diagID,
-                           Decl *rep, bool owned);
-
-  // bool SetFunctionSpecifierInline(SourceLocation Loc, const char *&prevSpec,
-  //                            unsigned &DiagID);
-
-  // bool setFunctionSpecifierForceInline(SourceLocation Loc, const char
-  // *&PrevSpec,
-  //                                 unsigned &DiagID);
-
-public:
-  TypeSpecifierKind GetKind() { return kind; }
-
-  bool IsBasicType();
-  bool IsNominalType();
+  bool HasFunctionDef() {
+    return flags && FunctionSpecifierContext::FunctionDef;
+  }
+  bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
+  bool HasForcedInline() {
+    return flags & FunctionSpecifierContext::ForcedInline;
+  }
+  bool HasVirtual() { return flags & FunctionSpecifierContext::Virtual; }
+  bool HasNoReturn() { return flags & FunctionSpecifierContext::NoReturn; }
 };
 
 class StorageSpecifierContext final {
@@ -115,9 +127,13 @@ public:
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
-
   TypeSpecifierContext typeSpecifierContext;
+  TypeQualifierContext typeQualifierContext;
   StorageSpecifierContext storageSpecifierContext;
+  FunctionSpecifierContext functionSpecifierContext;
+
+  SrcLoc accessLevelLoc;
+  AccessLevel accessLevel = AccessLevel::Private;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -126,12 +142,36 @@ public:
   DeclSpecifier(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
 
+private:
+  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+    accessLevel = inputLevel;
+    accessLevelLoc = inputLoc;
+  }
+
 public:
   StorageSpecifierContext &GetStorageSpeciferContext() {
     return storageSpecifierContext;
   }
   TypeSpecifierContext &GetTypeSpecifierContext() {
     return typeSpecifierContext;
+  }
+  FunctionSpecifierContext &GetFunctionSpecifierContext() {
+    return functionSpecifierContext;
+  }
+  TypeQualifierContext &GetTypeQualifireContext() {
+    return typeQualifierContext;
+  }
+  AccessLevel GetAccessLevel() { return accessLevel; }
+  SrcLoc GetAccessLevelLoc() { return accessLevelLoc; }
+
+  void AddPublicAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Public, loc);
+  }
+  void AddPrivateAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Private, loc);
+  }
+  void AddInternalAccessLevel(SrcLoc loc) {
+    AddAccessLevel(AccessLevel::Internal, loc);
   }
 };
 
@@ -140,7 +180,7 @@ class Declarator {
   const DeclSpecifier &declSpecifier;
   ScopeSpecifier scopeSpecifier;
   /// Where we are parsing this declarator.
-  DeclaratorScopeKind scopeKind;
+  DeclaratorContextKind contextKind;
 
   // /// The C++17 structured binding, if any. This is an alternative to a Name.
   // DecompositionDeclarator bindingGroup;
@@ -156,14 +196,15 @@ class Declarator {
   llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
-  Declarator(const DeclSpecifier &declSpecifier, DeclaratorScopeKind scopeKind)
-      : declSpecifier(declSpecifier) {}
+  Declarator(const DeclSpecifier &declSpecifier,
+             DeclaratorContextKind scopeKind)
+      : declSpecifier(declSpecifier), contextKind(contextKind) {}
 
 public:
   /// getDeclSpec - Return the declaration-specifier that this declarator was
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
-  DeclaratorScopeKind GetScopeKind() { return scopeKind; }
+  DeclaratorContextKind GetContextKind() { return contextKind; }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

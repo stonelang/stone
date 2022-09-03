@@ -1,7 +1,7 @@
 #include "stone/Parse/Parse.h"
-#include "stone/LangContext.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/SyntaxListener.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 
@@ -18,6 +18,10 @@ void syn::Parse(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener) {
     return;
   }
   for (auto result : results) {
-    sf.AddTopLevelDecl(result.Get());
+    if (!result.IsNull()) {
+      sf.AddTopLevelDecl(result.Get());
+    } else {
+      // Log something
+    }
   }
 }

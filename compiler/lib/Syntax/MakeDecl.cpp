@@ -20,19 +20,19 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-Module *Syntax::MakeModuleDecl(Identifier &name, bool isMainModule) {
+Module *Syntax::MakeModuleDecl(Identifier *name, bool isMainModule) {
   auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetSyntaxContext(),
                                                       sizeof(syn::Module));
   return ::new (declPtr) syn::Module(name, GetSyntaxContext());
 }
 
-FunDecl *Syntax::MakeFunDecl(DeclName name, SrcLoc nameLoc,
-                             DeclContext *parent) {
-  size_t size =
-      sizeof(FunDecl); // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
+FunDecl *Syntax::MakeFunDecl(DeclNameInfo &nameInfo, DeclContext *parent) {
+  size_t size = sizeof(FunDecl);
+  // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetSyntaxContext(), size);
-  return ::new (declPtr) FunDecl(name, nameLoc, parent);
+  return ::new (declPtr) FunDecl(nameInfo.GetName(), nameInfo.GetNameLoc(),
+                                 nameInfo.GetSpecialNameLoc(), parent);
 }
 
 StructDecl *Syntax::MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc) {

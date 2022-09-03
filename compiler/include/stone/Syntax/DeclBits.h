@@ -83,7 +83,7 @@ class NominalTypeDeclBits {
 };
 
 /// Number of non-inherited bits in TagDeclBitfields.
-enum { NumNominalTypeDeclBits = 9 };
+enum : unsigned { NumNominalTypeDeclBits = 3 + 1 + 1 + 1 + 1 + 1 + 1 };
 
 /// Stores the bits used by FunctionDecl.
 /// If modified NumFunctionDeclBits and the accessor
@@ -162,12 +162,12 @@ class ModuleDeclBits final {
 
   /// Whether the module was imported from Clang (or, someday, maybe another
   /// language).
-  uint64_t IsNonLangModule : 1;
+  uint64_t IsClangModule : 1;
 
   /// Whether this module is the main module.
   uint64_t IsMainModule : 1;
 };
-enum { NumModuleBits = 5 };
+enum { NumModuleBits = 1 + 1 + 1 + 1 };
 
 class EnumDeclBitfields final {
   friend class EnumDecl;

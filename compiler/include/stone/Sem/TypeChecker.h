@@ -2,7 +2,7 @@
 #define STONE_SEM_TYPECHECKER_H
 
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -11,6 +11,7 @@
 using namespace stone::syn;
 
 namespace stone {
+class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
@@ -18,7 +19,6 @@ class SyntaxFile;
 } // namespace syn
 namespace sem {
 class TypeChecker;
-class TypeCheckerOptions;
 
 class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;

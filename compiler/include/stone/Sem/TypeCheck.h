@@ -4,6 +4,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
+class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
@@ -12,13 +13,13 @@ class Module;
 
 } // namespace syn
 namespace sem {
-class TypeCheckerOptions;
+
 /// Perform type checking
-void TypeCheck(syn::SyntaxFile &sf, TypeCheckerOptions &typeCheckerOpts,
+void TypeCheck(syn::SyntaxFile &sf, stone::TypeCheckerOptions &typeCheckerOpts,
                TypeCheckerListener *pipeline = nullptr);
 
 /// Perform type checking
-void TypeCheck(syn::Module &sf, TypeCheckerOptions &typeCheckerOpts,
+void TypeCheck(syn::Module &sf, stone::TypeCheckerOptions &typeCheckerOpts,
                TypeCheckerListener *pipeline = nullptr);
 } // namespace sem
 

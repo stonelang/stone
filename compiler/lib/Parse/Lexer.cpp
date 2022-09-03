@@ -1,9 +1,10 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Confusable.h"
-#include "stone/Parse/SyntaxListener.h"
+#include "stone/Syntax/Identifier.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -219,8 +220,7 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
   initialize(Offset, EndOffset);
 }
 
-Lexer::Lexer(Lexer &Parent, SyntaxLexingState BeginState,
-             SyntaxLexingState EndState)
+Lexer::Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState)
     : Lexer(PrincipalCtor(), Parent.BufferID, Parent.sm, Parent.de, Parent.se,
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed
@@ -251,7 +251,7 @@ Token Lexer::getTokenAt(SrcLoc Loc) {
   Lexer L(BufferID, sm, de, se, LexMode, HashbangMode::Allowed,
           CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia);
 
-  L.restoreState(SyntaxLexingState(Loc));
+  L.restoreState(LexingState(Loc));
   return L.Peek();
 }
 
@@ -316,7 +316,7 @@ void Lexer::formStringLiteralToken(const char *TokStart, bool IsMultilineString,
   }
 }
 
-SyntaxLexingState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
+LexingState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
   const char *Ptr = getBufferPtrForSrcLoc(Loc);
   // Skip whitespace backwards until we hit a newline.  This is needed to
   // correctly lex the token if it is at the beginning of the line.
@@ -340,7 +340,7 @@ SyntaxLexingState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
     }
     break;
   }
-  return SyntaxLexingState(SrcLoc(llvm::SMLoc::getFromPointer(Ptr)));
+  return LexingState(SrcLoc(llvm::SMLoc::getFromPointer(Ptr)));
 }
 
 //===----------------------------------------------------------------------===//
@@ -881,8 +881,9 @@ void Lexer::lexOperatorIdentifier() {
       return formToken(tok::alien, TokStart);
     }
     case '?':
-      if (leftBound)
+      if (leftBound) {
         return formToken(tok::question_postfix, TokStart);
+      }
       return formToken(tok::question_infix, TokStart);
     }
   } else if (CurPtr - TokStart == 2) {
@@ -2706,7 +2707,7 @@ Token Lexer::getTokenAtLocation(const SrcMgr &sm, SrcLoc Loc,
   // we need to lex just the comment token.
   Lexer L(BufferID, sm, nullptr, nullptr, LexerMode::Stone,
           HashbangMode::Allowed, CRM);
-  L.restoreState(SyntaxLexingState(Loc));
+  L.restoreState(LexingState(Loc));
   return L.Peek();
 }
 

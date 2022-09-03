@@ -9,8 +9,10 @@ namespace syn {
 // TODO: Think about
 enum class SyntaxScopeKind : UInt8 {
   None = 0,
-  /// A synta file , which is the root of a scope.
+  /// A syntax file , which is the root of a scope.
   SyntaxFile,
+
+  Decl,
 
   // Declaration of a type
   ForwardDecl,

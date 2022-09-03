@@ -45,9 +45,9 @@ public:
 public:
   //== Declarations ==/
   void VerifyDecl(Decl *d);
-  Module *MakeModuleDecl(Identifier &name, bool isMainModule);
+  Module *MakeModuleDecl(Identifier *name, bool isMainModule);
 
-  FunDecl *MakeFunDecl(DeclName name, SrcLoc nameLoc, DeclContext *parent);
+  FunDecl *MakeFunDecl(DeclNameInfo &nameInfo, DeclContext *parent);
   void VerifyFunDecl(Decl *d);
 
   StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc);

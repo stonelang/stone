@@ -9,7 +9,9 @@
 
 namespace stone {
 
-struct alignas(uint8_t) Error final {
+constexpr size_t ErrorAlignment = 8;
+
+struct alignas(1 << ErrorAlignment) Error final {
 private:
   bool err;
   Error &operator=(const Error &other) = delete;

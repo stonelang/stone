@@ -1,6 +1,0 @@
-space Build;
-
-public pure struct BuildOptions {
-
-
-}

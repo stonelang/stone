@@ -1,6 +1,0 @@
-space Build;
-
-
-fun Main() -> int {
-	return 0;
-}

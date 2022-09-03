@@ -4,7 +4,7 @@ space Syntax.Template {
 
 public any<T> interface Queue {
 	fun Push(const T* t);
-	fun Pop() -> *T;
+	fun Pop() -> T*;
 }
 
 public any<T> struct PriorityQueue : Queue<T> {
@@ -22,14 +22,14 @@ public fun PriorityQueue::Pop() -> T* {
 
 }
 
-// // vs
-// public interface Queue<T> {
-// 	fun Push(const T* t) -> void;
-// 	fun Pop() -> *T;
-// }
+// vs
+public interface Queue<T> {
+	fun Push(const T* t) -> void;
+	fun Pop() -> T*;
+}
 
-// public struct PriorityQueue<T> : Queue<T> {
-// 	private T[] entries; 
-// }
+public struct PriorityQueue<T> : Queue<T> {
+	private T[] entries; 
+}
 
 

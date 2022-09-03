@@ -1,7 +1,7 @@
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Sem/TypeCheckerListener.h"
-#include "stone/Sem/TypeCheckerOptions.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
 using namespace stone::sem;

@@ -4,7 +4,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/PrimaryFileSpecificPaths.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Session/Options.h"
 
 #include "llvm/Option/Arg.h"

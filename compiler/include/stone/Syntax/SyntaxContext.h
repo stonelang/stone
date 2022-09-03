@@ -14,7 +14,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
@@ -22,6 +22,16 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/Using.h"
+
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/Expr.h"
+#include "stone/Syntax/Ownership.h"
+#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxDiagnosticArgument.h"
+#include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -55,11 +65,20 @@ class ConstructorDecl;
 class MethodDecl;
 class RecordDecl;
 class Expr;
-class MangleCtx;
+class MangleContext;
 class Module;
 class Stmt;
 class Builtin;
 class SyntaxContext;
+class Decl;
+class DeclContext;
+class FunDecl;
+class StructDecl;
+class Stmt;
+class IfStmt;
+class SwitchStmt;
+class Expr;
+class SyntaxFile;
 
 class SyntaxContextStats final : public Stats {
   const SyntaxContext &tc;

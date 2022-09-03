@@ -6,20 +6,20 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/PackageSystem.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/LangContext.h"
-#include "stone/Sem/TypeCheckerListener.h"
-#include "stone/Sem/TypeCheckerOptions.h"
+#include "stone/Public.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -66,9 +66,11 @@ class CompilerInvocation final : public Session {
   SearchPathOptions searchPathOpts;
 
   /// The options for type-checking
-  sem::TypeCheckerOptions typeCheckerOpts;
+  TypeCheckerOptions typeCheckerOpts;
 
   TargetOptions targetOpts;
+
+  LangOptions langOpts;
 
   SyntaxOptions syntaxOpts;
 
@@ -125,6 +127,9 @@ public:
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
 
 public:
+  void SetTargetTriple(llvm::StringRef triple);
+  void SetTargetTriple(const llvm::Triple &Triple);
+
   CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {
     return *invocationOpts.get();
@@ -139,8 +144,8 @@ public:
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
 
-  sem::TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
-  const sem::TypeCheckerOptions &GetTypeCheckerOptions() const {
+  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+  const TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
   }
 
@@ -149,9 +154,9 @@ public:
     return searchPathOpts;
   }
 
-  sem::TypeCheckMode GetTypeCheckMode() {
-    return (primarySourceIDs.empty() ? sem::TypeCheckMode::WholeModule
-                                     : sem::TypeCheckMode::EachFile);
+  TypeCheckMode GetTypeCheckMode() {
+    return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
+                                     : TypeCheckMode::EachFile);
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 

@@ -2,7 +2,6 @@ set(stone_compile_sources
 	Compile.cpp
 	CompilerInstance.cpp
 	Deserialization.cpp
-	DebugCompilerListener.cpp
 	CompilerInvocation.cpp
 	CompilerOptions.cpp
 	CompilerInputsAndOutputs.cpp
@@ -13,7 +12,6 @@ set(stone_compile_sources
 	ModuleDependencies.cpp
 	PackageSystem.cpp
 	Serialization.cpp
-	TargetMachine.cpp
 
 	LINK_LIBS
 	StoneGen
