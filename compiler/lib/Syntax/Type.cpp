@@ -4,7 +4,7 @@
 
 using namespace stone::syn;
 
-bool SyntaxType::Walk(TypeWalker &walker) const {}
+bool Type::Walk(TypeWalker &walker) const {}
 
 // SrcLoc TypeLoc::GetLoc() const {
 
