@@ -14,9 +14,9 @@
 using namespace stone;
 using namespace stone::syn;
 
-struct SyntaxContext::Extension final {
-  Extension();
-  ~Extension();
+struct SyntaxContext::Internal final {
+  Internal();
+  ~Internal();
 
   llvm::BumpPtrAllocator allocator;
 
@@ -33,15 +33,15 @@ struct SyntaxContext::Extension final {
   std::vector<std::function<void(void)>> cleanups;
 
   struct Arena final {
-    static_assert(alignof(Type) >= 8, "Type not 8-byte aligned?");
+    // static_assert(alignof(Type) >= 8, "Type not 8-byte aligned?");
   };
   /// The permanent arena.
   Arena permanent;
 };
 
-SyntaxContext::Extension::Extension() : identifiers(allocator) {}
+SyntaxContext::Internal::Internal() : identifiers(allocator) {}
 
-SyntaxContext::Extension::~Extension() {}
+SyntaxContext::Internal::~Internal() {}
 
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)

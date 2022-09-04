@@ -1,6 +1,6 @@
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/SyntaxType.h"
 #include "stone/Syntax/TypeLoc.h"
+#include "stone/Syntax/Types.h"
 
 using namespace stone::syn;
 

@@ -2,8 +2,8 @@
 #define STONE_SYNTAX_TYPELOC_H
 
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/PointerIntPair.h"
 

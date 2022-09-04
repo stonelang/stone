@@ -14,7 +14,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"

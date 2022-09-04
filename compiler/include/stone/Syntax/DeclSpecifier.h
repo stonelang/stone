@@ -5,7 +5,7 @@
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

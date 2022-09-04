@@ -4,9 +4,9 @@
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -44,20 +44,20 @@
 namespace stone {
 namespace syn {
 
-class Type;
+class TypeBase;
 class TypeWalker;
 
 class SyntaxType {
-  Type *typePtr = nullptr;
+  TypeBase *typePtr = nullptr;
 
 public:
-  SyntaxType(Type *typePtr = 0) : typePtr(typePtr) {}
+  SyntaxType(TypeBase *typePtr = 0) : typePtr(typePtr) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
-  Type *GetPtr() const { return typePtr; }
+  TypeBase *GetPtr() const { return typePtr; }
 
-  Type *operator->() const {
+  TypeBase *operator->() const {
     assert(typePtr && "Cannot dereference a null SyntaxType!");
     return typePtr;
   }
@@ -119,8 +119,8 @@ public:
   /// rather \c getAs, because the transform itself handles desugaring.
   ///
   /// \returns the result of transforming the SyntaxType.
-  SyntaxType
-  TransformRec(llvm::function_ref<llvm::Optional<SyntaxType>(Type *)> fn) const;
+  SyntaxType TransformRec(
+      llvm::function_ref<llvm::Optional<SyntaxType>(TypeBase *)> fn) const;
 
   /// Look through the given SyntaxType and its children and apply fn to them.
   void Visit(llvm::function_ref<void(SyntaxType)> fn) const {

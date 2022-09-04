@@ -172,17 +172,17 @@ enum class ScalarTypeKind {
   FloatingComplex,
   FixedPoint
 };
-class alignas(1 << TypeAlignInBits) Type
+class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
 
 public:
 };
 
 /// const int a = 10; volatile int a = 10;
-class QualType : public Type {
+class QualType : public TypeBase {
 public:
   QualType() = default;
-  QualType(const Type *ty, unsigned quals) {}
+  QualType(const TypeBase *ty, unsigned quals) {}
 
 public:
   /// Retrieves a pointer to the underlying (unqualified) type.

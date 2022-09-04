@@ -20,7 +20,7 @@
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPath.h"
 #include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 #include "stone/Syntax/Using.h"
 
 #include "stone/Basic/SrcLoc.h"
@@ -30,7 +30,7 @@
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxResult.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -139,8 +139,8 @@ public:
 
 public:
   // Members that should only be used by ASTContext.cpp.
-  struct Extension;
-  Extension &GetExtension() const;
+  struct Internal;
+  Internal &GetInternal() const;
 
   ///
   Identifier &GetIdentifier(llvm::StringRef name);

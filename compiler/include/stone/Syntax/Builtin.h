@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_BUILTIN_H
 #define STONE_SYNTAX_BUILTIN_H
 
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 namespace stone {
 namespace syn {

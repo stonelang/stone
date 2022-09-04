@@ -1,7 +1,7 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
