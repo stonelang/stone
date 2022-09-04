@@ -3,7 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-static bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
+bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
   switch (kind) {
   case TypeSpecifierKind::Float:
   case TypeSpecifierKind::Float32:

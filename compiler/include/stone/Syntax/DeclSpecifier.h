@@ -108,7 +108,7 @@ public:
   void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
   void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
 
-  bool HasFun() { return flags && FunctionSpecifierContext::Fun; }
+  bool HasFun() { return flags & FunctionSpecifierContext::Fun; }
   SrcLoc GetFunLoc() { return funLoc; }
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
   bool HasForcedInline() {

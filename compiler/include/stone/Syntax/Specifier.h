@@ -46,10 +46,6 @@ public:
   TypeSpecifierContext() : typeSpecifierKind(TypeSpecifierKind::None) {}
 
 public:
-  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
-  //                          const char *&prevTypeSpecifier, Diag<> diagID,
-  //                          Decl *rep, bool owned);
-
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
   bool HasTypeSpecifierKind() const {
     return typeSpecifierKind != TypeSpecifierKind::None;
