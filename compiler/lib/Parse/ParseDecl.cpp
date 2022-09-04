@@ -82,7 +82,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
   while (true) {
   BeginParse:
 
-    if (IsDone() || curTok.IsIdentifierOrUnderscore()) {
+    if (IsDone()) {
       goto EndParse;
     }
 
@@ -139,6 +139,21 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       if (curTok.IsEnum()) {
         spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
         // result = ParseEnumDecl(spec);
+      }
+      goto EndParse;
+    }
+
+    // if(curTok.Is(tok::star)){
+    // }
+
+    if (curTok.IsIdentifierOrUnderscore()) {
+      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+
+        ParsingDeclarator declarator(specifier,
+                                     DeclaratorContextKind::SyntaxFile);
+        result = ParseVarDecl(declarator);
+      } else {
+        // This is just some random variable with no type -- error message.
       }
       goto EndParse;
     }
