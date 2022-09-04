@@ -227,6 +227,15 @@ public:
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
   DeclaratorContextKind GetContextKind() { return contextKind; }
+
+public:
+  /// AddTypeInfo - Add a chunk to this declarator. Also extend the range to
+  /// EndLoc, which should be the last token of the chunk.
+  void AddTypeInfo(const DeclaratorChunk &chunk, SrcLoc endLoc) {
+    declTypeInfo.push_back(chunk);
+    // if (!EndLoc.isInvalid())
+    //   SetRangeEnd(EndLoc);
+  }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

@@ -828,7 +828,7 @@ void Lexer::lexOperatorIdentifier() {
   if (CurPtr - TokStart == 1) {
     switch (TokStart[0]) {
 
-    case '*':{
+    case '*': {
       return formToken(tok::star, TokStart);
     }
     case '=':
@@ -890,7 +890,7 @@ void Lexer::lexOperatorIdentifier() {
       }
       return formToken(tok::question_infix, TokStart);
     }
-    
+
   } else if (CurPtr - TokStart == 2) {
     switch ((TokStart[0] << 8) | TokStart[1]) {
     case ('-' << 8) | '>': // ->

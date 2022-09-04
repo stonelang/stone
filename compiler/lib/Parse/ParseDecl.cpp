@@ -85,7 +85,6 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     if (IsDone()) {
       goto EndParse;
     }
-
     // First, we check for access levels -- if one is not found, we will
     // eventually come back to it.
     if (!spec.HasAccessLevel()) {
@@ -130,13 +129,13 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         }
       }
     }
-
-    // Check for pointers 
-     if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() && curTok.IsStar()){
-        // Just consume for now
-        ConsumeToken();
-        goto BeginParse;
-     }
+    // Check for pointers
+    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
+        curTok.IsStar()) {
+      // Just consume for now
+      ConsumeToken();
+      goto BeginParse;
+    }
 
     if (!spec.GetFunctionSpecifierContext().HasFun() && curTok.IsFun()) {
       spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
@@ -147,7 +146,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       result = ParseFunDecl(spec);
       goto EndParse;
     }
-    
+
     if (curTok.IsIdentifierOrUnderscore()) {
       if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
@@ -156,14 +155,13 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // This is just some random variable with no type -- error message.
       }
       goto EndParse;
-    } 
+    }
 
     ConsumeToken();
 
   } // End of while
 
 EndParse : { return result; }
-
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
