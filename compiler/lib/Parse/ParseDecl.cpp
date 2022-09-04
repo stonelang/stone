@@ -131,6 +131,13 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
     }
 
+    // Check for pointers 
+     if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() && curTok.IsStar()){
+        // Just consume for now
+        ConsumeToken();
+        goto BeginParse;
+     }
+
     if (!spec.GetFunctionSpecifierContext().HasFun() && curTok.IsFun()) {
       spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
       // This goes into the ParseFunDecl
@@ -140,9 +147,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       result = ParseFunDecl(spec);
       goto EndParse;
     }
-    // if(curTok.Is(tok::star)){
-    // }
-
+    
     if (curTok.IsIdentifierOrUnderscore()) {
       if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
@@ -151,7 +156,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // This is just some random variable with no type -- error message.
       }
       goto EndParse;
-    }
+    } 
+
     ConsumeToken();
 
   } // End of while

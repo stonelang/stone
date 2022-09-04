@@ -176,6 +176,7 @@ public:
   bool IsLeftParen() { return kind == tok::l_paren; }
   bool IsRightParen() { return kind == tok::r_paren; }
   bool IsEnum() { return kind == tok::kw_enum; }
+  bool IsStar() { return kind == tok::star; }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

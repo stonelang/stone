@@ -827,6 +827,10 @@ void Lexer::lexOperatorIdentifier() {
   // Match various reserved words.
   if (CurPtr - TokStart == 1) {
     switch (TokStart[0]) {
+
+    case '*':{
+      return formToken(tok::star, TokStart);
+    }
     case '=':
       // Refrain from emitting this message in operator name position.
       if (NextToken.IsNot(tok::kw_operator) && leftBound != rightBound) {
@@ -886,6 +890,7 @@ void Lexer::lexOperatorIdentifier() {
       }
       return formToken(tok::question_infix, TokStart);
     }
+    
   } else if (CurPtr - TokStart == 2) {
     switch ((TokStart[0] << 8) | TokStart[1]) {
     case ('-' << 8) | '>': // ->
