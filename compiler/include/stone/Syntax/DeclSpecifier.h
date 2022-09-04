@@ -12,17 +12,6 @@
 namespace stone {
 namespace syn {
 
-enum class DeclaratorChunkKind {
-  Pointer,
-  Reference,
-  Array,
-  Function,
-  BlockPointer,
-  MemberPointer,
-  Paren,
-  Pipe,
-};
-
 enum class DeclaratorContextKind {
   SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
@@ -48,10 +37,25 @@ enum class DeclaratorContextKind {
   RequiresExpr         // Requires-expression.
 };
 
+enum class DeclaratorChunkKind {
+  Pointer,
+  Reference,
+  Array,
+  Function,
+  BlockPointer,
+  MemberPointer,
+  Paren,
+  Pipe,
+};
+
 struct DeclaratorChunk final {
 public:
   DeclaratorChunk(){};
   DeclaratorChunkKind kind;
+
+public:
+  struct PointerTypeInfo {};
+  struct FunctionTypeInfo {};
 
 public:
   static DeclaratorChunk CreatePointer();
