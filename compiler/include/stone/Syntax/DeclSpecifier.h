@@ -82,9 +82,11 @@ class FunctionSpecifierContext final {
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
 
+  SrcLoc funLoc;
+
   enum Flags : unsigned {
     None = 1 << 0,
-    FunctionDef = 1 << 1,
+    Fun = 1 << 1,
     Inline = 1 << 2,
     ForcedInline = 1 << 3,
     Virtual = 1 << 4,
@@ -95,15 +97,19 @@ private:
   unsigned flags;
 
 public:
-  void AddFunctionDefinition(SrcLoc loc) { flags |= FunctionDef; }
-  void AddInline(SrcLoc loc) { flags |= Inline; }
-  void AddForcedInline(SrcLoc loc) { flags |= ForcedInline; }
-  void AddVirtual(SrcLoc loc) { flags |= Virtual; }
-  void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
-
-  bool HasFunctionDefinition() {
-    return flags && FunctionSpecifierContext::FunctionDef;
+  void AddFun(SrcLoc loc) {
+    flags |= Fun;
+    funLoc = loc;
   }
+  void AddInline(SrcLoc loc) { flags |= FunctionSpecifierContext::Inline; }
+  void AddForcedInline(SrcLoc loc) {
+    flags |= FunctionSpecifierContext::ForcedInline;
+  }
+  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
+  void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
+
+  bool HasFun() { return flags && FunctionSpecifierContext::Fun; }
+  SrcLoc GetFunLoc() { return funLoc; }
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
   bool HasForcedInline() {
     return flags & FunctionSpecifierContext::ForcedInline;
@@ -140,7 +146,7 @@ class DeclSpecifier {
   FunctionSpecifierContext functionSpecifierContext;
 
   SrcLoc accessLevelLoc;
-  AccessLevel accessLevel = AccessLevel::Private;
+  AccessLevel accessLevel = AccessLevel::None;
 
   // DescriptiveDeclSpecifier descriptiveDeclSpecifier =
   // DescriptiveDeclSpecifier::None;
@@ -183,6 +189,7 @@ public:
   void AddInternalAccessLevel(SrcLoc loc) {
     AddAccessLevel(AccessLevel::Internal, loc);
   }
+  bool HasAccessLevel() { return accessLevel != AccessLevel::None; }
 
   // void SetDescriptiveDeclSpecifier(DescriptiveDeclSpecifier descriptive){
   //   descriptiveDeclSpecifier = descriptive;

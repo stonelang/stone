@@ -1,3 +1,4 @@
+#include "stone/Basic/Defer.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/Stmt.h"
@@ -72,44 +73,114 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
                                      llvm::function_ref<void(Decl *)> handler) {
+  SyntaxStatus status;
 
   SyntaxResult<Decl> result;
   // TODO: Replace with ParsingScope
   ParsingContext parsingContext(ParsingContextKind::Decl);
 
-  ParseDeclSpecifier(spec);
+  while (true) {
+  BeginParse:
 
-  if (spec.GetFunctionSpecifierContext().HasFunctionDefinition()) {
-    return (result = ParseFunDecl(spec));
-  }
-
-  switch (spec.GetTypeSpecifierContext().GetTypeSpecifierKind()) {
-  case TypeSpecifierKind::Enum:
-    return (result = ParseEnumDecl(spec));
-  case TypeSpecifierKind::Struct:
-    return (result = ParseStructDecl(spec));
-  case TypeSpecifierKind::Interface:
-    return (result = ParseInterfaceDecl(spec));
-  default:
-    break;
-  }
-
-  if (spec.GetTypeSpecifierContext().IsBasicType() ||
-      spec.GetTypeSpecifierContext().IsAuto()) {
-
-    if (!curTok.IsIdentifierOrUnderscore()) {
-      // Error -- type declaration is missing a declarator/identifier
-      return result;
-    } else {
-      ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
-      return (result = ParseVarDecl(declarator));
+    if (IsDone() || curTok.IsIdentifierOrUnderscore()) {
+      goto EndParse;
     }
-  }
 
-  // Ok, it sesms that we have a random identifier
-  if (curTok.IsIdentifierOrUnderscore()) {
-    // Error -- declarator/identifier is missing a type 
-  }
+    if (!spec.HasAccessLevel()) {
+      status |= ParseAccessLevel(spec);
+      if (status.hasCodeCompletion()) {
+        goto BeginParse;
+      }
+    }
+    if (!spec.GetTypeQualifireContext().HasTypeQualifiers()) {
+      /// Look for any type qualifiers: const, volatile, restrict, etc.
+      status |= ParseTypeQualifiers(spec.GetTypeQualifireContext());
+      if (status.hasCodeCompletion()) {
+        goto BeginParse;
+      }
+    }
+
+    if (!spec.GetTypeSpecifierContext().IsBasicType()) {
+      status |= ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
+      if (status.hasCodeCompletion()) {
+        goto BeginParse;
+      }
+    }
+
+    if (!spec.GetFunctionSpecifierContext().HasFun()) {
+      if (curTok.IsFun()) {
+        spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
+        // This goes into the ParseFunDecl
+        // if (PeekNextToken().IsDoubleColon()) {
+        // specifier.GetFunctionSpecifierContext().SetIsMember();
+        //}
+        result = ParseFunDecl(spec);
+      }
+      goto EndParse;
+    }
+
+    if (!spec.GetTypeSpecifierContext().IsStruct()) {
+      if (curTok.IsStruct()) {
+        spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
+        result = ParseStructDecl(spec);
+      }
+      goto EndParse;
+    }
+
+    if (!spec.GetTypeSpecifierContext().IsInterface()) {
+      if (curTok.IsInterface()) {
+        spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
+        result = ParseInterfaceDecl(spec);
+      }
+      goto EndParse;
+    }
+
+    if (!spec.GetTypeSpecifierContext().IsEnum()) {
+      if (curTok.IsEnum()) {
+        spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
+        // result = ParseEnumDecl(spec);
+      }
+      goto EndParse;
+    }
+
+  } // End of while
+
+EndParse : { return result; }
+
+  // ParseDeclSpecifier(spec);
+
+  // if (spec.GetFunctionSpecifierContext().HasFun()) {
+  //   return (result = ParseFunDecl(spec));
+  // }
+
+  // switch (spec.GetTypeSpecifierContext().GetTypeSpecifierKind()) {
+  // case TypeSpecifierKind::Enum:
+  //   return (result = ParseEnumDecl(spec));
+  // case TypeSpecifierKind::Struct:
+  //   return (result = ParseStructDecl(spec));
+  // case TypeSpecifierKind::Interface:
+  //   return (result = ParseInterfaceDecl(spec));
+  // default:
+  //   break;
+  // }
+
+  // if (spec.GetTypeSpecifierContext().IsBasicType() ||
+  //     spec.GetTypeSpecifierContext().IsAuto()) {
+
+  //   if (!curTok.IsIdentifierOrUnderscore()) {
+  //     // Error -- type declaration is missing a declarator/identifier
+  //     return result;
+  //   } else {
+  //     ParsingDeclarator declarator(spec,
+  //     DeclaratorContextKind::SyntaxFile); return (result =
+  //     ParseVarDecl(declarator));
+  //   }
+  // }
+
+  // // Ok, it sesms that we have a random identifier
+  // if (curTok.IsIdentifierOrUnderscore()) {
+  //   // Error -- declarator/identifier is missing a type
+  // }
   return result;
 }
 
@@ -122,114 +193,113 @@ void Parser::ParseDeclSpecifier(ParsingDeclSpecifier &spec) {
     if (IsDone() || curTok.IsIdentifierOrUnderscore()) {
       return;
     }
-    SrcLoc loc = curTok.GetLoc();
     switch (curTok.GetKind()) {
-
     // Access levels
     case tok::kw_public:
-      spec.AddPublicAccessLevel(loc);
-      goto ConsumeSpec;
+      spec.AddPublicAccessLevel(ConsumeToken());
+      break;
     case tok::kw_internal:
-      spec.AddInternalAccessLevel(loc);
-      goto ConsumeSpec;
+      spec.AddInternalAccessLevel(ConsumeToken());
+      break;
     case tok::kw_private:
-      spec.AddInternalAccessLevel(loc);
-      goto ConsumeSpec;
+      spec.AddInternalAccessLevel(ConsumeToken());
+      break;
 
       /// CRV
     case tok::kw_const:
-      spec.GetTypeQualifireContext().AddConst(loc);
+      spec.GetTypeQualifireContext().AddConst(ConsumeToken());
       // We do not consume the token because the QualType that we create
       // will be of the following const int i = ....
-      goto ConsumeSpec;
+      break;
     case tok::kw_restrict:
-      spec.GetTypeQualifireContext().AddRestrict(loc);
-      goto ConsumeSpec;
+      spec.GetTypeQualifireContext().AddRestrict(ConsumeToken());
+      break;
     case tok::kw_volatile:
-      spec.GetTypeQualifireContext().AddVolatile(loc);
-      goto ConsumeSpec;
+      spec.GetTypeQualifireContext().AddVolatile(ConsumeToken());
+      break;
 
     // Functions
     case tok::kw_inline:
-      spec.GetFunctionSpecifierContext().AddInline(loc);
-      goto ConsumeSpec;
+      spec.GetFunctionSpecifierContext().AddInline(ConsumeToken());
+      break;
     case tok::kw_fun:
-      spec.GetFunctionSpecifierContext().AddFunctionDefinition(loc);
-      goto ConsumeSpec;
+      spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
+      goto EndParse;
 
       // Nominals
     case tok::kw_struct:
-      spec.GetTypeSpecifierContext().AddStruct(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
+      goto EndParse;
     case tok::kw_enum:
-      spec.GetTypeSpecifierContext().AddEnum(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
+      goto EndParse;
     case tok::kw_interface:
-      spec.GetTypeSpecifierContext().AddInterface(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
+      goto EndParse;
     case tok::kw_auto:
-      spec.GetTypeSpecifierContext().AddAuto(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddAuto(ConsumeToken());
+      goto EndParse;
 
       // Basic types
     case tok::kw_int:
-      spec.GetTypeSpecifierContext().AddInt(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInt(ConsumeToken());
+      goto EndParse;
     case tok::kw_int8:
-      spec.GetTypeSpecifierContext().AddInt8(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInt8(ConsumeToken());
+      goto EndParse;
     case tok::kw_int16:
-      spec.GetTypeSpecifierContext().AddInt16(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInt16(ConsumeToken());
+      goto EndParse;
     case tok::kw_int32:
-      spec.GetTypeSpecifierContext().AddInt32(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInt32(ConsumeToken());
+      goto EndParse;
     case tok::kw_int64:
-      spec.GetTypeSpecifierContext().AddInt64(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddInt64(ConsumeToken());
+      goto EndParse;
     case tok::kw_uint:
-      spec.GetTypeSpecifierContext().AddUInt(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddUInt(ConsumeToken());
+      goto EndParse;
     case tok::kw_uint8:
-      spec.GetTypeSpecifierContext().AddUInt8(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddUInt8(ConsumeToken());
+      goto EndParse;
     case tok::kw_byte:
-      spec.GetTypeSpecifierContext().AddByte(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddByte(ConsumeToken());
+      goto EndParse;
     case tok::kw_uint16:
-      spec.GetTypeSpecifierContext().AddUInt16(loc);
-      break;
+      spec.GetTypeSpecifierContext().AddUInt16(ConsumeToken());
+      goto EndParse;
     case tok::kw_uint32:
-      spec.GetTypeSpecifierContext().AddUInt32(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddUInt32(ConsumeToken());
+      goto EndParse;
     case tok::kw_uint64:
-      spec.GetTypeSpecifierContext().AddUInt64(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddUInt64(ConsumeToken());
+      goto EndParse;
     case tok::kw_float:
-      spec.GetTypeSpecifierContext().AddFloat(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddFloat(ConsumeToken());
+      goto EndParse;
     case tok::kw_float32:
-      spec.GetTypeSpecifierContext().AddFloat32(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddFloat32(ConsumeToken());
+      goto EndParse;
     case tok::kw_float64:
-      spec.GetTypeSpecifierContext().AddFloat64(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddFloat64(ConsumeToken());
+      goto EndParse;
     case tok::kw_complex32:
-      spec.GetTypeSpecifierContext().AddComplex32(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddComplex32(ConsumeToken());
+      goto EndParse;
     case tok::kw_complex64:
-      spec.GetTypeSpecifierContext().AddComplex64(loc);
-      goto ConsumeSpec;
+      spec.GetTypeSpecifierContext().AddComplex64(ConsumeToken());
+      goto EndParse;
     // Identifier marks the end
     case tok::identifier:
       goto EndParse;
-    default:
+    default: {
+
+      /// TODO: Figure out why we are here -- this must be an error
       break;
     }
-  ConsumeSpec:
-    ConsumeToken();
+    }
   }
-EndParse : {}
+EndParse : { return; }
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
@@ -253,13 +323,15 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 
   SyntaxStatus status;
-  assert(curTok.IsFun() &&
-         "Attempting to parse a 'fun' decl with incorrect curTok.");
-  auto funLoc = ConsumeToken(tok::kw_fun);
 
-  // const FunctionSpecifierContext &functionContext =
-  //     spec.GetFunctionSpecifierContext();
-  // assert(functionContext.HasFunction());
+  assert(spec.GetFunctionSpecifierContext().HasFun() &&
+         "Attempting to parse a function without a functin definition.");
+
+  auto funLoc = spec.GetFunctionSpecifierContext().GetFunLoc();
+
+  // At this point, we are expecting an identifier
+  assert(curTok.IsIdentifierOrUnderscore() &&
+         "Expecting function declarator or identifier");
 
   // Build the DeclName
   DeclNameInfo nameInfo;
@@ -310,15 +382,7 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
 
   status |= ParseFunctionArguments(spec);
 
-  SrcLoc arrowLoc;
-  if (!ConsumeIf(tok::arrow, arrowLoc)) {
-    // FixIt ':' to '->'.
-    PrintD(curTok, diag::err_expected_arrow_after_function_param)
-        .WithFix()
-        .Replace(curTok.GetLoc(), llvm::StringRef("->"));
-
-    // arrowLoc = ConsumeToken(tok::colon);
-  }
+  // status |= ParseFunctionResult(spec);
 
   // assert(curTok.Is(tok::arrow) && "Require '->'");
   // auto arrowLoc = ConsumeToken(tok::arrow);
@@ -351,12 +415,31 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclSpecifier &spec) {
     // auto diag = PrintD(Tok, diagID);
   } else {
     // Just consume for now
-    auto lParenLoc = ConsumeToken(tok::l_paren);
+    auto lParenLoc = ConsumeToken(tok::r_paren);
   }
   // auto result = ParseDeclResultType();
 
   return status;
 }
+
+// TODO: Actually return the type;
+// SyntaxStatus Parser::ParseFunctionResult(ParsingDeclSpecifier &spec) {
+//   SyntaxStatus status;
+
+//   SrcLoc arrowLoc;
+//   if (!ConsumeIf(tok::arrow, arrowLoc)) {
+//     // FixIt ':' to '->'.
+//     PrintD(curTok, diag::err_expected_arrow_after_function_param)
+//         .WithFix()
+//         .Replace(curTok.GetLoc(), llvm::StringRef("->"));
+
+//     // arrowLoc = ConsumeToken(tok::colon);
+//   }
+
+//   // ParseDeclSpecifier();
+
+//   return status;
+// }
 
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclSpecifier &spec,
                                        FunctionDecl &funDecl) {

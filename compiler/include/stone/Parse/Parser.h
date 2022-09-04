@@ -168,6 +168,8 @@ public:
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
+  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierContext &spec);
+
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                       ParsingDeclSpecifier &specifier);
 
@@ -182,6 +184,7 @@ private:
   //                                       TypeRepr *&retType);
 
   SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier);
+  SyntaxStatus ParseFunctionReturn(ParsingDeclSpecifier &specifier);
 
   SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
                                  FunctionDecl &functionDecl);

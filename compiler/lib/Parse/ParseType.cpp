@@ -60,84 +60,86 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
 }
 
 SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
-  SrcLoc loc = curTok.GetLoc();
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_auto:
-    specifier.AddAuto(loc);
+    specifier.AddAuto(ConsumeToken());
     break;
   case tok::kw_int:
-    specifier.AddInt(loc);
+    specifier.AddInt(ConsumeToken());
     break;
   case tok::kw_int8:
-    specifier.AddInt8(loc);
+    specifier.AddInt8(ConsumeToken());
     break;
   case tok::kw_int16:
-    specifier.AddInt16(loc);
+    specifier.AddInt16(ConsumeToken());
     break;
   case tok::kw_int32:
-    specifier.AddInt32(loc);
+    specifier.AddInt32(ConsumeToken());
     break;
   case tok::kw_int64:
-    specifier.AddInt64(loc);
+    specifier.AddInt64(ConsumeToken());
     break;
   case tok::kw_uint:
-    specifier.AddUInt(loc);
+    specifier.AddUInt(ConsumeToken());
     break;
   case tok::kw_uint8:
-    specifier.AddUInt8(loc);
+    specifier.AddUInt8(ConsumeToken());
     break;
   case tok::kw_byte:
-    specifier.AddByte(loc);
+    specifier.AddByte(ConsumeToken());
     break;
   case tok::kw_uint16:
-    specifier.AddUInt16(loc);
+    specifier.AddUInt16(ConsumeToken());
     break;
   case tok::kw_uint32:
-    specifier.AddUInt32(loc);
+    specifier.AddUInt32(ConsumeToken());
     break;
   case tok::kw_uint64:
-    specifier.AddUInt64(loc);
+    specifier.AddUInt64(ConsumeToken());
     break;
   case tok::kw_float:
-    specifier.AddFloat(loc);
+    specifier.AddFloat(ConsumeToken());
     break;
   case tok::kw_float32:
-    specifier.AddFloat32(loc);
+    specifier.AddFloat32(ConsumeToken());
     break;
   case tok::kw_float64:
-    specifier.AddFloat64(loc);
+    specifier.AddFloat64(ConsumeToken());
     break;
   case tok::kw_complex32:
-    specifier.AddComplex32(loc);
+    specifier.AddComplex32(ConsumeToken());
     break;
   case tok::kw_complex64:
-    specifier.AddComplex64(loc);
+    specifier.AddComplex64(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxError();
+    return status;
   }
-  return syn::MakeSyntaxSuccess();
+  status.SetHasCodeCompletion();
+  return status;
 }
 
 SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
-  SrcLoc loc = curTok.GetLoc();
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_const:
-    qualifier.AddConst(loc);
+    qualifier.AddConst(ConsumeToken());
     // We do not consume the token because the QualType that we create
     // will be of the following const int i = ....
     break;
   case tok::kw_volatile:
-    qualifier.AddVolatile(loc);
+    qualifier.AddVolatile(ConsumeToken());
     break;
   case tok::kw_restrict:
-    qualifier.AddRestrict(loc);
+    qualifier.AddRestrict(ConsumeToken());
     break;
   case tok::kw_pure:
-    qualifier.AddPure(loc);
+    qualifier.AddPure(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxError();
+    return status;
   }
-  return syn::MakeSyntaxSuccess();
+  status.SetHasCodeCompletion();
+  return status;
 }

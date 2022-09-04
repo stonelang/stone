@@ -7,6 +7,7 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
       sc(new syn::SyntaxContext(invocation.GetLangContext(),
                                 invocation.GetSearchPathOptions())),
+      stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation.GetLangContext(), GetSyntaxContext(),
                           invocation.GetCompilerOptions().moduleOpts)) {
 

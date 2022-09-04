@@ -335,8 +335,9 @@ public:
   bool IsFun() { return token.GetKind() == tok::kw_fun; }
   bool IsStruct() { return token.GetKind() == tok::kw_struct; }
   bool IsInterface() { return token.GetKind() == tok::kw_interface; }
+  bool IsEnum() { return token.GetKind() == tok::kw_enum; }
   bool IsPure() { return token.GetKind() == tok::kw_pure; }
-  bool IsInline() { return token.GetKind() == tok::kw_pure; }
+  bool IsInline() { return token.GetKind() == tok::kw_inline; }
 };
 
 } // namespace syn

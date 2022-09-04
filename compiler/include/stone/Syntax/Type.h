@@ -122,6 +122,9 @@ public:
     mask |= TypeQualifierFlags::Pure;
   }
 
+  bool HasTypeQualifiers() {
+    return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
+  }
   SrcLoc GetVolatileLoc() { return volatileLoc; }
 
   // bool HasCVR() const { return getCVRQualifiers(); }

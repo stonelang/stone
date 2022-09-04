@@ -26,10 +26,10 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     &result)>;
 
 class CompilerInstanceStats final : public Stats {
-  CompilerInstance &compiler;
+  const CompilerInstance &compiler;
 
 public:
-  CompilerInstanceStats(CompilerInstance &compiler)
+  CompilerInstanceStats(const CompilerInstance &compiler)
       : Stats("CompilerInvocationstatistics:"), compiler(compiler) {}
   void Print(ColorfulStream &stream) override;
 };

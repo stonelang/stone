@@ -122,22 +122,29 @@ SrcLoc Parser::ConsumeStartingGreater() {
 }
 
 SyntaxStatus Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
-  SrcLoc loc = curTok.GetLoc();
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_public:
-    specifier.AddPublicAccessLevel(loc);
+    specifier.AddPublicAccessLevel(ConsumeToken());
     break;
   case tok::kw_internal:
-    specifier.AddInternalAccessLevel(loc);
+    specifier.AddInternalAccessLevel(ConsumeToken());
     break;
   case tok::kw_private:
-    specifier.AddPrivateAccessLevel(loc);
+    specifier.AddPrivateAccessLevel(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxError();
+    return status;
   }
-  return syn::MakeSyntaxSuccess();
+  status.SetHasCodeCompletion();
+  return status;
 }
+
+// SyntaxStatus Parser::ParseFunctionSpecifier(FunctionSpecifierContext &spec) {
+//   SyntaxStatus status;
+//   return status;
+// }
+
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
 }
