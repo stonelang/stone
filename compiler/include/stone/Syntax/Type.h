@@ -44,7 +44,14 @@
 namespace stone {
 namespace syn {
 
+class ASTPrinter;
+class CanType;
+class EnumDecl;
+class ModuleDecl;
+class InterfaceType;
+class StructDecl;
 class TypeBase;
+class Type;
 class TypeWalker;
 
 class Type {
@@ -159,6 +166,11 @@ public:
   // Type Substitute(TypeSubstitutionFn substitutions,
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
+
+private:
+  // Direct comparison is disabled for types, because they may not be canonical.
+  void operator==(Type T) const = delete;
+  void operator!=(Type T) const = delete;
 };
 
 // CanType - This is a Type that is statically known to be
@@ -172,10 +184,13 @@ public:
 };
 
 /// const int a = 10; volatile int a = 10;
+/// The qual type in this case is ust int with the aforementioned qualifiers
 class QualType : public Type {
+  friend class TypeQualifierCollector;
+
 public:
   QualType() = default;
-  QualType(const Type *ty, unsigned quals) {}
+  QualType(unsigned quals) {}
 
 public:
 };

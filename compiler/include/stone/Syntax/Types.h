@@ -67,7 +67,7 @@ struct TypeQualifierFlags {
   };
 };
 
-class TypeQualifierContext final {
+class TypeQualifierContext {
 
   // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
   //           |C R V|U|GCAttr|Lifetime|AddressSpace|
@@ -150,6 +150,27 @@ public:
   //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
   //   Mask |= mask;
   // }
+};
+
+class TypeQualifierCollector final : public TypeQualifierContext {
+public:
+  TypeQualifierCollector(TypeQualifierContext tqc = TypeQualifierContext())
+      : TypeQualifierContext(tqc) {}
+
+public:
+  /// Collect any qualifiers on the given type and return an
+  /// unqualified type.  The qualifiers are assumed to be consistent
+  /// with those already in the type.
+  const Type *StripQualifiers(QualType type) {
+    // TODO:
+    //  AddFastQualifiers(type.GetLocalFastQualifiers());
+    //  if (!type.HasLocalNonFastQualifiers()){
+    //    return type.GetTypePtrUnsafe();
+    //  }
+    return nullptr;
+  }
+  /// Apply the collected qualifiers to the given type.
+  QualType Apply(const SyntaxContext &sc, QualType qt) const;
 };
 
 /// ref-qualifier associated with a function SyntaxType.

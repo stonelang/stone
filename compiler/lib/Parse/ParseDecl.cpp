@@ -209,10 +209,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 
-  SyntaxStatus status;
-
-
-  SyntaxResult<Decl>  result;
+  SyntaxResult<Decl> result;
 
   assert(spec.GetFunctionSpecifierContext().HasFun() &&
          "Attempting to parse a function without a functin definition.");
@@ -239,6 +236,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
     spec.GetFunctionSpecifierContext().AddIsMember();
   }
 
+  SyntaxStatus status;
   // Now, parse the function signature
   status |= ParseFunctionSignature(nameInfo, spec);
 
@@ -294,25 +292,27 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
   return status;
 }
 SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclSpecifier &spec) {
-  SyntaxStatus status;
 
-  if (!curTok.IsLeftParen()) {
+  SrcLoc lParenLoc;
+  SrcLoc rParenLoc;
+
+  if (curTok.IsLeftParen()) {
+    lParenLoc = ConsumeToken(tok::l_paren);
+  } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-  } else {
-    // Just consume for now
-    auto lParenLoc = ConsumeToken(tok::l_paren);
+    return syn::MakeSyntaxError();
   }
 
-  if (!curTok.IsRightParen()) {
+  if (curTok.IsRightParen()) {
+    lParenLoc = ConsumeToken(tok::r_paren);
+
+  } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-  } else {
-    // Just consume for now
-    auto lParenLoc = ConsumeToken(tok::r_paren);
+    return syn::MakeSyntaxError();
   }
-  // auto result = ParseDeclResultType();
-  return status;
+  return syn::MakeSyntaxSuccess();
 }
 
 // TODO: Actually return the type;
