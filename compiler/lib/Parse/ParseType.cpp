@@ -33,7 +33,9 @@ bool Parser::IsBasicType(tok kind) const {
 
 // Similar to ParseDeclSpecifiers
 SyntaxResult<QualType> Parser::ParseType(TypeSpecifierContext &specContext) {
-  return syn::MakeSyntaxResult<QualType>(nullptr);
+
+  SyntaxResult<QualType> result;
+  return result;
 }
 
 SyntaxResult<QualType>

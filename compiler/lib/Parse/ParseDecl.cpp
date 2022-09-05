@@ -211,6 +211,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 
   SyntaxStatus status;
 
+
+  SyntaxResult<Decl>  result;
+
   assert(spec.GetFunctionSpecifierContext().HasFun() &&
          "Attempting to parse a function without a functin definition.");
 
@@ -257,7 +260,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
   // // Scope is now function body
   // status |= ParseFunctionBody(spec, *funDecl);
   // syn::VerifyDecl(funDecl);
-  return status;
+  return result;
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
