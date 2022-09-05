@@ -54,7 +54,7 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsStartOfDecl(curTok) && "Invalid start of or top level declaration");
+  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
 
   return ParseDecl(ParsingDeclFlags::AllowTopLevel,
                    [&](Decl *d) { /* Do nothing for now*/ });
