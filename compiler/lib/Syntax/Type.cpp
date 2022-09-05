@@ -37,6 +37,6 @@ QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext &sc,
 
 // // THINK about this
 // /// Apply the collected qualifiers to the given type.
-// QualType TypeQualifierCollector::ApplyQualifiers(const SyntaxContext
+// QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext
 // &Context,
 //                                        const Type *ty) const {}
