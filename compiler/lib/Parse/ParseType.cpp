@@ -120,22 +120,38 @@ SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
   return status;
 }
 
-SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
+SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualContext) {
   SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_const:
-    qualifier.AddConst(ConsumeToken());
+    if (!qualContext.HasConst()) {
+      qualContext.AddConst(ConsumeToken());
+    } else {
+      /// Log -- attempting to add a const
+    }
     // We do not consume the token because the QualType that we create
     // will be of the following const int i = ....
     break;
   case tok::kw_volatile:
-    qualifier.AddVolatile(ConsumeToken());
+    if (!qualContext.HasVolatile()) {
+      qualContext.AddVolatile(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   case tok::kw_restrict:
-    qualifier.AddRestrict(ConsumeToken());
+    if (!qualContext.HasRestrict()) {
+      qualContext.AddRestrict(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   case tok::kw_pure:
-    qualifier.AddPure(ConsumeToken());
+    if (!qualContext.HasPure()) {
+      qualContext.AddPure(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   default:
     return status;

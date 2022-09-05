@@ -87,66 +87,104 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     }
     // First, we check for access levels -- if one is not found, we will
     // eventually come back to it.
-    if (!spec.GetAccessLevelContext().HasAccessLevel()) {
-      status = ParseAccessLevel(spec.GetAccessLevelContext());
-      if (status.hasCodeCompletion() && status.IsSuccess()) {
-        goto BeginParse;
+    if (curTok.IsAccessLevel()) {
+      if (!spec.GetAccessLevelContext().HasAccessLevel()) {
+        status = ParseAccessLevel(spec.GetAccessLevelContext());
+        if (status.hasCodeCompletion() && status.IsSuccess()) {
+          goto BeginParse;
+        }
+      } else {
+        /// PrintD -- found dup
+        goto EndParse;
       }
     }
 
     // Look for any type qualifiers: const, volatile, restrict, etc.
-    if (!spec.GetTypeQualifireContext().HasTypeQualifiers()) {
-      status = ParseTypeQualifiers(spec.GetTypeQualifireContext());
-      if (status.hasCodeCompletion() && status.IsSuccess()) {
-        goto BeginParse;
-      }
-    }
-
-    // Check for a type specifier
-    if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-      // Check for nominal types
-      if (curTok.IsStruct()) {
-        spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
-        result = ParseStructDecl(spec);
-        goto EndParse;
-      }
-      if (curTok.IsInterface()) {
-        spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
-        result = ParseInterfaceDecl(spec);
-        goto EndParse;
-      }
-      if (curTok.IsEnum()) {
-        spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
-        // result = ParseEnumDecl(spec);
-        goto EndParse;
-      }
-      if (IsBasicType(curTok.GetKind())) {
-        status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
+    if (curTok.IsQualifier()) {
+      if (!spec.GetTypeQualifireContext().HasAllTypeQualifiers()) {
+        status = ParseTypeQualifiers(spec.GetTypeQualifireContext());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
           goto BeginParse;
         }
+      } else {
+        /// PrintD
+        goto EndParse;
       }
     }
 
-    // Check for pointers
-    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
-        curTok.IsStar()) {
-      // Just consume for now
-      ConsumeToken();
+    if (curTok.IsStruct()) {
+      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
+        result = ParseStructDecl(spec);
+
+      } else {
+        // PrintD -- dup
+      }
+      goto EndParse;
+    }
+
+    if (curTok.IsInterface()) {
+      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
+        result = ParseInterfaceDecl(spec);
+      } else {
+        // PrintD
+      }
+      goto EndParse;
+    }
+
+    if (curTok.IsEnum()) {
+      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
+        result = ParseInterfaceDecl(spec);
+      } else {
+        // PrintD
+      }
+      goto EndParse;
+    }
+
+    // Parse basic types : int, float, ect.
+    if (IsBasicType(curTok.GetKind())) {
+      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
+        if (status.hasCodeCompletion() && status.IsSuccess()) {
+        }
+      } else {
+        // PrintD
+      }
       goto BeginParse;
     }
 
-    if (!spec.GetFunctionSpecifierContext().HasFun() && curTok.IsFun()) {
-      spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
-      result = ParseFunDecl(spec);
-      goto EndParse;
+    // Check for pointers
+    if (curTok.IsPointerOperator()) {
+      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        // spec.GetTypeSpecifierContext().Bits.IsPointer = true;
+        ConsumeToken();
+        goto BeginParse;
+      } else {
+        // PrinD -- random varialb
+        goto EndParse;
+      }
     }
 
-    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
-        curTok.IsIdentifierOrUnderscore()) {
-      ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
-      result = ParseVarDecl(declarator);
+    if (curTok.IsFun()) {
+      if (!spec.GetFunctionSpecifierContext().HasFun()) {
+        spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
+        result = ParseFunDecl(spec);
+      } else {
+
+        // PrintD
+      }
       goto EndParse;
+    }
+    if (curTok.IsIdentifierOrUnderscore()) {
+      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
+        result = ParseVarDecl(declarator);
+      } else {
+        // PrintD
+        goto EndParse;
+      }
     }
     ConsumeToken();
 
@@ -157,17 +195,13 @@ EndParse : { return result; }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
-  // assert(spec.GetTypeSpecifierContext().HasTypeSpecifierKind());
-  // const ParsingDeclSpecifier &spec =
-  //     declarator.GetParsingDeclSpecifier();
-
   SyntaxResult<Decl> result;
+  // assert(curTok.IsIdentifierOrUnderscore() && "Invalid identifier");
+  // assert(declarator.GetParsingDeclSpecifier()
+  //            .GetTypeSpecifierContext()
+  //            .HasTypeSpecifierKind() &&
+  //        "Declarator does not have a type");
 
-  if (!curTok.IsPointerOperator()) {
-    return result;
-  }
-  if (curTok.IsPointerOperator()) {
-  }
   // We are dealing with a pointer operator and:
 
   return result;

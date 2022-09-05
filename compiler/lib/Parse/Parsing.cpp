@@ -50,7 +50,7 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
-ParsingDeclSpecifier::~ParsingDeclSpecifier() { }
+ParsingDeclSpecifier::~ParsingDeclSpecifier() {}
 
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}

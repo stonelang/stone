@@ -267,6 +267,7 @@ public:
       : parser(parser), DeclSpecifier(attributeFactory) {}
 
   ~ParsingDeclSpecifier();
+
 public:
   Parser &GetParser() { return parser; }
 };
@@ -278,7 +279,7 @@ public:
       : Declarator(specifier, contextKind) {}
 
 public:
-  const ParsingDeclSpecifier &GetParsingDeclSpecifier() const {
+  const ParsingDeclSpecifier &GetParsingDeclSpecifier() {
     return static_cast<const ParsingDeclSpecifier &>(
         Declarator::GetDeclSpecifier());
   }

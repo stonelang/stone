@@ -177,6 +177,13 @@ public:
   bool IsRightParen() { return kind == tok::r_paren; }
   bool IsEnum() { return kind == tok::kw_enum; }
   bool IsStar() { return kind == tok::star; }
+  bool IsQualifier() {
+    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
+                 tok::kw_pure);
+  }
+  bool IsAccessLevel() {
+    return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
+  }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
