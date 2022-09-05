@@ -85,7 +85,6 @@ class FunctionSpecifierContext final {
   SrcLoc inlineLoc;
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
-
   SrcLoc funLoc;
 
   enum Flags : unsigned {
@@ -94,7 +93,8 @@ class FunctionSpecifierContext final {
     Inline = 1 << 2,
     ForcedInline = 1 << 3,
     Virtual = 1 << 4,
-    NoReturn = 1 << 5
+    NoReturn = 1 << 5,
+    IsMember = 1 << 6
   };
 
 private:
@@ -105,21 +105,28 @@ public:
     flags |= Fun;
     funLoc = loc;
   }
+  bool HasFun() { return flags & FunctionSpecifierContext::Fun; }
+
   void AddInline(SrcLoc loc) { flags |= FunctionSpecifierContext::Inline; }
+  bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
+
   void AddForcedInline(SrcLoc loc) {
     flags |= FunctionSpecifierContext::ForcedInline;
   }
-  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
-  void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
-
-  bool HasFun() { return flags & FunctionSpecifierContext::Fun; }
-  SrcLoc GetFunLoc() { return funLoc; }
-  bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
   bool HasForcedInline() {
     return flags & FunctionSpecifierContext::ForcedInline;
   }
+
+  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
   bool HasVirtual() { return flags & FunctionSpecifierContext::Virtual; }
+
+  void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
   bool HasNoReturn() { return flags & FunctionSpecifierContext::NoReturn; }
+
+  void AddIsMember() { flags |= FunctionSpecifierContext::IsMember; }
+  bool HasIsMember() { return flags & FunctionSpecifierContext::IsMember; }
+
+  SrcLoc GetFunLoc() { return funLoc; }
 };
 
 class StorageSpecifierContext final {
@@ -141,6 +148,30 @@ public:
 //   BasicType
 // }
 
+class AccessLevelContext final {
+  SrcLoc loc;
+  AccessLevel level = AccessLevel::None;
+
+private:
+  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+    level = inputLevel;
+    loc = inputLoc;
+  }
+
+public:
+  void AddPublic(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Public, inputLoc);
+  }
+  void AddPrivate(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Private, inputLoc);
+  }
+  void AddInternal(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Internal, inputLoc);
+  }
+  bool HasAccessLevel() { return level != AccessLevel::None; }
+  SrcLoc GetLoc() { return loc; }
+};
+
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
@@ -148,9 +179,7 @@ class DeclSpecifier {
   TypeQualifierContext typeQualifierContext;
   StorageSpecifierContext storageSpecifierContext;
   FunctionSpecifierContext functionSpecifierContext;
-
-  SrcLoc accessLevelLoc;
-  AccessLevel accessLevel = AccessLevel::None;
+  AccessLevelContext accessLevelContext;
 
   // DescriptiveDeclSpecifier descriptiveDeclSpecifier =
   // DescriptiveDeclSpecifier::None;
@@ -161,12 +190,6 @@ class DeclSpecifier {
 public:
   DeclSpecifier(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
-
-private:
-  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
-    accessLevel = inputLevel;
-    accessLevelLoc = inputLoc;
-  }
 
 public:
   StorageSpecifierContext &GetStorageSpeciferContext() {
@@ -181,19 +204,7 @@ public:
   TypeQualifierContext &GetTypeQualifireContext() {
     return typeQualifierContext;
   }
-  AccessLevel GetAccessLevel() { return accessLevel; }
-  SrcLoc GetAccessLevelLoc() { return accessLevelLoc; }
-
-  void AddPublicAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Public, loc);
-  }
-  void AddPrivateAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Private, loc);
-  }
-  void AddInternalAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Internal, loc);
-  }
-  bool HasAccessLevel() { return accessLevel != AccessLevel::None; }
+  AccessLevelContext &GetAccessLevelContext() { return accessLevelContext; }
 
   // void SetDescriptiveDeclSpecifier(DescriptiveDeclSpecifier descriptive){
   //   descriptiveDeclSpecifier = descriptive;

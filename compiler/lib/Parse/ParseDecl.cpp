@@ -87,8 +87,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     }
     // First, we check for access levels -- if one is not found, we will
     // eventually come back to it.
-    if (!spec.HasAccessLevel()) {
-      status = ParseAccessLevel(spec);
+    if (!spec.GetAccessLevelContext().HasAccessLevel()) {
+      status = ParseAccessLevel(spec.GetAccessLevelContext());
       if (status.hasCodeCompletion() && status.IsSuccess()) {
         goto BeginParse;
       }
@@ -102,8 +102,6 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
     }
 
-
-    
     // Check for a type specifier
     if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
       // Check for nominal types
@@ -128,10 +126,11 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
           goto BeginParse;
         }
       }
-    } 
+    }
 
-    // Check for pointers 
-    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() && curTok.IsStar()) {
+    // Check for pointers
+    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
+        curTok.IsStar()) {
       // Just consume for now
       ConsumeToken();
       goto BeginParse;
@@ -139,24 +138,16 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
     if (!spec.GetFunctionSpecifierContext().HasFun() && curTok.IsFun()) {
       spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
-      // This goes into the ParseFunDecl
-      // if (PeekNextToken().IsDoubleColon()) {
-      // specifier.GetFunctionSpecifierContext().SetIsMember();
-      //}
       result = ParseFunDecl(spec);
       goto EndParse;
     }
 
-    if (curTok.IsIdentifierOrUnderscore()) {
-      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
-        result = ParseVarDecl(declarator);
-      } else {
-        // This is just some random variable with no type -- error message.
-      }
+    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
+        curTok.IsIdentifierOrUnderscore()) {
+      ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
+      result = ParseVarDecl(declarator);
       goto EndParse;
     }
-
     ConsumeToken();
 
   } // End of while
@@ -206,6 +197,10 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
   nameInfo.SetNameLoc(nameLoc);
+
+  if (PeekNextToken().IsDoubleColon()) {
+    spec.GetFunctionSpecifierContext().AddIsMember();
+  }
 
   // Now, parse the function signature
   status |= ParseFunctionSignature(nameInfo, spec);

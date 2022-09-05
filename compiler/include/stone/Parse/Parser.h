@@ -135,6 +135,8 @@ public:
 
   void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
 
+  void VerifyDeclSpec(ParsingDeclSpecifier &spec);
+
   void ParseForwardDecl();
   void ParseInheritance();
 
@@ -195,7 +197,7 @@ private:
   //==End Function==//
 
 public:
-  SyntaxStatus ParseAccessLevel(ParsingDeclSpecifier &specifier);
+  SyntaxStatus ParseAccessLevel(AccessLevelContext &levelContext);
 
 public:
   //=struct=//

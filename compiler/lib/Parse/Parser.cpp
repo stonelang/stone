@@ -121,17 +121,17 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
-SyntaxStatus Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
+SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
   SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_public:
-    specifier.AddPublicAccessLevel(ConsumeToken());
+    levelContext.AddPublic(ConsumeToken());
     break;
   case tok::kw_internal:
-    specifier.AddInternalAccessLevel(ConsumeToken());
+    levelContext.AddInternal(ConsumeToken());
     break;
   case tok::kw_private:
-    specifier.AddPrivateAccessLevel(ConsumeToken());
+    levelContext.AddPrivate(ConsumeToken());
     break;
   default:
     return status;

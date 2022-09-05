@@ -260,11 +260,13 @@ class ParsingDeclSpecifier final : public DeclSpecifier {
 
 public:
   ParsingDeclOptions flags;
+  bool DeclCreated = false;
 
 public:
   ParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
       : parser(parser), DeclSpecifier(attributeFactory) {}
 
+  ~ParsingDeclSpecifier();
 public:
   Parser &GetParser() { return parser; }
 };
