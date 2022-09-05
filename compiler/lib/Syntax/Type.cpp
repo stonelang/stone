@@ -15,7 +15,20 @@ bool Type::Walk(TypeWalker &walker) const {}
 
 // }
 
-QualType TypeQualifierCollector::ApplyToType(const SyntaxContext &sc, QualType qt) const {
+/// Collect any qualifiers on the given type and return an
+/// unqualified type.  The qualifiers are assumed to be consistent
+/// with those already in the type.
+const Type *TypeQualifierCollector::StripQualsFromType(QualType type) {
+  // TODO:
+  //  AddFastQualifiers(type.GetLocalFastQualifiers());
+  //  if (!type.HasLocalNonFastQualifiers()){
+  //    return type.GetTypePtrUnsafe();
+  //  }
+  return nullptr;
+}
+
+QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext &sc,
+                                                  QualType qt) const {
 
   // You can do this because the type was saved in the SyntaxContext
   // So, look up the type from the context and apple the qualifiers to it.
