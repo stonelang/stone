@@ -204,7 +204,7 @@ public:
   /// Collect any qualifiers on the given type and return an
   /// unqualified type.  The qualifiers are assumed to be consistent
   /// with those already in the type.
-  const Type *StripQualifiers(QualType type) {
+  const Type *StripFromType(QualType type) {
     // TODO:
     //  AddFastQualifiers(type.GetLocalFastQualifiers());
     //  if (!type.HasLocalNonFastQualifiers()){
@@ -213,11 +213,11 @@ public:
     return nullptr;
   }
   /// Apply the collected qualifiers to the given type.
-  QualType Apply(const SyntaxContext &sc, QualType qt) const;
+  QualType ApplyToType(const SyntaxContext &sc, QualType qt) const;
 
   // THINK about this
   /// Apply the collected qualifiers to the given type.
-  QualType Apply(const SyntaxContext &Context, const Type *ty) const;
+  QualType ApplyToType(const SyntaxContext &Context, const Type *ty) const;
 };
 
 } // namespace syn
