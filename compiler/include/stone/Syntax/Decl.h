@@ -340,8 +340,9 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-// TODO: May use this instead of using NamedDecl
 class ValueDecl : public NamedDecl {
+
+  // The actual declaration type
   QualType qualType;
 
 public:

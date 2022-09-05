@@ -10,6 +10,7 @@ using namespace llvm::opt;
 // static ModeKind ComputeModeKind(const llvm::opt::ArgList &args) {}
 
 static ModeKind GetModeKind(const unsigned modeID) {
+
   // TODO: may have to claim
   switch (modeID) {
   case opts::Parse:

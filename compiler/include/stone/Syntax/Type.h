@@ -119,8 +119,8 @@ public:
   /// rather \c getAs, because the transform itself handles desugaring.
   ///
   /// \returns the result of transforming the Type.
-  Type TransformRec(
-      llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
+  Type
+  TransformRec(llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
 
   /// Look through the given Type and its children and apply fn to them.
   void Visit(llvm::function_ref<void(Type)> fn) const {
@@ -167,6 +167,15 @@ public:
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
 class CanType : public Type {
+
+public:
+};
+
+/// const int a = 10; volatile int a = 10;
+class QualType : public Type {
+public:
+  QualType() = default;
+  QualType(const Type *ty, unsigned quals) {}
 
 public:
 };

@@ -102,36 +102,36 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
     }
 
+
+    
     // Check for a type specifier
     if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
       // Check for nominal types
-      if (!spec.GetTypeSpecifierContext().IsStruct() && curTok.IsStruct()) {
+      if (curTok.IsStruct()) {
         spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
         result = ParseStructDecl(spec);
         goto EndParse;
       }
-      if (!spec.GetTypeSpecifierContext().IsInterface() &&
-          curTok.IsInterface()) {
+      if (curTok.IsInterface()) {
         spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
         result = ParseInterfaceDecl(spec);
         goto EndParse;
       }
-      if (!spec.GetTypeSpecifierContext().IsEnum() && curTok.IsEnum()) {
+      if (curTok.IsEnum()) {
         spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
         // result = ParseEnumDecl(spec);
         goto EndParse;
       }
-      if (!spec.GetTypeSpecifierContext().IsBasicType() &&
-          IsBasicType(curTok.GetKind())) {
+      if (IsBasicType(curTok.GetKind())) {
         status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
           goto BeginParse;
         }
       }
-    }
-    // Check for pointers
-    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() &&
-        curTok.IsStar()) {
+    } 
+
+    // Check for pointers 
+    if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind() && curTok.IsStar()) {
       // Just consume for now
       ConsumeToken();
       goto BeginParse;

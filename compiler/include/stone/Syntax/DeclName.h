@@ -6,7 +6,7 @@
 #include "stone/Basic/OperatorKind.h"
 #include "stone/Basic/Printable.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/Types.h"
+#include "stone/Syntax/Type.h"
 #include "llvm/ADT/FoldingSet.h"
 
 namespace stone {
