@@ -195,6 +195,31 @@ public:
 public:
 };
 
+class TypeQualifierCollector final : public TypeQualifierContext {
+public:
+  TypeQualifierCollector(TypeQualifierContext tqc = TypeQualifierContext())
+      : TypeQualifierContext(tqc) {}
+
+public:
+  /// Collect any qualifiers on the given type and return an
+  /// unqualified type.  The qualifiers are assumed to be consistent
+  /// with those already in the type.
+  const Type *StripQualifiers(QualType type) {
+    // TODO:
+    //  AddFastQualifiers(type.GetLocalFastQualifiers());
+    //  if (!type.HasLocalNonFastQualifiers()){
+    //    return type.GetTypePtrUnsafe();
+    //  }
+    return nullptr;
+  }
+  /// Apply the collected qualifiers to the given type.
+  QualType Apply(const SyntaxContext &sc, QualType qt) const;
+
+  // THINK about this
+  /// Apply the collected qualifiers to the given type.
+  QualType Apply(const SyntaxContext &Context, const Type *ty) const;
+};
+
 } // namespace syn
 } // namespace stone
 #endif

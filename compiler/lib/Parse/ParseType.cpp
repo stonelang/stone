@@ -122,12 +122,12 @@ SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
   return status;
 }
 
-SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualContext) {
+SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierCollector &collector) {
   SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_const:
-    if (!qualContext.HasConst()) {
-      qualContext.AddConst(ConsumeToken());
+    if (!collector.HasConst()) {
+      collector.AddConst(ConsumeToken());
     } else {
       /// Log -- attempting to add a const
     }
@@ -135,22 +135,22 @@ SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierContext &qualContext) {
     // will be of the following const int i = ....
     break;
   case tok::kw_volatile:
-    if (!qualContext.HasVolatile()) {
-      qualContext.AddVolatile(ConsumeToken());
+    if (!collector.HasVolatile()) {
+      collector.AddVolatile(ConsumeToken());
     } else {
       // Log
     }
     break;
   case tok::kw_restrict:
-    if (!qualContext.HasRestrict()) {
-      qualContext.AddRestrict(ConsumeToken());
+    if (!collector.HasRestrict()) {
+      collector.AddRestrict(ConsumeToken());
     } else {
       // Log
     }
     break;
   case tok::kw_pure:
-    if (!qualContext.HasPure()) {
-      qualContext.AddPure(ConsumeToken());
+    if (!collector.HasPure()) {
+      collector.AddPure(ConsumeToken());
     } else {
       // Log
     }

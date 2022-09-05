@@ -160,7 +160,7 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
-  SyntaxStatus ParseTypeQualifiers(TypeQualifierContext &qualifier);
+  SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
   SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:

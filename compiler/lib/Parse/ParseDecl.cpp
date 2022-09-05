@@ -101,8 +101,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
     // Look for any type qualifiers: const, volatile, restrict, etc.
     if (curTok.IsQualifier()) {
-      if (!spec.GetTypeQualifireContext().HasAllTypeQualifiers()) {
-        status = ParseTypeQualifiers(spec.GetTypeQualifireContext());
+      if (!spec.GetTypeQualifierCollector().HasAllTypeQualifiers()) {
+        status = ParseTypeQualifiers(spec.GetTypeQualifierCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
           goto BeginParse;
         }
