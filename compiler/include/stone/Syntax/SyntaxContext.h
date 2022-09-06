@@ -109,7 +109,8 @@ class SyntaxContext final {
 
   /// Table for all
   IdentifierTable identifiers;
-  ///
+
+  /// All builtin types will be stored here.
   mutable llvm::SmallVector<Type *, 0> types;
 
   /// The standard library module.
@@ -158,6 +159,24 @@ public:
   llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
 
   SyntaxContextStats &GetStats() { return *stats.get(); }
+
+public:
+  const CanType Float16Type;  /// 32-bit IEEE floating point
+  const CanType Float32Type;  /// 32-bit IEEE floating point
+  const CanType Float64Type;  /// 64-bit IEEE floating point
+  const CanType Float128Type; /// 128-bit IEEE floating point
+
+  const CanType Int8Type;
+  const CanType Int16Type;
+  const CanType Int32Type;
+  const CanType Int64Type;
+  const CanType Int128Type;
+
+  const CanType UInt8Type;
+  const CanType UInt16Type;
+  const CanType UInt32Type;
+  const CanType UInt64Type;
+  const CanType UInt128Type;
 
 public:
   //==Module stuff==//

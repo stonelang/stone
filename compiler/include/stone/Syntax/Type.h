@@ -54,6 +54,18 @@ class TypeBase;
 class Type;
 class TypeWalker;
 
+// class BitterType {
+
+// };
+
+// class CanType : public BitterType {
+
+// };
+
+// class SugarType {
+
+// };
+
 class Type {
   TypeBase *typePtr = nullptr;
 
@@ -175,12 +187,23 @@ private:
 
 // CanType - This is a Type that is statically known to be
 // canonical.  To get
-/// one of these, use Type->GetCononicalType().  Since all
+/// one of these, use Type->GetCanType().  Since all
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
 class CanType : public Type {
 
 public:
+  explicit CanType(TypeBase *ty = 0) : Type(ty) {
+    assert(IsActuallyCanonicalOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(Type ty) : Type(ty) {
+    assert(IsActuallyCanonicalOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+
+private:
+  bool IsActuallyCanonicalOrNull() const {}
 };
 
 /// const int a = 10; volatile int a = 10;
@@ -194,6 +217,9 @@ public:
 
 public:
 };
+
+// class CanQualType : public QualType {
+// }
 
 class TypeQualifierCollector final : public TypeQualifierContext {
 public:
