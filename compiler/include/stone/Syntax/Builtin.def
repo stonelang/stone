@@ -5,8 +5,6 @@
 #endif
 
 
-#undef BUILTIN_OPERATION
-
 
 #ifndef BUILTIN_MISC_OPERATION
 #define BUILTIN_MISC_OPERATION(ID, Name, Attrs, Overload) \
@@ -15,9 +13,6 @@
 
 /// Sizeof has type T.Type -> Int
 BUILTIN_MISC_OPERATION(SizeOf, "sizeof", "n", Special)
-
-
-#undef BUILTIN_OPERATION
 
 
 #ifndef BUILTIN_TYPE
@@ -33,6 +28,28 @@ BUILTIN_MISC_OPERATION(SizeOf, "sizeof", "n", Special)
 
 
 #undef BUILTIN_IDENTIFIER
+
+
+#ifndef SIGNED_BUILTIN_TYPE
+#define SIGNED_BUILTIN_TYPE(ID, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef UNSIGNED_BUILTIN_TYPE
+#define UNSIGNED_BUILTIN_TYPE(ID, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef FLOATING_BUILTIN_TYPE
+#define FLOATING_BUILTIN_TYPE(ID, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef PLACEHOLDER_BUILTIN_TYPE
+#define PLACEHOLDER_BUILTIN_TYPE(Id, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+
+
+#undef BUILTIN_OPERATION
+
 
 
 

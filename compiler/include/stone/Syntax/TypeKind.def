@@ -144,65 +144,40 @@ TYPE(Error, Type)
 TYPE(LValue, Type)
 TYPE(RValue, Type)
 TYPE(Tuple, Type)
-ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(AnyBuiltinInteger, BuiltinType)
-    BUILTIN_TYPE(BuiltinInteger, AnyBuiltinIntegerType)
-    BUILTIN_TYPE(BuiltinIntegerLiteral, AnyBuiltinIntegerType)
-    TYPE_RANGE(AnyBuiltinInteger, BuiltinInteger, BuiltinIntegerLiteral)
-  BUILTIN_TYPE(BuiltinFloat, BuiltinType)
-  BUILTIN_TYPE(BuiltinPointer, BuiltinType)
-  BUILTIN_TYPE(BuiltinMemberPointerType, BuiltinType)
-  BUILTIN_TYPE(BuiltinBlockPointerType, BuiltinType)
-  BUILTIN_TYPE(BuiltinVector, BuiltinType)
-  TYPE_RANGE(Builtin, BuiltinInteger, BuiltinVector)
 
-ABSTRACT_TYPE(AnyGeneric, Type)
-  ABSTRACT_TYPE(NominalOrBoundGenericNominal, Type)
-    ABSTRACT_TYPE(Nominal, Type)
+ABSTRACT_TYPE(Builtin, Type)
+  ABSTRACT_TYPE(AbstractInteger,  BuiltinType)
+    BUILTIN_TYPE(Integer,         AbstractIntegerType)
+    BUILTIN_TYPE(UInteger,        AbstractIntegerType)
+  TYPE_RANGE(AbstractInteger, Integer, UInteger)
+  BUILTIN_TYPE(Float,             BuiltinType)
+  BUILTIN_TYPE(Void,              BuiltinType)
+  BUILTIN_TYPE(Complex,           BuiltinType)
+  BUILTIN_TYPE(Imaginary,         BuiltinType)
+  BUILTIN_TYPE(Null,              BuiltinType)
+TYPE_RANGE(Builtin, Integer, Null) 
+
+
+ABSTRACT_TYPE(AbstractPointer, Type)
+  TYPE(Pointer, AbstractPointerType)
+  TYPE(BlockPointer, AbstractPointerType)
+  TYPE(MemberPointer, AbstractPointerType)
+TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
+
+// ABSTRACT_TYPE(Deduced, Type)
+//   TYPE(Auto, DeducedType)
+// TYPE_RANGE(Deduced, Auto)
+
+ABSTRACT_TYPE(AbstractFunction, Type)
+  TYPE(Function, AbstractFunctionType)
+  TYPE(GenericFunction, FunctionType)
+TYPE_RANGE(AbstractFunction, Function, GenericFunction)
+
+ABSTRACT_TYPE(Nominal, Type)
       TYPE(Enum, NominalType)
       TYPE(Struct, NominalType)
       TYPE(Interface, NominalType)
-      TYPE_RANGE(Nominal, Enum, Interface)
-
-// ABSTRACT_TYPE(AnyMetatype, Type)
-//   TYPE(Metatype, AnyMetatypeType)
-//   TYPE(ExistentialMetatype, AnyMetatypeType)
-
-CANONICAL_TYPE(Module, Type)
-
-//TYPE(DynamicThis, Type)
-
-// ABSTRACT_TYPE(Substitutable, Type)
-//   ABSTRACT_TYPE(Archetype, SubstitutableType)
-//     CANONICAL_TYPE(PrimaryArchetype, ArchetypeType)
-//     CANONICAL_TYPE(OpaqueTypeArchetype, ArchetypeType)
-//     CANONICAL_TYPE(OpenedArchetype, ArchetypeType)
-//     CANONICAL_TYPE(NestedArchetype, ArchetypeType)
-//     CANONICAL_TYPE(SequenceArchetype, ArchetypeType)
-//     TYPE_RANGE(Archetype, PrimaryArchetype, SequenceArchetype)
-//   TYPE(GenericTypeParam, SubstitutableType)
-//   TYPE_RANGE(Substitutable, PrimaryArchetype, GenericTypeParam)
-// TYPE(DependentMember, Type)
-
-ABSTRACT_TYPE(AnyFunction, Type)
-  TYPE(Function, AnyFunctionType)
-  TYPE(GenericFunction, AnyFunctionType)
-  TYPE_RANGE(AnyFunction, Function, GenericFunction)
-
-ABSTRACT_SUGARED_TYPE(Sugar, Type)
-  SUGARED_TYPE(Paren, SugarType)
-  SUGARED_TYPE(TypeAlias, SugarType)
-  ABSTRACT_SUGARED_TYPE(SyntaxSugar, SugarType)
-    // ABSTRACT_SUGARED_TYPE(UnarySyntaxSugar, SyntaxSugarType)
-    //   SUGARED_TYPE(ArraySlice, UnarySyntaxSugarType)
-    //   SUGARED_TYPE(Optional, UnarySyntaxSugarType)
-    //   SUGARED_TYPE(VariadicSequence, UnarySyntaxSugarType)
-    //   TYPE_RANGE(UnarySyntaxSugar, ArraySlice, VariadicSequence)
-    SUGARED_TYPE(Dictionary, SyntaxSugarType)
-    //TYPE_RANGE(SyntaxSugar, ArraySlice, Dictionary)
-  TYPE_RANGE(Sugar, Paren, Dictionary)
-LAST_TYPE(Dictionary) // Sugared types are last to make isa<SugarType>() fast.
-
+TYPE_RANGE(Nominal, Enum, Interface)
 
 
 #undef TYPE_RANGE
@@ -215,11 +190,3 @@ LAST_TYPE(Dictionary) // Sugared types are last to make isa<SugarType>() fast.
 #undef CANONICAL_TYPE
 #undef TYPE
 #undef LAST_TYPE
-
-
-
-
-
-
-
-
