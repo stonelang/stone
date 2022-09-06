@@ -21,9 +21,6 @@ class TemplateDecl;
 // class TypeSourceInfo
 class UseDecl;
 
-template <typename> class CanQual;
-using CanQualType = CanQual<syn::Type>;
-
 enum class DeclNameKind : uint8_t {
   Basic = 0,
   Constructor,

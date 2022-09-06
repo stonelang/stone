@@ -1,6 +1,8 @@
 #ifndef STONE_SYNTAX_SYNTAXNODE_H
 #define STONE_SYNTAX_SYNTAXNODE_H
 
+#include "stone/Basic/STDTypeAlias.h"
+
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
@@ -20,6 +22,13 @@ enum class ExprKind : uint8_t;
 enum class DeclKind : uint8_t;
 enum class StmtKind : uint8_t; // TODO: May not want uint8_t
 
+enum class SyntaxNodeStatus : UInt8 {
+  None,
+  Created,
+  Parsed,
+  TypeChecked,
+};
+
 struct SyntaxNode
     : public llvm::PointerUnion<Expr *, Stmt *, Decl *, QualType *> {
   // Inherit the constructors from PointerUnion.
@@ -32,6 +41,8 @@ struct SyntaxNode
 
   /// Return the location of the end of the statement.
   SrcLoc GetEndLoc() const;
+
+  SyntaxNodeStatus Status;
 
   void Walk(SyntaxWalker &walker);
   void Walk(SyntaxWalker &&walker) { Walk(walker); }

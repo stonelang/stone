@@ -3,6 +3,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-Builtin::~Builtin() {}
+Builtin::Builtin(SyntaxContext &sc) : sc(sc) {}
 
-void Builtin::Init(SyntaxContext &tc) {}
+Builtin::~Builtin() {}

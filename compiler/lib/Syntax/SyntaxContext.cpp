@@ -46,11 +46,9 @@ SyntaxContext::Internal::~Internal() {}
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
     : lc(lc), searchPathOpts(spOpts), identifiers(lc.GetLangOptions()),
-      stats(new SyntaxContextStats(*this)) {
+      builtin(*this), stats(new SyntaxContextStats(*this)) {
 
   lc.GetStatEngine().Register(stats.get());
-
-  builtin.Init(*this);
 }
 
 SyntaxContext::~SyntaxContext() {
@@ -58,6 +56,8 @@ SyntaxContext::~SyntaxContext() {
     cleanup();
   }
 }
+
+const Builtin &SyntaxContext::GetBuiltin() const { return builtin; }
 
 void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
                                    AllocationArena arena, unsigned alignment) {

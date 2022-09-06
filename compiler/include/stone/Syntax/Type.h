@@ -55,15 +55,24 @@ class Type;
 class TypeWalker;
 
 // class BitterType {
-
-// };
-
-// class CanType : public BitterType {
-
+// public:
 // };
 
 // class SugarType {
+// public:
+//   void operator==(Type T) const = delete;
+//   void operator!=(Type T) const = delete;
+// };
 
+// class Type final : public llvm::PointerUnion<BitterType *, SugarType *> {
+// public:
+//   Type() {}
+// public:
+//   BitterType* GetBitter();
+//   SugarType*  GetSugar();
+
+// public:
+//   Type Transform(llvm::function_ref<Type(Type)> fn) const;
 // };
 
 class Type {
@@ -185,37 +194,47 @@ private:
   void operator!=(Type T) const = delete;
 };
 
-// CanType - This is a Type that is statically known to be
+/// const int a = 10; volatile int a = 10;
+/// The qual type in this case is ust int with the aforementioned qualifiers
+class QualType {
+  friend class TypeQualifierCollector;
+
+  Type *tyPtr = nullptr;
+
+  // Thankfully, these are efficiently composable.
+  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;
+
+public:
+  QualType() = default;
+  QualType(Type *tyPtr, unsigned quals) : ptrInt(tyPtr, quals) {}
+
+public:
+};
+
+// CanQualType - This is a Type that is statically known to be
 // canonical.  To get
 /// one of these, use Type->GetCanType().  Since all
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
-class CanType : public Type {
+class CanQualType {
+  Type *tyPtr = nullptr;
 
 public:
-  explicit CanType(TypeBase *ty = 0) : Type(ty) {
-    assert(IsActuallyCanonicalOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(Type ty) : Type(ty) {
-    assert(IsActuallyCanonicalOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
+  /// Constructs a NULL canonical type.
+  CanQualType() = default;
+
+public:
+  // explicit CanQualType(TypeBase *tyPtr = 0) : storedPtr(tyPtr) {
+  //   assert(IsCanQualTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
+  // explicit CanQualType(Type *tyPtr) : storedPtr(tyPtr) {
+  //   assert(IsCanQualTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
 
 private:
-  bool IsActuallyCanonicalOrNull() const {}
-};
-
-/// const int a = 10; volatile int a = 10;
-/// The qual type in this case is ust int with the aforementioned qualifiers
-class QualType : public Type {
-  friend class TypeQualifierCollector;
-
-public:
-  QualType() = default;
-  QualType(unsigned quals) {}
-
-public:
+  bool IsCanQualTypeOrNull() const { return false; }
 };
 
 // class CanQualType : public QualType {

@@ -88,6 +88,19 @@ class TypeQualifierContext {
   SrcLoc pureLoc;
 
 public:
+  enum {
+    /// The maximum supported address space number.
+    /// 23 bits should be enough for anyone.
+    MaxAddressSpace = 0x7fffffu,
+
+    /// The width of the "fast" qualifier mask.
+    FastWidth = 3,
+
+    /// The fast qualifier mask.
+    FastMask = (1 << FastWidth) - 1
+  };
+
+public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
   bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
   void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }

@@ -146,7 +146,7 @@ public:
   ///
   Identifier &GetIdentifier(llvm::StringRef name);
   ///
-  Builtin &GetBuiltin() const;
+  const Builtin &GetBuiltin() const;
 
   LangContext &GetLangContext() { return lc; }
   const LangContext &GetLangContext() const { return lc; }
@@ -159,24 +159,6 @@ public:
   llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
 
   SyntaxContextStats &GetStats() { return *stats.get(); }
-
-public:
-  const CanType Float16Type;  /// 32-bit IEEE floating point
-  const CanType Float32Type;  /// 32-bit IEEE floating point
-  const CanType Float64Type;  /// 64-bit IEEE floating point
-  const CanType Float128Type; /// 128-bit IEEE floating point
-
-  const CanType Int8Type;
-  const CanType Int16Type;
-  const CanType Int32Type;
-  const CanType Int64Type;
-  const CanType Int128Type;
-
-  const CanType UInt8Type;
-  const CanType UInt16Type;
-  const CanType UInt32Type;
-  const CanType UInt64Type;
-  const CanType UInt128Type;
 
 public:
   //==Module stuff==//

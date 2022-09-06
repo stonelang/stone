@@ -22,7 +22,7 @@ namespace stone {
 namespace syn {
 
 class SyntaxContext;
-class CanType;
+class CanQualType;
 class Decl;
 class DeclContext;
 class EnumDecl;

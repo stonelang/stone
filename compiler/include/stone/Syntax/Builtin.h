@@ -1,11 +1,11 @@
 #ifndef STONE_SYNTAX_BUILTIN_H
 #define STONE_SYNTAX_BUILTIN_H
 
-#include "stone/Syntax/Types.h"
+#include "stone/Syntax/Type.h"
 
 namespace stone {
 namespace syn {
-class Type;
+
 class SyntaxContext;
 
 namespace builtin {
@@ -41,19 +41,38 @@ enum class BuiltinID {
 };
 
 class Builtin final {
+
+  SyntaxContext &sc;
+
 public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
 
 public:
-  void InitType(SyntaxContext &tc);
-  void InitTypes(SyntaxContext &tc);
+  const CanQualType VoidType;
+  const CanQualType BoolType;
+
+  const CanQualType Float;
+  const CanQualType Float16Type;  /// 32-bit IEEE floating point
+  const CanQualType Float32Type;  /// 32-bit IEEE floating point
+  const CanQualType Float64Type;  /// 64-bit IEEE floating point
+  const CanQualType Float128Type; /// 128-bit IEEE floating point
+
+  const CanQualType Int8Type;
+  const CanQualType Int16Type;
+  const CanQualType Int32Type;
+  const CanQualType Int64Type;
+  const CanQualType Int128Type;
+
+  const CanQualType UInt8Type;
+  const CanQualType UInt16Type;
+  const CanQualType UInt32Type;
+  const CanQualType UInt64Type;
+  const CanQualType UInt128Type;
 
 public:
-  Builtin() = default;
+  Builtin(SyntaxContext &sc);
   ~Builtin();
-
-  void Init(SyntaxContext &tc);
 
 public:
   Type GetType(llvm::StringRef name);
