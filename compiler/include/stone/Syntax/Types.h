@@ -201,21 +201,23 @@ public:
 //   // const Type *GetTypePtrOrNull() const;
 // };
 
-// class FunctionTypeBase : public Type {};
+class AbstractFunctionType : public TypeBase {
+public:
+};
 
-// class FunctionType : public FunctionTypeBase {
-//   // The type returned by the function.
-//   QualType returnType;
+class FunctionType : public AbstractFunctionType {
+public:
+};
 
+// class NominalType : public TypeBase {
 // public:
-//   QualType GetReturnType() { return returnType; }
+
 // };
 
-// class FunctionSignatureType : FunctionType {};
+// class StructType : public NominalType {
+// public:
 
-// class NominalType : public Type {};
-
-// class StructType : public NominalType {};
+// };
 
 // class EnumType : public NominalType {};
 
@@ -225,78 +227,94 @@ public:
 //   friend class SyntaxContext; // SyntaxContext creates these
 // };
 
-// class BuiltinType : public Type {};
+class BuiltinType : public TypeBase {
+public:
+};
 
-// /// An abstract base class for the two integer types.
-// class BuiltinIntegerTypeBase : public BuiltinType {
-//   // protected:
-//   //   BuiltinIntegerTypeBase(TypeKind kind, const ASTContext &C)
-//   //     : BuiltinType(kind, C) {}
+enum class BitWidth {
+  BitWidth8,
+  BitWidth16,
+  BitWidth32,
+  BitWidth64,
+  BitWidth80,
+  BitWidth128,
+};
 
-//   // public:
-//   //   static bool classof(const TypeBase *T) {
-//   //     return T->getKind() >= TypeKind::First_AnyBuiltinIntegerType &&
-//   //            T->getKind() <= TypeKind::Last_AnyBuiltinIntegerType;
-//   //   }
+/// An abstract base class for the two integer types.
+class AbstractIntegerType : public BuiltinType {
+  BitWidth bitWidth;
 
-//   // defined inline below
-//   // BuiltinIntegerWidth GetWidth() const;
-// };
+public:
+};
 
-// class BuiltinIntegerType : public BuiltinIntegerTypeBase {};
+class IntegerType : public AbstractIntegerType {
+public:
+};
 
-// class FloatBuiltinType : public BuiltinType {
-//   friend class SyntaxContext;
+class UIntegerType : public AbstractIntegerType {
+public:
+};
 
-// public:
-//   /// IEEE floating point types.
-//   enum IEEEKind {
-//     IEEE16,
-//     IEEE32,
-//     IEEE64,
-//     IEEE80,
-//     IEEE128,
-//   };
+class FloatType : public BuiltinType {
+  friend class SyntaxContext;
 
-// private:
-//   IEEEKind kind;
+public:
+  /// IEEE floating point types.
+  enum FloadPointKind {
+    IEEE16,
+    IEEE32,
+    IEEE64,
+    IEEE80,
+    IEEE128,
+  };
 
-//   // BuiltinFloatType(IEEEKind Kind, const SyntaxContext &C)
-//   //   : BuiltinType(TypeKind::BuiltinFloat, C), Kind(Kind) {}
+private:
+  FloadPointKind kind;
 
-// public:
-//   IEEEKind GetIEEEKind() const { return kind; }
+  // FloatType(FloadPointKind Kind, const SyntaxContext &C)
+  //    : FloatType(TypeKind::Float, C), Kind(Kind) {}
 
-//   const llvm::fltSemantics &GetAPFloatSemantics() const;
+public:
+  FloadPointKind GetFloadPointKind() const { return kind; }
 
-//   unsigned GetBitWidth() const {
-//     switch (kind) {
-//     case IEEE16:
-//       return 16;
-//     case IEEE32:
-//       return 32;
-//     case IEEE64:
-//       return 64;
-//     case IEEE80:
-//       return 80;
-//     case IEEE128:
-//       return 128;
-//     }
-//     llvm_unreachable("Invalid IEEE");
-//   }
-//   // static bool classof(const TypeBase *T) {
-//   //   return T->getKind() == TypeKind::BuiltinFloat;
-//   // }
-// };
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
 
-// class PointerType : public Type, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these.
+  unsigned GetBitWidth() const {
+    switch (kind) {
+    case IEEE16:
+      return 16;
+    case IEEE32:
+      return 32;
+    case IEEE64:
+      return 64;
+    case IEEE80:
+      return 80;
+    case IEEE128:
+      return 128;
+    }
+    llvm_unreachable("Invalid IEEE");
+  }
+  // static bool classof(const TypeBase *T) {
+  //   return T->getKind() == TypeKind::Float;
+  // }
+};
 
-//   // QualType PointeeType;
+class VoidType : public BuiltinType {
+public:
+};
 
-//   // PointerType(QualType Pointee, QualType CanonicalPtr)
-//   //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
-//   //       PointeeType(Pointee) {}
+class NullType : public BuiltinType {
+public:
+};
+
+class PointerType : public TypeBase, public llvm::FoldingSetNode {
+  friend class SyntaxContext; // SyntaxContext creates these.
+public:
+};
+
+class ArrayType : public TypeBase, public llvm::FoldingSetNode {
+public:
+};
 
 // public:
 //   // QualType getPointeeType() const { return PointeeType; }
