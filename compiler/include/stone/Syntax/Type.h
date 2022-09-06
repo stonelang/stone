@@ -193,14 +193,10 @@ private:
   void operator==(Type T) const = delete;
   void operator!=(Type T) const = delete;
 };
-
 /// const int a = 10; volatile int a = 10;
 /// The qual type in this case is ust int with the aforementioned qualifiers
 class QualType {
   friend class TypeQualifierCollector;
-
-  Type *tyPtr = nullptr;
-
   // Thankfully, these are efficiently composable.
   llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;
 
@@ -224,21 +220,18 @@ public:
   CanQualType() = default;
 
 public:
-  // explicit CanQualType(TypeBase *tyPtr = 0) : storedPtr(tyPtr) {
-  //   assert(IsCanQualTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
-  // explicit CanQualType(Type *tyPtr) : storedPtr(tyPtr) {
-  //   assert(IsCanQualTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
+  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
+    assert(IsCanQualTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanQualType(Type *tyPtr) : tyPtr(tyPtr) {
+    assert(IsCanQualTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
 
 private:
   bool IsCanQualTypeOrNull() const { return false; }
 };
-
-// class CanQualType : public QualType {
-// }
 
 class TypeQualifierCollector final : public TypeQualifierContext {
 public:
