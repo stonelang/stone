@@ -220,15 +220,14 @@ public:
   CanQualType() = default;
 
 public:
-  // explicit CanQualType(TypeBase tyPtr) : tyPtr(tyPtr) {
-  //   assert(IsCanQualTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
+  explicit CanQualType(TypeBase* tyPtr = 0) : tyPtr(tyPtr) {
+    assert(IsCanQualTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
   explicit CanQualType(Type tyPtr) : tyPtr(tyPtr) {
     assert(IsCanQualTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-
 private:
   bool IsCanQualTypeOrNull() const { return false; }
 };

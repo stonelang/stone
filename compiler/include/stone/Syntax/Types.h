@@ -289,19 +289,17 @@ public:
 
 class FloatType : public BuiltinType {
   friend class SyntaxContext;
+
 private:
-  using FloatPointBitWidth =  BitWidth::Kind;
+  using FloatPointBitWidth = BitWidth::Kind;
   FloatPointBitWidth fpBitWidth;
-// FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
+  // FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
 
 public:
-
   const llvm::fltSemantics &GetAPFloatSemantics() const;
 
-  FloatPointBitWidth  GetFloatPointBitWidth() const { return fpBitWidth; }
-  unsigned GetBitWidth() const {
-    return BitWidth::GetBitWidth(fpBitWidth);
-  }
+  FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
+  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth); }
   // static bool classof(const TypeBase *T) {
   //   return T->getKind() == TypeKind::Float;
   // }

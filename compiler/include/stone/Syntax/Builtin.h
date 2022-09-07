@@ -42,6 +42,7 @@ enum class BuiltinID {
 
 class Builtin final {
   SyntaxContext &sc;
+
 public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
