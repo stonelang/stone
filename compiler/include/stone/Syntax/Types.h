@@ -151,24 +151,28 @@ public:
 // public:
 // };
 
-// class FloatType : public BuiltinType {
-//   friend class SyntaxContext;
+class FloatType : public BuiltinType {
+  friend class SyntaxContext;
 
-// private:
-//   using FloatPointBitWidth = BitWidth::Kind;
-//   FloatPointBitWidth fpBitWidth;
-//   // FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
+public:
+  using FloatPointBitWidth = BitWidth::Kind;
 
-// public:
-//   const llvm::fltSemantics &GetAPFloatSemantics() const;
+private:
+  FloatPointBitWidth fpBitWidth;
 
-//   FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
-//   unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth);
-//   }
-//   // static bool classof(const TypeBase *T) {
-//   //   return T->getKind() == TypeKind::Float;
-//   // }
-// };
+public:
+  FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &canTypeCtx)
+      : BuiltinType(TypeKind::Float, canTypeCtx), fpBitWidth(fpBitWidth) {}
+
+public:
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
+
+  FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
+  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth); }
+  // static bool classof(const TypeBase *T) {
+  //   return T->getKind() == TypeKind::Float;
+  // }
+};
 
 // class VoidType : public BuiltinType {
 // public:
