@@ -81,7 +81,6 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
   while (true) {
   BeginParse:
-
     if (IsDone()) {
       goto EndParse;
     }
@@ -97,10 +96,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         /// PrintD -- found dup
         goto EndParse;
       }
-    }
-
-    // Look for any type qualifiers: const, volatile, restrict, etc.
-    if (curTok.IsQualifier()) {
+    } else if (curTok.IsQualifier()) {
       if (!spec.GetTypeQualifierCollector().HasAllTypeQualifiers()) {
         status = ParseTypeQualifiers(spec.GetTypeQualifierCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
@@ -110,9 +106,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         /// PrintD
         goto EndParse;
       }
-    }
-
-    if (curTok.IsStruct()) {
+    } else if (curTok.IsStruct()) {
       if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
         result = ParseStructDecl(spec);
@@ -121,9 +115,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD -- dup
       }
       goto EndParse;
-    }
-
-    if (curTok.IsInterface()) {
+    } else if (curTok.IsInterface()) {
       if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
         result = ParseInterfaceDecl(spec);
@@ -131,9 +123,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD
       }
       goto EndParse;
-    }
-
-    if (curTok.IsEnum()) {
+    } else if (curTok.IsEnum()) {
       if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
         result = ParseInterfaceDecl(spec);
@@ -141,10 +131,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD
       }
       goto EndParse;
-    }
-
-    // Parse basic types : int, float, ect.
-    if (IsBasicType(curTok.GetKind())) {
+    } else if (IsBasicType(curTok.GetKind())) {
       if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
@@ -153,10 +140,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD
       }
       goto BeginParse;
-    }
-
-    // Check for pointers
-    if (curTok.IsPointerOperator()) {
+    } else if (curTok.IsPointerOperator()) {
       if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         // spec.GetTypeSpecifierContext().Bits.IsPointer = true;
         ConsumeToken();
@@ -165,19 +149,15 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrinD -- random varialb
         goto EndParse;
       }
-    }
-
-    if (curTok.IsFun()) {
+    } else if (curTok.IsFun()) {
       if (!spec.GetFunctionSpecifierContext().HasFun()) {
         spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
         result = ParseFunDecl(spec);
       } else {
-
         // PrintD
       }
       goto EndParse;
-    }
-    if (curTok.IsIdentifierOrUnderscore()) {
+    } else if (curTok.IsIdentifierOrUnderscore()) {
       if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
         ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
         result = ParseVarDecl(declarator);
@@ -185,6 +165,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD
         goto EndParse;
       }
+    } else {
     }
     ConsumeToken();
 

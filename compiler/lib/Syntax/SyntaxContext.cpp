@@ -14,35 +14,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-struct SyntaxContext::Internal final {
-  Internal();
-  ~Internal();
-
-  llvm::BumpPtrAllocator allocator;
-
-  using IdentifierTable =
-      llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;
-  IdentifierTable identifiers;
-
-  /// The set of top-level modules we have loaded.
-  /// This map is used for iteration, therefore it's a MapVector and not a
-  /// DenseMap.
-  // llvm::MapVector<Identifier, ModuleDecl *> loadedModules;
-
-  /// The set of cleanups to be called when the ASTContext is destroyed.
-  std::vector<std::function<void(void)>> cleanups;
-
-  struct Arena final {
-    // static_assert(alignof(Type) >= 8, "Type not 8-byte aligned?");
-  };
-  /// The permanent arena.
-  Arena permanent;
-};
-
-SyntaxContext::Internal::Internal() : identifiers(allocator) {}
-
-SyntaxContext::Internal::~Internal() {}
-
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
     : lc(lc), searchPathOpts(spOpts), identifiers(lc.GetLangOptions()),

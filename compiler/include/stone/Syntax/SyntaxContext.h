@@ -139,10 +139,6 @@ public:
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
-  // Members that should only be used by ASTContext.cpp.
-  struct Internal;
-  Internal &GetInternal() const;
-
   ///
   Identifier &GetIdentifier(llvm::StringRef name);
   ///
