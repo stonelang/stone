@@ -143,8 +143,23 @@ class AbstractIntegerType : public BuiltinType {
 public:
 };
 
-class IntegerType : public AbstractIntegerType {
+using BitWidthKind = BitWidth::Kind;
+
+class IntegerType : public BuiltinType {
+  friend class SyntaxContext;
+
+private:
+  BitWidthKind intBitWidth;
+
 public:
+  IntegerType(BitWidthKind intBitWidth, const SyntaxContext &canTypeCtx)
+      : BuiltinType(TypeKind::Integer, canTypeCtx), intBitWidth(intBitWidth) {}
+
+  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(intBitWidth); }
+
+  // static bool classof(const TypeBase *T) {
+  //   return T->getKind() == TypeKind::Float;
+  // }
 };
 
 // class UIntegerType : public AbstractIntegerType {
@@ -154,20 +169,15 @@ public:
 class FloatType : public BuiltinType {
   friend class SyntaxContext;
 
-public:
-  using FloatPointBitWidth = BitWidth::Kind;
-
 private:
-  FloatPointBitWidth fpBitWidth;
+  BitWidthKind fpBitWidth;
 
 public:
-  FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &canTypeCtx)
+  FloatType(BitWidthKind fpBitWidth, const SyntaxContext &canTypeCtx)
       : BuiltinType(TypeKind::Float, canTypeCtx), fpBitWidth(fpBitWidth) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
-
-  FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
   unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth); }
   // static bool classof(const TypeBase *T) {
   //   return T->getKind() == TypeKind::Float;
