@@ -244,13 +244,32 @@ class BuiltinType : public TypeBase {
 public:
 };
 
-enum class BitWidth {
-  BitWidth8,
-  BitWidth16,
-  BitWidth32,
-  BitWidth64,
-  BitWidth80,
-  BitWidth128,
+struct BitWidth final {
+  enum Kind : UInt8 {
+    BitWidth8,
+    BitWidth16,
+    BitWidth32,
+    BitWidth64,
+    BitWidth80,
+    BitWidth128,
+  };
+  static unsigned GetBitWidth(BitWidth::Kind kind) {
+    switch (kind) {
+    case BitWidth::BitWidth8:
+      return 8;
+    case BitWidth::BitWidth16:
+      return 16;
+    case BitWidth::BitWidth32:
+      return 32;
+    case BitWidth::BitWidth64:
+      return 64;
+    case BitWidth::BitWidth80:
+      return 80;
+    case BitWidth::BitWidth128:
+      return 128;
+    }
+    llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
+  }
 };
 
 /// An abstract base class for the two integer types.
@@ -270,42 +289,18 @@ public:
 
 class FloatType : public BuiltinType {
   friend class SyntaxContext;
-
-public:
-  /// IEEE floating point types.
-  enum FloadPointKind {
-    IEEE16,
-    IEEE32,
-    IEEE64,
-    IEEE80,
-    IEEE128,
-  };
-
 private:
-  FloadPointKind kind;
-
-  // FloatType(FloadPointKind Kind, const SyntaxContext &C)
-  //    : FloatType(TypeKind::Float, C), Kind(Kind) {}
+  using FloatPointBitWidth =  BitWidth::Kind;
+  FloatPointBitWidth fpBitWidth;
+// FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
 
 public:
-  FloadPointKind GetFloadPointKind() const { return kind; }
 
   const llvm::fltSemantics &GetAPFloatSemantics() const;
 
+  FloatPointBitWidth  GetFloatPointBitWidth() const { return fpBitWidth; }
   unsigned GetBitWidth() const {
-    switch (kind) {
-    case IEEE16:
-      return 16;
-    case IEEE32:
-      return 32;
-    case IEEE64:
-      return 64;
-    case IEEE80:
-      return 80;
-    case IEEE128:
-      return 128;
-    }
-    llvm_unreachable("Invalid IEEE");
+    return BitWidth::GetBitWidth(fpBitWidth);
   }
   // static bool classof(const TypeBase *T) {
   //   return T->getKind() == TypeKind::Float;

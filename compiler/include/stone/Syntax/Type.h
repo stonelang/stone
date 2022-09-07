@@ -213,18 +213,18 @@ public:
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
 class CanQualType {
-  Type *tyPtr = nullptr;
+  Type tyPtr;
 
 public:
   /// Constructs a NULL canonical type.
   CanQualType() = default;
 
 public:
-  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
-    assert(IsCanQualTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanQualType(Type *tyPtr) : tyPtr(tyPtr) {
+  // explicit CanQualType(TypeBase tyPtr) : tyPtr(tyPtr) {
+  //   assert(IsCanQualTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
+  explicit CanQualType(Type tyPtr) : tyPtr(tyPtr) {
     assert(IsCanQualTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

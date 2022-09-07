@@ -196,6 +196,8 @@ EndParse : { return result; }
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
   SyntaxResult<Decl> result;
+
+  /// This is where you will call ParseType
   // assert(curTok.IsIdentifierOrUnderscore() && "Invalid identifier");
   // assert(declarator.GetParsingDeclSpecifier()
   //            .GetTypeSpecifierContext()
