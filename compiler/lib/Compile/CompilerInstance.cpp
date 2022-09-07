@@ -29,6 +29,12 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   }
   return os;
 }
+
+void CompilerInstance::SetupClang() {
+
+ 
+
+}
 // void CompilerInstance::FinishTypeCheck() {
 // }
 

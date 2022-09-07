@@ -76,7 +76,7 @@ public:
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
-
+  void SetupClang();
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 

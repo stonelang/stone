@@ -379,7 +379,7 @@ public:
   }
 
 private:
-  bool IsCanQualTypeOrNull() const { return false; }
+  bool IsCanQualTypeOrNull() const { return true; }
 };
 
 class TypeQualifierCollector final : public TypeQualifierContext {

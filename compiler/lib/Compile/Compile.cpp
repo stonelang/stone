@@ -120,6 +120,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   CompilerInstance compiler(invocation);
   compiler.Compile();
 
+  
+
+
   if (invocation.HasError()) {
     return Finish(1);
   }
@@ -326,6 +329,11 @@ void CompilerInstance::CompileWithSemanticAnalysis(
 void CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
+
+    // Clang setup 
+  GetClangInstance().createDiagnostics();
+  assert((GetClangInstance().hasDiagnostics()));
+  assert(GetClangInstance().createTarget());
 
   // if (GetInvocation().GetListener()) {
   //   GetInvocation().GetListener()->OnCompileStarted(*this);
