@@ -157,15 +157,16 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         // PrintD
       }
       goto EndParse;
-    } else if (curTok.IsIdentifierOrUnderscore()) {
-      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
-        result = ParseVarDecl(declarator);
-      } else {
-        // PrintD
-        goto EndParse;
-      }
     } else {
+      if (curTok.IsIdentifierOrUnderscore()) {
+        if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+          ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
+          result = ParseVarDecl(declarator);
+        } else {
+          // PrintD
+          goto EndParse;
+        }
+      }
     }
     ConsumeToken();
 

@@ -342,6 +342,18 @@ public:
   QualType(Type *tyPtr, unsigned quals) : ptrInt(tyPtr, quals) {}
 
 public:
+  bool HasConstQual() const;
+  bool HasRestrictQual() const;
+  bool HasVolatileQual() const;
+  bool HasPureQual() const;
+
+  bool HasQuals() const;
+  bool IsCanonical() const;
+
+  /// Return true if this QualType doesn't point to a type yet.
+  // bool IsNull() const { return ptrInt.getPointer().IsNull(); }
+
+public:
 };
 
 // CanQualType - This is a Type that is statically known to be

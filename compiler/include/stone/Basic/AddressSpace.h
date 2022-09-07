@@ -2,7 +2,7 @@
 #define STONE_BASIC_ADDRESSPACE_H
 
 #include <cassert>
-//NOTE: You may not use ths since it is opencl stuff ... I think. 
+// NOTE: You may not use ths since it is opencl stuff ... I think.
 namespace stone {
 
 /// Defines the address space values used by the address space qualifier
@@ -27,14 +27,12 @@ struct AddressSpace final {
   /// The type of a lookup table which maps from language-specific address
   /// spaces
   /// to target-specific ones.
-  using AddressSpaceMap =
-      unsigned[(unsigned)AddressSpaceKind::FirstTarget];
+  using AddressSpaceMap = unsigned[(unsigned)AddressSpaceKind::FirstTarget];
 
   /// \return whether \p AS is a target-specific address space rather than a
   /// clang AST address space
   static bool IsTargetAddressSpace(AddressSpaceKind kind) {
-    return (unsigned)kind >=
-           (unsigned)AddressSpaceKind::FirstTarget;
+    return (unsigned)kind >= (unsigned)AddressSpaceKind::FirstTarget;
   }
 
   static unsigned ToTargetAddressSpace(AddressSpaceKind kind) {
@@ -44,8 +42,7 @@ struct AddressSpace final {
 
   static AddressSpaceKind GetByAddressSpace(unsigned targetAddressSpace) {
     return static_cast<AddressSpaceKind>(
-        (targetAddressSpace) +
-        (unsigned)AddressSpaceKind::FirstTarget);
+        (targetAddressSpace) + (unsigned)AddressSpaceKind::FirstTarget);
   }
 
   static bool IsPtrSizeAddressSpace(AddressSpaceKind kind) {
