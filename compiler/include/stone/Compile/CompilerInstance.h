@@ -4,11 +4,16 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Syntax/SyntaxContext.h"
 
+#include "clang/Frontend/CompilerInstance.h"
+
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 
+
 class CompilerInstance;
+using ClangInstance = clang::CompilerInstance;
+
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
@@ -35,6 +40,8 @@ public:
 };
 
 class CompilerInstance final {
+
+  ClangInstance clangInstance; 
 
   CompilerInvocation &invocation;
   std::unique_ptr<syn::SyntaxContext> sc;
@@ -64,6 +71,7 @@ public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   CompilerInvocation &GetInvocation() { return invocation; }
+  ClangInstance& GetClangInstance() { return clangInstance; }
 
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();

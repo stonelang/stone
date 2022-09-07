@@ -19,6 +19,8 @@
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
+#include "clang/Frontend/CompilerInvocation.h"
+
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
 
@@ -33,6 +35,8 @@ class TargetMachine;
 
 namespace stone {
 class CompilerListener;
+using ClangInvocation = clang::CompilerInvocation;
+
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -90,6 +94,9 @@ class CompilerInvocation final : public Session {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
+
+  ClangInvocation clangInvocation; 
+
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
                      CompilerListener *listener = nullptr);
@@ -125,6 +132,7 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
+  ClangInvocation& GetClangInvocation() { return clangInvocation; }
 
 public:
   void SetTargetTriple(llvm::StringRef triple);

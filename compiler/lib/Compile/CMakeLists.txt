@@ -17,6 +17,9 @@ set(stone_compile_sources
 	StoneParse
 	StoneSem
 	StoneSession
+	clangFrontend
+
+
 	DEPENDS
 	StoneOptions
 )
