@@ -9,6 +9,8 @@
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/Types.h"
+
 #include "llvm/ADT/PointerEmbeddedInt.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"

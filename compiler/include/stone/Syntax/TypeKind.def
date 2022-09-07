@@ -178,7 +178,7 @@ ABSTRACT_TYPE(Nominal, Type)
       TYPE(Struct, NominalType)
       TYPE(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
-
+LAST_TYPE(Interface)
 
 #undef TYPE_RANGE
 #undef ABSTRACT_SUGARED_TYPE

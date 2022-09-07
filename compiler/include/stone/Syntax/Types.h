@@ -6,6 +6,7 @@
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
 
@@ -51,143 +52,7 @@ class ExtQuals; // Extended Qualifiers
 class QualType; // Qualified SyntaxTypes
 class StructDecl;
 class SyntaxType;
-
-enum class GCKind : UInt8 { None = 0, Weak, Strong };
-
-struct TypeQualifierFlags {
-  enum ID : UInt8 {
-    None = 0x0,
-    Const = 0x1,
-    Restrict = 0x2,
-    Volatile = 0x4,
-    Unaligned = 0x8,
-    Pure = 0x18,
-    CVRMask = Const | Volatile | Restrict,
-    CVRUMask = Const | Volatile | Restrict | Unaligned
-  };
-};
-
-class TypeQualifierContext {
-
-  // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
-  //           |C R V|U|GCAttr|Lifetime|AddressSpace|
-  UInt32 mask = 0;
-  // static const uint32_t uMask = 0x8;
-  // static const uint32_t uShift = 3;
-  // static const uint32_t GCAttrMask = 0x30;
-  // static const uint32_t GCAttrShift = 4;
-  // static const uint32_t lifetimeMask = 0x1C0;
-  // static const uint32_t lifetimeShift = 6;
-  // static const uint32_t addressSpaceMask =
-  //     ~(CVRMask | UMask | GCAttrMask | LifetimeMask);
-  // static const uint32_t AddressSpaceShift = 9;
-
-  SrcLoc constLoc;
-  SrcLoc restrictLoc;
-  SrcLoc volatileLoc;
-  SrcLoc pureLoc;
-
-public:
-  enum {
-    /// The maximum supported address space number.
-    /// 23 bits should be enough for anyone.
-    MaxAddressSpace = 0x7fffffu,
-
-    /// The width of the "fast" qualifier mask.
-    FastWidth = 3,
-
-    /// The fast qualifier mask.
-    FastMask = (1 << FastWidth) - 1
-  };
-
-public:
-  bool HasConst() const { return mask & TypeQualifierFlags::Const; }
-  bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
-  void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }
-  void AddConst(SrcLoc loc = SrcLoc()) {
-    constLoc = loc;
-    mask |= TypeQualifierFlags::Const;
-  }
-  SrcLoc GetConstLoc() { return constLoc; }
-
-  bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
-  bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
-  void RemoveRestrict() { mask &= ~TypeQualifierFlags::Restrict; }
-  void AddRestrict(SrcLoc loc = SrcLoc()) {
-    restrictLoc = loc;
-    mask |= TypeQualifierFlags::Restrict;
-  }
-  SrcLoc GetRestrictLoc() { return restrictLoc; }
-
-  bool HasVolatile() const { return mask & TypeQualifierFlags::Volatile; }
-  bool HasVolatileOnly() const { return mask == TypeQualifierFlags::Volatile; }
-  void RemoveVolatile() { mask &= ~TypeQualifierFlags::Volatile; }
-  void AddVolatile(SrcLoc loc = SrcLoc()) {
-    volatileLoc = loc;
-    mask |= TypeQualifierFlags::Volatile;
-  }
-
-  bool HasPure() const { return mask & TypeQualifierFlags::Pure; }
-  bool HasPureOnly() const { return mask == TypeQualifierFlags::Pure; }
-  void RemovePure() { mask &= ~TypeQualifierFlags::Pure; }
-  void AddPure(SrcLoc loc = SrcLoc()) {
-    pureLoc = loc;
-    mask |= TypeQualifierFlags::Pure;
-  }
-
-  bool HasAnyTypeQualifier() {
-    return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
-  }
-  bool HasAllTypeQualifiers() {
-    return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
-  }
-  SrcLoc GetVolatileLoc() { return volatileLoc; }
-
-  // bool HasCVR() const { return getCVRQualifiers(); }
-  // unsigned GetCVR() const { return mask & CVRmask; }
-
-  // unsigned GetCVRU() const { return mask & (CVRMask | UMask); }
-
-  // void setCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask = (Mask & ~CVRMask) | mask;
-  // }
-  // void removeCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask &= ~mask;
-  // }
-  // void removeCVRQualifiers() {
-  //   removeCVRQualifiers(CVRMask);
-  // }
-  // void addCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask |= mask;
-  // }
-};
-
-/// ref-qualifier associated with a function SyntaxType.
-/// This determines whether a member function's "this" object can be an
-/// lvalue, rvalue, or neither.
-enum class RefQualifierKind : UInt8 {
-  /// No ref-qualifier was provided.
-  None = 0,
-  /// An lvalue ref-qualifier was provided (\c &).
-  LValue,
-
-  /// An rvalue ref-qualifier was provided (\c &&).
-  RValue
-};
-enum class ScalarTypeKind {
-  Pointer,
-  BlockPointer,
-  MemberPointer,
-  Bool,
-  Integral,
-  Floating,
-  IntegralComplex,
-  FloatingComplex,
-  FixedPoint
-};
+class CanQualType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
@@ -196,31 +61,28 @@ class alignas(1 << TypeAlignInBits) TypeBase
   TypeBase(const TypeBase &) = delete;
   void operator=(const TypeBase &) = delete;
 
+  TypeKind kind;
+
+  /// This union contains to the ASTContext for canonical types, and is
+  /// otherwise lazily populated by ASTContext when the canonical form of a
+  /// non-canonical type is requested. The disposition of the union is stored
+  /// outside of the union for performance. See Bits.TypeBase.IsCanonical.
+  union {
+    // CanQualType canQualType;
+    const SyntaxContext *sc;
+  };
+
 public:
+  TypeBase(TypeKind kind, const SyntaxContext &canTypeCtx) : kind(kind) {}
 };
 
-// /// const int a = 10; volatile int a = 10;
-// class QualType : public TypeBase {
+// class AbstractFunctionType : public TypeBase {
 // public:
-//   QualType() = default;
-//   QualType(const TypeBase *ty, unsigned quals) {}
-
-// public:
-//   /// Retrieves a pointer to the underlying (unqualified) type.
-//   ///
-//   /// This function requires that the type not be NULL. If the type might be
-//   /// NULL, use the (slightly less efficient) \c getTypePtrOrNull().
-//   // const Type *GetTypePtr() const;
-//   // const Type *GetTypePtrOrNull() const;
 // };
 
-class AbstractFunctionType : public TypeBase {
-public:
-};
-
-class FunctionType : public AbstractFunctionType {
-public:
-};
+// class FunctionType : public AbstractFunctionType {
+// public:
+// };
 
 // class NominalType : public TypeBase {
 // public:
@@ -239,10 +101,6 @@ public:
 // class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
 //   friend class SyntaxContext; // SyntaxContext creates these
 // };
-
-class BuiltinType : public TypeBase {
-public:
-};
 
 struct BitWidth final {
   enum Kind : UInt8 {
@@ -272,6 +130,12 @@ struct BitWidth final {
   }
 };
 
+class BuiltinType : public TypeBase {
+protected:
+  BuiltinType(TypeKind kind, const SyntaxContext &canTypeCtx)
+      : TypeBase(kind, canTypeCtx) {}
+};
+
 /// An abstract base class for the two integer types.
 class AbstractIntegerType : public BuiltinType {
   BitWidth bitWidth;
@@ -283,44 +147,45 @@ class IntegerType : public AbstractIntegerType {
 public:
 };
 
-class UIntegerType : public AbstractIntegerType {
-public:
-};
+// class UIntegerType : public AbstractIntegerType {
+// public:
+// };
 
-class FloatType : public BuiltinType {
-  friend class SyntaxContext;
+// class FloatType : public BuiltinType {
+//   friend class SyntaxContext;
 
-private:
-  using FloatPointBitWidth = BitWidth::Kind;
-  FloatPointBitWidth fpBitWidth;
-  // FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
+// private:
+//   using FloatPointBitWidth = BitWidth::Kind;
+//   FloatPointBitWidth fpBitWidth;
+//   // FloatType(FloatPointBitWidth fpBitWidth, const SyntaxContext &C)
 
-public:
-  const llvm::fltSemantics &GetAPFloatSemantics() const;
+// public:
+//   const llvm::fltSemantics &GetAPFloatSemantics() const;
 
-  FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
-  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth); }
-  // static bool classof(const TypeBase *T) {
-  //   return T->getKind() == TypeKind::Float;
-  // }
-};
+//   FloatPointBitWidth GetFloatPointBitWidth() const { return fpBitWidth; }
+//   unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth);
+//   }
+//   // static bool classof(const TypeBase *T) {
+//   //   return T->getKind() == TypeKind::Float;
+//   // }
+// };
 
-class VoidType : public BuiltinType {
-public:
-};
+// class VoidType : public BuiltinType {
+// public:
+// };
 
-class NullType : public BuiltinType {
-public:
-};
+// class NullType : public BuiltinType {
+// public:
+// };
 
-class PointerType : public TypeBase, public llvm::FoldingSetNode {
-  friend class SyntaxContext; // SyntaxContext creates these.
-public:
-};
+// class PointerType : public TypeBase, public llvm::FoldingSetNode {
+//   friend class SyntaxContext; // SyntaxContext creates these.
+// public:
+// };
 
-class ArrayType : public TypeBase, public llvm::FoldingSetNode {
-public:
-};
+// class ArrayType : public TypeBase, public llvm::FoldingSetNode {
+// public:
+// };
 
 // public:
 //   // QualType getPointeeType() const { return PointeeType; }
@@ -356,7 +221,8 @@ public:
 
 //   // public:
 //   //   bool isSpelledAsLValue() const { return
-//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const { return
+//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const {
+//   return
 //   //   ReferenceTypeBits.InnerRef; }
 
 //   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
@@ -409,7 +275,8 @@ public:
 //   //   friend class ASTContext; // ASTContext creates these
 
 //   //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false)
+//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef,
+//   false)
 //   {}
 
 //   // public:
@@ -424,7 +291,8 @@ public:
 // /// A pointer to member type per C++ 8.3.3 - Pointers to members.
 // ///
 // /// This includes both pointers to data members and pointer to member
-// functions. class MemberPointerType : public Type, public llvm::FoldingSetNode
+// functions. class MemberPointerType : public Type, public
+// llvm::FoldingSetNode
 // {
 //   //   friend class ASTContext; // ASTContext creates these.
 
@@ -437,7 +305,8 @@ public:
 //   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
 //   //   CanonicalPtr)
 //   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() & ~TypeDependence::VariablyModified)
+//   //              (Cls->getDependence() &
+//   ~TypeDependence::VariablyModified)
 //   |
 //   //                  Pointee->getDependence()),
 //   //         PointeeType(Pointee), Class(Cls) {}

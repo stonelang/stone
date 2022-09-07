@@ -49,7 +49,7 @@ public:
 
 public:
   // const CanQualType VoidType;
-  // const CanQualType BoolType;
+  //  const CanQualType BoolType;
 
   // const CanQualType Float;
   // const CanQualType Float16Type;  /// 32-bit IEEE floating point

@@ -1,12 +1,12 @@
 #ifndef STONE_SYNTAX_Type_H
 #define STONE_SYNTAX_Type_H
 
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
-#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -45,7 +45,7 @@ namespace stone {
 namespace syn {
 
 class ASTPrinter;
-class CanType;
+class CanQualType;
 class EnumDecl;
 class ModuleDecl;
 class InterfaceType;
@@ -74,6 +74,143 @@ class TypeWalker;
 // public:
 //   Type Transform(llvm::function_ref<Type(Type)> fn) const;
 // };
+
+enum class GCKind : UInt8 { None = 0, Weak, Strong };
+
+struct TypeQualifierFlags {
+  enum ID : UInt8 {
+    None = 0x0,
+    Const = 0x1,
+    Restrict = 0x2,
+    Volatile = 0x4,
+    Unaligned = 0x8,
+    Pure = 0x18,
+    CVRMask = Const | Volatile | Restrict,
+    CVRUMask = Const | Volatile | Restrict | Unaligned
+  };
+};
+
+class TypeQualifierContext {
+
+  // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
+  //           |C R V|U|GCAttr|Lifetime|AddressSpace|
+  UInt32 mask = 0;
+  // static const uint32_t uMask = 0x8;
+  // static const uint32_t uShift = 3;
+  // static const uint32_t GCAttrMask = 0x30;
+  // static const uint32_t GCAttrShift = 4;
+  // static const uint32_t lifetimeMask = 0x1C0;
+  // static const uint32_t lifetimeShift = 6;
+  // static const uint32_t addressSpaceMask =
+  //     ~(CVRMask | UMask | GCAttrMask | LifetimeMask);
+  // static const uint32_t AddressSpaceShift = 9;
+
+  SrcLoc constLoc;
+  SrcLoc restrictLoc;
+  SrcLoc volatileLoc;
+  SrcLoc pureLoc;
+
+public:
+  enum {
+    /// The maximum supported address space number.
+    /// 23 bits should be enough for anyone.
+    MaxAddressSpace = 0x7fffffu,
+
+    /// The width of the "fast" qualifier mask.
+    FastWidth = 3,
+
+    /// The fast qualifier mask.
+    FastMask = (1 << FastWidth) - 1
+  };
+
+public:
+  bool HasConst() const { return mask & TypeQualifierFlags::Const; }
+  bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
+  void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }
+  void AddConst(SrcLoc loc = SrcLoc()) {
+    constLoc = loc;
+    mask |= TypeQualifierFlags::Const;
+  }
+  SrcLoc GetConstLoc() { return constLoc; }
+
+  bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
+  bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
+  void RemoveRestrict() { mask &= ~TypeQualifierFlags::Restrict; }
+  void AddRestrict(SrcLoc loc = SrcLoc()) {
+    restrictLoc = loc;
+    mask |= TypeQualifierFlags::Restrict;
+  }
+  SrcLoc GetRestrictLoc() { return restrictLoc; }
+
+  bool HasVolatile() const { return mask & TypeQualifierFlags::Volatile; }
+  bool HasVolatileOnly() const { return mask == TypeQualifierFlags::Volatile; }
+  void RemoveVolatile() { mask &= ~TypeQualifierFlags::Volatile; }
+  void AddVolatile(SrcLoc loc = SrcLoc()) {
+    volatileLoc = loc;
+    mask |= TypeQualifierFlags::Volatile;
+  }
+
+  bool HasPure() const { return mask & TypeQualifierFlags::Pure; }
+  bool HasPureOnly() const { return mask == TypeQualifierFlags::Pure; }
+  void RemovePure() { mask &= ~TypeQualifierFlags::Pure; }
+  void AddPure(SrcLoc loc = SrcLoc()) {
+    pureLoc = loc;
+    mask |= TypeQualifierFlags::Pure;
+  }
+
+  bool HasAnyTypeQualifier() {
+    return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
+  }
+  bool HasAllTypeQualifiers() {
+    return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
+  }
+  SrcLoc GetVolatileLoc() { return volatileLoc; }
+
+  // bool HasCVR() const { return getCVRQualifiers(); }
+  // unsigned GetCVR() const { return mask & CVRmask; }
+
+  // unsigned GetCVRU() const { return mask & (CVRMask | UMask); }
+
+  // void setCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask = (Mask & ~CVRMask) | mask;
+  // }
+  // void removeCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask &= ~mask;
+  // }
+  // void removeCVRQualifiers() {
+  //   removeCVRQualifiers(CVRMask);
+  // }
+  // void addCVRQualifiers(unsigned mask) {
+  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
+  //   Mask |= mask;
+  // }
+};
+
+/// ref-qualifier associated with a function SyntaxType.
+/// This determines whether a member function's "this" object can be an
+/// lvalue, rvalue, or neither.
+enum class RefQualifierKind : UInt8 {
+  /// No ref-qualifier was provided.
+  None = 0,
+  /// An lvalue ref-qualifier was provided (\c &).
+  LValue,
+
+  /// An rvalue ref-qualifier was provided (\c &&).
+  RValue
+};
+enum class ScalarTypeKind {
+  Pointer,
+  BlockPointer,
+  MemberPointer,
+  Bool,
+  Integral,
+  Floating,
+  IntegralComplex,
+  FloatingComplex,
+  FixedPoint
+};
 
 class Type {
   TypeBase *typePtr = nullptr;
@@ -220,7 +357,7 @@ public:
   CanQualType() = default;
 
 public:
-  explicit CanQualType(TypeBase* tyPtr = 0) : tyPtr(tyPtr) {
+  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
     assert(IsCanQualTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
@@ -228,6 +365,7 @@ public:
     assert(IsCanQualTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
+
 private:
   bool IsCanQualTypeOrNull() const { return false; }
 };
