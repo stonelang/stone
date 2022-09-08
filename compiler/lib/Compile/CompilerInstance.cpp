@@ -1,6 +1,10 @@
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
+#include "clang/Basic/FileManager.h"
+#include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Frontend/TextDiagnosticPrinter.h"
+
 using namespace stone;
 
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
@@ -32,8 +36,22 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 
 void CompilerInstance::SetupClang() {
 
- 
+  // GetClangInstance().createDiagnostics();
+  // assert((GetClangInstance().hasDiagnostics()));
+  // assert(GetClangInstance().createTarget());
 
+  auto diags = CompilerInstance::createDiagnostics(new DiagnosticOptions());
+  auto invocation = clang::createInvocationFromCommandLine({}, diags);
+
+  // if (!CInvok)
+  //   FAIL() << "could not create compiler invocation";
+
+  // Create a minimal CompilerInstance which should use the VFS we specified
+  // in the CompilerInvocation (as we don't explicitly set our own).
+  // clangInstance.setDiagnostics(diags.get());
+  // clangInstance.setInvocation(invocation);
+  // clangInstance.createFileManager();
+  // assert(clangInstance.createTarget());
 }
 // void CompilerInstance::FinishTypeCheck() {
 // }

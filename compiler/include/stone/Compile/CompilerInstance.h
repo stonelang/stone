@@ -4,24 +4,18 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Syntax/SyntaxContext.h"
 
-#include "clang/Frontend/CompilerInstance.h"
-
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 
-
-class CompilerInstance;
-using ClangInstance = clang::CompilerInstance;
-
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
 
-using SyntaxAnalysisCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
-using SemanticAnalysisCallback = llvm::function_ref<void(CompilerInstance &)>;
+using ParsingCompletedCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
+using TypeCheckingCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
 
-// using IRCodeGenCallback = llvm::function_ref<void(CompilerInstance &)>;
-// using NativeCodeGenCallback = llvm::function_ref<void(CompilerInstance &)>;
+using IRCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
+using NativeCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
@@ -39,11 +33,70 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
+
+class CompileStatus final {
+  unsigned isError : 1;
+  unsigned IsCodeCompletion : 1;
+
+public:
+  /// Construct a successful parser status.
+  CompileStatus() : isError(0), IsCodeCompletion(0) {}
+
+  /// Construct a parser status with specified bits.
+  CompileStatus(bool isError, bool isCodeCompletion = false)
+      : isError(0), IsCodeCompletion(0) {
+    if (isError) {
+      SetIsError();
+    }
+    if (isCodeCompletion) {
+      IsCodeCompletion = true;
+    }
+  }
+  /// Return true if either 1) no errors were encountered while parsing this,
+  /// or 2) there were errors but the the parser already recovered from them.
+  bool IsSuccess() const { return !IsError(); }
+  bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
+
+  /// Return true if we found a code completion token while parsing this.
+  bool HasCodeCompletion() const { return IsCodeCompletion; }
+
+  /// Return true if we encountered any errors while parsing this that the
+  /// parser hasn't yet recovered from.
+  bool IsError() const { return isError; }
+
+  void SetIsError() { isError = true; }
+
+  void SetHasCodeCompletion() { IsCodeCompletion = true; }
+
+  void ClearIsError() { isError = false; }
+
+  void SetHasCodeCompletionAndIsError() {
+    isError = true;
+    IsCodeCompletion = true;
+  }
+  CompileStatus &operator|=(CompileStatus RHS) {
+    isError |= RHS.isError;
+    IsCodeCompletion |= RHS.IsCodeCompletion;
+    return *this;
+  }
+
+  friend CompileStatus operator|(CompileStatus LHS, CompileStatus RHS) {
+    CompileStatus Result = LHS;
+    Result |= RHS;
+    return Result;
+  }
+
+public:
+  static CompileStatus MakeSuccess() { return CompileStatus(); }
+  static CompileStatus MakeError() {
+    CompileStatus Status;
+    Status.SetIsError();
+    return Status;
+  }
+};
+
 class CompilerInstance final {
 
-  ClangInstance clangInstance; 
-
-  CompilerInvocation &invocation;
   std::unique_ptr<syn::SyntaxContext> sc;
   std::unique_ptr<ModuleSystem> ms;
   std::unique_ptr<CompilerInstanceStats> stats;
@@ -71,7 +124,6 @@ public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   CompilerInvocation &GetInvocation() { return invocation; }
-  ClangInstance& GetClangInstance() { return clangInstance; }
 
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
@@ -82,18 +134,21 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  void Compile();
+  CompileStatus Compile();
 
 private:
-  void CompileWithSyntaxAnalysis();
-  void CompileWithSyntaxAnalysis(SyntaxAnalysisCallback client);
+  CompileStatus CompileWithParsing();
+  CompileStatus CompileWithParsing(ParsingCompletedCallback fn);
 
-  void CompileWithSemanticAnalysis();
-  void CompileWithSemanticAnalysis(SemanticAnalysisCallback client);
+  CompileStatus CompileWithTypeChecking();
+  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback client);
+
+  
+  CompileStatus CompileWithCodeGen(CompilerInstance &compiler);
 
   // TODO: Some things to think about
-  void CompileWithIRCodeGen();
-  void CompileWithNativeCodeGen();
+  CompileStatus CompileWithIRCodeGen();
+  CompileStatus CompileWithNativeCodeGen();
 
   // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
   // &cgc,

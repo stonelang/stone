@@ -20,6 +20,7 @@
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Frontend/CompilerInstance.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -94,8 +95,7 @@ class CompilerInvocation final : public Session {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
-
-  ClangInvocation clangInvocation; 
+  std::unique_ptr<clang::CompilerInstance> clangInstance;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -132,7 +132,7 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  ClangInvocation& GetClangInvocation() { return clangInvocation; }
+  clang::CompilerInstance &GetClangInstance() { return *clangInstance; }
 
 public:
   void SetTargetTriple(llvm::StringRef triple);

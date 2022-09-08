@@ -118,10 +118,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   CompilerInstance compiler(invocation);
-  compiler.Compile();
-
-  
-
+  CompileStatus status = compiler.Compile();
 
   if (invocation.HasError()) {
     return Finish(1);
@@ -165,10 +162,10 @@ static void CompileWithGenIR(CompilerInstance &compiler,
   }
 }
 
-static void GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
-                      IRCodeGenResult &result) {}
+static CompileStatus GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
+                      IRCodeGenResult &result) {return CompileStatus::MakeSuccess();}
 
-static void CompileWithGenNative(CompilerInstance &compiler,
+static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
                                  CodeGenContext &cgc, IRCodeGenResult &result) {
 
   // TODO: Move to CompilerInstance
@@ -203,9 +200,11 @@ static void CompileWithGenNative(CompilerInstance &compiler,
   ComputeNativeModeKind(compiler);
   auto err =
       stone::GenNative(cgc, compiler.GetSyntaxContext(), result, nullptr);
+
+      return CompileStatus::MakeSuccess();
 }
 
-static void CompileWithCodeGen(CompilerInstance &compiler) {
+static CompileStatus CompileWithCodeGen(CompilerInstance &compiler) {
 
   assert(compiler.GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
 
@@ -246,9 +245,9 @@ static void CompileWithCodeGen(CompilerInstance &compiler) {
   }
 }
 
-static void DumpSyntax(syn::SyntaxFile &sf) {}
+static CompileStatus DumpSyntax(syn::SyntaxFile &sf) { return CompileStatus::MakeSuccess(); }
 
-static void PrintSyntax(CompilerInstance &compiler) {}
+static CompileStatus PrintSyntax(CompilerInstance &compiler) {return CompileStatus::MakeSuccess();}
 
 void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
 
@@ -271,14 +270,13 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   }
   }
 }
-void CompilerInstance::CompileWithSyntaxAnalysis() {
-  CompileWithSyntaxAnalysis([&](syn::SyntaxFile &sf) {
+CompileStatus CompilerInstance::CompileWithParsing() {
+  CompileWithParsing([&](syn::SyntaxFile &sf) {
     return [&](syn::SyntaxFile &sf) -> void {}(sf);
   });
 }
 
-void CompilerInstance::CompileWithSyntaxAnalysis(
-    SyntaxAnalysisCallback client) {
+CompileStatus CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
 
   for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
     auto syntaxFile = syn::MakeSyntaxFile(
@@ -287,7 +285,7 @@ void CompilerInstance::CompileWithSyntaxAnalysis(
 
     syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
     assert(syntaxFile);
-    client(*syntaxFile);
+    fn(*syntaxFile);
   }
 
   if (!invocation.GetCompilerOptions().GetMode().JustParse()) {
@@ -296,6 +294,9 @@ void CompilerInstance::CompileWithSyntaxAnalysis(
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
   }
+
+  return CompileStatus::MakeSuccess();
+
 }
 
 void CompilerInstance::ResolveUsings() {
@@ -305,9 +306,9 @@ void CompilerInstance::ResolveUsings() {
       sem::ResolveUsings(*syntaxFile);
   }
 }
-void CompilerInstance::CompileWithSemanticAnalysis() {
+CompileStatus CompilerInstance::CompileWithTypeChecking() {
 
-  CompileWithSyntaxAnalysis();
+  CompileWithParsing();
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
                         TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
@@ -318,22 +319,22 @@ void CompilerInstance::CompileWithSemanticAnalysis() {
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
   }
+
+  return CompileStatus::MakeSuccess();
 }
 
-void CompilerInstance::CompileWithSemanticAnalysis(
-    SemanticAnalysisCallback client) {
-  CompileWithSemanticAnalysis();
-  client(*this);
+CompileStatus CompilerInstance::CompileWithTypeChecking(
+    TypeCheckingCompletedCallback fn) {
+  CompileWithTypeChecking();
+  fn(*this);
 }
 
 void CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
 
-    // Clang setup 
-  GetClangInstance().createDiagnostics();
-  assert((GetClangInstance().hasDiagnostics()));
-  assert(GetClangInstance().createTarget());
+  // Clang setup
+  SetupClang();
 
   // if (GetInvocation().GetListener()) {
   //   GetInvocation().GetListener()->OnCompileStarted(*this);
@@ -342,17 +343,17 @@ void CompilerInstance::Compile() {
 
   switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::Parse:
-    return CompileWithSyntaxAnalysis();
+    return CompileWithParsing();
   case ModeKind::DumpSyntax:
-    return CompileWithSyntaxAnalysis(
+    return CompileWithParsing(
         [&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
   case ModeKind::TypeCheck:
-    return CompileWithSemanticAnalysis();
+    return CompileWithTypeChecking();
   case ModeKind::PrintSyntax:
-    return CompileWithSemanticAnalysis(
+    return CompileWithTypeChecking(
         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
   default:
-    return CompileWithSemanticAnalysis(
+    return CompileWithTypeChecking(
         [&](CompilerInstance &compiler) { return CompileWithCodeGen(*this); });
   }
 }

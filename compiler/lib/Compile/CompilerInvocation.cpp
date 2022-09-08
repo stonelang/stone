@@ -26,7 +26,7 @@ using namespace stone::opts;
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
-    : Session(programName, programPath), listener(listener) {
+    : Session(programName, programPath), listener(listener), clangInstance(new clang::CompilerInstance()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
