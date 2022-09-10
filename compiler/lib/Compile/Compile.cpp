@@ -145,24 +145,26 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
                                       stone::ModuleSyntaxFileUnion msf,
                                       CodeGenContext &cgc,
                                       IRCodeGenCompletedCallback fn) {
-
+  CompileStatus status;
   switch (compiler.GetModuleOutputMode()) {
   case ModuleOutputMode::Single: {
     if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
       auto result = stone::GenIR(
           cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
-      return fn(compiler, cgc, *result);
+      status |= fn(compiler, cgc, *result);
     }
+    return status;
   }
   case ModuleOutputMode::Whole: {
     if (auto mod = msf.get<syn::Module *>()) {
       auto result = stone::GenIR(
           cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
-      return fn(compiler, cgc, *result);
+      status |= fn(compiler, cgc, *result);
     }
+    return status;
   }
   default:
-    stone::Panic("Unable to GenIR -- invalid IR ouput"); //
+    stone::Panic("Unable to GenIR -- invalid IR ouput");
   }
 
   return CompileStatus::MakeError();
@@ -292,6 +294,7 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
                invocation.GetListener());
       }
     }
+    break;
   }
   case TypeCheckMode::EachFile: {
     for (auto *syntaxFile :
@@ -299,6 +302,9 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
       client(*syntaxFile, invocation.GetTypeCheckerOptions(),
              invocation.GetListener());
     }
+    break;
+  }
+  default: {
   }
   }
 }

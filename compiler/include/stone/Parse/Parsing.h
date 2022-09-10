@@ -1,5 +1,5 @@
-#ifndef STONE_PARSE_SYNTAXPARSING_H
-#define STONE_PARSE_SYNTAXPARSING_H
+#ifndef STONE_PARSE_PARSINGSUPPORT_H
+#define STONE_PARSE_PARSINGSUPPORT_H
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Parse/Lexing.h"
@@ -316,6 +316,40 @@ public:
   // void SetDone() { status = ParsingContextStatus::Done; }
 };
 
+class ParsingToken final {
+  Parser &parser;
+
+public:
+  ParsingToken(Parser &parser) : parser(parser) {}
+
+public:
+  bool IsPeriod();
+  bool IsDoublePipe();
+  bool IsPipe();
+  bool IsPipeEqual();
+  bool IsEllipsis();
+  bool IsSemi();
+  bool IsEquality();
+  bool IsDoubleEquality();
+  bool IsPound();
+  bool IsAmp();
+  bool IsArrow();
+  bool IsBackTick();
+  bool IsExcliam();
+  bool IsDoubleColon();
+  bool IsTilde();
+  bool IsFun();
+  bool IsStruct();
+  bool IsInterface();
+  bool IsPure();
+  bool IsInline();
+  bool IsLeftParen();
+  bool IsRightParen();
+  bool IsEnum();
+  bool IsStar();
+  bool IsQualifier();
+  bool IsAccessLevel();
+};
 } // namespace syn
 } // namespace stone
 #endif

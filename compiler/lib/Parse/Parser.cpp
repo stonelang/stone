@@ -20,7 +20,7 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
-      stats(new ParserStats(*this)) {
+      parsingTok(*this), stats(new ParserStats(*this)) {
 
   GetLangContext().GetStatEngine().Register(stats.get());
 }

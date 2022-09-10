@@ -76,13 +76,13 @@ public:
   TypeBase(TypeKind kind, const SyntaxContext &canTypeCtx) : kind(kind) {}
 };
 
-// class AbstractFunctionType : public TypeBase {
-// public:
-// };
+class AbstractFunctionType : public TypeBase {
+public:
+};
 
-// class FunctionType : public AbstractFunctionType {
-// public:
-// };
+class FunctionType : public AbstractFunctionType {
+public:
+};
 
 // class NominalType : public TypeBase {
 // public:

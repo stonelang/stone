@@ -44,6 +44,8 @@ public:
 
 class Parser final {
   friend ParserStats;
+  friend ParsingToken;
+
   // friend PairDelimiterBalancer;
 
   SyntaxListener *listener;
@@ -82,6 +84,8 @@ class Parser final {
 
   // /// Factory object for creating ParsedAttribute objects.
   AttributeFactory attributeFactory;
+
+  ParsingToken parsingTok;
 
 private:
   // Identifiers
@@ -390,39 +394,6 @@ private:
   bool StartsWithLess(Token tok) { return StartsWithSymbol(tok, '<'); }
   /// Check whether the current curTok starts with '>'.
   bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
-
-  bool IsPeriod() { return curTok.GetKind() == tok::period; }
-  bool IsDoublePipe() { return curTok.GetKind() == tok::doublepipe; }
-  bool IsPipe() { return curTok.GetKind() == tok::pipe; }
-  bool IsPipeEqual() { return curTok.GetKind() == tok::pipeequal; }
-  bool IsEllipsis() { return curTok.GetKind() == tok::ellipsis; }
-  bool IsSemi() { return curTok.GetKind() == tok::semi; }
-  bool IsEquality() { return curTok.GetKind() == tok::equal; }
-  bool IsDoubleEquality() { return curTok.GetKind() == tok::doubleequal; }
-  bool IsPound() { return curTok.GetKind() == tok::pound; }
-  bool IsAmp() { return curTok.GetKind() == tok::amp; }
-  bool IsArrow() { return curTok.GetKind() == tok::arrow; }
-  bool IsBackTick() { return curTok.GetKind() == tok::backtick; }
-  bool IsExcliam() { return curTok.GetKind() == tok::exclaim; }
-  bool IsDoubleColon() const { return curTok.GetKind() == tok::doublecolon; }
-  bool IsTilde() { return curTok.GetKind() == tok::tilde; }
-  bool IsFun() { return curTok.GetKind() == tok::kw_fun; }
-  bool IsStruct() { return curTok.GetKind() == tok::kw_struct; }
-  bool IsInterface() { return curTok.GetKind() == tok::kw_interface; }
-  bool IsPure() { return curTok.GetKind() == tok::kw_pure; }
-  bool IsInline() { return curTok.GetKind() == tok::kw_pure; }
-  bool IsLeftParen() { return curTok.GetKind() == tok::l_paren; }
-  bool IsRightParen() { return curTok.GetKind() == tok::r_paren; }
-  bool IsEnum() { return curTok.GetKind() == tok::kw_enum; }
-  bool IsStar() { return curTok.GetKind() == tok::star; }
-
-  bool IsQualifier() {
-    return curTok.IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
-                 tok::kw_pure);
-  }
-  bool IsAccessLevel() {
-    return curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
-  }
 
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
