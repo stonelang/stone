@@ -133,7 +133,7 @@ public:
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
   clang::CompilerInstance &GetClangInstance() { return *clangInstance; }
-  void SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+  stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:
   void SetTargetTriple(llvm::StringRef triple);

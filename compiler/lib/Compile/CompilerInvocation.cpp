@@ -5,6 +5,21 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
+
+#include "clang/Basic/Stack.h"
+#include "clang/Basic/TargetOptions.h"
+#include "clang/CodeGen/ObjectFilePCHContainerOperations.h"
+#include "clang/Config/config.h"
+#include "clang/Driver/DriverDiagnostic.h"
+#include "clang/Driver/Options.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Frontend/FrontendDiagnostic.h"
+#include "clang/Frontend/TextDiagnosticBuffer.h"
+#include "clang/Frontend/TextDiagnosticPrinter.h"
+#include "clang/Frontend/Utils.h"
+
+
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
@@ -22,6 +37,7 @@
 using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
+
 
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
@@ -206,59 +222,65 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-void CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> args,
-                                    const char *arg0) {
+
+stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
+                                             const char *arg0) {
   // Setup the clang diagnostics
-  // IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
-  // IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
-  // TextDiagnosticBuffer *DiagsBuffer = new TextDiagnosticBuffer;
-  // DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
+  clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(new clang::DiagnosticIDs());
+  IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts = new clang::DiagnosticOptions();
+  clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
+  clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
-  // Lang lang;
-  // bool Success = CompilerInvocation::CreateFromArgs(
-  //   GetCompilerInstance().getInvocation(), {}, Diags, arg0);
+  bool Success = clang::CompilerInvocation::CreateFromArgs(
+      GetClangInstance().getInvocation(), argv, Diags, arg0);
+  if (!Success) {
+    return Error(true);
+  }
 
-  // CompileStatus status(Success);
-  // if (status.IsError()) {
-  //   return 1;
-  // }
+  // This works in clang 15 
+  // if (GetClangInstance().getFrontendOpts().TimeTrace ||
+  //     !GetClangInstance().getFrontendOpts().TimeTracePath.empty()) {
 
-  // if (lang.GetCompilerInstance().getFrontendOpts().TimeTrace ||
-  //     !lang.GetCompilerInstance().getFrontendOpts().TimeTracePath.empty()) {
-  //   lang.GetCompilerInstance().getFrontendOpts().TimeTrace = 1;
+  //   GetClangInstance().getFrontendOpts().TimeTrace = 1;
   //   llvm::timeTraceProfilerInitialize(
-  //       lang.GetCompilerInstance().getFrontendOpts().TimeTraceGranularity,
-  //       arg0);
+  //       GetClangInstance().getFrontendOpts().TimeTraceGranularity, arg0);
   // }
-  // // --print-supported-cpus takes priority over the actual compilation.
-  // // if (lang.GetCompilerInstance().getFrontendOpts().PrintSupportedCPUs)
-  // //   return PrintSupportedCPUs(
-  // //       lang.GetCompilerInstance().getTargetOpts().Triple);
+  // --print-supported-cpus takes priority over the actual compilation.
+  // if (GetClangInstance().getFrontendOpts().PrintSupportedCPUs)
+  //   return PrintSupportedCPUs(
+  //       GetClangInstance().getTargetOpts().Triple);
 
-  // // Infer the builtin include path if unspecified.
-  // if (lang.GetCompilerInstance().getHeaderSearchOpts().UseBuiltinIncludes &&
-  //     lang.GetCompilerInstance().getHeaderSearchOpts().ResourceDir.empty())
-  //   lang.GetCompilerInstance().getHeaderSearchOpts().ResourceDir =
+  // Infer the builtin include path if unspecified.
+  // if (GetClangInstance().getHeaderSearchOpts().UseBuiltinIncludes &&
+  //     GetClangInstance().getHeaderSearchOpts().ResourceDir.empty())
+  //   GetClangInstance().getHeaderSearchOpts().ResourceDir =
   //       CompilerInvocation::GetResourcesPath(arg0, mainAddr);
 
-  // // Create the actual diagnostics engine.
-  // lang.GetCompilerInstance().createDiagnostics();
-  // if (!lang.GetCompilerInstance().hasDiagnostics()) {
-  //   return 1;
-  // }
+  // Create the actual diagnostics engine.
+  GetClangInstance().createDiagnostics();
+  if (!GetClangInstance().hasDiagnostics()) {
+    return Error(true);
+  }
 
-  // DiagsBuffer->FlushDiagnostics(lang.GetCompilerInstance().getDiagnostics());
-  // if (!Success) {
-  //   lang.GetCompilerInstance().getDiagnosticClient().finish();
-  //   return 1;
-  // }
+  DiagsBuffer->FlushDiagnostics(GetClangInstance().getDiagnostics());
+  if (!Success) {
+    GetClangInstance().getDiagnosticClient().finish();
+    return Error(true);
+  }
+  // If there were errors in processing arguments, don't do anything else.
+  if (GetClangInstance().getDiagnostics().hasErrorOccurred()) {
+    return Error(true);
+  }
 
-  // // If there were errors in processing arguments, don't do anything else.
-  // if (lang.GetCompilerInstance().getDiagnostics().hasErrorOccurred()) {
-  //   return false;
-  // }
+  // Set up the file and source managers, if needed.
+  if (!GetClangInstance().hasFileManager()) {
+    assert(GetClangInstance().createFileManager());
+  }
+  if (!GetClangInstance().hasSourceManager()) {
+    GetClangInstance().createSourceManager(GetClangInstance().getFileManager());
+  }
 
-  // assert(lang.GetCompilerInstance().createTarget());
+  assert(GetClangInstance().createTarget());
 }
 void CompilerInvocation::Finish() {
   if (listener) {
