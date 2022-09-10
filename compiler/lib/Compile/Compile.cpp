@@ -19,7 +19,6 @@
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxFactory.h"
 
-
 #include "clang/Basic/TargetInfo.h"
 
 #include "llvm/IR/Module.h"
@@ -223,11 +222,11 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
                      GetInvocation().GetCodeGenOptions(),
                      GetInvocation().GetLangContext());
 
-  clang::TargetInfo& targetInfo = GetInvocation().GetClangInstance().getTarget();
+  clang::TargetInfo &targetInfo =
+      GetInvocation().GetClangInstance().getTarget();
 
   // Setup the empty module
-  cgc.GetModule().setTargetTriple(
-      targetInfo.getTriple().getTriple());
+  cgc.GetModule().setTargetTriple(targetInfo.getTriple().getTriple());
   cgc.GetModule().setDataLayout(targetInfo.getDataLayoutString());
 
   const auto &sdkVersion = targetInfo.getSDKVersion();
@@ -243,7 +242,6 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
   // }
-
   // switch
   // (invocation.GetCompilerOptions().moduleOutputMode)
 
