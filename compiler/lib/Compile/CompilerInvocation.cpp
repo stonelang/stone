@@ -5,7 +5,6 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
-
 #include "clang/Basic/Stack.h"
 #include "clang/Basic/TargetOptions.h"
 #include "clang/CodeGen/ObjectFilePCHContainerOperations.h"
@@ -18,7 +17,6 @@
 #include "clang/Frontend/TextDiagnosticBuffer.h"
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Frontend/Utils.h"
-
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -37,7 +35,6 @@
 using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
-
 
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
@@ -222,12 +219,13 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-
 stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                             const char *arg0) {
+                                            const char *arg0) {
   // Setup the clang diagnostics
-  clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(new clang::DiagnosticIDs());
-  IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts = new clang::DiagnosticOptions();
+  clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
+      new clang::DiagnosticIDs());
+  IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
+      new clang::DiagnosticOptions();
   clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
   clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
@@ -237,7 +235,7 @@ stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
     return Error(true);
   }
 
-  // This works in clang 15 
+  // This works in clang 15
   // if (GetClangInstance().getFrontendOpts().TimeTrace ||
   //     !GetClangInstance().getFrontendOpts().TimeTracePath.empty()) {
 

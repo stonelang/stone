@@ -33,8 +33,10 @@ class CodeGenContext final {
   llvm::CGSCCAnalysisManager cgam;
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
+
+  std::unique_ptr<llvm::Module> mod;
   // legacy::PassManager legacyPM;
-  std::unique_ptr<llvm::TargetMachine> targetMachine;
+  std::unique_ptr<llvm::TargetMachine> tm;
 
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
@@ -44,11 +46,7 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const LangContext &GetLangContext() const { return langContext; }
-
-public:
-  void TakeTargetMachine(std::unique_ptr<llvm::TargetMachine> &&tm) {
-    targetMachine = std::move(tm);
-  }
+  llvm::Module &GetModule() { return *mod; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -57,7 +55,7 @@ public:
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
-  llvm::TargetMachine &GetTargetMachine() { return *targetMachine; }
+  llvm::TargetMachine &GetTargetMachine() { return *tm; }
 };
 } // namespace stone
 

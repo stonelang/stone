@@ -19,6 +19,9 @@
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxFactory.h"
 
+
+#include "clang/Basic/TargetInfo.h"
+
 #include "llvm/IR/Module.h"
 
 using namespace stone;
@@ -183,8 +186,6 @@ static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
       compiler.GetInvocation().GetLangContext().GetLangOptions(),
       compiler.GetSyntaxContext());
 
-  cgc.TakeTargetMachine(std::move(targetMachine));
-
   auto ComputeNativeModeKind = [&](CompilerInstance &compiler) -> void {
     switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
     case ModeKind::None:
@@ -215,12 +216,34 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
 
   assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
 
+  auto *mainModule = GetModuleSystem().GetMainModule();
+
   // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
                      GetInvocation().GetCodeGenOptions(),
                      GetInvocation().GetLangContext());
 
-  auto *mainModule = GetModuleSystem().GetMainModule();
+  clang::TargetInfo& targetInfo = GetInvocation().GetClangInstance().getTarget();
+
+  // Setup the empty module
+  cgc.GetModule().setTargetTriple(
+      targetInfo.getTriple().getTriple());
+  cgc.GetModule().setDataLayout(targetInfo.getDataLayoutString());
+
+  const auto &sdkVersion = targetInfo.getSDKVersion();
+
+  if (!sdkVersion.empty()) {
+    cgc.GetModule().setSDKVersion(sdkVersion);
+  }
+
+  // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
+  //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
+  // }
+
+  // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
+  //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
+  // }
+
   // switch
   // (invocation.GetCompilerOptions().moduleOutputMode)
 

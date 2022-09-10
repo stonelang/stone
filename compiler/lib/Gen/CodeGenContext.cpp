@@ -1,4 +1,5 @@
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Public.h"
 
 using namespace stone;
@@ -8,7 +9,8 @@ using namespace stone;
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                const CodeGenOptions &genOpts,
                                const LangContext &langContext)
-    : llvmContext(llvmContext), genOpts(genOpts), langContext(langContext) {
+    : llvmContext(llvmContext), genOpts(genOpts), langContext(langContext),
+      mod(new llvm::Module(genOpts.ModuleName, llvmContext)) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);
@@ -22,4 +24,5 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
 
   // targetMachine = CreateTargetMachine();
 }
+
 CodeGenContext::~CodeGenContext() {}
