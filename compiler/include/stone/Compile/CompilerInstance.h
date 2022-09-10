@@ -154,8 +154,8 @@ private:
   CompileStatus CompileWithTypeChecking();
   CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback fn);
 
-  CompileStatus CompileWithCodeGen(CompilerInstance &compiler);
-
+private:
+  CompileStatus CompileWithCodeGen();
   // TODO: Some things to think about
   CompileStatus CompileWithIRCodeGen();
   CompileStatus CompileWithNativeCodeGen();

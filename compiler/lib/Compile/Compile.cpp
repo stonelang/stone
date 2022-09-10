@@ -142,30 +142,28 @@ static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc,
 static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
                                       stone::ModuleSyntaxFileUnion msf,
                                       CodeGenContext &cgc,
-                                      IRCodeGenCompletedCallback client) {
+                                      IRCodeGenCompletedCallback fn) {
 
   switch (compiler.GetModuleOutputMode()) {
   case ModuleOutputMode::Single: {
     if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
       auto result = stone::GenIR(
           cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
-      client(compiler, cgc, *result);
+      return fn(compiler, cgc, *result);
     }
-    break;
   }
   case ModuleOutputMode::Whole: {
     if (auto mod = msf.get<syn::Module *>()) {
       auto result = stone::GenIR(
           cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
-      client(compiler, cgc, *result);
+      return fn(compiler, cgc, *result);
     }
-    break;
   }
   default:
-    stone::Panic("Unable to GenIR -- invalid IR ouput");
+    stone::Panic("Unable to GenIR -- invalid IR ouput"); //
   }
 
-  return CompileStatus::MakeSuccess();
+  return CompileStatus::MakeError();
 }
 
 static CompileStatus GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
@@ -213,39 +211,39 @@ static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
   return CompileStatus::MakeSuccess();
 }
 
-static CompileStatus CompileWithCodeGen(CompilerInstance &compiler) {
+CompileStatus CompilerInstance::CompileWithCodeGen() {
 
-  assert(compiler.GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
+  assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
 
   // We are performing some low level code generation
   CodeGenContext cgc(stone::GetLLVMContext(),
-                     compiler.GetInvocation().GetCodeGenOptions(),
-                     compiler.GetInvocation().GetLangContext());
+                     GetInvocation().GetCodeGenOptions(),
+                     GetInvocation().GetLangContext());
 
-  auto *mainModule = compiler.GetModuleSystem().GetMainModule();
+  auto *mainModule = GetModuleSystem().GetMainModule();
   // switch
   // (invocation.GetCompilerOptions().moduleOutputMode)
 
-  switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
+  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
-    return CompileWithGenIR(compiler, mainModule, cgc,
+    return CompileWithGenIR(*this, mainModule, cgc,
                             [&](CompilerInstance &compiler, CodeGenContext &cgc,
                                 IRCodeGenResult &result) {
                               return GenModule(compiler, cgc, result);
                             });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
-        compiler, mainModule, cgc,
+        *this, mainModule, cgc,
         [&](CompilerInstance &compiler, CodeGenContext &cgc,
             IRCodeGenResult &result) { return DumpIR(compiler, cgc, result); });
   case ModeKind::PrintIR:
-    return CompileWithGenIR(compiler, mainModule, cgc,
+    return CompileWithGenIR(*this, mainModule, cgc,
                             [&](CompilerInstance &compiler, CodeGenContext &cgc,
                                 IRCodeGenResult &result) {
                               return PrintIR(compiler, cgc, result);
                             });
   default:
-    return CompileWithGenIR(compiler, mainModule, cgc,
+    return CompileWithGenIR(*this, mainModule, cgc,
                             [&](CompilerInstance &compiler, CodeGenContext &cgc,
                                 IRCodeGenResult &result) {
                               return CompileWithGenNative(compiler, cgc,
@@ -356,17 +354,20 @@ CompileStatus CompilerInstance::Compile() {
   case ModeKind::Parse:
     status |= CompileWithParsing();
     break;
-  // case ModeKind::DumpSyntax:
-  //   return CompileWithParsing(
-  //       [&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
-  // case ModeKind::TypeCheck:
-  //   return CompileWithTypeChecking();
-  // case ModeKind::PrintSyntax:
-  //   return CompileWithTypeChecking(
-  //       [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
+  case ModeKind::DumpSyntax:
+    status |=
+        CompileWithParsing([&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
+    break;
+  case ModeKind::TypeCheck:
+    status |= CompileWithTypeChecking();
+    break;
+  case ModeKind::PrintSyntax:
+    status |= CompileWithTypeChecking(
+        [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
+    break;
   default:
     status |= CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return CompileWithCodeGen(*this); });
+        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
   // For now
