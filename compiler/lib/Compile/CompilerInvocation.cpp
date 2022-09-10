@@ -26,7 +26,8 @@ using namespace stone::opts;
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
-    : Session(programName, programPath), listener(listener), clangInstance(new clang::CompilerInstance()) {
+    : Session(programName, programPath), listener(listener),
+      clangInstance(new clang::CompilerInstance()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
@@ -205,6 +206,60 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
+void CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> args,
+                                    const char *arg0) {
+  // Setup the clang diagnostics
+  // IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
+  // IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
+  // TextDiagnosticBuffer *DiagsBuffer = new TextDiagnosticBuffer;
+  // DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
+
+  // Lang lang;
+  // bool Success = CompilerInvocation::CreateFromArgs(
+  //   GetCompilerInstance().getInvocation(), {}, Diags, arg0);
+
+  // CompileStatus status(Success);
+  // if (status.IsError()) {
+  //   return 1;
+  // }
+
+  // if (lang.GetCompilerInstance().getFrontendOpts().TimeTrace ||
+  //     !lang.GetCompilerInstance().getFrontendOpts().TimeTracePath.empty()) {
+  //   lang.GetCompilerInstance().getFrontendOpts().TimeTrace = 1;
+  //   llvm::timeTraceProfilerInitialize(
+  //       lang.GetCompilerInstance().getFrontendOpts().TimeTraceGranularity,
+  //       arg0);
+  // }
+  // // --print-supported-cpus takes priority over the actual compilation.
+  // // if (lang.GetCompilerInstance().getFrontendOpts().PrintSupportedCPUs)
+  // //   return PrintSupportedCPUs(
+  // //       lang.GetCompilerInstance().getTargetOpts().Triple);
+
+  // // Infer the builtin include path if unspecified.
+  // if (lang.GetCompilerInstance().getHeaderSearchOpts().UseBuiltinIncludes &&
+  //     lang.GetCompilerInstance().getHeaderSearchOpts().ResourceDir.empty())
+  //   lang.GetCompilerInstance().getHeaderSearchOpts().ResourceDir =
+  //       CompilerInvocation::GetResourcesPath(arg0, mainAddr);
+
+  // // Create the actual diagnostics engine.
+  // lang.GetCompilerInstance().createDiagnostics();
+  // if (!lang.GetCompilerInstance().hasDiagnostics()) {
+  //   return 1;
+  // }
+
+  // DiagsBuffer->FlushDiagnostics(lang.GetCompilerInstance().getDiagnostics());
+  // if (!Success) {
+  //   lang.GetCompilerInstance().getDiagnosticClient().finish();
+  //   return 1;
+  // }
+
+  // // If there were errors in processing arguments, don't do anything else.
+  // if (lang.GetCompilerInstance().getDiagnostics().hasErrorOccurred()) {
+  //   return false;
+  // }
+
+  // assert(lang.GetCompilerInstance().createTarget());
+}
 void CompilerInvocation::Finish() {
   if (listener) {
     // listener->OnCompileCompleted(*this);

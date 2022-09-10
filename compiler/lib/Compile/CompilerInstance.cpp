@@ -34,25 +34,6 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   return os;
 }
 
-void CompilerInstance::SetupClang() {
-
-  // GetClangInstance().createDiagnostics();
-  // assert((GetClangInstance().hasDiagnostics()));
-  // assert(GetClangInstance().createTarget());
-
-  auto diags = CompilerInstance::createDiagnostics(new DiagnosticOptions());
-  auto invocation = clang::createInvocationFromCommandLine({}, diags);
-
-  // if (!CInvok)
-  //   FAIL() << "could not create compiler invocation";
-
-  // Create a minimal CompilerInstance which should use the VFS we specified
-  // in the CompilerInvocation (as we don't explicitly set our own).
-  // clangInstance.setDiagnostics(diags.get());
-  // clangInstance.setInvocation(invocation);
-  // clangInstance.createFileManager();
-  // assert(clangInstance.createTarget());
-}
 // void CompilerInstance::FinishTypeCheck() {
 // }
 

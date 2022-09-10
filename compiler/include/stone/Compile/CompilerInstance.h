@@ -8,21 +8,8 @@
 
 namespace stone {
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
-
-using ParsingCompletedCallback = llvm::function_ref<void(syn::SyntaxFile &)>;
-using TypeCheckingCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
-
-using IRCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
-using NativeCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance &)>;
-
-using EachSyntaxFileCallback = llvm::function_ref<void(
-    syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
-
-// using CompileWithGenIRCallback = llvm::function_ref<void(
-//     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
-//     &result)>;
+class CodeGenContext;
+class IRCodeGenResult;
 
 class CompilerInstanceStats final : public Stats {
   const CompilerInstance &compiler;
@@ -32,7 +19,6 @@ public:
       : Stats("CompilerInvocationstatistics:"), compiler(compiler) {}
   void Print(ColorfulStream &stream) override;
 };
-
 
 class CompileStatus final {
   unsigned isError : 1;
@@ -95,7 +81,32 @@ public:
   }
 };
 
+using ModuleSyntaxFileUnion =
+    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
+
+using ParsingCompletedCallback =
+    llvm::function_ref<CompileStatus(syn::SyntaxFile &)>;
+
+using TypeCheckingCompletedCallback =
+    llvm::function_ref<CompileStatus(CompilerInstance &)>;
+
+// using IRCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance
+// &)>; using NativeCodeGenCompletedCallback =
+// llvm::function_ref<void(CompilerInstance &)>;
+
+using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
+    CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
+
+using EachSyntaxFileCallback = llvm::function_ref<void(
+    syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+
+// using CompileWithGenIRCallback = llvm::function_ref<void(
+//     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
+//     &result)>;
+
 class CompilerInstance final {
+
+  CompilerInvocation &invocation;
 
   std::unique_ptr<syn::SyntaxContext> sc;
   std::unique_ptr<ModuleSystem> ms;
@@ -128,7 +139,7 @@ public:
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
-  void SetupClang();
+
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
@@ -141,9 +152,8 @@ private:
   CompileStatus CompileWithParsing(ParsingCompletedCallback fn);
 
   CompileStatus CompileWithTypeChecking();
-  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback client);
+  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback fn);
 
-  
   CompileStatus CompileWithCodeGen(CompilerInstance &compiler);
 
   // TODO: Some things to think about
@@ -154,7 +164,7 @@ private:
   // &cgc,
   //                       CompileWithGenIRCallback client);
 
-  void ForEachSyntaxFile(EachSyntaxFileCallback client);
+  void ForEachSyntaxFile(EachSyntaxFileCallback fn);
   void ResolveUsings();
 
 public:
