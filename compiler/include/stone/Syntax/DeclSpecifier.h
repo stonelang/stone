@@ -154,6 +154,7 @@ class AccessLevelContext final {
 
 private:
   void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+    assert(level == AccessLevel::None);
     level = inputLevel;
     loc = inputLoc;
   }

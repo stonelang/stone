@@ -343,12 +343,22 @@ public:
   bool IsInterface();
   bool IsPure();
   bool IsInline();
-  bool IsLeftParen();
-  bool IsRightParen();
   bool IsEnum();
   bool IsStar();
   bool IsQualifier();
   bool IsAccessLevel();
+
+public:
+  bool IsIf();
+  bool IsElse();
+  bool IsWhile();
+  bool IsRightParen();
+  bool IsLeftParen();
+  bool IsIntegerLiteral();
+  bool IsFloatingLiteral();
+  bool IsStringLiteral();
+  bool IsImaginaryLiteral();
+  bool IsRegexLiteral();
 };
 } // namespace syn
 } // namespace stone
