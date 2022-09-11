@@ -101,38 +101,38 @@ public:
 
 class EnumType final : public NominalType {};
 
-class DeducedType : public Type {};
+class DeducedType : public TypeBase {};
 
 class alignas(8) AutoType final : public DeducedType,
                                   public llvm::FoldingSetNode {
   friend class SyntaxContext; // SyntaxContext creates these
 };
 
-struct BitWidth final {
+struct NumberBitWidth final {
   enum Kind : UInt8 {
     Platform = 0,
-    BitWidth8,
-    BitWidth16,
-    BitWidth32,
-    BitWidth64,
-    BitWidth80,
-    BitWidth128,
+    N8,
+    N16,
+    N32,
+    N64,
+    N80,
+    N128,
   };
-  static unsigned GetBitWidth(BitWidth::Kind kind) {
+  static unsigned GetNumberBitWidth(NumberBitWidth::Kind kind) {
     switch (kind) {
-    case BitWidth::Platform:
+    case NumberBitWidth::Platform:
       return 0;
-    case BitWidth::BitWidth8:
+    case NumberBitWidth::N8:
       return 8;
-    case BitWidth::BitWidth16:
+    case NumberBitWidth::N16:
       return 16;
-    case BitWidth::BitWidth32:
+    case NumberBitWidth::N32:
       return 32;
-    case BitWidth::BitWidth64:
+    case NumberBitWidth::N64:
       return 64;
-    case BitWidth::BitWidth80:
+    case NumberBitWidth::N80:
       return 80;
-    case BitWidth::BitWidth128:
+    case NumberBitWidth::N128:
       return 128;
     }
     llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
@@ -145,37 +145,49 @@ protected:
       : TypeBase(kind, canTypeCtx) {}
 };
 
-using BitWidthKind = BitWidth::Kind;
+using NumberBitWidthKind = NumberBitWidth::Kind;
 
 /// An abstract base class for integers and floats
 class AbstractNumberType : public BuiltinType {
-  BitWidthKind bitWidthKind;
+  NumberBitWidthKind bitWidthKind;
 
 public:
-  AbstractNumberType(TypeKind kind, BitWidthKind bitWidthKind,
+  AbstractNumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
                      const SyntaxContext &canTypeCtx)
       : BuiltinType(kind, canTypeCtx), bitWidthKind(bitWidthKind) {}
 
 public:
-  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(bitWidthKind); }
-  bool UsePlatformBitWidth() { return GetBitWidth() == BitWidth::Platform; }
+  unsigned GetNumberBitWidth() const {
+    return NumberBitWidth::GetNumberBitWidth(bitWidthKind);
+  }
+  bool UsePlatformNumberBitWidth() {
+    return GetNumberBitWidth() == NumberBitWidth::Platform;
+  }
 };
 
 class IntegerType : public AbstractNumberType {
   friend class SyntaxContext;
 
 public:
-  IntegerType(BitWidthKind bitWidthKind,
-                     const SyntaxContext &canTypeCtx)
+  IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &canTypeCtx)
       : AbstractNumberType(TypeKind::Integer, bitWidthKind, canTypeCtx) {}
+};
+
+class UIntegerType : public AbstractNumberType {
+  friend class SyntaxContext;
+
+public:
+  UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &canTypeCtx)
+      : AbstractNumberType(TypeKind::UInteger, bitWidthKind, canTypeCtx) {}
 };
 
 class FloatType : public AbstractNumberType {
   friend class SyntaxContext;
 
 public:
-  FloatType(BitWidthKind fpBitWidthKind, const SyntaxContext &canTypeCtx)
-      : AbstractNumberType(TypeKind::Float, fpBitWidthKind, canTypeCtx) {}
+  FloatType(NumberBitWidthKind fpNumberBitWidthKind,
+            const SyntaxContext &canTypeCtx)
+      : AbstractNumberType(TypeKind::Float, fpNumberBitWidthKind, canTypeCtx) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;

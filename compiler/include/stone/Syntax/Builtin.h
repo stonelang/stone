@@ -66,11 +66,12 @@ public:
   const CanQualType BuiltinInt128Type;
   const CanQualType BuiltinIntType;
 
-  // const CanQualType UInt8Type;
-  // const CanQualType UInt16Type;
-  // const CanQualType UInt32Type;
-  // const CanQualType UInt64Type;
-  // const CanQualType UInt128Type;
+  const CanQualType BuiltinUInt8Type;
+  const CanQualType BuiltinUInt16Type;
+  const CanQualType BuiltinUInt32Type;
+  const CanQualType BuiltinUInt64Type;
+  const CanQualType BuiltinUInt128Type;
+  const CanQualType BuiltinUIntType;
 
 public:
   Builtin(SyntaxContext &sc);
