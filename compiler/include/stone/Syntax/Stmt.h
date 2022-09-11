@@ -14,6 +14,7 @@
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -38,7 +39,7 @@ class Expr;
 class StringLiteral;
 class SyntaxContext;
 
-class Stmt {
+class Stmt : public SyntaxAllocation<Stmt> {
   StmtKind kind;
 
 public:
@@ -55,9 +56,9 @@ public:
   StmtKind GetKind() const { return kind; }
 };
 
-class DeclStmt : public Stmt {
-  SrcLoc startLoc, endLoc;
-};
+// class DeclStmt : public Stmt {
+//   SrcLoc startLoc, endLoc;
+// };
 
 /// BraceStmt - A brace enclosed sequence of expressions, stmts, or decls, like
 /// { var x = 10; print(10) }.
@@ -162,7 +163,6 @@ public:
 };
 
 class ReturnStmt : public Stmt {
-
   Expr *result;
   SrcLoc returnLoc;
 
@@ -171,7 +171,6 @@ public:
       : Stmt(StmtKind::Return), returnLoc(returnLoc), result(result) {}
 
   SrcLoc GetReturnLoc() const { return returnLoc; }
-
   SrcLoc GetStartLoc() const;
   SrcLoc GetEndLoc() const;
 

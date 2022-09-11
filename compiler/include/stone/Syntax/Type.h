@@ -332,7 +332,7 @@ private:
 };
 /// const int a = 10; volatile int a = 10;
 /// The qual type in this case is ust int with the aforementioned qualifiers
-class QualType {
+class QualType final {
   friend class TypeQualifierCollector;
   // Thankfully, these are efficiently composable.
   llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;

@@ -49,19 +49,22 @@ public:
 
 public:
   // const CanQualType VoidType;
-  //   const CanQualType BoolType;
+  // const CanQualType BoolType;
+  // const CanQualType NullType;
 
   // const CanQualType FloatTy;
-  const CanQualType Float16Type; /// 32-bit IEEE floating point
-  const CanQualType Float32Type; /// 32-bit IEEE floating point
-  const CanQualType Float64Type; /// 64-bit IEEE floating point
-  // const CanQualType Float128Type; /// 128-bit IEEE floating point
+  const CanQualType BuiltinFloat16Type;  /// 32-bit IEEE floating point
+  const CanQualType BuiltinFloat32Type;  /// 32-bit IEEE floating point
+  const CanQualType BuiltinFloat64Type;  /// 64-bit IEEE floating point
+  const CanQualType BuiltinFloat128Type; /// 128-bit IEEE floating point
+  const CanQualType BuiltinFloatType;    /// 128-bit IEEE floating point
 
-  // const CanQualType Int8Type;
-  const CanQualType Int16Type;
-  const CanQualType Int32Type;
-  const CanQualType Int64Type;
-  // const CanQualType Int128Type;
+  const CanQualType BuiltinInt8Type;
+  const CanQualType BuiltinInt16Type;
+  const CanQualType BuiltinInt32Type;
+  const CanQualType BuiltinInt64Type;
+  const CanQualType BuiltinInt128Type;
+  const CanQualType BuiltinIntType;
 
   // const CanQualType UInt8Type;
   // const CanQualType UInt16Type;

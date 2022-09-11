@@ -40,3 +40,23 @@ QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext &sc,
 // QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext
 // &Context,
 //                                        const Type *ty) const {}
+
+bool TypeBase::IsBasic() {
+  switch (GetKind()) {
+  case TypeKind::Float:
+  case TypeKind::Integer:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool TypeBase::IsNominalType() {
+  switch (GetKind()) {
+  case TypeKind::Interface:
+  case TypeKind::Struct:
+    return true;
+  default:
+    return false;
+  }
+}

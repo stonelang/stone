@@ -113,8 +113,7 @@ enum class AccessLevel : UInt8 {
 };
 
 /// The categorization of expression values, currently following the
-enum class ExprValueType : UInt8 {
-
+enum class ExprValueKind : UInt8 {
   None = 0,
   /// An r-value expression (a pr-value in the C++11 taxonomy)
   /// produces a temporary value.
@@ -128,6 +127,22 @@ enum class ExprValueType : UInt8 {
   /// independent storage but which can be "moved", i.e.
   /// efficiently cannibalized for its resources.
   XValue
+};
+
+/// A further classification of the kind of object referenced by an
+/// l-value or x-value.
+enum class ExprObjectKind {
+  /// An ordinary object is located at an address in memory.
+  Ordinary,
+
+  /// A bitfield object is a bitfield on a struct.
+  BitField,
+
+  /// A vector component is an element or range of elements on a vector.
+  VectorComponent,
+
+  /// A matrix component is a single element of a matrix.
+  MatrixComponent
 };
 
 /// Storage classes.

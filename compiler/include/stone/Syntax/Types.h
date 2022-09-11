@@ -74,6 +74,13 @@ class alignas(1 << TypeAlignInBits) TypeBase
 
 public:
   TypeBase(TypeKind kind, const SyntaxContext &canTypeCtx) : kind(kind) {}
+
+public:
+  bool IsBasic();
+  bool IsNominalType();
+
+public:
+  TypeKind GetKind() const { return kind; }
 };
 
 class AbstractFunctionType : public TypeBase {
@@ -84,26 +91,26 @@ class FunctionType : public AbstractFunctionType {
 public:
 };
 
-// class NominalType : public TypeBase {
-// public:
+class NominalType : public TypeBase {
+public:
+};
 
-// };
+class StructType final : public NominalType {
+public:
+};
 
-// class StructType : public NominalType {
-// public:
+class EnumType final : public NominalType {};
 
-// };
+class DeducedType : public Type {};
 
-// class EnumType : public NominalType {};
-
-// class DeducedType : public Type {};
-
-// class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these
-// };
+class alignas(8) AutoType final : public DeducedType,
+                                  public llvm::FoldingSetNode {
+  friend class SyntaxContext; // SyntaxContext creates these
+};
 
 struct BitWidth final {
   enum Kind : UInt8 {
+    Platform = 0,
     BitWidth8,
     BitWidth16,
     BitWidth32,
@@ -113,6 +120,8 @@ struct BitWidth final {
   };
   static unsigned GetBitWidth(BitWidth::Kind kind) {
     switch (kind) {
+    case BitWidth::Platform:
+      return 0;
     case BitWidth::BitWidth8:
       return 8;
     case BitWidth::BitWidth16:
@@ -136,66 +145,68 @@ protected:
       : TypeBase(kind, canTypeCtx) {}
 };
 
-/// An abstract base class for the two integer types.
-class AbstractIntegerType : public BuiltinType {
-  BitWidth bitWidth;
-
-public:
-};
-
 using BitWidthKind = BitWidth::Kind;
 
-class IntegerType : public BuiltinType {
-  friend class SyntaxContext;
-
-private:
-  BitWidthKind intBitWidth;
+/// An abstract base class for integers and floats
+class AbstractNumberType : public BuiltinType {
+  BitWidthKind bitWidthKind;
 
 public:
-  IntegerType(BitWidthKind intBitWidth, const SyntaxContext &canTypeCtx)
-      : BuiltinType(TypeKind::Integer, canTypeCtx), intBitWidth(intBitWidth) {}
+  AbstractNumberType(TypeKind kind, BitWidthKind bitWidthKind,
+                     const SyntaxContext &canTypeCtx)
+      : BuiltinType(kind, canTypeCtx), bitWidthKind(bitWidthKind) {}
 
-  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(intBitWidth); }
-
-  // static bool classof(const TypeBase *T) {
-  //   return T->getKind() == TypeKind::Float;
-  // }
+public:
+  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(bitWidthKind); }
+  bool UsePlatformBitWidth() { return GetBitWidth() == BitWidth::Platform; }
 };
 
-// class UIntegerType : public AbstractIntegerType {
-// public:
-// };
-
-class FloatType : public BuiltinType {
+class IntegerType : public AbstractNumberType {
   friend class SyntaxContext;
 
-private:
-  BitWidthKind fpBitWidth;
+public:
+  IntegerType(BitWidthKind bitWidthKind,
+                     const SyntaxContext &canTypeCtx)
+      : AbstractNumberType(TypeKind::Integer, bitWidthKind, canTypeCtx) {}
+};
+
+class FloatType : public AbstractNumberType {
+  friend class SyntaxContext;
 
 public:
-  FloatType(BitWidthKind fpBitWidth, const SyntaxContext &canTypeCtx)
-      : BuiltinType(TypeKind::Float, canTypeCtx), fpBitWidth(fpBitWidth) {}
+  FloatType(BitWidthKind fpBitWidthKind, const SyntaxContext &canTypeCtx)
+      : AbstractNumberType(TypeKind::Float, fpBitWidthKind, canTypeCtx) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
-  unsigned GetBitWidth() const { return BitWidth::GetBitWidth(fpBitWidth); }
-  // static bool classof(const TypeBase *T) {
-  //   return T->getKind() == TypeKind::Float;
-  // }
+  static bool classof(const TypeBase *T) {
+    return T->GetKind() == TypeKind::Float;
+  }
 };
 
-// class VoidType : public BuiltinType {
-// public:
-// };
+class VoidType : public BuiltinType {
+public:
+  VoidType(const SyntaxContext &canTypeCtx)
+      : BuiltinType(TypeKind::Void, canTypeCtx) {}
+};
 
-// class NullType : public BuiltinType {
-// public:
-// };
+class NullType : public BuiltinType {
+public:
+  NullType(const SyntaxContext &canTypeCtx)
+      : BuiltinType(TypeKind::Null, canTypeCtx) {}
+};
 
-// class PointerType : public TypeBase, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these.
-// public:
-// };
+class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
+public:
+  AbstractPointerType(TypeKind kind, const SyntaxContext &canTypeCtx)
+      : TypeBase(kind, canTypeCtx) {}
+};
+class PointerType : public AbstractPointerType {
+
+public:
+  PointerType(const SyntaxContext &canTypeCtx)
+      : AbstractPointerType(TypeKind::Pointer, canTypeCtx) {}
+};
 
 // class ArrayType : public TypeBase, public llvm::FoldingSetNode {
 // public:
