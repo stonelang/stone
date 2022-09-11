@@ -453,7 +453,7 @@ class GenericTypeDecl : public TypeDecl {};
 // This is really your function prototye
 class FunctionDecl
     : public DeclContext,
-      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+      public DeclaratorDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
 
   /// This enum member is active if GetBodyKind() is BodyKind::Parsed or
   /// BodyKind::TypeChecked.
@@ -491,8 +491,8 @@ public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
-  }
+        DeclaratorDecl(kind, name, nameLoc, parent),
+        specialNameLoc(specialNameLoc) {}
 
 public:
   BraceStmt *GetBody(bool canSynthesize = true) const;
