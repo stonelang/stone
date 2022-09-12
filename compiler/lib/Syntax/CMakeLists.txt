@@ -24,7 +24,7 @@ set(stone_syn_sources
 	Substituion.cpp
 	SyntaxContext.cpp
 	SyntaxDiagnostic.cpp
-	SyntaxScope.cpp
+	Scope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp
 	Template.cpp

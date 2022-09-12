@@ -9,7 +9,7 @@ namespace stone {
 namespace syn {
 
 // TODO: Think about
-enum class SyntaxScopeKind : UInt8 {
+enum class ScopeKind : UInt8 {
   None = 0,
   /// A syntax file , which is the root of a scope.
   SyntaxFile,
@@ -24,6 +24,8 @@ enum class SyntaxScopeKind : UInt8 {
 
   /// A function/initializer/deinitializer.
   FunctionDecl,
+
+  FunctionSignature,
 
   /// The parameters of a function/initializer/deinitializer.
   FunctionParams,
@@ -74,15 +76,24 @@ enum class SyntaxScopeKind : UInt8 {
   Destructor,
 };
 
-class SyntaxScope final : public syn::SyntaxAllocation<SyntaxScope> {
-  SyntaxScopeKind kind;
+class Scope final : public syn::SyntaxAllocation<Scope> {
+  ScopeKind kind;
   DiagnosticEngine &diags;
-  SyntaxScope *parent = nullptr;
+  Scope *parent = nullptr;
 
 public:
-  SyntaxScope(SyntaxScopeKind kind, DiagnosticEngine &diags,
-              SyntaxScope *parent = nullptr);
-  ~SyntaxScope();
+  Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent = nullptr);
+  ~Scope();
+
+  ScopeKind GetKind() { return kind; }
+  Scope *GetParent() { return parent; }
+  const char* GetName() { return Scope::GetName(GetKind()); }
+
+public:
+  void Initialize();
+
+public:
+  static const char *GetName(ScopeKind kind);
 };
 } // namespace syn
 } // namespace stone

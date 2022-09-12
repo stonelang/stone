@@ -3,8 +3,8 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Public.h"
+#include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxScope.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -23,19 +23,16 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lx,
       parsingTok(*this), stats(new ParserStats(*this)) {
 
   GetLangContext().GetStatEngine().Register(stats.get());
-
-  assert(GetCurScope() == nullptr && "A scope is already active?");
-  EnterScope(SyntaxScopeKind::SyntaxFile);
 }
 
 Parser::~Parser() {}
 
-// SyntaxScope *Parser::GetCurScope() const {
+// Scope *Parser::GetCurScope() const {
 //   assert(false && "Not implemented");
 //   return nullptr;
 // }
 
-// void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
+// void Parser::EnterScope(ScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
@@ -149,35 +146,37 @@ SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
 // }
 
 /// EnterScope - start a new scope.
-void Parser::EnterScope(SyntaxScopeKind kind) {
+void Parser::EnterScope(ScopeKind kind) {
 
-  auto IsFirstSyntaxScope = [&]() -> bool {
-    return (!GetCurScope() && !GetPrevScope()) ? true : false;
-  };
-  // We ae entering the scope for the very first time -- i.e., SyntaxFile
-  if (IsFirstSyntaxScope()) {
-    assert(kind == SyntaxScopeKind::SyntaxFile);
+  if (!GetCurScope()) {
+    assert(kind == ScopeKind::SyntaxFile);
   }
-  else {
-    assert(GetCurScope());
-    prevScope = curScope;
-  }
+  // Create the new scope
+  auto curScope = CreateScope(kind, GetCurScope());
 
-  // This occurs all the time 
-  curScope =
-      Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), GetPrevScope());
-  //curScope->Initialize();
-  scopeCache.push_back(curScope);
+  // Initialize the new scope
+  curScope->Initialize();
+
+  // Cache the scope
+  PushCurScope(curScope);
 }
 
+Scope *Parser::CreateScope(ScopeKind kind, Scope *parent) {
+  return Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), parent);
+}
 /// ExitScope - pop a scope off the scope stack.
 void Parser::ExitScope() {
 
+  // Ensure we have a current scope.
+  if (GetCurScope()) {
+    // Remove the scope
+    PopCurScope();
+  }
 }
 
-SyntaxScope *Parser::CreateScope(SyntaxScopeKind kind, SyntaxContext &sc,
-                                 DiagnosticEngine &diags, SyntaxScope *parent) {
-  return new (sc) SyntaxScope(kind, diags, parent);
+Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
+                           DiagnosticEngine &diags, Scope *parent) {
+  return new (sc) Scope(kind, diags, parent);
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {

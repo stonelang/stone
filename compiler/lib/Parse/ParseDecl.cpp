@@ -56,6 +56,12 @@ void Parser::ParseTopLevelDecls(
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
 
+  assert(GetCurScope() == nullptr && "A scope is already active?");
+
+  // TODO: Get scope description from scopdeid::parsing_top_level_declaration
+  ScopeContext parsingTopLevelDecl(*this, ScopeKind::SyntaxFile,
+                                   "parsing top-level declaration");
+
   return ParseDecl(ParsingDeclFlags::AllowTopLevel,
                    [&](Decl *d) { /* Do nothing for now*/ });
 }
@@ -77,7 +83,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
   SyntaxResult<Decl> result;
   // TODO: Replace with ParsingScope
-  ParsingContext parsingContext(ParsingContextKind::Decl);
+  ScopeContext parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
 
   while (true) {
   BeginParse:
@@ -172,7 +178,12 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
 
   } // End of while
 
-EndParse : { return result; }
+EndParse : {
+  // while (!IsDone()) {
+  //   ConsumeToken();
+  // }
+  return result;
+}
 }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
@@ -203,6 +214,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
   // At this point, we are expecting an identifier
   assert(curTok.IsIdentifierOrUnderscore() &&
          "Expecting function declarator or identifier");
+
+  ScopeContext parsingFunDecl(*this, ScopeKind::FunctionDecl,
+                              "parsing fun declaration");
 
   // Build the DeclName
   DeclNameInfo nameInfo;
@@ -247,9 +261,11 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 
 SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                             ParsingDeclSpecifier &spec) {
-
   SyntaxStatus status;
   // ParsingScope syntaxScope(SyntaxKind::FunctionSignature);
+
+  ScopeContext parsingFunSig(*this, ScopeKind::FunctionSignature,
+                             "parsing fun signature");
 
   // TODO:
   // if(name == "Main"){

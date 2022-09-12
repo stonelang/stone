@@ -4,7 +4,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
-#include "stone/Syntax/SyntaxScope.h"
+#include "stone/Syntax/Scope.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -111,28 +111,30 @@ public:
 //   ~PairDelimiterBalancer();
 // };
 
-using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
-class ParsingScope final {
+using ScopeCache = llvm::SmallVector<Scope *, 16>;
+class ScopeContext final {
   Parser &self;
-  SyntaxScopeCache scopeCache;
+  llvm::StringRef description;
 
-  ParsingScope(const ParsingScope &) = delete;
-  void operator=(const ParsingScope &) = delete;
+  ScopeContext(const ScopeContext &) = delete;
+  void operator=(const ScopeContext &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
-  // may just pass SyntaxScope
-  ParsingScope(Parser &self, SyntaxScopeKind scopeKind);
-  ~ParsingScope();
+  // may just pass Scope
+  ScopeContext(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
+  ~ScopeContext();
 
 private:
   /// EnterScope - start a new scope.
-  void EnterScope(SyntaxScopeKind scopeKind);
+  void EnterScope(ScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
+
+  llvm::StringRef GetDescription() { return description; }
 };
 
 // class MultiParsingScope final {

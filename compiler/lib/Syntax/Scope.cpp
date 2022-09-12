@@ -1,0 +1,28 @@
+#include "stone/Syntax/Scope.h"
+
+using namespace stone::syn;
+
+static const auto &GetScopeNameTable() {
+  static const std::pair<ScopeKind, const char *> Table[] = {
+      {ScopeKind::FunctionDecl, "Function Declaration"},
+      {ScopeKind::SyntaxFile, "Syntax File"},
+      {ScopeKind::Decl, "Decl"},
+      {ScopeKind::FunctionSignature, "Function Signature "},
+  };
+  return Table;
+}
+
+const char *Scope::GetName(ScopeKind kind) {
+  for (const auto &item : GetScopeNameTable()) {
+    if (item.first == kind) {
+      return item.second;
+    }
+  }
+  assert(false && "Invalid ScopeKind");
+}
+
+Scope::Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent)
+    : kind(kind), diags(diags), parent(parent) {}
+Scope::~Scope() {}
+
+void Scope::Initialize() {}

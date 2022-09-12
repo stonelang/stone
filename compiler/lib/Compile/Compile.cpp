@@ -393,8 +393,9 @@ CompileStatus CompilerInstance::Compile() {
         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
     break;
   default:
-    status |= CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
+    status |= CompileWithTypeChecking([&](CompilerInstance &compiler) {
+      return CompileStatus::MakeSuccess(); /*return CompileWithCodeGen();*/
+    });
     break;
   }
   // For now

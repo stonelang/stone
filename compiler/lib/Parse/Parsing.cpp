@@ -18,22 +18,23 @@ using namespace stone::syn;
 //   parser.pairDelimiterCount.braceCount = pairDelimiterCount.braceCount;
 // }
 
-//=Scope=//
+// ==Scope == //
 
-ParsingScope::ParsingScope(Parser &self, SyntaxScopeKind scopeKind)
-    : self(self) {
+ScopeContext::ScopeContext(Parser &self, ScopeKind scopeKind,
+                           llvm::StringRef description)
+    : self(self), description(description) {
   EnterScope(scopeKind);
 }
-void ParsingScope::EnterScope(SyntaxScopeKind scopeKind) {
+void ScopeContext::EnterScope(ScopeKind scopeKind) {
   self.EnterScope(scopeKind);
 }
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void ParsingScope::ExitScope() { self.ExitScope(); }
+void ScopeContext::ExitScope() { self.ExitScope(); }
 
-//=Scope=//
+ScopeContext::~ScopeContext() { ExitScope(); }
 
-ParsingScope::~ParsingScope() { ExitScope(); }
+// == Position RAII == //
 
 ParsingPositionRAII::ParsingPositionRAII(Parser &parser)
     : parser(parser), parsingPos(parser.GetParsingPosition()) {}

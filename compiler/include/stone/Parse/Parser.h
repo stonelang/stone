@@ -28,7 +28,7 @@ namespace syn {
 class BraceStmt;
 class Syntax;
 class Parser;
-class SyntaxScope;
+class Scope;
 class PairDelimiterBalancer;
 class ParsingDeclSpecifier;
 class ParsingDeclarator;
@@ -80,15 +80,12 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  SyntaxScope *curScope = nullptr;
-  SyntaxScope *prevScope = nullptr;
-
   // /// Factory object for creating ParsedAttribute objects.
   AttributeFactory attributeFactory;
 
   ParsingToken parsingTok;
 
-  SyntaxScopeCache scopeCache;
+  ScopeCache scopeCache;
 
 private:
   // Identifiers
@@ -369,23 +366,30 @@ public:
 
 public:
   /// EnterScope - start a new scope.
-  void EnterScope(SyntaxScopeKind scopeKind);
+  void EnterScope(ScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
 
-  static SyntaxScope *CreateScope(SyntaxScopeKind kind, SyntaxContext &sc,
-                                  DiagnosticEngine &diags,
-                                  SyntaxScope *parent = nullptr);
+  Scope *CreateScope(ScopeKind kind, Scope *parent);
 
-  SyntaxScope *GetCurScope() const { return curScope; }
-  SyntaxScope *GetPrevScope() const { return prevScope; }
+  Scope *GetCurScope() const {
+    if (HasCurScope()) {
+      return scopeCache.back();
+    }
+    return nullptr;
+  }
+  bool HasCurScope() const { return (scopeCache.size() > 0); }
+  void PopCurScope() { scopeCache.pop_back(); }
+  void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
   InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
+  static Scope *CreateScope(ScopeKind kind, SyntaxContext &sc,
+                            DiagnosticEngine &diags, Scope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }
   SrcLoc GetLoc() { return curTok.GetLoc(); }
