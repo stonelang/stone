@@ -80,12 +80,15 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  SyntaxScope *curScope;
+  SyntaxScope *curScope = nullptr;
+  SyntaxScope *prevScope = nullptr;
 
   // /// Factory object for creating ParsedAttribute objects.
   AttributeFactory attributeFactory;
 
   ParsingToken parsingTok;
+
+  SyntaxScopeCache scopeCache;
 
 private:
   // Identifiers
@@ -239,6 +242,9 @@ public:
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  DiagnosticEngine &GetDiags() {
+    return GetLangContext().GetDiagUnit().GetDiagEngine();
+  }
 
 public:
   //===--------------------------------------------------------------------===//
@@ -362,13 +368,18 @@ public:
   void SkipAnyAttribute();
 
 public:
-  // /// EnterScope - start a new scope.
-  // void EnterScope(SyntaxScopeKind scopeKind);
+  /// EnterScope - start a new scope.
+  void EnterScope(SyntaxScopeKind scopeKind);
 
-  // /// ExitScope - pop a scope off the scope stack.
-  // void ExitScope();
+  /// ExitScope - pop a scope off the scope stack.
+  void ExitScope();
 
-  // SyntaxScope *GetCurScope() const;
+  static SyntaxScope *CreateScope(SyntaxScopeKind kind, SyntaxContext &sc,
+                                  DiagnosticEngine &diags,
+                                  SyntaxScope *parent = nullptr);
+
+  SyntaxScope *GetCurScope() const { return curScope; }
+  SyntaxScope *GetPrevScope() const { return prevScope; }
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);

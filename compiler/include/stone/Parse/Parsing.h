@@ -113,11 +113,8 @@ public:
 
 using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
 class ParsingScope final {
-  Parser *self;
+  Parser &self;
   SyntaxScopeCache scopeCache;
-
-  bool enteredScope;
-  bool beforeCompoundStmt;
 
   ParsingScope(const ParsingScope &) = delete;
   void operator=(const ParsingScope &) = delete;
@@ -127,22 +124,15 @@ public:
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass SyntaxScope
-  ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-               bool enteredScope = true, bool beforeCompoundStmt = false);
-
+  ParsingScope(Parser &self, SyntaxScopeKind scopeKind);
   ~ParsingScope();
 
-public:
+private:
   /// EnterScope - start a new scope.
   void EnterScope(SyntaxScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
-
-  SyntaxScope *GetCurScope() const;
-  // size_t GetSyntaxScopeCacheSize() {
-  //   return syntaxScopeCache.size();
-  // }
 };
 
 // class MultiParsingScope final {

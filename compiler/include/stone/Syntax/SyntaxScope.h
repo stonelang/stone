@@ -2,6 +2,8 @@
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
 #include "stone/Basic/STDTypeAlias.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 
 namespace stone {
 namespace syn {
@@ -72,12 +74,14 @@ enum class SyntaxScopeKind : UInt8 {
   Destructor,
 };
 
-class SyntaxScope final {
-  SyntaxScope *parent = nullptr;
+class SyntaxScope final : public syn::SyntaxAllocation<SyntaxScope> {
   SyntaxScopeKind kind;
+  DiagnosticEngine &diags;
+  SyntaxScope *parent = nullptr;
 
 public:
-  SyntaxScope(SyntaxScopeKind kind, SyntaxScope *parent = nullptr);
+  SyntaxScope(SyntaxScopeKind kind, DiagnosticEngine &diags,
+              SyntaxScope *parent = nullptr);
   ~SyntaxScope();
 };
 } // namespace syn

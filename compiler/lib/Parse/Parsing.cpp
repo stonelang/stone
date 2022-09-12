@@ -19,28 +19,20 @@ using namespace stone::syn;
 // }
 
 //=Scope=//
-ParsingScope::ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-                           bool enteredScope, bool beforeCompoundStmt)
+
+ParsingScope::ParsingScope(Parser &self, SyntaxScopeKind scopeKind)
     : self(self) {
-
-  // if (enteredScope && !beforeCompoundStmt) {
-  //   self->EnterScope(scopeKind);
-  // } else {
-  //   if (beforeCompoundStmt) {
-  //     // TODO: self->incrementMSManglingNumber();
-  //   }
-  //   this->self = nullptr;
-  // }
+  EnterScope(scopeKind);
 }
-
+void ParsingScope::EnterScope(SyntaxScopeKind scopeKind) {
+  self.EnterScope(scopeKind);
+}
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void ParsingScope::ExitScope() {
-  // if (self) {
-  //   self->ExitScope();
-  //   self = nullptr;
-  // }
-}
+void ParsingScope::ExitScope() { self.ExitScope(); }
+
+//=Scope=//
+
 ParsingScope::~ParsingScope() { ExitScope(); }
 
 ParsingPositionRAII::ParsingPositionRAII(Parser &parser)

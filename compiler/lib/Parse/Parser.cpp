@@ -23,6 +23,9 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lx,
       parsingTok(*this), stats(new ParserStats(*this)) {
 
   GetLangContext().GetStatEngine().Register(stats.get());
+
+  assert(GetCurScope() == nullptr && "A scope is already active?");
+  EnterScope(SyntaxScopeKind::SyntaxFile);
 }
 
 Parser::~Parser() {}
@@ -144,6 +147,38 @@ SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
 //   SyntaxStatus status;
 //   return status;
 // }
+
+/// EnterScope - start a new scope.
+void Parser::EnterScope(SyntaxScopeKind kind) {
+
+  auto IsFirstSyntaxScope = [&]() -> bool {
+    return (!GetCurScope() && !GetPrevScope()) ? true : false;
+  };
+  // We ae entering the scope for the very first time -- i.e., SyntaxFile
+  if (IsFirstSyntaxScope()) {
+    assert(kind == SyntaxScopeKind::SyntaxFile);
+  }
+  else {
+    assert(GetCurScope());
+    prevScope = curScope;
+  }
+
+  // This occurs all the time 
+  curScope =
+      Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), GetPrevScope());
+  //curScope->Initialize();
+  scopeCache.push_back(curScope);
+}
+
+/// ExitScope - pop a scope off the scope stack.
+void Parser::ExitScope() {
+
+}
+
+SyntaxScope *Parser::CreateScope(SyntaxScopeKind kind, SyntaxContext &sc,
+                                 DiagnosticEngine &diags, SyntaxScope *parent) {
+  return new (sc) SyntaxScope(kind, diags, parent);
+}
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
