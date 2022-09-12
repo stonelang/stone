@@ -22,7 +22,9 @@ const char *Scope::GetName(ScopeKind kind) {
 }
 
 Scope::Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent)
-    : kind(kind), diags(diags), parent(parent) {}
+    : kind(kind), diags(diags), parent(parent) {
+  Initialize();
+}
 Scope::~Scope() {}
 
-void Scope::Initialize() {}
+void Scope::Initialize() { scopeDecls.clear(); }

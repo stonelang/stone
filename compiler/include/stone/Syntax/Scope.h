@@ -81,15 +81,21 @@ class Scope final : public syn::SyntaxAllocation<Scope> {
   DiagnosticEngine &diags;
   Scope *parent = nullptr;
 
+  using DeclSet = llvm::SmallPtrSet<Decl *, 32>;
+  DeclSet scopeDecls;
+
 public:
   Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent = nullptr);
   ~Scope();
 
   ScopeKind GetKind() { return kind; }
   Scope *GetParent() { return parent; }
-  const char* GetName() { return Scope::GetName(GetKind()); }
+  const char *GetName() { return Scope::GetName(GetKind()); }
 
-public:
+  void AddDecl(Decl *d) { scopeDecls.insert(d); }
+  void RemoveDecl(Decl *d) { scopeDecls.erase(d); }
+
+private:
   void Initialize();
 
 public:
