@@ -4,9 +4,13 @@
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/Decl.h"
+
+#include "llvm/ADT/SmallPtrSet.h"
 
 namespace stone {
 namespace syn {
+class Decl;
 
 // TODO: Think about
 enum class ScopeKind : UInt8 {

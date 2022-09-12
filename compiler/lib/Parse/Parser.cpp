@@ -154,8 +154,8 @@ void Parser::EnterScope(ScopeKind kind) {
   // Create the new scope
   auto curScope = CreateScope(kind, GetCurScope());
 
-  // Initialize the new scope
-  curScope->Initialize();
+  // Make sure we have a scope 
+  assert(curScope);
 
   // Cache the scope
   PushCurScope(curScope);
