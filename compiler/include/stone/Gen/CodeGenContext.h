@@ -1,11 +1,15 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
+
+#include "stone/Basic/Mem.h"
+
+
+
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Target/TargetMachine.h"
-#include <memory>
 
 namespace llvm {
 class raw_pwrite_stream;
@@ -34,9 +38,9 @@ class CodeGenContext final {
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
 
-  std::unique_ptr<llvm::Module> mod;
+  mem::Safe<llvm::Module> mod;
   // legacy::PassManager legacyPM;
-  std::unique_ptr<llvm::TargetMachine> tm;
+  mem::Safe<llvm::TargetMachine> tm;
 
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,

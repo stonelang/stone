@@ -32,7 +32,7 @@ class IRCodeGen final {
   CodeGenContext &cgc;
   IRCodeGenBuilder irCodeGenBuilder;
 
-  // std::unique_ptr<IRModuleResult> result;
+  // Safe<IRModuleResult> result;
 public:
   IRCodeGen(CodeGenContext &cgc);
   ~IRCodeGen();
