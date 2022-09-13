@@ -41,4 +41,13 @@ code/
 			Driver.stone = > module Compiler.Driver.Driver 
 
 
+* LLDB
+
+Basic steps:
+lldb stone-compile test.stone 
+breakpoint --file.cpp --line 12
+run
+next
+
+
 

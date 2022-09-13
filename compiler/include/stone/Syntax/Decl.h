@@ -397,11 +397,11 @@ public:
 // public:
 // };
 
-// class SpaceDecl : public NamedDecl {
-// public:
-//   SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-//       : NamedDecl(DeclKind::Space, dc, loc, name) {}
-// };
+class SpaceDecl final : public NamedDecl {
+public:
+  // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
+  //     : NamedDecl(DeclKind::Space, dc, loc, name) {}
+};
 
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
@@ -611,6 +611,9 @@ public:
 
 class VarDecl : public StorageDecl {
 public:
+  /// Get the type of the variable within its context. If the context is
+  /// generic, this will use archetypes.
+  QualType GetQualType() const;
 };
 
 class ParamDecl : public VarDecl {
@@ -684,6 +687,8 @@ public:
   //   return D->getKind() == DeclKind::IfConfig;
   // }
 };
+
+class TopLevelDecl {};
 
 } // namespace syn
 } // namespace stone

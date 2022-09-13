@@ -3,8 +3,8 @@
 
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Decl.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 
