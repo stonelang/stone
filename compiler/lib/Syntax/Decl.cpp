@@ -40,6 +40,10 @@ using namespace stone::syn;
 //   return tc.Allocate(bytes, alignment);
 // }
 
+bool ValueDecl::IsInstanceMember() const {
+  // TODO: For now
+  return true;
+}
 
 template <std::size_t len>
 static bool IsMainImpl(const NamedDecl *named, const char (&str)[len]) {
@@ -48,7 +52,9 @@ static bool IsMainImpl(const NamedDecl *named, const char (&str)[len]) {
 }
 
 // Keeping this very simple for now
-bool FunDecl::IsMain() const { return IsMainImpl(this, "Main"); }
+bool FunDecl::IsMain() const {
+  return (!IsInstanceMember() && IsMainImpl(this, "Main"));
+}
 
 /// True if the function is a defer body.
 bool FunDecl::IsDeferBody() const {}

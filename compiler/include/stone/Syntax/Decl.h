@@ -353,6 +353,11 @@ public:
 public:
   void SetQualType(QualType inputQualType) { qualType = inputQualType; }
   QualType GetQualType() { return qualType; }
+
+public:
+  /// IsInstanceMember - Determine whether this value is an instance member
+  /// of an enum, struct or interface.
+  bool IsInstanceMember() const;
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
