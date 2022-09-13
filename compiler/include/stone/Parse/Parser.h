@@ -157,7 +157,7 @@ public:
 
   void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector);
+  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector, Diag<> diagID);
   SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
                                              Diag<> diagID);
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,

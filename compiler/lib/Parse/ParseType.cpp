@@ -32,15 +32,19 @@ bool Parser::IsBasicType(tok kind) const {
 }
 
 // Similar to ParseDeclSpecifiers
-SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector) {
+SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector, Diag<> diagID) {
 
   SyntaxResult<QualType> result;
+
+  SyntaxStatus status;
+  ScopeContext parsingType(*this, ScopeKind::Type, "parsing type");
+
   return result;
 }
 
 SyntaxResult<QualType>
 Parser::ParseDeclResultType(TypeSpecifierCollector &collector, Diag<> diagID) {
-  return ParseType(collector);
+  return ParseType(collector, diagID);
 }
 
 SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,

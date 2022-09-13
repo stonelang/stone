@@ -281,8 +281,6 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                             ParsingDeclSpecifier &spec) {
   SyntaxStatus status;
-  // ParsingScope syntaxScope(SyntaxKind::FunctionSignature);
-
   ScopeContext parsingFunSig(*this, ScopeKind::FunctionSignature,
                              "parsing fun signature");
 
@@ -303,9 +301,6 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
           .Replace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
     }
-
-    // TODO: ParseTypeQuals();
-
     if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
       if (!spec.GetTypeQualifierCollector().HasPureOnly()) {
         // TODO: Log
