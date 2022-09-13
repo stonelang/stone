@@ -13,6 +13,7 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Builtin.h"
@@ -95,7 +96,7 @@ class SyntaxContext final {
   ///  this SyntaxContext object.
   LangContext &lc;
 
-  std::unique_ptr<SyntaxContextStats> stats;
+  mem::Safe<SyntaxContextStats> stats;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;

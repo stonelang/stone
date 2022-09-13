@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
+#include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -108,9 +109,9 @@ class CompilerInstance final {
 
   CompilerInvocation &invocation;
 
-  std::unique_ptr<syn::SyntaxContext> sc;
-  std::unique_ptr<ModuleSystem> ms;
-  std::unique_ptr<CompilerInstanceStats> stats;
+  mem::Safe<syn::SyntaxContext> sc;
+  mem::Safe<ModuleSystem> ms;
+  mem::Safe<CompilerInstanceStats> stats;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
