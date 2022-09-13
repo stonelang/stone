@@ -155,17 +155,17 @@ public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
 
-  void ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
+  void ParseBasicTypeSpecifier(TypeSpecifierCollector &specifierContext,
                                SrcLoc loc);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierContext &specifierContext);
+  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &specifierContext);
   SyntaxResult<QualType>
-  ParseDeclResultType(TypeSpecifierContext &specifierContext, Diag<> diagID);
-  SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
+  ParseDeclResultType(TypeSpecifierCollector &specifierContext, Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &specifierContext,
                                         Diag<> diagID);
 
   SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
-  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
+  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &specifier);
 
 public:
   //==Begin Function==//

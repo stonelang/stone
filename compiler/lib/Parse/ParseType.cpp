@@ -32,18 +32,18 @@ bool Parser::IsBasicType(tok kind) const {
 }
 
 // Similar to ParseDeclSpecifiers
-SyntaxResult<QualType> Parser::ParseType(TypeSpecifierContext &specContext) {
+SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &specContext) {
 
   SyntaxResult<QualType> result;
   return result;
 }
 
 SyntaxResult<QualType>
-Parser::ParseDeclResultType(TypeSpecifierContext &specContext, Diag<> diagID) {
+Parser::ParseDeclResultType(TypeSpecifierCollector &specContext, Diag<> diagID) {
   return ParseType(specContext);
 }
 
-SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
+SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &specContext,
                                               Diag<> diagID) {
 
   assert(IsBasicType(curTok.GetKind()) &&
@@ -61,59 +61,59 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
   return syn::MakeSyntaxResult<QualType>(nullptr);
 }
 
-SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
+SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierCollector &spec) {
   SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_auto:
-    specifier.AddAuto(ConsumeToken());
+    spec.AddAuto(ConsumeToken());
     break;
   case tok::kw_int:
-    specifier.AddInt(ConsumeToken());
+    spec.AddInt(ConsumeToken());
     break;
   case tok::kw_int8:
-    specifier.AddInt8(ConsumeToken());
+    spec.AddInt8(ConsumeToken());
     break;
   case tok::kw_int16:
-    specifier.AddInt16(ConsumeToken());
+    spec.AddInt16(ConsumeToken());
     break;
   case tok::kw_int32:
-    specifier.AddInt32(ConsumeToken());
+    spec.AddInt32(ConsumeToken());
     break;
   case tok::kw_int64:
-    specifier.AddInt64(ConsumeToken());
+    spec.AddInt64(ConsumeToken());
     break;
   case tok::kw_uint:
-    specifier.AddUInt(ConsumeToken());
+    spec.AddUInt(ConsumeToken());
     break;
   case tok::kw_uint8:
-    specifier.AddUInt8(ConsumeToken());
+    spec.AddUInt8(ConsumeToken());
     break;
   case tok::kw_byte:
-    specifier.AddByte(ConsumeToken());
+    spec.AddByte(ConsumeToken());
     break;
   case tok::kw_uint16:
-    specifier.AddUInt16(ConsumeToken());
+    spec.AddUInt16(ConsumeToken());
     break;
   case tok::kw_uint32:
-    specifier.AddUInt32(ConsumeToken());
+    spec.AddUInt32(ConsumeToken());
     break;
   case tok::kw_uint64:
-    specifier.AddUInt64(ConsumeToken());
+    spec.AddUInt64(ConsumeToken());
     break;
   case tok::kw_float:
-    specifier.AddFloat(ConsumeToken());
+    spec.AddFloat(ConsumeToken());
     break;
   case tok::kw_float32:
-    specifier.AddFloat32(ConsumeToken());
+    spec.AddFloat32(ConsumeToken());
     break;
   case tok::kw_float64:
-    specifier.AddFloat64(ConsumeToken());
+    spec.AddFloat64(ConsumeToken());
     break;
   case tok::kw_complex32:
-    specifier.AddComplex32(ConsumeToken());
+    spec.AddComplex32(ConsumeToken());
     break;
   case tok::kw_complex64:
-    specifier.AddComplex64(ConsumeToken());
+    spec.AddComplex64(ConsumeToken());
     break;
   default:
     return status;

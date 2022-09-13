@@ -114,8 +114,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         goto EndParse;
       }
     } else if (curTok.IsStruct()) {
-      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        spec.GetTypeSpecifierContext().AddStruct(ConsumeToken());
+      if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
         result = ParseStructDecl(spec);
 
       } else {
@@ -123,24 +123,24 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
       goto EndParse;
     } else if (curTok.IsInterface()) {
-      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        spec.GetTypeSpecifierContext().AddInterface(ConsumeToken());
+      if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
         result = ParseInterfaceDecl(spec);
       } else {
         // PrintD
       }
       goto EndParse;
     } else if (curTok.IsEnum()) {
-      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        spec.GetTypeSpecifierContext().AddEnum(ConsumeToken());
+      if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        spec.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
         result = ParseInterfaceDecl(spec);
       } else {
         // PrintD
       }
       goto EndParse;
     } else if (IsBasicType(curTok.GetKind())) {
-      if (!spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierContext());
+      if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        status = ParseBasicTypeSpecifier(spec.GetTypeSpecifierCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
         }
       } else {
@@ -148,8 +148,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
       goto BeginParse;
     } else if (curTok.IsPointerOperator()) {
-      if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
-        // spec.GetTypeSpecifierContext().Bits.IsPointer = true;
+      if (spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        // spec.GetTypeSpecifierCollector().Bits.IsPointer = true;
         ConsumeToken();
         goto BeginParse;
       } else {
@@ -169,7 +169,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       goto EndParse;
     } else {
       if (curTok.IsIdentifierOrUnderscore()) {
-        if (spec.GetTypeSpecifierContext().HasTypeSpecifierKind()) {
+        if (spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
           ParsingDeclarator declarator(spec, DeclaratorContextKind::SyntaxFile);
           result = ParseVarDecl(declarator);
         } else {
@@ -197,7 +197,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
   /// This is where you will call ParseType
   // assert(curTok.IsIdentifierOrUnderscore() && "Invalid identifier");
   // assert(declarator.GetParsingDeclSpecifier()
-  //            .GetTypeSpecifierContext()
+  //            .GetTypeSpecifierCollector()
   //            .HasTypeSpecifierKind() &&
   //        "Declarator does not have a type");
 
@@ -292,7 +292,7 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
 
     // TODO: Look for TypeSpecs
     SyntaxResult<QualType> resultType =
-        ParseDeclResultType(spec.GetTypeSpecifierContext(),
+        ParseDeclResultType(spec.GetTypeSpecifierCollector(),
                             diag::err_expected_type_for_function_result);
   }
 

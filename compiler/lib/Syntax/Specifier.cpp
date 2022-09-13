@@ -28,10 +28,10 @@ bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
     return false;
   }
 }
-bool TypeSpecifierContext::IsBasicType() {
+bool TypeSpecifierCollector::IsBasicType() {
   return IsValidTypeSpecifierKind(typeSpecifierKind);
 }
-bool TypeSpecifierContext::IsNominalType() {
+bool TypeSpecifierCollector::IsNominalType() {
   switch (typeSpecifierKind) {
   case TypeSpecifierKind::Struct:
   case TypeSpecifierKind::Interface:
@@ -41,7 +41,7 @@ bool TypeSpecifierContext::IsNominalType() {
     return false;
   }
 }
-// bool TypeSpecifierContext::SetTypeSpecifierKind(TypeSpecifierKind kind,
+// bool TypeSpecifierCollector::SetTypeSpecifierKind(TypeSpecifierKind kind,
 //                                                 SrcLoc loc) {
 //   if (!IsValidTypeSpecifierKind(kind)) {
 //     return false;
@@ -50,7 +50,7 @@ bool TypeSpecifierContext::IsNominalType() {
 //   return true;
 // }
 
-void TypeSpecifierContext::AddTypeSpecifierKind(TypeSpecifierKind kind,
+void TypeSpecifierCollector::AddTypeSpecifierKind(TypeSpecifierKind kind,
                                                 SrcLoc loc) {
   assert((typeSpecifierKind == TypeSpecifierKind::None) &&
          "can only have one 'type specifier type'");
@@ -59,94 +59,94 @@ void TypeSpecifierContext::AddTypeSpecifierKind(TypeSpecifierKind kind,
   typeSpecifierKind = kind;
   typeSpecifierLoc = loc;
 }
-void TypeSpecifierContext::AddAuto(SrcLoc loc) {
+void TypeSpecifierCollector::AddAuto(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Auto, loc);
 }
-void TypeSpecifierContext::AddBool(SrcLoc loc) {
+void TypeSpecifierCollector::AddBool(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Bool, loc);
 }
-void TypeSpecifierContext::AddFloat(SrcLoc loc) {
+void TypeSpecifierCollector::AddFloat(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Bool, loc);
 }
-void TypeSpecifierContext::AddFloat32(SrcLoc loc) {
+void TypeSpecifierCollector::AddFloat32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Float32, loc);
 }
 
-void TypeSpecifierContext::AddFloat64(SrcLoc loc) {
+void TypeSpecifierCollector::AddFloat64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Float64, loc);
 }
-void TypeSpecifierContext::AddEnum(SrcLoc loc) {
+void TypeSpecifierCollector::AddEnum(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Enum, loc);
 }
-void TypeSpecifierContext::AddInterface(SrcLoc loc) {
+void TypeSpecifierCollector::AddInterface(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Interface, loc);
 }
-void TypeSpecifierContext::AddStruct(SrcLoc loc) {
+void TypeSpecifierCollector::AddStruct(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Struct, loc);
 }
-void TypeSpecifierContext::AddVoid(SrcLoc loc) {
+void TypeSpecifierCollector::AddVoid(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Void, loc);
 }
-void TypeSpecifierContext::AddInt(SrcLoc loc) {
+void TypeSpecifierCollector::AddInt(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int, loc);
 }
-void TypeSpecifierContext::AddInt8(SrcLoc loc) {
+void TypeSpecifierCollector::AddInt8(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int8, loc);
 }
-void TypeSpecifierContext::AddInt16(SrcLoc loc) {
+void TypeSpecifierCollector::AddInt16(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int16, loc);
 }
-void TypeSpecifierContext::AddInt32(SrcLoc loc) {
+void TypeSpecifierCollector::AddInt32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int32, loc);
 }
-void TypeSpecifierContext::AddInt64(SrcLoc loc) {
+void TypeSpecifierCollector::AddInt64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Int64, loc);
 }
-void TypeSpecifierContext::AddUInt(SrcLoc loc) {
+void TypeSpecifierCollector::AddUInt(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt, loc);
 }
-void TypeSpecifierContext::AddUInt8(SrcLoc loc) {
+void TypeSpecifierCollector::AddUInt8(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt, loc);
 }
-void TypeSpecifierContext::AddByte(SrcLoc loc) {
+void TypeSpecifierCollector::AddByte(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Byte, loc);
 }
-void TypeSpecifierContext::AddUInt16(SrcLoc loc) {
+void TypeSpecifierCollector::AddUInt16(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::UInt16, loc);
 }
-void TypeSpecifierContext::AddUInt32(SrcLoc loc) {
+void TypeSpecifierCollector::AddUInt32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt32, loc);
 }
-void TypeSpecifierContext::AddUInt64(SrcLoc loc) {
+void TypeSpecifierCollector::AddUInt64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::UInt64, loc);
 }
-void TypeSpecifierContext::AddComplex32(SrcLoc loc) {
+void TypeSpecifierCollector::AddComplex32(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Complex32, loc);
 }
-void TypeSpecifierContext::AddComplex64(SrcLoc loc) {
+void TypeSpecifierCollector::AddComplex64(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Complex64, loc);
 }
-void TypeSpecifierContext::AddImaginary32(SrcLoc loc) {
+void TypeSpecifierCollector::AddImaginary32(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Imaginary32, loc);
 }
-void TypeSpecifierContext::AddImaginary64(SrcLoc loc) {
+void TypeSpecifierCollector::AddImaginary64(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Imaginary64, loc);
 }

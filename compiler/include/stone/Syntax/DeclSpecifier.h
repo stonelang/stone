@@ -176,7 +176,7 @@ public:
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
-  TypeSpecifierContext typeSpecifierContext;
+  TypeSpecifierCollector typeSpecifierContext;
   TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierContext storageSpecifierContext;
   FunctionSpecifierContext functionSpecifierContext;
@@ -196,7 +196,7 @@ public:
   StorageSpecifierContext &GetStorageSpeciferContext() {
     return storageSpecifierContext;
   }
-  TypeSpecifierContext &GetTypeSpecifierContext() {
+  TypeSpecifierCollector &GetTypeSpecifierCollector() {
     return typeSpecifierContext;
   }
   FunctionSpecifierContext &GetFunctionSpecifierContext() {
