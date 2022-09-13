@@ -132,10 +132,10 @@ public:
 
   // TODO: We only need on ParseDecl
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
-                               llvm::function_ref<void(Decl *)> handler);
+                               ParsingDeclCallback handler);
 
   SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
-                               llvm::function_ref<void(Decl *)> handler);
+                               ParsingDeclCallback handler);
 
   void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
 

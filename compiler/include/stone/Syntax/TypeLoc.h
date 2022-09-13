@@ -13,6 +13,7 @@ namespace syn {
 class TypeRep;
 class SyntaxContext;
 
+/// Example: int a = 0;  The start loc is i and the range is i ...t
 class alignas(1 << TypeRepAlignInBits) TypeLoc {
   Type ty;
   TypeRep *tyRep = nullptr;
@@ -34,7 +35,7 @@ public:
 
   /// Get the representative location of this type, for diagnostic
   /// purposes.
-  /// This location is not necessarily the start location of the type repr.
+  /// This location is not necessarily the start location of the TypeRep.
   SrcLoc GetLoc() const;
   SrcRange GetSrcRange() const;
   bool HasLoc() const { return tyRep != nullptr; }

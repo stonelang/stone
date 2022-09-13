@@ -69,7 +69,7 @@ SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
 
 // NOTE: This is ripe for recursion.
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
-                                     llvm::function_ref<void(Decl *)> handler) {
+                                     ParsingDeclCallback handler) {
 
   ParsingDeclSpecifier spec(*this, GetAttributeFactory());
   spec.flags = flags;
@@ -79,7 +79,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
-                                     llvm::function_ref<void(Decl *)> handler) {
+                                     ParsingDeclCallback handler) {
   SyntaxStatus status;
 
   SyntaxResult<Decl> result;
@@ -284,6 +284,8 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
           .Replace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
     }
+
+    // TODO: ParseTypeQuals();
 
     // TODO: Look for TypeSpecs
     SyntaxResult<QualType> resultType =

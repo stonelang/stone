@@ -249,6 +249,7 @@ struct ParsingDeclFlags final {
 };
 /// Options that control the parsing of declarations.
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
+using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
 class ParsingDeclSpecifier final : public DeclSpecifier {
   Parser &parser;
