@@ -204,9 +204,7 @@ public:
   TypeQualifierCollector &GetTypeQualifierCollector() {
     return typeQualifierCollector;
   }
-  AacessLevelCollector &GetAacessLevelCollector() {
-    return acessLevelCollector;
-  }
+  AacessLevelCollector &GetAcessLevelCollector() { return acessLevelCollector; }
 };
 
 class Declarator {

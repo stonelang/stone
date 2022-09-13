@@ -55,8 +55,8 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
-  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
 
+  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
   assert(GetCurScope() == nullptr && "A scope is already active?");
 
   // TODO: Get scope description from scopdeid::parsing_top_level_declaration
@@ -94,8 +94,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     // First, we check for access levels -- if one is not found, we will
     // eventually come back to it.
     if (curTok.IsAccessLevel()) {
-      if (!spec.GetAacessLevelCollector().HasAccessLevel()) {
-        status = ParseAccessLevel(spec.GetAacessLevelCollector());
+      if (!spec.GetAcessLevelCollector().HasAccessLevel()) {
+        status = ParseAccessLevel(spec.GetAcessLevelCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
           goto BeginParse;
         }
@@ -115,6 +115,9 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
     } else if (curTok.IsStruct()) {
       if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+          goto EndParse;
+        }
         spec.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
         result = ParseStructDecl(spec);
 
@@ -124,6 +127,9 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       goto EndParse;
     } else if (curTok.IsInterface()) {
       if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+          goto EndParse;
+        }
         spec.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
         result = ParseInterfaceDecl(spec);
       } else {
@@ -132,6 +138,10 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       goto EndParse;
     } else if (curTok.IsEnum()) {
       if (!spec.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+          // Log error
+          goto EndParse;
+        }
         spec.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
         result = ParseInterfaceDecl(spec);
       } else {
@@ -159,7 +169,10 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     } else if (curTok.IsFun()) {
       if (!spec.GetFunctionSpecifierCollector().HasFun()) {
         if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-          assert(spec.GetTypeQualifierCollector().HasPureOnly());
+          if (!spec.GetTypeQualifierCollector().HasPureOnly()) {
+            // Do some logging
+            goto EndParse;
+          }
         }
         spec.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
         result = ParseFunDecl(spec);
@@ -352,6 +365,16 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclSpecifier &spec,
 }
 
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclSpecifier &spec) {
+
+  assert(spec.GetTypeSpecifierCollector().IsStruct() &&
+         "Attempting to parse a struct without a struct declaration.");
+
+  auto structLoc = spec.GetTypeSpecifierCollector().GetLoc();
+  assert(structLoc.isValid());
+
+  // At this point, we are expecting an identifier
+  assert(curTok.IsIdentifierOrUnderscore() &&
+         "Invalid struct declarator or identifier");
 
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }

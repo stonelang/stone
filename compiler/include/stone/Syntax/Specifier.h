@@ -91,6 +91,7 @@ public:
     return typeSpecifierKind == TypeSpecifierKind::Interface;
   }
   bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
+  SrcLoc GetLoc() { return typeSpecifierLoc; }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {

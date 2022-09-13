@@ -66,11 +66,10 @@ Parser::ParseBasicTypeSpecifier(TypeSpecifierCollector &collector) {
   SyntaxStatus status;
 
   // We can only collect one
-  if(collector.HasTypeSpecifierKind()){
+  if (collector.HasTypeSpecifierKind()) {
     status.SetIsError();
-    return status; 
+    return status;
   }
-
   switch (curTok.GetKind()) {
   case tok::kw_auto:
     collector.AddAuto(ConsumeToken());
