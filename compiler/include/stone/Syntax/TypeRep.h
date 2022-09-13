@@ -37,6 +37,19 @@ public:
              const PrintSyntaxOptions &printOpts = PrintSyntaxOptions()) const;
 };
 
+class QualTypeRep : public TypeRep {
+  SrcLoc constLoc;
+  SrcLoc restricLoc;
+  SrcLoc volatileLoc;
+  SrcLoc pureLoc;
+
+public:
+  bool IsConst() const { return constLoc.isValid(); }
+  bool IsRestrict() const { return restricLoc.isValid(); }
+  bool IsVolatile() const { return volatileLoc.isValid(); }
+  bool IsPure() const { return pureLoc.isValid(); }
+};
+
 } // namespace syn
 } // end namespace stone
 

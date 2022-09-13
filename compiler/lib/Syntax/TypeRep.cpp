@@ -4,4 +4,5 @@
 using namespace stone;
 using namespace stone::syn;
 
-void TypeRep::Print(raw_ostream &os, const PrintSyntaxOptions &printOpts) const {}
+void TypeRep::Print(raw_ostream &os,
+                    const PrintSyntaxOptions &printOpts) const {}
