@@ -99,7 +99,8 @@ private:
 
 /// May want to inherit from QualTypeRep
 
-class FunctionTypeRep : public TypeRep {
+// Ex: public pure fun
+class FunctionTypeRep : public QualTypeRep {
   QualTypeRep *resultTy;
 
 public:

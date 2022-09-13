@@ -287,6 +287,9 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
                              "parsing fun signature");
 
   status |= ParseFunctionArguments(spec);
+  if(status.IsError()){
+    return status;
+  }
 
   SrcLoc arrowLoc;
   if (curTok.IsArrow()) {
@@ -302,6 +305,18 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
     }
 
     // TODO: ParseTypeQuals();
+
+    if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+      if (!spec.GetTypeQualifierCollector().HasPureOnly()) {
+        // TODO: Log
+        status.SetIsError();
+        return status;
+      }
+    }
+    status |= ParseTypeQualifiers(spec.GetTypeQualifierCollector());
+    if(status.IsError()){
+      return status; 
+    }
 
     // TODO: Look for TypeSpecs
     SyntaxResult<QualType> resultType =
