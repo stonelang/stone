@@ -149,6 +149,8 @@ public:
   bool IsModuleContext() const;
 
   Module *GetParentModule() const;
+
+  bool IsTypeContext() const;
 };
 
 } // namespace syn

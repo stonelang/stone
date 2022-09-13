@@ -41,3 +41,10 @@ DeclContext *Decl::GetDeclContextForModule() const {
   }
   return nullptr;
 }
+
+bool DeclContext::IsTypeContext() const {
+  if (auto decl = CastToDecl()) {
+    return isa<NominalTypeDecl>(decl);
+  }
+  return false;
+}

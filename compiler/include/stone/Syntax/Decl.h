@@ -588,6 +588,8 @@ public:
 
 class NominalTypeDecl : public TypeDecl, public DeclContext {
 public:
+
+  static bool classof(const Decl *d) { return true; }
 };
 
 class StructDecl final : public NominalTypeDecl {
