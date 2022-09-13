@@ -100,8 +100,7 @@ public:
 
 class NominalType : public TypeBase {
 public:
-
-   // Implement isa/cast/dyncast/etc.
+  // Implement isa/cast/dyncast/etc.
   static bool classof(const TypeBase *ty) {
     return ty->GetKind() >= TypeKind::First_NominalType &&
            ty->GetKind() <= TypeKind::Last_NominalType;

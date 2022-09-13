@@ -1,6 +1,7 @@
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeLoc.h"
 
+using namespace stone;
 using namespace stone::syn;
 
 bool Type::Walk(TypeWalker &walker) const {}
@@ -60,3 +61,11 @@ bool TypeBase::IsNominalType() {
     return false;
   }
 }
+
+bool TypeLoc::IsError() const { return true; }
+
+SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
+
+SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
+
+void TypeLoc::SetType(Type ty) {}

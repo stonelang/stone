@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/Mem.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Builtin.h"
