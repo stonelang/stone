@@ -14,7 +14,7 @@
 namespace stone {
 namespace mem {
 
-template <typename T> using safe = std::unique_ptr<T>;
+template <typename T> using Safe = std::unique_ptr<T>;
 
 // FIXME: Use C11 aligned_alloc if available.
 inline void *AlignedAlloc(size_t size, size_t align) {

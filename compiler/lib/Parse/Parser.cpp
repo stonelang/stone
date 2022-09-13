@@ -1,4 +1,5 @@
 #include "stone/Parse/Parser.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
@@ -8,16 +9,17 @@
 
 using namespace stone;
 using namespace stone::syn;
+using namespace stone::mem;
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
     : Parser(sf, sc,
-             std::unique_ptr<Lexer>(
+             Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
                            &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
                            &sc.GetLangContext().GetStatEngine())),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lx,
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
