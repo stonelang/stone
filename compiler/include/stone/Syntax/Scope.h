@@ -2,12 +2,18 @@
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
 #include "stone/Basic/STDTypeAlias.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/Decl.h"
+#include "stone/Syntax/SyntaxAllocation.h"
+
+#include "llvm/ADT/SmallPtrSet.h"
 
 namespace stone {
 namespace syn {
+class Decl;
 
 // TODO: Think about
-enum class SyntaxScopeKind : UInt8 {
+enum class ScopeKind : UInt8 {
   None = 0,
   /// A syntax file , which is the root of a scope.
   SyntaxFile,
@@ -22,6 +28,8 @@ enum class SyntaxScopeKind : UInt8 {
 
   /// A function/initializer/deinitializer.
   FunctionDecl,
+
+  FunctionSignature,
 
   /// The parameters of a function/initializer/deinitializer.
   FunctionParams,
@@ -70,15 +78,34 @@ enum class SyntaxScopeKind : UInt8 {
   Constructor,
 
   Destructor,
+
+  ReturnClause
 };
 
-class SyntaxScope final {
-  SyntaxScope *parent = nullptr;
-  SyntaxScopeKind kind;
+class Scope final : public syn::SyntaxAllocation<Scope> {
+  ScopeKind kind;
+  DiagnosticEngine &diags;
+  Scope *parent = nullptr;
+
+  using DeclSet = llvm::SmallPtrSet<Decl *, 32>;
+  DeclSet scopeDecls;
 
 public:
-  SyntaxScope(SyntaxScopeKind kind, SyntaxScope *parent = nullptr);
-  ~SyntaxScope();
+  Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent = nullptr);
+  ~Scope();
+
+  ScopeKind GetKind() { return kind; }
+  Scope *GetParent() { return parent; }
+  const char *GetName() { return Scope::GetName(GetKind()); }
+
+  void AddDecl(Decl *d) { scopeDecls.insert(d); }
+  void RemoveDecl(Decl *d) { scopeDecls.erase(d); }
+
+private:
+  void Initialize();
+
+public:
+  static const char *GetName(ScopeKind kind);
 };
 } // namespace syn
 } // namespace stone

@@ -5,12 +5,12 @@
 using namespace stone;
 using namespace stone::syn;
 
-void IRCodeGenModule::EmitTopLevelDecl(Decl *topLevelDecl) {
-  switch (topLevelDecl->GetKind()) {
+void IRCodeGenModule::EmitDecl(Decl *d) {
+  switch (d->GetKind()) {
   case DeclKind::Interface:
-    return EmitInterfaceDecl(cast<InterfaceDecl>(topLevelDecl));
+    return EmitInterfaceDecl(cast<InterfaceDecl>(d));
   case DeclKind::Fun:
-    return EmitFunDecl(cast<FunDecl>(topLevelDecl));
+    return EmitFunDecl(cast<FunDecl>(d));
   // case DeclKind::Enum:
   //   return EmitEnumDecl(cast<EnumDecl>(topLvelDecl));
   // case DeclKind::Struct:

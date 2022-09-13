@@ -5,7 +5,7 @@
 
 namespace stone {
 namespace syn {
-class Type;
+
 class SyntaxContext;
 
 namespace builtin {
@@ -41,19 +41,41 @@ enum class BuiltinID {
 };
 
 class Builtin final {
+  SyntaxContext &sc;
+
 public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
 
 public:
-  void InitType(SyntaxContext &tc);
-  void InitTypes(SyntaxContext &tc);
+  // const CanQualType VoidType;
+  // const CanQualType BoolType;
+  // const CanQualType NullType;
+
+  // const CanQualType FloatTy;
+  const CanQualType BuiltinFloat16Type;  /// 32-bit IEEE floating point
+  const CanQualType BuiltinFloat32Type;  /// 32-bit IEEE floating point
+  const CanQualType BuiltinFloat64Type;  /// 64-bit IEEE floating point
+  const CanQualType BuiltinFloat128Type; /// 128-bit IEEE floating point
+  const CanQualType BuiltinFloatType;    /// 128-bit IEEE floating point
+
+  const CanQualType BuiltinInt8Type;
+  const CanQualType BuiltinInt16Type;
+  const CanQualType BuiltinInt32Type;
+  const CanQualType BuiltinInt64Type;
+  const CanQualType BuiltinInt128Type;
+  const CanQualType BuiltinIntType;
+
+  const CanQualType BuiltinUInt8Type;
+  const CanQualType BuiltinUInt16Type;
+  const CanQualType BuiltinUInt32Type;
+  const CanQualType BuiltinUInt64Type;
+  const CanQualType BuiltinUInt128Type;
+  const CanQualType BuiltinUIntType;
 
 public:
-  Builtin() = default;
+  Builtin(SyntaxContext &sc);
   ~Builtin();
-
-  void Init(SyntaxContext &tc);
 
 public:
   Type GetType(llvm::StringRef name);

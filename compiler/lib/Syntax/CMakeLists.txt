@@ -22,14 +22,14 @@ set(stone_syn_sources
 	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp
-	Syntax.cpp
 	SyntaxContext.cpp
 	SyntaxDiagnostic.cpp
-	SyntaxScope.cpp
+	Scope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp
 	Template.cpp
 	Type.cpp
+	TypeRep.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	

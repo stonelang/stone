@@ -6,6 +6,8 @@
 
 #include <memory>
 
+using namespace stone::syn;
+
 namespace llvm {
 class raw_pwrite_stream;
 class GlobalVariable;
@@ -30,12 +32,12 @@ public:
   ~IRCodeGenModule();
 
 public:
-  void EmitSyntaxFile(const syn::SyntaxFile &sf);
-  void EmitTopLevelDecl(syn::Decl *topLvelDecl);
-  void EmitFunDecl(syn::FunDecl *topLvelDecl);
-  void EmitInterfaceDecl(syn::InterfaceDecl *topLevelDecl);
-  void EmitStructDecl(syn::StructDecl *topLvelDecl);
-  void EmitEnumDecl(syn::EnumDecl *topLvelDecl);
+  void EmitSyntaxFile(const SyntaxFile &sf);
+  void EmitDecl(Decl *d);
+  void EmitFunDecl(FunDecl *d);
+  void EmitInterfaceDecl(InterfaceDecl *d);
+  void EmitStructDecl(StructDecl *d);
+  void EmitEnumDecl(EnumDecl *d);
 };
 } // namespace stone
 

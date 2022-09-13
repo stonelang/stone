@@ -5,23 +5,12 @@
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Template.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 namespace syn {
-
-enum class DeclaratorChunkKind {
-  Pointer,
-  Reference,
-  Array,
-  Function,
-  BlockPointer,
-  MemberPointer,
-  Paren,
-  Pipe,
-};
 
 enum class DeclaratorContextKind {
   SyntaxFile,          // File scope declaration.
@@ -48,10 +37,25 @@ enum class DeclaratorContextKind {
   RequiresExpr         // Requires-expression.
 };
 
+enum class DeclaratorChunkKind {
+  Pointer,
+  Reference,
+  Array,
+  Function,
+  BlockPointer,
+  MemberPointer,
+  Paren,
+  Pipe,
+};
+
 struct DeclaratorChunk final {
 public:
   DeclaratorChunk(){};
   DeclaratorChunkKind kind;
+
+public:
+  struct PointerTypeInfo {};
+  struct FunctionTypeInfo {};
 
 public:
   static DeclaratorChunk CreatePointer();
@@ -81,35 +85,48 @@ class FunctionSpecifierContext final {
   SrcLoc inlineLoc;
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
+  SrcLoc funLoc;
 
   enum Flags : unsigned {
     None = 1 << 0,
-    FunctionDef = 1 << 1,
+    Fun = 1 << 1,
     Inline = 1 << 2,
     ForcedInline = 1 << 3,
     Virtual = 1 << 4,
-    NoReturn = 1 << 5
+    NoReturn = 1 << 5,
+    IsMember = 1 << 6
   };
 
 private:
   unsigned flags;
 
 public:
-  void AddFunctionDef(SrcLoc loc) { flags |= FunctionDef; }
-  void AddInline(SrcLoc loc) { flags |= Inline; }
-  void AddForcedInline(SrcLoc loc) { flags |= ForcedInline; }
-  void AddVirtual(SrcLoc loc) { flags |= Virtual; }
-  void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
-
-  bool HasFunctionDef() {
-    return flags && FunctionSpecifierContext::FunctionDef;
+  void AddFun(SrcLoc loc) {
+    flags |= Fun;
+    funLoc = loc;
   }
+  bool HasFun() { return flags & FunctionSpecifierContext::Fun; }
+
+  void AddInline(SrcLoc loc) { flags |= FunctionSpecifierContext::Inline; }
   bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
+
+  void AddForcedInline(SrcLoc loc) {
+    flags |= FunctionSpecifierContext::ForcedInline;
+  }
   bool HasForcedInline() {
     return flags & FunctionSpecifierContext::ForcedInline;
   }
+
+  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
   bool HasVirtual() { return flags & FunctionSpecifierContext::Virtual; }
+
+  void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
   bool HasNoReturn() { return flags & FunctionSpecifierContext::NoReturn; }
+
+  void AddIsMember() { flags |= FunctionSpecifierContext::IsMember; }
+  bool HasIsMember() { return flags & FunctionSpecifierContext::IsMember; }
+
+  SrcLoc GetFunLoc() { return funLoc; }
 };
 
 class StorageSpecifierContext final {
@@ -124,16 +141,49 @@ public:
   StorageSpecifierKind GetKind() { return kind; }
 };
 
+// enum class DescriptiveDeclSpecifier {
+//   None,
+//   FuncitonDefinition,
+//   NominalType,
+//   BasicType
+// }
+
+class AccessLevelContext final {
+  SrcLoc loc;
+  AccessLevel level = AccessLevel::None;
+
+private:
+  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+    assert(level == AccessLevel::None);
+    level = inputLevel;
+    loc = inputLoc;
+  }
+
+public:
+  void AddPublic(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Public, inputLoc);
+  }
+  void AddPrivate(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Private, inputLoc);
+  }
+  void AddInternal(SrcLoc inputLoc) {
+    AddAccessLevel(AccessLevel::Internal, inputLoc);
+  }
+  bool HasAccessLevel() { return level != AccessLevel::None; }
+  SrcLoc GetLoc() { return loc; }
+};
+
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
   TypeSpecifierContext typeSpecifierContext;
-  TypeQualifierContext typeQualifierContext;
+  TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierContext storageSpecifierContext;
   FunctionSpecifierContext functionSpecifierContext;
+  AccessLevelContext accessLevelContext;
 
-  SrcLoc accessLevelLoc;
-  AccessLevel accessLevel = AccessLevel::Private;
+  // DescriptiveDeclSpecifier descriptiveDeclSpecifier =
+  // DescriptiveDeclSpecifier::None;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -141,12 +191,6 @@ class DeclSpecifier {
 public:
   DeclSpecifier(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
-
-private:
-  void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
-    accessLevel = inputLevel;
-    accessLevelLoc = inputLoc;
-  }
 
 public:
   StorageSpecifierContext &GetStorageSpeciferContext() {
@@ -158,21 +202,15 @@ public:
   FunctionSpecifierContext &GetFunctionSpecifierContext() {
     return functionSpecifierContext;
   }
-  TypeQualifierContext &GetTypeQualifireContext() {
-    return typeQualifierContext;
+  TypeQualifierCollector &GetTypeQualifierCollector() {
+    return typeQualifierCollector;
   }
-  AccessLevel GetAccessLevel() { return accessLevel; }
-  SrcLoc GetAccessLevelLoc() { return accessLevelLoc; }
+  AccessLevelContext &GetAccessLevelContext() { return accessLevelContext; }
 
-  void AddPublicAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Public, loc);
-  }
-  void AddPrivateAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Private, loc);
-  }
-  void AddInternalAccessLevel(SrcLoc loc) {
-    AddAccessLevel(AccessLevel::Internal, loc);
-  }
+  // void SetDescriptiveDeclSpecifier(DescriptiveDeclSpecifier descriptive){
+  //   descriptiveDeclSpecifier = descriptive;
+
+  // }
 };
 
 class Declarator {
@@ -205,6 +243,15 @@ public:
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
   DeclaratorContextKind GetContextKind() { return contextKind; }
+
+public:
+  /// AddTypeInfo - Add a chunk to this declarator. Also extend the range to
+  /// EndLoc, which should be the last token of the chunk.
+  void AddTypeInfo(const DeclaratorChunk &chunk, SrcLoc endLoc) {
+    declTypeInfo.push_back(chunk);
+    // if (!EndLoc.isInvalid())
+    //   SetRangeEnd(EndLoc);
+  }
 };
 
 // /// A context for parsing declaration specifiers.  TODO: flesh this

@@ -46,10 +46,6 @@ public:
   TypeSpecifierContext() : typeSpecifierKind(TypeSpecifierKind::None) {}
 
 public:
-  // bool SetTypeSpeciferKind(TypeSpecifierKind anyKind, SrcLoc loc,
-  //                          const char *&prevTypeSpecifier, Diag<> diagID,
-  //                          Decl *rep, bool owned);
-
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
   bool HasTypeSpecifierKind() const {
     return typeSpecifierKind != TypeSpecifierKind::None;
@@ -64,9 +60,6 @@ public:
   void AddFloat(SrcLoc loc);
   void AddFloat32(SrcLoc loc);
   void AddFloat64(SrcLoc loc);
-  void AddEnum(SrcLoc loc);
-  void AddInterface(SrcLoc loc);
-  void AddStruct(SrcLoc loc);
   void AddVoid(SrcLoc loc);
   void AddInt(SrcLoc loc);
   void AddInt8(SrcLoc loc);
@@ -84,10 +77,20 @@ public:
   void AddImaginary32(SrcLoc loc);
   void AddImaginary64(SrcLoc loc);
 
+  void AddEnum(SrcLoc loc);
+  void AddInterface(SrcLoc loc);
+  void AddStruct(SrcLoc loc);
+
 public:
   TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
   bool IsBasicType();
   bool IsNominalType();
+  bool IsEnum() { return typeSpecifierKind == TypeSpecifierKind::Enum; }
+  bool IsStruct() { return typeSpecifierKind == TypeSpecifierKind::Struct; }
+  bool IsInterface() {
+    return typeSpecifierKind == TypeSpecifierKind::Interface;
+  }
+  bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {
@@ -110,8 +113,7 @@ enum class AccessLevel : UInt8 {
 };
 
 /// The categorization of expression values, currently following the
-enum class ExprValueType : UInt8 {
-
+enum class ExprValueKind : UInt8 {
   None = 0,
   /// An r-value expression (a pr-value in the C++11 taxonomy)
   /// produces a temporary value.
@@ -125,6 +127,22 @@ enum class ExprValueType : UInt8 {
   /// independent storage but which can be "moved", i.e.
   /// efficiently cannibalized for its resources.
   XValue
+};
+
+/// A further classification of the kind of object referenced by an
+/// l-value or x-value.
+enum class ExprObjectKind {
+  /// An ordinary object is located at an address in memory.
+  Ordinary,
+
+  /// A bitfield object is a bitfield on a struct.
+  BitField,
+
+  /// A vector component is an element or range of elements on a vector.
+  VectorComponent,
+
+  /// A matrix component is a single element of a matrix.
+  MatrixComponent
 };
 
 /// Storage classes.

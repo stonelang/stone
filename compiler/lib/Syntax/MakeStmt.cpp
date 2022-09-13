@@ -1,15 +1,18 @@
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/Stmt.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-BraceStmt *Syntax::MakeBraceStmt(SrcLoc lbloc,
-                                 llvm::ArrayRef<SyntaxNode> elements,
-                                 SrcLoc rbloc, llvm::Optional<bool> implicit) {
+//== Statements ==/
+BraceStmt *syn::MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
+                              SrcLoc rbloc, SyntaxContext &sc,
+                              llvm::Optional<bool> implicit) {
 
-  void *stmtPtr = GetSyntaxContext().Allocate(
-      BraceStmt::totalSizeToAlloc<SyntaxNode>(elements.size()),
-      alignof(BraceStmt));
+  void *stmtPtr =
+      sc.Allocate(BraceStmt::totalSizeToAlloc<SyntaxNode>(elements.size()),
+                  alignof(BraceStmt));
 
   return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }

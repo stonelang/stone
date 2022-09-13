@@ -1,7 +1,6 @@
-#ifndef STONE_SYNTAX_RealType_H
-#define STONE_SYNTAX_RealType_H
+#ifndef STONE_SYNTAX_Type_H
+#define STONE_SYNTAX_Type_H
 
-#include "stone/Basic/STDTypeAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
@@ -45,12 +44,36 @@
 namespace stone {
 namespace syn {
 
+class ASTPrinter;
+class CanQualType;
+class EnumDecl;
+class ModuleDecl;
+class InterfaceType;
+class StructDecl;
+class TypeBase;
 class Type;
 class TypeWalker;
-class ExtQuals; // Extended Qualifiers
-class QualType; // Qualified SyntaxTypes
-class StructDecl;
-class SyntaxType;
+
+// class BitterType {
+// public:
+// };
+
+// class SugarType {
+// public:
+//   void operator==(Type T) const = delete;
+//   void operator!=(Type T) const = delete;
+// };
+
+// class Type final : public llvm::PointerUnion<BitterType *, SugarType *> {
+// public:
+//   Type() {}
+// public:
+//   BitterType* GetBitter();
+//   SugarType*  GetSugar();
+
+// public:
+//   Type Transform(llvm::function_ref<Type(Type)> fn) const;
+// };
 
 enum class GCKind : UInt8 { None = 0, Weak, Strong };
 
@@ -67,7 +90,7 @@ struct TypeQualifierFlags {
   };
 };
 
-class TypeQualifierContext final {
+class TypeQualifierContext {
 
   // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
   //           |C R V|U|GCAttr|Lifetime|AddressSpace|
@@ -86,6 +109,19 @@ class TypeQualifierContext final {
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
+
+public:
+  enum {
+    /// The maximum supported address space number.
+    /// 23 bits should be enough for anyone.
+    MaxAddressSpace = 0x7fffffu,
+
+    /// The width of the "fast" qualifier mask.
+    FastWidth = 3,
+
+    /// The fast qualifier mask.
+    FastMask = (1 << FastWidth) - 1
+  };
 
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
@@ -122,6 +158,12 @@ public:
     mask |= TypeQualifierFlags::Pure;
   }
 
+  bool HasAnyTypeQualifier() {
+    return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
+  }
+  bool HasAllTypeQualifiers() {
+    return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
+  }
   SrcLoc GetVolatileLoc() { return volatileLoc; }
 
   // bool HasCVR() const { return getCVRQualifiers(); }
@@ -169,285 +211,197 @@ enum class ScalarTypeKind {
   FloatingComplex,
   FixedPoint
 };
-class alignas(1 << TypeAlignInBits) Type
-    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
+
+class Type {
+  TypeBase *typePtr = nullptr;
 
 public:
-};
+  Type(TypeBase *typePtr = 0) : typePtr(typePtr) {}
 
+public:
+  bool IsNull() const { return typePtr == nullptr; }
+  TypeBase *GetPtr() const { return typePtr; }
+
+  TypeBase *operator->() const {
+    assert(typePtr && "Cannot dereference a null Type!");
+    return typePtr;
+  }
+  explicit operator bool() const { return typePtr != 0; }
+  /// Walk this Type.
+  ///
+  /// Returns true if the walk was aborted.
+  bool Walk(TypeWalker &walker) const;
+  bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+
+public:
+  /// Look through the given Type and its children to find a Type
+  /// for which the given predicate returns true.
+  ///
+  /// \param pred A predicate function object. It should return true if the give
+  /// Type node satisfies the criteria.
+  ///
+  /// \returns true if the predicate returns true for the given Type or
+  /// any of its children.
+  bool FindIf(llvm::function_ref<bool(Type)> pred) const;
+
+  /// Transform the given Type by applying the user-provided function to
+  /// each Type.
+  ///
+  /// This routine applies the given function to transform one Type into
+  /// another. If the function leaves the Type unchanged, recurse into the
+  /// child Type nodes and transform those. If any child Type node
+  /// changes, the parent Type node will be rebuilt.
+  ///
+  /// If at any time the function returns a null Type, the null will be
+  /// propagated out.
+  ///
+  /// \param fn A function object with the signature \c Type(Type),
+  /// which accepts a Type and returns either a transformed Type or
+  /// a null Type.
+  ///
+  /// \returns the result of transforming the Type.
+  Type Transform(llvm::function_ref<Type(Type)> fn) const;
+
+  /// Transform the given Type by applying the user-provided function to
+  /// each Type.
+  ///
+  /// This routine applies the given function to transform one Type into
+  /// another. If the function leaves the Type unchanged, recurse into the
+  /// child Type nodes and transform those. If any child Type node
+  /// changes, the parent Type node will be rebuilt.
+  ///
+  /// If at any time the function returns a null Type, the null will be
+  /// propagated out.
+  ///
+  /// If the function returns \c None, the transform operation will
+  ///
+  /// \param fn A function object with the signature
+  /// \c Optional<Type>(TypeBase *), which accepts a Type
+  /// pointer and returns a transformed Type, a null Type (which
+  /// will propagate the null Type to the outermost \c transform() call),
+  /// or None (to indicate that the transform operation should recursively
+  /// transform the subTypes). The function object should use \c dyn_cast
+  /// rather \c getAs, because the transform itself handles desugaring.
+  ///
+  /// \returns the result of transforming the Type.
+  Type
+  TransformRec(llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
+
+  /// Look through the given Type and its children and apply fn to them.
+  void Visit(llvm::function_ref<void(Type)> fn) const {
+    FindIf([&fn](Type t) -> bool {
+      fn(t);
+      return false;
+    });
+  }
+
+  /// Replace references to substitutable Types with new, concrete
+  /// Types and return the substituted result.
+  ///
+  /// \param substitutions The mapping from substitutable Types to their
+  /// replacements and conformances.
+  ///
+  /// \param options Options that affect the substitutions.
+  ///
+  /// \returns the substituted Type, or a null Type if an error
+  /// occurred.
+  // Type Substitute(SubstitutionMap substitutions,
+  //                 SubstitutionOptions options = None) const;
+
+  // /// Replace references to substitutable Types with new, concrete
+  // Types and
+  /// return the substituted result.
+  ///
+  /// \param substitutions A function mapping from substitutable Types to
+  /// their replacements.
+  ///
+  /// \param conformances A function for looking up conformances.
+  ///
+  /// \param options Options that affect the substitutions.
+  ///
+  /// \returns the substituted Type, or a null Type if an error
+  /// occurred.
+  // Type Substitute(TypeSubstitutionFn substitutions,
+  //                 LookupConformanceFn conformances,
+  //                 SubstOptions options = None) const;
+
+private:
+  // Direct comparison is disabled for types, because they may not be canonical.
+  void operator==(Type T) const = delete;
+  void operator!=(Type T) const = delete;
+};
 /// const int a = 10; volatile int a = 10;
-class QualType : public Type {
+/// The qual type in this case is ust int with the aforementioned qualifiers
+class QualType final {
+  friend class TypeQualifierCollector;
+  // Thankfully, these are efficiently composable.
+  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;
+
 public:
   QualType() = default;
-  QualType(const Type *ty, unsigned quals) {}
+  QualType(Type *tyPtr, unsigned quals) : ptrInt(tyPtr, quals) {}
 
 public:
-  /// Retrieves a pointer to the underlying (unqualified) type.
-  ///
-  /// This function requires that the type not be NULL. If the type might be
-  /// NULL, use the (slightly less efficient) \c getTypePtrOrNull().
-  // const Type *GetTypePtr() const;
-  // const Type *GetTypePtrOrNull() const;
+  bool HasConstQual() const;
+  bool HasRestrictQual() const;
+  bool HasVolatileQual() const;
+  bool HasPureQual() const;
+
+  bool HasQuals() const;
+  bool IsCanonical() const;
+
+  // Type* GetCanType() const;
+
+  /// Return true if this QualType doesn't point to a type yet.
+  // bool IsNull() const { return ptrInt.getPointer().IsNull(); }
+
+public:
 };
 
-// class FunctionTypeBase : public Type {};
+// CanQualType - This is a Type that is statically known to be
+// canonical.  To get
+/// one of these, use Type->GetCanType().  Since all
+/// CanType's can be used as 'Type' (they just don't have sugar) we
+/// derive from Type.
+class CanQualType {
+  Type tyPtr;
 
-// class FunctionType : public FunctionTypeBase {
-//   // The type returned by the function.
-//   QualType returnType;
+public:
+  /// Constructs a NULL canonical type.
+  CanQualType() = default;
 
-// public:
-//   QualType GetReturnType() { return returnType; }
-// };
+public:
+  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
+    assert(IsCanQualTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanQualType(Type tyPtr) : tyPtr(tyPtr) {
+    assert(IsCanQualTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
 
-// class FunctionSignatureType : FunctionType {};
+private:
+  bool IsCanQualTypeOrNull() const { return true; }
+};
 
-// class NominalType : public Type {};
+class TypeQualifierCollector final : public TypeQualifierContext {
+public:
+  TypeQualifierCollector(TypeQualifierContext tqc = TypeQualifierContext())
+      : TypeQualifierContext(tqc) {}
 
-// class StructType : public NominalType {};
+public:
+  /// Collect any qualifiers on the given type and return an
+  /// unqualified type.  The qualifiers are assumed to be consistent
+  /// with those already in the type.
+  const Type *StripQualsFromType(QualType type);
 
-// class EnumType : public NominalType {};
+  /// Apply the collected qualifiers to the given type.
+  QualType ApplyQualsToType(const SyntaxContext &sc, QualType qt) const;
 
-// class DeducedType : public Type {};
-
-// class alignas(8) AutoType : public DeducedType, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these
-// };
-
-// class BuiltinType : public Type {};
-
-// /// An abstract base class for the two integer types.
-// class BuiltinIntegerTypeBase : public BuiltinType {
-//   // protected:
-//   //   BuiltinIntegerTypeBase(TypeKind kind, const ASTContext &C)
-//   //     : BuiltinType(kind, C) {}
-
-//   // public:
-//   //   static bool classof(const TypeBase *T) {
-//   //     return T->getKind() >= TypeKind::First_AnyBuiltinIntegerType &&
-//   //            T->getKind() <= TypeKind::Last_AnyBuiltinIntegerType;
-//   //   }
-
-//   // defined inline below
-//   // BuiltinIntegerWidth GetWidth() const;
-// };
-
-// class BuiltinIntegerType : public BuiltinIntegerTypeBase {};
-
-// class FloatBuiltinType : public BuiltinType {
-//   friend class SyntaxContext;
-
-// public:
-//   /// IEEE floating point types.
-//   enum IEEEKind {
-//     IEEE16,
-//     IEEE32,
-//     IEEE64,
-//     IEEE80,
-//     IEEE128,
-//   };
-
-// private:
-//   IEEEKind kind;
-
-//   // BuiltinFloatType(IEEEKind Kind, const SyntaxContext &C)
-//   //   : BuiltinType(TypeKind::BuiltinFloat, C), Kind(Kind) {}
-
-// public:
-//   IEEEKind GetIEEEKind() const { return kind; }
-
-//   const llvm::fltSemantics &GetAPFloatSemantics() const;
-
-//   unsigned GetBitWidth() const {
-//     switch (kind) {
-//     case IEEE16:
-//       return 16;
-//     case IEEE32:
-//       return 32;
-//     case IEEE64:
-//       return 64;
-//     case IEEE80:
-//       return 80;
-//     case IEEE128:
-//       return 128;
-//     }
-//     llvm_unreachable("Invalid IEEE");
-//   }
-//   // static bool classof(const TypeBase *T) {
-//   //   return T->getKind() == TypeKind::BuiltinFloat;
-//   // }
-// };
-
-// class PointerType : public Type, public llvm::FoldingSetNode {
-//   friend class SyntaxContext; // SyntaxContext creates these.
-
-//   // QualType PointeeType;
-
-//   // PointerType(QualType Pointee, QualType CanonicalPtr)
-//   //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
-//   //       PointeeType(Pointee) {}
-
-// public:
-//   // QualType getPointeeType() const { return PointeeType; }
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   // }
-
-//   // static bool classof(const Type *T) { return T->getTypeClass() ==
-//   Pointer; }
-// };
-
-// /// Base for LValueReferenceType and RValueReferenceType
-// class ReferenceType : public Type, public llvm::FoldingSetNode {
-//   //   QualType PointeeType;
-
-//   // protected:
-//   //   ReferenceType(TypeClass tc, QualType Referencee, QualType
-//   CanonicalRef,
-//   //                 bool SpelledAsLValue)
-//   //       : Type(tc, CanonicalRef, Referencee->getDependence()),
-//   //         PointeeType(Referencee) {
-//   //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
-//   //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
-//   //   }
-
-//   // public:
-//   //   bool isSpelledAsLValue() const { return
-//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const { return
-//   //   ReferenceTypeBits.InnerRef; }
-
-//   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
-
-//   //   QualType getPointeeType() const {
-//   //     // FIXME: this might strip inner qualifiers; okay?
-//   //     const ReferenceType *T = this;
-//   //     while (T->isInnerRef())
-//   //       T = T->PointeeType->castAs<ReferenceType>();
-//   //     return T->PointeeType;
-//   //   }
-
-//   //   void Profile(llvm::FoldingSetNodeID &ID) {
-//   //     Profile(ID, PointeeType, isSpelledAsLValue());
-//   //   }
-
-//   //   static void Profile(llvm::FoldingSetNodeID &ID,
-//   //                       QualType Referencee,
-//   //                       bool SpelledAsLValue) {
-//   //     ID.AddPointer(Referencee.getAsOpaquePtr());
-//   //     ID.AddBoolean(SpelledAsLValue);
-//   //   }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference ||
-//   //            T->getTypeClass() == RValueReference;
-//   //   }
-// };
-
-// /// An lvalue reference type, per C++11 [dcl.ref].
-// class LeftValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
-
-//   //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
-//   //                       bool SpelledAsLValue)
-//   //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
-//   //                       SpelledAsLValue) {}
-
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference;
-//   //   }
-// };
-
-// /// An rvalue reference type, per C++11 [dcl.ref].
-// class RightValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
-
-//   //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef, false)
-//   {}
-
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == RValueReference;
-//   //   }
-// };
-
-// /// A pointer to member type per C++ 8.3.3 - Pointers to members.
-// ///
-// /// This includes both pointers to data members and pointer to member
-// functions. class MemberPointerType : public Type, public llvm::FoldingSetNode
-// {
-//   //   friend class ASTContext; // ASTContext creates these.
-
-//   //   QualType PointeeType;
-
-//   //   /// The class of which the pointee is a member. Must ultimately be a
-//   //   /// RecordType, but could be a typedef or a template parameter too.
-//   //   const Type *Class;
-
-//   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
-//   //   CanonicalPtr)
-//   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() & ~TypeDependence::VariablyModified)
-//   |
-//   //                  Pointee->getDependence()),
-//   //         PointeeType(Pointee), Class(Cls) {}
-
-//   // public:
-//   //   QualType getPointeeType() const { return PointeeType; }
-
-//   //   /// Returns true if the member type (i.e. the pointee type) is a
-//   //   /// function type rather than a data-member type.
-//   //   bool isMemberFunctionPointer() const {
-//   //     return PointeeType->isFunctionProtoType();
-//   //   }
-
-//   /// Returns true if the member type (i.e. the pointee type) is a
-//   /// data type rather than a function type.
-//   // bool isMemberDataPointer() const {
-//   //   return !PointeeType->isFunctionProtoType();
-//   // }
-
-//   // const Type *getClass() const { return Class; }
-//   // CXXRecordDecl *getMostRecentCXXRecordDecl() const;
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType(), getClass());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee,
-//   //                     const Type *Class) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   //   ID.AddPointer(Class);
-//   // }
-
-//   // static bool classof(const Type *T) {
-//   //   return T->getTypeClass() == MemberPointer;
-//   // }
-// };
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
+  // THINK about this
+  /// Apply the collected qualifiers to the given type.
+  QualType ApplyQualsToType(const SyntaxContext &Context, const Type *ty) const;
+};
 
 } // namespace syn
 } // namespace stone

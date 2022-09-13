@@ -2,12 +2,14 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
 
+#include "stone/Syntax/SyntaxFactory.h"
+
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Syntax &syntax, LangContext &ctx,
+ModuleSystem::ModuleSystem(LangContext &lc, SyntaxContext &sc,
                            ModuleOptions &moduleOpts)
-    : syntax(syntax), ctx(ctx), moduleOpts(moduleOpts) {}
+    : lc(lc), sc(sc), moduleOpts(moduleOpts) {}
 
 ModuleSystem::~ModuleSystem() {}
 
@@ -15,9 +17,8 @@ syn::Module *ModuleSystem::GetMainModule() const {
   if (mainModule) {
     return mainModule;
   }
-  Identifier &moduleIdentifier =
-      syntax.GetSyntaxContext().GetIdentifier(moduleOpts.moduleName);
-  mainModule = syntax.MakeModuleDecl(&moduleIdentifier, true);
+  Identifier &moduleIdentifier = sc.GetIdentifier(moduleOpts.moduleName);
+  mainModule = syn::MakeModuleDecl(&moduleIdentifier, sc, true);
   return mainModule;
 }
 

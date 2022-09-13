@@ -1,7 +1,7 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -33,7 +33,9 @@ bool Parser::IsBasicType(tok kind) const {
 
 // Similar to ParseDeclSpecifiers
 SyntaxResult<QualType> Parser::ParseType(TypeSpecifierContext &specContext) {
-  return syn::MakeSyntaxResult<QualType>(nullptr);
+
+  SyntaxResult<QualType> result;
+  return result;
 }
 
 SyntaxResult<QualType>
@@ -59,87 +61,103 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierContext &specContext,
   return syn::MakeSyntaxResult<QualType>(nullptr);
 }
 
-llvm::Optional<bool>
-Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
-  SrcLoc loc = curTok.GetLoc();
+SyntaxStatus Parser::ParseBasicTypeSpecifier(TypeSpecifierContext &specifier) {
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_auto:
-    specifier.AddAuto(loc);
+    specifier.AddAuto(ConsumeToken());
     break;
   case tok::kw_int:
-    specifier.AddInt(loc);
+    specifier.AddInt(ConsumeToken());
     break;
   case tok::kw_int8:
-    specifier.AddInt8(loc);
+    specifier.AddInt8(ConsumeToken());
     break;
   case tok::kw_int16:
-    specifier.AddInt16(loc);
+    specifier.AddInt16(ConsumeToken());
     break;
   case tok::kw_int32:
-    specifier.AddInt32(loc);
+    specifier.AddInt32(ConsumeToken());
     break;
   case tok::kw_int64:
-    specifier.AddInt64(loc);
+    specifier.AddInt64(ConsumeToken());
     break;
   case tok::kw_uint:
-    specifier.AddUInt(loc);
+    specifier.AddUInt(ConsumeToken());
     break;
   case tok::kw_uint8:
-    specifier.AddUInt8(loc);
+    specifier.AddUInt8(ConsumeToken());
     break;
   case tok::kw_byte:
-    specifier.AddByte(loc);
+    specifier.AddByte(ConsumeToken());
     break;
   case tok::kw_uint16:
-    specifier.AddUInt16(loc);
+    specifier.AddUInt16(ConsumeToken());
     break;
   case tok::kw_uint32:
-    specifier.AddUInt32(loc);
+    specifier.AddUInt32(ConsumeToken());
     break;
   case tok::kw_uint64:
-    specifier.AddUInt64(loc);
+    specifier.AddUInt64(ConsumeToken());
     break;
   case tok::kw_float:
-    specifier.AddFloat(loc);
+    specifier.AddFloat(ConsumeToken());
     break;
   case tok::kw_float32:
-    specifier.AddFloat32(loc);
+    specifier.AddFloat32(ConsumeToken());
     break;
   case tok::kw_float64:
-    specifier.AddFloat64(loc);
+    specifier.AddFloat64(ConsumeToken());
     break;
   case tok::kw_complex32:
-    specifier.AddComplex32(loc);
+    specifier.AddComplex32(ConsumeToken());
     break;
   case tok::kw_complex64:
-    specifier.AddComplex64(loc);
+    specifier.AddComplex64(ConsumeToken());
     break;
   default:
-    return llvm::None;
+    return status;
   }
-  return true;
+  status.SetHasCodeCompletion();
+  return status;
 }
 
-llvm::Optional<bool>
-Parser::ParseTypeQualifiers(TypeQualifierContext &qualifier) {
-  SrcLoc loc = curTok.GetLoc();
+SyntaxStatus Parser::ParseTypeQualifiers(TypeQualifierCollector &collector) {
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_const:
-    qualifier.AddConst(loc);
+    if (!collector.HasConst()) {
+      collector.AddConst(ConsumeToken());
+    } else {
+      /// Log -- attempting to add a const
+    }
     // We do not consume the token because the QualType that we create
     // will be of the following const int i = ....
     break;
   case tok::kw_volatile:
-    qualifier.AddVolatile(loc);
+    if (!collector.HasVolatile()) {
+      collector.AddVolatile(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   case tok::kw_restrict:
-    qualifier.AddRestrict(loc);
+    if (!collector.HasRestrict()) {
+      collector.AddRestrict(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   case tok::kw_pure:
-    qualifier.AddPure(loc);
+    if (!collector.HasPure()) {
+      collector.AddPure(ConsumeToken());
+    } else {
+      // Log
+    }
     break;
   default:
-    return llvm::None;
+    return status;
   }
-  return true;
+  status.SetHasCodeCompletion();
+  return status;
 }

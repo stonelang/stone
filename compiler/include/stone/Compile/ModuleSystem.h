@@ -5,7 +5,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 namespace stone {
 
@@ -23,15 +23,15 @@ class ModuleSystem final {
   friend class CompilerInvocation;
   friend class CompilerInstance;
 
-  LangContext &ctx;
-  syn::Syntax &syntax;
+  LangContext &lc;
+  syn::SyntaxContext &sc;
   ModuleOptions &moduleOpts;
 
   /// This is the main module that will be created
   mutable syn::Module *mainModule = nullptr;
 
 public:
-  ModuleSystem(syn::Syntax &syntax, LangContext &ctx,
+  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
                ModuleOptions &moduleOpts);
   ~ModuleSystem();
 

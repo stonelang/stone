@@ -97,6 +97,8 @@ public:
 
   InlineMode inlineMode = InlineMode::Default;
 
+  llvm::StringRef ModuleName;
+
 public:
   bool ShouldOptimize() {
     return optimizationLevel > OptimizationLevel::Default;

@@ -14,7 +14,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"
@@ -40,13 +40,82 @@ using namespace stone::syn;
 //   return tc.Allocate(bytes, alignment);
 // }
 
-bool FunDecl::IsMain() const { return false; }
+bool ValueDecl::IsInstanceMember() const {
+  DeclContext *dc = GetDeclContext();
+
+  if (!dc->IsTypeContext()) {
+    return false;
+  }
+
+  switch (GetKind()) {
+    // case DeclKind::Import:
+    // case DeclKind::Extension:
+    // case DeclKind::PatternBinding:
+    // case DeclKind::EnumCase:
+    // case DeclKind::TopLevelCode:
+    // case DeclKind::InfixOperator:
+    // case DeclKind::PrefixOperator:
+    // case DeclKind::PostfixOperator:
+    // case DeclKind::IfConfig:
+    // case DeclKind::PoundDiagnostic:
+    // case DeclKind::PrecedenceGroup:
+    // case DeclKind::MissingMember:
+    //   llvm_unreachable("Not a ValueDecl");
+
+  case DeclKind::Struct:
+  case DeclKind::Enum:
+  case DeclKind::Interface:
+    // case DeclKind::Alias:
+    //  Types are not instance members.
+    return false;
+
+    // case DeclKind::Constructor:
+    //   // Constructors are not instance members.
+    //   return false;
+
+    // case DeclKind::Destructor:
+    //   // Destructors are technically instance members, although they
+    //   // can't actually be referenced as such.
+    //   return true;
+
+  case DeclKind::Fun:
+    // Non-static methods are instance members.
+    // return !cast<FunDecl>(this)->IsStatic(); // TODO:
+    return true;
+
+    // case DeclKind::Param:
+    //   // enum elements and function parameters are not instance members.
+    //   return false;
+
+    // case DeclKind::Subscript:
+    // case DeclKind::Var:
+    //   // Non-static variables and subscripts are instance members.
+    //   return !cast<AbstractStorageDecl>(this)->isStatic();
+
+    // case DeclKind::Module:
+    //   // Modules are never instance members.
+    //   return false;
+  }
+  llvm_unreachable("bad DeclKind");
+}
+
+template <std::size_t len>
+static bool IsMainImpl(const NamedDecl *named, const char (&str)[len]) {
+  const Identifier *identifier = named->GetIdentifier();
+  return identifier && identifier->isStr(str);
+}
+
+// Keeping this very simple for now
+bool FunDecl::IsMain() const {
+  return (!IsInstanceMember() && IsMainImpl(this, "Main"));
+}
 
 /// True if the function is a defer body.
 bool FunDecl::IsDeferBody() const {}
 
 bool FunDecl::IsStatic() const { return false; }
 
+// TODO: Remove
 bool FunDecl::IsMember() const { return false; }
 
 // TODO: Think about

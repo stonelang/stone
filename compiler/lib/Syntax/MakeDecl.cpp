@@ -1,12 +1,13 @@
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
 
 template <typename DeclTy, typename AllocatorTy>
-void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
-                              bool extraSace) {
+void *syn::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
+                           bool extraSace) {
   static_assert(alignof(DeclTy) >= sizeof(void *),
                 "A pointer must fit in the alignment of the DeclTy!");
 
@@ -20,25 +21,27 @@ void *Syntax::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-Module *Syntax::MakeModuleDecl(Identifier *name, bool isMainModule) {
-  auto declPtr = Syntax::AllocateDeclMem<syn::Module>(GetSyntaxContext(),
-                                                      sizeof(syn::Module));
-  return ::new (declPtr) syn::Module(name, GetSyntaxContext());
-}
-
-FunDecl *Syntax::MakeFunDecl(DeclNameInfo &nameInfo, DeclContext *parent) {
+FunDecl *syn::MakeFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
+                          DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  auto declPtr = Syntax::AllocateDeclMem<FunDecl>(GetSyntaxContext(), size);
-  return ::new (declPtr) FunDecl(nameInfo.GetName(), nameInfo.GetNameLoc(),
-                                 nameInfo.GetSpecialNameLoc(), parent);
+  auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
+  return ::new (memPtr)
+      FunDecl(DeclKind::Fun, nameInfo.GetName(), nameInfo.GetNameLoc(),
+              nameInfo.GetSpecialNameLoc(), parent);
 }
 
-StructDecl *Syntax::MakeStructDecl(DeclName name, SrcLoc loc, DeclContext *dc) {
+StructDecl *syn::MakeStructDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
+                                DeclContext *dc) {
   size_t size = sizeof(StructDecl);
-
-  auto declPtr = Syntax::AllocateDeclMem<StructDecl>(GetSyntaxContext(), size);
+  auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
   return nullptr;
+}
+
+Module *syn::MakeModuleDecl(Identifier *name, SyntaxContext &sc,
+                            bool isMainModule) {
+  auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
+  return ::new (declPtr) syn::Module(name, sc);
 }

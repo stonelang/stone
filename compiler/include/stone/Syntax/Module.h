@@ -6,8 +6,8 @@
 #include "stone/Basic/Printable.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxScope.h"
 #include "stone/Syntax/SyntaxWalker.h"
 #include "llvm/ADT/SmallVector.h"
 
@@ -44,7 +44,7 @@ enum class SyntaxFileStage : uint8_t { None, AtImports, AtTypeCheck };
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
   friend SyntaxContext;
-  // llvm::NullablePtr<SyntaxScope> scope = nullptr;
+  // llvm::NullablePtr<Scope> scope = nullptr;
 
   /// A unique identifier representing this file; used to mark private decls
   /// within the file to keep them from conflicting with other files in the

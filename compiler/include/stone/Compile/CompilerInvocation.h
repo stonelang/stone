@@ -10,16 +10,17 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/PackageSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
+
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/CompilerInvocation.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
@@ -35,6 +36,8 @@ class TargetMachine;
 
 namespace stone {
 class CompilerListener;
+using ClangInvocation = clang::CompilerInvocation;
+
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -72,6 +75,8 @@ class CompilerInvocation final : public Session {
 
   LangOptions langOpts;
 
+  ModuleOptions moduleOpts;
+
   SyntaxOptions syntaxOpts;
 
   /// The main executable path of the running program
@@ -89,6 +94,8 @@ class CompilerInvocation final : public Session {
   unsigned codeCompletionOffset = ~0U;
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
+
+  std::unique_ptr<clang::CompilerInstance> clangInstance;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -125,6 +132,8 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
+  clang::CompilerInstance &GetClangInstance() { return *clangInstance; }
+  stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
@@ -149,10 +158,14 @@ public:
     return typeCheckerOpts;
   }
 
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
   }
+  ModuleOptions &GetModuleOptions() { return moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
   TypeCheckMode GetTypeCheckMode() {
     return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule

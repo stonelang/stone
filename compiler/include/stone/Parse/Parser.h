@@ -14,7 +14,6 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/SyntaxOptions.h"
@@ -29,7 +28,7 @@ namespace syn {
 class BraceStmt;
 class Syntax;
 class Parser;
-class SyntaxScope;
+class Scope;
 class PairDelimiterBalancer;
 class ParsingDeclSpecifier;
 class ParsingDeclarator;
@@ -45,13 +44,15 @@ public:
 
 class Parser final {
   friend ParserStats;
+  friend ParsingToken;
+
   // friend PairDelimiterBalancer;
 
   SyntaxListener *listener;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  Syntax &syntax;
+  SyntaxContext &sc;
   SyntaxFile &sf;
   DeclContext *curDC;
 
@@ -79,21 +80,23 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  SyntaxScope *curScope;
-
   // /// Factory object for creating ParsedAttribute objects.
   AttributeFactory attributeFactory;
+
+  ParsingToken parsingTok;
+
+  ScopeCache scopeCache;
 
 private:
   // Identifiers
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lexer,
+  Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener = nullptr);
+  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener = nullptr);
 
   ~Parser();
 
@@ -101,15 +104,13 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetCurTok() const { return curTok; }
-  SyntaxContext &GetSyntaxContext() { return syntax.GetSyntaxContext(); }
+  SyntaxContext &GetSyntaxContext() { return sc; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
   AttributeFactory &GetAttributeFactory() { return attributeFactory; }
-  LangContext &GetLangContext() {
-    return syntax.GetSyntaxContext().GetLangContext();
-  }
+  LangContext &GetLangContext() { return sc.GetLangContext(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
@@ -129,11 +130,16 @@ public:
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
+  // TODO: We only need on ParseDecl
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                llvm::function_ref<void(Decl *)> handler);
 
   SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
                                llvm::function_ref<void(Decl *)> handler);
+
+  void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
+
+  void VerifyDeclSpec(ParsingDeclSpecifier &spec);
 
   void ParseForwardDecl();
   void ParseInheritance();
@@ -142,6 +148,7 @@ private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
+  // TODO: Param should be constant
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
 
 public:
@@ -157,8 +164,8 @@ public:
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
                                         Diag<> diagID);
 
-  llvm::Optional<bool> ParseTypeQualifiers(TypeQualifierContext &qualifier);
-  llvm::Optional<bool> ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
+  SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
+  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
 
 public:
   //==Begin Function==//
@@ -167,8 +174,10 @@ public:
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDeclSpecifier &specifier,
-                                      FunDecl &funDecl);
+  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierContext &spec);
+
+  SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
+                                      ParsingDeclSpecifier &specifier);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -180,22 +189,27 @@ private:
   //                                       bool &rethrows,
   //                                       TypeRepr *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier,
-                                      FunDecl &funDecl);
+  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier);
+  SyntaxStatus ParseFunctionReturn(ParsingDeclSpecifier &specifier);
+
   SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
-                                 FunctionDecl &funDecl);
+                                 FunctionDecl &functionDecl);
+
   BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
                                    FunctionDecl &funDecl);
 
   //==End Function==//
 
 public:
-  llvm::Optional<bool> ParseAccessLevel(ParsingDeclSpecifier &specifier);
+  SyntaxStatus ParseAccessLevel(AccessLevelContext &levelContext);
 
 public:
   //=struct=//
   SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
   void ParseStructForwardDecl();
+
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclSpecifier &specifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -225,6 +239,9 @@ public:
   /// Is at end of file.
   bool IsDone() { return curTok.GetKind() == tok::eof; }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  DiagnosticEngine &GetDiags() {
+    return GetLangContext().GetDiagUnit().GetDiagEngine();
+  }
 
 public:
   //===--------------------------------------------------------------------===//
@@ -348,19 +365,31 @@ public:
   void SkipAnyAttribute();
 
 public:
-  // /// EnterScope - start a new scope.
-  // void EnterScope(SyntaxScopeKind scopeKind);
+  /// EnterScope - start a new scope.
+  void EnterScope(ScopeKind scopeKind);
 
-  // /// ExitScope - pop a scope off the scope stack.
-  // void ExitScope();
+  /// ExitScope - pop a scope off the scope stack.
+  void ExitScope();
 
-  // SyntaxScope *GetCurScope() const;
+  Scope *CreateScope(ScopeKind kind, Scope *parent);
+
+  Scope *GetCurScope() const {
+    if (HasCurScope()) {
+      return scopeCache.back();
+    }
+    return nullptr;
+  }
+  bool HasCurScope() const { return (scopeCache.size() > 0); }
+  void PopCurScope() { scopeCache.pop_back(); }
+  void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
   InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
+  static Scope *CreateScope(ScopeKind kind, SyntaxContext &sc,
+                            DiagnosticEngine &diags, Scope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }
   SrcLoc GetLoc() { return curTok.GetLoc(); }

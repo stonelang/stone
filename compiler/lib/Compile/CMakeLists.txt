@@ -10,7 +10,6 @@ set(stone_compile_sources
 	CompilerOutputsConverter.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
-	PackageSystem.cpp
 	Serialization.cpp
 
 	LINK_LIBS
@@ -18,6 +17,9 @@ set(stone_compile_sources
 	StoneParse
 	StoneSem
 	StoneSession
+	clangFrontend
+
+
 	DEPENDS
 	StoneOptions
 )

@@ -14,5 +14,10 @@ public:
 public:
   SyntaxOptions() {}
 };
+
+class PrintSyntaxOptions final {
+public:
+  PrintSyntaxOptions() {}
+};
 } // namespace stone
 #endif

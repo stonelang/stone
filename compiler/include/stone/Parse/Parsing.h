@@ -1,10 +1,10 @@
-#ifndef STONE_PARSE_SYNTAXPARSING_H
-#define STONE_PARSE_SYNTAXPARSING_H
+#ifndef STONE_PARSE_PARSINGSUPPORT_H
+#define STONE_PARSE_PARSINGSUPPORT_H
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
-#include "stone/Syntax/SyntaxScope.h"
+#include "stone/Syntax/Scope.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -111,38 +111,30 @@ public:
 //   ~PairDelimiterBalancer();
 // };
 
-using SyntaxScopeCache = llvm::SmallVector<SyntaxScope *, 16>;
-class ParsingScope final {
-  Parser *self;
-  SyntaxScopeCache scopeCache;
+using ScopeCache = llvm::SmallVector<Scope *, 16>;
+class ScopeContext final {
+  Parser &self;
+  llvm::StringRef description;
 
-  bool enteredScope;
-  bool beforeCompoundStmt;
-
-  ParsingScope(const ParsingScope &) = delete;
-  void operator=(const ParsingScope &) = delete;
+  ScopeContext(const ScopeContext &) = delete;
+  void operator=(const ScopeContext &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
-  // may just pass SyntaxScope
-  ParsingScope(Parser *self, SyntaxScopeKind scopeKind,
-               bool enteredScope = true, bool beforeCompoundStmt = false);
+  // may just pass Scope
+  ScopeContext(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
+  ~ScopeContext();
 
-  ~ParsingScope();
-
-public:
+private:
   /// EnterScope - start a new scope.
-  void EnterScope(SyntaxScopeKind scopeKind);
+  void EnterScope(ScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
 
-  SyntaxScope *GetCurScope() const;
-  // size_t GetSyntaxScopeCacheSize() {
-  //   return syntaxScopeCache.size();
-  // }
+  llvm::StringRef GetDescription() { return description; }
 };
 
 // class MultiParsingScope final {
@@ -239,7 +231,10 @@ public:
   ~ParsingPositionRAII();
 };
 
-struct ParsingDeclFlags {
+struct ParsingDeclFlags final {
+
+  ParsingDeclFlags() = delete;
+
   /// Flags that control the parsing of declarations.
   enum ID {
     Default = 0,
@@ -260,10 +255,13 @@ class ParsingDeclSpecifier final : public DeclSpecifier {
 
 public:
   ParsingDeclOptions flags;
+  bool DeclCreated = false;
 
 public:
   ParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
       : parser(parser), DeclSpecifier(attributeFactory) {}
+
+  ~ParsingDeclSpecifier();
 
 public:
   Parser &GetParser() { return parser; }
@@ -276,7 +274,7 @@ public:
       : Declarator(specifier, contextKind) {}
 
 public:
-  const ParsingDeclSpecifier &GetParsingDeclSpecifier() const {
+  const ParsingDeclSpecifier &GetParsingDeclSpecifier() {
     return static_cast<const ParsingDeclSpecifier &>(
         Declarator::GetDeclSpecifier());
   }
@@ -311,34 +309,49 @@ public:
 };
 
 class ParsingToken final {
-  Token &token;
+  Parser &parser;
 
 public:
-  ParsingToken(Token &token) : token(token) {}
+  ParsingToken(Parser &parser) : parser(parser) {}
 
 public:
-  bool IsPeriod() const { return token.GetKind() == tok::period; }
-  bool IsDoublePipe() const { return token.GetKind() == tok::doublepipe; }
-  bool IsPipe() const { return token.GetKind() == tok::pipe; }
-  bool IsPipeEqual() const { return token.GetKind() == tok::pipeequal; }
-  bool IsEllipsis() const { return token.GetKind() == tok::ellipsis; }
-  bool IsSemi() const { return token.GetKind() == tok::semi; }
-  bool IsEquality() const { return token.GetKind() == tok::equal; }
-  bool IsDoubleEquality() const { return token.GetKind() == tok::doubleequal; }
-  bool IsPound() { return token.GetKind() == tok::pound; }
-  bool IsAmp() { return token.GetKind() == tok::amp; }
-  bool IsArrow() { return token.GetKind() == tok::arrow; }
-  bool IsBackTick() { return token.GetKind() == tok::backtick; }
-  bool IsExcliam() { return token.GetKind() == tok::exclaim; }
-  bool IsDoubleColon() const { return token.GetKind() == tok::doublecolon; }
-  bool IsTilde() { return token.GetKind() == tok::tilde; }
-  bool IsFun() { return token.GetKind() == tok::kw_fun; }
-  bool IsStruct() { return token.GetKind() == tok::kw_struct; }
-  bool IsInterface() { return token.GetKind() == tok::kw_interface; }
-  bool IsPure() { return token.GetKind() == tok::kw_pure; }
-  bool IsInline() { return token.GetKind() == tok::kw_pure; }
+  bool IsPeriod();
+  bool IsDoublePipe();
+  bool IsPipe();
+  bool IsPipeEqual();
+  bool IsEllipsis();
+  bool IsSemi();
+  bool IsEquality();
+  bool IsDoubleEquality();
+  bool IsPound();
+  bool IsAmp();
+  bool IsArrow();
+  bool IsBackTick();
+  bool IsExcliam();
+  bool IsDoubleColon();
+  bool IsTilde();
+  bool IsFun();
+  bool IsStruct();
+  bool IsInterface();
+  bool IsPure();
+  bool IsInline();
+  bool IsEnum();
+  bool IsStar();
+  bool IsQualifier();
+  bool IsAccessLevel();
+
+public:
+  bool IsIf();
+  bool IsElse();
+  bool IsWhile();
+  bool IsRightParen();
+  bool IsLeftParen();
+  bool IsIntegerLiteral();
+  bool IsFloatingLiteral();
+  bool IsStringLiteral();
+  bool IsImaginaryLiteral();
+  bool IsRegexLiteral();
 };
-
 } // namespace syn
 } // namespace stone
 #endif

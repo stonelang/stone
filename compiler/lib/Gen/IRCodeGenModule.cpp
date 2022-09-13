@@ -13,7 +13,7 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen) : irCodeGen(irCodeGen) {}
 void IRCodeGenModule::EmitSyntaxFile(const syn::SyntaxFile &sf) {
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
-  for (auto &topLevelDecl : *sf.allDecls) {
-    EmitTopLevelDecl(topLevelDecl);
+  for (auto &d : *sf.allDecls) {
+    EmitDecl(d);
   }
 }

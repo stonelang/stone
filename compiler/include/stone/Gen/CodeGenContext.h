@@ -1,11 +1,12 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
+#include "stone/Basic/Mem.h"
+
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Target/TargetMachine.h"
-#include <memory>
 
 namespace llvm {
 class raw_pwrite_stream;
@@ -33,8 +34,10 @@ class CodeGenContext final {
   llvm::CGSCCAnalysisManager cgam;
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
+
+  mem::Safe<llvm::Module> mod;
   // legacy::PassManager legacyPM;
-  std::unique_ptr<llvm::TargetMachine> targetMachine;
+  mem::Safe<llvm::TargetMachine> tm;
 
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
@@ -44,11 +47,7 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const LangContext &GetLangContext() const { return langContext; }
-
-public:
-  void TakeTargetMachine(std::unique_ptr<llvm::TargetMachine> &&tm) {
-    targetMachine = std::move(tm);
-  }
+  llvm::Module &GetModule() { return *mod; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -57,7 +56,7 @@ public:
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
-  llvm::TargetMachine &GetTargetMachine() { return *targetMachine; }
+  llvm::TargetMachine &GetTargetMachine() { return *tm; }
 };
 } // namespace stone
 

@@ -173,6 +173,17 @@ public:
   bool IsInterface() { return kind == tok::kw_interface; }
   bool IsPure() { return kind == tok::kw_pure; }
   bool IsInline() { return kind == tok::kw_pure; }
+  bool IsLeftParen() { return kind == tok::l_paren; }
+  bool IsRightParen() { return kind == tok::r_paren; }
+  bool IsEnum() { return kind == tok::kw_enum; }
+  bool IsStar() { return kind == tok::star; }
+  bool IsQualifier() {
+    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
+                 tok::kw_pure);
+  }
+  bool IsAccessLevel() {
+    return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
+  }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

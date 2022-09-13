@@ -4,7 +4,6 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -41,4 +40,11 @@ DeclContext *Decl::GetDeclContextForModule() const {
     return const_cast<syn::Module *>(module);
   }
   return nullptr;
+}
+
+bool DeclContext::IsTypeContext() const {
+  if (auto decl = CastToDecl()) {
+    return isa<NominalTypeDecl>(decl);
+  }
+  return false;
 }

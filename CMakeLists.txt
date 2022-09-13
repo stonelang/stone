@@ -22,6 +22,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(BEFORE
   ${CMAKE_CURRENT_BINARY_DIR}/compiler/include
   ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
+  ${CLANG_BUILD_INCLUDE_DIR}
+  ${CLANG_MAIN_INCLUDE_DIR}
 )
 
 set_stone_version()

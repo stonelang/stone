@@ -2,6 +2,9 @@
 #define STONE_BASIC_MEM_H
 
 #include <cassert>
+#include <cstring>
+#include <memory>
+
 #if defined(_WIN32)
 #include <malloc.h>
 #else
@@ -11,7 +14,7 @@
 namespace stone {
 namespace mem {
 
-template <typename T> using safe = std::unique_ptr<T>;
+template <typename T> using Safe = std::unique_ptr<T>;
 
 // FIXME: Use C11 aligned_alloc if available.
 inline void *AlignedAlloc(size_t size, size_t align) {
@@ -38,6 +41,10 @@ inline void AlignedFree(void *p) {
 #else
   free(p);
 #endif
+}
+
+inline void *Copy(void *dest, const void *src, std::size_t count) {
+  return std::memcpy(dest, src, count);
 }
 } // namespace mem
 } // namespace stone

@@ -9,6 +9,8 @@
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/Types.h"
+
 #include "llvm/ADT/PointerEmbeddedInt.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -22,7 +24,7 @@ namespace stone {
 namespace syn {
 
 class SyntaxContext;
-class CanType;
+class CanQualType;
 class Decl;
 class DeclContext;
 class EnumDecl;
@@ -147,6 +149,8 @@ public:
   bool IsModuleContext() const;
 
   Module *GetParentModule() const;
+
+  bool IsTypeContext() const;
 };
 
 } // namespace syn

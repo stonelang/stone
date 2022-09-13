@@ -1,42 +1,40 @@
 #include "stone/Parse/Parser.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Syntax.h"
-#include "stone/Syntax/SyntaxScope.h"
+#include "stone/Syntax/Scope.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 using namespace stone;
 using namespace stone::syn;
+using namespace stone::mem;
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, SyntaxListener *listener)
-    : Parser(sf, syntax,
-             std::unique_ptr<Lexer>(new Lexer(
-                 sf.GetSrcID(), syntax.GetSyntaxContext().GetSrcMgr(),
-                 &syntax.GetSyntaxContext()
-                      .GetLangContext()
-                      .GetDiagUnit()
-                      .GetDiagEngine(),
-                 &syntax.GetSyntaxContext().GetLangContext().GetStatEngine())),
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
+    : Parser(sf, sc,
+             mem::Safe<Lexer>(
+                 new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
+                           &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
+                           &sc.GetLangContext().GetStatEngine())),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, Syntax &syntax, std::unique_ptr<Lexer> lx,
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, mem::Safe<Lexer> lx,
                SyntaxListener *listener)
-    : sf(sf), syntax(syntax), lexer(lx.release()), curDC(&sf),
-      listener(listener) {
+    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
+      parsingTok(*this), stats(new ParserStats(*this)) {
 
-  stats.reset(new ParserStats(*this));
   GetLangContext().GetStatEngine().Register(stats.get());
 }
 
 Parser::~Parser() {}
 
-// SyntaxScope *Parser::GetCurScope() const {
+// Scope *Parser::GetCurScope() const {
 //   assert(false && "Not implemented");
 //   return nullptr;
 // }
 
-// void Parser::EnterScope(SyntaxScopeKind scopeKind) {}
+// void Parser::EnterScope(ScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
@@ -79,7 +77,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
 Identifier &Parser::GetIdentifier(llvm::StringRef text) {
-  return syntax.MakeIdentifier(text);
+  return sc.GetIdentifier(text);
 }
 
 SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
@@ -125,23 +123,64 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
-llvm::Optional<bool> Parser::ParseAccessLevel(ParsingDeclSpecifier &specifier) {
-  SrcLoc loc = curTok.GetLoc();
+SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
+  SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_public:
-    specifier.AddPublicAccessLevel(loc);
+    levelContext.AddPublic(ConsumeToken());
     break;
   case tok::kw_internal:
-    specifier.AddInternalAccessLevel(loc);
+    levelContext.AddInternal(ConsumeToken());
     break;
   case tok::kw_private:
-    specifier.AddPrivateAccessLevel(loc);
+    levelContext.AddPrivate(ConsumeToken());
     break;
   default:
-    return llvm::None;
+    return status;
   }
-  return true;
+  status.SetHasCodeCompletion();
+  return status;
 }
+
+// SyntaxStatus Parser::ParseFunctionSpecifier(FunctionSpecifierContext &spec) {
+//   SyntaxStatus status;
+//   return status;
+// }
+
+/// EnterScope - start a new scope.
+void Parser::EnterScope(ScopeKind kind) {
+
+  if (!GetCurScope()) {
+    assert(kind == ScopeKind::SyntaxFile);
+  }
+  // Create the new scope
+  auto curScope = CreateScope(kind, GetCurScope());
+
+  // Make sure we have a scope
+  assert(curScope);
+
+  // Cache the scope
+  PushCurScope(curScope);
+}
+
+Scope *Parser::CreateScope(ScopeKind kind, Scope *parent) {
+  return Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), parent);
+}
+/// ExitScope - pop a scope off the scope stack.
+void Parser::ExitScope() {
+
+  // Ensure we have a current scope.
+  if (GetCurScope()) {
+    // Remove the scope
+    PopCurScope();
+  }
+}
+
+Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
+                           DiagnosticEngine &diags, Scope *parent) {
+  return new (sc) Scope(kind, diags, parent);
+}
+
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
   return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
 }
