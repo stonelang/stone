@@ -158,6 +158,9 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
       }
     } else if (curTok.IsFun()) {
       if (!spec.GetFunctionSpecifierContext().HasFun()) {
+        if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+          assert(spec.GetTypeQualifierCollector().HasPureOnly());
+        }
         spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
         result = ParseFunDecl(spec);
       } else {
