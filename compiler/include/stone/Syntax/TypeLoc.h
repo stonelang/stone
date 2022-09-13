@@ -10,6 +10,7 @@
 namespace stone {
 namespace syn {
 
+class TypeRep;
 class SyntaxContext;
 
 /// TypeLoc - Provides source location information for a parsed type.
@@ -17,7 +18,7 @@ class SyntaxContext;
 class alignas(1 << TypeRepAlignInBits) TypeLoc {
 
   Type ty;
-  //   TypeRep *tyRep = nullptr;
+  TypeRep *tyRep = nullptr;
 
   // public:
   //   TypeLoc() {}

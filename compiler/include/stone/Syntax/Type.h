@@ -350,6 +350,8 @@ public:
   bool HasQuals() const;
   bool IsCanonical() const;
 
+  // Type* GetCanType() const;
+
   /// Return true if this QualType doesn't point to a type yet.
   // bool IsNull() const { return ptrInt.getPointer().IsNull(); }
 

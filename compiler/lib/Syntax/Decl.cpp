@@ -80,9 +80,8 @@ bool ValueDecl::IsInstanceMember() const {
 
   case DeclKind::Fun:
     // Non-static methods are instance members.
-    //return !cast<FunDecl>(this)->IsStatic(); // TODO: 
-  	return true; 
-
+    // return !cast<FunDecl>(this)->IsStatic(); // TODO:
+    return true;
 
     // case DeclKind::Param:
     //   // enum elements and function parameters are not instance members.
@@ -116,7 +115,7 @@ bool FunDecl::IsDeferBody() const {}
 
 bool FunDecl::IsStatic() const { return false; }
 
-//TODO: Remove
+// TODO: Remove
 bool FunDecl::IsMember() const { return false; }
 
 // TODO: Think about

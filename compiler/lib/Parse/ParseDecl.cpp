@@ -3,6 +3,7 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -238,7 +239,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
   // Now, parse the function signature
   status |= ParseFunctionSignature(nameInfo, spec);
 
-  // FunDecl *funDecl = syn.MakeFunDecl(nameInfo, sc);
+  auto funDecl = syn::MakeFunDecl(nameInfo, sc, GetCurDeclContext());
+  assert(funDecl);
+
   // // TODO: Think about this part
 
   // funDecl->SetAccessLevel(spec.GetAccessLevel());
@@ -267,12 +270,26 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
   ScopeContext parsingFunSig(*this, ScopeKind::FunctionSignature,
                              "parsing fun signature");
 
-  // TODO:
-  // if(name == "Main"){
-  //   sf.SetHasMainFun(true)
-  // }
-
   status |= ParseFunctionArguments(spec);
+
+  SrcLoc arrowLoc;
+  if (curTok.IsArrow()) {
+    ScopeContext functionResult(*this, ScopeKind::ReturnClause,
+                                "parsing result");
+    if (!ConsumeIf(tok::arrow, arrowLoc)) {
+
+      // FixIt ':' to '->'.
+      PrintD(curTok, diag::err_expected_arrow_after_function_param)
+          .WithFix()
+          .Replace(curTok.GetLoc(), llvm::StringRef("->"));
+      // arrowLoc = ConsumeToken(tok::colon);
+    }
+
+    // TODO: Look for TypeSpecs
+    SyntaxResult<QualType> resultType =
+        ParseDeclResultType(spec.GetTypeSpecifierContext(),
+                            diag::err_expected_type_for_function_result);
+  }
 
   // status |= ParseFunctionResult(spec);
 
@@ -283,10 +300,6 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
 
   // Parse the return type
   // funDecl->SetReturnType();
-
-  SyntaxResult<QualType> resultType =
-      ParseDeclResultType(spec.GetTypeSpecifierContext(),
-                          diag::err_expected_type_for_function_result);
 
   // ConsumeToken();
   return status;
@@ -314,25 +327,6 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclSpecifier &spec) {
   }
   return syn::MakeSyntaxSuccess();
 }
-
-// TODO: Actually return the type;
-// SyntaxStatus Parser::ParseFunctionResult(ParsingDeclSpecifier &spec) {
-//   SyntaxStatus status;
-
-//   SrcLoc arrowLoc;
-//   if (!ConsumeIf(tok::arrow, arrowLoc)) {
-//     // FixIt ':' to '->'.
-//     PrintD(curTok, diag::err_expected_arrow_after_function_param)
-//         .WithFix()
-//         .Replace(curTok.GetLoc(), llvm::StringRef("->"));
-
-//     // arrowLoc = ConsumeToken(tok::colon);
-//   }
-
-//   // ParseDeclSpecifier();
-
-//   return status;
-// }
 
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclSpecifier &spec,
                                        FunctionDecl &funDecl) {

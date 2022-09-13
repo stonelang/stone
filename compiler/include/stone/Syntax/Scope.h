@@ -78,6 +78,8 @@ enum class ScopeKind : UInt8 {
   Constructor,
 
   Destructor,
+
+  ReturnClause
 };
 
 class Scope final : public syn::SyntaxAllocation<Scope> {

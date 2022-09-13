@@ -79,16 +79,23 @@ public:
   bool IsBasic();
   bool IsNominalType();
 
+  /// getASTContext - Return the ASTContext that this type belongs to.
+  SyntaxContext &GetSyntaxContext();
+
 public:
   TypeKind GetKind() const { return kind; }
 };
 
 class AbstractFunctionType : public TypeBase {
+  QualType retType;
+
 public:
 };
 
 class FunctionType : public AbstractFunctionType {
+
 public:
+  FunctionType(TypeKind kind, QualType retType);
 };
 
 class NominalType : public TypeBase {
@@ -219,6 +226,36 @@ public:
   PointerType(const SyntaxContext &canTypeCtx)
       : AbstractPointerType(TypeKind::Pointer, canTypeCtx) {}
 };
+
+class SugarType : public TypeBase {
+  // The state of this union is known via Bits.SugarType.HasCachedType so that
+  // we can avoid masking the pointer on the fast path.
+  union {
+    TypeBase *underlyingType;
+    const SyntaxContext *Context;
+  };
+};
+
+/// An alias to a type
+/// alias Int = int; My using use using Int = int;
+class AliasType : public SugarType {};
+
+/// A type with a special syntax that is always sugar for a library type. The
+/// library type may have multiple base types. For unary syntax sugar, see
+/// UnarySyntaxSugarType.
+///
+/// The prime examples are:
+/// Arrays: [T] -> Array<T>
+/// Dictionaries: [K : V]  -> Dictionary<K, V>
+class SyntaxSugarType : public SugarType {};
+
+/// The dictionary type [K : V], which is syntactic sugar for Dictionary<K, V>.
+///
+/// Example:
+/// \code
+/// auto dict: [string : int] = ["hello" : 0, "world" : 1]
+/// \endcode
+class DictionaryType : public SyntaxSugarType {};
 
 // class ArrayType : public TypeBase, public llvm::FoldingSetNode {
 // public:
