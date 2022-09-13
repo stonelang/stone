@@ -123,7 +123,7 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
-SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
+SyntaxStatus Parser::ParseAccessLevel(AacessLevelCollector &levelContext) {
   SyntaxStatus status;
   switch (curTok.GetKind()) {
   case tok::kw_public:
@@ -142,7 +142,8 @@ SyntaxStatus Parser::ParseAccessLevel(AccessLevelContext &levelContext) {
   return status;
 }
 
-// SyntaxStatus Parser::ParseFunctionSpecifier(FunctionSpecifierContext &spec) {
+// SyntaxStatus Parser::ParseFunctionSpecifier(FunctionSpecifierCollector &spec)
+// {
 //   SyntaxStatus status;
 //   return status;
 // }

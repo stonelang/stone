@@ -81,7 +81,7 @@ public:
   // }
 };
 
-class FunctionSpecifierContext final {
+class FunctionSpecifierCollector final {
   SrcLoc inlineLoc;
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
@@ -105,35 +105,37 @@ public:
     flags |= Fun;
     funLoc = loc;
   }
-  bool HasFun() { return flags & FunctionSpecifierContext::Fun; }
+  bool HasFun() { return flags & FunctionSpecifierCollector::Fun; }
 
-  void AddInline(SrcLoc loc) { flags |= FunctionSpecifierContext::Inline; }
-  bool HasInline() { return flags & FunctionSpecifierContext::Inline; }
+  void AddInline(SrcLoc loc) { flags |= FunctionSpecifierCollector::Inline; }
+  bool HasInline() { return flags & FunctionSpecifierCollector::Inline; }
 
   void AddForcedInline(SrcLoc loc) {
-    flags |= FunctionSpecifierContext::ForcedInline;
+    flags |= FunctionSpecifierCollector::ForcedInline;
   }
   bool HasForcedInline() {
-    return flags & FunctionSpecifierContext::ForcedInline;
+    return flags & FunctionSpecifierCollector::ForcedInline;
   }
 
-  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierContext::Virtual; }
-  bool HasVirtual() { return flags & FunctionSpecifierContext::Virtual; }
+  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierCollector::Virtual; }
+  bool HasVirtual() { return flags & FunctionSpecifierCollector::Virtual; }
 
-  void AddNoReturn(SrcLoc loc) { flags |= FunctionSpecifierContext::NoReturn; }
-  bool HasNoReturn() { return flags & FunctionSpecifierContext::NoReturn; }
+  void AddNoReturn(SrcLoc loc) {
+    flags |= FunctionSpecifierCollector::NoReturn;
+  }
+  bool HasNoReturn() { return flags & FunctionSpecifierCollector::NoReturn; }
 
-  void AddIsMember() { flags |= FunctionSpecifierContext::IsMember; }
-  bool HasIsMember() { return flags & FunctionSpecifierContext::IsMember; }
+  void AddIsMember() { flags |= FunctionSpecifierCollector::IsMember; }
+  bool HasIsMember() { return flags & FunctionSpecifierCollector::IsMember; }
 
   SrcLoc GetFunLoc() { return funLoc; }
 };
 
-class StorageSpecifierContext final {
+class StorageSpecifierCollector final {
   StorageSpecifierKind kind;
 
 public:
-  StorageSpecifierContext() : kind(StorageSpecifierKind::None) {}
+  StorageSpecifierCollector() : kind(StorageSpecifierKind::None) {}
 
 public:
   void SetKind(StorageSpecifierKind anyKind) { kind = anyKind; }
@@ -148,7 +150,7 @@ public:
 //   BasicType
 // }
 
-class AccessLevelContext final {
+class AacessLevelCollector final {
   SrcLoc loc;
   AccessLevel level = AccessLevel::None;
 
@@ -176,14 +178,11 @@ public:
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
-  TypeSpecifierCollector typeSpecifierContext;
+  TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
-  StorageSpecifierContext storageSpecifierContext;
-  FunctionSpecifierContext functionSpecifierContext;
-  AccessLevelContext accessLevelContext;
-
-  // DescriptiveDeclSpecifier descriptiveDeclSpecifier =
-  // DescriptiveDeclSpecifier::None;
+  StorageSpecifierCollector storageSpecifierCollector;
+  FunctionSpecifierCollector functionSpecifierCollector;
+  AacessLevelCollector acessLevelCollector;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -193,24 +192,21 @@ public:
       : attributeFactory(attributeFactory) {}
 
 public:
-  StorageSpecifierContext &GetStorageSpeciferContext() {
-    return storageSpecifierContext;
+  StorageSpecifierCollector &GetStorageSpeciferContext() {
+    return storageSpecifierCollector;
   }
   TypeSpecifierCollector &GetTypeSpecifierCollector() {
-    return typeSpecifierContext;
+    return typeSpecifierCollector;
   }
-  FunctionSpecifierContext &GetFunctionSpecifierContext() {
-    return functionSpecifierContext;
+  FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
+    return functionSpecifierCollector;
   }
   TypeQualifierCollector &GetTypeQualifierCollector() {
     return typeQualifierCollector;
   }
-  AccessLevelContext &GetAccessLevelContext() { return accessLevelContext; }
-
-  // void SetDescriptiveDeclSpecifier(DescriptiveDeclSpecifier descriptive){
-  //   descriptiveDeclSpecifier = descriptive;
-
-  // }
+  AacessLevelCollector &GetAacessLevelCollector() {
+    return acessLevelCollector;
+  }
 };
 
 class Declarator {

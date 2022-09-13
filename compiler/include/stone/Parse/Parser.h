@@ -155,26 +155,25 @@ public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
 
-  void ParseBasicTypeSpecifier(TypeSpecifierCollector &specifierContext,
-                               SrcLoc loc);
+  void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &specifierContext);
-  SyntaxResult<QualType>
-  ParseDeclResultType(TypeSpecifierCollector &specifierContext, Diag<> diagID);
-  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &specifierContext,
+  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector);
+  SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
+                                             Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
 
   SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
-  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &specifier);
+  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &collector);
 
 public:
   //==Begin Function==//
 
-  // TODO: Pass FunctionSpecifierContext
+  // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
 
 private:
-  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierContext &spec);
+  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierCollector &spec);
 
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                       ParsingDeclSpecifier &specifier);
@@ -201,7 +200,7 @@ private:
   //==End Function==//
 
 public:
-  SyntaxStatus ParseAccessLevel(AccessLevelContext &levelContext);
+  SyntaxStatus ParseAccessLevel(AacessLevelCollector &collector);
 
 public:
   //=struct=//

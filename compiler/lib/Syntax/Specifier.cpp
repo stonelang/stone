@@ -51,7 +51,7 @@ bool TypeSpecifierCollector::IsNominalType() {
 // }
 
 void TypeSpecifierCollector::AddTypeSpecifierKind(TypeSpecifierKind kind,
-                                                SrcLoc loc) {
+                                                  SrcLoc loc) {
   assert((typeSpecifierKind == TypeSpecifierKind::None) &&
          "can only have one 'type specifier type'");
   assert(IsValidTypeSpecifierKind(kind) && "alien specifier type");

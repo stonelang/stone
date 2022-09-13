@@ -94,8 +94,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
     // First, we check for access levels -- if one is not found, we will
     // eventually come back to it.
     if (curTok.IsAccessLevel()) {
-      if (!spec.GetAccessLevelContext().HasAccessLevel()) {
-        status = ParseAccessLevel(spec.GetAccessLevelContext());
+      if (!spec.GetAacessLevelCollector().HasAccessLevel()) {
+        status = ParseAccessLevel(spec.GetAacessLevelCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
           goto BeginParse;
         }
@@ -157,11 +157,11 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifier &spec,
         goto EndParse;
       }
     } else if (curTok.IsFun()) {
-      if (!spec.GetFunctionSpecifierContext().HasFun()) {
+      if (!spec.GetFunctionSpecifierCollector().HasFun()) {
         if (spec.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
           assert(spec.GetTypeQualifierCollector().HasPureOnly());
         }
-        spec.GetFunctionSpecifierContext().AddFun(ConsumeToken());
+        spec.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
         result = ParseFunDecl(spec);
       } else {
         // PrintD
@@ -210,10 +210,10 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
 
   SyntaxResult<Decl> result;
 
-  assert(spec.GetFunctionSpecifierContext().HasFun() &&
+  assert(spec.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
 
-  auto funLoc = spec.GetFunctionSpecifierContext().GetFunLoc();
+  auto funLoc = spec.GetFunctionSpecifierCollector().GetFunLoc();
 
   // At this point, we are expecting an identifier
   assert(curTok.IsIdentifierOrUnderscore() &&
@@ -235,7 +235,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclSpecifier &spec) {
   nameInfo.SetNameLoc(nameLoc);
 
   if (PeekNextToken().IsDoubleColon()) {
-    spec.GetFunctionSpecifierContext().AddIsMember();
+    spec.GetFunctionSpecifierCollector().AddIsMember();
   }
 
   SyntaxStatus status;
