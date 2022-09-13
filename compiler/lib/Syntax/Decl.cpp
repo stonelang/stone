@@ -40,12 +40,14 @@ using namespace stone::syn;
 //   return tc.Allocate(bytes, alignment);
 // }
 
-// Keeping this very simple for now
+
 template <std::size_t len>
 static bool IsMainImpl(const NamedDecl *named, const char (&str)[len]) {
-  Identifier *identifier = named->GetIdentifier();
+  const Identifier *identifier = named->GetIdentifier();
   return identifier && identifier->isStr(str);
 }
+
+// Keeping this very simple for now
 bool FunDecl::IsMain() const { return IsMainImpl(this, "Main"); }
 
 /// True if the function is a defer body.
