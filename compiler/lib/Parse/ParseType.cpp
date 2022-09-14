@@ -37,11 +37,9 @@ SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector,
 
   SyntaxResult<QualType> result;
 
-  SyntaxStatus status;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
-  ParseBasicType(collector, diagID);
-
+  result = ParseBasicType(collector, diagID);
   return result;
 }
 
@@ -56,6 +54,7 @@ Parser::ParseDeclResultType(TypeSpecifierCollector &collector, Diag<> diagID) {
 SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
                                               Diag<> diagID) {
 
+  SyntaxResult<QualType> result;
   assert(IsBasicType(curTok.GetKind()) &&
          "The current token is not a basic type");
 
@@ -68,7 +67,7 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
   default:
     break;
   }
-  return syn::MakeSyntaxResult<QualType>(nullptr);
+  result;
 }
 
 void Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
