@@ -396,6 +396,9 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
 
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
+
+  SyntaxResult<Decl> result;
+  
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
@@ -406,16 +409,20 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(curTok.IsIdentifierOrUnderscore() &&
          "Invalid struct declarator or identifier");
 
-  return syn::MakeSyntaxResult<Decl>(nullptr);
+  return result; 
 }
 
 SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collectorifier) {
-  return syn::MakeSyntaxResult<Decl>(nullptr);
+  SyntaxResult<Decl> result;
+  return result; 
 }
 SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
-  return syn::MakeSyntaxResult<Decl>(nullptr);
+  SyntaxResult<Decl> result;
+  return result; 
 }
 
 void ParsingDeclCollector::Verify() {}
+
+
 void ParsingDeclCollector::Apply() {}
