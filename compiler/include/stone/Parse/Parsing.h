@@ -29,15 +29,15 @@ public:
 // };
 
 // /// A class for parsing a DeclSpecifier.
-// class ParsingDeclSpecifier final : public DeclSpecifier {
+// class ParsingDeclCollector final : public DeclSpecifier {
 //   //   ParsingDeclRAII parsingDeclRAII;
 //   Parser &parser;
 
 // public:
 //   // TODO: There is more to this
-//   ParsingDeclSpecifier(Parser &parser);
+//   ParsingDeclCollector(Parser &parser);
 
-//   //   ParsingDeclSpecifier(Parser &P, ParsingDeclRAIIObject *RAII)
+//   //   ParsingDeclCollector(Parser &P, ParsingDeclRAIIObject *RAII)
 //   //     : DeclSpecifier(P.getAttrFactory()),
 //   //       ParsingDeclRAII(P, RAII) {}
 
@@ -59,7 +59,7 @@ public:
 //   // ParsingDeclRAIIObject ParsingRAII;
 
 //   // public:
-//   //   ParsingDeclarator(Parser &P, const ParsingDeclSpecifier &ds,
+//   //   ParsingDeclarator(Parser &P, const ParsingDeclCollector &ds,
 //   //   DeclaratorContext dc)
 //   //       : Declarator(DS, C), ParsingRAII(P,
 //   &DS.getDelayedDiagnosticPool())
@@ -251,7 +251,7 @@ struct ParsingDeclFlags final {
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
-class ParsingDeclSpecifier final : public DeclSpecifier {
+class ParsingDeclCollector final : public DeclSpecifier {
   Parser &parser;
 
 public:
@@ -259,10 +259,14 @@ public:
   bool DeclCreated = false;
 
 public:
-  ParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
+  ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
       : parser(parser), DeclSpecifier(attributeFactory) {}
 
-  ~ParsingDeclSpecifier();
+  ~ParsingDeclCollector();
+
+public:
+  void Verify();
+  void Apply();
 
 public:
   Parser &GetParser() { return parser; }
@@ -270,13 +274,13 @@ public:
 
 class ParsingDeclarator final : public Declarator {
 public:
-  ParsingDeclarator(const ParsingDeclSpecifier &specifier,
+  ParsingDeclarator(const ParsingDeclCollector &specifier,
                     DeclaratorContextKind contextKind)
       : Declarator(specifier, contextKind) {}
 
 public:
-  const ParsingDeclSpecifier &GetParsingDeclSpecifier() {
-    return static_cast<const ParsingDeclSpecifier &>(
+  const ParsingDeclCollector &GetParsingDeclCollector() {
+    return static_cast<const ParsingDeclCollector &>(
         Declarator::GetDeclSpecifier());
   }
 };
@@ -293,10 +297,13 @@ enum class ParsingContextStatus : UInt8 { None = 0, Parsing, Error, Done };
 constexpr size_t ParsingAlignInBits = 3;
 class alignas(1 << ParsingAlignInBits) ParsingContext final {
   ParsingContextKind kind;
+  ParsingContext *holder = nullptr;
+
   // ParsingContextStatus status;
 
 public:
-  ParsingContext(ParsingContextKind kind) : kind(kind) {}
+  ParsingContext(ParsingContextKind kind, ParsingContext *holder = nullptr)
+      : kind(kind) {}
   ParsingContextKind GetKind() { return kind; }
 
 public:

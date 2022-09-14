@@ -59,9 +59,7 @@ public:
   SrcLoc GetPureLoc() const { return pureLoc; }
 };
 
-class IdentifierTypeRep : public QualTypeRep {
-public:
-};
+class IdentifierTypeRep : public QualTypeRep {};
 
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
   DeclNameLoc nameLoc;
@@ -95,6 +93,13 @@ private:
   // SrcLoc GetEndLocImpl() const { return GetNameLoc().GetEndLoc(); }
 
   friend class TypeRep;
+};
+
+class TupleTypeRep final : public QualTypeRep {
+
+public:
+public:
+  static TupleTypeRep *Create();
 };
 
 /// May want to inherit from QualTypeRep

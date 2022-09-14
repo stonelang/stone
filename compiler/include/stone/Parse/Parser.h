@@ -30,7 +30,7 @@ class Syntax;
 class Parser;
 class Scope;
 class PairDelimiterBalancer;
-class ParsingDeclSpecifier;
+class ParsingDeclCollector;
 class ParsingDeclarator;
 
 class ParserStats final : public Stats {
@@ -126,26 +126,18 @@ public:
 public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
-
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
-
-  // TODO: We only need on ParseDecl
-  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
-                               ParsingDeclCallback handler);
-
-  SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
-                               ParsingDeclCallback handler);
-
-  void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
-
-  void VerifyDeclSpec(ParsingDeclSpecifier &spec);
-
-  void ParseForwardDecl();
-  void ParseInheritance();
-
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
+
+public:
+  // TODO: We only need on ParseDecl
+  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
+                               ParsingDeclCollector *collector = nullptr);
+private:
+  SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
+
 
 public:
   // TODO: Param should be constant
@@ -157,26 +149,26 @@ public:
 
   void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector, Diag<> diagID);
+  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector,
+                                   Diag<> diagID);
   SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
                                              Diag<> diagID);
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
 
+  void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
   SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
   SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &collector);
 
 public:
-  //==Begin Function==//
+  //== fun ==//
 
   // TODO: Pass FunctionSpecifierCollector
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
 private:
-  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierCollector &spec);
-
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
-                                      ParsingDeclSpecifier &specifier);
+                                      ParsingDeclCollector &collectorifier);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -188,27 +180,26 @@ private:
   //                                       bool &rethrows,
   //                                       TypeRepr *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier);
-  SyntaxStatus ParseFunctionReturn(ParsingDeclSpecifier &specifier);
-
-  SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
+  SyntaxStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
+  SyntaxStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
                                  FunctionDecl &functionDecl);
 
-  BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
+  BraceStmt *ParseFunctionBodyImpl(ParsingDeclCollector &collectorifier,
                                    FunctionDecl &funDecl);
-
-  //==End Function==//
 
 public:
   SyntaxStatus ParseAccessLevel(AacessLevelCollector &collector);
 
 public:
-  //=struct=//
-  SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
-  void ParseStructForwardDecl();
+  //== struct ==//
+  SyntaxResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
 
-  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclSpecifier &specifier);
-  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclSpecifier &specifier);
+public:
+  //== enum== //
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
+
+  //== interface ==//
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -217,12 +208,8 @@ private:
   }
 
 public:
-  // First, call ParseFunDecl -- this is your fun prototype
-  // Then you call the following:
-  // void ParseFunDeclDefinition();
-
   SyntaxResult<Decl> ParseSpaceDecl();
-  ///
+
 public:
   bool IsStartOfStmt();
   /// Stmt
@@ -280,7 +267,7 @@ public:
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
-  /// If the current curTok is the specified kind, consume it and
+  /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind) {
     if (curTok.IsNot(kind)) {
@@ -289,7 +276,7 @@ public:
     ConsumeToken(kind);
     return true;
   }
-  /// If the current curTok is the specified kind, consume it and
+  /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
     if (curTok.IsNot(kind)) {

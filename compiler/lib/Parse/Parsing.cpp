@@ -3,7 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-// ParsingDeclSpecifier::ParsingDeclSpecifier(Parser &parser)
+// ParsingDeclCollector::ParsingDeclCollector(Parser &parser)
 //     : DeclSpecifier(parser.GetAttributeFactory()), parser(parser) {}
 
 // PairDelimiterBalancer::PairDelimiterBalancer(Parser &other) : parser(other) {
@@ -43,7 +43,7 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
-ParsingDeclSpecifier::~ParsingDeclSpecifier() {}
+ParsingDeclCollector::~ParsingDeclCollector() {}
 
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}

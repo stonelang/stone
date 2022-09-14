@@ -32,18 +32,24 @@ bool Parser::IsBasicType(tok kind) const {
 }
 
 // Similar to ParseDeclSpecifiers
-SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector, Diag<> diagID) {
+SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector,
+                                         Diag<> diagID) {
 
   SyntaxResult<QualType> result;
 
   SyntaxStatus status;
   ScopeContext parsingType(*this, ScopeKind::Type, "parsing type");
 
+  ParseBasicType(collector, diagID);
+
   return result;
 }
 
 SyntaxResult<QualType>
 Parser::ParseDeclResultType(TypeSpecifierCollector &collector, Diag<> diagID) {
+
+  // assert(curTok.IsIdentifierOrUnderscore)
+
   return ParseType(collector, diagID);
 }
 
@@ -56,7 +62,7 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
   /// Maybe parse ParseDeclarator -- or just take a look at the code
   switch (curTok.GetKind()) {
   case tok::identifier: {
-    // ty = ParseIdentifierType();
+    ParseIdentifierType(collector, diagID);
     break;
   }
   default:
@@ -65,6 +71,8 @@ SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
   return syn::MakeSyntaxResult<QualType>(nullptr);
 }
 
+void Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
+                                 Diag<> diagID) {}
 SyntaxStatus
 Parser::ParseBasicTypeSpecifier(TypeSpecifierCollector &collector) {
   SyntaxStatus status;
