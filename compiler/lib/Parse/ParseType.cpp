@@ -38,7 +38,7 @@ SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector,
   SyntaxResult<QualType> result;
 
   SyntaxStatus status;
-  ScopeContext parsingType(*this, ScopeKind::Type, "parsing type");
+  ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
   ParseBasicType(collector, diagID);
 

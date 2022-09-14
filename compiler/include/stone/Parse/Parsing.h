@@ -112,20 +112,20 @@ public:
 // };
 
 using ScopeCache = llvm::SmallVector<Scope *, 16>;
-class ScopeContext final {
+class ParsingScope final {
   Parser &self;
   llvm::StringRef description;
 
-  ScopeContext(const ScopeContext &) = delete;
-  void operator=(const ScopeContext &) = delete;
+  ParsingScope(const ParsingScope &) = delete;
+  void operator=(const ParsingScope &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass Scope
-  ScopeContext(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
-  ~ScopeContext();
+  ParsingScope(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
+  ~ParsingScope();
 
 private:
   /// EnterScope - start a new scope.

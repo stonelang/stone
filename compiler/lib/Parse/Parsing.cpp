@@ -20,19 +20,19 @@ using namespace stone::syn;
 
 // ==Scope == //
 
-ScopeContext::ScopeContext(Parser &self, ScopeKind scopeKind,
+ParsingScope::ParsingScope(Parser &self, ScopeKind scopeKind,
                            llvm::StringRef description)
     : self(self), description(description) {
   EnterScope(scopeKind);
 }
-void ScopeContext::EnterScope(ScopeKind scopeKind) {
+void ParsingScope::EnterScope(ScopeKind scopeKind) {
   self.EnterScope(scopeKind);
 }
 // Exit - Exit the scope associated with this object now, rather
 // than waiting until the object is destroyed.
-void ScopeContext::ExitScope() { self.ExitScope(); }
+void ParsingScope::ExitScope() { self.ExitScope(); }
 
-ScopeContext::~ScopeContext() { ExitScope(); }
+ParsingScope::~ParsingScope() { ExitScope(); }
 
 // == Position RAII == //
 

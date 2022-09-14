@@ -60,7 +60,7 @@ SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(GetCurScope() == nullptr && "A scope is already active?");
 
   // TODO: Get scope description from scopdeid::parsing_top_level_declaration
-  ScopeContext parsingTopLevelDecl(*this, ScopeKind::SyntaxFile,
+  ParsingScope parsingTopLevelDecl(*this, ScopeKind::SyntaxFile,
                                    "parsing top-level declaration");
 
   return ParseDecl(ParsingDeclFlags::AllowTopLevel);
@@ -83,7 +83,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
   // TODO: Replace with ParsingScope
-  ScopeContext parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
+  ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
 
   while (true) {
   BeginParse:
@@ -360,7 +360,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(curTok.IsIdentifierOrUnderscore() &&
          "Expecting function declarator or identifier");
 
-  ScopeContext parsingFunDecl(*this, ScopeKind::FunctionDecl,
+  ParsingScope parsingFunDecl(*this, ScopeKind::FunctionDecl,
                               "parsing fun declaration");
 
   // Build the DeclName
@@ -409,7 +409,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                             ParsingDeclCollector &collector) {
   SyntaxStatus status;
-  ScopeContext parsingFunSig(*this, ScopeKind::FunctionSignature,
+  ParsingScope parsingFunSig(*this, ScopeKind::FunctionSignature,
                              "parsing fun signature");
 
   status |= ParseFunctionArguments(collector);
@@ -419,7 +419,7 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
 
   SrcLoc arrowLoc;
   if (curTok.IsArrow()) {
-    ScopeContext functionResult(*this, ScopeKind::ReturnClause,
+    ParsingScope functionResult(*this, ScopeKind::ReturnClause,
                                 "parsing result");
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
 
