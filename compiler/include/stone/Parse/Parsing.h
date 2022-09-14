@@ -360,6 +360,22 @@ public:
   bool IsImaginaryLiteral();
   bool IsRegexLiteral();
 };
+
+enum class ParsingDeclAction {
+  None = 0,
+  ParseAccessLevel,
+  ParseAuto,
+  ParseFun,
+  ParseStruct,
+  ParseEnum,
+  ParseInterface,
+  ParseBasicType,
+  ParseTypeQualifier,
+  ParsePointer,
+  ParseIdentifier,
+  ParseImport,
+};
+
 } // namespace syn
 } // namespace stone
 #endif

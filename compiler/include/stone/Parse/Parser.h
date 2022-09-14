@@ -128,6 +128,7 @@ public:
   // Decl Parsing
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
+
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
@@ -135,9 +136,9 @@ public:
   // TODO: We only need on ParseDecl
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
+
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
-
 
 public:
   // TODO: Param should be constant
@@ -221,9 +222,9 @@ public:
 
 public:
   /// Stop parsing now.
-  void Stop() { curTok.SetKind(tok::eof); }
+  void StopParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
-  bool IsDone() { return curTok.GetKind() == tok::eof; }
+  bool IsParsing() { return (curTok.GetKind() != tok::eof) && (!HasError()); }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
   DiagnosticEngine &GetDiags() {
     return GetLangContext().GetDiagUnit().GetDiagEngine();
@@ -398,6 +399,9 @@ private:
 
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
+
+public:
+  ParsingDeclAction GetParsingDeclAction();
 };
 
 } // namespace syn

@@ -35,7 +35,7 @@ void Parser::ParseTopLevelDecls(
   if (curTok.Is(tok::MAX)) {
     ConsumeToken();
   }
-  while (!IsDone()) {
+  while (IsParsing()) {
     // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
     if (listener) {
@@ -69,7 +69,6 @@ SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
 // NOTE: This is ripe for recursion.
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
                                      ParsingDeclCollector *collector) {
-
   if (collector) {
     return ParseDeclInternal(*collector);
   } else {
@@ -88,12 +87,14 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   while (true) {
   BeginParse:
-    if (IsDone()) {
+
+    if (!IsParsing()) {
       goto EndParse;
     }
-    // First, we check for access levels -- if one is not found, we will
-    // eventually come back to it.
-    if (curTok.IsAccessLevel()) {
+
+    switch (GetParsingDeclAction()) {
+    case ParsingDeclAction::ParseAccessLevel:
+      assert(curTok.IsAccessLevel());
       if (!collector.GetAcessLevelCollector().HasAccessLevel()) {
         status = ParseAccessLevel(collector.GetAcessLevelCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
@@ -101,9 +102,10 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
       } else {
         /// PrintD -- found dup
-        goto EndParse;
       }
-    } else if (curTok.IsQualifier()) {
+      goto EndParse;
+    case ParsingDeclAction::ParseTypeQualifier:
+      assert(curTok.IsQualifier());
       if (!collector.GetTypeQualifierCollector().HasAllTypeQualifiers()) {
         status = ParseTypeQualifiers(collector.GetTypeQualifierCollector());
         if (status.hasCodeCompletion() && status.IsSuccess()) {
@@ -111,9 +113,10 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
       } else {
         /// PrintD
-        goto EndParse;
       }
-    } else if (curTok.IsStruct()) {
+      goto EndParse;
+    case ParsingDeclAction::ParseStruct:
+      assert(curTok.IsStruct());
       if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
         if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
           goto EndParse;
@@ -125,18 +128,8 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         // PrintD -- dup
       }
       goto EndParse;
-    } else if (curTok.IsInterface()) {
-      if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-        if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-          goto EndParse;
-        }
-        collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
-        result = ParseInterfaceDecl(collector);
-      } else {
-        // PrintD
-      }
-      goto EndParse;
-    } else if (curTok.IsEnum()) {
+    case ParsingDeclAction::ParseInterface:
+      assert(curTok.IsInterface());
       if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
         if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
           // Log error
@@ -148,25 +141,21 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         // PrintD
       }
       goto EndParse;
-    } else if (IsBasicType(curTok.GetKind())) {
+    case ParsingDeclAction::ParseEnum:
+      assert(curTok.IsEnum());
       if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-        status = ParseBasicTypeSpecifier(collector.GetTypeSpecifierCollector());
-        if (status.hasCodeCompletion() && status.IsSuccess()) {
+        if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+          // Log error
+          goto EndParse;
         }
+        collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
+        result = ParseInterfaceDecl(collector);
       } else {
         // PrintD
       }
-      goto BeginParse;
-    } else if (curTok.IsPointerOperator()) {
-      if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-        // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
-        ConsumeToken();
-        goto BeginParse;
-      } else {
-        // PrinD -- random varialb
-        goto EndParse;
-      }
-    } else if (curTok.IsFun()) {
+      goto EndParse;
+    case ParsingDeclAction::ParseFun:
+      assert(curTok.IsFun());
       if (!collector.GetFunctionSpecifierCollector().HasFun()) {
         if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
           if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
@@ -174,8 +163,8 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
             goto EndParse;
           }
         }
-        if(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-          // Log -- wrong place for type 
+        if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+          // Log -- wrong place for type
           goto EndParse;
         }
         collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
@@ -184,26 +173,160 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         // PrintD
       }
       goto EndParse;
-    } else {
-      if (curTok.IsIdentifierOrUnderscore()) {
-        if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-          ParsingDeclarator declarator(collector,
-                                       DeclaratorContextKind::SyntaxFile);
-          result = ParseVarDecl(declarator);
-        } else {
-          // PrintD
-          goto EndParse;
+    case ParsingDeclAction::ParseAuto:
+      assert(curTok.IsAuto());
+      goto EndParse;
+    case ParsingDeclAction::ParseBasicType:
+      assert(IsBasicType(GetCurTok().GetKind()));
+      if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        status = ParseBasicTypeSpecifier(collector.GetTypeSpecifierCollector());
+        if (status.hasCodeCompletion() && status.IsSuccess()) {
+          goto BeginParse;
         }
+      } else {
+        // PrintD
       }
+      goto EndParse;
+    case ParsingDeclAction::ParsePointer:
+      assert(curTok.IsPointerOperator());
+      if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
+        ConsumeToken();
+        goto BeginParse;
+      } else {
+        // PrinD -- random varialb
+      }
+      goto EndParse;
+    case ParsingDeclAction::ParseIdentifier:
+      assert(curTok.IsIdentifierOrUnderscore());
+      if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+        ParsingDeclarator declarator(collector,
+                                     DeclaratorContextKind::SyntaxFile);
+        result = ParseVarDecl(declarator);
+      } else {
+        // PrintD
+      }
+      goto EndParse;
+    default:
+      // Must find a top-level action
+      goto EndParse;
     }
-    ConsumeToken();
 
+    //  First, we check for access levels -- if one is not found, we will
+    //  eventually come back to it.
+    // if (curTok.IsAccessLevel()) {
+    //   if (!collector.GetAcessLevelCollector().HasAccessLevel()) {
+    //     status = ParseAccessLevel(collector.GetAcessLevelCollector());
+    //     if (status.hasCodeCompletion() && status.IsSuccess()) {
+    //       goto BeginParse;
+    //     }
+    //   } else {
+    //     /// PrintD -- found dup
+    //     goto EndParse;
+    //   }
+    // } else if (curTok.IsQualifier()) {
+    //   if (!collector.GetTypeQualifierCollector().HasAllTypeQualifiers()) {
+    //     status = ParseTypeQualifiers(collector.GetTypeQualifierCollector());
+    //     if (status.hasCodeCompletion() && status.IsSuccess()) {
+    //       goto BeginParse;
+    //     }
+    //   } else {
+    //     /// PrintD
+    //     goto EndParse;
+    //   }
+    // } else if (curTok.IsStruct()) {
+    //   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    //       goto EndParse;
+    //     }
+    //     collector.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
+    //     result = ParseStructDecl(collector);
+
+    //   } else {
+    //     // PrintD -- dup
+    //   }
+    //   goto EndParse;
+    // } else if (curTok.IsInterface()) {
+    //   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    //       goto EndParse;
+    //     }
+    //     collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
+    //     result = ParseInterfaceDecl(collector);
+    //   } else {
+    //     // PrintD
+    //   }
+    //   goto EndParse;
+    // } else if (curTok.IsEnum()) {
+    //   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    //       // Log error
+    //       goto EndParse;
+    //     }
+    //     collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
+    //     result = ParseInterfaceDecl(collector);
+    //   } else {
+    //     // PrintD
+    //   }
+    //   goto EndParse;
+    // } else if (IsBasicType(curTok.GetKind())) {
+    //   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //     status =
+    //     ParseBasicTypeSpecifier(collector.GetTypeSpecifierCollector()); if
+    //     (status.hasCodeCompletion() && status.IsSuccess()) {
+    //     }
+    //   } else {
+    //     // PrintD
+    //   }
+    //   goto BeginParse;
+    // } else if (curTok.IsPointerOperator()) {
+    //   if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //     // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
+    //     ConsumeToken();
+    //     goto BeginParse;
+    //   } else {
+    //     // PrinD -- random varialb
+    //     goto EndParse;
+    //   }
+    // } else if (curTok.IsFun()) {
+    //   if (!collector.GetFunctionSpecifierCollector().HasFun()) {
+    //     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    //       if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
+    //         // Do some logging
+    //         goto EndParse;
+    //       }
+    //     }
+    //     if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //       // Log -- wrong place for type
+    //       goto EndParse;
+    //     }
+    //     collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
+    //     result = ParseFunDecl(collector);
+    //   } else {
+    //     // PrintD
+    //   }
+    //   goto EndParse;
+    // } else {
+    //   if (curTok.IsIdentifierOrUnderscore()) {
+    //     if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //       ParsingDeclarator declarator(collector,
+    //                                    DeclaratorContextKind::SyntaxFile);
+    //       result = ParseVarDecl(declarator);
+    //     } else {
+    //       // PrintD
+    //       goto EndParse;
+    //     }
+    //   }
+    // }
+
+    ConsumeToken();
   } // End of while
 
 EndParse : {
-  // while (!IsDone()) {
-  //   ConsumeToken();
-  // }
+  // End requested, so we manually stop.
+  if (IsParsing()) {
+    StopParsing();
+  }
   return result;
 }
 }
@@ -402,9 +525,5 @@ SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxResult<Decl>(nullptr);
 }
 
-void ParsingDeclCollector::Verify() {
-
-}
-void ParsingDeclCollector::Apply() {
-
-}
+void ParsingDeclCollector::Verify() {}
+void ParsingDeclCollector::Apply() {}
