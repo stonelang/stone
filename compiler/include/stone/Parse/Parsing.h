@@ -256,7 +256,6 @@ class ParsingDeclCollector final : public DeclSpecifier {
 
 public:
   ParsingDeclOptions flags;
-  bool DeclCreated = false;
 
 public:
   ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
@@ -265,12 +264,13 @@ public:
   ~ParsingDeclCollector();
 
 public:
+  Parser &GetParser() { return parser; }
+  void Collect();
+  void CollectUntil(tok kind);
+
 public:
   void Verify();
   void Apply();
-
-public:
-  Parser &GetParser() { return parser; }
 };
 
 class ParsingDeclarator final : public Declarator {

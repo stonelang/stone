@@ -132,27 +132,57 @@ public:
 };
 
 class StorageSpecifierCollector final {
+
+  SrcLoc loc;
   StorageSpecifierKind kind;
+
+private:
+  void AddStorageSpecifier(StorageSpecifierKind inputKind, SrcLoc inputLoc) {
+    kind = inputKind;
+    loc = inputLoc;
+  }
 
 public:
   StorageSpecifierCollector() : kind(StorageSpecifierKind::None) {}
 
 public:
-  void SetKind(StorageSpecifierKind anyKind) { kind = anyKind; }
-
   StorageSpecifierKind GetKind() { return kind; }
+  void AddExtern(SrcLoc loc) {
+    AddStorageSpecifier(StorageSpecifierKind::Extern, loc);
+  }
+  bool HasExtern() {
+    return (kind == StorageSpecifierKind::Extern && loc.isValid());
+  }
+
+  void AddStatic(SrcLoc loc) {
+    AddStorageSpecifier(StorageSpecifierKind::Static, loc);
+  }
+  bool HasStatic() {
+    return (kind == StorageSpecifierKind::Static && loc.isValid());
+  }
+
+  void AddAuto(SrcLoc loc) {
+    AddStorageSpecifier(StorageSpecifierKind::Auto, loc);
+  }
+  bool HasAuto() {
+    return (kind == StorageSpecifierKind::Auto && loc.isValid());
+  }
+
+  void AddRegister(SrcLoc loc) {
+    AddStorageSpecifier(StorageSpecifierKind::Register, loc);
+  }
+  bool HasRegister() {
+    return (kind == StorageSpecifierKind::Register && loc.isValid());
+  }
+  bool HasAnyStorageSpecifier() {
+    return (HasExtern() || HasStatic() || HasAuto() || HasRegister());
+  }
+  SrcLoc GetLoc() { return loc; }
 };
 
-// enum class DescriptiveDeclSpecifier {
-//   None,
-//   FuncitonDefinition,
-//   NominalType,
-//   BasicType
-// }
-
-class AacessLevelCollector final {
+class AccessLevelCollector final {
   SrcLoc loc;
-  AccessLevel level = AccessLevel::None;
+  AccessLevel level;
 
 private:
   void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
@@ -162,16 +192,29 @@ private:
   }
 
 public:
+  AccessLevelCollector() : level(AccessLevel::None) {}
+
+public:
   void AddPublic(SrcLoc inputLoc) {
     AddAccessLevel(AccessLevel::Public, inputLoc);
   }
+  bool HasPublic() { return (level == AccessLevel::Public && loc.isValid()); }
+
   void AddPrivate(SrcLoc inputLoc) {
     AddAccessLevel(AccessLevel::Private, inputLoc);
   }
+  bool HasPrivate() { return (level == AccessLevel::Private && loc.isValid()); }
+
   void AddInternal(SrcLoc inputLoc) {
     AddAccessLevel(AccessLevel::Internal, inputLoc);
   }
-  bool HasAccessLevel() { return level != AccessLevel::None; }
+  bool HasInternal() {
+    return (level == AccessLevel::Internal && loc.isValid());
+  }
+
+  bool HasAnyAccessLevel() {
+    return (HasPublic() || HasPrivate() || HasInternal());
+  }
   SrcLoc GetLoc() { return loc; }
 };
 
@@ -182,7 +225,7 @@ class DeclSpecifier {
   TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
-  AacessLevelCollector acessLevelCollector;
+  AccessLevelCollector accessLevelCollector;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
   void operator=(const DeclSpecifier &) = delete;
@@ -192,7 +235,7 @@ public:
       : attributeFactory(attributeFactory) {}
 
 public:
-  StorageSpecifierCollector &GetStorageSpeciferContext() {
+  StorageSpecifierCollector &GetStorageSpecifierCollector() {
     return storageSpecifierCollector;
   }
   TypeSpecifierCollector &GetTypeSpecifierCollector() {
@@ -204,7 +247,9 @@ public:
   TypeQualifierCollector &GetTypeQualifierCollector() {
     return typeQualifierCollector;
   }
-  AacessLevelCollector &GetAcessLevelCollector() { return acessLevelCollector; }
+  AccessLevelCollector &GetAccessLevelCollector() {
+    return accessLevelCollector;
+  }
 };
 
 class Declarator {

@@ -144,7 +144,7 @@ private:
 
 public:
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &declarator);
 
 public:
   // == Type Parsing ==//
@@ -191,7 +191,7 @@ private:
                                    FunctionDecl &funDecl);
 
 public:
-  SyntaxStatus ParseAccessLevel(AacessLevelCollector &collector);
+  SyntaxStatus ParseAccessLevel(AccessLevelCollector &collector);
 
 public:
   //== struct ==//

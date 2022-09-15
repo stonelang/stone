@@ -46,8 +46,6 @@ SyntaxResult<QualType> Parser::ParseType(TypeSpecifierCollector &collector,
 SyntaxResult<QualType>
 Parser::ParseDeclResultType(TypeSpecifierCollector &collector, Diag<> diagID) {
 
-  // assert(curTok.IsIdentifierOrUnderscore)
-
   return ParseType(collector, diagID);
 }
 
