@@ -30,7 +30,7 @@ class Syntax;
 class Parser;
 class Scope;
 class PairDelimiterBalancer;
-class ParsingDeclSpecifier;
+class ParsingDeclCollector;
 class ParsingDeclarator;
 
 class ParserStats final : public Stats {
@@ -126,58 +126,52 @@ public:
 public:
   //===--------------------------------------------------------------------===//
   // Decl Parsing
-
   bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
-
-  // TODO: We only need on ParseDecl
-  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
-                               llvm::function_ref<void(Decl *)> handler);
-
-  SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifier &specifier,
-                               llvm::function_ref<void(Decl *)> handler);
-
-  void ParseDeclSpecifier(ParsingDeclSpecifier &spec);
-
-  void VerifyDeclSpec(ParsingDeclSpecifier &spec);
-
-  void ParseForwardDecl();
-  void ParseInheritance();
 
 private:
   SyntaxResult<Decl> ParseTopLevelDecl();
 
 public:
+  // TODO: We only need on ParseDecl
+  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
+                               ParsingDeclCollector *collector = nullptr);
+
+  void CollectDecl(ParsingDeclCollector &collector);
+
+private:
+  SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
+
+public:
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDeclarator &declarator);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &declarator);
 
 public:
   // == Type Parsing ==//
   bool IsBasicType(tok kind) const;
 
-  void ParseBasicTypeSpecifier(TypeSpecifierContext &specifierContext,
-                               SrcLoc loc);
+  void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierContext &specifierContext);
-  SyntaxResult<QualType>
-  ParseDeclResultType(TypeSpecifierContext &specifierContext, Diag<> diagID);
-  SyntaxResult<QualType> ParseBasicType(TypeSpecifierContext &specifierContext,
+  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector,
+                                   Diag<> diagID);
+  SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
+                                             Diag<> diagID);
+  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
 
+  void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
   SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
-  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierContext &specifier);
+  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &collector);
 
 public:
-  //==Begin Function==//
+  //== fun ==//
 
-  // TODO: Pass FunctionSpecifierContext
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifier &specifier);
+  // TODO: Pass FunctionSpecifierCollector
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
 private:
-  // SyntaxStatus ParseFunctionSpecifier(FunctionSpecifierContext &spec);
-
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
-                                      ParsingDeclSpecifier &specifier);
+                                      ParsingDeclCollector &collectorifier);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -189,27 +183,26 @@ private:
   //                                       bool &rethrows,
   //                                       TypeRepr *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDeclSpecifier &specifier);
-  SyntaxStatus ParseFunctionReturn(ParsingDeclSpecifier &specifier);
-
-  SyntaxStatus ParseFunctionBody(ParsingDeclSpecifier &specifier,
+  SyntaxStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
+  SyntaxStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
                                  FunctionDecl &functionDecl);
 
-  BraceStmt *ParseFunctionBodyImpl(ParsingDeclSpecifier &specifier,
+  BraceStmt *ParseFunctionBodyImpl(ParsingDeclCollector &collectorifier,
                                    FunctionDecl &funDecl);
 
-  //==End Function==//
+public:
+  SyntaxStatus ParseAccessLevel(AccessLevelCollector &collector);
 
 public:
-  SyntaxStatus ParseAccessLevel(AccessLevelContext &levelContext);
+  //== struct ==//
+  SyntaxResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
 
 public:
-  //=struct=//
-  SyntaxResult<Decl> ParseStructDecl(ParsingDeclSpecifier &specifier);
-  void ParseStructForwardDecl();
+  //== enum== //
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
-  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclSpecifier &specifier);
-  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclSpecifier &specifier);
+  //== interface ==//
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -218,12 +211,8 @@ private:
   }
 
 public:
-  // First, call ParseFunDecl -- this is your fun prototype
-  // Then you call the following:
-  // void ParseFunDeclDefinition();
-
   SyntaxResult<Decl> ParseSpaceDecl();
-  ///
+
 public:
   bool IsStartOfStmt();
   /// Stmt
@@ -235,9 +224,10 @@ public:
 
 public:
   /// Stop parsing now.
-  void Stop() { curTok.SetKind(tok::eof); }
+  void StopParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
-  bool IsDone() { return curTok.GetKind() == tok::eof; }
+  bool IsEOF() { return curTok.GetKind() == tok::eof; }
+  bool IsParsing() { return (!IsEOF() && !HasError()); }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
   DiagnosticEngine &GetDiags() {
     return GetLangContext().GetDiagUnit().GetDiagEngine();
@@ -281,7 +271,7 @@ public:
   }
   SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
-  /// If the current curTok is the specified kind, consume it and
+  /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind) {
     if (curTok.IsNot(kind)) {
@@ -290,7 +280,7 @@ public:
     ConsumeToken(kind);
     return true;
   }
-  /// If the current curTok is the specified kind, consume it and
+  /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
   bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
     if (curTok.IsNot(kind)) {
@@ -412,6 +402,9 @@ private:
 
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
+
+public:
+  ParsingDeclAction GetParsingDeclAction();
 };
 
 } // namespace syn

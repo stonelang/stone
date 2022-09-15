@@ -29,15 +29,15 @@ public:
 // };
 
 // /// A class for parsing a DeclSpecifier.
-// class ParsingDeclSpecifier final : public DeclSpecifier {
+// class ParsingDeclCollector final : public DeclSpecifier {
 //   //   ParsingDeclRAII parsingDeclRAII;
 //   Parser &parser;
 
 // public:
 //   // TODO: There is more to this
-//   ParsingDeclSpecifier(Parser &parser);
+//   ParsingDeclCollector(Parser &parser);
 
-//   //   ParsingDeclSpecifier(Parser &P, ParsingDeclRAIIObject *RAII)
+//   //   ParsingDeclCollector(Parser &P, ParsingDeclRAIIObject *RAII)
 //   //     : DeclSpecifier(P.getAttrFactory()),
 //   //       ParsingDeclRAII(P, RAII) {}
 
@@ -59,7 +59,7 @@ public:
 //   // ParsingDeclRAIIObject ParsingRAII;
 
 //   // public:
-//   //   ParsingDeclarator(Parser &P, const ParsingDeclSpecifier &ds,
+//   //   ParsingDeclarator(Parser &P, const ParsingDeclCollector &ds,
 //   //   DeclaratorContext dc)
 //   //       : Declarator(DS, C), ParsingRAII(P,
 //   &DS.getDelayedDiagnosticPool())
@@ -112,20 +112,20 @@ public:
 // };
 
 using ScopeCache = llvm::SmallVector<Scope *, 16>;
-class ScopeContext final {
+class ParsingScope final {
   Parser &self;
   llvm::StringRef description;
 
-  ScopeContext(const ScopeContext &) = delete;
-  void operator=(const ScopeContext &) = delete;
+  ParsingScope(const ParsingScope &) = delete;
+  void operator=(const ParsingScope &) = delete;
 
 public:
   // ParseScope - Construct a new object to manage a scope in the
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass Scope
-  ScopeContext(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
-  ~ScopeContext();
+  ParsingScope(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
+  ~ParsingScope();
 
 private:
   /// EnterScope - start a new scope.
@@ -249,33 +249,39 @@ struct ParsingDeclFlags final {
 };
 /// Options that control the parsing of declarations.
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
+using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
-class ParsingDeclSpecifier final : public DeclSpecifier {
+class ParsingDeclCollector final : public DeclSpecifier {
   Parser &parser;
 
 public:
   ParsingDeclOptions flags;
-  bool DeclCreated = false;
 
 public:
-  ParsingDeclSpecifier(Parser &parser, AttributeFactory &attributeFactory)
+  ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
       : parser(parser), DeclSpecifier(attributeFactory) {}
 
-  ~ParsingDeclSpecifier();
+  ~ParsingDeclCollector();
 
 public:
   Parser &GetParser() { return parser; }
+  void Collect();
+  void CollectUntil(tok kind);
+
+public:
+  void Verify();
+  void Apply();
 };
 
 class ParsingDeclarator final : public Declarator {
 public:
-  ParsingDeclarator(const ParsingDeclSpecifier &specifier,
+  ParsingDeclarator(const ParsingDeclCollector &specifier,
                     DeclaratorContextKind contextKind)
       : Declarator(specifier, contextKind) {}
 
 public:
-  const ParsingDeclSpecifier &GetParsingDeclSpecifier() {
-    return static_cast<const ParsingDeclSpecifier &>(
+  const ParsingDeclCollector &GetParsingDeclCollector() {
+    return static_cast<const ParsingDeclCollector &>(
         Declarator::GetDeclSpecifier());
   }
 };
@@ -292,10 +298,13 @@ enum class ParsingContextStatus : UInt8 { None = 0, Parsing, Error, Done };
 constexpr size_t ParsingAlignInBits = 3;
 class alignas(1 << ParsingAlignInBits) ParsingContext final {
   ParsingContextKind kind;
+  ParsingContext *holder = nullptr;
+
   // ParsingContextStatus status;
 
 public:
-  ParsingContext(ParsingContextKind kind) : kind(kind) {}
+  ParsingContext(ParsingContextKind kind, ParsingContext *holder = nullptr)
+      : kind(kind) {}
   ParsingContextKind GetKind() { return kind; }
 
 public:
@@ -352,6 +361,22 @@ public:
   bool IsImaginaryLiteral();
   bool IsRegexLiteral();
 };
+
+enum class ParsingDeclAction {
+  None = 0,
+  ParseAccessLevel,
+  ParseAuto,
+  ParseFun,
+  ParseStruct,
+  ParseEnum,
+  ParseInterface,
+  ParseBasicType,
+  ParseTypeQualifier,
+  ParsePointer,
+  ParseIdentifier,
+  ParseImport,
+};
+
 } // namespace syn
 } // namespace stone
 #endif

@@ -38,12 +38,12 @@ enum class TypeSpecifierKind : uint8_t {
 
 };
 
-class TypeSpecifierContext final {
+class TypeSpecifierCollector final {
   TypeSpecifierKind typeSpecifierKind;
   SrcLoc typeSpecifierLoc;
 
 public:
-  TypeSpecifierContext() : typeSpecifierKind(TypeSpecifierKind::None) {}
+  TypeSpecifierCollector() : typeSpecifierKind(TypeSpecifierKind::None) {}
 
 public:
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
@@ -91,6 +91,7 @@ public:
     return typeSpecifierKind == TypeSpecifierKind::Interface;
   }
   bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
+  SrcLoc GetLoc() { return typeSpecifierLoc; }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {

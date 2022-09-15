@@ -17,8 +17,8 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
-//#include "stone/Syntax/OperatorKind.h"
-//#include "stone/Syntax/Specifiers.h"
+// #include "stone/Syntax/OperatorKind.h"
+// #include "stone/Syntax/Specifiers.h"
 
 using namespace stone;
 using namespace stone::syn;

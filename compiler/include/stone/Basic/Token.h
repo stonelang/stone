@@ -169,10 +169,11 @@ public:
   bool IsDoubleColon() const { return kind == tok::doublecolon; }
   bool IsTilde() { return kind == tok::tilde; }
   bool IsFun() { return kind == tok::kw_fun; }
+  bool IsAuto() { return kind == tok::kw_auto; }
   bool IsStruct() { return kind == tok::kw_struct; }
   bool IsInterface() { return kind == tok::kw_interface; }
   bool IsPure() { return kind == tok::kw_pure; }
-  bool IsInline() { return kind == tok::kw_pure; }
+  bool IsInline() { return kind == tok::kw_inline; }
   bool IsLeftParen() { return kind == tok::l_paren; }
   bool IsRightParen() { return kind == tok::r_paren; }
   bool IsEnum() { return kind == tok::kw_enum; }

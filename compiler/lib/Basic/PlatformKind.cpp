@@ -1,7 +1,7 @@
 
 #include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/LangOptions.h"
-///#include "stone/Basic/Platform.h"
+/// #include "stone/Basic/Platform.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/Support/ErrorHandling.h"
 
