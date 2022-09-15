@@ -226,9 +226,8 @@ public:
   /// Stop parsing now.
   void StopParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
-  bool IsEOF() { curTok.GetKind() == tok::eof; }
-  bool IsParsing() { return (!IsEOF() && (!HasError());
-  }
+  bool IsEOF() { return curTok.GetKind() == tok::eof; }
+  bool IsParsing() { return (!IsEOF() && !HasError()); }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
   DiagnosticEngine &GetDiags() {
     return GetLangContext().GetDiagUnit().GetDiagEngine();

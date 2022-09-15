@@ -230,7 +230,11 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 EndParse : { return result; }
 }
 
-void Parser::CollectDecl(ParsingDeclCollector &collector) {}
+void Parser::CollectDecl(ParsingDeclCollector &collector) {
+
+
+  
+}
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
