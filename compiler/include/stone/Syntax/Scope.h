@@ -27,7 +27,7 @@ enum class ScopeKind : UInt8 {
   TypeDecl,
 
   /// A function/initializer/deinitializer.
-  FunctionDecl,
+  FunDecl,
 
   FunctionSignature,
 

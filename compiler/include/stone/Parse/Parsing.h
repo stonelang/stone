@@ -5,6 +5,7 @@
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/Scope.h"
+#include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -265,8 +266,8 @@ public:
 
 public:
   Parser &GetParser() { return parser; }
-  void Collect();
-  void CollectUntil(tok kind);
+  SyntaxStatus Collect();
+  SyntaxStatus CollectUntil(tok kind);
 
 public:
   void Verify();

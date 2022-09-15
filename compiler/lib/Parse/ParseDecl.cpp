@@ -83,11 +83,15 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 }
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
-
+  SyntaxStatus status;
   SyntaxResult<Decl> result;
   ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
   while (result.IsNull() && IsParsing()) {
-    collector.Collect();
+    
+    status|= collector.Collect();
+    if(status.HasCodeCompletion()){
+      goto EndParse;
+    }
     if (collector.GetFunctionSpecifierCollector().HasFun()) {
       result = ParseFunDecl(collector);
       goto EndParse;
@@ -116,12 +120,18 @@ EndParse : {
 }
 }
 
-void ParsingDeclCollector::CollectUntil(tok kind) {
+SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
+  SyntaxStatus status;
   while (GetParser().GetCurTok().IsNot(kind)) {
-    Collect();
+    status|= Collect();
+    if(status.HasCodeCompletion()){
+      break;
+    }
   }
+  return status;
 }
-void ParsingDeclCollector::Collect() {
+SyntaxStatus ParsingDeclCollector::Collect() {
+  SyntaxStatus status;
   switch (GetParser().GetCurTok().GetKind()) {
   case tok::kw_public:
     GetAccessLevelCollector().AddPublic(GetParser().ConsumeToken());
@@ -212,8 +222,12 @@ void ParsingDeclCollector::Collect() {
     GetTypeSpecifierCollector().AddComplex64(GetParser().ConsumeToken());
     break;
   default:
+      // We did not find a type -- this could mean tha one was not specified or 
+      // it is a user defined type 
+      status.SetHasCodeCompletion();
     break;
   }
+  return status;
 }
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
@@ -237,7 +251,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-  ParsingScope parsingFunDecl(*this, ScopeKind::FunctionDecl,
+  ParsingScope parsingFunDecl(*this, ScopeKind::FunDecl,
                               "parsing fun declaration");
 
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
@@ -342,7 +356,7 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
     // We can call collect here to get the return type
     collector.CollectUntil(tok::l_brace);
     if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-      // Perform some logging function must return a function typ9e
+      // Perform some logging function must return a function type
       status.SetIsError();
       return status;
     }
