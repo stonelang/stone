@@ -38,6 +38,13 @@ void Parser::ParseTopLevelDecls(
   while (IsParsing()) {
     // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
+    if(result.IsNull()){
+      // Do some logging 
+      return; 
+    }
+    if (HasError()){
+      return; 
+    }
     if (listener) {
       if (HasError()) {
         listener->OnError();
@@ -102,10 +109,14 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
       result = ParseVarDecl(collector);
       goto EndParse;
     }
-    ConsumeToken();
   } // End of while
 
-EndParse : { return result; }
+EndParse : {
+  if (result.IsNull()) {
+    EndParsing();
+  }
+  return result;
+}
 }
 
 void ParsingDeclCollector::CollectUntil(tok kind) {
@@ -223,7 +234,6 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   }
 
   // We are dealing with a pointer operator and:
-
   return result;
 }
 

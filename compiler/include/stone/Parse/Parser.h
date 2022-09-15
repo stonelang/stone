@@ -224,7 +224,7 @@ public:
 
 public:
   /// Stop parsing now.
-  void StopParsing() { curTok.SetKind(tok::eof); }
+  void EndParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
