@@ -35,23 +35,20 @@ void Parser::ParseTopLevelDecls(
   if (curTok.Is(tok::MAX)) {
     ConsumeToken();
   }
+  auto Success = [&](SyntaxResult<Decl> &result) -> bool {
+    return (!result.IsError() && !HasError() && result.IsNonNull());
+  };
   while (IsParsing()) {
     // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
-    if(result.IsNull()){
-      // Do some logging 
-      return; 
-    }
-    if (HasError()){
-      return; 
+    if (!Success(result)) {
+      if (listener) {
+        listener->OnError();
+      }
+      return;
     }
     if (listener) {
-      if (HasError()) {
-        listener->OnError();
-        return;
-      } else {
-        listener->OnDecl(result.Get(), true);
-      }
+      listener->OnDecl(result.Get(), true);
     }
     results.push_back(result);
   }
