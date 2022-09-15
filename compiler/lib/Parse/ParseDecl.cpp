@@ -86,31 +86,16 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   while (result.IsNull() && IsParsing()) {
     collector.Collect();
     if (collector.GetFunctionSpecifierCollector().HasFun()) {
-      if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-        // We only allow pure on functions => non-member function
-        if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-          // Do some logging
-          goto EndParse;
-        }
-      }
       result = ParseFunDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsStruct()) {
-      if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-        // We only allow pure on structs
-        if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-          goto EndParse;
-        }
-      }
       result = ParseStructDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsEnum()) {
-      if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-      }
+      result = ParseEnumDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
-      if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-      }
+      return ParseInterfaceDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsBasicType() ||
                collector.GetTypeSpecifierCollector().IsAuto()) {
@@ -125,7 +110,6 @@ EndParse : { return result; }
 }
 
 void ParsingDeclCollector::CollectUntil(tok kind) {
-
   while (GetParser().GetCurTok().IsNot(kind)) {
     Collect();
   }
@@ -419,8 +403,18 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
+  ParsingScope parsingDecl(*this, ScopeKind::Struct, "parsing struct-declaration");
+
+
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
+
+  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    // We only allow pure on structs
+    if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
+      return result;
+    }
+  }
 
   auto structLoc = collector.GetTypeSpecifierCollector().GetLoc();
   assert(structLoc.isValid());
@@ -432,8 +426,17 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collectorifier) {
+SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   SyntaxResult<Decl> result;
+
+ ParsingScope parsingDecl(*this, ScopeKind::Enum, "parsing enum-declaration");
+
+  assert(collector.GetTypeSpecifierCollector().IsEnum() &&
+         "Attempting to parse a struct without a struct declaration.");
+
+  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    return result;
+  }
 
   // assert(curTok.IsEnum());
 
@@ -453,6 +456,12 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collectorifier) {
 SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
+  assert(collector.GetTypeSpecifierCollector().IsInterface() &&
+         "Attempting to parse a struct without a struct declaration.");
+
+  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    return result;
+  }
   return result;
 }
 
