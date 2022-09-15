@@ -82,7 +82,7 @@ public:
   }
 
   /// Return true if we found a code completion token while parsing this.
-  bool hasCodeCompletion() const {
+  bool HasCodeCompletion() const {
     return ptrAndBits.getInt() & IsCodeCompletion;
   }
 
@@ -149,7 +149,7 @@ public:
     if (Result.IsError()) {
       SetIsError();
     }
-    if (Result.hasCodeCompletion())
+    if (Result.HasCodeCompletion())
       IsCodeCompletion = true;
   }
 
@@ -159,7 +159,7 @@ public:
   bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
 
   /// Return true if we found a code completion token while parsing this.
-  bool hasCodeCompletion() const { return IsCodeCompletion; }
+  bool HasCodeCompletion() const { return IsCodeCompletion; }
 
   /// Return true if we encountered any errors while parsing this that the
   /// parser hasn't yet recovered from.
@@ -212,7 +212,7 @@ static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
   SyntaxResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
                                         : MakeSyntaxResult(Result);
 
-  if (Status.hasCodeCompletion()) {
+  if (Status.HasCodeCompletion()) {
     PR.SetHasCodeCompletion();
   }
   return PR;
@@ -221,7 +221,7 @@ static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
 template <typename T> SyntaxResult<T>::SyntaxResult(SyntaxStatus Status) {
   assert(Status.IsError());
   SetIsError();
-  if (Status.hasCodeCompletion()) {
+  if (Status.HasCodeCompletion()) {
     SetHasCodeCompletion();
   }
 }
