@@ -82,7 +82,6 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
   ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
-
   while (result.IsNull() && IsParsing()) {
     collector.Collect();
     if (collector.GetFunctionSpecifierCollector().HasFun()) {
@@ -403,8 +402,8 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
-  ParsingScope parsingDecl(*this, ScopeKind::Struct, "parsing struct-declaration");
-
+  ParsingScope parsingDecl(*this, ScopeKind::Struct,
+                           "parsing struct-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
@@ -429,7 +428,7 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   SyntaxResult<Decl> result;
 
- ParsingScope parsingDecl(*this, ScopeKind::Enum, "parsing enum-declaration");
+  ParsingScope parsingDecl(*this, ScopeKind::Enum, "parsing enum-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
@@ -437,8 +436,6 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     return result;
   }
-
-  // assert(curTok.IsEnum());
 
   // if(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()){
   //   // Log that a specifier is already present

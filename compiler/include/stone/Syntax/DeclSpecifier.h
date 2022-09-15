@@ -105,28 +105,30 @@ public:
     flags |= Fun;
     funLoc = loc;
   }
-  bool HasFun() { return flags & FunctionSpecifierCollector::Fun; }
+  bool HasFun() { return ((flags & Fun) && funLoc.isValid()); }
 
-  void AddInline(SrcLoc loc) { flags |= FunctionSpecifierCollector::Inline; }
-  bool HasInline() { return flags & FunctionSpecifierCollector::Inline; }
+  void AddInline(SrcLoc loc) {
+    flags |= Inline;
+    inlineLoc = loc;
+  }
+  bool HasInline() { return ((flags & Inline) && inlineLoc.isValid()); }
 
   void AddForcedInline(SrcLoc loc) {
-    flags |= FunctionSpecifierCollector::ForcedInline;
+    flags |= ForcedInline;
+    forcedInlineLoc = loc;
   }
   bool HasForcedInline() {
-    return flags & FunctionSpecifierCollector::ForcedInline;
+    return ((flags & ForcedInline) && forcedInlineLoc.isValid());
   }
 
-  void AddVirtual(SrcLoc loc) { flags |= FunctionSpecifierCollector::Virtual; }
-  bool HasVirtual() { return flags & FunctionSpecifierCollector::Virtual; }
+  void AddVirtual(SrcLoc loc) { flags |= Virtual; }
+  bool HasVirtual() { return ((flags & Virtual) && virtualLoc.isValid()); }
 
-  void AddNoReturn(SrcLoc loc) {
-    flags |= FunctionSpecifierCollector::NoReturn;
-  }
-  bool HasNoReturn() { return flags & FunctionSpecifierCollector::NoReturn; }
+  void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
+  bool HasNoReturn() { return (flags & NoReturn); }
 
-  void AddIsMember() { flags |= FunctionSpecifierCollector::IsMember; }
-  bool HasIsMember() { return flags & FunctionSpecifierCollector::IsMember; }
+  void AddIsMember() { flags |= IsMember; }
+  bool HasIsMember() { return (flags & IsMember); }
 
   SrcLoc GetFunLoc() { return funLoc; }
 };
