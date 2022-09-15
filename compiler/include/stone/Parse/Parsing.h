@@ -265,6 +265,7 @@ public:
   ~ParsingDeclCollector();
 
 public:
+public:
   void Verify();
   void Apply();
 

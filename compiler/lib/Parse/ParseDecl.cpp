@@ -85,6 +85,8 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   // TODO: Replace with ParsingScope
   ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
 
+  // CollectDecl(collector);
+
   while (true) {
   BeginParse:
 
@@ -102,6 +104,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
       } else {
         /// PrintD -- found dup
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseTypeQualifier:
@@ -113,6 +116,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
       } else {
         /// PrintD
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseStruct:
@@ -126,6 +130,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
       } else {
         // PrintD -- dup
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseInterface:
@@ -139,6 +144,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         result = ParseInterfaceDecl(collector);
       } else {
         // PrintD
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseEnum:
@@ -149,9 +155,10 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
           goto EndParse;
         }
         collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
-        result = ParseInterfaceDecl(collector);
+        result = ParseEnumDecl(collector);
       } else {
         // PrintD
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseFun:
@@ -165,12 +172,14 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
         if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
           // Log -- wrong place for type
+          StopParsing();
           goto EndParse;
         }
         collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
         result = ParseFunDecl(collector);
       } else {
         // PrintD
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseAuto:
@@ -185,6 +194,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         }
       } else {
         // PrintD
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParsePointer:
@@ -195,6 +205,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         goto BeginParse;
       } else {
         // PrinD -- random varialb
+        StopParsing();
       }
       goto EndParse;
     case ParsingDeclAction::ParseIdentifier:
@@ -205,23 +216,21 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
         result = ParseVarDecl(declarator);
       } else {
         // PrintD
+        StopParsing();
       }
       goto EndParse;
     default:
+      StopParsing();
       // Must find a top-level action
       goto EndParse;
     }
     ConsumeToken();
   } // End of while
 
-EndParse : {
-  // End requested, so we manually stop.
-  if (IsParsing()) {
-    StopParsing();
-  }
-  return result;
+EndParse : { return result; }
 }
-}
+
+void Parser::CollectDecl(ParsingDeclCollector &collector) {}
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclarator &declarator) {
 
@@ -396,9 +405,8 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
 
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
-
   SyntaxResult<Decl> result;
-  
+
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
@@ -409,20 +417,33 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(curTok.IsIdentifierOrUnderscore() &&
          "Invalid struct declarator or identifier");
 
-  return result; 
+  return result;
 }
 
 SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collectorifier) {
   SyntaxResult<Decl> result;
-  return result; 
+
+  // assert(curTok.IsEnum());
+
+  // if(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()){
+  //   // Log that a specifier is already present
+  //   return result;
+  // }
+
+  // if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  //   // Log that enums are not allowed to have qualifiers
+  //   return result;
+  // }
+  // collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
+
+  return result;
 }
 SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-  return result; 
+  return result;
 }
 
 void ParsingDeclCollector::Verify() {}
-
 
 void ParsingDeclCollector::Apply() {}

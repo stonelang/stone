@@ -137,6 +137,8 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
+  void CollectDecl(ParsingDeclCollector &collector);
+
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
@@ -224,7 +226,9 @@ public:
   /// Stop parsing now.
   void StopParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
-  bool IsParsing() { return (curTok.GetKind() != tok::eof) && (!HasError()); }
+  bool IsEOF() { curTok.GetKind() == tok::eof; }
+  bool IsParsing() { return (!IsEOF() && (!HasError());
+  }
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
   DiagnosticEngine &GetDiags() {
     return GetLangContext().GetDiagUnit().GetDiagEngine();
