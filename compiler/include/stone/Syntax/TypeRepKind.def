@@ -28,6 +28,8 @@ ABSTRACT_TYPEREP(Identifier, TypeRep)
   TYPEREP(CompoundIdentifier, IdentifierTypeRep)
 
 TYPEREP(Function, TypeRep)
+TYPEREP(TypeQualifier, TypeRep)
+TYPEREP(TypeSpecifier, TypeRep)
 TYPEREP(Array, TypeRep)
 TYPEREP(Dictionary, TypeRep)
 TYPEREP(Optional, TypeRep)

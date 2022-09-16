@@ -335,18 +335,24 @@ private:
 /// The qual type in this case is ust int with the aforementioned qualifiers
 class QualType final {
   friend class TypeQualifierCollector;
+
   // Thankfully, these are efficiently composable.
-  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;
+  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth>
+      typeAndFastWidth;
 
 public:
   QualType() = default;
-  QualType(Type *tyPtr, unsigned quals) : ptrInt(tyPtr, quals) {}
+  // TODO: come back to this -- it seems tha we should make this into a type and
+  // just pass the quals -- no need to pass the type as a separate parm
+  QualType(const Type *ty, unsigned quals) : typeAndFastWidth(ty, quals) {}
 
 public:
-  bool HasConstQual() const;
-  bool HasRestrictQual() const;
-  bool HasVolatileQual() const;
-  bool HasPureQual() const;
+  bool HasConst() const;
+  bool AddConst();
+
+  bool HasRestrict() const;
+  bool HasVolatile() const;
+  bool HasPure() const;
 
   bool HasQuals() const;
   bool IsCanonical() const;

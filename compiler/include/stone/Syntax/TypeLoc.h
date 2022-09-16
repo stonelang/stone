@@ -15,6 +15,8 @@ class SyntaxContext;
 
 /// Example: int a = 0;  The start loc is i and the range is i ...t
 class alignas(1 << TypeRepAlignInBits) TypeLoc {
+
+  // TODO: This may actually be QualType instead of jus Type
   Type ty;
   TypeRep *tyRep = nullptr;
 
@@ -39,8 +41,10 @@ public:
   SrcLoc GetLoc() const;
   SrcRange GetSrcRange() const;
   bool HasLoc() const { return tyRep != nullptr; }
+
   TypeRep *GetTypeRep() const { return tyRep; }
   Type GetType() const { return ty; }
+
   bool IsNull() const { return GetType().IsNull() && tyRep == nullptr; }
   void SetType(Type ty);
 
@@ -56,6 +60,13 @@ public:
     return !(lhs == rhs);
   }
 };
+
+// class alignas(1 << TypeRepAlignInBits) QualTypeLoc {
+//   TypeLoc typeLoc;
+// public:
+
+//   QualTypeLoc(TypeLoc typeLoc) : typeLoc(typeLoc) {}
+// };
 
 } // namespace syn
 } // namespace stone

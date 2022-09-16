@@ -72,6 +72,8 @@ public:
   SrcLoc GetPureLoc() const { return pureLoc; }
 };
 
+class TypeSpecTypeRep : public TypeRep {};
+
 class IdentifierTypeRep : public QualTypeRep {};
 
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
