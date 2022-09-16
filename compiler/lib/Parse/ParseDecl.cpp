@@ -87,9 +87,9 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   SyntaxResult<Decl> result;
   ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
   while (result.IsNull() && IsParsing()) {
-    
-    status|= collector.Collect();
-    if(status.HasCodeCompletion()){
+
+    status |= collector.Collect();
+    if (status.HasCodeCompletion()) {
       goto EndParse;
     }
     if (collector.GetFunctionSpecifierCollector().HasFun()) {
@@ -123,8 +123,8 @@ EndParse : {
 SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
   SyntaxStatus status;
   while (GetParser().GetCurTok().IsNot(kind)) {
-    status|= Collect();
-    if(status.HasCodeCompletion()){
+    status |= Collect();
+    if (status.HasCodeCompletion()) {
       break;
     }
   }
@@ -222,9 +222,9 @@ SyntaxStatus ParsingDeclCollector::Collect() {
     GetTypeSpecifierCollector().AddComplex64(GetParser().ConsumeToken());
     break;
   default:
-      // We did not find a type -- this could mean tha one was not specified or 
-      // it is a user defined type 
-      status.SetHasCodeCompletion();
+    // We did not find a type -- this could mean tha one was not specified or
+    // it is a user defined type
+    status.SetHasCodeCompletion();
     break;
   }
   return status;

@@ -215,7 +215,6 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-
 Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
                            DiagnosticEngine &diags, Scope *parent) {
   return new (sc) Scope(kind, diags, parent);

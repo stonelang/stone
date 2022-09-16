@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_Type_H
 #define STONE_SYNTAX_Type_H
 
+#include "stone/Basic/Result.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
