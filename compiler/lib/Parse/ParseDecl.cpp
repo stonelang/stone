@@ -234,6 +234,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
+  ParsingScope varDeclScope(*this, ScopeKind::VarDecl, "parsing var declaration");
+
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attempting to parse a variable without a type.");
 
@@ -429,7 +431,7 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-  ParsingScope structDeclScope(*this, ScopeKind::Struct,
+  ParsingScope structDeclScope(*this, ScopeKind::StructDecl,
                                "parsing struct-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
@@ -455,7 +457,7 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   SyntaxResult<Decl> result;
 
-  ParsingScope enumDeclScope(*this, ScopeKind::Enum,
+  ParsingScope enumDeclScope(*this, ScopeKind::EnumDecl,
                              "parsing enum-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsEnum() &&
@@ -482,7 +484,7 @@ SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
-  ParsingScope interfaceDeclScope(*this, ScopeKind::Enum,
+  ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&

@@ -53,7 +53,7 @@ enum class ScopeKind : UInt8 {
   Control,
 
   /// The scope of a struct/union/class definition.
-  Struct,
+  StructDecl,
 
   /// This is a scope that corresponds to a block/closure object.
   /// Blocks serve as top-level scopes for some objects like labels, they
@@ -68,14 +68,14 @@ enum class ScopeKind : UInt8 {
   TemplateParams,
 
   /// This scope corresponds to an enum.
-  Enum,
+  EnumDecl,
 
   /// This is a compound statement scope.
   BlockStmt,
 
   /// We are between inheritance colon and the real class/struct definition
   /// scope. TypeDeclaration?
-  Interface,
+  InterfaceDecl,
 
   Constructor,
 
@@ -84,6 +84,8 @@ enum class ScopeKind : UInt8 {
   ReturnClause,
 
   Type,
+
+  VarDecl, 
 };
 
 class Scope final : public syn::SyntaxAllocation<Scope> {
