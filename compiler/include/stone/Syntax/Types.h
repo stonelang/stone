@@ -72,6 +72,20 @@ class alignas(1 << TypeAlignInBits) TypeBase
     const SyntaxContext *sc;
   };
 
+protected:
+  union {
+    uint64_t OpaqueBits;
+    /// Kind - The discriminator that indicates what subclass of type this is.
+    // STONE_INLINE_BITFIELD_BASE(TypeBase, stone::BitMax(NumTypeKindBits, 8),
+
+    //   Kind :stone::BitMax(NumTypeKindBits, 8),
+    //   /// Whether this type is canonical or not.
+    //   IsCanonical : 1
+
+    // );
+
+  } Bits;
+
 public:
   TypeBase(TypeKind kind, const SyntaxContext *canTypeCtx)
       : kind(kind), sc(nullptr) {
