@@ -260,8 +260,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
 
-  auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
-
+ 
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     // We only allow pure on functions => non-member function
     if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
@@ -270,10 +269,17 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     }
   }
 
+  if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    // TODO: Log a message -- not allowed to have type specs here
+    return result;
+  }
+
   if (!GetCurTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
     return result;
   }
+
+ auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
 
   // ParsingDeclarator parsingDeclarator(collector);
   // ParseDeclarator(parsingDeclarator);
@@ -304,6 +310,11 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Now, parse the function signature
   status |= ParseFunctionSignature(nameInfo, collector);
 
+  if(status.IsError()){
+    return result;
+  }
+
+  // Create the function 
   auto funDecl = syn::MakeFunDecl(nameInfo, sc, GetCurDeclContext());
   assert(funDecl);
 
