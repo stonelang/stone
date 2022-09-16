@@ -106,6 +106,12 @@ public:
 
 public:
   TypeKind GetKind() const { return kind; }
+
+  // TypeKind GetKind() const { return
+  // static_cast<TypeKind>(Bits.TypeBase.Kind); }
+
+  // We can do this because all types are generally cannonical types.
+  // CanQualType GetCanQualType();
 };
 
 class AbstractFunctionType : public TypeBase {
@@ -255,9 +261,14 @@ public:
 };
 class PointerType : public AbstractPointerType {
 
+  QualType pointeeType;
+
 public:
   PointerType(const SyntaxContext &sc)
       : AbstractPointerType(TypeKind::Pointer, sc) {}
+
+public:
+  // QualType GetPointeeType() const { return pointeeType; }
 };
 
 class SugarType : public TypeBase {

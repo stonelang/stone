@@ -21,8 +21,8 @@ void *syn::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-FunDecl *syn::MakeFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
-                          DeclContext *parent) {
+FunDecl *FunDeclFactory::Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
+                                TypeRep *result, DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 

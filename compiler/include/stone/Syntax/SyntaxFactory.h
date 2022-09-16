@@ -28,14 +28,16 @@ namespace syn {
 template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
-}
-namespace syn {
-SyntaxFile *MakeSyntaxFile(SyntaxFileKind kind, unsigned srcID, Module &owner,
-                           SyntaxContext &sc, bool isPrimary = false);
-}
-namespace syn {
-FunDecl *MakeFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
-                     DeclContext *parent);
+
+struct FunDeclFactory final {
+  static FunDecl *Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
+                         TypeRep *result, DeclContext *parent);
+};
+
+struct SyntaxFileFactory final {
+  static SyntaxFile *Create(SyntaxFileKind kind, unsigned srcID, Module &owner,
+                            SyntaxContext &sc, bool isPrimary = false);
+};
 
 StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
                            DeclContext *parent = nullptr);
@@ -52,9 +54,6 @@ void VerifyFunDecl(Decl *d);
 //   return identifier && identifier->isStr(str);
 // }
 
-} // namespace syn
-
-namespace syn {
 //== Statements ==/
 BraceStmt *MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
                          SrcLoc rbloc, SyntaxContext &sc,

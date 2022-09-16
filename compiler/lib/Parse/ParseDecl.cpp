@@ -315,7 +315,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   }
 
   // Create the function
-  auto funDecl = syn::MakeFunDecl(nameInfo, sc, GetCurDeclContext());
+  auto funDecl =
+      FunDeclFactory::Create(nameInfo, sc, nullptr, GetCurDeclContext());
   assert(funDecl);
 
   // // TODO: Think about this part

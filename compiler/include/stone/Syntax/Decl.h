@@ -347,10 +347,8 @@ public:
 
 class ValueDecl : public NamedDecl {
 
-  // TypeLoc typeLoc;
-
-  // llvm::PointerIntPair<Type, 3, llvm::OptionalEnum<AccessLevel>>
-  // qualTypeAndAccess;
+  // llvm::PointerIntPair<QualType, 3, AccessLevel>>
+  //     qualTypeAndAccess;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -474,10 +472,14 @@ public:
 
 class GenericTypeDecl : public TypeDecl {};
 
+// class TemplateTypeDecl : public TypeDecl();
+
 // This is really your function prototye
 class FunctionDecl
     : public DeclContext,
       public DeclaratorDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+
+  // TypeLoc returnType;
 
   /// This enum member is active if GetBodyKind() is BodyKind::Parsed or
   /// BodyKind::TypeChecked.
