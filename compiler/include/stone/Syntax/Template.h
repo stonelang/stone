@@ -80,7 +80,7 @@ public:
 };
 
 class TemplateParameterList final
-    : private llvm::TrailingObjects<TemplateParameterList, NamedDecl *> {
+    : private llvm::TrailingObjects<TemplateParameterList, NameableDecl *> {
 
   SrcRange brackets;
 

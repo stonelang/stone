@@ -6,16 +6,16 @@
 #define CONTEXT_BASE_DECL(Id, Parent)
 #endif
 
-#ifndef NAMED_DECL
-#define NAMED_DECL(Id, Parent) DECL(Id, Parent)
+#ifndef NAMEABLE_DECL
+#define NAMEABLE_DECL(Id, Parent) DECL(Id, Parent)
 #endif
 
 #ifndef NOMINAL_TYPE_DECL
-#define NOMINAL_TYPE_DECL(Id, Parent) NAMED_DECL(Id, Parent)
+#define NOMINAL_TYPE_DECL(Id, Parent) NAMEABLE_DECL(Id, Parent)
 #endif
 
 #ifndef TEMPLATE_DECL
-#define TEMPLATE_DECL(Id, Parent) NAMED_DECL(Id, Parent)
+#define TEMPLATE_DECL(Id, Parent) NAMEABLE_DECL(Id, Parent)
 #endif
 
 /// CONTEXT_DECL(Id, Parent)
@@ -128,12 +128,12 @@
 #define LAST_DECL(Id)
 #endif
 
-BASE_DECL(Named, Decl)
-	NAMED_DECL(Space, NamedDecl)
-	NAMED_DECL(Use, NamedDecl)
-	NAMED_DECL(Label, NamedDecl) // break, continue, and goto
-	DECL_RANGE(Named, Space, Label)
-	BASE_DECL(Value, NamedDecl)
+BASE_DECL(Nameable, Decl)
+	NAMEABLE_DECL(Space, NameableDecl)
+	NAMEABLE_DECL(Use, NameableDecl)
+	NAMEABLE_DECL(Label, NameableDecl) // break, continue, and goto
+	DECL_RANGE(Nameable, Space, Label)
+	BASE_DECL(Value, NameableDecl)
 		BASE_DECL(Type, ValueDecl)
 			CONTEXT_BASE_DECL(NominalType, TypeDecl)
 				NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
@@ -153,7 +153,7 @@ BASE_DECL(Named, Decl)
 			VALUE_DECL(Var, StorageDecl)
 			VALUE_DECL(Param, VarDecl)
 		CONTEXT_VALUE_DECL(Module, TypeDecl)
-	BASE_DECL(Template, NamedDecl)
+	BASE_DECL(Template, NameableDecl)
 		TEMPLATE_DECL(FunctionTemplate, Template)
 		TEMPLATE_DECL(StructTemplate, Template)
 		TEMPLATE_DECL(InterfaceTemplate, Template)
@@ -165,7 +165,7 @@ BASE_DECL(Named, Decl)
 DECL(IfConfig, Decl)
 LAST_DECL(IfConfig)
 
-#undef NAMED_DECL
+#undef NAMEABLE_DECL
 #undef NOMINAL_TYPE_DECL
 #undef CONTEXT_DECL
 #undef ITERABLE_NONGENERIC_DECL

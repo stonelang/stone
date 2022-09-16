@@ -310,7 +310,7 @@ public:
   bool Walk(SyntaxWalker &walker);
 };
 
-class NamedDecl : public Decl {
+class NameableDecl : public Decl {
   /// The name of this declaration, which is typically a normal
   /// identifier but may also be a special ty of name (C++
   /// constructor, etc.)
@@ -318,7 +318,7 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+  NameableDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
             UnifiedContext context)
       : Decl(kind, context), name(name), nameLoc(nameLoc) {}
 
@@ -345,7 +345,7 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-class ValueDecl : public NamedDecl {
+class ValueDecl : public NameableDecl {
 
   // llvm::PointerIntPair<QualType, 3, AccessLevel>>
   //     qualTypeAndAccess;
@@ -353,7 +353,7 @@ class ValueDecl : public NamedDecl {
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
             UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context) {}
+      : NameableDecl(kind, name, nameLoc, context) {}
 
 public:
   // void SetQualType(QualType inputQualType) { qualType = inputQualType; }
@@ -415,24 +415,24 @@ public:
       : ValueDecl(kind, name, nameLoc, context) {}
 };
 
-// class LabelDecl : public NamedDecl {
+// class LabelDecl : public NameableDecl {
 // public:
 // };
 
-class SpaceDecl final : public NamedDecl {
+class SpaceDecl final : public NameableDecl {
 public:
   // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-  //     : NamedDecl(DeclKind::Space, dc, loc, name) {}
+  //     : NameableDecl(DeclKind::Space, dc, loc, name) {}
 };
 
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
 /// requirements for any corresponding type argument.
-// class AbstractTypeParamDecl : public NamedDecl {
+// class AbstractTypeParamDecl : public NameableDecl {
 // protected:
 //   AbstractTypeParamDecl(DeclKind kind, DeclContext *dc, Identifier name,
 //                         SourceLoc NameLoc)
-//     : NamedDecl(kind, dc, name, NameLoc, { }) { }
+//     : NameableDecl(kind, dc, name, NameLoc, { }) { }
 
 // public:
 //   /// Retrieve the set of protocols to which this abstract type
@@ -649,11 +649,11 @@ class ParamDecl : public VarDecl {
 public:
 };
 
-class TemplateDecl : public NamedDecl {
+class TemplateDecl : public NameableDecl {
 public:
 };
 
-class UsingDecl final : public NamedDecl {
+class UsingDecl final : public NameableDecl {
   SrcLoc usingLoc;
   UsingKind usingKind;
 

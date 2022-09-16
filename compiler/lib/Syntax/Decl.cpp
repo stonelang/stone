@@ -100,8 +100,9 @@ bool ValueDecl::IsInstanceMember() const {
 }
 
 template <std::size_t len>
-static bool IsMainImpl(const NamedDecl *named, const char (&str)[len]) {
-  const Identifier *identifier = named->GetIdentifier();
+static bool IsMainImpl(const NameableDecl *nameable, const char (&str)[len]) {
+  assert(nameable);
+  const Identifier *identifier = nameable->GetIdentifier();
   return identifier && identifier->isStr(str);
 }
 
