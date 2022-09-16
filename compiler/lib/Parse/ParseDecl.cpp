@@ -63,9 +63,8 @@ SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
   assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
   assert(GetCurScope() == nullptr && "A scope is already active?");
 
-  // TODO: Get scope description from scopdeid::parsing_top_level_declaration
-  ParsingScope parsingTopLevelDecl(*this, ScopeKind::SyntaxFile,
-                                   "parsing top-level declaration");
+  ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
+                             "parsing top-level declaration");
 
   return ParseDecl(ParsingDeclFlags::AllowTopLevel);
 }
@@ -85,7 +84,9 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   SyntaxStatus status;
   SyntaxResult<Decl> result;
-  ParsingScope parsingDecl(*this, ScopeKind::Decl, "parsing declaration");
+
+  ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
+
   while (result.IsNull() && IsParsing()) {
 
     status |= collector.Collect();
@@ -251,8 +252,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-  ParsingScope parsingFunDecl(*this, ScopeKind::FunDecl,
-                              "parsing fun declaration");
+  ParsingScope funDeclScope(*this, ScopeKind::FunDecl,
+                            "parsing fun declaration");
 
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
@@ -327,8 +328,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                             ParsingDeclCollector &collector) {
   SyntaxStatus status;
-  ParsingScope parsingFunSig(*this, ScopeKind::FunctionSignature,
-                             "parsing fun signature");
+  ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
+                           "parsing fun signature");
 
   status |= ParseFunctionArguments(collector);
   if (status.IsError()) {
@@ -383,6 +384,9 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   SrcLoc lParenLoc;
   SrcLoc rParenLoc;
 
+  ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
+                           "parsing fun arguments");
+
   if (curTok.IsLeftParen()) {
     lParenLoc = ConsumeToken(tok::l_paren);
   } else {
@@ -405,6 +409,9 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
                                        FunctionDecl &funDecl) {
 
   SyntaxStatus status;
+  ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
+                            "parsing fun arguments");
+
   assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
   auto lParenLoc = ConsumeToken(tok::l_brace);
 
@@ -422,9 +429,8 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
 SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-
-  ParsingScope parsingDecl(*this, ScopeKind::Struct,
-                           "parsing struct-declaration");
+  ParsingScope structDeclScope(*this, ScopeKind::Struct,
+                               "parsing struct-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
@@ -449,7 +455,8 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   SyntaxResult<Decl> result;
 
-  ParsingScope parsingDecl(*this, ScopeKind::Enum, "parsing enum-declaration");
+  ParsingScope enumDeclScope(*this, ScopeKind::Enum,
+                             "parsing enum-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
@@ -474,6 +481,10 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
 SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
+
+  ParsingScope interfaceDeclScope(*this, ScopeKind::Enum,
+                                  "parsing interface-declaration");
+
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&
          "Attempting to parse a struct without a struct declaration.");
 

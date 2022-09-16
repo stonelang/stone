@@ -191,7 +191,7 @@ ParsingDeclAction Parser::GetParsingDeclAction() {
 void Parser::EnterScope(ScopeKind kind) {
 
   if (!GetCurScope()) {
-    assert(kind == ScopeKind::SyntaxFile);
+    assert(kind == ScopeKind::TopLevel);
   }
   // Create the new scope
   auto curScope = CreateScope(kind, GetCurScope());

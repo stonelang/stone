@@ -15,6 +15,8 @@ class Decl;
 // TODO: Think about
 enum class ScopeKind : UInt8 {
   None = 0,
+
+  TopLevel,
   /// A syntax file , which is the root of a scope.
   SyntaxFile,
 
@@ -32,7 +34,7 @@ enum class ScopeKind : UInt8 {
   FunctionSignature,
 
   /// The parameters of a function/initializer/deinitializer.
-  FunctionParams,
+  FunctionArguments,
 
   /// The body of a function.
   FunctionBody,
