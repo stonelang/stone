@@ -1,0 +1,52 @@
+/// TYPEREP(Id, Parent)
+///   The TypeRep's enumerator value is TypeRepKind::Id.  The TypeRep's
+///   class name is Id##TypeRep, and the name of its base class is Parent.
+#ifndef TYPEREP
+# error Included TypeRepNodes.def without defining TYPEREP!
+#endif
+
+/// An abstract node is an abstract base class in the hierarchy;
+/// it is never a most-derived type, and it does not have an enumerator in
+/// TypeRepKind.
+///
+/// Most metaprograms do not care about abstract classes, so the default
+/// is to ignore them.
+#ifndef ABSTRACT_TYPEREP
+#define ABSTRACT_TYPEREP(Id, Parent)
+#endif
+
+#ifndef LAST_TYPEREP
+#define LAST_TYPEREP(Id)
+#endif
+
+TYPEREP(Error, TypeRep)
+TYPEREP(Attributed, TypeRep)
+ABSTRACT_TYPEREP(Identifier, TypeRep)
+  ABSTRACT_TYPEREP(ComponentIdentifier, IdentifierTypeRep)
+    TYPEREP(SimpleIdentifier, ComponentIdentifierTypeRep)
+    TYPEREP(GenericIdentifier, ComponentIdentifierTypeRep)
+  TYPEREP(CompoundIdentifier, IdentifierTypeRep)
+
+TYPEREP(Function, TypeRep)
+TYPEREP(Array, TypeRep)
+TYPEREP(Dictionary, TypeRep)
+TYPEREP(Optional, TypeRep)
+TYPEREP(Tuple, TypeRep)
+TYPEREP(Composition, TypeRep)
+TYPEREP(Metatype, TypeRep)
+TYPEREP(Interface, TypeRep)
+TYPEREP(OpaqueReturn, TypeRep)
+TYPEREP(NamedOpaqueReturn, TypeRep)
+TYPEREP(Existential, TypeRep)
+TYPEREP(Placeholder, TypeRep)
+ABSTRACT_TYPEREP(Specifier, TypeRep)
+  TYPEREP(InOut, SpecifierTypeRep)
+  TYPEREP(Shared, SpecifierTypeRep)
+  TYPEREP(Owned, SpecifierTypeRep)
+  TYPEREP(Isolated, SpecifierTypeRep)
+TYPEREP(Fixed, TypeRep)
+LAST_TYPEREP(Fixed)
+
+#undef ABSTRACT_TYPEREP
+#undef TYPEREP
+#undef LAST_TYPEREP

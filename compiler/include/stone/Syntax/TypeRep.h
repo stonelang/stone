@@ -23,6 +23,16 @@ class TypeDecl;
 class TupleTypeRep;
 class IdentifierTypeRep;
 
+enum class TypeRepKind : UInt8 {
+#define TYPEREP(ID, PARENT) ID,
+#define LAST_TYPEREP(ID) Last_TypeRep = ID,
+#include "TypeRepKind.def"
+};
+enum : unsigned {
+  NumTypeReprKindBits =
+      stone::CountBitsUsed(static_cast<unsigned>(TypeRepKind::Last_TypeRep))
+};
+
 /// Representation of a type as written in source.
 class alignas(1 << TypeRepAlignInBits) TypeRep
     : public SyntaxAllocation<TypeRep> {

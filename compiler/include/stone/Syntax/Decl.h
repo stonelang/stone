@@ -319,7 +319,7 @@ class NameableDecl : public Decl {
 
 protected:
   NameableDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-            UnifiedContext context)
+               UnifiedContext context)
       : Decl(kind, context), name(name), nameLoc(nameLoc) {}
 
 public:
