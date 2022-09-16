@@ -31,6 +31,9 @@ class alignas(1 << TypeRepAlignInBits) TypeRep
   void operator=(const TypeRep &) = delete;
 
 public:
+  TypeRep() {}
+
+public:
   /// Walk this type representation.
   TypeRep *Walk(SyntaxWalker &walker);
   TypeRep *Walk(SyntaxWalker &&walker) { return Walk(walker); }
@@ -105,12 +108,14 @@ public:
 /// May want to inherit from QualTypeRep
 
 // Ex: public pure fun
-class FunctionTypeRep : public QualTypeRep {
+class FunctionTypeRep : public TypeRep {
   QualTypeRep *resultTy;
 
 public:
-  // FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
-  // QualTypeRep *GetResultType() { return resultTy; }
+  FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
+
+public:
+  QualTypeRep *GetResultTypeRep() { return resultTy; }
 };
 
 /// All this may be covered by the IdentifierTypeRep

@@ -234,7 +234,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
-  ParsingScope varDeclScope(*this, ScopeKind::VarDecl, "parsing var declaration");
+  ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
+                            "parsing var declaration");
 
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attempting to parse a variable without a type.");
@@ -260,7 +261,6 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
 
- 
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     // We only allow pure on functions => non-member function
     if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
@@ -279,7 +279,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return result;
   }
 
- auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
+  auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
 
   // ParsingDeclarator parsingDeclarator(collector);
   // ParseDeclarator(parsingDeclarator);
@@ -310,11 +310,11 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Now, parse the function signature
   status |= ParseFunctionSignature(nameInfo, collector);
 
-  if(status.IsError()){
+  if (status.IsError()) {
     return result;
   }
 
-  // Create the function 
+  // Create the function
   auto funDecl = syn::MakeFunDecl(nameInfo, sc, GetCurDeclContext());
   assert(funDecl);
 

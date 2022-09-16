@@ -73,6 +73,11 @@ enum : unsigned {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
 };
 
+// Kinds of pointer types.
+enum PointerTypeKind : unsigned {
+  Raw,
+};
+
 class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
   friend DeclStats;
 
@@ -342,8 +347,10 @@ public:
 
 class ValueDecl : public NamedDecl {
 
-  // The actual declaration type
-  QualType qualType;
+  // TypeLoc typeLoc;
+
+  // llvm::PointerIntPair<Type, 3, llvm::OptionalEnum<AccessLevel>>
+  // qualTypeAndAccess;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -351,13 +358,25 @@ public:
       : NamedDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetQualType(QualType inputQualType) { qualType = inputQualType; }
-  QualType GetQualType() { return qualType; }
+  // void SetQualType(QualType inputQualType) { qualType = inputQualType; }
+  // QualType GetQualType() { return qualType; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
+
+  //  void SetAccess(AccessLevel access) {
+  //   assert(!HasAccess() && "access already set");
+  //   OverwriteAccess(access);
+  // }
+
+  /// Overwrite the access of this declaration.
+  ///
+  /// This is needed in the LLDB REPL.
+  // void OverwriteAccess(AccessLevel access) {
+  //   qualTypeAndAccess.setInt(access);
+  // }
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
@@ -522,6 +541,8 @@ class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
   SrcLoc funLoc;
   bool hasLBrace;
+
+  // QualTypeRep *resultTy;
 
 public:
   FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
