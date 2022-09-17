@@ -333,18 +333,21 @@ private:
 };
 /// const int a = 10; volatile int a = 10;
 /// The qual type in this case is ust int with the aforementioned qualifiers
-class QualType final {
+class QualType : public Type {
   friend class TypeQualifierCollector;
 
   // Thankfully, these are efficiently composable.
-  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth>
-      typeAndFastWidth;
+  // llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth>
+  //     typeAndFastWidth;
+  unsigned quals;
 
 public:
   QualType() = default;
+
+  QualType(TypeBase *ty, unsigned quals) : Type(ty), quals(quals) {}
   // TODO: come back to this -- it seems tha we should make this into a type and
   // just pass the quals -- no need to pass the type as a separate parm
-  QualType(const Type *ty, unsigned quals) : typeAndFastWidth(ty, quals) {}
+  QualType(Type ty, unsigned quals) : Type(ty), quals(quals) {}
 
 public:
   bool HasConst() const;
@@ -370,25 +373,27 @@ public:
 /// one of these, use Type->GetCanType().  Since all
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
-class CanQualType {
-  Type tyPtr;
-
+class CanType final : public Type {
 public:
   /// Constructs a NULL canonical type.
-  CanQualType() = default;
+  CanType() = default;
 
 public:
-  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
-    assert(IsCanQualTypeOrNull() &&
+  explicit CanType(TypeBase *ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanQualType(Type tyPtr) : tyPtr(tyPtr) {
-    assert(IsCanQualTypeOrNull() &&
+  explicit CanType(Type ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(QualType ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
 
 private:
-  bool IsCanQualTypeOrNull() const { return true; }
+  bool IsCanTypeOrNull() const { return true; }
 };
 
 class TypeQualifierCollector final : public TypeQualifierContext {

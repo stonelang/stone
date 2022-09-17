@@ -52,7 +52,7 @@ class ExtQuals; // Extended Qualifiers
 class QualType; // Qualified SyntaxTypes
 class StructDecl;
 class SyntaxType;
-class CanQualType;
+class CanType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
@@ -68,7 +68,7 @@ class alignas(1 << TypeAlignInBits) TypeBase
   /// non-canonical type is requested. The disposition of the union is stored
   /// outside of the union for performance. See Bits.TypeBase.IsCanonical.
   union {
-    CanQualType canQualType;
+    CanType canType;
     const SyntaxContext *sc;
   };
 
@@ -111,7 +111,7 @@ public:
   // static_cast<TypeKind>(Bits.TypeBase.Kind); }
 
   // We can do this because all types are generally cannonical types.
-  // CanQualType GetCanQualType();
+  // CanType GetCanType();
 };
 
 class AbstractFunctionType : public TypeBase {
