@@ -4,6 +4,8 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/TypeAlignment.h"
+
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -36,6 +38,17 @@ enum class TypeSpecifierKind : uint8_t {
   Imaginary32,
   Imaginary64,
 
+};
+
+/// TODO: Flag it
+enum class TypeSpecifierChunkKind : UInt8 {
+  Pointer,
+  Reference,
+  Array,
+  Function,
+  MemberPointer,
+  Paren,
+  Pipe,
 };
 
 class TypeSpecifierCollector final {

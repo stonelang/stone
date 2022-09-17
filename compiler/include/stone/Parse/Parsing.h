@@ -154,6 +154,7 @@ public:
 public:
   Parser &GetParser() { return parser; }
   SyntaxStatus Collect();
+  SyntaxStatus CollectSpecifier();
   SyntaxStatus CollectUntil(tok kind);
 
 public:
@@ -161,16 +162,15 @@ public:
   void Apply();
 };
 
-class ParsingDeclarator final : public Declarator {
+class ParsingDeclaratorCollector final : public DeclaratorCollector {
 public:
-  ParsingDeclarator(const ParsingDeclCollector &specifier,
-                    DeclaratorContextKind contextKind)
-      : Declarator(specifier, contextKind) {}
+  ParsingDeclaratorCollector(const ParsingDeclCollector &collector,
+                             DeclaratorScopeKind declaratorScopeKind)
+      : DeclaratorCollector(collector, declaratorScopeKind) {}
 
 public:
-  const ParsingDeclCollector &GetParsingDeclCollector() {
-    return static_cast<const ParsingDeclCollector &>(
-        Declarator::GetDeclSpecifier());
+  const ParsingDeclCollector &GetParsingDeclCollector() const {
+    return static_cast<const ParsingDeclCollector &>(DeclaratorCollector::GetDeclSpecifier());
   }
 };
 

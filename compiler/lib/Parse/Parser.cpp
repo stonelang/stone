@@ -186,7 +186,6 @@ ParsingDeclAction Parser::GetParsingDeclAction() {
     return ParsingDeclAction::None;
   }
 }
-
 /// EnterScope - start a new scope.
 void Parser::EnterScope(ScopeKind kind) {
 

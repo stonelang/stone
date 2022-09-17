@@ -71,12 +71,13 @@ enum class ScopeKind : UInt8 {
   EnumDecl,
 
   /// This is a compound statement scope.
-  BlockStmt,
+  BraceStmt,
 
   /// We are between inheritance colon and the real class/struct definition
   /// scope. TypeDeclaration?
   InterfaceDecl,
 
+  ///
   Constructor,
 
   Destructor,
@@ -86,6 +87,11 @@ enum class ScopeKind : UInt8 {
   Type,
 
   VarDecl,
+
+  New,
+
+  Alias,
+
 };
 
 class Scope final : public syn::SyntaxAllocation<Scope> {

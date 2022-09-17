@@ -2,18 +2,20 @@
 
 using namespace stone::syn;
 
-DeclaratorChunk DeclaratorChunk::CreatePointer() {
-
-  DeclaratorChunk chunk;
+PointerDeclaratorChunk PointerDeclaratorChunk::Create() {
+  PointerDeclaratorChunk chunk;
   return chunk;
 }
-DeclaratorChunk DeclaratorChunk::CreateReference() {
 
-  DeclaratorChunk chunk;
+void PointerDeclaratorChunk::AddPointer() {
+  // pointerCount++;
+}
+
+ReferenceDeclaratorChunk ReferenceDeclaratorChunk::Create() {
+  ReferenceDeclaratorChunk chunk;
   return chunk;
 }
-DeclaratorChunk DeclaratorChunk::CreateFunction() {
 
-  DeclaratorChunk chunk;
-  return chunk;
+void ReferenceDeclaratorChunk::AddReference() {
+  // referenceCount++;
 }

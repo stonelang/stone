@@ -27,7 +27,7 @@
 
 namespace stone {
 namespace syn {
-
+class NameableDecl;
 /// The kind of template argument we're storing.
 enum class TemplateArgumentKind : uint8_t {
   /// Represents an empty template argument, e.g., one that has not
@@ -101,7 +101,12 @@ public:
 
 using TemplateParameterLists = llvm::SmallVector<TemplateParameterList *, 4>;
 
-class TemplateContext {};
+class alignas(8) TemplateContextBase {
+public:
+};
+class TemplateContext : public TemplateContextBase, public DeclContext {
+public:
+};
 
 } // namespace syn
 } // namespace stone

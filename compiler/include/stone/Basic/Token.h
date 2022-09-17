@@ -78,6 +78,7 @@ public:
 
   // This is good for now.
   bool IsPointerOperator() { return kind == tok::star; }
+  bool IsReferenceOperator() { return kind == tok::amp_prefix; }
 
   bool IsAnyOperator() const {
     return IsBinaryOperator() || kind == tok::oper_postfix ||

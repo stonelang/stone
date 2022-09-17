@@ -89,7 +89,8 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   while (result.IsNull() && IsParsing()) {
 
-    status |= collector.Collect();
+    /// Collect the specifier and it's associated quals
+    status |= collector.CollectSpecifier();
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
@@ -103,11 +104,10 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
       result = ParseEnumDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
-      return ParseInterfaceDecl(collector);
+      result = ParseInterfaceDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsBasicType() ||
                collector.GetTypeSpecifierCollector().IsAuto()) {
-
       result = ParseVarDecl(collector);
       goto EndParse;
     }
@@ -131,6 +131,8 @@ SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
   }
   return status;
 }
+SyntaxStatus ParsingDeclCollector::CollectSpecifier() { return Collect(); }
+
 SyntaxStatus ParsingDeclCollector::Collect() {
   SyntaxStatus status;
   switch (GetParser().GetCurTok().GetKind()) {
@@ -230,6 +232,7 @@ SyntaxStatus ParsingDeclCollector::Collect() {
   }
   return status;
 }
+
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
@@ -237,19 +240,51 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
-  assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
-         "Attempting to parse a variable without a type.");
+  // NOTE: You must check the current scope to determine the DeclaratorScopeKind
+  // to you
+  //  ParsingDeclaratorCollector declaratorCollector(
+  //      collector, DeclaratorContextKind::Variable);
 
-  if (curTok.IsPointerOperator()) {
-    // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
-    ConsumeToken();
-  }
-  /// This is where you will call ParseType
-  if (!curTok.IsIdentifierOrUnderscore()) {
-  }
+  // auto status = ParseDeclarator(declaratorCollector);
 
-  // We are dealing with a pointer operator and:
+  // if (!curTok.IsIdentifierOrUnderscore()) {
+  // }
   return result;
+}
+
+SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
+  SyntaxStatus status;
+
+  assert(collector.GetParsingDeclCollector().GetTypeSpecifierCollector()
+             .HasTypeSpecifierKind() &&
+         "Attempting to parse a declarator without a type-specifier.");
+
+  // 1. Are you parsing a VarDecl
+  // if(GetCurScope().GetParent().GetKind() == ScopeKind::VarDecl){
+
+  // }
+
+  // if (curTok.IsPointerOperator()) {
+  //   // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
+  //   auto pointerDeclaratorChunk = PointerDeclaratorChunk::Create();
+  //   pointerDeclaratorChunk.AddPointer();
+  //   collector.AddDeclaratorChunk(pointerDeclaratorChunk, ConsumeToken());
+  //   while (curTok.IsPointerOperator()) {
+  //     pointerDeclaratorChunk.AddPointer();
+  //     ConsumeToken();
+  //   }
+  // }
+  // if (curTok.IsReferenceOperator()) {
+  //   auto refernceDeclaratorChunk = ReferenceDeclaratorChunk::Create();
+  //    refernceDeclaratorChunk.AddReference();
+  //   collector.AddDeclaratorChunk(refernceDeclaratorChunk, ConsumeToken());
+  //   ConsumeToken();
+  //   while (curTok.IsReferenceOperator()) {
+  //     refernceDeclaratorChunk.AddReference();
+  //     ConsumeToken();
+  //   }
+  // }
+  return status;
 }
 
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
@@ -260,6 +295,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
+
+  auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
 
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     // We only allow pure on functions => non-member function
@@ -274,12 +311,13 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return result;
   }
 
+  // ParsingDeclaratorCollector declaratorCollector(collector);
+  // auto status = ParseDeclarator(declaratorCollector);
+
   if (!GetCurTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
     return result;
   }
-
-  auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
 
   // ParsingDeclarator parsingDeclarator(collector);
   // ParseDeclarator(parsingDeclarator);

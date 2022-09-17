@@ -12,10 +12,11 @@
 namespace stone {
 namespace syn {
 
-enum class DeclaratorContextKind {
+/// TODO: I think you can replace this with ScopeKind
+enum class DeclaratorScopeKind {
   SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
-  TypeName,            // Abstract declarator for types.
+  TypeName,            // Abstract VariableName for types.
   FunctionalCast,      // Type in a C++ functional cast expression.
   Member,              // Struct/Union field.
   Block,               // Declaration within a block in a function.
@@ -24,12 +25,12 @@ enum class DeclaratorContextKind {
   Condition,           // Condition declaration in a C++ if/switch/while/for.
   TemplateParam,       // Within a template parameter list.
   New,                 // new-expression.
-  BlockLiteral,        // Block literal declarator.
-  LambdaExpr,          // Lambda-expression declarator.
-  LambdaExprParameter, // Lambda-expression parameter declarator.
+  BlockLiteral,        // Block literal VariableName.
+  LambdaExpr,          // Lambda-expression VariableName.
+  LambdaExprParameter, // Lambda-expression parameter VariableName.
   ConversionId,        // Conversion-type-id.
   TrailingReturn,      // Trailing-type-specifier.
-  TrailingReturnVar,   // Trailing-type-specifier for variable.
+  TrailingReturnVar,   // Trailing-type-specifier for VariableName.
   TemplateArg,         // Any template argument (in template argument list).
   TemplateTypeArg,     // Template type argument (in default argument).
   AliasDecl,           // Alias-declaration.
@@ -48,19 +49,72 @@ enum class DeclaratorChunkKind {
   Pipe,
 };
 
-struct DeclaratorChunk final {
-public:
-  DeclaratorChunk(){};
+class alignas(8) DeclaratorChunk {
   DeclaratorChunkKind kind;
 
 public:
-  struct PointerTypeInfo {};
-  struct FunctionTypeInfo {};
+  DeclaratorChunk(DeclaratorChunkKind kind) : kind(kind) {}
+};
+
+class PointerDeclaratorChunk final : public DeclaratorChunk {
+  UInt8 starCount;
 
 public:
-  static DeclaratorChunk CreatePointer();
-  static DeclaratorChunk CreateReference();
-  static DeclaratorChunk CreateFunction();
+  PointerDeclaratorChunk()
+      : DeclaratorChunk(DeclaratorChunkKind::Pointer), starCount(0) {}
+  void AddPointer();
+
+public:
+  static PointerDeclaratorChunk Create();
+
+public:
+  // UInt8 GetStarCount() const { return starCount; }
+  // void AddStar() { ++starCount; }
+};
+
+class MemberPointerDeclaratorChunk final : public DeclaratorChunk {
+public:
+  MemberPointerDeclaratorChunk()
+      : DeclaratorChunk(DeclaratorChunkKind::MemberPointer) {}
+
+public:
+  static MemberPointerDeclaratorChunk Create();
+};
+
+class ReferenceDeclaratorChunk final : public DeclaratorChunk {
+public:
+  ReferenceDeclaratorChunk()
+      : DeclaratorChunk(DeclaratorChunkKind::Reference) {}
+
+public:
+  void AddReference();
+
+public:
+  static ReferenceDeclaratorChunk Create();
+};
+
+class ArrayDeclaratorChunk final : public DeclaratorChunk {
+public:
+  ArrayDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Array) {}
+
+public:
+  static ArrayDeclaratorChunk Create();
+};
+
+class ParenDeclaratorChunk final : public DeclaratorChunk {
+public:
+  ParenDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Paren) {}
+
+public:
+  static ParenDeclaratorChunk Create();
+};
+
+class FunctionDeclaratorChunk final : public DeclaratorChunk {
+public:
+  FunctionDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Function) {}
+
+public:
+  static FunctionDeclaratorChunk Create();
 };
 
 class ScopeSpecifier {
@@ -240,13 +294,25 @@ public:
   StorageSpecifierCollector &GetStorageSpecifierCollector() {
     return storageSpecifierCollector;
   }
+  const StorageSpecifierCollector &GetStorageSpecifierCollector() const {
+    return storageSpecifierCollector;
+  }
   TypeSpecifierCollector &GetTypeSpecifierCollector() {
+    return typeSpecifierCollector;
+  }
+  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
     return typeSpecifierCollector;
   }
   FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
     return functionSpecifierCollector;
   }
+  const FunctionSpecifierCollector &GetFunctionSpecifierCollector() const {
+    return functionSpecifierCollector;
+  }
   TypeQualifierCollector &GetTypeQualifierCollector() {
+    return typeQualifierCollector;
+  }
+  const TypeQualifierCollector &GetTypeQualifierCollector() const {
     return typeQualifierCollector;
   }
   AccessLevelCollector &GetAccessLevelCollector() {
@@ -254,62 +320,50 @@ public:
   }
 };
 
-class Declarator {
+class DeclaratorCollector {
 
   const DeclSpecifier &declSpecifier;
   ScopeSpecifier scopeSpecifier;
-  /// Where we are parsing this declarator.
-  DeclaratorContextKind contextKind;
+  /// Where we are parsing this Declarator.
+  DeclaratorScopeKind declaratorScopeKind;
 
   // /// The C++17 structured binding, if any. This is an alternative to a Name.
   // DecompositionDeclarator bindingGroup;
 
-  // /// DeclTypeInfo - This holds each type that the declarator includes as it
-  // is
+  /// chunks - This holds each type that the Declarator includes as it is
   /// parsed.  This is pushed from the identifier out, which means that element
   /// #0 will be the most closely bound to the identifier, and
-  /// DeclTypeInfo.back() will be the least closely bound.
-  llvm::SmallVector<DeclaratorChunk, 8> declTypeInfo;
+  /// chunks.back() will be the least closely bound.
+  llvm::SmallVector<DeclaratorChunk, 8> chunks;
 
-  /// If this declarator declares a template, its template parameter lists.
-  llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
-
-public:
-  Declarator(const DeclSpecifier &declSpecifier,
-             DeclaratorContextKind scopeKind)
-      : declSpecifier(declSpecifier), contextKind(contextKind) {}
+  /// If this Declarator declares a template, its template parameter lists.
+  // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 
 public:
-  /// getDeclSpec - Return the declaration-specifier that this declarator was
+  DeclaratorCollector(const DeclSpecifier &declSpecifier,
+                      DeclaratorScopeKind scopeKind)
+      : declSpecifier(declSpecifier), declaratorScopeKind(declaratorScopeKind) {
+  }
+
+public:
+  /// getDeclSpec - Return the declaration-specifier that this Declarator was
   /// declared with.
   const DeclSpecifier &GetDeclSpecifier() const { return declSpecifier; }
-  DeclaratorContextKind GetContextKind() { return contextKind; }
+  DeclaratorScopeKind GetDeclaratorScopeKind() { return declaratorScopeKind; }
 
 public:
-  /// AddTypeInfo - Add a chunk to this declarator. Also extend the range to
+  /// Add a chunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the chunk.
-  void AddTypeInfo(const DeclaratorChunk &chunk, SrcLoc endLoc) {
-    declTypeInfo.push_back(chunk);
-    // if (!EndLoc.isInvalid())
-    //   SetRangeEnd(EndLoc);
+  void AddDeclaratorChunk(const DeclaratorChunk &chunk, SrcLoc endLoc) {
+    chunks.push_back(chunk);
+    // TODO:
+    //  if (!EndLoc.isInvalid())
+    //    SetRangeEnd(EndLoc);
   }
-};
 
-// /// A context for parsing declaration specifiers.  TODO: flesh this
-// /// out, there are other significant restrictions on specifiers than
-// /// would be best implemented in the parser.
-// enum class DeclSpecifierContextKind {
-//   Normal,         // normal context
-//   Fun,
-//   Struct,          // struct context, enables 'friend'
-//   Type, // C++ type-specifier-seq or C specifier-qualifier-list
-//   Trailing, // C++11 trailing-type-specifier in a trailing return type
-//   AliasDeclaration,  // C++11 type-specifier-seq in an alias-declaration
-//   TopLevel,          // top-level/namespace declaration context
-//   TemplateParam,     // template parameter context
-//   TemplateTypeArg,  // template type argument context
-//   Condition           // condition declaration context
-// };
+public:
+  void Collect();
+};
 
 } // namespace syn
 } // namespace stone
