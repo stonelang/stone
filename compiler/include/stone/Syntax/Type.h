@@ -344,10 +344,16 @@ class QualType : public Type {
 public:
   QualType() = default;
 
-  QualType(TypeBase *ty, unsigned quals) : Type(ty), quals(quals) {}
+  explicit QualType(TypeBase *ty, unsigned quals) : Type(ty), quals(quals) {
+    assert(IsQualTypeOrNull() &&
+           "Forming a QualType out of a unqualified type!");
+  }
   // TODO: come back to this -- it seems tha we should make this into a type and
   // just pass the quals -- no need to pass the type as a separate parm
-  QualType(Type ty, unsigned quals) : Type(ty), quals(quals) {}
+  explicit QualType(Type ty, unsigned quals) : Type(ty), quals(quals) {
+    assert(IsQualTypeOrNull() &&
+           "Forming a QualType out of a an unqualified type!");
+  }
 
 public:
   bool HasConst() const;
@@ -359,6 +365,9 @@ public:
 
   bool HasQuals() const;
   bool IsCanonical() const;
+
+  /// Return true fro now
+  bool IsQualTypeOrNull() { return true; }
 
   // Type* GetCanType() const;
 

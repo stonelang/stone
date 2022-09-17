@@ -32,16 +32,16 @@ FunDecl *FunDeclFactory::Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
               nameInfo.GetSpecialNameLoc(), parent);
 }
 
-StructDecl *syn::MakeStructDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
-                                DeclContext *dc) {
+StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
+                                      SyntaxContext &sc, DeclContext *dc) {
   size_t size = sizeof(StructDecl);
   auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
   return nullptr;
 }
 
-Module *syn::MakeModuleDecl(Identifier *name, SyntaxContext &sc,
-                            bool isMainModule) {
+Module *ModuleDeclFactory::Create(Identifier *name, SyntaxContext &sc,
+                                  bool isMainModule) {
   auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
   return ::new (declPtr) syn::Module(name, sc);
 }

@@ -81,7 +81,6 @@ protected:
     //   Kind :stone::BitMax(NumTypeKindBits, 8),
     //   /// Whether this type is canonical or not.
     //   IsCanonical : 1
-
     // );
 
   } Bits;

@@ -18,7 +18,7 @@ syn::Module *ModuleSystem::GetMainModule() const {
     return mainModule;
   }
   Identifier &moduleIdentifier = sc.GetIdentifier(moduleOpts.moduleName);
-  mainModule = syn::MakeModuleDecl(&moduleIdentifier, sc, true);
+  mainModule = ModuleDeclFactory::Create(&moduleIdentifier, sc, true);
   return mainModule;
 }
 

@@ -6,13 +6,13 @@ using namespace stone;
 using namespace stone::syn;
 
 //== Statements ==/
-BraceStmt *syn::MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
-                              SrcLoc rbloc, SyntaxContext &sc,
-                              llvm::Optional<bool> implicit) {
+BraceStmt *BraceStmtFactory::Create(SrcLoc lbloc,
+                                    llvm::ArrayRef<SyntaxNode> elements,
+                                    SrcLoc rbloc, SyntaxContext &sc,
+                                    llvm::Optional<bool> implicit) {
 
   void *stmtPtr =
       sc.Allocate(BraceStmt::totalSizeToAlloc<SyntaxNode>(elements.size()),
                   alignof(BraceStmt));
-
   return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }

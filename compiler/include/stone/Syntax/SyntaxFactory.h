@@ -29,6 +29,30 @@ template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
 
+// class SyntaxFactory final {
+// public:
+//   SyntaxFactory() = delete;
+
+// public:
+//   static FunDecl *CreateFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
+//                                 TypeRep *result, DeclContext *parent);
+
+// public:
+//   static SyntaxFile *CreateSyntaxFile(SyntaxFileKind kind, unsigned srcID,
+//                                       Module &owner, SyntaxContext &sc,
+//                                       bool isPrimary = false);
+
+// public:
+//   static Module *CreateModuleDecl(Identifier *name, SyntaxContext &sc,
+//                                   bool isMainModule = false);
+
+// public:
+//   static BraceStmt *CreateBraceStmt(SrcLoc lbloc,
+//                                     llvm::ArrayRef<SyntaxNode> elements,
+//                                     SrcLoc rbloc, SyntaxContext &sc,
+//                                     llvm::Optional<bool> implicit = llvm::None);
+// };
+
 struct FunDeclFactory final {
   static FunDecl *Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
                          TypeRep *result, DeclContext *parent);
@@ -39,25 +63,28 @@ struct SyntaxFileFactory final {
                             SyntaxContext &sc, bool isPrimary = false);
 };
 
-StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
-                           DeclContext *parent = nullptr);
+struct StructDeclFactory final {
+  StructDecl *Create(DeclName name, SrcLoc loc, SyntaxContext &sc,
+                     DeclContext *parent = nullptr);
+};
 
-Module *MakeModuleDecl(Identifier *name, SyntaxContext &sc,
-                       bool isMainModule = false);
-
-void VerifyDecl(Decl *d);
-void VerifyFunDecl(Decl *d);
+struct ModuleDeclFactory final {
+  static Module *Create(Identifier *name, SyntaxContext &sc,
+                        bool isMainModule = false);
+};
 
 // template <std::size_t Len>
-// bool IsNamedDecl(const NamedDecl *namedDecl, const char (&str)[Len]) {
+// bool IsNamedDecl(const NameableDecl *nameableDecl, const char (&str)[Len]) {
 //   Identifier *identifier = namedDecl->GetIdentifier();
 //   return identifier && identifier->isStr(str);
 // }
 
-//== Statements ==/
-BraceStmt *MakeBraceStmt(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
-                         SrcLoc rbloc, SyntaxContext &sc,
-                         llvm::Optional<bool> implicit = llvm::None);
+struct BraceStmtFactory {
+  //== Statements ==/
+  static BraceStmt *Create(SrcLoc lbloc, llvm::ArrayRef<SyntaxNode> elements,
+                           SrcLoc rbloc, SyntaxContext &sc,
+                           llvm::Optional<bool> implicit = llvm::None);
+};
 
 } // namespace syn
 
