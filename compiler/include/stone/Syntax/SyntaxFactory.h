@@ -50,7 +50,8 @@ void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 //   static BraceStmt *CreateBraceStmt(SrcLoc lbloc,
 //                                     llvm::ArrayRef<SyntaxNode> elements,
 //                                     SrcLoc rbloc, SyntaxContext &sc,
-//                                     llvm::Optional<bool> implicit = llvm::None);
+//                                     llvm::Optional<bool> implicit =
+//                                     llvm::None);
 // };
 
 struct FunDeclFactory final {

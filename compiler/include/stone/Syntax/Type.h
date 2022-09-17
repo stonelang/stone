@@ -403,6 +403,17 @@ public:
 
 private:
   bool IsCanTypeOrNull() const { return true; }
+
+public:
+  void Visit(llvm::function_ref<void(CanType)> fn) const {
+    FindIf([&fn](Type t) -> bool {
+      fn(CanType(t));
+      return false;
+    });
+  }
+  bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
+    return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
+  }
 };
 
 class TypeQualifierCollector final : public TypeQualifierContext {

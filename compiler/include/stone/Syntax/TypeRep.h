@@ -111,8 +111,6 @@ private:
 };
 
 class TupleTypeRep final : public QualTypeRep {
-
-public:
 public:
   static TupleTypeRep *Create();
 };

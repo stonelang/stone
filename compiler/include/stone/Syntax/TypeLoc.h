@@ -17,6 +17,7 @@ class SyntaxContext;
 class alignas(1 << TypeRepAlignInBits) TypeLoc {
 
   // TODO: This may actually be QualType instead of jus Type
+  // But since QualType implements Type, it may not matter.
   Type ty;
   TypeRep *tyRep = nullptr;
 
