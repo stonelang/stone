@@ -170,12 +170,13 @@ public:
 };
 
 class ParsingDeclaratorCollector final : public DeclaratorCollector {
+  Parser &parser;
 
-  // TODO: ParsingScope& curScope
 public:
-  ParsingDeclaratorCollector(const ParsingDeclCollector &collector,
-                             DeclaratorScopeKind declaratorScopeKind = DeclaratorScopeKind::None)
-      : DeclaratorCollector(collector, declaratorScopeKind) {}
+  ParsingDeclaratorCollector(
+      Parser &parser, const ParsingDeclCollector &collector,
+      DeclaratorScopeKind declaratorScopeKind = DeclaratorScopeKind::None)
+      : DeclaratorCollector(collector, declaratorScopeKind), parser(parser) {}
 
 public:
   const ParsingDeclCollector &GetParsingDeclCollector() const {
@@ -258,21 +259,6 @@ public:
   bool IsStringLiteral();
   bool IsImaginaryLiteral();
   bool IsRegexLiteral();
-};
-
-enum class ParsingDeclAction {
-  None = 0,
-  ParseAccessLevel,
-  ParseAuto,
-  ParseFun,
-  ParseStruct,
-  ParseEnum,
-  ParseInterface,
-  ParseBasicType,
-  ParseTypeQualifier,
-  ParsePointer,
-  ParseIdentifier,
-  ParseImport,
 };
 
 } // namespace syn

@@ -128,9 +128,6 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  //===--------------------------------------------------------------------===//
-  // Decl Parsing
-  bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
 private:
@@ -140,8 +137,6 @@ public:
   // TODO: We only need on ParseDecl
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
-
-  // void CollectDecl(ParsingDeclCollector &collector);
 
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
@@ -164,19 +159,13 @@ public:
                                              Diag<> diagID);
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
-
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
-  SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
-  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &collector);
 
 public:
   //== fun ==//
 
   // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
-
-public:
-  SyntaxResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 private:
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
@@ -200,7 +189,8 @@ private:
                                    FunctionDecl &funDecl);
 
 public:
-  SyntaxStatus ParseAccessLevel(AccessLevelCollector &collector);
+  //== using ==//
+  SyntaxResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== struct ==//
@@ -210,6 +200,7 @@ public:
   //== enum== //
   SyntaxResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
+public:
   //== interface ==//
   SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
@@ -412,8 +403,6 @@ private:
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
 
-public:
-  ParsingDeclAction GetParsingDeclAction();
 };
 
 } // namespace syn

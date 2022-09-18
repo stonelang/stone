@@ -172,7 +172,6 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   // ParsingDeclaratorCollector declaratorCollector(collector);
   // declaratorCollector.Collect();
 
-
   // auto status = ParseDeclarator(declaratorCollector);
 
   return result;
@@ -207,26 +206,26 @@ SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
 
   // }
 
-  // if (curTok.IsPointerOperator()) {
-  //   // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
-  //   auto pointerDeclaratorChunk = PointerDeclaratorChunk::Create();
-  //   pointerDeclaratorChunk.AddPointer();
-  //   collector.AddDeclaratorChunk(pointerDeclaratorChunk, ConsumeToken());
-  //   while (curTok.IsPointerOperator()) {
-  //     pointerDeclaratorChunk.AddPointer();
-  //     ConsumeToken();
-  //   }
-  // }
-  // if (curTok.IsReferenceOperator()) {
-  //   auto refernceDeclaratorChunk = ReferenceDeclaratorChunk::Create();
-  //    refernceDeclaratorChunk.AddReference();
-  //   collector.AddDeclaratorChunk(refernceDeclaratorChunk, ConsumeToken());
-  //   ConsumeToken();
-  //   while (curTok.IsReferenceOperator()) {
-  //     refernceDeclaratorChunk.AddReference();
-  //     ConsumeToken();
-  //   }
-  // }
+  if (curTok.IsPointerOperator()) {
+    // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
+    auto pointerDeclaratorChunk = PointerDeclaratorChunk::Create();
+    pointerDeclaratorChunk.AddPointer();
+    collector.AddDeclaratorChunk(pointerDeclaratorChunk, ConsumeToken());
+    while (curTok.IsPointerOperator()) {
+      pointerDeclaratorChunk.AddPointer();
+      ConsumeToken();
+    }
+  }
+  if (curTok.IsReferenceOperator()) {
+    auto refernceDeclaratorChunk = ReferenceDeclaratorChunk::Create();
+    refernceDeclaratorChunk.AddReference();
+    collector.AddDeclaratorChunk(refernceDeclaratorChunk, ConsumeToken());
+    ConsumeToken();
+    while (curTok.IsReferenceOperator()) {
+      refernceDeclaratorChunk.AddReference();
+      ConsumeToken();
+    }
+  }
   return syn::MakeSyntaxSuccess();
 }
 

@@ -161,6 +161,8 @@ class TypeSpecifierCollector final {
 
   SrcLoc typeSpecifierLoc;
   TypeSpecifierKind typeSpecifierKind;
+
+  // TODO: remove -- do not need this part.
   TypeNullabilityKind nullabilityKind;
 
 public:
