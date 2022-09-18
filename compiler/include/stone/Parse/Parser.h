@@ -175,6 +175,9 @@ public:
   // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
+public:
+  SyntaxResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
+
 private:
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
                                       ParsingDeclCollector &collectorifier);

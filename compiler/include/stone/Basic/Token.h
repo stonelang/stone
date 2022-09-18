@@ -154,6 +154,7 @@ public:
       return false;
     }
   }
+  bool IsUsing() { return kind == tok::kw_using; }
   bool IsPeriod() { return kind == tok::period; }
   bool IsDoublePipe() { return kind == tok::doublepipe; }
   bool IsPipe() { return kind == tok::pipe; }

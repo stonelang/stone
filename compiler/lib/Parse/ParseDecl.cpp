@@ -88,19 +88,20 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
 
   while (result.IsNull() && IsParsing()) {
-
-    /// Collect the specifier and it's associated quals
+    /// Collect using(s), qualifier(s), and specifier.
     status |= collector.Collect();
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
-
     status |= collector.IsDoubleDiping();
     if (status.IsError()) {
       goto EndParse;
     }
-    /// collector.GetUsingSpecifier().HasUsings()
-    if (collector.GetFunctionSpecifierCollector().HasFun()) {
+
+    if (collector.GetUsingDeclarationCollector().HasUsing()) {
+      result = ParseUsingDecl(collector);
+      goto EndParse;
+    } else if (collector.GetFunctionSpecifierCollector().HasFun()) {
       result = ParseFunDecl(collector);
       goto EndParse;
     } else if (collector.GetTypeSpecifierCollector().IsStruct()) {
@@ -149,6 +150,9 @@ SyntaxStatus ParsingDeclCollector::IsDoubleDiping() {
 SyntaxStatus ParsingDeclCollector::CollectImpl() {
   SyntaxStatus status;
   switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_using:
+    GetUsingDeclarationCollector().AddUsing(GetParser().ConsumeToken());
+    break;
   case tok::kw_public:
     GetAccessLevelCollector().AddPublic(GetParser().ConsumeToken());
     break;
@@ -569,6 +573,15 @@ SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     return result;
   }
+  return result;
+}
+
+SyntaxResult<Decl> Parser::ParseUsingDecl(ParsingDeclCollector &collector) {
+  SyntaxResult<Decl> result;
+
+  assert(collector.GetUsingDeclarationCollector().HasUsing() &&
+         "Attempting to parse a function without a functin definition.");
+
   return result;
 }
 

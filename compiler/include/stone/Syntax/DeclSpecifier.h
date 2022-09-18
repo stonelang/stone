@@ -291,10 +291,15 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-
-class UsingSpecifierCollector {
+// Light weight value type for now
+class UsingDeclarationCollector final {
+  SrcLoc loc;
 public:
-  UsingSpecifierCollector() {}
+  UsingDeclarationCollector() : loc(SrcLoc()) {}
+public:
+  void AddUsing(SrcLoc inputLoc) { loc = inputLoc; }
+  bool HasUsing() { return loc.isValid(); }
+  SrcLoc GetLoc() { return loc;}
 };
 
 class DeclSpecifier {
@@ -304,7 +309,7 @@ class DeclSpecifier {
   TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
-  // UsingSpecifierCollector usingSpecifierCollector;
+  UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
@@ -315,13 +320,12 @@ public:
       : attributeFactory(attributeFactory) {}
 
 public:
-  // UsingSpecifierCollector &GetUsingSpecifierCollector() {
-  //   return storageSpecifierCollector;
-  // }
-  // const UsingSpecifierCollector &GetUsingSpecifierCollector() const {
-  //   return storageSpecifierCollector;
-  // }
-
+  UsingDeclarationCollector &GetUsingDeclarationCollector() {
+    return usingDeclarationCollector;
+  }
+  const UsingDeclarationCollector &GetUsingDeclarationCollector() const {
+    return usingDeclarationCollector;
+  }
   StorageSpecifierCollector &GetStorageSpecifierCollector() {
     return storageSpecifierCollector;
   }

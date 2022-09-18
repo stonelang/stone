@@ -120,9 +120,7 @@ public:
 };
 
 struct ParsingDeclFlags final {
-
   ParsingDeclFlags() = delete;
-
   /// Flags that control the parsing of declarations.
   enum ID {
     Default = 0,
