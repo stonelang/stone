@@ -86,6 +86,8 @@ enum class ScopeKind : UInt8 {
 
   Type,
 
+  AutoDecl,
+
   VarDecl,
 
   New,

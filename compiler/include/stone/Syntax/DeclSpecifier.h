@@ -191,11 +191,15 @@ class StorageSpecifierCollector final {
 
   SrcLoc loc;
   StorageSpecifierKind kind;
+  StorageDuration duration;
 
 private:
   void AddStorageSpecifier(StorageSpecifierKind inputKind, SrcLoc inputLoc) {
     kind = inputKind;
     loc = inputLoc;
+  }
+  void AddStorageDuration(StorageDuration inputDuration) {
+    duration = inputDuration;
   }
 
 public:
@@ -203,6 +207,8 @@ public:
 
 public:
   StorageSpecifierKind GetKind() { return kind; }
+  StorageDuration GetDuration() { return duration; }
+
   void AddExtern(SrcLoc loc) {
     AddStorageSpecifier(StorageSpecifierKind::Extern, loc);
   }
@@ -217,13 +223,6 @@ public:
     return (kind == StorageSpecifierKind::Static && loc.isValid());
   }
 
-  void AddAuto(SrcLoc loc) {
-    AddStorageSpecifier(StorageSpecifierKind::Auto, loc);
-  }
-  bool HasAuto() {
-    return (kind == StorageSpecifierKind::Auto && loc.isValid());
-  }
-
   void AddRegister(SrcLoc loc) {
     AddStorageSpecifier(StorageSpecifierKind::Register, loc);
   }
@@ -231,9 +230,27 @@ public:
     return (kind == StorageSpecifierKind::Register && loc.isValid());
   }
   bool HasAnyStorageSpecifier() {
-    return (HasExtern() || HasStatic() || HasAuto() || HasRegister());
+    /// TODO: Consider auto
+    return (HasExtern() || HasStatic() || HasRegister());
   }
+
   SrcLoc GetLoc() { return loc; }
+
+  void AddFullExpressionStorageDuration() {
+    AddStorageDuration(StorageDuration::FullExpression);
+  }
+  void AddAutomaticStorageDuration() {
+    AddStorageDuration(StorageDuration::Automatic);
+  }
+  void AddThreadStorageDuration() {
+    AddStorageDuration(StorageDuration::Thread);
+  }
+  void AddStaticStorageDuration() {
+    AddStorageDuration(StorageDuration::Static);
+  }
+  void AddDynamicStorageDuration() {
+    AddStorageDuration(StorageDuration::Dynamic);
+  }
 };
 
 class AccessLevelCollector final {
@@ -274,6 +291,12 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
+
+class UsingSpecifierCollector {
+public:
+  UsingSpecifierCollector() {}
+};
+
 class DeclSpecifier {
 
   AttributeFactory &attributeFactory;
@@ -281,6 +304,7 @@ class DeclSpecifier {
   TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
+  // UsingSpecifierCollector usingSpecifierCollector;
   AccessLevelCollector accessLevelCollector;
 
   DeclSpecifier(const DeclSpecifier &) = delete;
@@ -291,6 +315,13 @@ public:
       : attributeFactory(attributeFactory) {}
 
 public:
+  // UsingSpecifierCollector &GetUsingSpecifierCollector() {
+  //   return storageSpecifierCollector;
+  // }
+  // const UsingSpecifierCollector &GetUsingSpecifierCollector() const {
+  //   return storageSpecifierCollector;
+  // }
+
   StorageSpecifierCollector &GetStorageSpecifierCollector() {
     return storageSpecifierCollector;
   }

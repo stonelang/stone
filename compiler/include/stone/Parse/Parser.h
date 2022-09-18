@@ -149,6 +149,7 @@ private:
 public:
   // TODO: Param should be constant
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
+  SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
   SyntaxStatus ParseDeclarator(ParsingDeclaratorCollector &collector);
 
 public:

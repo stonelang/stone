@@ -154,8 +154,11 @@ public:
 public:
   Parser &GetParser() { return parser; }
   SyntaxStatus Collect();
-  SyntaxStatus CollectSpecifier();
   SyntaxStatus CollectUntil(tok kind);
+  SyntaxStatus IsDoubleDiping();
+
+private:
+  SyntaxStatus CollectImpl();
 
 public:
   void Verify();
@@ -170,7 +173,8 @@ public:
 
 public:
   const ParsingDeclCollector &GetParsingDeclCollector() const {
-    return static_cast<const ParsingDeclCollector &>(DeclaratorCollector::GetDeclSpecifier());
+    return static_cast<const ParsingDeclCollector &>(
+        DeclaratorCollector::GetDeclSpecifier());
   }
 };
 

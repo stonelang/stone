@@ -14,6 +14,8 @@ namespace syn {
 enum class TypeSpecifierKind : uint8_t {
   None = 0,
   Auto,
+  Void,
+  Any,
   Bool,
   Float,
   Float32,
@@ -21,7 +23,6 @@ enum class TypeSpecifierKind : uint8_t {
   Enum,
   Interface,
   Struct,
-  Void,
   Int,
   Int8,
   Int16,
@@ -49,62 +50,6 @@ enum class TypeSpecifierChunkKind : UInt8 {
   MemberPointer,
   Paren,
   Pipe,
-};
-
-class TypeSpecifierCollector final {
-  TypeSpecifierKind typeSpecifierKind;
-  SrcLoc typeSpecifierLoc;
-
-public:
-  TypeSpecifierCollector() : typeSpecifierKind(TypeSpecifierKind::None) {}
-
-public:
-  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-  bool HasTypeSpecifierKind() const {
-    return typeSpecifierKind != TypeSpecifierKind::None;
-  }
-
-private:
-  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-
-public:
-  void AddAuto(SrcLoc loc);
-  void AddBool(SrcLoc loc);
-  void AddFloat(SrcLoc loc);
-  void AddFloat32(SrcLoc loc);
-  void AddFloat64(SrcLoc loc);
-  void AddVoid(SrcLoc loc);
-  void AddInt(SrcLoc loc);
-  void AddInt8(SrcLoc loc);
-  void AddInt16(SrcLoc loc);
-  void AddInt32(SrcLoc loc);
-  void AddInt64(SrcLoc loc);
-  void AddUInt(SrcLoc loc);
-  void AddUInt8(SrcLoc loc);
-  void AddByte(SrcLoc loc);
-  void AddUInt16(SrcLoc loc);
-  void AddUInt32(SrcLoc loc);
-  void AddUInt64(SrcLoc loc);
-  void AddComplex32(SrcLoc loc);
-  void AddComplex64(SrcLoc loc);
-  void AddImaginary32(SrcLoc loc);
-  void AddImaginary64(SrcLoc loc);
-
-  void AddEnum(SrcLoc loc);
-  void AddInterface(SrcLoc loc);
-  void AddStruct(SrcLoc loc);
-
-public:
-  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
-  bool IsBasicType();
-  bool IsNominalType();
-  bool IsEnum() { return typeSpecifierKind == TypeSpecifierKind::Enum; }
-  bool IsStruct() { return typeSpecifierKind == TypeSpecifierKind::Struct; }
-  bool IsInterface() {
-    return typeSpecifierKind == TypeSpecifierKind::Interface;
-  }
-  bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
-  SrcLoc GetLoc() { return typeSpecifierLoc; }
 };
 
 enum class FunctionInlineSpecifierKind : UInt8 {
@@ -163,10 +108,10 @@ enum class ExprObjectKind {
 /// These are legal on both functions and variables
 enum class StorageSpecifierKind : UInt8 {
   None = 0,
+  // TODO: You may not need extern
   Extern,
   Static,
-  // These are only legal on variables.
-  Auto,
+  // Legal only on variables.
   Register
 };
 
@@ -210,6 +155,83 @@ enum class TemplateSpecializationKind : UInt8 {
   /// This template specialization was instantiated from a template
   /// due to an explicit instantiation definition request
   ExplicitInstantiationDefinition
+};
+
+class TypeSpecifierCollector final {
+
+  SrcLoc typeSpecifierLoc;
+  TypeSpecifierKind typeSpecifierKind;
+  TypeNullabilityKind nullabilityKind;
+
+public:
+  TypeSpecifierCollector()
+      : typeSpecifierKind(TypeSpecifierKind::None), typeSpecifierLoc(SrcLoc()),
+        nullabilityKind(TypeNullabilityKind::Unspecified) {}
+
+public:
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool HasTypeSpecifierKind() const {
+    return typeSpecifierKind != TypeSpecifierKind::None;
+  }
+
+private:
+  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  void AddTypeNullabilityKind(TypeNullabilityKind kind);
+
+public:
+  // == Basic Types ==//
+  void AddAuto(SrcLoc loc);
+  void AddAny(SrcLoc loc);
+  void AddVoid(SrcLoc loc);
+  void AddBool(SrcLoc loc);
+  void AddFloat(SrcLoc loc);
+  void AddFloat32(SrcLoc loc);
+  void AddFloat64(SrcLoc loc);
+  void AddInt(SrcLoc loc);
+  void AddInt8(SrcLoc loc);
+  void AddInt16(SrcLoc loc);
+  void AddInt32(SrcLoc loc);
+  void AddInt64(SrcLoc loc);
+  void AddUInt(SrcLoc loc);
+  void AddUInt8(SrcLoc loc);
+  void AddByte(SrcLoc loc);
+  void AddUInt16(SrcLoc loc);
+  void AddUInt32(SrcLoc loc);
+  void AddUInt64(SrcLoc loc);
+  void AddComplex32(SrcLoc loc);
+  void AddComplex64(SrcLoc loc);
+  void AddImaginary32(SrcLoc loc);
+  void AddImaginary64(SrcLoc loc);
+
+  // == Nominal Types ==//
+  void AddEnum(SrcLoc loc);
+  void AddInterface(SrcLoc loc);
+  void AddStruct(SrcLoc loc);
+
+public:
+  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
+  TypeNullabilityKind GetTypeNullabilityKind() { return nullabilityKind; }
+
+public:
+  bool IsBasicType();
+  bool IsNominalType();
+  bool IsEnum() { return typeSpecifierKind == TypeSpecifierKind::Enum; }
+  bool IsStruct() { return typeSpecifierKind == TypeSpecifierKind::Struct; }
+  bool IsInterface() {
+    return typeSpecifierKind == TypeSpecifierKind::Interface;
+  }
+  bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
+  SrcLoc GetLoc() { return typeSpecifierLoc; }
+
+public:
+  void AddNotNullable() {
+    AddTypeNullabilityKind(TypeNullabilityKind::NotNullable);
+  }
+  void AddNullable() { AddTypeNullabilityKind(TypeNullabilityKind::Nullable); }
+
+  void AddUnspecifiedNullable() {
+    AddTypeNullabilityKind(TypeNullabilityKind::Unspecified);
+  }
 };
 
 } // namespace syn

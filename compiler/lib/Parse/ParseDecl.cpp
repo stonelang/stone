@@ -90,10 +90,16 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
   while (result.IsNull() && IsParsing()) {
 
     /// Collect the specifier and it's associated quals
-    status |= collector.CollectSpecifier();
+    status |= collector.Collect();
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
+
+    status |= collector.IsDoubleDiping();
+    if (status.IsError()) {
+      goto EndParse;
+    }
+    /// collector.GetUsingSpecifier().HasUsings()
     if (collector.GetFunctionSpecifierCollector().HasFun()) {
       result = ParseFunDecl(collector);
       goto EndParse;
@@ -106,15 +112,18 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
     } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
       result = ParseInterfaceDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsBasicType() ||
-               collector.GetTypeSpecifierCollector().IsAuto()) {
+    } else if (collector.GetTypeSpecifierCollector().IsBasicType()) {
       result = ParseVarDecl(collector);
+      goto EndParse;
+    } else if (collector.GetTypeSpecifierCollector().IsAuto()) {
+      result = ParseAutoDecl(collector);
       goto EndParse;
     }
   } // End of while
 
 EndParse : {
   if (result.IsNull()) {
+    // collector.PrintD();
     EndParsing();
   }
   return result;
@@ -124,16 +133,20 @@ EndParse : {
 SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
   SyntaxStatus status;
   while (GetParser().GetCurTok().IsNot(kind)) {
-    status |= Collect();
+    status |= CollectImpl();
     if (status.HasCodeCompletion()) {
       break;
     }
   }
   return status;
 }
-SyntaxStatus ParsingDeclCollector::CollectSpecifier() { return Collect(); }
+SyntaxStatus ParsingDeclCollector::Collect() { return CollectImpl(); }
+SyntaxStatus ParsingDeclCollector::IsDoubleDiping() {
+  SyntaxStatus status;
+  return status;
+}
 
-SyntaxStatus ParsingDeclCollector::Collect() {
+SyntaxStatus ParsingDeclCollector::CollectImpl() {
   SyntaxStatus status;
   switch (GetParser().GetCurTok().GetKind()) {
   case tok::kw_public:
@@ -163,6 +176,10 @@ SyntaxStatus ParsingDeclCollector::Collect() {
   case tok::kw_auto:
     // TODO: Storage specifier
     GetTypeSpecifierCollector().AddAuto(GetParser().ConsumeToken());
+    break;
+  case tok::kw_register:
+    // TODO: Storage specifier
+    GetStorageSpecifierCollector().AddRegister(GetParser().ConsumeToken());
     break;
   case tok::kw_fun:
     GetFunctionSpecifierCollector().AddFun(GetParser().ConsumeToken());
@@ -252,10 +269,19 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
+SyntaxResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
+
+  SyntaxResult<Decl> result;
+  ParsingScope autoDeclScope(*this, ScopeKind::AutoDecl,
+                             "parsing auto storage declaration");
+  return result;
+}
+
 SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
   SyntaxStatus status;
 
-  assert(collector.GetParsingDeclCollector().GetTypeSpecifierCollector()
+  assert(collector.GetParsingDeclCollector()
+             .GetTypeSpecifierCollector()
              .HasTypeSpecifierKind() &&
          "Attempting to parse a declarator without a type-specifier.");
 
