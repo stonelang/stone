@@ -10,24 +10,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool Parser::IsStartOfDecl(const Token &curTok) {
-  switch (curTok.GetKind()) {
-  case tok::kw_interface:
-  case tok::kw_fun:
-  case tok::kw_inline:
-  case tok::kw_struct:
-  case tok::kw_space:
-  case tok::kw_const:
-  case tok::kw_public:
-  case tok::kw_private:
-  case tok::kw_internal:
-  case tok::kw_static:
-  case tok::kw_forward:
-    return true;
-  default:
-    return false;
-  }
-}
 void Parser::ParseTopLevelDecls(
     llvm::SmallVector<SyntaxResult<Decl>> &results) {
   // Prime the Parser's curTok
@@ -61,9 +43,7 @@ void Parser::ParseTopLevelDecls(
 // This call parses one at a time and adds it to the SyntaxFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
 
-  assert(IsStartOfDecl(curTok) && "Invalid top-declaration");
   assert(GetCurScope() == nullptr && "A scope is already active?");
-
   ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
                              "parsing top-level declaration");
 
@@ -83,9 +63,9 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 }
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
-  SyntaxStatus status;
+  
+  SyntaxStatus status; 
   SyntaxResult<Decl> result;
-
   ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
 
   while (result.IsNull() && IsParsing()) {
@@ -94,7 +74,7 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
-    status |= collector.IsDoubleDiping();
+    status |= collector.IsDoubleDipping();
     if (status.IsError()) {
       goto EndParse;
     }
@@ -143,7 +123,7 @@ SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
   return status;
 }
 SyntaxStatus ParsingDeclCollector::Collect() { return CollectImpl(); }
-SyntaxStatus ParsingDeclCollector::IsDoubleDiping() {
+SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
   SyntaxStatus status;
   return status;
 }
@@ -247,8 +227,8 @@ SyntaxStatus ParsingDeclCollector::CollectImpl() {
     GetTypeSpecifierCollector().AddComplex64(GetParser().ConsumeToken());
     break;
   default:
-    // We did not find a type -- this could mean tha one was not specified or
-    // it is a user defined type
+    // We did not find a any of the above. This could mean that the user entered junk 
+    // or the file is empty. Either weay, we end the parse.
     status.SetHasCodeCompletion();
     break;
   }

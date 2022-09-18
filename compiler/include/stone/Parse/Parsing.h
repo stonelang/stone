@@ -153,8 +153,8 @@ public:
   Parser &GetParser() { return parser; }
   SyntaxStatus Collect();
   SyntaxStatus CollectUntil(tok kind);
-  SyntaxStatus IsDoubleDiping();
-
+  SyntaxStatus IsDoubleDipping();
+  
 private:
   SyntaxStatus CollectImpl();
 
