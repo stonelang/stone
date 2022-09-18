@@ -14,6 +14,7 @@ namespace syn {
 
 /// TODO: I think you can replace this with ScopeKind
 enum class DeclaratorScopeKind {
+  None = 0, 
   SyntaxFile,          // File scope declaration.
   FunctionSignature,   // Within a function prototype.
   TypeName,            // Abstract VariableName for types.

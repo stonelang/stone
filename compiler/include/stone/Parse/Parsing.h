@@ -14,6 +14,7 @@ namespace stone {
 namespace syn {
 
 class Parser;
+class ParsingScope;
 class AttributeFactory;
 
 /// To assist debugging parser crashes, tell us the location of the
@@ -165,14 +166,15 @@ public:
   SyntaxStatus CollectFunction();
 
 public:
-  void Verify();
-  void Apply();
+  SyntaxStatus Verify();
 };
 
 class ParsingDeclaratorCollector final : public DeclaratorCollector {
+
+  // TODO: ParsingScope& curScope
 public:
   ParsingDeclaratorCollector(const ParsingDeclCollector &collector,
-                             DeclaratorScopeKind declaratorScopeKind)
+                             DeclaratorScopeKind declaratorScopeKind = DeclaratorScopeKind::None)
       : DeclaratorCollector(collector, declaratorScopeKind) {}
 
 public:

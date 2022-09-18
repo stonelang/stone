@@ -22,8 +22,7 @@ enum class ScopeKind : UInt8 {
 
   Decl,
 
-  // Declaration of a type
-  ForwardDecl,
+  UsingDecl,
 
   // Declaration of a type
   TypeDecl,
@@ -54,46 +53,47 @@ enum class ScopeKind : UInt8 {
 
   /// The scope of a struct/union/class definition.
   StructDecl,
-
   /// This is a scope that corresponds to a block/closure object.
   /// Blocks serve as top-level scopes for some objects like labels, they
   /// also prevent things like break and continue.  BlockScopes always have
   /// the FunScope and DeclScope flags set as well.
   Block,
-
   /// This is a scope that corresponds to the
   /// template parameters of a C++ template. Template parameter
   /// scope starts at the 'template' keyword and ends when the
   /// template declaration ends.
-  TemplateParams,
+  TemplateArguments,
 
   /// This scope corresponds to an enum.
   EnumDecl,
 
   /// This is a compound statement scope.
   BraceStmt,
-
   /// We are between inheritance colon and the real class/struct definition
   /// scope. TypeDeclaration?
   InterfaceDecl,
 
   ///
-  Constructor,
+  ConstructorDecl,
 
-  Destructor,
+  ///
+  DestructorDecl,
 
+  ///
   ReturnClause,
 
-  Type,
-
+  ///
   AutoDecl,
 
+  ///
   VarDecl,
 
-  New,
-
-  Alias,
-
+  ///
+  NewDecl,
+  ///
+  AliasDecl,
+  ///
+  Type,
 };
 
 class Scope final : public syn::SyntaxAllocation<Scope> {

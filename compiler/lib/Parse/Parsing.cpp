@@ -136,6 +136,7 @@ SyntaxStatus ParsingDeclCollector::CollectAccessLevel() {
     break;
   case tok::kw_private:
     GetAccessLevelCollector().AddPrivate(GetParser().ConsumeToken());
+    break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
@@ -172,6 +173,11 @@ SyntaxStatus ParsingDeclCollector::CollectStorageSpecifier() {
     return syn::MakeSyntaxCodeCompletionStatus();
   }
   return syn::MakeSyntaxSuccess();
+}
+
+SyntaxStatus ParsingDeclCollector::Verify() {
+  SyntaxStatus status;
+  return status;
 }
 
 ParsingDeclCollector::~ParsingDeclCollector() {}

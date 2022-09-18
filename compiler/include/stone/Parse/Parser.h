@@ -141,7 +141,7 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
-  void CollectDecl(ParsingDeclCollector &collector);
+  // void CollectDecl(ParsingDeclCollector &collector);
 
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
