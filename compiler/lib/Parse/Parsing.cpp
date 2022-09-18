@@ -3,21 +3,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-// ParsingDeclCollector::ParsingDeclCollector(Parser &parser)
-//     : DeclSpecifier(parser.GetAttributeFactory()), parser(parser) {}
-
-// PairDelimiterBalancer::PairDelimiterBalancer(Parser &other) : parser(other) {
-//   pairDelimiterCount.parenCount = other.pairDelimiterCount.parenCount;
-//   pairDelimiterCount.bracketCount = other.pairDelimiterCount.bracketCount;
-//   pairDelimiterCount.braceCount = other.pairDelimiterCount.braceCount;
-// }
-// PairDelimiterBalancer::~PairDelimiterBalancer() {
-//   // parser.AngleBrackets.clear(parser);
-//   parser.pairDelimiterCount.parenCount = pairDelimiterCount.parenCount;
-//   parser.pairDelimiterCount.bracketCount = pairDelimiterCount.bracketCount;
-//   parser.pairDelimiterCount.braceCount = pairDelimiterCount.braceCount;
-// }
-
 // ==Scope == //
 
 ParsingScope::ParsingScope(Parser &self, ScopeKind scopeKind,
@@ -41,6 +26,153 @@ ParsingPositionRAII::ParsingPositionRAII(Parser &parser)
 
 ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
+}
+
+SyntaxStatus ParsingDeclCollector::CollectUsing() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_using:
+    GetUsingDeclarationCollector().AddUsing(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+
+SyntaxStatus ParsingDeclCollector::CollectFunction() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_fun:
+    GetFunctionSpecifierCollector().AddFun(GetParser().ConsumeToken());
+    break;
+  case tok::kw_inline:
+    GetFunctionSpecifierCollector().AddInline(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+SyntaxStatus ParsingDeclCollector::CollectBasicType() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_auto:
+    GetTypeSpecifierCollector().AddAuto(GetParser().ConsumeToken());
+    break;
+  case tok::kw_int:
+    GetTypeSpecifierCollector().AddInt(GetParser().ConsumeToken());
+    break;
+  case tok::kw_int8:
+    GetTypeSpecifierCollector().AddInt8(GetParser().ConsumeToken());
+    break;
+  case tok::kw_int16:
+    GetTypeSpecifierCollector().AddInt16(GetParser().ConsumeToken());
+    break;
+  case tok::kw_int32:
+    GetTypeSpecifierCollector().AddInt32(GetParser().ConsumeToken());
+    break;
+  case tok::kw_int64:
+    GetTypeSpecifierCollector().AddInt64(GetParser().ConsumeToken());
+    break;
+  case tok::kw_uint:
+    GetTypeSpecifierCollector().AddUInt(GetParser().ConsumeToken());
+    break;
+  case tok::kw_uint8:
+    GetTypeSpecifierCollector().AddUInt8(GetParser().ConsumeToken());
+    break;
+  case tok::kw_byte:
+    GetTypeSpecifierCollector().AddByte(GetParser().ConsumeToken());
+    break;
+  case tok::kw_uint16:
+    GetTypeSpecifierCollector().AddUInt16(GetParser().ConsumeToken());
+    break;
+  case tok::kw_uint32:
+    GetTypeSpecifierCollector().AddUInt32(GetParser().ConsumeToken());
+    break;
+  case tok::kw_uint64:
+    GetTypeSpecifierCollector().AddUInt64(GetParser().ConsumeToken());
+    break;
+  case tok::kw_float:
+    GetTypeSpecifierCollector().AddFloat(GetParser().ConsumeToken());
+    break;
+  case tok::kw_float32:
+    GetTypeSpecifierCollector().AddFloat32(GetParser().ConsumeToken());
+    break;
+  case tok::kw_float64:
+    GetTypeSpecifierCollector().AddFloat64(GetParser().ConsumeToken());
+    break;
+  case tok::kw_complex32:
+    GetTypeSpecifierCollector().AddComplex32(GetParser().ConsumeToken());
+    break;
+  case tok::kw_complex64:
+    GetTypeSpecifierCollector().AddComplex64(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+SyntaxStatus ParsingDeclCollector::CollectNominalType() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_enum:
+    GetTypeSpecifierCollector().AddEnum(GetParser().ConsumeToken());
+    break;
+  case tok::kw_struct:
+    GetTypeSpecifierCollector().AddStruct(GetParser().ConsumeToken());
+    break;
+  case tok::kw_interface:
+    GetTypeSpecifierCollector().AddInterface(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+SyntaxStatus ParsingDeclCollector::CollectAccessLevel() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_public:
+    GetAccessLevelCollector().AddPublic(GetParser().ConsumeToken());
+    break;
+  case tok::kw_internal:
+    GetAccessLevelCollector().AddInternal(GetParser().ConsumeToken());
+    break;
+  case tok::kw_private:
+    GetAccessLevelCollector().AddPrivate(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+SyntaxStatus ParsingDeclCollector::CollectTypeQualifier() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_const:
+    GetTypeQualifierCollector().AddConst(GetParser().ConsumeToken());
+    break;
+  case tok::kw_restrict:
+    GetTypeQualifierCollector().AddRestrict(GetParser().ConsumeToken());
+    break;
+  case tok::kw_volatile:
+    GetTypeQualifierCollector().AddVolatile(GetParser().ConsumeToken());
+    break;
+  case tok::kw_pure:
+    GetTypeQualifierCollector().AddPure(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+SyntaxStatus ParsingDeclCollector::CollectStorageSpecifier() {
+  switch (GetParser().GetCurTok().GetKind()) {
+  case tok::kw_static:
+    GetStorageSpecifierCollector().AddStatic(GetParser().ConsumeToken());
+    break;
+  case tok::kw_register:
+    GetStorageSpecifierCollector().AddRegister(GetParser().ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
 }
 
 ParsingDeclCollector::~ParsingDeclCollector() {}

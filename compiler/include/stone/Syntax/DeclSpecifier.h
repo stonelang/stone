@@ -294,12 +294,14 @@ public:
 // Light weight value type for now
 class UsingDeclarationCollector final {
   SrcLoc loc;
+
 public:
   UsingDeclarationCollector() : loc(SrcLoc()) {}
+
 public:
   void AddUsing(SrcLoc inputLoc) { loc = inputLoc; }
   bool HasUsing() { return loc.isValid(); }
-  SrcLoc GetLoc() { return loc;}
+  SrcLoc GetLoc() { return loc; }
 };
 
 class DeclSpecifier {

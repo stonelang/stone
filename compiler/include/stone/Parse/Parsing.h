@@ -154,9 +154,15 @@ public:
   SyntaxStatus Collect();
   SyntaxStatus CollectUntil(tok kind);
   SyntaxStatus IsDoubleDipping();
-  
-private:
-  SyntaxStatus CollectImpl();
+
+public:
+  SyntaxStatus CollectUsing();
+  SyntaxStatus CollectBasicType();
+  SyntaxStatus CollectNominalType();
+  SyntaxStatus CollectAccessLevel();
+  SyntaxStatus CollectTypeQualifier();
+  SyntaxStatus CollectStorageSpecifier();
+  SyntaxStatus CollectFunction();
 
 public:
   void Verify();

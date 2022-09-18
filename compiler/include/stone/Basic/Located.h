@@ -6,14 +6,13 @@
 
 namespace stone {
 
-/// A currency type for keeping track of items which were found in the source code.
-/// Several parts of the compiler need to keep track of a `SrcLoc` corresponding
-/// to an item, in case they need to report some diagnostics later. For example,
-/// the ClangImporter needs to keep track of where imports were originally written.
-/// Located makes it easy to do so while making the code more readable, compared to
-/// using `std::pair`.
-template <typename T>
-struct Located {
+/// A currency type for keeping track of items which were found in the source
+/// code. Several parts of the compiler need to keep track of a `SrcLoc`
+/// corresponding to an item, in case they need to report some diagnostics
+/// later. For example, the ClangImporter needs to keep track of where imports
+/// were originally written. Located makes it easy to do so while making the
+/// code more readable, compared to using `std::pair`.
+template <typename T> struct Located {
   /// The main item whose source location is being tracked.
   T Item;
 
@@ -29,7 +28,7 @@ struct Located {
 };
 
 template <typename T>
-bool operator ==(const Located<T> &lhs, const Located<T> &rhs) {
+bool operator==(const Located<T> &lhs, const Located<T> &rhs) {
   return lhs.Item == rhs.Item && lhs.Loc == rhs.Loc;
 }
 
@@ -39,8 +38,7 @@ namespace llvm {
 
 template <typename T> struct DenseMapInfo;
 
-template<typename T>
-struct DenseMapInfo<stone::Located<T>> {
+template <typename T> struct DenseMapInfo<stone::Located<T>> {
 
   static inline stone::Located<T> getEmptyKey() {
     return stone::Located<T>(DenseMapInfo<T>::getEmptyKey(),
@@ -53,11 +51,13 @@ struct DenseMapInfo<stone::Located<T>> {
   }
 
   static unsigned getHashValue(const stone::Located<T> &LocatedVal) {
-    return combineHashValue(DenseMapInfo<T>::getHashValue(LocatedVal.Item),
-                            DenseMapInfo<stone::SrcLoc>::getHashValue(LocatedVal.Loc));
+    return combineHashValue(
+        DenseMapInfo<T>::getHashValue(LocatedVal.Item),
+        DenseMapInfo<stone::SrcLoc>::getHashValue(LocatedVal.Loc));
   }
 
-  static bool isEqual(const stone::Located<T> &LHS, const stone::Located<T> &RHS) {
+  static bool isEqual(const stone::Located<T> &LHS,
+                      const stone::Located<T> &RHS) {
     return DenseMapInfo<T>::isEqual(LHS.Item, RHS.Item) &&
            DenseMapInfo<T>::isEqual(LHS.Loc, RHS.Loc);
   }

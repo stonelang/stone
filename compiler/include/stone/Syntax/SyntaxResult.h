@@ -136,11 +136,13 @@ MakeSyntaxCodeCompletionResult(T *Result = nullptr) {
 /// If you want to use 'bool' as a result type in the Syntax, consider using
 /// SyntaxStatus instead.
 class SyntaxStatus {
+
+  // 1 = false
   unsigned isError : 1;
   unsigned IsCodeCompletion : 1;
 
 public:
-  /// Construct a successful parser status.
+  /// Construct a successful parser status by setting values to true = 0
   SyntaxStatus() : isError(0), IsCodeCompletion(0) {}
 
   /// Construct a parser status with specified bits.
@@ -205,7 +207,6 @@ static inline SyntaxStatus MakeSyntaxCodeCompletionStatus() {
   Status.SetHasCodeCompletionAndIsError();
   return Status;
 }
-
 /// Create a parser result with specified bits.
 template <typename T>
 static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {

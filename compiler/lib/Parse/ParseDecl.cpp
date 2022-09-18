@@ -2,7 +2,7 @@
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/Stmt.h"
-//#include "stone/Syntax/Using.h"
+// #include "stone/Syntax/Using.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
@@ -63,8 +63,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
 }
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
-  
-  SyntaxStatus status; 
+
+  SyntaxStatus status;
   SyntaxResult<Decl> result;
   ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
 
@@ -78,7 +78,6 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
     if (status.IsError()) {
       goto EndParse;
     }
-
     if (collector.GetUsingDeclarationCollector().HasUsing()) {
       result = ParseUsingDecl(collector);
       goto EndParse;
@@ -115,123 +114,52 @@ EndParse : {
 SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
   SyntaxStatus status;
   while (GetParser().GetCurTok().IsNot(kind)) {
-    status |= CollectImpl();
+    status |= Collect();
     if (status.HasCodeCompletion()) {
       break;
     }
   }
   return status;
 }
-SyntaxStatus ParsingDeclCollector::Collect() { return CollectImpl(); }
-SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
+SyntaxStatus ParsingDeclCollector::Collect() {
+
   SyntaxStatus status;
+
+  status = CollectUsing();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectAccessLevel();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectFunction();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectBasicType();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectNominalType();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectTypeQualifier();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  status = CollectStorageSpecifier();
+  if (status.IsSuccess()) {
+    return status;
+  }
+  if (!status.IsSuccess()) {
+    status.SetHasCodeCompletion();
+  }
   return status;
 }
-
-SyntaxStatus ParsingDeclCollector::CollectImpl() {
+SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
   SyntaxStatus status;
-  switch (GetParser().GetCurTok().GetKind()) {
-  case tok::kw_using:
-    GetUsingDeclarationCollector().AddUsing(GetParser().ConsumeToken());
-    break;
-  case tok::kw_public:
-    GetAccessLevelCollector().AddPublic(GetParser().ConsumeToken());
-    break;
-  case tok::kw_internal:
-    GetAccessLevelCollector().AddInternal(GetParser().ConsumeToken());
-    break;
-  case tok::kw_private:
-    GetAccessLevelCollector().AddPrivate(GetParser().ConsumeToken());
-    break;
-  case tok::kw_const:
-    GetTypeQualifierCollector().AddConst(GetParser().ConsumeToken());
-    break;
-  case tok::kw_restrict:
-    GetTypeQualifierCollector().AddRestrict(GetParser().ConsumeToken());
-    break;
-  case tok::kw_volatile:
-    GetTypeQualifierCollector().AddVolatile(GetParser().ConsumeToken());
-    break;
-  case tok::kw_pure:
-    GetTypeQualifierCollector().AddPure(GetParser().ConsumeToken());
-    break;
-  case tok::kw_static:
-    GetStorageSpecifierCollector().AddStatic(GetParser().ConsumeToken());
-    break;
-  case tok::kw_auto:
-    // TODO: Storage specifier
-    GetTypeSpecifierCollector().AddAuto(GetParser().ConsumeToken());
-    break;
-  case tok::kw_register:
-    // TODO: Storage specifier
-    GetStorageSpecifierCollector().AddRegister(GetParser().ConsumeToken());
-    break;
-  case tok::kw_fun:
-    GetFunctionSpecifierCollector().AddFun(GetParser().ConsumeToken());
-    break;
-  case tok::kw_inline:
-    GetFunctionSpecifierCollector().AddInline(GetParser().ConsumeToken());
-    break;
-  case tok::kw_struct:
-    GetTypeSpecifierCollector().AddStruct(GetParser().ConsumeToken());
-    break;
-  case tok::kw_interface:
-    GetTypeSpecifierCollector().AddInterface(GetParser().ConsumeToken());
-    break;
-  case tok::kw_int:
-    GetTypeSpecifierCollector().AddInt(GetParser().ConsumeToken());
-    break;
-  case tok::kw_int8:
-    GetTypeSpecifierCollector().AddInt8(GetParser().ConsumeToken());
-    break;
-  case tok::kw_int16:
-    GetTypeSpecifierCollector().AddInt16(GetParser().ConsumeToken());
-    break;
-  case tok::kw_int32:
-    GetTypeSpecifierCollector().AddInt32(GetParser().ConsumeToken());
-    break;
-  case tok::kw_int64:
-    GetTypeSpecifierCollector().AddInt64(GetParser().ConsumeToken());
-    break;
-  case tok::kw_uint:
-    GetTypeSpecifierCollector().AddUInt(GetParser().ConsumeToken());
-    break;
-  case tok::kw_uint8:
-    GetTypeSpecifierCollector().AddUInt8(GetParser().ConsumeToken());
-    break;
-  case tok::kw_byte:
-    GetTypeSpecifierCollector().AddByte(GetParser().ConsumeToken());
-    break;
-  case tok::kw_uint16:
-    GetTypeSpecifierCollector().AddUInt16(GetParser().ConsumeToken());
-    break;
-  case tok::kw_uint32:
-    GetTypeSpecifierCollector().AddUInt32(GetParser().ConsumeToken());
-    break;
-  case tok::kw_uint64:
-    GetTypeSpecifierCollector().AddUInt64(GetParser().ConsumeToken());
-    break;
-  case tok::kw_float:
-    GetTypeSpecifierCollector().AddFloat(GetParser().ConsumeToken());
-    break;
-  case tok::kw_float32:
-    GetTypeSpecifierCollector().AddFloat32(GetParser().ConsumeToken());
-    break;
-  case tok::kw_float64:
-    GetTypeSpecifierCollector().AddFloat64(GetParser().ConsumeToken());
-    break;
-  case tok::kw_complex32:
-    GetTypeSpecifierCollector().AddComplex32(GetParser().ConsumeToken());
-    break;
-  case tok::kw_complex64:
-    GetTypeSpecifierCollector().AddComplex64(GetParser().ConsumeToken());
-    break;
-  default:
-    // We did not find a any of the above. This could mean that the user entered junk 
-    // or the file is empty. Either weay, we end the parse.
-    status.SetHasCodeCompletion();
-    break;
-  }
   return status;
 }
 
