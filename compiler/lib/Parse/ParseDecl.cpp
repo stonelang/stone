@@ -124,7 +124,6 @@ SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
 SyntaxStatus ParsingDeclCollector::Collect() {
 
   SyntaxStatus status;
-
   status = CollectUsing();
   if (status.IsSuccess()) {
     return status;
@@ -153,10 +152,9 @@ SyntaxStatus ParsingDeclCollector::Collect() {
   if (status.IsSuccess()) {
     return status;
   }
-  if (!status.IsSuccess()) {
-    status.SetHasCodeCompletion();
-  }
-  return status;
+  // If we are here, we did not find anything
+  status.SetHasCodeCompletion();
+  return status; 
 }
 SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
   SyntaxStatus status;

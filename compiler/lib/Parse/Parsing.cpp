@@ -136,7 +136,6 @@ SyntaxStatus ParsingDeclCollector::CollectAccessLevel() {
     break;
   case tok::kw_private:
     GetAccessLevelCollector().AddPrivate(GetParser().ConsumeToken());
-    break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
