@@ -182,6 +182,13 @@ SyntaxStatus ParsingDeclCollector::Verify() {
 
 ParsingDeclCollector::~ParsingDeclCollector() {}
 
+SyntaxStatus ParsingDeclaratorCollector::Collect() {
+
+  SyntaxStatus status;
+
+  return status;
+}
+
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 

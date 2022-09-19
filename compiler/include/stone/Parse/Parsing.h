@@ -183,6 +183,9 @@ public:
     return static_cast<const ParsingDeclCollector &>(
         DeclaratorCollector::GetDeclSpecifier());
   }
+
+public:
+  SyntaxStatus Collect();
 };
 
 enum class ParsingContextKind : UInt8 {

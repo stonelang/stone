@@ -1,20 +1,15 @@
 #include "stone/Syntax/Decl.h"
-
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <string>
-#include <tuple>
-#include <utility>
-
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
+#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/SyntaxFactory.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Types.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"
@@ -25,8 +20,31 @@
 #include "llvm/Support/VersionTuple.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <string>
+#include <tuple>
+#include <utility>
+
 using namespace stone;
 using namespace stone::syn;
+
+template <typename DeclTy, typename AllocatorTy>
+void *syn::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
+                           bool extraSace) {
+  static_assert(alignof(DeclTy) >= sizeof(void *),
+                "A pointer must fit in the alignment of the DeclTy!");
+
+  size_t size = baseSize;
+  if (extraSace) {
+    size += alignof(DeclTy);
+  }
+  void *mem = allocatorTy.Allocate(size, alignof(DeclTy));
+  if (extraSace)
+    mem = reinterpret_cast<char *>(mem) + alignof(DeclTy);
+  return mem;
+}
 
 // // Only allow allocation of Decls using the allocator in ASTContext.
 // void *syn::Decl::operator new(std::size_t bytes, const SyntaxContext &tc,
@@ -127,3 +145,34 @@ bool FunDecl::HasReturn() const { return false; }
 void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
 
 void DeclStats::Print(ColorfulStream &stream) {}
+
+FunDecl *FunDeclFactory::Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
+                                TypeRep *result, DeclContext *parent) {
+  size_t size = sizeof(FunDecl);
+  // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
+
+  auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
+  return ::new (memPtr)
+      FunDecl(DeclKind::Fun, nameInfo.GetName(), nameInfo.GetNameLoc(),
+              nameInfo.GetSpecialNameLoc(), parent);
+}
+
+StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
+                                      SyntaxContext &sc, DeclContext *dc) {
+  size_t size = sizeof(StructDecl);
+  auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
+  // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
+  return nullptr;
+}
+
+Module *ModuleDeclFactory::Create(Identifier *name, SyntaxContext &sc,
+                                  bool isMainModule) {
+  auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
+  return ::new (declPtr) syn::Module(name, sc);
+}
+
+VarDecl *VarDeclFactory::Create(SyntaxContext &sc) {
+  // auto declPtr = syn::AllocateDeclMem<syn::VarDecl>(sc,
+  // sizeof(syn::VarDecl)); return ::new (declPtr) syn::VarDecl(sc);
+  return nullptr;
+}

@@ -54,6 +54,10 @@ void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 //                                     llvm::None);
 // };
 
+struct VarDeclFactory final {
+  static VarDecl *Create(SyntaxContext &sc);
+};
+
 struct FunDeclFactory final {
   static FunDecl *Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
                          TypeRep *result, DeclContext *parent);

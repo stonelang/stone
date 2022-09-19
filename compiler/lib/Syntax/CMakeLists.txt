@@ -15,9 +15,6 @@ set(stone_syn_sources
 	DeclName.cpp
 	Expr.cpp
 	Identifier.cpp
-	MakeDecl.cpp
-	MakeExpr.cpp
-	MakeStmt.cpp
 	Module.cpp
 	SearchPath.cpp
 	Specifier.cpp

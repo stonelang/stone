@@ -170,7 +170,9 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   // TODO: What about just passing the scope object
   ParsingDeclaratorCollector declaratorCollector(*this, collector);
-  auto status = ParseDeclarator(declaratorCollector);
+  auto status = CollectDeclarator(declaratorCollector);
+
+  auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
 
   return result;
 }
@@ -188,7 +190,7 @@ SyntaxResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
+SyntaxStatus Parser::CollectDeclarator(ParsingDeclaratorCollector &collector) {
 
   assert(collector.GetParsingDeclCollector()
              .GetTypeSpecifierCollector()
@@ -208,20 +210,18 @@ SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
     // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
     auto pointerDeclarator = PointerDeclarator::Create();
     collector.AddDeclarator(pointerDeclarator, ConsumeToken());
-    ConsumeToken();
-    ParseDeclarator(collector);
+    CollectDeclarator(collector);
   }
   if (curTok.IsReferenceOperator()) {
     auto refernceDeclarator = ReferenceDeclarator::Create();
     collector.AddDeclarator(refernceDeclarator, ConsumeToken());
-    ConsumeToken();
-    ParseDeclarator(collector);
+    CollectDeclarator(collector);
   }
   return syn::MakeSyntaxSuccess();
 }
 
 SyntaxStatus
-Parser::ParseDirectDeclarator(ParsingDeclaratorCollector &collector) {
+Parser::CollectDirectDeclarator(ParsingDeclaratorCollector &collector) {
 
   return syn::MakeSyntaxSuccess();
 }

@@ -145,8 +145,10 @@ public:
   // TODO: Param should be constant
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
   SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
-  SyntaxStatus ParseDeclarator(ParsingDeclaratorCollector &collector);
-  SyntaxStatus ParseDirectDeclarator(ParsingDeclaratorCollector &collector);
+
+  // Declarator collection
+  SyntaxStatus CollectDeclarator(ParsingDeclaratorCollector &collector);
+  SyntaxStatus CollectDirectDeclarator(ParsingDeclaratorCollector &collector);
 
 public:
   // == Type Parsing ==//

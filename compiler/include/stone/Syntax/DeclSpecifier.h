@@ -12,6 +12,30 @@
 namespace stone {
 namespace syn {
 
+/// Describes the kind of unqualified-id parsed.
+enum class UnqualifiedIdKind {
+  /// An identifier.
+  Identifier,
+  /// An overloaded operator name, e.g., operator+.
+  OperatorFunction,
+  /// A conversion function name, e.g., operator int.
+  ConversionFunction,
+  /// A user-defined literal name, e.g., operator "" _i.
+  LiteralOperator,
+  /// A constructor name.
+  ConstructorName,
+  /// A constructor named via a template-id.
+  ConstructorTemplate,
+  /// A destructor name.
+  DestructorName,
+  /// A template-id, e.g., f<int>.
+  Template,
+  /// An implicit 'self' parameter
+  ImplicitSelfParam,
+  /// A deduction-guide name (a template-name)
+  DeductionGuideName
+};
+
 class ScopeSpecifier {
   SrcRange range;
   // NestedNameSpecifierLocBuilder builder;
