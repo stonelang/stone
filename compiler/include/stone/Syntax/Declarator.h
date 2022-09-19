@@ -4,8 +4,45 @@
 #include "stone/Syntax/DeclSpecifier.h"
 namespace stone {
 namespace syn {
-
 constexpr size_t DeclaratorAlignInBits = 3;
+
+/// TODO: I think you can replace this with ScopeKind
+enum class DeclaratorScopeKind {
+  None = 0,
+  SyntaxFile,          // File scope declaration.
+  FunctionSignature,   // Within a function prototype.
+  TypeName,            // Abstract VariableName for types.
+  FunctionalCast,      // Type in a C++ functional cast expression.
+  Member,              // Struct/Union field.
+  Block,               // Declaration within a block in a function.
+  ForInit,             // Declaration within first part of a for loop.
+  SelectionInit,       // Declaration within optional init stmt of if/switch.
+  Condition,           // Condition declaration in a C++ if/switch/while/for.
+  TemplateParam,       // Within a template parameter list.
+  New,                 // new-expression.
+  BlockLiteral,        // Block literal VariableName.
+  LambdaExpr,          // Lambda-expression VariableName.
+  LambdaExprParameter, // Lambda-expression parameter VariableName.
+  ConversionId,        // Conversion-type-id.
+  TrailingReturn,      // Trailing-type-specifier.
+  TrailingReturnVar,   // Trailing-type-specifier for VariableName.
+  TemplateArg,         // Any template argument (in template argument list).
+  TemplateTypeArg,     // Template type argument (in default argument).
+  AliasDecl,           // Alias-declaration.
+  AliasTemplate,       // Alias-declaration template.
+  RequiresExpr         // Requires-expression.
+};
+
+enum class DeclaratorKind {
+  Pointer,
+  Reference,
+  Array,
+  Function,
+  BlockPointer,
+  MemberPointer,
+  Paren,
+  Pipe,
+};
 
 class alignas(1 << DeclaratorAlignInBits) Declarator {
   DeclaratorKind kind;
