@@ -4,8 +4,10 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Parse/Lexing.h"
-#include "stone/Syntax/Declarator.h"
+#include "stone/Syntax/DeclCollector.h"
+#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Scope.h"
+#include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -138,7 +140,7 @@ struct ParsingDeclFlags final {
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
-class ParsingDeclCollector final : public DeclSpecifier {
+class ParsingDeclCollector final : public DeclCollector {
   Parser &parser;
 
 public:
@@ -146,7 +148,7 @@ public:
 
 public:
   ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
-      : parser(parser), DeclSpecifier(attributeFactory) {}
+      : parser(parser), DeclCollector(attributeFactory) {}
 
   ~ParsingDeclCollector();
 
@@ -169,20 +171,21 @@ public:
   SyntaxStatus Verify();
 };
 
-class ParsingDeclaratorCollector final : public DeclaratorCollector {
+class ParsingTypePatternCollector final : public TypePatternCollector {
   Parser &parser;
 
 public:
-  ParsingDeclaratorCollector(
-      Parser &parser, const ParsingDeclCollector &collector,
-      DeclaratorScopeKind declaratorScopeKind = DeclaratorScopeKind::None)
-      : DeclaratorCollector(collector, declaratorScopeKind), parser(parser) {}
+  ParsingTypePatternCollector(Parser &parser,
+                              const TypeSpecifierCollector &specifierCollector)
+      : TypePatternCollector(specifierCollector), parser(parser) {}
 
 public:
-  const ParsingDeclCollector &GetParsingDeclCollector() const {
-    return static_cast<const ParsingDeclCollector &>(
-        DeclaratorCollector::GetDeclSpecifier());
+  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+    return static_cast<const TypeSpecifierCollector &>(
+        TypePatternCollector::GetTypeSpecifierCollector());
   }
+
+  Parser &GetParser() { return parser; }
 
 public:
   SyntaxStatus Collect();

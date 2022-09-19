@@ -138,6 +138,8 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
+  // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
+
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
@@ -147,8 +149,9 @@ public:
   SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
   // Declarator collection
-  SyntaxStatus CollectDeclarator(ParsingDeclaratorCollector &collector);
-  SyntaxStatus CollectDirectDeclarator(ParsingDeclaratorCollector &collector);
+  // SyntaxStatus CollectDeclarator(ParsingDeclaratorCollector &collector);
+  // SyntaxStatus CollectDirectDeclarator(ParsingDeclaratorCollector
+  // &collector);
 
 public:
   // == Type Parsing ==//
@@ -169,6 +172,7 @@ public:
 
   // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
+  SyntaxStatus CollectFunctionSpecifier(ParsingDeclCollector &collectorifier);
 
 private:
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,

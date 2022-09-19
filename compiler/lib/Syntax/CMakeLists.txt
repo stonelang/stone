@@ -8,14 +8,14 @@ set(stone_syn_sources
 	Builtin.cpp
 	Comment.cpp
 	Decl.cpp
-	Declarator.cpp
-	DeclSpecifier.cpp
+	DeclCollector.cpp
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
+	Pattern.cpp
 	SearchPath.cpp
 	Specifier.cpp
 	Stmt.cpp

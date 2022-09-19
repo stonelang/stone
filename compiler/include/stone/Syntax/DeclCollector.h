@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECLSPECIFIER_H
-#define STONE_SYNTAX_DECLSPECIFIER_H
+#ifndef STONE_SYNTAX_DECLCOLLECTOR_H
+#define STONE_SYNTAX_DECLCOLLECTOR_H
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
@@ -223,21 +223,24 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class DeclSpecifier {
+class DeclCollector {
 
   AttributeFactory &attributeFactory;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
+
+  // Does not belong here
   UsingDeclarationCollector usingDeclarationCollector;
+
   AccessLevelCollector accessLevelCollector;
 
-  DeclSpecifier(const DeclSpecifier &) = delete;
-  void operator=(const DeclSpecifier &) = delete;
+  DeclCollector(const DeclCollector &) = delete;
+  void operator=(const DeclCollector &) = delete;
 
 public:
-  DeclSpecifier(AttributeFactory &attributeFactory)
+  DeclCollector(AttributeFactory &attributeFactory)
       : attributeFactory(attributeFactory) {}
 
 public:
