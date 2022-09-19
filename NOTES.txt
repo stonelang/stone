@@ -50,4 +50,8 @@ run
 next
 
 
+** BUG
+int** fails in lexer but int* works 
+
+
 
