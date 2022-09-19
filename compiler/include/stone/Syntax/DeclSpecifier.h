@@ -12,112 +12,6 @@
 namespace stone {
 namespace syn {
 
-/// TODO: I think you can replace this with ScopeKind
-enum class DeclaratorScopeKind {
-  None = 0,
-  SyntaxFile,          // File scope declaration.
-  FunctionSignature,   // Within a function prototype.
-  TypeName,            // Abstract VariableName for types.
-  FunctionalCast,      // Type in a C++ functional cast expression.
-  Member,              // Struct/Union field.
-  Block,               // Declaration within a block in a function.
-  ForInit,             // Declaration within first part of a for loop.
-  SelectionInit,       // Declaration within optional init stmt of if/switch.
-  Condition,           // Condition declaration in a C++ if/switch/while/for.
-  TemplateParam,       // Within a template parameter list.
-  New,                 // new-expression.
-  BlockLiteral,        // Block literal VariableName.
-  LambdaExpr,          // Lambda-expression VariableName.
-  LambdaExprParameter, // Lambda-expression parameter VariableName.
-  ConversionId,        // Conversion-type-id.
-  TrailingReturn,      // Trailing-type-specifier.
-  TrailingReturnVar,   // Trailing-type-specifier for VariableName.
-  TemplateArg,         // Any template argument (in template argument list).
-  TemplateTypeArg,     // Template type argument (in default argument).
-  AliasDecl,           // Alias-declaration.
-  AliasTemplate,       // Alias-declaration template.
-  RequiresExpr         // Requires-expression.
-};
-
-enum class DeclaratorChunkKind {
-  Pointer,
-  Reference,
-  Array,
-  Function,
-  BlockPointer,
-  MemberPointer,
-  Paren,
-  Pipe,
-};
-
-class alignas(8) DeclaratorChunk {
-  DeclaratorChunkKind kind;
-
-public:
-  DeclaratorChunk(DeclaratorChunkKind kind) : kind(kind) {}
-};
-
-class PointerDeclaratorChunk final : public DeclaratorChunk {
-  UInt8 starCount;
-
-public:
-  PointerDeclaratorChunk()
-      : DeclaratorChunk(DeclaratorChunkKind::Pointer), starCount(0) {}
-  void AddPointer();
-
-public:
-  static PointerDeclaratorChunk Create();
-
-public:
-  // UInt8 GetStarCount() const { return starCount; }
-  // void AddStar() { ++starCount; }
-};
-
-class MemberPointerDeclaratorChunk final : public DeclaratorChunk {
-public:
-  MemberPointerDeclaratorChunk()
-      : DeclaratorChunk(DeclaratorChunkKind::MemberPointer) {}
-
-public:
-  static MemberPointerDeclaratorChunk Create();
-};
-
-class ReferenceDeclaratorChunk final : public DeclaratorChunk {
-public:
-  ReferenceDeclaratorChunk()
-      : DeclaratorChunk(DeclaratorChunkKind::Reference) {}
-
-public:
-  void AddReference();
-
-public:
-  static ReferenceDeclaratorChunk Create();
-};
-
-class ArrayDeclaratorChunk final : public DeclaratorChunk {
-public:
-  ArrayDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Array) {}
-
-public:
-  static ArrayDeclaratorChunk Create();
-};
-
-class ParenDeclaratorChunk final : public DeclaratorChunk {
-public:
-  ParenDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Paren) {}
-
-public:
-  static ParenDeclaratorChunk Create();
-};
-
-class FunctionDeclaratorChunk final : public DeclaratorChunk {
-public:
-  FunctionDeclaratorChunk() : DeclaratorChunk(DeclaratorChunkKind::Function) {}
-
-public:
-  static FunctionDeclaratorChunk Create();
-};
-
 class ScopeSpecifier {
   SrcRange range;
   // NestedNameSpecifierLocBuilder builder;
@@ -358,6 +252,109 @@ public:
   }
 };
 
+/// TODO: I think you can replace this with ScopeKind
+enum class DeclaratorScopeKind {
+  None = 0,
+  SyntaxFile,          // File scope declaration.
+  FunctionSignature,   // Within a function prototype.
+  TypeName,            // Abstract VariableName for types.
+  FunctionalCast,      // Type in a C++ functional cast expression.
+  Member,              // Struct/Union field.
+  Block,               // Declaration within a block in a function.
+  ForInit,             // Declaration within first part of a for loop.
+  SelectionInit,       // Declaration within optional init stmt of if/switch.
+  Condition,           // Condition declaration in a C++ if/switch/while/for.
+  TemplateParam,       // Within a template parameter list.
+  New,                 // new-expression.
+  BlockLiteral,        // Block literal VariableName.
+  LambdaExpr,          // Lambda-expression VariableName.
+  LambdaExprParameter, // Lambda-expression parameter VariableName.
+  ConversionId,        // Conversion-type-id.
+  TrailingReturn,      // Trailing-type-specifier.
+  TrailingReturnVar,   // Trailing-type-specifier for VariableName.
+  TemplateArg,         // Any template argument (in template argument list).
+  TemplateTypeArg,     // Template type argument (in default argument).
+  AliasDecl,           // Alias-declaration.
+  AliasTemplate,       // Alias-declaration template.
+  RequiresExpr         // Requires-expression.
+};
+
+enum class DeclaratorKind {
+  Pointer,
+  Reference,
+  Array,
+  Function,
+  BlockPointer,
+  MemberPointer,
+  Paren,
+  Pipe,
+};
+
+class alignas(8) Declarator {
+  DeclaratorKind kind;
+
+public:
+  Declarator(DeclaratorKind kind) : kind(kind) {}
+};
+
+class PointerDeclarator final : public Declarator {
+  UInt8 starCount;
+
+public:
+  PointerDeclarator() : Declarator(DeclaratorKind::Pointer), starCount(0) {}
+  void AddPointer();
+
+public:
+  static PointerDeclarator Create();
+
+public:
+  // UInt8 GetStarCount() const { return starCount; }
+  // void AddStar() { ++starCount; }
+};
+
+class MemberPointerDeclarator final : public Declarator {
+public:
+  MemberPointerDeclarator() : Declarator(DeclaratorKind::MemberPointer) {}
+
+public:
+  static MemberPointerDeclarator Create();
+};
+
+class ReferenceDeclarator final : public Declarator {
+public:
+  ReferenceDeclarator() : Declarator(DeclaratorKind::Reference) {}
+
+public:
+  void AddReference();
+
+public:
+  static ReferenceDeclarator Create();
+};
+
+class ArrayDeclarator final : public Declarator {
+public:
+  ArrayDeclarator() : Declarator(DeclaratorKind::Array) {}
+
+public:
+  static ArrayDeclarator Create();
+};
+
+class ParenDeclarator final : public Declarator {
+public:
+  ParenDeclarator() : Declarator(DeclaratorKind::Paren) {}
+
+public:
+  static ParenDeclarator Create();
+};
+
+class FunctionDeclarator final : public Declarator {
+public:
+  FunctionDeclarator() : Declarator(DeclaratorKind::Function) {}
+
+public:
+  static FunctionDeclarator Create();
+};
+
 class DeclaratorCollector {
 
   const DeclSpecifier &declSpecifier;
@@ -372,7 +369,7 @@ class DeclaratorCollector {
   /// parsed.  This is pushed from the identifier out, which means that element
   /// #0 will be the most closely bound to the identifier, and
   /// chunks.back() will be the least closely bound.
-  llvm::SmallVector<DeclaratorChunk, 8> chunks;
+  llvm::SmallVector<Declarator, 8> declarators;
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
@@ -392,8 +389,8 @@ public:
 public:
   /// Add a chunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the chunk.
-  void AddDeclaratorChunk(const DeclaratorChunk &chunk, SrcLoc endLoc) {
-    chunks.push_back(chunk);
+  void AddDeclarator(const Declarator &declarator, SrcLoc endLoc) {
+    declarators.push_back(declarator);
     // TODO:
     //  if (!EndLoc.isInvalid())
     //    SetRangeEnd(EndLoc);

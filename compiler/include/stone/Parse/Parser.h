@@ -146,6 +146,7 @@ public:
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
   SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
   SyntaxStatus ParseDeclarator(ParsingDeclaratorCollector &collector);
+  SyntaxStatus ParseDirectDeclarator(ParsingDeclaratorCollector &collector);
 
 public:
   // == Type Parsing ==//
@@ -402,7 +403,6 @@ private:
 
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
-
 };
 
 } // namespace syn

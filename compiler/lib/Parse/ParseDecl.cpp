@@ -169,10 +169,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
                             "parsing var declaration");
 
   // TODO: What about just passing the scope object
-  // ParsingDeclaratorCollector declaratorCollector(collector);
-  // declaratorCollector.Collect();
-
-  // auto status = ParseDeclarator(declaratorCollector);
+  ParsingDeclaratorCollector declaratorCollector(*this, collector);
+  auto status = ParseDeclarator(declaratorCollector);
 
   return result;
 }
@@ -197,10 +195,10 @@ SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
              .HasTypeSpecifierKind() &&
          "Attempting to parse a declarator without a type-specifier.");
 
-  if (!curTok.IsIdentifierOrUnderscore()) {
-    // TODO: Log
-    syn::MakeSyntaxError();
-  }
+  // if (!curTok.IsIdentifierOrUnderscore()) {
+  //   // TODO: Log
+  //   syn::MakeSyntaxError();
+  // }
   // 1. Are you parsing a VarDecl
   // if(GetCurScope().GetParent().GetKind() == ScopeKind::VarDecl){
 
@@ -208,27 +206,25 @@ SyntaxStatus Parser::ParseDeclarator(ParsingDeclaratorCollector &collector) {
 
   if (curTok.IsPointerOperator()) {
     // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
-    auto pointerDeclaratorChunk = PointerDeclaratorChunk::Create();
-    pointerDeclaratorChunk.AddPointer();
-    collector.AddDeclaratorChunk(pointerDeclaratorChunk, ConsumeToken());
-    while (curTok.IsPointerOperator()) {
-      pointerDeclaratorChunk.AddPointer();
-      ConsumeToken();
-    }
+    auto pointerDeclarator = PointerDeclarator::Create();
+    collector.AddDeclarator(pointerDeclarator, ConsumeToken());
+    ConsumeToken();
+    ParseDeclarator(collector);
   }
   if (curTok.IsReferenceOperator()) {
-    auto refernceDeclaratorChunk = ReferenceDeclaratorChunk::Create();
-    refernceDeclaratorChunk.AddReference();
-    collector.AddDeclaratorChunk(refernceDeclaratorChunk, ConsumeToken());
+    auto refernceDeclarator = ReferenceDeclarator::Create();
+    collector.AddDeclarator(refernceDeclarator, ConsumeToken());
     ConsumeToken();
-    while (curTok.IsReferenceOperator()) {
-      refernceDeclaratorChunk.AddReference();
-      ConsumeToken();
-    }
+    ParseDeclarator(collector);
   }
   return syn::MakeSyntaxSuccess();
 }
 
+SyntaxStatus
+Parser::ParseDirectDeclarator(ParsingDeclaratorCollector &collector) {
+
+  return syn::MakeSyntaxSuccess();
+}
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   ParsingScope funDeclScope(*this, ScopeKind::FunDecl,

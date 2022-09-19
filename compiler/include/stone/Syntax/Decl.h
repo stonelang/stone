@@ -718,7 +718,9 @@ public:
   // }
 };
 
-class TopLevelDecl {};
+class TopLevelDecl final : public DeclContext, public Decl {
+public:
+};
 
 } // namespace syn
 } // namespace stone
