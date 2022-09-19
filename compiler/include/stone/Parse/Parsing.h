@@ -4,7 +4,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Parse/Lexing.h"
-#include "stone/Syntax/DeclSpecifier.h"
+#include "stone/Syntax/Declarator.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxResult.h"
 
