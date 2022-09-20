@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_PATTERN_H
 
 #include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 
 namespace stone {
 namespace syn {
@@ -46,7 +47,7 @@ enum class TypePatternKind {
   Pipe,
 };
 
-class TypePattern {
+class alignas(8) TypePattern : syn::SyntaxAllocation<TypePattern> {
   SrcLoc loc;
   TypePatternKind kind;
 

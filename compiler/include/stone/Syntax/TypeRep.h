@@ -34,8 +34,7 @@ enum : unsigned {
 };
 
 /// Representation of a type as written in source.
-class alignas(1 << TypeRepAlignInBits) TypeRep
-    : public SyntaxAllocation<TypeRep> {
+class alignas(1 << TypeRepAlignInBits) TypeRep : public syn::SyntaxAllocation<TypeRep> {
 
   TypeRep(const TypeRep &) = delete;
   void operator=(const TypeRep &) = delete;
@@ -144,7 +143,7 @@ class AbstractPointerTypeRep : public QualTypeRep {};
 class PointerTypeRep : public AbstractPointerTypeRep {};
 
 /// Wrapper for source info for block pointers.
-class BlockPointerTypeRep : public AbstractPointerTypeRep {};
+class MemboerPointerTypeRep : public AbstractPointerTypeRep {};
 
 } // namespace syn
 } // end namespace stone

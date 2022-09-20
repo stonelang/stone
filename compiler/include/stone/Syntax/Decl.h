@@ -351,6 +351,8 @@ class ValueDecl : public NameableDecl {
   // llvm::PointerIntPair<QualType, 3, AccessLevel>>
   //     qualTypeAndAccess;
 
+//QualTypeRep *resultTy;
+
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
             UnifiedContext context)
@@ -545,7 +547,7 @@ class FunDecl : public FunctionDecl {
   SrcLoc funLoc;
   bool hasLBrace;
 
-  // QualTypeRep *resultTy;
+ //TypeLoc output;
 
 public:
   FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -571,6 +573,8 @@ public:
   SrcLoc GetFunLoc() { return funLoc; }
 
   QualType GetReturnType() const;
+
+  //TypeLoc GetReturnType() const; 
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
