@@ -138,6 +138,8 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
+  void ParseDeclName(DeclNameInfo &nameInfo);
+
   // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
@@ -159,6 +161,7 @@ public:
   SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
   SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
+  SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//

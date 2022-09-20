@@ -99,6 +99,7 @@ SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attemping to collect type-patterns without a type");
 
+  // TODO: Simple for now but this will be greatly expanded
   while (!GetCurTok().IsIdentifierOrUnderscore()) {
     switch (GetCurTok().GetKind()) {
     case tok::star:
@@ -222,5 +223,9 @@ SyntaxStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
+  return syn::MakeSyntaxSuccess();
+}
+
+SyntaxStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxSuccess();
 }

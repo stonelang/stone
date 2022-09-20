@@ -11,7 +11,7 @@ void sem::TypeCheck(syn::SyntaxFile &sf,
                     TypeCheckerListener *listener) {
 
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
-  for (auto &d : *sf.allDecls) {
+  for (auto d : sf.Decls) {
     checker.CheckDecl(d);
   }
   // checker.Check();

@@ -67,7 +67,7 @@ public:
   SyntaxFileKind kind = SyntaxFileKind::None;
   SyntaxFileStage stage = SyntaxFileStage::None;
 
-  llvm::Optional<std::vector<Decl *>> allDecls;
+  std::vector<Decl *> Decls;
 
 public:
   SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
@@ -85,7 +85,7 @@ public:
   void AddTopLevelDecl(Decl *d) {
     // Force decl parsing if we haven't already.
     //(void)GetTopLevelDecls();
-    allDecls->push_back(d);
+    Decls.push_back(d);
   }
 
   /// Retrieves an immutable view of the list of top-level decls in this file.

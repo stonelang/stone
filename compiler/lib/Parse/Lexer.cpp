@@ -788,17 +788,11 @@ void Lexer::lexOperatorIdentifier() {
   (void)didStart;
 
   do {
-    // if (CurPtr != BufferEnd && InSILBody && (*CurPtr == '!' || *CurPtr ==
-    // '?'))
-    //   // When parsing SIL body, '!' and '?' are special token and can't be
-    //   // in the middle of an operator.
-    //   break;
-
-    // // '.' cannot appear in the middle of an operator unless the operator
-    // // started with a '.'.
-    // if (*CurPtr == '.' && *TokStart != '.') {
-    //   break;
-    // }
+    // '.' cannot appear in the middle of an operator unless the operator
+    // started with a '.'.
+    if (*CurPtr == '.' && *TokStart != '.') {
+      break;
+    }
     // TODO:
     if (Identifier::IsEditorPlaceholder(
             StringRef(CurPtr, BufferEnd - CurPtr)) &&
@@ -848,10 +842,12 @@ void Lexer::lexOperatorIdentifier() {
         break;
       return formToken(tok::amp_prefix, TokStart);
     case '.': {
-      if (leftBound == rightBound)
+      if (leftBound == rightBound) {
         return formToken(tok::period, TokStart);
-      if (rightBound)
+      }
+      if (rightBound) {
         return formToken(tok::period_prefix, TokStart);
+      }
 
       // If left bound but not right bound, handle some likely situations.
 
@@ -2559,14 +2555,6 @@ void Lexer::Lex() {
     }
     return lexOperatorIdentifier();
   case '%':
-    // // Lex %[0-9a-zA-Z_]+ as a local SIL value
-    // if (InSILBody && stone::isIdentifierBody(CurPtr[0])) {
-    //   do {
-    //     ++CurPtr;
-    //   } while (stone::isIdentifierBody(CurPtr[0]));
-
-    //   return formToken(tok::sil_local_name, TokStart);
-    // }
     return lexOperatorIdentifier();
 
   case '!':

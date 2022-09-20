@@ -75,12 +75,10 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
-    // TODO:
-    //  status |= collector.Verify();
-    //  if (status.IsError()) {
-    //    goto EndParse;
-    //  }
-
+    status |= VerifyDeclCollected(collector);
+    if (status.IsError()) {
+      goto EndParse;
+    }
     if (collector.GetUsingDeclarationCollector().HasUsing()) {
       result = ParseUsingDecl(collector);
       goto EndParse;
@@ -124,26 +122,20 @@ EndParse : {
 //   return status;
 // }
 
-// SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
-//   SyntaxStatus status;
-//   return status;
-// }
-
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
-
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
+  assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
+         "Attempting to parse type-patterns without a type specified");
+
   CollectTypePatterns(collector);
+  assert(collector.GetTypePatternCollector().HasTypePatterns() &&
+         "Type is missing a type-pattern");
 
-  // assert(collector.GetTypePatternCollector().HasPatterns());
-  // auto status = collector.CollectTypePatterns();
-
-  // assert(patterns.HasTypePatterns());
-
-  // auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
+  auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
 
   return result;
 }
@@ -161,42 +153,6 @@ SyntaxResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-// SyntaxStatus Parser::CollectDeclarator(ParsingDeclaratorCollector &collector)
-// {
-
-//   assert(collector.GetParsingDeclCollector()
-//              .GetTypeSpecifierCollector()
-//              .HasTypeSpecifierKind() &&
-//          "Attempting to parse a declarator without a type-specifier.");
-
-//   // if (!curTok.IsIdentifierOrUnderscore()) {
-//   //   // TODO: Log
-//   //   syn::MakeSyntaxError();
-//   // }
-//   // 1. Are you parsing a VarDecl
-//   // if(GetCurScope().GetParent().GetKind() == ScopeKind::VarDecl){
-
-//   // }
-
-//   if (curTok.IsPointerOperator()) {
-//     // collector.GetTypeSpecifierCollector().Bits.IsPointer = true;
-//     auto pointerDeclarator = PointerDeclarator::Create();
-//     collector.AddDeclarator(pointerDeclarator, ConsumeToken());
-//     auto status = CollectDeclarator(collector);
-//   }
-//   if (curTok.IsReferenceOperator()) {
-//     auto refernceDeclarator = ReferenceDeclarator::Create();
-//     collector.AddDeclarator(refernceDeclarator, ConsumeToken());
-//     auto status = CollectDeclarator(collector);
-//   }
-//   return syn::MakeSyntaxSuccess();
-// }
-
-// SyntaxStatus
-// Parser::CollectDirectDeclarator(ParsingDeclaratorCollector &collector) {
-
-//   return syn::MakeSyntaxSuccess();
-// }
 SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   ParsingScope funDeclScope(*this, ScopeKind::FunDecl,
@@ -228,12 +184,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return syn::MakeSyntaxError();
   }
 
-  // ParsingDeclarator parsingDeclarator(collector);
-  // ParseDeclarator(parsingDeclarator);
-  // ParseDeclName();
-
   // Build the DeclName
   DeclNameInfo nameInfo;
+  // ParseDeclName(nameInfo);
 
   // Parse function name.
   auto name = GetIdentifier(curTok.GetText());
