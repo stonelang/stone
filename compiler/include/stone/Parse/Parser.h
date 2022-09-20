@@ -154,7 +154,20 @@ public:
   // &collector);
 
 public:
-  // == Type Parsing ==//
+  // === Collectors === ///
+
+  SyntaxStatus CollectDeclSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectUsingSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
+  SyntaxStatus CollectBasicTypeSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectNominalTypeSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectFunctionSpecifier(ParsingDeclCollector &collector);
+
+public:
+  // === Type Parsing ===//
   bool IsBasicType(tok kind) const;
 
   void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
@@ -169,10 +182,7 @@ public:
 
 public:
   //== fun ==//
-
-  // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
-  SyntaxStatus CollectFunctionSpecifier(ParsingDeclCollector &collectorifier);
 
 private:
   SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,

@@ -172,6 +172,9 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   ParsingTypePatternCollector patterns(*this,
                                        collector.GetTypeSpecifierCollector());
 
+  // assert(collector.GetTypePatternCollector().HasPatterns());
+  // auto status = collector.CollectTypePatterns();
+
   auto status = patterns.Collect();
   assert(patterns.HasTypePatterns());
 

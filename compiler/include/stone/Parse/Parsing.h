@@ -164,6 +164,7 @@ public:
   SyntaxStatus CollectNominalType();
   SyntaxStatus CollectAccessLevel();
   SyntaxStatus CollectTypeQualifier();
+  SyntaxStatus CollectTypePatterns();
   SyntaxStatus CollectStorageSpecifier();
   SyntaxStatus CollectFunction();
 

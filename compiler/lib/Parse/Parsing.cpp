@@ -163,6 +163,36 @@ SyntaxStatus ParsingDeclCollector::CollectTypeQualifier() {
   return syn::MakeSyntaxSuccess();
 }
 
+// SyntaxStatus ParsingDeclCollector::CollectTypePatterns() {
+//   assert(GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
+//          "Attemping to collect type-patterns without a type");
+
+//   while (!GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
+//     switch (GetParser().GetCurTok().GetKind()) {
+//     case tok::star:
+//       GetTypePatternCollector().AddPointer(GetParser().ConsumeToken());
+//       break;
+//     case tok::amp:
+//       GetTypePatternCollector().AddReference(GetParser().ConsumeToken());
+//       break;
+//     default: {
+//       goto EndCollecting;
+//     }
+//     }
+//   EndCollecting : {
+//     if (GetTypePatternCollector().HasTypePatterns()) {
+//       return syn::MakeSyntaxSuccess();
+//     }
+//     if (!GetTypePatternCollector().HasTypePatterns() &&
+//         GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
+//       GetTypePatternCollector().AddDirect(GetParser().ConsumeToken());
+//       return syn::MakeSyntaxSuccess();
+//     }
+//   }
+//     return syn::MakeSyntaxCodeCompletionStatus();
+//   }
+// }
+
 SyntaxStatus ParsingTypePatternCollector::Collect() {
 
   assert(GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
