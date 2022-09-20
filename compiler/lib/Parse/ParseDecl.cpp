@@ -71,14 +71,16 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   while (result.IsNull() && IsParsing()) {
     /// Collect using(s), qualifier(s), and specifier.
-    status |= collector.Collect();
+    status |= CollectDecl(collector);
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
-    status |= collector.Verify();
-    if (status.IsError()) {
-      goto EndParse;
-    }
+    // TODO:
+    //  status |= collector.Verify();
+    //  if (status.IsError()) {
+    //    goto EndParse;
+    //  }
+
     if (collector.GetUsingDeclarationCollector().HasUsing()) {
       result = ParseUsingDecl(collector);
       goto EndParse;
@@ -111,56 +113,21 @@ EndParse : {
   return result;
 }
 }
+// SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
+//   SyntaxStatus status;
+//   while (GetParser().GetCurTok().IsNot(kind)) {
+//     status |= Collect();
+//     if (status.HasCodeCompletion()) {
+//       break;
+//     }
+//   }
+//   return status;
+// }
 
-SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
-  SyntaxStatus status;
-  while (GetParser().GetCurTok().IsNot(kind)) {
-    status |= Collect();
-    if (status.HasCodeCompletion()) {
-      break;
-    }
-  }
-  return status;
-}
-SyntaxStatus ParsingDeclCollector::Collect() {
-
-  SyntaxStatus status;
-  status = CollectUsing();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectAccessLevel();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectFunction();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectBasicType();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectNominalType();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectTypeQualifier();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  status = CollectStorageSpecifier();
-  if (status.IsSuccess()) {
-    return status;
-  }
-  // If we are here, we did not find anything
-  status.SetHasCodeCompletion();
-  return status;
-}
-SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
-  SyntaxStatus status;
-  return status;
-}
+// SyntaxStatus ParsingDeclCollector::IsDoubleDipping() {
+//   SyntaxStatus status;
+//   return status;
+// }
 
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
@@ -169,14 +136,12 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
-  ParsingTypePatternCollector patterns(*this,
-                                       collector.GetTypeSpecifierCollector());
+  CollectTypePatterns(collector);
 
   // assert(collector.GetTypePatternCollector().HasPatterns());
   // auto status = collector.CollectTypePatterns();
 
-  auto status = patterns.Collect();
-  assert(patterns.HasTypePatterns());
+  // assert(patterns.HasTypePatterns());
 
   // auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
 
@@ -353,12 +318,12 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
       }
     }
     // We can call collect here to get the return type
-    collector.CollectUntil(tok::l_brace);
-    if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
-      // Perform some logging function must return a function type
-      status.SetIsError();
-      return status;
-    }
+    // collector.CollectUntil(tok::l_brace);
+    // if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    //   // Perform some logging function must return a function type
+    //   status.SetIsError();
+    //   return status;
+    // }
     // TODO: Look for TypeSpecs
     // SyntaxResult<QualType> resultType = ParseDeclResultType(
     //     collector, diag::err_expected_type_for_function_result);

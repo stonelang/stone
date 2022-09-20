@@ -148,23 +148,17 @@ public:
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
   SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
-  // Declarator collection
-  // SyntaxStatus CollectDeclarator(ParsingDeclaratorCollector &collector);
-  // SyntaxStatus CollectDirectDeclarator(ParsingDeclaratorCollector
-  // &collector);
-
 public:
   // === Collectors === ///
-
-  SyntaxStatus CollectDeclSpecifier(ParsingDeclCollector &collector);
-  SyntaxStatus CollectUsingSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
-  SyntaxStatus CollectBasicTypeSpecifier(ParsingDeclCollector &collector);
-  SyntaxStatus CollectNominalTypeSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
-  SyntaxStatus CollectFunctionSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//

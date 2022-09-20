@@ -193,36 +193,36 @@ SyntaxStatus ParsingDeclCollector::CollectTypeQualifier() {
 //   }
 // }
 
-SyntaxStatus ParsingTypePatternCollector::Collect() {
+// SyntaxStatus ParsingTypePatternCollector::Collect() {
 
-  assert(GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
-         "Attemping to collect type-patterns without a type");
+//   assert(GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
+//          "Attemping to collect type-patterns without a type");
 
-  while (!GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
-    switch (GetParser().GetCurTok().GetKind()) {
-    case tok::star:
-      AddPointer(GetParser().ConsumeToken());
-      break;
-    case tok::amp:
-      AddReference(GetParser().ConsumeToken());
-      break;
-    default: {
-      goto EndCollecting;
-    }
-    }
-  EndCollecting : {
-    if (HasTypePatterns()) {
-      return syn::MakeSyntaxSuccess();
-    }
-    if (!HasTypePatterns() &&
-        GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
-      AddDirect(GetParser().ConsumeToken());
-      return syn::MakeSyntaxSuccess();
-    }
-  }
-    return syn::MakeSyntaxCodeCompletionStatus();
-  }
-}
+//   while (!GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
+//     switch (GetParser().GetCurTok().GetKind()) {
+//     case tok::star:
+//       AddPointer(GetParser().ConsumeToken());
+//       break;
+//     case tok::amp:
+//       AddReference(GetParser().ConsumeToken());
+//       break;
+//     default: {
+//       goto EndCollecting;
+//     }
+//     }
+//   EndCollecting : {
+//     if (HasTypePatterns()) {
+//       return syn::MakeSyntaxSuccess();
+//     }
+//     if (!HasTypePatterns() &&
+//         GetParser().GetCurTok().IsIdentifierOrUnderscore()) {
+//       AddDirect(GetParser().ConsumeToken());
+//       return syn::MakeSyntaxSuccess();
+//     }
+//   }
+//     return syn::MakeSyntaxCodeCompletionStatus();
+//   }
+// }
 SyntaxStatus ParsingDeclCollector::CollectStorageSpecifier() {
   switch (GetParser().GetCurTok().GetKind()) {
   case tok::kw_static:

@@ -3,7 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
-#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Template.h"
 #include "stone/Syntax/Types.h"
 
@@ -228,20 +228,17 @@ class DeclCollector {
   AttributeFactory &attributeFactory;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
+  TypePatternCollector typePatternCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
-
-  // Does not belong here
   UsingDeclarationCollector usingDeclarationCollector;
-
   AccessLevelCollector accessLevelCollector;
 
   DeclCollector(const DeclCollector &) = delete;
   void operator=(const DeclCollector &) = delete;
 
 public:
-  DeclCollector(AttributeFactory &attributeFactory)
-      : attributeFactory(attributeFactory) {}
+  DeclCollector(AttributeFactory &attributeFactory);
 
 public:
   UsingDeclarationCollector &GetUsingDeclarationCollector() {
@@ -273,6 +270,13 @@ public:
   }
   const TypeQualifierCollector &GetTypeQualifierCollector() const {
     return typeQualifierCollector;
+  }
+
+  TypePatternCollector &GetTypePatternCollector() {
+    return typePatternCollector;
+  }
+  const TypePatternCollector &GetTypePatternCollector() const {
+    return typePatternCollector;
   }
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;

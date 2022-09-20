@@ -154,9 +154,10 @@ public:
 
 public:
   Parser &GetParser() { return parser; }
-  SyntaxStatus Collect();
-  SyntaxStatus CollectUntil(tok kind);
-  SyntaxStatus IsDoubleDipping();
+
+  // SyntaxStatus Collect();
+  // SyntaxStatus CollectUntil(tok kind);
+  // SyntaxStatus IsDoubleDipping();
 
 public:
   SyntaxStatus CollectUsing();
@@ -164,7 +165,6 @@ public:
   SyntaxStatus CollectNominalType();
   SyntaxStatus CollectAccessLevel();
   SyntaxStatus CollectTypeQualifier();
-  SyntaxStatus CollectTypePatterns();
   SyntaxStatus CollectStorageSpecifier();
   SyntaxStatus CollectFunction();
 
@@ -172,25 +172,26 @@ public:
   SyntaxStatus Verify();
 };
 
-class ParsingTypePatternCollector final : public TypePatternCollector {
-  Parser &parser;
+// class ParsingTypePatternCollector final : public TypePatternCollector {
+//   Parser &parser;
 
-public:
-  ParsingTypePatternCollector(Parser &parser,
-                              const TypeSpecifierCollector &specifierCollector)
-      : TypePatternCollector(specifierCollector), parser(parser) {}
+// public:
+//   ParsingTypePatternCollector(Parser &parser,
+//                               const TypeSpecifierCollector
+//                               &specifierCollector)
+//       : TypePatternCollector(specifierCollector), parser(parser) {}
 
-public:
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return static_cast<const TypeSpecifierCollector &>(
-        TypePatternCollector::GetTypeSpecifierCollector());
-  }
+// public:
+//   const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+//     return static_cast<const TypeSpecifierCollector &>(
+//         TypeSpecifierCollector::GetTypeSpecifierCollector());
+//   }
 
-  Parser &GetParser() { return parser; }
+//   Parser &GetParser() { return parser; }
 
-public:
-  SyntaxStatus Collect();
-};
+// public:
+//   SyntaxStatus Collect();
+// };
 
 enum class ParsingContextKind : UInt8 {
   None = 0,
