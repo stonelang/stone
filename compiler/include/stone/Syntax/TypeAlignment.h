@@ -9,8 +9,10 @@ namespace syn {
 class Decl;
 class Expr;
 class Stmt;
+class ValueDecl;
 class TypeRep;
 class TypeDecl;
+class TypeBase;
 class InterfaceDecl;
 class SyntaxContext;
 class DeclContext;
@@ -57,6 +59,8 @@ template <class T> struct PointerLikeTypeTraits;
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Decl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::InterfaceDecl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TypeDecl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ValueDecl, stone::DeclAlignInBits)
+
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Expr, stone::ExprAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::SyntaxContext,
@@ -68,6 +72,7 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ModuleFile,
                             stone::SyntaxContextAlignInBits)
 
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TypeBase, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Attribute, stone::AttributeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TypeRep, stone::TypeRepAlignInBits)
 

@@ -17,6 +17,7 @@
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/Types.h"
 #include "stone/Syntax/Using.h"
+#include "stone/Syntax/TypeLoc.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -79,7 +80,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public syn::SyntaxAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -411,12 +412,12 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
-class DeclaratorDecl : public ValueDecl {
-public:
-  DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-                 UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, context) {}
-};
+// class DeclaratorDecl : public ValueDecl {
+// public:
+//   DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+//                  UnifiedContext context)
+//       : ValueDecl(kind, name, nameLoc, context) {}
+// };
 
 // class LabelDecl : public NameableDecl {
 // public:
@@ -480,7 +481,7 @@ class GenericTypeDecl : public TypeDecl {};
 // This is really your function prototye
 class FunctionDecl
     : public DeclContext,
-      public DeclaratorDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -520,7 +521,7 @@ public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        DeclaratorDecl(kind, name, nameLoc, parent),
+        ValueDecl(kind, name, nameLoc, parent),
         specialNameLoc(specialNameLoc) {}
 
 public:
@@ -547,7 +548,9 @@ class FunDecl : public FunctionDecl {
   SrcLoc funLoc;
   bool hasLBrace;
 
- //TypeLoc output;
+ /// fun GetObject() -> Object* { return obj; } where obj is the returnType. 
+ /// and Oject* is the QualType which is the resultType  
+ TypeLoc returnType; 
 
 public:
   FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
