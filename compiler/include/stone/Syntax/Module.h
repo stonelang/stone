@@ -89,7 +89,7 @@ public:
   }
 
   /// Retrieves an immutable view of the list of top-level decls in this file.
-  // llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
+  llvm::ArrayRef<Decl *> GetDecls() const;
 
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
   // override;

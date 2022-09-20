@@ -61,6 +61,12 @@ class QualTypeRep : public TypeRep {
   SrcLoc pureLoc;
 
 public:
+  bool AddConst(SrcLoc loc) { constLoc = loc; }
+  bool AddRestrict(SrcLoc loc) { restricLoc = loc; }
+  bool AddVolatile(SrcLoc loc) { volatileLoc = loc; }
+  bool AddPure(SrcLoc loc) { pureLoc = loc; }
+
+public:
   bool IsConst() const { return constLoc.isValid(); }
   bool IsRestrict() const { return restricLoc.isValid(); }
   bool IsVolatile() const { return volatileLoc.isValid(); }

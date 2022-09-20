@@ -126,6 +126,10 @@ SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
   }
 }
 SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
+  // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
+  // 	//TODO: Log
+  //   return syn::MakeSyntaxCodeCompletionStatus();
+  // }
   switch (GetCurTok().GetKind()) {
   case tok::kw_auto:
     collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
