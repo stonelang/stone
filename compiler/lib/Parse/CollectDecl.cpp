@@ -94,36 +94,41 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxSuccess();
 }
 
+static bool IsTypePattern(const Token &tk) {
+  switch (tk.GetKind()) {
+  case tok::star:
+  case tok::amp:
+    return true;
+  default:
+    return false;
+  }
+}
 SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attemping to collect type-patterns without a type");
 
   // TODO: Simple for now but this will be greatly expanded
-  while (!GetTok().IsIdentifierOrUnderscore()) {
+  while (IsTypePattern(GetTok())) {
+  BeginCollecting:
     switch (GetTok().GetKind()) {
     case tok::star:
       collector.GetTypePatternCollector().AddPointer(ConsumeToken());
-      break;
+      goto BeginCollecting;
     case tok::amp:
       collector.GetTypePatternCollector().AddReference(ConsumeToken());
-      break;
-    default: {
+      goto BeginCollecting;
+    default:
       goto EndCollecting;
     }
-    }
-  EndCollecting : {
-    if (collector.GetTypePatternCollector().HasTypePatterns()) {
-      return syn::MakeSyntaxSuccess();
-    }
-    if (!collector.GetTypePatternCollector().HasTypePatterns() &&
-        GetTok().IsIdentifierOrUnderscore()) {
-      collector.GetTypePatternCollector().AddDirect(ConsumeToken());
-      return syn::MakeSyntaxSuccess();
-    }
+  } // end wile
+
+EndCollecting : {
+  if (!collector.GetTypePatternCollector().HasTypePatterns()) {
+    collector.GetTypePatternCollector().AddDirect();
   }
-    return syn::MakeSyntaxCodeCompletionStatus();
-  }
+  return syn::MakeSyntaxSuccess();
+}
 }
 SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
   // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
@@ -131,6 +136,11 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
   //   return syn::MakeSyntaxCodeCompletionStatus();
   // }
   switch (GetTok().GetKind()) {
+
+  // TODO: Think about void here
+  case tok::kw_void:
+    collector.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
+    break;
   case tok::kw_auto:
     collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
     break;

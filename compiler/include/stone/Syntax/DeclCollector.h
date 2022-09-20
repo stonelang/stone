@@ -59,6 +59,7 @@ class FunctionSpecifierCollector final {
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
   SrcLoc funLoc;
+  SrcLoc arrowLoc;
 
   enum Flags : unsigned {
     None = 1 << 0,
@@ -104,6 +105,9 @@ public:
   bool HasIsMember() { return (flags & IsMember); }
 
   SrcLoc GetFunLoc() { return funLoc; }
+
+  void AddArrowLoc(SrcLoc loc) { arrowLoc = loc; }
+  SrcLoc GetArrowLoc() { return arrowLoc; }
 };
 
 class StorageSpecifierCollector final {

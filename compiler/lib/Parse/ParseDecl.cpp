@@ -253,16 +253,20 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
   }
 
   SrcLoc arrowLoc;
-  if (curTok.IsArrow()) {
+  if (GetTok().IsArrow()) {
     ParsingScope functionResult(*this, ScopeKind::ReturnClause,
                                 "parsing result");
+
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
       // FixIt ':' to '->'.
       PrintD(curTok, diag::err_expected_arrow_after_function_param)
           .WithFix()
           .Replace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
+    } else {
+      collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
+
     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
       if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
         // TODO: Log

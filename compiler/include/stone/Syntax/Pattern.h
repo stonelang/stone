@@ -65,7 +65,7 @@ public:
   DirectTypePattern() : TypePattern(TypePatternKind::Direct, SrcLoc()) {}
 
 public:
-  static DirectTypePattern Create(SrcLoc loc);
+  static DirectTypePattern Create();
 };
 
 class PointerTypePattern final : public TypePattern {
@@ -145,7 +145,7 @@ public:
 private:
   /// Add a chunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the chunk.
-  void AddTypePattern(const TypePattern &pattern, SrcLoc endLoc) {
+  void AddTypePattern(const TypePattern &pattern) {
     patterns.push_back(pattern);
     // TODO:
     //  if (!EndLoc.isInvalid())
@@ -153,7 +153,8 @@ private:
   }
 
 public:
-  void AddDirect(SrcLoc loc);
+  // Direct has no source loc
+  void AddDirect();
   void AddPointer(SrcLoc loc);
   void AddReference(SrcLoc loc);
   void AddArray(SrcLoc loc);

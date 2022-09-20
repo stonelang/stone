@@ -166,14 +166,15 @@ class TypeSpecifierCollector final {
   TypeNullabilityKind nullabilityKind;
 
 public:
-  TypeSpecifierCollector()
-      : typeSpecifierKind(TypeSpecifierKind::None), typeSpecifierLoc(SrcLoc()),
-        nullabilityKind(TypeNullabilityKind::Unspecified) {}
+  TypeSpecifierCollector() : typeSpecifierKind(TypeSpecifierKind::None) {}
 
 public:
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
   bool HasTypeSpecifierKind() const {
     return typeSpecifierKind != TypeSpecifierKind::None;
+  }
+  bool NotHasTypeSpecifierKind() const {
+    return typeSpecifierKind == TypeSpecifierKind::None;
   }
 
 private:

@@ -12,7 +12,14 @@ ReferenceTypePattern ReferenceTypePattern::Create(SrcLoc loc) {
   return pattern;
 }
 
-void TypePatternCollector::AddDirect(SrcLoc loc) {}
+DirectTypePattern DirectTypePattern::Create() {
+  DirectTypePattern pattern;
+  return pattern;
+}
+
+void TypePatternCollector::AddDirect() {
+  AddTypePattern(DirectTypePattern::Create());
+}
 
 void TypePatternCollector::AddPointer(SrcLoc loc) {}
 
