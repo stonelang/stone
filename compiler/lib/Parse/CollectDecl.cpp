@@ -24,7 +24,20 @@ SyntaxStatus Parser::CollectUsingSpecifier(ParsingDeclCollector &collector) {
 }
 
 SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
-  //
+  switch (GetCurTok().GetKind()) {
+  case tok::kw_public:
+    collector.GetAccessLevelCollector().AddPublic(ConsumeToken());
+    break;
+  case tok::kw_internal:
+    collector.GetAccessLevelCollector().AddInternal(ConsumeToken());
+    break;
+  case tok::kw_private:
+    collector.GetAccessLevelCollector().AddPrivate(ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
