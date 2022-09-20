@@ -2,6 +2,8 @@
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
 #include "stone/Syntax/Types.h"
+#include "stone/Syntax/TypeRep.h"
+
 
 using namespace stone;
 using namespace stone::syn;
@@ -9,6 +11,7 @@ using namespace stone::syn;
 SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
                                                 Diag<> diagID) {
 
+  SyntaxResult<TypeRep> result;
   ParsingScope parsingType(*this, ScopeKind::FunctionType, "parsing type");
   // TODO: We are asserting these for now but we may just want to log some ass
   // erros
@@ -43,6 +46,15 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
 
   // Requires at least a direct type pattern which is just the type by itself.
   assert(collector.GetTypePatternCollector().HasTypePatterns());
+
+  // Create the FunctionTypeRep 
+
+  // Passing full for now 
+  //typeRep = CreateParseFunctionTypeRep(GetSyntaxContext());
+
+  auto typeRep = new (GetSyntaxContext()) FunctionTypeRep(nullptr);
+  return syn::MakeSyntaxResult<TypeRep>(typeRep);
+
 }
 
 // Similar to ParseDeclSpecifiers
