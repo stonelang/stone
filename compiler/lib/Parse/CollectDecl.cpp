@@ -119,16 +119,11 @@ SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
       collector.GetTypePatternCollector().AddReference(ConsumeToken());
       goto BeginCollecting;
     default:
-      goto EndCollecting;
+      collector.GetTypePatternCollector().AddDirect();
+      break;
     }
   } // end wile
-
-EndCollecting : {
-  if (!collector.GetTypePatternCollector().HasTypePatterns()) {
-    collector.GetTypePatternCollector().AddDirect();
-  }
   return syn::MakeSyntaxSuccess();
-}
 }
 SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
   // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
