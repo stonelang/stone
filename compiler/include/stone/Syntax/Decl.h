@@ -349,9 +349,10 @@ public:
 
 class ValueDecl : public NameableDecl {
 
-  llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
+  // llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
   /// fun GetObject() -> Object* {return object } where Object* is resultTy
-  //QualType resultTy;
+  QualType resultTy;
+  AccessLevel level;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -359,25 +360,29 @@ public:
       : NameableDecl(kind, name, nameLoc, context) {}
 
 public:
-  // void SetResultType(QualType inputQualType) { resultTy = inputQualType; }
-  // QualType GetResultType() { return resultTy; }
+  void SetResultType(QualType inputResultType) { resultTy = inputResultType; }
+  QualType GetResultType() { return resultTy; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
 
-  //  void SetAccess(AccessLevel access) {
-  //   assert(!HasAccess() && "access already set");
+  // bool HasAccessLevel() const {
+  //   return resultTypeAndAccess.getInt().hasValue();
+  // }
+
+  // AccessLevel GetAccessLevel() const;
+
+  // void SetAccess(AccessLevel level) {
+  //   assert(!HasAccessLevel() && "access already set");
   //   OverwriteAccess(access);
   // }
 
-  /// Overwrite the access of this declaration.
-  ///
-  /// This is needed in the LLDB REPL.
-  // void OverwriteAccess(AccessLevel access) {
-  //   qualTypeAndAccess.setInt(access);
-  // }
+  // Overwrite the access of this declaration.
+  //
+  // This is needed in the LLDB REPL.
+  void OverwriteAccess(AccessLevel inputLevel) { level = inputLevel; }
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
@@ -524,9 +529,15 @@ public:
   }
 
 public:
+
+  /// TODO: 
+  void SetBodyStatus(BodyStatus status) {
+    //Bits.AbstractFunctionDecl.BodyKind = unsigned(K);
+  }
+
   BraceStmt *GetBody(bool canSynthesize = true) const;
   /// Set a new body for the function.
-  void SetBody(BraceStmt *body);
+  void SetBody(BraceStmt *body, BodyStatus bodyStatus);
 
   void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
     this->storageSpecifierKind = ssk;
@@ -597,6 +608,7 @@ public:
 
 /// Member functions: fun Particle::Fire() -> bool ...
 class MemberFunDecl : public FunDecl {
+  /// TODO: pass , NominalTypeDecl* owner,
 public:
   MemberFunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                 DeclNameLoc specialNameLoc, DeclContext *parent)

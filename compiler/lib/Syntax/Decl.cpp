@@ -117,6 +117,11 @@ bool ValueDecl::IsInstanceMember() const {
   llvm_unreachable("bad DeclKind");
 }
 
+//TODO: Set body  -- not being set now. 
+void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
+  SetBodyStatus(bodyStatus);
+}
+
 template <std::size_t len>
 static bool IsMainImpl(const NameableDecl *nameable, const char (&str)[len]) {
   assert(nameable);

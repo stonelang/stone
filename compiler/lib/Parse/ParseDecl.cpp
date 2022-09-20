@@ -324,6 +324,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
                                        FunctionDecl &funDecl) {
 
+  // This is where you what to start a BracePairDelimeter 
   SyntaxStatus status;
   ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
                             "parsing fun arguments");
@@ -333,6 +334,10 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
 
   assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
   auto rParenLoc = ConsumeToken(tok::r_brace);
+
+  // Simple for now 
+  auto functionBody = BraceStmtFactory::Create(lParenLoc, {}, rParenLoc, GetSyntaxContext());
+  funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;
 }
