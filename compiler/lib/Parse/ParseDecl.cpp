@@ -113,7 +113,7 @@ EndParse : {
 }
 // SyntaxStatus ParsingDeclCollector::CollectUntil(tok kind) {
 //   SyntaxStatus status;
-//   while (GetParser().GetCurTok().IsNot(kind)) {
+//   while (GetParser().GetTok().IsNot(kind)) {
 //     status |= Collect();
 //     if (status.HasCodeCompletion()) {
 //       break;
@@ -179,7 +179,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // ParsingDeclaratorCollector declaratorCollector(collector);
   // auto status = ParseDeclarator(declaratorCollector);
 
-  if (!GetCurTok().IsIdentifierOrUnderscore()) {
+  if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
     return syn::MakeSyntaxError();
   }
@@ -278,8 +278,8 @@ SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
     //   return status;
     // }
     // TODO: Look for TypeSpecs
-    // SyntaxResult<QualType> resultType = ParseDeclResultType(
-    //     collector, diag::err_expected_type_for_function_result);
+    SyntaxResult<TypeRep> resultTypeRep = ParseDeclResultType(
+        collector, diag::err_expected_type_for_function_result);
   }
 
   // status |= ParseFunctionResult(collector);
@@ -303,7 +303,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
                            "parsing fun arguments");
 
-  if (curTok.IsLeftParen()) {
+  if (GetTok().IsLParen()) {
     lParenLoc = ConsumeToken(tok::l_paren);
   } else {
     // If we don't have the leading '(', complain.
@@ -311,7 +311,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
     return syn::MakeSyntaxError();
   }
 
-  if (curTok.IsRightParen()) {
+  if (GetTok().IsRParen()) {
     lParenLoc = ConsumeToken(tok::r_paren);
   } else {
     // If we don't have the leading '(', complain.
@@ -324,7 +324,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
                                        FunctionDecl &funDecl) {
 
-  // This is where you what to start a BracePairDelimeter 
+  // This is where you what to start a BracePairDelimeter
   SyntaxStatus status;
   ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
                             "parsing fun arguments");
@@ -335,8 +335,9 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
   assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
   auto rParenLoc = ConsumeToken(tok::r_brace);
 
-  // Simple for now 
-  auto functionBody = BraceStmtFactory::Create(lParenLoc, {}, rParenLoc, GetSyntaxContext());
+  // Simple for now
+  auto functionBody =
+      BraceStmtFactory::Create(lParenLoc, {}, rParenLoc, GetSyntaxContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

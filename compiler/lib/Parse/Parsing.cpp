@@ -41,7 +41,7 @@ ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
 
 void ParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
   out << "With parser at source location: ";
-  parser.GetCurTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
+  parser.GetTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
   out << '\n';
 }
 

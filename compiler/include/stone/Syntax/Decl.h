@@ -529,10 +529,9 @@ public:
   }
 
 public:
-
-  /// TODO: 
+  /// TODO:
   void SetBodyStatus(BodyStatus status) {
-    //Bits.AbstractFunctionDecl.BodyKind = unsigned(K);
+    // Bits.AbstractFunctionDecl.BodyKind = unsigned(K);
   }
 
   BraceStmt *GetBody(bool canSynthesize = true) const;

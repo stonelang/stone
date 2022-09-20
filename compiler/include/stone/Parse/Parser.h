@@ -107,7 +107,7 @@ public:
 public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
-  const Token &GetCurTok() const { return curTok; }
+  const Token &GetTok() const { return curTok; }
   SyntaxContext &GetSyntaxContext() { return sc; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
@@ -167,12 +167,16 @@ public:
   // === Type Parsing ===//
   bool IsBasicType(tok kind) const;
 
-  void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
+  // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
+  // collectors in the furture. This is ok for now.
+  SyntaxResult<TypeRep> ParseType(ParsingDeclCollector &collector,
+                                  Diag<> diagID);
+  SyntaxResult<TypeRep> ParseFunctionType(ParsingDeclCollector &collector,
+                                          Diag<> diagID);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector,
-                                   Diag<> diagID);
-  SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
-                                             Diag<> diagID);
+  SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
+                                            Diag<> diagID);
+
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);

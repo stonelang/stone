@@ -117,7 +117,7 @@ bool ValueDecl::IsInstanceMember() const {
   llvm_unreachable("bad DeclKind");
 }
 
-//TODO: Set body  -- not being set now. 
+// TODO: Set body  -- not being set now.
 void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
   SetBodyStatus(bodyStatus);
 }

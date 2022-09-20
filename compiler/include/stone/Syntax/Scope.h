@@ -94,6 +94,9 @@ enum class ScopeKind : UInt8 {
   AliasDecl,
   ///
   Type,
+
+  FunctionType,
+
 };
 
 class Scope final : public syn::SyntaxAllocation<Scope> {
