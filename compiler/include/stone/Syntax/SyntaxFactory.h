@@ -63,7 +63,7 @@ struct FunDeclFactory final {
                          TypeRep *resultRep, DeclContext *parent);
 
   static FunDecl *CreateImplicit(DeclNameInfo &nameInfo, SyntaxContext &sc,
-                         QualType *returnType, DeclContext *parent);
+                                 QualType *returnType, DeclContext *parent);
 };
 
 struct SyntaxFileFactory final {

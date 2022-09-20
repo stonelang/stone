@@ -34,7 +34,8 @@ enum : unsigned {
 };
 
 /// Representation of a type as written in source.
-class alignas(1 << TypeRepAlignInBits) TypeRep : public syn::SyntaxAllocation<TypeRep> {
+class alignas(1 << TypeRepAlignInBits) TypeRep
+    : public syn::SyntaxAllocation<TypeRep> {
 
   TypeRep(const TypeRep &) = delete;
   void operator=(const TypeRep &) = delete;

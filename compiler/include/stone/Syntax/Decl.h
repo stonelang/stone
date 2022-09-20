@@ -15,9 +15,9 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Template.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"
 #include "stone/Syntax/Using.h"
-#include "stone/Syntax/TypeLoc.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -349,11 +349,9 @@ public:
 
 class ValueDecl : public NameableDecl {
 
-  // llvm::PointerIntPair<QualType, 3, AccessLevel>>
-  //     qualTypeAndAccess;
-
-/// fun GetObject() -> Object* {return object } where Object* is resultTy
-QualType resultTy;
+  llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
+  /// fun GetObject() -> Object* {return object } where Object* is resultTy
+  //QualType resultTy;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -522,8 +520,8 @@ public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent),
-        specialNameLoc(specialNameLoc) {}
+        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
+  }
 
 public:
   BraceStmt *GetBody(bool canSynthesize = true) const;
@@ -549,9 +547,9 @@ class FunDecl : public FunctionDecl {
   SrcLoc funLoc;
   bool hasLBrace;
 
- /// fun GetObject() -> Object* { return obj; } where obj is the returnType. 
- /// and Oject* is the QualType which is the resultType  
- TypeLoc returnType; 
+  /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
+  /// and Oject* is the QualType which is the resultType
+  TypeLoc returnType;
 
 public:
   FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -578,7 +576,7 @@ public:
 
   QualType GetReturnType() const;
 
-  //TypeLoc GetReturnType() const; 
+  // TypeLoc GetReturnType() const;
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
