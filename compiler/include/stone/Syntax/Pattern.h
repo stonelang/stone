@@ -56,7 +56,7 @@ public:
       : kind(kind), loc(inputLoc) {}
 
 public:
-  TypePatternKind GetKind() { return kind; }
+  TypePatternKind GetKind() const { return kind; }
   SrcLoc GetLoc() { return loc; }
 };
 
@@ -161,6 +161,27 @@ public:
   void AddBlockPointer(SrcLoc loc);
   void AddParen(SrcLoc loc);
   void AddPipe(SrcLoc loc);
+
+public:
+  /// int** -- the '*' toucing int 
+  const TypePattern *GetInnermostNonParenPattern() const {
+    for (unsigned i = patterns.size(), i_end = 0; i != i_end; --i) {
+      if (patterns[i - 1].GetKind() != TypePatternKind::Paren) {
+        return &patterns[i - 1];
+      }
+    }
+    return nullptr;
+  }
+  
+  /// int** -- the '*' farthest from int  
+  const TypePattern *GetOutermostNonParenPattern() const {
+    for (unsigned i = 0, i_end = patterns.size(); i < i_end; ++i) {
+      if (patterns[i].GetKind() != TypePatternKind::Paren) {
+        return &patterns[i];
+      }
+    }
+    return nullptr;
+  }
 
 public:
   void Verify();

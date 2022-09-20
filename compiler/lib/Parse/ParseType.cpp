@@ -1,9 +1,8 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Types.h"
 #include "stone/Syntax/TypeRep.h"
-
+#include "stone/Syntax/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -47,14 +46,10 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   // Requires at least a direct type pattern which is just the type by itself.
   assert(collector.GetTypePatternCollector().HasTypePatterns());
 
-  // Create the FunctionTypeRep 
-
-  // Passing full for now 
-  //typeRep = CreateParseFunctionTypeRep(GetSyntaxContext());
+  // TODO: Call parseType to get the actual type
 
   auto typeRep = new (GetSyntaxContext()) FunctionTypeRep(nullptr);
   return syn::MakeSyntaxResult<TypeRep>(typeRep);
-
 }
 
 // Similar to ParseDeclSpecifiers

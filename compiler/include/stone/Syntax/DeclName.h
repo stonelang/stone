@@ -22,7 +22,7 @@ class TemplateDecl;
 class UseDecl;
 
 enum class DeclNameKind : uint8_t {
-  Basic = 0,
+  Identifier = 0,
   Constructor,
   Destructor,
   Operator,
@@ -148,7 +148,7 @@ public:
 
 public:
   // TODO:
-  bool IsBasic() const { return declNameKind == DeclNameKind::Basic; }
+  bool IsIdentifier() const { return declNameKind == DeclNameKind::Identifier; }
   bool IsConstructor() const {
     return declNameKind == DeclNameKind::Constructor;
   }

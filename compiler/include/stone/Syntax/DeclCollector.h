@@ -14,7 +14,7 @@ namespace syn {
 
 /// Describes the kind of unqualified-id parsed.
 enum class UnqualifiedIdKind {
-  /// An identifier.
+  /// An identifier, e.g., int, Particle
   Identifier,
   /// An overloaded operator name, e.g., operator+.
   OperatorFunction,
@@ -30,10 +30,28 @@ enum class UnqualifiedIdKind {
   DestructorName,
   /// A template-id, e.g., f<int>.
   Template,
-  /// An implicit 'self' parameter
-  ImplicitSelfParam,
+
+  // TODO: Think about
+  /// An implicit 'this' parameter
+  ImplicitThisParam,
   /// A deduction-guide name (a template-name)
   DeductionGuideName
+};
+
+class UnqualifiedId {
+private:
+  UnqualifiedId(const UnqualifiedId &other) = delete;
+  const UnqualifiedId &operator=(const UnqualifiedId &) = delete;
+
+public:
+  /// Describes the kind of unqualified-id parsed.
+  UnqualifiedIdKind Kind;
+
+  union {
+    /// When Kind == Identifier, the parsed identifier, or when
+    /// Kind == UserLiteralId, the identifier suffix.
+    Identifier *identifier;
+  };
 };
 
 class ScopeSpecifier {
