@@ -74,6 +74,13 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 //   }
 // }
 
+/// Keeping this simple for now
+void Parser::ParseDeclName(DeclNameContext &nameResult) {
+  // Parse function name.
+  auto name = GetIdentifier(curTok.GetText());
+  nameResult.SetName(DeclName(&name));
+  nameResult.SetNameLoc(ConsumeToken(tok::identifier));
+}
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
 Identifier &Parser::GetIdentifier(llvm::StringRef text) {
@@ -123,75 +130,11 @@ SrcLoc Parser::ConsumeStartingGreater() {
   return ConsumeStartingCharOfCurToken(tok::r_angle);
 }
 
-SyntaxStatus Parser::ParseAccessLevel(AccessLevelCollector &collector) {
-  SyntaxStatus status;
-  switch (curTok.GetKind()) {
-  case tok::kw_public:
-    collector.AddPublic(ConsumeToken());
-    break;
-  case tok::kw_internal:
-    collector.AddInternal(ConsumeToken());
-    break;
-  case tok::kw_private:
-    collector.AddPrivate(ConsumeToken());
-    break;
-  default:
-    return status;
-  }
-  status.SetHasCodeCompletion();
-  return status;
-}
-
-ParsingDeclAction Parser::GetParsingDeclAction() {
-  switch (GetCurTok().GetKind()) {
-  case tok::kw_public:
-  case tok::kw_internal:
-  case tok::kw_private:
-    return ParsingDeclAction::ParseAccessLevel;
-  case tok::kw_const:
-  case tok::kw_volatile:
-  case tok::kw_restrict:
-  case tok::kw_pure:
-    return ParsingDeclAction::ParseTypeQualifier;
-  case tok::kw_fun:
-    return ParsingDeclAction::ParseFun;
-  case tok::kw_struct:
-    return ParsingDeclAction::ParseStruct;
-  case tok::kw_interface:
-    return ParsingDeclAction::ParseInterface;
-  case tok::kw_auto:
-  case tok::kw_int:
-  case tok::kw_int8:
-  case tok::kw_int16:
-  case tok::kw_int32:
-  case tok::kw_int64:
-  case tok::kw_uint:
-  case tok::kw_uint8:
-  case tok::kw_byte:
-  case tok::kw_uint16:
-  case tok::kw_uint32:
-  case tok::kw_uint64:
-  case tok::kw_float:
-  case tok::kw_float32:
-  case tok::kw_float64:
-  case tok::kw_complex32:
-  case tok::kw_complex64:
-    return ParsingDeclAction::ParseBasicType;
-  case tok::star:
-    return ParsingDeclAction::ParsePointer;
-  case tok::identifier:
-  case tok::kw__:
-    return ParsingDeclAction::ParseIdentifier;
-  default:
-    return ParsingDeclAction::None;
-  }
-}
-
 /// EnterScope - start a new scope.
 void Parser::EnterScope(ScopeKind kind) {
 
   if (!GetCurScope()) {
-    assert(kind == ScopeKind::SyntaxFile);
+    assert(kind == ScopeKind::TopLevel);
   }
   // Create the new scope
   auto curScope = CreateScope(kind, GetCurScope());
@@ -215,7 +158,6 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-
 Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
                            DiagnosticEngine &diags, Scope *parent) {
   return new (sc) Scope(kind, diags, parent);

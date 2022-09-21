@@ -3,8 +3,10 @@
 using namespace stone;
 using namespace stone::syn;
 
-bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
+static bool IsBasicTypeImpl(TypeSpecifierKind kind) {
   switch (kind) {
+  case TypeSpecifierKind::Void:
+  case TypeSpecifierKind::Any:
   case TypeSpecifierKind::Float:
   case TypeSpecifierKind::Float32:
   case TypeSpecifierKind::Float64:
@@ -28,11 +30,8 @@ bool IsValidTypeSpecifierKind(TypeSpecifierKind kind) {
     return false;
   }
 }
-bool TypeSpecifierCollector::IsBasicType() {
-  return IsValidTypeSpecifierKind(typeSpecifierKind);
-}
-bool TypeSpecifierCollector::IsNominalType() {
-  switch (typeSpecifierKind) {
+static bool IsNominalTypeImpl(TypeSpecifierKind kind) {
+  switch (kind) {
   case TypeSpecifierKind::Struct:
   case TypeSpecifierKind::Interface:
   case TypeSpecifierKind::Enum:
@@ -41,24 +40,35 @@ bool TypeSpecifierCollector::IsNominalType() {
     return false;
   }
 }
-// bool TypeSpecifierCollector::SetTypeSpecifierKind(TypeSpecifierKind kind,
-//                                                 SrcLoc loc) {
-//   if (!IsValidTypeSpecifierKind(kind)) {
-//     return false;
-//   }
-//   typeSpecifierKind = kind;
-//   return true;
-// }
 
+static bool IsMiscTypeImpl(TypeSpecifierKind kind) {
+  switch (kind) {
+  case TypeSpecifierKind::Auto:
+    return true;
+  default:
+    return false;
+  }
+}
+bool TypeSpecifierCollector::IsBasicType() {
+  return IsBasicTypeImpl(typeSpecifierKind);
+}
+bool TypeSpecifierCollector::IsNominalType() {
+  return IsNominalTypeImpl(typeSpecifierKind);
+}
 void TypeSpecifierCollector::AddTypeSpecifierKind(TypeSpecifierKind kind,
                                                   SrcLoc loc) {
   assert((typeSpecifierKind == TypeSpecifierKind::None) &&
          "can only have one 'type specifier type'");
-  assert(IsValidTypeSpecifierKind(kind) && "alien specifier type");
+  assert((IsBasicTypeImpl(kind) || IsNominalTypeImpl(kind) ||
+          IsMiscTypeImpl(kind)) &&
+         "Unknown specifier type");
 
   typeSpecifierKind = kind;
   typeSpecifierLoc = loc;
 }
+
+void TypeSpecifierCollector::AddTypeNullabilityKind(TypeNullabilityKind kind) {}
+
 void TypeSpecifierCollector::AddAuto(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Auto, loc);
 }
@@ -93,6 +103,10 @@ void TypeSpecifierCollector::AddStruct(SrcLoc loc) {
 void TypeSpecifierCollector::AddVoid(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Void, loc);
+}
+void TypeSpecifierCollector::AddAny(SrcLoc loc) {
+
+  AddTypeSpecifierKind(TypeSpecifierKind::Any, loc);
 }
 void TypeSpecifierCollector::AddInt(SrcLoc loc) {
 

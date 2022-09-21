@@ -2,9 +2,13 @@
 #define STONE_PARSE_PARSINGSUPPORT_H
 
 #include "stone/Basic/OptionSet.h"
+#include "stone/Basic/STDTypeAlias.h"
 #include "stone/Parse/Lexing.h"
-#include "stone/Syntax/DeclSpecifier.h"
+#include "stone/Syntax/DeclCollector.h"
+#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Scope.h"
+#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -12,6 +16,7 @@ namespace stone {
 namespace syn {
 
 class Parser;
+class ParsingScope;
 class AttributeFactory;
 
 /// To assist debugging parser crashes, tell us the location of the
@@ -24,91 +29,35 @@ public:
   void print(llvm::raw_ostream &out) const override;
 };
 
-// class ParsingDeclContext {
-// public:
-// };
+enum class PairBalancerKind : UInt8 {
+  None = 0,
+  Bracket,
+  Paren,
+  Brace,
+};
+class PairBalancer {
 
-// /// A class for parsing a DeclSpecifier.
-// class ParsingDeclCollector final : public DeclSpecifier {
-//   //   ParsingDeclRAII parsingDeclRAII;
+  PairBalancerKind kind;
+
+protected:
+  UInt16 count;
+
+public:
+  PairBalancer(PairBalancerKind kind, UInt16 count)
+      : kind(kind), count(count) {}
+
+public:
+  PairBalancerKind GetKind() { return kind; }
+  bool IsEven() { return ((count % 2) == 0); }
+};
+// class ParenBalancer final : public PairBalancer {
 //   Parser &parser;
-
 // public:
-//   // TODO: There is more to this
-//   ParsingDeclCollector(Parser &parser);
+//   ParenBalancer(Parser &parser)
+//       : PairBalancer(PairBalancerKind::Paren, parser.ParenCount),
+//         parser(parser) {}
 
-//   //   ParsingDeclCollector(Parser &P, ParsingDeclRAIIObject *RAII)
-//   //     : DeclSpecifier(P.getAttrFactory()),
-//   //       ParsingDeclRAII(P, RAII) {}
-
-//   //   const sema::DelayedDiagnosticPool &getDelayedDiagnosticPool() const {
-//   //     return ParsingDeclRAII.GetDelayedDiagnosticPool();
-//   //   }
-
-//   //   void Complete(Decl *D) {
-//   //     ParsingDeclRAII.complete(D);
-//   //   }
-
-//   //   void Abort() {
-//   //     ParsingDeclRAII.abort();
-//   //   }
-// };
-
-// /// A class for parsing a declarator.
-// class ParsingDeclarator final : public Declarator {
-//   // ParsingDeclRAIIObject ParsingRAII;
-
-//   // public:
-//   //   ParsingDeclarator(Parser &P, const ParsingDeclCollector &ds,
-//   //   DeclaratorContext dc)
-//   //       : Declarator(DS, C), ParsingRAII(P,
-//   &DS.getDelayedDiagnosticPool())
-//   //       {}
-
-//   //   const ParsingDeclSpec &GetDeclSpecifier() const {
-//   //     return static_cast<const ParsingDeclSpec
-//   &>(Declarator::getDeclSpec());
-//   //   }
-
-//   //   ParsingDeclSpec &getMutableDeclSpecifier() const {
-//   //     return const_cast<ParsingDeclSpec &>(getDeclSpec());
-//   //   }
-
-//   //   void Clear() {
-//   //     //Declarator::Clear();
-//   //     //ParsingRAII.Reset();
-//   //   }
-
-//   // void Complete(Decl *D) { ParsingRAII.complete(D); }
-// };
-
-// class PairDelimiterCount final {
-// public:
-//   unsigned short parenCount;
-//   unsigned short bracketCount;
-//   unsigned short braceCount;
-
-// public:
-//   PairDelimiterCount() : parenCount(0), bracketCount(0), braceCount(0) {}
-
-//   ~PairDelimiterCount() {
-//     parenCount = 0;
-//     bracketCount = 0;
-//     braceCount = 0;
-//   }
-// };
-
-// /// RAII object that makes sure paren/bracket/brace count is correct
-// /// after declaration/statement parsing, even when there's a parsing error.
-// class PairDelimiterBalancer final {
-//   Parser &parser;
-
-// public:
-//   PairDelimiterCount pairDelimiterCount;
-
-// public:
-//   PairDelimiterBalancer(Parser &other);
-//   ~PairDelimiterBalancer();
+//   ~ParenBalancer() { parser.ParenCount = count; }
 // };
 
 using ScopeCache = llvm::SmallVector<Scope *, 16>;
@@ -136,64 +85,6 @@ private:
 
   llvm::StringRef GetDescription() { return description; }
 };
-
-// class MultiParsingScope final {
-// public:
-// };
-
-// /// The kind of template we are parsing.
-// enum class ParsingTemplateKind : uint8_t {
-//   /// We are not parsing a template at all.
-//   None = 0,
-//   /// We are parsing a template declaration.
-//   Template,
-//   /// We are parsing an explicit specialization.
-//   ExplicitSpecialization,
-//   /// We are parsing an explicit instantiation.
-//   ExplicitInstantiation
-// };
-// /// Contains information about any template-specific
-// /// information that has been parsed prior to parsing declaration
-// /// specifiers.
-// struct ParsingTemplate {
-
-//   ParsingTemplateKind kind;
-
-//   /// The template parameter lists, for template declarations
-//   /// and explicit specializations.
-//   TemplateParameterLists *templateParameterLists;
-
-//   /// The location of the 'extern' keyword, if any, for an explicit
-//   /// instantiation
-//   SrcLoc externLoc;
-
-//   /// The location of the 'template' keyword, for an explicit
-//   /// instantiation.
-//   SrcLoc templateLoc;
-
-//   /// Whether the last template parameter list was empty.
-//   bool lastParameterListWasEmpty;
-
-//   ParsingTemplate()
-//       : kind(ParsingTemplateKind::None),
-//       templateParameterLists(nullptr) {
-//   }
-//   ParsingTemplate(TemplateParameterLists *templateParameterLists,
-//                         bool isSpecialization,
-//                         bool lastParameterListWasEmpty = false)
-//       : kind(isSpecialization
-//                  ? ParsingTemplateKind::ExplicitSpecialization
-//                  : ParsingTemplateKind::Template),
-//         templateParameterLists(templateParameterLists),
-//         lastParameterListWasEmpty(lastParameterListWasEmpty) {}
-
-//   explicit ParsingTemplate(SrcLoc externLoc, SrcLoc templateLoc)
-//       : kind(ParsingTemplateKind::ExplicitInstantiation),
-//         templateParameterLists(nullptr), externLoc(externLoc),
-//         templateLoc(templateLoc), lastParameterListWasEmpty(false) {}
-
-//   SrcRange GetSrcRange() const;
-// };
 
 enum class ParsingNotification : UInt8 {
   None,
@@ -232,9 +123,7 @@ public:
 };
 
 struct ParsingDeclFlags final {
-
   ParsingDeclFlags() = delete;
-
   /// Flags that control the parsing of declarations.
   enum ID {
     Default = 0,
@@ -251,7 +140,7 @@ struct ParsingDeclFlags final {
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
-class ParsingDeclCollector final : public DeclSpecifier {
+class ParsingDeclCollector final : public DeclCollector {
   Parser &parser;
 
 public:
@@ -259,31 +148,15 @@ public:
 
 public:
   ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
-      : parser(parser), DeclSpecifier(attributeFactory) {}
+      : parser(parser), DeclCollector(attributeFactory) {}
 
   ~ParsingDeclCollector();
 
 public:
   Parser &GetParser() { return parser; }
-  void Collect();
-  void CollectUntil(tok kind);
 
 public:
-  void Verify();
-  void Apply();
-};
-
-class ParsingDeclarator final : public Declarator {
-public:
-  ParsingDeclarator(const ParsingDeclCollector &specifier,
-                    DeclaratorContextKind contextKind)
-      : Declarator(specifier, contextKind) {}
-
-public:
-  const ParsingDeclCollector &GetParsingDeclCollector() {
-    return static_cast<const ParsingDeclCollector &>(
-        Declarator::GetDeclSpecifier());
-  }
+  SyntaxStatus Verify();
 };
 
 enum class ParsingContextKind : UInt8 {
@@ -360,21 +233,6 @@ public:
   bool IsStringLiteral();
   bool IsImaginaryLiteral();
   bool IsRegexLiteral();
-};
-
-enum class ParsingDeclAction {
-  None = 0,
-  ParseAccessLevel,
-  ParseAuto,
-  ParseFun,
-  ParseStruct,
-  ParseEnum,
-  ParseInterface,
-  ParseBasicType,
-  ParseTypeQualifier,
-  ParsePointer,
-  ParseIdentifier,
-  ParseImport,
 };
 
 } // namespace syn

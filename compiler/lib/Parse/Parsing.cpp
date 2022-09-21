@@ -1,22 +1,8 @@
 #include "stone/Parse/Parser.h"
+#include "stone/Syntax/Pattern.h"
 
 using namespace stone;
 using namespace stone::syn;
-
-// ParsingDeclCollector::ParsingDeclCollector(Parser &parser)
-//     : DeclSpecifier(parser.GetAttributeFactory()), parser(parser) {}
-
-// PairDelimiterBalancer::PairDelimiterBalancer(Parser &other) : parser(other) {
-//   pairDelimiterCount.parenCount = other.pairDelimiterCount.parenCount;
-//   pairDelimiterCount.bracketCount = other.pairDelimiterCount.bracketCount;
-//   pairDelimiterCount.braceCount = other.pairDelimiterCount.braceCount;
-// }
-// PairDelimiterBalancer::~PairDelimiterBalancer() {
-//   // parser.AngleBrackets.clear(parser);
-//   parser.pairDelimiterCount.parenCount = pairDelimiterCount.parenCount;
-//   parser.pairDelimiterCount.bracketCount = pairDelimiterCount.bracketCount;
-//   parser.pairDelimiterCount.braceCount = pairDelimiterCount.braceCount;
-// }
 
 // ==Scope == //
 
@@ -43,6 +29,11 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
+SyntaxStatus ParsingDeclCollector::Verify() {
+  SyntaxStatus status;
+  return status;
+}
+
 ParsingDeclCollector::~ParsingDeclCollector() {}
 
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
@@ -50,7 +41,7 @@ ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
 
 void ParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
   out << "With parser at source location: ";
-  parser.GetCurTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
+  parser.GetTok().GetLoc().print(out, parser.GetSyntaxContext().GetSrcMgr());
   out << '\n';
 }
 

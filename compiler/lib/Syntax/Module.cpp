@@ -57,9 +57,9 @@ syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 
-syn::SyntaxFile *syn::MakeSyntaxFile(SyntaxFileKind kind, unsigned srcID,
-                                     syn::Module &owner, SyntaxContext &sc,
-                                     bool isPrimary) {
+syn::SyntaxFile *SyntaxFileFactory::Create(SyntaxFileKind kind, unsigned srcID,
+                                           syn::Module &owner,
+                                           SyntaxContext &sc, bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 

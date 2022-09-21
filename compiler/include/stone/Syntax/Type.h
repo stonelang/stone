@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_Type_H
 #define STONE_SYNTAX_Type_H
 
+#include "stone/Basic/Result.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"
@@ -332,23 +333,41 @@ private:
 };
 /// const int a = 10; volatile int a = 10;
 /// The qual type in this case is ust int with the aforementioned qualifiers
-class QualType final {
+class QualType : public Type {
   friend class TypeQualifierCollector;
+
   // Thankfully, these are efficiently composable.
-  llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth> ptrInt;
+  // llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth>
+  //     typeAndFastWidth;
+  unsigned quals;
 
 public:
   QualType() = default;
-  QualType(Type *tyPtr, unsigned quals) : ptrInt(tyPtr, quals) {}
+
+  explicit QualType(TypeBase *ty, unsigned quals) : Type(ty), quals(quals) {
+    assert(IsQualTypeOrNull() &&
+           "Forming a QualType out of a unqualified type!");
+  }
+  // TODO: come back to this -- it seems tha we should make this into a type and
+  // just pass the quals -- no need to pass the type as a separate parm
+  explicit QualType(Type ty, unsigned quals) : Type(ty), quals(quals) {
+    assert(IsQualTypeOrNull() &&
+           "Forming a QualType out of a an unqualified type!");
+  }
 
 public:
-  bool HasConstQual() const;
-  bool HasRestrictQual() const;
-  bool HasVolatileQual() const;
-  bool HasPureQual() const;
+  bool HasConst() const;
+  bool AddConst();
+
+  bool HasRestrict() const;
+  bool HasVolatile() const;
+  bool HasPure() const;
 
   bool HasQuals() const;
   bool IsCanonical() const;
+
+  /// Return true fro now
+  bool IsQualTypeOrNull() { return true; }
 
   // Type* GetCanType() const;
 
@@ -363,25 +382,38 @@ public:
 /// one of these, use Type->GetCanType().  Since all
 /// CanType's can be used as 'Type' (they just don't have sugar) we
 /// derive from Type.
-class CanQualType {
-  Type tyPtr;
-
+class CanType final : public Type {
 public:
   /// Constructs a NULL canonical type.
-  CanQualType() = default;
+  CanType() = default;
 
 public:
-  explicit CanQualType(TypeBase *tyPtr = 0) : tyPtr(tyPtr) {
-    assert(IsCanQualTypeOrNull() &&
+  explicit CanType(TypeBase *ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanQualType(Type tyPtr) : tyPtr(tyPtr) {
-    assert(IsCanQualTypeOrNull() &&
+  explicit CanType(Type ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(QualType ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
 
 private:
-  bool IsCanQualTypeOrNull() const { return true; }
+  bool IsCanTypeOrNull() const { return true; }
+
+public:
+  void Visit(llvm::function_ref<void(CanType)> fn) const {
+    FindIf([&fn](Type t) -> bool {
+      fn(CanType(t));
+      return false;
+    });
+  }
+  bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
+    return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
+  }
 };
 
 class TypeQualifierCollector final : public TypeQualifierContext {

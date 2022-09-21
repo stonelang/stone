@@ -48,30 +48,30 @@ public:
   void operator=(const Builtin &) = delete;
 
 public:
-  // const CanQualType VoidType;
-  // const CanQualType BoolType;
-  // const CanQualType NullType;
+  // const CanType VoidType;
+  // const CanType BoolType;
+  // const CanType NullType;
 
-  // const CanQualType FloatTy;
-  const CanQualType BuiltinFloat16Type;  /// 32-bit IEEE floating point
-  const CanQualType BuiltinFloat32Type;  /// 32-bit IEEE floating point
-  const CanQualType BuiltinFloat64Type;  /// 64-bit IEEE floating point
-  const CanQualType BuiltinFloat128Type; /// 128-bit IEEE floating point
-  const CanQualType BuiltinFloatType;    /// 128-bit IEEE floating point
+  // const CanType FloatTy;
+  const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
+  const CanType BuiltinFloat32Type;  /// 32-bit IEEE floating point
+  const CanType BuiltinFloat64Type;  /// 64-bit IEEE floating point
+  const CanType BuiltinFloat128Type; /// 128-bit IEEE floating point
+  const CanType BuiltinFloatType;    /// 128-bit IEEE floating point
 
-  const CanQualType BuiltinInt8Type;
-  const CanQualType BuiltinInt16Type;
-  const CanQualType BuiltinInt32Type;
-  const CanQualType BuiltinInt64Type;
-  const CanQualType BuiltinInt128Type;
-  const CanQualType BuiltinIntType;
+  const CanType BuiltinInt8Type;
+  const CanType BuiltinInt16Type;
+  const CanType BuiltinInt32Type;
+  const CanType BuiltinInt64Type;
+  const CanType BuiltinInt128Type;
+  const CanType BuiltinIntType;
 
-  const CanQualType BuiltinUInt8Type;
-  const CanQualType BuiltinUInt16Type;
-  const CanQualType BuiltinUInt32Type;
-  const CanQualType BuiltinUInt64Type;
-  const CanQualType BuiltinUInt128Type;
-  const CanQualType BuiltinUIntType;
+  const CanType BuiltinUInt8Type;
+  const CanType BuiltinUInt16Type;
+  const CanType BuiltinUInt32Type;
+  const CanType BuiltinUInt64Type;
+  const CanType BuiltinUInt128Type;
+  const CanType BuiltinUIntType;
 
 public:
   Builtin(SyntaxContext &sc);

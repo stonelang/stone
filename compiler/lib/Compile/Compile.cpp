@@ -317,7 +317,7 @@ CompileStatus
 CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
 
   for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
-    auto syntaxFile = syn::MakeSyntaxFile(
+    auto syntaxFile = SyntaxFileFactory::Create(
         SyntaxFileKind::Library, sourceBufferID,
         *GetModuleSystem().GetMainModule(), GetSyntaxContext());
 

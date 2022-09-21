@@ -22,7 +22,7 @@ class TemplateDecl;
 class UseDecl;
 
 enum class DeclNameKind : uint8_t {
-  Basic = 0,
+  Identifier = 0,
   Constructor,
   Destructor,
   Operator,
@@ -148,7 +148,7 @@ public:
 
 public:
   // TODO:
-  bool IsBasic() const { return declNameKind == DeclNameKind::Basic; }
+  bool IsIdentifier() const { return declNameKind == DeclNameKind::Identifier; }
   bool IsConstructor() const {
     return declNameKind == DeclNameKind::Constructor;
   }
@@ -182,7 +182,7 @@ public:
   DeclNameLoc(DeclName name) : name(name) {}
 };
 
-struct DeclNameInfo final {
+struct DeclNameContext final {
 private:
   /// Name - The declaration name, also encoding name kind.
   DeclName name;
@@ -194,12 +194,13 @@ private:
   DeclNameLoc specialNameLoc;
 
 public:
-  DeclNameInfo() : name(nullptr), nameLoc(SrcLoc()), specialNameLoc(nullptr) {}
+  DeclNameContext()
+      : name(nullptr), nameLoc(SrcLoc()), specialNameLoc(nullptr) {}
 
-  DeclNameInfo(DeclName name, SrcLoc nameLoc)
+  DeclNameContext(DeclName name, SrcLoc nameLoc)
       : name(name), nameLoc(nameLoc), specialNameLoc(name) {}
 
-  DeclNameInfo(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc)
+  DeclNameContext(DeclName name, SrcLoc nameLoc, DeclNameLoc specialNameLoc)
       : name(name), nameLoc(nameLoc), specialNameLoc(specialNameLoc) {}
 
   /// getName - Returns the embedded declaration name.
@@ -219,6 +220,8 @@ public:
 
   // /// getNamedTypeInfo - Returns the source type info associated to
   // /// the name. Assumes it is a constructor, destructor or conversion.
+
+  
   // TypeSourceInfo *getNamedTypeInfo() const {
   //   if (Name.getNameKind() != DeclName::CXXConstructorName &&
   //       Name.getNameKind() != DeclName::CXXDestructorName &&
@@ -293,6 +296,10 @@ public:
   //   SrcLoc EndLoc = getEndLocPrivate();
   //   return EndLoc.isValid() ? EndLoc : getBeginLoc();
   // }
+
+public:
+  bool IsSimple();
+  bool IsSpecial();
 
 private:
   // SrcLoc getEndLocPrivate() const;

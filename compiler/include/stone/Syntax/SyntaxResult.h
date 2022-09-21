@@ -82,7 +82,7 @@ public:
   }
 
   /// Return true if we found a code completion token while parsing this.
-  bool hasCodeCompletion() const {
+  bool HasCodeCompletion() const {
     return ptrAndBits.getInt() & IsCodeCompletion;
   }
 
@@ -136,11 +136,13 @@ MakeSyntaxCodeCompletionResult(T *Result = nullptr) {
 /// If you want to use 'bool' as a result type in the Syntax, consider using
 /// SyntaxStatus instead.
 class SyntaxStatus {
+
+  // 1 = false
   unsigned isError : 1;
   unsigned IsCodeCompletion : 1;
 
 public:
-  /// Construct a successful parser status.
+  /// Construct a successful parser status by setting values to true = 0
   SyntaxStatus() : isError(0), IsCodeCompletion(0) {}
 
   /// Construct a parser status with specified bits.
@@ -149,7 +151,7 @@ public:
     if (Result.IsError()) {
       SetIsError();
     }
-    if (Result.hasCodeCompletion())
+    if (Result.HasCodeCompletion())
       IsCodeCompletion = true;
   }
 
@@ -159,7 +161,7 @@ public:
   bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
 
   /// Return true if we found a code completion token while parsing this.
-  bool hasCodeCompletion() const { return IsCodeCompletion; }
+  bool HasCodeCompletion() const { return IsCodeCompletion; }
 
   /// Return true if we encountered any errors while parsing this that the
   /// parser hasn't yet recovered from.
@@ -205,14 +207,13 @@ static inline SyntaxStatus MakeSyntaxCodeCompletionStatus() {
   Status.SetHasCodeCompletionAndIsError();
   return Status;
 }
-
 /// Create a parser result with specified bits.
 template <typename T>
 static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
   SyntaxResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
                                         : MakeSyntaxResult(Result);
 
-  if (Status.hasCodeCompletion()) {
+  if (Status.HasCodeCompletion()) {
     PR.SetHasCodeCompletion();
   }
   return PR;
@@ -221,7 +222,7 @@ static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
 template <typename T> SyntaxResult<T>::SyntaxResult(SyntaxStatus Status) {
   assert(Status.IsError());
   SetIsError();
-  if (Status.hasCodeCompletion()) {
+  if (Status.HasCodeCompletion()) {
     SetHasCodeCompletion();
   }
 }

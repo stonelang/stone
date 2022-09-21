@@ -87,6 +87,10 @@ class Parser final {
 
   ScopeCache scopeCache;
 
+  UInt16 ParenCount = 0;
+  UInt16 BraceCount = 0;
+  UInt16 BrackeCount = 0;
+
 private:
   // Identifiers
   // mutable Identifier *importIdentifier;
@@ -103,7 +107,7 @@ public:
 public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
-  const Token &GetCurTok() const { return curTok; }
+  const Token &GetTok() const { return curTok; }
   SyntaxContext &GetSyntaxContext() { return sc; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
@@ -124,9 +128,6 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  //===--------------------------------------------------------------------===//
-  // Decl Parsing
-  bool IsStartOfDecl(const Token &tok);
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
 
 private:
@@ -137,40 +138,55 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
-  void CollectDecl(ParsingDeclCollector &collector);
+  void ParseDeclName(DeclNameContext &nameInfo);
+
+  // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
   SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
 public:
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &declarator);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
+  SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
 public:
-  // == Type Parsing ==//
+  // === Collectors === ///
+  SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
+  SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
+  SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
+  SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
+  SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);
+
+public:
+  // === Type Parsing ===//
   bool IsBasicType(tok kind) const;
 
-  void ParseBasicTypeSpecifier(TypeSpecifierCollector &collector, SrcLoc loc);
+  // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
+  // collectors in the furture. This is ok for now.
+  SyntaxResult<TypeRep> ParseType(ParsingDeclCollector &collector,
+                                  Diag<> diagID);
+  SyntaxResult<TypeRep> ParseFunctionType(ParsingDeclCollector &collector,
+                                          Diag<> diagID);
 
-  SyntaxResult<QualType> ParseType(TypeSpecifierCollector &collector,
-                                   Diag<> diagID);
-  SyntaxResult<QualType> ParseDeclResultType(TypeSpecifierCollector &collector,
-                                             Diag<> diagID);
+  SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
+                                            Diag<> diagID);
+
   SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
                                         Diag<> diagID);
-
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
-  SyntaxStatus ParseTypeQualifiers(TypeQualifierCollector &collector);
-  SyntaxStatus ParseBasicTypeSpecifier(TypeSpecifierCollector &collector);
 
 public:
   //== fun ==//
-
-  // TODO: Pass FunctionSpecifierCollector
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
+  SyntaxStatus ParseFunctionSignature(const DeclNameContext &nameInfo,
                                       ParsingDeclCollector &collectorifier);
 
   // Identifier functionName,
@@ -191,7 +207,8 @@ private:
                                    FunctionDecl &funDecl);
 
 public:
-  SyntaxStatus ParseAccessLevel(AccessLevelCollector &collector);
+  //== using ==//
+  SyntaxResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== struct ==//
@@ -201,6 +218,7 @@ public:
   //== enum== //
   SyntaxResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
+public:
   //== interface ==//
   SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
@@ -224,7 +242,7 @@ public:
 
 public:
   /// Stop parsing now.
-  void StopParsing() { curTok.SetKind(tok::eof); }
+  void EndParsing() { curTok.SetKind(tok::eof); }
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
@@ -402,9 +420,6 @@ private:
 
 public:
   Identifier &GetIdentifier(llvm::StringRef text);
-
-public:
-  ParsingDeclAction GetParsingDeclAction();
 };
 
 } // namespace syn

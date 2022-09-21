@@ -78,6 +78,7 @@ public:
 
   // This is good for now.
   bool IsPointerOperator() { return kind == tok::star; }
+  bool IsReferenceOperator() { return kind == tok::amp_prefix; }
 
   bool IsAnyOperator() const {
     return IsBinaryOperator() || kind == tok::oper_postfix ||
@@ -141,7 +142,6 @@ public:
       return false;
     }
   }
-  bool IsAlien() const { return kind == tok::alien; }
 
   bool IsPunctuation() const {
     switch (kind) {
@@ -153,6 +153,31 @@ public:
       return false;
     }
   }
+  /// TODO:
+  bool IsBasicType() const {
+    switch (kind) {
+#define PUNCTUATOR(Name, Str)                                                  \
+  case tok::Name:                                                              \
+    return true;
+#include "stone/Basic/TokenKind.def"
+    default:
+      return false;
+    }
+  }
+
+  bool IsNominalType() const {
+    switch (kind) {
+    case tok::kw_enum:
+    case tok::kw_struct:
+    case tok::kw_interface:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  bool IsAlien() const { return kind == tok::alien; }
+  bool IsUsing() { return kind == tok::kw_using; }
   bool IsPeriod() { return kind == tok::period; }
   bool IsDoublePipe() { return kind == tok::doublepipe; }
   bool IsPipe() { return kind == tok::pipe; }
@@ -163,7 +188,7 @@ public:
   bool IsDoubleEquality() { return kind == tok::doubleequal; }
   bool IsPound() { return kind == tok::pound; }
   bool IsAmp() { return kind == tok::amp; }
-  bool IsArrow() { return kind == tok::arrow; }
+  bool IsArrow() const { return kind == tok::arrow; }
   bool IsBackTick() { return kind == tok::backtick; }
   bool IsExcliam() { return kind == tok::exclaim; }
   bool IsDoubleColon() const { return kind == tok::doublecolon; }
@@ -174,10 +199,15 @@ public:
   bool IsInterface() { return kind == tok::kw_interface; }
   bool IsPure() { return kind == tok::kw_pure; }
   bool IsInline() { return kind == tok::kw_inline; }
-  bool IsLeftParen() { return kind == tok::l_paren; }
-  bool IsRightParen() { return kind == tok::r_paren; }
   bool IsEnum() { return kind == tok::kw_enum; }
   bool IsStar() { return kind == tok::star; }
+  bool IsLParen() const { return kind == tok::l_paren; }
+  bool IsRParen() const { return kind == tok::r_paren; }
+  bool IsLBrace() const { return kind == tok::l_brace; }
+  bool IsRBrace() const { return kind == tok::r_brace; }
+  bool IsLSquare() const { return kind == tok::l_square; }
+  bool IsRSquare() const { return kind == tok::r_square; }
+
   bool IsQualifier() {
     return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
                  tok::kw_pure);

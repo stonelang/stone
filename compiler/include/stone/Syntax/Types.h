@@ -52,7 +52,7 @@ class ExtQuals; // Extended Qualifiers
 class QualType; // Qualified SyntaxTypes
 class StructDecl;
 class SyntaxType;
-class CanQualType;
+class CanType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
@@ -68,12 +68,33 @@ class alignas(1 << TypeAlignInBits) TypeBase
   /// non-canonical type is requested. The disposition of the union is stored
   /// outside of the union for performance. See Bits.TypeBase.IsCanonical.
   union {
-    // CanQualType canQualType;
+    CanType canType;
     const SyntaxContext *sc;
   };
 
+protected:
+  union {
+    uint64_t OpaqueBits;
+    /// Kind - The discriminator that indicates what subclass of type this is.
+    // STONE_INLINE_BITFIELD_BASE(TypeBase, stone::BitMax(NumTypeKindBits, 8),
+
+    //   Kind :stone::BitMax(NumTypeKindBits, 8),
+    //   /// Whether this type is canonical or not.
+    //   IsCanonical : 1
+    // );
+
+  } Bits;
+
 public:
-  TypeBase(TypeKind kind, const SyntaxContext &canTypeCtx) : kind(kind) {}
+  TypeBase(TypeKind kind, const SyntaxContext *canTypeCtx)
+      : kind(kind), sc(nullptr) {
+
+    /// TODO: I do not like this ....
+    if (canTypeCtx) {
+      // Bits.TypeBase.IsCanonical = true;
+      sc = canTypeCtx;
+    }
+  }
 
 public:
   bool IsBasic();
@@ -84,18 +105,34 @@ public:
 
 public:
   TypeKind GetKind() const { return kind; }
+
+  // TypeKind GetKind() const { return
+  // static_cast<TypeKind>(Bits.TypeBase.Kind); }
+
+  // We can do this because all types are generally cannonical types.
+  // CanType GetCanType();
 };
 
 class AbstractFunctionType : public TypeBase {
-  QualType retType;
+  QualType result;
 
 public:
+  AbstractFunctionType(TypeKind kind, const SyntaxContext *canTypeCtx,
+                       QualType result)
+      : TypeBase(kind, canTypeCtx), result(result) {}
 };
 
-class FunctionType : public AbstractFunctionType {
+// You are returning Type for now, it may have to be QualType
+class FunctionType : public AbstractFunctionType,
+                     private llvm::TrailingObjects<FunctionType, Type> {
+  friend TrailingObjects;
 
 public:
-  FunctionType(TypeKind kind, QualType retType);
+  FunctionType(const SyntaxContext *sc, QualType result);
+
+public:
+  /// 'Constructor' Factory Function
+  static FunctionType *Create(QualType result);
 };
 
 class NominalType : public TypeBase {
@@ -153,8 +190,7 @@ struct NumberBitWidth final {
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const SyntaxContext &canTypeCtx)
-      : TypeBase(kind, canTypeCtx) {}
+  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
 };
 
 using NumberBitWidthKind = NumberBitWidth::Kind;
@@ -165,8 +201,8 @@ class AbstractNumberType : public BuiltinType {
 
 public:
   AbstractNumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-                     const SyntaxContext &canTypeCtx)
-      : BuiltinType(kind, canTypeCtx), bitWidthKind(bitWidthKind) {}
+                     const SyntaxContext &sc)
+      : BuiltinType(kind, sc), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -181,25 +217,24 @@ class IntegerType : public AbstractNumberType {
   friend class SyntaxContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &canTypeCtx)
-      : AbstractNumberType(TypeKind::Integer, bitWidthKind, canTypeCtx) {}
+  IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : AbstractNumberType(TypeKind::Integer, bitWidthKind, sc) {}
 };
 
 class UIntegerType : public AbstractNumberType {
   friend class SyntaxContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &canTypeCtx)
-      : AbstractNumberType(TypeKind::UInteger, bitWidthKind, canTypeCtx) {}
+  UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : AbstractNumberType(TypeKind::UInteger, bitWidthKind, sc) {}
 };
 
 class FloatType : public AbstractNumberType {
   friend class SyntaxContext;
 
 public:
-  FloatType(NumberBitWidthKind fpNumberBitWidthKind,
-            const SyntaxContext &canTypeCtx)
-      : AbstractNumberType(TypeKind::Float, fpNumberBitWidthKind, canTypeCtx) {}
+  FloatType(NumberBitWidthKind fpNumberBitWidthKind, const SyntaxContext &sc)
+      : AbstractNumberType(TypeKind::Float, fpNumberBitWidthKind, sc) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -210,26 +245,29 @@ public:
 
 class VoidType : public BuiltinType {
 public:
-  VoidType(const SyntaxContext &canTypeCtx)
-      : BuiltinType(TypeKind::Void, canTypeCtx) {}
+  VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 };
 
 class NullType : public BuiltinType {
 public:
-  NullType(const SyntaxContext &canTypeCtx)
-      : BuiltinType(TypeKind::Null, canTypeCtx) {}
+  NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const SyntaxContext &canTypeCtx)
-      : TypeBase(kind, canTypeCtx) {}
+  AbstractPointerType(TypeKind kind, const SyntaxContext &sc)
+      : TypeBase(kind, &sc) {}
 };
 class PointerType : public AbstractPointerType {
 
+  QualType pointeeType;
+
 public:
-  PointerType(const SyntaxContext &canTypeCtx)
-      : AbstractPointerType(TypeKind::Pointer, canTypeCtx) {}
+  PointerType(const SyntaxContext &sc)
+      : AbstractPointerType(TypeKind::Pointer, sc) {}
+
+public:
+  // QualType GetPointeeType() const { return pointeeType; }
 };
 
 class SugarType : public TypeBase {

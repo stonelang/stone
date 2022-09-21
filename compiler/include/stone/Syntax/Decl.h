@@ -13,7 +13,9 @@
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/Template.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"
 #include "stone/Syntax/Using.h"
 
@@ -73,7 +75,12 @@ enum : unsigned {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public SyntaxAllocation<Decl> {
+// Kinds of pointer types.
+enum PointerTypeKind : unsigned {
+  Raw,
+};
+
+class alignas(1 << DeclAlignInBits) Decl : public syn::SyntaxAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -305,7 +312,7 @@ public:
   bool Walk(SyntaxWalker &walker);
 };
 
-class NamedDecl : public Decl {
+class NameableDecl : public Decl {
   /// The name of this declaration, which is typically a normal
   /// identifier but may also be a special ty of name (C++
   /// constructor, etc.)
@@ -313,8 +320,8 @@ class NamedDecl : public Decl {
   SrcLoc nameLoc;
 
 protected:
-  NamedDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-            UnifiedContext context)
+  NameableDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+               UnifiedContext context)
       : Decl(kind, context), name(name), nameLoc(nameLoc) {}
 
 public:
@@ -340,24 +347,42 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
-class ValueDecl : public NamedDecl {
+class ValueDecl : public NameableDecl {
 
-  // The actual declaration type
-  QualType qualType;
+  // llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
+  /// fun GetObject() -> Object* {return object } where Object* is resultTy
+  QualType resultTy;
+  AccessLevel level;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
             UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context) {}
+      : NameableDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetQualType(QualType inputQualType) { qualType = inputQualType; }
-  QualType GetQualType() { return qualType; }
+  void SetResultType(QualType inputResultType) { resultTy = inputResultType; }
+  QualType GetResultType() { return resultTy; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
+
+  // bool HasAccessLevel() const {
+  //   return resultTypeAndAccess.getInt().hasValue();
+  // }
+
+  // AccessLevel GetAccessLevel() const;
+
+  // void SetAccess(AccessLevel level) {
+  //   assert(!HasAccessLevel() && "access already set");
+  //   OverwriteAccess(access);
+  // }
+
+  // Overwrite the access of this declaration.
+  //
+  // This is needed in the LLDB REPL.
+  void OverwriteAccess(AccessLevel inputLevel) { level = inputLevel; }
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
@@ -391,31 +416,31 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
-class DeclaratorDecl : public ValueDecl {
-public:
-  DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-                 UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, context) {}
-};
+// class DeclaratorDecl : public ValueDecl {
+// public:
+//   DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+//                  UnifiedContext context)
+//       : ValueDecl(kind, name, nameLoc, context) {}
+// };
 
-// class LabelDecl : public NamedDecl {
+// class LabelDecl : public NameableDecl {
 // public:
 // };
 
-class SpaceDecl final : public NamedDecl {
+class SpaceDecl final : public NameableDecl {
 public:
   // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-  //     : NamedDecl(DeclKind::Space, dc, loc, name) {}
+  //     : NameableDecl(DeclKind::Space, dc, loc, name) {}
 };
 
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
 /// requirements for any corresponding type argument.
-// class AbstractTypeParamDecl : public NamedDecl {
+// class AbstractTypeParamDecl : public NameableDecl {
 // protected:
 //   AbstractTypeParamDecl(DeclKind kind, DeclContext *dc, Identifier name,
 //                         SourceLoc NameLoc)
-//     : NamedDecl(kind, dc, name, NameLoc, { }) { }
+//     : NameableDecl(kind, dc, name, NameLoc, { }) { }
 
 // public:
 //   /// Retrieve the set of protocols to which this abstract type
@@ -455,10 +480,14 @@ public:
 
 class GenericTypeDecl : public TypeDecl {};
 
+// class TemplateTypeDecl : public TypeDecl();
+
 // This is really your function prototye
 class FunctionDecl
     : public DeclContext,
-      public DeclaratorDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+
+  // TypeLoc returnType;
 
   /// This enum member is active if GetBodyKind() is BodyKind::Parsed or
   /// BodyKind::TypeChecked.
@@ -496,13 +525,18 @@ public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                DeclNameLoc specialNameLoc, DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        DeclaratorDecl(kind, name, nameLoc, parent),
-        specialNameLoc(specialNameLoc) {}
+        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
+  }
 
 public:
+  /// TODO:
+  void SetBodyStatus(BodyStatus status) {
+    // Bits.AbstractFunctionDecl.BodyKind = unsigned(K);
+  }
+
   BraceStmt *GetBody(bool canSynthesize = true) const;
   /// Set a new body for the function.
-  void SetBody(BraceStmt *body);
+  void SetBody(BraceStmt *body, BodyStatus bodyStatus);
 
   void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
     this->storageSpecifierKind = ssk;
@@ -522,6 +556,10 @@ class FunDecl : public FunctionDecl {
   // TODO: You should aonly pass SyntaxContext and DeclContext
   SrcLoc funLoc;
   bool hasLBrace;
+
+  /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
+  /// and Oject* is the QualType which is the resultType
+  TypeLoc returnType;
 
 public:
   FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
@@ -548,6 +586,8 @@ public:
 
   QualType GetReturnType() const;
 
+  // TypeLoc GetReturnType() const;
+
 public:
   // void SetReturnType(TypeDecl* returnTy);
 
@@ -567,6 +607,7 @@ public:
 
 /// Member functions: fun Particle::Fire() -> bool ...
 class MemberFunDecl : public FunDecl {
+  /// TODO: pass , NominalTypeDecl* owner,
 public:
   MemberFunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
                 DeclNameLoc specialNameLoc, DeclContext *parent)
@@ -626,11 +667,11 @@ class ParamDecl : public VarDecl {
 public:
 };
 
-class TemplateDecl : public NamedDecl {
+class TemplateDecl : public NameableDecl {
 public:
 };
 
-class UsingDecl final : public NamedDecl {
+class UsingDecl final : public NameableDecl {
   SrcLoc usingLoc;
   UsingKind usingKind;
 
@@ -694,7 +735,9 @@ public:
   // }
 };
 
-class TopLevelDecl {};
+class TopLevelDecl final : public DeclContext, public Decl {
+public:
+};
 
 } // namespace syn
 } // namespace stone

@@ -4,9 +4,9 @@ using namespace stone::syn;
 
 static const auto &GetScopeNameTable() {
   static const std::pair<ScopeKind, const char *> Table[] = {
-      {ScopeKind::FunctionDecl, "Function Declaration"},
-      {ScopeKind::SyntaxFile, "Syntax File"},
       {ScopeKind::Decl, "Decl"},
+      {ScopeKind::FunDecl, "Function Declaration"},
+      {ScopeKind::SyntaxFile, "Syntax File"},
       {ScopeKind::FunctionSignature, "Function Signature "},
   };
   return Table;

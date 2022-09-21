@@ -23,12 +23,25 @@ class TypeDecl;
 class TupleTypeRep;
 class IdentifierTypeRep;
 
+enum class TypeRepKind : UInt8 {
+#define TYPEREP(ID, PARENT) ID,
+#define LAST_TYPEREP(ID) Last_TypeRep = ID,
+#include "TypeRepKind.def"
+};
+enum : unsigned {
+  NumTypeReprKindBits =
+      stone::CountBitsUsed(static_cast<unsigned>(TypeRepKind::Last_TypeRep))
+};
+
 /// Representation of a type as written in source.
 class alignas(1 << TypeRepAlignInBits) TypeRep
-    : public SyntaxAllocation<TypeRep> {
+    : public syn::SyntaxAllocation<TypeRep> {
 
   TypeRep(const TypeRep &) = delete;
   void operator=(const TypeRep &) = delete;
+
+public:
+  TypeRep() {}
 
 public:
   /// Walk this type representation.
@@ -48,6 +61,12 @@ class QualTypeRep : public TypeRep {
   SrcLoc pureLoc;
 
 public:
+  bool AddConst(SrcLoc loc) { constLoc = loc; }
+  bool AddRestrict(SrcLoc loc) { restricLoc = loc; }
+  bool AddVolatile(SrcLoc loc) { volatileLoc = loc; }
+  bool AddPure(SrcLoc loc) { pureLoc = loc; }
+
+public:
   bool IsConst() const { return constLoc.isValid(); }
   bool IsRestrict() const { return restricLoc.isValid(); }
   bool IsVolatile() const { return volatileLoc.isValid(); }
@@ -59,14 +78,25 @@ public:
   SrcLoc GetPureLoc() const { return pureLoc; }
 };
 
+class TypeSpecTypeRep : public TypeRep {};
+
 class IdentifierTypeRep : public QualTypeRep {};
 
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
   DeclNameLoc nameLoc;
 
+  /// The declaration context from which the bound declaration was
+  /// found. only valid if IdOrDecl is a TypeDecl.
+  DeclContext *dc;
+
 public:
   DeclNameLoc GetNameLoc() const { return nameLoc; }
   // TODO: DeclNameRef GetNameRef() const;
+
+  //  void SetValue(TypeDecl *td, DeclContext *dc) {
+  //   IdOrDecl = TD;
+  //   this->DC = DC;
+  // }
 };
 
 /// A simple identifier type like "int".
@@ -96,8 +126,6 @@ private:
 };
 
 class TupleTypeRep final : public QualTypeRep {
-
-public:
 public:
   static TupleTypeRep *Create();
 };
@@ -105,12 +133,14 @@ public:
 /// May want to inherit from QualTypeRep
 
 // Ex: public pure fun
-class FunctionTypeRep : public QualTypeRep {
+class FunctionTypeRep : public TypeRep {
   QualTypeRep *resultTy;
 
 public:
-  // FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
-  // QualTypeRep *GetResultType() { return resultTy; }
+  FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
+
+public:
+  QualTypeRep *GetResultTypeRep() { return resultTy; }
 };
 
 /// All this may be covered by the IdentifierTypeRep
@@ -123,7 +153,7 @@ class AbstractPointerTypeRep : public QualTypeRep {};
 class PointerTypeRep : public AbstractPointerTypeRep {};
 
 /// Wrapper for source info for block pointers.
-class BlockPointerTypeRep : public AbstractPointerTypeRep {};
+class MemboerPointerTypeRep : public AbstractPointerTypeRep {};
 
 } // namespace syn
 } // end namespace stone

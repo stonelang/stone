@@ -18,10 +18,9 @@ void syn::Parse(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener) {
     return;
   }
   for (auto result : results) {
-    if (!result.IsNull()) {
-      sf.AddTopLevelDecl(result.Get());
-    } else {
-      // Log something
+    if (result.IsNull()) {
+      return;
     }
+    sf.AddTopLevelDecl(result.Get());
   }
 }

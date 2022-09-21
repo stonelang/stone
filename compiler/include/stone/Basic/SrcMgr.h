@@ -77,7 +77,7 @@ public:
     CodeCompletionOffset = Offset;
   }
 
-  bool hasCodeCompletionBuffer() const { return CodeCompletionBufferID != 0U; }
+  bool HasCodeCompletionBuffer() const { return CodeCompletionBufferID != 0U; }
 
   unsigned getCodeCompletionBufferID() const { return CodeCompletionBufferID; }
 

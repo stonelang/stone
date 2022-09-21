@@ -8,16 +8,14 @@ set(stone_syn_sources
 	Builtin.cpp
 	Comment.cpp
 	Decl.cpp
-	DeclSpecifier.cpp
+	DeclCollector.cpp
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp
 	Expr.cpp
 	Identifier.cpp
-	MakeDecl.cpp
-	MakeExpr.cpp
-	MakeStmt.cpp
 	Module.cpp
+	Pattern.cpp
 	SearchPath.cpp
 	Specifier.cpp
 	Stmt.cpp
