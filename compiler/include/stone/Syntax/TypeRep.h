@@ -93,7 +93,6 @@ public:
   DeclNameLoc GetNameLoc() const { return nameLoc; }
   // TODO: DeclNameRef GetNameRef() const;
 
-
   //  void SetValue(TypeDecl *td, DeclContext *dc) {
   //   IdOrDecl = TD;
   //   this->DC = DC;

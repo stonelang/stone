@@ -138,7 +138,7 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
-  void ParseDeclName(DeclNameInfo &nameInfo);
+  void ParseDeclName(DeclNameContext &nameInfo);
 
   // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
@@ -186,7 +186,7 @@ public:
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(const DeclNameInfo &nameInfo,
+  SyntaxStatus ParseFunctionSignature(const DeclNameContext &nameInfo,
                                       ParsingDeclCollector &collectorifier);
 
   // Identifier functionName,

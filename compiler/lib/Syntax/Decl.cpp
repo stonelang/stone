@@ -151,15 +151,14 @@ void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
 
 void DeclStats::Print(ColorfulStream &stream) {}
 
-FunDecl *FunDeclFactory::Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
+FunDecl *FunDeclFactory::Create(DeclNameContext &dnc, SyntaxContext &sc,
                                 TypeRep *result, DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
-  return ::new (memPtr)
-      FunDecl(DeclKind::Fun, nameInfo.GetName(), nameInfo.GetNameLoc(),
-              nameInfo.GetSpecialNameLoc(), parent);
+  return ::new (memPtr) FunDecl(DeclKind::Fun, dnc.GetName(), dnc.GetNameLoc(),
+                                dnc.GetSpecialNameLoc(), parent);
 }
 
 StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,

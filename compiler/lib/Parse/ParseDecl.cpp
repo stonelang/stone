@@ -185,17 +185,17 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   }
 
   // Build the DeclName
-  DeclNameInfo nameInfo;
-  // ParseDeclName(nameInfo);
+  DeclNameContext declNameContext;
+  // ParseDeclName(declNameContext);
 
   // Parse function name.
   auto name = GetIdentifier(curTok.GetText());
   DeclName fullName(&name);
-  nameInfo.SetName(fullName);
+  declNameContext.SetName(fullName);
 
   // very simple for now.
   SrcLoc nameLoc = ConsumeToken(tok::identifier);
-  nameInfo.SetNameLoc(nameLoc);
+  declNameContext.SetNameLoc(nameLoc);
 
   if (PeekNextToken().IsDoubleColon()) {
     collector.GetFunctionSpecifierCollector().AddIsMember();
@@ -208,7 +208,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   }
   SyntaxStatus status;
   // Now, parse the function signature
-  status |= ParseFunctionSignature(nameInfo, collector);
+  status |= ParseFunctionSignature(declNameContext, collector);
 
   if (status.IsError()) {
     return status;
@@ -216,7 +216,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   // Create the function
   auto funDecl =
-      FunDeclFactory::Create(nameInfo, sc, nullptr, GetCurDeclContext());
+      FunDeclFactory::Create(declNameContext, sc, nullptr, GetCurDeclContext());
   assert(funDecl);
 
   // Very simple for the time being
@@ -241,8 +241,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // syn::VerifyDecl(funDecl);
 }
 
-SyntaxStatus Parser::ParseFunctionSignature(const DeclNameInfo &nameInfo,
-                                            ParsingDeclCollector &collector) {
+SyntaxStatus
+Parser::ParseFunctionSignature(const DeclNameContext &declNameContext,
+                               ParsingDeclCollector &collector) {
   SyntaxStatus status;
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");

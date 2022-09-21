@@ -75,7 +75,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 // }
 
 /// Keeping this simple for now
-void Parser::ParseDeclName(DeclNameInfo &nameResult) {
+void Parser::ParseDeclName(DeclNameContext &nameResult) {
   // Parse function name.
   auto name = GetIdentifier(curTok.GetText());
   nameResult.SetName(DeclName(&name));

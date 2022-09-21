@@ -20,7 +20,7 @@ class SwitchStmt;
 class Expr;
 class Syntax;
 class SyntaxFile;
-struct DeclNameInfo;
+struct DeclNameContext;
 
 } // namespace syn
 
@@ -34,7 +34,8 @@ void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 //   SyntaxFactory() = delete;
 
 // public:
-//   static FunDecl *CreateFunDecl(DeclNameInfo &nameInfo, SyntaxContext &sc,
+//   static FunDecl *CreateFunDecl(DeclNameContext &dnc,
+//   SyntaxContext &sc,
 //                                 TypeRep *result, DeclContext *parent);
 
 // public:
@@ -59,10 +60,10 @@ struct VarDeclFactory final {
 };
 
 struct FunDeclFactory final {
-  static FunDecl *Create(DeclNameInfo &nameInfo, SyntaxContext &sc,
+  static FunDecl *Create(DeclNameContext &dnc, SyntaxContext &sc,
                          TypeRep *resultRep, DeclContext *parent);
 
-  static FunDecl *CreateImplicit(DeclNameInfo &nameInfo, SyntaxContext &sc,
+  static FunDecl *CreateImplicit(DeclNameContext &dnc, SyntaxContext &sc,
                                  QualType *returnType, DeclContext *parent);
 };
 
