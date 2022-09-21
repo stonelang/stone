@@ -14,6 +14,10 @@
 using namespace stone;
 using namespace stone::syn;
 
+// SyntaxContext::Internal::Internal() : identifiers(allocator) {}
+
+// SyntaxContext::Internal::~Internal() {}
+
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
     : lc(lc), searchPathOpts(spOpts), identifiers(lc.GetLangOptions()),
@@ -42,6 +46,10 @@ Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
 size_t SyntaxContext::GetSizeOfMemUsed() const {
   return GetAllocator().getTotalMemory();
 }
+
+// llvm::BumpPtrAllocator &SyntaxContext::GetBumpAllocator() const {
+//   return internal.allocator;
+// }
 
 FunctionType::FunctionType(const SyntaxContext *sc, QualType result)
     : AbstractFunctionType(TypeKind::Function, sc, result) {}

@@ -180,6 +180,7 @@ public:
   //   return const_cast<SyntaxContext *>(this)->GetStdlibModule(false);
   // }
 
+private:
 public:
   /// Return the total amount of physical memory allocated for representing
   /// AST nodes and type information.

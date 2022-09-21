@@ -88,6 +88,12 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   case tok::kw_pure:
     collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
     break;
+  case tok::kw_final:
+    collector.GetTypeQualifierCollector().AddFinal(ConsumeToken());
+    break;
+  case tok::kw_mutable:
+    collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
+    break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
