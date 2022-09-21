@@ -85,9 +85,19 @@ class IdentifierTypeRep : public QualTypeRep {};
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
   DeclNameLoc nameLoc;
 
+  /// The declaration context from which the bound declaration was
+  /// found. only valid if IdOrDecl is a TypeDecl.
+  DeclContext *dc;
+
 public:
   DeclNameLoc GetNameLoc() const { return nameLoc; }
   // TODO: DeclNameRef GetNameRef() const;
+
+
+  //  void SetValue(TypeDecl *td, DeclContext *dc) {
+  //   IdOrDecl = TD;
+  //   this->DC = DC;
+  // }
 };
 
 /// A simple identifier type like "int".

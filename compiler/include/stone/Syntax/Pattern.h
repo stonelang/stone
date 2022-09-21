@@ -163,7 +163,7 @@ public:
   void AddPipe(SrcLoc loc);
 
 public:
-  /// int** -- the '*' toucing int 
+  /// int** -- the '*' toucing int
   const TypePattern *GetInnermostNonParenPattern() const {
     for (unsigned i = patterns.size(), i_end = 0; i != i_end; --i) {
       if (patterns[i - 1].GetKind() != TypePatternKind::Paren) {
@@ -172,8 +172,8 @@ public:
     }
     return nullptr;
   }
-  
-  /// int** -- the '*' farthest from int  
+
+  /// int** -- the '*' farthest from int
   const TypePattern *GetOutermostNonParenPattern() const {
     for (unsigned i = 0, i_end = patterns.size(); i < i_end; ++i) {
       if (patterns[i].GetKind() != TypePatternKind::Paren) {
