@@ -131,10 +131,10 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attempting to parse type-patterns without a type specified");
 
-  // TODO: Significant improvement required here. This is a starter. 
+  // TODO: Significant improvement required here. This is a starter.
   // May just require the TypeCollecter to add Final on creation but remove it
   // if mutable is added
-  if(!collector.GetTypeQualifierCollector().HasAnyTypeQualifier()){
+  if (!collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     collector.GetTypeQualifierCollector().AddFinal(SrcLoc());
   }
 

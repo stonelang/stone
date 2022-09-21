@@ -46,8 +46,16 @@ namespace stone {
 namespace syn {
 
 enum class BitterTypeKind : UInt8 {
-    None = 0,
+#define BITTER_TYPE(id, parent) id,
+#define LAST_BITTER_TYPE(id) Last_Type = id,
+#define BITTER_TYPE_RANGE(Id, FirstId, LastId)                                 \
+  First_##Id##Type = FirstId, Last_##Id##Type = LastId,
+#include "stone/Syntax/BitterTypeKind.def"
+};
 
+enum : unsigned {
+  NumBitterTypeKindBits =
+      stone::CountBitsUsed(static_cast<unsigned>(BitterTypeKind::Last_Type))
 };
 
 class alignas(1 << TypeAlignInBits) BitterType
@@ -57,10 +65,20 @@ class alignas(1 << TypeAlignInBits) BitterType
   BitterType(const BitterType &) = delete;
   void operator=(const BitterType &) = delete;
 
-    BitterTypeKind kind; 
+  BitterTypeKind kind;
+
 public:
-    BitterTypeKind GetKind() { return kind; }
+  BitterTypeKind GetKind() { return kind; }
 };
+
+// class AbstractFunctionType : public BitterType {
+//   QualType result;
+
+// public:
+//   AbstractFunctionType(BitterTypeKind kind, const SyntaxContext *canTypeCtx,
+//                        QualType result)
+//       : TypeBase(kind, canTypeCtx), result(result) {}
+// };
 
 } // namespace syn
 

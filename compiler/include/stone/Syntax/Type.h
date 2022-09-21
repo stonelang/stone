@@ -92,7 +92,6 @@ struct TypeQualifierFlags {
     Final = 0x36,
     Mutable = 0x72,
 
-
     CVRMask = Const | Volatile | Restrict,
     CVRUMask = Const | Volatile | Restrict | Unaligned
   };
@@ -134,9 +133,8 @@ public:
   };
 
 public:
-  TypeQualifierContext() {
-    AddFinal(SrcLoc());
-  }
+  TypeQualifierContext() { AddFinal(SrcLoc()); }
+
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
   bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
@@ -146,8 +144,9 @@ public:
     mask |= TypeQualifierFlags::Const;
   }
   SrcLoc GetConstLoc() { return constLoc; }
-  
-  // TODO: Think about this whole const concept now giving that you have final and mutable 
+
+  // TODO: Think about this whole const concept now giving that you have final
+  // and mutable
   bool HasFinal() const { return mask & TypeQualifierFlags::Final; }
   bool HasFinalOnly() const { return mask == TypeQualifierFlags::Final; }
   void RemoveFinal() { mask &= ~TypeQualifierFlags::Final; }
@@ -157,7 +156,6 @@ public:
   }
   SrcLoc GetFinalLoc() { return finalLoc; }
 
-
   bool HasMutable() const { return mask & TypeQualifierFlags::Mutable; }
   bool HasMutableOnly() const { return mask == TypeQualifierFlags::Mutable; }
   void RemoveMutable() { mask &= ~TypeQualifierFlags::Mutable; }
@@ -166,7 +164,6 @@ public:
     mask |= TypeQualifierFlags::Mutable;
   }
   SrcLoc GetMutableLoc() { return mutableLoc; }
-
 
   bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
   bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
