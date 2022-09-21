@@ -134,6 +134,10 @@ public:
   };
 
 public:
+  TypeQualifierContext() {
+    AddFinal(SrcLoc());
+  }
+public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
   bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
   void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }
@@ -142,7 +146,8 @@ public:
     mask |= TypeQualifierFlags::Const;
   }
   SrcLoc GetConstLoc() { return constLoc; }
-
+  
+  // TODO: Think about this whole const concept now giving that you have final and mutable 
   bool HasFinal() const { return mask & TypeQualifierFlags::Final; }
   bool HasFinalOnly() const { return mask == TypeQualifierFlags::Final; }
   void RemoveFinal() { mask &= ~TypeQualifierFlags::Final; }
