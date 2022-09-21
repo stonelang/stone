@@ -221,7 +221,6 @@ public:
   // /// getNamedTypeInfo - Returns the source type info associated to
   // /// the name. Assumes it is a constructor, destructor or conversion.
 
-  
   // TypeSourceInfo *getNamedTypeInfo() const {
   //   if (Name.getNameKind() != DeclName::CXXConstructorName &&
   //       Name.getNameKind() != DeclName::CXXDestructorName &&

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_Type_H
-#define STONE_SYNTAX_Type_H
+#ifndef STONE_SYNTAX_TYPE_H
+#define STONE_SYNTAX_TYPE_H
 
 #include "stone/Basic/Result.h"
 #include "stone/Basic/SrcLoc.h"
@@ -63,14 +63,17 @@ class TypeWalker;
 // public:
 //   void operator==(Type T) const = delete;
 //   void operator!=(Type T) const = delete;
+
+//   void operator==(SugarType T) const = delete;
+//   void operator!=(SugarType T) const = delete;
 // };
 
 // class Type final : public llvm::PointerUnion<BitterType *, SugarType *> {
 // public:
 //   Type() {}
 // public:
-//   BitterType* GetBitter();
-//   SugarType*  GetSugar();
+//   CanType* GetCanType();
+//   SugarType*  GetSugarType(); GetSugarType()->GetCanType();
 
 // public:
 //   Type Transform(llvm::function_ref<Type(Type)> fn) const;
@@ -86,6 +89,10 @@ struct TypeQualifierFlags {
     Volatile = 0x4,
     Unaligned = 0x8,
     Pure = 0x18,
+    Final = 0x36,
+    Mutable = 0x72,
+
+
     CVRMask = Const | Volatile | Restrict,
     CVRUMask = Const | Volatile | Restrict | Unaligned
   };
@@ -110,6 +117,8 @@ class TypeQualifierContext {
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
+  SrcLoc finalLoc;
+  SrcLoc mutableLoc;
 
 public:
   enum {
@@ -133,6 +142,26 @@ public:
     mask |= TypeQualifierFlags::Const;
   }
   SrcLoc GetConstLoc() { return constLoc; }
+
+  bool HasFinal() const { return mask & TypeQualifierFlags::Final; }
+  bool HasFinalOnly() const { return mask == TypeQualifierFlags::Final; }
+  void RemoveFinal() { mask &= ~TypeQualifierFlags::Final; }
+  void AddFinal(SrcLoc loc = SrcLoc()) {
+    finalLoc = loc;
+    mask |= TypeQualifierFlags::Final;
+  }
+  SrcLoc GetFinalLoc() { return finalLoc; }
+
+
+  bool HasMutable() const { return mask & TypeQualifierFlags::Mutable; }
+  bool HasMutableOnly() const { return mask == TypeQualifierFlags::Mutable; }
+  void RemoveMutable() { mask &= ~TypeQualifierFlags::Mutable; }
+  void AddMutable(SrcLoc loc = SrcLoc()) {
+    mutableLoc = loc;
+    mask |= TypeQualifierFlags::Mutable;
+  }
+  SrcLoc GetMutableLoc() { return mutableLoc; }
+
 
   bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
   bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }

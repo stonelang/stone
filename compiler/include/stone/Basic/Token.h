@@ -176,6 +176,8 @@ public:
     }
   }
 
+  bool IsFinal() const { return kind == tok::kw_final; }
+  bool IsMutable() const { return kind == tok::kw_mutable; }
   bool IsAlien() const { return kind == tok::alien; }
   bool IsUsing() { return kind == tok::kw_using; }
   bool IsPeriod() { return kind == tok::period; }
@@ -209,7 +211,7 @@ public:
   bool IsRSquare() const { return kind == tok::r_square; }
 
   bool IsQualifier() {
-    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
+    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile, tok::kw_final, tok::kw_mutable, 
                  tok::kw_pure);
   }
   bool IsAccessLevel() {

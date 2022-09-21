@@ -16,10 +16,14 @@ jobs:
 
 * Driver/Git.h => git.Diff(input)
 
-class CompilationRequest {
 
-} 
 
-class CompileRequest : CompilationRequest {
+class CanType {
 	
 }
+
+class SugarType {
+	
+}
+
+
