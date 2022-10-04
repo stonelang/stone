@@ -75,15 +75,16 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 // }
 
 /// Keeping this simple for now
-void Parser::ParseDeclName(DeclNameContext &nameResult) {
-  // Parse function name.
-  auto name = GetIdentifier(curTok.GetText());
-  nameResult.SetName(DeclName(&name));
-  nameResult.SetNameLoc(ConsumeToken(tok::identifier));
-}
+// void Parser::ParseDeclName(DeclNameContext &nameResult) {
+//   // Parse function name.
+//   auto name = GetIdentifier(curTok.GetText());
+//   nameResult.SetName(DeclName(&name));
+//   nameResult.SetNameLoc(ConsumeToken(tok::identifier));
+// }
+
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
-Identifier &Parser::GetIdentifier(llvm::StringRef text) {
+Identifier Parser::GetIdentifier(llvm::StringRef text) {
   return sc.GetIdentifier(text);
 }
 

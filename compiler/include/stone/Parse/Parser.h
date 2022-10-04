@@ -138,8 +138,6 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
-  void ParseDeclName(DeclNameContext &nameInfo);
-
   // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
@@ -186,8 +184,7 @@ public:
   SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
 
 private:
-  SyntaxStatus ParseFunctionSignature(const DeclNameContext &nameInfo,
-                                      ParsingDeclCollector &collectorifier);
+  SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collectorifier);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -419,7 +416,7 @@ private:
   bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
 
 public:
-  Identifier &GetIdentifier(llvm::StringRef text);
+  Identifier GetIdentifier(llvm::StringRef text);
 };
 
 } // namespace syn

@@ -330,16 +330,13 @@ public:
   /// This will return NULL if this declaration has no name (e.g., for
   /// an unnamed class) or if the name is a special name such ast a C++
   /// constructor.
-  Identifier *GetIdentifier() const { return name.GetAsIdentifier(); }
+  Identifier GetIdentifier() const { return name.GetIdentifier(); }
 
   /// Get the name of identifier for this declaration as a StringRef.
   ///
   /// This requires that the declaration have a name and that it be a simple
   /// identifier.
-  llvm::StringRef GetNameText() const {
-    // TODO: assert(name.IsIdentifier() && "Name is not a simple identifier");
-    return GetIdentifier() ? GetIdentifier()->GetName() : "";
-  }
+  llvm::StringRef GetNameText() const { return GetIdentifier().GetString(); }
   void SetDeclName(DeclName name) { this->name = name; }
   DeclName GetDeclName() { return name; }
 
@@ -400,7 +397,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier *name, SrcLoc nameLoc,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
            UnifiedContext context)
       : ValueDecl(kind, name, nameLoc, context) {}
 
@@ -412,7 +409,7 @@ public:
   const Type *GetTypeForDecl() const { return typeForDecl; }
   void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
 
-  // SourceLocation GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
+  // SrcLoc GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
@@ -496,7 +493,7 @@ class FunctionDecl
   StorageSpecifierKind storageSpecifierKind;
 
   /// Info - Further source/type location info for special kinds of names.
-  DeclNameLoc specialNameLoc;
+  // TODO: DeclNameLoc specialNameLoc;
 
 public:
   enum class BodyStatus {
@@ -523,10 +520,9 @@ public:
 
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-               DeclNameLoc specialNameLoc, DeclContext *parent)
+               DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent), specialNameLoc(specialNameLoc) {
-  }
+        ValueDecl(kind, name, nameLoc, parent) {}
 
 public:
   /// TODO:
@@ -545,8 +541,8 @@ public:
     return storageSpecifierKind;
   }
 
-  DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
-  // void SetReturnType(TypeDecl* tyDecl);
+  // DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
+  //  void SetReturnType(TypeDecl* tyDecl);
 
 public:
 };
@@ -561,10 +557,11 @@ class FunDecl : public FunctionDecl {
   /// and Oject* is the QualType which is the resultType
   TypeLoc returnType;
 
+  // TODO: We are removing SpecialNameLoc for now.
 public:
-  FunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-          DeclNameLoc specialNameLoc, DeclContext *parent)
-      : FunctionDecl(kind, name, nameLoc, specialNameLoc, parent) {}
+  FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
+          DeclContext *parent)
+      : FunctionDecl(kind, name, nameLoc, parent) {}
 
 public:
   bool IsMain() const;
@@ -609,14 +606,9 @@ public:
 class MemberFunDecl : public FunDecl {
   /// TODO: pass , NominalTypeDecl* owner,
 public:
-  MemberFunDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-                DeclNameLoc specialNameLoc, DeclContext *parent)
-      : FunDecl(kind, name, nameLoc, specialNameLoc, parent) {}
-
-public:
-  /// Add to Bits
-  bool IsStatic() const;
-  bool IsInstance() const;
+  MemberFunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
+                DeclContext *parent)
+      : FunDecl(kind, funLoc, name, nameLoc, parent) {}
 };
 
 class ConstructorDecl : public MemberFunDecl {
@@ -703,7 +695,7 @@ class IfConfigDecl : public Decl {
 
 public:
   // IfConfigDecl(DeclContext *parent, llvm::ArrayRef<IfConfigClause> clauses,
-  //              SourceLoc endLoc, bool hadMissingEnd)
+  //              SrcLoc endLoc, bool hadMissingEnd)
   //   : Decl(DeclKind::IfConfig, Parent), Clauses(Clauses), EndLoc(EndLoc)
   // {
   //   Bits.IfConfigDecl.HadMissingEnd = HadMissingEnd;
@@ -724,7 +716,7 @@ public:
   //   return {};
   // }
 
-  // SourceLoc getEndLoc() const { return EndLoc; }
+  // SrcLoc getEndLoc() const { return EndLoc; }
 
   // bool hadMissingEnd() const { return Bits.IfConfigDecl.HadMissingEnd; }
 

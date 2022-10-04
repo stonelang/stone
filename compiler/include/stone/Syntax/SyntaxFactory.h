@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXFACTORY_H
 #define STONE_SYNTAX_SYNTAXFACTORY_H
 
+#include "stone/Syntax/DeclCollector.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/ADT/None.h"
@@ -60,10 +61,10 @@ struct VarDeclFactory final {
 };
 
 struct FunDeclFactory final {
-  static FunDecl *Create(DeclNameContext &dnc, SyntaxContext &sc,
+  static FunDecl *Create(DeclCollector &collector, SyntaxContext &sc,
                          TypeRep *resultRep, DeclContext *parent);
 
-  static FunDecl *CreateImplicit(DeclNameContext &dnc, SyntaxContext &sc,
+  static FunDecl *CreateImplicit(DeclCollector &collector, SyntaxContext &sc,
                                  QualType *returnType, DeclContext *parent);
 };
 
@@ -78,7 +79,7 @@ struct StructDeclFactory final {
 };
 
 struct ModuleDeclFactory final {
-  static Module *Create(Identifier *name, SyntaxContext &sc,
+  static Module *Create(Identifier name, SyntaxContext &sc,
                         bool isMainModule = false);
 };
 

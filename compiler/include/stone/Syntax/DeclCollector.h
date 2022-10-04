@@ -3,6 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Template.h"
 #include "stone/Syntax/Types.h"
@@ -256,6 +257,10 @@ class DeclCollector {
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
+  DeclName name;
+  SrcLoc nameLoc;
+
+private:
   DeclCollector(const DeclCollector &) = delete;
   void operator=(const DeclCollector &) = delete;
 
@@ -303,6 +308,11 @@ public:
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;
   }
+  void SetDeclName(DeclName inputName) { name = inputName; }
+  DeclName GetDeclName() { return name; }
+
+  void SetDeclNameLoc(SrcLoc inputLoc) { nameLoc = inputLoc; }
+  SrcLoc GetDeclNameLoc() { return nameLoc; }
 };
 
 } // namespace syn

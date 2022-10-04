@@ -28,8 +28,9 @@ namespace syn {
 class DeclName;
 class DeclNameTable;
 class Identifier;
-/// A simple pair of identifier info and location.
-using IdentifierLocPair = std::pair<Identifier *, SrcLoc>;
+class SyntaxContext;
+
+enum class IdentifierStatus { Enabled, Disabled, Reserved };
 
 /// Identifier and other related classes are aligned to
 /// 8 bytes so that DeclName can use the lower 3 bits
@@ -44,65 +45,86 @@ enum { IdentifierAlignment = 8 };
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class alignas(IdentifierAlignment) Identifier {
   friend class SyntaxContext;
-  friend class IdentifierTable; // TODO: Replace with SyntaxContext
+  friend class DeclNameBase;
+  friend class IdentifierTable;
 
-  // Front-end token ID or tok::identifier.
-  tok ty;
-
-  /// FIXME:
-  unsigned BuiltinID;
-
-  // True if the identifier is a keyword in a newer or proposed Standard.
-  unsigned isKeywordReserved : 1;
-
-  // True if the identifier is a C++ operator keyword.
-  unsigned IsOperatorKeyword : 1;
-
-  llvm::StringMapEntry<Identifier *> *entry = nullptr;
+  IdentifierStatus status;
+  const char *dataPointer;
 
 public:
+  enum : size_t {
+    NumLowBitsAvailable = 3,
+    RequiredAlignment = 1 << NumLowBitsAvailable,
+    SpareBitMask = ((intptr_t)1 << NumLowBitsAvailable) - 1
+  };
+
   struct alignas(uint64_t) Aligner {};
+  static_assert(alignof(Aligner) >= RequiredAlignment,
+                "Identifier table will provide enough spare bits");
+
+private:
+  explicit Identifier(const char *dataPointer)
+      : dataPointer(dataPointer), status(IdentifierStatus::Enabled) {}
+
+private:
+  void Enable() { status = IdentifierStatus::Enabled; }
+  void Disable() {
+    if (IsKeyword())
+      status = IdentifierStatus::Disabled;
+  }
+  void Reserve() {
+    if (IsKeyword())
+      status = IdentifierStatus::Reserved;
+  }
 
 public:
   explicit Identifier()
-      : ty(tok::identifier), BuiltinID(0), isKeywordReserved(false),
-        IsOperatorKeyword(false) {}
+      : dataPointer(nullptr), status(IdentifierStatus::Disabled) {}
 
-  /// Return true if this is the identifier for the specified string.
-  ///
-  /// This is intended to be used for string literals only: II->isStr("foo").
-  template <std::size_t StrLen> bool isStr(const char (&Str)[StrLen]) const {
-    return getLength() == StrLen - 1 &&
-           memcmp(getNameStart(), Str, StrLen - 1) == 0;
+  const char *GetPointer() const { return dataPointer; }
+
+  llvm::StringRef GetString() const { return dataPointer; }
+  explicit operator std::string() const { return std::string(dataPointer); }
+
+  unsigned GetLength() const {
+    assert(dataPointer != nullptr &&
+           "Tried getting length of empty identifier");
+    return ::strlen(dataPointer);
+  }
+  bool IsEmpty() const { return dataPointer == nullptr; }
+  bool IsEqual(llvm::StringRef other) const {
+    return GetString().equals(other);
   }
 
-  /// Return true if this is the identifier for the specified StringRef.
-  bool isStr(llvm::StringRef Str) const {
-    llvm::StringRef ThisStr(getNameStart(), getLength());
-    return ThisStr == Str;
-  }
+  // bool IsOperator() const {
+  //   if (IsEmpty()) {
+  //     return false;
+  //   }
+  //   if (IsEditorPlaceholder()) {
+  //     return false;
+  //   }
+  //   if ((unsigned char)dataPointer[0] < 0x80) {
+  //     return IsOperatorStartCodePoint((unsigned char)dataPointer[0]);
+  //   }
+  //   // Handle the high unicode case out of line.
+  //   return IsOperatorSlow();
+  // }
 
-  /// Return the beginning of the actual null-terminated string for this
-  /// identifier.
-  const char *getNameStart() const { return entry->getKeyData(); }
+  bool IsOperatorSlow() const;
 
-  /// Efficiently return the length of this identifier info.
-  unsigned getLength() const { return entry->getKeyLength(); }
-
-  /// Return the actual identifier string.
-  llvm::StringRef GetName() const {
-    return StringRef(getNameStart(), getLength());
-  }
+  /// Return true if this identifier is specified by the language.
+  bool IsKeyword() const { return true; }
+  // bool IsBuiltin() const;
 
   bool IsArithmeticOperator() const {
-    return isStr("+") || isStr("-") || isStr("*") || isStr("/") || isStr("%");
+    return IsEqual("+") || IsEqual("-") || IsEqual("*") || IsEqual("/") ||
+           IsEqual("%");
   }
-
   // Returns whether this is a standard comparison operator,
   // such as '==', '>=' or '!=='.
   bool IsSTDComparisonOperator() const {
-    return isStr("==") || isStr("!=") || isStr("===") || isStr("!==") ||
-           isStr("<") || isStr(">") || isStr("<=") || isStr(">=");
+    return IsEqual("==") || IsEqual("!=") || IsEqual("===") || IsEqual("!==") ||
+           IsEqual("<") || IsEqual(">") || IsEqual("<=") || IsEqual(">=");
   }
 
   /// isOperatorStartCodePoint - Return true if the specified code point is a
@@ -110,8 +132,9 @@ public:
   static bool IsOperatorStartCodePoint(uint32_t C) {
     // ASCII operator chars.
     static const char OpChars[] = "/=-+*%<>!&|^~.?";
-    if (C < 0x80)
+    if (C < 0x80) {
       return memchr(OpChars, C, sizeof(OpChars) - 1) != 0;
+    }
 
     // Unicode math, symbol, arrow, dingbat, and line/box drawing chars.
     return (C >= 0x00A1 && C <= 0x00A7) || C == 0x00A9 || C == 0x00AB ||
@@ -128,66 +151,59 @@ public:
   /// isOperatorContinuationCodePoint - Return true if the specified code point
   /// is a valid operator code point.
   static bool IsOperatorContinuationCodePoint(uint32_t C) {
-    if (IsOperatorStartCodePoint(C))
+    if (IsOperatorStartCodePoint(C)) {
       return true;
-
+    }
     // Unicode combining characters and variation selectors.
     return (C >= 0x0300 && C <= 0x036F) || (C >= 0x1DC0 && C <= 0x1DFF) ||
            (C >= 0x20D0 && C <= 0x20FF) || (C >= 0xFE00 && C <= 0xFE0F) ||
            (C >= 0xFE20 && C <= 0xFE2F) || (C >= 0xE0100 && C <= 0xE01EF);
   }
 
-  static bool IsEditorPlaceholder(StringRef name) {
+  static bool IsEditorPlaceholder(llvm::StringRef name) {
     return stone::isEditorPlaceholder(name);
   }
 
-  /// If this is a source-language token (e.g. 'for'), this API
-  /// can be used to cause the lexer to map identifiers to source-language
-  /// tokens.
-  tok GetTokenType() const { return ty; }
-
-  /// Return a value indicating whether this is a builtin function.
-  ///
-  /// 0 is not-built-in. 1+ are specific builtin functions.
-  unsigned GetBuiltinID() const { return BuiltinID; }
-  void SetBuiltinID(unsigned ID) { BuiltinID = ID; }
-
-  /// is/setIsKeywordReserved - Initialize information about whether or not
-  /// this language token is a keyword in a newer or proposed Standard. This
-  /// controls compatibility warnings, and is only true when not parsing the
-  /// corresponding Standard. Once a compatibility problem has been diagnosed
-  /// with this keyword, the flag will be cleared.
-  bool IsKeywordReserved() const { return isKeywordReserved; }
-
-  void SetIsKeywordReserved(bool reserved) { isKeywordReserved = reserved; }
-
-  /// isCPlusPlusOperatorKeyword/setIsCPlusPlusOperatorKeyword controls whether
-  /// this identifier is a C++ alternate representation of an operator.
-  void setIsOperatorKeyword(bool Val = true) { IsOperatorKeyword = Val; }
-  bool isOperatorKeyword() const { return IsOperatorKeyword; }
-
-  /// Return true if this token is a keyword in the specified language.
-  bool IsKeyword(const LangOptions &langOpts) const;
-
-  /// Return true if this identifier is an editor placeholder.
-  ///
-  /// Editor placeholders are produced by the code-completion engine and are
-  /// represented as characters between '<#' and '#>' in the source code. An
-  /// example of auto-completed call with a placeholder parameter is shown
-  /// below:
-  /// \code
-  ///   function(<#int x#>);
-  /// \endcode
-  bool isEditorPlaceholder() const {
-    return GetName().startswith("<#") && GetName().endswith("#>");
+  bool IsEditorPlaceholder() const {
+    return !IsEmpty() && isEditorPlaceholder(GetString());
   }
 
-  /// Provide less than operator for lexicographical sorting.
-  bool operator<(const Identifier &RHS) const {
-    return GetName() < RHS.GetName();
+  const void *GetAsOpaquePointer() const {
+    return static_cast<const void *>(dataPointer);
   }
 
-  bool static IsIdentifier(llvm::StringRef identifier);
+  static Identifier GetFromOpaquePointer(void *Ptr) {
+    return Identifier((const char *)Ptr);
+  }
+
+  /// Compare two identifiers, producing -1 if \c *this comes before \c other,
+  /// 1 if \c *this comes after \c other, and 0 if they are equal.
+  ///
+  /// Null identifiers come after all other identifiers.
+  int Compare(Identifier other) const;
+
+  friend llvm::hash_code hash_value(Identifier identifier) {
+    return llvm::hash_value(identifier.GetAsOpaquePointer());
+  }
+
+  bool operator==(Identifier RHS) const {
+    return dataPointer == RHS.dataPointer;
+  }
+  bool operator!=(Identifier RHS) const { return !(*this == RHS); }
+  bool operator<(Identifier RHS) const { return dataPointer < RHS.dataPointer; }
+
+public:
+  static Identifier getEmptyKey() {
+    uintptr_t Val = static_cast<uintptr_t>(-1);
+    Val <<= NumLowBitsAvailable;
+    return Identifier((const char *)Val);
+  }
+
+  static Identifier getTombstoneKey() {
+    uintptr_t Val = static_cast<uintptr_t>(-2);
+    Val <<= NumLowBitsAvailable;
+    return Identifier((const char *)Val);
+  }
 };
 
 class IdentifierTable;
@@ -206,76 +222,25 @@ public:
 /// piece of the code, as each occurrence of every identifier goes through
 /// here when lexed.
 class IdentifierTable final {
-  const LangOptions &systemOpts;
+  friend SyntaxContext;
   friend IdentifierTableStats;
 
-  using Symbols = llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>;
-  Symbols symbols;
+  using Entries =
+      llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;
+
+  mutable Entries entries;
 
 public:
   /// Create the identifier table, populating it with info about the
   /// language keywords for the language specified by \p LangOpts.
-  explicit IdentifierTable(const LangOptions &systemOpts);
+  explicit IdentifierTable(llvm::BumpPtrAllocator &allocator);
 
-  llvm::BumpPtrAllocator &GetAllocator() { return symbols.getAllocator(); }
-
-  /// Return the identifier token info for the specified named
-  /// identifier.
-  Identifier &Get(llvm::StringRef name) {
-    auto &entry = *symbols.insert(std::make_pair(name, nullptr)).first;
-    Identifier *&identifier = entry.second;
-    if (identifier) {
-      return *identifier;
-    }
-    // Lookups failed, make a new Identifier.
-    void *mem = GetAllocator().Allocate<Identifier>();
-    identifier = new (mem) Identifier();
-
-    // Make sure GetName() knows how to find the Identifier
-    // contents.
-    identifier->entry = &entry;
-    return *identifier;
-  }
-
-  Identifier &Get(llvm::StringRef name, tok t) {
-    auto &identifier = Get(name);
-    identifier.ty = t;
-    assert(identifier.ty == t && "TokenCode too large");
-    return identifier;
-  }
-
-  /// Gets an Identifier for the given name without consulting
-  ///        external sources.
-  ///
-  /// This is a version of Get() meant for external sources that want to
-  /// introduce or modify an identifier. If they called Get(), they would
-  /// likely end up in a recursion.
-  Identifier &GetOwn(llvm::StringRef name) {
-    auto &entry = *symbols.insert(std::make_pair(name, nullptr)).first;
-    Identifier *&identifier = entry.second;
-    if (identifier) {
-      return *identifier;
-    }
-    // Lookups failed, make a new Identifier.
-    void *mem = GetAllocator().Allocate<Identifier>();
-    identifier = new (mem) Identifier();
-
-    // Make sure GetName() knows how to find the Identifier
-    // contents.
-    identifier->entry = &entry;
-    return *identifier;
-  }
-
-  using iterator = Symbols::const_iterator;
-  using const_iterator = Symbols::const_iterator;
-
-  iterator begin() const { return symbols.begin(); }
-  iterator end() const { return symbols.end(); }
-  unsigned size() const { return symbols.size(); }
+public:
+  Identifier GetIdentifier(llvm::StringRef identifierStr) const;
 
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.
-  void AddKeywords(const LangOptions &LangOpts);
+  // void AddKeywords(const LangOptions &LangOpts);
 };
 
 namespace detail {
@@ -322,28 +287,35 @@ protected:
 } // namespace stone
 
 namespace llvm {
-// Provide PointerLikeTypeTraits for Identifier pointers, which
-// are not guaranteed to be 8-byte aligned.
-template <> struct PointerLikeTypeTraits<stone::syn::Identifier *> {
-  static void *getAsVoidPointer(stone::syn::Identifier *P) { return P; }
 
-  static stone::syn::Identifier *getFromVoidPointer(void *P) {
-    return static_cast<stone::syn::Identifier *>(P);
+raw_ostream &operator<<(raw_ostream &OS, stone::syn::Identifier I);
+// Identifiers hash just like pointers.
+template <> struct DenseMapInfo<stone::syn::Identifier> {
+  static stone::syn::Identifier getEmptyKey() {
+    return stone::syn::Identifier::getEmptyKey();
   }
-
-  enum { NumLowBitsAvailable = 1 };
+  static stone::syn::Identifier getTombstoneKey() {
+    return stone::syn::Identifier::getTombstoneKey();
+  }
+  static unsigned getHashValue(stone::syn::Identifier Val) {
+    return DenseMapInfo<const void *>::getHashValue(Val.GetPointer());
+  }
+  static bool isEqual(stone::syn::Identifier LHS, stone::syn::Identifier RHS) {
+    return LHS == RHS;
+  }
 };
 
-template <> struct PointerLikeTypeTraits<const stone::syn::Identifier *> {
-  static const void *getAsVoidPointer(const stone::syn::Identifier *P) {
-    return P;
+// An Identifier is "pointer like".
+template <typename T> struct PointerLikeTypeTraits;
+template <> struct PointerLikeTypeTraits<stone::syn::Identifier> {
+public:
+  static inline void *getAsVoidPointer(stone::syn::Identifier I) {
+    return const_cast<void *>(I.GetAsOpaquePointer());
   }
-
-  static const stone::syn::Identifier *getFromVoidPointer(const void *P) {
-    return static_cast<const stone::syn::Identifier *>(P);
+  static inline stone::syn::Identifier getFromVoidPointer(void *P) {
+    return stone::syn::Identifier::GetFromOpaquePointer(P);
   }
-
-  enum { NumLowBitsAvailable = 1 };
+  enum { NumLowBitsAvailable = stone::syn::Identifier::NumLowBitsAvailable };
 };
 
 } // namespace llvm

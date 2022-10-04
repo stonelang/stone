@@ -4,8 +4,10 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Decl.h"
+#include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -104,7 +106,9 @@ using TemplateParameterLists = llvm::SmallVector<TemplateParameterList *, 4>;
 class alignas(8) TemplateContextBase {
 public:
 };
-class TemplateContext : public TemplateContextBase, public DeclContext {
+
+class TemplateContext : public TemplateContextBase,
+                        public stone::syn::DeclContext {
 public:
 };
 

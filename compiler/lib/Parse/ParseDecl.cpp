@@ -191,18 +191,19 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return syn::MakeSyntaxError();
   }
 
-  // Build the DeclName
-  DeclNameContext declNameContext;
-  // ParseDeclName(declNameContext);
+  // TODO:
+  //  Build the DeclName
+  //  DeclNameBase declNameContext;
+  //  // ParseDeclName(declNameContext);
 
-  // Parse function name.
-  auto name = GetIdentifier(curTok.GetText());
-  DeclName fullName(&name);
-  declNameContext.SetName(fullName);
+  // // Parse function name.
+  // auto name = GetIdentifier(curTok.GetText());
+  // DeclName fullName(&name);
+  // declNameContext.SetName(fullName);
 
-  // very simple for now.
-  SrcLoc nameLoc = ConsumeToken(tok::identifier);
-  declNameContext.SetNameLoc(nameLoc);
+  // // very simple for now.
+  // SrcLoc nameLoc = ConsumeToken(tok::identifier);
+  // declNameContext.SetNameLoc(nameLoc);
 
   if (PeekNextToken().IsDoubleColon()) {
     collector.GetFunctionSpecifierCollector().AddIsMember();
@@ -215,7 +216,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   }
   SyntaxStatus status;
   // Now, parse the function signature
-  status |= ParseFunctionSignature(declNameContext, collector);
+  status |= ParseFunctionSignature(collector);
 
   if (status.IsError()) {
     return status;
@@ -223,7 +224,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   // Create the function
   auto funDecl =
-      FunDeclFactory::Create(declNameContext, sc, nullptr, GetCurDeclContext());
+      FunDeclFactory::Create(collector, sc, nullptr, GetCurDeclContext());
   assert(funDecl);
 
   // Very simple for the time being
@@ -248,9 +249,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // syn::VerifyDecl(funDecl);
 }
 
-SyntaxStatus
-Parser::ParseFunctionSignature(const DeclNameContext &declNameContext,
-                               ParsingDeclCollector &collector) {
+SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector) {
   SyntaxStatus status;
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
