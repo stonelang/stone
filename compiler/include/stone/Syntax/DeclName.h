@@ -33,39 +33,51 @@ enum class DeclNameKind : UInt8 {
 };
 
 class DeclNameBase final {
+  Identifier identifier;
+
+private:
   /// In a special DeclName representing a subscript, this opaque pointer
   /// is used as the data of the base name identifier.
   /// This is an implementation detail that should never leak outside of
   /// DeclName.
-  static const Identifier::Aligner BasicData;
+  static const Identifier::Aligner BasicIdentifierAligner;
   /// As above, for special constructor DeclNames.
-  static const Identifier::Aligner ConstructorIdentifierData;
+  static const Identifier::Aligner ConstructorIdentifierAligner;
   /// As above, for special destructor DeclNames.
-  static const Identifier::Aligner DestructorIdentifierData;
+  static const Identifier::Aligner DestructorIdentifierAligner;
 
-  // static const Identifier::Aligner OperatorIdentifierData;
-
-  Identifier identifier;
+  static const Identifier::Aligner OperatorIdentifierAligner;
 
 public:
   DeclNameBase() : DeclNameBase(Identifier()) {}
-
   DeclNameBase(Identifier I) : identifier(I) {}
 
+public:
   static DeclNameBase CreateConstructor() {
-    return DeclNameBase(Identifier((const char *)&DeclNameBase::ConstructorIdentifierData));
+    return DeclNameBase(
+        Identifier((const char *)&DeclNameBase::ConstructorIdentifierAligner));
   }
 
   static DeclNameBase CreateDestructor() {
-    return DeclNameBase(Identifier((const char *)&DeclNameBase::DestructorIdentifierData));
+    return DeclNameBase(
+        Identifier((const char *)&DeclNameBase::DestructorIdentifierAligner));
+  }
+
+  static DeclNameBase CreateOperator() {
+    return DeclNameBase(
+        Identifier((const char *)&DeclNameBase::OperatorIdentifierAligner));
   }
 
   DeclNameKind GetKind() const {
-    if (identifier.GetPointer() == (const char *)&DeclNameBase::ConstructorIdentifierData) {
+    if (identifier.GetPointer() ==
+        (const char *)&DeclNameBase::ConstructorIdentifierAligner) {
       return DeclNameKind::Constructor;
     } else if (identifier.GetPointer() ==
-               (const char *)&DeclNameBase::DestructorIdentifierData) {
+               (const char *)&DeclNameBase::DestructorIdentifierAligner) {
       return DeclNameKind::Destructor;
+    } else if (identifier.GetPointer() ==
+               (const char *)&DeclNameBase::OperatorIdentifierAligner) {
+      return DeclNameKind::Operator;
     } else {
       return DeclNameKind::Basic;
     }

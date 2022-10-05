@@ -59,6 +59,7 @@ public:
   };
 
   struct alignas(uint64_t) Aligner {};
+
   static_assert(alignof(Aligner) >= RequiredAlignment,
                 "Identifier table will provide enough spare bits");
 
