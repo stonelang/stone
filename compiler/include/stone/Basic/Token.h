@@ -175,7 +175,6 @@ public:
       return false;
     }
   }
-
   bool IsFinal() const { return kind == tok::kw_final; }
   bool IsMutable() const { return kind == tok::kw_mutable; }
   bool IsAlien() const { return kind == tok::alien; }

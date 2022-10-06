@@ -82,7 +82,6 @@ static KeywordStatus GetKeywordStatus(const LangOptions &systemOpts,
 // #include "stone/Basic/TokenKind.def"
 // }
 
-
 IdentifierTable::IdentifierTable(llvm::BumpPtrAllocator &allocator)
     : entries(allocator) {
   // AddKeywords(langOpts);

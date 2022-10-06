@@ -138,6 +138,8 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
+  void ParseDeclName();
+
   // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
@@ -181,10 +183,11 @@ public:
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collectorifier);
+  SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collector,
+                                      Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -284,7 +287,6 @@ public:
     assert(curTok.Is(kind) && "Consuming wrong curTok type");
     return ConsumeToken(ParsingNotification::None);
   }
-  SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
   /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
@@ -314,6 +316,9 @@ public:
   SrcLoc ConsumeStartingGreater();
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
+
+  SyntaxStatus ParseIdentifier(Identifier& result, SrcLoc& resultLoc);
+  SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:
   // == Skipping ==/

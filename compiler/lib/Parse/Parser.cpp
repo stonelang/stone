@@ -113,6 +113,23 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
+SyntaxStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
+  SyntaxStatus status;
+
+  assert(GetTok().IsIdentifierOrUnderscore());
+  resultLoc = ConsumeIdentifier(result);
+  
+  return status;
+}
+SrcLoc Parser::ConsumeIdentifier(Identifier &result) {
+  // assert(Tok.isAny(tok::identifier, tok::kw_self, tok::kw_Self));
+  // assert(Result.empty());
+  result = GetIdentifier(GetTok().GetText());
+  // if (Tok.getText()[0] == '$')
+  //   diagnoseDollarIdentifier(Tok, diagnoseDollarPrefix);
+  return ConsumeToken();
+}
+
 void Parser::RecordTokenHash(llvm::StringRef tokText) {
   assert(!tokText.empty());
   if (currentTokenHash) {

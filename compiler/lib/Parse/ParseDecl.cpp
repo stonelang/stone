@@ -122,6 +122,7 @@ EndParse : {
 //   return status;
 // }
 
+void Parser::ParseDeclName() {}
 SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
@@ -197,12 +198,18 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   //  // ParseDeclName(declNameContext);
 
   // // Parse function name.
-  // auto name = GetIdentifier(curTok.GetText());
+
+  SyntaxStatus status;
+
+  Identifier basicName;
+  SrcLoc nameLoc;
+  status = ParseIdentifier(basicName, nameLoc);
+
+  // SrcLoc nameLoc = ConsumeToken(tok::identifier);
   // DeclName fullName(&name);
   // declNameContext.SetName(fullName);
 
   // // very simple for now.
-  // SrcLoc nameLoc = ConsumeToken(tok::identifier);
   // declNameContext.SetNameLoc(nameLoc);
 
   if (PeekNextToken().IsDoubleColon()) {
@@ -214,13 +221,16 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     // Log only member functions can be status
     return syn::MakeSyntaxError();
   }
-  SyntaxStatus status;
+
+  DeclName fullName;
   // Now, parse the function signature
-  status |= ParseFunctionSignature(collector);
+  status |= ParseFunctionSignature(collector, basicName, fullName);
 
   if (status.IsError()) {
     return status;
   }
+  
+  collector.SetDeclName(fullName);
 
   // Create the function
   auto funDecl =
@@ -249,7 +259,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // syn::VerifyDecl(funDecl);
 }
 
-SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
+                                            Identifier basicName,
+                                            DeclName &fullName) {
   SyntaxStatus status;
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
@@ -258,6 +270,9 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector) {
   if (status.IsError()) {
     return status;
   }
+
+  // TODO: simple for now
+  fullName = DeclName(basicName);
 
   SrcLoc arrowLoc;
   if (GetTok().IsArrow()) {
