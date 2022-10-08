@@ -14,6 +14,7 @@ namespace stone {
 
 class IRCodeGenResult final {
   std::unique_ptr<llvm::Module> llvmModule;
+
 public:
   /// Return the module that this code generator is building into.
   ///

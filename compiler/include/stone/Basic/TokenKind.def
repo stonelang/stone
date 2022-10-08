@@ -17,6 +17,7 @@
 #define DECL_KEYWORD(kw, S) KEYWORD(kw, S)
 #endif
 
+
 /// STMT_KEYWORD(kw)
 ///   Expands for every keyword used in statement grammar.
 #ifndef STMT_KEYWORD
@@ -109,8 +110,7 @@ LITERAL(regex_literal)
 
 // STATUS FLAGS : TOKON, TOKOFF, TOKRSV
 // Keywords that start decls.
-DECL_KEYWORD(auto, TOKON)
-DECL_KEYWORD(void, TOKON)
+
 DECL_KEYWORD(any, TOKON)
 DECL_KEYWORD(class, TOKRSV) 
 DECL_KEYWORD(ref, TOKON)
@@ -145,6 +145,9 @@ DECL_KEYWORD(forward, TOKON)
 DECL_KEYWORD(safe, TOKRSV)
 DECL_KEYWORD(fun, TOKON)
 
+
+DECL_KEYWORD(auto, TOKON)
+DECL_KEYWORD(void, TOKON)
 DECL_KEYWORD(int8, TOKON)
 DECL_KEYWORD(int16, TOKON)
 DECL_KEYWORD(int32, TOKON)

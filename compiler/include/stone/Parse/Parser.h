@@ -156,7 +156,10 @@ public:
   SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
+
+  bool IsTypePattern(const Token &tk);
   SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
+
   SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
@@ -317,7 +320,7 @@ public:
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
 
-  SyntaxStatus ParseIdentifier(Identifier& result, SrcLoc& resultLoc);
+  SyntaxStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
   SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:

@@ -27,29 +27,28 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   }
 
   SyntaxStatus status;
-  // Get all of the Type information
-  while (!GetTok().IsLBrace() && !IsEOF()) {
-    // TODO: We obviously have to check for duplicates and errors -- ok for now
-    // to get this to work.
-    status = CollectTypeQualifier(collector);
-    status = CollectBasicTypeDecl(collector);
-    status = CollectTypePatterns(collector);
-  }
 
-  // Let us see what we have
+  // Collect the type -- only basic types for now.
+  status = CollectBasicTypeDecl(collector);
 
   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
     // TODO: log that "Function requires a return type. Try '-> void' if it has
+    assert(false && "No return type specified");
     // no return"
   }
+
+  // Collect the type pattersn
+  CollectTypePatterns(collector);
 
   // Requires at least a direct type pattern which is just the type by itself.
   assert(collector.GetTypePatternCollector().HasTypePatterns());
 
   // TODO: Call parseType to get the actual type
 
-  auto typeRep = new (GetSyntaxContext()) FunctionTypeRep(nullptr);
-  return syn::MakeSyntaxResult<TypeRep>(typeRep);
+  auto qualTypeRep = new (GetSyntaxContext()) QualTypeRep();
+  auto functionTypeRep = new (GetSyntaxContext()) FunctionTypeRep(qualTypeRep);
+
+  return syn::MakeSyntaxResult<TypeRep>(functionTypeRep);
 }
 
 // Similar to ParseDeclSpecifiers

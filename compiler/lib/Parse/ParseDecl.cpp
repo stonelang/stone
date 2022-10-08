@@ -133,10 +133,10 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
-  // May just require the TypeCollecter to add Immutable on creation but remove it
-  // if mutable is added
+  // May just require the TypeCollecter to add Immutable on creation but remove
+  // it if mutable is added
 
-  if(!collector.GetTypeQualifierCollector().HasMutable()){
+  if (!collector.GetTypeQualifierCollector().HasMutable()) {
     collector.GetTypeQualifierCollector().AddImmutable(SrcLoc());
   }
 
@@ -199,7 +199,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   SrcLoc nameLoc;
   status = ParseIdentifier(basicName, nameLoc);
 
-  // TODO: May want to move to ParseFunctionSignaure 
+  // TODO: May want to move to ParseFunctionSignaure
   if (PeekNextToken().IsDoubleColon()) {
     collector.GetFunctionSpecifierCollector().AddIsMember();
   }
@@ -255,18 +255,13 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
 
-
-
-
   status |= ParseFunctionArguments(collector);
   if (status.IsError()) {
     return status;
   }
 
- 
- // TODO: simple for now
+  // TODO: simple for now
   fullName = DeclName(basicName);
-
 
   SrcLoc arrowLoc;
   if (GetTok().IsArrow()) {
@@ -298,12 +293,25 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     //   return status;
     // }
     // TODO: Look for TypeSpecs
+
+    // Collect Qualifiers
+
+    // We are checking this here for now.
+    if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+      if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
+        status.SetHasCodeCompletion();
+        return status;
+      }
+    }
+    while (!GetTok().IsQualifier()) {
+      CollectTypeQualifier(collector);
+    }
+
     SyntaxResult<TypeRep> resultTypeRep = ParseDeclResultType(
         collector, diag::err_expected_type_for_function_result);
   }
 
   // status |= ParseFunctionResult(collector);
-
   // assert(curTok.Is(tok::arrow) && "Require '->'");
   // auto arrowLoc = ConsumeToken(tok::arrow);
 

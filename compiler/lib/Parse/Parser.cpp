@@ -118,7 +118,7 @@ SyntaxStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
 
   assert(GetTok().IsIdentifierOrUnderscore());
   resultLoc = ConsumeIdentifier(result);
-  
+
   return status;
 }
 SrcLoc Parser::ConsumeIdentifier(Identifier &result) {

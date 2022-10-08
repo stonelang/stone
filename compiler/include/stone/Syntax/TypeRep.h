@@ -59,6 +59,8 @@ class QualTypeRep : public TypeRep {
   SrcLoc restricLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
+  SrcLoc mutableLoc;
+  SrcLoc immutableLoc;
 
 public:
   bool AddConst(SrcLoc loc) { constLoc = loc; }

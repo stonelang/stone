@@ -133,7 +133,7 @@ public:
   };
 
 public:
-  TypeQualifierContext() { }
+  TypeQualifierContext() {}
 
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
@@ -148,7 +148,9 @@ public:
   // TODO: Think about this whole const concept now giving that you have final
   // and mutable
   bool HasImmutable() const { return mask & TypeQualifierFlags::Immutable; }
-  bool HasImmutableOnly() const { return mask == TypeQualifierFlags::Immutable; }
+  bool HasImmutableOnly() const {
+    return mask == TypeQualifierFlags::Immutable;
+  }
   void RemoveImmutable() { mask &= ~TypeQualifierFlags::Immutable; }
   void AddImmutable(SrcLoc loc = SrcLoc()) {
     immutableLoc = loc;

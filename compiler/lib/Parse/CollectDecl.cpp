@@ -74,6 +74,7 @@ SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxSuccess();
 }
 
+// TODO: Dulicate check
 SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:
@@ -100,7 +101,7 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxSuccess();
 }
 
-static bool IsTypePattern(const Token &tk) {
+bool Parser::IsTypePattern(const Token &tk) {
   switch (tk.GetKind()) {
   case tok::star:
   case tok::amp:
@@ -114,21 +115,27 @@ SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attemping to collect type-patterns without a type");
 
-  // TODO: Simple for now but this will be greatly expanded
-  while (IsTypePattern(GetTok())) {
-  BeginCollecting:
-    switch (GetTok().GetKind()) {
-    case tok::star:
-      collector.GetTypePatternCollector().AddPointer(ConsumeToken());
-      goto BeginCollecting;
-    case tok::amp:
-      collector.GetTypePatternCollector().AddReference(ConsumeToken());
-      goto BeginCollecting;
-    default:
-      collector.GetTypePatternCollector().AddDirect();
-      break;
-    }
-  } // end wile
+  if (!IsTypePattern(GetTok())) {
+    collector.GetTypePatternCollector().AddDirect();
+    return syn::MakeSyntaxSuccess();
+  } else {
+    // TODO: Simple for now but this will be greatly expanded
+    while (IsTypePattern(GetTok())) {
+    BeginCollecting:
+      switch (GetTok().GetKind()) {
+      case tok::star:
+        collector.GetTypePatternCollector().AddPointer(ConsumeToken());
+        goto BeginCollecting;
+      case tok::amp:
+        collector.GetTypePatternCollector().AddReference(ConsumeToken());
+        goto BeginCollecting;
+      default:
+        /// TODO: Log as error -- asserting for now
+        assert(false && "Invalid type-patter");
+        break;
+      }
+    } // end wile
+  }
   return syn::MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
