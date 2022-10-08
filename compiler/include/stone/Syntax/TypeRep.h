@@ -37,6 +37,8 @@ enum : unsigned {
 class alignas(1 << TypeRepAlignInBits) TypeRep
     : public syn::SyntaxAllocation<TypeRep> {
 
+  TypeRepKind kind;
+
   TypeRep(const TypeRep &) = delete;
   void operator=(const TypeRep &) = delete;
 
@@ -63,6 +65,9 @@ class QualTypeRep : public TypeRep {
   SrcLoc immutableLoc;
 
 public:
+  // QualTypeRep() : TypeRep(TypeRepKind::QualType) {}
+
+public:
   bool AddConst(SrcLoc loc) { constLoc = loc; }
   bool AddRestrict(SrcLoc loc) { restricLoc = loc; }
   bool AddVolatile(SrcLoc loc) { volatileLoc = loc; }
@@ -83,6 +88,70 @@ public:
 class TypeSpecTypeRep : public TypeRep {};
 
 class IdentifierTypeRep : public QualTypeRep {};
+
+/// A parsed element within a tuple type.
+struct TupleTypeRepElement final {
+  Identifier name;
+  SrcLoc nameLoc;
+  Identifier secondName;
+  SrcLoc secondNameLoc;
+  SrcLoc underscoreLoc;
+  SrcLoc colonLoc;
+  TypeRep *type;
+  SrcLoc trailingCommaLoc;
+
+  TupleTypeRepElement() : type(nullptr) {}
+  TupleTypeRepElement(TypeRep *type) : type(type) {}
+};
+
+class CompositionTypeRep final
+    : public TypeRep,
+      private llvm::TrailingObjects<CompositionTypeRep, TypeRep *> {
+  friend TrailingObjects;
+
+  SrcLoc firstTypeLoc;
+  SrcRange compositionRange;
+
+  CompositionTypeRep(llvm::ArrayRef<TypeRep *> types, SrcLoc firstTypeLoc,
+                     SrcRange compositionRange)
+      : /*TypeRep(TypeRepKind::Composition),*/ firstTypeLoc(firstTypeLoc),
+        compositionRange(compositionRange) {
+
+    // Bits.CompositionTypeRepr.NumTypes = Types.size();
+    std::uninitialized_copy(types.begin(), types.end(),
+                            getTrailingObjects<TypeRep *>());
+  }
+
+  // public:
+  //   ArrayRef<TypeRepr *> getTypes() const {
+  //     return {getTrailingObjects<TypeRepr*>(),
+  //     Bits.CompositionTypeRepr.NumTypes};
+  //   }
+  //   SrcLoc getSrcLoc() const { return FirstTypeLoc; }
+  //   SourceRange getCompositionRange() const { return CompositionRange; }
+
+  //   static CompositionTypeRepr *create(const ASTContext &C,
+  //                                      ArrayRef<TypeRepr*> Protocols,
+  //                                      SrcLoc FirstTypeLoc,
+  //                                      SourceRange CompositionRange);
+
+  //   static CompositionTypeRepr *createEmptyComposition(ASTContext &C,
+  //                                                      SrcLoc AnyLoc) {
+  //     return CompositionTypeRepr::create(C, {}, AnyLoc, {AnyLoc, AnyLoc});
+  //   }
+
+  //   static bool classof(const TypeRepr *T) {
+  //     return T->getKind() == TypeReprKind::Composition;
+  //   }
+  //   static bool classof(const CompositionTypeRepr *T) { return true; }
+
+  // private:
+  //   SrcLoc getStartLocImpl() const { return FirstTypeLoc; }
+  //   SrcLoc getLocImpl() const { return CompositionRange.Start; }
+  //   SrcLoc getEndLocImpl() const { return CompositionRange.End; }
+  //   void printImpl(ASTPrinter &Printer, const PrintOptions &Opts) const;
+  friend class TypeRep;
+};
 
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
   DeclNameLoc nameLoc;
@@ -127,10 +196,17 @@ private:
   friend class TypeRep;
 };
 
+/// Why QualType
 class TupleTypeRep final : public QualTypeRep {
 public:
   static TupleTypeRep *Create();
 };
+
+// class TupleTypeRep final : public TypeRep,
+//     private llvm::TrailingObjects<TupleTypeRep, TupleTypeRepElement,
+//     Located<unsigned>> {
+
+// };
 
 /// May want to inherit from QualTypeRep
 

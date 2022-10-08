@@ -181,8 +181,9 @@ public:
   SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
                                             Diag<> diagID);
 
-  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
-                                        Diag<> diagID);
+  SyntaxResult<TypeRep> ParseBasicType(ParsingDeclCollector &collector,
+                                       Diag<> diagID);
+
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
 
 public:

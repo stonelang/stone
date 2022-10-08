@@ -1,3 +1,4 @@
+#include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
@@ -28,9 +29,8 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
 
   SyntaxStatus status;
 
-  // Collect the type -- only basic types for now (TODO: user type  and function
-  // types)
-  status = CollectBasicTypeDecl(collector);
+  SyntaxResult<TypeRep> typeRep =
+      ParseType(collector, diag::err_expected_type_for_function_result);
 
   if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
     // TODO: log that "Function requires a return type. Try '-> void' if it has
@@ -59,6 +59,8 @@ SyntaxResult<TypeRep> Parser::ParseType(ParsingDeclCollector &collector,
   SyntaxResult<TypeRep> result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
+  result = ParseBasicType(collector, diagID);
+
   // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
   // }
 
@@ -66,7 +68,7 @@ SyntaxResult<TypeRep> Parser::ParseType(ParsingDeclCollector &collector,
   // }
 
   if (collector.GetFunctionSpecifierCollector().HasFun()) {
-    return ParseFunctionType(collector, diagID);
+    result = ParseFunctionType(collector, diagID);
   }
 
   return result;
@@ -78,10 +80,14 @@ Parser::ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
-                                              Diag<> diagID) {
+SyntaxResult<TypeRep> Parser::ParseBasicType(ParsingDeclCollector &collector,
+                                             Diag<> diagID) {
+  SyntaxResult<TypeRep> result;
 
-  SyntaxResult<QualType> result;
+  // Collect the type -- only basic types for now (TODO: user type  and function
+  // types)
+  auto status = CollectBasicTypeDecl(collector);
+
   // assert(IsBasicType(curTok.GetKind()) &&
   //        "The current token is not a basic type");
 
