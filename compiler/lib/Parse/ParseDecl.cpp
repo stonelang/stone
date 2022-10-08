@@ -169,7 +169,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a functin definition.");
 
-  auto funLoc = collector.GetFunctionSpecifierCollector().GetFunLoc();
+  assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
   if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
     // We only allow pure on functions => non-member function
@@ -192,26 +192,13 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return syn::MakeSyntaxError();
   }
 
-  // TODO:
-  //  Build the DeclName
-  //  DeclNameBase declNameContext;
-  //  // ParseDeclName(declNameContext);
-
-  // // Parse function name.
-
   SyntaxStatus status;
 
   Identifier basicName;
   SrcLoc nameLoc;
   status = ParseIdentifier(basicName, nameLoc);
 
-  // SrcLoc nameLoc = ConsumeToken(tok::identifier);
-  // DeclName fullName(&name);
-  // declNameContext.SetName(fullName);
-
-  // // very simple for now.
-  // declNameContext.SetNameLoc(nameLoc);
-
+  // TODO: May want to move to ParseFunctionSignaure 
   if (PeekNextToken().IsDoubleColon()) {
     collector.GetFunctionSpecifierCollector().AddIsMember();
   }
@@ -229,8 +216,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (status.IsError()) {
     return status;
   }
-  
+
   collector.SetDeclName(fullName);
+  collector.SetDeclNameLoc(nameLoc);
 
   // Create the function
   auto funDecl =
@@ -266,13 +254,18 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
 
+
+
+  
   status |= ParseFunctionArguments(collector);
   if (status.IsError()) {
     return status;
   }
 
-  // TODO: simple for now
+ 
+ // TODO: simple for now
   fullName = DeclName(basicName);
+
 
   SrcLoc arrowLoc;
   if (GetTok().IsArrow()) {
