@@ -158,6 +158,7 @@ public:
   SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
 
   bool IsTypePattern(const Token &tk);
+  SyntaxStatus CollectTypePattern(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
 
   SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
