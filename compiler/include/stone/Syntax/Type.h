@@ -89,7 +89,7 @@ struct TypeQualifierFlags {
     Volatile = 0x4,
     Unaligned = 0x8,
     Pure = 0x18,
-    Final = 0x36,
+    Immutable = 0x36,
     Mutable = 0x72,
 
     CVRMask = Const | Volatile | Restrict,
@@ -116,7 +116,7 @@ class TypeQualifierContext {
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
-  SrcLoc finalLoc;
+  SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
 public:
@@ -133,7 +133,7 @@ public:
   };
 
 public:
-  TypeQualifierContext() { AddFinal(SrcLoc()); }
+  TypeQualifierContext() { }
 
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
@@ -147,14 +147,14 @@ public:
 
   // TODO: Think about this whole const concept now giving that you have final
   // and mutable
-  bool HasFinal() const { return mask & TypeQualifierFlags::Final; }
-  bool HasFinalOnly() const { return mask == TypeQualifierFlags::Final; }
-  void RemoveFinal() { mask &= ~TypeQualifierFlags::Final; }
-  void AddFinal(SrcLoc loc = SrcLoc()) {
-    finalLoc = loc;
-    mask |= TypeQualifierFlags::Final;
+  bool HasImmutable() const { return mask & TypeQualifierFlags::Immutable; }
+  bool HasImmutableOnly() const { return mask == TypeQualifierFlags::Immutable; }
+  void RemoveImmutable() { mask &= ~TypeQualifierFlags::Immutable; }
+  void AddImmutable(SrcLoc loc = SrcLoc()) {
+    immutableLoc = loc;
+    mask |= TypeQualifierFlags::Immutable;
   }
-  SrcLoc GetFinalLoc() { return finalLoc; }
+  SrcLoc GetImmutableLoc() { return immutableLoc; }
 
   bool HasMutable() const { return mask & TypeQualifierFlags::Mutable; }
   bool HasMutableOnly() const { return mask == TypeQualifierFlags::Mutable; }

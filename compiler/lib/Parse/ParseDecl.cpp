@@ -133,10 +133,11 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
-  // May just require the TypeCollecter to add Final on creation but remove it
+  // May just require the TypeCollecter to add Immutable on creation but remove it
   // if mutable is added
-  if (!collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-    collector.GetTypeQualifierCollector().AddFinal(SrcLoc());
+
+  if(!collector.GetTypeQualifierCollector().HasMutable()){
+    collector.GetTypeQualifierCollector().AddImmutable(SrcLoc());
   }
 
   CollectTypePatterns(collector);
@@ -256,7 +257,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
 
 
 
-  
+
   status |= ParseFunctionArguments(collector);
   if (status.IsError()) {
     return status;
