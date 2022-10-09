@@ -110,41 +110,46 @@ bool Parser::IsTypePattern(const Token &tk) {
     return false;
   }
 }
+
+SyntaxStatus Parser::CollectTypePattern(ParsingDeclCollector &collector) {
+  switch (GetTok().GetKind()) {
+  case tok::star:
+    collector.GetTypePatternCollector().AddPointer(ConsumeToken());
+    break;
+  case tok::amp:
+    collector.GetTypePatternCollector().AddReference(ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
 SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attemping to collect type-patterns without a type");
 
-  if (!IsTypePattern(GetTok())) {
+  // TODO: This is not completely correct -- what about int % and so forth. Ok for now. 
+  if (!GetTok().IsTypePattern() && !GetTok().IsIdentifierOrUnderscore()) {
     collector.GetTypePatternCollector().AddDirect();
     return syn::MakeSyntaxSuccess();
-  } else {
-    // TODO: Simple for now but this will be greatly expanded
-    while (IsTypePattern(GetTok())) {
-    BeginCollecting:
-      switch (GetTok().GetKind()) {
-      case tok::star:
-        collector.GetTypePatternCollector().AddPointer(ConsumeToken());
-        goto BeginCollecting;
-      case tok::amp:
-        collector.GetTypePatternCollector().AddReference(ConsumeToken());
-        goto BeginCollecting;
-      default:
-        /// TODO: Log as error -- asserting for now
-        assert(false && "Invalid type-patter");
-        break;
-      }
-    } // end wile
   }
-  return syn::MakeSyntaxSuccess();
+  // TODO: Simple for now but this will be greatly expanded
+  SyntaxStatus status;
+  while (GetTok().IsTypePattern()) {
+    status = CollectTypePattern(collector);
+    if (status.HasCodeCompletion()) {
+      return status;
+    }
+  }
+  return status;
 }
 SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
-  // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
-  // 	//TODO: Log
-  //   return syn::MakeSyntaxCodeCompletionStatus();
-  // }
-  switch (GetTok().GetKind()) {
 
+  if (!GetTok().IsBasicType()) {
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  switch (GetTok().GetKind()) {
   // TODO: Think about void here
   case tok::kw_void:
     collector.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
@@ -199,6 +204,12 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
     break;
   case tok::kw_complex64:
     collector.GetTypeSpecifierCollector().AddComplex64(ConsumeToken());
+    break;
+  case tok::kw_imaginary32:
+    collector.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
+  case tok::kw_imaginary64:
+    break;
+    collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();

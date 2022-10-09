@@ -281,7 +281,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
       if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
         // TODO: Log
-        status.SetIsError();
+        status.SetHasCodeCompletion();
         return status;
       }
     }
@@ -295,14 +295,6 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     // TODO: Look for TypeSpecs
 
     // Collect Qualifiers
-
-    // We are checking this here for now.
-    if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
-      if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-        status.SetHasCodeCompletion();
-        return status;
-      }
-    }
     while (!GetTok().IsQualifier()) {
       CollectTypeQualifier(collector);
     }

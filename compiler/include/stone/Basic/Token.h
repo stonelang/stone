@@ -202,7 +202,7 @@ public:
   bool IsEquality() { return kind == tok::equal; }
   bool IsDoubleEquality() { return kind == tok::doubleequal; }
   bool IsPound() { return kind == tok::pound; }
-  bool IsAmp() { return kind == tok::amp; }
+  bool IsAmp() const { return kind == tok::amp; }
   bool IsArrow() const { return kind == tok::arrow; }
   bool IsBackTick() { return kind == tok::backtick; }
   bool IsExcliam() { return kind == tok::exclaim; }
@@ -215,7 +215,7 @@ public:
   bool IsPure() { return kind == tok::kw_pure; }
   bool IsInline() { return kind == tok::kw_inline; }
   bool IsEnum() { return kind == tok::kw_enum; }
-  bool IsStar() { return kind == tok::star; }
+  bool IsStar() const { return kind == tok::star; }
   bool IsLParen() const { return kind == tok::l_paren; }
   bool IsRParen() const { return kind == tok::r_paren; }
   bool IsLBrace() const { return kind == tok::l_brace; }
@@ -230,6 +230,8 @@ public:
   bool IsAccessLevel() const {
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
+
+  bool IsTypePattern() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

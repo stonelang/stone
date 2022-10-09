@@ -145,7 +145,7 @@ public:
 private:
   /// Add a chunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the chunk.
-  void AddTypePattern(const TypePattern &pattern) {
+  void AddTypePattern(const TypePattern pattern) {
     patterns.push_back(pattern);
     // TODO:
     //  if (!EndLoc.isInvalid())
