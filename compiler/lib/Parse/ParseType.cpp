@@ -59,24 +59,21 @@ SyntaxResult<TypeRep> Parser::ParseType(ParsingDeclCollector &collector,
   SyntaxResult<TypeRep> result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
-  result = ParseBasicType(collector, diagID);
-
-  // if (collector.GetTypeSpecifierCollector().IsBasicType()) {
-  // }
-
-  // if (collector.GetTypeSpecifierCollector().IsNominalType()) {
-  // }
-
-  if (collector.GetFunctionSpecifierCollector().HasFun()) {
-    result = ParseFunctionType(collector, diagID);
+  if (collector.GetFunctionSpecifierCollector().HasFun() &&
+      collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid()) {
+    // TODO:: Not too happy witht this
+    if (GetCurScope()->GetKind() != ScopeKind::FunctionType) {
+      return ParseFunctionType(collector, diagID);
+    }
   }
+
+  result = ParseBasicType(collector, diagID);
 
   return result;
 }
 
 SyntaxResult<TypeRep>
 Parser::ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID) {
-
   return ParseType(collector, diagID);
 }
 
@@ -84,6 +81,9 @@ SyntaxResult<TypeRep> Parser::ParseBasicType(ParsingDeclCollector &collector,
                                              Diag<> diagID) {
   SyntaxResult<TypeRep> result;
 
+  if (!GetTok().IsBasicType()) {
+    return result;
+  }
   // Collect the type -- only basic types for now (TODO: user type  and function
   // types)
   auto status = CollectBasicTypeDecl(collector);

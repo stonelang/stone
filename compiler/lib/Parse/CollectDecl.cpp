@@ -129,9 +129,8 @@ SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
          "Attemping to collect type-patterns without a type");
 
-  // TODO: This is not completely correct -- what about int % and so forth. Ok for now. 
-  if (!GetTok().IsTypePattern() && !GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypePatternCollector().AddDirect();
+  if (!GetTok().IsTypePattern() && GetTok().IsIdentifierOrUnderscore()) {
+    collector.GetTypePatternCollector().AddValue();
     return syn::MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded

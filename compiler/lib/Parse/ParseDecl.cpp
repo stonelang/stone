@@ -200,12 +200,24 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   status = ParseIdentifier(basicName, nameLoc);
 
   // TODO: May want to move to ParseFunctionSignaure
-  if (PeekNextToken().IsDoubleColon()) {
-    collector.GetFunctionSpecifierCollector().AddIsMember();
+  Identifier parentName;
+  SrcLoc parentNameLoc;
+
+  if (GetTok().IsDoubleColon()) {
+    if (collector.GetStorageSpecifierCollector().HasStatic()) {
+      // TODO: Log
+      return syn::MakeSyntaxError();
+    }
+    collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
+    if (!GetTok().IsIdentifierOrUnderscore()) {
+      // Do some logging  "Expecting Parent identifier");
+      return syn::MakeSyntaxError();
+    }
+    status = ParseIdentifier(parentName, parentNameLoc);
   }
 
-  if (!collector.GetFunctionSpecifierCollector().HasIsMember() &&
-      collector.GetStorageSpecifierCollector().HasStatic()) {
+  if (collector.GetStorageSpecifierCollector().HasStatic() &&
+      collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
     return syn::MakeSyntaxError();
   }

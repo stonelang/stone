@@ -37,7 +37,7 @@ constexpr size_t TypePatternAlignInBits = 3;
 
 enum class TypePatternKind {
   None,
-  Direct,
+  Value,
   Pointer,
   Reference,
   Array,
@@ -60,12 +60,12 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class DirectTypePattern final : public TypePattern {
+class ValueTypePattern final : public TypePattern {
 public:
-  DirectTypePattern() : TypePattern(TypePatternKind::Direct, SrcLoc()) {}
+  ValueTypePattern() : TypePattern(TypePatternKind::Value, SrcLoc()) {}
 
 public:
-  static DirectTypePattern Create();
+  static ValueTypePattern Create();
 };
 
 class PointerTypePattern final : public TypePattern {
@@ -153,8 +153,8 @@ private:
   }
 
 public:
-  // Direct has no source loc
-  void AddDirect();
+  // Value has no source loc
+  void AddValue();
   void AddPointer(SrcLoc loc);
   void AddReference(SrcLoc loc);
   void AddArray(SrcLoc loc);

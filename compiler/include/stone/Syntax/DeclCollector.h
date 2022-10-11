@@ -79,6 +79,7 @@ class FunctionSpecifierCollector final {
   SrcLoc virtualLoc;
   SrcLoc funLoc;
   SrcLoc arrowLoc;
+  SrcLoc doubleColonLoc;
 
   enum Flags : unsigned {
     None = 1 << 0,
@@ -87,7 +88,8 @@ class FunctionSpecifierCollector final {
     ForcedInline = 1 << 3,
     Virtual = 1 << 4,
     NoReturn = 1 << 5,
-    IsMember = 1 << 6
+    IsMember = 1 << 6,
+    IsStatic = 1 << 7,
   };
 
 private:
@@ -99,12 +101,14 @@ public:
     funLoc = loc;
   }
   bool HasFun() { return ((flags & Fun) && funLoc.isValid()); }
+  SrcLoc GetFunLoc() { return funLoc; }
 
   void AddInline(SrcLoc loc) {
     flags |= Inline;
     inlineLoc = loc;
   }
   bool HasInline() { return ((flags & Inline) && inlineLoc.isValid()); }
+  SrcLoc GetInlineLoc() { return inlineLoc; }
 
   void AddForcedInline(SrcLoc loc) {
     flags |= ForcedInline;
@@ -120,13 +124,15 @@ public:
   void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
   bool HasNoReturn() { return (flags & NoReturn); }
 
-  void AddIsMember() { flags |= IsMember; }
-  bool HasIsMember() { return (flags & IsMember); }
-
-  SrcLoc GetFunLoc() { return funLoc; }
-
   void AddArrowLoc(SrcLoc loc) { arrowLoc = loc; }
   SrcLoc GetArrowLoc() { return arrowLoc; }
+
+  void AddIsMember(SrcLoc inputLoc) {
+    flags |= IsMember;
+    doubleColonLoc = inputLoc;
+  }
+  bool HasIsMember() { return (flags & IsMember) && doubleColonLoc.isValid(); }
+  SrcLoc GetDoubleColonLoc() { return doubleColonLoc; }
 };
 
 class StorageSpecifierCollector final {
