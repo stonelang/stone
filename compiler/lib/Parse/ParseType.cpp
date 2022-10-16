@@ -46,7 +46,7 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
 
   // TODO: Call parseType to get the actual type
 
-  auto qualTypeRep = new (GetSyntaxContext()) QualTypeRep();
+  auto qualTypeRep = new (GetSyntaxContext()) QualifierTypeRep();
   auto functionTypeRep = new (GetSyntaxContext()) FunctionTypeRep(qualTypeRep);
 
   return syn::MakeSyntaxResult<TypeRep>(functionTypeRep);
@@ -59,16 +59,15 @@ SyntaxResult<TypeRep> Parser::ParseType(ParsingDeclCollector &collector,
   SyntaxResult<TypeRep> result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
-  if (collector.GetFunctionSpecifierCollector().HasFun() &&
-      collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid()) {
-    // TODO:: Not too happy witht this
-    if (GetCurScope()->GetKind() != ScopeKind::FunctionType) {
-      return ParseFunctionType(collector, diagID);
-    }
-  }
+  // if (collector.GetFunctionSpecifierCollector().HasFun() &&
+  //     collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid()) {
+  //   // TODO:: Not too happy witht this
+  //   if (GetCurScope()->GetKind() != ScopeKind::FunctionType) {
+  //     return ParseFunctionType(collector, diagID);
+  //   }
+  // }
 
   result = ParseBasicType(collector, diagID);
-
   return result;
 }
 
@@ -80,7 +79,6 @@ Parser::ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID) {
 SyntaxResult<TypeRep> Parser::ParseBasicType(ParsingDeclCollector &collector,
                                              Diag<> diagID) {
   SyntaxResult<TypeRep> result;
-
   if (!GetTok().IsBasicType()) {
     return result;
   }

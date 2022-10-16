@@ -55,17 +55,27 @@ public:
              const PrintSyntaxOptions &printOpts = PrintSyntaxOptions()) const;
 };
 
-/// Example: const int b = 0; TypeLoc will have QualTypeRep
-class QualTypeRep : public TypeRep {
+
+// You may not need this part. 
+// class SpecifierTypeRep : public TypeRep {
+
+// public:
+//   SpecifierTypeRep() {}
+// };
+
+/// Example: const int b = 0; TypeLoc will have QualifierTypeRep
+class QualifierTypeRep : public TypeRep {
   SrcLoc constLoc;
   SrcLoc restricLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
   SrcLoc mutableLoc;
   SrcLoc immutableLoc;
+  TypeRep *type;
 
 public:
-  // QualTypeRep() : TypeRep(TypeRepKind::QualType) {}
+  QualifierTypeRep() : type(nullptr) {}
+  QualifierTypeRep(TypeRep *type) : type(type) {}
 
 public:
   bool AddConst(SrcLoc loc) { constLoc = loc; }
@@ -83,11 +93,13 @@ public:
   SrcLoc GetRestrictLoc() const { return restricLoc; }
   SrcLoc GetVolatileLoc() const { return volatileLoc; }
   SrcLoc GetPureLoc() const { return pureLoc; }
+
+public:
+  TypeRep *GetType() { return type; }
 };
 
-class TypeSpecTypeRep : public TypeRep {};
-
-class IdentifierTypeRep : public QualTypeRep {};
+/// Particle particle where Particle is the type-identifier
+class IdentifierTypeRep : public TypeRep {};
 
 /// A parsed element within a tuple type.
 struct TupleTypeRepElement final {
@@ -197,7 +209,7 @@ private:
 };
 
 /// Why QualType
-class TupleTypeRep final : public QualTypeRep {
+class TupleTypeRep final : public QualifierTypeRep {
 public:
   static TupleTypeRep *Create();
 };
@@ -208,23 +220,23 @@ public:
 
 // };
 
-/// May want to inherit from QualTypeRep
+/// May want to inherit from QualifierTypeRep
 
 // Ex: public pure fun
 class FunctionTypeRep : public TypeRep {
-  QualTypeRep *resultTy;
+  QualifierTypeRep *resultTy;
 
 public:
-  FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
+  FunctionTypeRep(QualifierTypeRep *resultTy) : resultTy(resultTy) {}
 
 public:
-  QualTypeRep *GetResultTypeRep() { return resultTy; }
+  QualifierTypeRep *GetResultTypeRep() { return resultTy; }
 };
 
 /// All this may be covered by the IdentifierTypeRep
 class BuiltinTypeRep : public TypeRep {};
 
-class AbstractPointerTypeRep : public QualTypeRep {};
+class AbstractPointerTypeRep : public QualifierTypeRep {};
 
 /// Wrapper for source info for pointers.
 /// Ex: const int* p = null;

@@ -335,6 +335,10 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
                            "parsing fun arguments");
 
+  // ParenPair
+  /// TODO: Handle
+  /// Name(int i)
+  /// Name(int i, () -> void)
   if (GetTok().IsLParen()) {
     lParenLoc = ConsumeToken(tok::l_paren);
   } else {
@@ -355,6 +359,8 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
 
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
                                        FunctionDecl &funDecl) {
+
+  // TODO:  BraceStmtPair braceStmtPair;
 
   // This is where you what to start a BracePairDelimeter
   SyntaxStatus status;
