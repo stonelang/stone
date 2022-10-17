@@ -55,13 +55,12 @@ public:
              const PrintSyntaxOptions &printOpts = PrintSyntaxOptions()) const;
 };
 
+// You may not need this part.
+class SpecifierTypeRep : public TypeRep {
 
-// You may not need this part. 
-// class SpecifierTypeRep : public TypeRep {
-
-// public:
-//   SpecifierTypeRep() {}
-// };
+public:
+  SpecifierTypeRep() {}
+};
 
 /// Example: const int b = 0; TypeLoc will have QualifierTypeRep
 class QualifierTypeRep : public TypeRep {
@@ -78,10 +77,11 @@ public:
   QualifierTypeRep(TypeRep *type) : type(type) {}
 
 public:
-  bool AddConst(SrcLoc loc) { constLoc = loc; }
-  bool AddRestrict(SrcLoc loc) { restricLoc = loc; }
-  bool AddVolatile(SrcLoc loc) { volatileLoc = loc; }
-  bool AddPure(SrcLoc loc) { pureLoc = loc; }
+  void AddConst(SrcLoc loc) { constLoc = loc; }
+  void AddRestrict(SrcLoc loc) { restricLoc = loc; }
+  void AddVolatile(SrcLoc loc) { volatileLoc = loc; }
+  void AddPure(SrcLoc loc) { pureLoc = loc; }
+  void AddMutable(SrcLoc loc) { mutableLoc = loc; }
 
 public:
   bool IsConst() const { return constLoc.isValid(); }
@@ -93,6 +93,7 @@ public:
   SrcLoc GetRestrictLoc() const { return restricLoc; }
   SrcLoc GetVolatileLoc() const { return volatileLoc; }
   SrcLoc GetPureLoc() const { return pureLoc; }
+  SrcLoc GetMutableLoc() const { return mutableLoc; }
 
 public:
   TypeRep *GetType() { return type; }
@@ -209,7 +210,7 @@ private:
 };
 
 /// Why QualType
-class TupleTypeRep final : public QualifierTypeRep {
+class TupleTypeRep final : public TypeRep {
 public:
   static TupleTypeRep *Create();
 };
@@ -243,7 +244,7 @@ class AbstractPointerTypeRep : public QualifierTypeRep {};
 class PointerTypeRep : public AbstractPointerTypeRep {};
 
 /// Wrapper for source info for block pointers.
-class MemboerPointerTypeRep : public AbstractPointerTypeRep {};
+class MemberPointerTypeRep : public AbstractPointerTypeRep {};
 
 } // namespace syn
 } // end namespace stone

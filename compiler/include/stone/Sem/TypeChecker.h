@@ -46,8 +46,6 @@ public:
 
 public:
   void CheckDecl(Decl *d);
-  void CheckFunDecl(Decl *d);
-
   // DeclVisitor &GetDeclVisitor();
 
 public:
@@ -57,6 +55,19 @@ public:
 
 public:
   void CheckExpr();
+
+public:
+  void CheckType();
+
+public:
+  /// Determine whether one type is a subtype of another.
+  ///
+  /// \param t1 The potential subtype.
+  /// \param t2 The potential supertype.
+  /// \param dc The context of the check.
+  ///
+  /// \returns true if \c t1 is a subtype of \c t2.
+  bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
 } // namespace sem
 } // namespace stone

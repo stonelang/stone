@@ -1,18 +1,17 @@
 #include "stone/Sem/TypeChecker.h"
 
+#include "stone/Syntax/SyntaxVisitor.h"
+
 using stone::sem::TypeChecker;
 
-void TypeChecker::CheckDecl(Decl *d) {
-  // TODO:
-  switch (d->GetKind()) {
-  case DeclKind::Fun:
-    CheckFunDecl(d);
-    break;
-  default:
-    break;
-  }
-}
+class TypeCheckDeclVisitor final : public DeclVisitor<TypeCheckDeclVisitor> {
+  TypeChecker &checker;
 
-void TypeChecker::CheckFunDecl(Decl *d) {
-  // TODO: Valid cast
-}
+public:
+  TypeCheckDeclVisitor(TypeChecker &checker) : checker(checker) {}
+
+public:
+  void Visit(Decl *d) {}
+};
+
+void TypeChecker::CheckDecl(Decl *d) { TypeCheckDeclVisitor(*this).Visit(d); }

@@ -263,6 +263,8 @@ class DeclCollector {
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
+  // DeclNameLoc
+
   DeclName name;
   SrcLoc nameLoc;
 

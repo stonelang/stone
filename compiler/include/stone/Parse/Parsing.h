@@ -190,6 +190,8 @@ public:
   // void SetDone() { status = ParsingContextStatus::Done; }
 };
 
+// class ParsingDeclRep final : public DeclRep {};
+
 class ParsingToken final {
   Parser &parser;
 
