@@ -12,9 +12,9 @@ template <typename ImplClass, typename ExprRetTy = void,
           typename... Args>
 class SyntaxVisitor {
 public:
-  void Visit(const Decl *d);
-  void Visit(const Stmt *s);
-  void Visit(const Expr *e);
+  void Visit(Decl *d);
+  void Visit(Stmt *s);
+  void Visit(Expr *e);
 };
 
 template <typename ImplClass, typename ExprRetTy = void, typename... Args>

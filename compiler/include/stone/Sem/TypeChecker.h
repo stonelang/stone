@@ -16,7 +16,11 @@ class TypeCheckerListener;
 
 namespace syn {
 class SyntaxFile;
+class Expr;
+class Decl;
+class Stmt;
 } // namespace syn
+
 namespace sem {
 class TypeChecker;
 
@@ -29,7 +33,9 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
-class TypeCheckerDiagnostics {};
+class TypeCheckerDiagnostics final {
+public:
+};
 
 class TypeChecker final {
   friend TypeCheckerStats;
@@ -46,15 +52,12 @@ public:
 
 public:
   void CheckDecl(Decl *d);
-  // DeclVisitor &GetDeclVisitor();
 
 public:
-  void CheckStmt();
-
-  // StmtVisitor& GetStmtVisitor();
+  void CheckStmt(Stmt *s);
 
 public:
-  void CheckExpr();
+  void CheckExpr(Expr *e);
 
 public:
   void CheckType();
