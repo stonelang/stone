@@ -180,7 +180,7 @@ public:
   bool HasRegister() {
     return (kind == StorageSpecifierKind::Register && loc.isValid());
   }
-  bool HasAnyStorageSpecifier() {
+  bool HasAny() {
     /// TODO: Consider auto
     return (HasExtern() || HasStatic() || HasRegister());
   }
@@ -237,9 +237,7 @@ public:
     return (level == AccessLevel::Internal && loc.isValid());
   }
 
-  bool HasAnyAccessLevel() {
-    return (HasPublic() || HasPrivate() || HasInternal());
-  }
+  bool HasAny() { return (HasPublic() || HasPrivate() || HasInternal()); }
   SrcLoc GetLoc() { return loc; }
 
   void Apply();
@@ -327,6 +325,9 @@ public:
 
   void SetDeclNameLoc(SrcLoc inputLoc) { nameLoc = inputLoc; }
   SrcLoc GetDeclNameLoc() { return nameLoc; }
+
+public:
+  void Apply();
 };
 
 } // namespace syn

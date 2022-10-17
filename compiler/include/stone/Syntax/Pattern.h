@@ -140,7 +140,7 @@ public:
   const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
     return specifierCollector;
   }
-  bool HasTypePatterns() { return patterns.size() > 0; }
+  bool HasAny() { return patterns.size() > 0; }
 
 private:
   /// Add a chunk to this Declarator. Also extend the range to

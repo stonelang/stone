@@ -19,10 +19,10 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   assert(collector.GetFunctionSpecifierCollector().HasFun());
   assert(collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid());
 
-  assert(collector.GetTypeSpecifierCollector().NotHasTypeSpecifierKind() &&
+  assert(collector.GetTypeSpecifierCollector().NotHasAny() &&
          "Function type-specifier comes after ->");
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     assert(collector.GetTypeQualifierCollector().HasPureOnly() &&
            "Function can have only 'pure' type-specifier at this point");
   }
@@ -32,7 +32,7 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   SyntaxResult<TypeRep> typeRep =
       ParseType(collector, diag::err_expected_type_for_function_result);
 
-  if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+  if (!collector.GetTypeSpecifierCollector().HasAny()) {
     // TODO: log that "Function requires a return type. Try '-> void' if it has
     assert(false && "No return type specified");
     // no return"
@@ -42,7 +42,7 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   CollectTypePatterns(collector);
 
   // Requires at least a direct type pattern which is just the type by itself.
-  assert(collector.GetTypePatternCollector().HasTypePatterns());
+  assert(collector.GetTypePatternCollector().HasAny());
 
   // TODO: Call parseType to get the actual type
 

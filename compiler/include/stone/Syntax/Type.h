@@ -178,10 +178,10 @@ public:
   }
 
 public:
-  bool HasAnyTypeQualifier() {
+  bool HasAny() {
     return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
   }
-  bool HasAllTypeQualifiers() {
+  bool HasAll() {
     return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
   }
   SrcLoc GetVolatileLoc() { return volatileLoc; }

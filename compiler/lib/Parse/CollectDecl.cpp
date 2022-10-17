@@ -126,7 +126,7 @@ SyntaxStatus Parser::CollectTypePattern(ParsingDeclCollector &collector) {
 }
 SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
 
-  assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
+  assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
   if (!GetTok().IsTypePattern() && GetTok().IsIdentifierOrUnderscore()) {

@@ -129,7 +129,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
-  assert(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind() &&
+  assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
@@ -141,7 +141,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   }
 
   CollectTypePatterns(collector);
-  assert(collector.GetTypePatternCollector().HasTypePatterns() &&
+  assert(collector.GetTypePatternCollector().HasAny() &&
          "Type is missing a type-pattern");
 
   auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
@@ -172,7 +172,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     // We only allow pure on functions => non-member function
     if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       // Do some logging
@@ -180,7 +180,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     }
   }
 
-  if (collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+  if (collector.GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
     return syn::MakeSyntaxError();
   }
@@ -290,7 +290,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
 
-    if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+    if (collector.GetTypeQualifierCollector().HasAny()) {
       if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
         // TODO: Log
         status.SetHasCodeCompletion();
@@ -299,7 +299,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     }
     // We can call collect here to get the return type
     // collector.CollectUntil(tok::l_brace);
-    // if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+    // if (!collector.GetTypeSpecifierCollector().HasAny()) {
     //   // Perform some logging function must return a function type
     //   status.SetIsError();
     //   return status;
@@ -395,7 +395,7 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     // We only allow pure on structs
     if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       return result;
@@ -421,16 +421,16 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     return result;
   }
 
-  // if(collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()){
+  // if(collector.GetTypeSpecifierCollector().HasAny()){
   //   // Log that a specifier is already present
   //   return result;
   // }
 
-  // if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  // if (collector.GetTypeQualifierCollector().HasAny()) {
   //   // Log that enums are not allowed to have qualifiers
   //   return result;
   // }
@@ -451,7 +451,7 @@ SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   ParsingScope enumDeclScope(*this, ScopeKind::UsingDecl,
                              "parsing enum-declaration");
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     return result;
   }
   return result;

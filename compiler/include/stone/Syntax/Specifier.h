@@ -170,10 +170,9 @@ public:
 
 public:
   bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
-  bool HasTypeSpecifierKind() const {
-    return typeSpecifierKind != TypeSpecifierKind::None;
-  }
-  bool NotHasTypeSpecifierKind() const {
+
+  bool HasAny() const { return typeSpecifierKind != TypeSpecifierKind::None; }
+  bool NotHasAny() const {
     return typeSpecifierKind == TypeSpecifierKind::None;
   }
 
