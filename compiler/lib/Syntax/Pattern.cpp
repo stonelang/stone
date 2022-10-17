@@ -36,3 +36,5 @@ void TypePatternCollector::AddBlockPointer(SrcLoc inputLoc) {}
 void TypePatternCollector::AddParen(SrcLoc inputLoc) {}
 
 void TypePatternCollector::AddPipe(SrcLoc inputLoc) {}
+
+void TypePatternCollector::Apply() {}

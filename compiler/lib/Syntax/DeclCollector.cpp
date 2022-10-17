@@ -6,3 +6,10 @@ using namespace stone::syn;
 DeclCollector::DeclCollector(AttributeFactory &attributeFactory)
     : attributeFactory(attributeFactory),
       typePatternCollector(typeSpecifierCollector) {}
+
+
+void StorageSpecifierCollector::Apply() {}
+
+void FunctionSpecifierCollector::Apply() {}
+
+void AccessLevelCollector::Apply() {}

@@ -184,6 +184,9 @@ public:
   }
 
 public:
+  void Apply();
+
+public:
   void Verify();
 };
 

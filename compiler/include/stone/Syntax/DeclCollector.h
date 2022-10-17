@@ -133,6 +133,9 @@ public:
   }
   bool HasIsMember() { return (flags & IsMember) && doubleColonLoc.isValid(); }
   SrcLoc GetDoubleColonLoc() { return doubleColonLoc; }
+
+public:
+  void Apply();
 };
 
 class StorageSpecifierCollector final {
@@ -199,6 +202,7 @@ public:
   void AddDynamicStorageDuration() {
     AddStorageDuration(StorageDuration::Dynamic);
   }
+  void Apply();
 };
 
 class AccessLevelCollector final {
@@ -237,6 +241,8 @@ public:
     return (HasPublic() || HasPrivate() || HasInternal());
   }
   SrcLoc GetLoc() { return loc; }
+
+  void Apply();
 };
 
 // Light weight value type for now

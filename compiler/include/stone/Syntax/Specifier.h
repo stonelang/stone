@@ -235,6 +235,9 @@ public:
   void AddUnspecifiedNullable() {
     AddTypeNullabilityKind(TypeNullabilityKind::Unspecified);
   }
+
+public:
+  void Apply();
 };
 
 } // namespace syn
