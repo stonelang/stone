@@ -51,52 +51,64 @@ public:
   TypeRep *Walk(SyntaxWalker &&walker) { return Walk(walker); }
 
 public:
+  SrcLoc GetLoc() const;
+  SrcLoc GetStartLoc() const;
+  SrcLoc GetEndLoc() const;
+  SrcRange GetSrcRange() const;
+
+public:
   void Print(raw_ostream &os,
              const PrintSyntaxOptions &printOpts = PrintSyntaxOptions()) const;
 };
 
 // You may not need this part.
-class SpecifierTypeRep : public TypeRep {
+class SpecifierTypeRep final : public TypeRep {
 
 public:
   SpecifierTypeRep() {}
+
+public:
+  static SpecifierTypeRep *Create(SyntaxContext &sc);
 };
 
 /// Example: const int b = 0; TypeLoc will have QualifierTypeRep
 class QualifierTypeRep : public TypeRep {
-  SrcLoc constLoc;
-  SrcLoc restricLoc;
-  SrcLoc volatileLoc;
-  SrcLoc pureLoc;
-  SrcLoc mutableLoc;
-  SrcLoc immutableLoc;
+  // SrcLoc constLoc;
+  // SrcLoc restricLoc;
+  // SrcLoc volatileLoc;
+  // SrcLoc pureLoc;
+  // SrcLoc mutableLoc;
+  // SrcLoc immutableLoc;
   TypeRep *type;
 
 public:
   QualifierTypeRep() : type(nullptr) {}
   QualifierTypeRep(TypeRep *type) : type(type) {}
 
-public:
-  void AddConst(SrcLoc loc) { constLoc = loc; }
-  void AddRestrict(SrcLoc loc) { restricLoc = loc; }
-  void AddVolatile(SrcLoc loc) { volatileLoc = loc; }
-  void AddPure(SrcLoc loc) { pureLoc = loc; }
-  void AddMutable(SrcLoc loc) { mutableLoc = loc; }
+  // public:
+  //   void AddConst(SrcLoc loc) { constLoc = loc; }
+  //   void AddRestrict(SrcLoc loc) { restricLoc = loc; }
+  //   void AddVolatile(SrcLoc loc) { volatileLoc = loc; }
+  //   void AddPure(SrcLoc loc) { pureLoc = loc; }
+  //   void AddMutable(SrcLoc loc) { mutableLoc = loc; }
 
-public:
-  bool IsConst() const { return constLoc.isValid(); }
-  bool IsRestrict() const { return restricLoc.isValid(); }
-  bool IsVolatile() const { return volatileLoc.isValid(); }
-  bool IsPure() const { return pureLoc.isValid(); }
+  // public:
+  //   bool IsConst() const { return constLoc.isValid(); }
+  //   bool IsRestrict() const { return restricLoc.isValid(); }
+  //   bool IsVolatile() const { return volatileLoc.isValid(); }
+  //   bool IsPure() const { return pureLoc.isValid(); }
 
-  SrcLoc GetConstLoc() const { return constLoc; }
-  SrcLoc GetRestrictLoc() const { return restricLoc; }
-  SrcLoc GetVolatileLoc() const { return volatileLoc; }
-  SrcLoc GetPureLoc() const { return pureLoc; }
-  SrcLoc GetMutableLoc() const { return mutableLoc; }
+  //   SrcLoc GetConstLoc() const { return constLoc; }
+  //   SrcLoc GetRestrictLoc() const { return restricLoc; }
+  //   SrcLoc GetVolatileLoc() const { return volatileLoc; }
+  //   SrcLoc GetPureLoc() const { return pureLoc; }
+  //   SrcLoc GetMutableLoc() const { return mutableLoc; }
 
 public:
   TypeRep *GetType() { return type; }
+
+public:
+  static QualifierTypeRep *Create(TypeRep *type, SyntaxContext &sc);
 };
 
 /// Particle particle where Particle is the type-identifier
@@ -141,12 +153,12 @@ class CompositionTypeRep final
   //     Bits.CompositionTypeRepr.NumTypes};
   //   }
   //   SrcLoc getSrcLoc() const { return FirstTypeLoc; }
-  //   SourceRange getCompositionRange() const { return CompositionRange; }
+  //   SrcRange getCompositionRange() const { return CompositionRange; }
 
   //   static CompositionTypeRepr *create(const ASTContext &C,
   //                                      ArrayRef<TypeRepr*> Protocols,
   //                                      SrcLoc FirstTypeLoc,
-  //                                      SourceRange CompositionRange);
+  //                                      SrcRange CompositionRange);
 
   //   static CompositionTypeRepr *createEmptyComposition(ASTContext &C,
   //                                                      SrcLoc AnyLoc) {

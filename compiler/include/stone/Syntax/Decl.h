@@ -348,7 +348,7 @@ class ValueDecl : public NameableDecl {
 
   // llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
   /// fun GetObject() -> Object* {return object } where Object* is resultTy
-  QualType resultTy;
+  QualType type;
   AccessLevel level;
 
 public:
@@ -357,8 +357,8 @@ public:
       : NameableDecl(kind, name, nameLoc, context) {}
 
 public:
-  void SetResultType(QualType inputResultType) { resultTy = inputResultType; }
-  QualType GetResultType() { return resultTy; }
+  void SetType(QualType inputType) { type = inputType; }
+  QualType GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member

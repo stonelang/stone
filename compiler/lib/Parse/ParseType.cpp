@@ -84,8 +84,18 @@ SyntaxResult<TypeRep> Parser::ParseBasicType(ParsingDeclCollector &collector,
   }
   // Collect the type -- only basic types for now (TODO: user type  and function
   // types)
-  auto status = CollectBasicTypeDecl(collector);
 
+  auto status = CollectBasicTypeDecl(collector);
+  if (status.HasCodeCompletion()) {
+    // TODO: nothing to do
+  }
+
+  if (!collector.GetTypeSpecifierCollector().HasAny()) {
+    // TODO: nothing to do
+  }
+  if (collector.GetTypeQualifierCollector().HasAny()) {
+    // Create a QualTypeRep
+  }
   // assert(IsBasicType(curTok.GetKind()) &&
   //        "The current token is not a basic type");
 

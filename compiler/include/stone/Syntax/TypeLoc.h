@@ -25,7 +25,7 @@ public:
   TypeLoc() {}
   TypeLoc(TypeRep *tyRep) : tyRep(tyRep) {}
   TypeLoc(TypeRep *tyRep, Type ty) : tyRep(tyRep) { SetType(ty); }
-  TypeLoc(TypeRep *tyRep, QualType ty) : tyRep(tyRep) { SetType(ty); }
+  // TypeLoc(TypeRep *tyRep, QualType ty) : tyRep(tyRep) { SetType(ty); }
 
   bool WasValidated() const { return !ty.IsNull(); }
   bool IsError() const;

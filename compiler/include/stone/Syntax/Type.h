@@ -361,6 +361,8 @@ public:
   bool HasVolatile() const;
   bool HasPure() const;
 
+  bool HasImmutable() const;
+
   bool HasQuals() const;
   bool IsCanonical() const;
 
