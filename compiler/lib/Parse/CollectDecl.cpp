@@ -78,16 +78,20 @@ SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:
-    collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddConst(
+        ConsumeToken());
     break;
   case tok::kw_restrict:
-    collector.GetTypeQualifierCollector().AddRestrict(ConsumeToken());
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddRestrict(
+        ConsumeToken());
     break;
   case tok::kw_volatile:
-    collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddVolatile(
+        ConsumeToken());
     break;
   case tok::kw_mutable:
-    collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddMutable(
+        ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
@@ -108,10 +112,12 @@ bool Parser::IsTypeChunk(const Token &tk) {
 SyntaxStatus Parser::CollectTypeChunk(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
-    collector.GetTypeChunkCollector().AddPointer(ConsumeToken());
+    collector.GetTypeCollector().GetTypeChunkCollector().AddPointer(
+        ConsumeToken());
     break;
   case tok::amp:
-    collector.GetTypeChunkCollector().AddReference(ConsumeToken());
+    collector.GetTypeCollector().GetTypeChunkCollector().AddReference(
+        ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
@@ -120,11 +126,11 @@ SyntaxStatus Parser::CollectTypeChunk(ParsingDeclCollector &collector) {
 }
 SyntaxStatus Parser::CollectTypeChunks(ParsingDeclCollector &collector) {
 
-  assert(collector.GetTypeSpecifierCollector().HasAny() &&
+  assert(collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
   if (!GetTok().IsTypeChunk() && GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypeChunkCollector().AddValue();
+    collector.GetTypeCollector().GetTypeChunkCollector().AddValue();
     return syn::MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
@@ -145,64 +151,84 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   // TODO: Think about void here
   case tok::kw_void:
-    collector.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddVoid(
+        ConsumeToken());
     break;
   case tok::kw_auto:
-    collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddAuto(
+        ConsumeToken());
     break;
   case tok::kw_int:
-    collector.GetTypeSpecifierCollector().AddInt(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInt(
+        ConsumeToken());
     break;
   case tok::kw_int8:
-    collector.GetTypeSpecifierCollector().AddInt8(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInt8(
+        ConsumeToken());
     break;
   case tok::kw_int16:
-    collector.GetTypeSpecifierCollector().AddInt16(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInt16(
+        ConsumeToken());
     break;
   case tok::kw_int32:
-    collector.GetTypeSpecifierCollector().AddInt32(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInt32(
+        ConsumeToken());
     break;
   case tok::kw_int64:
-    collector.GetTypeSpecifierCollector().AddInt64(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInt64(
+        ConsumeToken());
     break;
   case tok::kw_uint:
-    collector.GetTypeSpecifierCollector().AddUInt(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddUInt(
+        ConsumeToken());
     break;
   case tok::kw_uint8:
-    collector.GetTypeSpecifierCollector().AddUInt8(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddUInt8(
+        ConsumeToken());
     break;
   case tok::kw_byte:
-    collector.GetTypeSpecifierCollector().AddByte(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddByte(
+        ConsumeToken());
     break;
   case tok::kw_uint16:
-    collector.GetTypeSpecifierCollector().AddUInt16(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddUInt16(
+        ConsumeToken());
     break;
   case tok::kw_uint32:
-    collector.GetTypeSpecifierCollector().AddUInt32(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddUInt32(
+        ConsumeToken());
     break;
   case tok::kw_uint64:
-    collector.GetTypeSpecifierCollector().AddUInt64(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddUInt64(
+        ConsumeToken());
     break;
   case tok::kw_float:
-    collector.GetTypeSpecifierCollector().AddFloat(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddFloat(
+        ConsumeToken());
     break;
   case tok::kw_float32:
-    collector.GetTypeSpecifierCollector().AddFloat32(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddFloat32(
+        ConsumeToken());
     break;
   case tok::kw_float64:
-    collector.GetTypeSpecifierCollector().AddFloat64(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddFloat64(
+        ConsumeToken());
     break;
   case tok::kw_complex32:
-    collector.GetTypeSpecifierCollector().AddComplex32(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddComplex32(
+        ConsumeToken());
     break;
   case tok::kw_complex64:
-    collector.GetTypeSpecifierCollector().AddComplex64(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddComplex64(
+        ConsumeToken());
     break;
   case tok::kw_imaginary32:
-    collector.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddImaginary32(
+        ConsumeToken());
   case tok::kw_imaginary64:
     break;
-    collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddImaginary64(
+        ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
@@ -212,13 +238,16 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
 SyntaxStatus Parser::CollectNominalTypeDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
-    collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddEnum(
+        ConsumeToken());
     break;
   case tok::kw_struct:
-    collector.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddStruct(
+        ConsumeToken());
     break;
   case tok::kw_interface:
-    collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
+    collector.GetTypeCollector().GetTypeSpecifierCollector().AddInterface(
+        ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();

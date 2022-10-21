@@ -259,9 +259,30 @@ public:
 
 class TypeCollector final {
   Type type;
+  TypeSpecifierCollector typeSpecifierCollector;
+  TypeQualifierCollector typeQualifierCollector;
+  TypeChunkCollector typeChunkCollector;
 
 public:
-  TypeCollector() {}
+  TypeCollector() : typeChunkCollector(typeSpecifierCollector) {}
+
+  TypeQualifierCollector &GetTypeQualifierCollector() {
+    return typeQualifierCollector;
+  }
+  const TypeQualifierCollector &GetTypeQualifierCollector() const {
+    return typeQualifierCollector;
+  }
+  TypeSpecifierCollector &GetTypeSpecifierCollector() {
+    return typeSpecifierCollector;
+  }
+  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+    return typeSpecifierCollector;
+  }
+
+  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+  const TypeChunkCollector &GetTypeChunkCollector() const {
+    return typeChunkCollector;
+  }
 
 public:
   void SetType(Type inputType) { type = inputType; }
@@ -271,18 +292,13 @@ public:
 class DeclCollector {
 
   AttributeFactory &attributeFactory;
-  TypeSpecifierCollector typeSpecifierCollector;
-  TypeQualifierCollector typeQualifierCollector;
-  TypeChunkCollector typeChunkCollector;
+  TypeCollector typeCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
-  TypeCollector typeCollector;
-
   // DeclNameLoc
-
   DeclName name;
   SrcLoc nameLoc;
 
@@ -306,32 +322,17 @@ public:
   const StorageSpecifierCollector &GetStorageSpecifierCollector() const {
     return storageSpecifierCollector;
   }
-  TypeSpecifierCollector &GetTypeSpecifierCollector() {
-    return typeSpecifierCollector;
-  }
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return typeSpecifierCollector;
-  }
+
   FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
     return functionSpecifierCollector;
   }
   const FunctionSpecifierCollector &GetFunctionSpecifierCollector() const {
     return functionSpecifierCollector;
   }
-  TypeQualifierCollector &GetTypeQualifierCollector() {
-    return typeQualifierCollector;
-  }
-  const TypeQualifierCollector &GetTypeQualifierCollector() const {
-    return typeQualifierCollector;
-  }
 
   TypeCollector &GetTypeCollector() { return typeCollector; }
   const TypeCollector &GetTypeCollector() const { return typeCollector; }
 
-  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
-  const TypeChunkCollector &GetTypeChunkCollector() const {
-    return typeChunkCollector;
-  }
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;
   }

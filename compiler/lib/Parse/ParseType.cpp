@@ -97,10 +97,11 @@ Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   TypeQualifierList *qualifiers = nullptr;
-  if (collector.GetTypeQualifierCollector().HasAny()) {
-    qualifiers = TypeQualifierList::Create(
-        collector.GetTypeQualifierCollector().GetTypeQualifiers(),
-        GetSyntaxContext());
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+    qualifiers = TypeQualifierList::Create(collector.GetTypeCollector()
+                                               .GetTypeQualifierCollector()
+                                               .GetTypeQualifiers(),
+                                           GetSyntaxContext());
   }
 
   // Collect the type -- only basic types for now (TODO: user type  and function
@@ -111,37 +112,38 @@ Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
     // TODO: nothing to do
   }
 
-  if (!collector.GetTypeSpecifierCollector().HasAny()) {
+  if (!collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: nothing to do
   }
 
   CollectTypeChunks(collector);
   TypeChunkList *chunks = nullptr;
-  if (collector.GetTypeChunkCollector().HasAny()) {
+  if (collector.GetTypeCollector().GetTypeChunkCollector().HasAny()) {
     chunks = TypeChunkList::Create(
-        collector.GetTypeChunkCollector().GetTypeChunks(), GetSyntaxContext());
+        collector.GetTypeCollector().GetTypeChunkCollector().GetTypeChunks(),
+        GetSyntaxContext());
   }
 
   Type ty;
   // TypeBase *ty = nullptr;
-  switch (collector.GetTypeSpecifierCollector().GetKind()) {
+  switch (collector.GetTypeCollector().GetTypeSpecifierCollector().GetKind()) {
   case TypeSpecifierKind::Int: {
-    assert(collector.GetTypeSpecifierCollector().IsInt());
+    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt());
     ty = GetSyntaxContext().GetBuiltin().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
-    assert(collector.GetTypeSpecifierCollector().IsInt16());
+    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt16());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
-    assert(collector.GetTypeSpecifierCollector().IsInt32());
+    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt32());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
-    assert(collector.GetTypeSpecifierCollector().IsInt64());
+    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt64());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt64Type;
     break;
   }
