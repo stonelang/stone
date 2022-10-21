@@ -96,7 +96,6 @@ Type Parser::ParseDeclResultType(ParsingDeclCollector &collector,
 Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
-
   TypeQualifierList *qualifiers = nullptr;
   if (collector.GetTypeQualifierCollector().HasAny()) {
     qualifiers = TypeQualifierList::Create(
@@ -129,33 +128,29 @@ Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
     ty = GetSyntaxContext().GetBuiltin().BuiltinIntType;
-    // ty = IntegerType::Create(NumberBitWidth::Platform, qualifiers, chunks,
-    //                          GetSyntaxContext());
     break;
   }
-    // case TypeSpecifierKind::Int16: {
-    //   assert(collector.GetTypeSpecifierCollector().IsInt16());
-    //   ty = IntegerType::Create(NumberBitWidth::N16, qualifiers, chunks,
-    //                            GetSyntaxContext());
-    //   break;
-    // }
-    // case TypeSpecifierKind::Int32: {
-    //   assert(collector.GetTypeSpecifierCollector().IsInt32());
-    //   ty = IntegerType::Create(NumberBitWidth::N32, qualifiers, chunks,
-    //                            GetSyntaxContext());
-    //   break;
-    // }
-    // case TypeSpecifierKind::Int64: {
-    //   assert(collector.GetTypeSpecifierCollector().IsInt64());
-    //   ty = IntegerType::Create(NumberBitWidth::N64, qualifiers, chunks,
-    //                            GetSyntaxContext());
-    //   break;
-    // }
+  case TypeSpecifierKind::Int16: {
+    assert(collector.GetTypeSpecifierCollector().IsInt16());
+    ty = GetSyntaxContext().GetBuiltin().BuiltinInt16Type;
+    break;
+  }
+  case TypeSpecifierKind::Int32: {
+    assert(collector.GetTypeSpecifierCollector().IsInt32());
+    ty = GetSyntaxContext().GetBuiltin().BuiltinInt32Type;
+    break;
+  }
+  case TypeSpecifierKind::Int64: {
+    assert(collector.GetTypeSpecifierCollector().IsInt64());
+    ty = GetSyntaxContext().GetBuiltin().BuiltinInt64Type;
+    break;
+  }
   }
   // TODO: OK FOR NOW
   assert(!ty.IsNull());
   ty.GetPtr()->SetTypeQualifiers(qualifiers);
   ty.GetPtr()->SetTypeChunks(chunks);
+  return ty;
 }
 
 Type Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
