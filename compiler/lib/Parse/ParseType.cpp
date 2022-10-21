@@ -9,7 +9,7 @@ using namespace stone;
 using namespace stone::syn;
 
 // fun Do() -> '() -> int'
-Type Parser::ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID) {
+Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 
   Type result;
   ParsingScope parsingType(*this, ScopeKind::FunctionType, "parsing type");
@@ -53,7 +53,7 @@ Type Parser::ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID) {
 }
 
 // Similar to ParseDeclSpecifiers
-Type Parser::ParseType(ParsingDeclCollector &collector, Diag<> diagID) {
+Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   Type result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
@@ -88,20 +88,18 @@ Type Parser::ParseType(ParsingDeclCollector &collector, Diag<> diagID) {
   return result;
 }
 
-Type Parser::ParseDeclResultType(ParsingDeclCollector &collector,
-                                 Diag<> diagID) {
+Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
+Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   TypeQualifierList *qualifiers = nullptr;
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    qualifiers = TypeQualifierList::Create(collector.GetTypeCollector()
-                                               .GetTypeQualifierCollector()
-                                               .GetTypeQualifiers(),
-                                           GetSyntaxContext());
+  if (collector.GetTypeQualifierCollector().HasAny()) {
+    qualifiers = TypeQualifierList::Create(
+        collector.GetTypeQualifierCollector().GetTypeQualifiers(),
+        GetSyntaxContext());
   }
 
   // Collect the type -- only basic types for now (TODO: user type  and function
@@ -112,38 +110,37 @@ Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
     // TODO: nothing to do
   }
 
-  if (!collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
+  if (!collector.GetTypeSpecifierCollector().HasAny()) {
     // TODO: nothing to do
   }
 
   CollectTypeChunks(collector);
   TypeChunkList *chunks = nullptr;
-  if (collector.GetTypeCollector().GetTypeChunkCollector().HasAny()) {
+  if (collector.GetTypeChunkCollector().HasAny()) {
     chunks = TypeChunkList::Create(
-        collector.GetTypeCollector().GetTypeChunkCollector().GetTypeChunks(),
-        GetSyntaxContext());
+        collector.GetTypeChunkCollector().GetTypeChunks(), GetSyntaxContext());
   }
 
   Type ty;
   // TypeBase *ty = nullptr;
-  switch (collector.GetTypeCollector().GetTypeSpecifierCollector().GetKind()) {
+  switch (collector.GetTypeSpecifierCollector().GetKind()) {
   case TypeSpecifierKind::Int: {
-    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt());
+    assert(collector.GetTypeSpecifierCollector().IsInt());
     ty = GetSyntaxContext().GetBuiltin().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
-    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt16());
+    assert(collector.GetTypeSpecifierCollector().IsInt16());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
-    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt32());
+    assert(collector.GetTypeSpecifierCollector().IsInt32());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
-    assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsInt64());
+    assert(collector.GetTypeSpecifierCollector().IsInt64());
     ty = GetSyntaxContext().GetBuiltin().BuiltinInt64Type;
     break;
   }
@@ -155,8 +152,7 @@ Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
   return ty;
 }
 
-Type Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
-                                 Diag<> diagID) {
+Type Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
   Type result;
   return result;
 }

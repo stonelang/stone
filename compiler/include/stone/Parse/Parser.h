@@ -155,35 +155,32 @@ public:
   SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
-  SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
 
   bool IsTypeChunk(const Token &tk);
-  SyntaxStatus CollectTypeChunk(ParsingDeclCollector &collector);
-  SyntaxStatus CollectTypeChunks(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypeChunk(TypeCollector &collector);
+  SyntaxStatus CollectTypeChunks(TypeCollector &collector);
+  SyntaxStatus CollectBasicTypeDecl(TypeCollector &collector);
+  SyntaxStatus CollectNominalTypeDecl(TypeCollector &collector);
+  SyntaxStatus CollectTypeQualifier(TypeCollector &collector);
 
-  SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
-  SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
   SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
   SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//
+
   bool IsBasicType(tok kind) const;
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  Type ParseType(ParsingDeclCollector &collector, Diag<> diagID);
-
-  Type ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID);
-  Type ParsePointerType(ParsingDeclCollector &collector, Diag<> diagID);
-  Type ParseReferenceType(ParsingDeclCollector &collector, Diag<> diagID);
-
-  Type ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID);
-
-  Type ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID);
-
-  Type ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
+  Type ParseType(TypeCollector &collector, Diag<> diagID);
+  Type ParseFunctionType(TypeCollector &collector, Diag<> diagID);
+  Type ParsePointerType(TypeCollector &collector, Diag<> diagID);
+  Type ParseReferenceType(TypeCollector &collector, Diag<> diagID);
+  Type ParseDeclResultType(TypeCollector &collector, Diag<> diagID);
+  Type ParseBasicType(TypeCollector &collector, Diag<> diagID);
+  Type ParseIdentifierType(TypeCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//

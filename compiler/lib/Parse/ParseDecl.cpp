@@ -151,7 +151,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
         SrcLoc());
   }
 
-  CollectTypeChunks(collector);
+  CollectTypeChunks(collector.GetTypeCollector());
   assert(collector.GetTypeCollector().GetTypeChunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
@@ -330,12 +330,13 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
 
     // Collect Qualifiers
     while (!GetTok().IsQualifier()) {
-      CollectTypeQualifier(collector);
+      CollectTypeQualifier(collector.GetTypeCollector());
     }
 
     // Why not just ParseFunctionType
-    auto retType = ParseDeclResultType(
-        collector, diag::err_expected_type_for_function_result);
+    auto retType =
+        ParseDeclResultType(collector.GetTypeCollector(),
+                            diag::err_expected_type_for_function_result);
     collector.GetTypeCollector().SetType(retType);
 
     // status |= ParseFunctionResult(collector);
