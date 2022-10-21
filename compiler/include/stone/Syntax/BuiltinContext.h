@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_BUILTINCONTEXT_H
 #define STONE_SYNTAX_BUILTINCONTEXT_H
 
-#include "stone/Syntax/Type.h"
+#include "stone/Syntax/Types.h"
 
 namespace stone {
 namespace syn {
@@ -15,7 +15,6 @@ public:
   void operator=(const BuiltinContext &) = delete;
 
 public:
-  // const CanType FloatTy;
   const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
   const CanType BuiltinFloat32Type;  /// 32-bit IEEE floating point
   const CanType BuiltinFloat64Type;  /// 64-bit IEEE floating point
@@ -43,6 +42,9 @@ public:
 public:
   BuiltinContext(SyntaxContext &sc);
   ~BuiltinContext();
+
+private:
+  void Initialize();
 
 public:
   Type GetType(llvm::StringRef name);

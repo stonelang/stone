@@ -4,8 +4,9 @@
 #define STONE_SYNTAX_CANTYPE_H
 
 namespace stone {
-
 namespace syn {
+
+class TypeBase;
 
 class CanType final : public Type {
 public:
@@ -13,6 +14,10 @@ public:
   CanType() = default;
 
 public:
+  explicit CanType(TypeBase *ty = 0) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
   explicit CanType(Type ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");

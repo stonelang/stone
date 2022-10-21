@@ -1,6 +1,5 @@
 #include "stone/Syntax/BuiltinContext.h"
 #include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -44,5 +43,7 @@ BuiltinContext::BuiltinContext(SyntaxContext &sc)
           NumberBitWidth::N128, nullptr, nullptr, sc)),
       BuiltinUIntType(new(sc, AllocationArena::Permanent) UIntegerType(
           NumberBitWidth::Platform, nullptr, nullptr, sc)) {}
+
+void BuiltinContext::Initialize() {}
 
 BuiltinContext::~BuiltinContext() {}

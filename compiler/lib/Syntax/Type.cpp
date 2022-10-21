@@ -77,3 +77,20 @@ IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
                                  const SyntaxContext &sc) {
   return new (sc) IntegerType(bitWidthKind, qualifiers, chunks, sc);
 }
+
+IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
+                                 const SyntaxContext &sc) {
+  return new (sc) IntegerType(bitWidthKind, nullptr, nullptr, sc);
+}
+
+FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
+                             const SyntaxContext &sc) {
+  return new (sc) FloatType(bitWidthKind, nullptr, nullptr, sc);
+}
+
+FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
+                             TypeQualifierList *qualifiers,
+                             TypeChunkList *chunks, const SyntaxContext &sc) {
+
+  return new (sc) FloatType(bitWidthKind, qualifiers, chunks, sc);
+}

@@ -261,6 +261,9 @@ public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
                              TypeQualifierList *qualifiers,
                              TypeChunkList *chunks, const SyntaxContext &sc);
+
+  static IntegerType *Create(NumberBitWidthKind bitWidthKind,
+                             const SyntaxContext &sc);
 };
 
 class UIntegerType : public NumberType {
@@ -288,6 +291,14 @@ public:
   FloatType(NumberBitWidthKind bitWidthKind, TypeQualifierList *qualifiers,
             TypeChunkList *chunks, const SyntaxContext &sc)
       : NumberType(TypeKind::Float, bitWidthKind, qualifiers, chunks, sc) {}
+
+public:
+  static FloatType *Create(NumberBitWidthKind bitWidthKind,
+                           const SyntaxContext &sc);
+
+  static FloatType *Create(NumberBitWidthKind bitWidthKind,
+                           TypeQualifierList *qualifiers, TypeChunkList *chunks,
+                           const SyntaxContext &sc);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
