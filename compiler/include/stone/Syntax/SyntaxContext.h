@@ -16,7 +16,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Builtin.h"
+#include "stone/Syntax/BuiltinContext.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPath.h"
@@ -68,7 +68,7 @@ class Expr;
 class MangleContext;
 class Module;
 class Stmt;
-class Builtin;
+class BuiltinContext;
 class SyntaxContext;
 class Decl;
 class DeclContext;
@@ -101,7 +101,7 @@ class SyntaxContext final {
   /// The search path options
   const SearchPathOptions &searchPathOpts;
 
-  Builtin builtin;
+  BuiltinContext builtinContext;
   /// The allocator used to create SyntaxContext objects.
   /// SyntaxContext objects are never destructed; rather, all memory associated
   /// with the SyntaxContext objects will be released when the SyntaxContext
@@ -143,7 +143,7 @@ public:
   ///
   Identifier GetIdentifier(llvm::StringRef name);
   ///
-  const Builtin &GetBuiltin() const;
+  const BuiltinContext &GetBuiltinContext() const;
 
   LangContext &GetLangContext() { return lc; }
   const LangContext &GetLangContext() const { return lc; }

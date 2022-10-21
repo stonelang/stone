@@ -126,22 +126,22 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
-    ty = GetSyntaxContext().GetBuiltin().BuiltinIntType;
+    ty = GetSyntaxContext().GetBuiltinContext().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
     assert(collector.GetTypeSpecifierCollector().IsInt16());
-    ty = GetSyntaxContext().GetBuiltin().BuiltinInt16Type;
+    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
     assert(collector.GetTypeSpecifierCollector().IsInt32());
-    ty = GetSyntaxContext().GetBuiltin().BuiltinInt32Type;
+    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
     assert(collector.GetTypeSpecifierCollector().IsInt64());
-    ty = GetSyntaxContext().GetBuiltin().BuiltinInt64Type;
+    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt64Type;
     break;
   }
   }

@@ -20,8 +20,8 @@ using namespace stone::syn;
 
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
-    : lc(lc), searchPathOpts(spOpts), identifiers(allocator), builtin(*this),
-      stats(new SyntaxContextStats(*this)) {
+    : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
+      builtinContext(*this), stats(new SyntaxContextStats(*this)) {
 
   lc.GetStatEngine().Register(stats.get());
 }
@@ -32,7 +32,9 @@ SyntaxContext::~SyntaxContext() {
   }
 }
 
-const Builtin &SyntaxContext::GetBuiltin() const { return builtin; }
+const BuiltinContext &SyntaxContext::GetBuiltinContext() const {
+  return builtinContext;
+}
 
 void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
                                    AllocationArena arena, unsigned alignment) {

@@ -5,8 +5,7 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_syn_sources
-	Builtin.cpp
-	BitterType.cpp
+	BuiltinContext.cpp
 	Comment.cpp
 	Decl.cpp
 	DeclCollector.cpp
@@ -17,7 +16,6 @@ set(stone_syn_sources
 	Identifier.cpp
 	Module.cpp
 	SearchPath.cpp
-	SugarType.cpp
 	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp

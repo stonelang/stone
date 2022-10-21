@@ -1,11 +1,11 @@
-#include "stone/Syntax/Builtin.h"
+#include "stone/Syntax/BuiltinContext.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-Builtin::Builtin(SyntaxContext &sc)
+BuiltinContext::BuiltinContext(SyntaxContext &sc)
     : sc(sc),
 
       BuiltinFloat16Type(new(sc, AllocationArena::Permanent) FloatType(
@@ -45,4 +45,4 @@ Builtin::Builtin(SyntaxContext &sc)
       BuiltinUIntType(new(sc, AllocationArena::Permanent) UIntegerType(
           NumberBitWidth::Platform, nullptr, nullptr, sc)) {}
 
-Builtin::~Builtin() {}
+BuiltinContext::~BuiltinContext() {}
