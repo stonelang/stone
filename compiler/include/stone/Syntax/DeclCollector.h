@@ -257,6 +257,17 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
+class TypeCollector final {
+  Type type;
+
+public:
+  TypeCollector() {}
+
+public:
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
+};
+
 class DeclCollector {
 
   AttributeFactory &attributeFactory;
@@ -267,6 +278,8 @@ class DeclCollector {
   FunctionSpecifierCollector functionSpecifierCollector;
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
+
+  TypeCollector typeCollector;
 
   // DeclNameLoc
 
@@ -311,6 +324,9 @@ public:
   const TypeQualifierCollector &GetTypeQualifierCollector() const {
     return typeQualifierCollector;
   }
+
+  TypeCollector &GetTypeCollector() { return typeCollector; }
+  const TypeCollector &GetTypeCollector() const { return typeCollector; }
 
   TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
   const TypeChunkCollector &GetTypeChunkCollector() const {

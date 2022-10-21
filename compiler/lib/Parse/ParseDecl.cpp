@@ -225,9 +225,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   }
 
   DeclName fullName;
-  TypeBase *retType;
   // Now, parse the function signature
-  status |= ParseFunctionSignature(collector, basicName, fullName, retType);
+  status |= ParseFunctionSignature(collector, basicName, fullName);
 
   if (status.IsError()) {
     return status;
@@ -237,8 +236,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   collector.SetDeclNameLoc(nameLoc);
 
   // Create the function
-  auto funDecl =
-      FunDeclFactory::Create(collector, sc, Type(retType), GetCurDeclContext());
+  auto funDecl = FunDeclFactory::Create(collector, sc,
+                                        collector.GetTypeCollector().GetType(),
+                                        GetCurDeclContext());
   assert(funDecl);
 
   // Very simple for the time being
@@ -265,8 +265,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
                                             Identifier basicName,
-                                            DeclName &fullName,
-                                            TypeBase *retType) {
+                                            DeclName &fullName) {
   SyntaxStatus status;
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
@@ -319,10 +318,9 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     }
 
     // Why not just ParseFunctionType
-    SyntaxResult<TypeBase> resultType = ParseDeclResultType(
+    auto retType = ParseDeclResultType(
         collector, diag::err_expected_type_for_function_result);
-
-    retType = resultType.GetPtrOrNull();
+    collector.GetTypeCollector().SetType(retType);
 
     // status |= ParseFunctionResult(collector);
     // assert(curTok.Is(tok::arrow) && "Require '->'");

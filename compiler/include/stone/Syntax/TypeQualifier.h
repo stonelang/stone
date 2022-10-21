@@ -151,7 +151,6 @@ public:
 public:
   llvm::ArrayRef<TypeQualifier> GetTypeQualifiers() { return qualifiers; }
 };
-
 } // namespace syn
 } // namespace stone
 

@@ -9,10 +9,9 @@ using namespace stone;
 using namespace stone::syn;
 
 // fun Do() -> '() -> int'
-SyntaxResult<TypeBase>
-Parser::ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID) {
+Type Parser::ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID) {
 
-  SyntaxResult<TypeBase> result;
+  Type result;
   ParsingScope parsingType(*this, ScopeKind::FunctionType, "parsing type");
   // TODO: We are asserting these for now but we may just want to log some ass
   // erros
@@ -50,13 +49,12 @@ Parser::ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID) {
   // auto qualType = new (GetSyntaxContext()) QualifierType();
   // auto functionType = new (GetSyntaxContext()) FunctionType(qualType);
 
-  return syn::MakeSyntaxResult<TypeBase>(nullptr);
+  return result;
 }
 
 // Similar to ParseDeclSpecifiers
-SyntaxResult<TypeBase> Parser::ParseType(ParsingDeclCollector &collector,
-                                         Diag<> diagID) {
-  SyntaxResult<TypeBase> result;
+Type Parser::ParseType(ParsingDeclCollector &collector, Diag<> diagID) {
+  Type result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
   // if (collector.GetFunctionSpecifierCollector().HasFun() &&
@@ -90,13 +88,12 @@ SyntaxResult<TypeBase> Parser::ParseType(ParsingDeclCollector &collector,
   return result;
 }
 
-SyntaxResult<TypeBase>
-Parser::ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID) {
+Type Parser::ParseDeclResultType(ParsingDeclCollector &collector,
+                                 Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-SyntaxResult<TypeBase> Parser::ParseBasicType(ParsingDeclCollector &collector,
-                                              Diag<> diagID) {
+Type Parser::ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
 
@@ -126,13 +123,43 @@ SyntaxResult<TypeBase> Parser::ParseBasicType(ParsingDeclCollector &collector,
         collector.GetTypeChunkCollector().GetTypeChunks(), GetSyntaxContext());
   }
 
-  TypeBase *ty = nullptr;
-  if (collector.GetTypeSpecifierCollector().IsInt()) {
-    ty = IntegerType::Create(NumberBitWidth::Platform, qualifiers, chunks,
-                             GetSyntaxContext());
+  Type ty;
+  // TypeBase *ty = nullptr;
+  switch (collector.GetTypeSpecifierCollector().GetKind()) {
+  case TypeSpecifierKind::Int: {
+    assert(collector.GetTypeSpecifierCollector().IsInt());
+    ty = GetSyntaxContext().GetBuiltin().BuiltinIntType;
+    // ty = IntegerType::Create(NumberBitWidth::Platform, qualifiers, chunks,
+    //                          GetSyntaxContext());
+    break;
   }
-  return syn::MakeSyntaxResult<TypeBase>(ty);
+    // case TypeSpecifierKind::Int16: {
+    //   assert(collector.GetTypeSpecifierCollector().IsInt16());
+    //   ty = IntegerType::Create(NumberBitWidth::N16, qualifiers, chunks,
+    //                            GetSyntaxContext());
+    //   break;
+    // }
+    // case TypeSpecifierKind::Int32: {
+    //   assert(collector.GetTypeSpecifierCollector().IsInt32());
+    //   ty = IntegerType::Create(NumberBitWidth::N32, qualifiers, chunks,
+    //                            GetSyntaxContext());
+    //   break;
+    // }
+    // case TypeSpecifierKind::Int64: {
+    //   assert(collector.GetTypeSpecifierCollector().IsInt64());
+    //   ty = IntegerType::Create(NumberBitWidth::N64, qualifiers, chunks,
+    //                            GetSyntaxContext());
+    //   break;
+    // }
+  }
+  // TODO: OK FOR NOW
+  assert(!ty.IsNull());
+  ty.GetPtr()->SetTypeQualifiers(qualifiers);
+  ty.GetPtr()->SetTypeChunks(chunks);
 }
 
-void Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
-                                 Diag<> diagID) {}
+Type Parser::ParseIdentifierType(TypeSpecifierCollector &collector,
+                                 Diag<> diagID) {
+  Type result;
+  return result;
+}

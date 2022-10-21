@@ -173,23 +173,17 @@ public:
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  SyntaxResult<TypeBase> ParseType(ParsingDeclCollector &collector,
-                                   Diag<> diagID);
+  Type ParseType(ParsingDeclCollector &collector, Diag<> diagID);
 
-  SyntaxResult<TypeBase> ParseFunctionType(ParsingDeclCollector &collector,
-                                           Diag<> diagID);
-  SyntaxResult<TypeBase> ParsePointerType(ParsingDeclCollector &collector,
-                                          Diag<> diagID);
-  SyntaxResult<TypeBase> ParseReferenceType(ParsingDeclCollector &collector,
-                                            Diag<> diagID);
+  Type ParseFunctionType(ParsingDeclCollector &collector, Diag<> diagID);
+  Type ParsePointerType(ParsingDeclCollector &collector, Diag<> diagID);
+  Type ParseReferenceType(ParsingDeclCollector &collector, Diag<> diagID);
 
-  SyntaxResult<TypeBase> ParseDeclResultType(ParsingDeclCollector &collector,
-                                             Diag<> diagID);
+  Type ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID);
 
-  SyntaxResult<TypeBase> ParseBasicType(ParsingDeclCollector &collector,
-                                        Diag<> diagID);
+  Type ParseBasicType(ParsingDeclCollector &collector, Diag<> diagID);
 
-  void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
+  Type ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//
@@ -197,8 +191,7 @@ public:
 
 private:
   SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collector,
-                                      Identifier basicName, DeclName &fullName,
-                                      TypeBase *retType);
+                                      Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
