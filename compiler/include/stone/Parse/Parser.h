@@ -157,9 +157,9 @@ public:
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
 
-  bool IsTypePattern(const Token &tk);
-  SyntaxStatus CollectTypePattern(ParsingDeclCollector &collector);
-  SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
+  bool IsTypeChunk(const Token &tk);
+  SyntaxStatus CollectTypeChunk(ParsingDeclCollector &collector);
+  SyntaxStatus CollectTypeChunks(ParsingDeclCollector &collector);
 
   SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
@@ -173,16 +173,21 @@ public:
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  SyntaxResult<TypeRep> ParseType(ParsingDeclCollector &collector,
-                                  Diag<> diagID);
-  SyntaxResult<TypeRep> ParseFunctionType(ParsingDeclCollector &collector,
-                                          Diag<> diagID);
+  SyntaxResult<TypeBase> ParseType(ParsingDeclCollector &collector,
+                                   Diag<> diagID);
 
-  SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
+  SyntaxResult<TypeBase> ParseFunctionType(ParsingDeclCollector &collector,
+                                           Diag<> diagID);
+  SyntaxResult<TypeBase> ParsePointerType(ParsingDeclCollector &collector,
+                                          Diag<> diagID);
+  SyntaxResult<TypeBase> ParseReferenceType(ParsingDeclCollector &collector,
                                             Diag<> diagID);
 
-  SyntaxResult<TypeRep> ParseBasicType(ParsingDeclCollector &collector,
-                                       Diag<> diagID);
+  SyntaxResult<TypeBase> ParseDeclResultType(ParsingDeclCollector &collector,
+                                             Diag<> diagID);
+
+  SyntaxResult<TypeBase> ParseBasicType(ParsingDeclCollector &collector,
+                                        Diag<> diagID);
 
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
 
@@ -192,7 +197,8 @@ public:
 
 private:
   SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collector,
-                                      Identifier basicName, DeclName &fullName);
+                                      Identifier basicName, DeclName &fullName,
+                                      TypeBase *retType);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -202,7 +208,7 @@ private:
   //                                       bool &reasync,
   //                                       SourceLoc &throws,
   //                                       bool &rethrows,
-  //                                       TypeRepr *&retType);
+  //                                       Typer *&retType);
 
   SyntaxStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
   SyntaxStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,

@@ -51,7 +51,4 @@ size_t SyntaxContext::GetSizeOfMemUsed() const {
 //   return internal.allocator;
 // }
 
-FunctionType::FunctionType(const SyntaxContext *sc, QualType result)
-    : AbstractFunctionType(TypeKind::Function, sc, result) {}
-
 void SyntaxContextStats::Print(ColorfulStream &stream) {}

@@ -5,7 +5,7 @@ using namespace stone::syn;
 
 DeclCollector::DeclCollector(AttributeFactory &attributeFactory)
     : attributeFactory(attributeFactory),
-      typePatternCollector(typeSpecifierCollector) {}
+      typeChunkCollector(typeSpecifierCollector) {}
 
 void DeclCollector::Apply() {
 
@@ -15,8 +15,8 @@ void DeclCollector::Apply() {
   // if (GetTypeQualifierCollector().HasAny()) {
   //   GetTypeQualifierCollector().Apply();
   // }
-  if (GetTypePatternCollector().HasAny()) {
-    GetTypePatternCollector().Apply();
+  if (GetTypeChunkCollector().HasAny()) {
+    GetTypeChunkCollector().Apply();
   }
   if (GetStorageSpecifierCollector().HasAny()) {
     GetStorageSpecifierCollector().Apply();

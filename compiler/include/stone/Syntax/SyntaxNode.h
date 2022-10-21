@@ -14,7 +14,7 @@ namespace syn {
 class Expr;
 class Stmt;
 class Decl;
-class QualType;
+class Type;
 class DeclContext;
 class SyntaxWalker;
 
@@ -29,8 +29,7 @@ enum class SyntaxNodeStatus : UInt8 {
   TypeChecked,
 };
 
-struct SyntaxNode
-    : public llvm::PointerUnion<Expr *, Stmt *, Decl *, QualType *> {
+struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   // Inherit the constructors from PointerUnion.
   using PointerUnion::PointerUnion;
 

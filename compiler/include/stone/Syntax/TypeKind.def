@@ -3,7 +3,6 @@
 // def BuiltinType : TypeNode<Type>, LeafType;
 // def ComplexType : TypeNode<Type>;
 // def PointerType : TypeNode<Type>;
-// def BlockPointerType : TypeNode<Type>;
 // def ReferenceType : TypeNode<Type, 1>;
 // def LValueReferenceType : TypeNode<ReferenceType>;
 // def RValueReferenceType : TypeNode<ReferenceType>;
@@ -144,6 +143,14 @@ TYPE(Error, Type)
 TYPE(LValue, Type)
 TYPE(RValue, Type)
 TYPE(Tuple, Type)
+
+
+// ABSTRACT_TYPE(Identifier, Type)
+//   ABSTRACT_TYPEREPR(ComponentIdentifier, Identifier)
+//     TYPEREPR(SimpleIdent, ComponentIdentTypeRepr)
+//     TYPEREPR(GenericIdent, ComponentIdentTypeRepr)
+//   TYPEREPR(CompoundIdent, IdentTypeRepr)
+
 
 ABSTRACT_TYPE(Builtin, Type)
   ABSTRACT_TYPE(AbstractNumber,  BuiltinType)

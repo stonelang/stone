@@ -16,7 +16,6 @@ set(stone_syn_sources
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
-	Pattern.cpp
 	SearchPath.cpp
 	SugarType.cpp
 	Specifier.cpp
@@ -29,7 +28,8 @@ set(stone_syn_sources
 	SyntaxWalker.cpp
 	Template.cpp
 	Type.cpp
-	TypeRep.cpp
+	TypeQualifier.cpp
+	TypeChunk.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	

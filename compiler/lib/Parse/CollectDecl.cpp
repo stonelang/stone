@@ -86,12 +86,6 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   case tok::kw_volatile:
     collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
     break;
-  case tok::kw_pure:
-    collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
-    break;
-  // case tok::kw_final:
-  //   collector.GetTypeQualifierCollector().AddFinal(ConsumeToken());
-  //   break;
   case tok::kw_mutable:
     collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
     break;
@@ -101,7 +95,7 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   return syn::MakeSyntaxSuccess();
 }
 
-bool Parser::IsTypePattern(const Token &tk) {
+bool Parser::IsTypeChunk(const Token &tk) {
   switch (tk.GetKind()) {
   case tok::star:
   case tok::amp:
@@ -111,32 +105,32 @@ bool Parser::IsTypePattern(const Token &tk) {
   }
 }
 
-SyntaxStatus Parser::CollectTypePattern(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectTypeChunk(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
-    collector.GetTypePatternCollector().AddPointer(ConsumeToken());
+    collector.GetTypeChunkCollector().AddPointer(ConsumeToken());
     break;
   case tok::amp:
-    collector.GetTypePatternCollector().AddReference(ConsumeToken());
+    collector.GetTypeChunkCollector().AddReference(ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectTypeChunks(ParsingDeclCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
-  if (!GetTok().IsTypePattern() && GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypePatternCollector().AddValue();
+  if (!GetTok().IsTypeChunk() && GetTok().IsIdentifierOrUnderscore()) {
+    collector.GetTypeChunkCollector().AddValue();
     return syn::MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   SyntaxStatus status;
-  while (GetTok().IsTypePattern()) {
-    status = CollectTypePattern(collector);
+  while (GetTok().IsTypeChunk()) {
+    status = CollectTypeChunk(collector);
     if (status.HasCodeCompletion()) {
       return status;
     }

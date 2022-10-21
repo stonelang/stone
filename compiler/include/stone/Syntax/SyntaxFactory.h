@@ -62,10 +62,10 @@ struct VarDeclFactory final {
 
 struct FunDeclFactory final {
   static FunDecl *Create(DeclCollector &collector, SyntaxContext &sc,
-                         TypeRep *resultRep, DeclContext *parent);
+                         Type result, DeclContext *parent);
 
   static FunDecl *CreateImplicit(DeclCollector &collector, SyntaxContext &sc,
-                                 QualType *returnType, DeclContext *parent);
+                                 Type result, DeclContext *parent);
 };
 
 struct SyntaxFileFactory final {

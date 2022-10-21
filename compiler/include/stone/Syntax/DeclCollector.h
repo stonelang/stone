@@ -4,8 +4,9 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
-#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Template.h"
+#include "stone/Syntax/TypeChunk.h"
+#include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -261,7 +262,7 @@ class DeclCollector {
   AttributeFactory &attributeFactory;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
-  TypePatternCollector typePatternCollector;
+  TypeChunkCollector typeChunkCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
   UsingDeclarationCollector usingDeclarationCollector;
@@ -311,11 +312,9 @@ public:
     return typeQualifierCollector;
   }
 
-  TypePatternCollector &GetTypePatternCollector() {
-    return typePatternCollector;
-  }
-  const TypePatternCollector &GetTypePatternCollector() const {
-    return typePatternCollector;
+  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+  const TypeChunkCollector &GetTypeChunkCollector() const {
+    return typeChunkCollector;
   }
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;

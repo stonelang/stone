@@ -346,19 +346,17 @@ public:
 
 class ValueDecl : public NameableDecl {
 
-  // llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
-  /// fun GetObject() -> Object* {return object } where Object* is resultTy
-  QualType type;
+  Type type;
   AccessLevel level;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
             UnifiedContext context)
-      : NameableDecl(kind, name, nameLoc, context) {}
+      : NameableDecl(kind, name, nameLoc, context), type(type) {}
 
 public:
-  void SetType(QualType inputType) { type = inputType; }
-  QualType GetType() { return type; }
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
@@ -397,9 +395,9 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
            UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, context) {}
+      : ValueDecl(kind, name, nameLoc, type, context) {}
 
 public:
   // Low-level accessor. If you just want the type defined by this node,
@@ -480,9 +478,9 @@ class GenericTypeDecl : public TypeDecl {};
 // class TemplateTypeDecl : public TypeDecl();
 
 // This is really your function prototye
-class FunctionDecl
-    : public DeclContext,
-      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+class FunctionDecl : public ValueDecl,
+                     public DeclContext
+/*, public syn::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -519,10 +517,10 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
                DeclContext *parent)
       : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent) {}
+        ValueDecl(kind, name, nameLoc, retType, parent) {}
 
 public:
   /// TODO:
@@ -555,13 +553,13 @@ class FunDecl : public FunctionDecl {
 
   /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
   /// and Oject* is the QualType which is the resultType
-  TypeLoc returnType;
+  TypeLoc result;
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-          DeclContext *parent)
-      : FunctionDecl(kind, name, nameLoc, parent) {}
+          Type result, DeclContext *parent)
+      : FunctionDecl(kind, name, nameLoc, result, parent) {}
 
 public:
   bool IsMain() const;
@@ -607,8 +605,8 @@ class MemberFunDecl : public FunDecl {
   /// TODO: pass , NominalTypeDecl* owner,
 public:
   MemberFunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-                DeclContext *parent)
-      : FunDecl(kind, funLoc, name, nameLoc, parent) {}
+                Type retType, DeclContext *parent)
+      : FunDecl(kind, funLoc, name, nameLoc, retType, parent) {}
 };
 
 class ConstructorDecl : public MemberFunDecl {

@@ -5,7 +5,6 @@
 #include "stone/Basic/STDTypeAlias.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclCollector.h"
-#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxResult.h"

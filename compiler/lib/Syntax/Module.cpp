@@ -23,7 +23,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
 
 Module::Module(Identifier name, SyntaxContext &sc)
     : DeclContext(DeclContextKind::Module, nullptr),
-      TypeDecl(DeclKind::Module, name, SrcLoc(), &sc) {}
+      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc) {}
 
 void Module::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.

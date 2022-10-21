@@ -1,5 +1,4 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/Pattern.h"
 
 using namespace stone;
 using namespace stone::syn;

@@ -231,7 +231,7 @@ public:
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
 
-  bool IsTypePattern() const { return (IsStar() || IsAmp()); }
+  bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
