@@ -363,19 +363,14 @@ public:
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
 
-  // bool HasAccessLevel() const {
-  //   return resultTypeAndAccess.getInt().hasValue();
-  // }
+  bool HasAccessLevel() { return level != AccessLevel::None; }
+  AccessLevel GetAccessLevel() const { return level; }
 
-  // AccessLevel GetAccessLevel() const;
-
-  // void SetAccess(AccessLevel level) {
-  //   assert(!HasAccessLevel() && "access already set");
-  //   OverwriteAccess(access);
-  // }
-
+  void SetAccessLevel(AccessLevel level) {
+    assert(!HasAccessLevel() && "access already set");
+    OverwriteAccess(level);
+  }
   // Overwrite the access of this declaration.
-  //
   // This is needed in the LLDB REPL.
   void OverwriteAccess(AccessLevel inputLevel) { level = inputLevel; }
 };
@@ -576,16 +571,10 @@ public:
 
   bool HasReturn() const;
 
-  void SetFunLoc(SrcLoc funLoc);
-  SrcLoc GetFunLoc() { return funLoc; }
-
-  QualType GetReturnType() const;
-
   // TypeLoc GetReturnType() const;
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
-
   // SrcLoc GetStaticLoc() const { return staticLoc; }
   // SrcLoc GetFunLoc() const { return funcLoc; }
 

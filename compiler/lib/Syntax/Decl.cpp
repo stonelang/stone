@@ -147,19 +147,21 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
-
 void DeclStats::Print(ColorfulStream &stream) {}
 
 FunDecl *FunDeclFactory::Create(DeclCollector &collector, SyntaxContext &sc,
-                                Type result, DeclContext *parent) {
+                                DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
-  return ::new (memPtr) FunDecl(
+  auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
-      collector.GetDeclName(), collector.GetDeclNameLoc(), result, parent);
+      collector.GetDeclName(), collector.GetDeclNameLoc(),
+      collector.GetTypeCollector().GetType(), parent);
+
+  funDecl->SetAccessLevel(collector.GetAccessLevelCollector().GetAccessLevel());
+  return funDecl;
 }
 
 StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,

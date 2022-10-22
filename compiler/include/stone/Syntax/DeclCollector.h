@@ -240,6 +240,7 @@ public:
 
   bool HasAny() { return (HasPublic() || HasPrivate() || HasInternal()); }
   SrcLoc GetLoc() { return loc; }
+  AccessLevel GetAccessLevel() { return level; }
 
   void Apply();
 };
@@ -283,6 +284,7 @@ public:
   const TypeChunkCollector &GetTypeChunkCollector() const {
     return typeChunkCollector;
   }
+  void Apply();
 
 public:
   void SetType(Type inputType) { type = inputType; }

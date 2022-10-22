@@ -251,32 +251,17 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return status;
   }
 
+  // Apply what what collected
+  // collector.Apply();
   // Create the function
-  auto funDecl = FunDeclFactory::Create(collector, sc,
-                                        collector.GetTypeCollector().GetType(),
-                                        GetCurDeclContext());
+  auto funDecl = FunDeclFactory::Create(collector, sc, GetCurDeclContext());
   assert(funDecl);
 
+  if (!status.HasCodeCompletion()) {
+    status |= ParseFunctionBody(collector, *funDecl);
+  }
   // Very simple for the time being
   return syn::MakeSyntaxResult<Decl>(funDecl);
-
-  // // TODO: Think about this part
-
-  // funDecl->SetAccessLevel(collector.GetAccessLevel());
-  // funDecl->SetFunLoc(funLoc);
-
-  // // funDecl->SetTemplate...
-  // // QualType *returnType = nullptr;
-  // // DeclName fullName;
-
-  // // Scope is functin signaure
-  // if (ParseFunctionSignature(collector, *funDecl).IsError()) {
-  //   return syn::MakeSyntaxError();
-  // }
-
-  // // Scope is now function body
-  // status |= ParseFunctionBody(collector, *funDecl);
-  // syn::VerifyDecl(funDecl);
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,

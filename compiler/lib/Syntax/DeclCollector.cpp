@@ -8,9 +8,8 @@ DeclCollector::DeclCollector(AttributeFactory &attributeFactory)
 
 void DeclCollector::Apply() {
 
-  // if (GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
-  //   GetTypeSpecifierCollector().Apply();
-  // }
+  GetTypeCollector().Apply();
+
   // // if (GetTypeQualifierCollector().HasAny()) {
   // //   GetTypeQualifierCollector().Apply();
   // // }
@@ -25,6 +24,8 @@ void DeclCollector::Apply() {
   //   GetAccessLevelCollector().Apply();
   // }
 }
+
+void TypeCollector::Apply() {}
 
 void StorageSpecifierCollector::Apply() {}
 
