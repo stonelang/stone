@@ -64,8 +64,6 @@ class alignas(1 << TypeAlignInBits) TypeBase
   void operator=(const TypeBase &) = delete;
 
   TypeKind kind;
-  TypeQualifierList *qualifiers = nullptr;
-  TypeChunkList *chunks = nullptr;
 
   /// This union contains to the ASTContext for canonical types, and is
   /// otherwise lazily populated by ASTContext when the canonical form of a
@@ -85,6 +83,7 @@ protected:
     //   Kind :stone::BitMax(NumTypeKindBits, 8),
     //   /// Whether this type is canonical or not.
     //   IsCanonical : 1
+    //   AllowQualifiers : 1
     // );
 
   } Bits;
@@ -94,9 +93,8 @@ private:
 
 public:
 public:
-  TypeBase(TypeKind kind, TypeQualifierList *qualifiers, TypeChunkList *chunks,
-           const SyntaxContext *canTypeContext)
-      : kind(kind), qualifiers(qualifiers), chunks(chunks), sc(nullptr) {
+  TypeBase(TypeKind kind, const SyntaxContext *canTypeContext)
+      : kind(kind), sc(nullptr) {
 
     /// TODO: I do not like this ....
     if (canTypeContext) {
@@ -115,14 +113,6 @@ public:
 public:
   TypeKind GetKind() const { return kind; }
 
-  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
-    qualifiers = inputQualifiers;
-  }
-  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
-
-  void SetTypeChunks(TypeChunkList *inputChunks) { chunks = inputChunks; }
-  TypeChunkList *GetTypeChunks() { return chunks; }
-
   // TypeKind GetKind() const { return
   // static_cast<TypeKind>(Bits.Type.Kind); }
 
@@ -134,10 +124,9 @@ class AbstractFunctionType : public TypeBase {
   Type result;
 
 public:
-  AbstractFunctionType(TypeKind kind, TypeQualifierList *qualifiers,
-                       Type result, TypeChunkList *chunks,
+  AbstractFunctionType(TypeKind kind, Type result,
                        const SyntaxContext *canTypeCtx)
-      : TypeBase(kind, qualifiers, chunks, canTypeCtx) {}
+      : TypeBase(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be QualType
@@ -146,8 +135,7 @@ class FunctionType : public AbstractFunctionType,
   friend TrailingObjects;
 
 public:
-  FunctionType(TypeQualifierList *qualifiers, Type result,
-               TypeChunkList *chunks, const SyntaxContext *sc);
+  FunctionType(Type result, const SyntaxContext *sc);
 
 public:
   /// 'Constructor' Factory Function
@@ -215,9 +203,7 @@ struct NumberBitWidth final {
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, TypeQualifierList *qualifiers,
-              TypeChunkList *chunks, const SyntaxContext &sc)
-      : TypeBase(kind, qualifiers, chunks, &sc) {}
+  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
 };
 
 // class IdentifierType : public TypeBase {
@@ -236,9 +222,8 @@ class NumberType : public BuiltinType {
 
 public:
   NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-             TypeQualifierList *qualifiers, TypeChunkList *chunks,
              const SyntaxContext &sc)
-      : BuiltinType(kind, qualifiers, chunks, sc), bitWidthKind(bitWidthKind) {}
+      : BuiltinType(kind, sc), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -253,15 +238,10 @@ class IntegerType : public NumberType {
   friend class SyntaxContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, TypeQualifierList *qualifiers,
-              TypeChunkList *chunks, const SyntaxContext &sc)
-      : NumberType(TypeKind::Integer, bitWidthKind, qualifiers, chunks, sc) {}
+  IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Integer, bitWidthKind, sc) {}
 
 public:
-  static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             TypeQualifierList *qualifiers,
-                             TypeChunkList *chunks, const SyntaxContext &sc);
-
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
                              const SyntaxContext &sc);
 };
@@ -270,34 +250,27 @@ class UIntegerType : public NumberType {
   friend class SyntaxContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, TypeQualifierList *qualifiers,
-               TypeChunkList *chunks, const SyntaxContext &sc)
+  UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
 
-      : NumberType(TypeKind::UInteger, bitWidthKind, qualifiers, chunks, sc) {}
+      : NumberType(TypeKind::UInteger, bitWidthKind, sc) {}
 };
 
 class ComplexType : public NumberType {
   friend class SyntaxContext;
 
 public:
-  ComplexType(NumberBitWidthKind bitWidthKind, TypeQualifierList *qualifiers,
-              TypeChunkList *chunks, const SyntaxContext &sc)
-      : NumberType(TypeKind::Complex, bitWidthKind, qualifiers, chunks, sc) {}
+  ComplexType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
 };
 class FloatType : public NumberType {
   friend class SyntaxContext;
 
 public:
-  FloatType(NumberBitWidthKind bitWidthKind, TypeQualifierList *qualifiers,
-            TypeChunkList *chunks, const SyntaxContext &sc)
-      : NumberType(TypeKind::Float, bitWidthKind, qualifiers, chunks, sc) {}
+  FloatType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Float, bitWidthKind, sc) {}
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const SyntaxContext &sc);
-
-  static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           TypeQualifierList *qualifiers, TypeChunkList *chunks,
                            const SyntaxContext &sc);
 
 public:
@@ -309,22 +282,18 @@ public:
 
 class VoidType : public BuiltinType {
 public:
-  VoidType(TypeQualifierList *qualifiers, TypeChunkList *chunks,
-           const SyntaxContext &sc)
-      : BuiltinType(TypeKind::Void, qualifiers, chunks, sc) {}
+  VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 };
 
 class NullType : public BuiltinType {
 public:
-  NullType(const SyntaxContext &sc)
-      : BuiltinType(TypeKind::Null, nullptr, nullptr, sc) {}
+  NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, TypeQualifierList *qualifiers,
-                      TypeChunkList *chunks, const SyntaxContext &sc)
-      : TypeBase(kind, qualifiers, chunks, &sc) {}
+  AbstractPointerType(TypeKind kind, const SyntaxContext &sc)
+      : TypeBase(kind, &sc) {}
 };
 
 // I don not think you need this

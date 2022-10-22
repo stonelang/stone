@@ -147,8 +147,8 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
   // TODO: OK FOR NOW
   assert(!ty.IsNull());
-  ty.GetPtr()->SetTypeQualifiers(qualifiers);
-  ty.GetPtr()->SetTypeChunks(chunks);
+  ty.SetTypeQualifiers(qualifiers);
+  ty.SetTypeChunks(chunks);
   return ty;
 }
 

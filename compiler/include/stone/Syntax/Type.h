@@ -7,7 +7,9 @@
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeKind.h"
+#include "stone/Syntax/TypeQualifier.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -55,30 +57,6 @@ class TypeBase;
 class Type;
 class TypeWalker;
 
-// class BitterType {
-// public:
-// };
-
-// class SugarType {
-// public:
-//   void operator==(Type T) const = delete;
-//   void operator!=(Type T) const = delete;
-
-//   void operator==(SugarType T) const = delete;
-//   void operator!=(SugarType T) const = delete;
-// };
-
-// class Type final : public llvm::PointerUnion<BitterType *, SugarType *> {
-// public:
-//   Type() {}
-// public:
-//   CanType* GetCanType();
-//   SugarType*  GetSugarType(); GetSugarType()->GetCanType();
-
-// public:
-//   Type Transform(llvm::function_ref<Type(Type)> fn) const;
-// };
-
 enum class GCKind : UInt8 { None = 0, Weak, Strong };
 
 /// ref-qualifier associated with a function Type.
@@ -107,9 +85,13 @@ enum class ScalarTypeKind {
 
 class Type {
   TypeBase *typePtr = nullptr;
+  TypeQualifierList *qualifiers = nullptr;
+  TypeChunkList *chunks = nullptr;
 
 public:
-  Type(TypeBase *typePtr = 0) : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
+  Type(TypeBase *typePtr, TypeQualifierList *qualifiers, TypeChunkList *chunks)
+      : typePtr(typePtr), qualifiers(qualifiers), chunks(chunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -119,7 +101,17 @@ public:
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
   }
-  explicit operator bool() const { return typePtr != 0; }
+  explicit operator bool() const { return typePtr != nullptr; }
+
+  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
+    qualifiers = inputQualifiers;
+  }
+  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
+
+  void SetTypeChunks(TypeChunkList *inputChunks) { chunks = inputChunks; }
+  TypeChunkList *GetTypeChunks() { return chunks; }
+
+public:
   /// Walk this Type.
   ///
   /// Returns true if the walk was aborted.
@@ -234,7 +226,13 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : Type(ty) {
+  explicit CanType(TypeBase *ty) : CanType(ty, nullptr, nullptr) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(TypeBase *ty, TypeQualifierList *qualifiers,
+                   TypeChunkList *chunks)
+      : Type(ty, qualifiers, chunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

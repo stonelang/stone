@@ -66,31 +66,15 @@ SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
 void TypeLoc::SetType(Type ty) {}
 
-FunctionType::FunctionType(TypeQualifierList *qualifiers, Type result,
-                           TypeChunkList *chunks, const SyntaxContext *sc)
-    : AbstractFunctionType(TypeKind::Function, qualifiers, result, chunks, sc) {
-}
-
-IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                 TypeQualifierList *qualifiers,
-                                 TypeChunkList *chunks,
-                                 const SyntaxContext &sc) {
-  return new (sc) IntegerType(bitWidthKind, qualifiers, chunks, sc);
-}
+FunctionType::FunctionType(Type result, const SyntaxContext *sc)
+    : AbstractFunctionType(TypeKind::Function, result, sc) {}
 
 IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
                                  const SyntaxContext &sc) {
-  return new (sc) IntegerType(bitWidthKind, nullptr, nullptr, sc);
+  return new (sc) IntegerType(bitWidthKind, sc);
 }
 
 FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
                              const SyntaxContext &sc) {
-  return new (sc) FloatType(bitWidthKind, nullptr, nullptr, sc);
-}
-
-FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
-                             TypeQualifierList *qualifiers,
-                             TypeChunkList *chunks, const SyntaxContext &sc) {
-
-  return new (sc) FloatType(bitWidthKind, qualifiers, chunks, sc);
+  return new (sc) FloatType(bitWidthKind, sc);
 }
