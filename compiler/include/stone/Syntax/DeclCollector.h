@@ -265,7 +265,7 @@ class TypeCollector final {
   TypeChunkCollector typeChunkCollector;
 
 public:
-  TypeCollector() : typeChunkCollector(typeSpecifierCollector) {}
+  TypeCollector() {}
 
   TypeQualifierCollector &GetTypeQualifierCollector() {
     return typeQualifierCollector;

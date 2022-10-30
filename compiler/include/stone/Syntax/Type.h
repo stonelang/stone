@@ -230,9 +230,9 @@ public:
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanType(TypeBase *ty, TypeQualifierList *qualifiers,
-                   TypeChunkList *chunks)
-      : Type(ty, qualifiers, chunks) {
+  explicit CanType(TypeBase *ty, TypeQualifierList *tyQuals,
+                   TypeChunkList *tyChunks)
+      : Type(ty, tyQuals, tyChunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

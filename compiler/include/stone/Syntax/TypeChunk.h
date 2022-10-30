@@ -3,6 +3,7 @@
 
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -11,7 +12,6 @@
 
 namespace stone {
 namespace syn {
-constexpr size_t TypeChunkAlignInBits = 3;
 
 enum class TypeChunkKind {
   None,
@@ -19,12 +19,11 @@ enum class TypeChunkKind {
   Pointer,
   Reference,
   Array,
-  BlockPointer,
   MemberPointer,
   Paren,
   Pipe,
 };
-class alignas(1 << TypeChunkAlignInBits) TypeChunk
+class alignas(1 << TypeAlignInBits) TypeChunk
     : syn::SyntaxAllocation<TypeChunk> {
   SrcLoc loc;
   TypeChunkKind kind;
@@ -115,8 +114,6 @@ public:
 
 class TypeChunkCollector {
 
-  const TypeSpecifierCollector &specifierCollector;
-
   /// This holds each type-patter that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
@@ -125,16 +122,8 @@ class TypeChunkCollector {
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
-
 public:
-  TypeChunkCollector(const TypeSpecifierCollector &specifierCollector)
-      : specifierCollector(specifierCollector) {}
-
-public:
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return specifierCollector;
-  }
-  bool HasAny() { return chunks.size() > 0; }
+  TypeChunkCollector() {}
 
 private:
   /// Add a chunk to this Declarator. Also extend the range to
@@ -177,13 +166,9 @@ public:
     return nullptr;
   }
 
-public:
+  bool HasAny() { return chunks.size() > 0; }
   llvm::ArrayRef<TypeChunk> GetTypeChunks() { return chunks; }
-
-public:
   void Apply();
-
-public:
   void Verify();
 };
 
