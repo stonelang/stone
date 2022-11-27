@@ -13,6 +13,18 @@
 namespace stone {
 namespace syn {
 
+ struct TypeQualifierFlags final  {
+  enum ID : UInt8 {
+    None = 1 << 0,
+    Const = 1 << 1,
+    Restrict = 1 << 2,
+    Volatile = 1 << 3,
+    Unaligned = 1 << 4,
+    Immutable = 1 << 5,
+    Mutable = 1 << 6,
+  };
+};
+
 enum class TypeQualifierKind : UInt8 {
   None = 0,
   Const,
