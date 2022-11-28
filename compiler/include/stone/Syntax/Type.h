@@ -85,12 +85,13 @@ enum class ScalarTypeKind {
 
 class Type {
   TypeBase *typePtr = nullptr;
-  TypeQualifierList *qualifiers = nullptr;
+  TypeQualifierList qualifiers;
   TypeChunkList *chunks = nullptr;
 
 public:
-  Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
-  Type(TypeBase *typePtr, TypeQualifierList *qualifiers, TypeChunkList *chunks)
+  Type(TypeBase *typePtr = nullptr)
+      : Type(typePtr, TypeQualifierList(), nullptr) {}
+  Type(TypeBase *typePtr, TypeQualifierList qualifiers, TypeChunkList *chunks)
       : typePtr(typePtr), qualifiers(qualifiers), chunks(chunks) {}
 
 public:
@@ -103,10 +104,10 @@ public:
   }
   explicit operator bool() const { return typePtr != nullptr; }
 
-  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
+  void SetTypeQualifiers(TypeQualifierList inputQualifiers) {
     qualifiers = inputQualifiers;
   }
-  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
+  TypeQualifierList GetTypeQualifiers() { return qualifiers; }
 
   void SetTypeChunks(TypeChunkList *inputChunks) { chunks = inputChunks; }
   TypeChunkList *GetTypeChunks() { return chunks; }
@@ -226,11 +227,11 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : CanType(ty, nullptr, nullptr) {
+  explicit CanType(TypeBase *ty) : CanType(ty, TypeQualifierList(), nullptr) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanType(TypeBase *ty, TypeQualifierList *tyQuals,
+  explicit CanType(TypeBase *ty, TypeQualifierList tyQuals,
                    TypeChunkList *tyChunks)
       : Type(ty, tyQuals, tyChunks) {
     assert(IsCanTypeOrNull() &&

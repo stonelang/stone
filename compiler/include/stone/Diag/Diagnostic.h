@@ -36,9 +36,7 @@ namespace detail {
 /// By default, diagnostic arguments are passed by value, because they
 /// tend to be small. Larger diagnostic arguments
 /// need to specialize this class template to pass by reference.
-template <typename T> struct PassArgument {
-  typedef T type;
-};
+template <typename T> struct PassArgument { typedef T type; };
 } // namespace detail
 
 class CodeFix final {

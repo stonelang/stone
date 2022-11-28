@@ -293,7 +293,7 @@ public:
 
 class DeclCollector {
 
-  AttributeFactory &attributeFactory;
+  AttributeCollector attributeCollector;
   TypeCollector typeCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
@@ -309,7 +309,7 @@ private:
   void operator=(const DeclCollector &) = delete;
 
 public:
-  DeclCollector(AttributeFactory &attributeFactory);
+  DeclCollector();
 
 public:
   UsingDeclarationCollector &GetUsingDeclarationCollector() {
@@ -338,6 +338,12 @@ public:
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;
   }
+
+  AttributeCollector &GetAttributeCollector() { return attributeCollector; }
+  const AttributeCollector &GetAttributeCollector() const {
+    return attributeCollector;
+  }
+
   void SetDeclName(DeclName inputName) { name = inputName; }
   DeclName GetDeclName() { return name; }
 

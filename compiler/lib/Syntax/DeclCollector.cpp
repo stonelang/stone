@@ -3,8 +3,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-DeclCollector::DeclCollector(AttributeFactory &attributeFactory)
-    : attributeFactory(attributeFactory) {}
+DeclCollector::DeclCollector() {}
 
 void DeclCollector::Apply() {
 

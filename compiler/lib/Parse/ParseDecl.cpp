@@ -57,7 +57,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
   if (collector) {
     return ParseDeclInternal(*collector);
   } else {
-    ParsingDeclCollector newCollector(*this, GetAttributeFactory());
+    ParsingDeclCollector newCollector(*this);
     newCollector.flags = flags;
     return ParseDeclInternal(newCollector);
   }

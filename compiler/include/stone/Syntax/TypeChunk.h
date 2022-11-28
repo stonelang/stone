@@ -112,7 +112,7 @@ public:
                                SyntaxContext &sc);
 };
 
-class TypeChunkCollector {
+class TypeChunkCollector final {
 
   /// This holds each type-patter that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element

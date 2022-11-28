@@ -146,8 +146,7 @@ public:
   ParsingDeclOptions flags;
 
 public:
-  ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
-      : parser(parser), DeclCollector(attributeFactory) {}
+  ParsingDeclCollector(Parser &parser) : parser(parser) {}
 
   ~ParsingDeclCollector();
 

@@ -95,13 +95,6 @@ Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
 Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
-  TypeQualifierList *qualifiers = nullptr;
-  if (collector.GetTypeQualifierCollector().HasAny()) {
-    qualifiers = TypeQualifierList::Create(
-        collector.GetTypeQualifierCollector().GetTypeQualifiers(),
-        GetSyntaxContext());
-  }
-
   // Collect the type -- only basic types for now (TODO: user type  and function
   // types)
 
@@ -147,8 +140,13 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
   // TODO: OK FOR NOW
   assert(!ty.IsNull());
-  ty.SetTypeQualifiers(qualifiers);
-  ty.SetTypeChunks(chunks);
+  
+  if (collector.GetTypeQualifierCollector().HasAny()) {
+    ty.SetTypeQualifiers(collector.GetTypeQualifierCollector());
+  }
+  if (chunks) {
+    ty.SetTypeChunks(chunks);
+  }
   return ty;
 }
 

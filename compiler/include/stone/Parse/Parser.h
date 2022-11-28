@@ -80,9 +80,6 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  // /// Factory object for creating ParsedAttribute objects.
-  AttributeFactory attributeFactory;
-
   ParsingToken parsingTok;
 
   ScopeCache scopeCache;
@@ -113,7 +110,6 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() { return sc.GetLangContext(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash

@@ -46,7 +46,7 @@ protected:
       : llBracketLoc(llBracketLoc), range(range) {}
 };
 
-class AttributeFactory {
+class AttributeCollector {
 public:
 };
 

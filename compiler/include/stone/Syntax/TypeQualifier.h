@@ -13,9 +13,10 @@
 namespace stone {
 namespace syn {
 
- struct TypeQualifierFlags final  {
+struct TypeQualifierFlags final {
+  TypeQualifierFlags() = delete;
   enum ID : UInt8 {
-    None = 1 << 0,
+    None = 0,
     Const = 1 << 1,
     Restrict = 1 << 2,
     Volatile = 1 << 3,
@@ -25,143 +26,93 @@ namespace syn {
   };
 };
 
-enum class TypeQualifierKind : UInt8 {
-  None = 0,
-  Const,
-  Restrict,
-  Volatile,
-  Unaligned,
-  Immutable,
-  Mutable,
-};
+class TypeQualifierList {
 
-class alignas(1 << TypeAlignInBits) TypeQualifier {
-  SrcLoc loc;
-  TypeQualifierKind kind;
+  UInt32 qualifiers = 0;
+  SrcLoc constLoc;
+  SrcLoc restrictLoc;
+  SrcLoc volatileLoc;
+  SrcLoc pureLoc;
+  SrcLoc immutableLoc;
+  SrcLoc mutableLoc;
 
 public:
-  TypeQualifier(TypeQualifierKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
+  TypeQualifierList() {}
 
 public:
-  TypeQualifierKind GetKind() { return kind; }
-  SrcLoc GetLoc() { return loc; }
-};
-
-class ConstTypeQualifier final : public TypeQualifier {
-public:
-  ConstTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Const, loc) {}
-
-public:
-  static ConstTypeQualifier Create(SrcLoc loc);
-};
-class RestrictTypeQualifier final : public TypeQualifier {
-public:
-  RestrictTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Restrict, loc) {}
-
-public:
-  static RestrictTypeQualifier Create(SrcLoc loc);
-};
-class VolatileTypeQualifier final : public TypeQualifier {
-public:
-  VolatileTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Volatile, loc) {}
-
-public:
-  static VolatileTypeQualifier Create(SrcLoc loc);
-};
-
-class UnalignedTypeQualifier final : public TypeQualifier {
-public:
-  UnalignedTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Unaligned, loc) {}
-
-public:
-  static UnalignedTypeQualifier Create(SrcLoc loc);
-};
-
-class ImmutableTypeQualifier final : public TypeQualifier {
-public:
-  ImmutableTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Immutable, loc) {}
-
-public:
-  static ImmutableTypeQualifier Create(SrcLoc loc);
-};
-class MutableTypeQualifier final : public TypeQualifier {
-public:
-  MutableTypeQualifier(SrcLoc loc)
-      : TypeQualifier(TypeQualifierKind::Mutable, loc) {}
-
-public:
-  static MutableTypeQualifier Create(SrcLoc loc);
-};
-
-class TypeQualifierList final
-    : private llvm::TrailingObjects<TypeQualifierList, TypeQualifier> {
-
-  friend TrailingObjects;
-
-public:
-  /// No copying
-  TypeQualifierList(const TypeQualifierList &) = delete;
-  TypeQualifierList &operator=(const TypeQualifierList &) = delete;
-
-public:
-  TypeQualifierList(llvm::ArrayRef<TypeQualifier> qualifiers);
-
-public:
-  static TypeQualifierList *Create(llvm::ArrayRef<TypeQualifier> qualifiers,
-                                   SyntaxContext &sc);
-};
-
-class TypeQualifierCollector final {
-  llvm::SmallVector<TypeQualifier, 4> qualifiers;
-
-public:
-  TypeQualifierCollector() {}
-
-private:
-  void AddQualifier(const TypeQualifier qualifier) {
-    qualifiers.push_back(qualifier);
+  bool HasConst() const { return qualifiers & TypeQualifierFlags::Const; }
+  bool HasConstOnly() const { return qualifiers == TypeQualifierFlags::Const; }
+  void RemoveConst() { qualifiers &= ~TypeQualifierFlags::Const; }
+  void AddConst(SrcLoc loc = SrcLoc()) {
+    constLoc = loc;
+    qualifiers |= TypeQualifierFlags::Const;
   }
+  SrcLoc GetConstLoc() { return constLoc; }
 
 public:
-  void AddConst(SrcLoc loc) { AddQualifier(ConstTypeQualifier::Create(loc)); }
-
-  void AddImmutable(SrcLoc loc) {
-    AddQualifier(ImmutableTypeQualifier::Create(loc));
+  bool HasImmutable() const {
+    return qualifiers & TypeQualifierFlags::Immutable;
   }
-  void AddMutable(SrcLoc loc) {
-    AddQualifier(MutableTypeQualifier::Create(loc));
+  bool HasImmutableOnly() const {
+    return qualifiers == TypeQualifierFlags::Immutable;
   }
-  void AddRestrict(SrcLoc loc) {
-    AddQualifier(RestrictTypeQualifier::Create(loc));
+  void RemoveImmutable() { qualifiers &= ~TypeQualifierFlags::Immutable; }
+  void AddImmutable(SrcLoc loc = SrcLoc()) {
+    immutableLoc = loc;
+    qualifiers |= TypeQualifierFlags::Immutable;
   }
-  void AddVolatile(SrcLoc loc) {
-    AddQualifier(VolatileTypeQualifier::Create(loc));
-  }
-
-private:
-  bool FindKind(TypeQualifierKind kind) const {
-    for (auto qualifier : qualifiers) {
-      return qualifier.GetKind() == kind;
-    }
-    return false;
-  }
+  SrcLoc GetImmutableLoc() { return immutableLoc; }
 
 public:
-  bool HasAny() { return qualifiers.size() > 0; }
+  bool HasMutable() const { return qualifiers & TypeQualifierFlags::Mutable; }
+  bool HasMutableOnly() const {
+    return qualifiers == TypeQualifierFlags::Mutable;
+  }
+  void RemoveMutable() { qualifiers &= ~TypeQualifierFlags::Mutable; }
+  void AddMutable(SrcLoc loc = SrcLoc()) {
+    mutableLoc = loc;
+    qualifiers |= TypeQualifierFlags::Mutable;
+  }
+  SrcLoc GetMutableLoc() { return mutableLoc; }
 
 public:
-  bool HasConst() const { return FindKind(TypeQualifierKind::Const); }
-  bool HasRestrict() const { return FindKind(TypeQualifierKind::Restrict); }
-  bool HasImmutable() const { return FindKind(TypeQualifierKind::Immutable); }
-  bool HasMutable() const { return FindKind(TypeQualifierKind::Mutable); }
+  bool HasRestrict() const { return qualifiers & TypeQualifierFlags::Restrict; }
+  bool HasRestrictOnly() const {
+    return qualifiers == TypeQualifierFlags::Restrict;
+  }
+  void RemoveRestrict() { qualifiers &= ~TypeQualifierFlags::Restrict; }
+  void AddRestrict(SrcLoc loc = SrcLoc()) {
+    restrictLoc = loc;
+    qualifiers |= TypeQualifierFlags::Restrict;
+  }
+  SrcLoc GetRestrictLoc() { return restrictLoc; }
 
 public:
-  llvm::ArrayRef<TypeQualifier> GetTypeQualifiers() { return qualifiers; }
+  bool HasVolatile() const { return qualifiers & TypeQualifierFlags::Volatile; }
+  bool HasVolatileOnly() const {
+    return qualifiers == TypeQualifierFlags::Volatile;
+  }
+  void RemoveVolatile() { qualifiers &= ~TypeQualifierFlags::Volatile; }
+  void AddVolatile(SrcLoc loc = SrcLoc()) {
+    volatileLoc = loc;
+    qualifiers |= TypeQualifierFlags::Volatile;
+  }
+  SrcLoc GetVolatileLoc() { return volatileLoc; }
+
+public:
+  bool HasAny() {
+    return (HasConst() || HasRestrict() || HasVolatile() || HasImmutable() ||
+            HasMutable());
+  }
+  bool HasAll() {
+    return (HasConst() && HasRestrict() && HasVolatile() && HasImmutable() &&
+            HasMutable());
+  }
+};
+
+class TypeQualifierCollector final : public TypeQualifierList {
+public:
+  TypeQualifierCollector();
 };
 } // namespace syn
 } // namespace stone
