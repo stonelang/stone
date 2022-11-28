@@ -11,6 +11,9 @@ public:
 
 public:
   void Visit(Decl *d) {}
+
+protected:
+  void VisitFunDecl(FunDecl *funDecl) {}
 };
 
 void TypeChecker::CheckDecl(Decl *d) { DeclChecker(*this).Visit(d); }

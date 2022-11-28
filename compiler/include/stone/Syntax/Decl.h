@@ -406,16 +406,13 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
-// class DeclaratorDecl : public ValueDecl {
-// public:
-//   DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-//                  UnifiedContext context)
-//       : ValueDecl(kind, name, nameLoc, context) {}
-// };
+class AliasDecl : public TypeDecl {
+public:
+};
 
-// class LabelDecl : public NameableDecl {
-// public:
-// };
+class LabelDecl : public NameableDecl {
+public:
+};
 
 class SpaceDecl final : public NameableDecl {
 public:
@@ -590,19 +587,19 @@ public:
 };
 
 /// Member functions: fun Particle::Fire() -> bool ...
-class MemberFunDecl : public FunDecl {
+class MethodDecl : public FunDecl {
   /// TODO: pass , NominalTypeDecl* owner,
 public:
-  MemberFunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-                Type retType, DeclContext *parent)
+  MethodDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
+             Type retType, DeclContext *parent)
       : FunDecl(kind, funLoc, name, nameLoc, retType, parent) {}
 };
 
-class ConstructorDecl : public MemberFunDecl {
+class ConstructorDecl : public MethodDecl {
 public:
 };
 
-class DestructorDecl : public MemberFunDecl {
+class DestructorDecl : public MethodDecl {
 public:
 };
 

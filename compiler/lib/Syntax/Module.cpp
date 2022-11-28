@@ -17,14 +17,14 @@
 using namespace stone;
 using namespace stone::syn;
 
-ModuleFile::ModuleFile(ModuleFileKind kind, Module &owner)
+ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-Module::Module(Identifier name, SyntaxContext &sc)
+ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc)
     : DeclContext(DeclContextKind::Module, nullptr),
       TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc) {}
 
-void Module::AddFile(ModuleFile &file) {
+void ModuleDecl::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.
   // assert(!(isa<LoadedFile>(newFile) &&
   //         cast<LoadedFile>(newFile).hadLoadError()));
@@ -36,28 +36,29 @@ void Module::AddFile(ModuleFile &file) {
   // ClearLookupCache();
 }
 
-bool Module::Walk(SyntaxWalker &waker) {}
+bool ModuleDecl::Walk(SyntaxWalker &waker) {}
 
-llvm::ArrayRef<SyntaxFile *> Module::GetPrimarySyntaxFiles() const {
+llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
   // auto &eval = GetASTContext().evaluator;
   // auto *mutableThis = const_cast<ModuleDecl *>(this);
   // return evaluateOrDefault(eval, PrimarySourceFilesRequest{mutableThis}, {});
   assert(false && "Not implemented");
 }
 
-SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
+SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Source, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
-syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, syn::Module &owner,
+syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind,
+                                       syn::ModuleDecl &owner,
                                        SyntaxContext &sc, unsigned srcID,
                                        bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 
 syn::SyntaxFile *SyntaxFileFactory::Create(SyntaxFileKind kind, unsigned srcID,
-                                           syn::Module &owner,
+                                           syn::ModuleDecl &owner,
                                            SyntaxContext &sc, bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }

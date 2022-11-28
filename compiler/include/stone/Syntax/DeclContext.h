@@ -148,7 +148,7 @@ public:
   }
   bool IsModuleContext() const;
 
-  Module *GetParentModule() const;
+  ModuleDecl *GetParentModule() const;
 
   bool IsTypeContext() const;
 };

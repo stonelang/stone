@@ -83,7 +83,7 @@ public:
 };
 
 using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
+    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
 using ParsingCompletedCallback =
     llvm::function_ref<CompileStatus(syn::SyntaxFile &)>;

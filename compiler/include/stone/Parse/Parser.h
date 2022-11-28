@@ -84,9 +84,9 @@ class Parser final {
 
   ScopeCache scopeCache;
 
-  UInt16 ParenCount = 0;
-  UInt16 BraceCount = 0;
-  UInt16 BrackeCount = 0;
+  // UInt16 ParenCount = 0;
+  // UInt16 BraceCount = 0;
+  // UInt16 BrackeCount = 0;
 
 private:
   // Identifiers

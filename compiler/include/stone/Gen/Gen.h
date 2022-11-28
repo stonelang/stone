@@ -33,7 +33,8 @@ std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
                                        const LangContext &ctx,
                                        const OutputFile *output);
 
-std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc, syn::Module &mod,
+std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc,
+                                       syn::ModuleDecl &mod,
                                        const LangContext &ctx,
                                        const OutputFile *output);
 

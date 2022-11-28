@@ -13,7 +13,7 @@ ModuleSystem::ModuleSystem(LangContext &lc, SyntaxContext &sc,
 
 ModuleSystem::~ModuleSystem() {}
 
-syn::Module *ModuleSystem::GetMainModule() const {
+syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (mainModule) {
     return mainModule;
   }

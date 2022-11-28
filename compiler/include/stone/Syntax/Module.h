@@ -25,7 +25,7 @@ private:
   ModuleFileKind kind;
 
 public:
-  ModuleFile(ModuleFileKind kind, Module &owner);
+  ModuleFile(ModuleFileKind kind, ModuleDecl &owner);
 
 public:
   ModuleFileKind GetKind() const { return kind; }
@@ -70,7 +70,7 @@ public:
   std::vector<Decl *> Decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
+  SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
              llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~SyntaxFile();
@@ -104,7 +104,7 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
+  static syn::SyntaxFile *Make(SyntaxFileKind kind, ModuleDecl &owner,
                                SyntaxContext &tc, unsigned srcID,
                                bool isPrimary = false);
 
@@ -117,15 +117,15 @@ class BuiltinFile final : public ModuleFile {
 public:
 };
 
-class Module final : public DeclContext,
-                     public TypeDecl,
-                     public SyntaxAllocation<Module> {
+class ModuleDecl final : public DeclContext,
+                         public TypeDecl,
+                         public SyntaxAllocation<ModuleDecl> {
 
   /// The ABI name of the module, if it differs from the module name.
   mutable Identifier moduleABIName;
 
 public:
-  Module(Identifier name, SyntaxContext &tc);
+  ModuleDecl(Identifier name, SyntaxContext &tc);
 
 public:
   using syn::Decl::GetSyntaxContext;

@@ -156,7 +156,7 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
     return status;
   }
   case ModuleOutputMode::Whole: {
-    if (auto mod = msf.get<syn::Module *>()) {
+    if (auto mod = msf.get<syn::ModuleDecl *>()) {
       auto result = stone::GenIR(
           cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
       status |= fn(compiler, cgc, *result);

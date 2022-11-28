@@ -2,10 +2,6 @@
 #define BASE_DECL(Id, Parent)
 #endif
 
-#ifndef CONTEXT_BASE_DECL
-#define CONTEXT_BASE_DECL(Id, Parent)
-#endif
-
 #ifndef NAMEABLE_DECL
 #define NAMEABLE_DECL(Id, Parent) DECL(Id, Parent)
 #endif
@@ -130,37 +126,38 @@
 
 BASE_DECL(Nameable, Decl)
 	NAMEABLE_DECL(Space, NameableDecl)
-	NAMEABLE_DECL(Use, NameableDecl)
+	NAMEABLE_DECL(Using, NameableDecl)
 	NAMEABLE_DECL(Label, NameableDecl) // break, continue, and goto
 	DECL_RANGE(Nameable, Space, Label)
 	BASE_DECL(Value, NameableDecl)
 		BASE_DECL(Type, ValueDecl)
-			CONTEXT_BASE_DECL(NominalType, TypeDecl)
+			CONTEXT_DECL(NominalType, TypeDecl)
 				NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
 				NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
 				NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
 				DECL_RANGE(NominalType, Enum, Interface)
-			VALUE_DECL(TypeAlias, TypeDecl)
-			DECL_RANGE(Type, Enum, TypeAlias)
-		BASE_DECL(Declarator, ValueDecl)
-			CONTEXT_BASE_DECL(Function, DeclaratorDecl)
+			VALUE_DECL(Alias, TypeDecl)
+			CONTEXT_VALUE_DECL(Module, TypeDecl)
+			DECL_RANGE(Type, Enum, Module)
+			CONTEXT_DECL(Function, ValueDecl)
 				FUNCTION_DECL(Fun, FunctionDecl)
-				CONTEXT_BASE_DECL(Member, FunDecl)
-					FUNCTION_DECL(Constructor, MemberDecl)
-					FUNCTION_DECL(Destructor, MemberDecl)
-				DECL_RANGE(Function, Destructor, Fun)
+				BASE_DECL(Method, FunDecl)
+					FUNCTION_DECL(Constructor, MethodDecl)
+					FUNCTION_DECL(Destructor, MethodDecl)
+				DECL_RANGE(Function, Fun, Destructor)
 		BASE_DECL(Storage, ValueDecl)
 			VALUE_DECL(Var, StorageDecl)
 			VALUE_DECL(Param, VarDecl)
-		CONTEXT_VALUE_DECL(Module, TypeDecl)
-	BASE_DECL(Template, NameableDecl)
-		TEMPLATE_DECL(FunctionTemplate, Template)
-		TEMPLATE_DECL(StructTemplate, Template)
-		TEMPLATE_DECL(InterfaceTemplate, Template)
-		TEMPLATE_DECL(VarTemplate, Template)
-		TEMPLATE_DECL(TypeAliasTemplate, Template)
-		TEMPLATE_DECL(BuiltinTemplate, Template)
-		DECL_RANGE(Template, FunctionTemplate, BuiltinTemplate)
+			DECL_RANGE(Storage, Var, Param)
+		
+	// BASE_DECL(Template, NameableDecl)
+	// 	TEMPLATE_DECL(FunctionTemplate, Template)
+	// 	TEMPLATE_DECL(StructTemplate, Template)
+	// 	TEMPLATE_DECL(InterfaceTemplate, Template)
+	// 	TEMPLATE_DECL(VarTemplate, Template)
+	// 	TEMPLATE_DECL(TypeAliasTemplate, Template)
+	// 	TEMPLATE_DECL(BuiltinTemplate, Template)
+	// 	DECL_RANGE(Template, FunctionTemplate, BuiltinTemplate)
 
 DECL(IfConfig, Decl)
 LAST_DECL(IfConfig)

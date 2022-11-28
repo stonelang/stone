@@ -140,7 +140,7 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
   // TODO: OK FOR NOW
   assert(!ty.IsNull());
-  
+
   if (collector.GetTypeQualifierCollector().HasAny()) {
     ty.SetTypeQualifiers(collector.GetTypeQualifierCollector());
   }

@@ -172,10 +172,11 @@ StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
   return nullptr;
 }
 
-Module *ModuleDeclFactory::Create(Identifier name, SyntaxContext &sc,
-                                  bool isMainModule) {
-  auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
-  return ::new (declPtr) syn::Module(name, sc);
+ModuleDecl *ModuleDeclFactory::Create(Identifier name, SyntaxContext &sc,
+                                      bool isMainModule) {
+  auto declPtr =
+      syn::AllocateDeclMem<syn::ModuleDecl>(sc, sizeof(syn::ModuleDecl));
+  return ::new (declPtr) syn::ModuleDecl(name, sc);
 }
 
 VarDecl *VarDeclFactory::Create(SyntaxContext &sc) {

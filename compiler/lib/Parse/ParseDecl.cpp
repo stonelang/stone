@@ -342,6 +342,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   SrcLoc lParenLoc;
   SrcLoc rParenLoc;
 
+  // ParenTracker
   ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
                            "parsing fun arguments");
 

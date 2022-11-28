@@ -28,7 +28,7 @@ class ModuleSystem final {
   ModuleOptions &moduleOpts;
 
   /// This is the main module that will be created
-  mutable syn::Module *mainModule = nullptr;
+  mutable syn::ModuleDecl *mainModule = nullptr;
 
 public:
   ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
@@ -36,7 +36,7 @@ public:
   ~ModuleSystem();
 
 public:
-  syn::Module *GetMainModule() const;
+  syn::ModuleDecl *GetMainModule() const;
 
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }

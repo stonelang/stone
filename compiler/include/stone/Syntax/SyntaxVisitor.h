@@ -1,6 +1,12 @@
 #ifndef STONE_SYNTAX_SYNTAXVISITOR_H
 #define STONE_SYNTAX_SYNTAXVISITOR_H
 
+#include "stone/Syntax/Decl.h"
+#include "stone/Syntax/Expr.h"
+#include "stone/Syntax/Module.h"
+#include "stone/Syntax/Stmt.h"
+#include "stone/Syntax/Type.h"
+
 namespace stone {
 namespace syn {
 class Decl;
@@ -12,9 +18,24 @@ template <typename ImplClass, typename ExprRetTy = void,
           typename... Args>
 class SyntaxVisitor {
 public:
-  void Visit(Decl *d);
-  void Visit(Stmt *s);
-  void Visit(Expr *e);
+  DeclRetTy Visit(Decl *D, Args... AA) {
+    switch (D->GetKind()) {
+#define DECL(CLASS, PARENT)                                                    \
+  case DeclKind::CLASS:                                                        \
+    return static_cast<ImplClass *>(this)->Visit##CLASS##Decl(                 \
+        static_cast<CLASS##Decl *>(D), ::std::forward<Args>(AA)...);
+#include "stone/Syntax/DeclKind.def"
+    }
+    llvm_unreachable("Not reachable, all cases handled");
+  }
+
+#define DECL(CLASS, PARENT)                                                    \
+  DeclRetTy Visit##CLASS##Decl(CLASS##Decl *D, Args... AA) {                   \
+    return static_cast<ImplClass *>(this)->Visit##PARENT(                      \
+        D, ::std::forward<Args>(AA)...);                                       \
+  }
+#define BASE_DECL(CLASS, PARENT) DECL(CLASS, PARENT)
+#include "stone/Syntax/DeclKind.def"
 };
 
 template <typename ImplClass, typename ExprRetTy = void, typename... Args>

@@ -115,7 +115,7 @@ class SyntaxContext final {
   mutable llvm::SmallVector<Type *, 0> types;
 
   /// The standard library module.
-  mutable syn::Module *stdlibModule = nullptr;
+  mutable syn::ModuleDecl *stdlibModule = nullptr;
 
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
@@ -123,7 +123,7 @@ class SyntaxContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier *, syn::Module *> loadedModules;
+  llvm::MapVector<Identifier *, syn::ModuleDecl *> loadedModules;
 
 public:
   /// The set of cleanups to be called when the SyntaxContext is destroyed.
@@ -167,8 +167,8 @@ public:
   /// or NULL if the overlay module cannot be found.
   // TODO: Module *GetOverlayModule(const ModuleFile *clangModule);
 
-  Module *GetModuleByName(llvm::StringRef moduleName);
-  Module *GetModuleByIdentifier(Identifier moduleID);
+  ModuleDecl *GetModuleByName(llvm::StringRef moduleName);
+  ModuleDecl *GetModuleByIdentifier(Identifier moduleIdentifier);
 
   /// Returns the standard library module, or null if the library isn't present.
   ///

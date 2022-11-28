@@ -69,8 +69,9 @@ struct FunDeclFactory final {
 };
 
 struct SyntaxFileFactory final {
-  static SyntaxFile *Create(SyntaxFileKind kind, unsigned srcID, Module &owner,
-                            SyntaxContext &sc, bool isPrimary = false);
+  static SyntaxFile *Create(SyntaxFileKind kind, unsigned srcID,
+                            ModuleDecl &owner, SyntaxContext &sc,
+                            bool isPrimary = false);
 };
 
 struct StructDeclFactory final {
@@ -79,8 +80,8 @@ struct StructDeclFactory final {
 };
 
 struct ModuleDeclFactory final {
-  static Module *Create(Identifier name, SyntaxContext &sc,
-                        bool isMainModule = false);
+  static ModuleDecl *Create(Identifier name, SyntaxContext &sc,
+                            bool isMainModule = false);
 };
 
 // template <std::size_t Len>

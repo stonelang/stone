@@ -25,7 +25,7 @@ SyntaxContext &DeclContext::GetSyntaxContext() const {
   return GetParentModule()->GetSyntaxContext();
 }
 
-syn::Module *DeclContext::GetParentModule() const {
+syn::ModuleDecl *DeclContext::GetParentModule() const {
   const DeclContext *dc = this;
   // TODO:
   return nullptr;
@@ -36,8 +36,8 @@ syn::Module *DeclContext::GetParentModule() const {
 }
 
 DeclContext *Decl::GetDeclContextForModule() const {
-  if (auto module = dyn_cast<syn::Module>(this)) {
-    return const_cast<syn::Module *>(module);
+  if (auto module = dyn_cast<syn::ModuleDecl>(this)) {
+    return const_cast<syn::ModuleDecl *>(module);
   }
   return nullptr;
 }
