@@ -5,12 +5,12 @@ using stone::sem::TypeChecker;
 
 class DeclChecker final : public DeclVisitor<DeclChecker> {
   TypeChecker &checker;
-  // SyntaxContext &sf;
+  SyntaxContext &sc;
   // SyntaxFile *sf;
 
 public:
-  DeclChecker(TypeChecker &checker /*, SyntaxContext &sc, SyntaxFile *sf*/)
-      : checker(checker) {}
+  DeclChecker(TypeChecker &checker, SyntaxContext &sc /*SyntaxFile *sf*/)
+      : checker(checker), sc(sc) {}
 
 public:
   void Visit(Decl *d) { DeclVisitor<DeclChecker>::Visit(d); }
@@ -26,7 +26,7 @@ void TypeChecker::CheckDecl(Decl *d) {
 
   // auto *sf = d->GetDeclContext()->GetParentSyntaxFile();
   // DeclChecker(*this, d->GetDeclContext(), sf).Visit(d);
-  DeclChecker(*this).Visit(d);
+  DeclChecker(*this, d->GetSyntaxContext()).Visit(d);
 }
 
 void TypeChecker::CheckAccessLevel(Decl *d) {}
