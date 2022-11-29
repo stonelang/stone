@@ -126,6 +126,7 @@ class NextStmt : public Stmt {
 
 class ValueStmt : public Stmt {
 public:
+  ValueStmt(StmtKind kind) : Stmt(kind) {}
 };
 /// LabelStmt - Represents a label, which has a substatement.  For example:
 ///    foo: return;

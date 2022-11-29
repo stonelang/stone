@@ -35,7 +35,7 @@ public:
   Expr &operator=(Expr &&) = delete;
 
 public:
-  // Expr(StmtKind kind) : ValueStmt(kind) {}
+  Expr(StmtKind kind) : ValueStmt(kind) {}
 
   // StmtKind kind, QualType qualTy, ExprValueKind VK, ExprObjectKind OK
 
@@ -48,79 +48,82 @@ public:
 };
 
 /// FullExpr - Represents a "full-expression" node.
-class FullExpr : public Expr {
-protected:
-  Stmt *subExpr;
-};
+// class FullExpr : public Expr {
+// protected:
+//   Stmt *subExpr;
+// };
 
 /// Represents a new-expression for memory allocation and constructor
 /// calls, e.g: "new NewExpr(foo)".
 class NewExpr final : public Expr,
                       private llvm::TrailingObjects<NewExpr, Stmt *, SrcRange> {
   friend TrailingObjects;
+
+public:
+  NewExpr() : Expr(StmtKind::New) {}
 };
 
-class ThisExpr : public Expr {
-public:
-};
+// class ThisExpr : public Expr {
+// public:
+// };
 
 /// Represents a call to a constructor.
-class ConstructorExpr : public Expr {
-public:
-};
-/// Represents a call to a destructor.
-class DestructorExpr : public Expr {
-public:
-};
+// class ConstructorExpr : public Expr {
+// public:
+// };
+// /// Represents a call to a destructor.
+// class DestructorExpr : public Expr {
+// public:
+// };
 
-class ParenExpr final : public Expr {
-  Stmt *val;
-  SrcLoc leftLoc, rightLoc;
+// class ParenExpr final : public Expr {
+//   Stmt *val;
+//   SrcLoc leftLoc, rightLoc;
 
-public:
-  //   ParenExpr(SrcLoc left, SrcLoc right, Expr *val)
-  //       : Expr(ParenExprClass, val->getType(), val->getValueKind(),
-  //              val->getObjectKind()),
-  //         L(l), R(r), Val(val) {
-  //     setDependence(computeDependence(this));
-  //   }
+// public:
+//   ParenExpr(SrcLoc left, SrcLoc right, Expr *val)
+//       : Expr(ParenExprClass, val->getType(), val->getValueKind(),
+//              val->getObjectKind()),
+//         L(l), R(r), Val(val) {
+//     setDependence(computeDependence(this));
+//   }
 
-  //   /// Construct an empty parenthesized expression.
-  //   explicit ParenExpr(EmptyShell Empty)
-  //     : Expr(ParenExprClass, Empty) { }
+//   /// Construct an empty parenthesized expression.
+//   explicit ParenExpr(EmptyShell Empty)
+//     : Expr(ParenExprClass, Empty) { }
 
-  //   const Expr *GetSubExpr() const { return cast<Expr>(al); }
-  //   Expr *GetSubExpr() { return cast<Expr>(Val); }
-  //   void SetSubExpr(Expr *E) { Val = E; }
+//   const Expr *GetSubExpr() const { return cast<Expr>(al); }
+//   Expr *GetSubExpr() { return cast<Expr>(Val); }
+//   void SetSubExpr(Expr *E) { Val = E; }
 
-  //   SourceLocation GetBeginLoc() const LLVM_READONLY { return beginLoc; }
-  //   SourceLocation GetEndLoc() const LLVM_READONLY { return endLoc; }
+//   SourceLocation GetBeginLoc() const LLVM_READONLY { return beginLoc; }
+//   SourceLocation GetEndLoc() const LLVM_READONLY { return endLoc; }
 
-  //   /// Get the location of the left parentheses '('.
-  //   SourceLocation GetLeftParen() const { return L; }
-  //   void SetLParen(SourceLocation Loc) { L = Loc; }
+//   /// Get the location of the left parentheses '('.
+//   SourceLocation GetLeftParen() const { return L; }
+//   void SetLParen(SourceLocation Loc) { L = Loc; }
 
-  //   /// Get the location of the right parentheses ')'.
-  //   SourceLocation GetRightParen() const { return R; }
-  //   void setRParen(SourceLocation Loc) { R = Loc; }
+//   /// Get the location of the right parentheses ')'.
+//   SourceLocation GetRightParen() const { return R; }
+//   void setRParen(SourceLocation Loc) { R = Loc; }
 
-  // static bool classof(const Stmt *T) {
-  //   return T->getStmtClass() == ParenExprClass;
-  // }
+// static bool classof(const Stmt *T) {
+//   return T->getStmtClass() == ParenExprClass;
+// }
 
-  // // Iterators
-  // child_range children() { return child_range(&Val, &Val+1); }
-  // const_child_range children() const {
-  //   return const_child_range(&Val, &Val + 1);
-  // }
-};
+// // Iterators
+// child_range children() { return child_range(&Val, &Val+1); }
+// const_child_range children() const {
+//   return const_child_range(&Val, &Val + 1);
+// }
+//};
 
 /// LiteralExpr - Common base class between the literals.
-class LiteralExpr : public Expr {};
+// class LiteralExpr : public Expr {};
 
-class NullLiteralExpr : public LiteralExpr {
-public:
-};
+// class NullLiteralExpr : public LiteralExpr {
+// public:
+// };
 
 } // namespace syn
 } // namespace stone

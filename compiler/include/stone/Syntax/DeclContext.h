@@ -150,6 +150,8 @@ public:
 
   ModuleDecl *GetParentModule() const;
 
+  SyntaxFile *GetParentSyntaxFile() const;
+
   bool IsTypeContext() const;
 };
 
