@@ -51,7 +51,13 @@ public:
               TypeCheckerListener *pipeline = nullptr);
 
 public:
+  void CheckSyntaxNode(SyntaxNode &syntaxNode, DeclContext *dc,
+                       bool checkBody = false);
+
+public:
   void CheckDecl(Decl *d);
+
+  void CheckAccessLevel(Decl *D);
 
 public:
   void CheckStmt(Stmt *s);
