@@ -5,6 +5,11 @@
 using namespace stone;
 using namespace stone::syn;
 
+
+
+// class DeclCodeGen {
+// };
+
 void IRCodeGenModule::EmitDecl(Decl *d) {
   switch (d->GetKind()) {
   case DeclKind::Interface:

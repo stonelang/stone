@@ -100,8 +100,8 @@ std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
 }
 
 std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
-                                              syn::ModuleDecl &sf,
-                                              const LangContext &ctx,
+                                              syn::ModuleDecl &md,
+                                              const LangContext &lc,
                                               const OutputFile *output) {
   // IRCodeGen IRCodeGen(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);

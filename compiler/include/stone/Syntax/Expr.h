@@ -42,9 +42,6 @@ public:
   /// This recursively walks the AST rooted at this expression.
   Expr *Walk(SyntaxWalker &walker);
   Expr *Walk(SyntaxWalker &&walker) { return Walk(walker); }
-
-public:
-  // ExprKind GetExprKind() { return exprKind;}
 };
 
 /// FullExpr - Represents a "full-expression" node.
