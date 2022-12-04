@@ -1,3 +1,4 @@
+#include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
@@ -18,38 +19,37 @@ SyntaxResult<TypeRep> Parser::ParseFunctionType(ParsingDeclCollector &collector,
   assert(collector.GetFunctionSpecifierCollector().HasFun());
   assert(collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid());
 
-  assert(collector.GetTypeSpecifierCollector().NotHasTypeSpecifierKind() &&
+  assert(collector.GetTypeSpecifierCollector().NotHasAny() &&
          "Function type-specifier comes after ->");
 
-  if (collector.GetTypeQualifierCollector().HasAnyTypeQualifier()) {
+  if (collector.GetTypeQualifierCollector().HasAny()) {
     assert(collector.GetTypeQualifierCollector().HasPureOnly() &&
            "Function can have only 'pure' type-specifier at this point");
   }
 
   SyntaxStatus status;
-  // Get all of the Type information
-  while (!GetTok().IsLBrace() && !IsEOF()) {
-    // TODO: We obviously have to check for duplicates and errors -- ok for now
-    // to get this to work.
-    status = CollectTypeQualifier(collector);
-    status = CollectBasicTypeDecl(collector);
-    status = CollectTypePatterns(collector);
-  }
 
-  // Let us see what we have
+  SyntaxResult<TypeRep> typeRep =
+      ParseType(collector, diag::err_expected_type_for_function_result);
 
-  if (!collector.GetTypeSpecifierCollector().HasTypeSpecifierKind()) {
+  if (!collector.GetTypeSpecifierCollector().HasAny()) {
     // TODO: log that "Function requires a return type. Try '-> void' if it has
+    assert(false && "No return type specified");
     // no return"
   }
 
+  // Collect the type pattersn
+  CollectTypePatterns(collector);
+
   // Requires at least a direct type pattern which is just the type by itself.
-  assert(collector.GetTypePatternCollector().HasTypePatterns());
+  assert(collector.GetTypePatternCollector().HasAny());
 
   // TODO: Call parseType to get the actual type
 
-  auto typeRep = new (GetSyntaxContext()) FunctionTypeRep(nullptr);
-  return syn::MakeSyntaxResult<TypeRep>(typeRep);
+  auto qualTypeRep = new (GetSyntaxContext()) QualifierTypeRep();
+  auto functionTypeRep = new (GetSyntaxContext()) FunctionTypeRep(qualTypeRep);
+
+  return syn::MakeSyntaxResult<TypeRep>(functionTypeRep);
 }
 
 // Similar to ParseDeclSpecifiers
@@ -59,23 +59,43 @@ SyntaxResult<TypeRep> Parser::ParseType(ParsingDeclCollector &collector,
   SyntaxResult<TypeRep> result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
+  // if (collector.GetFunctionSpecifierCollector().HasFun() &&
+  //     collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid()) {
+  //   // TODO:: Not too happy witht this
+  //   if (GetCurScope()->GetKind() != ScopeKind::FunctionType) {
+  //     return ParseFunctionType(collector, diagID);
+  //   }
+  // }
+
+  result = ParseBasicType(collector, diagID);
   return result;
 }
 
 SyntaxResult<TypeRep>
 Parser::ParseDeclResultType(ParsingDeclCollector &collector, Diag<> diagID) {
-
-  if (collector.GetFunctionSpecifierCollector().HasFun()) {
-    return ParseFunctionType(collector, diagID);
-  }
-
   return ParseType(collector, diagID);
 }
 
-SyntaxResult<QualType> Parser::ParseBasicType(TypeSpecifierCollector &collector,
-                                              Diag<> diagID) {
+SyntaxResult<TypeRep> Parser::ParseBasicType(ParsingDeclCollector &collector,
+                                             Diag<> diagID) {
+  SyntaxResult<TypeRep> result;
+  if (!GetTok().IsBasicType()) {
+    return result;
+  }
+  // Collect the type -- only basic types for now (TODO: user type  and function
+  // types)
 
-  SyntaxResult<QualType> result;
+  auto status = CollectBasicTypeDecl(collector);
+  if (status.HasCodeCompletion()) {
+    // TODO: nothing to do
+  }
+
+  if (!collector.GetTypeSpecifierCollector().HasAny()) {
+    // TODO: nothing to do
+  }
+  if (collector.GetTypeQualifierCollector().HasAny()) {
+    // Create a QualTypeRep
+  }
   // assert(IsBasicType(curTok.GetKind()) &&
   //        "The current token is not a basic type");
 

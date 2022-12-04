@@ -6,7 +6,6 @@ public any<T> interface Queue {
 	fun Push(const T* t);
 	fun Pop() -> T*;
 }
-
 public any<T> struct PriorityQueue : Queue<T> {
 	private T[] entries; 
 }

@@ -6,22 +6,22 @@
 
 namespace stone {
 
-/// A currency type for keeping track of items which were found in the source
+/// A currency type for keeping track of Items which were found in the source
 /// code. Several parts of the compiler need to keep track of a `SrcLoc`
-/// corresponding to an item, in case they need to report some diagnostics
+/// corresponding to an Item, in case they need to report some diagnostics
 /// later. For example, the ClangImporter needs to keep track of where imports
 /// were originally written. Located makes it easy to do so while making the
 /// code more readable, compared to using `std::pair`.
 template <typename T> struct Located {
-  /// The main item whose source location is being tracked.
+  /// The main Item whose source location is being tracked.
   T Item;
 
-  /// The original source location from which the item was parsed.
+  /// The original source location from which the Item was parsed.
   SrcLoc Loc;
 
   Located() : Item(), Loc() {}
 
-  Located(T Item, SrcLoc loc) : Item(Item), Loc(loc) {}
+  Located(T item, SrcLoc loc) : Item(item), Loc(loc) {}
 
   // STONE_DEBUG_DUMP;
   // void dump(raw_ostream &os) const;

@@ -106,7 +106,7 @@ class SyntaxContext final {
   /// SyntaxContext objects are never destructed; rather, all memory associated
   /// with the SyntaxContext objects will be released when the SyntaxContext
   /// itself is destroyed.
-  mutable llvm::BumpPtrAllocator bumpAlloc;
+  mutable llvm::BumpPtrAllocator allocator;
 
   /// Table for all
   IdentifierTable identifiers;
@@ -141,7 +141,7 @@ public:
 
 public:
   ///
-  Identifier &GetIdentifier(llvm::StringRef name);
+  Identifier GetIdentifier(llvm::StringRef name);
   ///
   const Builtin &GetBuiltin() const;
 
@@ -153,8 +153,7 @@ public:
   SrcMgr &GetSrcMgr() { return lc.GetSrcMgr(); }
 
   /// Retrieve the allocator for the given arena.
-  llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
-
+  llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
   SyntaxContextStats &GetStats() { return *stats.get(); }
 
 public:

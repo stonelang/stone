@@ -3,6 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Template.h"
 #include "stone/Syntax/Types.h"
@@ -78,6 +79,7 @@ class FunctionSpecifierCollector final {
   SrcLoc virtualLoc;
   SrcLoc funLoc;
   SrcLoc arrowLoc;
+  SrcLoc doubleColonLoc;
 
   enum Flags : unsigned {
     None = 1 << 0,
@@ -86,7 +88,8 @@ class FunctionSpecifierCollector final {
     ForcedInline = 1 << 3,
     Virtual = 1 << 4,
     NoReturn = 1 << 5,
-    IsMember = 1 << 6
+    IsMember = 1 << 6,
+    IsStatic = 1 << 7,
   };
 
 private:
@@ -98,12 +101,14 @@ public:
     funLoc = loc;
   }
   bool HasFun() { return ((flags & Fun) && funLoc.isValid()); }
+  SrcLoc GetFunLoc() { return funLoc; }
 
   void AddInline(SrcLoc loc) {
     flags |= Inline;
     inlineLoc = loc;
   }
   bool HasInline() { return ((flags & Inline) && inlineLoc.isValid()); }
+  SrcLoc GetInlineLoc() { return inlineLoc; }
 
   void AddForcedInline(SrcLoc loc) {
     flags |= ForcedInline;
@@ -119,13 +124,18 @@ public:
   void AddNoReturn(SrcLoc loc) { flags |= NoReturn; }
   bool HasNoReturn() { return (flags & NoReturn); }
 
-  void AddIsMember() { flags |= IsMember; }
-  bool HasIsMember() { return (flags & IsMember); }
-
-  SrcLoc GetFunLoc() { return funLoc; }
-
   void AddArrowLoc(SrcLoc loc) { arrowLoc = loc; }
   SrcLoc GetArrowLoc() { return arrowLoc; }
+
+  void AddIsMember(SrcLoc inputLoc) {
+    flags |= IsMember;
+    doubleColonLoc = inputLoc;
+  }
+  bool HasIsMember() { return (flags & IsMember) && doubleColonLoc.isValid(); }
+  SrcLoc GetDoubleColonLoc() { return doubleColonLoc; }
+
+public:
+  void Apply();
 };
 
 class StorageSpecifierCollector final {
@@ -170,7 +180,7 @@ public:
   bool HasRegister() {
     return (kind == StorageSpecifierKind::Register && loc.isValid());
   }
-  bool HasAnyStorageSpecifier() {
+  bool HasAny() {
     /// TODO: Consider auto
     return (HasExtern() || HasStatic() || HasRegister());
   }
@@ -192,6 +202,7 @@ public:
   void AddDynamicStorageDuration() {
     AddStorageDuration(StorageDuration::Dynamic);
   }
+  void Apply();
 };
 
 class AccessLevelCollector final {
@@ -226,10 +237,10 @@ public:
     return (level == AccessLevel::Internal && loc.isValid());
   }
 
-  bool HasAnyAccessLevel() {
-    return (HasPublic() || HasPrivate() || HasInternal());
-  }
+  bool HasAny() { return (HasPublic() || HasPrivate() || HasInternal()); }
   SrcLoc GetLoc() { return loc; }
+
+  void Apply();
 };
 
 // Light weight value type for now
@@ -256,6 +267,12 @@ class DeclCollector {
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
+  // DeclNameLoc
+
+  DeclName name;
+  SrcLoc nameLoc;
+
+private:
   DeclCollector(const DeclCollector &) = delete;
   void operator=(const DeclCollector &) = delete;
 
@@ -303,6 +320,14 @@ public:
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;
   }
+  void SetDeclName(DeclName inputName) { name = inputName; }
+  DeclName GetDeclName() { return name; }
+
+  void SetDeclNameLoc(SrcLoc inputLoc) { nameLoc = inputLoc; }
+  SrcLoc GetDeclNameLoc() { return nameLoc; }
+
+public:
+  void Apply();
 };
 
 } // namespace syn

@@ -47,7 +47,9 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const LangContext &GetLangContext() const { return langContext; }
-  llvm::Module &GetModule() { return *mod; }
+
+  const llvm::Module &GetLLVMModule() const { return *mod; }
+  llvm::Module &GetLLVMModule() { return *mod; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }

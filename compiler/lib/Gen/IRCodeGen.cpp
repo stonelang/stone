@@ -1,5 +1,6 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Gen/IRCodeGenResult.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/Module.h"

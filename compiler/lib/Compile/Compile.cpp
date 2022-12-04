@@ -228,13 +228,13 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
       GetInvocation().GetClangInstance().getTarget();
 
   // Setup the empty module
-  cgc.GetModule().setTargetTriple(targetInfo.getTriple().getTriple());
-  cgc.GetModule().setDataLayout(targetInfo.getDataLayoutString());
+  cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
+  cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
 
   const auto &sdkVersion = targetInfo.getSDKVersion();
 
   if (!sdkVersion.empty()) {
-    cgc.GetModule().setSDKVersion(sdkVersion);
+    cgc.GetLLVMModule().setSDKVersion(sdkVersion);
   }
 
   // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {

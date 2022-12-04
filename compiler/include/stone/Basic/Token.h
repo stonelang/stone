@@ -7,7 +7,6 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
-
 namespace syn {
 class Token final {
   /// The token kind
@@ -153,18 +152,33 @@ public:
       return false;
     }
   }
-  /// TODO:
   bool IsBasicType() const {
     switch (kind) {
-#define PUNCTUATOR(Name, Str)                                                  \
-  case tok::Name:                                                              \
-    return true;
-#include "stone/Basic/TokenKind.def"
+    case tok::kw_void:
+    case tok::kw_any:
+    case tok::kw_int8:
+    case tok::kw_int16:
+    case tok::kw_int32:
+    case tok::kw_int64:
+    case tok::kw_int:
+    case tok::kw_uint:
+    case tok::kw_uint8:
+    case tok::kw_ubyte:
+    case tok::kw_uint16:
+    case tok::kw_uint32:
+    case tok::kw_uint64:
+    case tok::kw_float:
+    case tok::kw_float32:
+    case tok::kw_float64:
+    case tok::kw_complex32:
+    case tok::kw_complex64:
+    case tok::kw_imaginary32:
+    case tok::kw_imaginary64:
+      return true;
     default:
       return false;
     }
   }
-
   bool IsNominalType() const {
     switch (kind) {
     case tok::kw_enum:
@@ -175,7 +189,6 @@ public:
       return false;
     }
   }
-
   bool IsFinal() const { return kind == tok::kw_final; }
   bool IsMutable() const { return kind == tok::kw_mutable; }
   bool IsAlien() const { return kind == tok::alien; }
@@ -189,7 +202,7 @@ public:
   bool IsEquality() { return kind == tok::equal; }
   bool IsDoubleEquality() { return kind == tok::doubleequal; }
   bool IsPound() { return kind == tok::pound; }
-  bool IsAmp() { return kind == tok::amp; }
+  bool IsAmp() const { return kind == tok::amp; }
   bool IsArrow() const { return kind == tok::arrow; }
   bool IsBackTick() { return kind == tok::backtick; }
   bool IsExcliam() { return kind == tok::exclaim; }
@@ -202,7 +215,7 @@ public:
   bool IsPure() { return kind == tok::kw_pure; }
   bool IsInline() { return kind == tok::kw_inline; }
   bool IsEnum() { return kind == tok::kw_enum; }
-  bool IsStar() { return kind == tok::star; }
+  bool IsStar() const { return kind == tok::star; }
   bool IsLParen() const { return kind == tok::l_paren; }
   bool IsRParen() const { return kind == tok::r_paren; }
   bool IsLBrace() const { return kind == tok::l_brace; }
@@ -210,13 +223,15 @@ public:
   bool IsLSquare() const { return kind == tok::l_square; }
   bool IsRSquare() const { return kind == tok::r_square; }
 
-  bool IsQualifier() {
-    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile, tok::kw_final, tok::kw_mutable, 
-                 tok::kw_pure);
+  bool IsQualifier() const {
+    return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
+                 tok::kw_final, tok::kw_mutable, tok::kw_pure);
   }
-  bool IsAccessLevel() {
+  bool IsAccessLevel() const {
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
+
+  bool IsTypePattern() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

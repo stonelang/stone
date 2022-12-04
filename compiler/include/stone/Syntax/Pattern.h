@@ -37,7 +37,7 @@ constexpr size_t TypePatternAlignInBits = 3;
 
 enum class TypePatternKind {
   None,
-  Direct,
+  Value,
   Pointer,
   Reference,
   Array,
@@ -60,12 +60,12 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class DirectTypePattern final : public TypePattern {
+class ValueTypePattern final : public TypePattern {
 public:
-  DirectTypePattern() : TypePattern(TypePatternKind::Direct, SrcLoc()) {}
+  ValueTypePattern() : TypePattern(TypePatternKind::Value, SrcLoc()) {}
 
 public:
-  static DirectTypePattern Create();
+  static ValueTypePattern Create();
 };
 
 class PointerTypePattern final : public TypePattern {
@@ -140,12 +140,12 @@ public:
   const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
     return specifierCollector;
   }
-  bool HasTypePatterns() { return patterns.size() > 0; }
+  bool HasAny() { return patterns.size() > 0; }
 
 private:
   /// Add a chunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the chunk.
-  void AddTypePattern(const TypePattern &pattern) {
+  void AddTypePattern(const TypePattern pattern) {
     patterns.push_back(pattern);
     // TODO:
     //  if (!EndLoc.isInvalid())
@@ -153,8 +153,8 @@ private:
   }
 
 public:
-  // Direct has no source loc
-  void AddDirect();
+  // Value has no source loc
+  void AddValue();
   void AddPointer(SrcLoc loc);
   void AddReference(SrcLoc loc);
   void AddArray(SrcLoc loc);
@@ -182,6 +182,9 @@ public:
     }
     return nullptr;
   }
+
+public:
+  void Apply();
 
 public:
   void Verify();

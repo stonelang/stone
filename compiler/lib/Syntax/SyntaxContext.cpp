@@ -20,8 +20,8 @@ using namespace stone::syn;
 
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
-    : lc(lc), searchPathOpts(spOpts), identifiers(lc.GetLangOptions()),
-      builtin(*this), stats(new SyntaxContextStats(*this)) {
+    : lc(lc), searchPathOpts(spOpts), identifiers(allocator), builtin(*this),
+      stats(new SyntaxContextStats(*this)) {
 
   lc.GetStatEngine().Register(stats.get());
 }
@@ -39,8 +39,8 @@ void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 
-Identifier &SyntaxContext::GetIdentifier(llvm::StringRef name) {
-  return identifiers.Get(name);
+Identifier SyntaxContext::GetIdentifier(llvm::StringRef name) {
+  return identifiers.GetIdentifier(name);
 }
 
 size_t SyntaxContext::GetSizeOfMemUsed() const {

@@ -16,7 +16,11 @@ class TypeCheckerListener;
 
 namespace syn {
 class SyntaxFile;
+class Expr;
+class Decl;
+class Stmt;
 } // namespace syn
+
 namespace sem {
 class TypeChecker;
 
@@ -29,7 +33,9 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
-class TypeCheckerDiagnostics {};
+class TypeCheckerDiagnostics final {
+public:
+};
 
 class TypeChecker final {
   friend TypeCheckerStats;
@@ -46,17 +52,25 @@ public:
 
 public:
   void CheckDecl(Decl *d);
-  void CheckFunDecl(Decl *d);
-
-  // DeclVisitor &GetDeclVisitor();
 
 public:
-  void CheckStmt();
-
-  // StmtVisitor& GetStmtVisitor();
+  void CheckStmt(Stmt *s);
 
 public:
-  void CheckExpr();
+  void CheckExpr(Expr *e);
+
+public:
+  void CheckType();
+
+public:
+  /// Determine whether one type is a subtype of another.
+  ///
+  /// \param t1 The potential subtype.
+  /// \param t2 The potential supertype.
+  /// \param dc The context of the check.
+  ///
+  /// \returns true if \c t1 is a subtype of \c t2.
+  bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
 } // namespace sem
 } // namespace stone

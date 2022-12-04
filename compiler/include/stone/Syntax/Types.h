@@ -322,88 +322,87 @@ class DictionaryType : public SyntaxSugarType {};
 //   Pointer; }
 // };
 
-// /// Base for LValueReferenceType and RValueReferenceType
-// class ReferenceType : public Type, public llvm::FoldingSetNode {
-//   //   QualType PointeeType;
+/// Base for LValueReferenceType and RValueReferenceType
+class ReferenceType : public TypeBase, public llvm::FoldingSetNode {
+  //   QualType PointeeType;
 
-//   // protected:
-//   //   ReferenceType(TypeClass tc, QualType Referencee, QualType
-//   CanonicalRef,
-//   //                 bool SpelledAsLValue)
-//   //       : Type(tc, CanonicalRef, Referencee->getDependence()),
-//   //         PointeeType(Referencee) {
-//   //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
-//   //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
-//   //   }
+  // protected:
+  //   ReferenceType(TypeClass tc, QualType Referencee, QualType
+  // CanonicalRef,
+  //                 bool SpelledAsLValue)
+  //       : Type(tc, CanonicalRef, Referencee->getDependence()),
+  //         PointeeType(Referencee) {
+  //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
+  //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
+  //   }
 
-//   // public:
-//   //   bool isSpelledAsLValue() const { return
-//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const {
-//   return
-//   //   ReferenceTypeBits.InnerRef; }
+  //   // public:
+  //   //   bool isSpelledAsLValue() const { return
+  //   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const {
+  //   return
+  //   //   ReferenceTypeBits.InnerRef; }
 
-//   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
+  //   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
 
-//   //   QualType getPointeeType() const {
-//   //     // FIXME: this might strip inner qualifiers; okay?
-//   //     const ReferenceType *T = this;
-//   //     while (T->isInnerRef())
-//   //       T = T->PointeeType->castAs<ReferenceType>();
-//   //     return T->PointeeType;
-//   //   }
+  //   //   QualType getPointeeType() const {
+  //   //     // FIXME: this might strip inner qualifiers; okay?
+  //   //     const ReferenceType *T = this;
+  //   //     while (T->isInnerRef())
+  //   //       T = T->PointeeType->castAs<ReferenceType>();
+  //   //     return T->PointeeType;
+  //   //   }
 
-//   //   void Profile(llvm::FoldingSetNodeID &ID) {
-//   //     Profile(ID, PointeeType, isSpelledAsLValue());
-//   //   }
+  //   //   void Profile(llvm::FoldingSetNodeID &ID) {
+  //   //     Profile(ID, PointeeType, isSpelledAsLValue());
+  //   //   }
 
-//   //   static void Profile(llvm::FoldingSetNodeID &ID,
-//   //                       QualType Referencee,
-//   //                       bool SpelledAsLValue) {
-//   //     ID.AddPointer(Referencee.getAsOpaquePtr());
-//   //     ID.AddBoolean(SpelledAsLValue);
-//   //   }
+  //   //   static void Profile(llvm::FoldingSetNodeID &ID,
+  //   //                       QualType Referencee,
+  //   //                       bool SpelledAsLValue) {
+  //   //     ID.AddPointer(Referencee.getAsOpaquePtr());
+  //   //     ID.AddBoolean(SpelledAsLValue);
+  //   //   }
 
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference ||
-//   //            T->getTypeClass() == RValueReference;
-//   //   }
-// };
+  //   //   static bool classof(const Type *T) {
+  //   //     return T->getTypeClass() == LValueReference ||
+  //   //            T->getTypeClass() == RValueReference;
+  //   //   }
+};
 
 // /// An lvalue reference type, per C++11 [dcl.ref].
-// class LeftValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
+class LValueReferenceType final : public ReferenceType {
 
-//   //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
-//   //                       bool SpelledAsLValue)
-//   //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
-//   //                       SpelledAsLValue) {}
+  //   friend class ASTContext; // ASTContext creates these
 
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
+  //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
+  //                       bool SpelledAsLValue)
+  //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
+  //                       SpelledAsLValue) {}
 
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference;
-//   //   }
-// };
+  // public:
+  //   bool isSugared() const { return false; }
+  //   QualType desugar() const { return QualType(this, 0); }
+
+  //   static bool classof(const Type *T) {
+  //     return T->getTypeClass() == LValueReference;
+  //   }
+};
 
 // /// An rvalue reference type, per C++11 [dcl.ref].
-// class RightValueReferenceType : public ReferenceType {
-//   //   friend class ASTContext; // ASTContext creates these
+class RValueReferenceType : public ReferenceType {
+  //   friend class ASTContext; // ASTContext creates these
 
-//   //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//   //        : ReferenceType(RValueReference, Referencee, CanonicalRef,
-//   false)
-//   {}
+  //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
+  //        : ReferenceType(RValueReference, Referencee, CanonicalRef,false){}
 
-//   // public:
-//   //   bool isSugared() const { return false; }
-//   //   QualType desugar() const { return QualType(this, 0); }
+  // public:
+  //   bool isSugared() const { return false; }
+  //   QualType desugar() const { return QualType(this, 0); }
 
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == RValueReference;
-//   //   }
-// };
+  //   static bool classof(const Type *T) {
+  //     return T->getTypeClass() == RValueReference;
+  //   }
+};
 
 // /// A pointer to member type per C++ 8.3.3 - Pointers to members.
 // ///
@@ -463,9 +462,6 @@ class DictionaryType : public SyntaxSugarType {};
 //   //   return T->getTypeClass() == MemberPointer;
 //   // }
 // };
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 // using TypeRep = OpaquePtr<QualType>;
 // using UnionTypeRep = UnionOpaquePtr<QualType>;

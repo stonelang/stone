@@ -51,7 +51,7 @@ next
 
 
 ** BUG
-int** fails in lexer but int* works 
+int** fails in lexer but int* works -- ok for now 
 
 
 

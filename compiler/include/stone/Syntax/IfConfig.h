@@ -4,10 +4,12 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-
-class Expr;
 class SrcLoc;
+
+namespace syn {
+class Expr;
 struct SyntaxNode;
+} // namespace syn
 
 /// This represents one part of a #if block.  If the condition field is
 /// non-null, then this represents a #if or a #elseif, otherwise it represents
@@ -18,16 +20,16 @@ struct IfConfigClause {
 
   /// The condition guarding this #if or #elseif block.  If this is null, this
   /// is a #else clause.
-  Expr *cond;
+  syn::Expr *cond;
 
   /// Elements inside the clause
-  llvm::ArrayRef<SyntaxNode> elements;
+  llvm::ArrayRef<syn::SyntaxNode> elements;
 
   /// True if this is the active clause of the #if block.
   const bool isActive;
 
-  IfConfigClause(SrcLoc loc, Expr *cond, llvm::ArrayRef<SyntaxNode> elements,
-                 bool isActive)
+  IfConfigClause(SrcLoc loc, syn::Expr *cond,
+                 llvm::ArrayRef<syn::SyntaxNode> elements, bool isActive)
       : loc(loc), cond(cond), elements(elements), isActive(isActive) {}
 };
 

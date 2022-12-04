@@ -138,7 +138,7 @@ public:
   SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
-  void ParseDeclName(DeclNameContext &nameInfo);
+  void ParseDeclName();
 
   // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
 
@@ -156,7 +156,11 @@ public:
   SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
+
+  bool IsTypePattern(const Token &tk);
+  SyntaxStatus CollectTypePattern(ParsingDeclCollector &collector);
   SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
+
   SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
@@ -177,17 +181,18 @@ public:
   SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
                                             Diag<> diagID);
 
-  SyntaxResult<QualType> ParseBasicType(TypeSpecifierCollector &collector,
-                                        Diag<> diagID);
+  SyntaxResult<TypeRep> ParseBasicType(ParsingDeclCollector &collector,
+                                       Diag<> diagID);
+
   void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collectorifier);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
 
 private:
-  SyntaxStatus ParseFunctionSignature(const DeclNameContext &nameInfo,
-                                      ParsingDeclCollector &collectorifier);
+  SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collector,
+                                      Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
   //                                       DeclName &fullName,
@@ -287,7 +292,6 @@ public:
     assert(curTok.Is(kind) && "Consuming wrong curTok type");
     return ConsumeToken(ParsingNotification::None);
   }
-  SrcLoc ConsumeIdentifier(Identifier *result = nullptr);
 
   /// If the current curTok is the collectorified kind, consume it and
   /// return true.  Otherwise, return false without consuming it.
@@ -317,6 +321,9 @@ public:
   SrcLoc ConsumeStartingGreater();
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
+
+  SyntaxStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
+  SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:
   // == Skipping ==/
@@ -419,7 +426,7 @@ private:
   bool StartsWithGreater(Token tok) { return StartsWithSymbol(tok, '>'); }
 
 public:
-  Identifier &GetIdentifier(llvm::StringRef text);
+  Identifier GetIdentifier(llvm::StringRef text);
 };
 
 } // namespace syn

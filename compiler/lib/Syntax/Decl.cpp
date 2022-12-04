@@ -125,8 +125,8 @@ void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
 template <std::size_t len>
 static bool IsMainImpl(const NameableDecl *nameable, const char (&str)[len]) {
   assert(nameable);
-  const Identifier *identifier = nameable->GetIdentifier();
-  return identifier && identifier->isStr(str);
+  auto identifier = nameable->GetIdentifier();
+  return identifier.IsEqual(str);
 }
 
 // Keeping this very simple for now
@@ -151,14 +151,15 @@ void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
 
 void DeclStats::Print(ColorfulStream &stream) {}
 
-FunDecl *FunDeclFactory::Create(DeclNameContext &dnc, SyntaxContext &sc,
+FunDecl *FunDeclFactory::Create(DeclCollector &collector, SyntaxContext &sc,
                                 TypeRep *result, DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
-  return ::new (memPtr) FunDecl(DeclKind::Fun, dnc.GetName(), dnc.GetNameLoc(),
-                                dnc.GetSpecialNameLoc(), parent);
+  return ::new (memPtr) FunDecl(
+      DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
+      collector.GetDeclName(), collector.GetDeclNameLoc(), parent);
 }
 
 StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
@@ -169,7 +170,7 @@ StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
   return nullptr;
 }
 
-Module *ModuleDeclFactory::Create(Identifier *name, SyntaxContext &sc,
+Module *ModuleDeclFactory::Create(Identifier name, SyntaxContext &sc,
                                   bool isMainModule) {
   auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
   return ::new (declPtr) syn::Module(name, sc);

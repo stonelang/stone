@@ -12,23 +12,29 @@ ReferenceTypePattern ReferenceTypePattern::Create(SrcLoc loc) {
   return pattern;
 }
 
-DirectTypePattern DirectTypePattern::Create() {
-  DirectTypePattern pattern;
+ValueTypePattern ValueTypePattern::Create() {
+  ValueTypePattern pattern;
   return pattern;
 }
 
-void TypePatternCollector::AddDirect() {
-  AddTypePattern(DirectTypePattern::Create());
+void TypePatternCollector::AddValue() {
+  AddTypePattern(ValueTypePattern::Create());
 }
 
-void TypePatternCollector::AddPointer(SrcLoc loc) {}
+void TypePatternCollector::AddPointer(SrcLoc inputLoc) {
+  AddTypePattern(PointerTypePattern::Create(inputLoc));
+}
 
-void TypePatternCollector::AddReference(SrcLoc loc) {}
+void TypePatternCollector::AddReference(SrcLoc inputLoc) {
+  AddTypePattern(ReferenceTypePattern::Create(inputLoc));
+}
 
-void TypePatternCollector::AddArray(SrcLoc loc) {}
+void TypePatternCollector::AddArray(SrcLoc inputLoc) {}
 
-void TypePatternCollector::AddBlockPointer(SrcLoc loc) {}
+void TypePatternCollector::AddBlockPointer(SrcLoc inputLoc) {}
 
-void TypePatternCollector::AddParen(SrcLoc loc) {}
+void TypePatternCollector::AddParen(SrcLoc inputLoc) {}
 
-void TypePatternCollector::AddPipe(SrcLoc loc) {}
+void TypePatternCollector::AddPipe(SrcLoc inputLoc) {}
+
+void TypePatternCollector::Apply() {}

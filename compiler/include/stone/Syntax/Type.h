@@ -89,12 +89,8 @@ struct TypeQualifierFlags {
     Volatile = 0x4,
     Unaligned = 0x8,
     Pure = 0x18,
-    Final = 0x36,
+    Immutable = 0x36,
     Mutable = 0x72,
-
-
-    CVRMask = Const | Volatile | Restrict,
-    CVRUMask = Const | Volatile | Restrict | Unaligned
   };
 };
 
@@ -103,21 +99,12 @@ class TypeQualifierContext {
   // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
   //           |C R V|U|GCAttr|Lifetime|AddressSpace|
   UInt32 mask = 0;
-  // static const uint32_t uMask = 0x8;
-  // static const uint32_t uShift = 3;
-  // static const uint32_t GCAttrMask = 0x30;
-  // static const uint32_t GCAttrShift = 4;
-  // static const uint32_t lifetimeMask = 0x1C0;
-  // static const uint32_t lifetimeShift = 6;
-  // static const uint32_t addressSpaceMask =
-  //     ~(CVRMask | UMask | GCAttrMask | LifetimeMask);
-  // static const uint32_t AddressSpaceShift = 9;
 
   SrcLoc constLoc;
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;
   SrcLoc pureLoc;
-  SrcLoc finalLoc;
+  SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
 public:
@@ -125,18 +112,11 @@ public:
     /// The maximum supported address space number.
     /// 23 bits should be enough for anyone.
     MaxAddressSpace = 0x7fffffu,
-
-    /// The width of the "fast" qualifier mask.
-    FastWidth = 3,
-
-    /// The fast qualifier mask.
-    FastMask = (1 << FastWidth) - 1
   };
 
 public:
-  TypeQualifierContext() {
-    AddFinal(SrcLoc());
-  }
+  TypeQualifierContext() {}
+
 public:
   bool HasConst() const { return mask & TypeQualifierFlags::Const; }
   bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
@@ -146,18 +126,20 @@ public:
     mask |= TypeQualifierFlags::Const;
   }
   SrcLoc GetConstLoc() { return constLoc; }
-  
-  // TODO: Think about this whole const concept now giving that you have final and mutable 
-  bool HasFinal() const { return mask & TypeQualifierFlags::Final; }
-  bool HasFinalOnly() const { return mask == TypeQualifierFlags::Final; }
-  void RemoveFinal() { mask &= ~TypeQualifierFlags::Final; }
-  void AddFinal(SrcLoc loc = SrcLoc()) {
-    finalLoc = loc;
-    mask |= TypeQualifierFlags::Final;
+
+public:
+  bool HasImmutable() const { return mask & TypeQualifierFlags::Immutable; }
+  bool HasImmutableOnly() const {
+    return mask == TypeQualifierFlags::Immutable;
   }
-  SrcLoc GetFinalLoc() { return finalLoc; }
+  void RemoveImmutable() { mask &= ~TypeQualifierFlags::Immutable; }
+  void AddImmutable(SrcLoc loc = SrcLoc()) {
+    immutableLoc = loc;
+    mask |= TypeQualifierFlags::Immutable;
+  }
+  SrcLoc GetImmutableLoc() { return immutableLoc; }
 
-
+public:
   bool HasMutable() const { return mask & TypeQualifierFlags::Mutable; }
   bool HasMutableOnly() const { return mask == TypeQualifierFlags::Mutable; }
   void RemoveMutable() { mask &= ~TypeQualifierFlags::Mutable; }
@@ -167,7 +149,7 @@ public:
   }
   SrcLoc GetMutableLoc() { return mutableLoc; }
 
-
+public:
   bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
   bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
   void RemoveRestrict() { mask &= ~TypeQualifierFlags::Restrict; }
@@ -177,6 +159,7 @@ public:
   }
   SrcLoc GetRestrictLoc() { return restrictLoc; }
 
+public:
   bool HasVolatile() const { return mask & TypeQualifierFlags::Volatile; }
   bool HasVolatileOnly() const { return mask == TypeQualifierFlags::Volatile; }
   void RemoveVolatile() { mask &= ~TypeQualifierFlags::Volatile; }
@@ -185,6 +168,7 @@ public:
     mask |= TypeQualifierFlags::Volatile;
   }
 
+public:
   bool HasPure() const { return mask & TypeQualifierFlags::Pure; }
   bool HasPureOnly() const { return mask == TypeQualifierFlags::Pure; }
   void RemovePure() { mask &= ~TypeQualifierFlags::Pure; }
@@ -193,34 +177,14 @@ public:
     mask |= TypeQualifierFlags::Pure;
   }
 
-  bool HasAnyTypeQualifier() {
+public:
+  bool HasAny() {
     return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
   }
-  bool HasAllTypeQualifiers() {
+  bool HasAll() {
     return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
   }
   SrcLoc GetVolatileLoc() { return volatileLoc; }
-
-  // bool HasCVR() const { return getCVRQualifiers(); }
-  // unsigned GetCVR() const { return mask & CVRmask; }
-
-  // unsigned GetCVRU() const { return mask & (CVRMask | UMask); }
-
-  // void setCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask = (Mask & ~CVRMask) | mask;
-  // }
-  // void removeCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask &= ~mask;
-  // }
-  // void removeCVRQualifiers() {
-  //   removeCVRQualifiers(CVRMask);
-  // }
-  // void addCVRQualifiers(unsigned mask) {
-  //   assert(!(mask & ~CVRMask) && "bitmask contains non-CVR bits");
-  //   Mask |= mask;
-  // }
 };
 
 /// ref-qualifier associated with a function SyntaxType.
@@ -396,6 +360,8 @@ public:
   bool HasRestrict() const;
   bool HasVolatile() const;
   bool HasPure() const;
+
+  bool HasImmutable() const;
 
   bool HasQuals() const;
   bool IsCanonical() const;

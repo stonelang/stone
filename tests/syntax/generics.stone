@@ -18,5 +18,6 @@ public PriorityQueue::~PriorityQueue() {
 public fun PriorityQueue::Push(const T* t) -> void {
 }
 
+
 public fun PriorityQueue::Pop() -> T* {
 }

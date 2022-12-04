@@ -46,6 +46,7 @@ public:
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   IRCodeGenBuilder &GetIRCodeGenBuilder() { return irCodeGenBuilder; }
+
   void InitLLVMModule();
 };
 } // namespace stone

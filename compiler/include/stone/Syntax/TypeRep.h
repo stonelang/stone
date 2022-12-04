@@ -37,6 +37,8 @@ enum : unsigned {
 class alignas(1 << TypeRepAlignInBits) TypeRep
     : public syn::SyntaxAllocation<TypeRep> {
 
+  TypeRepKind kind;
+
   TypeRep(const TypeRep &) = delete;
   void operator=(const TypeRep &) = delete;
 
@@ -49,38 +51,132 @@ public:
   TypeRep *Walk(SyntaxWalker &&walker) { return Walk(walker); }
 
 public:
+  SrcLoc GetLoc() const;
+  SrcLoc GetStartLoc() const;
+  SrcLoc GetEndLoc() const;
+  SrcRange GetSrcRange() const;
+
+public:
   void Print(raw_ostream &os,
              const PrintSyntaxOptions &printOpts = PrintSyntaxOptions()) const;
 };
 
-/// Example: const int b = 0; TypeLoc will have QualTypeRep
-class QualTypeRep : public TypeRep {
-  SrcLoc constLoc;
-  SrcLoc restricLoc;
-  SrcLoc volatileLoc;
-  SrcLoc pureLoc;
+// You may not need this part.
+class SpecifierTypeRep final : public TypeRep {
 
 public:
-  bool AddConst(SrcLoc loc) { constLoc = loc; }
-  bool AddRestrict(SrcLoc loc) { restricLoc = loc; }
-  bool AddVolatile(SrcLoc loc) { volatileLoc = loc; }
-  bool AddPure(SrcLoc loc) { pureLoc = loc; }
+  SpecifierTypeRep() {}
 
 public:
-  bool IsConst() const { return constLoc.isValid(); }
-  bool IsRestrict() const { return restricLoc.isValid(); }
-  bool IsVolatile() const { return volatileLoc.isValid(); }
-  bool IsPure() const { return pureLoc.isValid(); }
-
-  SrcLoc GetConstLoc() const { return constLoc; }
-  SrcLoc GetRestrictLoc() const { return restricLoc; }
-  SrcLoc GetVolatileLoc() const { return volatileLoc; }
-  SrcLoc GetPureLoc() const { return pureLoc; }
+  static SpecifierTypeRep *Create(SyntaxContext &sc);
 };
 
-class TypeSpecTypeRep : public TypeRep {};
+/// Example: const int b = 0; TypeLoc will have QualifierTypeRep
+class QualifierTypeRep : public TypeRep {
+  // SrcLoc constLoc;
+  // SrcLoc restricLoc;
+  // SrcLoc volatileLoc;
+  // SrcLoc pureLoc;
+  // SrcLoc mutableLoc;
+  // SrcLoc immutableLoc;
+  TypeRep *type;
 
-class IdentifierTypeRep : public QualTypeRep {};
+public:
+  QualifierTypeRep() : type(nullptr) {}
+  QualifierTypeRep(TypeRep *type) : type(type) {}
+
+  // public:
+  //   void AddConst(SrcLoc loc) { constLoc = loc; }
+  //   void AddRestrict(SrcLoc loc) { restricLoc = loc; }
+  //   void AddVolatile(SrcLoc loc) { volatileLoc = loc; }
+  //   void AddPure(SrcLoc loc) { pureLoc = loc; }
+  //   void AddMutable(SrcLoc loc) { mutableLoc = loc; }
+
+  // public:
+  //   bool IsConst() const { return constLoc.isValid(); }
+  //   bool IsRestrict() const { return restricLoc.isValid(); }
+  //   bool IsVolatile() const { return volatileLoc.isValid(); }
+  //   bool IsPure() const { return pureLoc.isValid(); }
+
+  //   SrcLoc GetConstLoc() const { return constLoc; }
+  //   SrcLoc GetRestrictLoc() const { return restricLoc; }
+  //   SrcLoc GetVolatileLoc() const { return volatileLoc; }
+  //   SrcLoc GetPureLoc() const { return pureLoc; }
+  //   SrcLoc GetMutableLoc() const { return mutableLoc; }
+
+public:
+  TypeRep *GetType() { return type; }
+
+public:
+  static QualifierTypeRep *Create(TypeRep *type, SyntaxContext &sc);
+};
+
+/// Particle particle where Particle is the type-identifier
+class IdentifierTypeRep : public TypeRep {};
+
+/// A parsed element within a tuple type.
+struct TupleTypeRepElement final {
+  Identifier name;
+  SrcLoc nameLoc;
+  Identifier secondName;
+  SrcLoc secondNameLoc;
+  SrcLoc underscoreLoc;
+  SrcLoc colonLoc;
+  TypeRep *type;
+  SrcLoc trailingCommaLoc;
+
+  TupleTypeRepElement() : type(nullptr) {}
+  TupleTypeRepElement(TypeRep *type) : type(type) {}
+};
+
+class CompositionTypeRep final
+    : public TypeRep,
+      private llvm::TrailingObjects<CompositionTypeRep, TypeRep *> {
+  friend TrailingObjects;
+
+  SrcLoc firstTypeLoc;
+  SrcRange compositionRange;
+
+  CompositionTypeRep(llvm::ArrayRef<TypeRep *> types, SrcLoc firstTypeLoc,
+                     SrcRange compositionRange)
+      : /*TypeRep(TypeRepKind::Composition),*/ firstTypeLoc(firstTypeLoc),
+        compositionRange(compositionRange) {
+
+    // Bits.CompositionTypeRepr.NumTypes = Types.size();
+    std::uninitialized_copy(types.begin(), types.end(),
+                            getTrailingObjects<TypeRep *>());
+  }
+
+  // public:
+  //   ArrayRef<TypeRepr *> getTypes() const {
+  //     return {getTrailingObjects<TypeRepr*>(),
+  //     Bits.CompositionTypeRepr.NumTypes};
+  //   }
+  //   SrcLoc getSrcLoc() const { return FirstTypeLoc; }
+  //   SrcRange getCompositionRange() const { return CompositionRange; }
+
+  //   static CompositionTypeRepr *create(const ASTContext &C,
+  //                                      ArrayRef<TypeRepr*> Protocols,
+  //                                      SrcLoc FirstTypeLoc,
+  //                                      SrcRange CompositionRange);
+
+  //   static CompositionTypeRepr *createEmptyComposition(ASTContext &C,
+  //                                                      SrcLoc AnyLoc) {
+  //     return CompositionTypeRepr::create(C, {}, AnyLoc, {AnyLoc, AnyLoc});
+  //   }
+
+  //   static bool classof(const TypeRepr *T) {
+  //     return T->getKind() == TypeReprKind::Composition;
+  //   }
+  //   static bool classof(const CompositionTypeRepr *T) { return true; }
+
+  // private:
+  //   SrcLoc getStartLocImpl() const { return FirstTypeLoc; }
+  //   SrcLoc getLocImpl() const { return CompositionRange.Start; }
+  //   SrcLoc getEndLocImpl() const { return CompositionRange.End; }
+  //   void printImpl(ASTPrinter &Printer, const PrintOptions &Opts) const;
+  friend class TypeRep;
+};
 
 class ComponentIdentifierTypeRep : public IdentifierTypeRep {
   DeclNameLoc nameLoc;
@@ -125,35 +221,42 @@ private:
   friend class TypeRep;
 };
 
-class TupleTypeRep final : public QualTypeRep {
+/// Why QualType
+class TupleTypeRep final : public TypeRep {
 public:
   static TupleTypeRep *Create();
 };
 
-/// May want to inherit from QualTypeRep
+// class TupleTypeRep final : public TypeRep,
+//     private llvm::TrailingObjects<TupleTypeRep, TupleTypeRepElement,
+//     Located<unsigned>> {
+
+// };
+
+/// May want to inherit from QualifierTypeRep
 
 // Ex: public pure fun
 class FunctionTypeRep : public TypeRep {
-  QualTypeRep *resultTy;
+  QualifierTypeRep *resultTy;
 
 public:
-  FunctionTypeRep(QualTypeRep *resultTy) : resultTy(resultTy) {}
+  FunctionTypeRep(QualifierTypeRep *resultTy) : resultTy(resultTy) {}
 
 public:
-  QualTypeRep *GetResultTypeRep() { return resultTy; }
+  QualifierTypeRep *GetResultTypeRep() { return resultTy; }
 };
 
 /// All this may be covered by the IdentifierTypeRep
 class BuiltinTypeRep : public TypeRep {};
 
-class AbstractPointerTypeRep : public QualTypeRep {};
+class AbstractPointerTypeRep : public QualifierTypeRep {};
 
 /// Wrapper for source info for pointers.
 /// Ex: const int* p = null;
 class PointerTypeRep : public AbstractPointerTypeRep {};
 
 /// Wrapper for source info for block pointers.
-class MemboerPointerTypeRep : public AbstractPointerTypeRep {};
+class MemberPointerTypeRep : public AbstractPointerTypeRep {};
 
 } // namespace syn
 } // end namespace stone

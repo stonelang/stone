@@ -39,8 +39,9 @@ public:
   }
 
   SrcLoc getAdvancedLocOrInvalid(int ByteOffset) const {
-    if (isValid())
+    if (isValid()) {
       return getAdvancedLoc(ByteOffset);
+    }
     return SrcLoc();
   }
 
