@@ -135,7 +135,6 @@ public:
   static std::unique_ptr<Mode> Create(const llvm::opt::InputArgList &ial);
 };
 
-
 // class EmitBCMode final : public Mode {
 // };
 

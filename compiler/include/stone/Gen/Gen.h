@@ -29,17 +29,14 @@ class CodeGenOptions;
 class CodeGenContext;
 class IRCodeGenResult;
 
-std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
-                                       const LangContext &ctx,
-                                       const OutputFile *output);
+void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf, const LangContext &ctx,
+           const OutputFile *output);
 
-std::unique_ptr<IRCodeGenResult> GenIR(CodeGenContext &cgc,
-                                       syn::ModuleDecl &mod,
-                                       const LangContext &ctx,
-                                       const OutputFile *output);
+void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod, const LangContext &ctx,
+           const OutputFile *output);
 
-stone::Error GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
-                       IRCodeGenResult &result, const OutputFile *output);
+void GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
+               const OutputFile *output);
 
 // void GenModule();
 

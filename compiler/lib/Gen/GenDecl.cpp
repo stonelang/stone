@@ -5,8 +5,6 @@
 using namespace stone;
 using namespace stone::syn;
 
-
-
 // class DeclCodeGen {
 // };
 

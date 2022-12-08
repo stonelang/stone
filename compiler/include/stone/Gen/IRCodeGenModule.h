@@ -21,7 +21,7 @@ namespace stone {
 
 class IRCodeGen;
 
-// I do not think that you need this -- just use IRCodeGen 
+// I do not think that you need this -- just use IRCodeGen
 class IRCodeGenModule final {
   IRCodeGen &irCodeGen;
 

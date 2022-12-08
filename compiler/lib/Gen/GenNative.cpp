@@ -78,23 +78,22 @@ using namespace stone::syn;
 
 static void GenNativeWithParallelization() {}
 
-stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
-                              IRCodeGenResult &result,
-                              const OutputFile *output) {
+void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+                      const OutputFile *output) {
 
   NativeCodeGen ncg(cgc, sc);
-  switch (cgc.GetCodeGenOptions().nativeModeKind) {
-  case NativeModeKind::EmitObject:
-    return ncg.EmitObject(result);
-  case NativeModeKind::EmitBC:
-    return ncg.EmitBC(result);
-  case NativeModeKind::EmitAssembly:
-    return ncg.EmitAssembly(result);
-  default:
-    stone::Panic("Unknown native mode");
-  }
+  // switch (cgc.GetCodeGenOptions().nativeModeKind) {
+  // case NativeModeKind::EmitObject:
+  //   return ncg.EmitObject(result);
+  // case NativeModeKind::EmitBC:
+  //   return ncg.EmitBC(result);
+  // case NativeModeKind::EmitAssembly:
+  //   return ncg.EmitAssembly(result);
+  // default:
+  //   stone::Panic("Unknown native mode");
+  // }
 
-  return stone::Error();
+  // return stone::Error();
 }
 
 // EmitWith...

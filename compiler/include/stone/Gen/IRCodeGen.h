@@ -50,7 +50,7 @@ public:
 public:
   void GenDecl();
 
-  //TODO: REMOVE - this is already in CodeGenContext
+  // TODO: REMOVE - this is already in CodeGenContext
   void InitLLVMModule();
 };
 } // namespace stone

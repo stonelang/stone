@@ -76,10 +76,8 @@
 using namespace stone;
 using namespace stone::syn;
 
-std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
-                                              syn::SyntaxFile &sf,
-                                              const LangContext &ctx,
-                                              const OutputFile *output) {
+void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
+                  const LangContext &ctx, const OutputFile *output) {
   // IRCodeGen irCG(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);
 
@@ -96,13 +94,10 @@ std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
   //   // }
   // }
   // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
-  return nullptr;
 }
 
-std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
-                                              syn::ModuleDecl &md,
-                                              const LangContext &lc,
-                                              const OutputFile *output) {
+void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl &md,
+                  const LangContext &lc, const OutputFile *output) {
   // IRCodeGen IRCodeGen(genOpts);
   // IRModuleEmitter modEmitter(IRCodeGen);
 
@@ -119,5 +114,4 @@ std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
   //   // }
   // }
   // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
-  return nullptr;
 }

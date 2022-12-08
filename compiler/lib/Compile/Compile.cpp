@@ -131,13 +131,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-static CompileStatus DumpIR(CompilerInstance &compiler, CodeGenContext &cgc,
-                            IRCodeGenResult &result) {
+static CompileStatus DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   CompileStatus::MakeSuccess();
 }
 
-static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc,
-                             IRCodeGenResult &result) {
+static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   CompileStatus::MakeSuccess();
 }
 
@@ -149,17 +147,17 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
   switch (compiler.GetModuleOutputMode()) {
   case ModuleOutputMode::Single: {
     if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-      auto result = stone::GenIR(
-          cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
-      status |= fn(compiler, cgc, *result);
+      stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
+                   nullptr);
+      status |= fn(compiler, cgc);
     }
     return status;
   }
   case ModuleOutputMode::Whole: {
     if (auto mod = msf.get<syn::ModuleDecl *>()) {
-      auto result = stone::GenIR(
-          cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
-      status |= fn(compiler, cgc, *result);
+      stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
+                   nullptr);
+      status |= fn(compiler, cgc);
     }
     return status;
   }
@@ -170,14 +168,13 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
   return CompileStatus::MakeError();
 }
 
-static CompileStatus GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
-                               IRCodeGenResult &result) {
+static CompileStatus GenModule(CompilerInstance &compiler,
+                               CodeGenContext &cgc) {
   return CompileStatus::MakeSuccess();
 }
 
 static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
-                                          CodeGenContext &cgc,
-                                          IRCodeGenResult &result) {
+                                          CodeGenContext &cgc) {
 
   // TODO: Move to CompilerInstance
   auto targetMachine = stone::CreateTargetMachine(
@@ -207,8 +204,7 @@ static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
     }
   };
   ComputeNativeModeKind(compiler);
-  auto err =
-      stone::GenNative(cgc, compiler.GetSyntaxContext(), result, nullptr);
+  stone::GenNative(cgc, compiler.GetSyntaxContext(), nullptr);
 
   return CompileStatus::MakeSuccess();
 }
@@ -249,29 +245,29 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
 
   switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return GenModule(compiler, cgc, result);
-                            });
+    return CompileWithGenIR(
+        *this, mainModule, cgc,
+        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return GenModule(compiler, cgc);
+        });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
         *this, mainModule, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc,
-            IRCodeGenResult &result) { return DumpIR(compiler, cgc, result); });
+        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return DumpIR(compiler, cgc);
+        });
   case ModeKind::PrintIR:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return PrintIR(compiler, cgc, result);
-                            });
+    return CompileWithGenIR(
+        *this, mainModule, cgc,
+        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return PrintIR(compiler, cgc);
+        });
   default:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return CompileWithGenNative(compiler, cgc,
-                                                          result);
-                            });
+    return CompileWithGenIR(
+        *this, mainModule, cgc,
+        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return CompileWithGenNative(compiler, cgc);
+        });
   }
 }
 

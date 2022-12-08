@@ -96,7 +96,7 @@ using TypeCheckingCompletedCallback =
 // llvm::function_ref<void(CompilerInstance &)>;
 
 using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
-    CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
+    CompilerInstance &compiler, CodeGenContext &cgc)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
