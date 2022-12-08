@@ -7,6 +7,7 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenBuilder.h"
 #include "stone/Syntax/Module.h"
+
 #include "llvm/IR/PassManager.h"
 
 namespace llvm {

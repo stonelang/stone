@@ -2,6 +2,7 @@
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
 #include "stone/Gen/IRCodeGenModule.h"
+
 #include "llvm/IR/Function.h"
 
 #include <memory>
