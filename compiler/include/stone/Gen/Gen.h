@@ -3,8 +3,8 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/OutputFile.h"
-#include "stone/Gen/IRCodeGenResult.h"
 #include "stone/Syntax/SyntaxContext.h"
+
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
