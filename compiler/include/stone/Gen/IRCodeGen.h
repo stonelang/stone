@@ -24,7 +24,7 @@ namespace stone {
 // class IREmitterLoop {};
 // class IREmitterCall {};
 
-// class IREmitterBlocks {
+// class IRCodeBlocks {
 // public:
 //   IREmitterBlocks();
 // };
@@ -37,22 +37,13 @@ class IRCodeGen final {
 public:
   IRCodeGen(CodeGenContext &cgc);
   ~IRCodeGen();
-
-public:
-  /// Return an opaque reference to the IRCodeModule object, which can
-  /// be used in various secondary APIs.  It is valid as long as the
-  /// Generator exists.
-  // IRModule &GetIRModule();
-  // IRFunction &GetIRFunction();
+  // IRCodeGenFunction &GetIRCodeGenFunction();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   IRCodeGenBuilder &GetIRCodeGenBuilder() { return irCodeGenBuilder; }
 
 public:
   void GenDecl();
-
-  // TODO: REMOVE - this is already in CodeGenContext
-  void InitLLVMModule();
 };
 } // namespace stone
 

@@ -5,8 +5,9 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Syntax/Module.h"
 
-
-#include "llvm/IR/PassManager.h"
+#include "llvm/IR/DataLayout.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Type.h"
 
 #include <memory>
 
@@ -21,7 +22,26 @@ class TargetMachine;
 
 namespace stone {
 
-class IRCodeGenBuilder final {
+class IRCodeGenFunction;
+
+class IRCodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
+private:
+  IRCodeGenFunction *cgf = nullptr;
+
+public:
+  IRCodeGenBuilderInserter() = default;
+  explicit IRCodeGenBuilderInserter(IRCodeGenFunction *cgf) : cgf(cgf) {}
+
+  /// This forwards to CodeGenFunction::InsertHelper.
+  void InsertHelper(llvm::Instruction *instruction, const llvm::Twine &name,
+                    llvm::BasicBlock *basicBlock,
+                    llvm::BasicBlock::iterator insertPt) const override;
+};
+
+using IRCodeGenBuilderBase =
+    llvm::IRBuilder<llvm::ConstantFolder, IRCodeGenBuilderInserter>;
+
+class IRCodeGenBuilder : public IRCodeGenBuilderBase {
   CodeGenContext &cgc;
 
 public:

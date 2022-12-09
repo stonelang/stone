@@ -14,7 +14,6 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-class IRCodeGenResult;
 namespace syn {
 class Module;
 class SyntaxContext;
@@ -35,10 +34,10 @@ public:
   CodeGenContext &GetCodeGenContext() { return cgc; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }
 
-public:
-  stone::Error EmitObject(const IRCodeGenResult &result);
-  stone::Error EmitBC(const IRCodeGenResult &result);
-  stone::Error EmitAssembly(const IRCodeGenResult &result);
+  // public:
+  //   void EmitObject(const CodeGenContext &result);
+  //   void EmitBC(const  CodeGenContext &result);
+  //   void EmitAssembly(const CodeGenContext &result);
 };
 } // namespace stone
 

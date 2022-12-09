@@ -96,14 +96,10 @@ void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
 }
 
 // EmitWith...
-stone::Error NativeCodeGen::EmitObject(const IRCodeGenResult &result) {
-  return stone::Error();
-}
+// void NativeCodeGen::EmitObject(const CodeGenContext &cgc) {
 
-stone::Error NativeCodeGen::EmitBC(const IRCodeGenResult &result) {
-  return stone::Error();
-}
-
-stone::Error NativeCodeGen::EmitAssembly(const IRCodeGenResult &result) {
-  return stone::Error();
-}
+// }
+// void NativeCodeGen::EmitBC(const CodeGenContext &cgc) {
+// }
+// void NativeCodeGen::EmitAssembly(const CodeGenContext &cgc) {
+// }

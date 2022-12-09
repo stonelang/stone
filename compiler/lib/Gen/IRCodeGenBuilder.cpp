@@ -3,4 +3,12 @@
 
 using namespace stone;
 
-IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc) : cgc(cgc) {}
+
+void IRCodeGenBuilderInserter::InsertHelper(llvm::Instruction *instruction, const llvm::Twine &name,
+                    llvm::BasicBlock *basicBlock,
+                    llvm::BasicBlock::iterator insertPt) const {
+
+}
+
+IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc)
+    : IRCodeGenBuilderBase(cgc.GetLLVMContext()), cgc(cgc) {}
