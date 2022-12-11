@@ -36,10 +36,18 @@ public:
   CodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
                  CodeGenAlignment alignment)
       : addr(addr), elementType(elementType), alignment(alignment) {}
+
 public:
   llvm::Value *GetAddress() const { return addr; }
   llvm::Type *GetElementType() const { return elementType; }
   CodeGenAlignment GetAlignment() const { return alignment; }
+};
+
+class ConstantAddress : public CodeGenAddress {
+public:
+  ConstantAddress(llvm::Value *addr, llvm::Type *elementType,
+                  CodeGenAlignment alignment)
+      : CodeGenAddress(addr, elementType, alignment) {}
 };
 
 } // namespace stone
