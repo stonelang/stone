@@ -1,11 +1,19 @@
 #ifndef STONE_GEN_IRCODEGENFUNCTION_H
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
+#include "stone/Basic/Mem.h"
 #include "stone/Gen/IRCodeGenModule.h"
 
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/IR/CallingConv.h"
 #include "llvm/IR/Function.h"
 
-#include <memory>
+namespace llvm {
+class AllocaInst;
+class CallSite;
+class Constant;
+class Function;
+} // namespace llvm
 
 namespace stone {
 
@@ -70,15 +78,16 @@ enum class ABIArgKind {
 class IRCodeGenModule;
 class IRCodeGenFunction final {
 
-  IRCodeGenModule &irCodeGenModule;
-  llvm::Function *llvmFunction = nullptr;
+  IRCodeGenModule &codeGenModule;
+  llvm::Function *curFunction = nullptr;
 
 public:
   IRCodeGenFunction(const IRCodeGenFunction &) = delete;
   void operator=(const IRCodeGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &, llvm::Function *llvmFunction);
+  IRCodeGenFunction(IRCodeGenModule &codeGenModule,
+                    llvm::Function *curFunction);
   ~IRCodeGenFunction();
 
 public:

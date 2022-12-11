@@ -29,7 +29,7 @@
 
 namespace stone {
 namespace syn {
-class NameableDecl;
+
 /// The kind of template argument we're storing.
 enum class TemplateArgumentKind : uint8_t {
   /// Represents an empty template argument, e.g., one that has not
@@ -80,6 +80,11 @@ public:
 class TemplateName {
 public:
 };
+
+class TemplateDecl : public NameableDecl {
+public:
+};
+
 
 class TemplateParameterList final
     : private llvm::TrailingObjects<TemplateParameterList, NameableDecl *> {
