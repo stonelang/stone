@@ -179,7 +179,13 @@ public:
   }
 
   void AddVoid(SrcLoc inputLoc);
+  bool IsVoid() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Void));
+  }
   void AddBool(SrcLoc inputLoc);
+  bool IsBool() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Bool));
+  }
 
 public:
   void AddFloat(SrcLoc inputLoc);

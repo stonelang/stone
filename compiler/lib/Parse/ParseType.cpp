@@ -117,6 +117,13 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   Type ty;
   // TypeBase *ty = nullptr;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
+
+  case TypeSpecifierKind::Void: {
+    assert(collector.GetTypeSpecifierCollector().IsVoid());
+    ty = GetSyntaxContext().GetBuiltinContext().BuiltinVoidType;
+    break;
+  }
+
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
     ty = GetSyntaxContext().GetBuiltinContext().BuiltinIntType;

@@ -45,7 +45,7 @@ code/
 
 Basic steps:
 lldb stone-compile test.stone 
-breakpoint --file.cpp --line 12
+breakpoint set --file SomeFile.cpp --line 68
 run
 next
 

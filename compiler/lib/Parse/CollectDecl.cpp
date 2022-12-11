@@ -75,6 +75,17 @@ SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
 }
 
 // TODO: Dulicate check
+SyntaxStatus Parser::CollectTypeQualifiers(TypeCollector &collector) {
+  SyntaxStatus status;
+  while (GetTok().IsQualifier()) {
+    status = CollectTypeQualifier(collector);
+    if (status.HasCodeCompletion()) {
+      return status;
+    }
+  }
+  return status;
+}
+// TODO: Dulicate check
 SyntaxStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:

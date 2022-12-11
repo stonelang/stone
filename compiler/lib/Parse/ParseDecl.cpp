@@ -314,9 +314,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     // TODO: Look for TypeSpecs
 
     // Collect Qualifiers
-    while (!GetTok().IsQualifier()) {
-      CollectTypeQualifier(collector.GetTypeCollector());
-    }
+    CollectTypeQualifiers(collector.GetTypeCollector());
 
     // Why not just ParseFunctionType
     auto retType =

@@ -157,6 +157,7 @@ public:
   SyntaxStatus CollectTypeChunks(TypeCollector &collector);
   SyntaxStatus CollectBasicTypeDecl(TypeCollector &collector);
   SyntaxStatus CollectNominalTypeDecl(TypeCollector &collector);
+  SyntaxStatus CollectTypeQualifiers(TypeCollector &collector);
   SyntaxStatus CollectTypeQualifier(TypeCollector &collector);
 
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
