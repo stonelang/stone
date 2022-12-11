@@ -85,7 +85,6 @@ class TemplateDecl : public NameableDecl {
 public:
 };
 
-
 class TemplateParameterList final
     : private llvm::TrailingObjects<TemplateParameterList, NameableDecl *> {
 

@@ -2,6 +2,7 @@
 #define STONE_GEN_CODEGENADDRESS_H
 
 #include "stone/Basic/Mem.h"
+#include "stone/Syntax/CodeGenAlignment.h"
 
 #include "clang/AST/CharUnits.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -29,8 +30,16 @@ namespace stone {
 class CodeGenAddress {
   llvm::Value *addr;
   llvm::Type *elementType;
+  CodeGenAlignment alignment;
 
 public:
+  CodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
+                 CodeGenAlignment alignment)
+      : addr(addr), elementType(elementType), alignment(alignment) {}
+public:
+  llvm::Value *GetAddress() const { return addr; }
+  llvm::Type *GetElementType() const { return elementType; }
+  CodeGenAlignment GetAlignment() const { return alignment; }
 };
 
 } // namespace stone
