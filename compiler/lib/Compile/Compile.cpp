@@ -312,8 +312,6 @@ CompileStatus CompilerInstance::CompileWithParsing() {
 CompileStatus
 CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
 
-  // GetModuleSystem().CreateModuleFiles() ...
-
   for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
     auto syntaxFile = SyntaxFileFactory::Create(
         SyntaxFileKind::Library, sourceBufferID,

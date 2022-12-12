@@ -17,8 +17,7 @@ private:
   Error &operator=(const Error &other) = delete;
 
 public:
-  Error() : err(false) {}
-  Error(bool err) : err(err) {}
+  Error(bool e = false) : err(e) {}
   bool Has() { return err; }
 };
 

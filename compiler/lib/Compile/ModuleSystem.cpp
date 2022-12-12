@@ -23,27 +23,24 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     sc.AddLoadedModule(mainModule);
 
     // Create and add the module's files.
-    //   llvm::SmallVector<ModuleFile *, 16> moduleFiles;
-    //   if (!CreateFilesForMainModule(mainModule, moduleFiles)) {
-    //     for (auto *moduleFile : moduleFiles)
-    //       mainModule->AddFile(*moduleFile);
-    //   } else {
-    //     // If we failed to load a partial module, mark the main module as
-    //     having
-    //     // "failed to load", as it will contain no files. Note that we don't
-    //     try
-    //     // to add any of the successfully loaded partial modules. This
-    //     ensures
-    //     // that we don't encounter cases where we try to resolve a
-    //     cross-reference
-    //     // into a partial module that failed to load.
-    //     mainModule->SetFailedToLoad();
-    //   }
+    llvm::SmallVector<ModuleFile *, 16> moduleFiles;
+
+    if (!CreateSyntaxFilesForMainModule(mainModule, moduleFiles).Has()) {
+      for (auto *moduleFile : moduleFiles)
+        mainModule->AddFile(*moduleFile);
+    } else {
+      // If we failed to load a partial module, mark the main module as having
+      // "failed to load", as it will contain no files. Note that we don'ttry
+      // to add any of the successfully loaded partial modules. This ensures
+      // that we don't encounter cases where we try to resolve a cross-reference
+      // into a partial module that failed to load.
+      // mainModule->SetFailedToLoad();
+    }
   }
   return mainModule;
 }
 
-bool ModuleSystem::CreateSyntaxFilesForMainModule(
+Error ModuleSystem::CreateSyntaxFilesForMainModule(
     ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
@@ -76,7 +73,7 @@ bool ModuleSystem::CreateSyntaxFilesForMainModule(
   //       bufferID);
   //   files.push_back(libraryFile);
   // }
-  return false;
+  return Error();
 }
 
 ModuleFile *
