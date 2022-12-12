@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_FRONTEND_H
-#define STONE_COMPILE_FRONTEND_H
+#ifndef STONE_COMPILE_COMPILERINVOCATION_H
+#define STONE_COMPILE_COMPILERINVOCATION_H
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
@@ -8,7 +8,6 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
@@ -186,7 +185,7 @@ public:
 
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
-  bool JustCompiler() {
+  bool JustCompile() {
     if (GetCompilerOptions().GetMode().JustParse() ||
         GetCompilerOptions().GetMode().JustTypeCheck() ||
         GetCompilerOptions().GetMode().IsEmitIR()) {

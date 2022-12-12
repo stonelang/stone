@@ -173,11 +173,8 @@ DECL_KEYWORD(string, TOKON)
 DECL_KEYWORD(type, TOKON)
 DECL_KEYWORD(using, TOKON)
 DECL_KEYWORD(alias, TOKON)
-
 DECL_KEYWORD(import, TOKRSV)
-DECL_KEYWORD(unsigned, TOKRSV)
 DECL_KEYWORD(object, TOKRSV)
-
 
 // Statement keywords.
 STMT_KEYWORD(defer, TOKON)

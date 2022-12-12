@@ -170,6 +170,12 @@ public:
   /// If no module aliasing is set, it will return getName(), i.e. Foo.
   Identifier GetRealName() const;
 
+  //TODO: Defaulting to true for now
+  bool IsMainModule() const {
+    //return Bits.ModuleDecl.IsMainModule;
+    return true;
+  }
+
 public:
   static bool classof(const DeclContext *DC) {
     if (auto D = DC->CastToDecl()) {

@@ -125,7 +125,7 @@ void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
 template <std::size_t len>
 static bool IsMainImpl(const NameableDecl *nameable, const char (&str)[len]) {
   assert(nameable);
-  auto identifier = nameable->GetIdentifier();
+  auto identifier = nameable->GetBasicName();
   return identifier.IsEqual(str);
 }
 

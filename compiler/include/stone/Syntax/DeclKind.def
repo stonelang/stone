@@ -126,7 +126,7 @@
 
 BASE_DECL(Nameable, Decl)
 	NAMEABLE_DECL(Space, NameableDecl)
-	NAMEABLE_DECL(Using, NameableDecl)
+	NAMEABLE_DECL(Import, NameableDecl)
 	NAMEABLE_DECL(Label, NameableDecl) // break, continue, and goto
 	DECL_RANGE(Nameable, Space, Label)
 	BASE_DECL(Value, NameableDecl)

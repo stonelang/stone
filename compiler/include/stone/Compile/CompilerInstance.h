@@ -106,12 +106,11 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     &result)>;
 
 class CompilerInstance final {
+  mem::Safe<CompilerInstanceStats> stats;
 
   CompilerInvocation &invocation;
-
   mem::Safe<syn::SyntaxContext> sc;
   mem::Safe<ModuleSystem> ms;
-  mem::Safe<CompilerInstanceStats> stats;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;

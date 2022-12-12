@@ -10,13 +10,13 @@
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
+#include "stone/Syntax/Import.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/Using.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -329,13 +329,16 @@ public:
   /// This will return NULL if this declaration has no name (e.g., for
   /// an unnamed class) or if the name is a special name such ast a C++
   /// constructor.
-  Identifier GetIdentifier() const { return name.GetIdentifier(); }
+  Identifier GetBasicName() const { return name.GetDeclNameBaseIdentifier(); }
 
   /// Get the name of identifier for this declaration as a StringRef.
   ///
   /// This requires that the declaration have a name and that it be a simple
   /// identifier.
-  llvm::StringRef GetNameText() const { return GetIdentifier().GetString(); }
+  llvm::StringRef GetBasicNameText() const {
+    return GetBasicName().GetString();
+  }
+
   void SetDeclName(DeclName name) { this->name = name; }
   DeclName GetDeclName() { return name; }
 
@@ -642,9 +645,9 @@ class ParamDecl : public VarDecl {
 public:
 };
 
-class UsingDecl final : public NameableDecl {
-  SrcLoc usingLoc;
-  UsingKind usingKind;
+class ImportDecl final : public NameableDecl {
+  SrcLoc importLoc;
+  ImportKind importKind;
 
 public:
   // syn::Module *mod = nullptr;

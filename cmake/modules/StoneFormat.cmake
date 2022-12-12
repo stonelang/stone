@@ -1,4 +1,5 @@
 set(stone_include_files
+	${STONE_SOURCE_DIR}/compiler/include/stone/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Diag/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Foreign/*.h

@@ -31,8 +31,8 @@ void *AllocateInSyntaxContext(size_t bytes, const syn::SyntaxContext &ctx,
 
 namespace syn {
 /// Types inheriting from this class are intended to be allocated in an
-/// \c ASTContext allocator; you cannot allocate them by using a normal \c new,
-/// and instead you must either provide an \c ASTContext or use a placement
+/// \c SyntaxContext allocator; you cannot allocate them by using a normal \c
+/// new, and instead you must either provide an \c ASTContext or use a placement
 /// \c new.
 ///
 /// The template parameter is a type with the desired alignment. It is usually,

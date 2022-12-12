@@ -1,5 +1,5 @@
-#ifndef LLVM_CLANG_CORE_IDENTIFIERTABLE_H
-#define LLVM_CLANG_CORE_IDENTIFIERTABLE_H
+#ifndef STONE_SYNTAX_IDENTIFIER_H
+#define STONE_SYNTAX_IDENTIFIER_H
 
 #include <cassert>
 #include <cstddef>
@@ -12,6 +12,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/TokenKind.h"
+
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringMap.h"
@@ -21,8 +22,9 @@
 #include "llvm/Support/type_traits.h"
 
 namespace stone {
-class LangOptions;
 class SrcLoc;
+class LangOptions;
+
 namespace syn {
 
 class DeclName;
@@ -239,6 +241,7 @@ public:
 public:
   Identifier GetIdentifier(llvm::StringRef identifierStr) const;
 
+  // TODO?
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.
   // void AddKeywords(const LangOptions &LangOpts);

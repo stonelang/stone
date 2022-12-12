@@ -18,6 +18,8 @@ public:
   /// No path canonicalization is done.
   void AddDep(llvm::StringRef depFile, bool isSystem);
 };
+
+// TODO: Move to Syntax
 class ModuleSystem final {
   // TODO: We need built-in information
   friend class CompilerInvocation;
@@ -30,6 +32,11 @@ class ModuleSystem final {
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
 
+  /// Contains \c MemoryBuffers for partial serialized module files and
+  /// corresponding partial serialized module documentation files. This is
+  /// \c mutable as it is consumed by \c loadPartialModulesAndImplicitImports.
+  // mutable std::vector<ModuleBuffers> partialModules;
+
 public:
   ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
                ModuleOptions &moduleOpts);
@@ -37,6 +44,13 @@ public:
 
 public:
   syn::ModuleDecl *GetMainModule() const;
+  void SetMainModule(syn::ModuleDecl *mod);
+
+  bool CreateSyntaxFilesForMainModule(
+      syn::ModuleDecl *mod,
+      llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
+
+  syn::ModuleFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
 
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }

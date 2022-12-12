@@ -18,11 +18,11 @@
 #include "stone/Public.h"
 #include "stone/Syntax/BuiltinContext.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Import.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPath.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/Using.h"
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
@@ -89,6 +89,12 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
+/// Look up option used in \c GetRealModuleName when module aliasing is applied.
+enum class ModuleAliasLookupOption {
+  AlwaysRealName,
+  RealNameFromAlias,
+  AliasFromRealName
+};
 class SyntaxContext final {
   friend SyntaxContextStats;
 
@@ -123,7 +129,18 @@ class SyntaxContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier *, syn::ModuleDecl *> loadedModules;
+  llvm::MapVector<Identifier, syn::ModuleDecl *> loadedModules;
+
+  /// Set if a `-module-alias` was passed. Used to store mapping between module
+  /// aliases and their corresponding real names, and vice versa for a reverse
+  /// lookup, which is needed to check if the module names appearing in source
+  /// files are aliases or real names. \see SyntaxContext::GetRealModuleName.
+  ///
+  /// The boolean in the value indicates whether or not the entry is keyed by an
+  /// alias vs real name, i.e. true if the entry is [key: alias_name, value:
+  /// (real_name, true)].
+  mutable llvm::DenseMap<Identifier, std::pair<Identifier, bool>>
+      moduleAliasMap;
 
 public:
   /// The set of cleanups to be called when the SyntaxContext is destroyed.
@@ -178,6 +195,15 @@ public:
   // Module *GetSTDLibModule() const {
   //   return const_cast<SyntaxContext *>(this)->GetStdlibModule(false);
   // }
+
+  /// Insert an externally-sourced module into the set of known loaded modules
+  /// in this context.
+  void AddLoadedModule(ModuleDecl *mod);
+
+  Identifier
+  GetRealModuleName(Identifier key,
+                    ModuleAliasLookupOption option =
+                        ModuleAliasLookupOption::AlwaysRealName) const;
 
 private:
 public:

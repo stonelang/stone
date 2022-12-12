@@ -271,11 +271,11 @@ public:
   }
 
   /// Assert that the base name is not special and return its identifier.
-  Identifier GetIdentifier() const {
-    auto baseName = GetDeclNameBase();
-    assert(!baseName.IsSpecial() &&
+  Identifier GetDeclNameBaseIdentifier() const {
+    auto declNameBase = GetDeclNameBase();
+    assert(!declNameBase.IsSpecial() &&
            "Can't retrieve the identifier of a special base name");
-    return baseName.GetIdentifier();
+    return declNameBase.GetIdentifier();
   }
 
   // public:

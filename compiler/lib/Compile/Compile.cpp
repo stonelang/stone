@@ -312,6 +312,8 @@ CompileStatus CompilerInstance::CompileWithParsing() {
 CompileStatus
 CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
 
+  // GetModuleSystem().CreateModuleFiles() ...
+
   for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
     auto syntaxFile = SyntaxFileFactory::Create(
         SyntaxFileKind::Library, sourceBufferID,
@@ -367,9 +369,9 @@ CompileStatus CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
 
-  // if (GetInvocation().GetListener()) {
-  //   GetInvocation().GetListener()->OnCompileStarted(*this);
-  // }
+  if (GetInvocation().GetListener()) {
+    GetInvocation().GetListener()->OnCompileStarted(*this);
+  }
   // TODO: Future CreateSyntax();
 
   CompileStatus status;

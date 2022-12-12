@@ -36,6 +36,11 @@ void ModuleDecl::AddFile(ModuleFile &file) {
   // ClearLookupCache();
 }
 
+Identifier ModuleDecl::GetRealName() const {
+  // This will return the real name for an alias (if used) or getName()
+  return GetSyntaxContext().GetRealModuleName(GetBasicName());
+}
+
 bool ModuleDecl::Walk(SyntaxWalker &waker) {}
 
 llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
