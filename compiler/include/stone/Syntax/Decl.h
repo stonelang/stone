@@ -195,7 +195,7 @@ protected:
     STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
 
     STONE_INLINE_BITFIELD(
-        Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+        ModuleDecl, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
         /// If the module is compiled as static library.
         IsStaticLibrary : 1,
 

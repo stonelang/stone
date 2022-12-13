@@ -55,12 +55,12 @@ public:
   enum class LibOutputMode { Dynamic, Static };
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;
 
-  enum class InputFileMode {
+  enum class ParsingInputMode {
     Stone,
     StoneLibrary,
     StoneModuleInterface,
   };
-  InputFileMode inputFileMode = InputFileMode::Stone;
+  ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
   CompilerOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {

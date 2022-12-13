@@ -14,7 +14,7 @@ class CompilerOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
   LangOptions &langOpts;
-  CompilerOptions &invocationOpts;
+  CompilerOptions &compilerOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -22,10 +22,10 @@ private:
 
   void HandleDebugCrashGroupArguments();
   void ComputeDebugTimeOptions();
-  stone::Error ComputeFallbackModuleName();
-  stone::Error ComputeModuleName();
-  stone::Error ComputeModuleAliases();
-  stone::Error ComputeMainAndSupplementaryOutputFilenames();
+  Error ComputeFallbackModuleName();
+  Error ComputeModuleName();
+  Error ComputeModuleAliases();
+  Error ComputeMainAndSupplementaryOutputFilenames();
   void ComputeDumpScopeMapLocations();
   void ComputeHelpOptions();
   void ComputeImplicitImportModuleNames(llvm::opt::OptSpecifier id,
@@ -35,20 +35,19 @@ private:
   void ComputePrintStatsOptions();
   void ComputeTBDOptions();
 
-  stone::Error SetUpImmediateArgs();
-  stone::Error CheckUnusedSupplementaryOutputPaths() const;
-  stone::Error CheckForUnusedOutputPaths() const;
+  Error SetUpImmediateArgs();
+  Error CheckUnusedSupplementaryOutputPaths() const;
+  Error CheckForUnusedOutputPaths() const;
 
 public:
   CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
                            LangOptions &langOpts,
-                           CompilerOptions &invocationOpts)
-      : de(de), args(args), langOpts(langOpts), invocationOpts(invocationOpts) {
+                           CompilerOptions &compilerOpts)
+      : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts) {
   }
 
 public:
-  stone::Error
-  Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
+  Error Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 };
 } // namespace stone
 #endif

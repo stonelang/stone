@@ -29,7 +29,7 @@ class ModuleSystem final {
 
   LangContext &lc;
   syn::SyntaxContext &sc;
-  ModuleOptions &moduleOpts;
+  CompilerOptions &compilerOpts;
 
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
@@ -40,8 +40,7 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
-               ModuleOptions &moduleOpts);
+  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc, CompilerOptions &compilerOpts);
   ~ModuleSystem();
 
 public:
@@ -52,13 +51,16 @@ public:
       syn::ModuleDecl *mod,
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 
-  syn::ModuleFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
+  syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
 
-  ModuleOptions &GetModuleOptions() { return moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+  ModuleOptions &GetModuleOptions() { return GetCompilerOptions().moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return GetCompilerOptions().moduleOpts; }
+
+  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
+  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
 public:
-  static stone::Error IsValidModuleName(const llvm::StringRef moduleName);
+  static Error IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

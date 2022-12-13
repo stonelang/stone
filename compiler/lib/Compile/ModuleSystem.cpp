@@ -8,15 +8,15 @@ using namespace stone;
 using namespace stone::syn;
 
 ModuleSystem::ModuleSystem(LangContext &lc, SyntaxContext &sc,
-                           ModuleOptions &moduleOpts)
-    : lc(lc), sc(sc), moduleOpts(moduleOpts) {}
+                           CompilerOptions &compilerOpts)
+    : lc(lc), sc(sc), compilerOpts(compilerOpts) {}
 
 ModuleSystem::~ModuleSystem() {}
 
 syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
     // TODO: Check to make sure that we have the correct Identifier
-    Identifier moduleIdentifier = sc.GetIdentifier(moduleOpts.moduleName);
+    Identifier moduleIdentifier = sc.GetIdentifier(GetModuleOptions().moduleName);
     mainModule = ModuleDeclFactory::Create(moduleIdentifier, sc, true);
 
     // Register the main module with the AST context.
@@ -41,14 +41,14 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 }
 
 Error ModuleSystem::CreateSyntaxFilesForMainModule(
-    ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &resultFiles) const {
+    syn::ModuleDecl *mod, llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
-  // llvm::Optional<unsigned> mainBufferID = llvm::None;
-  // if (ModouleFile *mainSyntaxFile = ComputeMainSyntaxFileForModule(mod)) {
-  //   mainBufferID = mainSyntaxFile->GetBufferID();
-  //   resultFiles.push_back(mainSyntaxFile);
-  // }
+  llvm::Optional<unsigned> mainBufferID = llvm::None;
+  if (syn::SyntaxFile *mainSyntaxFile = ComputeMainSyntaxFileForModule(mod)) {
+    mainBufferID = mainSyntaxFile->GetSrcID();
+    resultFiles.push_back(mainSyntaxFile);
+  }
 
   // If we have partial modules to load, do so now, bailing if any failed to
   // load.
@@ -76,8 +76,13 @@ Error ModuleSystem::CreateSyntaxFilesForMainModule(
   return Error();
 }
 
-ModuleFile *
+SyntaxFile *
 ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
+
+  if (GetCompilerOptions().parsingInputMode ==
+      CompilerOptions::ParsingInputMode::StoneLibrary) {
+    return nullptr;
+  }
 
   return nullptr;
 }

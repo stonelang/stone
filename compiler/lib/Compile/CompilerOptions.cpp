@@ -7,17 +7,17 @@ using namespace stone;
 
 static Error ComputeCompilerOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
-    CompilerOptions &invocationOpts,
+    CompilerOptions &compilerOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
-  CompilerOptionsConverter converter(de, ial, langOpts, invocationOpts);
+  CompilerOptionsConverter converter(de, ial, langOpts, compilerOpts);
 
   return Error(converter.Convert(buffers));
 }
 
 static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
                                 DiagnosticEngine &de,
-                                CompilerOptions &invocationOpts,
+                                CompilerOptions &compilerOpts,
                                 LangOptions &langOpts) {
 
   return Error();
@@ -25,7 +25,7 @@ static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
 
 static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
                                    DiagnosticEngine &de,
-                                   CompilerOptions &invocationOpts,
+                                   CompilerOptions &compilerOpts,
                                    CodeGenOptions &codeGenOpts) {
 
   return Error();
@@ -33,7 +33,7 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
 
 static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
                                        DiagnosticEngine &de,
-                                       CompilerOptions &invocationOpts,
+                                       CompilerOptions &compilerOpts,
                                        TypeCheckerOptions &typeCheckerOpts) {
 
   return Error();
@@ -41,32 +41,32 @@ static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
 
 static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
                                       DiagnosticEngine &de,
-                                      CompilerOptions &invocationOpts,
+                                      CompilerOptions &compilerOpts,
                                       SearchPathOptions &searchPathOpts) {
   return Error();
 }
 
 Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
 
-  invocationOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
-  if (invocationOpts->GetMode().IsAlien()) {
+  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
+  if (compilerOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  auto invocationOptsErr = ComputeCompilerOptions(
+  auto compilerOptsErr = ComputeCompilerOptions(
       ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-      GetLangContext().GetLangOptions(), *invocationOpts,
+      GetLangContext().GetLangOptions(), *compilerOpts,
       nullptr /* pass null for now*/);
-  if (invocationOptsErr.Has()) {
+  if (compilerOptsErr.Has()) {
   }
   ComputeLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                     *invocationOpts, GetLangContext().GetLangOptions());
+                     *compilerOpts, GetLangContext().GetLangOptions());
 
   ComputeTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                            *invocationOpts, typeCheckerOpts);
+                            *compilerOpts, typeCheckerOpts);
   ComputeSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                           *invocationOpts, searchPathOpts);
+                           *compilerOpts, searchPathOpts);
   ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                        *invocationOpts, codeGenOpts);
+                        *compilerOpts, codeGenOpts);
 
   return Error();
 }

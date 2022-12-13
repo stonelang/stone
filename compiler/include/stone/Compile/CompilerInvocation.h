@@ -59,7 +59,7 @@ class CompilerInvocation final : public Session {
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<CompilerOptions> invocationOpts;
+  std::unique_ptr<CompilerOptions> compilerOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -138,9 +138,9 @@ public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
 
-  CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
+  CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {
-    return *invocationOpts.get();
+    return *compilerOpts.get();
   }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }

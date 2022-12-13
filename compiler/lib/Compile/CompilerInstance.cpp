@@ -13,7 +13,7 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
                                 invocation.GetSearchPathOptions())),
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation.GetLangContext(), GetSyntaxContext(),
-                          invocation.GetCompilerOptions().moduleOpts)) {
+                          invocation.GetCompilerOptions())) {
 
   invocation.GetLangContext().GetStatEngine().Register(stats.get());
 }

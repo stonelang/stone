@@ -26,11 +26,11 @@ stone::Error CompilerOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
-  // assert(invocationOpts.inputsAndOutputs.HasInputs() &&
+  // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
 
   llvm::Optional<CompilerInputsAndOutputs> inputsAndOutputs =
-      CompilerInputsConverter(de, args, invocationOpts).Convert(buffers);
+      CompilerInputsConverter(de, args, compilerOpts).Convert(buffers);
 
   // None here means error, not just "no inputs". Propagage unconditionally.
   if (!inputsAndOutputs) {
@@ -38,28 +38,28 @@ stone::Error CompilerOptionsConverter::Convert(
   }
 
   bool haveNewInputsAndOutputs = false;
-  if (invocationOpts.GetCompilerInputsAndOutputs().HasInputs()) {
+  if (compilerOpts.GetCompilerInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
 
     haveNewInputsAndOutputs = true;
-    invocationOpts.GetCompilerInputsAndOutputs() =
+    compilerOpts.GetCompilerInputsAndOutputs() =
         std::move(inputsAndOutputs).getValue();
 
-    if (invocationOpts.allowModuleWithCompilerErrors) {
-      invocationOpts.GetCompilerInputsAndOutputs()
+    if (compilerOpts.allowModuleWithCompilerErrors) {
+      compilerOpts.GetCompilerInputsAndOutputs()
           .SetShouldRecoverMissingInputs();
     }
   }
 
-  if (invocationOpts.GetCompilerInputsAndOutputs()
+  if (compilerOpts.GetCompilerInputsAndOutputs()
           .ShouldTreatAsModuleInterface()) {
-    invocationOpts.inputFileMode =
-        CompilerOptions::InputFileMode::StoneModuleInterface;
+    compilerOpts.parsingInputMode =
+        CompilerOptions::ParsingInputMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
-    invocationOpts.inputFileMode = CompilerOptions::InputFileMode::StoneLibrary;
+    compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::StoneLibrary;
   } else {
-    invocationOpts.inputFileMode = CompilerOptions::InputFileMode::Stone;
+    compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
   if (ComputeModuleName().Has()) {
@@ -73,12 +73,12 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
-  invocationOpts.moduleOpts.moduleAliasMap.clear();
+  compilerOpts.moduleOpts.moduleAliasMap.clear();
 
   const Arg *A = args.getLastArg(opts::ModuleName);
   if (A) {
-    invocationOpts.moduleOpts.moduleName = A->getValue();
-  } else if (invocationOpts.moduleOpts.moduleName.empty()) {
+    compilerOpts.moduleOpts.moduleName = A->getValue();
+  } else if (compilerOpts.moduleOpts.moduleName.empty()) {
     // The user did not specify a module name, so determine a default fallback
     // based on other options.
 
@@ -89,31 +89,31 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(invocationOpts.moduleOpts.moduleName)
+  if (!ModuleSystem::IsValidModuleName(compilerOpts.moduleOpts.moduleName)
            .Has()) {
     return stone::Error();
   }
 
-  if (invocationOpts.moduleOpts.moduleName != strings::StdLibName) {
+  if (compilerOpts.moduleOpts.moduleName != strings::StdLibName) {
     return stone::Error();
   }
 
-  if (invocationOpts.shouldParseAsStdLib) {
+  if (compilerOpts.shouldParseAsStdLib) {
     return stone::Error();
   }
 
   // TODO:
-  //  if (Lexer::isIdentifier(invocationOpts.moduleName) &&
-  //      (invocationOpts.moduleName != strings::StdLibName ||
-  //      invocationOpts.parseStdLib)) {
+  //  if (Lexer::isIdentifier(compilerOpts.moduleName) &&
+  //      (compilerOpts.moduleName != strings::StdLibName ||
+  //      compilerOpts.parseStdLib)) {
   //    return false;
   //  }
-  //  if (!CompilerOptions::NeedsProperModuleName(invocationOpts.modeKind) ||
-  //      invocationOpts.IsCompilingExactlyOneStoneFile()) {
-  //    invocationOpts.ModuleName = strings::MainFileName;
+  //  if (!CompilerOptions::NeedsProperModuleName(compilerOpts.modeKind) ||
+  //      compilerOpts.IsCompilingExactlyOneStoneFile()) {
+  //    compilerOpts.ModuleName = strings::MainFileName;
   //    return false;
   //  }
-  //  auto DID = (invocationOpts.noduleName == STDLIB_NAME) ?
+  //  auto DID = (compilerOpts.noduleName == STDLIB_NAME) ?
   //  diag::error_stdlib_module_name
   //                                              : diag::error_bad_module_name;
   //  Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
@@ -136,10 +136,10 @@ stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
               outputFilenames->front() != "-" &&
               !llvm::sys::fs::is_directory(outputFilenames->front())
           ? outputFilenames->front()
-          : invocationOpts.GetCompilerInputsAndOutputs()
+          : compilerOpts.GetCompilerInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
-  invocationOpts.moduleOpts.moduleName =
+  compilerOpts.moduleOpts.moduleName =
       llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();

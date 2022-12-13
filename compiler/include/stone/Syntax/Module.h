@@ -35,7 +35,7 @@ enum class SyntaxFileKind : uint8_t {
   None,
   // .stone file without 'Main'
   Library,
-  // .stone file with 'Main entry'
+  // .stone file with 'Main entry' //TODO: rename to Executable 
   Main
 };
 
@@ -171,10 +171,7 @@ public:
   Identifier GetRealName() const;
 
   // TODO: Defaulting to true for now
-  bool IsMainModule() const {
-    // return Bits.ModuleDecl.IsMainModule;
-    return true;
-  }
+  bool IsMainModule() const { return Bits.ModuleDecl.IsMainModule; }
 
 public:
   static bool classof(const DeclContext *DC) {
