@@ -55,6 +55,19 @@ SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
     : ModuleFile(ModuleFileKind::Source, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
+SyntaxFile::ParsingOptions
+SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
+
+  ParsingOptions parsingOptions;
+  // if (langOpts.DisablePoundIfEvaluation)
+  //   opts |= ParsingFlags::DisablePoundIfEvaluation;
+  // if (langOpts.BuildSyntaxTree)
+  //   opts |= ParsingFlags::BuildSyntaxTree;
+  // if (langOpts.CollectParsedToken)
+  //   opts |= ParsingFlags::CollectParsedTokens;
+  return parsingOptions;
+}
+
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind,
                                        syn::ModuleDecl &owner,
                                        SyntaxContext &sc, unsigned srcID,

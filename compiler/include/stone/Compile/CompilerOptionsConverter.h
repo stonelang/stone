@@ -41,13 +41,12 @@ private:
 
 public:
   CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                           LangOptions &langOpts,
-                           CompilerOptions &compilerOpts)
-      : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts) {
-  }
+                           LangOptions &langOpts, CompilerOptions &compilerOpts)
+      : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts) {}
 
 public:
-  Error Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
+  Error
+  Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 };
 } // namespace stone
 #endif

@@ -57,7 +57,8 @@ stone::Error CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
-    compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::StoneLibrary;
+    compilerOpts.parsingInputMode =
+        CompilerOptions::ParsingInputMode::StoneLibrary;
   } else {
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
@@ -139,8 +140,7 @@ stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
           : compilerOpts.GetCompilerInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
-  compilerOpts.moduleOpts.moduleName =
-      llvm::sys::path::stem(nameToStem).str();
+  compilerOpts.moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

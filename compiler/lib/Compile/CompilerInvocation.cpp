@@ -219,8 +219,8 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                            const char *arg0) {
+Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
+                                     const char *arg0) {
   // Setup the clang diagnostics
   clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
       new clang::DiagnosticIDs());
@@ -279,6 +279,8 @@ stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   }
 
   assert(GetClangInstance().createTarget());
+
+  return Error();
 }
 void CompilerInvocation::Finish() {
   if (listener) {

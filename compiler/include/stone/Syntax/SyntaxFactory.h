@@ -30,30 +30,33 @@ template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
 
-// class SyntaxFactory final {
+// struct Syntax final {
 // public:
-//   SyntaxFactory() = delete;
+//   Syntax() = delete;
 
 // public:
-//   static FunDecl *CreateFunDecl(DeclNameContext &dnc,
+//   static FunDecl *MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
+//                          DeclContext *parent);
+
+//   static FunDecl *MakeFunDeclImplicitly(DeclCollector &collector,
 //   SyntaxContext &sc,
-//                                 TypeRep *result, DeclContext *parent);
+//                                  DeclContext *parent);
 
 // public:
-//   static SyntaxFile *CreateSyntaxFile(SyntaxFileKind kind, unsigned srcID,
-//                                       Module &owner, SyntaxContext &sc,
-//                                       bool isPrimary = false);
+//   static SyntaxFile *MakeSyntaxFile(SyntaxFileKind kind, unsigned srcID,
+//                                     ModuleDecl &owner, SyntaxContext &sc,
+//                                     bool isPrimary = false);
 
 // public:
-//   static Module *CreateModuleDecl(Identifier *name, SyntaxContext &sc,
-//                                   bool isMainModule = false);
+//   static ModuleDecl *MakeModuleDecl(Identifier name, SyntaxContext &sc,
+//                                     bool isMainModule = false);
 
 // public:
-//   static BraceStmt *CreateBraceStmt(SrcLoc lbloc,
-//                                     llvm::ArrayRef<SyntaxNode> elements,
-//                                     SrcLoc rbloc, SyntaxContext &sc,
-//                                     llvm::Optional<bool> implicit =
-//                                     llvm::None);
+//   static BraceStmt *MakeBraceStmt(SrcLoc lbloc,
+//                                   llvm::ArrayRef<SyntaxNode> elements,
+//                                   SrcLoc rbloc, SyntaxContext &sc,
+//                                   llvm::Optional<bool> implicit =
+//                                   llvm::None);
 // };
 
 struct VarDeclFactory final {

@@ -1,22 +1,22 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
-
 #include "stone/Syntax/SyntaxFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(LangContext &lc, SyntaxContext &sc,
-                           CompilerOptions &compilerOpts)
-    : lc(lc), sc(sc), compilerOpts(compilerOpts) {}
+ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
+                           syn::SyntaxContext &sc)
+    : invocation(invocation), sc(sc) {}
 
 ModuleSystem::~ModuleSystem() {}
 
 syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
     // TODO: Check to make sure that we have the correct Identifier
-    Identifier moduleIdentifier = sc.GetIdentifier(GetModuleOptions().moduleName);
+    Identifier moduleIdentifier =
+        sc.GetIdentifier(GetModuleOptions().moduleName);
     mainModule = ModuleDeclFactory::Create(moduleIdentifier, sc, true);
 
     // Register the main module with the AST context.
@@ -41,7 +41,8 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 }
 
 Error ModuleSystem::CreateSyntaxFilesForMainModule(
-    syn::ModuleDecl *mod, llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
+    syn::ModuleDecl *mod,
+    llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
   llvm::Optional<unsigned> mainBufferID = llvm::None;
@@ -62,21 +63,20 @@ Error ModuleSystem::CreateSyntaxFilesForMainModule(
   // FIXME: This is the only demand point for InputSourceCodeBufferIDs. We
   // should compute this list of source files lazily.
 
-  // for (auto bufferID : invocation.GetSourceBufferIDs()) {
-  //   // Skip the main buffer, we've already handled it.
-  //   if (bufferID == mainBufferID){
-  //     continue;
-  //   }
+  for (auto bufferID : invocation.GetSourceBufferIDs()) {
+    // Skip the main buffer, we've already handled it.
+    if (bufferID == mainBufferID) {
+      continue;
+    }
 
-  //   auto *libraryFile =
-  //       CreateSyntaxFilesForMainModule(mod, ModuleFileKind::Library,
-  //       bufferID);
-  //   files.push_back(libraryFile);
-  // }
+    auto *libraryFile =
+        CreateSyntaxFileForMainModule(mod, syn::SyntaxFileKind::Library, bufferID);
+    resultFiles.push_back(libraryFile);
+  }
   return Error();
 }
 
-SyntaxFile *
+syn::SyntaxFile *
 ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
 
   if (GetCompilerOptions().parsingInputMode ==
@@ -85,6 +85,33 @@ ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
   }
 
   return nullptr;
+}
+
+syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
+    ModuleDecl *mod, syn::SyntaxFileKind syntaxFileKind, unsigned bufferID,
+    bool isMainBuffer) const {
+
+  auto isPrimary = bufferID && invocation.IsPrimarySourceID(bufferID);
+  auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
+
+  auto syntaxFile =
+      SyntaxFileFactory::Create(syntaxFileKind, bufferID, *mod, sc);
+
+  // if (isMainBuffer)
+  //   inputFile->SyntaxParsingCache =
+  //   Invocation.getMainFileSyntaxParsingCache();
+
+  // return inputFile;
+
+  return syntaxFile;
+}
+
+syn::SyntaxFile::ParsingOptions
+ModuleSystem::GetSyntaxFileParsingOptions(bool forPrimary) const {
+
+  auto parsingOpts = SyntaxFile::GetDefaultParsingOptions(
+      sc.GetLangContext().GetLangOptions());
+  return parsingOpts;
 }
 
 void ModuleSystem::SetMainModule(ModuleDecl *mod) {
@@ -105,4 +132,11 @@ Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
     }
   }
   return Error();
+}
+
+CompilerOptions &ModuleSystem::GetCompilerOptions() {
+  return invocation.GetCompilerOptions();
+}
+const CompilerOptions &ModuleSystem::GetCompilerOptions() const {
+  return invocation.GetCompilerOptions();
 }

@@ -3,7 +3,9 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
+#include "stone/Basic/OptionSet.h"
 #include "stone/Basic/Printable.h"
+#include "stone/Basic/STDTypeAlias.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
@@ -35,7 +37,7 @@ enum class SyntaxFileKind : uint8_t {
   None,
   // .stone file without 'Main'
   Library,
-  // .stone file with 'Main entry' //TODO: rename to Executable 
+  // .stone file with 'Main entry' //TODO: rename to Executable
   Main
 };
 
@@ -62,6 +64,49 @@ private:
 
   /// fun Main() -> int {}
   bool hasMainFun;
+
+public:
+  /// Flags that direct how the source file is parsed.
+  enum class ParsingFlags : UInt8 {
+    /// Whether to disable delayed parsing for nominal type, extension, and
+    /// function bodies.
+    ///
+    /// If set, type and function bodies will be parsed eagerly. Otherwise they
+    /// will be lazily parsed when their contents is queried. This lets us avoid
+    /// building AST nodes when they're not needed.
+    ///
+    /// This is set for primary files, since we want to type check all
+    /// declarations and function bodies anyway, so there's no benefit in lazy
+    /// parsing.
+    DisableDelayedBodies = 1 << 0,
+
+    /// Whether to disable evaluating the conditions of #if decls.
+    ///
+    /// If set, #if decls are parsed as-is. Otherwise, the bodies of any active
+    /// clauses are hoisted such that they become sibling nodes with the #if
+    /// decl.
+    ///
+    /// FIXME: When condition evaluation moves to a later phase, remove this
+    /// and the associated language option.
+    DisablePoundIfEvaluation = 1 << 1,
+
+    /// Whether to build a syntax tree.
+    BuildSyntaxTree = 1 << 2,
+
+    /// Whether to save the file's parsed tokens.
+    CollectParsedTokens = 1 << 3,
+
+    /// Whether to compute the interface hash of the file.
+    EnableInterfaceHash = 1 << 4,
+
+    /// Whether to suppress warnings when parsing. This is set for secondary
+    /// files, as they get parsed multiple times.
+    SuppressWarnings = 1 << 5,
+  };
+  using ParsingOptions = OptionSet<ParsingFlags>;
+
+  /// Retrieve the parsing options specified in the LangOptions.
+  static ParsingOptions GetDefaultParsingOptions(const LangOptions &langOpts);
 
 public:
   SyntaxFileKind kind = SyntaxFileKind::None;

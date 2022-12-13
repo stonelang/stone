@@ -21,16 +21,17 @@ public:
   void AddDep(llvm::StringRef depFile, bool isSystem);
 };
 
+class CompilerInvocation;
+class CompilerInstance;
+
 // TODO: Move to Syntax
 class ModuleSystem final {
   // TODO: We need built-in information
-  friend class CompilerInvocation;
-  friend class CompilerInstance;
+  friend CompilerInvocation;
+  friend CompilerInstance;
 
-  LangContext &lc;
+  CompilerInvocation &invocation;
   syn::SyntaxContext &sc;
-  CompilerOptions &compilerOpts;
-
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
 
@@ -40,7 +41,7 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc, CompilerOptions &compilerOpts);
+  ModuleSystem(CompilerInvocation &invocation, syn::SyntaxContext &sc);
   ~ModuleSystem();
 
 public:
@@ -51,13 +52,22 @@ public:
       syn::ModuleDecl *mod,
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 
+  syn::SyntaxFile *
+  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod, syn::SyntaxFileKind fileKind,
+                                unsigned bufferID,
+                                bool isMainBuffer = false) const;
+
   syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
 
   ModuleOptions &GetModuleOptions() { return GetCompilerOptions().moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const { return GetCompilerOptions().moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const {
+    return GetCompilerOptions().moduleOpts;
+  }
 
-  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
-  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
+  CompilerOptions &GetCompilerOptions();
+  const CompilerOptions &GetCompilerOptions() const;
+
+  syn::SyntaxFile::ParsingOptions GetSyntaxFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);
