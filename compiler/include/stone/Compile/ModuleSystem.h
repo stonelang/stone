@@ -22,14 +22,10 @@ public:
 };
 
 class CompilerInvocation;
-class CompilerInstance;
 
 // TODO: Move to Syntax
 class ModuleSystem final {
   // TODO: We need built-in information
-  friend CompilerInvocation;
-  friend CompilerInstance;
-
   CompilerInvocation &invocation;
   syn::SyntaxContext &sc;
   /// This is the main module that will be created
