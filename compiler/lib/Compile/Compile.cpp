@@ -22,6 +22,7 @@
 #include "clang/Basic/TargetInfo.h"
 
 #include "llvm/IR/Module.h"
+#include "llvm/Support/Casting.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -312,14 +313,11 @@ CompileStatus CompilerInstance::CompileWithParsing() {
 CompileStatus
 CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
 
-  for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
-    auto syntaxFile = SyntaxFileFactory::Create(
-        SyntaxFileKind::Library, sourceBufferID,
-        *GetModuleSystem().GetMainModule(), GetSyntaxContext());
-
-    syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
-    assert(syntaxFile);
-    fn(*syntaxFile);
+  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+      syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
+      fn(*syntaxFile);
+    }
   }
 
   if (!invocation.GetCompilerOptions().GetMode().JustParse()) {

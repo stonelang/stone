@@ -69,8 +69,8 @@ Error ModuleSystem::CreateSyntaxFilesForMainModule(
       continue;
     }
 
-    auto *libraryFile =
-        CreateSyntaxFileForMainModule(mod, syn::SyntaxFileKind::Library, bufferID);
+    auto *libraryFile = CreateSyntaxFileForMainModule(
+        mod, syn::SyntaxFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
   return Error();

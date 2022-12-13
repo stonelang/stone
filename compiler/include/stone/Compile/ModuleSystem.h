@@ -53,8 +53,8 @@ public:
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 
   syn::SyntaxFile *
-  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod, syn::SyntaxFileKind fileKind,
-                                unsigned bufferID,
+  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod,
+                                syn::SyntaxFileKind fileKind, unsigned bufferID,
                                 bool isMainBuffer = false) const;
 
   syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
@@ -67,7 +67,8 @@ public:
   CompilerOptions &GetCompilerOptions();
   const CompilerOptions &GetCompilerOptions() const;
 
-  syn::SyntaxFile::ParsingOptions GetSyntaxFileParsingOptions(bool forPrimary) const;
+  syn::SyntaxFile::ParsingOptions
+  GetSyntaxFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);
