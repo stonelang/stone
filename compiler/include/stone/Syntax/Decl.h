@@ -513,7 +513,7 @@ public:
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
                DeclContext *parent)
-      : DeclContext(DeclContextKind::Decl, parent),
+      : DeclContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, retType, parent) {}
 
 public:
@@ -537,6 +537,21 @@ public:
   //  void SetReturnType(TypeDecl* tyDecl);
 
 public:
+  static bool classof(const Decl *d) {
+    return d->GetKind() >= DeclKind::FirstFunctionDecl &&
+           d->GetKind() <= DeclKind::LastFunctionDecl;
+  }
+
+  static bool classof(const DeclContext *dc) {
+    if (auto d = dc->CastToDecl())
+      return classof(d);
+    return false;
+  }
+
+public:
+  using DeclContext::operator new;
+  using DeclContext::operator delete;
+  using Decl::GetSyntaxContext;
 };
 
 /// Standalone function: fun F0() -> void {}
@@ -578,6 +593,7 @@ public:
   // SrcLoc GetFunLoc() const { return funcLoc; }
 
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Fun; }
+
   static bool classof(const FunctionDecl *d) {
     return classof(static_cast<const Decl *>(d));
   }

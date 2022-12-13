@@ -8,6 +8,7 @@
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/Types.h"
 
@@ -38,10 +39,17 @@ class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
 
-enum class DeclContextKind : uint8_t { Decl, Module, ModuleFile };
+enum class DeclContextKind : uint8_t {
+  None,
+  Module,
+  ModuleFile,
+  FunctionDecl,
+};
 
-class DeclContext {
-  enum class TreeHierarchy : unsigned {
+class alignas(1 << DeclContextAlignInBits) DeclContext
+    : public SyntaxAllocation<DeclContext> {
+
+  enum class SyntaxHierarchy : unsigned {
     Decl,
     Expr,
     ModuleFile,
@@ -51,7 +59,18 @@ class DeclContext {
   };
 
   DeclContext *parent;
-  DeclContextKind declContextKind;
+  llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchy> parentAndKind;
+
+  static SyntaxHierarchy GetSyntaxHierarchyFromKind(DeclContextKind Kind) {
+    switch (Kind) {
+    case DeclContextKind::ModuleFile:
+      return SyntaxHierarchy::ModuleFile;
+    case DeclContextKind::Module:
+    case DeclContextKind::FunctionDecl:
+      return SyntaxHierarchy::Decl;
+    }
+    llvm_unreachable("Unhandled DeclContextKind");
+  }
 
 protected:
   /// This anonymous union stores the bits belonging to DeclContext and classes
@@ -119,16 +138,13 @@ public:
   DeclContext(DeclContextKind kind, DeclContext *parent = nullptr);
 
 public:
-  DeclContextKind GetDeclContextType() { return declContextKind; }
+  DeclContextKind GetDeclContextKind() const;
   DeclContext *GetParent() { return parent; }
 
   Decl *CastToDecl() {
-    switch (declContextKind) {
-    case DeclContextKind::Decl:
-      return reinterpret_cast<Decl *>(this + 1); // TODO: UB
-    default:
-      return nullptr;
-    }
+    return parentAndKind.getInt() == SyntaxHierarchy::Decl
+               ? reinterpret_cast<Decl *>(this + 1)
+               : nullptr;
   }
   const Decl *CastToDecl() const {
     return const_cast<DeclContext *>(this)->CastToDecl();
@@ -140,12 +156,7 @@ public:
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.
-  DeclContext *GetParent() const {
-    // TODO:
-    assert(false && "Not implemented");
-    return nullptr;
-    // return ParentAndKind.getPointer();
-  }
+  DeclContext *GetParent() const { parentAndKind.getPointer(); }
   bool IsModuleContext() const;
 
   ModuleDecl *GetParentModule() const;

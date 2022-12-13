@@ -19,7 +19,34 @@ using namespace stone;
 using namespace stone::syn;
 
 DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
-    : declContextKind(declContextKind), parent(parent) {}
+    : parentAndKind(parent, GetSyntaxHierarchyFromKind(declContextKind)) {
+
+  if (declContextKind != DeclContextKind::Module) {
+    assert(parent != nullptr && "DeclContext must have a parent context");
+  }
+}
+
+DeclContextKind DeclContext::GetDeclContextKind() const {
+
+  switch (parentAndKind.getInt()) {
+  case SyntaxHierarchy::ModuleFile:
+    return DeclContextKind::ModuleFile;
+  case SyntaxHierarchy::Decl: {
+    auto decl = reinterpret_cast<const Decl *>(this + 1);
+    if (llvm::isa<FunctionDecl>(decl))
+      return DeclContextKind::FunctionDecl;
+    // if (llvm::isa<TemplateTypeDecl>(decl))
+    //   return DeclContextKind::GenericTypeDecl;
+    switch (decl->GetKind()) {
+    case DeclKind::Module:
+      return DeclContextKind::Module;
+    default:
+      llvm_unreachable("Unhandled Decl kind");
+    }
+  }
+  }
+  llvm_unreachable("Unhandled DeclContext SyntaxHierarchy");
+}
 
 SyntaxContext &DeclContext::GetSyntaxContext() const {
   return GetParentModule()->GetSyntaxContext();
@@ -27,12 +54,10 @@ SyntaxContext &DeclContext::GetSyntaxContext() const {
 
 syn::ModuleDecl *DeclContext::GetParentModule() const {
   const DeclContext *dc = this;
-  // TODO:
-  return nullptr;
-  // while (!dc->IsModuleContext()){
-  //   dc = dc->GetParent();
-  // }
-  // return const_cast<Module *>(cast<Module>(dc));
+  while (!dc->IsModuleContext()) {
+    dc = dc->GetParent();
+  }
+  return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(dc));
 }
 
 DeclContext *Decl::GetDeclContextForModule() const {

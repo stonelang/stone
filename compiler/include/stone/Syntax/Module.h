@@ -31,6 +31,10 @@ public:
 
 public:
   ModuleFileKind GetKind() const { return kind; }
+
+public:
+  using SyntaxAllocation<ModuleFile>::operator new;
+  using SyntaxAllocation<ModuleFile>::operator delete;
 };
 
 enum class SyntaxFileKind : uint8_t {
@@ -41,7 +45,11 @@ enum class SyntaxFileKind : uint8_t {
   Main
 };
 
-enum class SyntaxFileStage : uint8_t { None, AtImports, AtTypeCheck };
+enum class SyntaxFileStage : uint8_t {
+  None = 0,
+  ImportsResolved,
+  TypeChecked,
+};
 
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
@@ -231,10 +239,9 @@ public:
 };
 
 inline bool DeclContext::IsModuleContext() const {
-  // TODO:
-  // if (auto D = GetAsDecl()){
-  //   return Module::classof(D);
-  // }
+  if (auto D = CastToDecl()) {
+    return ModuleDecl::classof(D);
+  }
   return false;
 }
 
