@@ -72,6 +72,11 @@ class alignas(1 << DeclContextAlignInBits) DeclContext
     llvm_unreachable("Unhandled DeclContextKind");
   }
 
+  void SetParent(DeclContext *parent) { parentAndKind.setPointer(parent); }
+
+  // See stone/Syntax/Decl.h
+  static DeclContext *CastDeclToDeclContext(const Decl *d);
+
 protected:
   /// This anonymous union stores the bits belonging to DeclContext and classes
   /// deriving from it. The goal is to use otherwise wasted
@@ -141,13 +146,14 @@ public:
   DeclContextKind GetDeclContextKind() const;
   DeclContext *GetParent() { return parent; }
 
-  Decl *CastToDecl() {
-    return parentAndKind.getInt() == SyntaxHierarchy::Decl
-               ? reinterpret_cast<Decl *>(this + 1)
-               : nullptr;
+  Decl *ToDecl() {
+    if (parentAndKind.getInt() == SyntaxHierarchy::Decl) {
+      return reinterpret_cast<Decl *>(this + 1);
+    }
+    return nullptr;
   }
-  const Decl *CastToDecl() const {
-    return const_cast<DeclContext *>(this)->CastToDecl();
+  const Decl *ToDecl() const {
+    return const_cast<DeclContext *>(this)->ToDecl();
   }
 
   // Return the SyntaxContext for a specified DeclContext by
@@ -164,6 +170,21 @@ public:
   SyntaxFile *GetParentSyntaxFile() const;
 
   bool IsTypeContext() const;
+
+  /// If this DeclContext is an enum, or an extension on an enum, return the
+  /// EnumDecl, otherwise return null.
+  //EnumDecl *GetSelfEnumDecl() const;
+
+  /// If this DeclContext is a struct, or an extension on a struct, return the
+  /// StructDecl, otherwise return null.
+  //StructDecl *GetSelfStructDecl() const;
+
+  /// If this DeclContext is a protocol, or an extension on a
+  /// protocol, return the ProtocolDecl, otherwise return null.
+  //InterfaceDecl *GetSelfInterfaceDecl() const;
+
+
+
 };
 
 } // namespace syn

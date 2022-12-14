@@ -1,7 +1,6 @@
 
 
 public struct Particle {
-
 	public uint8 mass = 0; 
 }
 

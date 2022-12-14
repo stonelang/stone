@@ -543,7 +543,7 @@ public:
   }
 
   static bool classof(const DeclContext *dc) {
-    if (auto d = dc->CastToDecl())
+    if (auto d = dc->ToDecl())
       return classof(d);
     return false;
   }
@@ -598,7 +598,7 @@ public:
     return classof(static_cast<const Decl *>(d));
   }
   static bool classof(const DeclContext *dc) {
-    if (auto d = dc->CastToDecl())
+    if (auto d = dc->ToDecl())
       return classof(d);
     return false;
   }

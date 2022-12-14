@@ -1,0 +1,20 @@
+
+// Core.Console 
+
+
+import Core.IO; 
+import Core.OS; 
+
+public fun Print(string value) -> void {
+	
+}
+public fun Print(int32 value) -> void {
+
+}
+public fun Print(int64 value) -> void  {
+	
+}
+
+public fun Print(any value) -> void  {
+	
+}

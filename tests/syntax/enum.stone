@@ -1,0 +1,5 @@
+
+enum Day {
+	int Monday = 0, 
+	Tuesday,
+}

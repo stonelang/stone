@@ -30,35 +30,6 @@ template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
 
-// struct Syntax final {
-// public:
-//   Syntax() = delete;
-
-// public:
-//   static FunDecl *MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
-//                          DeclContext *parent);
-
-//   static FunDecl *MakeFunDeclImplicitly(DeclCollector &collector,
-//   SyntaxContext &sc,
-//                                  DeclContext *parent);
-
-// public:
-//   static SyntaxFile *MakeSyntaxFile(SyntaxFileKind kind, unsigned srcID,
-//                                     ModuleDecl &owner, SyntaxContext &sc,
-//                                     bool isPrimary = false);
-
-// public:
-//   static ModuleDecl *MakeModuleDecl(Identifier name, SyntaxContext &sc,
-//                                     bool isMainModule = false);
-
-// public:
-//   static BraceStmt *MakeBraceStmt(SrcLoc lbloc,
-//                                   llvm::ArrayRef<SyntaxNode> elements,
-//                                   SrcLoc rbloc, SyntaxContext &sc,
-//                                   llvm::Optional<bool> implicit =
-//                                   llvm::None);
-// };
-
 struct VarDeclFactory final {
   static VarDecl *Create(SyntaxContext &sc);
 };
@@ -70,6 +41,11 @@ struct FunDeclFactory final {
   static FunDecl *CreateImplicit(DeclCollector &collector, SyntaxContext &sc,
                                  DeclContext *parent);
 };
+
+FunDecl *MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
+                     DeclContext *parent);
+FunDecl *MakeFunDeclImplicit(DeclCollector &collector, SyntaxContext &sc,
+                             DeclContext *parent);
 
 struct SyntaxFileFactory final {
   static SyntaxFile *Create(SyntaxFileKind kind, unsigned srcID,
@@ -87,6 +63,10 @@ struct ModuleDeclFactory final {
                             bool isMainModule = false);
 };
 
+// TODO -- This is better
+ModuleDecl *MakeModuleDecl(Identifier name, SyntaxContext &sc,
+                           bool isMainModule = false);
+
 // template <std::size_t Len>
 // bool IsNamedDecl(const NameableDecl *nameableDecl, const char (&str)[Len]) {
 //   Identifier *identifier = namedDecl->GetIdentifier();
@@ -101,7 +81,6 @@ struct BraceStmtFactory {
 };
 
 } // namespace syn
-
 } // namespace stone
 
 #endif

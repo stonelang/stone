@@ -1,8 +1,5 @@
 
-
-/// Belongs to STD.Core module 
-
-
+/// Core
 public struct Assert {
 	
 }

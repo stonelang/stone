@@ -228,7 +228,7 @@ public:
 
 public:
   static bool classof(const DeclContext *DC) {
-    if (auto D = DC->CastToDecl()) {
+    if (auto D = DC->ToDecl()) {
       return classof(D);
     }
     return false;
@@ -237,13 +237,6 @@ public:
     return D->GetKind() == DeclKind::Module;
   }
 };
-
-inline bool DeclContext::IsModuleContext() const {
-  if (auto D = CastToDecl()) {
-    return ModuleDecl::classof(D);
-  }
-  return false;
-}
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 

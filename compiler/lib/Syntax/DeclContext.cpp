@@ -68,7 +68,7 @@ DeclContext *Decl::GetDeclContextForModule() const {
 }
 
 bool DeclContext::IsTypeContext() const {
-  if (auto decl = CastToDecl()) {
+  if (auto decl = ToDecl()) {
     return isa<NominalTypeDecl>(decl);
   }
   return false;

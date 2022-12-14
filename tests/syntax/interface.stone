@@ -1,6 +1,5 @@
 
 
-space Syntax.Interface {
 
 	public interface A {
 		fun Do() -> void;
@@ -25,6 +24,5 @@ space Syntax.Interface {
 
 	public fun S1::B::Do() -> void {
 	}
-}
 
 

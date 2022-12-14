@@ -1,8 +1,4 @@
 
-
-/// Belongs to System module 
-
-
+// Core 
 public struct String {
-
 }

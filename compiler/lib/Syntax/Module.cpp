@@ -21,7 +21,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
 ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc)
-    : DeclContext(DeclContextKind::Module, nullptr),
+    : DeclContext(DeclContextKind::Module),
       TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc) {}
 
 void ModuleDecl::AddFile(ModuleFile &file) {
@@ -42,6 +42,13 @@ Identifier ModuleDecl::GetRealName() const {
 }
 
 bool ModuleDecl::Walk(SyntaxWalker &waker) {}
+
+bool DeclContext::IsModuleContext() const {
+  if (auto D = ToDecl()) {
+    return ModuleDecl::classof(D);
+  }
+  return false;
+}
 
 llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
   // auto &eval = GetASTContext().evaluator;

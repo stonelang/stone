@@ -1,0 +1,6 @@
+// System.Console 
+
+public fun Print(string value) -> void {
+	
+}
+
