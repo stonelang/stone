@@ -6,7 +6,7 @@ public any<T> interface Queue {
 }
 
 public any<T> struct PriorityQueue : Queue<T> {
-	private T[] entries; 
+	private T*[] entries; 
 }
 public PriorityQueue::PriorityQueue() {
 }

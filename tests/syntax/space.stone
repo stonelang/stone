@@ -11,7 +11,7 @@ space Cosmology {
 	}
 }
 // Main.stone 
-import Core.Physics;
+import System.Physics;
 
 public fun Main() -> int {
 

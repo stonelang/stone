@@ -40,39 +40,43 @@ class ValueDecl;
 class StructDecl;
 
 enum class DeclContextKind : uint8_t {
-  None,
+  None = 0,
   Module,
   ModuleFile,
   FunctionDecl,
 };
 
+enum class SyntaxHierarchyKind : unsigned {
+  None = 0,
+  Decl,
+  Expr,
+  ModuleFile,
+  Initializer,
+  SerializedLocal,
+  // If you add a new Tree hierarchies, then update the static_assert() below.
+};
+
 class alignas(1 << DeclContextAlignInBits) DeclContext
     : public SyntaxAllocation<DeclContext> {
 
-  enum class SyntaxHierarchy : unsigned {
-    Decl,
-    Expr,
-    ModuleFile,
-    Initializer,
-    SerializedLocal,
-    // If you add a new Tree hierarchies, then update the static_assert() below.
-  };
+  DeclContext* parent = nullptr;
+  DeclContextKind declContextKind;
+  SyntaxHierarchyKind syntaxHierarchyKind;
 
-  DeclContext *parent;
-  llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchy> parentAndKind;
+  // llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchyKind> parentAndKind;
 
   static SyntaxHierarchy GetSyntaxHierarchyFromKind(DeclContextKind Kind) {
     switch (Kind) {
     case DeclContextKind::ModuleFile:
-      return SyntaxHierarchy::ModuleFile;
+      return SyntaxHierarchyKind::ModuleFile;
     case DeclContextKind::Module:
     case DeclContextKind::FunctionDecl:
-      return SyntaxHierarchy::Decl;
+      return SyntaxHierarchyKind::Decl;
     }
     llvm_unreachable("Unhandled DeclContextKind");
   }
 
-  void SetParent(DeclContext *parent) { parentAndKind.setPointer(parent); }
+  void SetParent(DeclContext *inputParent) { parent = inputParent; }
 
   // See stone/Syntax/Decl.h
   static DeclContext *CastDeclToDeclContext(const Decl *d);
@@ -147,7 +151,7 @@ public:
   DeclContext *GetParent() { return parent; }
 
   Decl *ToDecl() {
-    if (parentAndKind.getInt() == SyntaxHierarchy::Decl) {
+    if (syntaxHierarchyKind == SyntaxHierarchyKind::Decl)) {
       return reinterpret_cast<Decl *>(this + 1);
     }
     return nullptr;
@@ -162,29 +166,28 @@ public:
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.
-  DeclContext *GetParent() const { parentAndKind.getPointer(); }
+  DeclContext *GetParent() const { parent; }
+  bool HasParent() { return parent != nullptr; }
+
   bool IsModuleContext() const;
+  bool IsModuleFileContext() const; 
 
   ModuleDecl *GetParentModule() const;
-
   SyntaxFile *GetParentSyntaxFile() const;
 
   bool IsTypeContext() const;
 
   /// If this DeclContext is an enum, or an extension on an enum, return the
   /// EnumDecl, otherwise return null.
-  //EnumDecl *GetSelfEnumDecl() const;
+  // EnumDecl *GetSelfEnumDecl() const;
 
   /// If this DeclContext is a struct, or an extension on a struct, return the
   /// StructDecl, otherwise return null.
-  //StructDecl *GetSelfStructDecl() const;
+  // StructDecl *GetSelfStructDecl() const;
 
   /// If this DeclContext is a protocol, or an extension on a
   /// protocol, return the ProtocolDecl, otherwise return null.
-  //InterfaceDecl *GetSelfInterfaceDecl() const;
-
-
-
+  // InterfaceDecl *GetSelfInterfaceDecl() const;
 };
 
 } // namespace syn

@@ -9,7 +9,7 @@ public struct Universe {
 pubic fun Universe::Bang() -> bool {
 }
 enum Planet {
-	Earth,
+	uint8 Earth,
 	Mars,
 }
 
