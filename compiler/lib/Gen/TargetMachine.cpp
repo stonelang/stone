@@ -2,7 +2,7 @@
 #include "stone/Public.h"
 #include "stone/Syntax/SyntaxContext.h"
 
-#include "llvm/Support/TargetRegistry.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 

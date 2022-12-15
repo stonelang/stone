@@ -9,8 +9,58 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::StringRef triple) {
   return SetTarget(llvm::Triple(triple));
 }
 
+
+struct SupportedConditionalValue final {
+  llvm::StringRef value;
+
+  /// If the value has been deprecated, the new value to replace it with.
+  llvm::StringRef replacement = "";
+
+  SupportedConditionalValue(const char *value) : value(value) {}
+  SupportedConditionalValue(const char *value, const char *replacement)
+    : value(value), replacement(replacement) {}
+};
+
+static const SupportedConditionalValue SupportedConditionalCompilationOSs[] = {
+  "OSX",
+  "macOS",
+  "tvOS",
+  "watchOS",
+  "iOS",
+  "Linux",
+  "FreeBSD",
+  "OpenBSD",
+  "Windows",
+  "Android",
+  "PS4",
+  "Cygwin",
+  "Haiku",
+  "WASI",
+};
+
+static const SupportedConditionalValue SupportedConditionalCompilationArches[] = {
+  "arm",
+  "arm64",
+  "arm64_32",
+  "i386",
+  "x86_64",
+  "powerpc",
+  "powerpc64",
+  "powerpc64le",
+  "s390x",
+  "wasm32",
+  "riscv64",
+};
+
+static const SupportedConditionalValue SupportedConditionalCompilationEndianness[] = {
+  "little",
+  "big"
+};
+
 static bool CanSupportOS() { return false; }
 static bool CanSupportArch() { return false; }
+
+
 LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
 
   LangOptions::TargetResult result;
@@ -22,12 +72,13 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
     llvm::raw_svector_ostream osx(osxBuf);
     osx << llvm::Triple::getOSTypeName(llvm::Triple::MacOSX);
 
-    unsigned major, minor, micro;
-    triple.getMacOSXVersion(major, minor, micro);
-    osx << major << "." << minor;
-    if (micro != 0) {
-      osx << "." << micro;
-    }
+    llvm::VersionTuple OSVersion;
+    triple.getMacOSXVersion(OSVersion);
+
+    osx << OSVersion.getMajor() << "." << OSVersion.getMinor().getValueOr(0);
+    if (auto Subminor = OSVersion.getSubminor())
+      osx << "." << *Subminor;
+
     triple.setOSName(osx.str());
   }
   Target = std::move(triple);

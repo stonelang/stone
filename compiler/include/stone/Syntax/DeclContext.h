@@ -65,7 +65,7 @@ class alignas(1 << DeclContextAlignInBits) DeclContext
 
   // llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchyKind> parentAndKind;
 
-  static SyntaxHierarchy GetSyntaxHierarchyFromKind(DeclContextKind Kind) {
+  static SyntaxHierarchyKind GetSyntaxHierarchyFromKind(DeclContextKind Kind) {
     switch (Kind) {
     case DeclContextKind::ModuleFile:
       return SyntaxHierarchyKind::ModuleFile;
@@ -151,7 +151,7 @@ public:
   DeclContext *GetParent() { return parent; }
 
   Decl *ToDecl() {
-    if (syntaxHierarchyKind == SyntaxHierarchyKind::Decl)) {
+    if (syntaxHierarchyKind == SyntaxHierarchyKind::Decl) {
       return reinterpret_cast<Decl *>(this + 1);
     }
     return nullptr;

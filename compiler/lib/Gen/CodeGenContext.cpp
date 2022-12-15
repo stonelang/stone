@@ -20,7 +20,7 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
 
   // TODO: get ol from gen options
   mpm = pb.buildPerModuleDefaultPipeline(
-      llvm::PassBuilder::OptimizationLevel::O2);
+      llvm::OptimizationLevel::O2);
 
   // targetMachine = CreateTargetMachine();
 }

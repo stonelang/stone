@@ -268,6 +268,7 @@ public:
 private:
   const VirtualFile *getVirtualFile(SrcLoc Loc) const;
   unsigned getExternalSourceBufferId(StringRef Path);
+
   int getLineOffset(SrcLoc Loc) const {
     if (auto VFile = getVirtualFile(Loc))
       return VFile->LineOffset;
@@ -280,56 +281,6 @@ public:
     return getVirtualFile(Loc) != nullptr;
   }
 };
-
 } // namespace stone
 
-namespace llvm {
-template <typename T> struct DenseMapInfo;
-
-template <> struct DenseMapInfo<stone::SrcLoc> {
-  static stone::SrcLoc getEmptyKey() {
-    return stone::SrcLoc(
-        SMLoc::getFromPointer(DenseMapInfo<const char *>::getEmptyKey()));
-  }
-
-  static stone::SrcLoc getTombstoneKey() {
-    // Make this different from empty key. See for context:
-    // http://lists.llvm.org/pipermail/llvm-dev/2015-July/088744.html
-    return stone::SrcLoc(
-        SMLoc::getFromPointer(DenseMapInfo<const char *>::getTombstoneKey()));
-  }
-
-  static unsigned getHashValue(const stone::SrcLoc &Val) {
-    return DenseMapInfo<const void *>::getHashValue(
-        Val.getOpaquePointerValue());
-  }
-
-  static bool isEqual(const stone::SrcLoc &LHS, const stone::SrcLoc &RHS) {
-    return LHS == RHS;
-  }
-};
-
-template <> struct DenseMapInfo<stone::SrcRange> {
-  static stone::SrcRange getEmptyKey() {
-    return stone::SrcRange(stone::SrcLoc(
-        SMLoc::getFromPointer(DenseMapInfo<const char *>::getEmptyKey())));
-  }
-
-  static stone::SrcRange getTombstoneKey() {
-    // Make this different from empty key. See for context:
-    // http://lists.llvm.org/pipermail/llvm-dev/2015-July/088744.html
-    return stone::SrcRange(stone::SrcLoc(
-        SMLoc::getFromPointer(DenseMapInfo<const char *>::getTombstoneKey())));
-  }
-
-  static unsigned getHashValue(const stone::SrcRange &Val) {
-    return hash_combine(Val.Start.getOpaquePointerValue(),
-                        Val.End.getOpaquePointerValue());
-  }
-
-  static bool isEqual(const stone::SrcRange &LHS, const stone::SrcRange &RHS) {
-    return LHS == RHS;
-  }
-};
-} // namespace llvm
 #endif

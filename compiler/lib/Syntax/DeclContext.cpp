@@ -19,7 +19,8 @@ using namespace stone;
 using namespace stone::syn;
 
 DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
-    : declContextKind(declContextKind), parent, syntaxHierarchyKind(GetSyntaxHierarchyFromKind(declContextKind)) {
+    : declContextKind(declContextKind), parent(parent), 
+      syntaxHierarchyKind(GetSyntaxHierarchyFromKind(declContextKind)) {
 
   if (declContextKind != DeclContextKind::Module) {
     assert(parent != nullptr && "DeclContext must have a parent context");
