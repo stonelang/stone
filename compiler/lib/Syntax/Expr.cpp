@@ -6,6 +6,6 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/ExprFactory.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Types.h"

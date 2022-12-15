@@ -32,6 +32,7 @@ message(STATUS "Stone version: ${STONE_VERSION}")
 # Install the path for the lib files 
 install_stone()
 
+
 add_definitions( -D_GNU_SOURCE )
 
 option(STONE_BUILD_TOOLS

@@ -6,7 +6,7 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Types.h"
 
@@ -149,7 +149,7 @@ bool FunDecl::HasReturn() const { return false; }
 
 void DeclStats::Print(ColorfulStream &stream) {}
 
-FunDecl *FunDeclFactory::Create(DeclCollector &collector, SyntaxContext &sc,
+FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
                                 DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
@@ -164,7 +164,7 @@ FunDecl *FunDeclFactory::Create(DeclCollector &collector, SyntaxContext &sc,
   return funDecl;
 }
 
-StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
+StructDecl *DeclFactory::MakeStructDecl(DeclName name, SrcLoc loc,
                                       SyntaxContext &sc, DeclContext *dc) {
   size_t size = sizeof(StructDecl);
   auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
@@ -172,14 +172,14 @@ StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
   return nullptr;
 }
 
-ModuleDecl *ModuleDeclFactory::Create(Identifier name, SyntaxContext &sc,
+ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, SyntaxContext &sc,
                                       bool isMainModule) {
   auto declPtr =
       syn::AllocateDeclMem<syn::ModuleDecl>(sc, sizeof(syn::ModuleDecl));
   return ::new (declPtr) syn::ModuleDecl(name, sc);
 }
 
-VarDecl *VarDeclFactory::Create(SyntaxContext &sc) {
+VarDecl *DeclFactory::MakeVarDecl(SyntaxContext &sc) {
   // auto declPtr = syn::AllocateDeclMem<syn::VarDecl>(sc,
   // sizeof(syn::VarDecl)); return ::new (declPtr) syn::VarDecl(sc);
   return nullptr;

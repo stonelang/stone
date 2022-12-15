@@ -4,7 +4,7 @@
 #include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;

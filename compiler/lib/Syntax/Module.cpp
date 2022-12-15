@@ -1,6 +1,6 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/DeclFactory.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -75,16 +75,10 @@ SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
   return parsingOptions;
 }
 
-syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind,
+syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind,unsigned srcID,
                                        syn::ModuleDecl &owner,
-                                       SyntaxContext &sc, unsigned srcID,
+                                       SyntaxContext &sc, 
                                        bool isPrimary) {
-  return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
-}
-
-syn::SyntaxFile *SyntaxFileFactory::Create(SyntaxFileKind kind, unsigned srcID,
-                                           syn::ModuleDecl &owner,
-                                           SyntaxContext &sc, bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 

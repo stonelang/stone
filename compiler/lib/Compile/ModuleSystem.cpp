@@ -1,7 +1,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/DeclFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -17,13 +17,13 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     // TODO: Check to make sure that we have the correct Identifier
     Identifier moduleIdentifier =
         sc.GetIdentifier(GetModuleOptions().moduleName);
-    mainModule = ModuleDeclFactory::Create(moduleIdentifier, sc, true);
+    mainModule = DeclFactory::MakeModuleDecl(moduleIdentifier, sc, true);
 
     // Register the main module with the AST context.
     sc.AddLoadedModule(mainModule);
 
     // Create and add the module's files.
-    llvm::SmallVector<ModuleFile *, 16> moduleFiles;
+    llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
 
     if (!CreateSyntaxFilesForMainModule(mainModule, moduleFiles).Has()) {
       for (auto *moduleFile : moduleFiles)
@@ -95,7 +95,7 @@ syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
   auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
 
   auto syntaxFile =
-      SyntaxFileFactory::Create(syntaxFileKind, bufferID, *mod, sc);
+      SyntaxFile::Make(syntaxFileKind, bufferID, *mod, sc);
 
   // if (isMainBuffer)
   //   inputFile->SyntaxParsingCache =

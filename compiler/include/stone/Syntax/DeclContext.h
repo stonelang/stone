@@ -60,13 +60,13 @@ class alignas(1 << DeclContextAlignInBits) DeclContext
     : public SyntaxAllocation<DeclContext> {
 
   DeclContext* parent = nullptr;
-  DeclContextKind declContextKind;
-  SyntaxHierarchyKind syntaxHierarchyKind;
+  DeclContextKind declContextKind = DeclContextKind::None;
+  SyntaxHierarchyKind syntaxHierarchyKind = SyntaxHierarchyKind::None;
 
   // llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchyKind> parentAndKind;
 
-  static SyntaxHierarchyKind GetSyntaxHierarchyFromKind(DeclContextKind Kind) {
-    switch (Kind) {
+  static SyntaxHierarchyKind GetSyntaxHierarchyFromKind(DeclContextKind kind) {
+    switch (kind) {
     case DeclContextKind::ModuleFile:
       return SyntaxHierarchyKind::ModuleFile;
     case DeclContextKind::Module:

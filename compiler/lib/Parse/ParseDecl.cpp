@@ -5,7 +5,8 @@
 #include "stone/Syntax/Stmt.h"
 // #include "stone/Syntax/Using.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
+#include "stone/Syntax/DeclFactory.h"
+#include "stone/Syntax/StmtFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -155,7 +156,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeChunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
-  auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
+  auto varDecl = DeclFactory::MakeVarDecl(GetSyntaxContext());
 
   return result;
 }
@@ -254,7 +255,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Apply what what collected
   // collector.Apply();
   // Create the function
-  auto funDecl = FunDeclFactory::Create(collector, sc, GetCurDeclContext());
+  auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
   assert(funDecl);
 
   if (!status.HasCodeCompletion()) {
@@ -383,8 +384,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
   auto rParenLoc = ConsumeToken(tok::r_brace);
 
   // Simple for now
-  auto functionBody =
-      BraceStmtFactory::Create(lParenLoc, {}, rParenLoc, GetSyntaxContext());
+  auto functionBody = StmtFactory::MakeBraceStmt(lParenLoc, {}, rParenLoc, GetSyntaxContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

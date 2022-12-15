@@ -1,5 +1,4 @@
 #include "stone/Syntax/Decl.h"
-#include "stone/Syntax/SyntaxFactory.h"
 
 using namespace stone;
 using namespace stone::syn;

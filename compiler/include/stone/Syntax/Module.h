@@ -123,7 +123,7 @@ public:
   std::vector<Decl *> Decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
+  SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl& owner,
              llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~SyntaxFile();
@@ -157,9 +157,8 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static syn::SyntaxFile *Make(SyntaxFileKind kind, ModuleDecl &owner,
-                               SyntaxContext &tc, unsigned srcID,
-                               bool isPrimary = false);
+  static syn::SyntaxFile *Make(SyntaxFileKind kind, unsigned srcID, ModuleDecl &owner,
+                               SyntaxContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::Source;

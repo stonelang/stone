@@ -17,7 +17,6 @@
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
-#include "stone/Syntax/SyntaxFactory.h"
 
 #include "clang/Basic/TargetInfo.h"
 
