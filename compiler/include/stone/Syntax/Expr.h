@@ -126,10 +126,8 @@ class IdentityExpr : public Expr {
   Expr *subExpr;
 };
 
-// DotThis 
-class DotThisExpr : public IdentityExpr {
-};
-
+// DotThis
+class DotThisExpr : public IdentityExpr {};
 
 } // namespace syn
 } // namespace stone

@@ -11,7 +11,7 @@ class Expr;
 
 namespace syn {
 struct ExprFactory final {
-    NewExpr* MakeNewExpr();
+  NewExpr *MakeNewExpr();
 };
 
 } // namespace syn

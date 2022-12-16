@@ -9,7 +9,6 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::StringRef triple) {
   return SetTarget(llvm::Triple(triple));
 }
 
-
 struct SupportedConditionalValue final {
   llvm::StringRef value;
 
@@ -18,48 +17,25 @@ struct SupportedConditionalValue final {
 
   SupportedConditionalValue(const char *value) : value(value) {}
   SupportedConditionalValue(const char *value, const char *replacement)
-    : value(value), replacement(replacement) {}
+      : value(value), replacement(replacement) {}
 };
 
 static const SupportedConditionalValue SupportedConditionalCompilationOSs[] = {
-  "OSX",
-  "macOS",
-  "tvOS",
-  "watchOS",
-  "iOS",
-  "Linux",
-  "FreeBSD",
-  "OpenBSD",
-  "Windows",
-  "Android",
-  "PS4",
-  "Cygwin",
-  "Haiku",
-  "WASI",
+    "OSX",     "macOS",   "tvOS",    "watchOS", "iOS",    "Linux", "FreeBSD",
+    "OpenBSD", "Windows", "Android", "PS4",     "Cygwin", "Haiku", "WASI",
 };
 
-static const SupportedConditionalValue SupportedConditionalCompilationArches[] = {
-  "arm",
-  "arm64",
-  "arm64_32",
-  "i386",
-  "x86_64",
-  "powerpc",
-  "powerpc64",
-  "powerpc64le",
-  "s390x",
-  "wasm32",
-  "riscv64",
+static const SupportedConditionalValue SupportedConditionalCompilationArches[] =
+    {
+        "arm",       "arm64",       "arm64_32", "i386",   "x86_64",  "powerpc",
+        "powerpc64", "powerpc64le", "s390x",    "wasm32", "riscv64",
 };
 
-static const SupportedConditionalValue SupportedConditionalCompilationEndianness[] = {
-  "little",
-  "big"
-};
+static const SupportedConditionalValue
+    SupportedConditionalCompilationEndianness[] = {"little", "big"};
 
 static bool CanSupportOS() { return false; }
 static bool CanSupportArch() { return false; }
-
 
 LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
 

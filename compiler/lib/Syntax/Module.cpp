@@ -1,6 +1,6 @@
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/DeclFactory.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -21,7 +21,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
 ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc)
-    : DeclContext(DeclContextKind::Module),
+    : DeclContext(DeclContextKind::ModuleDecl),
       TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc) {}
 
 void ModuleDecl::AddFile(ModuleFile &file) {
@@ -75,10 +75,9 @@ SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
   return parsingOptions;
 }
 
-syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind,unsigned srcID,
+syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, unsigned srcID,
                                        syn::ModuleDecl &owner,
-                                       SyntaxContext &sc, 
-                                       bool isPrimary) {
+                                       SyntaxContext &sc, bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 

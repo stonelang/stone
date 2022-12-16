@@ -19,34 +19,14 @@ using namespace stone;
 using namespace stone::syn;
 
 DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
-    : declContextKind(declContextKind), parent(parent), 
-      syntaxHierarchyKind(GetSyntaxHierarchyFromKind(declContextKind)) {
+    : declContextKind(declContextKind), parent(parent) {
 
-  if (declContextKind != DeclContextKind::Module) {
-    assert(parent != nullptr && "DeclContext must have a parent context");
+  if (IsNot(DeclContextKind::ModuleDecl)) {
+    assert(parent != nullptr && "DeclContext must have a parent DeclContext!");
   }
 }
 
 DeclContextKind DeclContext::GetDeclContextKind() const {
-
-  // switch (parentAndKind.getInt()) {
-  // case SyntaxHierarchy::ModuleFile:
-  //   return DeclContextKind::ModuleFile;
-  // case SyntaxHierarchy::Decl: {
-  //   auto decl = reinterpret_cast<const Decl *>(this + 1);
-  //   if (llvm::isa<FunctionDecl>(decl))
-  //     return DeclContextKind::FunctionDecl;
-  //   // if (llvm::isa<TemplateTypeDecl>(decl))
-  //   //   return DeclContextKind::GenericTypeDecl;
-  //   switch (decl->GetKind()) {
-  //   case DeclKind::Module:
-  //     return DeclContextKind::Module;
-  //   default:
-  //     llvm_unreachable("Unhandled Decl kind");
-  //   }
-  // }
-  // }
-  // llvm_unreachable("Unhandled DeclContext SyntaxHierarchy");
   return declContextKind;
 }
 

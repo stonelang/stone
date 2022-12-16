@@ -94,8 +94,7 @@ syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
   auto isPrimary = bufferID && invocation.IsPrimarySourceID(bufferID);
   auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
 
-  auto syntaxFile =
-      SyntaxFile::Make(syntaxFileKind, bufferID, *mod, sc);
+  auto syntaxFile = SyntaxFile::Make(syntaxFileKind, bufferID, *mod, sc);
 
   // if (isMainBuffer)
   //   inputFile->SyntaxParsingCache =

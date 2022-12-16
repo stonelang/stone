@@ -4,9 +4,9 @@
 #include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Stmt.h"
 // #include "stone/Syntax/Using.h"
-#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/StmtFactory.h"
+#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -384,7 +384,8 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
   auto rParenLoc = ConsumeToken(tok::r_brace);
 
   // Simple for now
-  auto functionBody = StmtFactory::MakeBraceStmt(lParenLoc, {}, rParenLoc, GetSyntaxContext());
+  auto functionBody =
+      StmtFactory::MakeBraceStmt(lParenLoc, {}, rParenLoc, GetSyntaxContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

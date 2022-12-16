@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDTypeAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
@@ -39,42 +40,22 @@ class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
 
-enum class DeclContextKind : uint8_t {
+enum class DeclContextKind : UInt8 {
   None = 0,
-  Module,
+  ModuleDecl,
   ModuleFile,
   FunctionDecl,
-};
-
-enum class SyntaxHierarchyKind : unsigned {
-  None = 0,
-  Decl,
-  Expr,
-  ModuleFile,
-  Initializer,
+  EnumElementDecl,
+  ClosureExpr,
   SerializedLocal,
-  // If you add a new Tree hierarchies, then update the static_assert() below.
+  Initializer,
 };
 
 class alignas(1 << DeclContextAlignInBits) DeclContext
     : public SyntaxAllocation<DeclContext> {
 
-  DeclContext* parent = nullptr;
+  DeclContext *parent = nullptr;
   DeclContextKind declContextKind = DeclContextKind::None;
-  SyntaxHierarchyKind syntaxHierarchyKind = SyntaxHierarchyKind::None;
-
-  // llvm::PointerIntPair<DeclContext *, 3, SyntaxHierarchyKind> parentAndKind;
-
-  static SyntaxHierarchyKind GetSyntaxHierarchyFromKind(DeclContextKind kind) {
-    switch (kind) {
-    case DeclContextKind::ModuleFile:
-      return SyntaxHierarchyKind::ModuleFile;
-    case DeclContextKind::Module:
-    case DeclContextKind::FunctionDecl:
-      return SyntaxHierarchyKind::Decl;
-    }
-    llvm_unreachable("Unhandled DeclContextKind");
-  }
 
   void SetParent(DeclContext *inputParent) { parent = inputParent; }
 
@@ -148,10 +129,30 @@ public:
 
 public:
   DeclContextKind GetDeclContextKind() const;
-  DeclContext *GetParent() { return parent; }
 
+  bool Is(DeclContextKind k) const { return declContextKind == k; }
+  bool IsNot(DeclContextKind k) const { return declContextKind != k; }
+  bool IsAny(DeclContextKind K1) const { return Is(K1); }
+
+  template <typename... T>
+  bool IsAny(DeclContextKind K1, DeclContextKind K2, T... K) const {
+    if (Is(K1)) {
+      return true;
+    }
+    return IsAny(K2, K...);
+  }
+
+  // Predicates to check to see if the token is not the same as any of a list.
+  template <typename... T> bool IsNot(DeclContextKind K1, T... K) const {
+    return !IsAny(K1, K...);
+  }
+
+  bool IsDecl() {
+    return IsAny(DeclContextKind::ModuleDecl, DeclContextKind::FunctionDecl,
+                 DeclContextKind::EnumElementDecl);
+  }
   Decl *ToDecl() {
-    if (syntaxHierarchyKind == SyntaxHierarchyKind::Decl) {
+    if (IsDecl()) {
       return reinterpret_cast<Decl *>(this + 1);
     }
     return nullptr;
@@ -166,11 +167,11 @@ public:
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.
-  DeclContext *GetParent() const { parent; }
+  DeclContext *GetParent() const { return parent; }
   bool HasParent() { return parent != nullptr; }
 
   bool IsModuleContext() const;
-  bool IsModuleFileContext() const; 
+  bool IsModuleFileContext() const;
 
   ModuleDecl *GetParentModule() const;
   SyntaxFile *GetParentSyntaxFile() const;
