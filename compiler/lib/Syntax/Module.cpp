@@ -49,6 +49,12 @@ bool DeclContext::IsModuleContext() const {
   }
   return false;
 }
+bool DeclContext::IsModuleFileContext() const {
+  if (declContextKind == DeclContextKind::ModuleFile) {
+    return true;
+  }
+  return IsModuleContext();
+}
 
 llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
   // auto &eval = GetASTContext().evaluator;

@@ -16,7 +16,7 @@
 namespace stone {
 namespace syn {
 
-class Module;
+class ModuleDecl;
 
 static inline unsigned AlignOfModuleFile();
 
@@ -33,6 +33,15 @@ public:
   ModuleFileKind GetKind() const { return kind; }
 
 public:
+  // Efficiency override for DeclContext::getParentModule().
+  ModuleDecl *GetParentModule() const {
+    return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(GetParent()));
+  }
+
+  static bool classof(const DeclContext *dc) {
+    return dc->GetDeclContextKind() == DeclContextKind::ModuleFile;
+  }
+
   using SyntaxAllocation<ModuleFile>::operator new;
   using SyntaxAllocation<ModuleFile>::operator delete;
 };
@@ -163,6 +172,9 @@ public:
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::Source;
+  }
+  static bool classof(const DeclContext *dc) {
+    return llvm::isa<ModuleFile>(dc) && classof(cast<ModuleFile>(dc));
   }
 };
 

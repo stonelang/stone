@@ -11,9 +11,9 @@ void sem::TypeCheck(syn::SyntaxFile &sf,
                     TypeCheckerListener *listener) {
 
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
-  // for (auto d : sf.Decls) {
-  //   checker.CheckDecl(d);
-  // }
+  for (auto d : sf.Decls) {
+    checker.CheckDecl(d);
+  }
   // checker.Check();
 
   // assert(sf.stage == SyntaxFileStage::AtImports);

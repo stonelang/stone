@@ -57,6 +57,8 @@ class alignas(1 << DeclContextAlignInBits) DeclContext
   DeclContext *parent = nullptr;
   DeclContextKind declContextKind = DeclContextKind::None;
 
+  llvm::PointerIntPair<DeclContext *, 3, DeclContextKind> parentAndKind;
+
   void SetParent(DeclContext *inputParent) { parent = inputParent; }
 
   // See stone/Syntax/Decl.h
@@ -141,12 +143,10 @@ public:
     }
     return IsAny(K2, K...);
   }
-
   // Predicates to check to see if the token is not the same as any of a list.
   template <typename... T> bool IsNot(DeclContextKind K1, T... K) const {
     return !IsAny(K1, K...);
   }
-
   bool IsDecl() {
     return IsAny(DeclContextKind::ModuleDecl, DeclContextKind::FunctionDecl,
                  DeclContextKind::EnumElementDecl);
