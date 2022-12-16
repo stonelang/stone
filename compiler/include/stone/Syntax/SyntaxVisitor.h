@@ -12,6 +12,7 @@ namespace syn {
 class Decl;
 class Stmt;
 class Expr;
+class Type;
 
 template <typename ImplClass, typename DeclRetTy = void,
           typename ExprRetTy = void, typename StmtRetTy = void,
@@ -52,17 +53,20 @@ public:
 };
 
 template <typename ImplClass, typename DeclRetTy = void, typename... Args>
-using DeclVisitor = SyntaxVisitor<ImplClass, DeclRetTy, void, void, Args...>;
+using DeclVisitor =
+    SyntaxVisitor<ImplClass, DeclRetTy, void, void, void, Args...>;
 
 template <typename ImplClass, typename ExprRetTy = void, typename... Args>
-using ExprVisitor = SyntaxVisitor<ImplClass, void, ExprRetTy, void, Args...>;
+using ExprVisitor =
+    SyntaxVisitor<ImplClass, void, ExprRetTy, void, void, Args...>;
 
 template <typename ImplClass, typename StmtRetTy = void, typename... Args>
-using StmtVisitor = SyntaxVisitor<ImplClass, void, void, StmtRetTy, Args...>;
+using StmtVisitor =
+    SyntaxVisitor<ImplClass, void, void, StmtRetTy, void, Args...>;
 
 template <typename ImplClass, typename TypeRetTy = void, typename... Args>
 using TypeVisitor =
-    SyntaxVisitor<ImplClass, void, void, void, void, TypeRetTy, Args...>;
+    SyntaxVisitor<ImplClass, void, void, void, TypeRetTy, Args...>;
 
 } // namespace syn
 } // namespace stone
