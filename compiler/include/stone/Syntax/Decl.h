@@ -375,6 +375,16 @@ public:
   // Overwrite the access of this declaration.
   // This is needed in the LLDB REPL.
   void OverwriteAccess(AccessLevel inputLevel) { level = inputLevel; }
+
+public:
+  static bool classof(const Decl *d) {
+    assert(false && "Implement classof for ValueDecl");
+
+    // return d->GetKind() >= DeclKind::FirstValueDecl &&
+    //        d->GetKind() <= DeclKind::LastValueDecl;
+    return false; 
+
+  }
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {

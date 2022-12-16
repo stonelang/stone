@@ -150,6 +150,8 @@ BASE_DECL(Nameable, Decl)
 			VALUE_DECL(Param, VarDecl)
 			DECL_RANGE(Storage, Var, Param)
 		
+//DECL_RANGE(Value, Enum, EnumElement)
+
 	// BASE_DECL(Template, NameableDecl)
 	// 	TEMPLATE_DECL(FunctionTemplate, Template)
 	// 	TEMPLATE_DECL(StructTemplate, Template)

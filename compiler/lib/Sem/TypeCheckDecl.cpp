@@ -3,6 +3,16 @@
 
 using stone::sem::TypeChecker;
 
+class AccessControlCheckerBase {
+
+public:
+};
+
+class AccessControlChecker : public AccessControlCheckerBase,
+                             public DeclVisitor<AccessControlChecker> {
+public:
+};
+
 class DeclChecker final : public DeclVisitor<DeclChecker> {
   TypeChecker &checker;
   SyntaxContext &sc;
@@ -13,7 +23,10 @@ public:
       : checker(checker), sc(sc), sf(sf) {}
 
 public:
-  void Visit(Decl *d) { DeclVisitor<DeclChecker>::Visit(d); }
+  void Visit(Decl *d) {
+    //
+    DeclVisitor<DeclChecker>::Visit(d);
+  }
 
   // TODO: Think about
   void VisitDecl(Decl *d) { llvm_unreachable("Not yet implemented"); }
@@ -28,4 +41,19 @@ void TypeChecker::CheckDecl(Decl *d) {
   DeclChecker(*this, d->GetSyntaxContext(), sf).Visit(d);
 }
 
-void TypeChecker::CheckAccessLevel(Decl *d) {}
+void TypeChecker::CheckAccessLevel(Decl *d) {
+
+  if (llvm::isa<syn::ValueDecl>(d)) {
+    // AccessControlChecker().visit(D);
+    // UsableFromInlineChecker().visit(D);
+  }
+
+  // if (llvm::isa<syn::ValueDecl>(D) || isa<PatternBindingDecl>(D)) {
+  //   bool allowInlineable =
+  //       D->getDeclContext()->isInSpecializeExtensionContext();
+  //   AccessControlChecker(allowInlineable).visit(D);
+  //   UsableFromInlineChecker().visit(D);
+  // } else if (auto *ED = dyn_cast<ExtensionDecl>(D)) {
+  //   checkExtensionGenericParamAccess(ED);
+  // }
+}
