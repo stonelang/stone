@@ -3,29 +3,29 @@
 
 using stone::sem::TypeChecker;
 
-class AccessControlCheckerBase {
+class AccessLevelCheckingBase {
 
 public:
 };
 
-class AccessControlChecker : public AccessControlCheckerBase,
-                             public DeclVisitor<AccessControlChecker> {
+class AccessLevelChecking : public AccessLevelCheckingBase,
+                            public DeclVisitor<AccessLevelChecking> {
 public:
 };
 
-class DeclChecker final : public DeclVisitor<DeclChecker> {
+class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;
   SyntaxContext &sc;
   SyntaxFile *sf;
 
 public:
-  DeclChecker(TypeChecker &checker, SyntaxContext &sc, SyntaxFile *sf)
+  DeclChecking(TypeChecker &checker, SyntaxContext &sc, SyntaxFile *sf)
       : checker(checker), sc(sc), sf(sf) {}
 
 public:
   void Visit(Decl *d) {
     //
-    DeclVisitor<DeclChecker>::Visit(d);
+    DeclVisitor<DeclChecking>::Visit(d);
   }
 
   // TODO: Think about
@@ -38,7 +38,7 @@ public:
 void TypeChecker::CheckDecl(Decl *d) {
 
   auto *sf = d->GetDeclContext()->GetParentSyntaxFile();
-  DeclChecker(*this, d->GetSyntaxContext(), sf).Visit(d);
+  DeclChecking(*this, d->GetSyntaxContext(), sf).Visit(d);
 }
 
 void TypeChecker::CheckAccessLevel(Decl *d) {

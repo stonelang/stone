@@ -13,9 +13,9 @@ class Decl;
 class Stmt;
 class Expr;
 
-template <typename ImplClass, typename ExprRetTy = void,
-          typename StmtRetTy = void, typename DeclRetTy = void,
-          typename... Args>
+template <typename ImplClass, typename DeclRetTy = void,
+          typename ExprRetTy = void, typename StmtRetTy = void,
+          typename TypeRetTy = void, typename... Args>
 class SyntaxVisitor {
 public:
   DeclRetTy Visit(Decl *D, Args... AA) {
@@ -36,16 +36,33 @@ public:
   }
 #define BASE_DECL(CLASS, PARENT) DECL(CLASS, PARENT)
 #include "stone/Syntax/DeclKind.def"
+
+public:
+  //   TypeRetTy visit(Type *T, Args... AA) {
+  //     switch (T->GetKind()) {
+  // #define TYPEREPR(CLASS, PARENT) \
+//     case TypeKind::CLASS: \
+//       return static_cast<ImplClass*>(this) \
+//         ->visit##CLASS##Type(static_cast<CLASS##Type*>(T), \
+//                                  ::std::forward<Args>(AA)...);
+  // #include "stone/Syntax/TypeKind.def"
+  //     }
+  //     llvm_unreachable("Not reachable, all cases handled");
+  //   }
 };
 
+template <typename ImplClass, typename DeclRetTy = void, typename... Args>
+using DeclVisitor = SyntaxVisitor<ImplClass, DeclRetTy, void, void, Args...>;
+
 template <typename ImplClass, typename ExprRetTy = void, typename... Args>
-using ExprVisitor = SyntaxVisitor<ImplClass, ExprRetTy, void, void, Args...>;
+using ExprVisitor = SyntaxVisitor<ImplClass, void, ExprRetTy, void, Args...>;
 
 template <typename ImplClass, typename StmtRetTy = void, typename... Args>
-using StmtVisitor = SyntaxVisitor<ImplClass, void, StmtRetTy, void, Args...>;
+using StmtVisitor = SyntaxVisitor<ImplClass, void, void, StmtRetTy, Args...>;
 
-template <typename ImplClass, typename DeclRetTy = void, typename... Args>
-using DeclVisitor = SyntaxVisitor<ImplClass, void, void, DeclRetTy, Args...>;
+template <typename ImplClass, typename TypeRetTy = void, typename... Args>
+using TypeVisitor =
+    SyntaxVisitor<ImplClass, void, void, void, void, TypeRetTy, Args...>;
 
 } // namespace syn
 } // namespace stone

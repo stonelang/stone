@@ -382,8 +382,7 @@ public:
 
     // return d->GetKind() >= DeclKind::FirstValueDecl &&
     //        d->GetKind() <= DeclKind::LastValueDecl;
-    return false; 
-
+    return false;
   }
 };
 
