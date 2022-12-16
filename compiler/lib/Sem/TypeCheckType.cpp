@@ -6,7 +6,7 @@ using namespace stone::sem;
 using namespace stone::syn;
 
 class TypeChecking final : public TypeVisitor<TypeChecking>,
-                           public syn::SyntaxWalker {
+                           public SyntaxWalker {
 public:
 };
 
