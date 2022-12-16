@@ -65,7 +65,7 @@ llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)
-    : ModuleFile(ModuleFileKind::Source, owner), kind(kind),
+    : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
 SyntaxFile::ParsingOptions

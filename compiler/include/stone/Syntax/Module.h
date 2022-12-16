@@ -20,7 +20,7 @@ class ModuleDecl;
 
 static inline unsigned AlignOfModuleFile();
 
-enum class ModuleFileKind : uint8_t { Source, Builtin };
+enum class ModuleFileKind : uint8_t { Syntax, Builtin };
 
 class ModuleFile : public DeclContext, public SyntaxAllocation<ModuleFile> {
 private:
@@ -171,7 +171,7 @@ public:
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
-    return file->GetKind() == ModuleFileKind::Source;
+    return file->GetKind() == ModuleFileKind::Syntax;
   }
   static bool classof(const DeclContext *dc) {
     return llvm::isa<ModuleFile>(dc) && classof(cast<ModuleFile>(dc));

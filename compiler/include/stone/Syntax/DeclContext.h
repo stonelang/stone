@@ -57,8 +57,6 @@ class alignas(1 << DeclContextAlignInBits) DeclContext
   DeclContext *parent = nullptr;
   DeclContextKind declContextKind = DeclContextKind::None;
 
-  llvm::PointerIntPair<DeclContext *, 3, DeclContextKind> parentAndKind;
-
   void SetParent(DeclContext *inputParent) { parent = inputParent; }
 
   // See stone/Syntax/Decl.h
@@ -180,15 +178,15 @@ public:
 
   /// If this DeclContext is an enum, or an extension on an enum, return the
   /// EnumDecl, otherwise return null.
-  // EnumDecl *GetSelfEnumDecl() const;
+  // EnumDecl *GetThisEnumDecl() const;
 
   /// If this DeclContext is a struct, or an extension on a struct, return the
   /// StructDecl, otherwise return null.
-  // StructDecl *GetSelfStructDecl() const;
+  // StructDecl *GetThisStructDecl() const;
 
   /// If this DeclContext is a protocol, or an extension on a
   /// protocol, return the ProtocolDecl, otherwise return null.
-  // InterfaceDecl *GetSelfInterfaceDecl() const;
+  // InterfaceDecl *GetThisInterfaceDecl() const;
 };
 
 } // namespace syn
