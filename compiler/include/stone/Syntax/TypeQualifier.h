@@ -113,6 +113,9 @@ public:
 class TypeQualifierCollector final : public TypeQualifierList {
 public:
   TypeQualifierCollector();
+
+public:
+  TypeQualifierList *GetTypeQualifiers() { HasAny() ? this : nullptr; }
 };
 } // namespace syn
 } // namespace stone
