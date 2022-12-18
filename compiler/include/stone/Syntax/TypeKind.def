@@ -177,13 +177,13 @@ ABSTRACT_TYPE(Sweet, TypeBase)
   SWEET_TYPE(Alias, SweetType)
   TYPE_RANGE(Sweet, Dictionary, Alias)
 
-  ABSTRACT_TYPE(Reference, TypeBase)
+ABSTRACT_TYPE(Reference, TypeBase)
   TYPE(RValueReference, ReferenceType)
   TYPE(LValueReference, ReferenceType)
   TYPE_RANGE(Reference, RValueReference, LValueReference)
 
 
-ABSTRACT_TYPE(Deduced, Type)
+ABSTRACT_TYPE(Deduced, TypeBase)
   TYPE(Auto, DeducedType)
   TYPE_RANGE(Deduced, Auto, Auto)
 

@@ -10,8 +10,11 @@ namespace syn {
 
 struct TypeFactory final {
 public:
-  static FunType *MakeFunType(Type result);
-  // static StructType *MakeStructType(StructDecl *sd);
+  // static FunType *MakeFunType(Type result);
+  // static StructType *MakeIntegerType(NumberBitWidthKind bitWidthKind, const
+  // SyntaxContext &sc);
 };
 } // namespace syn
 } // namespace stone
+
+#endif

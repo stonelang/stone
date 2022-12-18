@@ -39,11 +39,11 @@ public:
 #include "stone/Syntax/DeclKind.def"
 
 public:
-  TypeRetTy visit(TypeBase *T, Args... AA) {
+  TypeRetTy Visit(TypeBase *T, Args... AA) {
     switch (T->GetKind()) {
 #define TYPE(CLASS, PARENT)                                                    \
   case TypeKind::CLASS:                                                        \
-    return static_cast<ImplClass *>(this)->visit##CLASS##Type(                 \
+    return static_cast<ImplClass *>(this)->Visit##CLASS##Type(                 \
         static_cast<CLASS##Type *>(T), ::std::forward<Args>(AA)...);
 #include "stone/Syntax/TypeKind.def"
     }
@@ -51,8 +51,8 @@ public:
   }
 
 #define TYPE(CLASS, PARENT)                                                    \
-  TypeRetTy visit##CLASS##Type(CLASS##Type *T, Args... AA) {                   \
-    return static_cast<ImplClass *>(this)->visit##PARENT(                      \
+  TypeRetTy Visit##CLASS##Type(CLASS##Type *T, Args... AA) {                   \
+    return static_cast<ImplClass *>(this)->Visit##PARENT(                      \
         T, ::std::forward<Args>(AA)...);                                       \
   }
 #define ABSTRACT_TYPE(CLASS, PARENT) TYPE(CLASS, PARENT)
@@ -71,9 +71,9 @@ template <typename ImplClass, typename StmtRetTy = void, typename... Args>
 using StmtVisitor =
     SyntaxVisitor<ImplClass, void, void, StmtRetTy, void, Args...>;
 
-template <typename ImplClass, typename TypeRetTy = void, typename... Args>
-using TypeVisitor =
-    SyntaxVisitor<ImplClass, void, void, void, TypeRetTy, Args...>;
+// template <typename ImplClass, typename TypeRetTy = void, typename... Args>
+// using TypeVisitor =
+//     SyntaxVisitor<ImplClass, void, void, void, TypeRetTy, Args...>;
 
 } // namespace syn
 } // namespace stone

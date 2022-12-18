@@ -32,7 +32,7 @@ public:
   void VisitDecl(Decl *d) { llvm_unreachable("Not yet implemented"); }
 
 public:
-  void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
+  void VisitFunDecl(FunDecl *fd) { checker.CheckAccessLevel(fd); }
 };
 
 void TypeChecker::CheckDecl(Decl *d) {

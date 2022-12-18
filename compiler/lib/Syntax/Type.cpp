@@ -1,4 +1,5 @@
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/TypeFactory.h"
 #include "stone/Syntax/TypeLoc.h"
 
 #include "stone/Syntax/TypeQualifier.h"
@@ -73,6 +74,8 @@ void TypeLoc::SetType(Type ty) {}
 
 FunType::FunType(Type result, const SyntaxContext *sc)
     : FunctionType(TypeKind::Fun, result, sc) {}
+
+// FunType *TypeFactory::MakeFunType(Type result);
 
 // IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
 //                                  const SyntaxContext &sc) {
