@@ -751,6 +751,8 @@ public:
   // }
 };
 
+class OperatorDecl : public Decl {};
+
 class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };

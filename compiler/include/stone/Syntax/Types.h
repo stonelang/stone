@@ -65,8 +65,8 @@ class alignas(1 << TypeAlignInBits) TypeBase
 
   TypeKind kind;
 
-  /// This union contains to the ASTContext for canonical types, and is
-  /// otherwise lazily populated by ASTContext when the canonical form of a
+  /// This union contains to the SyntaxContext for canonical types, and is
+  /// otherwise lazily populated by SyntaxContext when the canonical form of a
   /// non-canonical type is requested. The disposition of the union is stored
   /// outside of the union for performance. See Bits.Type.IsCanonical.
   union {
@@ -118,6 +118,11 @@ public:
 
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
+};
+
+class CanContext {
+public:
+  CanContext() {}
 };
 
 class FunctionType : public TypeBase {

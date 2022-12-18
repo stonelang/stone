@@ -24,19 +24,19 @@ using namespace stone;
 using namespace stone::syn;
 
 enum class KeywordStatus {
-  On,
-  Off,
+  Enabled,
+  Disabled,
   Reserved,
 };
 static KeywordStatus GetKeywordStatus(const LangOptions &systemOpts,
                                       unsigned flag) {
-  if (flag & TOKON) {
-    return KeywordStatus::On;
+  if (flag & TOK_ENABLED) {
+    return KeywordStatus::Enabled;
   }
-  if (flag & TOKRSV) {
+  if (flag & TOK_RESERVED) {
     return KeywordStatus::Reserved;
   }
-  return KeywordStatus::Off;
+  return KeywordStatus::Disabled;
 }
 // /// Returns true if the identifier is a keyword
 // bool Identifier::IsKeyword(const LangOptions &systemOpts) const {

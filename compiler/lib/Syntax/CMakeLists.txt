@@ -15,6 +15,8 @@ set(stone_syn_sources
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
+	MemberTable.cpp
+	NameLookup.cpp
 	SearchPath.cpp
 	Specifier.cpp
 	Stmt.cpp
@@ -33,8 +35,8 @@ set(stone_syn_sources
 	
 	LINK_LIBS
 	StoneBasic
-	StoneForeign
 	StoneDiag
+	StoneForeign
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}
