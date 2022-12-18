@@ -300,6 +300,11 @@ public:
   NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
+class BoolType : public BuiltinType {
+public:
+  BoolType(const SyntaxContext &sc) : BuiltinType(TypeKind::Bool, sc) {}
+};
+
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
   AbstractPointerType(TypeKind kind, const SyntaxContext &sc)
