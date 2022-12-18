@@ -39,17 +39,24 @@ public:
 #include "stone/Syntax/DeclKind.def"
 
 public:
-  //   TypeRetTy visit(Type *T, Args... AA) {
-  //     switch (T->GetKind()) {
-  // #define TYPEREPR(CLASS, PARENT) \
-//     case TypeKind::CLASS: \
-//       return static_cast<ImplClass*>(this) \
-//         ->visit##CLASS##Type(static_cast<CLASS##Type*>(T), \
-//                                  ::std::forward<Args>(AA)...);
-  // #include "stone/Syntax/TypeKind.def"
-  //     }
-  //     llvm_unreachable("Not reachable, all cases handled");
-  //   }
+  TypeRetTy visit(TypeBase *T, Args... AA) {
+    switch (T->GetKind()) {
+#define TYPE(CLASS, PARENT)                                                    \
+  case TypeKind::CLASS:                                                        \
+    return static_cast<ImplClass *>(this)->visit##CLASS##Type(                 \
+        static_cast<CLASS##Type *>(T), ::std::forward<Args>(AA)...);
+#include "stone/Syntax/TypeKind.def"
+    }
+    llvm_unreachable("Not reachable, all cases handled");
+  }
+
+#define TYPE(CLASS, PARENT)                                                    \
+  TypeRetTy visit##CLASS##Type(CLASS##Type *T, Args... AA) {                   \
+    return static_cast<ImplClass *>(this)->visit##PARENT(                      \
+        T, ::std::forward<Args>(AA)...);                                       \
+  }
+#define ABSTRACT_TYPE(CLASS, PARENT) TYPE(CLASS, PARENT)
+#include "stone/Syntax/TypeKind.def"
 };
 
 template <typename ImplClass, typename DeclRetTy = void, typename... Args>

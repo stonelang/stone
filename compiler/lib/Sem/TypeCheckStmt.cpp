@@ -11,6 +11,9 @@ public:
 
 public:
   void Visit(Stmt *s) {}
+
+  // void VisitIfStmt() {
+  // }
 };
 
 void TypeChecker::CheckStmt(Stmt *s) { StmtChecking(*this).Visit(s); }

@@ -15,8 +15,8 @@ import Tests.Behavior.Modules;
 
 fun Main() -> int {
 
-	Physics::LinearAcceleartor* la = new Physics::LinearAcceleartor();
-	Physics::Electron* electron = new Physics::Electron();
+	LinearAcceleartor* la = new LinearAcceleartor();
+	Electron* electron = new Electron();
 
 	defer{
 		delete electron;

@@ -98,6 +98,8 @@ public:
   bool IsNull() const { return typePtr == nullptr; }
   TypeBase *GetPtr() const { return typePtr; }
 
+  TypeKind GetKind() const;
+
   TypeBase *operator->() const {
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
@@ -256,6 +258,7 @@ public:
     return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
   }
 };
+
 } // namespace syn
 } // namespace stone
 #endif

@@ -5,10 +5,11 @@
 // module Tests.Physics.Accelerator;
 // using Tests.Physics.Particle;
 
-space Physics;
+// belongs to Tests.Modules; 
+
 
 public interface Accelerator {
-	Fire(const Particle* particle) -> bool;
+	fun Fire(const Particle* particle) -> bool;
 }
 public struct LinearAccelerator : Accelerator {
 }

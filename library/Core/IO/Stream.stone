@@ -1,6 +1,6 @@
 
 
-// System.IO;
+// Core.IO;
 public interface Stream {
 
 }

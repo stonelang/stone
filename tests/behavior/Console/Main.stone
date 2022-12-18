@@ -1,7 +1,5 @@
- 
-import Core.Console; 
-import Core.Net;
 
+import System.Console; 
 
 fun Main() -> int {
 

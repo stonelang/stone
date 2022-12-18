@@ -17,6 +17,11 @@ bool TypeBase::IsBasic() {
   }
 }
 
+TypeKind Type::GetKind() const {
+  assert(GetPtr());
+  return GetPtr()->GetKind();
+}
+
 bool TypeBase::IsNominalType() {
   switch (GetKind()) {
   case TypeKind::Interface:
@@ -66,8 +71,13 @@ SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
 void TypeLoc::SetType(Type ty) {}
 
-FunctionType::FunctionType(Type result, const SyntaxContext *sc)
-    : AbstractFunctionType(TypeKind::Function, result, sc) {}
+FunType::FunType(Type result, const SyntaxContext *sc)
+    : FunctionType(TypeKind::Fun, result, sc) {}
+
+// IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
+//                                  const SyntaxContext &sc) {
+//   return new (sc) IntegerType(bitWidthKind, sc);
+// }
 
 IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
                                  const SyntaxContext &sc) {

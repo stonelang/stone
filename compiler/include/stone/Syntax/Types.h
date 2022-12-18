@@ -120,26 +120,21 @@ public:
   // CanType GetCanType();
 };
 
-class AbstractFunctionType : public TypeBase {
+class FunctionType : public TypeBase {
   Type result;
 
 public:
-  AbstractFunctionType(TypeKind kind, Type result,
-                       const SyntaxContext *canTypeCtx)
+  FunctionType(TypeKind kind, Type result, const SyntaxContext *canTypeCtx)
       : TypeBase(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be QualType
-class FunctionType : public AbstractFunctionType,
-                     private llvm::TrailingObjects<FunctionType, Type> {
+class FunType : public FunctionType,
+                private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 
 public:
-  FunctionType(Type result, const SyntaxContext *sc);
-
-public:
-  /// 'Constructor' Factory Function
-  static FunctionType *Create(Type result);
+  FunType(Type result, const SyntaxContext *sc);
 };
 
 class NominalType : public TypeBase {
@@ -158,6 +153,10 @@ class StructType final : public NominalType {
 public:
 };
 
+class InterfaceType final : public NominalType {
+public:
+};
+
 class EnumType final : public NominalType {};
 
 class DeducedType : public TypeBase {
@@ -165,7 +164,9 @@ protected:
   friend class SyntaxContext; // SyntaxContext creates these
 };
 
-class AutoType final : public DeducedType, public llvm::FoldingSetNode {};
+class AutoType final : public DeducedType, public llvm::FoldingSetNode {
+public:
+};
 
 // class TemplateParmType : public Type{
 // };
@@ -262,6 +263,15 @@ public:
   ComplexType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
       : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
 };
+
+class ImaginaryType : public NumberType {
+  friend class SyntaxContext;
+
+public:
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Imaginary, bitWidthKind, sc) {}
+};
+
 class FloatType : public NumberType {
   friend class SyntaxContext;
 
@@ -296,17 +306,19 @@ public:
       : TypeBase(kind, &sc) {}
 };
 
-// I don not think you need this
-// class PointerType : public AbstractPointerType {
-//   Type pointeeType;
+class PointerType : public AbstractPointerType {
+public:
+};
 
-// public:
-//   PointerType(const SyntaxContext &sc)
-//       : AbstractPointerType(TypeKind::Pointer, sc) {}
+class MemberPointerType : public AbstractPointerType {
+public:
+};
 
-// public:
-//   // QualType GetPointeeType() const { return pointeeType; }
-// };
+class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
+
+class LeftValueReferenceType final : public ReferenceType {};
+
+class RightValueReferenceType final : public ReferenceType {};
 
 class SweetType : public TypeBase {
   // The state of this union is known via Bits.SweetType.HasCachedType so that

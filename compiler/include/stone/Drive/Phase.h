@@ -97,8 +97,8 @@ public:
   // void SetPrimaryInput(PhaseInput input) { primaryInput = input; }
 
 public:
-  static bool classof(const Phase *action) {
-    return action->GetKind() == PhaseKind::Compile;
+  static bool classof(const Phase *phase) {
+    return phase->GetKind() == PhaseKind::Compile;
   }
 };
 
@@ -112,8 +112,8 @@ public:
   bool WithLTO() { return withLTO; }
 
 public:
-  static bool classof(const Phase *action) {
-    return action->GetKind() == PhaseKind::DynamicLink;
+  static bool classof(const Phase *phase) {
+    return phase->GetKind() == PhaseKind::DynamicLink;
   }
 };
 class StaticLinkPhase final : public Phase {
@@ -121,8 +121,8 @@ public:
   StaticLinkPhase(const Tool &tool, PhaseInputList inputs);
 
 public:
-  static bool classof(const Phase *action) {
-    return action->GetKind() == PhaseKind::StaticLink;
+  static bool classof(const Phase *phase) {
+    return phase->GetKind() == PhaseKind::StaticLink;
   }
 };
 
@@ -131,8 +131,8 @@ public:
   ExecutableLinkPhase(const Tool &tool, PhaseInputList inputs);
 
 public:
-  static bool classof(const Phase *action) {
-    return action->GetKind() == PhaseKind::ExecutableLink;
+  static bool classof(const Phase *phase) {
+    return phase->GetKind() == PhaseKind::ExecutableLink;
   }
 };
 

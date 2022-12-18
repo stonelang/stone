@@ -1,9 +1,5 @@
 
-// Core.Console 
-
-
-import Core.IO; 
-import Core.OS; 
+// Core.Console  
 
 public fun Print(string value) -> void {
 	

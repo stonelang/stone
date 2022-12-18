@@ -1,4 +1,4 @@
-// Core.Collections
+// Core.Collection
 
 public any<T> struct Array : List<T> {
 }
