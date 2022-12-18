@@ -419,7 +419,8 @@ public:
 
 class AliasDecl : public TypeDecl {
 
-  /// The location of the 'alias' keyword // seems that this location should be in TypeDecl 
+  /// The location of the 'alias' keyword // seems that this location should be
+  /// in TypeDecl
   SrcLoc aliasLoc;
 
   /// The location of the equal '=' token

@@ -15,4 +15,6 @@ TypeChecker::TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
   sc.GetLangContext().GetStatEngine().Register(stats.get());
 }
 
+TypeChecker::~TypeChecker() {}
+
 void TypeCheckerStats::Print(ColorfulStream &stream) {}

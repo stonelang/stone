@@ -46,6 +46,11 @@ class TypeChecker final {
   TypeCheckerListener *pipeline;
 
 public:
+  TypeChecker(const TypeChecker &) = delete;
+  TypeChecker &operator=(const TypeChecker &) = delete;
+  ~TypeChecker();
+
+public:
   /// TODO: Pass in Syntax so that you can create the Nodes
   TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
               TypeCheckerListener *pipeline = nullptr);
@@ -69,6 +74,10 @@ public:
   void CheckTypes(Decl *d);
   void CheckTypes(Stmt *stmt, DeclContext *DC);
   void CheckTypes(AliasDecl *alias);
+
+public:
+  void ValidateValueDecl(ValueDecl *vd);
+  void FinalizeValueDecl(ValueDecl *vd);
 
 public:
   /// Determine whether one type is a subtype of another.
