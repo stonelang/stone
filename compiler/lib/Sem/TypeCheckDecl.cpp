@@ -26,13 +26,16 @@ public:
   void Visit(Decl *d) {
     //
     DeclVisitor<DeclChecking>::Visit(d);
-  }
 
+    checker.CheckTypes(d);
+  }
   // TODO: Think about
   void VisitDecl(Decl *d) { llvm_unreachable("Not yet implemented"); }
 
 public:
-  void VisitFunDecl(FunDecl *fd) { checker.CheckAccessLevel(fd); }
+  void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
+
+  void VisitImportDecl(ImportDecl *importDecl) {}
 };
 
 void TypeChecker::CheckDecl(Decl *d) {

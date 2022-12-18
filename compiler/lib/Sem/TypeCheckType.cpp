@@ -10,4 +10,4 @@ class TypeChecking final : public TypeVisitor<TypeChecking>,
 public:
 };
 
-void TypeChecker::CheckType() {}
+void TypeChecker::CheckTypes(Decl *d) {}

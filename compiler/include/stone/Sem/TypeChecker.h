@@ -66,7 +66,9 @@ public:
   void CheckExpr(Expr *e);
 
 public:
-  void CheckType();
+  void CheckTypes(Decl *d);
+  void CheckTypes(Stmt *stmt, DeclContext *DC);
+  void CheckTypes(AliasDecl *alias);
 
 public:
   /// Determine whether one type is a subtype of another.

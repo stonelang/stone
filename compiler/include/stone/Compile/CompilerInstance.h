@@ -165,7 +165,7 @@ private:
   //                       CompileWithGenIRCallback client);
 
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);
-  void ResolveUsings();
+  void ResolveImports();
 
 public:
   // TODO: Consider moving to the Compiler

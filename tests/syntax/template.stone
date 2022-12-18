@@ -20,3 +20,11 @@ public fun PriorityQueue::Pop() -> T* {
 }
 
 
+
+public any<T> interface Collection {
+
+}
+
+public any<T> where T : Comparable List : Collection<T> {
+	
+}

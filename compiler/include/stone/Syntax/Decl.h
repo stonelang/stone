@@ -53,7 +53,7 @@ class Type;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
-class TypeAliasDecl;
+class AliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
@@ -418,6 +418,19 @@ public:
 };
 
 class AliasDecl : public TypeDecl {
+
+  /// The location of the 'alias' keyword // seems that this location should be in TypeDecl 
+  SrcLoc aliasLoc;
+
+  /// The location of the equal '=' token
+  SrcLoc equalLoc;
+
+  /// The end of the type, valid even when the type cannot be parsed
+  SrcLoc typeEndLoc;
+
+  /// The location of the right-hand side of the typealias binding
+  TypeLoc underlyingTy;
+
 public:
 };
 
@@ -430,6 +443,10 @@ public:
   // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
   //     : NameableDecl(DeclKind::Space, dc, loc, name) {}
 };
+
+class TypeParamDecl : public TypeDecl {};
+
+class TemplateTypeParamDecl : public TypeParamDecl {};
 
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
@@ -475,8 +492,6 @@ public:
 //   GenericContext(DeclContextKind declContextKind, DeclContext *parentDC,
 //                  GenericParamList *genericParams);
 // };
-
-class GenericTypeDecl : public TypeDecl {};
 
 // class TemplateTypeDecl : public TypeDecl();
 
@@ -683,16 +698,17 @@ class TrustDecl final
       public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
 
 /// IfConfigDecl - This class represents #if/#else/#endif blocks.
-/// Active and inactive block members are stored separately, with the actionion
-/// being that active members will be handed back to the enclosing context.
+/// Active and inactive block members are stored separately, with the
+/// actionion being that active members will be handed back to the enclosing
+/// context.
 class IfConfigDecl : public Decl {
 
   friend class Decl;
 
   SrcLoc endLoc;
 
-  /// An array of clauses controlling each of the #if/#elseif/#else conditions.
-  /// The array is SyntaxContext allocated.
+  /// An array of clauses controlling each of the #if/#elseif/#else
+  /// conditions. The array is SyntaxContext allocated.
   llvm::ArrayRef<IfConfigClause> clauses;
 
   SrcLoc GetLocFromSource() const {

@@ -31,5 +31,21 @@ protected:
   TypeWalker(const TypeWalker &) = default;
   virtual ~TypeWalker() = default;
 };
+
+// class TypeDeclWalker : public TypeWalker {
+//   TypeWalkerAction WalkToTypePreChildren(Type T) override;
+
+// public:
+//   virtual TypeWalkerAction WisitNominalType(NominalType *ty) {
+//     return TypeWalkerAction::Continue;
+//   }
+//   // virtual TypeWalkerAction VisitBoundGenericType(BoundGenericType *ty) {
+//   //   return TypeWalkerAction::Continue;
+//   // }
+//   virtual TypeWalkerAction WisitAliasType(AliasType *ty) {
+//     return TypeWalkerAction::Continue;
+//   }
+// };
+
 } // namespace syn
 } // namespace stone

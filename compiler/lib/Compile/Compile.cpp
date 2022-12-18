@@ -13,7 +13,7 @@
 #include "stone/Gen/Gen.h"
 #include "stone/Parse/Parse.h"
 #include "stone/Sem/TypeCheck.h"
-#include "stone/Sem/UsingResolution.h"
+#include "stone/Sem/ImportResolution.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
@@ -320,7 +320,7 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
   }
 
   if (!invocation.GetCompilerOptions().GetMode().JustParse()) {
-    ResolveUsings();
+    ResolveImports();
   }
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
@@ -328,11 +328,11 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
   return CompileStatus::MakeSuccess();
 }
 
-void CompilerInstance::ResolveUsings() {
+void CompilerInstance::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
-      sem::ResolveUsings(*syntaxFile);
+      sem::ResolveImports(*syntaxFile);
   }
 }
 CompileStatus CompilerInstance::CompileWithTypeChecking() {

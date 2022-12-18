@@ -108,7 +108,7 @@ public:
   void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
     qualifiers = inputQualifiers;
   }
-  TypeQualifierList* GetTypeQualifiers() { return qualifiers; }
+  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
 
   void SetTypeChunks(TypeChunkList *inputChunks) { chunks = inputChunks; }
   TypeChunkList *GetTypeChunks() { return chunks; }

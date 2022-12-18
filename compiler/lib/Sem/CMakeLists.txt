@@ -5,8 +5,7 @@ set(stone_sem_sources
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
 	TypeCheckType.cpp
-	
-	UsingResolution.cpp
+	ImportResolution.cpp
 	
 	LINK_LIBS
 	StoneSyntax

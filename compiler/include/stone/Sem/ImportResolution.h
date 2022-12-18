@@ -1,5 +1,5 @@
-#ifndef STONE_SEM_USINGRESOLUTION_H
-#define STONE_SEM_USINGRESOLUTION_H
+#ifndef STONE_SEM_IMPORTRESOLUTION_H
+#define STONE_SEM_IMPORTRESOLUTION_H
 
 namespace stone {
 namespace syn {
@@ -8,7 +8,7 @@ class SyntaxFile;
 
 namespace sem {
 // TODO: ModuleResolution
-void ResolveUsings(syn::SyntaxFile &syntaxFile);
+void ResolveImports(syn::SyntaxFile &syntaxFile);
 } // namespace sem
 } // namespace stone
 
