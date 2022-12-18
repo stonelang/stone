@@ -170,6 +170,12 @@ ABSTRACT_TYPE(AbstractPointer, TypeBase)
   TYPE(MemberPointer, AbstractPointerType)
   TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
 
+ABSTRACT_TYPE(Reference, TypeBase)
+  TYPE(RValueReference, ReferenceType)
+  TYPE(LValueReference, ReferenceType)
+  TYPE_RANGE(Reference, RValueReference, LValueReference)
+
+
 ABSTRACT_TYPE(Deduced, Type)
   TYPE(Auto, DeducedType)
   TYPE_RANGE(Deduced, Auto, Auto)

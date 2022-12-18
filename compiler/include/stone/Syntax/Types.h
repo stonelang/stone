@@ -321,9 +321,9 @@ public:
 
 class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
 
-class LeftValueReferenceType final : public ReferenceType {};
+class LValueReferenceType final : public ReferenceType {};
 
-class RightValueReferenceType final : public ReferenceType {};
+class RValueReferenceType final : public ReferenceType {};
 
 class SweetType : public TypeBase {
   // The state of this union is known via Bits.SweetType.HasCachedType so that
