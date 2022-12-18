@@ -20,6 +20,3 @@ public fun Main() -> int {
 
 	bh.TrapLight(light); 
 }
-
-
-

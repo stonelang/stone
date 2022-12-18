@@ -23,6 +23,7 @@ struct TypeQualifierFlags final {
     Unaligned = 1 << 4,
     Immutable = 1 << 5,
     Mutable = 1 << 6,
+    Pure = 1 << 7,
   };
 };
 
@@ -100,13 +101,23 @@ public:
   SrcLoc GetVolatileLoc() { return volatileLoc; }
 
 public:
+  bool HasPure() const { return qualifiers & TypeQualifierFlags::Volatile; }
+  bool HasPureOnly() const { return qualifiers == TypeQualifierFlags::Pure; }
+  void RemovePure() { qualifiers &= ~TypeQualifierFlags::Pure; }
+  void AddPure(SrcLoc loc = SrcLoc()) {
+    pureLoc = loc;
+    qualifiers |= TypeQualifierFlags::Pure;
+  }
+  SrcLoc GetPureLoc() { return pureLoc; }
+
+public:
   bool HasAny() {
     return (HasConst() || HasRestrict() || HasVolatile() || HasImmutable() ||
-            HasMutable());
+            HasMutable() || HasPure());
   }
   bool HasAll() {
     return (HasConst() && HasRestrict() && HasVolatile() && HasImmutable() &&
-            HasMutable());
+            HasMutable() && HasPure());
   }
 };
 

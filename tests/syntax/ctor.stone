@@ -1,6 +1,5 @@
 
 
-
 struct Boson {
 	public float64 mass; 
 }

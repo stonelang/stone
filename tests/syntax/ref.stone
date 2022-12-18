@@ -6,11 +6,11 @@ public struct S1 {
 	S0 s0;
 }
 
-public S1::S1(ref S0 s0) {
+public S1::S1(S0& s0) {
 	this.s0 = s0;
 }
 
-public fun Max(ref int first, ref int second) -> ref int {
+public fun Max(int& first, int& second) -> int& {
 	if (first < second) {
 		return first; 
 	}

@@ -325,6 +325,25 @@ class LValueReferenceType final : public ReferenceType {};
 
 class RValueReferenceType final : public ReferenceType {};
 
+class ModuleType : public TypeBase {
+  ModuleDecl *const mod;
+
+public:
+  /// get - Return the ModuleType for the specified module.
+  static ModuleType *Get(ModuleDecl *mod);
+
+  ModuleDecl *GetModule() const { return mod; }
+
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const TypeBase *ty) {
+    return ty->GetKind() == TypeKind::Module;
+  }
+
+private:
+  ModuleType(ModuleDecl *mod, const SyntaxContext &sc)
+      : TypeBase(TypeKind::Module, &sc), mod(mod) {}
+};
+
 class SweetType : public TypeBase {
   // The state of this union is known via Bits.SweetType.HasCachedType so that
   // we can avoid masking the pointer on the fast path.
