@@ -7,6 +7,9 @@ namespace syn {
 /// by various query methods.
 enum class NameLookupKind { None = 0, Unqualified, Qualified };
 
+class NameLookup final {
+public:
+};
 
 } // namespace syn
 } // namespace stone

@@ -1,5 +1,5 @@
-#ifndef BASE_DECL
-#define BASE_DECL(Id, Parent)
+#ifndef ABSTRACT_DECL
+#define ABSTRACT_DECL(Id, Parent)
 #endif
 
 #ifndef NAMEABLE_DECL
@@ -124,35 +124,36 @@
 #define LAST_DECL(Id)
 #endif
 
-BASE_DECL(Nameable, Decl)
-	NAMEABLE_DECL(Space, NameableDecl)
-	NAMEABLE_DECL(Import, NameableDecl)
-	NAMEABLE_DECL(Label, NameableDecl) // break, continue, and goto
-	DECL_RANGE(Nameable, Space, Label)
-	BASE_DECL(Value, NameableDecl)
-		BASE_DECL(Type, ValueDecl)
-			CONTEXT_DECL(NominalType, TypeDecl)
-				NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
-				NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
-				NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
-				DECL_RANGE(NominalType, Enum, Interface)
-			VALUE_DECL(Alias, TypeDecl)
-			CONTEXT_VALUE_DECL(Module, TypeDecl)
+ABSTRACT_DECL(Nameable, Decl)
+	ABSTRACT_DECL(Value, NameableDecl)
+		ABSTRACT_DECL(Type, ValueDecl)
+				ABSTRACT_DECL(NominalType, TypeDecl)
+					NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
+					NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
+					NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
+					DECL_RANGE(NominalType, Enum, Interface)
+			  VALUE_DECL(Alias, TypeDecl)
+				CONTEXT_VALUE_DECL(Module, TypeDecl)
 			DECL_RANGE(Type, Enum, Module)
-			CONTEXT_DECL(Function, ValueDecl)
-				FUNCTION_DECL(Fun, FunctionDecl)
-				BASE_DECL(Method, FunDecl)
+		ABSTRACT_DECL(Function, ValueDecl)
+			FUNCTION_DECL(Fun, FunctionDecl)
+				ABSTRACT_DECL(Method, FunDecl)
 					FUNCTION_DECL(Constructor, MethodDecl)
 					FUNCTION_DECL(Destructor, MethodDecl)
-				DECL_RANGE(Function, Fun, Destructor)
-		BASE_DECL(Storage, ValueDecl)
+					DECL_RANGE(Method, Constructor, Destructor)
+			DECL_RANGE(Function, Fun, Destructor)
+		ABSTRACT_DECL(Storage, ValueDecl)
 			VALUE_DECL(Var, StorageDecl)
 			VALUE_DECL(Param, VarDecl)
 			DECL_RANGE(Storage, Var, Param)
-		
-//DECL_RANGE(Value, Enum, EnumElement)
+	DECL_RANGE(Value, Enum, Param)
+	NAMEABLE_DECL(Space, NameableDecl)
+	NAMEABLE_DECL(Import, NameableDecl)
+	NAMEABLE_DECL(Label, NameableDecl) 
 
-	// BASE_DECL(Template, NameableDecl)
+	DECL_RANGE(Nameable, Enum, Label)
+
+	// ABSTRACT_DECL(Template, NameableDecl)
 	// 	TEMPLATE_DECL(FunctionTemplate, Template)
 	// 	TEMPLATE_DECL(StructTemplate, Template)
 	// 	TEMPLATE_DECL(InterfaceTemplate, Template)
@@ -177,7 +178,7 @@ LAST_DECL(IfConfig)
 #undef BASE_FUNCTION_DECL
 #undef VALUE_DECL
 #undef DECL_RANGE
-#undef BASE_DECL
+#undef ABSTRACT_DECL
 #undef OPERATOR_DECL
 #undef DECL
 #undef LAST_DECL

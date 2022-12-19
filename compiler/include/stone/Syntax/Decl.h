@@ -704,7 +704,7 @@ class TrustDecl final
 /// context.
 class IfConfigDecl : public Decl {
 
-  friend class Decl;
+  friend Decl;
 
   SrcLoc endLoc;
 

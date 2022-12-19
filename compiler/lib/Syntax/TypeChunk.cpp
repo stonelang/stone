@@ -24,6 +24,7 @@ ArrayTypeChunk ArrayTypeChunk::Create(SrcLoc loc) {
 }
 
 void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
+
 void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {
   AddTypeChunk(PointerTypeChunk::Create(inputLoc));
 }
@@ -35,7 +36,9 @@ void TypeChunkCollector::AddArray(SrcLoc inputLoc) {
 }
 
 void TypeChunkCollector::AddParen(SrcLoc inputLoc) {}
+
 void TypeChunkCollector::AddPipe(SrcLoc inputLoc) {}
+
 void TypeChunkCollector::Apply() {}
 
 TypeChunkList::TypeChunkList(llvm::ArrayRef<TypeChunk> chunks) {

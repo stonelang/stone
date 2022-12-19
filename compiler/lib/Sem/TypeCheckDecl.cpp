@@ -4,13 +4,28 @@
 using stone::sem::TypeChecker;
 
 class AccessLevelCheckingBase {
-
 public:
 };
 
 class AccessLevelChecking : public AccessLevelCheckingBase,
                             public DeclVisitor<AccessLevelChecking> {
 public:
+  void Visit(Decl *d) {
+    // if (d->IsInvalid() || d->IsImplicit()) {
+    //   return;
+    // }
+    DeclVisitor<AccessLevelChecking>::Visit(d);
+  }
+  // Force all kinds to be handled at a lower level.
+  void VisitDecl(Decl *D) {}
+  void VisitValueDecl(ValueDecl *D) {}
+  void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
+
+  // #define UNREACHABLE(KIND, REASON) \
+  // void visit##KIND##Decl(KIND##Decl *D) { \
+  //   llvm_unreachable(REASON); \
+  // }
+  // #undef UNREACHABLE
 };
 
 class DeclChecking final : public DeclVisitor<DeclChecking> {
@@ -27,15 +42,15 @@ public:
     //
     DeclVisitor<DeclChecking>::Visit(d);
 
-    checker.CheckTypes(d);
+    //checker.CheckTypes(d);
   }
-  // TODO: Think about
-  void VisitDecl(Decl *d) { llvm_unreachable("Not yet implemented"); }
+  void VisitDecl(Decl *D) {}
 
 public:
   void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
-
+  
   void VisitImportDecl(ImportDecl *importDecl) {}
+  void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
 };
 
 void TypeChecker::CheckDecl(Decl *d) {
@@ -60,3 +75,26 @@ void TypeChecker::CheckAccessLevel(Decl *d) {
   //   checkExtensionGenericParamAccess(ED);
   // }
 }
+
+// void TypeChecker::CheckValueDecl(ValueDecl *d) {
+
+//   if (llvm::isa<syn::ValueDecl>(d)) {
+//     // AccessControlChecker().visit(D);
+//     // UsableFromInlineChecker().visit(D);
+//   }
+
+//   // switch (d->GetKind()) {
+//   // case DeclKind::Import:{
+//   //   llvm_unreachable("Not a 'ValueDecl' ");
+//   // }
+//   // case DeclKind::Fun:{
+//   //   auto *fd = llvm::cast<FunDecl>(d);
+
+//   //   ComputeAccessLevel(fd);
+//   // }
+
+// }
+
+// void TypeChecker::FinalizeValueDecl(ValueDecl *d) {}
+
+// void TypeChecker::ComputeAccessLevel(ValueDecl *d) {}

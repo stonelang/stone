@@ -76,8 +76,11 @@ public:
   void CheckTypes(AliasDecl *alias);
 
 public:
-  void ValidateValueDecl(ValueDecl *vd);
-  void FinalizeValueDecl(ValueDecl *vd);
+  void ValidateValueDecl(ValueDecl *d);
+  void FinalizeValueDecl(ValueDecl *d);
+
+public:
+  void ComputeAccessLevel(ValueDecl *d);
 
 public:
   /// Determine whether one type is a subtype of another.

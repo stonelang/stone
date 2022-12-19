@@ -23,15 +23,15 @@
 namespace stone {
 namespace syn {
 /// TypeVisitor - This is a simple visitor class for Swift types.
-template <typename ImplClass, typename RetTy = void, typename... Args>
+template <typename ImplTy, typename RetTy = void, typename... Args>
 class TypeVisitor {
 public:
   RetTy Visit(Type T, Args... args) {
     switch (T->GetKind()) {
-#define TYPE(CLASS, PARENT)                                                    \
-  case TypeKind::CLASS:                                                        \
-    return static_cast<ImplClass *>(this)->Visit##CLASS##Type(                 \
-        static_cast<CLASS##Type *>(T.GetPtr()),                                \
+#define TYPE(KIND, PARENT)                                                    \
+  case TypeKind::KIND:                                                        \
+    return static_cast<ImplTy *>(this)->Visit##KIND##Type(                    \
+        static_cast<KIND##Type *>(T.GetPtr()),                                \
         ::std::forward<Args>(args)...);
 #include "stone/Syntax/TypeKind.def"
     }
@@ -43,12 +43,12 @@ public:
   // the base behavior and handle all subclasses if they desire.  Since this is
   // a template, it will only instantiate cases that are used and thus we still
   // require full coverage of the AST nodes by the visitor.
-#define ABSTRACT_TYPE(CLASS, PARENT)                                           \
-  RetTy Visit##CLASS##Type(CLASS##Type *T, Args... args) {                     \
-    return static_cast<ImplClass *>(this)->Visit##PARENT(                      \
+#define ABSTRACT_TYPE(KIND, PARENT)                                            \
+  RetTy Visit##KIND##Type(KIND##Type *T, Args... args) {                       \
+    return static_cast<ImplTy *>(this)->Visit##PARENT(                         \
         T, std::forward<Args>(args)...);                                       \
   }
-#define TYPE(CLASS, PARENT) ABSTRACT_TYPE(CLASS, PARENT)
+#define TYPE(KIND, PARENT) ABSTRACT_TYPE(KIND, PARENT)
 #include "stone/Syntax/TypeKind.def"
 };
 } // namespace syn
