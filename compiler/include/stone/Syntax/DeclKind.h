@@ -13,6 +13,24 @@ enum class DeclKind : uint8_t {
 #include "stone/Syntax/DeclKind.def"
 };
 
+enum class DescriptiveDeclKind : uint8_t {
+  Import,
+  EnumCase,
+  IfConfig,
+  Var,
+  Param,
+  Auto,
+  Alias,
+  Type,
+  Enum,
+  Fun,
+  Struct,
+  Interface,
+  Constructor,
+  Destructor,
+  Module,
+};
+
 // llvm::StringRef GetDeclKindName(DeclKind kind);
 } // namespace syn
 

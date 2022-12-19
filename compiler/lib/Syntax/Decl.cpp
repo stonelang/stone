@@ -117,6 +117,33 @@ bool ValueDecl::IsInstanceMember() const {
   llvm_unreachable("bad DeclKind");
 }
 
+// void Decl::SetInvalid() {
+//   switch (GetKind()) {
+// #define VALUE_DECL(ID, PARENT)
+// #define DECL(ID, PARENT) \
+//   case DeclKind::ID:
+// #include "stone/Syntax/DeclKind.def"
+//     Bits.Decl.Invalid = true;
+//     return;
+//   case DeclKind::Enum:
+//   case DeclKind::Struct:
+//   case DeclKind::Interface:
+//   case DeclKind::Alias:
+//   case DeclKind::Module:
+//   case DeclKind::Var:
+//   case DeclKind::Param:
+//   case DeclKind::Constructor:
+//   case DeclKind::Destructor:
+//   case DeclKind::Fun:
+//     //llvm::cast<ValueDecl>(this)->SetInterfaceType(ErrorType::Get(GetSyntaxContext()));
+//     return;
+
+//   case DeclKind::BuiltinTuple:
+//     llvm_unreachable("BuiltinTupleDecl should not end up here");
+//   }
+
+//   llvm_unreachable("Unknown decl kind");
+// }
 // TODO: Set body  -- not being set now.
 void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
   SetBodyStatus(bodyStatus);

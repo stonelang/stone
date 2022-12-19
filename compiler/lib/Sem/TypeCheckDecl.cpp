@@ -9,6 +9,12 @@ public:
 
 class AccessLevelChecking : public AccessLevelCheckingBase,
                             public DeclVisitor<AccessLevelChecking> {
+
+  TypeChecker &checker;
+
+public:
+  AccessLevelChecking(TypeChecker &checker) : checker(checker) {}
+
 public:
   void Visit(Decl *d) {
     // if (d->IsInvalid() || d->IsImplicit()) {
@@ -42,13 +48,13 @@ public:
     //
     DeclVisitor<DeclChecking>::Visit(d);
 
-    //checker.CheckTypes(d);
+    // checker.CheckTypes(d);
   }
   void VisitDecl(Decl *D) {}
 
 public:
   void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
-  
+
   void VisitImportDecl(ImportDecl *importDecl) {}
   void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
 };
@@ -62,39 +68,6 @@ void TypeChecker::CheckDecl(Decl *d) {
 void TypeChecker::CheckAccessLevel(Decl *d) {
 
   if (llvm::isa<syn::ValueDecl>(d)) {
-    // AccessControlChecker().visit(D);
-    // UsableFromInlineChecker().visit(D);
+    AccessLevelChecking(*this).Visit(d);
   }
-
-  // if (llvm::isa<syn::ValueDecl>(D) || isa<PatternBindingDecl>(D)) {
-  //   bool allowInlineable =
-  //       D->getDeclContext()->isInSpecializeExtensionContext();
-  //   AccessControlChecker(allowInlineable).visit(D);
-  //   UsableFromInlineChecker().visit(D);
-  // } else if (auto *ED = dyn_cast<ExtensionDecl>(D)) {
-  //   checkExtensionGenericParamAccess(ED);
-  // }
 }
-
-// void TypeChecker::CheckValueDecl(ValueDecl *d) {
-
-//   if (llvm::isa<syn::ValueDecl>(d)) {
-//     // AccessControlChecker().visit(D);
-//     // UsableFromInlineChecker().visit(D);
-//   }
-
-//   // switch (d->GetKind()) {
-//   // case DeclKind::Import:{
-//   //   llvm_unreachable("Not a 'ValueDecl' ");
-//   // }
-//   // case DeclKind::Fun:{
-//   //   auto *fd = llvm::cast<FunDecl>(d);
-
-//   //   ComputeAccessLevel(fd);
-//   // }
-
-// }
-
-// void TypeChecker::FinalizeValueDecl(ValueDecl *d) {}
-
-// void TypeChecker::ComputeAccessLevel(ValueDecl *d) {}

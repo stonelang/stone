@@ -20,9 +20,9 @@ using namespace stone::syn;
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc)
+ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc) {}
+      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {}
 
 void ModuleDecl::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.

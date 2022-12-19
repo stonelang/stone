@@ -10,6 +10,10 @@ void sem::TypeCheck(syn::SyntaxFile &sf,
                     stone::TypeCheckerOptions &typeCheckerOpts,
                     TypeCheckerListener *listener) {
 
+  if (sf.stage == SyntaxFileStage::TypeChecked) {
+    return;
+  }
+
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
   for (auto d : sf.Decls) {
     checker.CheckDecl(d);

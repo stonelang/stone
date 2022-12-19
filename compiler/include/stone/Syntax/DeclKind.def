@@ -150,7 +150,6 @@ ABSTRACT_DECL(Nameable, Decl)
 	NAMEABLE_DECL(Space, NameableDecl)
 	NAMEABLE_DECL(Import, NameableDecl)
 	NAMEABLE_DECL(Label, NameableDecl) 
-
 	DECL_RANGE(Nameable, Enum, Label)
 
 	// ABSTRACT_DECL(Template, NameableDecl)

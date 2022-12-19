@@ -1,4 +1,5 @@
 
+
 // This will be added to a module System.Physics.stonemodule 
 space QuantumMechanics {
 	public struct Accelerator {

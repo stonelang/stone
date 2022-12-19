@@ -28,11 +28,10 @@ class TypeVisitor {
 public:
   RetTy Visit(Type T, Args... args) {
     switch (T->GetKind()) {
-#define TYPE(KIND, PARENT)                                                    \
-  case TypeKind::KIND:                                                        \
-    return static_cast<ImplTy *>(this)->Visit##KIND##Type(                    \
-        static_cast<KIND##Type *>(T.GetPtr()),                                \
-        ::std::forward<Args>(args)...);
+#define TYPE(KIND, PARENT)                                                     \
+  case TypeKind::KIND:                                                         \
+    return static_cast<ImplTy *>(this)->Visit##KIND##Type(                     \
+        static_cast<KIND##Type *>(T.GetPtr()), ::std::forward<Args>(args)...);
 #include "stone/Syntax/TypeKind.def"
     }
     llvm_unreachable("Not reachable, all cases handled");

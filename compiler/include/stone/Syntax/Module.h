@@ -186,15 +186,20 @@ class ModuleDecl final : public DeclContext,
                          public TypeDecl,
                          public SyntaxAllocation<ModuleDecl> {
 
+  // TODO: This is not yet implemented
+  ModuleDecl *parent = nullptr;
+
   /// The ABI name of the module, if it differs from the module name.
   mutable Identifier moduleABIName;
 
 public:
-  ModuleDecl(Identifier name, SyntaxContext &tc);
+  ModuleDecl(Identifier name, SyntaxContext &tc, ModuleDecl *parent = nullptr);
 
 public:
   using syn::Decl::GetSyntaxContext;
   llvm::SmallVector<ModuleFile *, 2> files;
+
+  // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
 
 public:
   llvm::ArrayRef<ModuleFile *> GetFiles() { return files; }
@@ -202,7 +207,6 @@ public:
     return {files.begin(), files.size()};
   }
   void AddFile(ModuleFile &file);
-
   SyntaxFile &GetMainSyntaxFile() const;
   ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
