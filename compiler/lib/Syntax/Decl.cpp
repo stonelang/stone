@@ -144,6 +144,19 @@ bool ValueDecl::IsInstanceMember() const {
 
 //   llvm_unreachable("Unknown decl kind");
 // }
+
+GenericContext::GenericContext(DeclContextKind kind, DeclContext *parent,
+                               GenericParamList *params)
+    : GenericContextBase(), DeclContext(kind, parent) {
+
+  // TODO:
+  // if (params) {
+  //   params->SetDeclContext(this);
+  //   cenericParamsAndState.setPointerAndInt(params,
+  //   GenericParamsState::Parsed);
+  // }
+}
+
 // TODO: Set body  -- not being set now.
 void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
   SetBodyStatus(bodyStatus);

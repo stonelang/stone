@@ -44,7 +44,7 @@ namespace syn {
 
 class Decl;
 class Stmt;
-class Module;
+class ModuleDecl;
 class BraceStmt;
 class DeclContext;
 class SyntaxContext;
@@ -60,6 +60,8 @@ class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
 class GenericParamList;
+class TrailingWhereClause;
+
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -431,28 +433,28 @@ public:
 
 class alignas(8) GenericContextBase {
   // // Not really public. See GenericContext.
-  // public:
-  //   /// The state of the generic parameters.
-  //   enum class GenericParamsState: uint8_t {
-  //     /// The stored generic parameters represent parsed generic parameters,
-  //     /// written in the source.
-  //     Parsed = 0,
-  //     /// The stored generic parameters represent generic parameters that are
-  //     /// synthesized by the type checker but were not written in the source.
-  //     TypeChecked = 1,
-  //     /// The stored generic parameters represent both the parsed and
-  //     /// type-checked generic parameters.
-  //     ParsedAndTypeChecked = 2,
-  //   };
+public:
+  /// The state of the generic parameters.
+  enum class GenericParamsState : uint8_t {
+    /// The stored generic parameters represent parsed generic parameters,
+    /// written in the source.
+    Parsed = 0,
+    /// The stored generic parameters represent generic parameters that are
+    /// synthesized by the type checker but were not written in the source.
+    TypeChecked = 1,
+    /// The stored generic parameters represent both the parsed and
+    /// type-checked generic parameters.
+    ParsedAndTypeChecked = 2,
+  };
 
-  //   llvm::PointerIntPair<GenericParamList *, 2, GenericParamsState>
-  //       GenericParamsAndState;
+  llvm::PointerIntPair<GenericParamList *, 2, GenericParamsState>
+      genericParamsAndState;
 
-  //   /// The trailing where clause.
-  //   ///
-  //   /// Note that this is not currently serialized, because semantic analysis
-  //   /// moves the trailing where clause into the generic parameter list.
-  //   TrailingWhereClause *TrailingWhere = nullptr;
+  /// The trailing where clause.
+  ///
+  /// Note that this is not currently serialized, because semantic analysis
+  /// moves the trailing where clause into the generic parameter list.
+  TrailingWhereClause *trailingWhereClause = nullptr;
 
   //   /// The generic signature of this declaration.
   //   llvm::PointerIntPair<GenericSignature, 1, bool> GenericSigAndBit;
@@ -460,6 +462,8 @@ class alignas(8) GenericContextBase {
 
 class GenericContext : private GenericContextBase, public DeclContext {
 public:
+  GenericContext(DeclContextKind kind, DeclContext *parent,
+                 GenericParamList *params = nullptr);
 };
 
 class GenericTypeDecl : public GenericContext, public TypeDecl {
@@ -506,58 +510,9 @@ public:
 
 class TypeParamDecl : public TypeDecl {};
 
-// class TemplateTypeParamDecl : public TypeParamDecl {};
-
-/// Abstract class describing generic type parameters and associated types,
-/// whose common purpose is to anchor the abstract type parameter and specify
-/// requirements for any corresponding type argument.
-// class AbstractTypeParamDecl : public NameableDecl {
-// protected:
-//   AbstractTypeParamDecl(DeclKind kind, DeclContext *dc, Identifier name,
-//                         SourceLoc NameLoc)
-//     : NameableDecl(kind, dc, name, NameLoc, { }) { }
-
-// public:
-//   /// Retrieve the set of protocols to which this abstract type
-//   /// parameter conforms.
-//   llvm::ArrayRef<ProtocolDecl *> GetConformingInterfacess() const;
-
-//   static bool classof(const Decl *D) {
-//     return D->getKind() >= DeclKind::First_AbstractTypeParamDecl &&
-//            D->getKind() <= DeclKind::Last_AbstractTypeParamDecl;
-//   }
-// };
-
-// A private class for forcing exact field layout.
-// class alignas(8) GenericContextBase {
-//   // Not really public. See GenericContext.
-// public:
-//   llvm::PointerIntPair<GenericParamList *, 1, bool> genericParamsAndBit;
-
-//   /// The trailing where clause.
-//   ///
-//   /// Note that this is not currently serialized, because semantic analysis
-//   /// moves the trailing where clause into the generic parameter list.
-//   TrailingWhereClause *trailingWhere = nullptr;
-
-//   /// The generic signature of this declaration.
-//   llvm::PointerIntPair<GenericSignature, 1, bool> genericSigAndBit;
-// };
-
-// class GenericContext : private GenericContextBase, public DeclContext {
-//   // friend class GenericParamListRequest;
-//   // friend class GenericSignatureRequest;
-
-// protected:
-//   GenericContext(DeclContextKind declContextKind, DeclContext *parentDC,
-//                  GenericParamList *genericParams);
-// };
-
-// class TemplateTypeDecl : public TypeDecl();
-
 // This is really your function prototye
-class FunctionDecl : public ValueDecl,
-                     public DeclContext
+class FunctionDecl : public GenericContext,
+                     public ValueDecl
 /*, public syn::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
@@ -597,7 +552,7 @@ public:
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
                DeclContext *parent)
-      : DeclContext(DeclContextKind::FunctionDecl, parent),
+      : GenericContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, retType, parent) {}
 
 public:
@@ -705,7 +660,7 @@ class DestructorDecl : public MethodDecl {
 public:
 };
 
-class NominalTypeDecl : public TypeDecl, public DeclContext {
+class NominalTypeDecl : public GenericTypeDecl {
 public:
   static bool classof(const Decl *d) { return true; }
 };

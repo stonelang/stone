@@ -69,43 +69,6 @@ class GenericTypeParamDecl;
 //   Pack
 // };
 
-// /// Represents a template argument.
-// class TemplateArgument final {
-//   TemplateArgumentKind kind;
-
-// public:
-// };
-
-// class TemplateArgumentLoc final {
-// public:
-// };
-
-// class TemplateName {
-// public:
-// };
-
-// class TemplateParameterList final
-//     : private llvm::TrailingObjects<TemplateParameterList, NameableDecl *> {
-
-//   SrcRange brackets;
-
-//   /// The location of the 'any' keyword.
-//   SrcLoc templateLoc;
-
-// public:
-//   // NO copying
-//   TemplateParameterList(const TemplateParameterList &) = delete;
-//   TemplateParameterList &operator=(const TemplateParameterList &) = delete;
-
-// public:
-//   SrcLoc GetLAngleLoc() const { return brackets.Start; }
-//   SrcLoc GetRAngleLoc() const { return brackets.End; }
-
-//   SrcRange GetSrcRange() const { return brackets; }
-// };
-
-// using TemplateParameterLists = llvm::SmallVector<TemplateParameterList *, 4>;
-
 enum class GenericRequirementKind : unsigned {
   /// A type bound T : P, where T is a type that depends on a generic
   /// parameter and P is some type that should bound T, either as a concrete
@@ -159,6 +122,48 @@ class GenericParamList final
 
 public:
   unsigned GetParamCount() const;
+};
+
+/// A trailing where clause.
+class alignas(GenericRequirement) TrailingWhereClause final
+    : private llvm::TrailingObjects<TrailingWhereClause, GenericRequirement> {
+  friend TrailingObjects;
+
+  SrcLoc whereLoc;
+  SrcLoc endLoc;
+
+  /// The number of requirements. The actual requirements are tail-allocated.
+  unsigned equirementCount;
+
+  TrailingWhereClause(SrcLoc whereLoc, SrcLoc endLoc,
+                      llvm::ArrayRef<GenericRequirement> requirements);
+
+public:
+  /// Create a new trailing where clause with the given set of requirements.
+  static TrailingWhereClause *
+  Create(SyntaxContext &ctx, SrcLoc whereLoc, SrcLoc endLoc,
+         llvm::ArrayRef<GenericRequirement> requirements);
+
+  /// Retrieve the location of the 'where' keyword.
+  SrcLoc GetWhereLoc() const { return whereLoc; }
+
+  /// Retrieve the set of requirements.
+  llvm::MutableArrayRef<GenericRequirement> GetRequirements() {
+    return {getTrailingObjects<GenericRequirement>(), equirementCount};
+  }
+
+  /// Retrieve the set of requirements.
+  llvm::ArrayRef<GenericRequirement> GetRequirements() const {
+    return {getTrailingObjects<GenericRequirement>(), equirementCount};
+  }
+
+  /// Compute the source range containing this trailing where clause.
+  SrcRange GetSrcRange() const { return SrcRange(whereLoc, endLoc); }
+
+public:
+  unsigned GetRequirementCount() const;
+
+  // void Print(ColorOutputStream &OS, bool printWhereKeyword) const;
 };
 
 } // namespace syn
