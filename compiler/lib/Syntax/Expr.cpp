@@ -3,9 +3,9 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/ExprFactory.h"
+#include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Types.h"

@@ -4,7 +4,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
-#include "stone/Syntax/Template.h"
+#include "stone/Syntax/Generics.h"
 #include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/Types.h"

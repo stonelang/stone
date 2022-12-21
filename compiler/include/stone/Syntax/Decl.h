@@ -9,6 +9,7 @@
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
+#include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/Import.h"
@@ -58,7 +59,7 @@ class AliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
-class TemplateParameterList;
+class GenericParamList;
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -87,10 +88,6 @@ class alignas(1 << DeclAlignInBits) Decl : public syn::SyntaxAllocation<Decl> {
   /// The location of the decl
   SrcLoc loc;
   DeclContext *dc;
-
-  // TODO: UB
-  // void *operator new(std::size_t size, const SyntaxContext &ctx,
-  //                    DeclContext *parent, std::size_t extra = 0);
 
 protected:
   union {
@@ -467,9 +464,19 @@ public:
 
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
+  GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
+                  Type type,
+                  /*llvm::ArrayRef<InheritedEntry> inherited,*/
+                  GenericParamList *genericParams = nullptr);
 };
 
-class AliasDecl : public TypeDecl {
+class GenericTypeParamDecl final
+    : public TypeDecl,
+      private llvm::TrailingObjects<GenericTypeParamDecl, Type *, SrcLoc> {
+  friend TrailingObjects;
+};
+
+class AliasDecl : public GenericTypeDecl {
 
   /// The location of the 'alias' keyword // seems that this location should be
   /// in TypeDecl
@@ -499,7 +506,7 @@ public:
 
 class TypeParamDecl : public TypeDecl {};
 
-class TemplateTypeParamDecl : public TypeParamDecl {};
+// class TemplateTypeParamDecl : public TypeParamDecl {};
 
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
@@ -748,7 +755,10 @@ public:
 
 class TrustDecl final
     : public Decl,
-      public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
+      public llvm::TrailingObjects<TrustDecl, GenericParamList *> {
+
+public:
+};
 
 /// IfConfigDecl - This class represents #if/#else/#endif blocks.
 /// Active and inactive block members are stored separately, with the
@@ -808,18 +818,6 @@ class OperatorDecl : public Decl {};
 class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };
-
-class TemplateDecl : public NameableDecl {
-public:
-};
-
-class FunctionTemplateDecl : public TemplateDecl {};
-
-class StructTemplateDecl : public TemplateDecl {};
-
-class InterfaceTemplateDecl : public TemplateDecl {};
-
-class AliasTemplateDecl : public TemplateDecl {};
 
 } // namespace syn
 } // namespace stone
