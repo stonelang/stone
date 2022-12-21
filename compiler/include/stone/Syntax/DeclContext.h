@@ -51,8 +51,6 @@ enum class DeclContextKind : UInt8 {
   Initializer,
 };
 
-
-
 /// Used in diagnostic %selects.
 struct FragileFunction final {
 
@@ -77,7 +75,6 @@ struct FragileFunction final {
   /// Casts to `unsigned` for diagnostic %selects.
   unsigned GetSelector() { return static_cast<unsigned>(kind); }
 };
-
 
 class alignas(1 << DeclContextAlignInBits) DeclContext
     : public SyntaxAllocation<DeclContext> {

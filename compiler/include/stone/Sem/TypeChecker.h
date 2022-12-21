@@ -61,7 +61,6 @@ public:
 
 public:
   void CheckDecl(Decl *d);
-
   void CheckAccessLevel(Decl *D);
 
 public:

@@ -432,6 +432,43 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
+class alignas(8) GenericContextBase {
+  // // Not really public. See GenericContext.
+  // public:
+  //   /// The state of the generic parameters.
+  //   enum class GenericParamsState: uint8_t {
+  //     /// The stored generic parameters represent parsed generic parameters,
+  //     /// written in the source.
+  //     Parsed = 0,
+  //     /// The stored generic parameters represent generic parameters that are
+  //     /// synthesized by the type checker but were not written in the source.
+  //     TypeChecked = 1,
+  //     /// The stored generic parameters represent both the parsed and
+  //     /// type-checked generic parameters.
+  //     ParsedAndTypeChecked = 2,
+  //   };
+
+  //   llvm::PointerIntPair<GenericParamList *, 2, GenericParamsState>
+  //       GenericParamsAndState;
+
+  //   /// The trailing where clause.
+  //   ///
+  //   /// Note that this is not currently serialized, because semantic analysis
+  //   /// moves the trailing where clause into the generic parameter list.
+  //   TrailingWhereClause *TrailingWhere = nullptr;
+
+  //   /// The generic signature of this declaration.
+  //   llvm::PointerIntPair<GenericSignature, 1, bool> GenericSigAndBit;
+};
+
+class GenericContext : private GenericContextBase, public DeclContext {
+public:
+};
+
+class GenericTypeDecl : public GenericContext, public TypeDecl {
+public:
+};
+
 class AliasDecl : public TypeDecl {
 
   /// The location of the 'alias' keyword // seems that this location should be
@@ -771,6 +808,18 @@ class OperatorDecl : public Decl {};
 class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };
+
+class TemplateDecl : public NameableDecl {
+public:
+};
+
+class FunctionTemplateDecl : public TemplateDecl {};
+
+class StructTemplateDecl : public TemplateDecl {};
+
+class InterfaceTemplateDecl : public TemplateDecl {};
+
+class AliasTemplateDecl : public TemplateDecl {};
 
 } // namespace syn
 } // namespace stone

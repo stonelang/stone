@@ -28,3 +28,12 @@ public any<T> interface Collection {
 public any<T> where T : Comparable List : Collection<T> {
 	
 }
+
+
+public interface Queue<T> {
+	fun Push(const T* t);
+	fun Pop() -> T*;
+}
+public fun Test::Compare<T>(T first, t second){
+
+}

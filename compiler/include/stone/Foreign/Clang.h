@@ -14,18 +14,15 @@ using namespace stone::mem;
 namespace stone {
 
 class Clang final {
-  Safe<ClangModuleImporter> moduleImporter;
+  Safe<ClangModuleImporter> clangModuleImporter;
   Safe<clang::CompilerInstance> compilerInstance;
 
 public:
   Clang();
 
 public:
-  ClangModuleImporter &GetModuleImporter() { return *moduleImporter; }
+  ClangModuleImporter &GetModuleImporter() { return *clangModuleImporter; }
   clang::CompilerInstance &GetInstance() { return *compilerInstance; }
-
-public:
-  bool ComputeOptions(llvm::ArrayRef<const char *> argv, const char *arg0);
 };
 
 } // namespace stone

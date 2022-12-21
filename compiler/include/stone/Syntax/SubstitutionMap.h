@@ -361,7 +361,8 @@ public:
 //   static unsigned getHashValue(stone::SubstitutionMap map) {
 //     return DenseMapInfo<void *>::getHashValue(map.getOpaqueValue());
 //   }
-//   static bool isEqual(stone::SubstitutionMap lhs, stone::SubstitutionMap rhs) {
+//   static bool isEqual(stone::SubstitutionMap lhs, stone::SubstitutionMap rhs)
+//   {
 //     return lhs.getOpaqueValue() == rhs.getOpaqueValue();
 //   }
 // };

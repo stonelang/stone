@@ -140,7 +140,8 @@ public:
   /// Create an instance describing associated conformances that can be
   /// referenced from the conformance defined by the given DeclContext,
   /// which must be a NominalTypeDecl or ExtensionDecl.
-  static ExportContext ForConformance(syn::DeclContext *DC, syn::InterfaceDecl *D);
+  static ExportContext ForConformance(syn::DeclContext *DC,
+                                      syn::InterfaceDecl *D);
 
   /// Produce a new context with the same properties as this one, except
   /// changing the ExportabilityReason. This only affects diagnostics.

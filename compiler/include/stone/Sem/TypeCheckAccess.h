@@ -28,6 +28,7 @@ class ValueDecl;
 
 } // namespace syn
 namespace sem {
+class TypeChecker;
 class ExportContext;
 
 /// Problematic origin of an exported type.
@@ -55,7 +56,6 @@ enum class DisallowedOriginKind : uint8_t {
 enum class DowngradeToWarningKind : bool {
   Disable,
   Enabled,
-
 };
 
 // Performs access-related checks for \p D.
@@ -64,6 +64,8 @@ enum class DowngradeToWarningKind : bool {
 /// reference any other declarations that are less visible than the declaration
 /// itself. Related checks may also be performed.
 void CheckAccessLevel(syn::Decl *D);
+
+void CheckAccessLevel(syn::Type ty);
 
 /// Returns the kind of origin, implementation-only import or SPI declaration,
 /// that restricts exporting \p decl from the given file and context.

@@ -125,6 +125,14 @@ public:
   CanContext() {}
 };
 
+// TODO: Think about
+//  class AnyType : public TypeBase {
+//  public:
+
+//   AnyType(TypeKind kind, SyntaxContext *canTypeCtx)
+//       : TypeBase(kind, canTypeCtx) {}
+// };
+
 class FunctionType : public TypeBase {
   Type result;
 

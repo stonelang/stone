@@ -2,8 +2,8 @@
 #define STONE_SYNTAX_AVAILABILITY_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Syntax/Type.h"
 #include "stone/Syntax/Attribute.h"
+#include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/Optional.h"
 #include "llvm/Support/VersionTuple.h"
