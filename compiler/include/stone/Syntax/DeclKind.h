@@ -13,7 +13,7 @@ enum class DeclKind : uint8_t {
 #include "stone/Syntax/DeclKind.def"
 };
 
-enum class DescriptiveDeclKind : uint8_t {
+enum class PrettyDeclKind : uint8_t {
   Import,
   EnumCase,
   IfConfig,

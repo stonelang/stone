@@ -5,6 +5,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Syntax/Access.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
@@ -280,8 +281,9 @@ public:
 
 public:
   DeclKind GetKind() const { return kind; }
-  DescriptiveDeclKind GetDescriptiveKind() const;
-  static llvm::StringRef GetDescriptiveKindName(DescriptiveDeclKind kind);
+
+  PrettyDeclKind GetPrettyKind() const;
+  static llvm::StringRef GetPrettyKindName(PrettyDeclKind kind);
 
   SrcLoc GetLoc() const { return loc; }
   DeclContext *GetDeclContextForModule() const;
@@ -389,7 +391,8 @@ public:
   // bool IsImplicit() const { return Bits.Decl.IsImplicit; }
 
   // /// Mark this declaration as implicit.
-  // void SetImplicit(bool isImplicit = true) { Bits.Decl.IsImplicit = isImplicit; }
+  // void SetImplicit(bool isImplicit = true) { Bits.Decl.IsImplicit =
+  // isImplicit; }
 
 public:
   static bool classof(const Decl *d) {

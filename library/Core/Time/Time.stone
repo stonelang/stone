@@ -1,12 +1,12 @@
 
 // Core.Time 
-enum TimeKind {
+public enum TimeKind {
 	uint16 Nanosecond, 
 	Microsecond,
 	Millisecond,
 	Second,
 	Minute,
-  Hour,
+    Hour,
 }
 
 public enum Month  {
@@ -25,7 +25,7 @@ public enum Month  {
 }
 
 public enum Weekday {
-	uint16 Sunday = 0,
+	uint16 Sunday = 1,
 	Monday,
 	Tuesday,
 	Wednesday,

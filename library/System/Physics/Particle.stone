@@ -1,6 +1,4 @@
 
-import System.Math; 
-
 
 /// System.Physics
 public interface Particle {

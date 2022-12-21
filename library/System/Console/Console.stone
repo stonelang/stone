@@ -1,6 +1,7 @@
+import Core.Console; 
+
 // System.Console 
 
 public fun Print(string value) -> void {
 	
 }
-

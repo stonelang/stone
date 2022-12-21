@@ -15,14 +15,11 @@
 using namespace stone;
 using namespace stone::syn;
 
-// SyntaxContext::Internal::Internal() : identifiers(allocator) {}
-
-// SyntaxContext::Internal::~Internal() {}
-
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts)
     : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
-      builtinContext(*this), stats(new SyntaxContextStats(*this)) {
+      builtinContext(*this), stats(new SyntaxContextStats(*this)),
+      clangInstance(new Clang()) {
 
   lc.GetStatEngine().Register(stats.get());
 }

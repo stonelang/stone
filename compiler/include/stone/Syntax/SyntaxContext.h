@@ -26,6 +26,7 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Foreign/Clang.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
@@ -98,6 +99,8 @@ enum class ModuleAliasLookupOption {
 class SyntaxContext final {
   friend SyntaxContextStats;
 
+  mem::Safe<Clang> clangInstance;
+
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
   LangContext &lc;
@@ -157,6 +160,8 @@ public:
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
+  Clang &GetClang() { return *clangInstance; }
+
   ///
   Identifier GetIdentifier(llvm::StringRef name);
   ///

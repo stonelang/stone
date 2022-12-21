@@ -35,8 +35,6 @@ class TargetMachine;
 
 namespace stone {
 class CompilerListener;
-using ClangInvocation = clang::CompilerInvocation;
-
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;

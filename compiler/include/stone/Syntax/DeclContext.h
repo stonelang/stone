@@ -51,6 +51,34 @@ enum class DeclContextKind : UInt8 {
   Initializer,
 };
 
+
+
+/// Used in diagnostic %selects.
+struct FragileFunction final {
+
+  enum Kind : unsigned {
+    Transparent,
+    Inlinable,
+    AlwaysEmitIntoClient,
+    DefaultArgument,
+    PropertyInitializer,
+    BackDeploy,
+    None
+  };
+
+  Kind kind = None;
+  bool allowUsableFromInline = false;
+
+  friend bool operator==(FragileFunction lhs, FragileFunction rhs) {
+    return (lhs.kind == rhs.kind &&
+            lhs.allowUsableFromInline == rhs.allowUsableFromInline);
+  }
+
+  /// Casts to `unsigned` for diagnostic %selects.
+  unsigned GetSelector() { return static_cast<unsigned>(kind); }
+};
+
+
 class alignas(1 << DeclContextAlignInBits) DeclContext
     : public SyntaxAllocation<DeclContext> {
 

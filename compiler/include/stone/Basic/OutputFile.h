@@ -10,27 +10,20 @@ class OutputFile final {
   file::File &output;
   llvm::Optional<llvm::sys::fs::TempFile> tempFile;
 
+  OutputFile() = delete;
+  OutputFile(const OutputFile &) = delete;
+  OutputFile &operator=(const OutputFile &) = delete;
+
 public:
   OutputFile(file::File &output,
              llvm::Optional<llvm::sys::fs::TempFile> tempFile)
       : output(output), tempFile(std::move(tempFile)) {}
 
 public:
-  file::File &GetFile() { return output; }
+  file::File &GetFile() const { return output; }
   llvm::Optional<llvm::sys::fs::TempFile> &GetTempFile() { return tempFile; }
 
-  // llvm::Optional<raw_fd_ostream> GetOutputFileStream() {
-  //   if (!output.GetFileName().empty()) {
-
-  //     llvm::Optional<raw_fd_ostream> outputFileStream;
-  //     // Try to open the output file.  Clobbering an existing file is fine.
-  //     // Open in binary mode if we're doing binary output.
-  //     llvm::sys::fs::OpenFlags openFlags = llvm::sys::fs::OF_None;
-  //     std::error_code ec;
-  //     outputFileStream.emplace(!output.GetFileName(), ec, openFlags);
-
-  // }
-  // return llvm::None;
+  // std::unique_ptr<llvm::raw_pwrite_stream> ToOutputStream();
 };
 
 } // namespace stone

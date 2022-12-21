@@ -9,11 +9,13 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_foreign_sources
+	Clang.cpp
 	ClangModuleImporter.cpp
 	ClangNode.cpp
 
 	LINK_LIBS
 	StoneBasic
+	clangFrontend
 )
 add_stone_library(StoneForeign
 	${stone_foreign_sources}

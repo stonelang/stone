@@ -5,6 +5,7 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_syn_sources
+	Availability.cpp
 	BuiltinContext.cpp
 	Comment.cpp
 	Decl.cpp
@@ -34,7 +35,6 @@ set(stone_syn_sources
 	VirtualTable.cpp
 	
 	LINK_LIBS
-	StoneBasic
 	StoneDiag
 	StoneForeign
 )

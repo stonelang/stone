@@ -37,6 +37,10 @@ public:
   }
 #define ABSTRACT_DECL(KIND, PARENT) DECL(KIND, PARENT)
 #include "stone/Syntax/DeclKind.def"
+
+public:
+  // Force all kinds to be handled at a lower level.
+  void VisitDecl(Decl *D) {}
 };
 
 template <typename ImplTy, typename DeclRetTy = void, typename... Args>

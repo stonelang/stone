@@ -1,26 +1,27 @@
 
-// stone -emit-module Accelerator.stone -M ./ => ./Tests.Physics.Accelerator.stonemodule
-// stone -emit-module Accelerator.stone -using-module Tests.Physics.Accelerator
 
-// module Tests.Physics.Accelerator;
-// using Tests.Physics.Particle;
+inside Stone.Tests.Behavior.Modules; 
 
-// belongs to Tests.Modules; 
+space Physics {
+
+	public interface Accelerator {
+		fun Fire(const Particle* particle) -> bool;
+	}
+
+	public struct LinearAccelerator : Accelerator {
+	}
+	public fun LinearAccelerator::LinearAccelerator() {
+	}
+	public fun LinearAccelerator::~LinearAccelerator() {
+
+	}
+	public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
+		return true; 
+	}
+
+}
 
 
-public interface Accelerator {
-	fun Fire(const Particle* particle) -> bool;
-}
-public struct LinearAccelerator : Accelerator {
-}
-LinearAccelerator::LinearAccelerator() {
-}
-LinearAccelerator::~LinearAccelerator() {
-
-}
-public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
-	return true; 
-}
 
 
 

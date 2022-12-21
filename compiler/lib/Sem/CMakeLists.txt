@@ -1,5 +1,7 @@
 set(stone_sem_sources
 	TypeCheck.cpp
+	TypeCheckAccess.cpp
+	TypeCheckAvailability.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp
 	TypeCheckExpr.cpp

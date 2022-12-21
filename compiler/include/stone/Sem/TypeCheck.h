@@ -8,8 +8,8 @@ class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
-class SyntaxFile;
 class Module;
+class SyntaxFile;
 
 } // namespace syn
 namespace sem {
@@ -21,7 +21,7 @@ void TypeCheck(syn::SyntaxFile &sf, stone::TypeCheckerOptions &typeCheckerOpts,
 /// Perform type checking
 void TypeCheck(syn::Module &sf, stone::TypeCheckerOptions &typeCheckerOpts,
                TypeCheckerListener *pipeline = nullptr);
-} // namespace sem
 
+} // namespace sem
 } // namespace stone
 #endif

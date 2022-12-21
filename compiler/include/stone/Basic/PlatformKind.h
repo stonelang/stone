@@ -2,6 +2,8 @@
 #define STONE_BASIC_PLATFORM_KIND_H
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDTypeAlias.h"
+
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/VersionTuple.h"
 
@@ -10,8 +12,8 @@ namespace stone {
 class LangOptions;
 
 /// Available platforms for the availability attribute.
-enum class PlatformKind : uint8_t {
-  none,
+enum class PlatformKind : UInt8 {
+  None,
 #define AVAILABILITY_PLATFORM(X, PrettyName) X,
 #include "stone/Basic/PlatformKind.def"
 };
@@ -34,7 +36,7 @@ StringRef PrettyPlatformString(PlatformKind platform);
 /// considered active when the target operating system is OS X and app extension
 /// restrictions are enabled, but OSXApplicationExtension is not considered
 /// active when the target platform is OS X and app extension restrictions are
-/// disabled. PlatformKind::none is always considered active.
+/// disabled. PlatformKind::None is always considered active.
 /// If ForTargetVariant is true then for zippered builds the target-variant
 /// triple will be used rather than the target to determine whether the
 /// platform is active.

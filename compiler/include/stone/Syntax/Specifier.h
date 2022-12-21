@@ -47,19 +47,6 @@ enum class FunctionInlineSpecifierKind : UInt8 {
   ForcedInline,
 };
 
-// TODO: All you need is Public and Local
-enum class AccessLevel : UInt8 {
-  None = 0,
-  /// Limited to the scope
-  Private,
-  /// Accessible only within module
-  Internal,
-  /// Open outside of module with certain restrictions
-  Public,
-  /// Completely open and available
-  Global,
-};
-
 /// The categorization of expression values, currently following the
 enum class ExprValueKind : UInt8 {
   None = 0,

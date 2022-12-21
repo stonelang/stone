@@ -1,5 +1,6 @@
 // Core.Collections
 
 public any<T> interface Collection {
+	fun Add(T t)-> void; 
 
 }

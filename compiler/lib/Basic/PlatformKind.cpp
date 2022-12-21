@@ -9,7 +9,7 @@ using namespace stone;
 
 StringRef stone::PlatformString(PlatformKind platform) {
   switch (platform) {
-  case PlatformKind::none:
+  case PlatformKind::None:
     return "*";
 #define AVAILABILITY_PLATFORM(X, PrettyName)                                   \
   case PlatformKind::X:                                                        \
@@ -21,7 +21,7 @@ StringRef stone::PlatformString(PlatformKind platform) {
 
 StringRef stone::PrettyPlatformString(PlatformKind platform) {
   switch (platform) {
-  case PlatformKind::none:
+  case PlatformKind::None:
     return "*";
 #define AVAILABILITY_PLATFORM(X, PrettyName)                                   \
   case PlatformKind::X:                                                        \
@@ -33,7 +33,7 @@ StringRef stone::PrettyPlatformString(PlatformKind platform) {
 
 Optional<PlatformKind> stone::PlatformFromString(StringRef Name) {
   if (Name == "*")
-    return PlatformKind::none;
+    return PlatformKind::None;
   return llvm::StringSwitch<Optional<PlatformKind>>(Name)
 #define AVAILABILITY_PLATFORM(X, PrettyName) .Case(#X, PlatformKind::X)
 #include "stone/Basic/PlatformKind.def"
@@ -46,7 +46,7 @@ Optional<PlatformKind> stone::PlatformFromString(StringRef Name) {
 static bool isPlatformActiveForTarget(PlatformKind Platform,
                                       const llvm::Triple &Target,
                                       bool EnableAppExtensionRestrictions) {
-  if (Platform == PlatformKind::none)
+  if (Platform == PlatformKind::None)
     return true;
 
   // if (Platform == PlatformKind::macOSApplicationExtension ||
@@ -76,7 +76,7 @@ static bool isPlatformActiveForTarget(PlatformKind Platform,
     return Target.isOSOpenBSD();
   case PlatformKind::Windows:
     return Target.isOSWindows();
-  case PlatformKind::none:
+  case PlatformKind::None:
     llvm_unreachable("handled above");
   }
   llvm_unreachable("bad PlatformKind");
@@ -128,7 +128,7 @@ PlatformKind stone::TargetPlatform(const LangOptions &LangOpts) {
     return PlatformKind::iOS;
   }
 
-  return PlatformKind::none;
+  return PlatformKind::None;
 }
 
 bool stone::InheritsAvailabilityFromPlatform(PlatformKind Child,
