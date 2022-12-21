@@ -501,10 +501,19 @@ class LabelDecl : public NameableDecl {
 public:
 };
 
-class SpaceDecl final : public NameableDecl {
+class SpaceDecl final : public NameableDecl, public DeclContext {
+
+  SrcLoc lBraceStartLoc;
+  SrcLoc rBraceEndLoc;
+  SpaceDecl *parent;
+
 public:
-  // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-  //     : NameableDecl(DeclKind::Space, dc, loc, name) {}
+  SpaceDecl(Identifier name, SrcLoc nameLoc, DeclContext *parentDC,
+            SpaceDecl *parent = nullptr)
+      : NameableDecl(DeclKind::Space, name, nameLoc, context),
+        DeclContext(DeclContextKind::SpaceDecl, parentDC) {}
+
+public:
 };
 
 class TypeParamDecl : public TypeDecl {};

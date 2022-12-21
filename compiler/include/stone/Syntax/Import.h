@@ -10,19 +10,19 @@ namespace syn {
 
 // TODO: You may not need this part
 enum class ImportKind : UInt8 {
-  /// import STD.IO;
+  /// import Core.IO;
   Module = 0,
-  ///
+  /// import type Core.IO.OutputStream;
   Type,
-  /// import STD.Core.IO.OutputStream;
+  /// import struct Core.Time.Time;
   Struct,
-  ///
+  /// import enum Core.Time.Day;
   Enum,
-  /// import STD.Core.IO.Stream;
+  /// import interface Core.Collections.Collection;
   Interface,
   // For variables
   Auto,
-  //
+  ///// import fun System.Math.Max
   Fun,
 };
 

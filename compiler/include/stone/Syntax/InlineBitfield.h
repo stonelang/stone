@@ -93,7 +93,6 @@ namespace stone {
 constexpr unsigned BitMax(unsigned a, unsigned b) { return a > b ? a : b; }
 
 constexpr unsigned CountBitsUsed(uint64_t arg) {
-  // Is there a C++ "std::countLeadingZeros()"?
   return (arg & 1ull << 63   ? 63
           : arg & 1ull << 62 ? 62
           : arg & 1ull << 61 ? 61

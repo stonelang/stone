@@ -190,7 +190,8 @@ public:
 
 // class ParsingDeclRep final : public DeclRep {};
 
-class ParsingToken final {
+struct ParsingToken final {
+private:
   Parser &parser;
 
 public:
@@ -221,8 +222,6 @@ public:
   bool IsStar();
   bool IsQualifier();
   bool IsAccessLevel();
-
-public:
   bool IsIf();
   bool IsElse();
   bool IsWhile();

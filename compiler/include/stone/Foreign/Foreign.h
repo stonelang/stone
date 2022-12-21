@@ -9,8 +9,8 @@ namespace stone {
 //  Only C for the time being.
 /// Enumeration describing foreign languages to which Stone may be bridged.
 enum class ForeignLangKind : UInt8 {
-  None,
-  C = 0,
+  None = 0,
+  C,
 };
 
 } // namespace stone

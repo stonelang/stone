@@ -1,6 +1,7 @@
 
-import Stone.Tests.Behavior.Modules; 
 import System.Core; 
+
+import Stone.Tests.Behavior.Modules; 
 
 // Main module 
 fun Main() -> int {

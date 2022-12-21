@@ -1,13 +1,12 @@
-inside Tests.Behavior.Modules.Physics; 
 
 space Physics {
+
 	public interface Particle {
 	}
 
 	public struct Electron : Particle {
 
 	}
-
 	public fun Electron::Electron() {
 	}
 

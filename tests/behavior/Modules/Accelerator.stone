@@ -1,7 +1,5 @@
 
 
-inside Stone.Tests.Behavior.Modules; 
-
 space Physics {
 
 	public interface Accelerator {

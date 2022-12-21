@@ -42,6 +42,7 @@ class StructDecl;
 
 enum class DeclContextKind : UInt8 {
   None = 0,
+  SpaceDecl,
   ModuleDecl,
   ModuleFile,
   FunctionDecl,
@@ -171,7 +172,8 @@ public:
     return !IsAny(K1, K...);
   }
   bool IsDecl() {
-    return IsAny(DeclContextKind::ModuleDecl, DeclContextKind::FunctionDecl,
+    return IsAny(DeclContextKind::SpaceDecl, DeclContextKind::ModuleDecl,
+                 DeclContextKind::FunctionDecl,
                  DeclContextKind::EnumElementDecl);
   }
   Decl *ToDecl() {

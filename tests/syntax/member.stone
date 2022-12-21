@@ -6,6 +6,10 @@ public struct Particle {
 
 public Particle::Particle() {
 }
+
+public Particle::~Particle() {
+}
+
 public fun Particle::Fire() -> bool {
 	return false;
 }
