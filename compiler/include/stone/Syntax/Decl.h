@@ -62,7 +62,6 @@ class SyntaxWalker;
 class GenericParamList;
 class TrailingWhereClause;
 
-
 class DeclStats final : public Stats {
   const Decl &declaration;
 
@@ -181,10 +180,10 @@ protected:
         // ForcedStaticDispatch : 1,
 
         /// Whether we've computed the 'self' access kind yet.
-        // SelfAccessComputed : 1,
+        // ThisfAccessComputed : 1,
 
         /// Backing bits for 'self' access kind.
-        // SelfAccess : 2,
+        // ThisAccess : 2,
 
         /// Whether this is a top-level function which should be treated
         /// as if it were in local context for the purposes of capture
