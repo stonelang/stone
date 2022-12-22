@@ -76,14 +76,13 @@
 using namespace stone;
 using namespace stone::syn;
 
-
 static void PerformGenIR(CodeGenContext &cgc, syn::ModuleDecl *md,
-                         syn::ModuleFile *sf, const LangContext &lc,
+                         syn::SyntaxFile *sf, const LangContext &lc,
                          const OutputFile *output) {
   IRCodeGen irCodeGen(cgc);
-  IRCodeGenModule irCodeGenModule(irCodeGen);
+  IRCodeGenModule irCodeGenModule(irCodeGen, sf, output);
 }
-void stone::GenIR(CodeGenContext &cgc, syn::ModuleFile &sf,
+void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
                   const LangContext &lc, const OutputFile *output) {
 
   PerformGenIR(cgc, sf.GetParentModule(), &sf, lc, output);

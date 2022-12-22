@@ -16,10 +16,11 @@ using namespace stone;
 using namespace stone::syn;
 
 SyntaxContext::SyntaxContext(stone::LangContext &lc,
-                             const SearchPathOptions &spOpts)
+                             const SearchPathOptions &spOpts,
+                             ClangContext &clangContext)
     : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
       builtinContext(*this), stats(new SyntaxContextStats(*this)),
-      clangInstance(new Clang()) {
+      clangContext(clangContext) {
 
   lc.GetStatEngine().Register(stats.get());
 }

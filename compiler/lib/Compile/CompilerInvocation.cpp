@@ -40,7 +40,8 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : Session(programName, programPath), listener(listener),
-      clangInstance(new clang::CompilerInstance()) {
+      clangInstance(new clang::CompilerInstance()),
+      clangContext(new ClangContext()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
@@ -230,7 +231,7 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
-      GetClangInstance().getInvocation(), argv, Diags, arg0);
+      GetClangContext().GetInstance().getInvocation(), argv, Diags, arg0);
   if (!Success) {
     return Error(true);
   }

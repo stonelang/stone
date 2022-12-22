@@ -4,6 +4,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Foreign/ClangModuleImporter.h"
 
+#include "clang/CodeGen/ModuleBuilder.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
 
@@ -13,16 +14,18 @@ using namespace stone::mem;
 
 namespace stone {
 
-class Clang final {
+class ClangContext final {
   Safe<ClangModuleImporter> clangModuleImporter;
-  Safe<clang::CompilerInstance> compilerInstance;
+  Safe<clang::CompilerInstance> clangInstance;
+  Safe<clang::CodeGenerator> clangCodeGen;
 
 public:
-  Clang();
+  ClangContext();
 
 public:
   ClangModuleImporter &GetModuleImporter() { return *clangModuleImporter; }
-  clang::CompilerInstance &GetInstance() { return *compilerInstance; }
+  clang::CompilerInstance &GetInstance() { return *clangInstance; }
+  clang::CodeGenerator &GetCodeGen() { return *clangCodeGen; }
 };
 
 } // namespace stone

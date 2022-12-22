@@ -144,30 +144,39 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
                                       CodeGenContext &cgc,
                                       IRCodeGenCompletedCallback fn) {
   CompileStatus status;
-  switch (compiler.GetModuleOutputMode()) {
-  case ModuleOutputMode::Single: {
-    if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-      stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
-                   nullptr);
-      status |= fn(compiler, cgc);
-    }
-    return status;
-  }
-  case ModuleOutputMode::Whole: {
-    if (auto mod = msf.get<syn::ModuleDecl *>()) {
-      stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
-                   nullptr);
-      status |= fn(compiler, cgc);
-    }
-    return status;
-  }
-  default:
-    stone::Panic("Unable to GenIR -- invalid IR ouput");
-  }
+  // switch (compiler.GetModuleOutputMode()) {
+  // case ModuleOutputMode::Single: {
+  //   if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
+  //     stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
+  //                  nullptr);
+  //     status |= fn(compiler, cgc);
+  //   }
+  //   return status;
+  // }
+  // case ModuleOutputMode::Whole: {
+  //   if (auto mod = msf.get<syn::ModuleDecl *>()) {
+  //     stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
+  //                  nullptr);
+  //     status |= fn(compiler, cgc);
+  //   }
+  //   return status;
+  // }
+  // default:
+  //   stone::Panic("Unable to GenIR -- invalid IR ouput");
+  // }
 
+  if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
+    stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
+    status |= fn(compiler, cgc);
+    return status;
+
+  } else if (auto mod = msf.get<syn::ModuleDecl *>()) {
+    stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
+    status |= fn(compiler, cgc);
+    return status;
+  }
   return CompileStatus::MakeError();
 }
-
 static CompileStatus GenModule(CompilerInstance &compiler,
                                CodeGenContext &cgc) {
   return CompileStatus::MakeSuccess();
@@ -211,14 +220,16 @@ static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
 
 CompileStatus CompilerInstance::CompileWithCodeGen() {
 
-  assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
+  assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen() &&
+         "Mode does not support code gen");
 
   auto *mainModule = GetModuleSystem().GetMainModule();
 
   // We are performing some low level code generation
-  CodeGenContext cgc(stone::GetLLVMContext(),
-                     GetInvocation().GetCodeGenOptions(),
-                     GetInvocation().GetLangContext());
+  CodeGenContext cgc(
+      stone::GetLLVMContext(), GetInvocation().GetCodeGenOptions(),
+      GetInvocation().GetModuleOptions(), GetInvocation().GetLangContext(),
+      GetInvocation().GetClangContext());
 
   clang::TargetInfo &targetInfo =
       GetInvocation().GetClangInstance().getTarget();
@@ -386,9 +397,8 @@ CompileStatus CompilerInstance::Compile() {
         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
     break;
   default:
-    status |= CompileWithTypeChecking([&](CompilerInstance &compiler) {
-      return CompileStatus::MakeSuccess(); /*return CompileWithCodeGen();*/
-    });
+    status |= CompileWithTypeChecking(
+        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
   // For now

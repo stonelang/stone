@@ -26,7 +26,7 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Foreign/Clang.h"
+#include "stone/Foreign/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
@@ -99,13 +99,13 @@ enum class ModuleAliasLookupOption {
 class SyntaxContext final {
   friend SyntaxContextStats;
 
-  mem::Safe<Clang> clangInstance;
+  mem::Safe<SyntaxContextStats> stats;
 
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
   LangContext &lc;
 
-  mem::Safe<SyntaxContextStats> stats;
+  ClangContext &clangContext;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;
@@ -153,15 +153,15 @@ public:
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
 
-  SyntaxContext(LangContext &lc, const SearchPathOptions &searchPathOpts);
+  SyntaxContext(LangContext &lc, const SearchPathOptions &searchPathOpts,
+                ClangContext &clangContext);
   ~SyntaxContext();
 
   /// Add a cleanup function to be called when the SyntaxContext is deallocated.
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
-  Clang &GetClang() { return *clangInstance; }
-
+  ClangContext &GetClangContext() { return clangContext; }
   ///
   Identifier GetIdentifier(llvm::StringRef name);
   ///

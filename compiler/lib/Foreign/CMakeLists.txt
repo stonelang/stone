@@ -9,9 +9,9 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_foreign_sources
-	Clang.cpp
+	ClangContext.cpp
 	ClangModuleImporter.cpp
-	ClangNode.cpp
+	ClangAST.cpp
 
 	LINK_LIBS
 	StoneBasic

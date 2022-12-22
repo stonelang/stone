@@ -94,6 +94,8 @@ class CompilerInvocation final : public Session {
 
   std::unique_ptr<clang::CompilerInstance> clangInstance;
 
+  std::unique_ptr<ClangContext> clangContext;
+
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
                      CompilerListener *listener = nullptr);
@@ -135,6 +137,8 @@ public:
 public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
+
+  ClangContext &GetClangContext() { return *clangContext; }
 
   CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {

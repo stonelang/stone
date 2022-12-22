@@ -1,5 +1,6 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/ModuleOptions.h"
 #include "stone/Public.h"
 
 using namespace stone;
@@ -8,9 +9,12 @@ using namespace stone;
 
 CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                const CodeGenOptions &genOpts,
-                               const LangContext &langContext)
-    : llvmContext(llvmContext), genOpts(genOpts), langContext(langContext),
-      mod(new llvm::Module(genOpts.ModuleName, llvmContext)) {
+                               const ModuleOptions &moduleOpts,
+                               const LangContext &langContext,
+                               ClangContext &clangContext)
+    : llvmContext(llvmContext), genOpts(genOpts), moduleOpts(moduleOpts),
+      langContext(langContext), clangContext(clangContext),
+      mod(new llvm::Module(moduleOpts.moduleName, llvmContext)) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);
