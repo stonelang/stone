@@ -1,23 +1,23 @@
 
 
-space Physics {
+space Physics;
 
-	public interface Accelerator {
-		fun Fire(const Particle* particle) -> bool;
-	}
+public interface Accelerator {
+	fun Fire(const Particle* particle) -> bool;
+}
 
-	public struct LinearAccelerator : Accelerator {
-	}
-	public fun LinearAccelerator::LinearAccelerator() {
-	}
-	public fun LinearAccelerator::~LinearAccelerator() {
-
-	}
-	public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
-		return true; 
-	}
+public struct LinearAccelerator : Accelerator {
+}
+public fun LinearAccelerator::LinearAccelerator() {
+}
+public fun LinearAccelerator::~LinearAccelerator() {
 
 }
+public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
+	return true; 
+}
+
+
 
 
 

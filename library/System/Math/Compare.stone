@@ -1,12 +1,12 @@
 
 
-public any<T> fun Min(T first, T second) -> T {
+public fun Min<T>(T first, T second) -> T {
 	if(first < second) {
 		return first; 
 	}
 	return second; 
 }
-public any<T> fun Max(T first, T second) -> T {
+public fun Max<T>(T first, T second) -> T {
 	if(first < second) {
 		return second; 
 	}

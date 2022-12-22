@@ -1,6 +1,6 @@
 // Core.Collection
 
-public any<T> struct Queue<T> : Collection <T> {
+public struct Queue<T> : Collection <T> {
 }
 
 public fun Queue::Push(T* item) -> void {

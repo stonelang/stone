@@ -15,7 +15,7 @@ namespace syn {
 
 struct TypeQualifierFlags final {
   TypeQualifierFlags() = delete;
-  enum ID : UInt8 {
+  enum ID : unsigned {
     None = 0,
     Const = 1 << 1,
     Restrict = 1 << 2,
@@ -24,6 +24,8 @@ struct TypeQualifierFlags final {
     Immutable = 1 << 5,
     Mutable = 1 << 6,
     Pure = 1 << 7,
+    Delete = 1 << 8,
+    Default = 1 << 9,
   };
 };
 
@@ -36,6 +38,8 @@ class TypeQualifierList {
   SrcLoc pureLoc;
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
+  SrcLoc deleteLoc;
+  SrcLoc defaultLoc;
 
 public:
   TypeQualifierList() {}
@@ -101,7 +105,7 @@ public:
   SrcLoc GetVolatileLoc() { return volatileLoc; }
 
 public:
-  bool HasPure() const { return qualifiers & TypeQualifierFlags::Volatile; }
+  bool HasPure() const { return qualifiers & TypeQualifierFlags::Pure; }
   bool HasPureOnly() const { return qualifiers == TypeQualifierFlags::Pure; }
   void RemovePure() { qualifiers &= ~TypeQualifierFlags::Pure; }
   void AddPure(SrcLoc loc = SrcLoc()) {
@@ -111,9 +115,33 @@ public:
   SrcLoc GetPureLoc() { return pureLoc; }
 
 public:
+  bool HasDelete() const { return qualifiers & TypeQualifierFlags::Delete; }
+  bool HasDeleteOnly() const {
+    return qualifiers == TypeQualifierFlags::Delete;
+  }
+  void RemoveDelete() { qualifiers &= ~TypeQualifierFlags::Delete; }
+  void AddDelete(SrcLoc loc = SrcLoc()) {
+    deleteLoc = loc;
+    qualifiers |= TypeQualifierFlags::Delete;
+  }
+  SrcLoc GetDeleteLoc() { return pureLoc; }
+
+public:
+  bool HasDefault() const { return qualifiers & TypeQualifierFlags::Default; }
+  bool HasDefaultOnly() const {
+    return qualifiers == TypeQualifierFlags::Default;
+  }
+  void RemoveDefault() { qualifiers &= ~TypeQualifierFlags::Pure; }
+  void AddDefault(SrcLoc loc = SrcLoc()) {
+    defaultLoc = loc;
+    qualifiers |= TypeQualifierFlags::Default;
+  }
+  SrcLoc GetDefaultLoc() { return pureLoc; }
+
+public:
   bool HasAny() {
     return (HasConst() || HasRestrict() || HasVolatile() || HasImmutable() ||
-            HasMutable() || HasPure());
+            HasMutable() || HasPure() || HasDelete() || HasDefault());
   }
   bool HasAll() {
     return (HasConst() && HasRestrict() && HasVolatile() && HasImmutable() &&

@@ -1,4 +1,4 @@
 // Core.Collection
 
-public any<T> struct Array : List<T> {
+public struct Array<T> : List<T> {
 }

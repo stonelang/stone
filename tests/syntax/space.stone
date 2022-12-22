@@ -10,6 +10,24 @@ space Cosmology {
 	public fun BlackHole::TrapLight(Light& light) -> void {
 	}
 }
+
+// vs 
+
+space Cosmology;
+
+public struct Light {
+}
+
+// BlackHole.stone 
+space Cosmology;
+
+public struct BlackHole {
+}
+public fun BlackHole::TrapLight(Light& light) -> void {
+}
+
+
+
 // Main.stone 
 import System.Physics;
 
