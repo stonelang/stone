@@ -27,13 +27,6 @@ public:
   bool WasValidated() const { return !ty.IsNull(); }
   bool IsError() const;
 
-  // FIXME: We generally shouldn't need to build TypeLocs without a location.
-  static TypeLoc WithoutLoc(Type ty) {
-    TypeLoc result;
-    result.ty = ty;
-    return result;
-  }
-
   /// Get the representative location of this type, for diagnostic
   /// purposes.
   /// This location is not necessarily the start location of the TypeRep.

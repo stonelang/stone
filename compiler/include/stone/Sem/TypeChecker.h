@@ -73,10 +73,8 @@ public:
   void CheckTypes(Decl *d);
   void CheckTypes(Stmt *stmt, DeclContext *DC);
   void CheckTypes(AliasDecl *alias);
-
-public:
-  void ValidateValueDecl(ValueDecl *d);
-  void FinalizeValueDecl(ValueDecl *d);
+  void CheckTypes(TrailingWhereClause *whereClause);
+  void CheckTypes(GenericParamList *params);
 
 public:
   void ComputeAccessLevel(ValueDecl *d);

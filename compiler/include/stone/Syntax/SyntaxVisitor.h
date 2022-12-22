@@ -40,7 +40,7 @@ public:
 
 public:
   // Force all kinds to be handled at a lower level.
-  void VisitDecl(Decl *D) {}
+  void VisitDecl(Decl *D) { llvm_unreachable("Unreachable decl"); }
 };
 
 template <typename ImplTy, typename DeclRetTy = void, typename... Args>

@@ -36,6 +36,7 @@ class InterfaceDecl;
 class SyntaxFile;
 class Type;
 class Module;
+class ModuleFile;
 class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
@@ -47,6 +48,7 @@ enum class DeclContextKind : UInt8 {
   ModuleFile,
   FunctionDecl,
   EnumElementDecl,
+  GenericTypeDecl,
   ClosureExpr,
   SerializedLocal,
   Initializer,
@@ -174,6 +176,7 @@ public:
   bool IsDecl() {
     return IsAny(DeclContextKind::SpaceDecl, DeclContextKind::ModuleDecl,
                  DeclContextKind::FunctionDecl,
+                 DeclContextKind::GenericTypeDecl,
                  DeclContextKind::EnumElementDecl);
   }
   Decl *ToDecl() {

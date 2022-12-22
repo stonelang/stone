@@ -88,10 +88,6 @@ protected:
 
   } Bits;
 
-private:
-  CanType ComputeCanType();
-
-public:
 public:
   TypeBase(TypeKind kind, const SyntaxContext *canTypeContext)
       : kind(kind), sc(nullptr) {
@@ -118,6 +114,13 @@ public:
 
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
+
+  /// hasCanonicalTypeComputed - Return true if we've already computed a
+  /// canonical version of this type.
+  bool IsCanTypeComputed() const { return !canType.IsNull(); }
+
+private:
+  CanType ComputeCanType();
 };
 
 class CanContext {
@@ -222,10 +225,8 @@ protected:
 
 // class IdentifierType : public TypeBase {
 // protected:
-//   TypeBase(TypeKind kind, TypeQualifierList *qualifiers, TypeChunkList
-//   *chunks,
-//            const SyntaxContext &sc)
-//       : TypeBase(kind, qualifiers, chunks, &sc) {}
+//   IdentifierType(TypeKind kind
+//            const SyntaxContext &sc): TypeBase(kind, &sc) {}
 // };
 
 using NumberBitWidthKind = NumberBitWidth::Kind;

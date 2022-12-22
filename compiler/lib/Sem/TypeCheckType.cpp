@@ -10,4 +10,23 @@ class TypeChecking final : public TypeVisitor<TypeChecking>,
 public:
 };
 
-void TypeChecker::CheckTypes(Decl *d) {}
+void TypeChecker::CheckTypes(Decl *d) {
+
+  // if (!decl || decl->IsInvalid()){
+  //     return;
+  // }
+  // auto syntaxFile = d->GetDeclContext()->GetParentSourceFile();
+  // if (syntaxFile && syntaxFile->GetKind() == SyntaxFileKind::Interface) {
+  //   return;
+  // }
+
+  auto &ctx = d->GetSyntaxContext();
+}
+
+void TypeChecker::CheckTypes(Stmt *stmt, DeclContext *dc) {}
+
+void TypeChecker::CheckTypes(AliasDecl *alias) {}
+
+void TypeChecker::CheckTypes(TrailingWhereClause *whereClause) {}
+
+void TypeChecker::CheckTypes(GenericParamList *params) {}

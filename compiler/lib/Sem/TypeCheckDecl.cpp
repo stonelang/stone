@@ -16,12 +16,10 @@ public:
 
 public:
   void Visit(Decl *d) {
-    //
-    DeclVisitor<DeclChecking>::Visit(d);
 
-    // checker.CheckTypes(d);
+    DeclVisitor<DeclChecking>::Visit(d);
+    checker.CheckTypes(d);
   }
-  void VisitDecl(Decl *D) {}
 
 public:
   void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }

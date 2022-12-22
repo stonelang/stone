@@ -29,6 +29,8 @@
 
 namespace stone {
 namespace syn {
+  
+class SyntaxWalker;
 class GenericTypeParamDecl;
 
 /// The kind of template argument we're storing.
@@ -122,6 +124,9 @@ class GenericParamList final
 
 public:
   unsigned GetParamCount() const;
+
+public:
+  bool Walk(SyntaxWalker &walker);
 };
 
 /// A trailing where clause.

@@ -22,6 +22,13 @@ using AccessLevelCheckingOptions =
     stone::OptionSet<AccessLevelCheckingFlags::ID>;
 
 class AccessLevelCheckingBase {
+
+protected:
+  TypeChecker &checker;
+
+public:
+  AccessLevelCheckingBase(TypeChecker &checker) : checker(checker) {}
+
 public:
   AccessLevelCheckingOptions flags;
 
@@ -43,13 +50,21 @@ public:
   }
 };
 
+void AccessLevelCheckingBase::CheckTypeAccessLevelImpl(
+    Type type, AccessScope contextAccessScope, const DeclContext *useDC,
+    bool mayBeInferred,
+    llvm::function_ref<CheckTypeAccessLevelCallback> diagnose) {}
+
+void AccessLevelCheckingBase::CheckTypeAccessLevel(
+    Type ty, const ValueDecl *context, bool mayBeInferred,
+    llvm::function_ref<CheckTypeAccessLevelCallback> diagnose) {}
+
 class AccessLevelChecking : public AccessLevelCheckingBase,
                             public DeclVisitor<AccessLevelChecking> {
 
-  TypeChecker &checker;
-
 public:
-  AccessLevelChecking(TypeChecker &checker) : checker(checker) {}
+  AccessLevelChecking(TypeChecker &checker)
+      : AccessLevelCheckingBase(checker) {}
 
 public:
   void Visit(Decl *d) {
@@ -63,12 +78,6 @@ public:
   void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
 
   void VisitFunDecl(FunDecl *fd) {}
-
-  // #define UNREACHABLE(KIND, REASON) \
-  // void visit##KIND##Decl(KIND##Decl *D) { \
-  //   llvm_unreachable(REASON); \
-  // }
-  // #undef UNREACHABLE
 };
 
 void TypeChecker::CheckAccessLevel(Decl *d) {
