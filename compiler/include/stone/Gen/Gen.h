@@ -29,7 +29,7 @@ class CodeGenOptions;
 class CodeGenContext;
 class IRCodeGenResult;
 
-void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf, const LangContext &ctx,
+void GenIR(CodeGenContext &cgc, syn::ModuleFile &sf, const LangContext &ctx,
            const OutputFile *output);
 
 void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod, const LangContext &ctx,

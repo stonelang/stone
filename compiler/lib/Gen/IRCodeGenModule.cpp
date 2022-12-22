@@ -5,10 +5,9 @@
 using namespace stone;
 using namespace stone::syn;
 
-// llvm::Module *IRModule::GetLLVMModule() { return llvmModule.get(); }
-// llvm::Module *IRModule::ReleaseLLVMModule() { return llvmModule.release(); }
-
 IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen) : irCodeGen(irCodeGen) {}
+
+IRCodeGenModule::~IRCodeGenModule() {}
 
 void IRCodeGenModule::EmitSyntaxFile(const syn::SyntaxFile &sf) {
   // Walk through the syntax file and call emit

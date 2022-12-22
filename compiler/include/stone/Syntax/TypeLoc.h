@@ -39,26 +39,7 @@ public:
 
   // bool IsNull() const { return GetType().IsNull() && tyRep == nullptr; }
   void SetType(Type ty);
-
-  // friend llvm::hash_code hash_value(const TypeLoc &owner) {
-  //   return llvm::hash_combine(owner.ty.GetPtr(), owner.tyRep);
-  // }
-
-  // friend bool operator==(const TypeLoc &lhs, const TypeLoc &rhs) {
-  //   return lhs.ty.GetPtr() == rhs.ty.GetPtr() && lhs.tyRep == rhs.tyRep;
-  // }
-
-  // friend bool operator!=(const TypeLoc &lhs, const TypeLoc &rhs) {
-  //   return !(lhs == rhs);
-  // }
 };
-
-// class alignas(1 << TypeRepAlignInBits) QualTypeLoc {
-//   TypeLoc typeLoc;
-// public:
-
-//   QualTypeLoc(TypeLoc typeLoc) : typeLoc(typeLoc) {}
-// };
 
 } // namespace syn
 } // namespace stone

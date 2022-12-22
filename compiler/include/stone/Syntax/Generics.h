@@ -29,7 +29,7 @@
 
 namespace stone {
 namespace syn {
-  
+
 class SyntaxWalker;
 class GenericTypeParamDecl;
 

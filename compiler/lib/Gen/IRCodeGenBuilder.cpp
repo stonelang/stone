@@ -9,3 +9,5 @@ void IRCodeGenBuilderInserter::InsertHelper(
 
 IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc)
     : IRCodeGenBuilderBase(cgc.GetLLVMContext()), cgc(cgc) {}
+
+IRCodeGenBuilder::~IRCodeGenBuilder() {}

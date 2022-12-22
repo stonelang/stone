@@ -41,9 +41,6 @@ public:
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   IRCodeGenBuilder &GetIRCodeGenBuilder() { return irCodeGenBuilder; }
-
-public:
-  void GenDecl();
 };
 } // namespace stone
 

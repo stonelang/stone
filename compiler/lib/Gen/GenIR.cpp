@@ -1,6 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -75,42 +76,21 @@
 using namespace stone;
 using namespace stone::syn;
 
-void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
-                  const LangContext &ctx, const OutputFile *output) {
-  // IRCodeGen irCG(genOpts);
-  // IRModuleEmitter modEmitter(IRCodeGen);
 
-  // for (auto *modFile : synMod->GetFiles()) {
-  //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {
-  //     if (sf->stage >= SyntaxFileStage::DidTypeCheck) {
-  //       modEmitter.EmitSyntaxFile(*sf);
-  //     }
-  //   }
-  //   // else {
-  //   //   modFile->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
-  //   //     irModule.AddLinkLibrary(linkLib);
-  //   //   });
-  //   // }
-  // }
-  // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
+static void PerformGenIR(CodeGenContext &cgc, syn::ModuleDecl *md,
+                         syn::ModuleFile *sf, const LangContext &lc,
+                         const OutputFile *output) {
+  IRCodeGen irCodeGen(cgc);
+  IRCodeGenModule irCodeGenModule(irCodeGen);
+}
+void stone::GenIR(CodeGenContext &cgc, syn::ModuleFile &sf,
+                  const LangContext &lc, const OutputFile *output) {
+
+  PerformGenIR(cgc, sf.GetParentModule(), &sf, lc, output);
 }
 
 void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl &md,
                   const LangContext &lc, const OutputFile *output) {
-  // IRCodeGen IRCodeGen(genOpts);
-  // IRModuleEmitter modEmitter(IRCodeGen);
 
-  // for (auto *modFile : synMod->GetFiles()) {
-  //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {
-  //     if (sf->stage >= SyntaxFileStage::DidTypeCheck) {
-  //       modEmitter.EmitSyntaxFile(*sf);
-  //     }
-  //   }
-  //   // else {
-  //   //   modFile->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
-  //   //     irModule.AddLinkLibrary(linkLib);
-  //   //   });
-  //   // }
-  // }
-  // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
+  PerformGenIR(cgc, &md, nullptr, lc, output);
 }
