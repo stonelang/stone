@@ -18,6 +18,7 @@ class TargetMachine;
 
 namespace stone {
 class CodeGenOptions;
+class CodeGenContext;
 class TargetOptions;
 class LangOptions;
 class DiagnosticEngine;
@@ -57,9 +58,6 @@ public:
   SrcMgr &GetSrcMgr() { return sm; }
 };
 
-std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
-                    const TargetOptions &targetOpts,
-                    const LangOptions &langOpts, syn::SyntaxContext &sc);
+std::unique_ptr<llvm::TargetMachine> CreateTargetMachine(CodeGenContext &cgc);
 } // namespace stone
 #endif

@@ -1,6 +1,10 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Public.h"
 #include "stone/Syntax/SyntaxContext.h"
+#include "stone/Foreign/ClangContext.h"
+#include "stone/Gen/CodeGenContext.h"
+#include "stone/Basic/TargetOptions.h"
+
 
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
@@ -10,26 +14,25 @@ using namespace stone;
 
 // TODO: This is something you can get from clang
 
-static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
-                                          llvm::TargetOptions &llvmTargetOpts,
-                                          const CodeGenOptions &codeGenOpts,
-                                          const LangOptions &langOpts) {
+static Error
+InitLLVMTargetOptions(CodeGenContext &cgc, llvm::TargetOptions &llvmTargetOpts) {
 
-  // switch (langOpts.GetThreadModel()) {
-  // case CompilerOptions::ThreadModelKind::POSIX:
-  //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
-  //   break;
-  // case CompilerOptions::ThreadModelKind::Single:
-  //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
-  //   break;
-  // }
+  switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
+  case LangOptions::ThreadModelKind::POSIX:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
+    break;
+  case LangOptions::ThreadModelKind::Single:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
+    break;
+  }
 
-  return stone::Error();
+  return Error();
 }
 
 static Optional<llvm::CodeModel::Model>
-GetCodeModel(const CodeGenOptions &cgc) {
-  unsigned codeModel = llvm::StringSwitch<unsigned>(cgc.codeModel)
+GetCodeModel(const CodeGenOptions &codeGenOpts) {
+
+  unsigned codeModel = llvm::StringSwitch<unsigned>(codeGenOpts.codeModel)
                            .Case("tiny", llvm::CodeModel::Tiny)
                            .Case("small", llvm::CodeModel::Small)
                            .Case("kernel", llvm::CodeModel::Kernel)
@@ -61,40 +64,38 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
   }
 }
 
-std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
-    DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
-    const stone::TargetOptions &targetOpts, const LangOptions &langOpts,
-    syn::SyntaxContext &sc) {
+std::unique_ptr<llvm::TargetMachine>
+stone::CreateTargetMachine(CodeGenContext &cgc) {
 
-  llvm::TargetOptions targetOptions;
-  std::unique_ptr<llvm::TargetMachine> targetMachine;
+  std::string error;
+  std::string triple = cgc.GetLLVMModule().getTargetTriple();
+  const llvm::Target *llvmTarget = llvm::TargetRegistry::lookupTarget(triple, error);
+  if (llvmTarget) {
 
-  llvm::Triple Triple(langOpts.Target);
+    llvm::Optional<llvm::CodeModel::Model> codeModel =
+        GetCodeModel(cgc.GetCodeGenOptions());
 
-  // Create the TargetMachine for generating code.
-  // std::string error;
-  // std::string triple = llvmModule.getTargetTriple();
-  // const llvm::Target *llvmTarget =
-  //     llvm::TargetRegistry::lookupTarget(triple, error);
+    std::string features =
+        llvm::join(cgc.GetTargetOptions().features.begin(),
+                   cgc.GetTargetOptions().features.end(), ",");
 
-  // llvm::Optional<llvm::CodeModel::Model> codeModel =
-  // GetCodeModel(codeGenOpts); std::string features =
-  //     llvm::join(targetOpts.features.begin(), targetOpts.features.end(),
-  //     ",");
+    llvm::Reloc::Model relocationModel =
+        cgc.GetCodeGenOptions().relocationModel;
 
-  // llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
-  // llvm::CodeGenOpt::Level codeGenOptLevel =
-  // GetOptimizationLevel(codeGenOpts);
+    llvm::CodeGenOpt::Level codeGenOptLevel =
+        GetOptimizationLevel(cgc.GetCodeGenOptions());
 
-  // llvm::TargetOptions llvmTargetOpts;
-  // if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has())
-  // {
-  //   return nullptr;
-  // }
+    llvm::TargetOptions llvmTargetOpts;
+    auto error = InitLLVMTargetOptions(cgc, llvmTargetOpts);
+    if (error.Has()) {
+      return nullptr;
+    }
 
-  // tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
-  //                                          llvmTargetOpts, relocationModel,
-  //                                          codeModel, codeGenOptLevel));
+    auto targetMachine = llvmTarget->createTargetMachine(
+        triple, cgc.GetTargetOptions().cpu, features, llvmTargetOpts,
+        relocationModel, codeModel, codeGenOptLevel);
 
-  return targetMachine;
+    return std::unique_ptr<llvm::TargetMachine>(targetMachine);
+  }
+  return nullptr;
 }

@@ -23,16 +23,7 @@ class CompilerOptions final : public BaseOptions {
   CompilerInputsAndOutputs inputsAndOutputs;
 
 public:
-  enum class ThreadModelKind {
-    /// POSIX Threads.
-    POSIX,
-    /// Single Threaded Environment.
-    Single
-  };
-
-  ///
-  ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
-
+  
   ModuleOptions moduleOpts;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.

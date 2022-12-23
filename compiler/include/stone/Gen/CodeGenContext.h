@@ -63,8 +63,14 @@ public:
 
   ClangContext &GetClangContext() { return clangContext; }
 
-  const llvm::Module &GetLLVMModule() const { return *mod; }
-  llvm::Module &GetLLVMModule() { return *mod; }
+  const llvm::Module &GetLLVMModule() const {
+    assert(mod.get());
+    return *mod;
+  }
+  llvm::Module &GetLLVMModule() {
+    assert(mod.get());
+    return *mod;
+  }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -73,7 +79,10 @@ public:
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
-  llvm::TargetMachine &GetTargetMachine() { return *tm; }
+  llvm::TargetMachine &GetTargetMachine() {
+    assert(tm.get());
+    return *tm;
+  }
 
 private:
   mem::Safe<llvm::TargetMachine> CreateTargetMachine();

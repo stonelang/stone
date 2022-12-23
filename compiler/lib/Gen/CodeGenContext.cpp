@@ -2,6 +2,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Public.h"
+#include "stone/Foreign/ClangContext.h"
 
 using namespace stone;
 
@@ -30,8 +31,8 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
 CodeGenContext::~CodeGenContext() {}
 
 mem::Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
-  //  clang::TargetInfo &targetInfo =
-  //     GetClangContext().GetInstance().getTarget();
+
+  // clang::TargetInfo &targetInfo = GetClangContext().GetInstance().getTarget();
 
   // // Setup the empty module
   // GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
@@ -50,5 +51,6 @@ mem::Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
   // }
 
-  return nullptr;
+  return stone::CreateTargetMachine(*this);
+
 }
