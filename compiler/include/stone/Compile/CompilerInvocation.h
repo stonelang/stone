@@ -92,8 +92,6 @@ class CompilerInvocation final : public Session {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
-  std::unique_ptr<clang::CompilerInstance> clangInstance;
-
   std::unique_ptr<ClangContext> clangContext;
 
 public:
@@ -131,7 +129,6 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  clang::CompilerInstance &GetClangInstance() { return *clangInstance; }
   stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:

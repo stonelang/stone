@@ -40,7 +40,6 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : Session(programName, programPath), listener(listener),
-      clangInstance(new clang::CompilerInstance()),
       clangContext(new ClangContext()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
@@ -236,50 +235,33 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
     return Error(true);
   }
 
-  // This works in clang 15
-  // if (GetClangInstance().getFrontendOpts().TimeTrace ||
-  //     !GetClangInstance().getFrontendOpts().TimeTracePath.empty()) {
-
-  //   GetClangInstance().getFrontendOpts().TimeTrace = 1;
-  //   llvm::timeTraceProfilerInitialize(
-  //       GetClangInstance().getFrontendOpts().TimeTraceGranularity, arg0);
-  // }
-  // --print-supported-cpus takes priority over the actual compilation.
-  // if (GetClangInstance().getFrontendOpts().PrintSupportedCPUs)
-  //   return PrintSupportedCPUs(
-  //       GetClangInstance().getTargetOpts().Triple);
-
-  // Infer the builtin include path if unspecified.
-  // if (GetClangInstance().getHeaderSearchOpts().UseBuiltinIncludes &&
-  //     GetClangInstance().getHeaderSearchOpts().ResourceDir.empty())
-  //   GetClangInstance().getHeaderSearchOpts().ResourceDir =
-  //       CompilerInvocation::GetResourcesPath(arg0, mainAddr);
-
   // Create the actual diagnostics engine.
-  GetClangInstance().createDiagnostics();
-  if (!GetClangInstance().hasDiagnostics()) {
+  GetClangContext().GetInstance().createDiagnostics();
+  if (!GetClangContext().GetInstance().hasDiagnostics()) {
     return Error(true);
   }
 
-  DiagsBuffer->FlushDiagnostics(GetClangInstance().getDiagnostics());
+  DiagsBuffer->FlushDiagnostics(
+      GetClangContext().GetInstance().getDiagnostics());
   if (!Success) {
-    GetClangInstance().getDiagnosticClient().finish();
+    GetClangContext().GetInstance().getDiagnosticClient().finish();
     return Error(true);
   }
   // If there were errors in processing arguments, don't do anything else.
-  if (GetClangInstance().getDiagnostics().hasErrorOccurred()) {
+  if (GetClangContext().GetInstance().getDiagnostics().hasErrorOccurred()) {
     return Error(true);
   }
 
   // Set up the file and source managers, if needed.
-  if (!GetClangInstance().hasFileManager()) {
-    assert(GetClangInstance().createFileManager());
+  if (!GetClangContext().GetInstance().hasFileManager()) {
+    assert(GetClangContext().GetInstance().createFileManager());
   }
-  if (!GetClangInstance().hasSourceManager()) {
-    GetClangInstance().createSourceManager(GetClangInstance().getFileManager());
+  if (!GetClangContext().GetInstance().hasSourceManager()) {
+    GetClangContext().GetInstance().createSourceManager(
+        GetClangContext().GetInstance().getFileManager());
   }
 
-  assert(GetClangInstance().createTarget());
+  assert(GetClangContext().GetInstance().createTarget());
 
   return Error();
 }

@@ -232,7 +232,7 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
       GetInvocation().GetClangContext());
 
   clang::TargetInfo &targetInfo =
-      GetInvocation().GetClangInstance().getTarget();
+      GetInvocation().GetClangContext().GetInstance().getTarget();
 
   // Setup the empty module
   cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
