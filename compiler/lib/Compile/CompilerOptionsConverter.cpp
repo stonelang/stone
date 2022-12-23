@@ -22,6 +22,12 @@
 using namespace stone;
 using namespace llvm::opt;
 
+CompilerOptionsConverter::CompilerOptionsConverter(
+    DiagnosticEngine &de, const llvm::opt::ArgList &args, LangOptions &langOpts,
+    CompilerOptions &compilerOpts, ModuleOptions &moduleOpts)
+    : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts),
+      moduleOpts(moduleOpts) {}
+
 stone::Error CompilerOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
@@ -74,12 +80,12 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
-  compilerOpts.moduleOpts.moduleAliasMap.clear();
+  moduleOpts.moduleAliasMap.clear();
 
   const Arg *A = args.getLastArg(opts::ModuleName);
   if (A) {
-    compilerOpts.moduleOpts.moduleName = A->getValue();
-  } else if (compilerOpts.moduleOpts.moduleName.empty()) {
+    moduleOpts.moduleName = A->getValue();
+  } else if (moduleOpts.moduleName.empty()) {
     // The user did not specify a module name, so determine a default fallback
     // based on other options.
 
@@ -90,12 +96,11 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(compilerOpts.moduleOpts.moduleName)
-           .Has()) {
+  if (!ModuleSystem::IsValidModuleName(moduleOpts.moduleName).Has()) {
     return stone::Error();
   }
 
-  if (compilerOpts.moduleOpts.moduleName != strings::StdLibName) {
+  if (moduleOpts.moduleName != strings::StdLibName) {
     return stone::Error();
   }
 
@@ -140,7 +145,7 @@ stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
           : compilerOpts.GetCompilerInputsAndOutputs()
                 .GetFilenameOfFirstInput();
 
-  compilerOpts.moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
+  moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
   return stone::Error();
 }

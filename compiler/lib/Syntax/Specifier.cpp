@@ -75,6 +75,11 @@ void TypeSpecifierCollector::AddAuto(SrcLoc loc) {
 void TypeSpecifierCollector::AddBool(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Bool, loc);
 }
+
+void TypeSpecifierCollector::AddChar(SrcLoc loc) {
+  AddTypeSpecifierKind(TypeSpecifierKind::Char, loc);
+}
+
 void TypeSpecifierCollector::AddFloat(SrcLoc loc) {
 
   AddTypeSpecifierKind(TypeSpecifierKind::Bool, loc);

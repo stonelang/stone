@@ -55,13 +55,7 @@ public:
 
   syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
 
-  ModuleOptions &GetModuleOptions() { return GetCompilerOptions().moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const {
-    return GetCompilerOptions().moduleOpts;
-  }
-
-  CompilerOptions &GetCompilerOptions();
-  const CompilerOptions &GetCompilerOptions() const;
+  CompilerInvocation &GetCompilerInvocation() { return invocation; }
 
   syn::SyntaxFile::ParsingOptions
   GetSyntaxFileParsingOptions(bool forPrimary) const;

@@ -15,6 +15,7 @@ class CompilerOptionsConverter {
   const llvm::opt::ArgList &args;
   LangOptions &langOpts;
   CompilerOptions &compilerOpts;
+  ModuleOptions &moduleOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -41,8 +42,8 @@ private:
 
 public:
   CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                           LangOptions &langOpts, CompilerOptions &compilerOpts)
-      : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts) {}
+                           LangOptions &langOpts, CompilerOptions &compilerOpts,
+                           ModuleOptions &moduleOpts);
 
 public:
   Error

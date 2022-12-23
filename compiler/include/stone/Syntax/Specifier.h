@@ -17,6 +17,7 @@ enum class TypeSpecifierKind : uint8_t {
   Void,
   Any,
   Bool,
+  Char,
   Float,
   Float32,
   Float64,
@@ -174,10 +175,24 @@ public:
     return (loc.isValid() && (kind == TypeSpecifierKind::Bool));
   }
 
+  void AddChar(SrcLoc inputLoc);
+  bool IsChar() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Char));
+  }
+
 public:
   void AddFloat(SrcLoc inputLoc);
+  bool IsFloat() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float));
+  }
   void AddFloat32(SrcLoc inputLoc);
+  bool IsFloat32() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float32));
+  }
   void AddFloat64(SrcLoc inputLoc);
+  bool IsFloat64() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float64));
+  }
 
 public:
   void AddInt(SrcLoc inputLoc);
@@ -231,7 +246,6 @@ public:
   bool IsStruct() { return kind == TypeSpecifierKind::Struct; }
   bool IsInterface() { return kind == TypeSpecifierKind::Interface; }
   bool IsAuto() { return kind == TypeSpecifierKind::Auto; }
-  SrcLoc GetLoc() { return loc; }
 
 public:
   void AddNotNullable() {
@@ -242,6 +256,8 @@ public:
   void AddUnspecifiedNullable() {
     AddTypeNullabilityKind(TypeNullabilityKind::Unspecified);
   }
+
+  SrcLoc GetLoc() { return loc; }
 
 public:
   void Apply();

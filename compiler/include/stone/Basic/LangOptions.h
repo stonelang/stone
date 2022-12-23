@@ -70,7 +70,6 @@ private:
 
   llvm::SmallVector<std::string, 2> CustomConditionalCompilationFlags;
 
-
 public:
   /// Access or distribution level of a library.
   enum class LibraryLevel : uint8_t {

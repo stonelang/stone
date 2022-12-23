@@ -171,7 +171,7 @@ public:
   // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.
-    return GetModuleSystem().GetModuleOptions().moduleOutputMode;
+    return GetInvocation().GetModuleOptions().moduleOutputMode;
   }
 
   void PrintHelp(const llvm::opt::OptTable &opts);

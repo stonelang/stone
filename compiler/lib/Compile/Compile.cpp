@@ -224,7 +224,7 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen() &&
          "Mode does not support code gen");
 
-  auto *mainModule = GetModuleSystem().GetMainModule();
+  auto *mainModuleDecl = GetModuleSystem().GetMainModule();
 
   // We are performing some low level code generation
   CodeGenContext cgc(
@@ -268,25 +268,25 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(
-        *this, mainModule, cgc,
+        *this, mainModuleDecl, cgc,
         [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return GenModule(compiler, cgc);
         });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
-        *this, mainModule, cgc,
+        *this, mainModuleDecl, cgc,
         [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return DumpIR(compiler, cgc);
         });
   case ModeKind::PrintIR:
     return CompileWithGenIR(
-        *this, mainModule, cgc,
+        *this, mainModuleDecl, cgc,
         [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return PrintIR(compiler, cgc);
         });
   default:
     return CompileWithGenIR(
-        *this, mainModule, cgc,
+        *this, mainModuleDecl, cgc,
         [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return CompileWithGenNative(compiler, cgc);
         });

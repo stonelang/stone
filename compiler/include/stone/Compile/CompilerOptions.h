@@ -16,15 +16,14 @@ namespace stone {
 class CompilerOptions final : public BaseOptions {
 
   friend class CompilerInvocation;
+  friend class CompilerOptionsConverter;
+  friend class CompilerInputsConverter;
+
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
 
   ///
   CompilerInputsAndOutputs inputsAndOutputs;
-
-public:
-  
-  ModuleOptions moduleOpts;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
@@ -43,6 +42,7 @@ public:
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool DowngradeInterfaceVerificationError = false;
 
+public:
   enum class LibOutputMode { Dynamic, Static };
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;
 

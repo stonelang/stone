@@ -30,7 +30,7 @@ public:
 
   /// The name of the module that the invocation is building.
   std::string moduleName;
-  bool HasModuleName() { return moduleName.size() > 0; }
+  bool HasModuleName() const { return !moduleName.empty(); }
 
   /// The ABI name of the module that the compile is building, to be used in
   /// mangling and metadata.

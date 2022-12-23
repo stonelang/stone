@@ -1,10 +1,9 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Public.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Basic/TargetOptions.h"
 #include "stone/Foreign/ClangContext.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Basic/TargetOptions.h"
-
+#include "stone/Public.h"
+#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
@@ -14,8 +13,8 @@ using namespace stone;
 
 // TODO: This is something you can get from clang
 
-static Error
-InitLLVMTargetOptions(CodeGenContext &cgc, llvm::TargetOptions &llvmTargetOpts) {
+static Error InitLLVMTargetOptions(CodeGenContext &cgc,
+                                   llvm::TargetOptions &llvmTargetOpts) {
 
   switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
   case LangOptions::ThreadModelKind::POSIX:
@@ -69,7 +68,8 @@ stone::CreateTargetMachine(CodeGenContext &cgc) {
 
   std::string error;
   std::string triple = cgc.GetLLVMModule().getTargetTriple();
-  const llvm::Target *llvmTarget = llvm::TargetRegistry::lookupTarget(triple, error);
+  const llvm::Target *llvmTarget =
+      llvm::TargetRegistry::lookupTarget(triple, error);
   if (llvmTarget) {
 
     llvm::Optional<llvm::CodeModel::Model> codeModel =

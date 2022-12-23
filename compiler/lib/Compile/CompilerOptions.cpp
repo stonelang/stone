@@ -7,10 +7,11 @@ using namespace stone;
 
 static Error ComputeCompilerOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
-    CompilerOptions &compilerOpts,
+    CompilerOptions &compilerOpts, ModuleOptions &moduleOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
-  CompilerOptionsConverter converter(de, ial, langOpts, compilerOpts);
+  CompilerOptionsConverter converter(de, ial, langOpts, compilerOpts,
+                                     moduleOpts);
 
   return Error(converter.Convert(buffers));
 }
@@ -54,7 +55,7 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
   }
   auto compilerOptsErr = ComputeCompilerOptions(
       ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-      GetLangContext().GetLangOptions(), *compilerOpts,
+      GetLangContext().GetLangOptions(), *compilerOpts, GetModuleOptions(),
       nullptr /* pass null for now*/);
   if (compilerOptsErr.Has()) {
   }

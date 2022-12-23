@@ -163,6 +163,9 @@ SyntaxStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
   case tok::kw_auto:
     collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
     break;
+  case tok::kw_char:
+    collector.GetTypeSpecifierCollector().AddChar(ConsumeToken());
+    break;
   case tok::kw_int:
     collector.GetTypeSpecifierCollector().AddInt(ConsumeToken());
     break;

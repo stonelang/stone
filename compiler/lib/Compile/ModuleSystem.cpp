@@ -14,9 +14,13 @@ ModuleSystem::~ModuleSystem() {}
 
 syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
+
+    assert(invocation.GetModuleOptions().HasModuleName());
+
     // TODO: Check to make sure that we have the correct Identifier
     Identifier moduleIdentifier =
-        sc.GetIdentifier(GetModuleOptions().moduleName);
+        sc.GetIdentifier(invocation.GetModuleOptions().moduleName);
+
     mainModule = DeclFactory::MakeModuleDecl(moduleIdentifier, sc, true);
 
     // Register the main module with the AST context.
@@ -79,7 +83,7 @@ Error ModuleSystem::CreateSyntaxFilesForMainModule(
 syn::SyntaxFile *
 ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
 
-  if (GetCompilerOptions().parsingInputMode ==
+  if (invocation.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
     return nullptr;
   }
@@ -131,11 +135,4 @@ Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
     }
   }
   return Error();
-}
-
-CompilerOptions &ModuleSystem::GetCompilerOptions() {
-  return invocation.GetCompilerOptions();
-}
-const CompilerOptions &ModuleSystem::GetCompilerOptions() const {
-  return invocation.GetCompilerOptions();
 }
