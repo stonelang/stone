@@ -81,24 +81,23 @@ void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                       const OutputFile *output) {
 
   NativeCodeGen ncg(cgc, sc);
+
   // switch (cgc.GetCodeGenOptions().nativeModeKind) {
   // case NativeModeKind::EmitObject:
-  //   return ncg.EmitObject(result);
-  // case NativeModeKind::EmitBC:
-  //   return ncg.EmitBC(result);
-  // case NativeModeKind::EmitAssembly:
-  //   return ncg.EmitAssembly(result);
+  //   return cgc.EmitObject();
+  // // case NativeModeKind::EmitBC:
+  // //   return ncg.EmitBC(result);
+  // // case NativeModeKind::EmitAssembly:
+  // //   return ncg.EmitAssembly(result);
   // default:
   //   stone::Panic("Unknown native mode");
   // }
 
-  // return stone::Error();
+  // return Error();
 }
 
-// EmitWith...
-// void NativeCodeGen::EmitObject(const CodeGenContext &cgc) {
+// void NativeCodeGen::EmitObject(CodeGenContext &cgc) {}
 
-// }
 // void NativeCodeGen::EmitBC(const CodeGenContext &cgc) {
 // }
 // void NativeCodeGen::EmitAssembly(const CodeGenContext &cgc) {

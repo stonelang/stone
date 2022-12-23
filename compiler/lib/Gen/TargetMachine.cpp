@@ -63,7 +63,7 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 
 std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
     DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
-    const TargetOptions &targetOpts, const LangOptions &langOpts,
+    const stone::TargetOptions &targetOpts, const LangOptions &langOpts,
     syn::SyntaxContext &sc) {
 
   llvm::TargetOptions targetOptions;

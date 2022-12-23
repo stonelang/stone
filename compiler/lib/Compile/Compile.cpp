@@ -144,6 +144,15 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
                                       CodeGenContext &cgc,
                                       IRCodeGenCompletedCallback fn) {
   CompileStatus status;
+
+  //  // TODO: Move to CompilerInstance
+  // auto targetMachine = stone::CreateTargetMachine(
+  //     compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
+  //     compiler.GetInvocation().GetCodeGenOptions(),
+  //     compiler.GetInvocation().GetTargetOptions(),
+  //     compiler.GetInvocation().GetLangContext().GetLangOptions(),
+  //     compiler.GetSyntaxContext());
+
   // switch (compiler.GetModuleOutputMode()) {
   // case ModuleOutputMode::Single: {
   //   if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
@@ -185,14 +194,6 @@ static CompileStatus GenModule(CompilerInstance &compiler,
 static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
                                           CodeGenContext &cgc) {
 
-  // TODO: Move to CompilerInstance
-  auto targetMachine = stone::CreateTargetMachine(
-      compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
-      compiler.GetInvocation().GetCodeGenOptions(),
-      compiler.GetInvocation().GetTargetOptions(),
-      compiler.GetInvocation().GetLangContext().GetLangOptions(),
-      compiler.GetSyntaxContext());
-
   auto ComputeNativeModeKind = [&](CompilerInstance &compiler) -> void {
     switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
     case ModeKind::None:
@@ -228,21 +229,23 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // We are performing some low level code generation
   CodeGenContext cgc(
       stone::GetLLVMContext(), GetInvocation().GetCodeGenOptions(),
-      GetInvocation().GetModuleOptions(), GetInvocation().GetLangContext(),
-      GetInvocation().GetClangContext());
+      GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
+      GetInvocation().GetLangContext(), GetInvocation().GetClangContext());
 
-  clang::TargetInfo &targetInfo =
-      GetInvocation().GetClangContext().GetInstance().getTarget();
+  // cgc.Initialize();
 
-  // Setup the empty module
-  cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
-  cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
+  // clang::TargetInfo &targetInfo =
+  //     GetInvocation().GetClangContext().GetInstance().getTarget();
 
-  const auto &sdkVersion = targetInfo.getSDKVersion();
+  // // Setup the empty module
+  // cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
+  // cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
 
-  if (!sdkVersion.empty()) {
-    cgc.GetLLVMModule().setSDKVersion(sdkVersion);
-  }
+  // const auto &sdkVersion = targetInfo.getSDKVersion();
+
+  // if (!sdkVersion.empty()) {
+  //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
+  // }
 
   // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
   //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
@@ -251,6 +254,14 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
   // }
+
+  // auto targetMachine = stone::CreateTargetMachine(
+  //     compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
+  //     compiler.GetInvocation().GetCodeGenOptions(),
+  //     compiler.GetInvocation().GetTargetOptions(),
+  //     compiler.GetInvocation().GetLangContext().GetLangOptions(),
+  //     compiler.GetSyntaxContext());
+
   // switch
   // (invocation.GetCompilerOptions().moduleOutputMode)
 

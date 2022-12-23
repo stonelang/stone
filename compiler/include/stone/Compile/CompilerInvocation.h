@@ -68,7 +68,7 @@ class CompilerInvocation final : public Session {
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
 
-  TargetOptions targetOpts;
+  stone::TargetOptions targetOpts;
 
   LangOptions langOpts;
 
@@ -145,8 +145,8 @@ public:
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
-  TargetOptions &GetTargetOptions() { return targetOpts; }
-  const TargetOptions &GetTargetOptions() const { return targetOpts; }
+  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }

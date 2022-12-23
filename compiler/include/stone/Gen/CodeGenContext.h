@@ -24,11 +24,13 @@ class LangContext;
 class ClangContext;
 class CodeGenOptions;
 class ModuleOptions;
+class TargetOptions;
 
 class CodeGenContext final {
   llvm::LLVMContext &llvmContext;
   const CodeGenOptions &genOpts;
   const ModuleOptions &moduleOpts;
+  const stone::TargetOptions &targetOpts;
 
   const LangContext &langContext;
   ClangContext &clangContext;
@@ -48,12 +50,14 @@ class CodeGenContext final {
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
                  const ModuleOptions &moduleOpts,
+                 const stone::TargetOptions &targetOpts,
                  const LangContext &langContext, ClangContext &clangContext);
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
   const LangContext &GetLangContext() const { return langContext; }
   llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
 
@@ -72,7 +76,7 @@ public:
   llvm::TargetMachine &GetTargetMachine() { return *tm; }
 
 private:
-  mem::Safe<llvm::TargetMachine> CreateTarget(ClangContext &clangContext);
+  mem::Safe<llvm::TargetMachine> CreateTargetMachine();
 };
 } // namespace stone
 

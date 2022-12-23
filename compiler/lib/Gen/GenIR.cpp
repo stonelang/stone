@@ -79,6 +79,7 @@ using namespace stone::syn;
 static void PerformGenIR(CodeGenContext &cgc, syn::ModuleDecl *md,
                          syn::SyntaxFile *sf, const LangContext &lc,
                          const OutputFile *output) {
+
   IRCodeGen irCodeGen(cgc);
   IRCodeGenModule irCodeGenModule(irCodeGen, sf, output);
 }
