@@ -140,7 +140,6 @@ static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
 }
 
 static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
-                                      stone::ModuleSyntaxFileUnion msf,
                                       CodeGenContext &cgc,
                                       IRCodeGenCompletedCallback fn) {
   CompileStatus status;
@@ -148,8 +147,8 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
   const CompilerOptions &compilerOpts = compilerInvocation.GetCompilerOptions();
 
   auto GenSyntaxFileOrWholeModule =
-      [&](const PrimaryFileSpecificPaths primarySpecificPaths)
-      -> CompileStatus {
+      [&](const PrimaryFileSpecificPaths primarySpecificPaths,
+          stone::ModuleSyntaxFileUnion msf) -> CompileStatus {
     CompileStatus status;
     if (auto syntaxFile = compilerInstance.CastToSyntaxFile(msf)) {
 
@@ -176,14 +175,7 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
         compilerInstance
             .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-    return GenSyntaxFileOrWholeModule(primaryFileSpecificPaths);
-
-    // SILOptions SILOpts = getSILOptions(PSPs);
-    // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
-    // auto SM = performASTLowering(mod, Instance.getSILTypes(), SILOpts,
-    //                              &irgenOpts);
-    // return performCompileStepsPostSILGen(Instance, std::move(SM), mod, PSPs,
-    //                                      ReturnValue, observer);
+    return GenSyntaxFileOrWholeModule(primaryFileSpecificPaths, mainModule);
   }
   // If there are primary source files, build a separate SILModule for
   // each source file, and run the remaining SILOpt-Serialize-IRGen-LLVM
@@ -196,15 +188,8 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
           compilerInstance.GetPrimaryFileSpecificPathsForSyntaxFile(
               *primarySyntaxFile);
 
-      //   SILOptions SILOpts = getSILOptions(PSPs);
-      // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
-      //   auto SM = performASTLowering(*PrimaryFile, Instance.getSILTypes(),
-      //                                SILOpts, &irgenOpts);
-      //   result |= performCompileStepsPostSILGen(Instance, std::move(SM),
-      //                                           PrimaryFile, PSPs,
-      //                                           ReturnValue, observer);
-
-      status = GenSyntaxFileOrWholeModule(primaryFileSpecificPaths);
+      status = GenSyntaxFileOrWholeModule(primaryFileSpecificPaths,
+                                          primarySyntaxFile);
       if (status.IsError()) {
         break;
       }
@@ -252,8 +237,6 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
 
   assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen() &&
          "Mode does not support code gen");
-
-  auto *mainModuleDecl = GetModuleSystem().GetMainModule();
 
   // We are performing some low level code generation
   CodeGenContext cgc(
@@ -305,26 +288,22 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(
-        *this, mainModuleDecl, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+        *this, cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return GenModule(compiler, cgc);
         });
   case ModeKind::EmitIR:
     return CompileWithGenIR(
-        *this, mainModuleDecl, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+        *this, cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return DumpIR(compiler, cgc);
         });
   case ModeKind::PrintIR:
     return CompileWithGenIR(
-        *this, mainModuleDecl, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+        *this, cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return PrintIR(compiler, cgc);
         });
   default:
     return CompileWithGenIR(
-        *this, mainModuleDecl, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+        *this, cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return CompileWithGenNative(compiler, cgc);
         });
   }
