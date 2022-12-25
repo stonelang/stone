@@ -172,6 +172,10 @@ public:
     msf.dyn_cast<syn::SyntaxFile *>();
   }
 
+
+Mode& GetMode() { return invocation.GetCompilerOptions().GetMode(); }
+const Mode& GetMode() const { return invocation.GetCompilerOptions().GetMode(); }
+
 public:
   // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {

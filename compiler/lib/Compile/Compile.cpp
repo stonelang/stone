@@ -188,7 +188,7 @@ static CompileStatus GenModule(CompilerInstance &compiler,
 CompileStatus CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
   auto ComputeNativeModeKind = [&]() -> void {
-    switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
+    switch (GetMode().GetKind()) {
     case ModeKind::None:
     case ModeKind::EmitObject:
       GetInvocation().GetCodeGenOptions().nativeModeKind =
@@ -215,8 +215,7 @@ CompileStatus CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
 CompileStatus CompilerInstance::CompileWithCodeGen() {
 
-  assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen() &&
-         "Mode does not support code gen");
+  assert(GetMode().CanCodeGen() && "Mode does not support code gen");
 
   // We are performing some low level code generation
   CodeGenContext cgc(
@@ -265,7 +264,7 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // switch
   // (invocation.GetCompilerOptions().moduleOutputMode)
 
-  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
+  switch (GetMode().GetKind()) {
   case ModeKind::EmitModule:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
@@ -289,7 +288,7 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static CompileStatus DumpSyntax(syn::SyntaxFile &sf) {
+static CompileStatus DumpSyntax(CompilerInstance &compiler, syn::SyntaxFile &sf) {
   return CompileStatus::MakeSuccess();
 }
 
@@ -303,16 +302,16 @@ CompileStatus CompilerInstance::CompileWithParsing() {
 }
 
 CompileStatus
-CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
+CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
       syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
-      fn(*syntaxFile);
+      notifiy(*syntaxFile);
     }
   }
 
-  if (!invocation.GetCompilerOptions().GetMode().JustParse()) {
+  if (!GetMode().JustParse()) {
     ResolveImports();
   }
   if (invocation.GetListener()) {
@@ -353,13 +352,13 @@ CompileStatus CompilerInstance::Compile() {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
   CompileStatus status;
-  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
+  switch (GetMode().GetKind()) {
   case ModeKind::Parse:
     status = CompileWithParsing();
     break;
   case ModeKind::DumpSyntax:
     status =
-        CompileWithParsing([&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
+        CompileWithParsing([&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
     break;
   case ModeKind::TypeCheck:
     status = CompileWithTypeChecking();
