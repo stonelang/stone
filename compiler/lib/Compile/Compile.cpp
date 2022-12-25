@@ -135,50 +135,41 @@ static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   CompileStatus::MakeSuccess();
 }
 
+static CompileStatus
+CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
+                         IRCodeGenCompletedCallback notifiy) {
+
+  for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
+        stone::GenIR(cgc, *primarySyntaxFile, primaryFileSpecificPaths);
+  }
+  return notifiy(instance, cgc);
+}
+
+static CompileStatus
+CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
+                          IRCodeGenCompletedCallback notifiy) {
+
+  auto *mainModule = instance.GetModuleSystem().GetMainModule();
+  const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+      instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+  stone::GenIR(cgc, *mainModule, primaryFileSpecificPaths);
+  return notifiy(instance, cgc);
+}
 CompileStatus
 CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
                                    IRCodeGenCompletedCallback notifiy) {
-  CompileStatus status;
-  const auto &compilerInvocation = GetInvocation();
-  const CompilerOptions &compilerOpts = compilerInvocation.GetCompilerOptions();
-
-  auto GenSyntaxFileOrWholeModule =
-      [&](const PrimaryFileSpecificPaths primarySpecificPaths,
-          stone::ModuleSyntaxFileUnion msf) -> CompileStatus {
-    if (auto syntaxFile = CastToSyntaxFile(msf)) {
-      stone::GenIR(cgc, *syntaxFile, primarySpecificPaths);
-      notifiy(*this, cgc);
-    } else if (auto moduleDecl = CastToModuleDecl(msf)) {
-      stone::GenIR(cgc, *moduleDecl, primarySpecificPaths);
-      return notifiy(*this, cgc);
-    }
-    return CompileStatus::MakeError();
-  };
+  const auto &invocation = GetInvocation();
+  const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
   if (!compilerOpts.GetInputsAndOutputs().HasPrimaryInputs()) {
-    auto *mainModule = GetModuleSystem().GetMainModule();
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-        GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-    return GenSyntaxFileOrWholeModule(primaryFileSpecificPaths, mainModule);
+    return CompileWithGenWholeModule(*this, cgc, notifiy);
   }
   if (!GetPrimarySyntaxFiles().empty()) {
-    // bool result = false;
-    for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
-      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-      auto status = GenSyntaxFileOrWholeModule(primaryFileSpecificPaths,
-                                               primarySyntaxFile);
-
-      if (status.IsError()) {
-        break;
-      } else {
-        notifiy(*this, cgc);
-      }
-    }
+    return CompileWithGenSyntaxFile(*this, cgc, notifiy);
   }
-
-  status.SetIsError();
-  return status;
+  CompileStatus::MakeError();
 }
 static CompileStatus GenModule(CompilerInstance &compiler,
                                CodeGenContext &cgc) {
@@ -288,7 +279,8 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static CompileStatus DumpSyntax(CompilerInstance &compiler, syn::SyntaxFile &sf) {
+static CompileStatus DumpSyntax(CompilerInstance &compiler,
+                                syn::SyntaxFile &sf) {
   return CompileStatus::MakeSuccess();
 }
 
@@ -357,8 +349,8 @@ CompileStatus CompilerInstance::Compile() {
     status = CompileWithParsing();
     break;
   case ModeKind::DumpSyntax:
-    status =
-        CompileWithParsing([&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
+    status = CompileWithParsing(
+        [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
     break;
   case ModeKind::TypeCheck:
     status = CompileWithTypeChecking();

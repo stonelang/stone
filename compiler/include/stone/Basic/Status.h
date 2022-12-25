@@ -57,8 +57,8 @@ public:
   }
 
 public:
-  static Status MakeSuccess() { return Status(); }
-  static Status MakeError() {
+  static Status Success() { return Status(); }
+  static Status Error() {
     Status status;
     status.SetIsError();
     return status;

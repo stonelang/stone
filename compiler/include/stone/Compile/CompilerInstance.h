@@ -91,12 +91,11 @@ using ParsingCompletedCallback =
 using TypeCheckingCompletedCallback =
     llvm::function_ref<CompileStatus(CompilerInstance &)>;
 
-// using IRCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance
-// &)>; using NativeCodeGenCompletedCallback =
-// llvm::function_ref<void(CompilerInstance &)>;
-
 using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
     CompilerInstance &compiler, CodeGenContext &cgc)>;
+
+using NativeCodeGenCompletedCallback =
+    llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
@@ -150,14 +149,15 @@ public:
 
 private:
   CompileStatus CompileWithParsing();
-  CompileStatus CompileWithParsing(ParsingCompletedCallback fn);
+  CompileStatus CompileWithParsing(ParsingCompletedCallback notifiy);
 
   CompileStatus CompileWithTypeChecking();
-  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback fn);
+  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
 
   CompileStatus CompileWithCodeGen();
   CompileStatus CompileWithGenIR(CodeGenContext &cgc,
                                  IRCodeGenCompletedCallback notifiy);
+
   CompileStatus CompileWithGenNative(CodeGenContext &cgc);
 
 private:
@@ -172,9 +172,10 @@ public:
     msf.dyn_cast<syn::SyntaxFile *>();
   }
 
-
-Mode& GetMode() { return invocation.GetCompilerOptions().GetMode(); }
-const Mode& GetMode() const { return invocation.GetCompilerOptions().GetMode(); }
+  Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
+  const Mode &GetMode() const {
+    return invocation.GetCompilerOptions().GetMode();
+  }
 
 public:
   // TODO: Consider moving to the Compiler

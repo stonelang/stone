@@ -194,10 +194,8 @@ protected:
 
 class IdentifierType : public TypeBase {};
 
-
 class ScalarType : public BuiltinType {
 public:
-
   ScalarType(TypeKind kind, const SyntaxContext &sc) : BuiltinType(kind, sc) {}
 };
 
