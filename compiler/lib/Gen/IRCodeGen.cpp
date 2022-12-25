@@ -6,9 +6,9 @@
 
 using namespace stone;
 
-IRCodeGen::IRCodeGen(CodeGenContext &cgc) : cgc(cgc), irCodeGenBuilder(cgc) {}
+IRCodeGen::IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener)
+    : cgc(cgc), listener(listener), cgb(cgc, typeCache) {}
 
 IRCodeGen::~IRCodeGen() {}
 
-// IRCodeModule &IRCode::GetIRCodeModule() { return *cm.get(); }
-// IRCodeFunction &IRCode::GetIRCodeFunction() { return *cf.get(); }
+Safe<llvm::TargetMachine> IRCodeGen::CreateTargetMachine() {}

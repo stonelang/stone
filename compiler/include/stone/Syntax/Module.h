@@ -5,7 +5,7 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/Printable.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"

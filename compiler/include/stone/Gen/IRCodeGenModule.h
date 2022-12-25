@@ -57,33 +57,12 @@ class TargetMachine;
 namespace stone {
 
 class IRCodeGen;
+class CodeGenListener;
 
-struct IRCodeGenTypes final {
-
-  /// void (usually {})
-  llvm::Type *VoidTy;
-
-  // LLVM Address types
-  llvm::IntegerType *RelativeAddressTy;
-  llvm::PointerType *RelativeAddressPtrTy;
-
-  /// LLVM basic types
-
-  llvm::IntegerType *Int1Ty;     /// i1
-  llvm::IntegerType *Int8Ty;     /// i8
-  llvm::IntegerType *Int16Ty;    /// i16
-  llvm::IntegerType *Int32Ty;    /// i32
-  llvm::PointerType *Int32PtrTy; /// i32 *
-  llvm::IntegerType *Int64Ty;    /// i64
-};
-
-// I do not think that you need this -- just use IRCodeGen
 class IRCodeGenModule final {
   IRCodeGen &irCodeGen;
   syn::SyntaxFile *sf;
-  const OutputFile *outputFile;
-
-  IRCodeGenTypes irCodeGenTypes;
+  llvm::StringRef outputFileName;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
@@ -91,8 +70,7 @@ private:
 
 public:
   IRCodeGenModule(IRCodeGen &irCodeGen, syn::SyntaxFile *sf,
-                  const OutputFile *outputFile);
-
+                  llvm::StringRef outputFileName);
   ~IRCodeGenModule();
 
 public:
@@ -102,6 +80,9 @@ public:
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
   void EmitEnumDecl(EnumDecl *d);
+
+private:
+  void Emit();
 };
 } // namespace stone
 

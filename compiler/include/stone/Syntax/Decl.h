@@ -678,6 +678,9 @@ public:
   static bool classof(const Decl *d) {
     return d->GetKind() == DeclKind::Struct;
   }
+
+public:
+  void AddMember(Decl *d);
 };
 
 class InterfaceDecl final : public NominalTypeDecl {

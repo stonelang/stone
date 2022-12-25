@@ -184,13 +184,10 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-
-    // We only allow pure on functions => non-member function
-    // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-    //   // Do some logging
-    //   return syn::MakeSyntaxError();
-    // }
+  // At this stage, only the pure modifier is allowed
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
+      !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
+    // Do some logging
     return syn::MakeSyntaxError();
   }
 
@@ -199,9 +196,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return syn::MakeSyntaxError();
   }
 
-  // ParsingDeclaratorCollector declaratorCollector(collector);
-  // auto status = ParseDeclarator(declaratorCollector);
-
+  // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
     return syn::MakeSyntaxError();
@@ -216,17 +211,22 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   Identifier parentName;
   SrcLoc parentNameLoc;
 
+  // TODO: You have to perform a name look-up where because you will be dealing
+  // with "identifier::""
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
       return syn::MakeSyntaxError();
     }
+    // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
+
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
       return syn::MakeSyntaxError();
     }
-    status = ParseIdentifier(parentName, parentNameLoc);
+    // TODO: That identifier should already exist
+    // status = ParseIdentifier(parentName, parentNameLoc);
   }
 
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
@@ -257,6 +257,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Create the function
   auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
   assert(funDecl);
+
+  if (collector.GetFunctionSpecifierCollector().HasIsMember()) {
+  }
 
   if (!status.HasCodeCompletion()) {
     status |= ParseFunctionBody(collector, *funDecl);

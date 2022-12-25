@@ -6,6 +6,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenBuilder.h"
+#include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/PassManager.h"
@@ -21,26 +22,29 @@ class TargetMachine;
 
 namespace stone {
 
-// class IREmitterLoop {};
-// class IREmitterCall {};
+class CodeGenListener;
 
-// class IRCodeBlocks {
-// public:
-//   IREmitterBlocks();
-// };
+// class IRCodeGenLoop {};
+// class IRCodeGenCall {};
+// class IRCodeGenBlocks {};
 
 class IRCodeGen final {
   CodeGenContext &cgc;
-  IRCodeGenBuilder irCodeGenBuilder;
+  IRCodeGenBuilder cgb;
+  IRCodeGenTypeCache typeCache;
+  CodeGenListener *listener;
 
-  // Safe<IRModuleResult> result;
 public:
-  IRCodeGen(CodeGenContext &cgc);
+  IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener = nullptr);
   ~IRCodeGen();
   // IRCodeGenFunction &GetIRCodeGenFunction();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  IRCodeGenBuilder &GetIRCodeGenBuilder() { return irCodeGenBuilder; }
+  IRCodeGenBuilder &GetIRCodeGenBuilder() { return cgb; }
+  CodeGenListener *GetCodeGenListener() { return listener; }
+
+public:
+  Safe<llvm::TargetMachine> CreateTargetMachine();
 };
 } // namespace stone
 

@@ -17,6 +17,7 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
 #include "stone/Syntax/BuiltinContext.h"
+#include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Import.h"
 #include "stone/Syntax/LangABI.h"
@@ -99,7 +100,7 @@ enum class ModuleAliasLookupOption {
 class SyntaxContext final {
   friend SyntaxContextStats;
 
-  mem::Safe<SyntaxContextStats> stats;
+  Safe<SyntaxContextStats> stats;
 
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
@@ -119,6 +120,8 @@ class SyntaxContext final {
 
   /// Table for all
   IdentifierTable identifiers;
+
+  mutable DeclNameTable declNames;
 
   /// All builtin types will be stored here.
   mutable llvm::SmallVector<Type *, 0> types;
@@ -164,6 +167,8 @@ public:
   ClangContext &GetClangContext() { return clangContext; }
   ///
   Identifier GetIdentifier(llvm::StringRef name);
+
+  DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
   const BuiltinContext &GetBuiltinContext() const;
 

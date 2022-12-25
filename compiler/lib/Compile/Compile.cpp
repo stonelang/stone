@@ -139,11 +139,13 @@ static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   CompileStatus::MakeSuccess();
 }
 
-static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
+static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
                                       stone::ModuleSyntaxFileUnion msf,
                                       CodeGenContext &cgc,
                                       IRCodeGenCompletedCallback fn) {
   CompileStatus status;
+  const auto &compilerInvocation = compilerInstance.GetInvocation();
+  const CompilerOptions &compilerOpts = compilerInvocation.GetCompilerOptions();
 
   //  // TODO: Move to CompilerInstance
   // auto targetMachine = stone::CreateTargetMachine(
@@ -174,17 +176,56 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
   //   stone::Panic("Unable to GenIR -- invalid IR ouput");
   // }
 
-  if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-    stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
-    status |= fn(compiler, cgc);
-    return status;
+  auto *mainModule = compilerInstance.GetModuleSystem().GetMainModule();
+  if (!compilerOpts.GetInputsAndOutputs().HasPrimaryInputs()) {
 
-  } else if (auto mod = msf.get<syn::ModuleDecl *>()) {
-    stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
-    status |= fn(compiler, cgc);
-    return status;
+    // If there are no primary inputs the compiler is in WMO mode and builds one
+    // SILModule for the entire module.
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        compilerInstance
+            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    // SILOptions SILOpts = getSILOptions(PSPs);
+    // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
+    // auto SM = performASTLowering(mod, Instance.getSILTypes(), SILOpts,
+    //                              &irgenOpts);
+    // return performCompileStepsPostSILGen(Instance, std::move(SM), mod, PSPs,
+    //                                      ReturnValue, observer);
   }
-  return CompileStatus::MakeError();
+  // If there are primary source files, build a separate SILModule for
+  // each source file, and run the remaining SILOpt-Serialize-IRGen-LLVM
+  // once for each such input.
+  if (!compilerInstance.GetPrimarySyntaxFiles().empty()) {
+    // bool result = false;
+    // for (auto *PrimaryFile : Instance.getPrimarySourceFiles()) {
+    //   const PrimarySpecificPaths PSPs =
+    //       Instance.getPrimarySpecificPathsForSourceFile(*PrimaryFile);
+    //   SILOptions SILOpts = getSILOptions(PSPs);
+    // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
+    //   auto SM = performASTLowering(*PrimaryFile, Instance.getSILTypes(),
+    //                                SILOpts, &irgenOpts);
+    //   result |= performCompileStepsPostSILGen(Instance, std::move(SM),
+    //                                           PrimaryFile, PSPs, ReturnValue,
+    //                                           observer);
+    //}
+
+    // return result;
+  }
+
+  // if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
+  //   stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
+  //                llvm::StringRef("TODO"));
+  //   status |= fn(compiler, cgc);
+  //   return status;
+
+  // } else if (auto mod = msf.get<syn::ModuleDecl *>()) {
+  //   stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
+  //                OutputFile("TODO"));
+  //   status |= fn(compiler, cgc);
+  //   return status;
+  // }
+  status.SetIsError();
+  return status;
 }
 static CompileStatus GenModule(CompilerInstance &compiler,
                                CodeGenContext &cgc) {
@@ -214,7 +255,8 @@ static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
     }
   };
   ComputeNativeModeKind(compiler);
-  stone::GenNative(cgc, compiler.GetSyntaxContext(), nullptr);
+  stone::GenNative(cgc, compiler.GetSyntaxContext(), llvm::StringRef() /*TODO*/,
+                   compiler.GetInvocation().GetListener());
 
   return CompileStatus::MakeSuccess();
 }
@@ -231,6 +273,14 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
       stone::GetLLVMContext(), GetInvocation().GetCodeGenOptions(),
       GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
       GetInvocation().GetLangContext(), GetInvocation().GetClangContext());
+
+  // auto *Module = IGM.getModule();
+  // assert(Module && "Expected llvm:Module for IR generation!");
+
+  // Module->setTargetTriple(IGM.Triple.str());
+
+  // // Set the module's string representation.
+  // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
 
   // cgc.Initialize();
 

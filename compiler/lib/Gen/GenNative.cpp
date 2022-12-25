@@ -77,28 +77,24 @@ using namespace stone::syn;
 
 static void GenNativeWithParallelization() {}
 
+static void EmitObject(CodeGenContext &cgc, syn::SyntaxContext &sc,
+                       llvm::StringRef outputFilename) {}
+
+static void EmitBC(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+                   llvm::StringRef outputFilename) {}
+
+static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+                         llvm::StringRef outputFilename) {}
+
 void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
-                      const OutputFile *output) {
+                      llvm::StringRef outputFilename,
+                      CodeGenListener *listener) {
 
-  NativeCodeGen ncg(cgc, sc);
-
-  // switch (cgc.GetCodeGenOptions().nativeModeKind) {
-  // case NativeModeKind::EmitObject:
-  //   return cgc.EmitObject();
-  // // case NativeModeKind::EmitBC:
-  // //   return ncg.EmitBC(result);
-  // // case NativeModeKind::EmitAssembly:
-  // //   return ncg.EmitAssembly(result);
-  // default:
-  //   stone::Panic("Unknown native mode");
-  // }
-
-  // return Error();
+  switch (cgc.GetCodeGenOptions().nativeModeKind) {
+  case NativeModeKind::EmitObject:
+    EmitObject(cgc, sc, outputFilename);
+    break;
+  default:
+    break;
+  }
 }
-
-// void NativeCodeGen::EmitObject(CodeGenContext &cgc) {}
-
-// void NativeCodeGen::EmitBC(const CodeGenContext &cgc) {
-// }
-// void NativeCodeGen::EmitAssembly(const CodeGenContext &cgc) {
-// }

@@ -78,17 +78,24 @@ enum class ABIArgKind {
 class IRCodeGenModule;
 class IRCodeGenFunction final {
 
-  IRCodeGenModule &codeGenModule;
-  llvm::Function *curFunction = nullptr;
+  IRCodeGenModule &cgm;
+  llvm::Function *curFun = nullptr;
 
 public:
   IRCodeGenFunction(const IRCodeGenFunction &) = delete;
   void operator=(const IRCodeGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &codeGenModule,
-                    llvm::Function *curFunction);
+  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *curFun);
   ~IRCodeGenFunction();
+
+public:
+  // llvm::Address CreateAddress(llvm::Type *ty, Alignment align,
+  //                      const llvm::Twine &name = "");
+
+  // llvm::Address CreateAddress(llvm::Type *ty, llvm::Value *arraySize,
+  // Alignment align,
+  //                      const llvm::Twine &name = "");
 
 public:
 };

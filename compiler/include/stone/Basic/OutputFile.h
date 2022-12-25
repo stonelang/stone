@@ -6,24 +6,14 @@
 
 namespace stone {
 
-class OutputFile final {
-  file::File &output;
-  llvm::Optional<llvm::sys::fs::TempFile> tempFile;
-
-  OutputFile() = delete;
-  OutputFile(const OutputFile &) = delete;
-  OutputFile &operator=(const OutputFile &) = delete;
+struct OutputFile final {
+  llvm::StringRef outputFilename;
+  llvm::Optional<llvm::sys::fs::TempFile> tempFileName;
 
 public:
-  OutputFile(file::File &output,
-             llvm::Optional<llvm::sys::fs::TempFile> tempFile)
-      : output(output), tempFile(std::move(tempFile)) {}
-
-public:
-  file::File &GetFile() const { return output; }
-  llvm::Optional<llvm::sys::fs::TempFile> &GetTempFile() { return tempFile; }
-
-  // std::unique_ptr<llvm::raw_pwrite_stream> ToOutputStream();
+  OutputFile(llvm::StringRef outputFilename,
+             llvm::Optional<llvm::sys::fs::TempFile> tempFileName)
+      : outputFilename(outputFilename), tempFileName(std::move(tempFileName)) {}
 };
 
 } // namespace stone

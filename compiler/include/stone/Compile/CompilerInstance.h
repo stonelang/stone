@@ -106,11 +106,12 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     &result)>;
 
 class CompilerInstance final {
-  mem::Safe<CompilerInstanceStats> stats;
+  Safe<CompilerInstanceStats> stats;
 
   CompilerInvocation &invocation;
-  mem::Safe<syn::SyntaxContext> sc;
-  mem::Safe<ModuleSystem> ms;
+
+  Safe<syn::SyntaxContext> sc;
+  Safe<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -134,6 +135,7 @@ public:
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
+  const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
@@ -174,12 +176,32 @@ public:
     return GetInvocation().GetModuleOptions().moduleOutputMode;
   }
 
-  void PrintHelp(const llvm::opt::OptTable &opts);
-
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
   GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
+
+public:
+  /// Gets the set of SourceFiles which are the primary inputs for this
+  /// CompilerInstance.
+  llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
+    return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  }
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForAtMostOnePrimary() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
+
+public:
+  void PrintHelp(const llvm::opt::OptTable &opts);
 };
 
 } // namespace stone

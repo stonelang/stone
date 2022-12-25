@@ -98,8 +98,12 @@ public:
   InlineMode inlineMode = InlineMode::Default;
 
 public:
-  bool ShouldOptimize() {
-    return optimizationLevel > OptimizationLevel::Default;
+  bool CanOptimize() { return optimizationLevel > OptimizationLevel::Default; }
+  bool OptimizeForSpeed() {
+    return optimizationLevel == OptimizationLevel::Default;
+  }
+  bool OptimizeForSize() {
+    return optimizationLevel == OptimizationLevel::Aggressive;
   }
 };
 

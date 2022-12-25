@@ -42,6 +42,21 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 //   return llvm::StringRef();
 // }
 
+const PrimaryFileSpecificPaths &
+CompilerInstance::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode()
+    const {}
+
+const PrimaryFileSpecificPaths &
+CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
+    llvm::StringRef fileName) const {}
+
+const PrimaryFileSpecificPaths &
+CompilerInstance::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {}
+
+const PrimaryFileSpecificPaths &
+CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
+    const syn::SyntaxFile &sf) const {}
+
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
   //   // GetLangContext().Out() << GetName() << '\n';

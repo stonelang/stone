@@ -2,7 +2,7 @@
 #define STONE_PARSE_PARSINGSUPPORT_H
 
 #include "stone/Basic/OptionSet.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclCollector.h"
 #include "stone/Syntax/Scope.h"

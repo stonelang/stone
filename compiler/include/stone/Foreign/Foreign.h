@@ -1,7 +1,7 @@
 #ifndef STONE_FOREIGN_FOREIGN_H
 #define STONE_FOREIGN_FOREIGN_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

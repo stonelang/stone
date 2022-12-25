@@ -17,7 +17,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-class EmitPipeline;
+class CodeGenListener;
 
 namespace syn {
 class SyntaxContext;
@@ -30,13 +30,14 @@ class CodeGenContext;
 class IRCodeGenResult;
 
 void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf, const LangContext &ctx,
-           const OutputFile *output);
+           llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
 
 void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod, const LangContext &ctx,
-           const OutputFile *output);
+           llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
 
 void GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
-               const OutputFile *output);
+               llvm::StringRef outputFilename,
+               CodeGenListener *listener = nullptr);
 
 // void GenModule();
 

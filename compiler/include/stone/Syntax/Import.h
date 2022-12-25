@@ -3,7 +3,7 @@
 
 // #include "stone/Basic/Located.h"
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 namespace stone {
 namespace syn {

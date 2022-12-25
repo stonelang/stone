@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_TYPECHECKEROPTIONS_H
 #define STONE_SYNTAX_TYPECHECKEROPTIONS_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 namespace stone {
 

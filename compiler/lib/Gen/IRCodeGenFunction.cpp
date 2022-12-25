@@ -3,8 +3,8 @@
 
 using namespace stone;
 
-IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &codeGenModule,
-                                     llvm::Function *curFunction)
-    : codeGenModule(codeGenModule), curFunction(curFunction) {}
+IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm,
+                                     llvm::Function *curFun)
+    : cgm(cgm), curFun(curFun) {}
 
 IRCodeGenFunction::~IRCodeGenFunction() {}

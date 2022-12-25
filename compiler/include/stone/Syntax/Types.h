@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_TYPES_H
 #define STONE_SYNTAX_TYPES_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
 #include "stone/Syntax/Ownership.h"

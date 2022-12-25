@@ -1,10 +1,8 @@
-#ifndef STONE_COMPILE_ADDITIONALOUTPUTPATHS_H
-#define STONE_COMPILE_ADDITIONALOUTPUTPATHS_H
+#ifndef STONE_BASIC_ADDITIONALOUTPUTPATHS_H
+#define STONE_BASIC_ADDITIONALOUTPUTPATHS_H
 
 #include "stone/Basic/LLVM.h"
-#include "llvm/IR/Function.h"
-
-#include <string>
+#include "llvm/ADT/StringRef.h"
 
 namespace stone {
 
@@ -188,4 +186,4 @@ struct SupplementaryOutputPaths final {
 };
 } // namespace stone
 
-#endif // SWIFT_FRONTEND_SUPPLEMENTARYOUTPUTPATHS_H
+#endif

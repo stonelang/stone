@@ -1,17 +1,13 @@
-#ifndef STONE_COMPILE_PRIMARYSPECIFICPATHS_H
-#define STONE_COMPILE_PRIMARYSPECIFICPATHS_H
+#ifndef STONE_BASIC_PRIMARYSPECIFICPATHS_H
+#define STONE_BASIC_PRIMARYSPECIFICPATHS_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Compile/SupplementaryOutputPaths.h"
-#include "llvm/ADT/StringRef.h"
-
-#include <string>
+#include "stone/Basic/SupplementaryOutputPaths.h"
 
 namespace stone {
 /// Holds all of the output paths, and debugging-info path that are
 /// specific to which primary file is being compiled at the moment.
 
-class PrimaryFileSpecificPaths {
+class PrimaryFileSpecificPaths final {
 public:
   /// The name of the main output file,
   /// that is, the .o file for this input (or a file specified by -o).

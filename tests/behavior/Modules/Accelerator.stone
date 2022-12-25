@@ -8,9 +8,9 @@ public interface Accelerator {
 
 public struct LinearAccelerator : Accelerator {
 }
-public fun LinearAccelerator::LinearAccelerator() {
+public LinearAccelerator::LinearAccelerator() {
 }
-public fun LinearAccelerator::~LinearAccelerator() {
+public LinearAccelerator::~LinearAccelerator() {
 
 }
 public fun LinearAccelerator::Fire(const Particle* particle) -> bool {

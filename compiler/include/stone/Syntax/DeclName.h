@@ -318,6 +318,23 @@ public:
   DeclNameLoc(DeclName name) : name(name) {}
 };
 
+// Take a look at name look
+class DeclNameTable final {
+  /// Used to allocate elements in the FoldingSets below.
+  // llvm::FoldingSet<DeclName> constructors;
+  // llvm::FoldingSet<DeclName> destructors;
+
+public:
+  //   /// Returns the decl name constructor for the given Type.
+  // Declame GetConstructorDeclName(Identifier identifier);
+
+  // /// Returns the name of a C++ destructor for the given Type.
+  // Declame GetDestructorDeclName(Identifier identifier);
+
+  // DeclName GetSpecialName(Special::NameKind Kind,
+  //                                   CanQualType Ty);
+};
+
 // struct DeclNameBase final {
 // private:
 //   /// Name - The declaration name, also encoding name kind.

@@ -6,8 +6,8 @@ using namespace stone;
 using namespace stone::syn;
 
 IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, syn::SyntaxFile *sf,
-                                 const OutputFile *outputFile)
-    : irCodeGen(irCodeGen), sf(sf), outputFile(outputFile) {}
+                                 llvm::StringRef outputFileName)
+    : irCodeGen(irCodeGen), sf(sf), outputFileName(outputFileName) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}
 

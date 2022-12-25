@@ -55,11 +55,12 @@ public:
 
 public:
   CompilerOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
-    GetCompilerInputsAndOutputs().ClearInputs();
+    GetInputsAndOutputs().ClearInputs();
   }
 
 public:
-  CompilerInputsAndOutputs &GetCompilerInputsAndOutputs() {
+  CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
+  const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
 };

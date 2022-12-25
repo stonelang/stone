@@ -30,7 +30,7 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
 
 CodeGenContext::~CodeGenContext() {}
 
-mem::Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
+Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
 
   // clang::TargetInfo &targetInfo =
   // GetClangContext().GetInstance().getTarget();

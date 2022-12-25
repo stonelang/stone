@@ -2,7 +2,7 @@
 #define STONE_SYNTAX_SPECIFIER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/TypeAlignment.h"
 

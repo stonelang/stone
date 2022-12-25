@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXSCOPE_H
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/SyntaxAllocation.h"

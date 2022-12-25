@@ -1,7 +1,7 @@
 #ifndef STONE_FOREIGN_CLANG_H
 #define STONE_FOREIGN_CLANG_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Foreign/ClangModuleImporter.h"
 
 #include "clang/CodeGen/ModuleBuilder.h"
@@ -9,8 +9,6 @@
 #include "clang/Frontend/CompilerInvocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
-
-using namespace stone::mem;
 
 namespace stone {
 

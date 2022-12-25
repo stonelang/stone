@@ -52,6 +52,7 @@ class alignas(IdentifierAlignment) Identifier {
 
   IdentifierStatus status;
   const char *dataPointer;
+  bool isSpecial;
 
 public:
   enum : size_t {
@@ -94,6 +95,7 @@ public:
            "Tried getting length of empty identifier");
     return ::strlen(dataPointer);
   }
+  bool IsSpecial() { return isSpecial; }
   bool IsEmpty() const { return dataPointer == nullptr; }
   bool IsEqual(llvm::StringRef other) const {
     return GetString().equals(other);
@@ -116,7 +118,10 @@ public:
   bool IsOperatorSlow() const;
 
   /// Return true if this identifier is specified by the language.
-  bool IsKeyword() const { return true; }
+  bool IsKeyword() const {
+    assert(false && "Not implemented");
+    return true;
+  }
   // bool IsBuiltin() const;
 
   bool IsArithmeticOperator() const {

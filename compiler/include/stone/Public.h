@@ -59,5 +59,6 @@ public:
 };
 
 std::unique_ptr<llvm::TargetMachine> CreateTargetMachine(CodeGenContext &cgc);
+
 } // namespace stone
 #endif

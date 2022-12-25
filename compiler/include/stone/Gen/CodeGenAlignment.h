@@ -2,7 +2,7 @@
 #define STONE_GEN_CODEGENALIGNMENT_H
 
 #include "stone/Basic/Mem.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "clang/AST/CharUnits.h"
 #include "clang/CodeGen/ConstantInitFuture.h"

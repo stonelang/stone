@@ -44,22 +44,19 @@ stone::Error CompilerOptionsConverter::Convert(
   }
 
   bool haveNewInputsAndOutputs = false;
-  if (compilerOpts.GetCompilerInputsAndOutputs().HasInputs()) {
+  if (compilerOpts.GetInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
 
     haveNewInputsAndOutputs = true;
-    compilerOpts.GetCompilerInputsAndOutputs() =
-        std::move(inputsAndOutputs).getValue();
+    compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
 
     if (compilerOpts.allowModuleWithCompilerErrors) {
-      compilerOpts.GetCompilerInputsAndOutputs()
-          .SetShouldRecoverMissingInputs();
+      compilerOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
     }
   }
 
-  if (compilerOpts.GetCompilerInputsAndOutputs()
-          .ShouldTreatAsModuleInterface()) {
+  if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneModuleInterface;
   } else if (args.hasArg(opts::ParseAsLibrary)) {
@@ -142,8 +139,7 @@ stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
               outputFilenames->front() != "-" &&
               !llvm::sys::fs::is_directory(outputFilenames->front())
           ? outputFilenames->front()
-          : compilerOpts.GetCompilerInputsAndOutputs()
-                .GetFilenameOfFirstInput();
+          : compilerOpts.GetInputsAndOutputs().GetFilenameOfFirstInput();
 
   moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 

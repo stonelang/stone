@@ -2,7 +2,7 @@
 #define STONE_GEN_CODEGENCONTEXT_H
 
 #include "stone/Basic/Error.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -43,9 +43,9 @@ class CodeGenContext final {
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
 
-  mem::Safe<llvm::Module> mod;
+  Safe<llvm::Module> mod;
   // legacy::PassManager legacyPM;
-  mem::Safe<llvm::TargetMachine> tm;
+  Safe<llvm::TargetMachine> tm;
 
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
@@ -79,13 +79,14 @@ public:
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
+
   llvm::TargetMachine &GetTargetMachine() {
     assert(tm.get());
     return *tm;
   }
 
 private:
-  mem::Safe<llvm::TargetMachine> CreateTargetMachine();
+  Safe<llvm::TargetMachine> CreateTargetMachine();
 };
 } // namespace stone
 
