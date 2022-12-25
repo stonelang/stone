@@ -1,5 +1,5 @@
 
 /// Core
-public struct Assert {
-	
+
+public pure fun Assert() -> void {
 }

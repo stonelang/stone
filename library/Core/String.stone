@@ -2,3 +2,10 @@
 // Core 
 public struct String {
 }
+
+public String::String() {
+}
+
+public fun String::Lenth() -> uint32 {
+	return 0;
+}

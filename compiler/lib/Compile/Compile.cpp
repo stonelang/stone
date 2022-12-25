@@ -147,34 +147,6 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
   const auto &compilerInvocation = compilerInstance.GetInvocation();
   const CompilerOptions &compilerOpts = compilerInvocation.GetCompilerOptions();
 
-  //  // TODO: Move to CompilerInstance
-  // auto targetMachine = stone::CreateTargetMachine(
-  //     compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
-  //     compiler.GetInvocation().GetCodeGenOptions(),
-  //     compiler.GetInvocation().GetTargetOptions(),
-  //     compiler.GetInvocation().GetLangContext().GetLangOptions(),
-  //     compiler.GetSyntaxContext());
-
-  // switch (compiler.GetModuleOutputMode()) {
-  // case ModuleOutputMode::Single: {
-  //   if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-  //     stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
-  //                  nullptr);
-  //     status |= fn(compiler, cgc);
-  //   }
-  //   return status;
-  // }
-  // case ModuleOutputMode::Whole: {
-  //   if (auto mod = msf.get<syn::ModuleDecl *>()) {
-  //     stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
-  //                  nullptr);
-  //     status |= fn(compiler, cgc);
-  //   }
-  //   return status;
-  // }
-  // default:
-  //   stone::Panic("Unable to GenIR -- invalid IR ouput");
-  // }
 
   auto *mainModule = compilerInstance.GetModuleSystem().GetMainModule();
   if (!compilerOpts.GetInputsAndOutputs().HasPrimaryInputs()) {

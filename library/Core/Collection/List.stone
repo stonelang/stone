@@ -1,5 +1,5 @@
 // Core.Collection
 
-public interface List<T> : Collection<T> {
+public struct List<T> : Collection<T> {
 
 }

@@ -1,10 +1,10 @@
 
 //Core.Builtin 
 
-public fun SizeOf() -> int {
+public pure fun SizeOf() -> int {
 		return 0; 
 }
-public fun TypeOf() -> T {
+public pure fun TypeOf() -> T {
 		return null;
 }
 

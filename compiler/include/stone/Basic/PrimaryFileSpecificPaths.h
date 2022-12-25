@@ -1,6 +1,7 @@
 #ifndef STONE_BASIC_PRIMARYSPECIFICPATHS_H
 #define STONE_BASIC_PRIMARYSPECIFICPATHS_H
 
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SupplementaryOutputPaths.h"
 
 namespace stone {
@@ -13,17 +14,16 @@ public:
   /// that is, the .o file for this input (or a file specified by -o).
   /// If there is no such file, contains an empty string. If the output
   /// is to be written to stdout, contains "-".
-  std::string outputFilename;
-
+  String outputFilename;
   /// The name to report the main output file as being in the index store.
   /// This is equivalent to OutputFilename, unless -index-store-output-path
   /// was specified.
-  std::string indexUnitOutputFilename;
+  String indexUnitOutputFilename;
 
   SupplementaryOutputPaths supplementaryOutputPaths;
 
   /// The name of the "main" input file, used by the debug info.
-  std::string mainInputFilenameForDebugInfo;
+  String mainInputFilenameForDebugInfo;
 
   PrimaryFileSpecificPaths(
       StringRef outputFilename = llvm::StringRef(),

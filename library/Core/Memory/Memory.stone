@@ -1,0 +1,5 @@
+
+
+// auto result = MakeSafe<Particle>(new Particle());
+public fun MakeSafe<T>(T *t) -> T {
+}
