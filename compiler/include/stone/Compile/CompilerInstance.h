@@ -170,6 +170,14 @@ private:
   void ResolveImports();
 
 public:
+  syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
+    return msf.get<syn::ModuleDecl *>();
+  }
+  syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
+    msf.dyn_cast<syn::SyntaxFile *>();
+  }
+
+public:
   // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.

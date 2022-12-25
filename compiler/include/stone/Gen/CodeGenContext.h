@@ -47,11 +47,14 @@ class CodeGenContext final {
   // legacy::PassManager legacyPM;
   Safe<llvm::TargetMachine> tm;
 
+  llvm::GlobalVariable **outModuleHash;
+
 public:
   CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
                  const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
-                 const LangContext &langContext, ClangContext &clangContext);
+                 const LangContext &langContext, ClangContext &clangContext,
+                 llvm::GlobalVariable **outModuleHash = nullptr);
   ~CodeGenContext();
 
 public:

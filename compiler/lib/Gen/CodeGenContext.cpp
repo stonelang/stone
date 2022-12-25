@@ -11,10 +11,11 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
                                const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,
                                const LangContext &langContext,
-                               ClangContext &clangContext)
+                               ClangContext &clangContext,
+                               llvm::GlobalVariable **outModuleHash)
     : llvmContext(llvmContext), genOpts(genOpts), moduleOpts(moduleOpts),
       targetOpts(targetOpts), langContext(langContext),
-      clangContext(clangContext),
+      clangContext(clangContext), outModuleHash(outModuleHash),
       mod(new llvm::Module(moduleOpts.moduleName, llvmContext)) {
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);

@@ -147,6 +147,25 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
   const auto &compilerInvocation = compilerInstance.GetInvocation();
   const CompilerOptions &compilerOpts = compilerInvocation.GetCompilerOptions();
 
+  auto GenSyntaxFileOrWholeModule =
+      [&](const PrimaryFileSpecificPaths primarySpecificPaths)
+      -> CompileStatus {
+    CompileStatus status;
+    if (auto syntaxFile = compilerInstance.CastToSyntaxFile(msf)) {
+
+      // stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
+      //              llvm::StringRef("TODO"));
+      // status |= fn(compiler, cgc);
+      return status;
+    } else if (auto moduleDecl = compilerInstance.CastToModuleDecl(msf)) {
+      // stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
+      //              OutputFile("TODO"));
+      // status |= fn(compiler, cgc);
+      return status;
+    }
+    status.SetIsError();
+    return status;
+  };
 
   auto *mainModule = compilerInstance.GetModuleSystem().GetMainModule();
   if (!compilerOpts.GetInputsAndOutputs().HasPrimaryInputs()) {
@@ -156,6 +175,8 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compilerInstance
             .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    return GenSyntaxFileOrWholeModule(primaryFileSpecificPaths);
 
     // SILOptions SILOpts = getSILOptions(PSPs);
     // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
@@ -169,33 +190,27 @@ static CompileStatus CompileWithGenIR(CompilerInstance &compilerInstance,
   // once for each such input.
   if (!compilerInstance.GetPrimarySyntaxFiles().empty()) {
     // bool result = false;
-    // for (auto *PrimaryFile : Instance.getPrimarySourceFiles()) {
-    //   const PrimarySpecificPaths PSPs =
-    //       Instance.getPrimarySpecificPathsForSourceFile(*PrimaryFile);
-    //   SILOptions SILOpts = getSILOptions(PSPs);
-    // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
-    //   auto SM = performASTLowering(*PrimaryFile, Instance.getSILTypes(),
-    //                                SILOpts, &irgenOpts);
-    //   result |= performCompileStepsPostSILGen(Instance, std::move(SM),
-    //                                           PrimaryFile, PSPs, ReturnValue,
-    //                                           observer);
-    //}
+    for (auto *primarySyntaxFile : compilerInstance.GetPrimarySyntaxFiles()) {
 
-    // return result;
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          compilerInstance.GetPrimaryFileSpecificPathsForSyntaxFile(
+              *primarySyntaxFile);
+
+      //   SILOptions SILOpts = getSILOptions(PSPs);
+      // IRGenOptions irgenOpts = Invocation.getIRGenOptions();
+      //   auto SM = performASTLowering(*PrimaryFile, Instance.getSILTypes(),
+      //                                SILOpts, &irgenOpts);
+      //   result |= performCompileStepsPostSILGen(Instance, std::move(SM),
+      //                                           PrimaryFile, PSPs,
+      //                                           ReturnValue, observer);
+
+      status = GenSyntaxFileOrWholeModule(primaryFileSpecificPaths);
+      if (status.IsError()) {
+        break;
+      }
+    }
   }
 
-  // if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-  //   stone::GenIR(cgc, *sf, compiler.GetInvocation().GetLangContext(),
-  //                llvm::StringRef("TODO"));
-  //   status |= fn(compiler, cgc);
-  //   return status;
-
-  // } else if (auto mod = msf.get<syn::ModuleDecl *>()) {
-  //   stone::GenIR(cgc, *mod, compiler.GetInvocation().GetLangContext(),
-  //                OutputFile("TODO"));
-  //   status |= fn(compiler, cgc);
-  //   return status;
-  // }
   status.SetIsError();
   return status;
 }

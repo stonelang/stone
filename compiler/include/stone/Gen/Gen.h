@@ -18,6 +18,7 @@ class TargetMachine;
 
 namespace stone {
 class CodeGenListener;
+class PrimaryFileSpecificPaths;
 
 namespace syn {
 class SyntaxContext;
@@ -30,9 +31,11 @@ class CodeGenContext;
 class IRCodeGenResult;
 
 void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf, const LangContext &ctx,
+           const PrimaryFileSpecificPaths specificPaths,
            llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
 
 void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod, const LangContext &ctx,
+           const PrimaryFileSpecificPaths specificPaths,
            llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
 
 void GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
