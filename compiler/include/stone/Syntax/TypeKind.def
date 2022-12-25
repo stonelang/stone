@@ -153,17 +153,25 @@
 
 
 ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(Number,  BuiltinType)
-    BUILTIN_TYPE(Integer,         NumberType)
-    BUILTIN_TYPE(UInteger,        NumberType)
-    BUILTIN_TYPE(Float,           NumberType)
-    BUILTIN_TYPE(Complex,         NumberType)
-    BUILTIN_TYPE(Imaginary,       NumberType)
-    TYPE_RANGE(Number, Integer, Imaginary) 
-  BUILTIN_TYPE(Bool, BuiltinType)
+  ABSTRACT_TYPE(Scalar,  BuiltinType)
+    ABSTRACT_TYPE(Number,  ScalarType)
+      BUILTIN_TYPE(Integer,         NumberType)
+      BUILTIN_TYPE(UInteger,        NumberType)
+      BUILTIN_TYPE(Float,           NumberType)
+      BUILTIN_TYPE(Complex,         NumberType)
+      BUILTIN_TYPE(Imaginary,       NumberType)
+      TYPE_RANGE(Number, Integer, Imaginary) 
+
+    BUILTIN_TYPE(Bool, ScalarType)
+    BUILTIN_TYPE(Char, ScalarType)
+    TYPE_RANGE(Scalar, Integer, Char) 
+
   BUILTIN_TYPE(Null, BuiltinType)
   BUILTIN_TYPE(Void, BuiltinType)
+  //BUILTIN_TYPE(String, BuiltinType)
+
   TYPE_RANGE(Builtin, Integer, Void) 
+
 CANONICAL_TYPE(Module, Type)
 
 ABSTRACT_TYPE(AbstractPointer, Type)
@@ -171,17 +179,18 @@ ABSTRACT_TYPE(AbstractPointer, Type)
   TYPE(MemberPointer, AbstractPointerType)
   TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
 
+ABSTRACT_TYPE(Reference, Type)
+  TYPE(RValueReference, ReferenceType)
+  TYPE(LValueReference, ReferenceType)
+  TYPE_RANGE(Reference, RValueReference, LValueReference)
+
+
 ABSTRACT_TYPE(Sweet, Type)
   ABSTRACT_TYPE(SyntaxSweet, SweetType)
     SWEET_TYPE(Dictionary, SyntaxSweetType)
     TYPE_RANGE(SyntaxSweetType, Dictionary, Dictionary)
   SWEET_TYPE(Alias, SweetType)
   TYPE_RANGE(Sweet, Dictionary, Alias)
-
-ABSTRACT_TYPE(Reference, Type)
-  TYPE(RValueReference, ReferenceType)
-  TYPE(LValueReference, ReferenceType)
-  TYPE_RANGE(Reference, RValueReference, LValueReference)
 
 
 ABSTRACT_TYPE(Deduced, Type)

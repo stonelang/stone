@@ -12,7 +12,6 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Parse/Parse.h"
-#include "stone/Sem/ImportResolution.h"
 #include "stone/Sem/TypeCheck.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
@@ -56,9 +55,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  auto Finish = [&](Error err = Error()) -> int {
-    return err.GetFlag();
-  };
+  auto Finish = [&](Error err = Error()) -> int { return err.GetFlag(); };
 
   auto programPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto programName = file::GetStem(programPath);
@@ -122,13 +119,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   CompilerInstance compiler(invocation);
+  auto status = compiler.Compile();
 
-  // auto compileAction = GetCompileAction(compiler);
-  // compileAction->Run(); 
-   
-  CompileStatus status = compiler.Compile();
-
-  if (invocation.HasError()) {
+  if (status.IsError() || invocation.HasError()) {
     return Finish(Error(true));
   }
   return Finish();
@@ -154,7 +147,7 @@ CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
           stone::ModuleSyntaxFileUnion msf) -> CompileStatus {
     if (auto syntaxFile = CastToSyntaxFile(msf)) {
       stone::GenIR(cgc, *syntaxFile, primarySpecificPaths);
-      return notifiy(*this, cgc);
+      notifiy(*this, cgc);
     } else if (auto moduleDecl = CastToModuleDecl(msf)) {
       stone::GenIR(cgc, *moduleDecl, primarySpecificPaths);
       return notifiy(*this, cgc);
@@ -173,8 +166,14 @@ CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
     for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-      return GenSyntaxFileOrWholeModule(primaryFileSpecificPaths,
-                                        primarySyntaxFile);
+      auto status = GenSyntaxFileOrWholeModule(primaryFileSpecificPaths,
+                                               primarySyntaxFile);
+
+      if (status.IsError()) {
+        break;
+      } else {
+        notifiy(*this, cgc);
+      }
     }
   }
 
@@ -298,31 +297,6 @@ static CompileStatus PrintSyntax(CompilerInstance &compiler) {
   return CompileStatus::MakeSuccess();
 }
 
-void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
-
-  switch (invocation.GetTypeCheckMode()) {
-  case TypeCheckMode::WholeModule: {
-    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
-      if (syntaxFile) {
-        client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-               invocation.GetListener());
-      }
-    }
-    break;
-  }
-  case TypeCheckMode::EachFile: {
-    for (auto *syntaxFile :
-         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-             invocation.GetListener());
-    }
-    break;
-  }
-  default: {
-  }
-  }
-}
 CompileStatus CompilerInstance::CompileWithParsing() {
   return CompileWithParsing(
       [&](syn::SyntaxFile &) { return CompileStatus::MakeSuccess(); });
@@ -347,22 +321,15 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
   return CompileStatus::MakeSuccess();
 }
 
-void CompilerInstance::ResolveImports() {
-  // Resolve imports for all the source files.
-  for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
-      sem::ResolveImports(*syntaxFile);
-  }
-}
 CompileStatus CompilerInstance::CompileWithTypeChecking() {
   return CompileWithTypeChecking(
       [&](CompilerInstance &) { return CompileStatus::MakeSuccess(); });
 }
 
-CompileStatus
-CompilerInstance::CompileWithTypeChecking(TypeCheckingCompletedCallback fn) {
+CompileStatus CompilerInstance::CompileWithTypeChecking(
+    TypeCheckingCompletedCallback notifiy) {
 
-  CompileStatus status = CompileWithParsing();
+  auto status = CompileWithParsing();
   if (status.IsError()) {
     return status;
   }
@@ -376,9 +343,8 @@ CompilerInstance::CompileWithTypeChecking(TypeCheckingCompletedCallback fn) {
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
   }
-  return fn(*this);
+  return notifiy(*this);
 }
-
 CompileStatus CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
@@ -386,8 +352,6 @@ CompileStatus CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-  // TODO: Future CreateSyntax();
-
   CompileStatus status;
   switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
   case ModeKind::Parse:
@@ -409,6 +373,5 @@ CompileStatus CompilerInstance::Compile() {
         [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
-  // For now
   return status;
 }

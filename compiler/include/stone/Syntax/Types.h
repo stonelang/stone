@@ -187,6 +187,35 @@ public:
 // class TemplateParmType : public Type{
 // };
 
+class BuiltinType : public TypeBase {
+protected:
+  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
+};
+
+class IdentifierType : public TypeBase {};
+
+
+class ScalarType : public BuiltinType {
+public:
+
+  ScalarType(TypeKind kind, const SyntaxContext &sc) : BuiltinType(kind, sc) {}
+};
+
+class CharType : public ScalarType {
+public:
+  CharType(const SyntaxContext &sc) : ScalarType(TypeKind::Char, sc) {}
+};
+
+class BoolType : public ScalarType {
+public:
+  BoolType(const SyntaxContext &sc) : ScalarType(TypeKind::Bool, sc) {}
+};
+
+// class StringType : public BuiltinType {
+// public:
+//   StringType(const SyntaxContext &sc) : ScalarType(TypeKind::String, sc) {}
+// };
+
 struct NumberBitWidth final {
   enum Kind : UInt8 {
     Platform = 0,
@@ -217,28 +246,15 @@ struct NumberBitWidth final {
     llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
   }
 };
-
-class BuiltinType : public TypeBase {
-protected:
-  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
-};
-
-// class IdentifierType : public TypeBase {
-// protected:
-//   IdentifierType(TypeKind kind
-//            const SyntaxContext &sc): TypeBase(kind, &sc) {}
-// };
-
 using NumberBitWidthKind = NumberBitWidth::Kind;
-
 /// An abstract base class for integers and floats
-class NumberType : public BuiltinType {
+class NumberType : public ScalarType {
   NumberBitWidthKind bitWidthKind;
 
 public:
   NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
              const SyntaxContext &sc)
-      : BuiltinType(kind, sc), bitWidthKind(bitWidthKind) {}
+      : ScalarType(kind, sc), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -314,10 +330,7 @@ public:
   NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
-class BoolType : public BuiltinType {
-public:
-  BoolType(const SyntaxContext &sc) : BuiltinType(TypeKind::Bool, sc) {}
-};
+class ChunkType : public TypeBase, public llvm::FoldingSetNode {};
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
@@ -390,165 +403,6 @@ class DictionaryType : public SyntaxSweetType {};
 
 // class ArrayType : public Type, public llvm::FoldingSetNode {
 // public:
-// };
-
-// public:
-//   // QualType getPointeeType() const { return PointeeType; }
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   // }
-
-//   // static bool classof(const Type *T) { return T->getTypeClass() ==
-//   Pointer; }
-// };
-
-/// Base for LValueReferenceType and RValueReferenceType
-// class ReferenceType : public Type, public llvm::FoldingSetNode {
-//    QualType PointeeType;
-
-// protected:
-//   ReferenceType(TypeClass tc, QualType Referencee, QualType
-// CanonicalRef,
-//                 bool SpelledAsLValue)
-//       : Type(tc, CanonicalRef, Referencee->getDependence()),
-//         PointeeType(Referencee) {
-//     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
-//     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
-//   }
-
-//   // public:
-//   //   bool isSpelledAsLValue() const { return
-//   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const {
-//   return
-//   //   ReferenceTypeBits.InnerRef; }
-
-//   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
-
-//   //   QualType getPointeeType() const {
-//   //     // FIXME: this might strip inner qualifiers; okay?
-//   //     const ReferenceType *T = this;
-//   //     while (T->isInnerRef())
-//   //       T = T->PointeeType->castAs<ReferenceType>();
-//   //     return T->PointeeType;
-//   //   }
-
-//   //   void Profile(llvm::FoldingSetNodeID &ID) {
-//   //     Profile(ID, PointeeType, isSpelledAsLValue());
-//   //   }
-
-//   //   static void Profile(llvm::FoldingSetNodeID &ID,
-//   //                       QualType Referencee,
-//   //                       bool SpelledAsLValue) {
-//   //     ID.AddPointer(Referencee.getAsOpaquePtr());
-//   //     ID.AddBoolean(SpelledAsLValue);
-//   //   }
-
-//   //   static bool classof(const Type *T) {
-//   //     return T->getTypeClass() == LValueReference ||
-//   //            T->getTypeClass() == RValueReference;
-//   //   }
-//};
-
-// /// An lvalue reference type, per C++11 [dcl.ref].
-// class LValueReferenceType final : public ReferenceType {
-
-//   friend class ASTContext; // ASTContext creates these
-
-//   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
-//                       bool SpelledAsLValue)
-//       : ReferenceType(LValueReference, Referencee, CanonicalRef,
-//                       SpelledAsLValue) {}
-
-// public:
-//   bool isSugared() const { return false; }
-//   QualType desugar() const { return QualType(this, 0); }
-
-//   static bool classof(const Type *T) {
-//     return T->getTypeClass() == LValueReference;
-//   }
-//};
-
-// /// An rvalue reference type, per C++11 [dcl.ref].
-// class RValueReferenceType : public ReferenceType {
-//   friend class ASTContext; // ASTContext creates these
-
-//   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-//        : ReferenceType(RValueReference, Referencee, CanonicalRef,false){}
-
-// public:
-//   bool isSugared() const { return false; }
-//   QualType desugar() const { return QualType(this, 0); }
-
-//   static bool classof(const Type *T) {
-//     return T->getTypeClass() == RValueReference;
-//   }
-//};
-
-// /// A pointer to member type per C++ 8.3.3 - Pointers to members.
-// ///
-// /// This includes both pointers to data members and pointer to member
-// functions. class MemberPointerType : public Type, public
-// llvm::FoldingSetNode
-// {
-//   //   friend class ASTContext; // ASTContext creates these.
-
-//   //   QualType PointeeType;
-
-//   //   /// The class of which the pointee is a member. Must ultimately be a
-//   //   /// RecordType, but could be a typedef or a template parameter too.
-//   //   const Type *Class;
-
-//   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
-//   //   CanonicalPtr)
-//   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() &
-//   ~TypeDependence::VariablyModified)
-//   |
-//   //                  Pointee->getDependence()),
-//   //         PointeeType(Pointee), Class(Cls) {}
-
-//   // public:
-//   //   QualType getPointeeType() const { return PointeeType; }
-
-//   //   /// Returns true if the member type (i.e. the pointee type) is a
-//   //   /// function type rather than a data-member type.
-//   //   bool isMemberFunctionPointer() const {
-//   //     return PointeeType->isFunctionProtoType();
-//   //   }
-
-//   /// Returns true if the member type (i.e. the pointee type) is a
-//   /// data type rather than a function type.
-//   // bool isMemberDataPointer() const {
-//   //   return !PointeeType->isFunctionProtoType();
-//   // }
-
-//   // const Type *getClass() const { return Class; }
-//   // CXXRecordDecl *getMostRecentCXXRecordDecl() const;
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType(), getClass());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee,
-//   //                     const Type *Class) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   //   ID.AddPointer(Class);
-//   // }
-
-//   // static bool classof(const Type *T) {
-//   //   return T->getTypeClass() == MemberPointer;
-//   // }
 // };
 
 } // namespace syn

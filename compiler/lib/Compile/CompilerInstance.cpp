@@ -1,5 +1,6 @@
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Sem/ImportResolution.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -68,6 +69,39 @@ CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }
 
+void CompilerInstance::ResolveImports() {
+  // Resolve imports for all the source files.
+  for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile))
+      sem::ResolveImports(*syntaxFile);
+  }
+}
+
+void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+
+  switch (invocation.GetTypeCheckMode()) {
+  case TypeCheckMode::WholeModule: {
+    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+      auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
+      if (syntaxFile) {
+        client(*syntaxFile, invocation.GetTypeCheckerOptions(),
+               invocation.GetListener());
+      }
+    }
+    break;
+  }
+  case TypeCheckMode::EachFile: {
+    for (auto *syntaxFile :
+         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
+      client(*syntaxFile, invocation.GetTypeCheckerOptions(),
+             invocation.GetListener());
+    }
+    break;
+  }
+  default: {
+  }
+  }
+}
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
   //   // GetLangContext().Out() << GetName() << '\n';
