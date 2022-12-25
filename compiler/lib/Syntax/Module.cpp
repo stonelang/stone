@@ -81,6 +81,14 @@ SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
   return parsingOptions;
 }
 
+llvm::StringRef SyntaxFile::GetFilename() const {
+  if (srcID == -1) {
+    return llvm::StringRef();
+  }
+  SrcMgr &sm = GetSyntaxContext().GetSrcMgr();
+  return sm.getIdentifierForBuffer(srcID);
+}
+
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, unsigned srcID,
                                        syn::ModuleDecl &owner,
                                        SyntaxContext &sc, bool isPrimary) {

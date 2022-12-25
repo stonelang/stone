@@ -141,7 +141,6 @@ public:
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
-
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
@@ -156,16 +155,12 @@ private:
   CompileStatus CompileWithTypeChecking();
   CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback fn);
 
-private:
   CompileStatus CompileWithCodeGen();
-  // TODO: Some things to think about
-  CompileStatus CompileWithIRCodeGen();
-  CompileStatus CompileWithNativeCodeGen();
+  CompileStatus CompileWithGenIR(CodeGenContext &cgc,
+                                 IRCodeGenCompletedCallback notifiy);
+  CompileStatus CompileWithGenNative(CodeGenContext &cgc);
 
-  // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
-  // &cgc,
-  //                       CompileWithGenIRCallback client);
-
+private:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);
   void ResolveImports();
 
@@ -190,7 +185,7 @@ public:
   GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
 
 public:
-  /// Gets the set of SourceFiles which are the primary inputs for this
+  /// Gets the set of SyntaxFiles which are the primary inputs for this
   /// CompilerInstance.
   llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
     return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
@@ -200,10 +195,10 @@ public:
   GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const;
+  GetPrimaryFileSpecificPathsForAtMostOnePrimary() const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForAtMostOnePrimary() const;
+  GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
   GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;

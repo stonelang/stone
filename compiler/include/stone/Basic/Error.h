@@ -19,6 +19,7 @@ private:
 public:
   Error(bool e = false) : err(e) {}
   bool Has() { return err; }
+  int GetFlag() { Has() ? 1 : 0; }
 };
 
 inline void Panic(const char *msg) { llvm_unreachable(msg); }

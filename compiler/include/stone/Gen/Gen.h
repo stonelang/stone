@@ -30,13 +30,13 @@ class CodeGenOptions;
 class CodeGenContext;
 class IRCodeGenResult;
 
-void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf, const LangContext &ctx,
+void GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
            const PrimaryFileSpecificPaths specificPaths,
-           llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
+           CodeGenListener *listener = nullptr);
 
-void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod, const LangContext &ctx,
+void GenIR(CodeGenContext &cgc, syn::ModuleDecl &mod,
            const PrimaryFileSpecificPaths specificPaths,
-           llvm::StringRef outputFilename, CodeGenListener *listener = nullptr);
+           CodeGenListener *listener = nullptr);
 
 void GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
                llvm::StringRef outputFilename,

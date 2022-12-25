@@ -15,6 +15,7 @@ using String = std::string;
 
 template <typename T> using Safe = std::unique_ptr<T>;
 template <typename T> using Vector = std::vector<T>;
+template <typename F, typename S> using Pair = std::pair<F, S>;
 
 } // namespace stone
 #endif

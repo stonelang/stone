@@ -78,9 +78,8 @@ using namespace stone;
 using namespace stone::syn;
 
 void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
-                  const LangContext &lc,
                   const PrimaryFileSpecificPaths specificPaths,
-                  llvm::StringRef outputFilename, CodeGenListener *listener) {
+                  CodeGenListener *listener) {
 
   auto mod = sf.GetParentModule();
   IRCodeGen cg(cgc, listener);
@@ -89,9 +88,8 @@ void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
 }
 
 void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl &md,
-                  const LangContext &lc,
                   const PrimaryFileSpecificPaths specificPaths,
-                  llvm::StringRef outputFilename, CodeGenListener *listener) {
+                  CodeGenListener *listener) {
 
   IRCodeGen cg(cgc, listener);
   // IRCodeGenModule cgm(cg, sf, outputFilename);

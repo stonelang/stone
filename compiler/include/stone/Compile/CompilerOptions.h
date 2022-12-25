@@ -4,6 +4,7 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
@@ -20,7 +21,7 @@ class CompilerOptions final : public BaseOptions {
   friend class CompilerInputsConverter;
 
   /// A list of arbitrary modules to import and make implicitly visible.
-  std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
+  Vector<Pair<String, bool /*testable*/>> implicitModuleNames;
 
   ///
   CompilerInputsAndOutputs inputsAndOutputs;

@@ -44,18 +44,29 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
 
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode()
-    const {}
-
+    const {
+  return GetPrimaryFileSpecificPathsForAtMostOnePrimary();
+}
+const PrimaryFileSpecificPaths &
+CompilerInstance::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
+  return invocation.GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
+}
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
-    llvm::StringRef fileName) const {}
-
-const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {}
-
+    StringRef filename) const {
+  return invocation.GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForPrimary(filename);
+}
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
-    const syn::SyntaxFile &sf) const {}
+    const syn::SyntaxFile &sf) const {
+  return invocation.GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
+}
 
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
