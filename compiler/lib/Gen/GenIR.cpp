@@ -77,20 +77,23 @@
 using namespace stone;
 using namespace stone::syn;
 
-void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
-                  const PrimaryFileSpecificPaths specificPaths,
-                  CodeGenListener *listener) {
+void GenIR(CodeGenContext &cgc, const PrimaryFileSpecificPaths paths,
+           syn::ModuleDecl *md,
+           syn::SyntaxFile *sf, CodeGenListener *listener) {
 
-  auto mod = sf.GetParentModule();
-  IRCodeGen cg(cgc, listener);
-
+  // IRCodeGen cg(cgc, listener);
   // IRCodeGenModule cgm(cg, sf, outputFilename);
 }
 
-void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl &md,
-                  const PrimaryFileSpecificPaths specificPaths,
+void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile &sf,
+                  const PrimaryFileSpecificPaths paths,
                   CodeGenListener *listener) {
+  auto md = sf.GetParentModule();
+  ::GenIR(cgc, paths, md, &sf, listener);
+}
 
-  IRCodeGen cg(cgc, listener);
-  // IRCodeGenModule cgm(cg, sf, outputFilename);
+void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl &md,
+                  const PrimaryFileSpecificPaths paths,
+                  CodeGenListener *listener) {
+  ::GenIR(cgc, paths, &md, nullptr, listener);
 }

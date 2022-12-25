@@ -142,7 +142,7 @@ CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
   for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-        stone::GenIR(cgc, *primarySyntaxFile, primaryFileSpecificPaths);
+    stone::GenIR(cgc, *primarySyntaxFile, primaryFileSpecificPaths);
   }
   return notifiy(instance, cgc);
 }
