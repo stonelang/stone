@@ -24,11 +24,34 @@ static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
+static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts, CodeGenOptions &codeGenOpts) {
+
+  // TODO: You are missing a few -- OK for now
+  switch (compilerOpts.GetMode().GetKind()) {
+  case ModeKind::EmitModule:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
+  case ModeKind::EmitIRPre:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
+  case ModeKind::EmitIR:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
+  case ModeKind::EmitBC:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
+    break;
+  case ModeKind::EmitAssembly:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
+    break;
+  default:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::ObjectFile;
+    break;
+  }
+}
+
 static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
                                    DiagnosticEngine &de,
                                    CompilerOptions &compilerOpts,
                                    CodeGenOptions &codeGenOpts) {
 
+  ComputeCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
   return Error();
 }
 

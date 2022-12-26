@@ -27,6 +27,7 @@ class ModuleOptions;
 class TargetOptions;
 
 class CodeGenContext final {
+
   llvm::LLVMContext &llvmContext;
   const CodeGenOptions &genOpts;
   const ModuleOptions &moduleOpts;
@@ -42,11 +43,10 @@ class CodeGenContext final {
   llvm::CGSCCAnalysisManager cgam;
   llvm::ModuleAnalysisManager mam;
   llvm::ModulePassManager mpm;
+  llvm::legacy::PassManager lpm;
 
   Safe<llvm::Module> mod;
-  // legacy::PassManager legacyPM;
   Safe<llvm::TargetMachine> tm;
-
   llvm::GlobalVariable **outModuleHash;
 
 public:
@@ -82,6 +82,7 @@ public:
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
   llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
+  llvm::legacy::PassManager &GetLegacyPassManager() { return lpm; }
 
   llvm::TargetMachine &GetTargetMachine() {
     assert(tm.get());

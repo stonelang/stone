@@ -189,6 +189,8 @@ public:
   static std::unique_ptr<llvm::raw_fd_ostream>
   GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
 
+  void ComputeCodeCodeGenOutputKind();
+
 public:
   /// Gets the set of SyntaxFiles which are the primary inputs for this
   /// CompilerInstance.

@@ -142,7 +142,7 @@ CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
   for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-    stone::GenIR(cgc, *primarySyntaxFile, primaryFileSpecificPaths);
+    stone::GenIR(cgc, primarySyntaxFile, primaryFileSpecificPaths);
   }
   return notifiy(instance, cgc);
 }
@@ -154,7 +154,7 @@ CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
   auto *mainModule = instance.GetModuleSystem().GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
       instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-  stone::GenIR(cgc, *mainModule, primaryFileSpecificPaths);
+  stone::GenIR(cgc, mainModule, primaryFileSpecificPaths);
   return notifiy(instance, cgc);
 }
 CompileStatus
@@ -178,26 +178,6 @@ static CompileStatus GenModule(CompilerInstance &compiler,
 
 CompileStatus CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
-  auto ComputeNativeModeKind = [&]() -> void {
-    switch (GetMode().GetKind()) {
-    case ModeKind::None:
-    case ModeKind::EmitObject:
-      GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitObject;
-      break;
-    case ModeKind::EmitBC:
-      GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitBC;
-      break;
-    case ModeKind::EmitAssembly:
-      GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitAssembly;
-      break;
-    default:
-      stone::Panic("Unknown Native mode kind");
-    }
-  };
-  ComputeNativeModeKind();
   stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
                    GetInvocation().GetListener());
 
@@ -222,8 +202,6 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // // Set the module's string representation.
   // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
 
-  // cgc.Initialize();
-
   // clang::TargetInfo &targetInfo =
   //     GetInvocation().GetClangContext().GetInstance().getTarget();
 
@@ -245,32 +223,23 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
   // }
 
-  // auto targetMachine = stone::CreateTargetMachine(
-  //     compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
-  //     compiler.GetInvocation().GetCodeGenOptions(),
-  //     compiler.GetInvocation().GetTargetOptions(),
-  //     compiler.GetInvocation().GetLangContext().GetLangOptions(),
-  //     compiler.GetSyntaxContext());
-
-  // switch
-  // (invocation.GetCompilerOptions().moduleOutputMode)
-
-  switch (GetMode().GetKind()) {
-  case ModeKind::EmitModule:
+  switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
+  case CodeGenOutputKind::LLVMModule:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return GenModule(*this, cgc);
         });
-  case ModeKind::EmitIR:
+  case CodeGenOutputKind::LLVMIRPreOptimization:
+  case CodeGenOutputKind::LLVMIRPostOptimization:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
           return DumpIR(*this, cgc);
         });
-  case ModeKind::PrintIR:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return PrintIR(*this, cgc);
-        });
+  // case CodeGenOutputKind::PrintIR:
+  //   return CompileWithGenIR(
+  //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //         return PrintIR(*this, cgc);
+  //       });
   default:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {

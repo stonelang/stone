@@ -90,8 +90,8 @@ void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
-  switch (cgc.GetCodeGenOptions().nativeModeKind) {
-  case NativeModeKind::EmitObject:
+  switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
+  case CodeGenOutputKind::ObjectFile:
     EmitObject(cgc, sc, outputFilename);
     break;
   default:

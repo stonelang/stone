@@ -38,22 +38,25 @@ enum class OptimizationLevel : uint8_t {
   Aggressive = 3,
 };
 
-enum class NativeModeKind : uint8_t {
+enum class CodeGenOutputKind : uint8_t {
   None = 0,
-  /// Generate an LLVM module and write it out as LLVM assembly.
-  EmitAssemblyPreOptimization,
+  /// Generate an LLVM module and return it.
+  LLVMModule,
 
   /// Generate an LLVM module and write it out as LLVM assembly.
-  EmitAssemblyPostOptimization,
+  LLVMIRPreOptimization,
+
+  /// Generate an LLVM module and write it out as LLVM assembly.
+  LLVMIRPostOptimization,
 
   /// Generate an LLVM module and write it out as LLVM bitcode.
-  EmitBC,
+  LLVMBitCode,
 
   /// Generate an LLVM module and compile it to assembly.
-  EmitAssembly,
+  NativeAssembly,
 
   /// Generate an LLVM module, compile it, and assemble into an object file.
-  EmitObject
+  ObjectFile
 };
 
 enum class LibraryKind { Library = 0, Framework };
@@ -82,7 +85,7 @@ public:
   /// The code model to use (-mcmodel).
   std::string codeModel;
 
-  NativeModeKind nativeModeKind = NativeModeKind::None;
+  CodeGenOutputKind codeGenOutputKind = CodeGenOutputKind::None;
 
   OptimizationLevel optimizationLevel = OptimizationLevel::None;
 
@@ -99,6 +102,7 @@ public:
 
 public:
   bool CanOptimize() { return optimizationLevel > OptimizationLevel::Default; }
+
   bool OptimizeForSpeed() {
     return optimizationLevel == OptimizationLevel::Default;
   }

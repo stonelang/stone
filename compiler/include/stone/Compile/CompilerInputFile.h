@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_LANGINPUTFILE_H
-#define STONE_COMPILE_LANGINPUTFILE_H
+#ifndef STONE_COMPILE_COMPILEINPUTFILE_H
+#define STONE_COMPILE_COMPILEINPUTFILE_H
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
