@@ -3,7 +3,6 @@
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
 
-
 using namespace stone;
 using namespace stone::syn;
 

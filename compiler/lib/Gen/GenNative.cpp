@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Gen/BackendCodeGen.h"
+#include "stone/Gen/NativeCodeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -86,7 +86,7 @@ static void EmitBC(const CodeGenContext &cgc, syn::SyntaxContext &sc,
 static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
                          llvm::StringRef outputFilename) {}
 
-void stone::GenBackend(CodeGenContext &cgc, syn::SyntaxContext &sc,
+void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
@@ -98,3 +98,20 @@ void stone::GenBackend(CodeGenContext &cgc, syn::SyntaxContext &sc,
     break;
   }
 }
+
+// Error stone::GenNative(llvm::Module *mod, syn::SyntaxContext &context,
+//                const CodeGenOptions &opts llvm::StringRef outputFilename,
+//                CodeGenListener *listener = nullptr) {
+
+//   return Error();
+
+// }
+
+// Error stone::CompileAndWriteNative(llvm::Module *mod, llvm::TargetMachine
+// *targetMachine,
+//                  const CodeGenOptions &opts, StatisticEngine *stats,
+//                  DiagnosticEngine &diags, llvm::raw_pwrite_stream &out,
+//                  llvm::sys::Mutex *diagMutex) {
+
+//   return Error();
+// }

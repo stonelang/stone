@@ -1,4 +1,4 @@
-#include "stone/Compile/Compile.h"
+#include "stone/Public.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
@@ -118,14 +118,22 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
 
-  CompilerInstance compiler(invocation);
-  auto status = compiler.Compile();
+  CompilerInstance compilerInstance(invocation);
+
+  // auto result = stone::CompileFrontend(compilerInstance);
+  // auto result = stone::CompileBackend()
+
+  auto status = compilerInstance.Compile();
 
   if (status.IsError() || invocation.HasError()) {
     return Finish(Error(true));
   }
   return Finish();
 }
+
+// int stone::CompileBackend(BackendInstance& instance){
+//   return 0;
+// }
 
 static CompileStatus DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   CompileStatus::MakeSuccess();
@@ -180,7 +188,7 @@ static CompileStatus GenModule(CompilerInstance &compiler,
 
 CompileStatus CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
 
-  stone::GenBackend(cgc, GetSyntaxContext(), llvm::StringRef(),
+  stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
                    GetInvocation().GetListener());
 
   return CompileStatus::MakeSuccess();
@@ -336,4 +344,12 @@ CompileStatus CompilerInstance::Compile() {
     break;
   }
   return status;
+}
+
+bool stone::CompileFrontend(CompilerInstance &instance) { return true; }
+
+bool stone::CompileBackend(CodeGenContext &codeGenConext, syn::SyntaxContext &syntaxContext,
+                           CodeGenListener *listener) {
+
+  return true;
 }

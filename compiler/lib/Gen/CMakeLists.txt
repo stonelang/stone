@@ -9,7 +9,9 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_gen_sources
+	NativeCodeGen.cpp
 	CodeGenContext.cpp
+	
 	GenDecl.cpp
 	GenStmt.cpp
 	GenExpr.cpp
@@ -24,8 +26,7 @@ set(stone_gen_sources
 	IRCodeGenBuilder.cpp
 	IRCodeGenFunction.cpp
 	IRCodegenModule.cpp
-	NativeCodeGen.cpp
-	Optimize.cpp
+	OptimizeIR.cpp
 	TargetMachine.cpp
 	
 	

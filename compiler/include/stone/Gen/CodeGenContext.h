@@ -36,17 +36,9 @@ class CodeGenContext final {
   const LangContext &langContext;
   ClangContext &clangContext;
 
-  llvm::PassBuilder pb;
-  // Create the analysis managers.
-  llvm::LoopAnalysisManager lam;
-  llvm::FunctionAnalysisManager fam;
-  llvm::CGSCCAnalysisManager cgam;
-  llvm::ModuleAnalysisManager mam;
-  llvm::ModulePassManager mpm;
-  llvm::legacy::PassManager lpm;
-
   Safe<llvm::Module> mod;
   Safe<llvm::TargetMachine> tm;
+
   llvm::GlobalVariable **outModuleHash;
 
 public:
@@ -63,7 +55,6 @@ public:
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
   const LangContext &GetLangContext() const { return langContext; }
   llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
-
   ClangContext &GetClangContext() { return clangContext; }
 
   const llvm::Module &GetLLVMModule() const {
@@ -75,15 +66,6 @@ public:
     return *mod;
   }
 
-public:
-  llvm::PassBuilder &GetPassBuilder() { return pb; }
-  llvm::LoopAnalysisManager &GetLoopAnalysisManager() { return lam; }
-  llvm::FunctionAnalysisManager &GetFunctionAnalysisManager() { return fam; }
-  llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
-  llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
-  llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
-  llvm::legacy::PassManager &GetLegacyPassManager() { return lpm; }
-
   llvm::TargetMachine &GetTargetMachine() {
     assert(tm.get());
     return *tm;
@@ -92,6 +74,7 @@ public:
 private:
   Safe<llvm::TargetMachine> CreateTargetMachine();
 };
+
 } // namespace stone
 
 #endif

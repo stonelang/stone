@@ -82,6 +82,9 @@ class CodeGenOptions final {
 public:
   bool skipOptimization = false;
 
+  /// Should we use the legacy pass manager.
+  unsigned useegacyPassManager : 1;
+
   /// The code model to use (-mcmodel).
   std::string codeModel;
 

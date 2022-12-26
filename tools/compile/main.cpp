@@ -1,6 +1,6 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Compile/Compile.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"

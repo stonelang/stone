@@ -11,9 +11,9 @@ class FunType;
 class VoidType;
 class BoolType;
 
-VoidType *MakeVoidType(SyntaxContext &sc);
-FunType *MakeFunType(SyntaxContext &sc);
-BoolType *MakeBoolType(SyntaxContext &sc);
+// VoidType *MakeVoidType(SyntaxContext &sc);
+// FunType *MakeFunType(SyntaxContext &sc);
+// BoolType *MakeBoolType(SyntaxContext &sc);
 
 } // namespace syn
 } // namespace stone

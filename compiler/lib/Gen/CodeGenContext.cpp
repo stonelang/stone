@@ -1,8 +1,9 @@
+#include "stone/Public.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Foreign/ClangContext.h"
-#include "stone/Public.h"
+#include "stone/Gen/CodeGenScope.h"
 
 using namespace stone;
 
@@ -17,15 +18,7 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
       targetOpts(targetOpts), langContext(langContext),
       clangContext(clangContext), outModuleHash(outModuleHash),
       mod(new llvm::Module(moduleOpts.moduleName, llvmContext)) {
-  // Register all the ctx analyses with the managers.
-  pb.registerModuleAnalyses(mam);
-  pb.registerCGSCCAnalyses(cgam);
-  pb.registerFunctionAnalyses(fam);
-  pb.registerLoopAnalyses(lam);
-  pb.crossRegisterProxies(lam, fam, cgam, mam);
 
-  // TODO: get ol from gen options
-  mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
   tm = CreateTargetMachine();
 }
 
@@ -55,3 +48,19 @@ Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
 
   return stone::CreateTargetMachine(*this);
 }
+
+CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module* mod)
+    : codeGenOpts(codeGenOpts), lfpm(mod) {
+
+  // Register all the ctx analyses with the managers.
+  pb.registerModuleAnalyses(mam);
+  pb.registerCGSCCAnalyses(cgam);
+  pb.registerFunctionAnalyses(fam);
+  pb.registerLoopAnalyses(lam);
+  pb.crossRegisterProxies(lam, fam, cgam, mam);
+
+  // TODO: get ol from gen options
+  mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
+}
+
+CodeGenScope::~CodeGenScope() {}

@@ -19,24 +19,26 @@ class Module;
 class SyntaxContext;
 } // namespace syn
 
-class BackendCodeGen final {
+class NativeCodeGen final {
   CodeGenContext &cgc;
   syn::SyntaxContext &sc;
 
-public:
-  BackendCodeGen(const BackendCodeGen &) = delete;
-  void operator=(const BackendCodeGen &) = delete;
+  // llvm::Optional<raw_fd_ostream> rawStream;
 
 public:
-  BackendCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
-  ~BackendCodeGen();
+  NativeCodeGen(const NativeCodeGen &) = delete;
+  void operator=(const NativeCodeGen &) = delete;
+
+public:
+  NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
+  ~NativeCodeGen();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }
 
   // public:
   //   void EmitObject(const CodeGenContext &result);
-  //   void EmitBC(const  CodeGenContext &result);
+  //   void EmitBitCode(const  CodeGenContext &result);
   //   void EmitAssembly(const CodeGenContext &result);
 };
 } // namespace stone

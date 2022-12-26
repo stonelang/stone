@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_CODEGENADDRESS_H
-#define STONE_GEN_CODEGENADDRESS_H
+#ifndef STONE_GEN_IRCODEGENADDRESS_H
+#define STONE_GEN_IRCODEGENADDRESS_H
 
 #include "stone/Basic/Mem.h"
 #include "stone/Syntax/CodeGenAlignment.h"
@@ -27,14 +27,14 @@ class TargetMachine;
 
 namespace stone {
 
-class CodeGenAddress {
+class IRCodeGenAddress {
   llvm::Value *addr;
   llvm::Type *elementType;
   CodeGenAlignment alignment;
 
 public:
-  CodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
-                 CodeGenAlignment alignment)
+  IRCodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
+                   CodeGenAlignment alignment)
       : addr(addr), elementType(elementType), alignment(alignment) {}
 
 public:
@@ -43,11 +43,11 @@ public:
   CodeGenAlignment GetAlignment() const { return alignment; }
 };
 
-class ConstantAddress : public CodeGenAddress {
+class ConstantAddress : public IRCodeGenAddress {
 public:
   ConstantAddress(llvm::Value *addr, llvm::Type *elementType,
                   CodeGenAlignment alignment)
-      : CodeGenAddress(addr, elementType, alignment) {}
+      : IRCodeGenAddress(addr, elementType, alignment) {}
 };
 
 } // namespace stone
