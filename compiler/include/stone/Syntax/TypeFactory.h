@@ -7,13 +7,14 @@
 
 namespace stone {
 namespace syn {
+class FunType;
+class VoidType;
+class BoolType;
 
-struct TypeFactory final {
-public:
-  // static FunType *MakeFunType(Type result);
-  // static StructType *MakeIntegerType(NumberBitWidthKind bitWidthKind, const
-  // SyntaxContext &sc);
-};
+VoidType *MakeVoidType(SyntaxContext &sc);
+FunType *MakeFunType(SyntaxContext &sc);
+BoolType *MakeBoolType(SyntaxContext &sc);
+
 } // namespace syn
 } // namespace stone
 

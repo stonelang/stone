@@ -29,6 +29,8 @@ struct IRCodeGenTypeCache final {
   // LLVM Address types
   llvm::IntegerType *RelativeAddressTy;
   llvm::PointerType *RelativeAddressPtrTy;
+
+  IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 
 } // namespace stone

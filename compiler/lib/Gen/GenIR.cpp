@@ -77,25 +77,30 @@
 using namespace stone;
 using namespace stone::syn;
 
-void GenIR(CodeGenContext &cgc, const PrimaryFileSpecificPaths paths,
-           syn::ModuleDecl *md, syn::SyntaxFile *sf,
-           CodeGenListener *listener) {
+void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+           const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
+           syn::SyntaxFile *sf, CodeGenListener *listener) {
 
-  // IRCodeGen cg(cgc, listener);
-  // IRCodeGenModule cgm(cg, sf, outputFilename);
+  IRCodeGen cg(cgc, listener);
+  IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
+
+  if (sf) {
+    cgm.EmitSyntaxFile(*sf);
+  } else if (md) {
+  }
 }
 
-void stone::GenIR(CodeGenContext &cgc, syn::SyntaxFile *sf,
-                  const PrimaryFileSpecificPaths paths,
+void stone::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                  syn::SyntaxFile *sf, const PrimaryFileSpecificPaths paths,
                   CodeGenListener *listener) {
 
   assert(sf);
   auto md = sf->GetParentModule();
-  ::GenIR(cgc, paths, md, sf, listener);
+  ::GenIR(cgc, moduleName, paths, md, sf, listener);
 }
 
-void stone::GenIR(CodeGenContext &cgc, syn::ModuleDecl *md,
-                  const PrimaryFileSpecificPaths paths,
+void stone::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                  syn::ModuleDecl *md, const PrimaryFileSpecificPaths paths,
                   CodeGenListener *listener) {
-  ::GenIR(cgc, paths, md, nullptr, listener);
+  ::GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }

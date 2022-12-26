@@ -23,7 +23,7 @@ class TargetMachine;
 namespace stone {
 
 class IRCodeGenFunction;
-class IRCodeGenTypeCache;
+struct IRCodeGenTypeCache;
 
 class IRCodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
 private:

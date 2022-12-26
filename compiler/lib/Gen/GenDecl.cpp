@@ -6,24 +6,33 @@ using namespace stone;
 using namespace stone::syn;
 
 void IRCodeGenModule::EmitDecl(Decl *d) {
+
   switch (d->GetKind()) {
   case DeclKind::Interface:
     return EmitInterfaceDecl(cast<InterfaceDecl>(d));
   case DeclKind::Fun:
     return EmitFunDecl(cast<FunDecl>(d));
   // case DeclKind::Enum:
-  //   return EmitEnumDecl(cast<EnumDecl>(topLvelDecl));
+  //   return EmitEnumDecl(cast<EnumDecl>(d));
   // case DeclKind::Struct:
-  //   return EmitStructDecl(cast<StructDecl>(topLvelDecl));
+  //   return EmitStructDecl(cast<StructDecl>(d));
   default:
     return;
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
+  // Walk through the syntax file and call emit
+  // Emit types and other global decls.
+  for (auto d : sf.Decls) {
+    EmitDecl(d);
+  }
+}
 
-void IRCodeGenModule::EmitStructDecl(StructDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl) {}
 
-void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
 
-void IRCodeGenModule::EmitEnumDecl(EnumDecl *topLevelDecl) {}
+void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
+
+void IRCodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}

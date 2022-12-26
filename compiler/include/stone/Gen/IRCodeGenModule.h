@@ -61,20 +61,20 @@ class CodeGenListener;
 
 class IRCodeGenModule final {
   IRCodeGen &irCodeGen;
-  syn::SyntaxFile *sf;
-  llvm::StringRef outputFileName;
+  llvm::StringRef moduleName;
+  llvm::StringRef outputFilename;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
   void operator=(const IRCodeGenModule &) = delete;
 
 public:
-  IRCodeGenModule(IRCodeGen &irCodeGen, syn::SyntaxFile *sf,
-                  llvm::StringRef outputFileName);
+  IRCodeGenModule(IRCodeGen &irCodeGen, llvm::StringRef moduleName,
+                  llvm::StringRef outputFilename);
   ~IRCodeGenModule();
 
 public:
-  void EmitSyntaxFile(const SyntaxFile &sf);
+  void EmitSyntaxFile(SyntaxFile &sf);
   void EmitDecl(Decl *d);
   void EmitFunDecl(FunDecl *d);
   void EmitInterfaceDecl(InterfaceDecl *d);

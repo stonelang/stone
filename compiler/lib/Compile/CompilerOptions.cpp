@@ -24,7 +24,8 @@ static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
-static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts, CodeGenOptions &codeGenOpts) {
+static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
+                                         CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
   switch (compilerOpts.GetMode().GetKind()) {

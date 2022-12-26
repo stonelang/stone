@@ -142,7 +142,8 @@ CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
   for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-    stone::GenIR(cgc, primarySyntaxFile, primaryFileSpecificPaths);
+    stone::GenIR(cgc, primaryFileSpecificPaths.outputFilename,
+                 primarySyntaxFile, primaryFileSpecificPaths);
   }
   return notifiy(instance, cgc);
 }
@@ -154,7 +155,8 @@ CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
   auto *mainModule = instance.GetModuleSystem().GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
       instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-  stone::GenIR(cgc, mainModule, primaryFileSpecificPaths);
+  stone::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+               primaryFileSpecificPaths);
   return notifiy(instance, cgc);
 }
 CompileStatus
