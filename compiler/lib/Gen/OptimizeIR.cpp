@@ -1,8 +1,8 @@
-#include "stone/Public.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/CodeGenScope.h"
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -69,7 +69,6 @@ using namespace stone;
 
 void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
                        llvm::TargetMachine *targetMachine) {
- 
 
   // if (codeGenOpts.useLegacyPassManager) {
   //   OptimizeIRUsingLegacyPassManger(mod, codeGenOpts, targetMachine);

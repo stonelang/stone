@@ -24,8 +24,6 @@ class raw_pwrite_stream;
 } // namespace llvm
 
 namespace stone {
-class Error;
-class Status;
 class SyntaxListener;
 class CodeGenOptions;
 class CodeGenContext;
@@ -35,6 +33,7 @@ class DiagnosticEngine;
 class CompilerInstance;
 class TypeCheckerListener;
 class CodeGenListener;
+class TypeCheckerOptions;
 namespace syn {
 class SyntaxContext;
 class SyntaxFile;
@@ -88,7 +87,9 @@ class CompilerInstance;
 
 /// Parse, type-check and generate IR for syntax files.
 /// Returns true is successfull
-bool CompileFrontend(CompilerInstance &instance/*, CompileFrontendCallback* callback = nullptr*/ );
+bool CompileFrontend(
+    CompilerInstance
+        &instance /*, CompileFrontendCallback* callback = nullptr*/);
 
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing
@@ -110,7 +111,7 @@ void ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile);
 /// and diagnose problems therein.
 /// Returns true is successfull
 void TypeCheckSyntaxFile(
-    syn::SyntaxFile &syntaxFile,
+    syn::SyntaxFile &syntaxFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckSyntaxFileCallback* callback = nullptr*/);
 
@@ -122,7 +123,7 @@ void TypeCheckSyntaxFile(
 /// emitted.
 /// Returns true is successfull
 void TypeCheckWholeModule(
-    syn::ModuleDecl &&moduleDecl,
+    syn::ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
@@ -141,7 +142,6 @@ void GenSyntaxFileIR(syn::SyntaxFile *syntaxFile,
 /// Returns true is successfull
 void GenModuleIR(syn::ModuleDecl *moduleDecl,
                  CodeGenListener *listener = nullptr);
-
 } // namespace stone
 
 // Code generation
@@ -164,7 +164,8 @@ CreateTargetMachine(CodeGenContext &context);
 // CreateTargetMachine(const CodeGenOptions &codeGenOpts,
 //                     SyntaxContext &syntaxCotext);
 
-void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts, llvm::TargetMachine *target);
+void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
+                llvm::TargetMachine *target);
 
 /// Returns true is successfull
 // bool GenNative(llvm::Module *mod, syn::SyntaxContext &context,

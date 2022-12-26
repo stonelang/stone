@@ -1,14 +1,15 @@
-#include "stone/Sem/TypeCheck.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
 using namespace stone::syn;
+using namespace stone::sem;
 
-void sem::TypeCheck(syn::SyntaxFile &sf,
-                    stone::TypeCheckerOptions &typeCheckerOpts,
-                    TypeCheckerListener *listener) {
+void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
+                                stone::TypeCheckerOptions &typeCheckerOpts,
+                                TypeCheckerListener *listener) {
 
   if (sf.stage == SyntaxFileStage::TypeChecked) {
     return;
@@ -24,8 +25,9 @@ void sem::TypeCheck(syn::SyntaxFile &sf,
   // sf.stage = SyntaxFileStage::AtTypeCheck;
 }
 
-void sem::TypeCheck(syn::Module &m, stone::TypeCheckerOptions &typeCheckerOpts,
-                    TypeCheckerListener *pipeline) {
+void stone::TypeCheckWholeModule(syn::ModuleDecl &m,
+                                 stone::TypeCheckerOptions &typeCheckerOpts,
+                                 TypeCheckerListener *listener) {
   // TypeChecker checker
   // assert(sf.stage == SyntaxFileStage::AtImports);
   // sf.stage = SyntaxFileStage::AtTypeCheck;

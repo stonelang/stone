@@ -1,4 +1,3 @@
-#include "stone/Public.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
@@ -11,7 +10,7 @@
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Sem/TypeCheck.h"
+#include "stone/Public.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
@@ -23,7 +22,6 @@
 
 using namespace stone;
 using namespace stone::syn;
-using namespace stone::sem;
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
@@ -276,7 +274,8 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
+      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+                             invocation.GetListener());
       notifiy(*syntaxFile);
     }
   }
@@ -305,7 +304,7 @@ CompileStatus CompilerInstance::CompileWithTypeChecking(
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
                         TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
-    sem::TypeCheck(syntaxFile, typeCheckerOpts, listener);
+    stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
   });
 
   // TODO: FinishTypeCheck();
@@ -347,7 +346,8 @@ CompileStatus CompilerInstance::Compile() {
 
 bool stone::CompileFrontend(CompilerInstance &instance) { return true; }
 
-bool stone::CompileBackend(CodeGenContext &codeGenConext, syn::SyntaxContext &syntaxContext,
+bool stone::CompileBackend(CodeGenContext &codeGenConext,
+                           syn::SyntaxContext &syntaxContext,
                            CodeGenListener *listener) {
 
   return true;

@@ -1,9 +1,9 @@
-#include "stone/Public.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Foreign/ClangContext.h"
 #include "stone/Gen/CodeGenScope.h"
+#include "stone/Public.h"
 
 using namespace stone;
 
@@ -49,7 +49,7 @@ Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
   return stone::CreateTargetMachine(*this);
 }
 
-CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module* mod)
+CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod)
     : codeGenOpts(codeGenOpts), lfpm(mod) {
 
   // Register all the ctx analyses with the managers.

@@ -36,7 +36,7 @@ public:
   void operator=(CodeGenScope &&) = delete;
 
 public:
-  CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module* mod = nullptr);
+  CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod = nullptr);
   ~CodeGenScope();
 
 public:
