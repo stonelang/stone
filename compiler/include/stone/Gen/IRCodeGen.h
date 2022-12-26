@@ -1,8 +1,6 @@
 #ifndef STONE_GEN_IRCODEGEN_H
 #define STONE_GEN_IRCODEGEN_H
 
-#include <memory>
-
 #include "stone/Basic/LLVM.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenBuilder.h"

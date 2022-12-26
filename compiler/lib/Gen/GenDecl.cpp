@@ -1,11 +1,13 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Decl.h"
+#include "stone/Syntax/Global.h"
+
 
 using namespace stone;
 using namespace stone::syn;
 
-void IRCodeGenModule::EmitDecl(Decl *d) {
+void IRCodeGenModule::EmitTopLevelDecl(Decl *d) {
 
   switch (d->GetKind()) {
   case DeclKind::Interface:
@@ -21,11 +23,13 @@ void IRCodeGenModule::EmitDecl(Decl *d) {
   }
 }
 
+void IRCodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+
 void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {
-    EmitDecl(d);
+    EmitTopLevelDecl(d);
   }
 }
 

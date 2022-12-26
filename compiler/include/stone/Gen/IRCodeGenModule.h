@@ -45,6 +45,7 @@ class Type;
 class AttributeList;
 } // namespace llvm
 
+
 namespace llvm {
 class raw_pwrite_stream;
 class GlobalVariable;
@@ -55,6 +56,19 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+namespace syn {
+  class GlobalDecl;
+  class SyntaxFile;
+  class Decl;
+  class GlobalDecl;
+  class FunDecl;
+  class InterfaceDecl;
+  class StructDecl;
+  class EnumDecl;
+  class VarDecl;
+  class AutoDecl;
+}
+
 
 class IRCodeGen;
 class CodeGenListener;
@@ -75,11 +89,14 @@ public:
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);
-  void EmitDecl(Decl *d);
+  void EmitTopLevelDecl(Decl *d);
+  void EmitGlobalDecl(syn::GlobalDecl* gd);
   void EmitFunDecl(FunDecl *d);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
   void EmitEnumDecl(EnumDecl *d);
+  void EmitVarDecl(EnumDecl *d);
+  void EmitAutoDecl(AutoDecl* d);
 
 private:
   void Emit();

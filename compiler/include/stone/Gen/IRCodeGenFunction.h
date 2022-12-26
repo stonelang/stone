@@ -99,6 +99,8 @@ public:
   // Alignment align,
   //                      const llvm::Twine &name = "");
 
+  IRCodeGenModule &GetIRCodeGenModule() { return cgm; }
+
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
 
