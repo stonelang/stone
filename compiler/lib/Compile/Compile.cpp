@@ -344,7 +344,13 @@ CompileStatus CompilerInstance::Compile() {
   return status;
 }
 
-bool stone::CompileFrontend(CompilerInstance &instance) { return true; }
+bool stone::CompileFrontend(CompilerInstance &instance) {
+
+  assert(instance.CanCompile() &&
+         "Unknown mode -- cannot continue with compile!");
+
+  return true;
+}
 
 bool stone::CompileBackend(CodeGenContext &codeGenConext,
                            syn::SyntaxContext &syntaxContext,

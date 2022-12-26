@@ -1,4 +1,5 @@
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Gen/CodeGenScope.h"
 #include "stone/Gen/Gen.h"
 #include "stone/Gen/NativeCodeGen.h"
 #include "stone/Syntax/Module.h"
@@ -99,19 +100,21 @@ void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
   }
 }
 
-// Error stone::GenNative(llvm::Module *mod, syn::SyntaxContext &context,
-//                const CodeGenOptions &opts llvm::StringRef outputFilename,
-//                CodeGenListener *listener = nullptr) {
+/// Returns true is successfull
+void stone::GenNative(llvm::Module *mod, syn::SyntaxContext &context,
+                      const CodeGenOptions &opts, LangContext &langContext,
+                      llvm::StringRef outputFilename,
+                      CodeGenListener *listener) {
 
-//   return Error();
+  CodeGenScope nativeScope(opts);
 
-// }
+}
 
-// Error stone::CompileAndWriteNative(llvm::Module *mod, llvm::TargetMachine
-// *targetMachine,
-//                  const CodeGenOptions &opts, StatisticEngine *stats,
-//                  DiagnosticEngine &diags, llvm::raw_pwrite_stream &out,
-//                  llvm::sys::Mutex *diagMutex) {
+/// Returns true is successfull
+void stone::WriteNative(llvm::Module *mod, llvm::TargetMachine *targetMachine,
+                        const CodeGenOptions &opts, LangContext &langContext,
+                        llvm::raw_pwrite_stream &out,
+                        llvm::sys::Mutex *diagMutex, CodeGenScope *scope) {
 
-//   return Error();
-// }
+
+}

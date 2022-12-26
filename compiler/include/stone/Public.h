@@ -27,6 +27,7 @@ namespace stone {
 class SyntaxListener;
 class CodeGenOptions;
 class CodeGenContext;
+class CodeGenScope;
 class TargetOptions;
 class LangOptions;
 class DiagnosticEngine;
@@ -165,18 +166,20 @@ CreateTargetMachine(CodeGenContext &context);
 //                     SyntaxContext &syntaxCotext);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
-                llvm::TargetMachine *target);
+                LangContext &langContext, llvm::TargetMachine *target);
 
 /// Returns true is successfull
-// bool GenNative(llvm::Module *mod, syn::SyntaxContext &context,
-//                const CodeGenOptions &opts llvm::StringRef outputFilename,
-//                CodeGenListener *listener = nullptr);
+void GenNative(llvm::Module *mod, syn::SyntaxContext &context,
+               const CodeGenOptions &opts, LangContext &langContext,
+               llvm::StringRef outputFilename,
+               CodeGenListener *listener = nullptr);
 
-// /// Returns true is successfull
-// bool WriteNative(llvm::Module *mod, llvm::TargetMachine *targetMachine,
-//                  const CodeGenOptions &opts, StatisticEngine *stats,
-//                  DiagnosticEngine &diags, llvm::raw_pwrite_stream &out,
-//                  llvm::sys::Mutex *diagMutex = nullptr);
+/// Returns true is successfull
+void WriteNative(llvm::Module *mod, llvm::TargetMachine *targetMachine,
+                 const CodeGenOptions &opts, LangContext &langContext,
+                 llvm::raw_pwrite_stream &out,
+                 llvm::sys::Mutex *diagMutex = nullptr,
+                 CodeGenScope *scope = nullptr);
 
 } // namespace stone
 #endif
