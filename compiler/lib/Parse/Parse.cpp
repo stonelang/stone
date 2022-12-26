@@ -1,4 +1,3 @@
-#include "stone/Parse/Parse.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Public.h"
@@ -8,7 +7,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-void syn::Parse(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener) {
+void stone::ParseSyntaxFile(syn::SyntaxFile &sf, syn::SyntaxContext &sc, SyntaxListener *listener) {
 
   Parser parser(sf, sc, listener);
   llvm::SmallVector<SyntaxResult<Decl>> results;

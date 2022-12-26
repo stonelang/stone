@@ -67,16 +67,13 @@ using namespace stone;
 //   //     *mod, optimizeIRScope.GetModulePassManager());
 // }
 
-bool stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
+void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
                        llvm::TargetMachine *targetMachine) {
-
-	bool status = false; 
+ 
 
   // if (codeGenOpts.useLegacyPassManager) {
   //   OptimizeIRUsingLegacyPassManger(mod, codeGenOpts, targetMachine);
   // } else {
   //   OptimizeIRUsingModulePassManger(mod, codeGenOpts, targetMachine);
   // }
-
-	return status; 
 }

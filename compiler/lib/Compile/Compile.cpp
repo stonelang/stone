@@ -11,7 +11,6 @@
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/Gen.h"
-#include "stone/Parse/Parse.h"
 #include "stone/Sem/TypeCheck.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
@@ -277,7 +276,7 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
+      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
       notifiy(*syntaxFile);
     }
   }

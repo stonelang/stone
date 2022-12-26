@@ -25,6 +25,7 @@ class raw_pwrite_stream;
 
 namespace stone {
 class Error;
+class Status;
 class SyntaxListener;
 class CodeGenOptions;
 class CodeGenContext;
@@ -98,17 +99,17 @@ bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-bool ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
+void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
                      SyntaxListener *listener = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-bool ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile);
+void ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile);
 
 /// Once import resolution is complete, this walks the syntax to resolve types
 /// and diagnose problems therein.
 /// Returns true is successfull
-bool TypeCheckSyntaxFile(
+void TypeCheckSyntaxFile(
     syn::SyntaxFile &syntaxFile,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckSyntaxFileCallback* callback = nullptr*/);
@@ -120,25 +121,25 @@ bool TypeCheckSyntaxFile(
 /// provide a somewhat defined order in which diagnostics should be
 /// emitted.
 /// Returns true is successfull
-bool TypeCheckWholeModule(
+void TypeCheckWholeModule(
     syn::ModuleDecl &&moduleDecl,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
 /// Returns true is successfull
-bool SerializeSyntaxFile(syn::SyntaxFile &syntaxFile);
+void SerializeSyntaxFile(syn::SyntaxFile &syntaxFile);
 
 /// Returns true is successfull
-bool SerializeModule(syn::ModuleDecl &moduleDecl);
+void SerializeModule(syn::ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-bool GenSyntaxFileIR(syn::SyntaxFile *syntaxFile,
+void GenSyntaxFileIR(syn::SyntaxFile *syntaxFile,
                      CodeGenListener *listener = nullptr);
 
 /// Gen IR for the Module
 /// Returns true is successfull
-bool GenModuleIR(syn::ModuleDecl *moduleDecl,
+void GenModuleIR(syn::ModuleDecl *moduleDecl,
                  CodeGenListener *listener = nullptr);
 
 } // namespace stone
@@ -163,7 +164,7 @@ CreateTargetMachine(CodeGenContext &context);
 // CreateTargetMachine(const CodeGenOptions &codeGenOpts,
 //                     SyntaxContext &syntaxCotext);
 
-bool OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts, llvm::TargetMachine *target);
+void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts, llvm::TargetMachine *target);
 
 /// Returns true is successfull
 // bool GenNative(llvm::Module *mod, syn::SyntaxContext &context,
