@@ -81,6 +81,8 @@ class IRCodeGenFunction final {
   IRCodeGenModule &cgm;
   llvm::Function *curFun = nullptr;
 
+  llvm::BasicBlock *returnBB;
+
 public:
   IRCodeGenFunction(const IRCodeGenFunction &) = delete;
   void operator=(const IRCodeGenFunction &) = delete;
@@ -96,6 +98,9 @@ public:
   // llvm::Address CreateAddress(llvm::Type *ty, llvm::Value *arraySize,
   // Alignment align,
   //                      const llvm::Twine &name = "");
+
+public:
+  llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
 
 public:
 };
