@@ -94,7 +94,7 @@ using TypeCheckingCompletedCallback =
 using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
     CompilerInstance &compiler, CodeGenContext &cgc)>;
 
-using NativeCodeGenCompletedCallback =
+using BackendCodeGenCompletedCallback =
     llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
@@ -158,7 +158,7 @@ private:
   CompileStatus CompileWithGenIR(CodeGenContext &cgc,
                                  IRCodeGenCompletedCallback notifiy);
 
-  CompileStatus CompileWithGenNative(CodeGenContext &cgc);
+  CompileStatus CompileWithGenBackend(CodeGenContext &cgc);
 
 private:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);

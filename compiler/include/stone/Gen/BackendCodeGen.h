@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_NATIVECODEGEN_H
-#define STONE_GEN_NATIVECODEGEN_H
+#ifndef STONE_GEN_BACKENDCODEGEN_H
+#define STONE_GEN_BACKENDCODEGEN_H
 
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
@@ -19,17 +19,17 @@ class Module;
 class SyntaxContext;
 } // namespace syn
 
-class NativeCodeGen final {
+class BackendCodeGen final {
   CodeGenContext &cgc;
   syn::SyntaxContext &sc;
 
 public:
-  NativeCodeGen(const NativeCodeGen &) = delete;
-  void operator=(const NativeCodeGen &) = delete;
+  BackendCodeGen(const BackendCodeGen &) = delete;
+  void operator=(const BackendCodeGen &) = delete;
 
 public:
-  NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
-  ~NativeCodeGen();
+  BackendCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
+  ~BackendCodeGen();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }

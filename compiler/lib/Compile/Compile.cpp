@@ -178,9 +178,9 @@ static CompileStatus GenModule(CompilerInstance &compiler,
   return CompileStatus::MakeSuccess();
 }
 
-CompileStatus CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
+CompileStatus CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
 
-  stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
+  stone::GenBackend(cgc, GetSyntaxContext(), llvm::StringRef(),
                    GetInvocation().GetListener());
 
   return CompileStatus::MakeSuccess();
@@ -245,7 +245,7 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   default:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return CompileWithGenNative(cgc);
+          return CompileWithGenBackend(cgc);
         });
   }
 }
