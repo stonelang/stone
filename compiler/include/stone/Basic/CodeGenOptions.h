@@ -1,6 +1,7 @@
 #ifndef STONE_BASIC_CODEGENOPTIONS_H
 #define STONE_BASIC_CODEGENOPTIONS_H
 
+//#include "clang/Basic/PointerAuthOptions.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CodeGen.h"
@@ -84,6 +85,12 @@ public:
 using IRTargetOptions = std::tuple<llvm::TargetOptions, std::string,
                                    std::vector<std::string>, std::string>;
 
+//using clang::PointerAuthSchema;
+struct PointerAuthOptions final /*: clang::PointerAuthOptions*/  {
+public:
+
+};
+
 class CodeGenOptions final {
 public:
   bool skipOptimization = false;
@@ -115,6 +122,8 @@ public:
 
   IRTargetOptions irTargetOptions;
 
+  /// Pointer authentication.
+  //PointerAuthOptions pointerAuthOptions;
 
   /// Emit functions to separate sections.
   unsigned functionSections : 1;

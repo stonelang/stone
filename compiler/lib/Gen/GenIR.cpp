@@ -107,9 +107,6 @@ void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
 
-// IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &Opts,
-//                                           syntaxCotext &Ctx) {}
-
 // std::unique_ptr<llvm::TargetMachine>
 // stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
 //                            SyntaxContext &syntaxCotext) {

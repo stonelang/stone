@@ -5,7 +5,7 @@
 
 namespace stone {
 
-class ClangModuleLoader  {
+class ClangModuleLoader {
 public:
   ClangModuleLoader() {}
 };

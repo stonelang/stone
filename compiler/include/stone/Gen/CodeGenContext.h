@@ -58,7 +58,7 @@ public:
   llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
   ClangContext &GetClangContext() { return clangContext; }
 
-  const llvm::Module& GetLLVMModule() const {
+  const llvm::Module &GetLLVMModule() const {
     assert(mod.get());
     return *mod;
   }

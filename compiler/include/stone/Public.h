@@ -96,7 +96,7 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 } // namespace stone
 
 namespace stone {
-class ClangContext; 
+class ClangContext;
 class CompilerInstance;
 
 using ModuleSyntaxFileUnion =
@@ -176,7 +176,8 @@ namespace stone {
 std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(CodeGenContext &context);
 
-IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts, ClangContext &cc);
+IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
+                                   ClangContext &cc);
 
 std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(const CodeGenOptions &opts,

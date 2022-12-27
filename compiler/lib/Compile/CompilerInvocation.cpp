@@ -313,7 +313,18 @@ static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
   }
 }
 
-IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &opts, ClangContext &cc) {
+//TODO: 
+// static void SetPointerAuthOptions(
+//     PointerAuthOptions &pointerAuthOptions,
+//     const clang::PointerAuthOptions &clangPointerAuthOptions) {
+
+
+//   // Intentionally do a slice-assignment to copy over the clang options.
+//   static_cast<clang::PointerAuthOptions &>(pointerAuthOptions) =
+//       clangPointerAuthOptions;
+// }
+IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &opts,
+                                          ClangContext &cc) {
 
   llvm::TargetOptions llvmTargetOpts;
   // Explicitly request debugger tuning for LLDB which is the default
@@ -335,6 +346,11 @@ static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
   ComputeCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
   codeGenOpts.irTargetOptions = stone::GetIRTargetOptions(codeGenOpts, cc);
 
+  // if (cc.GetInstance().getLangOpts().PointerAuthCalls) {
+
+  //   SetPointerAuthOptions(const_cast<CodeGenOptions &>(codeGenOpts).pointerAuth,
+  //                          cc.GetInstance().getCodeGenOpts().PointerAuth);
+  // }
   return Error();
 }
 

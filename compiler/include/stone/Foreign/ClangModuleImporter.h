@@ -3,7 +3,6 @@
 
 #include "stone/Foreign/ClangModuleLoader.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {

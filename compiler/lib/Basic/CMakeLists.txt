@@ -36,6 +36,7 @@ set(stone_basic_sources
 	UnixDirWatcher.cpp
 	Version.cpp
 	WinDirWatcher.cpp
+
 )
 add_stone_library(StoneBasic
 	${stone_basic_sources}
