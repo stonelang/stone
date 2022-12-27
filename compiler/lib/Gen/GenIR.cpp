@@ -1,8 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Public.h"
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -78,8 +78,8 @@ using namespace stone;
 using namespace stone::syn;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-           const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
-           syn::SyntaxFile *sf, CodeGenListener *listener) {
+                  const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
+                  syn::SyntaxFile *sf, CodeGenListener *listener) {
 
   IRCodeGen cg(cgc, listener);
   IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
@@ -91,8 +91,9 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  syn::SyntaxFile *sf, const PrimaryFileSpecificPaths paths,
-                  CodeGenListener *listener) {
+                            syn::SyntaxFile *sf,
+                            const PrimaryFileSpecificPaths paths,
+                            CodeGenListener *listener) {
 
   assert(sf);
   auto md = sf->GetParentModule();
@@ -100,7 +101,21 @@ void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  syn::ModuleDecl *md, const PrimaryFileSpecificPaths paths,
-                  CodeGenListener *listener) {
+                        syn::ModuleDecl *md,
+                        const PrimaryFileSpecificPaths paths,
+                        CodeGenListener *listener) {
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
+
+// IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &Opts,
+//                                           syntaxCotext &Ctx) {}
+
+// std::unique_ptr<llvm::TargetMachine>
+// stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
+//                            SyntaxContext &syntaxCotext) {
+
+//   auto targetOptionsContext =
+//       stone::GetIRTargetOptions(codeGenOpts, syntaxCotext);
+
+//   return nullptr;
+// }

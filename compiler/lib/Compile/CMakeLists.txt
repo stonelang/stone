@@ -3,7 +3,6 @@ set(stone_compile_sources
 	CompilerInstance.cpp
 	Deserialization.cpp
 	CompilerInvocation.cpp
-	CompilerOptions.cpp
 	CompilerInputsAndOutputs.cpp
 	CompilerInputsConverter.cpp
 	CompilerOptionsConverter.cpp

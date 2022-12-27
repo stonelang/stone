@@ -1,6 +1,7 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Error.h"
 #include "stone/Basic/STDAlias.h"
 
@@ -57,7 +58,7 @@ public:
   llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
   ClangContext &GetClangContext() { return clangContext; }
 
-  const llvm::Module &GetLLVMModule() const {
+  const llvm::Module& GetLLVMModule() const {
     assert(mod.get());
     return *mod;
   }
@@ -69,6 +70,14 @@ public:
   llvm::TargetMachine &GetTargetMachine() {
     assert(tm.get());
     return *tm;
+  }
+
+  llvm::CodeGenFileType GetCodeGenFileType() {
+
+    return (GetCodeGenOptions().codeGenOutputKind ==
+                    CodeGenOutputKind::NativeAssembly
+                ? llvm::CGFT_AssemblyFile
+                : llvm::CGFT_ObjectFile);
   }
 
 private:

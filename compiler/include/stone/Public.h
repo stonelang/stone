@@ -1,6 +1,7 @@
 #ifndef STONE_PUBLIC_H
 #define STONE_PUBLIC_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Error.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
@@ -47,6 +48,13 @@ class ModuleDecl;
 } // namespace stone
 
 namespace stone {
+
+// struct Public final {
+//   DiagnosticEngine diagnosticEngine;
+//   StatisticEngine statisticEngine;
+//   Public() : diagnosticEngine(DiagnosticOptions()) {}
+// };
+
 class LangContext final {
   FileMgr fm;
   SrcMgr sm;
@@ -88,6 +96,7 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 } // namespace stone
 
 namespace stone {
+class ClangContext; 
 class CompilerInstance;
 
 using ModuleSyntaxFileUnion =
@@ -95,9 +104,9 @@ using ModuleSyntaxFileUnion =
 
 /// Parse, type-check and generate IR for syntax files.
 /// Returns true is successfull
-bool CompileFrontend(
-    CompilerInstance
-        &instance /*, CompileFrontendCallback* callback = nullptr*/);
+// bool CompileFrontend(
+//     CompilerInstance
+//         &instance /*, CompileFrontendCallback callback = nullptr*/);
 
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing
@@ -139,41 +148,39 @@ void TypeCheckWholeModule(
 void SerializeSyntaxFile(syn::SyntaxFile &syntaxFile);
 
 /// Returns true is successfull
-void SerializeModule(syn::ModuleDecl &moduleDecl);
+void SerializeModuleDecl(syn::ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, syn::SyntaxFile *sf,
-           const PrimaryFileSpecificPaths specificPaths,
-           CodeGenListener *listener = nullptr);
+void GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                     syn::SyntaxFile *sf,
+                     const PrimaryFileSpecificPaths specificPaths,
+                     CodeGenListener *listener = nullptr);
 
 /// Gen IR for the Module
 /// Returns true is successfull
 void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-           syn::ModuleDecl *mod, const PrimaryFileSpecificPaths specificPaths,
-           CodeGenListener *listener = nullptr);
+                 syn::ModuleDecl *mod,
+                 const PrimaryFileSpecificPaths specificPaths,
+                 CodeGenListener *listener = nullptr);
 
 } // namespace stone
 
 // Code generation
 namespace stone {
 /// Returns true is successfull
-bool CompileBackend(CodeGenContext &codeGenConext,
-                    syn::SyntaxContext &syntaxContext,
-                    CodeGenListener *listener = nullptr);
+// bool CompileBackend(CodeGenContext &codeGenConext,
+//                     syn::SyntaxContext &syntaxContext,
+//                     CodeGenListener *listener = nullptr);
 
 std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(CodeGenContext &context);
 
-// using TargetOptionsContext = std::tuple<llvm::TargetOptions, std::string,
-//                                         std::vector<std::string>,
-//                                         std::string>;
-// TargetOptionsContext GetIRTargetOptions(const CodeGenOptions &Opts,
-//                                         ASTContext &Ctx);
+IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts, ClangContext &cc);
 
-// std::unique_ptr<llvm::TargetMachine>
-// CreateTargetMachine(const CodeGenOptions &codeGenOpts,
-//                     SyntaxContext &syntaxCotext);
+std::unique_ptr<llvm::TargetMachine>
+CreateTargetMachine(const CodeGenOptions &opts,
+                    syn::SyntaxContext &syntaxCotext);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 LangContext &langContext, llvm::TargetMachine *target);

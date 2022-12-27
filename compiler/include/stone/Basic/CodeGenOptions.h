@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+namespace llvm {
+class TargetOptions;
+}
 namespace stone {
 
 enum class InlineMode {
@@ -78,12 +81,15 @@ public:
   bool ShouldForceLoad() const { return forceLoad; }
 };
 
+using IRTargetOptions = std::tuple<llvm::TargetOptions, std::string,
+                                   std::vector<std::string>, std::string>;
+
 class CodeGenOptions final {
 public:
   bool skipOptimization = false;
 
   /// Should we use the legacy pass manager.
-  unsigned useegacyPassManager : 1;
+  unsigned useLegacyPassManager : 1;
 
   /// The code model to use (-mcmodel).
   std::string codeModel;
@@ -102,6 +108,16 @@ public:
   llvm::Reloc::Model relocationModel;
 
   InlineMode inlineMode = InlineMode::Default;
+
+  /// Should we spend time verifying that the IR we produce is
+  /// well-formed?
+  unsigned verifyWellFormedIR : 1;
+
+  IRTargetOptions irTargetOptions;
+
+
+  /// Emit functions to separate sections.
+  unsigned functionSections : 1;
 
 public:
   bool CanOptimize() { return optimizationLevel > OptimizationLevel::Default; }

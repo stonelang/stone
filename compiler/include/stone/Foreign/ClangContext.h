@@ -4,6 +4,8 @@
 #include "stone/Basic/STDAlias.h"
 #include "stone/Foreign/ClangModuleImporter.h"
 
+
+#include "clang/Basic/TargetInfo.h"
 #include "clang/CodeGen/ModuleBuilder.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"

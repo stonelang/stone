@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/CodeGenScope.h"
-#include "stone/Public.h"
 #include "stone/Gen/NativeCodeGen.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -108,7 +108,7 @@ bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
                       CodeGenListener *listener) {
 
   CodeGenScope nativeScope(cgc.GetCodeGenOptions());
- // EmbedBitcode(mod, nativeScope);
+  // EmbedBitcode(mod, nativeScope);
 
   return true;
 }
@@ -119,17 +119,62 @@ bool stone::WriteEmptyOutputFiles(
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
                       llvm::StringRef outputFilename,
                       llvm::sys::Mutex *diagMutex,
                       llvm::GlobalVariable *hashGlobal,
                       CodeGenListener *listener) {
-  return true; 
+
+  llvm::Optional<llvm::raw_fd_ostream> rawOS;
+  if (!outputFilename.empty()) {
+    // Try to open the output file.  Clobbering an existing file is fine.
+    // Open in binary mode if we're doing binary output.
+    llvm::sys::fs::OpenFlags osFlags = llvm::sys::fs::OF_None;
+    std::error_code ec;
+    rawOS.emplace(outputFilename, ec, osFlags);
+    // if (rawOS->has_error() || ec) {
+    //   PrintSync(diags, diagMutex,
+    //                SrcLoc(), diag::error_opening_output,
+    //                outputFilename, ec.message());
+    //   rawOS->clear_error();
+    //   return true;
+    // }
+    if (cgc.GetCodeGenOptions().codeGenOutputKind ==
+        CodeGenOutputKind::LLVMIRPreOptimization) {
+      cgc.GetLLVMModule().print(rawOS.value(),
+                                nullptr); // Send file to the output stream
+      return false;
+    }
+  } else {
+    assert(cgc.GetCodeGenOptions().codeGenOutputKind ==
+               CodeGenOutputKind::LLVMModule &&
+           "No output specified");
+  }
+  return true;
 }
 
 /// Returns true is successfull
 void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
                         llvm::sys::Mutex *diagMutex,
                         CodeGenScope *parentScope) {
-  
+
+  // switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
+  //   case CodeGenOutputKind::ObjectFile:
+  //   case CodeGenOutputKind::NativeAssembly:{
+  //      cgc.GetLegacyPassManager().add(llvm::createTargetTransformInfoWrapperPass(
+  //         cgc.GetTargetMachine().getTargetIRAnalysis()));
+  //     bool failed =
+  //     cgc.GetTargetMachine().addPassesToEmitFile(cgc.GetTargetMachine(), out,
+  //     nullptr,
+  //                                                    cgc.GetCodeGenFileType(),
+  //                                                    !cgc.GetCodeGenOptions().VerifyWellFormedIR);
+  //     // if (failed) {
+  //     //   PrintSync(diags, diagMutex, SourceLoc(),
+  //     //                diag::error_codegen_init_fail);
+  //     //   return true;
+  //     break;
+  //   }
+  //   default:
+  //     break;
+  //   }
 }

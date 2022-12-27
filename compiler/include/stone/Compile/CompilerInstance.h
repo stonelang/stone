@@ -98,7 +98,7 @@ private:
 
   Status CompileWithGenBackend(CodeGenContext &cgc);
 
-private:
+public:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);
   void ResolveImports();
 
