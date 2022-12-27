@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/CodeGenScope.h"
-#include "stone/Gen/Gen.h"
+#include "stone/Public.h"
 #include "stone/Gen/NativeCodeGen.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"

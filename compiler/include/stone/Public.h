@@ -36,6 +36,9 @@ class CompilerInstance;
 class TypeCheckerListener;
 class CodeGenListener;
 class TypeCheckerOptions;
+class CodeGenListener;
+class PrimaryFileSpecificPaths;
+
 namespace syn {
 class SyntaxContext;
 class SyntaxFile;
@@ -140,13 +143,16 @@ void SerializeModule(syn::ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSyntaxFileIR(syn::SyntaxFile *syntaxFile,
-                     CodeGenListener *listener = nullptr);
+void GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, syn::SyntaxFile *sf,
+           const PrimaryFileSpecificPaths specificPaths,
+           CodeGenListener *listener = nullptr);
 
 /// Gen IR for the Module
 /// Returns true is successfull
-void GenModuleIR(syn::ModuleDecl *moduleDecl,
-                 CodeGenListener *listener = nullptr);
+void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+           syn::ModuleDecl *mod, const PrimaryFileSpecificPaths specificPaths,
+           CodeGenListener *listener = nullptr);
+
 } // namespace stone
 
 // Code generation

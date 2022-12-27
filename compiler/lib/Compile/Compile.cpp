@@ -9,7 +9,6 @@
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Gen/Gen.h"
 #include "stone/Public.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
@@ -147,7 +146,7 @@ static Status CompileWithGenSyntaxFile(CompilerInstance &instance,
   for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-    stone::GenIR(cgc, primaryFileSpecificPaths.outputFilename,
+    stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
                  primarySyntaxFile, primaryFileSpecificPaths);
   }
   return notifiy(instance, cgc);
@@ -160,7 +159,7 @@ static Status CompileWithGenWholeModule(CompilerInstance &instance,
   auto *mainModule = instance.GetModuleSystem().GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
       instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-  stone::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+  stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
                primaryFileSpecificPaths);
   return notifiy(instance, cgc);
 }

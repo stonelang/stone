@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Gen/Gen.h"
+#include "stone/Public.h"
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Module.h"
@@ -77,7 +77,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
            const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
            syn::SyntaxFile *sf, CodeGenListener *listener) {
 
@@ -90,17 +90,17 @@ void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void stone::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   syn::SyntaxFile *sf, const PrimaryFileSpecificPaths paths,
                   CodeGenListener *listener) {
 
   assert(sf);
   auto md = sf->GetParentModule();
-  ::GenIR(cgc, moduleName, paths, md, sf, listener);
+  GenIR(cgc, moduleName, paths, md, sf, listener);
 }
 
-void stone::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   syn::ModuleDecl *md, const PrimaryFileSpecificPaths paths,
                   CodeGenListener *listener) {
-  ::GenIR(cgc, moduleName, paths, md, nullptr, listener);
+  GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
