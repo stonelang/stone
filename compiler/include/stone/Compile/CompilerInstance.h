@@ -21,77 +21,17 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
-class CompileStatus final {
-  unsigned isError : 1;
-  unsigned IsCodeCompletion : 1;
-
-public:
-  /// Construct a successful parser status.
-  CompileStatus() : isError(0), IsCodeCompletion(0) {}
-
-  /// Construct a parser status with specified bits.
-  CompileStatus(bool isError, bool isCodeCompletion = false)
-      : isError(0), IsCodeCompletion(0) {
-    if (isError) {
-      SetIsError();
-    }
-    if (isCodeCompletion) {
-      IsCodeCompletion = true;
-    }
-  }
-  /// Return true if either 1) no errors were encountered while parsing this,
-  /// or 2) there were errors but the the parser already recovered from them.
-  bool IsSuccess() const { return !IsError(); }
-  bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
-
-  /// Return true if we found a code completion token while parsing this.
-  bool HasCodeCompletion() const { return IsCodeCompletion; }
-
-  /// Return true if we encountered any errors while parsing this that the
-  /// parser hasn't yet recovered from.
-  bool IsError() const { return isError; }
-
-  void SetIsError() { isError = true; }
-
-  void SetHasCodeCompletion() { IsCodeCompletion = true; }
-
-  void ClearIsError() { isError = false; }
-
-  void SetHasCodeCompletionAndIsError() {
-    isError = true;
-    IsCodeCompletion = true;
-  }
-  CompileStatus &operator|=(CompileStatus RHS) {
-    isError |= RHS.isError;
-    IsCodeCompletion |= RHS.IsCodeCompletion;
-    return *this;
-  }
-
-  friend CompileStatus operator|(CompileStatus LHS, CompileStatus RHS) {
-    CompileStatus Result = LHS;
-    Result |= RHS;
-    return Result;
-  }
-
-public:
-  static CompileStatus MakeSuccess() { return CompileStatus(); }
-  static CompileStatus MakeError() {
-    CompileStatus Status;
-    Status.SetIsError();
-    return Status;
-  }
-};
 
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
 using ParsingCompletedCallback =
-    llvm::function_ref<CompileStatus(syn::SyntaxFile &)>;
+    llvm::function_ref<Status(syn::SyntaxFile &)>;
 
 using TypeCheckingCompletedCallback =
-    llvm::function_ref<CompileStatus(CompilerInstance &)>;
+    llvm::function_ref<Status(CompilerInstance &)>;
 
-using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
+using IRCodeGenCompletedCallback = llvm::function_ref<Status(
     CompilerInstance &compiler, CodeGenContext &cgc)>;
 
 using BackendCodeGenCompletedCallback =
@@ -145,20 +85,20 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  CompileStatus Compile();
+  Status Compile();
 
 private:
-  CompileStatus CompileWithParsing();
-  CompileStatus CompileWithParsing(ParsingCompletedCallback notifiy);
+  Status CompileWithParsing();
+  Status CompileWithParsing(ParsingCompletedCallback notifiy);
 
-  CompileStatus CompileWithTypeChecking();
-  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
+  Status CompileWithTypeChecking();
+  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
 
-  CompileStatus CompileWithCodeGen();
-  CompileStatus CompileWithGenIR(CodeGenContext &cgc,
+  Status CompileWithCodeGen();
+  Status CompileWithGenIR(CodeGenContext &cgc,
                                  IRCodeGenCompletedCallback notifiy);
 
-  CompileStatus CompileWithGenBackend(CodeGenContext &cgc);
+  Status CompileWithGenBackend(CodeGenContext &cgc);
 
 private:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);

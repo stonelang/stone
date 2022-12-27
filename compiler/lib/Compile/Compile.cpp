@@ -132,15 +132,15 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   return 0;
 // }
 
-static CompileStatus DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
-  CompileStatus::MakeSuccess();
+static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
 }
 
-static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
-  CompileStatus::MakeSuccess();
+static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
 }
 
-static CompileStatus
+static Status
 CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
                          IRCodeGenCompletedCallback notifiy) {
 
@@ -153,7 +153,7 @@ CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
   return notifiy(instance, cgc);
 }
 
-static CompileStatus
+static Status
 CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
                           IRCodeGenCompletedCallback notifiy) {
 
@@ -164,7 +164,7 @@ CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
                primaryFileSpecificPaths);
   return notifiy(instance, cgc);
 }
-CompileStatus
+Status
 CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
                                    IRCodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
@@ -176,22 +176,22 @@ CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
   if (!GetPrimarySyntaxFiles().empty()) {
     return CompileWithGenSyntaxFile(*this, cgc, notifiy);
   }
-  CompileStatus::MakeError();
+  Status::Error();
 }
-static CompileStatus GenModule(CompilerInstance &compiler,
+static Status GenModule(CompilerInstance &compiler,
                                CodeGenContext &cgc) {
-  return CompileStatus::MakeSuccess();
+  return Status::Success();
 }
 
-CompileStatus CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
+Status CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
 
   stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
                    GetInvocation().GetListener());
 
-  return CompileStatus::MakeSuccess();
+  return Status::Success();
 }
 
-CompileStatus CompilerInstance::CompileWithCodeGen() {
+Status CompilerInstance::CompileWithCodeGen() {
 
   assert(GetMode().CanCodeGen() && "Mode does not support code gen");
 
@@ -255,21 +255,21 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static CompileStatus DumpSyntax(CompilerInstance &compiler,
+static Status DumpSyntax(CompilerInstance &compiler,
                                 syn::SyntaxFile &sf) {
-  return CompileStatus::MakeSuccess();
+  return Status::Success();
 }
 
-static CompileStatus PrintSyntax(CompilerInstance &compiler) {
-  return CompileStatus::MakeSuccess();
+static Status PrintSyntax(CompilerInstance &compiler) {
+  return Status::Success();
 }
 
-CompileStatus CompilerInstance::CompileWithParsing() {
+Status CompilerInstance::CompileWithParsing() {
   return CompileWithParsing(
-      [&](syn::SyntaxFile &) { return CompileStatus::MakeSuccess(); });
+      [&](syn::SyntaxFile &) { return Status::Success(); });
 }
 
-CompileStatus
+Status
 CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
@@ -286,15 +286,15 @@ CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
   }
-  return CompileStatus::MakeSuccess();
+  return Status::Success();
 }
 
-CompileStatus CompilerInstance::CompileWithTypeChecking() {
+Status CompilerInstance::CompileWithTypeChecking() {
   return CompileWithTypeChecking(
-      [&](CompilerInstance &) { return CompileStatus::MakeSuccess(); });
+      [&](CompilerInstance &) { return Status::Success(); });
 }
 
-CompileStatus CompilerInstance::CompileWithTypeChecking(
+Status CompilerInstance::CompileWithTypeChecking(
     TypeCheckingCompletedCallback notifiy) {
 
   auto status = CompileWithParsing();
@@ -313,14 +313,14 @@ CompileStatus CompilerInstance::CompileWithTypeChecking(
   }
   return notifiy(*this);
 }
-CompileStatus CompilerInstance::Compile() {
+Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
 
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-  CompileStatus status;
+  Status status;
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
     status = CompileWithParsing();
