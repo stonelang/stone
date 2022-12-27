@@ -87,34 +87,49 @@ static void EmitBC(const CodeGenContext &cgc, syn::SyntaxContext &sc,
 static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
                          llvm::StringRef outputFilename) {}
 
-void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+// void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+//                       llvm::StringRef outputFilename,
+//                       CodeGenListener *listener) {
+
+//   switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
+//   case CodeGenOutputKind::ObjectFile:
+//     EmitObject(cgc, sc, outputFilename);
+//     break;
+//   default:
+//     break;
+//   }
+// }
+
+static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
+
+/// Returns true is successfull
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
-  switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
-  case CodeGenOutputKind::ObjectFile:
-    EmitObject(cgc, sc, outputFilename);
-    break;
-  default:
-    break;
-  }
+  CodeGenScope nativeScope(cgc.GetCodeGenOptions());
+ // EmbedBitcode(mod, nativeScope);
+
+  return true;
 }
 
-/// Returns true is successfull
-void stone::GenNative(llvm::Module *mod, syn::SyntaxContext &context,
-                      const CodeGenOptions &opts, LangContext &langContext,
+bool stone::WriteEmptyOutputFiles(
+    std::vector<std::string> &parallelOutputFilenames,
+    const syn::SyntaxContext &Context, const CodeGenOptions &opts) {
+  return true;
+}
+
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
                       llvm::StringRef outputFilename,
+                      llvm::sys::Mutex *diagMutex,
+                      llvm::GlobalVariable *hashGlobal,
                       CodeGenListener *listener) {
-
-  CodeGenScope nativeScope(opts);
-
+  return true; 
 }
 
 /// Returns true is successfull
-void stone::WriteNative(llvm::Module *mod, llvm::TargetMachine *targetMachine,
-                        const CodeGenOptions &opts, LangContext &langContext,
-                        llvm::raw_pwrite_stream &out,
-                        llvm::sys::Mutex *diagMutex, CodeGenScope *scope) {
-
-
+void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
+                        llvm::sys::Mutex *diagMutex,
+                        CodeGenScope *parentScope) {
+  
 }

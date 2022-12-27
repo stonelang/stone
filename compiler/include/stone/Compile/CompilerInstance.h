@@ -21,18 +21,16 @@ public:
   void Print(ColorfulStream &stream) override;
 };
 
-
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
-using ParsingCompletedCallback =
-    llvm::function_ref<Status(syn::SyntaxFile &)>;
+using ParsingCompletedCallback = llvm::function_ref<Status(syn::SyntaxFile &)>;
 
 using TypeCheckingCompletedCallback =
     llvm::function_ref<Status(CompilerInstance &)>;
 
-using IRCodeGenCompletedCallback = llvm::function_ref<Status(
-    CompilerInstance &compiler, CodeGenContext &cgc)>;
+using IRCodeGenCompletedCallback =
+    llvm::function_ref<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
 
 using BackendCodeGenCompletedCallback =
     llvm::function_ref<void(CompilerInstance &)>;
@@ -96,7 +94,7 @@ private:
 
   Status CompileWithCodeGen();
   Status CompileWithGenIR(CodeGenContext &cgc,
-                                 IRCodeGenCompletedCallback notifiy);
+                          IRCodeGenCompletedCallback notifiy);
 
   Status CompileWithGenBackend(CodeGenContext &cgc);
 

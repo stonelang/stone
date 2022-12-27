@@ -21,6 +21,7 @@ class MemoryBuffer;
 class TargetOptions;
 class TargetMachine;
 class raw_pwrite_stream;
+class GlobalVariable;
 } // namespace llvm
 
 namespace stone {
@@ -85,6 +86,9 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 
 namespace stone {
 class CompilerInstance;
+
+using ModuleSyntaxFileUnion =
+    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
 /// Parse, type-check and generate IR for syntax files.
 /// Returns true is successfull
@@ -158,7 +162,7 @@ CreateTargetMachine(CodeGenContext &context);
 // using TargetOptionsContext = std::tuple<llvm::TargetOptions, std::string,
 //                                         std::vector<std::string>,
 //                                         std::string>;
-// TargetOptionsContext GetIRTargetOptions(const IRGenOptions &Opts,
+// TargetOptionsContext GetIRTargetOptions(const CodeGenOptions &Opts,
 //                                         ASTContext &Ctx);
 
 // std::unique_ptr<llvm::TargetMachine>
@@ -169,17 +173,34 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 LangContext &langContext, llvm::TargetMachine *target);
 
 /// Returns true is successfull
-void GenNative(llvm::Module *mod, syn::SyntaxContext &context,
-               const CodeGenOptions &opts, LangContext &langContext,
+bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
                llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
+bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
+                           const syn::SyntaxContext &Context,
+                           const CodeGenOptions &opts);
+
+/// Run the LLVM passes. In multi-threaded compilation this will be done for
+/// multiple LLVM modules in parallel.
+/// \param Diags The Diagnostic Engine.
+/// \param DiagMutex in contexts that require parallel codegen, a mutex that the
+///                  diagnostic engine uses to synchronize emission.
+/// \param HashGlobal used with incremental LLVMCodeGen to know if a module
+///                   was already compiled, may be null if not desired.
+/// \param Module LLVM module to code gen, required.
+/// \param TargetMachine target of code gen, required.
+/// \param OutputFilename Filename for output.
+
+bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+               llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
+               llvm::GlobalVariable *hashGlobal,
+               CodeGenListener *listener = nullptr);
+
 /// Returns true is successfull
-void WriteNative(llvm::Module *mod, llvm::TargetMachine *targetMachine,
-                 const CodeGenOptions &opts, LangContext &langContext,
-                 llvm::raw_pwrite_stream &out,
+void WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
                  llvm::sys::Mutex *diagMutex = nullptr,
-                 CodeGenScope *scope = nullptr);
+                 CodeGenScope *parentScope = nullptr);
 
 } // namespace stone
 #endif

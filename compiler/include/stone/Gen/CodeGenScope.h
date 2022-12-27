@@ -18,6 +18,8 @@ class CodeGenOptions;
 
 class CodeGenScope final {
   const CodeGenOptions &codeGenOpts;
+  llvm::Module *mod = nullptr;
+  llvm::TargetMachine *targetMachine = nullptr;
 
   llvm::PassBuilder pb;
   llvm::LoopAnalysisManager lam;
@@ -36,7 +38,8 @@ public:
   void operator=(CodeGenScope &&) = delete;
 
 public:
-  CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod = nullptr);
+  CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod = nullptr,
+               llvm::TargetMachine *targetMachine = nullptr);
   ~CodeGenScope();
 
 public:
@@ -51,6 +54,10 @@ public:
     return lfpm;
   }
   llvm::FunctionPassManager &GetFunctionPassManager() { return fpm; }
+
+public:
+  llvm::TargetMachine *GetTargetMachine() { return targetMachine; }
+  llvm::Module *GetLLVMModule() { return mod; }
 };
 
 } // namespace stone

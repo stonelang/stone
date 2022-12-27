@@ -140,9 +140,9 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
 
-static Status
-CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
-                         IRCodeGenCompletedCallback notifiy) {
+static Status CompileWithGenSyntaxFile(CompilerInstance &instance,
+                                       CodeGenContext &cgc,
+                                       IRCodeGenCompletedCallback notifiy) {
 
   for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
@@ -153,9 +153,9 @@ CompileWithGenSyntaxFile(CompilerInstance &instance, CodeGenContext &cgc,
   return notifiy(instance, cgc);
 }
 
-static Status
-CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
-                          IRCodeGenCompletedCallback notifiy) {
+static Status CompileWithGenWholeModule(CompilerInstance &instance,
+                                        CodeGenContext &cgc,
+                                        IRCodeGenCompletedCallback notifiy) {
 
   auto *mainModule = instance.GetModuleSystem().GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
@@ -164,9 +164,8 @@ CompileWithGenWholeModule(CompilerInstance &instance, CodeGenContext &cgc,
                primaryFileSpecificPaths);
   return notifiy(instance, cgc);
 }
-Status
-CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
-                                   IRCodeGenCompletedCallback notifiy) {
+Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
+                                          IRCodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
@@ -178,15 +177,14 @@ CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
   }
   Status::Error();
 }
-static Status GenModule(CompilerInstance &compiler,
-                               CodeGenContext &cgc) {
+static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
   return Status::Success();
 }
 
 Status CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
 
-  stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
-                   GetInvocation().GetListener());
+  auto result = stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
+                                 GetInvocation().GetListener());
 
   return Status::Success();
 }
@@ -255,8 +253,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static Status DumpSyntax(CompilerInstance &compiler,
-                                syn::SyntaxFile &sf) {
+static Status DumpSyntax(CompilerInstance &compiler, syn::SyntaxFile &sf) {
   return Status::Success();
 }
 
@@ -269,8 +266,7 @@ Status CompilerInstance::CompileWithParsing() {
       [&](syn::SyntaxFile &) { return Status::Success(); });
 }
 
-Status
-CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
+Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
@@ -342,19 +338,4 @@ Status CompilerInstance::Compile() {
     break;
   }
   return status;
-}
-
-bool stone::CompileFrontend(CompilerInstance &instance) {
-
-  assert(instance.CanCompile() &&
-         "Unknown mode -- cannot continue with compile!");
-
-  return true;
-}
-
-bool stone::CompileBackend(CodeGenContext &codeGenConext,
-                           syn::SyntaxContext &syntaxContext,
-                           CodeGenListener *listener) {
-
-  return true;
 }

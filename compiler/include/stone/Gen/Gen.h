@@ -38,10 +38,6 @@ void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
            syn::ModuleDecl *mod, const PrimaryFileSpecificPaths specificPaths,
            CodeGenListener *listener = nullptr);
 
-void GenNative(CodeGenContext &cgc, syn::SyntaxContext &tc,
-               llvm::StringRef outputFilename,
-               CodeGenListener *listener = nullptr);
-
 // void EmbedBitCode(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
 //                   llvm::MemoryBufferRef buffer);
 

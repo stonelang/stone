@@ -49,8 +49,10 @@ Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
   return stone::CreateTargetMachine(*this);
 }
 
-CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod)
-    : codeGenOpts(codeGenOpts), lfpm(mod) {
+CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
+                           llvm::TargetMachine *targetMachine)
+    : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
+      lfpm(mod) {
 
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
