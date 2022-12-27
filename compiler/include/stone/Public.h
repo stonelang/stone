@@ -177,11 +177,14 @@ std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(CodeGenContext &context);
 
 IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
+                                   const LangOptions &langOpts,
                                    ClangContext &cc);
 
+/// Disable thumb-mode until debugger support is there.
+bool ShouldRemoveTargetFeature(llvm::StringRef feature);
+
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &opts,
-                    syn::SyntaxContext &syntaxCotext);
+CreateTargetMachine(const CodeGenOptions &opts);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 LangContext &langContext, llvm::TargetMachine *target);

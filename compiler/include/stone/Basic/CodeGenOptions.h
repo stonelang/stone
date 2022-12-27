@@ -1,7 +1,7 @@
 #ifndef STONE_BASIC_CODEGENOPTIONS_H
 #define STONE_BASIC_CODEGENOPTIONS_H
 
-//#include "clang/Basic/PointerAuthOptions.h"
+// #include "clang/Basic/PointerAuthOptions.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CodeGen.h"
@@ -85,10 +85,9 @@ public:
 using IRTargetOptions = std::tuple<llvm::TargetOptions, std::string,
                                    std::vector<std::string>, std::string>;
 
-//using clang::PointerAuthSchema;
-struct PointerAuthOptions final /*: clang::PointerAuthOptions*/  {
+// using clang::PointerAuthSchema;
+struct PointerAuthOptions final /*: clang::PointerAuthOptions*/ {
 public:
-
 };
 
 class CodeGenOptions final {
@@ -111,8 +110,8 @@ public:
   /// The public dependent libraries specified on the command line.
   std::vector<std::string> publicLinkLibraries;
 
-  /// The name of the relocation model to use.
-  llvm::Reloc::Model relocationModel;
+  /// The name of the relocation model to use -- it default to llvm::Reloc::PIC_
+  llvm::Reloc::Model relocationModel = llvm::Reloc::PIC_;
 
   InlineMode inlineMode = InlineMode::Default;
 
@@ -123,18 +122,32 @@ public:
   IRTargetOptions irTargetOptions;
 
   /// Pointer authentication.
-  //PointerAuthOptions pointerAuthOptions;
+  // PointerAuthOptions pointerAuthOptions;
 
   /// Emit functions to separate sections.
   unsigned functionSections : 1;
 
-public:
-  bool CanOptimize() { return optimizationLevel > OptimizationLevel::Default; }
+  /// The LLVM target options.
+  llvm::TargetOptions llvmTargetOpts;
 
-  bool OptimizeForSpeed() {
+  /// The target CPU
+  std::string targetCPU;
+
+  /// The triple generated from clang.
+  std::string effectiveClangTriple;
+
+  /// The features the target supports.
+  std::vector<std::string> targetFeatures;
+
+public:
+  bool ShouldOptimize() const {
+    return optimizationLevel > OptimizationLevel::Default;
+  }
+
+  bool OptimizeForSpeed() const {
     return optimizationLevel == OptimizationLevel::Default;
   }
-  bool OptimizeForSize() {
+  bool OptimizeForSize() const {
     return optimizationLevel == OptimizationLevel::Aggressive;
   }
 };

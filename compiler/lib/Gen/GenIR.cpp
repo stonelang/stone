@@ -107,6 +107,11 @@ void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
 
+/// Disable thumb-mode until debugger support is there.
+bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
+  return feature == "+thumb-mode";
+}
+
 // std::unique_ptr<llvm::TargetMachine>
 // stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
 //                            SyntaxContext &syntaxCotext) {

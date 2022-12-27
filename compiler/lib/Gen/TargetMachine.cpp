@@ -5,6 +5,7 @@
 #include "stone/Public.h"
 #include "stone/Syntax/SyntaxContext.h"
 
+#include "llvm/MC/SubtargetFeature.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
@@ -24,7 +25,6 @@ static Error InitLLVMTargetOptions(CodeGenContext &cgc,
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
     break;
   }
-
   return Error();
 }
 
@@ -98,4 +98,60 @@ stone::CreateTargetMachine(CodeGenContext &cgc) {
     return std::unique_ptr<llvm::TargetMachine>(targetMachine);
   }
   return nullptr;
+}
+
+std::unique_ptr<llvm::TargetMachine>
+stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
+
+  std::string targetFeatures;
+  if (!codeGenOpts.targetFeatures.empty()) {
+    llvm::SubtargetFeatures features;
+    for (const std::string &feature : codeGenOpts.targetFeatures)
+      if (!stone::ShouldRemoveTargetFeature(feature)) {
+        features.AddFeature(feature);
+      }
+    targetFeatures = features.getString();
+  }
+
+  std::string error;
+  const llvm::Triple &effectiveTriple =
+      llvm::Triple(codeGenOpts.effectiveClangTriple);
+
+  const llvm::Target *target =
+      llvm::TargetRegistry::lookupTarget(effectiveTriple.str(), error);
+  if (!target) {
+    assert(false && "Could not create target");
+    // Ctx.Diags.diagnose(SourceLoc(), diag::no_llvm_target,
+    // effectiveTriple.str(),
+    //                    Error);
+    // return nullptr;
+  }
+
+  llvm::CodeGenOpt::Level optLevel = codeGenOpts.ShouldOptimize()
+                                         ? llvm::CodeGenOpt::Default // -Os
+                                         : llvm::CodeGenOpt::None;
+
+  // // On Cygwin 64 bit, dlls are loaded above the max address for 32 bits.
+  // // This means that the default CodeModel causes generated code to segfault
+  // // when run.
+  llvm::Optional<llvm::CodeModel::Model> codeModel = llvm::None;
+  if (effectiveTriple.isArch64Bit() &&
+      effectiveTriple.isWindowsCygwinEnvironment()) {
+    codeModel = llvm::CodeModel::Large;
+  } else {
+    codeModel = GetCodeModel(codeGenOpts);
+  }
+
+  // // Create a target machine.
+  llvm::TargetMachine *targetMachine = target->createTargetMachine(
+      effectiveTriple.str(), codeGenOpts.targetCPU, targetFeatures,
+      codeGenOpts.llvmTargetOpts, codeGenOpts.relocationModel, codeModel,
+      optLevel);
+  if (!targetMachine) {
+    // Ctx.Diags.diagnose(SourceLoc(), diag::no_llvm_target,
+    //                    EffectiveTriple.str(), "no LLVM target machine");
+    assert(false && "Could not create target machine");
+    // return nullptr;
+  }
+  return std::unique_ptr<llvm::TargetMachine>(targetMachine);
 }

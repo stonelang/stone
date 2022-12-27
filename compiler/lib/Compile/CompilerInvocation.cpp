@@ -313,44 +313,82 @@ static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
   }
 }
 
-//TODO: 
-// static void SetPointerAuthOptions(
-//     PointerAuthOptions &pointerAuthOptions,
-//     const clang::PointerAuthOptions &clangPointerAuthOptions) {
-
+// TODO:
+//  static void SetPointerAuthOptions(
+//      PointerAuthOptions &pointerAuthOptions,
+//      const clang::PointerAuthOptions &clangPointerAuthOptions) {
 
 //   // Intentionally do a slice-assignment to copy over the clang options.
 //   static_cast<clang::PointerAuthOptions &>(pointerAuthOptions) =
 //       clangPointerAuthOptions;
 // }
-IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &opts,
-                                          ClangContext &cc) {
 
-  llvm::TargetOptions llvmTargetOpts;
+// TODO: See clang
+static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
+                                  const CodeGenOptions &codeGenOpts,
+                                  const LangOptions &langOpts) {
+
   // Explicitly request debugger tuning for LLDB which is the default
   // on Darwin platforms but not on others.
   llvmTargetOpts.DebuggerTuning = llvm::DebuggerKind::LLDB;
-  llvmTargetOpts.FunctionSections = opts.functionSections;
+  llvmTargetOpts.FunctionSections = codeGenOpts.functionSections;
+
+  switch (langOpts.threadModelKind) {
+  case LangOptions::ThreadModelKind::POSIX:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
+    break;
+  case LangOptions::ThreadModelKind::Single:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
+    break;
+  }
+  // Set float ABI type.
+  // assert((CodeGenOpts.FloatABI == "soft" || CodeGenOpts.FloatABI == "softfp"
+  // ||
+  //         CodeGenOpts.FloatABI == "hard" || CodeGenOpts.FloatABI.empty()) &&
+  //        "Invalid Floating Point ABI!");
+  // Options.FloatABIType =
+  //     llvm::StringSwitch<llvm::FloatABI::ABIType>(CodeGenOpts.FloatABI)
+  //         .Case("soft", llvm::FloatABI::Soft)
+  //         .Case("softfp", llvm::FloatABI::Soft)
+  //         .Case("hard", llvm::FloatABI::Hard)
+  //         .Default(llvm::FloatABI::Default);
+}
+IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
+                                          const LangOptions &langOpts,
+                                          ClangContext &cc) {
+
+  llvm::TargetOptions llvmTargetOpts;
+  InitLLVMTargetOptions(llvmTargetOpts, codeGenOpts, langOpts);
 
   clang::TargetOptions &clangTargetOpts =
       cc.GetInstance().getTarget().getTargetOpts();
   return std::make_tuple(llvmTargetOpts, clangTargetOpts.CPU,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
+
+static Error ComputeTargetOptions(llvm::opt::InputArgList &ial,
+                                  DiagnosticEngine &de,
+                                  CompilerOptions &compilerOpts,
+                                  CodeGenOptions &codeGenOpts,
+                                  LangOptions &langOpts, ClangContext &cc) {
+  std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
+           codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
+      stone::GetIRTargetOptions(codeGenOpts, langOpts, cc);
+
+  // if (cc.GetInstance().getLangOpts().PointerAuthCalls) {
+  //   SetPointerAuthOptions(const_cast<CodeGenOptions
+  //   &>(codeGenOpts).pointerAuth,
+  //                          cc.GetInstance().getCodeGenOpts().PointerAuth);
+  // }
+  return Error();
+}
 static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
                                    DiagnosticEngine &de,
                                    CompilerOptions &compilerOpts,
                                    CodeGenOptions &codeGenOpts,
-                                   ClangContext &cc) {
-
+                                   LangOptions &langOpts, ClangContext &cc) {
   ComputeCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
-  codeGenOpts.irTargetOptions = stone::GetIRTargetOptions(codeGenOpts, cc);
 
-  // if (cc.GetInstance().getLangOpts().PointerAuthCalls) {
-
-  //   SetPointerAuthOptions(const_cast<CodeGenOptions &>(codeGenOpts).pointerAuth,
-  //                          cc.GetInstance().getCodeGenOpts().PointerAuth);
-  // }
   return Error();
 }
 
@@ -358,7 +396,6 @@ static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
                                        DiagnosticEngine &de,
                                        CompilerOptions &compilerOpts,
                                        TypeCheckerOptions &typeCheckerOpts) {
-
   return Error();
 }
 
@@ -370,7 +407,6 @@ static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
 }
 
 Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
-
   compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
   if (compilerOpts->GetMode().IsAlien()) {
     return Error(true);
@@ -388,9 +424,14 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
                             *compilerOpts, typeCheckerOpts);
   ComputeSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                            *compilerOpts, searchPathOpts);
-  ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                        *compilerOpts, codeGenOpts, *clangContext);
 
+  ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                        *compilerOpts, codeGenOpts,
+                        GetLangContext().GetLangOptions(), *clangContext);
+
+  ComputeTargetOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                       *compilerOpts, codeGenOpts,
+                       GetLangContext().GetLangOptions(), *clangContext);
   return Error();
 }
 
