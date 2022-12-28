@@ -7,7 +7,7 @@
 
 namespace stone {
 
-class ClangModuleImporter final : public ClangModuleLoader {
+class ClangModuleImporter : public ClangModuleLoader {
 public:
   ClangModuleImporter();
 };

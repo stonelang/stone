@@ -150,6 +150,14 @@ public:
   bool OptimizeForSize() const {
     return optimizationLevel == OptimizationLevel::Aggressive;
   }
+
+  // TODO: OK for now
+  llvm::CodeGenFileType GetLLVMCodeGenFileType() const {
+    if (codeGenOutputKind == CodeGenOutputKind::NativeAssembly) {
+      return llvm::CGFT_AssemblyFile;
+    }
+    return llvm::CGFT_ObjectFile;
+  }
 };
 
 } // namespace stone

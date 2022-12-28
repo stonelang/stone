@@ -1,5 +1,6 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/Module.h"
@@ -26,4 +27,6 @@ IRCodeGen::IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener)
 
 IRCodeGen::~IRCodeGen() {}
 
-Safe<llvm::TargetMachine> IRCodeGen::CreateTargetMachine() {}
+Safe<llvm::TargetMachine> IRCodeGen::CreateTargetMachine() {
+  return stone::CreateTargetMachine(cgc.GetCodeGenOptions());
+}

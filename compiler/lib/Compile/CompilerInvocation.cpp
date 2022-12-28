@@ -356,7 +356,6 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,
                                           ClangContext &cc) {
-
   llvm::TargetOptions llvmTargetOpts;
   InitLLVMTargetOptions(llvmTargetOpts, codeGenOpts, langOpts);
 

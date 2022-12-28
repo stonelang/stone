@@ -79,9 +79,6 @@ public:
                 ? llvm::CGFT_AssemblyFile
                 : llvm::CGFT_ObjectFile);
   }
-
-private:
-  Safe<llvm::TargetMachine> CreateTargetMachine();
 };
 
 } // namespace stone

@@ -173,8 +173,8 @@ namespace stone {
 //                     syn::SyntaxContext &syntaxContext,
 //                     CodeGenListener *listener = nullptr);
 
-std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(CodeGenContext &context);
+// std::unique_ptr<llvm::TargetMachine>
+// CreateTargetMachine(CodeGenContext &context);
 
 IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                    const LangOptions &langOpts,

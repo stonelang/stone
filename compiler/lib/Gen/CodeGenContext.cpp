@@ -17,37 +17,33 @@ CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
     : llvmContext(llvmContext), genOpts(genOpts), moduleOpts(moduleOpts),
       targetOpts(targetOpts), langContext(langContext),
       clangContext(clangContext), outModuleHash(outModuleHash),
-      mod(new llvm::Module(moduleOpts.moduleName, llvmContext)) {
-
-  tm = CreateTargetMachine();
-}
+      mod(new llvm::Module(moduleOpts.moduleName, llvmContext)),
+      tm(stone::CreateTargetMachine(genOpts)) {}
 
 CodeGenContext::~CodeGenContext() {}
 
-Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
+// Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
 
-  // clang::TargetInfo &targetInfo =
-  // GetClangContext().GetInstance().getTarget();
+//   // clang::TargetInfo &targetInfo =
+//   // GetClangContext().GetInstance().getTarget();
 
-  // // Setup the empty module
-  // GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
-  // GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
+//   // // Setup the empty module
+//   // GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
+//   // GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
 
-  // const auto &sdkVersion = targetInfo.getSDKVersion();
+//   // const auto &sdkVersion = targetInfo.getSDKVersion();
 
-  // if (!sdkVersion.empty()) {
-  //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
-  // }
-  // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
-  //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
-  // }
+//   // if (!sdkVersion.empty()) {
+//   //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
+//   // }
+//   // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
+//   //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
+//   // }
 
-  // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
-  //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
-  // }
-
-  return stone::CreateTargetMachine(*this);
-}
+//   // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
+//   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
+//   // }
+// }
 
 CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
                            llvm::TargetMachine *targetMachine)

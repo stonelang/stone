@@ -16,6 +16,7 @@ set(stone_foreign_sources
 	LINK_LIBS
 	StoneBasic
 	clangFrontend
+	clangTooling
 )
 add_stone_library(StoneForeign
 	${stone_foreign_sources}

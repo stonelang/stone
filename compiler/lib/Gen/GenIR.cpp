@@ -111,13 +111,3 @@ void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";
 }
-
-// std::unique_ptr<llvm::TargetMachine>
-// stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
-//                            SyntaxContext &syntaxCotext) {
-
-//   auto targetOptionsContext =
-//       stone::GetIRTargetOptions(codeGenOpts, syntaxCotext);
-
-//   return nullptr;
-// }

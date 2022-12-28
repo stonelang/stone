@@ -2,6 +2,4 @@
 
 using namespace stone;
 
-ClangContext::ClangContext()
-    : clangInstance(new clang::CompilerInstance()),
-      clangModuleImporter(new ClangModuleImporter()) {}
+ClangContext::ClangContext() : clangInstance(new clang::CompilerInstance()) {}
