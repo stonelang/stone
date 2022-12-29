@@ -3,6 +3,7 @@
 
 #include "stone/Basic/OutputFile.h"
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/SyntaxVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -71,7 +72,7 @@ class AutoDecl;
 class IRCodeGen;
 class CodeGenListener;
 
-class IRCodeGenModule final {
+class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule>{
   IRCodeGen &irCodeGen;
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;

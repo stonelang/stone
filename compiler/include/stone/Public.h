@@ -100,11 +100,11 @@ namespace stone {
 class CodeGenContext;
 class CompilerInstance;
 
-// using ModuleSyntaxFileUnion =
-//     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+using ModuleSyntaxFileUnion =
+     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
-// using SyntaxConsumer =
-//     llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
+// using ParseSyntaxFileListener =
+//      llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
 
 // using SemanticConsumer = llvm::function_ref<void(
 //     CompilerInstance &instance, ModuleSyntaxFileUnion moduleSyntaxFileUnion,
