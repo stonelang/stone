@@ -177,4 +177,8 @@ void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
   //   default:
   //     break;
   //   }
+
+  if (parentScope) {
+    parentScope->GetLegacyPassManager().run(cgc.GetLLVMModule());
+  }
 }

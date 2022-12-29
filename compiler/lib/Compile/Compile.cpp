@@ -180,7 +180,7 @@ static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
   return Status::Success();
 }
 
-Status CompilerInstance::CompileWithGenBackend(CodeGenContext &cgc) {
+Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
   auto result = stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
                                  GetInvocation().GetListener());
@@ -246,7 +246,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   default:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return CompileWithGenBackend(cgc);
+          return CompileWithGenNative(cgc);
         });
   }
 }
@@ -310,6 +310,8 @@ Status CompilerInstance::CompileWithTypeChecking(
 Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
+
+  llvm::TimeTraceScope TimeScope("Compile");
 
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);

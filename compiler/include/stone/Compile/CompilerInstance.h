@@ -57,6 +57,12 @@ class CompilerInstance final {
   // /// considered primaries.
   // llvm::SetVector<unsigned> primaryBufferIDs;
 
+  /// The stream for verbose output if owned, otherwise nullptr.
+  // Safe<raw_ostream> OwnedVerboseOutputStream;
+
+  // /// The stream for verbose output.
+  // raw_ostream *VerboseOutputStream = &llvm::errs();
+
 public:
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
@@ -96,7 +102,7 @@ private:
   Status CompileWithGenIR(CodeGenContext &cgc,
                           IRCodeGenCompletedCallback notifiy);
 
-  Status CompileWithGenBackend(CodeGenContext &cgc);
+  Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);

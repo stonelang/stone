@@ -96,11 +96,30 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 } // namespace stone
 
 namespace stone {
-class ClangContext;
+
+class CodeGenContext;
 class CompilerInstance;
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+// using ModuleSyntaxFileUnion =
+//     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+
+// using SyntaxConsumer =
+//     llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
+
+// using SemanticConsumer = llvm::function_ref<void(
+//     CompilerInstance &instance, ModuleSyntaxFileUnion moduleSyntaxFileUnion,
+//     bool *error)>;
+
+// using IRCodeGenConsumer = llvm::function_ref<Status(
+//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool *error)>;
+
+// using NativeCodeGenConsumer = llvm::function_ref<void(
+//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool *error)>;
+
+} // namespace stone
+namespace stone {
+class ClangContext;
+class CompilerInstance;
 
 /// Parse, type-check and generate IR for syntax files.
 /// Returns true is successfull

@@ -138,9 +138,11 @@ stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
   if (effectiveTriple.isArch64Bit() &&
       effectiveTriple.isWindowsCygwinEnvironment()) {
     codeModel = llvm::CodeModel::Large;
-  } else {
-    codeModel = GetCodeModel(codeGenOpts);
   }
+  // TODO:
+  //  else {
+  //    codeModel = GetCodeModel(codeGenOpts);
+  //  }
 
   // // Create a target machine.
   llvm::TargetMachine *targetMachine = target->createTargetMachine(
