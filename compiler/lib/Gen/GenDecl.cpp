@@ -39,3 +39,7 @@ void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
 void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
 
 void IRCodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}
+
+void IRCodeGenModule::EmitConstructorDecl(ConstructorDecl *d) {}
+
+void IRCodeGenModule::EmitDestructorDecl(DestructorDecl *d) {}

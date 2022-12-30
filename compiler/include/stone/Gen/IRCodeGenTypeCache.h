@@ -30,6 +30,7 @@ struct IRCodeGenTypeCache final {
   llvm::IntegerType *RelativeAddressTy;
   llvm::PointerType *RelativeAddressPtrTy;
 
+  IRCodeGenTypeCache() = delete;
   IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 

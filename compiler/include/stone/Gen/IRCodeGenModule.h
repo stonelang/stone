@@ -72,7 +72,7 @@ class AutoDecl;
 class IRCodeGen;
 class CodeGenListener;
 
-class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule>{
+class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
   IRCodeGen &irCodeGen;
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
@@ -96,6 +96,8 @@ public:
   void EmitEnumDecl(EnumDecl *d);
   void EmitVarDecl(EnumDecl *d);
   void EmitAutoDecl(AutoDecl *d);
+  void EmitConstructorDecl(ConstructorDecl *d);
+  void EmitDestructorDecl(DestructorDecl *d);
 
 private:
   void Emit();

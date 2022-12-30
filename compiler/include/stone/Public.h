@@ -101,7 +101,7 @@ class CodeGenContext;
 class CompilerInstance;
 
 using ModuleSyntaxFileUnion =
-     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
 // using ParseSyntaxFileListener =
 //      llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
@@ -111,10 +111,12 @@ using ModuleSyntaxFileUnion =
 //     bool *error)>;
 
 // using IRCodeGenConsumer = llvm::function_ref<Status(
-//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool *error)>;
+//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
+//     *error)>;
 
 // using NativeCodeGenConsumer = llvm::function_ref<void(
-//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool *error)>;
+//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
+//     *error)>;
 
 } // namespace stone
 namespace stone {
