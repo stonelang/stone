@@ -11,7 +11,6 @@ set( LLVM_LINK_COMPONENTS
 set(stone_gen_sources
 	NativeCodeGen.cpp
 	CodeGenContext.cpp
-	
 	GenDecl.cpp
 	GenStmt.cpp
 	GenExpr.cpp
@@ -26,9 +25,9 @@ set(stone_gen_sources
 	IRCodeGenBuilder.cpp
 	IRCodeGenFunction.cpp
 	IRCodegenModule.cpp
+	IRCodeGenTypeResolver.cpp
 	OptimizeIR.cpp
 	TargetMachine.cpp
-	
 	
 	LINK_LIBS
 	StoneSyntax

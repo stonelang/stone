@@ -48,6 +48,8 @@ enum class FunctionInlineSpecifierKind : UInt8 {
   ForcedInline,
 };
 
+enum class FunctionCallingConvention : UInt8 { Stone, C };
+
 /// The categorization of expression values, currently following the
 enum class ExprValueKind : UInt8 {
   None = 0,

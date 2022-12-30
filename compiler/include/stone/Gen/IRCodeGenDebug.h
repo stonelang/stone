@@ -19,12 +19,18 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+class ClangContext;
+class IRCodeGenModule;
 
 class IRCodeGenDebug final {
   CodeGenContext &cgc;
 
 public:
-  IRCodeGenDebug(CodeGenContext &cgc);
+  IRCodeGenDebug(CodeGenContext &cgc, IRCodeGenModule &cgm,
+                 ClangContext &clangContext,
+                 llvm::StringRef mainOutputFilenameForDebug,
+                 llvm::StringRef privateDiscriminator);
+
   ~IRCodeGenDebug();
 
 public:

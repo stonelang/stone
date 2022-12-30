@@ -24,7 +24,6 @@ class NativeCodeGen final {
   syn::SyntaxContext &sc;
 
   // llvm::Optional<raw_fd_ostream> rawStream;
-
 public:
   NativeCodeGen(const NativeCodeGen &) = delete;
   void operator=(const NativeCodeGen &) = delete;
@@ -35,11 +34,6 @@ public:
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }
-
-  // public:
-  //   void EmitObject(const CodeGenContext &result);
-  //   void EmitBitCode(const  CodeGenContext &result);
-  //   void EmitAssembly(const CodeGenContext &result);
 };
 } // namespace stone
 

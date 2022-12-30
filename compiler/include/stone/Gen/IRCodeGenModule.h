@@ -87,6 +87,9 @@ public:
   ~IRCodeGenModule();
 
 public:
+  IRCodeGen &GetIRCodeGen() { return irCodeGen; }
+
+public:
   void EmitSyntaxFile(SyntaxFile &sf);
   void EmitTopLevelDecl(Decl *d);
   void EmitGlobalDecl(syn::GlobalDecl *gd);
