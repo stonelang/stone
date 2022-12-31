@@ -10,14 +10,16 @@ using namespace stone;
 // TODO: Ok for now -- may move to IRCodeGenMoulde
 IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 
-  VoidTy = llvm::Type::getVoidTy(llvmContext);
 
-  // Int8Ty = llvm::Type::getInt8Ty(getLLVMContext());
-  // Int16Ty = llvm::Type::getInt16Ty(getLLVMContext());
-  // Int32Ty = llvm::Type::getInt32Ty(getLLVMContext());
-  // Int32PtrTy = Int32Ty->getPointerTo();
-  // Int64Ty = llvm::Type::getInt64Ty(getLLVMContext());
-  // Int8PtrTy = llvm::Type::getInt8PtrTy(getLLVMContext());
+  VoidTy = llvm::Type::getVoidTy(llvmContext);
+  
+  Int8Ty = llvm::Type::getInt8Ty(llvmContext);
+  Int16Ty = llvm::Type::getInt16Ty(llvmContext);
+  Int32Ty = llvm::Type::getInt32Ty(llvmContext);
+  Int32PtrTy = Int32Ty->getPointerTo();
+  Int64Ty = llvm::Type::getInt64Ty(llvmContext);
+  Int8PtrTy = llvm::Type::getInt8PtrTy(llvmContext);
+
   // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
 }
 

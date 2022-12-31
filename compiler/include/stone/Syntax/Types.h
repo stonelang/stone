@@ -50,10 +50,9 @@ namespace syn {
 
 class Type;
 class TypeWalker;
-class ExtQuals; // Extended Qualifiers
-class QualType; // Qualified SyntaxTypes
 class StructDecl;
 class CanType;
+class SweetType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
@@ -84,6 +83,11 @@ protected:
     //   /// Whether this type is canonical or not.
     //   IsCanonical : 1
     //   AllowQualifiers : 1
+    // );
+
+    // STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, 
+    //   HasCachedType : 1
+
     // );
 
   } Bits;

@@ -13,6 +13,7 @@ class FoldingSetNodeID;
 
 namespace stone {
 namespace syn {
+
 // class GenericEnvironment;
 // class GenericParamList;
 // class SubstitutableType;
