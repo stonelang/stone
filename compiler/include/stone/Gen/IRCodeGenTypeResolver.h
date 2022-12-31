@@ -21,7 +21,7 @@ public:
   IRCodeGenTypeResolver(IRCodeGenModule &cgm);
 
 public:
-  llvm::Type *ReloveType(syn::Type ty);
+  llvm::Type *ResolveType(syn::Type ty);
 };
 
 } // namespace stone

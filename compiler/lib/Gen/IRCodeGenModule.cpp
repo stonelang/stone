@@ -1,5 +1,6 @@
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/IRCodeGenABI.h"
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;

@@ -17,6 +17,9 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+namespace syn {
+class MemberPointerType;
+}
 class IRCodeGenModule;
 
 class IRCodeGenABI final {
@@ -24,6 +27,11 @@ class IRCodeGenABI final {
 
 public:
   IRCodeGenABI(IRCodeGenModule &cgm);
+
+public:
+  llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType *mpt);
 };
 
 } // namespace stone
+
+#endif 
