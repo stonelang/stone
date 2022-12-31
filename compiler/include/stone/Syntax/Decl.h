@@ -169,12 +169,14 @@ protected:
     );
 
     STONE_INLINE_BITFIELD(
-        FunDecl, FunctionDecl, 1,
+        FunDecl, FunctionDecl, 1 + 1,
         /// Whether we've computed the 'static' flag yet.
         // IsStaticComputed : 1,
 
         /// Whether this function is a 'static' method.
-        IsStatic : 1
+        IsStatic : 1, 
+
+        IsMain : 1
 
         /// Whether 'static' or 'class' was used.
         // StaticSpelling : 2,
@@ -644,6 +646,11 @@ public:
   bool HasReturn() const;
 
   // TypeLoc GetReturnType() const;
+
+  //  bool IsMain() { return Bits.FunDecl.IsTopLevel; }
+  // void SetIsTopLevel(bool isTopLevel = true) {
+  //   Bits.Decl.IsTopLevel = isTopLevel;
+  // }
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
