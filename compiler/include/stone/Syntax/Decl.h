@@ -583,6 +583,8 @@ public:
     return storageSpecifierKind;
   }
 
+  bool IsMember() { return Bits.FunctionDecl.IsMember; }
+
   // DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
   //  void SetReturnType(TypeDecl* tyDecl);
 

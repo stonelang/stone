@@ -32,7 +32,7 @@ public:
   llvm::PointerType *RelativeAddressPtrTy;
 
 public:
-  IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
+  explicit IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 
 } // namespace stone

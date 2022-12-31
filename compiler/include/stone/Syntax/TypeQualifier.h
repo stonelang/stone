@@ -13,6 +13,10 @@
 namespace stone {
 namespace syn {
 
+// NOTES:
+// Array types are considered to have the same cv-qualification as their element
+// types.
+
 struct TypeQualifierFlags final {
   TypeQualifierFlags() = delete;
   enum ID : unsigned {

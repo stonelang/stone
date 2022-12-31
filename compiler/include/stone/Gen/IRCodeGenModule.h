@@ -75,7 +75,7 @@ class IRCodeGen;
 class CodeGenListener;
 
 class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
-  
+
   IRCodeGen &irCodeGen;
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
