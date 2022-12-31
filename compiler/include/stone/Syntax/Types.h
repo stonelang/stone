@@ -4,6 +4,7 @@
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
+#include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
@@ -75,26 +76,27 @@ class alignas(1 << TypeAlignInBits) TypeBase
 
 protected:
   union {
+
     uint64_t OpaqueBits;
-    /// Kind - The discriminator that indicates what subclass of type this is.
-    // STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8),
+    STONE_INLINE_BITFIELD_BASE(TypeBase, stone::BitMax(NumTypeKindBits, 8) + 1,
+                               Kind
+                               : stone::BitMax(NumTypeKindBits, 8),
 
-    //   Kind :stone::BitMax(NumTypeKindBits, 8),
-    //   /// Whether this type is canonical or not.
-    //   IsCanonical : 1
-    //   AllowQualifiers : 1
-    // );
+                                 /// Whether this type is canonical or not.
+                                 IsCanonical : 1
+                               // Whether this type can have qualifiers
+                               // IsQualType : 1
+    );
 
-    // STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, 
-    //   HasCachedType : 1
-
-    // );
+    STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
   } Bits;
 
 public:
   TypeBase(TypeKind kind, const SyntaxContext *canTypeContext)
       : kind(kind), sc(nullptr) {
+
+    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
 
     /// TODO: I do not like this ....
     if (canTypeContext) {

@@ -704,7 +704,7 @@ class VarDecl : public StorageDecl {
 public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
-  //QualType GetQualType() const;
+  // QualType GetQualType() const;
 };
 
 class ParamDecl : public VarDecl {
