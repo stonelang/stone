@@ -9,7 +9,7 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
-    : IRCodeGenTypeCache(irCodeGen.GetCodeGenContext().GetLLVMContext()),
+    : typeCache(irCodeGen.GetCodeGenContext().GetLLVMContext()),
       irCodeGen(irCodeGen), moduleName(moduleName),
       outputFilename(outputFilename), typeResolver(*this) {}
 

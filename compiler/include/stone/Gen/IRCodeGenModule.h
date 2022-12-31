@@ -74,9 +74,10 @@ class AutoDecl;
 class IRCodeGen;
 class CodeGenListener;
 
-class IRCodeGenModule final : public IRCodeGenTypeCache,
-                              public SyntaxVisitor<IRCodeGenModule> {
+class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
+  
   IRCodeGen &irCodeGen;
+  IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
 
   llvm::StringRef moduleName;
@@ -93,6 +94,7 @@ public:
 
 public:
   IRCodeGen &GetIRCodeGen() { return irCodeGen; }
+  IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
 
 public:
