@@ -14,3 +14,5 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
       outputFilename(outputFilename), typeResolver(*this) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}
+
+IRCodeGenABI::IRCodeGenABI(IRCodeGenModule &cgm) : cgm(cgm) {}

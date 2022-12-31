@@ -17,9 +17,13 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+class IRCodeGenModule;
 
 class IRCodeGenABI final {
+  IRCodeGenModule &cgm;
+
 public:
+  IRCodeGenABI(IRCodeGenModule &cgm);
 };
 
 } // namespace stone
