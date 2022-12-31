@@ -306,6 +306,12 @@ public:
     return *context.get<SyntaxContext *>();
   }
 
+public:
+  bool IsTopLevel() { return Bits.Decl.IsTopLevel; }
+  void SetIsTopLevel(bool isTopLevel = true) {
+    Bits.Decl.IsTopLevel = isTopLevel;
+  }
+
 protected:
   Decl(DeclKind kind, UnifiedContext context) : kind(kind), context(context) {}
 

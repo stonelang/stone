@@ -1,6 +1,6 @@
 #include "stone/Gen/IRCodeGenTypeResolver.h"
-#include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Gen/IRCodeGenABI.h"
+#include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Type.h"
 
 using namespace stone;

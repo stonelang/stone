@@ -8,6 +8,8 @@ using namespace stone::syn;
 
 void IRCodeGenModule::EmitTopLevelDecl(Decl *d) {
 
+  assert(d->IsTopLevel() && "Not a top-level declaration");
+
   switch (d->GetKind()) {
   case DeclKind::Interface:
     return EmitInterfaceDecl(cast<InterfaceDecl>(d));
