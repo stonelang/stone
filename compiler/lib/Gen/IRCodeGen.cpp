@@ -23,8 +23,7 @@ IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 }
 
 IRCodeGen::IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener)
-    : cgc(cgc), listener(listener), typeCache(cgc.GetLLVMContext()),
-      cgb(cgc, typeCache) {}
+    : cgc(cgc), listener(listener) {}
 
 IRCodeGen::~IRCodeGen() {}
 

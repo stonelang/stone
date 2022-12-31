@@ -2,6 +2,7 @@
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
 #include "stone/Basic/Mem.h"
+#include "stone/Gen/IRCodeGenBuilder.h"
 #include "stone/Gen/IRCodeGenModule.h"
 
 #include "llvm/ADT/DenseMap.h"
@@ -76,11 +77,14 @@ enum class ABIArgKind {
 };
 
 class IRCodeGenModule;
+class IRCodeGenBuilder;
+
 class IRCodeGenFunction final {
 
   IRCodeGenModule &cgm;
-  llvm::Function *curFun = nullptr;
+  IRCodeGenBuilder builder;
 
+  llvm::Function *curFun = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
@@ -100,6 +104,7 @@ public:
   //                      const llvm::Twine &name = "");
 
   IRCodeGenModule &GetIRCodeGenModule() { return cgm; }
+  IRCodeGenBuilder &GetIRCodeGenBuilder() { return builder; }
 
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);

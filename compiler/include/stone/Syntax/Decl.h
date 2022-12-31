@@ -94,7 +94,7 @@ protected:
   union {
     uint64_t OpaqueBits;
     STONE_INLINE_BITFIELD_BASE(
-        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1, Kind
+        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1 + 1, Kind
         : BitMax(NumDeclKindBits, 8),
 
           /// Whether this declaration is invalid.
@@ -106,7 +106,7 @@ protected:
 
           /// Whether this declaration was mapped directly from a Clang AST.
           ///
-          /// Use getClangNode() to retrieve the corresponding Clang AST.
+          /// Use GetClangNode() to retrieve the corresponding Clang AST.
           IsFromClang : 1,
 
           /// Whether this declaration was added to the surrounding
@@ -117,7 +117,10 @@ protected:
           /// a local context, but should behave like a top-level
           /// declaration for name lookup purposes. This is used by
           /// lldb.
-          IsHoisted : 1
+          IsHoisted : 1,
+
+          /// Wether this is a top level decl
+          IsTopLevel : 1
 
     );
 

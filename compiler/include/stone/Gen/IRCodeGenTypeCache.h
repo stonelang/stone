@@ -5,12 +5,13 @@ namespace llvm {
 class Type;
 class IntegerType;
 class PointerType;
+class LLVMContext;
 } // namespace llvm
 
 namespace stone {
 
-struct IRCodeGenTypeCache final {
-
+class IRCodeGenTypeCache {
+public:
   llvm::Type *VoidTy;
 
   llvm::IntegerType *Int8Ty;  /// i8
@@ -30,7 +31,7 @@ struct IRCodeGenTypeCache final {
   llvm::IntegerType *RelativeAddressTy;
   llvm::PointerType *RelativeAddressPtrTy;
 
-  IRCodeGenTypeCache() = delete;
+public:
   IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 

@@ -8,6 +8,9 @@ class PointerType;
 } // namespace llvm
 
 namespace stone {
+namespace syn {
+class Type;
+}
 
 class IRCodeGenModule;
 
@@ -17,7 +20,8 @@ class IRCodeGenTypeResolver final {
 public:
   IRCodeGenTypeResolver(IRCodeGenModule &cgm);
 
-  // llvm::Type* ReloveType(Type ty);
+public:
+  llvm::Type *ReloveType(syn::Type ty);
 };
 
 } // namespace stone

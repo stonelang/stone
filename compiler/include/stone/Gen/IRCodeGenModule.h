@@ -2,6 +2,8 @@
 #define STONE_GEN_IRCODEGENMODULE_H
 
 #include "stone/Basic/OutputFile.h"
+#include "stone/Gen/IRCodeGenTypeCache.h"
+#include "stone/Gen/IRCodeGenTypeResolver.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxVisitor.h"
 
@@ -72,8 +74,11 @@ class AutoDecl;
 class IRCodeGen;
 class CodeGenListener;
 
-class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
+class IRCodeGenModule final : public IRCodeGenTypeCache,
+                              public SyntaxVisitor<IRCodeGenModule> {
   IRCodeGen &irCodeGen;
+  IRCodeGenTypeResolver typeResolver;
+
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
 
@@ -88,6 +93,7 @@ public:
 
 public:
   IRCodeGen &GetIRCodeGen() { return irCodeGen; }
+  IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);

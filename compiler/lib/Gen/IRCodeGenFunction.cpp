@@ -6,7 +6,8 @@ using namespace stone;
 
 IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm,
                                      llvm::Function *curFun)
-    : cgm(cgm), curFun(curFun) {}
+    : cgm(cgm), curFun(curFun),
+      builder(cgm.GetIRCodeGen().GetCodeGenContext(), GetIRCodeGenModule()) {}
 
 IRCodeGenFunction::~IRCodeGenFunction() {}
 

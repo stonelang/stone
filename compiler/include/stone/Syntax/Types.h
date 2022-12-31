@@ -76,17 +76,15 @@ class alignas(1 << TypeAlignInBits) TypeBase
 
 protected:
   union {
-
     uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(TypeBase, stone::BitMax(NumTypeKindBits, 8) + 1,
-                               Kind
+    STONE_INLINE_BITFIELD_BASE(TypeBase,
+                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
                                : stone::BitMax(NumTypeKindBits, 8),
 
                                  /// Whether this type is canonical or not.
-                                 IsCanonical : 1
-                               // Whether this type can have qualifiers
-                               // IsQualType : 1
-    );
+                                 IsCanonical : 1,
+                                 // Whether this type can have qualifiers
+                                 AllowQuals : 1);
 
     STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
@@ -121,17 +119,19 @@ public:
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
 
+  /// isCanonical - Return true if this is a canonical type.
+  bool IsCanType() const { return Bits.TypeBase.IsCanonical; }
+
+  bool AllowQuals() const { return Bits.TypeBase.AllowQuals; }
+
+  bool HasQuals() const;
+
   /// hasCanonicalTypeComputed - Return true if we've already computed a
   /// canonical version of this type.
   bool IsCanTypeComputed() const { return !canType.IsNull(); }
 
 private:
   CanType ComputeCanType();
-};
-
-class CanContext {
-public:
-  CanContext() {}
 };
 
 // TODO: Think about

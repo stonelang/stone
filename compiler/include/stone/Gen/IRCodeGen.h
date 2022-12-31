@@ -28,8 +28,6 @@ class CodeGenListener;
 
 class IRCodeGen final {
   CodeGenContext &cgc;
-  IRCodeGenBuilder cgb;
-  IRCodeGenTypeCache typeCache;
   CodeGenListener *listener;
 
 public:
@@ -38,7 +36,6 @@ public:
   // IRCodeGenFunction &GetIRCodeGenFunction();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  IRCodeGenBuilder &GetIRCodeGenBuilder() { return cgb; }
   CodeGenListener *GetCodeGenListener() { return listener; }
 
 public:
