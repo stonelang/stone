@@ -14,7 +14,6 @@ void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
   if (sf.stage == SyntaxFileStage::TypeChecked) {
     return;
   }
-
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
   for (auto d : sf.Decls) {
     checker.CheckDecl(d);
@@ -22,15 +21,17 @@ void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
   // checker.Check();
 
   // assert(sf.stage == SyntaxFileStage::AtImports);
-  // sf.stage = SyntaxFileStage::AtTypeCheck;
+  sf.stage = SyntaxFileStage::TypeChecked;
 }
 
-void stone::TypeCheckWholeModule(syn::ModuleDecl &m,
+void stone::TypeCheckWholeModule(syn::ModuleDecl &md,
                                  stone::TypeCheckerOptions &typeCheckerOpts,
                                  TypeCheckerListener *listener) {
-  // TypeChecker checker
-  // assert(sf.stage == SyntaxFileStage::AtImports);
-  // sf.stage = SyntaxFileStage::AtTypeCheck;
 
-  // Go through all the files and type-check
+  // Go through all the files and type-check -- OK for now
+  for (auto *moduleFile : md.GetFiles()) {
+    if (auto *nextSyntaxFile = dyn_cast<SyntaxFile>(moduleFile)) {
+      stone::TypeCheckSyntaxFile(*nextSyntaxFile, typeCheckerOpts, listener);
+    }
+  }
 }
