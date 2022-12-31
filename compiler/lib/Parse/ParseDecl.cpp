@@ -258,6 +258,11 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
   assert(funDecl);
 
+  // TODO: Find a better place for this -- maybe pass as parameter
+  if (collector.flags.contains(ParsingDeclFlags::AllowTopLevel)) {
+    funDecl->SetIsTopLevel();
+  }
+
   if (collector.GetFunctionSpecifierCollector().HasIsMember()) {
   }
 
