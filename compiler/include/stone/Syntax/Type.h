@@ -216,6 +216,7 @@ private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
   void operator!=(Type T) const = delete;
+
 };
 // CanQualType - This is a Type that is statically known to be
 // canonical.  To get
