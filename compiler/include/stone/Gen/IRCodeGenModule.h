@@ -59,7 +59,6 @@ class TargetMachine;
 
 namespace stone {
 namespace syn {
-class GlobalDecl;
 class SyntaxFile;
 class Decl;
 class GlobalDecl;
@@ -69,6 +68,8 @@ class StructDecl;
 class EnumDecl;
 class VarDecl;
 class AutoDecl;
+class SyntaxFile;
+class NominalTypeDecl;
 } // namespace syn
 
 class IRCodeGen;
@@ -82,6 +83,21 @@ class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
 
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
+
+  SyntaxFile *curSyntaxFile = nullptr;
+
+  // llvm::SetVector<CanType> builtinTypes;
+  //  /// Opaque but fixed-size types for which we also emit builtin type
+  //  /// descriptors, allowing the reflection library to layout these types
+  //  /// without knowledge of their contents. This includes imported structs
+  //  /// and fixed-size multi-payload enums.
+  //  llvm::SetVector<const NominalTypeDecl *> opaqueTypes;
+  //  // /// Imported protocols referenced by types in this module when emitting
+  //  // /// reflection metadata.
+  //  llvm::SetVector<const InterfaceDecl *> importedInterfaces;
+  //  // /// Imported structs referenced by types in this module when emitting
+  //  // /// reflection metadata.
+  //  llvm::SetVector<const StructDecl *> importedStructs;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
@@ -109,8 +125,8 @@ public:
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);
-  void EmitTopLevelDecl(Decl *d);
-  void EmitGlobalDecl(syn::GlobalDecl *gd);
+  void EmitGlobalDecl(Decl *d);
+  // void EmitGlobalDecl(syn::GlobalDecl *gd);
   void EmitFunDecl(FunDecl *d);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);

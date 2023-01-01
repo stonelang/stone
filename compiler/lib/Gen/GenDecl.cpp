@@ -6,7 +6,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-void IRCodeGenModule::EmitTopLevelDecl(Decl *d) {
+void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
 
   assert(d->IsTopLevel() && "Not a top-level declaration");
 
@@ -24,13 +24,28 @@ void IRCodeGenModule::EmitTopLevelDecl(Decl *d) {
   }
 }
 
-void IRCodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+// void IRCodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+
+namespace {
+class PrettySyntaxFileEmission : public llvm::PrettyStackTraceEntry {
+  const syn::SyntaxFile &sf;
+
+public:
+  explicit PrettySyntaxFileEmission(const SyntaxFile &sf) : sf(sf) {}
+  void print(raw_ostream &os) const override {
+    // os << "While emitting IR for syntax file " << SF.GetFilename() << '\n';
+  }
+};
+} // end anonymous namespace
 
 void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
+
+  PrettySyntaxFileEmission stackEntry(sf);
+  llvm::SaveAndRestore<syn::SyntaxFile *> setCurSyntaxFile(curSyntaxFile, &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {
-    EmitTopLevelDecl(d);
+    EmitGlobalDecl(d);
   }
 }
 

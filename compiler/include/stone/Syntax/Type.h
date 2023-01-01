@@ -275,6 +275,12 @@ public:
   bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
     return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
   }
+
+public:
+  // Direct comparison is allowed for CanTypes - they are known canonical.
+  bool operator==(CanType T) const { return GetPtr() == T.GetPtr(); }
+  bool operator!=(CanType T) const { return !operator==(T); }
+  bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
 
 } // namespace syn

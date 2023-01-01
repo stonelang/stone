@@ -6,8 +6,6 @@
 namespace stone {
 namespace syn {
 
-class QualType;
-
 class CanType final {
   QualType qualType;
 

@@ -104,16 +104,15 @@ void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                             syn::SyntaxFile *sf,
                             const PrimaryFileSpecificPaths paths,
                             CodeGenListener *listener) {
-
   assert(sf);
-  auto md = sf->GetParentModule();
-  GenIR(cgc, moduleName, paths, md, sf, listener);
+  GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }
 
 void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                         syn::ModuleDecl *md,
                         const PrimaryFileSpecificPaths paths,
                         CodeGenListener *listener) {
+
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
 
