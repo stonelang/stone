@@ -84,7 +84,7 @@ class IRCodeGenFunction final {
   IRCodeGenModule &cgm;
   IRCodeGenBuilder builder;
 
-  llvm::Function *curFun = nullptr;
+  llvm::Function *fn = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
@@ -92,7 +92,7 @@ public:
   void operator=(const IRCodeGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *curFun);
+  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn);
   ~IRCodeGenFunction();
 
 public:

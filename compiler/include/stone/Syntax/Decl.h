@@ -174,7 +174,7 @@ protected:
         // IsStaticComputed : 1,
 
         /// Whether this function is a 'static' method.
-        IsStatic : 1, 
+        IsStatic : 1,
 
         IsMain : 1
 

@@ -383,7 +383,6 @@ class SweetType : public TypeBase {
     const SyntaxContext *Context;
   };
 };
-
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
 class AliasType : public SweetType {};

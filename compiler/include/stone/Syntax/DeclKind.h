@@ -1,10 +1,12 @@
 #ifndef STONE_SYNTAX_DECLKIND_H
 #define STONE_SYNTAX_DECLKIND_H
 
+#include "stone/Basic/STDAlias.h"
+
 namespace stone {
 namespace syn {
 
-enum class DeclKind : uint8_t {
+enum class DeclKind : UInt8 {
   None,
 #define DECL(Id, Parent) Id,
 #define LAST_DECL(Id) Count = Id,
@@ -13,7 +15,7 @@ enum class DeclKind : uint8_t {
 #include "stone/Syntax/DeclKind.def"
 };
 
-enum class PrettyDeclKind : uint8_t {
+enum class PrettyDeclKind : UInt8 {
   Import,
   EnumCase,
   IfConfig,

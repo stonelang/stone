@@ -217,11 +217,30 @@ private:
   void operator==(Type T) const = delete;
   void operator!=(Type T) const = delete;
 };
-// CanQualType - This is a Type that is statically known to be
-// canonical.  To get
-/// one of these, use Type->GetCanType().  Since all
-/// CanType's can be used as 'Type' (they just don't have sugar) we
-/// derive from Type.
+
+// class QualType final : public Type {
+//   TypeQualifierList *quals = nullptr;
+// public:
+//   /// Constructs a NULL canonical type.
+//   QualType() = default;
+
+// public:
+//   explicit QualType(TypeBase *ty) : QualType(ty, nullptr, nullptr) {
+//     assert(IsCanTypeOrNull() &&
+//            "Forming a CanType out of a non-canonical type!");
+//   }
+//   explicit QualType(TypeBase *ty, TypeQualifierList *quals,
+//                     TypeChunkList *chunks)
+//       : Type(ty, chunks), quals(quals) {}
+
+//   explicit CanType(Type ty) : Type(ty) {}
+//   // CanQualType - This is a Type that is statically known to be
+//   // canonical.  To get
+//   /// one of these, use Type->GetCanType().  Since all
+//   /// CanType's can be used as 'Type' (they just don't have sugar) we
+//   /// derive from Type.
+// };
+
 class CanType final : public Type {
 public:
   /// Constructs a NULL canonical type.
