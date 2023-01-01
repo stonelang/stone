@@ -10,14 +10,14 @@ class TypeQualifierList;
 
 class QualType final {
   Type *tyPointer = nullptr;
-  TypeQualifierList *qualifiers = nullptr;
+  TypeQualifierList *tyQualifiers = nullptr;
 
 public:
   QualType() = default;
 
 public:
-  QualType(const Type *tyPointer, TypeQualifierList *qualifiers = nullptr)
-      : tyPointer(tyPointer), qualifiers(qualifiers) {}
+  QualType(const Type *tyPointer, TypeQualifierList *tyQualifiers = nullptr)
+      : tyPointer(tyPointer), tyQualifiers(tyQualifiers) {}
 
 public:
   const Type *GetPointer() const { return tyPointer; }

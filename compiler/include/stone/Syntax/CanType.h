@@ -6,21 +6,16 @@
 namespace stone {
 namespace syn {
 
-class CanType final {
+class QualType;
 
-  // QualType qulType;
+class CanType final {
+  QualType qualType;
+
 public:
   CanType() = default;
 
 public:
-  // explicit CanType(Type *ty = 0) : Type(ty) {
-  //   assert(IsCanTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
-  // explicit CanType(QualType ty) : Type(ty) {
-  //   assert(IsCanTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
+  explicit CanType(QualType qualType) : qualType(qualType) {}
 };
 
 } // namespace syn
