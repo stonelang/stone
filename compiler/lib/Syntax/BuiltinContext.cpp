@@ -7,7 +7,7 @@ using namespace stone::syn;
 BuiltinContext::BuiltinContext(SyntaxContext &sc)
     : sc(sc),
 
-      BuiltinVoidType(new(sc, AllocationArena::Permanent) VoidType(sc)),
+      BuiltinVoidType(VoidType::Create(sc)),
       BuiltinNullType(new(sc, AllocationArena::Permanent) NullType(sc)),
       BuiltinBoolType(new(sc, AllocationArena::Permanent) BoolType(sc)),
       BuiltinFloat16Type(new(sc, AllocationArena::Permanent)

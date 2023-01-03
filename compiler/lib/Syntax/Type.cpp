@@ -33,6 +33,18 @@ bool TypeBase::IsNominalType() {
   }
 }
 
+
+VoidType* VoidType::Create(const SyntaxContext& sc, AllocationArena arena) {
+  return new(sc, arena) VoidType(sc);
+}
+
+// NullType* NullType::Create(const SyntaxContext& sc, AllocationArena arena) {
+//   return new(sc, arena) NullType(sc);
+// }
+// BoolType* BoolType::Create(const SyntaxContext& sc, AllocationArena arena) {
+//   return new(sc, arena) BoolType(sc);
+// }
+
 // == Type == //
 bool Type::Walk(TypeWalker &walker) const {}
 
