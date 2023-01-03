@@ -32,9 +32,6 @@ public:
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   CodeGenListener *GetCodeGenListener() { return listener; }
-
-public:
-  Safe<llvm::TargetMachine> CreateTargetMachine();
 };
 } // namespace stone
 

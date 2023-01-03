@@ -26,7 +26,3 @@ IRCodeGen::IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener)
     : cgc(cgc), listener(listener) {}
 
 IRCodeGen::~IRCodeGen() {}
-
-Safe<llvm::TargetMachine> IRCodeGen::CreateTargetMachine() {
-  return stone::CreateTargetMachine(cgc.GetCodeGenOptions());
-}

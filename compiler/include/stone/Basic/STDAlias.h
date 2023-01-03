@@ -10,6 +10,7 @@ using UInt16 = uint16_t;
 using UInt32 = uint32_t;
 using UInt64 = uint64_t;
 using Int32 = int32_t;
+using Int64 = int64_t;
 using UIntPtr = uintptr_t;
 using String = std::string;
 

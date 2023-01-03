@@ -2,6 +2,7 @@
 #define STONE_GEN_IRCODEGENMODULE_H
 
 #include "stone/Basic/OutputFile.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Gen/IRCodeGenTypeResolver.h"
 #include "stone/Syntax/Module.h"
@@ -142,8 +143,17 @@ public:
   void EmitConstructorDecl(ConstructorDecl *d);
   void EmitDestructorDecl(DestructorDecl *d);
 
+public:
+  // llvm::Constant *getBuiltinLibFunction(const FunctionDecl *FD,
+  //                                       unsigned BuiltinID);
+
 private:
   void Emit();
+
+public:
+  static Int64 Clamp(Int64 val, Int64 low, Int64 high) {
+    return std::min(high, std::max(low, val));
+  }
 };
 } // namespace stone
 
