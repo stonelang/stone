@@ -75,6 +75,12 @@ class NominalTypeDecl;
 class IRCodeGen;
 class CodeGenListener;
 
+// class IRCodeGenLoop {};
+// class IRCodeGenCall {};
+class IRCodeGenBlocks final {
+public:
+};
+
 class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
 
   IRCodeGen &irCodeGen;

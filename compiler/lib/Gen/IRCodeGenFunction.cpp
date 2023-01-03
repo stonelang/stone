@@ -14,5 +14,5 @@ IRCodeGenFunction::~IRCodeGenFunction() {}
 /// automatically inserted into the function.
 llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
   return llvm::BasicBlock::Create(
-      cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext(), name);
+      *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext(), name);
 }

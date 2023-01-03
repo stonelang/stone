@@ -18,12 +18,3 @@ jobs:
 
 
 
-class CanType {
-	
-}
-
-class SugarType {
-	
-}
-
-

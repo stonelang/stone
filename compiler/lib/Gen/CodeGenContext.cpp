@@ -7,18 +7,17 @@
 
 using namespace stone;
 
-CodeGenContext::CodeGenContext(llvm::LLVMContext &llvmContext,
-                               const CodeGenOptions &genOpts,
+CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,
                                const LangContext &langContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable **outModuleHash)
-    : llvmContext(llvmContext), genOpts(genOpts), moduleOpts(moduleOpts),
-      targetOpts(targetOpts), langContext(langContext),
+    : llvmContext(new llvm::LLVMContext()), genOpts(genOpts),
+      moduleOpts(moduleOpts), targetOpts(targetOpts), langContext(langContext),
       clangContext(clangContext), outModuleHash(outModuleHash),
-      mod(new llvm::Module(moduleOpts.moduleName, llvmContext)),
-      tm(stone::CreateTargetMachine(genOpts)) {}
+      llvmModule(new llvm::Module(moduleOpts.moduleName, *llvmContext)),
+      llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {}
 
 CodeGenContext::~CodeGenContext() {}
 

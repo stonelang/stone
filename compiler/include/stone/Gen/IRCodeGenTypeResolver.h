@@ -3,6 +3,7 @@
 
 namespace llvm {
 class Type;
+class FunctionType;
 class IntegerType;
 class PointerType;
 } // namespace llvm
@@ -10,7 +11,8 @@ class PointerType;
 namespace stone {
 namespace syn {
 class Type;
-}
+class Decl;
+} // namespace syn
 
 class IRCodeGenModule;
 
@@ -22,6 +24,7 @@ public:
 
 public:
   llvm::Type *ResolveType(syn::Type ty);
+  llvm::FunctionType *ResolveFunctionType(syn::Decl &fd);
 };
 
 } // namespace stone

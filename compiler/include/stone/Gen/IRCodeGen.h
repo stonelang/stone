@@ -21,11 +21,6 @@ class TargetMachine;
 namespace stone {
 
 class CodeGenListener;
-
-// class IRCodeGenLoop {};
-// class IRCodeGenCall {};
-// class IRCodeGenBlocks {};
-
 class IRCodeGen final {
   CodeGenContext &cgc;
   CodeGenListener *listener;

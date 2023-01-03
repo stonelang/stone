@@ -29,7 +29,6 @@ class TargetOptions;
 
 class CodeGenContext final {
 
-  llvm::LLVMContext &llvmContext;
   const CodeGenOptions &genOpts;
   const ModuleOptions &moduleOpts;
   const stone::TargetOptions &targetOpts;
@@ -37,14 +36,14 @@ class CodeGenContext final {
   const LangContext &langContext;
   ClangContext &clangContext;
 
-  Safe<llvm::Module> mod;
-  Safe<llvm::TargetMachine> tm;
+  std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
   llvm::GlobalVariable **outModuleHash;
 
 public:
-  CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
-                 const ModuleOptions &moduleOpts,
+  CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
                  const LangContext &langContext, ClangContext &clangContext,
                  llvm::GlobalVariable **outModuleHash = nullptr);
@@ -55,25 +54,23 @@ public:
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
   const LangContext &GetLangContext() const { return langContext; }
-  llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
   ClangContext &GetClangContext() { return clangContext; }
 
-  const llvm::Module &GetLLVMModule() const {
-    assert(mod.get());
-    return *mod;
-  }
-  llvm::Module &GetLLVMModule() {
-    assert(mod.get());
-    return *mod;
-  }
+  const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
+  llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 
-  llvm::TargetMachine &GetTargetMachine() {
-    assert(tm.get());
-    return *tm;
+  const llvm::LLVMContext *GetLLVMContext() const { return llvmContext.get(); }
+  llvm::LLVMContext *GetLLVMContext() { return llvmContext.get(); }
+
+  const llvm::TargetMachine *GetLLVMTargetMachine() const {
+    return llvmTargetMachine.get();
   }
+  llvm::TargetMachine *GetLLVMTargetMachine() {
+    return llvmTargetMachine.get();
+  }
+  llvm::GlobalVariable **GetOutModuleHash() { return outModuleHash; }
 
   llvm::CodeGenFileType GetCodeGenFileType() {
-
     return (GetCodeGenOptions().codeGenOutputKind ==
                     CodeGenOutputKind::NativeAssembly
                 ? llvm::CGFT_AssemblyFile

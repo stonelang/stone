@@ -141,8 +141,8 @@ bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
     // }
     if (cgc.GetCodeGenOptions().codeGenOutputKind ==
         CodeGenOutputKind::LLVMIRPreOptimization) {
-      cgc.GetLLVMModule().print(rawOS.value(),
-                                nullptr); // Send file to the output stream
+      cgc.GetLLVMModule()->print(rawOS.value(),
+                                 nullptr); // Send file to the output stream
       return false;
     }
   } else {
@@ -178,7 +178,7 @@ void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
   //     break;
   //   }
 
-  if (parentScope) {
-    parentScope->GetLegacyPassManager().run(cgc.GetLLVMModule());
-  }
+  // if (parentScope) {
+  //   parentScope->GetLegacyPassManager().run(cgc->GetLLVMModule());
+  // }
 }

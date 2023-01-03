@@ -1,5 +1,4 @@
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/CodeCompletionListener.h"
@@ -193,9 +192,9 @@ Status CompilerInstance::CompileWithCodeGen() {
 
   // We are performing some low level code generation
   CodeGenContext cgc(
-      stone::GetLLVMContext(), GetInvocation().GetCodeGenOptions(),
-      GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
-      GetInvocation().GetLangContext(), GetInvocation().GetClangContext());
+      GetInvocation().GetCodeGenOptions(), GetInvocation().GetModuleOptions(),
+      GetInvocation().GetTargetOptions(), GetInvocation().GetLangContext(),
+      GetInvocation().GetClangContext());
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
