@@ -163,7 +163,7 @@ public:
   llvm::GlobalValue *GetGlobalValue(llvm::StringRef name);
 
 public:
-  //clang::CanQual<clang::Type> GetClangType(CanType type);
+  // clang::CanQual<clang::Type> GetClangType(CanType type);
 
 public:
   static Int64 Clamp(Int64 val, Int64 low, Int64 high) {

@@ -16,3 +16,9 @@ llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
   return llvm::BasicBlock::Create(
       *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext(), name);
 }
+
+Status IRCodeGenFunction::EmitBasicBlock(llvm::BasicBlock *bb) {
+  Status status;
+
+  return status;
+}

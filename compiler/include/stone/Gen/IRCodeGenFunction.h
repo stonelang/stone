@@ -2,6 +2,7 @@
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
 #include "stone/Basic/Mem.h"
+#include "stone/Basic/Status.h"
 #include "stone/Gen/IRCodeGenBuilder.h"
 #include "stone/Gen/IRCodeGenModule.h"
 
@@ -111,7 +112,7 @@ public:
 
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
-
+  Status EmitBasicBlock(llvm::BasicBlock *bb);
 
 public:
 };

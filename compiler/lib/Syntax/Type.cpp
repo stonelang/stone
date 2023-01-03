@@ -33,9 +33,8 @@ bool TypeBase::IsNominalType() {
   }
 }
 
-
-VoidType* VoidType::Create(const SyntaxContext& sc, AllocationArena arena) {
-  return new(sc, arena) VoidType(sc);
+VoidType *VoidType::Create(const SyntaxContext &sc, AllocationArena arena) {
+  return new (sc, arena) VoidType(sc);
 }
 
 // NullType* NullType::Create(const SyntaxContext& sc, AllocationArena arena) {

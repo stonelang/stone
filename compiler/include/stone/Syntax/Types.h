@@ -331,8 +331,10 @@ public:
 class VoidType : public BuiltinType {
 public:
   VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
+
 public:
-  static VoidType* Create(const SyntaxContext &sc, AllocationArena arena = AllocationArena::Permanent);
+  static VoidType *Create(const SyntaxContext &sc,
+                          AllocationArena arena = AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {
