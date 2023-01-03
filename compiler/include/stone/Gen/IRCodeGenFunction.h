@@ -113,6 +113,7 @@ public:
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
   Status EmitBasicBlock(llvm::BasicBlock *bb);
+  void EmitBranch(llvm::BasicBlock *target);
 
 public:
 };
