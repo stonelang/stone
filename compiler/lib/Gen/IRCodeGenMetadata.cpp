@@ -2,4 +2,4 @@
 
 using namespace stone;
 
-IRCodeGenMetadata::IRCodeGenMetadata(IRCodeGenModule& cgm) : cgm(cgm) {}
+IRCodeGenMetadata::IRCodeGenMetadata(IRCodeGenModule &cgm) : cgm(cgm) {}

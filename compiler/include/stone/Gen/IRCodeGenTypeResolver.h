@@ -12,6 +12,7 @@ namespace stone {
 namespace syn {
 class Type;
 class Decl;
+class MemberPointerType;
 } // namespace syn
 
 class IRCodeGenModule;
@@ -23,8 +24,10 @@ public:
   IRCodeGenTypeResolver(IRCodeGenModule &cgm);
 
 public:
-  llvm::Type *ResolveType(syn::Type ty);
-  llvm::FunctionType *ResolveFunctionType(syn::Decl &fd);
+  llvm::Type *GetType(const syn::Type ty);
+
+  // llvm::Type *GetType(const syn::MemberPointerType *mpt);
+  // llvm::FunctionType *GetFunctionType(const syn::FunctionType* );
 };
 
 } // namespace stone

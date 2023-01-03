@@ -29,7 +29,7 @@ public:
   IRCodeGenABI(IRCodeGenModule &cgm);
 
 public:
-  llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType *mpt);
+  llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType mpt);
 };
 
 } // namespace stone

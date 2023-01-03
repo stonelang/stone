@@ -8,10 +8,16 @@ using namespace stone;
 // TODO: Ok for now -- may move to IRCodeGenMoulde
 IRCodeGenTypeResolver::IRCodeGenTypeResolver(IRCodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *IRCodeGenTypeResolver::ResolveType(syn::Type ty) { return nullptr; }
-
-llvm::Type *
-IRCodeGenABI::ResolveMemberPointerType(const syn::MemberPointerType *mpt) {
-  // return cgm.GetIRCodeGenTypeResolver().ResolveType(mpt);
+llvm::Type *IRCodeGenTypeResolver::GetType(const syn::Type ty) {
   return nullptr;
 }
+
+// llvm::Type *IRCodeGenTypeResolver::GetType(const syn::MemberPointerType mpty)
+// {
+//   return nullptr;
+// }
+
+// llvm::FunctionType *IRCodeGenTypeResolver::GetFunctionType(const
+// syn::FunctionType fty) {
+//   return nullptr;
+// }

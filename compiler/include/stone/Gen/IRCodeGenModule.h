@@ -137,14 +137,19 @@ public:
   void EmitSyntaxFile(SyntaxFile &sf);
   void EmitGlobalDecl(Decl *d);
   // void EmitGlobalDecl(syn::GlobalDecl *gd);
-  void EmitFunDecl(FunDecl *d);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
   void EmitEnumDecl(EnumDecl *d);
   void EmitVarDecl(EnumDecl *d);
   void EmitAutoDecl(AutoDecl *d);
+
   void EmitConstructorDecl(ConstructorDecl *d);
-  void EmitDestructorDecl(DestructorDecl *d);
+  void EmitDestructorDecl(DestructorDecl *dd);
+
+public:
+  void EmitFunDecl(FunDecl *fd);
+  /// Emits the function definition for a given SILDeclRef.
+  // void EmitFunctionDefinition(FunDecl *fd);
 
 public:
   // llvm::Constant *getBuiltinLibFunction(const FunctionDecl *FD,
@@ -152,6 +157,10 @@ public:
 
 private:
   void Emit();
+
+public:
+  llvm::StringRef GetMangledName(Decl &d);
+  llvm::GlobalValue *GetGlobalValue(llvm::StringRef name);
 
 public:
   static Int64 Clamp(Int64 val, Int64 low, Int64 high) {

@@ -2,9 +2,6 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenABI.h"
 
-
-
-
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
@@ -19,3 +16,9 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
       outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}
+
+llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
+
+// llvm::GlobalValue *IRCodeGenModule::GetGlobalValue(llvm::StringRef name) {
+//   return GetCodeGenContext().GetLLVMModule()->getNamedValue(Name);
+// }

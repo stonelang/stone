@@ -1,7 +1,6 @@
 #ifndef STONE_GEN_IRCODEGENMETADATA_H
 #define STONE_GEN_IRCODEGENMETADATA_H
 
-
 #include "clang/AST/CharUnits.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/IR/Constants.h"
@@ -26,10 +25,10 @@ class TargetMachine;
 namespace stone {
 class IRCodeGenModule;
 class IRCodeGenMetadata final {
-  IRCodeGenModule& cgm;
-public:
-  IRCodeGenMetadata(IRCodeGenModule& cgm);
+  IRCodeGenModule &cgm;
 
+public:
+  IRCodeGenMetadata(IRCodeGenModule &cgm);
 };
 
 } // namespace stone

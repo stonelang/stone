@@ -90,7 +90,8 @@ class Type {
 
 public:
   Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
-  Type(TypeBase *typePtr, TypeQualifierList *qualifiers, TypeChunkList *chunks)
+  Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
+       TypeChunkList *chunks = nullptr)
       : typePtr(typePtr), qualifiers(qualifiers), chunks(chunks) {}
 
 public:
@@ -212,34 +213,20 @@ public:
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
 
+public:
+  bool IsBuiltinType() const;
+  bool IsFunType() const;
+  bool IsStructType() const;
+
+  bool IsPointerType() const;
+
+  bool IsReferenceType() const;
+
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
   void operator!=(Type T) const = delete;
 };
-
-// class QualType final : public Type {
-//   TypeQualifierList *quals = nullptr;
-// public:
-//   /// Constructs a NULL canonical type.
-//   QualType() = default;
-
-// public:
-//   explicit QualType(TypeBase *ty) : QualType(ty, nullptr, nullptr) {
-//     assert(IsCanTypeOrNull() &&
-//            "Forming a CanType out of a non-canonical type!");
-//   }
-//   explicit QualType(TypeBase *ty, TypeQualifierList *quals,
-//                     TypeChunkList *chunks)
-//       : Type(ty, chunks), quals(quals) {}
-
-//   explicit CanType(Type ty) : Type(ty) {}
-//   // CanQualType - This is a Type that is statically known to be
-//   // canonical.  To get
-//   /// one of these, use Type->GetCanType().  Since all
-//   /// CanType's can be used as 'Type' (they just don't have sugar) we
-//   /// derive from Type.
-// };
 
 class CanType final : public Type {
 public:

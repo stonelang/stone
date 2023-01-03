@@ -36,6 +36,16 @@ bool TypeBase::IsNominalType() {
 // == Type == //
 bool Type::Walk(TypeWalker &walker) const {}
 
+bool Type::IsBuiltinType() const {}
+
+bool Type::IsFunType() const {}
+
+bool Type::IsStructType() const {}
+
+bool Type::IsPointerType() const {}
+
+bool Type::IsReferenceType() const {}
+
 // == TypeQualifierCollector == //
 
 /// Collect any qualifiers on the given type and return an

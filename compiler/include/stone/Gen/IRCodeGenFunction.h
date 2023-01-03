@@ -95,6 +95,9 @@ public:
   IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn);
   ~IRCodeGenFunction();
 
+  /// Emits the function definition for a given SILDeclRef.
+  // void EmitFunctionDefinition(FunDecl *fd);
+
 public:
   // llvm::Address CreateAddress(llvm::Type *ty, Alignment align,
   //                      const llvm::Twine &name = "");

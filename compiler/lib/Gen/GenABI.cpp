@@ -1,6 +1,5 @@
 #include "stone/Gen/IRCodeGenABI.h"
 
-
 using namespace stone;
 
 // stone::GenABI();

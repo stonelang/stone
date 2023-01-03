@@ -134,6 +134,10 @@ private:
   CanType ComputeCanType();
 };
 
+class SourType : public TypeBase {
+public:
+};
+
 // TODO: Think about
 //  class AnyType : public TypeBase {
 //  public:
@@ -362,7 +366,6 @@ class ModuleType : public TypeBase {
 public:
   /// get - Return the ModuleType for the specified module.
   static ModuleType *Get(ModuleDecl *mod);
-
   ModuleDecl *GetModule() const { return mod; }
 
   // Implement isa/cast/dyncast/etc.
@@ -385,7 +388,9 @@ class SweetType : public TypeBase {
 };
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
-class AliasType : public SweetType {};
+class AliasType : public SweetType {
+public:
+};
 
 /// A type with a special syntax that is always sugar for a library type. The
 /// library type may have multiple base types. For unary syntax sugar, see
@@ -394,7 +399,9 @@ class AliasType : public SweetType {};
 /// The prime examples are:
 /// Arrays: [T] -> Array<T>
 /// Dictionaries: [K : V]  -> Dictionary<K, V>
-class SyntaxSweetType : public SweetType {};
+class SyntaxSweetType : public SweetType {
+public:
+};
 
 /// The dictionary type [K : V], which is syntactic sugar for Dictionary<K, V>.
 ///
@@ -402,7 +409,9 @@ class SyntaxSweetType : public SweetType {};
 /// \code
 /// auto dict: [string : int] = ["hello" : 0, "world" : 1]
 /// \endcode
-class DictionaryType : public SyntaxSweetType {};
+class DictionaryType : public SyntaxSweetType {
+public:
+};
 
 // class ArrayType : public Type, public llvm::FoldingSetNode {
 // public:
