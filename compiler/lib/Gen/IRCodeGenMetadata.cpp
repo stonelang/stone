@@ -1,4 +1,4 @@
-#include "stone/Gen/IRCodeGenMetadata.h"
+#include "stone/Gen/IRCodeGenModule.h"
 
 using namespace stone;
 

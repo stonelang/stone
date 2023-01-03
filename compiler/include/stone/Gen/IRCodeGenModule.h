@@ -3,6 +3,7 @@
 
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Gen/IRCodeGenMetadata.h"
 #include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Gen/IRCodeGenTypeResolver.h"
 #include "stone/Syntax/Module.h"

@@ -1,7 +1,7 @@
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenABI.h"
-#include "stone/Gen/IRCodeGenMetadata.h"
+
 
 
 
@@ -16,6 +16,6 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
 
     : typeCache(*irCodeGen.GetCodeGenContext().GetLLVMContext()),
       irCodeGen(irCodeGen), moduleName(moduleName),
-      outputFilename(outputFilename), typeResolver(*this), metatda(*this) {}
+      outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}

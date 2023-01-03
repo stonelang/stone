@@ -26,10 +26,12 @@ class TargetMachine;
 namespace stone {
 class IRCodeGenModule;
 class IRCodeGenMetadata final {
-
+  IRCodeGenModule& cgm;
 public:
   IRCodeGenMetadata(IRCodeGenModule& cgm);
 
 };
 
 } // namespace stone
+
+#endif
