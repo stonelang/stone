@@ -87,6 +87,7 @@ class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
   IRCodeGen &irCodeGen;
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
+  IRCodeGenMetadata metadata;
 
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
@@ -129,6 +130,7 @@ public:
   IRCodeGen &GetIRCodeGen() { return irCodeGen; }
   IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
+  IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);

@@ -25,6 +25,7 @@ set(stone_gen_sources
 	IRCodeGenBuilder.cpp
 	IRCodeGenFunction.cpp
 	IRCodegenModule.cpp
+	IRCodeGenMetadata.cpp
 	IRCodeGenTypeResolver.cpp
 	OptimizeIR.cpp
 	TargetMachine.cpp
