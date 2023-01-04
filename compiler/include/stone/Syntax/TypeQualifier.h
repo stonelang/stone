@@ -43,12 +43,13 @@ class TypeQualifierList {
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
-  // TODO: Remove delete -- it is an operator 
+  // TODO: Remove delete -- it is an operator
   SrcLoc deleteLoc;
   SrcLoc defaultLoc;
 
 public:
-  TypeQualifierList() : qualifiers(0), constLoc(SrcLoc()), restrictLoc(SrcLoc()) {}
+  TypeQualifierList()
+      : qualifiers(0), constLoc(SrcLoc()), restrictLoc(SrcLoc()) {}
 
 public:
   bool HasConst() const { return qualifiers & TypeQualifierFlags::Const; }
@@ -153,9 +154,7 @@ public:
     return (HasConst() && HasRestrict() && HasVolatile() && HasImmutable() &&
             HasMutable() && HasPure());
   }
-  void ClearAll() {
-    qualifiers = 0;
-  }
+  void ClearAll() { qualifiers = 0; }
 };
 
 class TypeQualifierCollector final : public TypeQualifierList {

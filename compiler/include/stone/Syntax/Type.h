@@ -7,9 +7,9 @@
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
-#include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeThunk.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"

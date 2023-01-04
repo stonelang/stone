@@ -31,6 +31,7 @@ set(stone_syn_sources
 	Type.cpp
 	TypeQualifier.cpp
 	TypeThunk.cpp
+	TypeOperator.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	

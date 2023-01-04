@@ -147,7 +147,7 @@ public:
 
 public:
   /// int** -- the '*' toucing int
-  const TypeThunk *GetInnermostNonParenChunk() const {
+  const TypeThunk *GetInnermostNonParenThunk() const {
     for (unsigned i = thunks.size(), i_end = 0; i != i_end; --i) {
       if (thunks[i - 1].GetKind() != TypeThunkKind::Paren) {
         return &thunks[i - 1];
@@ -157,7 +157,7 @@ public:
   }
 
   /// int** -- the '*' farthest from int
-  const TypeThunk *GetOutermostNonParenChunk() const {
+  const TypeThunk *GetOutermostNonParenThunk() const {
     for (unsigned i = 0, i_end = thunks.size(); i < i_end; ++i) {
       if (thunks[i].GetKind() != TypeThunkKind::Paren) {
         return &thunks[i];
