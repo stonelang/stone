@@ -160,6 +160,8 @@ public:
   SyntaxStatus CollectTypeQualifiers(TypeCollector &collector);
   SyntaxStatus CollectTypeQualifier(TypeCollector &collector);
 
+  SyntaxStatus CollectTypeOperator(TypeCollector &collector);
+
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
   SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
   SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);

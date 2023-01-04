@@ -13,6 +13,9 @@ DeleteTypeOperator DeleteTypeOperator::Create(SrcLoc loc) {
   return op;
 }
 
+
+TypeOperatorCollector::TypeOperatorCollector() {}
+
 void TypeOperatorCollector::AddNew(SrcLoc inputLoc) {
   AddTypeOperator(NewTypeOperator::Create(inputLoc));
 }

@@ -5,9 +5,11 @@
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Generics.h"
-#include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/Types.h"
+#include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeOperator.h"
+
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -263,6 +265,7 @@ class TypeCollector final {
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   TypeThunkCollector typeChunkCollector;
+  TypeOperatorCollector typeOperatorCollector;
 
 public:
   TypeCollector() {}
@@ -284,6 +287,13 @@ public:
   const TypeThunkCollector &GetTypeThunkCollector() const {
     return typeChunkCollector;
   }
+  TypeOperatorCollector &GetTypeOperatorCollector() {
+    return typeOperatorCollector;
+  }
+  const TypeOperatorCollector &GetTypeOperatorCollector() const {
+    return typeOperatorCollector;
+  }
+
   void Apply();
 
 public:

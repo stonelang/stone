@@ -87,6 +87,7 @@ private:
     //  if (!EndLoc.isInvalid())
     //    SetRangeEnd(EndLoc);
   }
+
 public:
   void AddNew(SrcLoc loc);
   void AddDelete(SrcLoc loc);
