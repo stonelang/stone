@@ -43,7 +43,7 @@ public:
     switch (GetKind()) {
     case ModeKind::None:
     case ModeKind::Parse:
-    case ModeKind::ResolveUsings:
+    case ModeKind::ResolveImports:
     case ModeKind::DumpSyntax:
     case ModeKind::TypeCheck:
     case ModeKind::PrintSyntax:

@@ -11,7 +11,6 @@ using namespace stone;
 IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 
   VoidTy = llvm::Type::getVoidTy(llvmContext);
-
   Int8Ty = llvm::Type::getInt8Ty(llvmContext);
   Int16Ty = llvm::Type::getInt16Ty(llvmContext);
   Int32Ty = llvm::Type::getInt32Ty(llvmContext);

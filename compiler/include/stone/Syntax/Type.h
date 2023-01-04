@@ -217,9 +217,7 @@ public:
   bool IsBuiltinType() const;
   bool IsFunType() const;
   bool IsStructType() const;
-
   bool IsPointerType() const;
-
   bool IsReferenceType() const;
 
 private:

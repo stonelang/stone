@@ -80,6 +80,9 @@ enum class ABIArgKind {
 class IRCodeGenModule;
 class IRCodeGenBuilder;
 
+class IRCodeGenFunctionInvocation final {
+public:
+};
 class IRCodeGenFunction final {
 
   IRCodeGenModule &cgm;
@@ -98,6 +101,9 @@ public:
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
+
+public:
+  void EmitIfStmt(const IfStmt &stmt);
 
 public:
   // llvm::Address CreateAddress(llvm::Type *ty, Alignment align,
