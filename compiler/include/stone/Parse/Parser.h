@@ -152,9 +152,9 @@ public:
   SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
 
-  bool IsTypeChunk(const Token &tk);
-  SyntaxStatus CollectTypeChunk(TypeCollector &collector);
-  SyntaxStatus CollectTypeChunks(TypeCollector &collector);
+  bool IsTypeThunk(const Token &tk);
+  SyntaxStatus CollectTypeThunk(TypeCollector &collector);
+  SyntaxStatus CollectTypeThunks(TypeCollector &collector);
   SyntaxStatus CollectBasicTypeDecl(TypeCollector &collector);
   SyntaxStatus CollectNominalTypeDecl(TypeCollector &collector);
   SyntaxStatus CollectTypeQualifiers(TypeCollector &collector);

@@ -12,9 +12,9 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
 
   switch (d->GetKind()) {
   case DeclKind::Interface:
-    return EmitInterfaceDecl(cast<InterfaceDecl>(d));
+    return EmitInterfaceDecl(llvm::cast<InterfaceDecl>(d));
   case DeclKind::Fun:
-    return EmitFunDecl(cast<FunDecl>(d));
+    return EmitFunDecl(llvm::cast<FunDecl>(d));
   // case DeclKind::Enum:
   //   return EmitEnumDecl(cast<EnumDecl>(d));
   // case DeclKind::Struct:

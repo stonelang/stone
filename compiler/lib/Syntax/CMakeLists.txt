@@ -30,7 +30,7 @@ set(stone_syn_sources
 	Generics.cpp
 	Type.cpp
 	TypeQualifier.cpp
-	TypeChunk.cpp
+	TypeThunk.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	

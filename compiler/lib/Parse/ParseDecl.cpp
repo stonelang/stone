@@ -152,8 +152,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
         SrcLoc());
   }
 
-  CollectTypeChunks(collector.GetTypeCollector());
-  assert(collector.GetTypeCollector().GetTypeChunkCollector().HasAny() &&
+  CollectTypeThunks(collector.GetTypeCollector());
+  assert(collector.GetTypeCollector().GetTypeThunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
   auto varDecl = DeclFactory::MakeVarDecl(GetSyntaxContext());

@@ -10,13 +10,13 @@ class TypeQualifierList;
 
 class QualType final {
   Type *tyPointer = nullptr;
-  TypeQualifierList *tyQualifiers = nullptr;
+  TypeQualifierList tyQualifiers;
 
 public:
   QualType() = default;
 
 public:
-  QualType(const Type *tyPointer, TypeQualifierList *tyQualifiers = nullptr)
+  QualType(const Type *tyPointer, TypeQualifierList tyQualifiers)
       : tyPointer(tyPointer), tyQualifiers(tyQualifiers) {}
 
 public:

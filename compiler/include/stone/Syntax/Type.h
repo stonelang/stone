@@ -7,7 +7,7 @@
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
-#include "stone/Syntax/TypeChunk.h"
+#include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeQualifier.h"
 
@@ -86,12 +86,12 @@ enum class ScalarTypeKind {
 class Type {
   TypeBase *typePtr = nullptr;
   TypeQualifierList *qualifiers;
-  TypeChunkList *chunks = nullptr;
+  TypeThunkList *chunks = nullptr;
 
 public:
   Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
   Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-       TypeChunkList *chunks = nullptr)
+       TypeThunkList *chunks = nullptr)
       : typePtr(typePtr), qualifiers(qualifiers), chunks(chunks) {}
 
 public:
@@ -111,8 +111,8 @@ public:
   }
   TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
 
-  void SetTypeChunks(TypeChunkList *inputChunks) { chunks = inputChunks; }
-  TypeChunkList *GetTypeChunks() { return chunks; }
+  void SetTypeThunks(TypeThunkList *inputChunks) { chunks = inputChunks; }
+  TypeThunkList *GetTypeThunks() { return chunks; }
 
 public:
   /// Walk this Type.
@@ -237,7 +237,7 @@ public:
            "Forming a CanType out of a non-canonical type!");
   }
   explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-                   TypeChunkList *chunks)
+                   TypeThunkList *chunks)
       : Type(ty, quals, chunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");

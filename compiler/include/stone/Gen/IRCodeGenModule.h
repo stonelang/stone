@@ -123,15 +123,18 @@ public:
   // llvm::DenseMap<LinkEntity, llvm::Constant*> globalVars;
   // llvm::DenseMap<LinkEntity, llvm::Constant*> globalGOTEquivalents;
   // llvm::DenseMap<LinkEntity, llvm::Function*> globalFunctions;
-  // llvm::DenseSet<const clang::Decl *> globalClangDecls;
+  //llvm::DenseSet<const clang::Decl *> globalClangDecls;
   // llvm::StringMap<std::pair<llvm::GlobalVariable*, llvm::Constant*>>
   //   globalStrings;
+
+   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
   IRCodeGen &GetIRCodeGen() { return irCodeGen; }
   IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
+
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);
