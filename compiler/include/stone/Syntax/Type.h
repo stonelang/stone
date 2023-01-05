@@ -86,13 +86,14 @@ enum class ScalarTypeKind {
 class Type {
   TypeBase *typePtr = nullptr;
   TypeQualifierList *qualifiers;
-  TypeThunkList *chunks = nullptr;
+  TypeThunkList *thunks = nullptr;
+  // TypeOperatorList* ops = nullptr;
 
 public:
   Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
   Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-       TypeThunkList *chunks = nullptr)
-      : typePtr(typePtr), qualifiers(qualifiers), chunks(chunks) {}
+       TypeThunkList *thunks = nullptr)
+      : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -111,8 +112,8 @@ public:
   }
   TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
 
-  void SetTypeThunks(TypeThunkList *inputChunks) { chunks = inputChunks; }
-  TypeThunkList *GetTypeThunks() { return chunks; }
+  void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
+  TypeThunkList *GetTypeThunks() { return thunks; }
 
 public:
   /// Walk this Type.
@@ -237,8 +238,8 @@ public:
            "Forming a CanType out of a non-canonical type!");
   }
   explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-                   TypeThunkList *chunks)
-      : Type(ty, quals, chunks) {
+                   TypeThunkList *thunks)
+      : Type(ty, quals, thunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

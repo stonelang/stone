@@ -5,11 +5,10 @@
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Generics.h"
+#include "stone/Syntax/TypeOperator.h"
+#include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/TypeQualifier.h"
-#include "stone/Syntax/TypeOperator.h"
-
 
 #include "llvm/ADT/ArrayRef.h"
 

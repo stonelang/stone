@@ -49,7 +49,10 @@ void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl) {}
+void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl) {
+
+  // IRCodeGenFunction(*this, nullptr).EmitFunction(funDecl);
+}
 
 void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
 

@@ -41,7 +41,7 @@ code/
 			Driver.stone = > module Compiler.Driver.Driver 
 
 
-* LLDB
+***LLDB***
 
 Basic steps:
 lldb stone-compile test.stone 
@@ -49,9 +49,32 @@ breakpoint set --file SomeFile.cpp --line 68
 run
 next
 
+***Clang IR Generation***
+HandleTopLevelDecl()
+	CodeGenModule::EmitTopLevelDecl
+		CodeGenModule::EmitGlobal(GlobalDecl GD) 
+			CodeGenModule::EmitGlobalFunctionDefinition()
+	 			CodeGenFunction(*this).GenerateCode(GD, Fn, FI);
 
-** BUG
-int** fails in lexer but int* works -- ok for now 
+***Swift IR Generation***
+
+performIRGeneration() in IRGen.cpp
+
+	irgen.emitGlobalTopLevel();
+		 IGM->emitSILFunction(&f);
+
+	IGM.emitSourceFile(*SF, StartElem);
+
+
+	performLLVM()
+
+
+
+
+
+
+
+
 
 
 

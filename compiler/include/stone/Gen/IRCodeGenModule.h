@@ -89,6 +89,7 @@ class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
   IRCodeGenMetadata metadata;
+  // IRCodeGenDebug debug;
 
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
@@ -134,10 +135,17 @@ public:
   IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
+  // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);
+
   void EmitGlobalDecl(Decl *d);
+
+  /// Emit functions, variables and tables which are needed anyway, e.g. because
+  /// they are externally visible.
+  // void EmitGlobalTopLevel(const std::vector<std::string> &linkerDirectives);
+
   // void EmitGlobalDecl(syn::GlobalDecl *gd);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
@@ -153,6 +161,10 @@ public:
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
 
+  // See Clang CodeGenModule
+  void SetFunctionLinkage(Decl *d, llvm::Function *fn);
+  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(FunDecl *d);
+
 public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,
   //                                       unsigned BuiltinID);
@@ -162,10 +174,25 @@ private:
 
 public:
   llvm::StringRef GetMangledName(Decl &d);
-  llvm::GlobalValue *GetGlobalValue(llvm::StringRef name);
 
 public:
   // clang::CanQual<clang::Type> GetClangType(CanType type);
+
+  llvm::GlobalValue *GetGlobalValue(llvm::StringRef name);
+
+  /// Given a global declaration, return a mangled name for this declaration
+  /// which has been added to this code generator via a Handle method.
+  llvm::StringRef GetMangledNameOfGlobalDecl(Decl *d);
+
+  /// Return the LLVM address of the given global entity.
+  ///
+  /// \param isForDefinition If true, the caller intends to define the
+  ///   entity; the object returned will be an llvm::GlobalValue of
+  ///   some sort.  If false, the caller just intends to use the entity;
+  ///   the object returned may be any sort of constant value, and the
+  ///   code generator will schedule the entity for emission if a
+  ///   definition has been registered with this code generator.
+  llvm::Constant *GetAddressOfGlobalDecl(Decl *d, bool isForDefinition);
 
 public:
   static Int64 Clamp(Int64 val, Int64 low, Int64 high) {
