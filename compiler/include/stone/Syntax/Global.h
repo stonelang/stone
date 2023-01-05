@@ -20,7 +20,7 @@ class GlobalDecl final {
   llvm::PointerIntPair<const Decl *, 3> val;
 
 private:
-  void Initialize(const Decl *d) {
+  void SetGlobalDecl(const Decl *d) {
     // assert(!llvm::isa<ConstructorDecl>(d) && "Use other ctor with ctor
     // decls!"); assert(!llvm::isa<DestructorDecl>(d) && "Use other ctor with
     // dtor decls!");
@@ -31,10 +31,9 @@ private:
 
 public:
   GlobalDecl() = default;
-
-  GlobalDecl(const VarDecl *d) { Initialize(d); }
-  GlobalDecl(const FunctionDecl *d) { Initialize(d); }
-  GlobalDecl(const NameableDecl *d) { Initialize(d); }
+  GlobalDecl(const VarDecl *d) { SetGlobalDecl(d); }
+  GlobalDecl(const FunctionDecl *d) { SetGlobalDecl(d); }
+  GlobalDecl(const NameableDecl *d) { SetGlobalDecl(d); }
 
   // GlobalDecl(const ConstructorDecl *d, ConstructorType ty);
   // GlobalDecl(const DestructorDecl *d, DestructorType ty);

@@ -120,9 +120,7 @@ protected:
           IsHoisted : 1,
 
           /// Wether this is a top level decl
-          IsTopLevel : 1
-
-    );
+          IsTopLevel : 1 );
 
     STONE_INLINE_BITFIELD(
         ValueDecl, Decl, 1 + 1 + 1 + 1,
@@ -140,6 +138,17 @@ protected:
         /// Whether this member was synthesized as part of a derived
         /// protocol conformance.
         IsSynthesized : 1);
+
+    STONE_INLINE_BITFIELD(StorageDecl, ValueDecl, 1,
+                          /// Whether this property is a type property
+                          /// (currently unfortunately called 'static').
+                          IsStatic : 1);
+
+    STONE_INLINE_BITFIELD(VarDecl, StorageDecl, 1,
+
+                          /// Whether this is a lazily top-level global variable
+                          /// from the main file.
+                          IsTopLevelGlobal : 1);
 
     STONE_INLINE_BITFIELD(
         FunctionDecl, ValueDecl, 1,
