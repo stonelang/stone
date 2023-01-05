@@ -19,11 +19,14 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+class SrcLoc;
 class ClangContext;
 class IRCodeGenModule;
 
 class IRCodeGenDebug final {
   CodeGenContext &cgc;
+
+  SrcLoc curLoc;
 
 public:
   IRCodeGenDebug(CodeGenContext &cgc, IRCodeGenModule &cgm,
@@ -147,6 +150,15 @@ public:
   //                                &E,
   //                                llvm::DIType
   //                                *T);
+
+public:
+  /// Update the current source location. If \arg loc is invalid it is
+  /// ignored.
+  void SetLoc(SrcLoc loc);
+
+  /// Return the current source location. This does not necessarily correspond
+  /// to the IRBuilder's current DebugLoc.
+  SrcLoc GetLoc() const { return curLoc; }
 };
 } // namespace stone
 
