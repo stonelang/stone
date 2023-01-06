@@ -83,10 +83,20 @@ class IRCodeGenBlocks final {
 public:
 };
 
-enum class FunctionAddressKind : bool {
-  NotForDefinition = false,
-  Definition = true
+struct EmitFunctionFlags final {
+  EmitFunctionFlags() = delete;
+  /// Flags that control the parsing of declarations.
+  enum ID : UInt32 {
+    None = 1 << 0,
+    ForVirtualTable = 1 << 1,
+    DontDefer = 1 << 2,
+    IsThunk = 1 << 3,
+    AllowEnumElement = 1 << 4,
+    IsForDefinition = 1 << 5,
+  };
 };
+/// Options that control the parsing of declarations.
+using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
 class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
 
@@ -122,6 +132,12 @@ public:
   IRCodeGenModule(IRCodeGen &irCodeGen, llvm::StringRef moduleName,
                   llvm::StringRef outputFilename);
   ~IRCodeGenModule();
+
+public:
+  enum IsForFunctionDefintion : bool {
+    NotForDefinition = false,
+    ForDefinition = true
+  };
 
 public:
   // Globals
@@ -164,22 +180,21 @@ public:
 private:
   llvm::Constant *
   CreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
-                 syn::FunctionDecl *fd, bool forVTable, bool dontDefer = false,
-                 bool isThunk = false,
+                 syn::FunctionDecl *fd,
+                 const EmitFunctionOptions emitFunctionOpts,
                  llvm::AttributeList extraAttrs = llvm::AttributeList());
   llvm::Constant *
   GetOrCreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
-                      syn::FunctionDecl *fd, bool forVTable,
-                      bool dontDefer = false, bool isThunk = false,
-                      llvm::AttributeList extraAttrs = llvm::AttributeList(),
-                      bool forDefinition = true);
+                      syn::FunctionDecl *fd,
+                      const EmitFunctionOptions emitFunctionOpts,
+                      llvm::AttributeList extraAttrs = llvm::AttributeList());
 
 public:
   void EmitFunDecl(FunDecl *fd, llvm::GlobalValue *globalValue = nullptr);
 
-  llvm::Constant *GetFunctionAddress(syn::FunctionDecl *fd,
-                                     llvm::Type *functionTy, bool forVTable,
-                                     bool dontDefer, bool forDefinition = true);
+  llvm::Constant *
+  GetFunctionAddress(syn::FunctionDecl *fd, llvm::Type *functionTy,
+                     const EmitFunctionOptions emitFunctionOpts);
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);

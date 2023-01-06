@@ -23,11 +23,9 @@ llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
 //   return GetCodeGenContext().GetLLVMModule()->getNamedValue(Name);
 // }
 
-llvm::Constant *
-IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
-                                llvm::Type *functionTy, syn::FunctionDecl *fd,
-                                bool forVTable, bool dontDefer, bool isThunk,
-                                llvm::AttributeList extraAttrs) {
+llvm::Constant *IRCodeGenModule::CreateFunction(
+    llvm::StringRef mangledName, llvm::Type *functionTy, syn::FunctionDecl *fd,
+    EmitFunctionOptions emitFunctionOpts, llvm::AttributeList extraAttrs) {
 
   llvm::GlobalValue *entry; //= GetGlobalValue(MangledName);
 
@@ -35,7 +33,7 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
   llvm::FunctionType *fnTy = nullptr;
 
   if (llvm::isa<llvm::FunctionType>(functionTy)) {
-    fnTy = cast<llvm::FunctionType>(functionTy);
+    fnTy = llvm::cast<llvm::FunctionType>(functionTy);
   } else {
     fnTy = llvm::FunctionType::get(GetIRCodeGenTypeCache().VoidTy, false);
     isIncompleteFunction = true;
@@ -50,19 +48,17 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
 }
 llvm::Constant *IRCodeGenModule::GetOrCreateFunction(
     llvm::StringRef mangledName, llvm::Type *functionTy, syn::FunctionDecl *fd,
-    bool forVTable, bool dontDefer, bool isThunk,
-    llvm::AttributeList extraAttrs, bool forDefinition) {
+    EmitFunctionOptions emitFunctionOpts, llvm::AttributeList extraAttrs) {
 
   // TODO: Ignoring forDefinition for now -- just creating
-  return CreateFunction(mangledName, functionTy, fd, forVTable, dontDefer,
-                        isThunk, extraAttrs);
+  return CreateFunction(mangledName, functionTy, fd, emitFunctionOpts,
+                        extraAttrs);
 }
 
-llvm::Constant *IRCodeGenModule::GetFunctionAddress(syn::FunctionDecl *fd,
-                                                    llvm::Type *functionTy,
-                                                    bool forVTable,
-                                                    bool dontDefer,
-                                                    bool forDefinition) {
+llvm::Constant *
+IRCodeGenModule::GetFunctionAddress(syn::FunctionDecl *fd,
+                                    llvm::Type *functionTy,
+                                    EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
   // If there was no specific requested type, just convert it now.
