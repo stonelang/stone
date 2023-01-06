@@ -120,7 +120,7 @@ protected:
           IsHoisted : 1,
 
           /// Wether this is a top level decl
-          IsTopLevel : 1 );
+          IsTopLevel : 1);
 
     STONE_INLINE_BITFIELD(
         ValueDecl, Decl, 1 + 1 + 1 + 1,
@@ -678,20 +678,11 @@ public:
   }
 };
 
-/// Member functions: fun Particle::Fire() -> bool ...
-class MethodDecl : public FunDecl {
-  /// TODO: pass , NominalTypeDecl* owner,
-public:
-  MethodDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-             Type retType, DeclContext *parent)
-      : FunDecl(kind, funLoc, name, nameLoc, retType, parent) {}
-};
-
-class ConstructorDecl : public MethodDecl {
+class ConstructorDecl : public FunctionDecl {
 public:
 };
 
-class DestructorDecl : public MethodDecl {
+class DestructorDecl : public FunctionDecl {
 public:
 };
 

@@ -21,6 +21,103 @@ class TargetMachine;
 namespace stone {
 
 class CodeGenListener;
+
+/// A size value, in eight-bit units.
+// class CodeGenSize final {
+//   private:
+//   Int64 val;
+// public:
+//   constexpr CodeGenSize() : val(0) {}
+//   explicit constexpr Size(Int64 val) : val(val) {}
+
+//   static constexpr CodeGenSize forBits(Int64 bitSize) {
+//     return CodeGenSize((bitSize + 7U) / 8U);
+//   }
+
+//   /// An "invalid" size, equal to the maximum possible size.
+//   static constexpr CodeGenSize invalid() { return Size(~Int64(0)); }
+
+//   /// Is this the "invalid" size value?
+//   bool IsInvalid() const { return *this == Size::invalid(); }
+
+//   constexpr Int64 getval() const { return val; }
+
+//   Int64 getvalInBits() const { return val * 8; }
+
+//   bool isZero() const { return val == 0; }
+
+//   friend CodeGenSize operator+(CodeGenSize L, CodeGenSize R) {
+//     return CodeGenSize(L.val + R.val);
+//   }
+//   friend CodeGenSize &operator+=(CodeGenSize &L, CodeGenSize R) {
+//     L.val += R.val;
+//     return L;
+//   }
+
+//   friend CodeGenSize operator-(CodeGenSize L, CodeGenSize R) {
+//     return CodeGenSize(L.val - R.val);
+//   }
+//   friend CodeGenSize &operator-=(CodeGenSize &L, CodeGenSize R) {
+//     L.val -= R.val;
+//     return L;
+//   }
+
+//   friend CodeGenSize operator*(CodeGenSize L, Int64 R) {
+//     return CodeGenSize(L.val * R);
+//   }
+//   friend CodeGenSize operator*(Int64 L, CodeGenSize R) {
+//     return CodeGenSize(L * R.val);
+//   }
+//   friend CodeGenSize &operator*=(CodeGenSize &L, Int64 R) {
+//     L.val *= R;
+//     return L;
+//   }
+
+//   friend Int64 operator/(CodeGenSize L, CodeGenSize R) {
+//     return L.val / R.val;
+//   }
+
+//   explicit operator bool() const { return val != 0; }
+
+//   CodeGenSize RoundUpToAlignment(Alignment align) const {
+//     Int64 value = getval() + align.getval() - 1;
+//     return CodeGenSize(value & ~Int64(align.getval() - 1));
+//   }
+
+//   bool IsPowerOf2() const {
+//     auto value = getval();
+//     return ((value & -value) == value);
+//   }
+
+//   bool IsMultipleOf(CodeGenSize other) const {
+//     return (val % other.val) == 0;
+//   }
+
+//   unsigned Log2() const {
+//     return llvm::Log2_64(val);
+//   }
+
+//   operator clang::CharUnits() const {
+//     return asCharUnits();
+//   }
+//   clang::CharUnits AsCharUnits() const {
+//     return clang::CharUnits::fromQuantity(getval());
+//   }
+
+//   friend bool operator< (CodeGenSize L, CodeGenSize R) { return L.val <
+//   R.val; } friend bool operator<=(CodeGenSize L, CodeGenSize R) { return
+//   L.val <= R.val; } friend bool operator> (CodeGenSize L, CodeGenSize R) {
+//   return L.val >  R.val; } friend bool operator>=(CodeGenSize L, CodeGenSize
+//   R) { return L.val >= R.val; } friend bool operator==(CodeGenSize L,
+//   CodeGenSize R) { return L.val == R.val; } friend bool
+//   operator!=(CodeGenSize L, CodeGenSize R) { return L.val != R.val; }
+
+//   friend CodeGenSize operator%(CodeGenSize L, Alignment R) {
+//     return CodeGenSize(L.val % R.getValue());
+//   }
+
+// };
+
 class IRCodeGen final {
   CodeGenContext &cgc;
   CodeGenListener *listener;

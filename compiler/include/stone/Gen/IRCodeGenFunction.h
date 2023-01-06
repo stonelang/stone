@@ -120,6 +120,20 @@ public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
   Status EmitBasicBlock(llvm::BasicBlock *bb);
   void EmitBranch(llvm::BasicBlock *target);
+
+public:
+  void EmitPrologue();
+  void EmitEpilogue();
+
+public:
+  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src, IRCodeGenSize size,
+  //                  IRCodeGenAlignment align);
+
+  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src,
+  //                 llvm::Value *size, Alignment align);
+
+  // void EmitMemCopy(Address dest, Address src, Size size);
+  // void EmitMemCopy(Address dest, Address src, llvm::Value *size);
 };
 
 } // namespace stone

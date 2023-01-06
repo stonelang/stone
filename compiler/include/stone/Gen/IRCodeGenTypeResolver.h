@@ -12,6 +12,7 @@ namespace stone {
 namespace syn {
 class Type;
 class Decl;
+class FunctionDecl;
 class MemberPointerType;
 } // namespace syn
 
@@ -27,7 +28,7 @@ public:
   llvm::Type *GetType(const syn::Type ty);
 
   // llvm::Type *GetType(const syn::MemberPointerType *mpt);
-  // llvm::FunctionType *GetFunctionType(const syn::FunctionType* );
+  llvm::FunctionType *GetFunctionType(const syn::FunctionDecl *fd);
 };
 
 } // namespace stone

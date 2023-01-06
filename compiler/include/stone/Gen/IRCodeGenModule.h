@@ -83,6 +83,11 @@ class IRCodeGenBlocks final {
 public:
 };
 
+enum class FunctionAddressKind : bool {
+  NotForDefinition = false,
+  Definition = true
+};
+
 class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
 
   IRCodeGen &irCodeGen;
@@ -156,14 +161,32 @@ public:
   void EmitConstructorDecl(ConstructorDecl *d);
   void EmitDestructorDecl(DestructorDecl *dd);
 
+private:
+  llvm::Constant *
+  CreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
+                 syn::FunctionDecl *fd, bool forVTable, bool dontDefer = false,
+                 bool isThunk = false,
+                 llvm::AttributeList extraAttrs = llvm::AttributeList());
+  llvm::Constant *
+  GetOrCreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
+                      syn::FunctionDecl *fd, bool forVTable,
+                      bool dontDefer = false, bool isThunk = false,
+                      llvm::AttributeList extraAttrs = llvm::AttributeList(),
+                      bool forDefinition = true);
+
 public:
-  void EmitFunDecl(FunDecl *fd);
+  void EmitFunDecl(FunDecl *fd, llvm::GlobalValue *globalValue = nullptr);
+
+  llvm::Constant *GetFunctionAddress(syn::FunctionDecl *fd,
+                                     llvm::Type *functionTy, bool forVTable,
+                                     bool dontDefer, bool forDefinition = true);
+
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
 
   // See Clang CodeGenModule
-  void SetFunctionLinkage(Decl *d, llvm::Function *fn);
-  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(FunDecl *d);
+  void SetFunctionLinkage(syn::FunctionDecl *fd, llvm::Function *fn);
+  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(syn::FunctionDecl *fd);
 
 public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,

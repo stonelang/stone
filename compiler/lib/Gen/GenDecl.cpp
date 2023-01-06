@@ -49,7 +49,14 @@ void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl) {
+void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
+                                  llvm::GlobalValue *globalValue) {
+
+  auto llvmFunctionType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
+
+  // globalValue = llvm::cast<llvm::GlobalValue>(
+  //     GetFunctionAddress(GD, Ty, /*forVTable=*/false,
+  //                        /*dontDefer=*/true, ForDefinition));
 
   // IRCodeGenFunction(*this, nullptr).EmitFunction(funDecl);
 }
