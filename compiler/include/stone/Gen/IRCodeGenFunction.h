@@ -5,6 +5,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Gen/IRCodeGenBuilder.h"
 #include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Syntax/SyntaxVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/CallingConv.h"
@@ -83,7 +84,7 @@ class IRCodeGenBuilder;
 class IRCodeGenFunctionInvocation final {
 public:
 };
-class IRCodeGenFunction final {
+class IRCodeGenFunction final : public SyntaxVisitor<IRCodeGenFunction> {
 
   IRCodeGenModule &cgm;
   IRCodeGenBuilder builder;
@@ -122,6 +123,8 @@ public:
   void EmitBranch(llvm::BasicBlock *target);
 
 public:
+  void EmitFunction(FunctionDecl *fd);
+
   void EmitPrologue();
   void EmitEpilogue();
 

@@ -366,6 +366,12 @@ public:
 
   void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
   SrcLoc GetDeclNameLoc() { return nameLoc; }
+
+public:
+  static bool classof(const Decl *d) {
+    return d->GetKind() >= DeclKind::FirstNameableDecl &&
+           d->GetKind() <= DeclKind::LastNameableDecl;
+  }
 };
 
 class ValueDecl : public NameableDecl {

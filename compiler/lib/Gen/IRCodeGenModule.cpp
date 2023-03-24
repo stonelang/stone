@@ -23,42 +23,45 @@ llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
 //   return GetCodeGenContext().GetLLVMModule()->getNamedValue(Name);
 // }
 
-llvm::Constant *IRCodeGenModule::CreateFunction(
-    llvm::StringRef mangledName, llvm::Type *functionTy, syn::FunctionDecl *fd,
-    EmitFunctionOptions emitFunctionOpts, llvm::AttributeList extraAttrs) {
+llvm::Constant *
+IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
+                                syn::FunctionDecl *fd, llvm::Type *fnTy,
+                                const EmitFunctionOptions emitFunctionOpts,
+                                llvm::AttributeList extraAttrs) {
 
   llvm::GlobalValue *entry; //= GetGlobalValue(MangledName);
 
   auto isIncompleteFunction = false;
-  llvm::FunctionType *fnTy = nullptr;
+  llvm::FunctionType *llvmFunctionType = nullptr;
 
-  if (llvm::isa<llvm::FunctionType>(functionTy)) {
-    fnTy = llvm::cast<llvm::FunctionType>(functionTy);
+  if (llvm::isa<llvm::FunctionType>(fnTy)) {
+    llvmFunctionType = llvm::cast<llvm::FunctionType>(fnTy);
   } else {
-    fnTy = llvm::FunctionType::get(GetIRCodeGenTypeCache().VoidTy, false);
+    llvmFunctionType =
+        llvm::FunctionType::get(GetIRCodeGenTypeCache().VoidTy, false);
     isIncompleteFunction = true;
   }
 
   llvm::Function *llvmFunction = llvm::Function::Create(
-      fnTy, llvm::Function::ExternalLinkage,
+      llvmFunctionType, llvm::Function::ExternalLinkage,
       entry ? llvm::StringRef() : mangledName,
       *GetIRCodeGen().GetCodeGenContext().GetLLVMModule());
 
-  return nullptr;
+  return llvmFunction;
 }
-llvm::Constant *IRCodeGenModule::GetOrCreateFunction(
-    llvm::StringRef mangledName, llvm::Type *functionTy, syn::FunctionDecl *fd,
-    EmitFunctionOptions emitFunctionOpts, llvm::AttributeList extraAttrs) {
+llvm::Constant *
+IRCodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
+                                     syn::FunctionDecl *fd, llvm::Type *fnTy,
+                                     const EmitFunctionOptions emitFunctionOpts,
+                                     llvm::AttributeList extraAttrs) {
 
   // TODO: Ignoring forDefinition for now -- just creating
-  return CreateFunction(mangledName, functionTy, fd, emitFunctionOpts,
-                        extraAttrs);
+  return CreateFunction(mangledName, fd, fnTy, emitFunctionOpts, extraAttrs);
 }
 
-llvm::Constant *
-IRCodeGenModule::GetFunctionAddress(syn::FunctionDecl *fd,
-                                    llvm::Type *functionTy,
-                                    EmitFunctionOptions emitFunctionOpts) {
+llvm::Constant *IRCodeGenModule::GetFunctionAddress(
+    syn::FunctionDecl *fd, llvm::Type *fnTy,
+    const EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
   // If there was no specific requested type, just convert it now.
@@ -67,5 +70,23 @@ IRCodeGenModule::GetFunctionAddress(syn::FunctionDecl *fd,
   //   functionTy = GetIRCodeGenTypeResolver().ResolveType(fd->GetType());
   // }
 
-  return nullptr;
+  if (emitFunctionOpts.contains(EmitFunctionFlags::IsForDefinition)) {
+  }
+
+  return GetOrCreateFunction("mangledName", fd, fnTy, emitFunctionOpts);
+}
+
+void IRCodeGenModule::SetFunctionLinkage(syn::FunctionDecl *fd,
+                                         llvm::Function *fn) {
+  fn->setLinkage(GetFunctionLinkage(fd));
+}
+llvm::GlobalValue::LinkageTypes
+IRCodeGenModule::GetFunctionLinkage(syn::FunctionDecl *fd) {
+
+  // TODO: FOR NOW
+  return llvm::GlobalValue::InternalLinkage;
+}
+
+llvm::StringRef IRCodeGenModule::GetMangledNameOfGlobalDecl(Decl *d) {
+  const auto *nd = llvm::cast<NameableDecl>(d);
 }

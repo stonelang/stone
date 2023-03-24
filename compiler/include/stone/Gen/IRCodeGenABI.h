@@ -1,6 +1,8 @@
 #ifndef STONE_GEN_IRCODEGENABI_H
 #define STONE_GEN_IRCODEGENABI_H
 
+
+#include "stone/Syntax/Mangle.h"
 #include "llvm/IR/Argument.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
@@ -24,6 +26,8 @@ class IRCodeGenModule;
 
 class IRCodeGenABI final {
   IRCodeGenModule &cgm;
+
+  std::unique_ptr<MangleContext> mangleContext;
 
 public:
   IRCodeGenABI(IRCodeGenModule &cgm);

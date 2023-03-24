@@ -16,3 +16,17 @@ llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
   return llvm::BasicBlock::Create(
       *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext(), name);
 }
+
+void IRCodeGenFunction::EmitFunction(FunctionDecl *fd) {
+
+  EmitPrologue();
+
+  EmitEpilogue();
+}
+
+void IRCodeGenFunction::EmitPrologue() {
+  assert(!fn &&
+         "Do not use a IRCodeGenFunction object for more than one function");
+}
+
+void IRCodeGenFunction::EmitEpilogue() {}

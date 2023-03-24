@@ -1,5 +1,6 @@
 
-space Physics {
+space Physics;
+
 
 	public interface Particle {
 	}
@@ -16,5 +17,3 @@ space Physics {
 	public fun Electron::Fire() -> void {
 
 	}
-
-}

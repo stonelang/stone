@@ -210,6 +210,9 @@ public:
   /// in this context.
   void AddLoadedModule(ModuleDecl *mod);
 
+  /// If \p T is null pointer, assume the target in ASTContext.
+  MangleContext *CreateMangleContext(const clang::TargetInfo *T = nullptr);
+
   Identifier
   GetRealModuleName(Identifier key,
                     ModuleAliasLookupOption option =

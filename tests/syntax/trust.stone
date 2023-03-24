@@ -1,7 +1,7 @@
 
 space Trust {
 
-forward struct S1; 
+//forward struct S1; 
 
 public struct S0 {
 	trust S1; 

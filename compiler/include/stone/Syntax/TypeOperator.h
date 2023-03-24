@@ -17,6 +17,7 @@ enum class TypeOperatorKind : UInt8 {
   None = 0,
   New,
   Delete,
+  Default,
 };
 class alignas(1 << TypeAlignInBits) TypeOperator
     : syn::SyntaxAllocation<TypeOperator> {

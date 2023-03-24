@@ -179,13 +179,12 @@ public:
 
 private:
   llvm::Constant *
-  CreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
-                 syn::FunctionDecl *fd,
-                 const EmitFunctionOptions emitFunctionOpts,
+  CreateFunction(llvm::StringRef mangledName, syn::FunctionDecl *fd,
+                 llvm::Type *fnTy, const EmitFunctionOptions emitFunctionOpts,
                  llvm::AttributeList extraAttrs = llvm::AttributeList());
   llvm::Constant *
-  GetOrCreateFunction(llvm::StringRef mangledName, llvm::Type *functionTy,
-                      syn::FunctionDecl *fd,
+  GetOrCreateFunction(llvm::StringRef mangledName, syn::FunctionDecl *fd,
+                      llvm::Type *fnTy,
                       const EmitFunctionOptions emitFunctionOpts,
                       llvm::AttributeList extraAttrs = llvm::AttributeList());
 

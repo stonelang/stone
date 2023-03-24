@@ -2,7 +2,7 @@
 
 space Log2 {
 
-	public sealed fun Pow64() -> uint64{
+	public fun Pow64() -> uint64{
 		return 0;
 	}
 }

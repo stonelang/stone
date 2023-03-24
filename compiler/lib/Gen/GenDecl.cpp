@@ -1,4 +1,5 @@
 #include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/IRCodeGenFunction.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
@@ -49,16 +50,24 @@ void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
-                                  llvm::GlobalValue *globalValue) {
+void IRCodeGenModule::EmitFunDecl(FunDecl *fd, llvm::GlobalValue *gv) {
 
-  auto llvmFunctionType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
+  auto fdTy = GetIRCodeGenTypeResolver().GetFunctionType(fd);
 
-  // globalValue = llvm::cast<llvm::GlobalValue>(
-  //     GetFunctionAddress(GD, Ty, /*forVTable=*/false,
-  //                        /*dontDefer=*/true, ForDefinition));
+  EmitFunctionOptions emitFunctionOpts;
+  emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;
+  emitFunctionOpts |= EmitFunctionFlags::DontDefer;
 
-  // IRCodeGenFunction(*this, nullptr).EmitFunction(funDecl);
+  if (!gv) {
+    gv = llvm::cast<llvm::GlobalValue>(
+        GetFunctionAddress(fd, fdTy, emitFunctionOpts));
+  }
+
+  auto *fn = cast<llvm::Function>(gv);
+
+  SetFunctionLinkage(fd, fn);
+
+  IRCodeGenFunction(*this, fn).EmitFunction(fd);
 }
 
 void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
