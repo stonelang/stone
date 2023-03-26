@@ -11,6 +11,7 @@ set( LLVM_LINK_COMPONENTS
 set(stone_gen_sources
 	NativeCodeGen.cpp
 	CodeGenContext.cpp
+	GenCall.cpp
 	GenDecl.cpp
 	GenStmt.cpp
 	GenExpr.cpp
