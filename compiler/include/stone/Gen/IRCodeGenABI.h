@@ -3,6 +3,8 @@
 
 
 #include "stone/Syntax/Mangle.h"
+
+
 #include "llvm/IR/Argument.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
@@ -27,7 +29,7 @@ class IRCodeGenModule;
 class IRCodeGenABI final {
   IRCodeGenModule &cgm;
 
-  std::unique_ptr<MangleContext> mangleContext;
+  std::unique_ptr<syn::MangleContext> mangleContext;
 
 public:
   IRCodeGenABI(IRCodeGenModule &cgm);

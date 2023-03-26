@@ -28,7 +28,7 @@ enum class MangleContextKind : UInt8 { None = 0, Itanium, Microsoft };
 
 class MangleContext {
   SyntaxContext &sc;
-  const ManglerKind Kind;
+  const MangleContextKind kind;
 
 public:
   MangleContext(MangleContextKind kind, SyntaxContext &sc)
