@@ -17,6 +17,8 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
       ms(new ModuleSystem(invocation, GetSyntaxContext())) {
 
   invocation.GetLangContext().GetStatEngine().Register(stats.get());
+
+  // CreateCodeGenContext();
 }
 CompilerInstance::~CompilerInstance() {}
 
@@ -102,6 +104,9 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   }
   }
 }
+
+// CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
+
 void CompilerInstanceStats::Print(ColorfulStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
   //   // GetLangContext().Out() << GetName() << '\n';

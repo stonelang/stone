@@ -22,7 +22,22 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
 
 ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {}
+      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {
+
+  Bits.ModuleDecl.IsStaticLibrary = 0;
+  Bits.ModuleDecl.IsTestingEnabled = 0;
+  Bits.ModuleDecl.FailedToLoad = 0;
+  Bits.ModuleDecl.RawResilienceStrategy = 0;
+  Bits.ModuleDecl.HasResolvedImports = 0;
+  Bits.ModuleDecl.PrivateImportsEnabled = 0;
+  Bits.ModuleDecl.ImplicitDynamicEnabled = 0;
+  Bits.ModuleDecl.IsSystemModule = 0;
+  Bits.ModuleDecl.IsNonStoneModule = 0;
+  Bits.ModuleDecl.IsMainModule = 0;
+  Bits.ModuleDecl.HasIncrementalInfo = 0;
+  Bits.ModuleDecl.HasHermeticSealAtLink = 0;
+  Bits.ModuleDecl.IsConcurrencyChecked = 0;
+}
 
 void ModuleDecl::AddFile(ModuleFile &file) {
   // If this is a LoadedFile, make sure it loaded without error.
@@ -30,8 +45,14 @@ void ModuleDecl::AddFile(ModuleFile &file) {
   //         cast<LoadedFile>(newFile).hadLoadError()));
   // Require Main and REPL files to be the first file added.
   assert(files.empty() || !isa<SyntaxFile>(file) ||
-         cast<SyntaxFile>(file).kind == SyntaxFileKind::Library
+         llvm::cast<SyntaxFile>(file).kind == SyntaxFileKind::Library
          /*||cast<SyntaxFile>(unit).Kind == SyntaxFileKind::SIL*/);
+
+  if (llvm::isa<SyntaxFile>(file) && llvm::cast<SyntaxFile>(file).IsPrimary()) {
+    if (IsMainModule()) {
+      primaries.push_back(&file);
+    }
+  }
   files.push_back(&file);
   // ClearLookupCache();
 }
@@ -56,12 +77,11 @@ bool DeclContext::IsModuleFileContext() const {
   return IsModuleContext();
 }
 
-llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
-  // auto &eval = GetASTContext().evaluator;
-  // auto *mutableThis = const_cast<ModuleDecl *>(this);
-  // return evaluateOrDefault(eval, PrimarySourceFilesRequest{mutableThis}, {});
-  assert(false && "Not implemented");
-}
+// llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
+
+//   assert(IsMainModule() && "Only the main module can have primaries");
+//   return {primaries.begin(), primaries.size()};
+// }
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)

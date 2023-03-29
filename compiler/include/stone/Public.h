@@ -129,12 +129,16 @@ class CompilerInstance;
 //     CompilerInstance
 //         &instance /*, CompileFrontendCallback callback = nullptr*/);
 
+bool CompileFrontend(CompilerInstance &instance);
+
+bool CompileBackend(CompilerInstance &instance);
+
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true is successfull
-bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
-                       SyntaxListener *listener = nullptr);
+bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, CompilerInstance &instance,
+                       CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull

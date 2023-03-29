@@ -11,7 +11,7 @@
 namespace stone {
 /// Options for controlling the target.
 class TargetContext final {
-	//TargetOptions targetOpts;
+  // TargetOptions targetOpts;
 public:
   TargetContext();
 };

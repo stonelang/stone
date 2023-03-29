@@ -88,7 +88,7 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
     cgm.EmitSyntaxFile(*sf);
   } else if (md) {
     for (auto *moduleFile : md->GetFiles()) {
-      if (auto *nextSyntaxFile = dyn_cast<SyntaxFile>(moduleFile)) {
+      if (auto *nextSyntaxFile = llvm::dyn_cast<SyntaxFile>(moduleFile)) {
         if (nextSyntaxFile->stage >= SyntaxFileStage::TypeChecked)
           cgm.EmitSyntaxFile(*nextSyntaxFile);
       } else {

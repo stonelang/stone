@@ -184,16 +184,8 @@ public:
 
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
-  bool JustCompile() {
-    if (GetCompilerOptions().GetMode().JustParse() ||
-        GetCompilerOptions().GetMode().JustTypeCheck() ||
-        GetCompilerOptions().GetMode().IsEmitIR()) {
-      return true;
-    }
-    return false;
-  }
-
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+  // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
 };
 
 } // namespace stone

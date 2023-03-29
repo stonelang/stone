@@ -22,3 +22,9 @@ jobs:
 
 
 
+
+class CompileCallback {
+
+}
+
+class ParseCallback : CompileC

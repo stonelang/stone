@@ -50,24 +50,26 @@ void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *fd, llvm::GlobalValue *gv) {
+void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
+                                  llvm::GlobalValue *globalValue) {
 
-  auto fdTy = GetIRCodeGenTypeResolver().GetFunctionType(fd);
+  assert(funDecl && "Null FundDecl");
+
+  auto funDeclType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
 
   EmitFunctionOptions emitFunctionOpts;
   emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;
   emitFunctionOpts |= EmitFunctionFlags::DontDefer;
 
-  if (!gv) {
-    gv = llvm::cast<llvm::GlobalValue>(
-        GetFunctionAddress(fd, fdTy, emitFunctionOpts));
+  if (!globalValue) {
+    globalValue = llvm::cast<llvm::GlobalValue>(
+        GetFunctionAddress(funDecl, funDeclType, emitFunctionOpts));
   }
 
-  auto *fn = cast<llvm::Function>(gv);
+  auto *llvmFunction = cast<llvm::Function>(globalValue);
 
-  SetFunctionLinkage(fd, fn);
-
-  IRCodeGenFunction(*this, fn).EmitFunction(fd);
+  SetFunctionLinkage(funDecl, llvmFunction);
+  IRCodeGenFunction(*this, llvmFunction).EmitFunction(funDecl);
 }
 
 void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}

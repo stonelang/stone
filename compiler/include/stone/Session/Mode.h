@@ -23,6 +23,7 @@ public:
   ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
+  file::Type GetOutputFileType() const;
 
   bool CanOutput() const {
     switch (GetKind()) {
@@ -82,32 +83,6 @@ public:
       return false;
     }
   }
-  bool IsValid() {
-    if (CanCompile()) {
-      return true;
-    }
-    if (IsImmediate()) {
-      return true;
-    }
-    return false;
-  }
-  bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
-  bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }
-
-public:
-  // Convenience
-  bool IsNone() const { return GetKind() == ModeKind::None; }
-  bool IsParse() { return GetKind() == ModeKind::Parse; }
-  bool IsDumpSyntax() { return GetKind() == ModeKind::DumpSyntax; }
-  bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
-  bool IsPrintSyntax() { return GetKind() == ModeKind::PrintSyntax; }
-  bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
-  bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
-  bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }
-  bool IsEmitBC() { return GetKind() == ModeKind::EmitBC; }
-  bool IsEmitObject() { return GetKind() == ModeKind::EmitObject; }
-  bool IsEmitAssembly() { return GetKind() == ModeKind::EmitAssembly; }
-  bool IsAlien() { return GetKind() == ModeKind::Alien; }
 
   bool JustParse() {
     switch (GetKind()) {
@@ -127,15 +102,37 @@ public:
       return false;
     }
   }
-  file::Type GetOutputFileType() const;
+
+  bool IsValid() {
+    if (CanCompile()) {
+      return true;
+    }
+    if (IsImmediate()) {
+      return true;
+    }
+    return false;
+  }
+
+public:
+  // Convenience
+  bool IsNone() const { return GetKind() == ModeKind::None; }
+  bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
+  bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }
+  bool IsParse() { return GetKind() == ModeKind::Parse; }
+  bool IsDumpSyntax() { return GetKind() == ModeKind::DumpSyntax; }
+  bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
+  bool IsPrintSyntax() { return GetKind() == ModeKind::PrintSyntax; }
+  bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
+  bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
+  bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }
+  bool IsEmitBC() { return GetKind() == ModeKind::EmitBC; }
+  bool IsEmitObject() { return GetKind() == ModeKind::EmitObject; }
+  bool IsEmitAssembly() { return GetKind() == ModeKind::EmitAssembly; }
+  bool IsAlien() { return GetKind() == ModeKind::Alien; }
 
 public:
   static file::Type GetOutputFileTypeByModeKind(ModeKind kind);
   static std::unique_ptr<Mode> Create(const llvm::opt::InputArgList &ial);
 };
-
-// class EmitBCMode final : public Mode {
-// };
-
 } // namespace stone
 #endif

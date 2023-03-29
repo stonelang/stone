@@ -138,7 +138,7 @@ public:
   ~SyntaxFile();
 
 public:
-  bool IsPrimary() { return isPrimary; }
+  bool IsPrimary() const { return isPrimary; }
   unsigned GetSrcID() { return srcID; }
 
   bool HasMainFun() { return hasMainFun; }
@@ -195,6 +195,8 @@ class ModuleDecl final : public DeclContext,
 
   /// The ABI name of the module, if it differs from the module name.
   mutable Identifier moduleABIName;
+
+  llvm::SmallVector<ModuleFile *, 8> primaries;
 
 public:
   ModuleDecl(Identifier name, SyntaxContext &tc, ModuleDecl *parent = nullptr);

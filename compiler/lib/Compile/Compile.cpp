@@ -64,7 +64,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(Error(true));
   }
   // We setup clang now -- this just loads the instance.
-  invocation.SetupClang(args, arg0);
+  if (invocation.SetupClang(args, arg0).Has()) {
+
+    return Finish(Error(true));
+  }
 
   // Setup the custom formatting to be able to handle syntax diagnostics
   auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
@@ -138,40 +141,29 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
 
-static Status CompileWithGenSyntaxFile(CompilerInstance &instance,
-                                       CodeGenContext &cgc,
-                                       IRCodeGenCompletedCallback notifiy) {
-
-  for (auto *primarySyntaxFile : instance.GetPrimarySyntaxFiles()) {
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-        instance.GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-    stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
-                           primarySyntaxFile, primaryFileSpecificPaths);
-  }
-  return notifiy(instance, cgc);
-}
-
-static Status CompileWithGenWholeModule(CompilerInstance &instance,
-                                        CodeGenContext &cgc,
-                                        IRCodeGenCompletedCallback notifiy) {
-
-  auto *mainModule = instance.GetModuleSystem().GetMainModule();
-  const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-      instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-  stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
-                     primaryFileSpecificPaths);
-  return notifiy(instance, cgc);
-}
 Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
                                           IRCodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
-  if (!compilerOpts.GetInputsAndOutputs().HasPrimaryInputs()) {
-    return CompileWithGenWholeModule(*this, cgc, notifiy);
+  if (IsWholeModuleCodeGen()) {
+    auto *mainModule = GetModuleSystem().GetMainModule();
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+                       primaryFileSpecificPaths);
+  } else if (IsSyntaxFileCodeGen()) {
+    for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
+      stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+                             primarySyntaxFile, primaryFileSpecificPaths);
+    }
   }
-  if (!GetPrimarySyntaxFiles().empty()) {
-    return CompileWithGenSyntaxFile(*this, cgc, notifiy);
+
+  if (notifiy) {
+    notifiy(*this, cgc);
   }
   Status::Error();
 }
@@ -188,7 +180,7 @@ Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
 Status CompilerInstance::CompileWithCodeGen() {
 
-  assert(GetMode().CanCodeGen() && "Mode does not support code gen");
+  assert(CanCodeGen() && "Mode does not support code gen");
 
   // We are performing some low level code generation
   CodeGenContext cgc(
@@ -269,7 +261,9 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
       stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
                              invocation.GetListener());
-      notifiy(*syntaxFile);
+      if (notifiy) {
+        notifiy(*syntaxFile);
+      }
     }
   }
 
@@ -309,13 +303,14 @@ Status CompilerInstance::CompileWithTypeChecking(
 Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
-
-  llvm::TimeTraceScope TimeScope("Compile");
+  llvm::TimeTraceScope compileTimeScope("Compile");
 
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
+
   Status status;
+
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
     status = CompileWithParsing();
@@ -338,3 +333,34 @@ Status CompilerInstance::Compile() {
   }
   return status;
 }
+
+// bool stone::CompileFrontend(CompilerInstance &instance) {
+//    llvm::TimeTraceScope compileFrontendTimeScope("Compile Frontend");
+
+//    Status status;
+
+//   switch (GetMode().GetKind()) {
+//   case ModeKind::Parse:
+//     status = CompileWithParsing(instance);
+//     break;
+//   case ModeKind::DumpSyntax:
+//     status = CompileWithParsing(
+//         [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
+//     break;
+//   case ModeKind::TypeCheck:
+//     status = CompileWithTypeChecking();
+//     break;
+//   case ModeKind::PrintSyntax:
+//     status = CompileWithTypeChecking(
+//         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
+//     break;
+//   default:
+//     status = CompileWithTypeChecking(
+//         [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
+//     break;
+//   }
+// }
+
+// bool stone::CompileBackend(CompilerInstance &instance) {
+//   llvm::TimeTraceScope compileBackendTimeScope("Compile Backend");
+// }

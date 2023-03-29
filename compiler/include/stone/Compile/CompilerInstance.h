@@ -49,6 +49,7 @@ class CompilerInstance final {
 
   Safe<syn::SyntaxContext> sc;
   Safe<ModuleSystem> ms;
+  Safe<CodeGenContext> cgc;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -79,10 +80,18 @@ public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
+
+  CodeGenContext &GetCodeGenContext() { return *cgc.get(); }
+  const CodeGenContext &GetCodeGenContext() const { return *cgc.get(); }
+
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
+  }
+
+  bool CanCodeGen() {
+    return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
   }
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
@@ -128,6 +137,15 @@ public:
     return GetInvocation().GetModuleOptions().moduleOutputMode;
   }
 
+  bool IsWholeModuleCodeGen() {
+    return ((invocation.GetCompilerOptions()
+                 .GetInputsAndOutputs()
+                 .HasPrimaryInputs())
+                ? false
+                : true);
+  }
+  bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
+
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
@@ -140,6 +158,10 @@ public:
   /// CompilerInstance.
   llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
     return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  }
+
+  bool HasPrimarySyntaxFiles() const {
+    return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
   }
 
   const PrimaryFileSpecificPaths &

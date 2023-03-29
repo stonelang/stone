@@ -370,6 +370,7 @@ static Error ComputeTargetOptions(llvm::opt::InputArgList &ial,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts,
                                   LangOptions &langOpts, ClangContext &cc) {
+
   std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
            codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
       stone::GetIRTargetOptions(codeGenOpts, langOpts, cc);

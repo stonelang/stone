@@ -25,8 +25,8 @@ void IRCodeGenFunction::EmitFunction(FunctionDecl *fd) {
 }
 
 void IRCodeGenFunction::EmitPrologue() {
-  assert(!fn &&
-         "Do not use a IRCodeGenFunction object for more than one function");
+  // assert(!fn &&
+  //        "Do not use a IRCodeGenFunction object for more than one function");
 }
 
 void IRCodeGenFunction::EmitEpilogue() {}
