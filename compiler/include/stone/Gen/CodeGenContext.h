@@ -36,8 +36,8 @@ class CodeGenContext final {
   const LangContext &langContext;
   ClangContext &clangContext;
 
-  std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
   llvm::GlobalVariable **outModuleHash;

@@ -24,6 +24,8 @@ ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
       TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {
 
+  SetAccessLevel(AccessLevel::Public);
+
   Bits.ModuleDecl.IsStaticLibrary = 0;
   Bits.ModuleDecl.IsTestingEnabled = 0;
   Bits.ModuleDecl.FailedToLoad = 0;
@@ -77,11 +79,10 @@ bool DeclContext::IsModuleFileContext() const {
   return IsModuleContext();
 }
 
-// llvm::ArrayRef<SyntaxFile *> ModuleDecl::GetPrimarySyntaxFiles() const {
-
-//   assert(IsMainModule() && "Only the main module can have primaries");
-//   return {primaries.begin(), primaries.size()};
-// }
+llvm::ArrayRef<SyntaxFile *> &ModuleDecl::GetPrimarySyntaxFiles() const {
+  assert(IsMainModule() && "Only the main module can have primaries");
+  primaries;
+}
 
 SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)

@@ -218,7 +218,7 @@ public:
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<SyntaxFile *> GetPrimarySyntaxFiles() const;
+  llvm::ArrayRef<SyntaxFile *> &GetPrimarySyntaxFiles() const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.

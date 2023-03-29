@@ -49,7 +49,6 @@ class CompilerInstance final {
 
   Safe<syn::SyntaxContext> sc;
   Safe<ModuleSystem> ms;
-  Safe<CodeGenContext> cgc;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -81,15 +80,11 @@ public:
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
 
-  CodeGenContext &GetCodeGenContext() { return *cgc.get(); }
-  const CodeGenContext &GetCodeGenContext() const { return *cgc.get(); }
-
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
-
   bool CanCodeGen() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
   }
@@ -160,9 +155,9 @@ public:
     return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
   }
 
-  bool HasPrimarySyntaxFiles() const {
-    return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
-  }
+  // bool HasPrimarySyntaxFiles() const {
+  //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
+  // }
 
   const PrimaryFileSpecificPaths &
   GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;

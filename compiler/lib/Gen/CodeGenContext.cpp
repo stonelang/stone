@@ -13,11 +13,15 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const LangContext &langContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable **outModuleHash)
-    : llvmContext(new llvm::LLVMContext()), genOpts(genOpts),
-      moduleOpts(moduleOpts), targetOpts(targetOpts), langContext(langContext),
-      clangContext(clangContext), outModuleHash(outModuleHash),
-      llvmModule(new llvm::Module(moduleOpts.moduleName, *llvmContext)),
-      llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {}
+    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts),
+      langContext(langContext), clangContext(clangContext),
+      outModuleHash(outModuleHash),
+      llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {
+
+  llvmContext = std::make_unique<llvm::LLVMContext>();
+  llvmModule =
+      std::make_unique<llvm::Module>(moduleOpts.moduleName, *llvmContext);
+}
 
 CodeGenContext::~CodeGenContext() {}
 
