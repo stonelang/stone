@@ -24,7 +24,7 @@ class TaskQueueStats final : public Stats {
 public:
   TaskQueueStats(const TaskQueue &queue)
       : Stats("task-queue statistics:"), queue(queue) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 using ProcID = llvm::sys::procid_t;

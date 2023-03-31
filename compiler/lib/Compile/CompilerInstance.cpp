@@ -107,7 +107,7 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
 
 // CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
 
-void CompilerInstanceStats::Print(ColorfulStream &stream) {
+void CompilerInstanceStats::Print(ColorStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
   //   // GetLangContext().Out() << GetName() << '\n';
   //   return;

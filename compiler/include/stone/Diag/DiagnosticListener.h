@@ -52,7 +52,7 @@ public:
   //   formatter = diagFormatter;
   // }
 
-  DiagnosticEmitter &GetDiagnosticEmitter() { return emitter; }
+  DiagnosticEmitter &GetEmitter() { return emitter; }
 };
 
 // class FakeDiagnosticListener final : public DiagnosticListener {

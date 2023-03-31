@@ -101,7 +101,7 @@ Identifier IdentifierTable::GetIdentifier(llvm::StringRef identifierStr) const {
 //===----------------------------------------------------------------------===//
 /// PrintStats - Print statistics about how well the identifier table is doing
 /// at hashing identifiers.
-void IdentifierTableStats::Print(ColorfulStream &stream) {
+void IdentifierTableStats::Print(ColorStream &stream) {
   // unsigned numBuckets = table.symbols.getNumBuckets();
   // unsigned numIdentifiers = table.symbols.getNumItems();
   // unsigned numEmptyBuckets = numBuckets - numIdentifiers;

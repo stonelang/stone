@@ -18,7 +18,7 @@ class CompilerInstanceStats final : public Stats {
 public:
   CompilerInstanceStats(const CompilerInstance &compiler)
       : Stats("CompilerInvocationstatistics:"), compiler(compiler) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 using ModuleSyntaxFileUnion =

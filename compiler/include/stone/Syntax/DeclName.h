@@ -304,7 +304,7 @@ public:
   //   DeclNameKind GetDeclNameKind() { return declNameKind; }
 
   // public:
-  void Print(ColorfulStream &os, const PrintingPolicy *policy = nullptr) const;
+  void Print(ColorStream &os, const PrintingPolicy *policy = nullptr) const;
   void Dump() const;
 
 public:

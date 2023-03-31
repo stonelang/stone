@@ -189,4 +189,4 @@ InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
   return PrintD(token.GetLoc(), diagID);
 }
 
-void ParserStats::Print(ColorfulStream &stream) {}
+void ParserStats::Print(ColorStream &stream) {}

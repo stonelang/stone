@@ -68,7 +68,7 @@ class DeclStats final : public Stats {
 public:
   DeclStats(const Decl &declaration)
       : Stats("ast-declaration stats:"), declaration(declaration) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;

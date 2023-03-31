@@ -12,6 +12,7 @@ class DiagnosticEvent;
 class DiagnosticFormatter;
 
 class DiagnosticEmitter {
+
   DiagnosticFormatter &formatter;
 
 public:

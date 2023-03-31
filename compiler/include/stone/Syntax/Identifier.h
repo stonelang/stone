@@ -221,7 +221,7 @@ class IdentifierTableStats final : public Stats {
 public:
   IdentifierTableStats(const IdentifierTable &table)
       : Stats("identifier table stats:"), table(table) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 /// Implements an efficient mapping from strings to Identifier nodes.

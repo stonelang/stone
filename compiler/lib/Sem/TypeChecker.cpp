@@ -17,4 +17,4 @@ TypeChecker::TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
 
 TypeChecker::~TypeChecker() {}
 
-void TypeCheckerStats::Print(ColorfulStream &stream) {}
+void TypeCheckerStats::Print(ColorStream &stream) {}

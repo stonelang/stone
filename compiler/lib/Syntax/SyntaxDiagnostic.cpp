@@ -48,17 +48,16 @@ SyntaxDiagnostic::~SyntaxDiagnostic() {}
 
 SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 
-void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
+void SyntaxDiagnosticFormatter::Format(ColorStream &out,
                                        DiagnosticDetail &detail,
                                        DiagnosticFormatOptions fmtOpts) {
-  printf("%s\n", "Hello syntax formatting");
 
-  //
+  //printf("%s\n", "Hello syntax formatting");
+
 }
 
-void SyntaxDiagnosticFormatter::Format(llvm::raw_ostream &out,
+void SyntaxDiagnosticFormatter::Format(ColorStream &out,
                                        llvm::StringRef text,
                                        llvm::ArrayRef<diag::Argument> args,
                                        DiagnosticFormatOptions fmtOpts) {
-  //
 }

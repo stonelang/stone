@@ -88,7 +88,7 @@ class SyntaxContextStats final : public Stats {
 public:
   SyntaxContextStats(const SyntaxContext &sc)
       : Stats("syntax context stats:"), sc(sc) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 /// Look up option used in \c GetRealModuleName when module aliasing is applied.

@@ -18,7 +18,7 @@ Job::Job(const Phase &phase, LangContext &ctx,
 Job::~Job() {}
 
 /// -print-jobs
-void Job::Print(ColorfulStream &stream, CrashState *crashState) {
+void Job::Print(ColorStream &stream, CrashState *crashState) {
 
   // stream() << std::to_string(GetQueueID()) << ":";
   // stream().UseGreen();
@@ -40,7 +40,7 @@ void Job::Print(ColorfulStream &stream, CrashState *crashState) {
 }
 
 // -print-jobs -v
-void Job::Dump(ColorfulStream &stream, llvm::StringRef terminator,
+void Job::Dump(ColorStream &stream, llvm::StringRef terminator,
                CrashState *crashState) {
   //
 }

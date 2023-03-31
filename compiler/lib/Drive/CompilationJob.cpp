@@ -7,7 +7,7 @@
 using namespace stone;
 
 /// -print-jobs
-// void CompilationJob::Print(ColorfulStream &stream, CrashState *crashState)
+// void CompilationJob::Print(ColorStream &stream, CrashState *crashState)
 // {
 
 // stream() << std::to_string(GetQueueID()) << ":";
@@ -30,7 +30,7 @@ using namespace stone;
 //}
 
 /// -print-jobs -v
-// void CompilationJob::Dump(ColorfulStream &stream, llvm::StringRef
+// void CompilationJob::Dump(ColorStream &stream, llvm::StringRef
 // terminator,
 //                           CrashState *crashState) {
 
@@ -45,11 +45,11 @@ using namespace stone;
 // }
 
 // /// -print-jobs
-// void UniversalJob::Print(ColorfulStream &stream, CrashState *crashState)
+// void UniversalJob::Print(ColorStream &stream, CrashState *crashState)
 // {}
 
 // /// -print-jobs -v
-// void UniversalJob::Dump(ColorfulStream &stream, llvm::StringRef
+// void UniversalJob::Dump(ColorStream &stream, llvm::StringRef
 // terminator,
 //                         CrashState *crashState) {
 

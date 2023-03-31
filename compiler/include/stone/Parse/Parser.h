@@ -39,7 +39,7 @@ class ParserStats final : public Stats {
 public:
   ParserStats(const Parser &parser)
       : Stats("parser statistics:"), parser(parser) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 class Parser final {

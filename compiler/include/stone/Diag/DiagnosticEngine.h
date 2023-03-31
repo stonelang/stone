@@ -276,7 +276,7 @@ public:
   bool HasError();
   SrcMgr &GetSrcMgr() { return sm; }
 
-  void Print(ColorfulStream &os, const PrintingPolicy *policy) const override;
+  void Print(ColorStream &os, const PrintingPolicy *policy) const override;
 
   /// Specify a limit for the number of errors we should
   /// emit before giving up.

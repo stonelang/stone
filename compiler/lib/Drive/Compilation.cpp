@@ -65,7 +65,7 @@ void Compilation::PrintJobs() {
   // }
 }
 
-void CompilationStats::Print(ColorfulStream &stream) {
+void CompilationStats::Print(ColorStream &stream) {
   if (compilation.GetDriver()
           .GetLangContext()
           .GetLangOptions()

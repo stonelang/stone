@@ -67,7 +67,7 @@ public:
 
 public:
   /// Perform a complete dump of this action.
-  virtual void Print(ColorfulStream &stream,
+  virtual void Print(ColorStream &stream,
                      llvm::StringRef terminator = "\n") const;
 
 public:

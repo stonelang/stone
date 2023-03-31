@@ -95,4 +95,4 @@ size_t SyntaxContext::GetSizeOfMemUsed() const {
 //   return internal.allocator;
 // }
 
-void SyntaxContextStats::Print(ColorfulStream &stream) {}
+void SyntaxContextStats::Print(ColorStream &stream) {}

@@ -61,7 +61,7 @@ class LangContext final {
   DiagUnit du;
   LangOptions langOpts;
   StatisticEngine se;
-  ColorfulStream cos;
+  ColorStream cos;
   FileSystemOptions fsOpts;
 
 public:
@@ -69,7 +69,7 @@ public:
   ~LangContext() {}
 
 public:
-  ColorfulStream &Out() { return cos; }
+  ColorStream &Out() { return cos; }
 
   StatisticEngine &GetStatEngine() { return se; }
   const StatisticEngine &GeStatEngine() const { return se; }

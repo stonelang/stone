@@ -15,24 +15,18 @@ class DiagnosticDetail;
 
 class DiagnosticFormatter {
 
-  // TODO: Move to emitter
-  ColorfulStream colorfulStream;
-
 public:
   DiagnosticFormatter();
   virtual ~DiagnosticFormatter();
 
   virtual void
-  Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, DiagnosticDetail &detail,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) {}
 
   virtual void
-  Format(llvm::raw_ostream &out, llvm::StringRef text,
+  Format(ColorStream &out, llvm::StringRef text,
          llvm::ArrayRef<diag::Argument> args,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) {}
-
-public:
-  ColorfulStream &GetColorfulStream() { return colorfulStream; }
 };
 } // namespace stone
 #endif

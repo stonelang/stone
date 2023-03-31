@@ -49,7 +49,7 @@ const char *Phase::GetNameByKind(PhaseKind kind) const {
   }
 }
 
-static void PrintPhase(ColorfulStream &stream, llvm::StringRef terminator,
+static void PrintPhase(ColorStream &stream, llvm::StringRef terminator,
                        const PhaseInput) {
   //   /// TODO: PhaseFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
@@ -72,7 +72,7 @@ static void PrintPhase(ColorfulStream &stream, llvm::StringRef terminator,
   // }
 }
 
-void Phase::Print(ColorfulStream &stream, llvm::StringRef terminator) const {
+void Phase::Print(ColorStream &stream, llvm::StringRef terminator) const {
   for (auto input : *this) {
     PrintPhase(stream, terminator, input);
   }

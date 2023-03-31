@@ -187,7 +187,7 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-void DeclStats::Print(ColorfulStream &stream) {}
+void DeclStats::Print(ColorStream &stream) {}
 
 FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
                                   DeclContext *parent) {

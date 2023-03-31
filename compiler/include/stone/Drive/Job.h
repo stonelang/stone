@@ -39,7 +39,7 @@ class JobStats final : public Stats {
 
 public:
   JobStats(const Job &job) : Stats("job statistics:"), job(job) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 // The process ID
@@ -121,10 +121,10 @@ public:
 
 public:
   /// Print a nice summary of this job
-  virtual void Print(ColorfulStream &stream, CrashState *crashState = nullptr);
+  virtual void Print(ColorStream &stream, CrashState *crashState = nullptr);
 
   /// Perform a complete dump of this job.
-  virtual void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
+  virtual void Dump(ColorStream &stream, llvm::StringRef terminator = "\n",
                     CrashState *crashState = nullptr);
 };
 
@@ -142,11 +142,11 @@ public:
 //   // void SetPrimaryInput(job::Input input) { primaryInput = input; }
 
 //   /// Print a nice summary of this job
-//   void Print(ColorfulStream &stream, CrashState *crashState = nullptr)
+//   void Print(ColorStream &stream, CrashState *crashState = nullptr)
 //   override;
 
 //   /// Perform a complete dump of this job.
-//   void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
+//   void Dump(ColorStream &stream, llvm::StringRef terminator = "\n",
 //             CrashState *crashState = nullptr) override;
 
 // public:

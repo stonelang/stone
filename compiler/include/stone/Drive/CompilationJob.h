@@ -67,11 +67,11 @@ namespace stone {
 //         outputFileType(outputFileType) {}
 
 //   /// Print a nice summary of this job
-//   virtual void Print(ColorfulStream &stream,
+//   virtual void Print(ColorStream &stream,
 //                      CrashState *crashState = nullptr);
 
 //   /// Perform a complete dump of this job.
-//   virtual void Dump(ColorfulStream &stream,
+//   virtual void Dump(ColorStream &stream,
 //                     llvm::StringRef terminator = "\n",
 //                     CrashState *crashState = nullptr);
 
@@ -140,11 +140,11 @@ namespace stone {
 //   void AddDep(const CompilationJob *dep) { deps.push_back(dep); }
 
 //   /// Print a nice summary of this job
-//   void Print(ColorfulStream &stream,
+//   void Print(ColorStream &stream,
 //              CrashState *crashState = nullptr) override;
 
 //   /// Perform a complete dump of this job.
-//   void Dump(ColorfulStream &stream, llvm::StringRef terminator = "\n",
+//   void Dump(ColorStream &stream, llvm::StringRef terminator = "\n",
 //             CrashState *crashState = nullptr) override;
 
 //   Purpose GetPurpose() { return purpose; }
