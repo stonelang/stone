@@ -2,7 +2,8 @@
 
 using stone::DiagnosticListener;
 
-DiagnosticListener::DiagnosticListener() : colorfulStream() {}
+DiagnosticListener::DiagnosticListener(DiagnosticEmitter &emitter)
+    : emitter(emitter) {}
 
 DiagnosticListener::~DiagnosticListener() {}
 

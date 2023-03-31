@@ -7,19 +7,26 @@
 #include <assert.h>
 
 namespace stone {
-class DiagnosticFormatter;
+
 class DiagnosticEvent;
+class DiagnosticFormatter;
 
 class DiagnosticEmitter {
+  DiagnosticFormatter &formatter;
 
 public:
-  DiagnosticEmitter();
+  DiagnosticEmitter() = delete;
+
+  DiagnosticEmitter(DiagnosticFormatter &formatter);
   virtual ~DiagnosticEmitter();
 
 public:
   virtual void EmitLevel();
-  virtual void EmitDiagnostic(const DiagnosticEvent &diagnostic);
+  virtual void EmitDiagnostic(const DiagnosticEvent &de);
   virtual void EmitLoc();
+
+public:
+  DiagnosticFormatter &GetFormatter() { return formatter; }
 };
 
 } // namespace stone

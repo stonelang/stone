@@ -11,12 +11,8 @@ stone::SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
   return llvm::SMDiagnostic();
 }
 
-TextDiagnosticEmitter::TextDiagnosticEmitter()
-    : TextDiagnosticEmitter(std::make_unique<TextDiagnosticFormatter>()) {}
-
-TextDiagnosticEmitter::TextDiagnosticEmitter(
-    std::unique_ptr<TextDiagnosticFormatter> custom)
-    : formatter(std::move(custom)) {}
+TextDiagnosticEmitter::TextDiagnosticEmitter(TextDiagnosticFormatter &formatter)
+    : DiagnosticEmitter(formatter) {}
 
 TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
@@ -27,10 +23,8 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagEvent) {
   auto ed = const_cast<DiagnosticEvent &>(diagEvent);
   printf("%s\n", ed.GetFormatMessage().data());
 
-  assert(formatter);
-
   ColorfulStream cs;
-  formatter->Format(cs.GetOS(), diagEvent.GetDiagnostic().GetDetail());
+  GetFormatter().Format(cs.GetOS(), diagEvent.GetDiagnostic().GetDetail());
 
   // formatter.FormatText()
 

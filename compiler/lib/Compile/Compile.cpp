@@ -70,11 +70,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // Setup the custom formatting to be able to handle syntax diagnostics
-  auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
-  auto diagEmitter =
-      std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
+  SyntaxDiagnosticFormatter diagFormatter;
+  TextDiagnosticEmitter diagEmitter(diagFormatter);
+  TextDiagnosticListener diagListener(diagEmitter);
 
-  TextDiagnosticListener diagListener(std::move(diagEmitter));
   invocation.GetLangContext().GetDiagUnit().GetDiagEngine().AddListener(
       diagListener);
 
@@ -310,7 +309,6 @@ Status CompilerInstance::Compile() {
   }
 
   Status status;
-
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
     status = CompileWithParsing();
@@ -333,34 +331,3 @@ Status CompilerInstance::Compile() {
   }
   return status;
 }
-
-// bool stone::CompileFrontend(CompilerInstance &instance) {
-//    llvm::TimeTraceScope compileFrontendTimeScope("Compile Frontend");
-
-//    Status status;
-
-//   switch (GetMode().GetKind()) {
-//   case ModeKind::Parse:
-//     status = CompileWithParsing(instance);
-//     break;
-//   case ModeKind::DumpSyntax:
-//     status = CompileWithParsing(
-//         [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
-//     break;
-//   case ModeKind::TypeCheck:
-//     status = CompileWithTypeChecking();
-//     break;
-//   case ModeKind::PrintSyntax:
-//     status = CompileWithTypeChecking(
-//         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
-//     break;
-//   default:
-//     status = CompileWithTypeChecking(
-//         [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
-//     break;
-//   }
-// }
-
-// bool stone::CompileBackend(CompilerInstance &instance) {
-//   llvm::TimeTraceScope compileBackendTimeScope("Compile Backend");
-// }

@@ -10,11 +10,10 @@ namespace stone {
 class DiagnosticEvent;
 
 class TextDiagnosticListener : public DiagnosticListener {
-  std::unique_ptr<TextDiagnosticEmitter> emitter;
 
 public:
-  TextDiagnosticListener();
-  TextDiagnosticListener(std::unique_ptr<TextDiagnosticEmitter> custom);
+  TextDiagnosticListener() = delete;
+  TextDiagnosticListener(TextDiagnosticEmitter &emitter);
 
   ~TextDiagnosticListener();
 

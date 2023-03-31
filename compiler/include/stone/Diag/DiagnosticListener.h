@@ -1,8 +1,7 @@
 #ifndef STONE_DIAG_DIAGNOSTICLISTENER_H
 #define STONE_DIAG_DIAGNOSTICLISTENER_H
 
-#include "stone/Basic/Color.h"
-#include "stone/Diag/DiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticEmitter.h"
 #include "stone/Diag/DiagnosticOptions.h"
 
 namespace stone {
@@ -12,14 +11,13 @@ class DiagnosticEvent;
 class DiagnosticListener {
 
 protected:
-  ColorfulStream colorfulStream;
-  DiagnosticFormatter *formatter = nullptr;
+  DiagnosticEmitter &emitter;
 
   unsigned numWarnings = 0; ///< Number of warnings reported
   unsigned numErrors = 0;   ///< Number of errors reported
 
 public:
-  DiagnosticListener();
+  DiagnosticListener(DiagnosticEmitter &emitter);
   virtual ~DiagnosticListener();
 
   unsigned GetNumErrors() const { return numErrors; }
@@ -49,16 +47,21 @@ public:
   /// warnings and errors.
   virtual void OnDiagnostic(const DiagnosticEvent &diagnostic);
 
-  void SetFormatter(DiagnosticFormatter *diagFormatter) {
-    assert(diagFormatter);
-    formatter = diagFormatter;
-  }
-  DiagnosticFormatter *GetFormatter() { return formatter; }
+  // void SetFormatter(DiagnosticFormatter *diagFormatter) {
+  //   assert(diagFormatter);
+  //   formatter = diagFormatter;
+  // }
+
+  DiagnosticEmitter &GetDiagnosticEmitter() { return emitter; }
 };
 
-class FakeDiagnosticListener final : public DiagnosticListener {
-public:
-  void OnDiagnostic(const DiagnosticEvent &diagEvent) override {}
-};
+// class FakeDiagnosticListener final : public DiagnosticListener {
+
+// public:
+
+// public:
+//   void OnDiagnostic(const DiagnosticEvent &diagEvent) override {}
+// };
+
 } // namespace stone
 #endif

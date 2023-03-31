@@ -302,9 +302,9 @@ public:
   SrcMgr &GetSrcMgr() { return sm; }
   diag::Level GetLevel() { return level; }
 
-public:
-  // TODO: Think about
-  void Format();
+  // public:
+  //   // TODO: Think about
+  //   void Format();
 };
 
 } // namespace stone
