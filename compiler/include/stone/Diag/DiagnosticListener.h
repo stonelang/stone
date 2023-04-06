@@ -16,7 +16,11 @@ protected:
   unsigned numWarnings = 0; ///< Number of warnings reported
   unsigned numErrors = 0;   ///< Number of errors reported
 
+  bool forceColors = false;
+  bool didErrorOccur = false;
+
 public:
+  //TODO: May just waht to pass by value
   DiagnosticListener(DiagnosticEmitter &emitter);
   virtual ~DiagnosticListener();
 
@@ -53,6 +57,11 @@ public:
   // }
 
   DiagnosticEmitter &GetEmitter() { return emitter; }
+
+
+  void SetForceColors(bool useColors = false) {
+    forceColors = useColors;
+  }
 };
 
 // class FakeDiagnosticListener final : public DiagnosticListener {

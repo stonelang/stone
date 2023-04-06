@@ -13,6 +13,10 @@ TextDiagnosticListener::~TextDiagnosticListener() {}
 void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
 
   // DiagnosticListener::OnDiagnostic(diagEvent);
+
+    // switch(diagEvent.GetDiagLevel()){
+
+    // }
   GetEmitter().EmitDiagnostic(diagEvent);
 }
 

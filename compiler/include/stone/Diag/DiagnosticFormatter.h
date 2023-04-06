@@ -27,6 +27,12 @@ public:
   Format(ColorStream &out, llvm::StringRef text,
          llvm::ArrayRef<diag::Argument> args,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) {}
+
+  virtual void FormatArgument(ColorStream &out, llvm::StringRef modifier,
+                              llvm::StringRef modifierArguments,
+                              ArrayRef<diag::Argument> args,
+                              unsigned argIndex,
+                              DiagnosticFormatOptions fmtOpts) {}
 };
 } // namespace stone
 #endif

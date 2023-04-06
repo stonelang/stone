@@ -232,7 +232,7 @@ bool DiagnosticEngine::HasError() { return false; }
 void DiagnosticEngine::Print(ColorStream &os,
                              const PrintingPolicy *policy) const {}
 
-void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
+void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
   auto diagnosticEvent = CreateDiagnosticEvent(diagnostic);
   for (auto &listener : listeners) {
@@ -243,7 +243,7 @@ void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 void DiagnosticEngine::EmitPendingDiagnostics() {}
 
 bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
-  EmitSpecificDiagnostic(*curDiagnostic);
+  EmitDiagnostic(*curDiagnostic);
 }
 
 llvm::Optional<DiagnosticEvent>

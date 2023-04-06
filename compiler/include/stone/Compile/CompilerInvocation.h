@@ -35,6 +35,10 @@ class TargetMachine;
 
 namespace stone {
 class CompilerListener;
+
+using ConfigurationFileBuffers =
+    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
+
 struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -173,6 +177,8 @@ public:
 
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
+
+  DiagUnit &GetDiagUnit() { GetLangContext().GetDiagUnit(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);

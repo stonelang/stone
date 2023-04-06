@@ -71,16 +71,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   // Setup the custom formatting to be able to handle syntax diagnostics
   SyntaxDiagnosticFormatter diagFormatter;
-  TextDiagnosticEmitter diagEmitter(diagFormatter);
+  SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
-  invocation.GetLangContext().GetDiagUnit().GetDiagEngine().AddListener(
-      diagListener);
+  invocation.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
+
+  ConfigurationFileBuffers configurationFileBuffers;
 
   // Parse arguments.
-  llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
-      configurationFileBuffers;
-
   auto ial = invocation.ParseArgs(args);
   if (!ial) {
     return Finish(Error(true));
