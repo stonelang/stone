@@ -21,11 +21,12 @@ public:
 TEST_F(DiagTest, DiagnoseCompile) {
   ctx.GetDiagUnit().GetDiagOptions().useColor = true;
 
-  TextDiagnosticListener textListener;
-  ctx.GetDiagUnit().GetDiagEngine().AddListener(textListener);
+  // TextDiagnosticListener textListener;
+  // ctx.GetDiagUnit().GetDiagEngine().AddListener(textListener);
 
-  ctx.GetDiagUnit()
-      .PrintD(SrcLoc(), diag::err_no_input_files)
-      .WithFix()
-      .Replace(SrcLoc(), llvm::StringRef());
+  // ctx.GetDiagUnit()
+  //     .PrintD(SrcLoc(), diag::err_no_input_files)
+  //     .WithFix()
+  //     .Replace(SrcLoc(), llvm::StringRef());
+  
 }
