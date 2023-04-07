@@ -17,8 +17,8 @@ using stone::syn::SyntaxContext;
 using namespace stone;
 
 class SyntaxDiagTest : public ::testing::Test {
-// protected:
-//   LangContext ctx;
+protected:
+LangContext ctx;
 //   SearchPathOptions pathOpts;
 //   Syntax syntax;
 //   SrcMgr sm;
@@ -29,7 +29,7 @@ public:
 
 TEST_F(SyntaxDiagTest, PrintD) {
 
-  // STONE_DEFER { ctx.GetDiagUnit().GetDiagEngine().Finish(); };
+  //STONE_DEFER { ctx.GetDiagUnit().GetDiagEngine().Finish(); };
 
   // ctx.GetDiagUnit().GetDiagOptions().useColor = true;
 
