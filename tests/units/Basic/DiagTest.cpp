@@ -2,7 +2,7 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Diag/TextDiagnosticListener.h"
-#include "stone/LangContext.h"
+#include "stone/Public.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
 using stone::diag::Decl;

@@ -9,14 +9,14 @@ function(add_stone_unittest test_dirname)
 endfunction()
 
 
-find_program(STONE_CORE_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Core/StoneCoreUnitTests)
-	if(STONE_CORE_UT)
-	add_custom_target(utcore StoneCoreUnitTests)
+find_program(STONE_BASIC_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Basic/StoneBasicUnitTests)
+	if(STONE_BASIC_UT)
+	add_custom_target(utbasic StoneBasicUnitTests)
 endif()
 
-find_program(STONE_CHECK_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Check/StoneCheckUnitTests)
-	if(STONE_CHECK_UT)
-	add_custom_target(utcheck StoneCheckUnitTests)
+find_program(STONE_CHECK_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Sem/StoneSemUnitTests)
+	if(STONE_SEM_UT)
+	add_custom_target(utsem StoneSemUnitTests)
 endif()
 
 find_program(STONE_COMPILE_UT ${CMAKE_BINARY_DIR}/tools/stone/tests/units/Compile/StoneCompileUnitTests)
