@@ -1,9 +1,11 @@
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
-#include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Public.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
+#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Diag/TextDiagnosticListener.h"
+
 
 using stone::diag::Decl;
 
@@ -19,7 +21,14 @@ public:
 };
 
 TEST_F(DiagTest, DiagnoseCompile) {
+
   ctx.GetDiagUnit().GetDiagOptions().useColor = true;
+  
+  SyntaxDiagnosticFormatter diagFormatter;
+  SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
+  TextDiagnosticListener diagListener(diagEmitter);
+
+  ctx.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
 
   // TextDiagnosticListener textListener;
   // ctx.GetDiagUnit().GetDiagEngine().AddListener(textListener);
