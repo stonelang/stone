@@ -1,4 +1,4 @@
-#include "stone/Session/BaseOptions.h"
+#include "stone/Session/SessionOptions.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
@@ -7,19 +7,19 @@
 
 using namespace stone;
 
-BaseOptions::BaseOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {
+SessionOptions::SessionOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {
   llvm::sys::fs::current_path(currentPath);
 }
 
 // TODO:
-//  BaseOptions::BaseOptions() : target(llvm::sys::getDefaultTargetTriple()) {
+//  SessionOptions::SessionOptions() : target(llvm::sys::getDefaultTargetTriple()) {
 //  }
 
-// void BaseOptions::SetTargetTriple(llvm::StringRef triple) {
+// void SessionOptions::SetTargetTriple(llvm::StringRef triple) {
 //   SetTargetTriple(llvm::Triple(triple));
 // }
 
-// void BaseOptions::SetTargetTriple(const llvm::Triple &triple) {
+// void SessionOptions::SetTargetTriple(const llvm::Triple &triple) {
 //   /// TODO: Messy -- think of a cleaner way
 //   // if (triple.getOS() == llvm::Triple::Darwin &&
 //   //     triple.getVendor() == llvm::Triple::Apple) {

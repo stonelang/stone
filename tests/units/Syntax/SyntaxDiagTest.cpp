@@ -1,9 +1,9 @@
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/LangContext.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Diag/TextDiagnosticListener.h"
-#include "stone/Basic/LangContext.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Syntax.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
@@ -18,18 +18,19 @@ using namespace stone;
 
 class SyntaxDiagTest : public ::testing::Test {
 protected:
-LangContext ctx;
-//   SearchPathOptions pathOpts;
-//   Syntax syntax;
-//   SrcMgr sm;
+  LangContext ctx;
+  //   SearchPathOptions pathOpts;
+  //   Syntax syntax;
+  //   SrcMgr sm;
 
 public:
-  // SyntaxDiagTest() : syntax(std::make_unique<SyntaxContext>(ctx, pathOpts)) {}
+  // SyntaxDiagTest() : syntax(std::make_unique<SyntaxContext>(ctx, pathOpts))
+  // {}
 };
 
 TEST_F(SyntaxDiagTest, PrintD) {
 
-  //STONE_DEFER { ctx.GetDiagUnit().GetDiagEngine().Finish(); };
+  // STONE_DEFER { ctx.GetDiagUnit().GetDiagEngine().Finish(); };
 
   // ctx.GetDiagUnit().GetDiagOptions().useColor = true;
 
@@ -46,7 +47,8 @@ TEST_F(SyntaxDiagTest, PrintD) {
   //     .WithFix()
   //     .Replace(SrcLoc(), llvm::StringRef());
 
-  // syntax.PrintD(SrcLoc(), diag::err_case_stmt_without_body, diag::Bool(false))
+  // syntax.PrintD(SrcLoc(), diag::err_case_stmt_without_body,
+  // diag::Bool(false))
   //     .WithFix()
   //     .Replace(SrcLoc(), llvm::StringRef());
 }

@@ -39,6 +39,7 @@ class CodeGenListener;
 class TypeCheckerOptions;
 class CodeGenListener;
 class PrimaryFileSpecificPaths;
+class CompilerOptions;
 
 namespace syn {
 class SyntaxContext;
@@ -188,6 +189,10 @@ void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                  syn::ModuleDecl *mod,
                  const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener = nullptr);
+
+bool EmitImportedModules(syn::SyntaxContext &context,
+                         syn::ModuleDecl *mainModule,
+                         const CompilerOptions &opts);
 
 } // namespace stone
 

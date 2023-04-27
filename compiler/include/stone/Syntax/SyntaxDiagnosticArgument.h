@@ -3,8 +3,8 @@
 
 #include "stone/Diag/DiagnosticArgument.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticEmitter.h"
+#include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 
@@ -81,7 +81,6 @@ public:
 public:
 };
 
-
 class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {
 public:
   SyntaxDiagnosticFormatter();
@@ -96,22 +95,18 @@ public:
          llvm::ArrayRef<diag::Argument> args,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
-
   void FormatArgument(ColorStream &out, llvm::StringRef modifier,
                       llvm::StringRef modifierArguments,
                       ArrayRef<diag::Argument> args, unsigned argIndex,
                       DiagnosticFormatOptions fmtOpts) override;
-
-
 };
-
 
 class SyntaxDiagnosticEmitter : public TextDiagnosticEmitter {
 public:
-    SyntaxDiagnosticEmitter(SyntaxDiagnosticFormatter &formatter);
+  SyntaxDiagnosticEmitter(SyntaxDiagnosticFormatter &formatter);
+
 public:
   void EmitDeclLoc();
-
 };
 
 } // namespace stone

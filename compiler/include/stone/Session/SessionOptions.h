@@ -1,7 +1,8 @@
-#ifndef STONE_SESSION_BASEOPTIONS_H
-#define STONE_SESSION_BASEOPTIONS_H
+#ifndef STONE_SESSION_SESSIONOPTIONS_H
+#define STONE_SESSION_SESSIONOPTIONS_H
 
 #include "stone/Basic/File.h"
+#include "stone/Basic/LangOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
 #include "llvm/ADT/Triple.h"
@@ -9,7 +10,8 @@
 
 namespace stone {
 
-class BaseOptions {
+class SessionOptions {
+
   std::unique_ptr<Mode> mode;
 
   llvm::SmallString<128> currentPath;
@@ -37,6 +39,8 @@ class BaseOptions {
   // bool HasSDKPath() { return sdkPath.size() > 0; }
 
 public:
+  LangOptions langOpts;
+
   /// a SmallVector of ctx files
   file::Files inputFiles;
 
@@ -52,7 +56,7 @@ public:
   const Mode &GetMode() const { return *mode; }
 
 public:
-  BaseOptions(std::unique_ptr<Mode> mode);
+  SessionOptions(std::unique_ptr<Mode> mode);
 
   // public:
   //   void SetTargetTriple(const llvm::Triple &triple);

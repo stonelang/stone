@@ -11,7 +11,7 @@
 #include "stone/Basic/Timer.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Public.h"
-#include "stone/Session/BaseOptions.h"
+#include "stone/Session/SessionOptions.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Options.h"
 

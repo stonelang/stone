@@ -20,7 +20,7 @@ protected:
   bool didErrorOccur = false;
 
 public:
-  //TODO: May just waht to pass by value
+  // TODO: May just waht to pass by value
   DiagnosticListener(DiagnosticEmitter &emitter);
   virtual ~DiagnosticListener();
 
@@ -58,10 +58,7 @@ public:
 
   DiagnosticEmitter &GetEmitter() { return emitter; }
 
-
-  void SetForceColors(bool useColors = false) {
-    forceColors = useColors;
-  }
+  void SetForceColors(bool useColors = false) { forceColors = useColors; }
 };
 
 // class FakeDiagnosticListener final : public DiagnosticListener {

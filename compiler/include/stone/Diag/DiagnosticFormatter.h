@@ -30,8 +30,7 @@ public:
 
   virtual void FormatArgument(ColorStream &out, llvm::StringRef modifier,
                               llvm::StringRef modifierArguments,
-                              ArrayRef<diag::Argument> args,
-                              unsigned argIndex,
+                              ArrayRef<diag::Argument> args, unsigned argIndex,
                               DiagnosticFormatOptions fmtOpts) {}
 };
 } // namespace stone

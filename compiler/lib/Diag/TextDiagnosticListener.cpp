@@ -14,9 +14,9 @@ void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
 
   // DiagnosticListener::OnDiagnostic(diagEvent);
 
-    // switch(diagEvent.GetDiagLevel()){
+  // switch(diagEvent.GetDiagLevel()){
 
-    // }
+  // }
   GetEmitter().EmitDiagnostic(diagEvent);
 }
 

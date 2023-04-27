@@ -438,90 +438,81 @@ public:
 
 class DiagnosticTransaction {
 protected:
-    // DiagnosticEngine &de;
+  // DiagnosticEngine &de;
 
-    // /// How many tentative diagnostics there were when the transaction
-    // /// was opened.
-    // unsigned prevDiagnostics;
+  // /// How many tentative diagnostics there were when the transaction
+  // /// was opened.
+  // unsigned prevDiagnostics;
 
-    // /// How many other transactions were open when this transaction was
-    // /// opened.
-    // unsigned depth;
+  // /// How many other transactions were open when this transaction was
+  // /// opened.
+  // unsigned depth;
 
-    // /// Whether this transaction is currently open.
-    // bool isOpen = true;
-
+  // /// Whether this transaction is currently open.
+  // bool isOpen = true;
 
 private:
-    void Close() {
-      // assert(isOpen && "only open transactions may be closed");
-      // IsOpen = false;
-      // Engine.TransactionCount--;
-      // assert(Depth == Engine.TransactionCount &&
-      //        "transactions must be closed LIFO");
-    }
+  void Close() {
+    // assert(isOpen && "only open transactions may be closed");
+    // IsOpen = false;
+    // Engine.TransactionCount--;
+    // assert(Depth == Engine.TransactionCount &&
+    //        "transactions must be closed LIFO");
+  }
 
 public:
-    // DiagnosticTransaction(const DiagnosticTransaction &) = delete;
-    // DiagnosticTransaction &operator=(const DiagnosticTransaction &) = delete;
+  // DiagnosticTransaction(const DiagnosticTransaction &) = delete;
+  // DiagnosticTransaction &operator=(const DiagnosticTransaction &) = delete;
 
-    // explicit DiagnosticTransaction(DiagnosticEngine &de)
-    //   : de(de),
-    //     prevDiagnostics(de.GetTentativeDiagnosticsSize()),
-    //     depth(de.GetTransactionCount()),
-    //     isOpen(true)
-    // {
-    //   //de.transactionCount++;
-    // }
+  // explicit DiagnosticTransaction(DiagnosticEngine &de)
+  //   : de(de),
+  //     prevDiagnostics(de.GetTentativeDiagnosticsSize()),
+  //     depth(de.GetTransactionCount()),
+  //     isOpen(true)
+  // {
+  //   //de.transactionCount++;
+  // }
 
   /// Abort and close this transaction and erase all diagnostics
-    /// record while it was open.
-    void Abort() {
-      Close();
-      // Engine.TentativeDiagnostics.erase(
-      //   Engine.TentativeDiagnostics.begin() + PrevDiagnostics,
-      //   Engine.TentativeDiagnostics.end());
-    }
+  /// record while it was open.
+  void Abort() {
+    Close();
+    // Engine.TentativeDiagnostics.erase(
+    //   Engine.TentativeDiagnostics.begin() + PrevDiagnostics,
+    //   Engine.TentativeDiagnostics.end());
+  }
 
-    /// Commit and close this transaction. If this is the top-level
-    /// transaction, emit any diagnostics that were recorded while it was open.
-    void Commit() {
-      Close();
-      // if (Depth == 0) {
-      //   assert(PrevDiagnostics == 0);
-      //   Engine.emitTentativeDiagnostics();
-      // }
-    }
-
+  /// Commit and close this transaction. If this is the top-level
+  /// transaction, emit any diagnostics that were recorded while it was open.
+  void Commit() {
+    Close();
+    // if (Depth == 0) {
+    //   assert(PrevDiagnostics == 0);
+    //   Engine.emitTentativeDiagnostics();
+    // }
+  }
 };
 
-
 class CompoundDiagnosticTransaction : public DiagnosticTransaction {
-  public:
+public:
+};
 
+class DiagnosticQueue final {
+  /// The underlying diagnostic engine that the diagnostics will be emitted
+  /// by.
+  // DiagnosticEngine &underlyingEngine;
 
-  };
+  // /// A temporary engine used to queue diagnostics.
+  // DiagnosticEngine queueEngine;
 
+  /// Whether the queued diagnostics should be emitted on the destruction of
+  /// the queue, or whether they should be cleared.
+  bool emitOnDestruction;
 
-  class DiagnosticQueue final {
-    /// The underlying diagnostic engine that the diagnostics will be emitted
-    /// by.
-    // DiagnosticEngine &underlyingEngine;
-
-    // /// A temporary engine used to queue diagnostics.
-    // DiagnosticEngine queueEngine;
-
-    /// Whether the queued diagnostics should be emitted on the destruction of
-    /// the queue, or whether they should be cleared.
-    bool emitOnDestruction;
-
-  public:
-    DiagnosticQueue(const DiagnosticQueue &) = delete;
-    DiagnosticQueue &operator=(const DiagnosticQueue &) = delete;
-
-
-  };
-
+public:
+  DiagnosticQueue(const DiagnosticQueue &) = delete;
+  DiagnosticQueue &operator=(const DiagnosticQueue &) = delete;
+};
 
 // class BufferIndirectlyCausingDiagnosticRAII {
 // private:

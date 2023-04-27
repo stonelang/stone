@@ -94,7 +94,7 @@ static Error ComputeDriverOptions(llvm::opt::InputArgList &ial,
   driverOpts.printRequests = ial.hasArg(opts::PrintDriverRequests);
   driverOpts.printJobs = ial.hasArg(opts::PrintDriverJobs);
   driverOpts.printLifecycle = ial.hasArg(opts::PrintDriverLifecycle);
-  driverOpts.systemOpts.printStatistics = ial.hasArg(opts::PrintStats);
+  driverOpts.langOpts.printStatistics = ial.hasArg(opts::PrintStats);
 
   return Error();
 }

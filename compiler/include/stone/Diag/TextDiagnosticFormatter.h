@@ -3,7 +3,6 @@
 
 #include <assert.h>
 
-
 #include "stone/Diag/DiagnosticFormatter.h"
 
 namespace stone {

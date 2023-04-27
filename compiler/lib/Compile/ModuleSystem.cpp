@@ -136,3 +136,9 @@ Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Error();
 }
+
+bool stone::EmitImportedModules(syn::SyntaxContext &context,
+                                ModuleDecl *mainModule,
+                                const CompilerOptions &opts) {
+  return false;
+}

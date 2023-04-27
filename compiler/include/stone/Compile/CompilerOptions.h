@@ -8,13 +8,13 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
+#include "stone/Session/SessionOptions.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
 
-class CompilerOptions final : public BaseOptions {
+class CompilerOptions final : public SessionOptions {
 
   friend class CompilerInvocation;
   friend class CompilerOptionsConverter;
@@ -55,7 +55,8 @@ public:
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
-  CompilerOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
+  CompilerOptions(std::unique_ptr<Mode> mode)
+      : SessionOptions(std::move(mode)) {
     GetInputsAndOutputs().ClearInputs();
   }
 

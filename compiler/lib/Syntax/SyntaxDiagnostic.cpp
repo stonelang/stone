@@ -59,17 +59,16 @@ void SyntaxDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
                                        llvm::ArrayRef<diag::Argument> args,
                                        DiagnosticFormatOptions fmtOpts) {}
 
+void SyntaxDiagnosticFormatter::FormatArgument(
+    ColorStream &out, llvm::StringRef modifier,
+    llvm::StringRef modifierArguments, ArrayRef<diag::Argument> args,
+    unsigned argIndex, DiagnosticFormatOptions fmtOpts) {}
 
-void SyntaxDiagnosticFormatter::FormatArgument(ColorStream &out, llvm::StringRef modifier,
-                      llvm::StringRef modifierArguments,
-                      ArrayRef<diag::Argument> args, unsigned argIndex,
-                      DiagnosticFormatOptions fmtOpts) {}
+SyntaxDiagnosticEmitter::SyntaxDiagnosticEmitter(
+    SyntaxDiagnosticFormatter &formatter)
+    : TextDiagnosticEmitter(formatter) {}
 
-
-
-SyntaxDiagnosticEmitter::SyntaxDiagnosticEmitter(SyntaxDiagnosticFormatter &formatter) : TextDiagnosticEmitter(formatter){}
-
-//SyntaxDiagnosticEmitter::SyntaxDiagnosticEmitter() {}
+// SyntaxDiagnosticEmitter::SyntaxDiagnosticEmitter() {}
 
 // SyntaxDiagnosticEmitter::EmitDiagnostic() {
 
