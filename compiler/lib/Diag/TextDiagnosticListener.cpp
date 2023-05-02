@@ -20,6 +20,4 @@ void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
   GetEmitter().EmitDiagnostic(diagEvent);
 }
 
-void TextDiagnosticListener::Finish() {}
-
-void TextDiagnosticListener::Flush() {}
+bool TextDiagnosticListener::Finish() { return false; }

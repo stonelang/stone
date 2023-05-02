@@ -1,5 +1,4 @@
 #include "stone/Drive/CompilationJob.h"
-
 #include "stone/Basic/Defer.h"
 #include "stone/Drive/Compilation.h"
 #include "stone/Drive/Driver.h"

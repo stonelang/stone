@@ -115,9 +115,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   CompilerInstance compilerInstance(invocation);
 
-  // auto result = stone::CompileFrontend(compilerInstance);
-  // auto result = stone::CompileBackend()
-
+ 
   auto status = compilerInstance.Compile();
 
   if (status.IsError() || invocation.HasError()) {
@@ -305,6 +303,10 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
+
+
+  // auto result = stone::CompileFrontend(compilerInstance);
+  // auto result = stone::CompileBackend(compilerInstance)
 
   Status status;
   switch (GetMode().GetKind()) {

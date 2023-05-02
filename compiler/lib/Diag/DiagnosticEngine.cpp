@@ -188,18 +188,6 @@ InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
     : de(&de), fixer(*this), isActive(true), isForceFlush(false),
       tokenable(tokenable) {}
 
-void InFlightDiagnostic::Flush() {
-  // If this diagnostic is inactive, then its soul was stolen by the copy ctor
-  // (or by a subclass, as in SemaInFlightDiagnostic).
-  if (IsActive()) {
-    // de.GetCurrentDiagnostic().GetLangContext().Flush();
-    if (de) {
-      de->FlushCurrentDiagnostic();
-    }
-    // Clear();
-  }
-}
-
 DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm)
     : diagOpts(diagOpts), sm(sm), curDiagnostic() {}
 
@@ -219,6 +207,18 @@ llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
 
 llvm::StringRef DiagnosticEngine::GetDiagIDStringByDiagID(const DiagID diagID) {
   return DiagnosticIDStrings[(unsigned)diagID];
+}
+
+void InFlightDiagnostic::Flush() {
+  // If this diagnostic is inactive, then its soul was stolen by the copy ctor
+  // (or by a subclass, as in SemaInFlightDiagnostic).
+  if (IsActive()) {
+    // de.GetCurrentDiagnostic().GetLangContext().Flush();
+    if (de) {
+      de->FlushCurrentDiagnostic();
+    }
+    // Clear();
+  }
 }
 
 void DiagnosticEngine::FlushCurrentDiagnostic() {
@@ -254,4 +254,10 @@ DiagnosticEngine::CreateDiagnosticEvent(const Diagnostic &diagnostic) {
       /*TODO*/ llvm::StringRef());
 }
 
-void DiagnosticEngine::Finish() { FlushListeners(); }
+bool DiagnosticEngine::Finish() { 
+  bool hadError = false;
+  for (auto &listener : listeners) {
+    hadError |= listener->Finish();
+  }
+  return hadError;
+}

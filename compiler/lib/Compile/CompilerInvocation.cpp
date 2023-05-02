@@ -197,7 +197,7 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  langOpts.SetTarget(triple);
+  GetCompilerOptions().langOpts.SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 

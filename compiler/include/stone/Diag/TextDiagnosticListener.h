@@ -19,8 +19,7 @@ public:
 
 public:
   void OnDiagnostic(const DiagnosticEvent &diagnostic) override;
-  void Finish() override;
-  void Flush() override;
+  bool Finish() override;
 
   // void ForceColors() {
   //   ForceColors = true;

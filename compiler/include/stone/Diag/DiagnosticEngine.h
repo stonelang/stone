@@ -270,7 +270,7 @@ public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
 
-  void Finish();
+  bool Finish();
 
 public:
   bool HasError();
@@ -339,12 +339,7 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
-
-  void FlushListeners() {
-    for (auto listener : listeners)
-      listener->Flush();
-  }
-
+ 
 public:
   /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
   llvm::Optional<DiagnosticEvent>

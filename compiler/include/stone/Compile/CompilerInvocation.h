@@ -74,8 +74,6 @@ class CompilerInvocation final : public Session {
 
   stone::TargetOptions targetOpts;
 
-  LangOptions langOpts;
-
   ModuleOptions moduleOpts;
 
   SyntaxOptions syntaxOpts;
@@ -160,8 +158,9 @@ public:
     return typeCheckerOpts;
   }
 
-  LangOptions &GetLangOptions() { return langOpts; }
-  const LangOptions &GetLangOptions() const { return langOpts; }
+  LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
+  const LangOptions &GetLangOptions() const { return GetCompilerOptions().langOpts; }
+
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;

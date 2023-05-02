@@ -32,9 +32,7 @@ public:
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
-  virtual void Finish();
-
-  virtual void Flush();
+  virtual bool Finish();
 
   /// Indicates whether the diagnostics handled by this
   /// DiagnosticListener should be included in the number of diagnostics
@@ -49,7 +47,7 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void OnDiagnostic(const DiagnosticEvent &diagnostic);
+  virtual void OnDiagnostic(const DiagnosticEvent &diagEvent) = 0; 
 
   // void SetFormatter(DiagnosticFormatter *diagFormatter) {
   //   assert(diagFormatter);
