@@ -11,6 +11,28 @@ set(stone_compile_sources
 	ModuleDependencies.cpp
 	Serialization.cpp
 
+	TypeCheck.cpp
+	TypeCheckAccess.cpp
+	TypeCheckAvailability.cpp
+	TypeCheckDecl.cpp
+	TypeChecker.cpp
+	TypeCheckExpr.cpp
+	TypeCheckStmt.cpp
+	TypeCheckType.cpp
+	ImportResolution.cpp
+
+	Confusable.cpp
+	CollectDecl.cpp
+	Lexer.cpp
+	Parse.cpp
+	ParseDecl.cpp
+	ParseExpr.cpp
+	Parser.cpp
+	ParseStmt.cpp
+	ParseType.cpp
+	Lexing.cpp
+	Parsing.cpp
+
 	LINK_LIBS
 	StoneGen
 	StoneParse
