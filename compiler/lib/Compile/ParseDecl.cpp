@@ -13,14 +13,14 @@ using namespace stone;
 using namespace stone::ast;
 
 void Parser::ParseTopLevelDecls(
-    llvm::SmallVector<ASTResult<Decl>> &results) {
+    llvm::SmallVector<ParserResult<Decl>> &results) {
   // Prime the Parser's curTok
   // The Lexer has the first curTok but the Parser's curTok defaults to tk::MAX
   // So, update the parser's curTok with the first curTok from the Lexer
   if (curTok.Is(tok::MAX)) {
     ConsumeToken();
   }
-  auto Success = [&](ASTResult<Decl> &result) -> bool {
+  auto Success = [&](ParserResult<Decl> &result) -> bool {
     return (!result.IsError() && !HasError() && result.IsNonNull());
   };
   while (IsParsing()) {
@@ -43,7 +43,7 @@ void Parser::ParseTopLevelDecls(
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the ASTFile
-ASTResult<Decl> Parser::ParseTopLevelDecl() {
+ParserResult<Decl> Parser::ParseTopLevelDecl() {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");
   ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
@@ -53,7 +53,7 @@ ASTResult<Decl> Parser::ParseTopLevelDecl() {
 }
 
 // NOTE: This is ripe for recursion.
-ASTResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
+ParserResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
                                      ParsingDeclCollector *collector) {
   if (collector) {
     return ParseDeclInternal(*collector);
@@ -64,10 +64,10 @@ ASTResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
   }
 }
 /// Parse declaration specs
-ASTResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
-  ASTStatus status;
-  ASTResult<Decl> result;
+  ParserStatus status;
+  ParserResult<Decl> result;
   ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
 
   while (result.IsNull() && IsParsing()) {
@@ -122,8 +122,8 @@ EndParse : {
   return result;
 }
 }
-// ASTStatus ParsingDeclCollector::CollectUntil(tok kind) {
-//   ASTStatus status;
+// ParserStatus ParsingDeclCollector::CollectUntil(tok kind) {
+//   ParserStatus status;
 //   while (GetParser().GetTok().IsNot(kind)) {
 //     status |= Collect();
 //     if (status.HasCodeCompletion()) {
@@ -134,9 +134,9 @@ EndParse : {
 // }
 
 void Parser::ParseDeclName() {}
-ASTResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
-  ASTResult<Decl> result;
+  ParserResult<Decl> result;
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
@@ -161,9 +161,9 @@ ASTResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-ASTResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
 
-  ASTResult<Decl> result;
+  ParserResult<Decl> result;
   ParsingScope autoDeclScope(*this, ScopeKind::AutoDecl,
                              "parsing auto storage declaration");
 
@@ -174,7 +174,7 @@ ASTResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   ParsingScope funDeclScope(*this, ScopeKind::FunDecl,
                             "parsing fun declaration");
@@ -202,7 +202,7 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     return ast::MakeASTError();
   }
 
-  ASTStatus status;
+  ParserStatus status;
   Identifier basicName;
   SrcLoc nameLoc;
   status = ParseIdentifier(basicName, nameLoc);
@@ -270,13 +270,13 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return ast::MakeASTResult<Decl>(funDecl);
+  return ast::MakeParserResult<Decl>(funDecl);
 }
 
-ASTStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
+ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
                                             Identifier basicName,
                                             DeclName &fullName) {
-  ASTStatus status;
+  ParserStatus status;
   ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
                            "parsing fun signature");
 
@@ -344,7 +344,7 @@ ASTStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     return status;
   }
 }
-ASTStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
+ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
 
   SrcLoc lParenLoc;
   SrcLoc rParenLoc;
@@ -375,13 +375,13 @@ ASTStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   return ast::MakeASTSuccess();
 }
 
-ASTStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
+ParserStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
                                        FunctionDecl &funDecl) {
 
   // TODO:  BraceStmtPair braceStmtPair;
 
   // This is where you what to start a BracePairDelimeter
-  ASTStatus status;
+  ParserStatus status;
   ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
                             "parsing fun arguments");
 
@@ -404,9 +404,9 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
   return nullptr;
 }
 
-ASTResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
-  ASTResult<Decl> result;
+  ParserResult<Decl> result;
   ParsingScope structDeclScope(*this, ScopeKind::StructDecl,
                                "parsing struct-declaration");
 
@@ -428,8 +428,8 @@ ASTResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-ASTResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
-  ASTResult<Decl> result;
+ParserResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
+  ParserResult<Decl> result;
 
   ParsingScope enumDeclScope(*this, ScopeKind::EnumDecl,
                              "parsing enum-declaration");
@@ -455,9 +455,9 @@ ASTResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-ASTResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
+ParserResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
-  ASTResult<Decl> result;
+  ParserResult<Decl> result;
 
   ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
@@ -474,8 +474,8 @@ ASTResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   return result;
 }
 
-ASTResult<Decl> Parser::ParseUsingDecl(ParsingDeclCollector &collector) {
-  ASTResult<Decl> result;
+ParserResult<Decl> Parser::ParseUsingDecl(ParsingDeclCollector &collector) {
+  ParserResult<Decl> result;
 
   assert(collector.GetUsingDeclarationCollector().HasUsing() &&
          "Attempting to parse a function without a functin definition.");

@@ -7,7 +7,7 @@
 #include "stone/AST/DeclCollector.h"
 #include "stone/AST/Scope.h"
 #include "stone/AST/Specifier.h"
-#include "stone/AST/ASTResult.h"
+#include "stone/AST/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -154,7 +154,7 @@ public:
   Parser &GetParser() { return parser; }
 
 public:
-  ASTStatus Verify();
+  ParserStatus Verify();
 };
 
 enum class ParsingContextKind : UInt8 {

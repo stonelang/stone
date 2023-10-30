@@ -408,28 +408,10 @@ static Error ParseSearchPathOptions(llvm::opt::InputArgList &ial,
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  auto ial = std::make_unique<llvm::opt::InputArgList>(
-      GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
-                          includedFlagsBitmask, excludedFlagsBitmask));
-  assert(ial && "No input argument list.");
-  // Check for missing argument error.
-  if (missingArgCount) {
-    GetLangContext().GetDiagUnit().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(ial->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
-    return nullptr;
-  }
-  // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetLangContext().GetDiagEngine().PrintD(
-        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
-    return nullptr;
-  }
-
+  auto ial = stone::opts::CreateInputArgList(args);
   compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
   if (compilerOpts->GetMode().IsAlien()) {
-    return Error(true);
+    return Status::Error();
   }
   auto compilerOptsErr = ParseCompilerOptions(
       ial, GetLangContext().GetDiagUnit().GetDiagEngine(),

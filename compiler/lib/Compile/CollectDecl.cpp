@@ -10,9 +10,9 @@
 using namespace stone;
 using namespace stone::ast;
 
-ASTStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
+ParserStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
 
-  ASTStatus status;
+  ParserStatus status;
   status = CollectUsingDecl(collector);
   if (status.IsSuccess()) {
     return status;
@@ -46,7 +46,7 @@ ASTStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
   return status;
 }
 
-ASTStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
+ParserStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
     collector.GetUsingDeclarationCollector().AddUsing(ConsumeToken());
@@ -57,7 +57,7 @@ ASTStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
   return ast::MakeASTSuccess();
 }
 
-ASTStatus Parser::CollectTypeOperator(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeOperator(TypeCollector &collector) {
   // if(collector.GetTypeOperatorCollector().HasAny()){
   // }
   switch (GetTok().GetKind()) {
@@ -73,7 +73,7 @@ ASTStatus Parser::CollectTypeOperator(TypeCollector &collector) {
   return ast::MakeASTSuccess();
 }
 
-ASTStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
+ParserStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_public:
     collector.GetAccessLevelCollector().AddPublic(ConsumeToken());
@@ -91,8 +91,8 @@ ASTStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
 }
 
 // TODO: Dulicate check
-ASTStatus Parser::CollectTypeQualifiers(TypeCollector &collector) {
-  ASTStatus status;
+ParserStatus Parser::CollectTypeQualifiers(TypeCollector &collector) {
+  ParserStatus status;
   while (GetTok().IsQualifier()) {
     status = CollectTypeQualifier(collector);
     if (status.HasCodeCompletion()) {
@@ -102,7 +102,7 @@ ASTStatus Parser::CollectTypeQualifiers(TypeCollector &collector) {
   return status;
 }
 // TODO: Dulicate check
-ASTStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:
     collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
@@ -134,7 +134,7 @@ bool Parser::IsTypeThunk(const Token &tk) {
   }
 }
 
-ASTStatus Parser::CollectTypeThunk(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeThunk(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
     collector.GetTypeThunkCollector().AddPointer(ConsumeToken());
@@ -147,7 +147,7 @@ ASTStatus Parser::CollectTypeThunk(TypeCollector &collector) {
   }
   return ast::MakeASTSuccess();
 }
-ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
@@ -157,7 +157,7 @@ ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
     return ast::MakeASTSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
-  ASTStatus status;
+  ParserStatus status;
   while (GetTok().IsTypeThunk()) {
     status = CollectTypeThunk(collector);
     if (status.HasCodeCompletion()) {
@@ -166,7 +166,7 @@ ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
   }
   return status;
 }
-ASTStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
+ParserStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
 
   if (!GetTok().IsBasicType()) {
     return ast::MakeASTCodeCompletionStatus();
@@ -241,7 +241,7 @@ ASTStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
   }
   return ast::MakeASTSuccess();
 }
-ASTStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
+ParserStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
     collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
@@ -257,7 +257,7 @@ ASTStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   }
   return ast::MakeASTSuccess();
 }
-ASTStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
+ParserStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_static:
     collector.GetStorageSpecifierCollector().AddStatic(ConsumeToken());
@@ -270,7 +270,7 @@ ASTStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
   }
   return ast::MakeASTSuccess();
 }
-ASTStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
+ParserStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_fun:
     collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
@@ -284,6 +284,6 @@ ASTStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   return ast::MakeASTSuccess();
 }
 
-ASTStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
+ParserStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
   return ast::MakeASTSuccess();
 }

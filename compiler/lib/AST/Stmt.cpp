@@ -5,7 +5,7 @@
 using namespace stone;
 using namespace stone::ast;
 
-// ASTResult<Stmt *> AST::CreateIfStmt() { return StmtEmpty(); }
+// ParserResult<Stmt *> AST::CreateIfStmt() { return StmtEmpty(); }
 
 //== Statements ==/
 

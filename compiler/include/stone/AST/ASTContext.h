@@ -32,7 +32,7 @@
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Specifier.h"
 #include "stone/AST/ASTDiagnosticArgument.h"
-#include "stone/AST/ASTResult.h"
+#include "stone/AST/ParserResult.h"
 #include "stone/AST/Types.h"
 
 #include "llvm/ADT/APSInt.h"

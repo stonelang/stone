@@ -17,7 +17,7 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/ASTOptions.h"
-#include "stone/AST/ASTResult.h"
+#include "stone/AST/ParserResult.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -124,45 +124,45 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  void ParseTopLevelDecls(llvm::SmallVector<ASTResult<Decl>> &results);
+  void ParseTopLevelDecls(llvm::SmallVector<ParserResult<Decl>> &results);
 
 private:
-  ASTResult<Decl> ParseTopLevelDecl();
+  ParserResult<Decl> ParseTopLevelDecl();
 
 public:
   // TODO: We only need on ParseDecl
-  ASTResult<Decl> ParseDecl(ParsingDeclOptions flags,
+  ParserResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
   void ParseDeclName();
 
-  // ASTStatus CollectDecl(ParsingDeclCollector &collector);
+  // ParserStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
-  ASTResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
+  ParserResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
 public:
   // TODO: Param should be constant
-  ASTResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
-  ASTResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
+  ParserResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
+  ParserResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
 public:
   // === Collectors === ///
-  ASTStatus CollectDecl(ParsingDeclCollector &collector);
-  ASTStatus CollectUsingDecl(ParsingDeclCollector &collector);
-  ASTStatus CollectAccessLevel(ParsingDeclCollector &collector);
+  ParserStatus CollectDecl(ParsingDeclCollector &collector);
+  ParserStatus CollectUsingDecl(ParsingDeclCollector &collector);
+  ParserStatus CollectAccessLevel(ParsingDeclCollector &collector);
 
   bool IsTypeThunk(const Token &tk);
-  ASTStatus CollectTypeThunk(TypeCollector &collector);
-  ASTStatus CollectTypeThunks(TypeCollector &collector);
-  ASTStatus CollectBasicTypeDecl(TypeCollector &collector);
-  ASTStatus CollectNominalTypeDecl(TypeCollector &collector);
-  ASTStatus CollectTypeQualifiers(TypeCollector &collector);
-  ASTStatus CollectTypeQualifier(TypeCollector &collector);
-  ASTStatus CollectTypeOperator(TypeCollector &collector);
-  ASTStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
-  ASTStatus CollectFunctionDecl(ParsingDeclCollector &collector);
-  ASTStatus VerifyDeclCollected(ParsingDeclCollector &collector);
+  ParserStatus CollectTypeThunk(TypeCollector &collector);
+  ParserStatus CollectTypeThunks(TypeCollector &collector);
+  ParserStatus CollectBasicTypeDecl(TypeCollector &collector);
+  ParserStatus CollectNominalTypeDecl(TypeCollector &collector);
+  ParserStatus CollectTypeQualifiers(TypeCollector &collector);
+  ParserStatus CollectTypeQualifier(TypeCollector &collector);
+  ParserStatus CollectTypeOperator(TypeCollector &collector);
+  ParserStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
+  ParserStatus CollectFunctionDecl(ParsingDeclCollector &collector);
+  ParserStatus VerifyDeclCollected(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//
@@ -181,10 +181,10 @@ public:
 
 public:
   //== fun ==//
-  ASTResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
+  ParserResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
 
 private:
-  ASTStatus ParseFunctionSignature(ParsingDeclCollector &collector,
+  ParserStatus ParseFunctionSignature(ParsingDeclCollector &collector,
                                       Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
@@ -197,8 +197,8 @@ private:
   //                                       bool &rethrows,
   //                                       Typer *&retType);
 
-  ASTStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
-  ASTStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
+  ParserStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
+  ParserStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
                                  FunctionDecl &functionDecl);
 
   BraceStmt *ParseFunctionBodyImpl(ParsingDeclCollector &collectorifier,
@@ -206,19 +206,19 @@ private:
 
 public:
   //== using ==//
-  ASTResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== struct ==//
-  ASTResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== enum== //
-  ASTResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== interface ==//
-  ASTResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -227,16 +227,16 @@ private:
   }
 
 public:
-  ASTResult<Decl> ParseSpaceDecl();
+  ParserResult<Decl> ParseSpaceDecl();
 
 public:
   bool IsStartOfStmt();
   /// Stmt
-  ASTResult<Stmt> ParseStmt();
+  ParserResult<Stmt> ParseStmt();
 
 public:
   /// Expr
-  ASTResult<Expr> ParseExpr();
+  ParserResult<Expr> ParseExpr();
 
 public:
   /// Stop parsing now.
@@ -315,13 +315,13 @@ public:
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
 
-  ASTStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
+  ParserStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
   SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:
   // == Skipping ==/
 
-  ASTStatus SkipUntil(tok T1, tok T2 = tok::MAX);
+  ParserStatus SkipUntil(tok T1, tok T2 = tok::MAX);
   void SkipUntilAnyOperator();
 
   /// Skip until a curTok that starts with '>', and consume it if found.
@@ -346,7 +346,7 @@ public:
   ///
   /// Returns a parser status that can capture whether a code completion curTok
   /// was returned.
-  ASTStatus SkipSingle();
+  ParserStatus SkipSingle();
   /// Skip until the next '#else', '#endif' or until eof.
   void SkipUntilConditionalBlockClose();
 

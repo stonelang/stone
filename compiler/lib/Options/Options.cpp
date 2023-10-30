@@ -32,3 +32,29 @@ public:
 std::unique_ptr<OptTable> stone::opts::CreateOptTable() {
   return std::unique_ptr<OptTable>(new stone::StoneOptTable());
 }
+
+std::unique_ptr<llvm::opt::InputArgList> 
+stone::opts::CreateInputArgList(llvm::ArrayRef<const char *> args, unsigned includedFlagsBitmask, 
+  unsigned excludedFlagsBitmask, unsigned missingArgIndex, unsigned missingArgCount){
+
+  auto ial = std::make_unique<llvm::opt::InputArgList>(
+      GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
+                          includedFlagsBitmask, excludedFlagsBitmask));
+  assert(ial && "No input argument list.");
+  // Check for missing argument error.
+  if (missingArgCount) {
+    GetLangContext().GetDiagEngine().PrintD(
+        SrcLoc(), diag::err_missing_arg_value,
+        diag::LLVMStr(ial->getArgString(missingArgIndex)),
+        diag::UInt(missingArgCount));
+    return nullptr;
+  }
+  // Check for unknown arguments.
+  for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
+    GetLangContext().GetDiagUnit().PrintD(
+        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
+    return nullptr;
+  }
+  return ial;
+
+}

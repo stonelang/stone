@@ -1,8 +1,8 @@
 #include "stone/Parse/Parser.h"
-#include "stone/AST/ASTResult.h"
+#include "stone/AST/ParserResult.h"
 
 using namespace stone::ast;
 
-ASTResult<Expr> Parser::ParseExpr() {
-  return ast::MakeASTResult<Expr>(nullptr);
+ParserResult<Expr> Parser::ParseExpr() {
+  return parser::MakeParserResult<Expr>(nullptr);
 }

@@ -5,8 +5,8 @@
 #include <type_traits>
 
 namespace stone {
-namespace ast {
-class ASTStatus;
+namespace parser {
+class ParserStatus;
 /// A wrapper for a parser AST node result (Decl, Stmt, Expr,
 /// etc.)
 ///
@@ -16,34 +16,34 @@ class ASTStatus;
 /// \li if there was a code completion token.
 ///
 /// If you want to return an AST node pointer in the AST, consider using
-/// ASTResult instead.
-template <typename T> class ASTResult {
+/// ParserResult instead.
+template <typename T> class ParserResult {
   llvm::PointerIntPair<T *, 2> ptrAndBits;
   enum {
     isError = 0x1,
     IsCodeCompletion = 0x2,
   };
-  template <typename U> friend class ASTResult;
+  template <typename U> friend class ParserResult;
 
   template <typename U>
-  friend inline ASTResult<U> MakeASTResult(ASTStatus Status,
+  friend inline ParserResult<U> MakeParserResult(ParserStatus Status,
                                                  U *Result);
 
 public:
   /// Construct a null result with error bit set.
-  ASTResult(std::nullptr_t = nullptr) { SetIsError(); }
+  ParserResult(std::nullptr_t = nullptr) { SetIsError(); }
 
   /// Construct a null result with specified error bits set.
-  ASTResult(ASTStatus Status);
+  ParserResult(ParserStatus Status);
 
   /// Construct a successful parser result.
-  explicit ASTResult(T *Result) : ptrAndBits(Result) {
+  explicit ParserResult(T *Result) : ptrAndBits(Result) {
     assert(Result && "a successful parser result cannot be null");
   }
   /// Convert from a different but compatible parser result.
   template <typename U, typename Enabler = typename std::enable_if<
                             std::is_base_of<T, U>::value>::type>
-  ASTResult(ASTResult<U> Other)
+  ParserResult(ParserResult<U> Other)
       : ptrAndBits(Other.ptrAndBits.getPointer(), Other.ptrAndBits.getInt()) {}
 
   /// Return true if this result does not have an AST node.
@@ -100,16 +100,16 @@ private:
 
 /// Create a successful parser result.
 template <typename T>
-static inline ASTResult<T> MakeASTResult(T *Result) {
-  return ASTResult<T>(Result);
+static inline ParserResult<T> MakeParserResult(T *Result) {
+  return ParserResult<T>(Result);
 }
 
 /// Create a result (null or non-null) with error bit set.
 template <typename T>
-static inline ASTResult<T> MakeASTErrorResult(T *Result = nullptr) {
-  ASTResult<T> PR;
+static inline ParserResult<T> MakeASTErrorResult(T *Result = nullptr) {
+  ParserResult<T> PR;
   if (Result) {
-    PR = ASTResult<T>(Result);
+    PR = ParserResult<T>(Result);
   }
   PR.SetIsError();
   return PR;
@@ -117,25 +117,25 @@ static inline ASTResult<T> MakeASTErrorResult(T *Result = nullptr) {
 
 /// Create a result (null or non-null) with error and code completion bits set.
 template <typename T>
-static inline ASTResult<T>
+static inline ParserResult<T>
 MakeASTCodeCompletionResult(T *Result = nullptr) {
-  ASTResult<T> PR;
+  ParserResult<T> PR;
   if (Result) {
-    PR = ASTResult<T>(Result);
+    PR = ParserResult<T>(Result);
   }
   PR.SetHasCodeCompletionAndIsError();
   return PR;
 }
 
-/// Same as \c ASTResult, but just the status bits without the AST
+/// Same as \c ParserResult, but just the status bits without the AST
 /// node.
 ///
 /// Useful when the AST node is returned by some other means (for example, in
 /// a vector out parameter).
 ///
 /// If you want to use 'bool' as a result type in the AST, consider using
-/// ASTStatus instead.
-class ASTStatus {
+/// ParserStatus instead.
+class ParserStatus {
 
   // 1 = false
   unsigned isError : 1;
@@ -143,11 +143,11 @@ class ASTStatus {
 
 public:
   /// Construct a successful parser status by setting values to true = 0
-  ASTStatus() : isError(0), IsCodeCompletion(0) {}
+  ParserStatus() : isError(0), IsCodeCompletion(0) {}
 
   /// Construct a parser status with specified bits.
   template <typename T>
-  ASTStatus(ASTResult<T> Result) : isError(0), IsCodeCompletion(0) {
+  ParserStatus(ParserResult<T> Result) : isError(0), IsCodeCompletion(0) {
     if (Result.IsError()) {
       SetIsError();
     }
@@ -178,40 +178,40 @@ public:
     IsCodeCompletion = true;
   }
 
-  ASTStatus &operator|=(ASTStatus RHS) {
+  ParserStatus &operator|=(ParserStatus RHS) {
     isError |= RHS.isError;
     IsCodeCompletion |= RHS.IsCodeCompletion;
     return *this;
   }
 
-  friend ASTStatus operator|(ASTStatus LHS, ASTStatus RHS) {
-    ASTStatus Result = LHS;
+  friend ParserStatus operator|(ParserStatus LHS, ParserStatus RHS) {
+    ParserStatus Result = LHS;
     Result |= RHS;
     return Result;
   }
 };
 
 /// Create a successful parser status.
-static inline ASTStatus MakeASTSuccess() { return ASTStatus(); }
+static inline ParserStatus MakeASTSuccess() { return ParserStatus(); }
 
 /// Create a status with error bit set.
-static inline ASTStatus MakeASTError() {
-  ASTStatus Status;
+static inline ParserStatus MakeASTError() {
+  ParserStatus Status;
   Status.SetIsError();
   return Status;
 }
 
 /// Create a status with error and code completion bits set.
-static inline ASTStatus MakeASTCodeCompletionStatus() {
-  ASTStatus Status;
+static inline ParserStatus MakeASTCodeCompletionStatus() {
+  ParserStatus Status;
   Status.SetHasCodeCompletionAndIsError();
   return Status;
 }
 /// Create a parser result with specified bits.
 template <typename T>
-static inline ASTResult<T> MakeASTResult(ASTStatus Status, T *Result) {
-  ASTResult<T> PR = Status.IsError() ? MakeASTErrorResult(Result)
-                                        : MakeASTResult(Result);
+static inline ParserResult<T> MakeParserResult(ParserStatus Status, T *Result) {
+  ParserResult<T> PR = Status.IsError() ? MakeASTErrorResult(Result)
+                                        : MakeParserResult(Result);
 
   if (Status.HasCodeCompletion()) {
     PR.SetHasCodeCompletion();
@@ -219,7 +219,7 @@ static inline ASTResult<T> MakeASTResult(ASTStatus Status, T *Result) {
   return PR;
 }
 
-template <typename T> ASTResult<T>::ASTResult(ASTStatus Status) {
+template <typename T> ParserResult<T>::ParserResult(ParserStatus Status) {
   assert(Status.IsError());
   SetIsError();
   if (Status.HasCodeCompletion()) {

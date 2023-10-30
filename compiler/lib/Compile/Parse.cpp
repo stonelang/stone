@@ -11,7 +11,7 @@ void stone::ParseASTFile(ast::ASTFile &sf, ast::ASTContext &sc,
                             ASTListener *listener) {
 
   Parser parser(sf, sc, listener);
-  llvm::SmallVector<ASTResult<Decl>> results;
+  llvm::SmallVector<ParserResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 
   if (parser.HasError()) {

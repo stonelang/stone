@@ -28,8 +28,8 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
-ASTStatus ParsingDeclCollector::Verify() {
-  ASTStatus status;
+ParserStatus ParsingDeclCollector::Verify() {
+  ParserStatus status;
   return status;
 }
 
