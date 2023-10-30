@@ -4,36 +4,27 @@
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Session/BaseOptions.h"
 #include "stone/Session/Options.h"
+#include "stone/Session/SessionOptions.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
 
-class CompilerOptions final : public BaseOptions {
+class CompilerOptions final : public SessionOptions {
 
   friend class CompilerInvocation;
+  friend class CompilerOptionsConverter;
+  friend class CompilerInputsConverter;
+
   /// A list of arbitrary modules to import and make implicitly visible.
-  std::vector<std::pair<std::string, bool /*testable*/>> implicitModuleNames;
+  Vector<Pair<String, bool /*testable*/>> implicitModuleNames;
 
   ///
   CompilerInputsAndOutputs inputsAndOutputs;
-
-public:
-  enum class ThreadModelKind {
-    /// POSIX Threads.
-    POSIX,
-    /// Single Threaded Environment.
-    Single
-  };
-
-  ///
-  ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
-
-  ModuleOptions moduleOpts;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
@@ -52,23 +43,26 @@ public:
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool DowngradeInterfaceVerificationError = false;
 
+public:
   enum class LibOutputMode { Dynamic, Static };
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;
 
-  enum class InputFileMode {
+  enum class ParsingInputMode {
     Stone,
     StoneLibrary,
     StoneModuleInterface,
   };
-  InputFileMode inputFileMode = InputFileMode::Stone;
+  ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
-  CompilerOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {
-    GetCompilerInputsAndOutputs().ClearInputs();
+  CompilerOptions(std::unique_ptr<Mode> mode)
+      : SessionOptions(std::move(mode)) {
+    GetInputsAndOutputs().ClearInputs();
   }
 
 public:
-  CompilerInputsAndOutputs &GetCompilerInputsAndOutputs() {
+  CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
+  const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
 };

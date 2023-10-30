@@ -4,7 +4,7 @@
 #include "stone/Basic/LLVM.h"
 
 namespace {
-enum { TOKON = 0x1, TOKOFF = 0x2, TOKRSV = 0x4 };
+enum { TOK_ENABLED = 0x1, TOK_DISABLED = 0x2, TOK_RESERVED = 0x4 };
 }
 namespace stone {
 

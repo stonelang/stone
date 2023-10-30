@@ -4,8 +4,10 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
-#include "stone/Syntax/Pattern.h"
-#include "stone/Syntax/Template.h"
+#include "stone/Syntax/Generics.h"
+#include "stone/Syntax/TypeOperator.h"
+#include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -239,6 +241,7 @@ public:
 
   bool HasAny() { return (HasPublic() || HasPrivate() || HasInternal()); }
   SrcLoc GetLoc() { return loc; }
+  AccessLevel GetAccessLevel() { return level; }
 
   void Apply();
 };
@@ -256,19 +259,57 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class DeclCollector {
-
-  AttributeFactory &attributeFactory;
+class TypeCollector final {
+  Type type;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
-  TypePatternCollector typePatternCollector;
+  TypeThunkCollector typeChunkCollector;
+  TypeOperatorCollector typeOperatorCollector;
+
+public:
+  TypeCollector() {}
+
+  TypeQualifierCollector &GetTypeQualifierCollector() {
+    return typeQualifierCollector;
+  }
+  const TypeQualifierCollector &GetTypeQualifierCollector() const {
+    return typeQualifierCollector;
+  }
+  TypeSpecifierCollector &GetTypeSpecifierCollector() {
+    return typeSpecifierCollector;
+  }
+  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+    return typeSpecifierCollector;
+  }
+
+  TypeThunkCollector &GetTypeThunkCollector() { return typeChunkCollector; }
+  const TypeThunkCollector &GetTypeThunkCollector() const {
+    return typeChunkCollector;
+  }
+  TypeOperatorCollector &GetTypeOperatorCollector() {
+    return typeOperatorCollector;
+  }
+  const TypeOperatorCollector &GetTypeOperatorCollector() const {
+    return typeOperatorCollector;
+  }
+
+  void Apply();
+
+public:
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
+};
+
+class DeclCollector {
+
+  AttributeCollector attributeCollector;
+  TypeCollector typeCollector;
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
   UsingDeclarationCollector usingDeclarationCollector;
   AccessLevelCollector accessLevelCollector;
 
   // DeclNameLoc
-
   DeclName name;
   SrcLoc nameLoc;
 
@@ -277,7 +318,7 @@ private:
   void operator=(const DeclCollector &) = delete;
 
 public:
-  DeclCollector(AttributeFactory &attributeFactory);
+  DeclCollector();
 
 public:
   UsingDeclarationCollector &GetUsingDeclarationCollector() {
@@ -292,34 +333,26 @@ public:
   const StorageSpecifierCollector &GetStorageSpecifierCollector() const {
     return storageSpecifierCollector;
   }
-  TypeSpecifierCollector &GetTypeSpecifierCollector() {
-    return typeSpecifierCollector;
-  }
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return typeSpecifierCollector;
-  }
+
   FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
     return functionSpecifierCollector;
   }
   const FunctionSpecifierCollector &GetFunctionSpecifierCollector() const {
     return functionSpecifierCollector;
   }
-  TypeQualifierCollector &GetTypeQualifierCollector() {
-    return typeQualifierCollector;
-  }
-  const TypeQualifierCollector &GetTypeQualifierCollector() const {
-    return typeQualifierCollector;
-  }
 
-  TypePatternCollector &GetTypePatternCollector() {
-    return typePatternCollector;
-  }
-  const TypePatternCollector &GetTypePatternCollector() const {
-    return typePatternCollector;
-  }
+  TypeCollector &GetTypeCollector() { return typeCollector; }
+  const TypeCollector &GetTypeCollector() const { return typeCollector; }
+
   AccessLevelCollector &GetAccessLevelCollector() {
     return accessLevelCollector;
   }
+
+  AttributeCollector &GetAttributeCollector() { return attributeCollector; }
+  const AttributeCollector &GetAttributeCollector() const {
+    return attributeCollector;
+  }
+
   void SetDeclName(DeclName inputName) { name = inputName; }
   DeclName GetDeclName() { return name; }
 

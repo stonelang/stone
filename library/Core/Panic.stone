@@ -1,6 +1,5 @@
-space Core;
 
 
-public fun Panic() -> void {
+public pure fun Panic() -> void {
 
 }

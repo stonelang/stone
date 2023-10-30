@@ -3258,4 +3258,4 @@ llvm::ArrayRef<Token> stone::syn::slice_token_array(ArrayRef<Token> AllTokens,
   assert(StartIt->GetLoc() == StartLoc && EndIt->GetLoc() == EndLoc);
   return AllTokens.slice(StartIt - AllTokens.begin(), EndIt - StartIt + 1);
 }
-void LexerStats::Print(ColorfulStream &stream) {}
+void LexerStats::Print(ColorStream &stream) {}

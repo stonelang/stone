@@ -1,4 +1,4 @@
-#include "stone/Syntax/Builtin.h"
+#include "stone/Syntax/BuiltinContext.h"
 #include "gtest/gtest.h"
 
 using namespace stone;

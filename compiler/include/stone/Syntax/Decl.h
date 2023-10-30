@@ -5,19 +5,20 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Syntax/Access.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
+#include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
+#include "stone/Syntax/Import.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/Template.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/Using.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -43,7 +44,7 @@ namespace syn {
 
 class Decl;
 class Stmt;
-class Module;
+class ModuleDecl;
 class BraceStmt;
 class DeclContext;
 class SyntaxContext;
@@ -54,11 +55,12 @@ class Type;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
-class TypeAliasDecl;
+class AliasDecl;
 class ArchetypeKind;
 class SyntaxPrinter;
 class SyntaxWalker;
-class TemplateParameterList;
+class GenericParamList;
+class TrailingWhereClause;
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -66,7 +68,7 @@ class DeclStats final : public Stats {
 public:
   DeclStats(const Decl &declaration)
       : Stats("ast-declaration stats:"), declaration(declaration) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
@@ -88,15 +90,11 @@ class alignas(1 << DeclAlignInBits) Decl : public syn::SyntaxAllocation<Decl> {
   SrcLoc loc;
   DeclContext *dc;
 
-  // TODO: UB
-  // void *operator new(std::size_t size, const SyntaxContext &ctx,
-  //                    DeclContext *parent, std::size_t extra = 0);
-
 protected:
   union {
     uint64_t OpaqueBits;
     STONE_INLINE_BITFIELD_BASE(
-        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1, Kind
+        Decl, BitMax(NumDeclKindBits, 8) + 1 + 1 + 1 + 1 + 1 + 1, Kind
         : BitMax(NumDeclKindBits, 8),
 
           /// Whether this declaration is invalid.
@@ -108,7 +106,7 @@ protected:
 
           /// Whether this declaration was mapped directly from a Clang AST.
           ///
-          /// Use getClangNode() to retrieve the corresponding Clang AST.
+          /// Use GetClangNode() to retrieve the corresponding Clang AST.
           IsFromClang : 1,
 
           /// Whether this declaration was added to the surrounding
@@ -119,9 +117,10 @@ protected:
           /// a local context, but should behave like a top-level
           /// declaration for name lookup purposes. This is used by
           /// lldb.
-          IsHoisted : 1
+          IsHoisted : 1,
 
-    );
+          /// Wether this is a top level decl
+          IsTopLevel : 1);
 
     STONE_INLINE_BITFIELD(
         ValueDecl, Decl, 1 + 1 + 1 + 1,
@@ -139,6 +138,17 @@ protected:
         /// Whether this member was synthesized as part of a derived
         /// protocol conformance.
         IsSynthesized : 1);
+
+    STONE_INLINE_BITFIELD(StorageDecl, ValueDecl, 1,
+                          /// Whether this property is a type property
+                          /// (currently unfortunately called 'static').
+                          IsStatic : 1);
+
+    STONE_INLINE_BITFIELD(VarDecl, StorageDecl, 1,
+
+                          /// Whether this is a lazily top-level global variable
+                          /// from the main file.
+                          IsTopLevelGlobal : 1);
 
     STONE_INLINE_BITFIELD(
         FunctionDecl, ValueDecl, 1,
@@ -168,12 +178,14 @@ protected:
     );
 
     STONE_INLINE_BITFIELD(
-        FunDecl, FunctionDecl, 1,
+        FunDecl, FunctionDecl, 1 + 1,
         /// Whether we've computed the 'static' flag yet.
         // IsStaticComputed : 1,
 
         /// Whether this function is a 'static' method.
-        IsStatic : 1
+        IsStatic : 1,
+
+        IsMain : 1
 
         /// Whether 'static' or 'class' was used.
         // StaticSpelling : 2,
@@ -182,10 +194,10 @@ protected:
         // ForcedStaticDispatch : 1,
 
         /// Whether we've computed the 'self' access kind yet.
-        // SelfAccessComputed : 1,
+        // ThisfAccessComputed : 1,
 
         /// Backing bits for 'self' access kind.
-        // SelfAccess : 2,
+        // ThisAccess : 2,
 
         /// Whether this is a top-level function which should be treated
         /// as if it were in local context for the purposes of capture
@@ -196,7 +208,7 @@ protected:
     STONE_INLINE_BITFIELD_EMPTY(TypeDecl, ValueDecl);
 
     STONE_INLINE_BITFIELD(
-        Module, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+        ModuleDecl, TypeDecl, 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
         /// If the module is compiled as static library.
         IsStaticLibrary : 1,
 
@@ -281,8 +293,11 @@ public:
 
 public:
   DeclKind GetKind() const { return kind; }
-  SrcLoc GetLoc() const { return loc; }
 
+  PrettyDeclKind GetPrettyKind() const;
+  static llvm::StringRef GetPrettyKindName(PrettyDeclKind kind);
+
+  SrcLoc GetLoc() const { return loc; }
   DeclContext *GetDeclContextForModule() const;
 
   DeclContext *GetDeclContext() const {
@@ -300,6 +315,12 @@ public:
       return dc->GetSyntaxContext();
     }
     return *context.get<SyntaxContext *>();
+  }
+
+public:
+  bool IsTopLevel() { return Bits.Decl.IsTopLevel; }
+  void SetIsTopLevel(bool isTopLevel = true) {
+    Bits.Decl.IsTopLevel = isTopLevel;
   }
 
 protected:
@@ -330,56 +351,78 @@ public:
   /// This will return NULL if this declaration has no name (e.g., for
   /// an unnamed class) or if the name is a special name such ast a C++
   /// constructor.
-  Identifier GetIdentifier() const { return name.GetIdentifier(); }
+  Identifier GetBasicName() const { return name.GetDeclNameBaseIdentifier(); }
 
   /// Get the name of identifier for this declaration as a StringRef.
   ///
   /// This requires that the declaration have a name and that it be a simple
   /// identifier.
-  llvm::StringRef GetNameText() const { return GetIdentifier().GetString(); }
+  llvm::StringRef GetBasicNameText() const {
+    return GetBasicName().GetString();
+  }
+
   void SetDeclName(DeclName name) { this->name = name; }
   DeclName GetDeclName() { return name; }
 
   void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
   SrcLoc GetDeclNameLoc() { return nameLoc; }
+
+public:
+  static bool classof(const Decl *d) {
+    return d->GetKind() >= DeclKind::FirstNameableDecl &&
+           d->GetKind() <= DeclKind::LastNameableDecl;
+  }
 };
 
 class ValueDecl : public NameableDecl {
 
-  // llvm::PointerIntPair<QualType, 3, AccessLevel> resultTypeAndAccess;
-  /// fun GetObject() -> Object* {return object } where Object* is resultTy
-  QualType type;
+  Type type;
   AccessLevel level;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
             UnifiedContext context)
-      : NameableDecl(kind, name, nameLoc, context) {}
+      : NameableDecl(kind, name, nameLoc, context), type(type) {}
 
 public:
-  void SetType(QualType inputType) { type = inputType; }
-  QualType GetType() { return type; }
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
 
-  // bool HasAccessLevel() const {
-  //   return resultTypeAndAccess.getInt().hasValue();
-  // }
+  bool HasAccessLevel() { return level != AccessLevel::None; }
+  AccessLevel GetAccessLevel() const { return level; }
 
-  // AccessLevel GetAccessLevel() const;
-
-  // void SetAccess(AccessLevel level) {
-  //   assert(!HasAccessLevel() && "access already set");
-  //   OverwriteAccess(access);
-  // }
-
+  void SetAccessLevel(AccessLevel level) {
+    assert(!HasAccessLevel() && "access already set");
+    OverwriteAccess(level);
+  }
   // Overwrite the access of this declaration.
-  //
   // This is needed in the LLDB REPL.
   void OverwriteAccess(AccessLevel inputLevel) { level = inputLevel; }
+
+  /// Return whether this declaration has been determined invalid.
+  bool IsInvalid() const;
+
+  /// Mark this declaration invalid.
+  void SetInvalid();
+
+  /// Determine whether this declaration was implicitly generated by the
+  /// compiler (rather than explicitly written in source code).
+  // bool IsImplicit() const { return Bits.Decl.IsImplicit; }
+
+  // /// Mark this declaration as implicit.
+  // void SetImplicit(bool isImplicit = true) { Bits.Decl.IsImplicit =
+  // isImplicit; }
+
+public:
+  static bool classof(const Decl *d) {
+    return d->GetKind() >= DeclKind::FirstValueDecl &&
+           d->GetKind() <= DeclKind::LastValueDecl;
+  }
 };
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
@@ -397,9 +440,9 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
            UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, context) {}
+      : ValueDecl(kind, name, nameLoc, type, context) {}
 
 public:
   // Low-level accessor. If you just want the type defined by this node,
@@ -413,76 +456,98 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
-// class DeclaratorDecl : public ValueDecl {
-// public:
-//   DeclaratorDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-//                  UnifiedContext context)
-//       : ValueDecl(kind, name, nameLoc, context) {}
-// };
-
-// class LabelDecl : public NameableDecl {
-// public:
-// };
-
-class SpaceDecl final : public NameableDecl {
+class alignas(8) GenericContextBase {
+  // // Not really public. See GenericContext.
 public:
-  // SpaceDecl(DeclContext *dc, SrcLoc loc, DeclName name)
-  //     : NameableDecl(DeclKind::Space, dc, loc, name) {}
+  /// The state of the generic parameters.
+  enum class GenericParamsState : uint8_t {
+    /// The stored generic parameters represent parsed generic parameters,
+    /// written in the source.
+    Parsed = 0,
+    /// The stored generic parameters represent generic parameters that are
+    /// synthesized by the type checker but were not written in the source.
+    TypeChecked = 1,
+    /// The stored generic parameters represent both the parsed and
+    /// type-checked generic parameters.
+    ParsedAndTypeChecked = 2,
+  };
+
+  llvm::PointerIntPair<GenericParamList *, 2, GenericParamsState>
+      genericParamsAndState;
+
+  /// The trailing where clause.
+  ///
+  /// Note that this is not currently serialized, because semantic analysis
+  /// moves the trailing where clause into the generic parameter list.
+  TrailingWhereClause *trailingWhereClause = nullptr;
+
+  //   /// The generic signature of this declaration.
+  //   llvm::PointerIntPair<GenericSignature, 1, bool> GenericSigAndBit;
 };
 
-/// Abstract class describing generic type parameters and associated types,
-/// whose common purpose is to anchor the abstract type parameter and specify
-/// requirements for any corresponding type argument.
-// class AbstractTypeParamDecl : public NameableDecl {
-// protected:
-//   AbstractTypeParamDecl(DeclKind kind, DeclContext *dc, Identifier name,
-//                         SourceLoc NameLoc)
-//     : NameableDecl(kind, dc, name, NameLoc, { }) { }
+class GenericContext : private GenericContextBase, public DeclContext {
+public:
+  GenericContext(DeclContextKind kind, DeclContext *parent,
+                 GenericParamList *params = nullptr);
+};
 
-// public:
-//   /// Retrieve the set of protocols to which this abstract type
-//   /// parameter conforms.
-//   llvm::ArrayRef<ProtocolDecl *> GetConformingInterfacess() const;
+class GenericTypeDecl : public GenericContext, public TypeDecl {
+public:
+  GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
+                  Type type,
+                  /*llvm::ArrayRef<InheritedEntry> inherited,*/
+                  GenericParamList *genericParams = nullptr);
+};
 
-//   static bool classof(const Decl *D) {
-//     return D->getKind() >= DeclKind::First_AbstractTypeParamDecl &&
-//            D->getKind() <= DeclKind::Last_AbstractTypeParamDecl;
-//   }
-// };
+class GenericTypeParamDecl final
+    : public TypeDecl,
+      private llvm::TrailingObjects<GenericTypeParamDecl, Type *, SrcLoc> {
+  friend TrailingObjects;
+};
 
-// A private class for forcing exact field layout.
-// class alignas(8) GenericContextBase {
-//   // Not really public. See GenericContext.
-// public:
-//   llvm::PointerIntPair<GenericParamList *, 1, bool> genericParamsAndBit;
+class AliasDecl : public GenericTypeDecl {
 
-//   /// The trailing where clause.
-//   ///
-//   /// Note that this is not currently serialized, because semantic analysis
-//   /// moves the trailing where clause into the generic parameter list.
-//   TrailingWhereClause *trailingWhere = nullptr;
+  /// The location of the 'alias' keyword // seems that this location should be
+  /// in TypeDecl
+  SrcLoc aliasLoc;
 
-//   /// The generic signature of this declaration.
-//   llvm::PointerIntPair<GenericSignature, 1, bool> genericSigAndBit;
-// };
+  /// The location of the equal '=' token
+  SrcLoc equalLoc;
 
-// class GenericContext : private GenericContextBase, public DeclContext {
-//   // friend class GenericParamListRequest;
-//   // friend class GenericSignatureRequest;
+  /// The end of the type, valid even when the type cannot be parsed
+  SrcLoc typeEndLoc;
 
-// protected:
-//   GenericContext(DeclContextKind declContextKind, DeclContext *parentDC,
-//                  GenericParamList *genericParams);
-// };
+  /// The location of the right-hand side of the typealias binding
+  TypeLoc underlyingTy;
 
-class GenericTypeDecl : public TypeDecl {};
+public:
+};
 
-// class TemplateTypeDecl : public TypeDecl();
+class LabelDecl : public NameableDecl {
+public:
+};
+
+class SpaceDecl final : public NameableDecl, public DeclContext {
+
+  SrcLoc lBraceStartLoc;
+  SrcLoc rBraceEndLoc;
+  SpaceDecl *parent;
+
+public:
+  SpaceDecl(Identifier name, SrcLoc nameLoc, DeclContext *parentDC,
+            SpaceDecl *parent = nullptr)
+      : NameableDecl(DeclKind::Space, name, nameLoc, context),
+        DeclContext(DeclContextKind::SpaceDecl, parentDC) {}
+
+public:
+};
+
+class TypeParamDecl : public TypeDecl {};
 
 // This is really your function prototye
-class FunctionDecl
-    : public DeclContext,
-      public ValueDecl /*, public syn::Redeclarable<FunctionDecl>*/ {
+class FunctionDecl : public GenericContext,
+                     public ValueDecl
+/*, public syn::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -519,10 +584,10 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
                DeclContext *parent)
-      : DeclContext(DeclContextKind::Decl, parent),
-        ValueDecl(kind, name, nameLoc, parent) {}
+      : GenericContext(DeclContextKind::FunctionDecl, parent),
+        ValueDecl(kind, name, nameLoc, retType, parent) {}
 
 public:
   /// TODO:
@@ -541,10 +606,27 @@ public:
     return storageSpecifierKind;
   }
 
+  bool IsMember() { return Bits.FunctionDecl.IsMember; }
+
   // DeclNameLoc GetSpecialNameLoc() { return specialNameLoc; }
   //  void SetReturnType(TypeDecl* tyDecl);
 
 public:
+  static bool classof(const Decl *d) {
+    return d->GetKind() >= DeclKind::FirstFunctionDecl &&
+           d->GetKind() <= DeclKind::LastFunctionDecl;
+  }
+
+  static bool classof(const DeclContext *dc) {
+    if (auto d = dc->ToDecl())
+      return classof(d);
+    return false;
+  }
+
+public:
+  using DeclContext::operator new;
+  using DeclContext::operator delete;
+  using Decl::GetSyntaxContext;
 };
 
 /// Standalone function: fun F0() -> void {}
@@ -555,13 +637,13 @@ class FunDecl : public FunctionDecl {
 
   /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
   /// and Oject* is the QualType which is the resultType
-  TypeLoc returnType;
+  TypeLoc result;
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-          DeclContext *parent)
-      : FunctionDecl(kind, name, nameLoc, parent) {}
+          Type result, DeclContext *parent)
+      : FunctionDecl(kind, name, nameLoc, result, parent) {}
 
 public:
   bool IsMain() const;
@@ -578,48 +660,39 @@ public:
 
   bool HasReturn() const;
 
-  void SetFunLoc(SrcLoc funLoc);
-  SrcLoc GetFunLoc() { return funLoc; }
-
-  QualType GetReturnType() const;
-
   // TypeLoc GetReturnType() const;
+
+  //  bool IsMain() { return Bits.FunDecl.IsTopLevel; }
+  // void SetIsTopLevel(bool isTopLevel = true) {
+  //   Bits.Decl.IsTopLevel = isTopLevel;
+  // }
 
 public:
   // void SetReturnType(TypeDecl* returnTy);
-
   // SrcLoc GetStaticLoc() const { return staticLoc; }
   // SrcLoc GetFunLoc() const { return funcLoc; }
 
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Fun; }
+
   static bool classof(const FunctionDecl *d) {
     return classof(static_cast<const Decl *>(d));
   }
   static bool classof(const DeclContext *dc) {
-    if (auto d = dc->CastToDecl())
+    if (auto d = dc->ToDecl())
       return classof(d);
     return false;
   }
 };
 
-/// Member functions: fun Particle::Fire() -> bool ...
-class MemberFunDecl : public FunDecl {
-  /// TODO: pass , NominalTypeDecl* owner,
-public:
-  MemberFunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-                DeclContext *parent)
-      : FunDecl(kind, funLoc, name, nameLoc, parent) {}
-};
-
-class ConstructorDecl : public MemberFunDecl {
+class ConstructorDecl : public FunctionDecl {
 public:
 };
 
-class DestructorDecl : public MemberFunDecl {
+class DestructorDecl : public FunctionDecl {
 public:
 };
 
-class NominalTypeDecl : public TypeDecl, public DeclContext {
+class NominalTypeDecl : public GenericTypeDecl {
 public:
   static bool classof(const Decl *d) { return true; }
 };
@@ -629,6 +702,9 @@ public:
   static bool classof(const Decl *d) {
     return d->GetKind() == DeclKind::Struct;
   }
+
+public:
+  void AddMember(Decl *d);
 };
 
 class InterfaceDecl final : public NominalTypeDecl {
@@ -652,20 +728,16 @@ class VarDecl : public StorageDecl {
 public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
-  QualType GetQualType() const;
+  // QualType GetQualType() const;
 };
 
 class ParamDecl : public VarDecl {
 public:
 };
 
-class TemplateDecl : public NameableDecl {
-public:
-};
-
-class UsingDecl final : public NameableDecl {
-  SrcLoc usingLoc;
-  UsingKind usingKind;
+class ImportDecl final : public NameableDecl {
+  SrcLoc importLoc;
+  ImportKind importKind;
 
 public:
   // syn::Module *mod = nullptr;
@@ -673,19 +745,23 @@ public:
 
 class TrustDecl final
     : public Decl,
-      public llvm::TrailingObjects<TrustDecl, TemplateParameterList *> {};
+      public llvm::TrailingObjects<TrustDecl, GenericParamList *> {
+
+public:
+};
 
 /// IfConfigDecl - This class represents #if/#else/#endif blocks.
-/// Active and inactive block members are stored separately, with the actionion
-/// being that active members will be handed back to the enclosing context.
+/// Active and inactive block members are stored separately, with the
+/// actionion being that active members will be handed back to the enclosing
+/// context.
 class IfConfigDecl : public Decl {
 
-  friend class Decl;
+  friend Decl;
 
   SrcLoc endLoc;
 
-  /// An array of clauses controlling each of the #if/#elseif/#else conditions.
-  /// The array is SyntaxContext allocated.
+  /// An array of clauses controlling each of the #if/#elseif/#else
+  /// conditions. The array is SyntaxContext allocated.
   llvm::ArrayRef<IfConfigClause> clauses;
 
   SrcLoc GetLocFromSource() const {
@@ -726,6 +802,8 @@ public:
   //   return D->getKind() == DeclKind::IfConfig;
   // }
 };
+
+class OperatorDecl : public Decl {};
 
 class TopLevelDecl final : public DeclContext, public Decl {
 public:

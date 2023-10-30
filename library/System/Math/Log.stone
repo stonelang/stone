@@ -1,0 +1,8 @@
+
+
+space Log2 {
+
+	public fun Pow64() -> uint64{
+		return 0;
+	}
+}

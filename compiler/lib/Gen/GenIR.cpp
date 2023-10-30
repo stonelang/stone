@@ -1,7 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Gen/Gen.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Gen/IRCodeGen.h"
-#include "stone/Gen/IRCodeGenResult.h"
+#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -28,6 +29,7 @@
 #include "llvm/LTO/LTOBackend.h"
 #include "llvm/MC/MCAsmInfo.h"
 #include "llvm/MC/SubtargetFeature.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/StandardInstrumentations.h"
@@ -35,18 +37,17 @@
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/PrettyStackTrace.h"
-#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/ToolOutputFile.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
-#include "llvm/Transforms/Coroutines.h"
-// TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
-// TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
-// #include "llvm/Transforms/Coroutines/CoroElide.h"
-// #include "llvm/Transforms/Coroutines/CoroSplit.h"
+// #include "llvm/Transforms/Coroutines.h"
+//  TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
+//  TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
+//  #include "llvm/Transforms/Coroutines/CoroElide.h"
+//  #include "llvm/Transforms/Coroutines/CoroSplit.h"
 #include "llvm/Transforms/IPO.h"
 #include "llvm/Transforms/IPO/AlwaysInliner.h"
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
@@ -76,48 +77,46 @@
 using namespace stone;
 using namespace stone::syn;
 
-std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
-                                              syn::SyntaxFile &sf,
-                                              const LangContext &ctx,
-                                              const OutputFile *output) {
-  // IRCodeGen irCG(genOpts);
-  // IRModuleEmitter modEmitter(IRCodeGen);
+static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                  const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
+                  syn::SyntaxFile *sf, CodeGenListener *listener) {
 
-  // for (auto *modFile : synMod->GetFiles()) {
-  //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {
-  //     if (sf->stage >= SyntaxFileStage::DidTypeCheck) {
-  //       modEmitter.EmitSyntaxFile(*sf);
-  //     }
-  //   }
-  //   // else {
-  //   //   modFile->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
-  //   //     irModule.AddLinkLibrary(linkLib);
-  //   //   });
-  //   // }
-  // }
-  // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
-  return nullptr;
+  IRCodeGen cg(cgc, listener);
+  IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
+
+  if (sf) {
+    cgm.EmitSyntaxFile(*sf);
+  } else if (md) {
+    for (auto *moduleFile : md->GetFiles()) {
+      if (auto *nextSyntaxFile = llvm::dyn_cast<SyntaxFile>(moduleFile)) {
+        if (nextSyntaxFile->stage >= SyntaxFileStage::TypeChecked)
+          cgm.EmitSyntaxFile(*nextSyntaxFile);
+      } else {
+        // File->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
+        //   IGM.addLinkLibrary(LinkLib);
+        // });
+      }
+    }
+  }
 }
 
-std::unique_ptr<IRCodeGenResult> stone::GenIR(CodeGenContext &cgc,
-                                              syn::Module &sf,
-                                              const LangContext &ctx,
-                                              const OutputFile *output) {
-  // IRCodeGen IRCodeGen(genOpts);
-  // IRModuleEmitter modEmitter(IRCodeGen);
+void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                            syn::SyntaxFile *sf,
+                            const PrimaryFileSpecificPaths paths,
+                            CodeGenListener *listener) {
+  assert(sf);
+  GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
+}
 
-  // for (auto *modFile : synMod->GetFiles()) {
-  //   if (auto *sf = dyn_cast<SyntaxFile>(modFile)) {
-  //     if (sf->stage >= SyntaxFileStage::DidTypeCheck) {
-  //       modEmitter.EmitSyntaxFile(*sf);
-  //     }
-  //   }
-  //   // else {
-  //   //   modFile->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
-  //   //     irModule.AddLinkLibrary(linkLib);
-  //   //   });
-  //   // }
-  // }
-  // return std::unique_ptr<llvm::Module>(irModule.ReleaseLLVMModule());
-  return nullptr;
+void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                        syn::ModuleDecl *md,
+                        const PrimaryFileSpecificPaths paths,
+                        CodeGenListener *listener) {
+
+  GenIR(cgc, moduleName, paths, md, nullptr, listener);
+}
+
+/// Disable thumb-mode until debugger support is there.
+bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
+  return feature == "+thumb-mode";
 }

@@ -1,5 +1,5 @@
-#ifndef LLVM_CLANG_CORE_IDENTIFIERTABLE_H
-#define LLVM_CLANG_CORE_IDENTIFIERTABLE_H
+#ifndef STONE_SYNTAX_IDENTIFIER_H
+#define STONE_SYNTAX_IDENTIFIER_H
 
 #include <cassert>
 #include <cstddef>
@@ -12,6 +12,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/TokenKind.h"
+
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringMap.h"
@@ -21,8 +22,9 @@
 #include "llvm/Support/type_traits.h"
 
 namespace stone {
-class LangOptions;
 class SrcLoc;
+class LangOptions;
+
 namespace syn {
 
 class DeclName;
@@ -50,6 +52,7 @@ class alignas(IdentifierAlignment) Identifier {
 
   IdentifierStatus status;
   const char *dataPointer;
+  bool isSpecial;
 
 public:
   enum : size_t {
@@ -92,6 +95,7 @@ public:
            "Tried getting length of empty identifier");
     return ::strlen(dataPointer);
   }
+  bool IsSpecial() { return isSpecial; }
   bool IsEmpty() const { return dataPointer == nullptr; }
   bool IsEqual(llvm::StringRef other) const {
     return GetString().equals(other);
@@ -114,7 +118,10 @@ public:
   bool IsOperatorSlow() const;
 
   /// Return true if this identifier is specified by the language.
-  bool IsKeyword() const { return true; }
+  bool IsKeyword() const {
+    assert(false && "Not implemented");
+    return true;
+  }
   // bool IsBuiltin() const;
 
   bool IsArithmeticOperator() const {
@@ -214,7 +221,7 @@ class IdentifierTableStats final : public Stats {
 public:
   IdentifierTableStats(const IdentifierTable &table)
       : Stats("identifier table stats:"), table(table) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 /// Implements an efficient mapping from strings to Identifier nodes.
@@ -239,6 +246,7 @@ public:
 public:
   Identifier GetIdentifier(llvm::StringRef identifierStr) const;
 
+  // TODO?
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.
   // void AddKeywords(const LangOptions &LangOpts);

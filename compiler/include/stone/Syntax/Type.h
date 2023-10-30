@@ -8,6 +8,8 @@
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
+#include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeThunk.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -55,139 +57,9 @@ class TypeBase;
 class Type;
 class TypeWalker;
 
-// class BitterType {
-// public:
-// };
-
-// class SugarType {
-// public:
-//   void operator==(Type T) const = delete;
-//   void operator!=(Type T) const = delete;
-
-//   void operator==(SugarType T) const = delete;
-//   void operator!=(SugarType T) const = delete;
-// };
-
-// class Type final : public llvm::PointerUnion<BitterType *, SugarType *> {
-// public:
-//   Type() {}
-// public:
-//   CanType* GetCanType();
-//   SugarType*  GetSugarType(); GetSugarType()->GetCanType();
-
-// public:
-//   Type Transform(llvm::function_ref<Type(Type)> fn) const;
-// };
-
 enum class GCKind : UInt8 { None = 0, Weak, Strong };
 
-struct TypeQualifierFlags {
-  enum ID : UInt8 {
-    None = 0x0,
-    Const = 0x1,
-    Restrict = 0x2,
-    Volatile = 0x4,
-    Unaligned = 0x8,
-    Pure = 0x18,
-    Immutable = 0x36,
-    Mutable = 0x72,
-  };
-};
-
-class TypeQualifierContext {
-
-  // bits:     |0 1 2|3|4 .. 5|6  ..  8|9   ...   31|
-  //           |C R V|U|GCAttr|Lifetime|AddressSpace|
-  UInt32 mask = 0;
-
-  SrcLoc constLoc;
-  SrcLoc restrictLoc;
-  SrcLoc volatileLoc;
-  SrcLoc pureLoc;
-  SrcLoc immutableLoc;
-  SrcLoc mutableLoc;
-
-public:
-  enum {
-    /// The maximum supported address space number.
-    /// 23 bits should be enough for anyone.
-    MaxAddressSpace = 0x7fffffu,
-  };
-
-public:
-  TypeQualifierContext() {}
-
-public:
-  bool HasConst() const { return mask & TypeQualifierFlags::Const; }
-  bool HasConstOnly() const { return mask == TypeQualifierFlags::Const; }
-  void RemoveConst() { mask &= ~TypeQualifierFlags::Const; }
-  void AddConst(SrcLoc loc = SrcLoc()) {
-    constLoc = loc;
-    mask |= TypeQualifierFlags::Const;
-  }
-  SrcLoc GetConstLoc() { return constLoc; }
-
-public:
-  bool HasImmutable() const { return mask & TypeQualifierFlags::Immutable; }
-  bool HasImmutableOnly() const {
-    return mask == TypeQualifierFlags::Immutable;
-  }
-  void RemoveImmutable() { mask &= ~TypeQualifierFlags::Immutable; }
-  void AddImmutable(SrcLoc loc = SrcLoc()) {
-    immutableLoc = loc;
-    mask |= TypeQualifierFlags::Immutable;
-  }
-  SrcLoc GetImmutableLoc() { return immutableLoc; }
-
-public:
-  bool HasMutable() const { return mask & TypeQualifierFlags::Mutable; }
-  bool HasMutableOnly() const { return mask == TypeQualifierFlags::Mutable; }
-  void RemoveMutable() { mask &= ~TypeQualifierFlags::Mutable; }
-  void AddMutable(SrcLoc loc = SrcLoc()) {
-    mutableLoc = loc;
-    mask |= TypeQualifierFlags::Mutable;
-  }
-  SrcLoc GetMutableLoc() { return mutableLoc; }
-
-public:
-  bool HasRestrict() const { return mask & TypeQualifierFlags::Restrict; }
-  bool HasRestrictOnly() const { return mask == TypeQualifierFlags::Restrict; }
-  void RemoveRestrict() { mask &= ~TypeQualifierFlags::Restrict; }
-  void AddRestrict(SrcLoc loc = SrcLoc()) {
-    restrictLoc = loc;
-    mask |= TypeQualifierFlags::Restrict;
-  }
-  SrcLoc GetRestrictLoc() { return restrictLoc; }
-
-public:
-  bool HasVolatile() const { return mask & TypeQualifierFlags::Volatile; }
-  bool HasVolatileOnly() const { return mask == TypeQualifierFlags::Volatile; }
-  void RemoveVolatile() { mask &= ~TypeQualifierFlags::Volatile; }
-  void AddVolatile(SrcLoc loc = SrcLoc()) {
-    volatileLoc = loc;
-    mask |= TypeQualifierFlags::Volatile;
-  }
-
-public:
-  bool HasPure() const { return mask & TypeQualifierFlags::Pure; }
-  bool HasPureOnly() const { return mask == TypeQualifierFlags::Pure; }
-  void RemovePure() { mask &= ~TypeQualifierFlags::Pure; }
-  void AddPure(SrcLoc loc = SrcLoc()) {
-    pureLoc = loc;
-    mask |= TypeQualifierFlags::Pure;
-  }
-
-public:
-  bool HasAny() {
-    return (HasConst() || HasRestrict() || HasVolatile() || HasPure());
-  }
-  bool HasAll() {
-    return (HasConst() && HasRestrict() && HasVolatile() && HasPure());
-  }
-  SrcLoc GetVolatileLoc() { return volatileLoc; }
-};
-
-/// ref-qualifier associated with a function SyntaxType.
+/// ref-qualifier associated with a function Type.
 /// This determines whether a member function's "this" object can be an
 /// lvalue, rvalue, or neither.
 enum class RefQualifierKind : UInt8 {
@@ -213,19 +85,37 @@ enum class ScalarTypeKind {
 
 class Type {
   TypeBase *typePtr = nullptr;
+  TypeQualifierList *qualifiers;
+  TypeThunkList *thunks = nullptr;
+  // TypeOperatorList* ops = nullptr;
 
 public:
-  Type(TypeBase *typePtr = 0) : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
+  Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
+       TypeThunkList *thunks = nullptr)
+      : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
   TypeBase *GetPtr() const { return typePtr; }
 
+  TypeKind GetKind() const;
+
   TypeBase *operator->() const {
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
   }
-  explicit operator bool() const { return typePtr != 0; }
+  explicit operator bool() const { return typePtr != nullptr; }
+
+  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
+    qualifiers = inputQualifiers;
+  }
+  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
+
+  void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
+  TypeThunkList *GetTypeThunks() { return thunks; }
+
+public:
   /// Walk this Type.
   ///
   /// Returns true if the walk was aborted.
@@ -324,79 +214,36 @@ public:
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
 
+public:
+  bool IsBuiltinType() const;
+  bool IsFunType() const;
+  bool IsStructType() const;
+  bool IsPointerType() const;
+  bool IsReferenceType() const;
+
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
   void operator!=(Type T) const = delete;
 };
-/// const int a = 10; volatile int a = 10;
-/// The qual type in this case is ust int with the aforementioned qualifiers
-class QualType : public Type {
-  friend class TypeQualifierCollector;
 
-  // Thankfully, these are efficiently composable.
-  // llvm::PointerIntPair<const Type *, TypeQualifierContext::FastWidth>
-  //     typeAndFastWidth;
-  unsigned quals;
-
-public:
-  QualType() = default;
-
-  explicit QualType(TypeBase *ty, unsigned quals) : Type(ty), quals(quals) {
-    assert(IsQualTypeOrNull() &&
-           "Forming a QualType out of a unqualified type!");
-  }
-  // TODO: come back to this -- it seems tha we should make this into a type and
-  // just pass the quals -- no need to pass the type as a separate parm
-  explicit QualType(Type ty, unsigned quals) : Type(ty), quals(quals) {
-    assert(IsQualTypeOrNull() &&
-           "Forming a QualType out of a an unqualified type!");
-  }
-
-public:
-  bool HasConst() const;
-  bool AddConst();
-
-  bool HasRestrict() const;
-  bool HasVolatile() const;
-  bool HasPure() const;
-
-  bool HasImmutable() const;
-
-  bool HasQuals() const;
-  bool IsCanonical() const;
-
-  /// Return true fro now
-  bool IsQualTypeOrNull() { return true; }
-
-  // Type* GetCanType() const;
-
-  /// Return true if this QualType doesn't point to a type yet.
-  // bool IsNull() const { return ptrInt.getPointer().IsNull(); }
-
-public:
-};
-
-// CanQualType - This is a Type that is statically known to be
-// canonical.  To get
-/// one of these, use Type->GetCanType().  Since all
-/// CanType's can be used as 'Type' (they just don't have sugar) we
-/// derive from Type.
 class CanType final : public Type {
 public:
   /// Constructs a NULL canonical type.
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : Type(ty) {
+  explicit CanType(TypeBase *ty) : CanType(ty, nullptr, nullptr) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(TypeBase *ty, TypeQualifierList *quals,
+                   TypeThunkList *thunks)
+      : Type(ty, quals, thunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
   explicit CanType(Type ty) : Type(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(QualType ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
@@ -414,25 +261,12 @@ public:
   bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
     return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
   }
-};
-
-class TypeQualifierCollector final : public TypeQualifierContext {
-public:
-  TypeQualifierCollector(TypeQualifierContext tqc = TypeQualifierContext())
-      : TypeQualifierContext(tqc) {}
 
 public:
-  /// Collect any qualifiers on the given type and return an
-  /// unqualified type.  The qualifiers are assumed to be consistent
-  /// with those already in the type.
-  const Type *StripQualsFromType(QualType type);
-
-  /// Apply the collected qualifiers to the given type.
-  QualType ApplyQualsToType(const SyntaxContext &sc, QualType qt) const;
-
-  // THINK about this
-  /// Apply the collected qualifiers to the given type.
-  QualType ApplyQualsToType(const SyntaxContext &Context, const Type *ty) const;
+  // Direct comparison is allowed for CanTypes - they are known canonical.
+  bool operator==(CanType T) const { return GetPtr() == T.GetPtr(); }
+  bool operator!=(CanType T) const { return !operator==(T); }
+  bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
 
 } // namespace syn

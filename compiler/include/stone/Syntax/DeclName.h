@@ -271,11 +271,11 @@ public:
   }
 
   /// Assert that the base name is not special and return its identifier.
-  Identifier GetIdentifier() const {
-    auto baseName = GetDeclNameBase();
-    assert(!baseName.IsSpecial() &&
+  Identifier GetDeclNameBaseIdentifier() const {
+    auto declNameBase = GetDeclNameBase();
+    assert(!declNameBase.IsSpecial() &&
            "Can't retrieve the identifier of a special base name");
-    return baseName.GetIdentifier();
+    return declNameBase.GetIdentifier();
   }
 
   // public:
@@ -304,7 +304,7 @@ public:
   //   DeclNameKind GetDeclNameKind() { return declNameKind; }
 
   // public:
-  void Print(ColorfulStream &os, const PrintingPolicy *policy = nullptr) const;
+  void Print(ColorStream &os, const PrintingPolicy *policy = nullptr) const;
   void Dump() const;
 
 public:
@@ -316,6 +316,23 @@ class DeclNameLoc final {
 
 public:
   DeclNameLoc(DeclName name) : name(name) {}
+};
+
+// Take a look at name look
+class DeclNameTable final {
+  /// Used to allocate elements in the FoldingSets below.
+  // llvm::FoldingSet<DeclName> constructors;
+  // llvm::FoldingSet<DeclName> destructors;
+
+public:
+  //   /// Returns the decl name constructor for the given Type.
+  // Declame GetConstructorDeclName(Identifier identifier);
+
+  // /// Returns the name of a C++ destructor for the given Type.
+  // Declame GetDestructorDeclName(Identifier identifier);
+
+  // DeclName GetSpecialName(Special::NameKind Kind,
+  //                                   CanQualType Ty);
 };
 
 // struct DeclNameBase final {

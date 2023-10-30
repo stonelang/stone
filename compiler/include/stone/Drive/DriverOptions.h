@@ -3,18 +3,15 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Drive/OutputOptions.h"
-#include "stone/Session/BaseOptions.h"
+#include "stone/Session/SessionOptions.h"
 
 namespace stone {
 
 // TODO: a lot of what is in DriverOutputProfile can go here
-class DriverOptions final : public BaseOptions {
+class DriverOptions final : public SessionOptions {
   friend class Driver;
 
 public:
-  // TODO: Move to base
-  LangOptions systemOpts;
-
   /// Print the jobs in the TaskQueue
   bool printJobs = false;
 
@@ -42,7 +39,7 @@ public:
   OutputOptions outputOptions;
 
 public:
-  DriverOptions(std::unique_ptr<Mode> mode) : BaseOptions(std::move(mode)) {}
+  DriverOptions(std::unique_ptr<Mode> mode) : SessionOptions(std::move(mode)) {}
 };
 } // namespace stone
 

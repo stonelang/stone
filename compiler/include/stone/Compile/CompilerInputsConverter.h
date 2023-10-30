@@ -13,7 +13,7 @@ namespace stone {
 class DiagnosticEngine;
 
 class CompilerInputsConverter {
-  CompilerOptions &invocationOpts;
+  CompilerOptions &compilerOpts;
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;
 
@@ -29,7 +29,7 @@ class CompilerInputsConverter {
 
 public:
   CompilerInputsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
-                          CompilerOptions &invocationOpts);
+                          CompilerOptions &compilerOpts);
 
 public:
   /// Produces a CompilerInputsAndOutputs object with the inputs populated from

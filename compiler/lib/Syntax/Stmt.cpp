@@ -1,6 +1,6 @@
 #include "stone/Syntax/Stmt.h"
+#include "stone/Syntax/StmtFactory.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -20,10 +20,10 @@ BraceStmt::BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<SyntaxNode> elements,
                           getTrailingObjects<SyntaxNode>());
 }
 
-BraceStmt *BraceStmtFactory::Create(SrcLoc lbloc,
-                                    llvm::ArrayRef<SyntaxNode> elements,
-                                    SrcLoc rbloc, SyntaxContext &sc,
-                                    llvm::Optional<bool> implicit) {
+BraceStmt *StmtFactory::MakeBraceStmt(SrcLoc lbloc,
+                                      llvm::ArrayRef<SyntaxNode> elements,
+                                      SrcLoc rbloc, SyntaxContext &sc,
+                                      llvm::Optional<bool> implicit) {
 
   void *stmtPtr =
       sc.Allocate(BraceStmt::totalSizeToAlloc<SyntaxNode>(elements.size()),

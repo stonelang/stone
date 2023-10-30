@@ -1,30 +1,22 @@
 
 
-space Syntax.Interface {
+public interface A0 {
+	fun Do() -> void;
+}
 
-	public interface A {
-		fun Do() -> void;
-	}
+public interface A1 {
+	fun Do() -> void;
+}
 
+public struct S1 : A1, A0 {
 
-	public struct S0 : A  {
-	}
+}
+public fun S1::A0::Do() -> void {
 
-	public fun S0::Do() -> void {
-	}
+}
 
-	public interface B {
-		fun Do() -> void;
-	}
-
-	public struct S1 : A, B {
-	}
-
-	public fun S1::A::Do() -> void {
-	}
-
-	public fun S1::B::Do() -> void {
-	}
+public fun S1::A1::Do() -> void {
+	
 }
 
 

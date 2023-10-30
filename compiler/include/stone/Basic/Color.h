@@ -7,20 +7,20 @@ namespace stone {
 
 /// RAII class for setting a color for a raw_ostream and resetting when it goes
 /// out-of-scope.
-class ColorfulStream {
-  llvm::raw_ostream &os;
+class ColorStream final {
   bool hasColors;
+  llvm::raw_ostream &os;
 
 public:
-  ColorfulStream() : ColorfulStream(llvm::outs()) {}
+  ColorStream() : ColorStream(llvm::outs()) {}
 
-  ColorfulStream(llvm::raw_ostream &os) : os(os) {
+  ColorStream(llvm::raw_ostream &os) : os(os) {
     hasColors = os.has_colors();
     if (hasColors) {
       os.changeColor(llvm::raw_ostream::Colors::WHITE);
     }
   }
-  ~ColorfulStream() {
+  ~ColorStream() {
     if (hasColors)
       os.resetColor();
   }
@@ -66,15 +66,15 @@ public:
     }
   }
 
-  ColorfulStream &operator<<(char *str) {
+  ColorStream &operator<<(char *str) {
     os << str;
     return *this;
   }
-  ColorfulStream &operator<<(char ch) {
+  ColorStream &operator<<(char ch) {
     os << ch;
     return *this;
   }
-  ColorfulStream &operator<<(llvm::StringRef str) {
+  ColorStream &operator<<(llvm::StringRef str) {
     os << str;
     return *this;
   }

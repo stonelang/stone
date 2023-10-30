@@ -46,7 +46,11 @@ protected:
       : llBracketLoc(llBracketLoc), range(range) {}
 };
 
-class AttributeFactory {
+class DeclAttribute : public Attribute {};
+
+class SpecializeAttribute : public DeclAttribute {};
+
+class AttributeCollector {
 public:
 };
 

@@ -1,26 +1,14 @@
-space Constructor; 
 
 
-public struct Boson {
+struct Boson {
 	public float64 mass; 
 }
-public Boson::Boson() : Boson(0) {
+Boson::Boson() : Boson(0) {
 
 }
-public Boson::Boson(float64 mass) {
+Boson::Boson(float64 mass) {
 	this.mass = mass; 
 }
 
 Boson::~Boson() {
 }
-
-// public Boson::Init() : Init(0) {
-// }
-// public Boson::Init(float64 mass) {
-// 	this.mass = mass; 
-// }
-// public Boson::~Init() {
-// }
-
-
-

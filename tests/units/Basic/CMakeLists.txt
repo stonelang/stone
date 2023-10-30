@@ -13,5 +13,6 @@ target_link_libraries(StoneBasicUnitTests
   PRIVATE
 	StoneBasic
 	StoneDiag
+	StoneSyntax
 )
 

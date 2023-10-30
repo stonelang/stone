@@ -4,8 +4,9 @@
 #include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Stmt.h"
 // #include "stone/Syntax/Using.h"
+#include "stone/Syntax/DeclFactory.h"
+#include "stone/Syntax/StmtFactory.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -57,7 +58,7 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
   if (collector) {
     return ParseDeclInternal(*collector);
   } else {
-    ParsingDeclCollector newCollector(*this, GetAttributeFactory());
+    ParsingDeclCollector newCollector(*this);
     newCollector.flags = flags;
     return ParseDeclInternal(newCollector);
   }
@@ -85,19 +86,29 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
     } else if (collector.GetFunctionSpecifierCollector().HasFun()) {
       result = ParseFunDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsStruct()) {
+    } else if (collector.GetTypeCollector()
+                   .GetTypeSpecifierCollector()
+                   .IsStruct()) {
       result = ParseStructDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsEnum()) {
+    } else if (collector.GetTypeCollector()
+                   .GetTypeSpecifierCollector()
+                   .IsEnum()) {
       result = ParseEnumDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
+    } else if (collector.GetTypeCollector()
+                   .GetTypeSpecifierCollector()
+                   .IsInterface()) {
       result = ParseInterfaceDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsBasicType()) {
+    } else if (collector.GetTypeCollector()
+                   .GetTypeSpecifierCollector()
+                   .IsBasicType()) {
       result = ParseVarDecl(collector);
       goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsAuto()) {
+    } else if (collector.GetTypeCollector()
+                   .GetTypeSpecifierCollector()
+                   .IsAuto()) {
       result = ParseAutoDecl(collector);
       goto EndParse;
     }
@@ -129,22 +140,23 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
                             "parsing var declaration");
 
-  assert(collector.GetTypeSpecifierCollector().HasAny() &&
+  assert(collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny() &&
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
   // May just require the TypeCollecter to add Immutable on creation but remove
   // it if mutable is added
 
-  if (!collector.GetTypeQualifierCollector().HasMutable()) {
-    collector.GetTypeQualifierCollector().AddImmutable(SrcLoc());
+  if (!collector.GetTypeCollector().GetTypeQualifierCollector().HasMutable()) {
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddImmutable(
+        SrcLoc());
   }
 
-  CollectTypePatterns(collector);
-  assert(collector.GetTypePatternCollector().HasAny() &&
+  CollectTypeThunks(collector.GetTypeCollector());
+  assert(collector.GetTypeCollector().GetTypeThunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
-  auto varDecl = VarDeclFactory::Create(GetSyntaxContext());
+  auto varDecl = DeclFactory::MakeVarDecl(GetSyntaxContext());
 
   return result;
 }
@@ -172,29 +184,25 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
-    // We only allow pure on functions => non-member function
-    if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-      // Do some logging
-      return syn::MakeSyntaxError();
-    }
+  // At this stage, only the pure modifier is allowed
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
+      !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
+    // Do some logging
+    return syn::MakeSyntaxError();
   }
 
-  if (collector.GetTypeSpecifierCollector().HasAny()) {
+  if (collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
     return syn::MakeSyntaxError();
   }
 
-  // ParsingDeclaratorCollector declaratorCollector(collector);
-  // auto status = ParseDeclarator(declaratorCollector);
-
+  // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
     return syn::MakeSyntaxError();
   }
 
   SyntaxStatus status;
-
   Identifier basicName;
   SrcLoc nameLoc;
   status = ParseIdentifier(basicName, nameLoc);
@@ -203,17 +211,22 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   Identifier parentName;
   SrcLoc parentNameLoc;
 
+  // TODO: You have to perform a name look-up where because you will be dealing
+  // with "identifier::""
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
       return syn::MakeSyntaxError();
     }
+    // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
+
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
       return syn::MakeSyntaxError();
     }
-    status = ParseIdentifier(parentName, parentNameLoc);
+    // TODO: That identifier should already exist
+    // status = ParseIdentifier(parentName, parentNameLoc);
   }
 
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
@@ -233,31 +246,31 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   collector.SetDeclName(fullName);
   collector.SetDeclNameLoc(nameLoc);
 
+  // TODO: Ok for now.
+  if (collector.GetTypeCollector().GetType().IsNull()) {
+    status.SetIsError();
+    return status;
+  }
+
+  // Apply what what collected
+  // collector.Apply();
   // Create the function
-  auto funDecl =
-      FunDeclFactory::Create(collector, sc, nullptr, GetCurDeclContext());
+  auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
   assert(funDecl);
 
+  // TODO: Find a better place for this -- maybe pass as parameter
+  if (collector.flags.contains(ParsingDeclFlags::AllowTopLevel)) {
+    funDecl->SetIsTopLevel();
+  }
+
+  if (collector.GetFunctionSpecifierCollector().HasIsMember()) {
+  }
+
+  if (!status.HasCodeCompletion()) {
+    status |= ParseFunctionBody(collector, *funDecl);
+  }
   // Very simple for the time being
   return syn::MakeSyntaxResult<Decl>(funDecl);
-
-  // // TODO: Think about this part
-
-  // funDecl->SetAccessLevel(collector.GetAccessLevel());
-  // funDecl->SetFunLoc(funLoc);
-
-  // // funDecl->SetTemplate...
-  // // QualType *returnType = nullptr;
-  // // DeclName fullName;
-
-  // // Scope is functin signaure
-  // if (ParseFunctionSignature(collector, *funDecl).IsError()) {
-  //   return syn::MakeSyntaxError();
-  // }
-
-  // // Scope is now function body
-  // status |= ParseFunctionBody(collector, *funDecl);
-  // syn::VerifyDecl(funDecl);
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -290,12 +303,15 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
 
-    if (collector.GetTypeQualifierCollector().HasAny()) {
-      if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-        // TODO: Log
-        status.SetHasCodeCompletion();
-        return status;
-      }
+    if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+      // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
+      //   // TODO: Log
+      //   status.SetHasCodeCompletion();
+      //   return status;
+      // }
+
+      status.SetHasCodeCompletion();
+      return status;
     }
     // We can call collect here to get the return type
     // collector.CollectUntil(tok::l_brace);
@@ -307,31 +323,33 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
     // TODO: Look for TypeSpecs
 
     // Collect Qualifiers
-    while (!GetTok().IsQualifier()) {
-      CollectTypeQualifier(collector);
-    }
+    CollectTypeQualifiers(collector.GetTypeCollector());
 
-    SyntaxResult<TypeRep> resultTypeRep = ParseDeclResultType(
-        collector, diag::err_expected_type_for_function_result);
+    // Why not just ParseFunctionType
+    auto retType =
+        ParseDeclResultType(collector.GetTypeCollector(),
+                            diag::err_expected_type_for_function_result);
+    collector.GetTypeCollector().SetType(retType);
+
+    // status |= ParseFunctionResult(collector);
+    // assert(curTok.Is(tok::arrow) && "Require '->'");
+    // auto arrowLoc = ConsumeToken(tok::arrow);
+
+    // ParseReturnType();
+
+    // Parse the return type
+    // funDecl->SetReturnType();
+
+    // ConsumeToken();
+    return status;
   }
-
-  // status |= ParseFunctionResult(collector);
-  // assert(curTok.Is(tok::arrow) && "Require '->'");
-  // auto arrowLoc = ConsumeToken(tok::arrow);
-
-  // ParseReturnType();
-
-  // Parse the return type
-  // funDecl->SetReturnType();
-
-  // ConsumeToken();
-  return status;
 }
 SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
 
   SrcLoc lParenLoc;
   SrcLoc rParenLoc;
 
+  // ParenTracker
   ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
                            "parsing fun arguments");
 
@@ -375,7 +393,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
 
   // Simple for now
   auto functionBody =
-      BraceStmtFactory::Create(lParenLoc, {}, rParenLoc, GetSyntaxContext());
+      StmtFactory::MakeBraceStmt(lParenLoc, {}, rParenLoc, GetSyntaxContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;
@@ -392,17 +410,15 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   ParsingScope structDeclScope(*this, ScopeKind::StructDecl,
                                "parsing struct-declaration");
 
-  assert(collector.GetTypeSpecifierCollector().IsStruct() &&
+  assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
-    // We only allow pure on structs
-    if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
-      return result;
-    }
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+    return syn::MakeSyntaxError();
   }
 
-  auto structLoc = collector.GetTypeSpecifierCollector().GetLoc();
+  auto structLoc =
+      collector.GetTypeCollector().GetTypeSpecifierCollector().GetLoc();
   assert(structLoc.isValid());
 
   // At this point, we are expecting an identifier
@@ -418,10 +434,10 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   ParsingScope enumDeclScope(*this, ScopeKind::EnumDecl,
                              "parsing enum-declaration");
 
-  assert(collector.GetTypeSpecifierCollector().IsEnum() &&
+  assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
     return result;
   }
 
@@ -438,20 +454,21 @@ SyntaxResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
 
   return result;
 }
+
 SyntaxResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   SyntaxResult<Decl> result;
 
   ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
-
-  assert(collector.GetTypeSpecifierCollector().IsInterface() &&
-         "Attempting to parse a struct without a struct declaration.");
+  assert(
+      collector.GetTypeCollector().GetTypeSpecifierCollector().IsInterface() &&
+      "Attempting to parse a struct without a struct declaration.");
 
   ParsingScope enumDeclScope(*this, ScopeKind::UsingDecl,
                              "parsing enum-declaration");
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
     return result;
   }
   return result;

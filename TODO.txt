@@ -17,13 +17,14 @@ jobs:
 * Driver/Git.h => git.Diff(input)
 
 
+*****BUGS*****
+1. int** fails in lexer but int* works -- ok for now 
 
-class CanType {
-	
+
+
+
+class CompileCallback {
+
 }
 
-class SugarType {
-	
-}
-
-
+class ParseCallback : CompileC

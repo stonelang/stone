@@ -1,0 +1,9 @@
+
+
+
+public pure fun IsDigit() -> bool {
+
+}
+
+public pure fun IsNumber() -> bool {
+}

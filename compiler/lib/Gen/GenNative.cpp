@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Gen/Gen.h"
-#include "stone/Gen/IRCodeGenResult.h"
+#include "stone/Gen/CodeGenScope.h"
 #include "stone/Gen/NativeCodeGen.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 
@@ -28,6 +28,7 @@
 #include "llvm/LTO/LTOBackend.h"
 #include "llvm/MC/MCAsmInfo.h"
 #include "llvm/MC/SubtargetFeature.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/StandardInstrumentations.h"
@@ -35,18 +36,17 @@
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/PrettyStackTrace.h"
-#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/ToolOutputFile.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
-#include "llvm/Transforms/Coroutines.h"
-// TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
-// TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
-// #include "llvm/Transforms/Coroutines/CoroElide.h"
-// #include "llvm/Transforms/Coroutines/CoroSplit.h"
+// #include "llvm/Transforms/Coroutines.h"
+//  TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
+//  TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
+//  #include "llvm/Transforms/Coroutines/CoroElide.h"
+//  #include "llvm/Transforms/Coroutines/CoroSplit.h"
 #include "llvm/Transforms/IPO.h"
 #include "llvm/Transforms/IPO/AlwaysInliner.h"
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
@@ -78,34 +78,107 @@ using namespace stone::syn;
 
 static void GenNativeWithParallelization() {}
 
-stone::Error stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
-                              IRCodeGenResult &result,
-                              const OutputFile *output) {
+static void EmitObject(CodeGenContext &cgc, syn::SyntaxContext &sc,
+                       llvm::StringRef outputFilename) {}
 
-  NativeCodeGen ncg(cgc, sc);
-  switch (cgc.GetCodeGenOptions().nativeModeKind) {
-  case NativeModeKind::EmitObject:
-    return ncg.EmitObject(result);
-  case NativeModeKind::EmitBC:
-    return ncg.EmitBC(result);
-  case NativeModeKind::EmitAssembly:
-    return ncg.EmitAssembly(result);
-  default:
-    stone::Panic("Unknown native mode");
+static void EmitBC(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+                   llvm::StringRef outputFilename) {}
+
+static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+                         llvm::StringRef outputFilename) {}
+
+// void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+//                       llvm::StringRef outputFilename,
+//                       CodeGenListener *listener) {
+
+//   switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
+//   case CodeGenOutputKind::ObjectFile:
+//     EmitObject(cgc, sc, outputFilename);
+//     break;
+//   default:
+//     break;
+//   }
+// }
+
+static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
+
+/// Returns true is successfull
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+                      llvm::StringRef outputFilename,
+                      CodeGenListener *listener) {
+
+  CodeGenScope nativeScope(cgc.GetCodeGenOptions());
+  // EmbedBitcode(mod, nativeScope);
+
+  return true;
+}
+
+bool stone::WriteEmptyOutputFiles(
+    std::vector<std::string> &parallelOutputFilenames,
+    const syn::SyntaxContext &Context, const CodeGenOptions &opts) {
+  return true;
+}
+
+bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+                      llvm::StringRef outputFilename,
+                      llvm::sys::Mutex *diagMutex,
+                      llvm::GlobalVariable *hashGlobal,
+                      CodeGenListener *listener) {
+
+  llvm::Optional<llvm::raw_fd_ostream> rawOS;
+  if (!outputFilename.empty()) {
+    // Try to open the output file.  Clobbering an existing file is fine.
+    // Open in binary mode if we're doing binary output.
+    llvm::sys::fs::OpenFlags osFlags = llvm::sys::fs::OF_None;
+    std::error_code ec;
+    rawOS.emplace(outputFilename, ec, osFlags);
+    // if (rawOS->has_error() || ec) {
+    //   PrintSync(diags, diagMutex,
+    //                SrcLoc(), diag::error_opening_output,
+    //                outputFilename, ec.message());
+    //   rawOS->clear_error();
+    //   return true;
+    // }
+    if (cgc.GetCodeGenOptions().codeGenOutputKind ==
+        CodeGenOutputKind::LLVMIRPreOptimization) {
+      cgc.GetLLVMModule()->print(rawOS.value(),
+                                 nullptr); // Send file to the output stream
+      return false;
+    }
+  } else {
+    assert(cgc.GetCodeGenOptions().codeGenOutputKind ==
+               CodeGenOutputKind::LLVMModule &&
+           "No output specified");
   }
-
-  return stone::Error();
+  return true;
 }
 
-// EmitWith...
-stone::Error NativeCodeGen::EmitObject(const IRCodeGenResult &result) {
-  return stone::Error();
-}
+/// Returns true is successfull
+void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
+                        llvm::sys::Mutex *diagMutex,
+                        CodeGenScope *parentScope) {
 
-stone::Error NativeCodeGen::EmitBC(const IRCodeGenResult &result) {
-  return stone::Error();
-}
+  // switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
+  //   case CodeGenOutputKind::ObjectFile:
+  //   case CodeGenOutputKind::NativeAssembly:{
+  //      cgc.GetLegacyPassManager().add(llvm::createTargetTransformInfoWrapperPass(
+  //         cgc.GetTargetMachine().getTargetIRAnalysis()));
+  //     bool failed =
+  //     cgc.GetTargetMachine().addPassesToEmitFile(cgc.GetTargetMachine(), out,
+  //     nullptr,
+  //                                                    cgc.GetCodeGenFileType(),
+  //                                                    !cgc.GetCodeGenOptions().VerifyWellFormedIR);
+  //     // if (failed) {
+  //     //   PrintSync(diags, diagMutex, SourceLoc(),
+  //     //                diag::error_codegen_init_fail);
+  //     //   return true;
+  //     break;
+  //   }
+  //   default:
+  //     break;
+  //   }
 
-stone::Error NativeCodeGen::EmitAssembly(const IRCodeGenResult &result) {
-  return stone::Error();
+  // if (parentScope) {
+  //   parentScope->GetLegacyPassManager().run(cgc->GetLLVMModule());
+  // }
 }

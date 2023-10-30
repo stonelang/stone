@@ -5,12 +5,8 @@
 using stone::Diagnostic;
 using stone::TextDiagnosticListener;
 
-TextDiagnosticListener::TextDiagnosticListener()
-    : TextDiagnosticListener(std::make_unique<TextDiagnosticEmitter>()) {}
-
-TextDiagnosticListener::TextDiagnosticListener(
-    std::unique_ptr<TextDiagnosticEmitter> custom)
-    : emitter(std::move(custom)) {}
+TextDiagnosticListener::TextDiagnosticListener(TextDiagnosticEmitter &emitter)
+    : DiagnosticListener(emitter) {}
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
@@ -18,10 +14,10 @@ void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
 
   // DiagnosticListener::OnDiagnostic(diagEvent);
 
-  assert(emitter);
-  emitter->EmitDiagnostic(diagEvent);
+  // switch(diagEvent.GetDiagLevel()){
+
+  // }
+  GetEmitter().EmitDiagnostic(diagEvent);
 }
 
-void TextDiagnosticListener::Finish() {}
-
-void TextDiagnosticListener::Flush() {}
+bool TextDiagnosticListener::Finish() { return false; }

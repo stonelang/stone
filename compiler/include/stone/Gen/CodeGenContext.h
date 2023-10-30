@@ -1,7 +1,9 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/Error.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -20,46 +22,62 @@ class TargetMachine;
 namespace stone {
 
 class LangContext;
+class ClangContext;
 class CodeGenOptions;
+class ModuleOptions;
+class TargetOptions;
 
 class CodeGenContext final {
-  llvm::LLVMContext &llvmContext;
+
   const CodeGenOptions &genOpts;
+  const ModuleOptions &moduleOpts;
+  const stone::TargetOptions &targetOpts;
+
   const LangContext &langContext;
+  ClangContext &clangContext;
 
-  llvm::PassBuilder pb;
-  // Create the analysis managers.
-  llvm::LoopAnalysisManager lam;
-  llvm::FunctionAnalysisManager fam;
-  llvm::CGSCCAnalysisManager cgam;
-  llvm::ModuleAnalysisManager mam;
-  llvm::ModulePassManager mpm;
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
-  mem::Safe<llvm::Module> mod;
-  // legacy::PassManager legacyPM;
-  mem::Safe<llvm::TargetMachine> tm;
+  llvm::GlobalVariable **outModuleHash;
 
 public:
-  CodeGenContext(llvm::LLVMContext &llvmContext, const CodeGenOptions &genOpts,
-                 const LangContext &langContext);
+  CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
+                 const stone::TargetOptions &targetOpts,
+                 const LangContext &langContext, ClangContext &clangContext,
+                 llvm::GlobalVariable **outModuleHash = nullptr);
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
   const LangContext &GetLangContext() const { return langContext; }
+  ClangContext &GetClangContext() { return clangContext; }
 
-  const llvm::Module &GetLLVMModule() const { return *mod; }
-  llvm::Module &GetLLVMModule() { return *mod; }
+  const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
+  llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 
-public:
-  llvm::PassBuilder &GetPassBuilder() { return pb; }
-  llvm::LoopAnalysisManager &GetLoopAnalysisManager() { return lam; }
-  llvm::FunctionAnalysisManager &GetFunctionAnalysisManager() { return fam; }
-  llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
-  llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
-  llvm::ModulePassManager &ModuleAnalysisManager() { return mpm; }
-  llvm::TargetMachine &GetTargetMachine() { return *tm; }
+  const llvm::LLVMContext *GetLLVMContext() const { return llvmContext.get(); }
+  llvm::LLVMContext *GetLLVMContext() { return llvmContext.get(); }
+
+  const llvm::TargetMachine *GetLLVMTargetMachine() const {
+    return llvmTargetMachine.get();
+  }
+  llvm::TargetMachine *GetLLVMTargetMachine() {
+    return llvmTargetMachine.get();
+  }
+  llvm::GlobalVariable **GetOutModuleHash() { return outModuleHash; }
+
+  llvm::CodeGenFileType GetCodeGenFileType() {
+    return (GetCodeGenOptions().codeGenOutputKind ==
+                    CodeGenOutputKind::NativeAssembly
+                ? llvm::CGFT_AssemblyFile
+                : llvm::CGFT_ObjectFile);
+  }
 };
+
 } // namespace stone
 
 #endif

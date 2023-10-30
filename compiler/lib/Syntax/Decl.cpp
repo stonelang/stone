@@ -2,12 +2,12 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/DeclFactory.h"
+#include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
-#include "stone/Syntax/Template.h" //DeclTemplate
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -117,6 +117,46 @@ bool ValueDecl::IsInstanceMember() const {
   llvm_unreachable("bad DeclKind");
 }
 
+// void Decl::SetInvalid() {
+//   switch (GetKind()) {
+// #define VALUE_DECL(ID, PARENT)
+// #define DECL(ID, PARENT) \
+//   case DeclKind::ID:
+// #include "stone/Syntax/DeclKind.def"
+//     Bits.Decl.Invalid = true;
+//     return;
+//   case DeclKind::Enum:
+//   case DeclKind::Struct:
+//   case DeclKind::Interface:
+//   case DeclKind::Alias:
+//   case DeclKind::Module:
+//   case DeclKind::Var:
+//   case DeclKind::Param:
+//   case DeclKind::Constructor:
+//   case DeclKind::Destructor:
+//   case DeclKind::Fun:
+//     //llvm::cast<ValueDecl>(this)->SetInterfaceType(ErrorType::Get(GetSyntaxContext()));
+//     return;
+
+//   case DeclKind::BuiltinTuple:
+//     llvm_unreachable("BuiltinTupleDecl should not end up here");
+//   }
+
+//   llvm_unreachable("Unknown decl kind");
+// }
+
+GenericContext::GenericContext(DeclContextKind kind, DeclContext *parent,
+                               GenericParamList *params)
+    : GenericContextBase(), DeclContext(kind, parent) {
+
+  // TODO:
+  // if (params) {
+  //   params->SetDeclContext(this);
+  //   cenericParamsAndState.setPointerAndInt(params,
+  //   GenericParamsState::Parsed);
+  // }
+}
+
 // TODO: Set body  -- not being set now.
 void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
   SetBodyStatus(bodyStatus);
@@ -125,7 +165,7 @@ void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
 template <std::size_t len>
 static bool IsMainImpl(const NameableDecl *nameable, const char (&str)[len]) {
   assert(nameable);
-  auto identifier = nameable->GetIdentifier();
+  auto identifier = nameable->GetBasicName();
   return identifier.IsEqual(str);
 }
 
@@ -147,36 +187,39 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-void FunDecl::SetFunLoc(SrcLoc loc) { funLoc = loc; }
+void DeclStats::Print(ColorStream &stream) {}
 
-void DeclStats::Print(ColorfulStream &stream) {}
-
-FunDecl *FunDeclFactory::Create(DeclCollector &collector, SyntaxContext &sc,
-                                TypeRep *result, DeclContext *parent) {
+FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
+                                  DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
   auto memPtr = syn::AllocateDeclMem<FunDecl>(sc, size);
-  return ::new (memPtr) FunDecl(
+  auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
-      collector.GetDeclName(), collector.GetDeclNameLoc(), parent);
+      collector.GetDeclName(), collector.GetDeclNameLoc(),
+      collector.GetTypeCollector().GetType(), parent);
+
+  funDecl->SetAccessLevel(collector.GetAccessLevelCollector().GetAccessLevel());
+  return funDecl;
 }
 
-StructDecl *StructDeclFactory::Create(DeclName name, SrcLoc loc,
-                                      SyntaxContext &sc, DeclContext *dc) {
-  size_t size = sizeof(StructDecl);
+StructDecl *DeclFactory::MakeStructDecl(DeclName name, SrcLoc loc,
+                                        SyntaxContext &sc, DeclContext *dc) {
+  size_t size = sizeof(syn::StructDecl);
   auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
   return nullptr;
 }
 
-Module *ModuleDeclFactory::Create(Identifier name, SyntaxContext &sc,
-                                  bool isMainModule) {
-  auto declPtr = syn::AllocateDeclMem<syn::Module>(sc, sizeof(syn::Module));
-  return ::new (declPtr) syn::Module(name, sc);
+ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, SyntaxContext &sc,
+                                        bool isMainModule) {
+  size_t size = sizeof(syn::ModuleDecl);
+  auto declPtr = syn::AllocateDeclMem<syn::ModuleDecl>(sc, size);
+  return ::new (declPtr) syn::ModuleDecl(name, sc);
 }
 
-VarDecl *VarDeclFactory::Create(SyntaxContext &sc) {
+VarDecl *DeclFactory::MakeVarDecl(SyntaxContext &sc) {
   // auto declPtr = syn::AllocateDeclMem<syn::VarDecl>(sc,
   // sizeof(syn::VarDecl)); return ::new (declPtr) syn::VarDecl(sc);
   return nullptr;

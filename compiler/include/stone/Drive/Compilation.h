@@ -23,7 +23,7 @@ class CompilationStats final : public Stats {
 public:
   CompilationStats(Compilation &compilation)
       : Stats("Compilation statistics:"), compilation(compilation) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 class Compilation final {

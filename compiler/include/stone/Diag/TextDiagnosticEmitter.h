@@ -8,11 +8,9 @@ namespace stone {
 class DiagnosticEvent;
 
 class TextDiagnosticEmitter : public DiagnosticEmitter {
-  std::unique_ptr<TextDiagnosticFormatter> formatter;
-
 public:
-  TextDiagnosticEmitter();
-  TextDiagnosticEmitter(std::unique_ptr<TextDiagnosticFormatter> custom);
+  TextDiagnosticEmitter() = delete;
+  TextDiagnosticEmitter(TextDiagnosticFormatter &formatter);
   virtual ~TextDiagnosticEmitter();
 
 public:

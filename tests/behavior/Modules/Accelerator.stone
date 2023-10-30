@@ -1,25 +1,25 @@
 
-// stone -emit-module Accelerator.stone -M ./ => ./Tests.Physics.Accelerator.stonemodule
-// stone -emit-module Accelerator.stone -using-module Tests.Physics.Accelerator
-
-// module Tests.Physics.Accelerator;
-// using Tests.Physics.Particle;
 
 space Physics;
 
 public interface Accelerator {
-	Fire(const Particle* particle) -> bool;
+	fun Fire(const Particle* particle) -> bool;
 }
+
 public struct LinearAccelerator : Accelerator {
 }
-LinearAccelerator::LinearAccelerator() {
+public LinearAccelerator::LinearAccelerator() {
 }
-LinearAccelerator::~LinearAccelerator() {
+public LinearAccelerator::~LinearAccelerator() {
 
 }
 public fun LinearAccelerator::Fire(const Particle* particle) -> bool {
 	return true; 
 }
+
+
+
+
 
 
 

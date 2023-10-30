@@ -8,7 +8,6 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-
 class CodeGenContext;
 class IRCodeGenResult;
 
@@ -18,85 +17,22 @@ class CompilerInstanceStats final : public Stats {
 public:
   CompilerInstanceStats(const CompilerInstance &compiler)
       : Stats("CompilerInvocationstatistics:"), compiler(compiler) {}
-  void Print(ColorfulStream &stream) override;
-};
-
-class CompileStatus final {
-  unsigned isError : 1;
-  unsigned IsCodeCompletion : 1;
-
-public:
-  /// Construct a successful parser status.
-  CompileStatus() : isError(0), IsCodeCompletion(0) {}
-
-  /// Construct a parser status with specified bits.
-  CompileStatus(bool isError, bool isCodeCompletion = false)
-      : isError(0), IsCodeCompletion(0) {
-    if (isError) {
-      SetIsError();
-    }
-    if (isCodeCompletion) {
-      IsCodeCompletion = true;
-    }
-  }
-  /// Return true if either 1) no errors were encountered while parsing this,
-  /// or 2) there were errors but the the parser already recovered from them.
-  bool IsSuccess() const { return !IsError(); }
-  bool IsErrorOrHasCompletion() const { return isError || IsCodeCompletion; }
-
-  /// Return true if we found a code completion token while parsing this.
-  bool HasCodeCompletion() const { return IsCodeCompletion; }
-
-  /// Return true if we encountered any errors while parsing this that the
-  /// parser hasn't yet recovered from.
-  bool IsError() const { return isError; }
-
-  void SetIsError() { isError = true; }
-
-  void SetHasCodeCompletion() { IsCodeCompletion = true; }
-
-  void ClearIsError() { isError = false; }
-
-  void SetHasCodeCompletionAndIsError() {
-    isError = true;
-    IsCodeCompletion = true;
-  }
-  CompileStatus &operator|=(CompileStatus RHS) {
-    isError |= RHS.isError;
-    IsCodeCompletion |= RHS.IsCodeCompletion;
-    return *this;
-  }
-
-  friend CompileStatus operator|(CompileStatus LHS, CompileStatus RHS) {
-    CompileStatus Result = LHS;
-    Result |= RHS;
-    return Result;
-  }
-
-public:
-  static CompileStatus MakeSuccess() { return CompileStatus(); }
-  static CompileStatus MakeError() {
-    CompileStatus Status;
-    Status.SetIsError();
-    return Status;
-  }
+  void Print(ColorStream &stream) override;
 };
 
 using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::Module *, syn::SyntaxFile *>;
+    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 
-using ParsingCompletedCallback =
-    llvm::function_ref<CompileStatus(syn::SyntaxFile &)>;
+using ParsingCompletedCallback = llvm::function_ref<Status(syn::SyntaxFile &)>;
 
 using TypeCheckingCompletedCallback =
-    llvm::function_ref<CompileStatus(CompilerInstance &)>;
+    llvm::function_ref<Status(CompilerInstance &)>;
 
-// using IRCodeGenCompletedCallback = llvm::function_ref<void(CompilerInstance
-// &)>; using NativeCodeGenCompletedCallback =
-// llvm::function_ref<void(CompilerInstance &)>;
+using IRCodeGenCompletedCallback =
+    llvm::function_ref<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
 
-using IRCodeGenCompletedCallback = llvm::function_ref<CompileStatus(
-    CompilerInstance &compiler, CodeGenContext &cgc, IRCodeGenResult &result)>;
+using BackendCodeGenCompletedCallback =
+    llvm::function_ref<void(CompilerInstance &)>;
 
 using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
@@ -106,12 +42,12 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     &result)>;
 
 class CompilerInstance final {
+  Safe<CompilerInstanceStats> stats;
 
   CompilerInvocation &invocation;
 
-  mem::Safe<syn::SyntaxContext> sc;
-  mem::Safe<ModuleSystem> ms;
-  mem::Safe<CompilerInstanceStats> stats;
+  Safe<syn::SyntaxContext> sc;
+  Safe<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -119,6 +55,12 @@ class CompilerInstance final {
   // /// Identifies the set of input buffers in the SourceManager that are
   // /// considered primaries.
   // llvm::SetVector<unsigned> primaryBufferIDs;
+
+  /// The stream for verbose output if owned, otherwise nullptr.
+  // Safe<raw_ostream> OwnedVerboseOutputStream;
+
+  // /// The stream for verbose output.
+  // raw_ostream *VerboseOutputStream = &llvm::errs();
 
 public:
   CompilerInstance(const CompilerInstance &) = delete;
@@ -135,52 +77,104 @@ public:
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
+  const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
+
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
   }
-
+  bool CanCodeGen() {
+    return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
+  }
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
 public:
   /// Perform code analysis and code generation
-  CompileStatus Compile();
+  Status Compile();
+  
+  // Status CompileFrontend();
+  // Status CompileBackend();
 
 private:
-  CompileStatus CompileWithParsing();
-  CompileStatus CompileWithParsing(ParsingCompletedCallback fn);
+  Status CompileWithParsing();
+  Status CompileWithParsing(ParsingCompletedCallback notifiy);
 
-  CompileStatus CompileWithTypeChecking();
-  CompileStatus CompileWithTypeChecking(TypeCheckingCompletedCallback fn);
+  Status CompileWithTypeChecking();
+  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
 
-private:
-  CompileStatus CompileWithCodeGen();
-  // TODO: Some things to think about
-  CompileStatus CompileWithIRCodeGen();
-  CompileStatus CompileWithNativeCodeGen();
+  Status CompileWithCodeGen();
+  Status CompileWithGenIR(CodeGenContext &cgc,
+                          IRCodeGenCompletedCallback notifiy);
 
-  // void CompileWithGenIR(stone::ModuleSyntaxFileUnion msf, CodeGenContext
-  // &cgc,
-  //                       CompileWithGenIRCallback client);
+  Status CompileWithGenNative(CodeGenContext &cgc);
 
+public:
   void ForEachSyntaxFile(EachSyntaxFileCallback fn);
-  void ResolveUsings();
+  void ResolveImports();
+
+public:
+  syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
+    return msf.get<syn::ModuleDecl *>();
+  }
+  syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
+    msf.dyn_cast<syn::SyntaxFile *>();
+  }
+
+  Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
+  const Mode &GetMode() const {
+    return invocation.GetCompilerOptions().GetMode();
+  }
 
 public:
   // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.
-    return GetModuleSystem().GetModuleOptions().moduleOutputMode;
+    return GetInvocation().GetModuleOptions().moduleOutputMode;
   }
 
-  void PrintHelp(const llvm::opt::OptTable &opts);
+  bool IsWholeModuleCodeGen() {
+    return ((invocation.GetCompilerOptions()
+                 .GetInputsAndOutputs()
+                 .HasPrimaryInputs())
+                ? false
+                : true);
+  }
+  bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
 
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
   GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
+
+  void ComputeCodeCodeGenOutputKind();
+
+public:
+  /// Gets the set of SyntaxFiles which are the primary inputs for this
+  /// CompilerInstance.
+  llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
+    return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  }
+
+  // bool HasPrimarySyntaxFiles() const {
+  //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
+  // }
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForAtMostOnePrimary() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
+
+public:
+  void PrintHelp(const llvm::opt::OptTable &opts);
 };
 
 } // namespace stone

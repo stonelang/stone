@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_FRONTEND_H
-#define STONE_COMPILE_FRONTEND_H
+#ifndef STONE_COMPILE_COMPILERINVOCATION_H
+#define STONE_COMPILE_COMPILERINVOCATION_H
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
@@ -8,7 +8,6 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Compile/CompilerUnit.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
@@ -36,7 +35,9 @@ class TargetMachine;
 
 namespace stone {
 class CompilerListener;
-using ClangInvocation = clang::CompilerInvocation;
+
+using ConfigurationFileBuffers =
+    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
 
 struct ModuleBuffers {
 
@@ -60,7 +61,7 @@ class CompilerInvocation final : public Session {
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<CompilerOptions> invocationOpts;
+  std::unique_ptr<CompilerOptions> compilerOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -71,9 +72,7 @@ class CompilerInvocation final : public Session {
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
 
-  TargetOptions targetOpts;
-
-  LangOptions langOpts;
+  stone::TargetOptions targetOpts;
 
   ModuleOptions moduleOpts;
 
@@ -95,7 +94,7 @@ class CompilerInvocation final : public Session {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
-  std::unique_ptr<clang::CompilerInstance> clangInstance;
+  std::unique_ptr<ClangContext> clangContext;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -132,23 +131,24 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  clang::CompilerInstance &GetClangInstance() { return *clangInstance; }
   stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
 
-  CompilerOptions &GetCompilerOptions() { return *invocationOpts.get(); }
+  ClangContext &GetClangContext() { return *clangContext; }
+
+  CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {
-    return *invocationOpts.get();
+    return *compilerOpts.get();
   }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
-  TargetOptions &GetTargetOptions() { return targetOpts; }
-  const TargetOptions &GetTargetOptions() const { return targetOpts; }
+  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
@@ -158,8 +158,9 @@ public:
     return typeCheckerOpts;
   }
 
-  LangOptions &GetLangOptions() { return langOpts; }
-  const LangOptions &GetLangOptions() const { return langOpts; }
+  LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
+  const LangOptions &GetLangOptions() const { return GetCompilerOptions().langOpts; }
+
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
@@ -176,6 +177,8 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
+  DiagUnit &GetDiagUnit() { GetLangContext().GetDiagUnit(); }
+
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
   Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
@@ -186,16 +189,8 @@ public:
 
   bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
 
-  bool JustCompiler() {
-    if (GetCompilerOptions().GetMode().JustParse() ||
-        GetCompilerOptions().GetMode().JustTypeCheck() ||
-        GetCompilerOptions().GetMode().IsEmitIR()) {
-      return true;
-    }
-    return false;
-  }
-
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+  // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
 };
 
 } // namespace stone

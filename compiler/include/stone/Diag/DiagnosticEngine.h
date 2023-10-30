@@ -270,13 +270,13 @@ public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
 
-  void Finish();
+  bool Finish();
 
 public:
   bool HasError();
   SrcMgr &GetSrcMgr() { return sm; }
 
-  void Print(ColorfulStream &os, const PrintingPolicy *policy) const override;
+  void Print(ColorStream &os, const PrintingPolicy *policy) const override;
 
   /// Specify a limit for the number of errors we should
   /// emit before giving up.
@@ -339,19 +339,14 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
-
-  void FlushListeners() {
-    for (auto listener : listeners)
-      listener->Flush();
-  }
-
+ 
 public:
   /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
   llvm::Optional<DiagnosticEvent>
   CreateDiagnosticEvent(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
-  void EmitSpecificDiagnostic(const Diagnostic &diag);
+  void EmitDiagnostic(const Diagnostic &diagnostic);
 
   /// Send all tentative diagnostics to all diagnostic consumers and
   /// delete them.
@@ -436,7 +431,83 @@ public:
   ~DiagnosticStateRAII() {}
 };
 
-class DiagnosticTransaction {};
+class DiagnosticTransaction {
+protected:
+  // DiagnosticEngine &de;
+
+  // /// How many tentative diagnostics there were when the transaction
+  // /// was opened.
+  // unsigned prevDiagnostics;
+
+  // /// How many other transactions were open when this transaction was
+  // /// opened.
+  // unsigned depth;
+
+  // /// Whether this transaction is currently open.
+  // bool isOpen = true;
+
+private:
+  void Close() {
+    // assert(isOpen && "only open transactions may be closed");
+    // IsOpen = false;
+    // Engine.TransactionCount--;
+    // assert(Depth == Engine.TransactionCount &&
+    //        "transactions must be closed LIFO");
+  }
+
+public:
+  // DiagnosticTransaction(const DiagnosticTransaction &) = delete;
+  // DiagnosticTransaction &operator=(const DiagnosticTransaction &) = delete;
+
+  // explicit DiagnosticTransaction(DiagnosticEngine &de)
+  //   : de(de),
+  //     prevDiagnostics(de.GetTentativeDiagnosticsSize()),
+  //     depth(de.GetTransactionCount()),
+  //     isOpen(true)
+  // {
+  //   //de.transactionCount++;
+  // }
+
+  /// Abort and close this transaction and erase all diagnostics
+  /// record while it was open.
+  void Abort() {
+    Close();
+    // Engine.TentativeDiagnostics.erase(
+    //   Engine.TentativeDiagnostics.begin() + PrevDiagnostics,
+    //   Engine.TentativeDiagnostics.end());
+  }
+
+  /// Commit and close this transaction. If this is the top-level
+  /// transaction, emit any diagnostics that were recorded while it was open.
+  void Commit() {
+    Close();
+    // if (Depth == 0) {
+    //   assert(PrevDiagnostics == 0);
+    //   Engine.emitTentativeDiagnostics();
+    // }
+  }
+};
+
+class CompoundDiagnosticTransaction : public DiagnosticTransaction {
+public:
+};
+
+class DiagnosticQueue final {
+  /// The underlying diagnostic engine that the diagnostics will be emitted
+  /// by.
+  // DiagnosticEngine &underlyingEngine;
+
+  // /// A temporary engine used to queue diagnostics.
+  // DiagnosticEngine queueEngine;
+
+  /// Whether the queued diagnostics should be emitted on the destruction of
+  /// the queue, or whether they should be cleared.
+  bool emitOnDestruction;
+
+public:
+  DiagnosticQueue(const DiagnosticQueue &) = delete;
+  DiagnosticQueue &operator=(const DiagnosticQueue &) = delete;
+};
 
 // class BufferIndirectlyCausingDiagnosticRAII {
 // private:

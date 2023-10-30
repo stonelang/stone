@@ -1,0 +1,13 @@
+
+//Core.Builtin 
+
+public pure fun SizeOf() -> int {
+		return 0; 
+}
+public pure fun TypeOf() -> T {
+		return null;
+}
+
+
+
+

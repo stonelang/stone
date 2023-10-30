@@ -188,18 +188,6 @@ InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
     : de(&de), fixer(*this), isActive(true), isForceFlush(false),
       tokenable(tokenable) {}
 
-void InFlightDiagnostic::Flush() {
-  // If this diagnostic is inactive, then its soul was stolen by the copy ctor
-  // (or by a subclass, as in SemaInFlightDiagnostic).
-  if (IsActive()) {
-    // de.GetCurrentDiagnostic().GetLangContext().Flush();
-    if (de) {
-      de->FlushCurrentDiagnostic();
-    }
-    // Clear();
-  }
-}
-
 DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm)
     : diagOpts(diagOpts), sm(sm), curDiagnostic() {}
 
@@ -221,6 +209,18 @@ llvm::StringRef DiagnosticEngine::GetDiagIDStringByDiagID(const DiagID diagID) {
   return DiagnosticIDStrings[(unsigned)diagID];
 }
 
+void InFlightDiagnostic::Flush() {
+  // If this diagnostic is inactive, then its soul was stolen by the copy ctor
+  // (or by a subclass, as in SemaInFlightDiagnostic).
+  if (IsActive()) {
+    // de.GetCurrentDiagnostic().GetLangContext().Flush();
+    if (de) {
+      de->FlushCurrentDiagnostic();
+    }
+    // Clear();
+  }
+}
+
 void DiagnosticEngine::FlushCurrentDiagnostic() {
   assert(curDiagnostic && "No active diagnostic to flush");
   EmitCurrentDiagnostic(true);
@@ -229,10 +229,10 @@ void DiagnosticEngine::FlushCurrentDiagnostic() {
 
 bool DiagnosticEngine::HasError() { return false; }
 
-void DiagnosticEngine::Print(ColorfulStream &os,
+void DiagnosticEngine::Print(ColorStream &os,
                              const PrintingPolicy *policy) const {}
 
-void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
+void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
   auto diagnosticEvent = CreateDiagnosticEvent(diagnostic);
   for (auto &listener : listeners) {
@@ -243,7 +243,7 @@ void DiagnosticEngine::EmitSpecificDiagnostic(const Diagnostic &diagnostic) {
 void DiagnosticEngine::EmitPendingDiagnostics() {}
 
 bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
-  EmitSpecificDiagnostic(*curDiagnostic);
+  EmitDiagnostic(*curDiagnostic);
 }
 
 llvm::Optional<DiagnosticEvent>
@@ -254,4 +254,10 @@ DiagnosticEngine::CreateDiagnosticEvent(const Diagnostic &diagnostic) {
       /*TODO*/ llvm::StringRef());
 }
 
-void DiagnosticEngine::Finish() { FlushListeners(); }
+bool DiagnosticEngine::Finish() { 
+  bool hadError = false;
+  for (auto &listener : listeners) {
+    hadError |= listener->Finish();
+  }
+  return hadError;
+}

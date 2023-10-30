@@ -2,10 +2,9 @@
 #define STONE_PARSE_PARSINGSUPPORT_H
 
 #include "stone/Basic/OptionSet.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclCollector.h"
-#include "stone/Syntax/Pattern.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxResult.h"
@@ -147,8 +146,7 @@ public:
   ParsingDeclOptions flags;
 
 public:
-  ParsingDeclCollector(Parser &parser, AttributeFactory &attributeFactory)
-      : parser(parser), DeclCollector(attributeFactory) {}
+  ParsingDeclCollector(Parser &parser) : parser(parser) {}
 
   ~ParsingDeclCollector();
 
@@ -192,7 +190,8 @@ public:
 
 // class ParsingDeclRep final : public DeclRep {};
 
-class ParsingToken final {
+struct ParsingToken final {
+private:
   Parser &parser;
 
 public:
@@ -223,8 +222,6 @@ public:
   bool IsStar();
   bool IsQualifier();
   bool IsAccessLevel();
-
-public:
   bool IsIf();
   bool IsElse();
   bool IsWhile();

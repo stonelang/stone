@@ -14,7 +14,7 @@ using namespace stone;
 //       primaryInput(input) {}
 
 // /// Print a nice summary of this job
-// void CompileJob::Print(ColorfulStream &stream, CrashState *crashState) {
+// void CompileJob::Print(ColorStream &stream, CrashState *crashState) {
 
 // stream() << std::to_string(GetQueueID()) << ":";
 // stream().UseGreen();
@@ -36,7 +36,7 @@ using namespace stone;
 //}
 
 /// Perform a complete dump of this job.
-// void CompileJob::Dump(ColorfulStream &stream, llvm::StringRef terminator,
+// void CompileJob::Dump(ColorStream &stream, llvm::StringRef terminator,
 //                       CrashState *crashState) {}
 
 // std::unique_ptr<TaskDetail> CompileJob::ToTaskDetail(ToolChain &tc) const {

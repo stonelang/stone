@@ -41,7 +41,7 @@ public:
   stone::Timer &GetTimer() { return *timer.get(); }
 
 public:
-  virtual void Print(ColorfulStream &stream) = 0;
+  virtual void Print(ColorStream &stream) = 0;
 };
 
 // TODO: You can do something very similar to that of the DiagnosticEngine
@@ -55,7 +55,7 @@ public:
 public:
   void Register(Stats *stats);
   /// Print all groups and entries in groups
-  void Print(ColorfulStream &stream);
+  void Print(ColorStream &stream);
 };
 } // namespace stone
 

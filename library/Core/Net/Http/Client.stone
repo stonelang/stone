@@ -1,0 +1,7 @@
+
+// in Core.Net.Http; 
+
+public struct Client {
+}	
+
+

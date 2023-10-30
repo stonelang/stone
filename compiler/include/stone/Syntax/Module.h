@@ -3,7 +3,9 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
+#include "stone/Basic/OptionSet.h"
 #include "stone/Basic/Printable.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
@@ -14,32 +16,49 @@
 namespace stone {
 namespace syn {
 
-class Module;
+class ModuleDecl;
 
 static inline unsigned AlignOfModuleFile();
 
-enum class ModuleFileKind : uint8_t { Source, Builtin };
+enum class ModuleFileKind : uint8_t { Syntax, Builtin };
 
 class ModuleFile : public DeclContext, public SyntaxAllocation<ModuleFile> {
 private:
   ModuleFileKind kind;
 
 public:
-  ModuleFile(ModuleFileKind kind, Module &owner);
+  ModuleFile(ModuleFileKind kind, ModuleDecl &owner);
 
 public:
   ModuleFileKind GetKind() const { return kind; }
+
+public:
+  // Efficiency override for DeclContext::getParentModule().
+  ModuleDecl *GetParentModule() const {
+    return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(GetParent()));
+  }
+
+  static bool classof(const DeclContext *dc) {
+    return dc->GetDeclContextKind() == DeclContextKind::ModuleFile;
+  }
+
+  using SyntaxAllocation<ModuleFile>::operator new;
+  using SyntaxAllocation<ModuleFile>::operator delete;
 };
 
 enum class SyntaxFileKind : uint8_t {
   None,
   // .stone file without 'Main'
   Library,
-  // .stone file with 'Main entry'
+  // .stone file with 'Main entry' //TODO: rename to Executable
   Main
 };
 
-enum class SyntaxFileStage : uint8_t { None, AtImports, AtTypeCheck };
+enum class SyntaxFileStage : uint8_t {
+  None = 0,
+  ImportsResolved,
+  TypeChecked,
+};
 
 class SyntaxFile final : public ModuleFile /*, public Printable*/ {
 private:
@@ -64,19 +83,62 @@ private:
   bool hasMainFun;
 
 public:
+  /// Flags that direct how the source file is parsed.
+  enum class ParsingFlags : UInt8 {
+    /// Whether to disable delayed parsing for nominal type, extension, and
+    /// function bodies.
+    ///
+    /// If set, type and function bodies will be parsed eagerly. Otherwise they
+    /// will be lazily parsed when their contents is queried. This lets us avoid
+    /// building AST nodes when they're not needed.
+    ///
+    /// This is set for primary files, since we want to type check all
+    /// declarations and function bodies anyway, so there's no benefit in lazy
+    /// parsing.
+    DisableDelayedBodies = 1 << 0,
+
+    /// Whether to disable evaluating the conditions of #if decls.
+    ///
+    /// If set, #if decls are parsed as-is. Otherwise, the bodies of any active
+    /// clauses are hoisted such that they become sibling nodes with the #if
+    /// decl.
+    ///
+    /// FIXME: When condition evaluation moves to a later phase, remove this
+    /// and the associated language option.
+    DisablePoundIfEvaluation = 1 << 1,
+
+    /// Whether to build a syntax tree.
+    BuildSyntaxTree = 1 << 2,
+
+    /// Whether to save the file's parsed tokens.
+    CollectParsedTokens = 1 << 3,
+
+    /// Whether to compute the interface hash of the file.
+    EnableInterfaceHash = 1 << 4,
+
+    /// Whether to suppress warnings when parsing. This is set for secondary
+    /// files, as they get parsed multiple times.
+    SuppressWarnings = 1 << 5,
+  };
+  using ParsingOptions = OptionSet<ParsingFlags>;
+
+  /// Retrieve the parsing options specified in the LangOptions.
+  static ParsingOptions GetDefaultParsingOptions(const LangOptions &langOpts);
+
+public:
   SyntaxFileKind kind = SyntaxFileKind::None;
   SyntaxFileStage stage = SyntaxFileStage::None;
 
   std::vector<Decl *> Decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::Module &owner,
+  SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
              llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~SyntaxFile();
 
 public:
-  bool IsPrimary() { return isPrimary; }
+  bool IsPrimary() const { return isPrimary; }
   unsigned GetSrcID() { return srcID; }
 
   bool HasMainFun() { return hasMainFun; }
@@ -91,6 +153,10 @@ public:
   /// Retrieves an immutable view of the list of top-level decls in this file.
   llvm::ArrayRef<Decl *> GetDecls() const;
 
+  /// If this buffer corresponds to a file on disk, returns the path.
+  /// Otherwise, return an empty string.
+  llvm::StringRef GetFilename() const;
+
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
   // override;
 
@@ -104,12 +170,15 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static syn::SyntaxFile *Make(SyntaxFileKind kind, Module &owner,
-                               SyntaxContext &tc, unsigned srcID,
+  static syn::SyntaxFile *Make(SyntaxFileKind kind, unsigned srcID,
+                               ModuleDecl &owner, SyntaxContext &tc,
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
-    return file->GetKind() == ModuleFileKind::Source;
+    return file->GetKind() == ModuleFileKind::Syntax;
+  }
+  static bool classof(const DeclContext *dc) {
+    return llvm::isa<ModuleFile>(dc) && classof(cast<ModuleFile>(dc));
   }
 };
 
@@ -117,19 +186,26 @@ class BuiltinFile final : public ModuleFile {
 public:
 };
 
-class Module final : public DeclContext,
-                     public TypeDecl,
-                     public SyntaxAllocation<Module> {
+class ModuleDecl final : public DeclContext,
+                         public TypeDecl,
+                         public SyntaxAllocation<ModuleDecl> {
+
+  // TODO: This is not yet implemented
+  ModuleDecl *parent = nullptr;
 
   /// The ABI name of the module, if it differs from the module name.
   mutable Identifier moduleABIName;
 
+  llvm::SmallVector<ModuleFile *, 8> primaries;
+
 public:
-  Module(Identifier name, SyntaxContext &tc);
+  ModuleDecl(Identifier name, SyntaxContext &tc, ModuleDecl *parent = nullptr);
 
 public:
   using syn::Decl::GetSyntaxContext;
   llvm::SmallVector<ModuleFile *, 2> files;
+
+  // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
 
 public:
   llvm::ArrayRef<ModuleFile *> GetFiles() { return files; }
@@ -137,13 +213,12 @@ public:
     return {files.begin(), files.size()};
   }
   void AddFile(ModuleFile &file);
-
   SyntaxFile &GetMainSyntaxFile() const;
   ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<SyntaxFile *> GetPrimarySyntaxFiles() const;
+  llvm::ArrayRef<SyntaxFile *> &GetPrimarySyntaxFiles() const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.
@@ -170,9 +245,12 @@ public:
   /// If no module aliasing is set, it will return getName(), i.e. Foo.
   Identifier GetRealName() const;
 
+  // TODO: Defaulting to true for now
+  bool IsMainModule() const { return Bits.ModuleDecl.IsMainModule; }
+
 public:
   static bool classof(const DeclContext *DC) {
-    if (auto D = DC->CastToDecl()) {
+    if (auto D = DC->ToDecl()) {
       return classof(D);
     }
     return false;
@@ -181,14 +259,6 @@ public:
     return D->GetKind() == DeclKind::Module;
   }
 };
-
-inline bool DeclContext::IsModuleContext() const {
-  // TODO:
-  // if (auto D = GetAsDecl()){
-  //   return Module::classof(D);
-  // }
-  return false;
-}
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 

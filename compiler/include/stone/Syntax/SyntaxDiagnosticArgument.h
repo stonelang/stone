@@ -3,6 +3,7 @@
 
 #include "stone/Diag/DiagnosticArgument.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/TextDiagnosticEmitter.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
@@ -86,13 +87,26 @@ public:
 
 public:
   void
-  Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, DiagnosticDetail &detail,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void
-  Format(llvm::raw_ostream &out, llvm::StringRef text,
+  Format(ColorStream &out, llvm::StringRef text,
          llvm::ArrayRef<diag::Argument> args,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
+
+  void FormatArgument(ColorStream &out, llvm::StringRef modifier,
+                      llvm::StringRef modifierArguments,
+                      ArrayRef<diag::Argument> args, unsigned argIndex,
+                      DiagnosticFormatOptions fmtOpts) override;
+};
+
+class SyntaxDiagnosticEmitter : public TextDiagnosticEmitter {
+public:
+  SyntaxDiagnosticEmitter(SyntaxDiagnosticFormatter &formatter);
+
+public:
+  void EmitDeclLoc();
 };
 
 } // namespace stone

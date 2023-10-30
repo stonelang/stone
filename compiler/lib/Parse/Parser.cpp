@@ -13,13 +13,13 @@ using namespace stone::mem;
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
     : Parser(sf, sc,
-             mem::Safe<Lexer>(
+             Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
                            &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
                            &sc.GetLangContext().GetStatEngine())),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, mem::Safe<Lexer> lx,
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
@@ -189,4 +189,4 @@ InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
   return PrintD(token.GetLoc(), diagID);
 }
 
-void ParserStats::Print(ColorfulStream &stream) {}
+void ParserStats::Print(ColorStream &stream) {}

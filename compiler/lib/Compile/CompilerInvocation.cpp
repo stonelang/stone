@@ -3,7 +3,10 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Public.h"
 
 #include "clang/Basic/Stack.h"
 #include "clang/Basic/TargetOptions.h"
@@ -40,7 +43,7 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : Session(programName, programPath), listener(listener),
-      clangInstance(new clang::CompilerInstance()) {
+      clangContext(new ClangContext()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
@@ -194,7 +197,7 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  langOpts.SetTarget(triple);
+  GetCompilerOptions().langOpts.SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
@@ -219,8 +222,8 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                            const char *arg0) {
+Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
+                                     const char *arg0) {
   // Setup the clang diagnostics
   clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
       new clang::DiagnosticIDs());
@@ -230,56 +233,208 @@ stone::Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
-      GetClangInstance().getInvocation(), argv, Diags, arg0);
+      GetClangContext().GetInstance().getInvocation(), argv, Diags, arg0);
   if (!Success) {
     return Error(true);
   }
-
-  // This works in clang 15
-  // if (GetClangInstance().getFrontendOpts().TimeTrace ||
-  //     !GetClangInstance().getFrontendOpts().TimeTracePath.empty()) {
-
-  //   GetClangInstance().getFrontendOpts().TimeTrace = 1;
-  //   llvm::timeTraceProfilerInitialize(
-  //       GetClangInstance().getFrontendOpts().TimeTraceGranularity, arg0);
-  // }
-  // --print-supported-cpus takes priority over the actual compilation.
-  // if (GetClangInstance().getFrontendOpts().PrintSupportedCPUs)
-  //   return PrintSupportedCPUs(
-  //       GetClangInstance().getTargetOpts().Triple);
-
-  // Infer the builtin include path if unspecified.
-  // if (GetClangInstance().getHeaderSearchOpts().UseBuiltinIncludes &&
-  //     GetClangInstance().getHeaderSearchOpts().ResourceDir.empty())
-  //   GetClangInstance().getHeaderSearchOpts().ResourceDir =
-  //       CompilerInvocation::GetResourcesPath(arg0, mainAddr);
 
   // Create the actual diagnostics engine.
-  GetClangInstance().createDiagnostics();
-  if (!GetClangInstance().hasDiagnostics()) {
+  GetClangContext().GetInstance().createDiagnostics();
+  if (!GetClangContext().GetInstance().hasDiagnostics()) {
     return Error(true);
   }
 
-  DiagsBuffer->FlushDiagnostics(GetClangInstance().getDiagnostics());
+  DiagsBuffer->FlushDiagnostics(
+      GetClangContext().GetInstance().getDiagnostics());
   if (!Success) {
-    GetClangInstance().getDiagnosticClient().finish();
+    GetClangContext().GetInstance().getDiagnosticClient().finish();
     return Error(true);
   }
   // If there were errors in processing arguments, don't do anything else.
-  if (GetClangInstance().getDiagnostics().hasErrorOccurred()) {
+  if (GetClangContext().GetInstance().getDiagnostics().hasErrorOccurred()) {
     return Error(true);
   }
 
   // Set up the file and source managers, if needed.
-  if (!GetClangInstance().hasFileManager()) {
-    assert(GetClangInstance().createFileManager());
+  if (!GetClangContext().GetInstance().hasFileManager()) {
+    assert(GetClangContext().GetInstance().createFileManager());
   }
-  if (!GetClangInstance().hasSourceManager()) {
-    GetClangInstance().createSourceManager(GetClangInstance().getFileManager());
+  if (!GetClangContext().GetInstance().hasSourceManager()) {
+    GetClangContext().GetInstance().createSourceManager(
+        GetClangContext().GetInstance().getFileManager());
   }
 
-  assert(GetClangInstance().createTarget());
+  assert(GetClangContext().GetInstance().createTarget());
+
+  return Error();
 }
+
+using namespace stone;
+
+static Error ComputeCompilerOptions(
+    llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
+    CompilerOptions &compilerOpts, ModuleOptions &moduleOpts,
+    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
+
+  CompilerOptionsConverter converter(de, ial, langOpts, compilerOpts,
+                                     moduleOpts);
+
+  return Error(converter.Convert(buffers));
+}
+
+static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
+                                DiagnosticEngine &de,
+                                CompilerOptions &compilerOpts,
+                                LangOptions &langOpts) {
+
+  return Error();
+}
+
+static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
+                                         CodeGenOptions &codeGenOpts) {
+
+  // TODO: You are missing a few -- OK for now
+  switch (compilerOpts.GetMode().GetKind()) {
+  case ModeKind::EmitModule:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
+  case ModeKind::EmitIRPre:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
+  case ModeKind::EmitIR:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
+  case ModeKind::EmitBC:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
+    break;
+  case ModeKind::EmitAssembly:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
+    break;
+  default:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::ObjectFile;
+    break;
+  }
+}
+
+// TODO:
+//  static void SetPointerAuthOptions(
+//      PointerAuthOptions &pointerAuthOptions,
+//      const clang::PointerAuthOptions &clangPointerAuthOptions) {
+
+//   // Intentionally do a slice-assignment to copy over the clang options.
+//   static_cast<clang::PointerAuthOptions &>(pointerAuthOptions) =
+//       clangPointerAuthOptions;
+// }
+
+// TODO: See clang
+static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
+                                  const CodeGenOptions &codeGenOpts,
+                                  const LangOptions &langOpts) {
+
+  // Explicitly request debugger tuning for LLDB which is the default
+  // on Darwin platforms but not on others.
+  llvmTargetOpts.DebuggerTuning = llvm::DebuggerKind::LLDB;
+  llvmTargetOpts.FunctionSections = codeGenOpts.functionSections;
+
+  switch (langOpts.threadModelKind) {
+  case LangOptions::ThreadModelKind::POSIX:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
+    break;
+  case LangOptions::ThreadModelKind::Single:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
+    break;
+  }
+  // Set float ABI type.
+  // assert((CodeGenOpts.FloatABI == "soft" || CodeGenOpts.FloatABI == "softfp"
+  // ||
+  //         CodeGenOpts.FloatABI == "hard" || CodeGenOpts.FloatABI.empty()) &&
+  //        "Invalid Floating Point ABI!");
+  // Options.FloatABIType =
+  //     llvm::StringSwitch<llvm::FloatABI::ABIType>(CodeGenOpts.FloatABI)
+  //         .Case("soft", llvm::FloatABI::Soft)
+  //         .Case("softfp", llvm::FloatABI::Soft)
+  //         .Case("hard", llvm::FloatABI::Hard)
+  //         .Default(llvm::FloatABI::Default);
+}
+IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
+                                          const LangOptions &langOpts,
+                                          ClangContext &cc) {
+  llvm::TargetOptions llvmTargetOpts;
+  InitLLVMTargetOptions(llvmTargetOpts, codeGenOpts, langOpts);
+
+  clang::TargetOptions &clangTargetOpts =
+      cc.GetInstance().getTarget().getTargetOpts();
+  return std::make_tuple(llvmTargetOpts, clangTargetOpts.CPU,
+                         clangTargetOpts.Features, clangTargetOpts.Triple);
+}
+
+static Error ComputeTargetOptions(llvm::opt::InputArgList &ial,
+                                  DiagnosticEngine &de,
+                                  CompilerOptions &compilerOpts,
+                                  CodeGenOptions &codeGenOpts,
+                                  LangOptions &langOpts, ClangContext &cc) {
+
+  std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
+           codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
+      stone::GetIRTargetOptions(codeGenOpts, langOpts, cc);
+
+  // if (cc.GetInstance().getLangOpts().PointerAuthCalls) {
+  //   SetPointerAuthOptions(const_cast<CodeGenOptions
+  //   &>(codeGenOpts).pointerAuth,
+  //                          cc.GetInstance().getCodeGenOpts().PointerAuth);
+  // }
+  return Error();
+}
+static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
+                                   DiagnosticEngine &de,
+                                   CompilerOptions &compilerOpts,
+                                   CodeGenOptions &codeGenOpts,
+                                   LangOptions &langOpts, ClangContext &cc) {
+  ComputeCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
+
+  return Error();
+}
+
+static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
+                                       DiagnosticEngine &de,
+                                       CompilerOptions &compilerOpts,
+                                       TypeCheckerOptions &typeCheckerOpts) {
+  return Error();
+}
+
+static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
+                                      DiagnosticEngine &de,
+                                      CompilerOptions &compilerOpts,
+                                      SearchPathOptions &searchPathOpts) {
+  return Error();
+}
+
+Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
+  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
+  if (compilerOpts->GetMode().IsAlien()) {
+    return Error(true);
+  }
+  auto compilerOptsErr = ComputeCompilerOptions(
+      ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+      GetLangContext().GetLangOptions(), *compilerOpts, GetModuleOptions(),
+      nullptr /* pass null for now*/);
+  if (compilerOptsErr.Has()) {
+  }
+  ComputeLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                     *compilerOpts, GetLangContext().GetLangOptions());
+
+  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                            *compilerOpts, typeCheckerOpts);
+  ComputeSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                           *compilerOpts, searchPathOpts);
+
+  ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                        *compilerOpts, codeGenOpts,
+                        GetLangContext().GetLangOptions(), *clangContext);
+
+  ComputeTargetOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+                       *compilerOpts, codeGenOpts,
+                       GetLangContext().GetLangOptions(), *clangContext);
+  return Error();
+}
+
 void CompilerInvocation::Finish() {
   if (listener) {
     // listener->OnCompileCompleted(*this);

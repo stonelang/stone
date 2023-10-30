@@ -1,15 +1,19 @@
-#include "stone/Sem/TypeCheck.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
 using namespace stone::syn;
+using namespace stone::sem;
 
-void sem::TypeCheck(syn::SyntaxFile &sf,
-                    stone::TypeCheckerOptions &typeCheckerOpts,
-                    TypeCheckerListener *listener) {
+void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
+                                stone::TypeCheckerOptions &typeCheckerOpts,
+                                TypeCheckerListener *listener) {
 
+  if (sf.stage == SyntaxFileStage::TypeChecked) {
+    return;
+  }
   TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
   for (auto d : sf.Decls) {
     checker.CheckDecl(d);
@@ -17,14 +21,17 @@ void sem::TypeCheck(syn::SyntaxFile &sf,
   // checker.Check();
 
   // assert(sf.stage == SyntaxFileStage::AtImports);
-  // sf.stage = SyntaxFileStage::AtTypeCheck;
+  sf.stage = SyntaxFileStage::TypeChecked;
 }
 
-void sem::TypeCheck(syn::Module &m, stone::TypeCheckerOptions &typeCheckerOpts,
-                    TypeCheckerListener *pipeline) {
-  // TypeChecker checker
-  // assert(sf.stage == SyntaxFileStage::AtImports);
-  // sf.stage = SyntaxFileStage::AtTypeCheck;
+void stone::TypeCheckWholeModule(syn::ModuleDecl &md,
+                                 stone::TypeCheckerOptions &typeCheckerOpts,
+                                 TypeCheckerListener *listener) {
 
-  // Go through all the files and type-check
+  // Go through all the files and type-check -- OK for now
+  for (auto *moduleFile : md.GetFiles()) {
+    if (auto *nextSyntaxFile = dyn_cast<SyntaxFile>(moduleFile)) {
+      stone::TypeCheckSyntaxFile(*nextSyntaxFile, typeCheckerOpts, listener);
+    }
+  }
 }

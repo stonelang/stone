@@ -1,22 +1,12 @@
-//module Main;
 
+import System.Core; 
+import Stone.Tests.Behavior.Modules; 
 
-// using Tests.Physics.Particle;
-// using Tests.Physics.Accelerator;
-
-// stone -using-module ./ Main.stone => Main  
-// stone Main.stone => Main (automatically adds -M ./)
-// stone Main.stone -using-module Test.Physics.Particle -using-module Test.Physics.Accelerator 
-
-
-// Loads the actual module Tests.Behavior.Physics 
-// Or loads the types in the module that you passed -- whatever its name is 
-import Tests.Behavior.Modules; 
-
+// Main module 
 fun Main() -> int {
 
-	Physics::LinearAcceleartor* la = new Physics::LinearAcceleartor();
-	Physics::Electron* electron = new Physics::Electron();
+	Physics.LinearAcceleartor* la = new Physics.LinearAcceleartor();
+	physics.Electron* electron = new Physics.Electron();
 
 	defer{
 		delete electron;
@@ -24,3 +14,7 @@ fun Main() -> int {
 	}
 	la.Fire(electron);
 }
+
+
+// To build
+// stone --emit-module Stone.Tests.Behavior.Modules --module-source ~/tests/behavior/Modules  --import-module System.Core

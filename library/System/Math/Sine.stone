@@ -1,0 +1,5 @@
+
+
+public fun Sine(float64 x) -> float64 {
+		return 0;
+}

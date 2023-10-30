@@ -5,14 +5,14 @@
 using namespace stone::sem;
 using namespace stone::syn;
 
-class ExprChecker final : public ExprVisitor<ExprChecker> {
+class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;
 
 public:
-  ExprChecker(TypeChecker &checker) : checker(checker) {}
+  ExprChecking(TypeChecker &checker) : checker(checker) {}
 
 public:
   void Visit(Expr *e) {}
 };
 
-void TypeChecker::CheckExpr(Expr *e) { ExprChecker(*this).Visit(e); }
+void TypeChecker::CheckExpr(Expr *e) { ExprChecking(*this).Visit(e); }

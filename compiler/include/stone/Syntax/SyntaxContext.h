@@ -16,16 +16,18 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Builtin.h"
+#include "stone/Syntax/BuiltinContext.h"
+#include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Import.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPath.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/Using.h"
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Foreign/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
@@ -68,7 +70,7 @@ class Expr;
 class MangleContext;
 class Module;
 class Stmt;
-class Builtin;
+class BuiltinContext;
 class SyntaxContext;
 class Decl;
 class DeclContext;
@@ -86,22 +88,30 @@ class SyntaxContextStats final : public Stats {
 public:
   SyntaxContextStats(const SyntaxContext &sc)
       : Stats("syntax context stats:"), sc(sc) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
+/// Look up option used in \c GetRealModuleName when module aliasing is applied.
+enum class ModuleAliasLookupOption {
+  AlwaysRealName,
+  RealNameFromAlias,
+  AliasFromRealName
+};
 class SyntaxContext final {
   friend SyntaxContextStats;
+
+  Safe<SyntaxContextStats> stats;
 
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
   LangContext &lc;
 
-  mem::Safe<SyntaxContextStats> stats;
+  ClangContext &clangContext;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;
 
-  Builtin builtin;
+  BuiltinContext builtinContext;
   /// The allocator used to create SyntaxContext objects.
   /// SyntaxContext objects are never destructed; rather, all memory associated
   /// with the SyntaxContext objects will be released when the SyntaxContext
@@ -111,11 +121,13 @@ class SyntaxContext final {
   /// Table for all
   IdentifierTable identifiers;
 
+  mutable DeclNameTable declNames;
+
   /// All builtin types will be stored here.
   mutable llvm::SmallVector<Type *, 0> types;
 
   /// The standard library module.
-  mutable syn::Module *stdlibModule = nullptr;
+  mutable syn::ModuleDecl *stdlibModule = nullptr;
 
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
@@ -123,7 +135,18 @@ class SyntaxContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier *, syn::Module *> loadedModules;
+  llvm::MapVector<Identifier, syn::ModuleDecl *> loadedModules;
+
+  /// Set if a `-module-alias` was passed. Used to store mapping between module
+  /// aliases and their corresponding real names, and vice versa for a reverse
+  /// lookup, which is needed to check if the module names appearing in source
+  /// files are aliases or real names. \see SyntaxContext::GetRealModuleName.
+  ///
+  /// The boolean in the value indicates whether or not the entry is keyed by an
+  /// alias vs real name, i.e. true if the entry is [key: alias_name, value:
+  /// (real_name, true)].
+  mutable llvm::DenseMap<Identifier, std::pair<Identifier, bool>>
+      moduleAliasMap;
 
 public:
   /// The set of cleanups to be called when the SyntaxContext is destroyed.
@@ -133,17 +156,21 @@ public:
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
 
-  SyntaxContext(LangContext &lc, const SearchPathOptions &searchPathOpts);
+  SyntaxContext(LangContext &lc, const SearchPathOptions &searchPathOpts,
+                ClangContext &clangContext);
   ~SyntaxContext();
 
   /// Add a cleanup function to be called when the SyntaxContext is deallocated.
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
+  ClangContext &GetClangContext() { return clangContext; }
   ///
   Identifier GetIdentifier(llvm::StringRef name);
+
+  DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
-  const Builtin &GetBuiltin() const;
+  const BuiltinContext &GetBuiltinContext() const;
 
   LangContext &GetLangContext() { return lc; }
   const LangContext &GetLangContext() const { return lc; }
@@ -167,8 +194,8 @@ public:
   /// or NULL if the overlay module cannot be found.
   // TODO: Module *GetOverlayModule(const ModuleFile *clangModule);
 
-  Module *GetModuleByName(llvm::StringRef moduleName);
-  Module *GetModuleByIdentifier(Identifier moduleID);
+  ModuleDecl *GetModuleByName(llvm::StringRef moduleName);
+  ModuleDecl *GetModuleByIdentifier(Identifier moduleIdentifier);
 
   /// Returns the standard library module, or null if the library isn't present.
   ///
@@ -178,6 +205,18 @@ public:
   // Module *GetSTDLibModule() const {
   //   return const_cast<SyntaxContext *>(this)->GetStdlibModule(false);
   // }
+
+  /// Insert an externally-sourced module into the set of known loaded modules
+  /// in this context.
+  void AddLoadedModule(ModuleDecl *mod);
+
+  /// If \p T is null pointer, assume the target in ASTContext.
+  MangleContext *CreateMangleContext(const clang::TargetInfo *T = nullptr);
+
+  Identifier
+  GetRealModuleName(Identifier key,
+                    ModuleAliasLookupOption option =
+                        ModuleAliasLookupOption::AlwaysRealName) const;
 
 private:
 public:

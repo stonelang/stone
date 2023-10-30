@@ -53,6 +53,17 @@ public:
   /// Enable 'availability' restrictions for App Extensions.
   bool EnableAppExtensionRestrictions = false;
 
+public:
+  enum class ThreadModelKind {
+    /// POSIX Threads.
+    POSIX,
+    /// Single Threaded Environment.
+    Single
+  };
+
+  ///
+  ThreadModelKind threadModelKind = ThreadModelKind::POSIX;
+
 private:
   llvm::SmallVector<std::pair<PlatformConditionKind, std::string>, 6>
       PlatformConditionValues;

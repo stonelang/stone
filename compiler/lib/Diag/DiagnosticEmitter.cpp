@@ -4,7 +4,8 @@
 using stone::DiagnosticEmitter;
 using stone::DiagnosticListener;
 
-DiagnosticEmitter::DiagnosticEmitter() {}
+DiagnosticEmitter::DiagnosticEmitter(DiagnosticFormatter &formatter)
+    : formatter(formatter) {}
 DiagnosticEmitter::~DiagnosticEmitter() {}
 
 void DiagnosticEmitter::EmitLevel() {}

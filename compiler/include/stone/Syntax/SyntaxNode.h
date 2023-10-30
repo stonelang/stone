@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXNODE_H
 #define STONE_SYNTAX_SYNTAXNODE_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/ADT/PointerUnion.h"
 
@@ -14,7 +14,7 @@ namespace syn {
 class Expr;
 class Stmt;
 class Decl;
-class QualType;
+class Type;
 class DeclContext;
 class SyntaxWalker;
 
@@ -29,8 +29,7 @@ enum class SyntaxNodeStatus : UInt8 {
   TypeChecked,
 };
 
-struct SyntaxNode
-    : public llvm::PointerUnion<Expr *, Stmt *, Decl *, QualType *> {
+struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   // Inherit the constructors from PointerUnion.
   using PointerUnion::PointerUnion;
 

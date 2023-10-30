@@ -14,13 +14,18 @@ public:
 
 public:
   void
-  Format(llvm::raw_ostream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, DiagnosticDetail &detail,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void
-  Format(llvm::raw_ostream &out, llvm::StringRef text,
+  Format(ColorStream &out, llvm::StringRef text,
          llvm::ArrayRef<diag::Argument> args,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
+
+  void FormatArgument(ColorStream &out, llvm::StringRef modifier,
+                      llvm::StringRef modifierArguments,
+                      ArrayRef<diag::Argument> args, unsigned argIndex,
+                      DiagnosticFormatOptions fmtOpts) override;
 
 public:
 };

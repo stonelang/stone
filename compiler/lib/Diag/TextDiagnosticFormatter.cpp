@@ -6,11 +6,14 @@ TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 
 TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
-void TextDiagnosticFormatter::Format(llvm::raw_ostream &out,
-                                     DiagnosticDetail &detail,
+void TextDiagnosticFormatter::Format(ColorStream &out, DiagnosticDetail &detail,
                                      DiagnosticFormatOptions fmtOpts) {}
 
-void TextDiagnosticFormatter::Format(llvm::raw_ostream &out,
-                                     llvm::StringRef text,
+void TextDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
                                      llvm::ArrayRef<diag::Argument> args,
                                      DiagnosticFormatOptions fmtOpts) {}
+
+void TextDiagnosticFormatter::FormatArgument(
+    ColorStream &out, llvm::StringRef modifier,
+    llvm::StringRef modifierArguments, llvm::ArrayRef<diag::Argument> args,
+    unsigned argIndex, DiagnosticFormatOptions fmtOpts) {}

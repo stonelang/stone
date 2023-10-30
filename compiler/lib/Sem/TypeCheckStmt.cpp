@@ -3,14 +3,17 @@
 
 using namespace stone::sem;
 
-class StmtChecker final : public StmtVisitor<StmtChecker> {
+class StmtChecking final : public StmtVisitor<StmtChecking> {
   TypeChecker &checker;
 
 public:
-  StmtChecker(TypeChecker &checker) : checker(checker) {}
+  StmtChecking(TypeChecker &checker) : checker(checker) {}
 
 public:
   void Visit(Stmt *s) {}
+
+  // void VisitIfStmt() {
+  // }
 };
 
-void TypeChecker::CheckStmt(Stmt *s) { StmtChecker(*this).Visit(s); }
+void TypeChecker::CheckStmt(Stmt *s) { StmtChecking(*this).Visit(s); }

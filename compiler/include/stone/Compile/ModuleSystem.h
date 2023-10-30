@@ -1,7 +1,9 @@
 #ifndef STONE_COMPILE_MODULESYSTEM_H
 #define STONE_COMPILE_MODULESYSTEM_H
 
+#include "stone/Basic/Error.h"
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
 #include "stone/Syntax/Module.h"
@@ -18,31 +20,48 @@ public:
   /// No path canonicalization is done.
   void AddDep(llvm::StringRef depFile, bool isSystem);
 };
+
+class CompilerInvocation;
+
+// TODO: Move to Syntax
 class ModuleSystem final {
   // TODO: We need built-in information
-  friend class CompilerInvocation;
-  friend class CompilerInstance;
-
-  LangContext &lc;
+  CompilerInvocation &invocation;
   syn::SyntaxContext &sc;
-  ModuleOptions &moduleOpts;
-
   /// This is the main module that will be created
-  mutable syn::Module *mainModule = nullptr;
+  mutable syn::ModuleDecl *mainModule = nullptr;
+
+  /// Contains \c MemoryBuffers for partial serialized module files and
+  /// corresponding partial serialized module documentation files. This is
+  /// \c mutable as it is consumed by \c loadPartialModulesAndImplicitImports.
+  // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(LangContext &ctx, syn::SyntaxContext &sc,
-               ModuleOptions &moduleOpts);
+  ModuleSystem(CompilerInvocation &invocation, syn::SyntaxContext &sc);
   ~ModuleSystem();
 
 public:
-  syn::Module *GetMainModule() const;
+  syn::ModuleDecl *GetMainModule() const;
+  void SetMainModule(syn::ModuleDecl *mod);
 
-  ModuleOptions &GetModuleOptions() { return moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+  Error CreateSyntaxFilesForMainModule(
+      syn::ModuleDecl *mod,
+      llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
+
+  syn::SyntaxFile *
+  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod,
+                                syn::SyntaxFileKind fileKind, unsigned bufferID,
+                                bool isMainBuffer = false) const;
+
+  syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
+
+  CompilerInvocation &GetCompilerInvocation() { return invocation; }
+
+  syn::SyntaxFile::ParsingOptions
+  GetSyntaxFileParsingOptions(bool forPrimary) const;
 
 public:
-  static stone::Error IsValidModuleName(const llvm::StringRef moduleName);
+  static Error IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

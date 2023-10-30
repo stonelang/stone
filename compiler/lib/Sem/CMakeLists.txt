@@ -1,12 +1,13 @@
 set(stone_sem_sources
 	TypeCheck.cpp
+	TypeCheckAccess.cpp
+	TypeCheckAvailability.cpp
 	TypeCheckDecl.cpp
 	TypeChecker.cpp
 	TypeCheckExpr.cpp
 	TypeCheckStmt.cpp
 	TypeCheckType.cpp
-	
-	UsingResolution.cpp
+	ImportResolution.cpp
 	
 	LINK_LIBS
 	StoneSyntax

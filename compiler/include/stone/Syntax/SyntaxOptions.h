@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXOPTIONS_H
 #define STONE_SYNTAX_SYNTAXOPTIONS_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/ADT/PointerUnion.h"
 

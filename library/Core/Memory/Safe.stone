@@ -1,0 +1,18 @@
+
+
+public struct Safe<T> {
+	T* t; 
+}
+
+delete Safe::Safe();
+
+public Safe::Safe(T* t) {
+}
+
+public Safe::~Safe() {
+}
+
+public fun Safe::Get() -> T* {
+	return t; 
+}
+

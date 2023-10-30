@@ -2,11 +2,13 @@
 #define STONE_BASIC_TOKENABLE_H
 
 namespace stone {
+
+class SrcLoc;
+class SrcMgr;
+
 namespace syn {
 class Token;
 }
-class SrcLoc;
-class SrcMgr;
 
 class Tokenable {
 public:

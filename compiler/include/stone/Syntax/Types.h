@@ -1,14 +1,17 @@
-#ifndef STONE_SYNTAX_RealType_H
-#define STONE_SYNTAX_RealType_H
+#ifndef STONE_SYNTAX_TYPES_H
+#define STONE_SYNTAX_TYPES_H
 
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Foreign/Foreign.h"
+#include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
+#include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeThunk.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -48,25 +51,23 @@ namespace syn {
 
 class Type;
 class TypeWalker;
-class ExtQuals; // Extended Qualifiers
-class QualType; // Qualified SyntaxTypes
-class StructDecl;
-class SyntaxType;
 class CanType;
+class SweetType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
 
   friend class SyntaxContext;
+
   TypeBase(const TypeBase &) = delete;
   void operator=(const TypeBase &) = delete;
 
   TypeKind kind;
 
-  /// This union contains to the ASTContext for canonical types, and is
-  /// otherwise lazily populated by ASTContext when the canonical form of a
+  /// This union contains to the SyntaxContext for canonical types, and is
+  /// otherwise lazily populated by SyntaxContext when the canonical form of a
   /// non-canonical type is requested. The disposition of the union is stored
-  /// outside of the union for performance. See Bits.TypeBase.IsCanonical.
+  /// outside of the union for performance. See Bits.Type.IsCanonical.
   union {
     CanType canType;
     const SyntaxContext *sc;
@@ -75,24 +76,29 @@ class alignas(1 << TypeAlignInBits) TypeBase
 protected:
   union {
     uint64_t OpaqueBits;
-    /// Kind - The discriminator that indicates what subclass of type this is.
-    // STONE_INLINE_BITFIELD_BASE(TypeBase, stone::BitMax(NumTypeKindBits, 8),
+    STONE_INLINE_BITFIELD_BASE(TypeBase,
+                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
+                               : stone::BitMax(NumTypeKindBits, 8),
 
-    //   Kind :stone::BitMax(NumTypeKindBits, 8),
-    //   /// Whether this type is canonical or not.
-    //   IsCanonical : 1
-    // );
+                                 /// Whether this type is canonical or not.
+                                 IsCanonical : 1,
+                                 // Whether this type can have qualifiers
+                                 AllowQuals : 1);
+
+    STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
   } Bits;
 
 public:
-  TypeBase(TypeKind kind, const SyntaxContext *canTypeCtx)
+  TypeBase(TypeKind kind, const SyntaxContext *canTypeContext)
       : kind(kind), sc(nullptr) {
 
+    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
+
     /// TODO: I do not like this ....
-    if (canTypeCtx) {
-      // Bits.TypeBase.IsCanonical = true;
-      sc = canTypeCtx;
+    if (canTypeContext) {
+      // Bits.Type.IsCanonical = true;
+      sc = canTypeContext;
     }
   }
 
@@ -107,35 +113,59 @@ public:
   TypeKind GetKind() const { return kind; }
 
   // TypeKind GetKind() const { return
-  // static_cast<TypeKind>(Bits.TypeBase.Kind); }
+  // static_cast<TypeKind>(Bits.Type.Kind); }
 
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
+
+  /// isCanonical - Return true if this is a canonical type.
+  bool IsCanType() const { return Bits.TypeBase.IsCanonical; }
+
+  bool AllowQuals() const { return Bits.TypeBase.AllowQuals; }
+
+  bool HasQuals() const;
+
+  /// hasCanonicalTypeComputed - Return true if we've already computed a
+  /// canonical version of this type.
+  bool IsCanTypeComputed() const { return !canType.IsNull(); }
+
+private:
+  CanType ComputeCanType();
 };
 
-class AbstractFunctionType : public TypeBase {
-  QualType result;
+class SourType : public TypeBase {
+public:
+};
+
+// TODO: Think about
+//  class AnyType : public TypeBase {
+//  public:
+
+//   AnyType(TypeKind kind, SyntaxContext *canTypeCtx)
+//       : TypeBase(kind, canTypeCtx) {}
+// };
+
+class FunctionType : public TypeBase {
+  Type result;
 
 public:
-  AbstractFunctionType(TypeKind kind, const SyntaxContext *canTypeCtx,
-                       QualType result)
-      : TypeBase(kind, canTypeCtx), result(result) {}
+  FunctionType(TypeKind kind, Type result, const SyntaxContext *canTypeCtx)
+      : TypeBase(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be QualType
-class FunctionType : public AbstractFunctionType,
-                     private llvm::TrailingObjects<FunctionType, Type> {
+class FunType : public FunctionType,
+                private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 
 public:
-  FunctionType(const SyntaxContext *sc, QualType result);
-
-public:
-  /// 'Constructor' Factory Function
-  static FunctionType *Create(QualType result);
+  FunType(Type result, const SyntaxContext *sc);
 };
 
 class NominalType : public TypeBase {
+protected:
+  friend SyntaxContext;
+
 public:
   // Implement isa/cast/dyncast/etc.
   static bool classof(const TypeBase *ty) {
@@ -148,14 +178,50 @@ class StructType final : public NominalType {
 public:
 };
 
+class InterfaceType final : public NominalType {
+public:
+};
+
 class EnumType final : public NominalType {};
 
-class DeducedType : public TypeBase {};
-
-class alignas(8) AutoType final : public DeducedType,
-                                  public llvm::FoldingSetNode {
+class DeducedType : public TypeBase {
+protected:
   friend class SyntaxContext; // SyntaxContext creates these
 };
+
+class AutoType final : public DeducedType, public llvm::FoldingSetNode {
+public:
+};
+
+// class TemplateParmType : public Type{
+// };
+
+class BuiltinType : public TypeBase {
+protected:
+  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
+};
+
+class IdentifierType : public TypeBase {};
+
+class ScalarType : public BuiltinType {
+public:
+  ScalarType(TypeKind kind, const SyntaxContext &sc) : BuiltinType(kind, sc) {}
+};
+
+class CharType : public ScalarType {
+public:
+  CharType(const SyntaxContext &sc) : ScalarType(TypeKind::Char, sc) {}
+};
+
+class BoolType : public ScalarType {
+public:
+  BoolType(const SyntaxContext &sc) : ScalarType(TypeKind::Bool, sc) {}
+};
+
+// class StringType : public BuiltinType {
+// public:
+//   StringType(const SyntaxContext &sc) : ScalarType(TypeKind::String, sc) {}
+// };
 
 struct NumberBitWidth final {
   enum Kind : UInt8 {
@@ -187,22 +253,15 @@ struct NumberBitWidth final {
     llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
   }
 };
-
-class BuiltinType : public TypeBase {
-protected:
-  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
-};
-
 using NumberBitWidthKind = NumberBitWidth::Kind;
-
 /// An abstract base class for integers and floats
-class AbstractNumberType : public BuiltinType {
+class NumberType : public ScalarType {
   NumberBitWidthKind bitWidthKind;
 
 public:
-  AbstractNumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-                     const SyntaxContext &sc)
-      : BuiltinType(kind, sc), bitWidthKind(bitWidthKind) {}
+  NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
+             const SyntaxContext &sc)
+      : ScalarType(kind, sc), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -213,28 +272,53 @@ public:
   }
 };
 
-class IntegerType : public AbstractNumberType {
+class IntegerType : public NumberType {
   friend class SyntaxContext;
 
 public:
   IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
-      : AbstractNumberType(TypeKind::Integer, bitWidthKind, sc) {}
+      : NumberType(TypeKind::Integer, bitWidthKind, sc) {}
+
+public:
+  static IntegerType *Create(NumberBitWidthKind bitWidthKind,
+                             const SyntaxContext &sc);
 };
 
-class UIntegerType : public AbstractNumberType {
+class UIntegerType : public NumberType {
   friend class SyntaxContext;
 
 public:
   UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
-      : AbstractNumberType(TypeKind::UInteger, bitWidthKind, sc) {}
+
+      : NumberType(TypeKind::UInteger, bitWidthKind, sc) {}
 };
 
-class FloatType : public AbstractNumberType {
+class ComplexType : public NumberType {
   friend class SyntaxContext;
 
 public:
-  FloatType(NumberBitWidthKind fpNumberBitWidthKind, const SyntaxContext &sc)
-      : AbstractNumberType(TypeKind::Float, fpNumberBitWidthKind, sc) {}
+  ComplexType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
+};
+
+class ImaginaryType : public NumberType {
+  friend class SyntaxContext;
+
+public:
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Imaginary, bitWidthKind, sc) {}
+};
+
+class FloatType : public NumberType {
+  friend class SyntaxContext;
+
+public:
+  FloatType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+      : NumberType(TypeKind::Float, bitWidthKind, sc) {}
+
+public:
+  static FloatType *Create(NumberBitWidthKind bitWidthKind,
+                           const SyntaxContext &sc);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -246,6 +330,10 @@ public:
 class VoidType : public BuiltinType {
 public:
   VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
+
+public:
+  static VoidType *Create(const SyntaxContext &sc,
+                          AllocationArena arena = AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {
@@ -253,44 +341,70 @@ public:
   NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
+class ChunkType : public TypeBase, public llvm::FoldingSetNode {};
+
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
   AbstractPointerType(TypeKind kind, const SyntaxContext &sc)
       : TypeBase(kind, &sc) {}
 };
+
 class PointerType : public AbstractPointerType {
-
-  QualType pointeeType;
-
 public:
-  PointerType(const SyntaxContext &sc)
-      : AbstractPointerType(TypeKind::Pointer, sc) {}
-
-public:
-  // QualType GetPointeeType() const { return pointeeType; }
 };
 
-class SugarType : public TypeBase {
-  // The state of this union is known via Bits.SugarType.HasCachedType so that
+class MemberPointerType : public AbstractPointerType {
+public:
+};
+
+class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
+
+class LValueReferenceType final : public ReferenceType {};
+
+class RValueReferenceType final : public ReferenceType {};
+
+class ModuleType : public TypeBase {
+  ModuleDecl *const mod;
+
+public:
+  /// get - Return the ModuleType for the specified module.
+  static ModuleType *Get(ModuleDecl *mod);
+  ModuleDecl *GetModule() const { return mod; }
+
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const TypeBase *ty) {
+    return ty->GetKind() == TypeKind::Module;
+  }
+
+private:
+  ModuleType(ModuleDecl *mod, const SyntaxContext &sc)
+      : TypeBase(TypeKind::Module, &sc), mod(mod) {}
+};
+
+class SweetType : public TypeBase {
+  // The state of this union is known via Bits.SweetType.HasCachedType so that
   // we can avoid masking the pointer on the fast path.
   union {
-    TypeBase *underlyingType;
+    Type *underlyingType;
     const SyntaxContext *Context;
   };
 };
-
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
-class AliasType : public SugarType {};
+class AliasType : public SweetType {
+public:
+};
 
 /// A type with a special syntax that is always sugar for a library type. The
 /// library type may have multiple base types. For unary syntax sugar, see
-/// UnarySyntaxSugarType.
+/// UnarySyntaxSweetType.
 ///
 /// The prime examples are:
 /// Arrays: [T] -> Array<T>
 /// Dictionaries: [K : V]  -> Dictionary<K, V>
-class SyntaxSugarType : public SugarType {};
+class SyntaxSweetType : public SweetType {
+public:
+};
 
 /// The dictionary type [K : V], which is syntactic sugar for Dictionary<K, V>.
 ///
@@ -298,173 +412,13 @@ class SyntaxSugarType : public SugarType {};
 /// \code
 /// auto dict: [string : int] = ["hello" : 0, "world" : 1]
 /// \endcode
-class DictionaryType : public SyntaxSugarType {};
+class DictionaryType : public SyntaxSweetType {
+public:
+};
 
-// class ArrayType : public TypeBase, public llvm::FoldingSetNode {
+// class ArrayType : public Type, public llvm::FoldingSetNode {
 // public:
 // };
-
-// public:
-//   // QualType getPointeeType() const { return PointeeType; }
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   // }
-
-//   // static bool classof(const Type *T) { return T->getTypeClass() ==
-//   Pointer; }
-// };
-
-/// Base for LValueReferenceType and RValueReferenceType
-class ReferenceType : public TypeBase, public llvm::FoldingSetNode {
-  //   QualType PointeeType;
-
-  // protected:
-  //   ReferenceType(TypeClass tc, QualType Referencee, QualType
-  // CanonicalRef,
-  //                 bool SpelledAsLValue)
-  //       : Type(tc, CanonicalRef, Referencee->getDependence()),
-  //         PointeeType(Referencee) {
-  //     ReferenceTypeBits.SpelledAsLValue = SpelledAsLValue;
-  //     ReferenceTypeBits.InnerRef = Referencee->isReferenceType();
-  //   }
-
-  //   // public:
-  //   //   bool isSpelledAsLValue() const { return
-  //   //   ReferenceTypeBits.SpelledAsLValue; } bool isInnerRef() const {
-  //   return
-  //   //   ReferenceTypeBits.InnerRef; }
-
-  //   //   QualType getPointeeTypeAsWritten() const { return PointeeType; }
-
-  //   //   QualType getPointeeType() const {
-  //   //     // FIXME: this might strip inner qualifiers; okay?
-  //   //     const ReferenceType *T = this;
-  //   //     while (T->isInnerRef())
-  //   //       T = T->PointeeType->castAs<ReferenceType>();
-  //   //     return T->PointeeType;
-  //   //   }
-
-  //   //   void Profile(llvm::FoldingSetNodeID &ID) {
-  //   //     Profile(ID, PointeeType, isSpelledAsLValue());
-  //   //   }
-
-  //   //   static void Profile(llvm::FoldingSetNodeID &ID,
-  //   //                       QualType Referencee,
-  //   //                       bool SpelledAsLValue) {
-  //   //     ID.AddPointer(Referencee.getAsOpaquePtr());
-  //   //     ID.AddBoolean(SpelledAsLValue);
-  //   //   }
-
-  //   //   static bool classof(const Type *T) {
-  //   //     return T->getTypeClass() == LValueReference ||
-  //   //            T->getTypeClass() == RValueReference;
-  //   //   }
-};
-
-// /// An lvalue reference type, per C++11 [dcl.ref].
-class LValueReferenceType final : public ReferenceType {
-
-  //   friend class ASTContext; // ASTContext creates these
-
-  //   LValueReferenceType(QualType Referencee, QualType CanonicalRef,
-  //                       bool SpelledAsLValue)
-  //       : ReferenceType(LValueReference, Referencee, CanonicalRef,
-  //                       SpelledAsLValue) {}
-
-  // public:
-  //   bool isSugared() const { return false; }
-  //   QualType desugar() const { return QualType(this, 0); }
-
-  //   static bool classof(const Type *T) {
-  //     return T->getTypeClass() == LValueReference;
-  //   }
-};
-
-// /// An rvalue reference type, per C++11 [dcl.ref].
-class RValueReferenceType : public ReferenceType {
-  //   friend class ASTContext; // ASTContext creates these
-
-  //   RValueReferenceType(QualType Referencee, QualType CanonicalRef)
-  //        : ReferenceType(RValueReference, Referencee, CanonicalRef,false){}
-
-  // public:
-  //   bool isSugared() const { return false; }
-  //   QualType desugar() const { return QualType(this, 0); }
-
-  //   static bool classof(const Type *T) {
-  //     return T->getTypeClass() == RValueReference;
-  //   }
-};
-
-// /// A pointer to member type per C++ 8.3.3 - Pointers to members.
-// ///
-// /// This includes both pointers to data members and pointer to member
-// functions. class MemberPointerType : public Type, public
-// llvm::FoldingSetNode
-// {
-//   //   friend class ASTContext; // ASTContext creates these.
-
-//   //   QualType PointeeType;
-
-//   //   /// The class of which the pointee is a member. Must ultimately be a
-//   //   /// RecordType, but could be a typedef or a template parameter too.
-//   //   const Type *Class;
-
-//   //   MemberPointerType(QualType Pointee, const Type *Cls, QualType
-//   //   CanonicalPtr)
-//   //       : Type(MemberPointer, CanonicalPtr,
-//   //              (Cls->getDependence() &
-//   ~TypeDependence::VariablyModified)
-//   |
-//   //                  Pointee->getDependence()),
-//   //         PointeeType(Pointee), Class(Cls) {}
-
-//   // public:
-//   //   QualType getPointeeType() const { return PointeeType; }
-
-//   //   /// Returns true if the member type (i.e. the pointee type) is a
-//   //   /// function type rather than a data-member type.
-//   //   bool isMemberFunctionPointer() const {
-//   //     return PointeeType->isFunctionProtoType();
-//   //   }
-
-//   /// Returns true if the member type (i.e. the pointee type) is a
-//   /// data type rather than a function type.
-//   // bool isMemberDataPointer() const {
-//   //   return !PointeeType->isFunctionProtoType();
-//   // }
-
-//   // const Type *getClass() const { return Class; }
-//   // CXXRecordDecl *getMostRecentCXXRecordDecl() const;
-
-//   // bool isSugared() const { return false; }
-//   // QualType desugar() const { return QualType(this, 0); }
-
-//   // void Profile(llvm::FoldingSetNodeID &ID) {
-//   //   Profile(ID, getPointeeType(), getClass());
-//   // }
-
-//   // static void Profile(llvm::FoldingSetNodeID &ID, QualType Pointee,
-//   //                     const Type *Class) {
-//   //   ID.AddPointer(Pointee.getAsOpaquePtr());
-//   //   ID.AddPointer(Class);
-//   // }
-
-//   // static bool classof(const Type *T) {
-//   //   return T->getTypeClass() == MemberPointer;
-//   // }
-// };
-
-// using TypeRep = OpaquePtr<QualType>;
-// using UnionTypeRep = UnionOpaquePtr<QualType>;
 
 } // namespace syn
 } // namespace stone

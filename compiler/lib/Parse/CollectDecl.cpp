@@ -2,9 +2,9 @@
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
+#include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxFactory.h"
 #include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
@@ -25,15 +25,15 @@ SyntaxStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectBasicTypeDecl(collector);
+  status = CollectBasicTypeDecl(collector.GetTypeCollector());
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectNominalTypeDecl(collector);
+  status = CollectNominalTypeDecl(collector.GetTypeCollector());
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectTypeQualifier(collector);
+  status = CollectTypeQualifier(collector.GetTypeCollector());
   if (status.IsSuccess()) {
     return status;
   }
@@ -50,6 +50,22 @@ SyntaxStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
     collector.GetUsingDeclarationCollector().AddUsing(ConsumeToken());
+    break;
+  default:
+    return syn::MakeSyntaxCodeCompletionStatus();
+  }
+  return syn::MakeSyntaxSuccess();
+}
+
+SyntaxStatus Parser::CollectTypeOperator(TypeCollector &collector) {
+  // if(collector.GetTypeOperatorCollector().HasAny()){
+  // }
+  switch (GetTok().GetKind()) {
+  case tok::kw_new:
+    collector.GetTypeOperatorCollector().AddNew(ConsumeToken());
+    break;
+  case tok::kw_delete:
+    collector.GetTypeOperatorCollector().AddDelete(ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
@@ -75,7 +91,18 @@ SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
 }
 
 // TODO: Dulicate check
-SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectTypeQualifiers(TypeCollector &collector) {
+  SyntaxStatus status;
+  while (GetTok().IsQualifier()) {
+    status = CollectTypeQualifier(collector);
+    if (status.HasCodeCompletion()) {
+      return status;
+    }
+  }
+  return status;
+}
+// TODO: Dulicate check
+SyntaxStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:
     collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
@@ -86,22 +113,18 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDeclCollector &collector) {
   case tok::kw_volatile:
     collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
     break;
-  case tok::kw_pure:
-    collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
-    break;
-  // case tok::kw_final:
-  //   collector.GetTypeQualifierCollector().AddFinal(ConsumeToken());
-  //   break;
   case tok::kw_mutable:
     collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
     break;
+  case tok::kw_pure:
+    collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
   return syn::MakeSyntaxSuccess();
 }
 
-bool Parser::IsTypePattern(const Token &tk) {
+bool Parser::IsTypeThunk(const Token &tk) {
   switch (tk.GetKind()) {
   case tok::star:
   case tok::amp:
@@ -111,39 +134,39 @@ bool Parser::IsTypePattern(const Token &tk) {
   }
 }
 
-SyntaxStatus Parser::CollectTypePattern(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectTypeThunk(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
-    collector.GetTypePatternCollector().AddPointer(ConsumeToken());
+    collector.GetTypeThunkCollector().AddPointer(ConsumeToken());
     break;
   case tok::amp:
-    collector.GetTypePatternCollector().AddReference(ConsumeToken());
+    collector.GetTypeThunkCollector().AddReference(ConsumeToken());
     break;
   default:
     return syn::MakeSyntaxCodeCompletionStatus();
   }
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectTypePatterns(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
-  if (!GetTok().IsTypePattern() && GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypePatternCollector().AddValue();
+  if (!GetTok().IsTypeThunk() && GetTok().IsIdentifierOrUnderscore()) {
+    collector.GetTypeThunkCollector().AddValue();
     return syn::MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   SyntaxStatus status;
-  while (GetTok().IsTypePattern()) {
-    status = CollectTypePattern(collector);
+  while (GetTok().IsTypeThunk()) {
+    status = CollectTypeThunk(collector);
     if (status.HasCodeCompletion()) {
       return status;
     }
   }
   return status;
 }
-SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
 
   if (!GetTok().IsBasicType()) {
     return syn::MakeSyntaxCodeCompletionStatus();
@@ -155,6 +178,9 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
     break;
   case tok::kw_auto:
     collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
+    break;
+  case tok::kw_char:
+    collector.GetTypeSpecifierCollector().AddChar(ConsumeToken());
     break;
   case tok::kw_int:
     collector.GetTypeSpecifierCollector().AddInt(ConsumeToken());
@@ -215,7 +241,7 @@ SyntaxStatus Parser::CollectBasicTypeDecl(ParsingDeclCollector &collector) {
   }
   return syn::MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectNominalTypeDecl(ParsingDeclCollector &collector) {
+SyntaxStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
     collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());

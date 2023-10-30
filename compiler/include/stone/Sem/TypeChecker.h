@@ -30,7 +30,7 @@ class TypeCheckerStats final : public Stats {
 public:
   TypeCheckerStats(const TypeChecker &checker)
       : Stats("checker statistics:"), checker(checker) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 class TypeCheckerDiagnostics final {
@@ -46,12 +46,22 @@ class TypeChecker final {
   TypeCheckerListener *pipeline;
 
 public:
+  TypeChecker(const TypeChecker &) = delete;
+  TypeChecker &operator=(const TypeChecker &) = delete;
+  ~TypeChecker();
+
+public:
   /// TODO: Pass in Syntax so that you can create the Nodes
   TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
               TypeCheckerListener *pipeline = nullptr);
 
 public:
+  void CheckSyntaxNode(SyntaxNode &syntaxNode, DeclContext *dc,
+                       bool checkBody = false);
+
+public:
   void CheckDecl(Decl *d);
+  void CheckAccessLevel(Decl *D);
 
 public:
   void CheckStmt(Stmt *s);
@@ -60,7 +70,14 @@ public:
   void CheckExpr(Expr *e);
 
 public:
-  void CheckType();
+  void CheckTypes(Decl *d);
+  void CheckTypes(Stmt *stmt, DeclContext *DC);
+  void CheckTypes(AliasDecl *alias);
+  void CheckTypes(TrailingWhereClause *whereClause);
+  void CheckTypes(GenericParamList *params);
+
+public:
+  void ComputeAccessLevel(ValueDecl *d);
 
 public:
   /// Determine whether one type is a subtype of another.

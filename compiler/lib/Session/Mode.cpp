@@ -51,9 +51,8 @@ std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
       return std::make_unique<Mode>(ModeKind::Alien);
     }
     return std::make_unique<Mode>(modeKind, modeArg->getOption().getName());
-  } else {
-    return std::make_unique<Mode>(ModeKind::None);
   }
+  return std::make_unique<Mode>(ModeKind::None);
 }
 
 file::Type Mode::GetOutputFileType() const {
@@ -64,7 +63,7 @@ file::Type Mode::GetOutputFileTypeByModeKind(ModeKind kind) {
   switch (kind) {
   case ModeKind::None:
   case ModeKind::Parse:
-  case ModeKind::ResolveUsings:
+  case ModeKind::ResolveImports:
   case ModeKind::TypeCheck:
   // case ModeKind::TypecheckModuleFromInterface:
   case ModeKind::DumpSyntax:

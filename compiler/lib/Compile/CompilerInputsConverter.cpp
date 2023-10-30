@@ -16,10 +16,11 @@
 using namespace stone;
 using namespace llvm::opt;
 
-CompilerInputsConverter::CompilerInputsConverter(
-    DiagnosticEngine &de, const llvm::opt::ArgList &args,
-    CompilerOptions &invocationOpts)
-    : de(de), args(args), invocationOpts(invocationOpts),
+CompilerInputsConverter::CompilerInputsConverter(DiagnosticEngine &de,
+                                                 const llvm::opt::ArgList &args,
+                                                 CompilerOptions &compilerOpts)
+
+    : de(de), args(args), compilerOpts(compilerOpts),
       fileListPathArg(args.getLastArg(opts::FileList)),
       primaryFileListPathArg(args.getLastArg(opts::PrimaryFileList)),
       badFileDescriptorRetryCountArg(
@@ -87,7 +88,7 @@ bool CompilerInputsConverter::ReadInputFilesFromCommandLine() {
   bool hasDuplicate = false;
   for (const Arg *A : args.filtered(opts::INPUT, opts::PrimaryFile)) {
     hasDuplicate = AddFile(A->getValue());
-    if (hasDuplicate && !invocationOpts.shouldProcessDuplicateInputFile) {
+    if (hasDuplicate && !compilerOpts.shouldProcessDuplicateInputFile) {
       return true;
     }
   }
@@ -104,7 +105,7 @@ bool CompilerInputsConverter::ReadInputFilesFromFilelist() {
   if (hadError) {
     return true;
   }
-  if (hasDuplicate && invocationOpts.shouldProcessDuplicateInputFile) {
+  if (hasDuplicate && compilerOpts.shouldProcessDuplicateInputFile) {
     return true;
   }
   return false;

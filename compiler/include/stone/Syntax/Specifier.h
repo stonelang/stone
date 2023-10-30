@@ -2,7 +2,7 @@
 #define STONE_SYNTAX_SPECIFIER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDTypeAlias.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/TypeAlignment.h"
 
@@ -17,6 +17,7 @@ enum class TypeSpecifierKind : uint8_t {
   Void,
   Any,
   Bool,
+  Char,
   Float,
   Float32,
   Float64,
@@ -41,35 +42,13 @@ enum class TypeSpecifierKind : uint8_t {
 
 };
 
-/// TODO: Flag it
-enum class TypeSpecifierChunkKind : UInt8 {
-  Pointer,
-  Reference,
-  Array,
-  Function,
-  MemberPointer,
-  Paren,
-  Pipe,
-};
-
 enum class FunctionInlineSpecifierKind : UInt8 {
   None = 0,
   Inline,
   ForcedInline,
 };
 
-// TODO: All you need is Public and Local
-enum class AccessLevel : UInt8 {
-  None = 0,
-  /// Limited to the scope
-  Private,
-  /// Accessible only within module
-  Internal,
-  /// Open outside of module with certain restrictions
-  Public,
-  /// Completely open and available
-  Global,
-};
+enum class FunctionCallingConvention : UInt8 { Stone, C };
 
 /// The categorization of expression values, currently following the
 enum class ExprValueKind : UInt8 {
@@ -159,71 +138,116 @@ enum class TemplateSpecializationKind : UInt8 {
 
 class TypeSpecifierCollector final {
 
-  SrcLoc typeSpecifierLoc;
-  TypeSpecifierKind typeSpecifierKind;
+  SrcLoc loc;
+  TypeSpecifierKind kind;
 
   // TODO: remove -- do not need this part.
   TypeNullabilityKind nullabilityKind;
 
 public:
-  TypeSpecifierCollector() : typeSpecifierKind(TypeSpecifierKind::None) {}
+  TypeSpecifierCollector() : kind(TypeSpecifierKind::None) {}
 
 public:
-  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc inputLoc);
 
-  bool HasAny() const { return typeSpecifierKind != TypeSpecifierKind::None; }
-  bool NotHasAny() const {
-    return typeSpecifierKind == TypeSpecifierKind::None;
-  }
+  bool HasAny() const { return kind != TypeSpecifierKind::None; }
+  bool NotHasAny() const { return kind == TypeSpecifierKind::None; }
 
 private:
-  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc loc);
+  void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc inputLoc);
   void AddTypeNullabilityKind(TypeNullabilityKind kind);
 
 public:
   // == Basic Types ==//
-  void AddAuto(SrcLoc loc);
-  void AddAny(SrcLoc loc);
-  void AddVoid(SrcLoc loc);
-  void AddBool(SrcLoc loc);
-  void AddFloat(SrcLoc loc);
-  void AddFloat32(SrcLoc loc);
-  void AddFloat64(SrcLoc loc);
-  void AddInt(SrcLoc loc);
-  void AddInt8(SrcLoc loc);
-  void AddInt16(SrcLoc loc);
-  void AddInt32(SrcLoc loc);
-  void AddInt64(SrcLoc loc);
-  void AddUInt(SrcLoc loc);
-  void AddUInt8(SrcLoc loc);
-  void AddByte(SrcLoc loc);
-  void AddUInt16(SrcLoc loc);
-  void AddUInt32(SrcLoc loc);
-  void AddUInt64(SrcLoc loc);
-  void AddComplex32(SrcLoc loc);
-  void AddComplex64(SrcLoc loc);
-  void AddImaginary32(SrcLoc loc);
-  void AddImaginary64(SrcLoc loc);
+  void AddAuto(SrcLoc inputLoc);
+  bool IsAuto() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Auto));
+  }
+  void AddAny(SrcLoc inputLoc);
+  bool IsAny() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Any));
+  }
 
-  // == Nominal Types ==//
-  void AddEnum(SrcLoc loc);
-  void AddInterface(SrcLoc loc);
-  void AddStruct(SrcLoc loc);
+  void AddVoid(SrcLoc inputLoc);
+  bool IsVoid() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Void));
+  }
+  void AddBool(SrcLoc inputLoc);
+  bool IsBool() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Bool));
+  }
+
+  void AddChar(SrcLoc inputLoc);
+  bool IsChar() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Char));
+  }
 
 public:
-  TypeSpecifierKind GetTypeSpecifierKind() { return typeSpecifierKind; }
-  TypeNullabilityKind GetTypeNullabilityKind() { return nullabilityKind; }
+  void AddFloat(SrcLoc inputLoc);
+  bool IsFloat() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float));
+  }
+  void AddFloat32(SrcLoc inputLoc);
+  bool IsFloat32() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float32));
+  }
+  void AddFloat64(SrcLoc inputLoc);
+  bool IsFloat64() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Float64));
+  }
+
+public:
+  void AddInt(SrcLoc inputLoc);
+  bool IsInt() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Int));
+  }
+  void AddInt8(SrcLoc inputLoc);
+  bool IsInt8() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Int8));
+  }
+  void AddInt16(SrcLoc inputLoc);
+  bool IsInt16() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Int16));
+  }
+  void AddInt32(SrcLoc inputLoc);
+  bool IsInt32() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Int32));
+  }
+  void AddInt64(SrcLoc inputLoc);
+  bool IsInt64() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::Int64));
+  }
+
+public:
+  void AddUInt(SrcLoc inputLoc);
+  void AddUInt8(SrcLoc inputLoc);
+  void AddByte(SrcLoc inputLoc);
+  void AddUInt16(SrcLoc inputLoc);
+  void AddUInt32(SrcLoc inputLoc);
+  void AddUInt64(SrcLoc inputLoc);
+
+public:
+  void AddComplex32(SrcLoc inputLoc);
+  void AddComplex64(SrcLoc inputLoc);
+  void AddImaginary32(SrcLoc inputLoc);
+  void AddImaginary64(SrcLoc inputLoc);
+
+  // == Nominal Types ==//
+  void AddEnum(SrcLoc inputLoc);
+  void AddInterface(SrcLoc inputLoc);
+  void AddStruct(SrcLoc inputLoc);
+
+public:
+  TypeSpecifierKind GetKind() { return kind; }
+  TypeNullabilityKind GetNullabilityKind() { return nullabilityKind; }
 
 public:
   bool IsBasicType();
   bool IsNominalType();
-  bool IsEnum() { return typeSpecifierKind == TypeSpecifierKind::Enum; }
-  bool IsStruct() { return typeSpecifierKind == TypeSpecifierKind::Struct; }
-  bool IsInterface() {
-    return typeSpecifierKind == TypeSpecifierKind::Interface;
-  }
-  bool IsAuto() { return typeSpecifierKind == TypeSpecifierKind::Auto; }
-  SrcLoc GetLoc() { return typeSpecifierLoc; }
+  bool IsEnum() { return kind == TypeSpecifierKind::Enum; }
+  bool IsStruct() { return kind == TypeSpecifierKind::Struct; }
+  bool IsInterface() { return kind == TypeSpecifierKind::Interface; }
+  bool IsAuto() { return kind == TypeSpecifierKind::Auto; }
 
 public:
   void AddNotNullable() {
@@ -234,6 +258,8 @@ public:
   void AddUnspecifiedNullable() {
     AddTypeNullabilityKind(TypeNullabilityKind::Unspecified);
   }
+
+  SrcLoc GetLoc() { return loc; }
 
 public:
   void Apply();

@@ -1,0 +1,5 @@
+
+enum Day {
+	uint8 Monday = 0, 
+	Tuesday,
+}

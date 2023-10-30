@@ -4,10 +4,12 @@
 #include <type_traits>
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/Types.h"
 
@@ -34,24 +36,59 @@ class InterfaceDecl;
 class SyntaxFile;
 class Type;
 class Module;
+class ModuleFile;
 class NominalTypeDecl;
 class ValueDecl;
 class StructDecl;
 
-enum class DeclContextKind : uint8_t { Decl, Module, ModuleFile };
+enum class DeclContextKind : UInt8 {
+  None = 0,
+  SpaceDecl,
+  ModuleDecl,
+  ModuleFile,
+  FunctionDecl,
+  EnumElementDecl,
+  GenericTypeDecl,
+  ClosureExpr,
+  SerializedLocal,
+  Initializer,
+};
 
-class DeclContext {
-  enum class TreeHierarchy : unsigned {
-    Decl,
-    Expr,
-    ModuleFile,
-    Initializer,
-    SerializedLocal,
-    // If you add a new Tree hierarchies, then update the static_assert() below.
+/// Used in diagnostic %selects.
+struct FragileFunction final {
+
+  enum Kind : unsigned {
+    Transparent,
+    Inlinable,
+    AlwaysEmitIntoClient,
+    DefaultArgument,
+    PropertyInitializer,
+    BackDeploy,
+    None
   };
 
-  DeclContext *parent;
-  DeclContextKind declContextKind;
+  Kind kind = None;
+  bool allowUsableFromInline = false;
+
+  friend bool operator==(FragileFunction lhs, FragileFunction rhs) {
+    return (lhs.kind == rhs.kind &&
+            lhs.allowUsableFromInline == rhs.allowUsableFromInline);
+  }
+
+  /// Casts to `unsigned` for diagnostic %selects.
+  unsigned GetSelector() { return static_cast<unsigned>(kind); }
+};
+
+class alignas(1 << DeclContextAlignInBits) DeclContext
+    : public SyntaxAllocation<DeclContext> {
+
+  DeclContext *parent = nullptr;
+  DeclContextKind declContextKind = DeclContextKind::None;
+
+  void SetParent(DeclContext *inputParent) { parent = inputParent; }
+
+  // See stone/Syntax/Decl.h
+  static DeclContext *CastDeclToDeclContext(const Decl *d);
 
 protected:
   /// This anonymous union stores the bits belonging to DeclContext and classes
@@ -119,19 +156,37 @@ public:
   DeclContext(DeclContextKind kind, DeclContext *parent = nullptr);
 
 public:
-  DeclContextKind GetDeclContextType() { return declContextKind; }
-  DeclContext *GetParent() { return parent; }
+  DeclContextKind GetDeclContextKind() const;
 
-  Decl *CastToDecl() {
-    switch (declContextKind) {
-    case DeclContextKind::Decl:
-      return reinterpret_cast<Decl *>(this + 1); // TODO: UB
-    default:
-      return nullptr;
+  bool Is(DeclContextKind k) const { return declContextKind == k; }
+  bool IsNot(DeclContextKind k) const { return declContextKind != k; }
+  bool IsAny(DeclContextKind K1) const { return Is(K1); }
+
+  template <typename... T>
+  bool IsAny(DeclContextKind K1, DeclContextKind K2, T... K) const {
+    if (Is(K1)) {
+      return true;
     }
+    return IsAny(K2, K...);
   }
-  const Decl *CastToDecl() const {
-    return const_cast<DeclContext *>(this)->CastToDecl();
+  // Predicates to check to see if the token is not the same as any of a list.
+  template <typename... T> bool IsNot(DeclContextKind K1, T... K) const {
+    return !IsAny(K1, K...);
+  }
+  bool IsDecl() {
+    return IsAny(DeclContextKind::SpaceDecl, DeclContextKind::ModuleDecl,
+                 DeclContextKind::FunctionDecl,
+                 DeclContextKind::GenericTypeDecl,
+                 DeclContextKind::EnumElementDecl);
+  }
+  Decl *ToDecl() {
+    if (IsDecl()) {
+      return reinterpret_cast<Decl *>(this + 1);
+    }
+    return nullptr;
+  }
+  const Decl *ToDecl() const {
+    return const_cast<DeclContext *>(this)->ToDecl();
   }
 
   // Return the SyntaxContext for a specified DeclContext by
@@ -140,17 +195,28 @@ public:
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.
-  DeclContext *GetParent() const {
-    // TODO:
-    assert(false && "Not implemented");
-    return nullptr;
-    // return ParentAndKind.getPointer();
-  }
-  bool IsModuleContext() const;
+  DeclContext *GetParent() const { return parent; }
+  bool HasParent() { return parent != nullptr; }
 
-  Module *GetParentModule() const;
+  bool IsModuleContext() const;
+  bool IsModuleFileContext() const;
+
+  ModuleDecl *GetParentModule() const;
+  SyntaxFile *GetParentSyntaxFile() const;
 
   bool IsTypeContext() const;
+
+  /// If this DeclContext is an enum, or an extension on an enum, return the
+  /// EnumDecl, otherwise return null.
+  // EnumDecl *GetThisEnumDecl() const;
+
+  /// If this DeclContext is a struct, or an extension on a struct, return the
+  /// StructDecl, otherwise return null.
+  // StructDecl *GetThisStructDecl() const;
+
+  /// If this DeclContext is a protocol, or an extension on a
+  /// protocol, return the ProtocolDecl, otherwise return null.
+  // InterfaceDecl *GetThisInterfaceDecl() const;
 };
 
 } // namespace syn

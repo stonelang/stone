@@ -1,0 +1,23 @@
+
+
+/// System.Physics
+public interface Particle {
+	public fun GetMass() -> float64; 
+}
+
+
+public struct Electron : Particle {
+	
+}
+public fun Electron::GetMass() -> float64 {
+
+}
+public struct Proton : Particle {
+	
+}
+
+public fun Proton::GetMass() -> float64 {
+	
+	return (9.1093837015 * Pow(10, -31));
+}
+

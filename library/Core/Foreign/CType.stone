@@ -1,0 +1,5 @@
+// Core.Foreign
+
+public alias CChar = int8;
+
+public alias CInt = int32;

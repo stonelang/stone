@@ -5,8 +5,8 @@ set(LLVM_LINK_COMPONENTS
  )
 
 set(stone_syn_sources
-	Builtin.cpp
-	BitterType.cpp
+	Availability.cpp
+	BuiltinContext.cpp
 	Comment.cpp
 	Decl.cpp
 	DeclCollector.cpp
@@ -16,9 +16,9 @@ set(stone_syn_sources
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
-	Pattern.cpp
+	MemberTable.cpp
+	NameLookup.cpp
 	SearchPath.cpp
-	SugarType.cpp
 	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp
@@ -27,16 +27,17 @@ set(stone_syn_sources
 	Scope.cpp
 	SyntaxVisitor.cpp
 	SyntaxWalker.cpp
-	Template.cpp
+	Generics.cpp
 	Type.cpp
-	TypeRep.cpp
+	TypeQualifier.cpp
+	TypeThunk.cpp
+	TypeOperator.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 	
 	LINK_LIBS
-	StoneBasic
-	StoneForeign
 	StoneDiag
+	StoneForeign
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

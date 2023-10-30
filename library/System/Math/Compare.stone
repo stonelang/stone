@@ -1,0 +1,14 @@
+
+
+public fun Min<T>(T first, T second) -> T {
+	if(first < second) {
+		return first; 
+	}
+	return second; 
+}
+public fun Max<T>(T first, T second) -> T {
+	if(first < second) {
+		return second; 
+	}
+	return first; 
+}

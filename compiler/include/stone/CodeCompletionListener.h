@@ -10,9 +10,8 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Diag/DiagUnit.h"
 
-
 namespace llvm {
-  class Module;
+class Module;
 }
 
 namespace stone {
@@ -31,7 +30,6 @@ class CodeCompletionListener {
 public:
   CodeCompletionListener() = default;
   virtual ~CodeCompletionListener() = default;
-
 };
 
 class LexerListener : public CodeCompletionListener {
@@ -90,7 +88,7 @@ public:
 
 public:
   virtual void OnEmitIRError() {}
-  virtual void OnEmitIRCompleted(llvm::Module *m){}
+  virtual void OnEmitIRCompleted(llvm::Module *m) {}
   virtual void OnEmitObjectError() {}
   virtual void OnEmitObject() {}
   virtual void OnEmitObjectCompleted() {}
@@ -120,6 +118,7 @@ public:
   virtual void OnCompileStarted(CompilerInstance &instance) {}
   virtual void OnSyntaxAnalysisCompleted(CompilerInstance &instance) {}
   virtual void OnSemanticAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnCodeGenCompleted(CompilerInstance &instance) {}
   virtual void OnCompileCompleted(CompilerInstance &instance) {}
 };
 } // namespace stone

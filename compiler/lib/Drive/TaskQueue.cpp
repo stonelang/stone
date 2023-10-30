@@ -35,4 +35,4 @@ bool TaskQueue::Execute(TaskBeganCallback Began, TaskFinishedCallback Finished,
   return true;
 }
 
-void stone::TaskQueueStats::Print(ColorfulStream &stream) {}
+void stone::TaskQueueStats::Print(ColorStream &stream) {}

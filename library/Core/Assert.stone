@@ -1,8 +1,5 @@
 
+/// Core
 
-/// Belongs to STD.Core module 
-
-
-public struct Assert {
-	
+public pure fun Assert() -> void {
 }

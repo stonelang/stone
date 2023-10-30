@@ -15,7 +15,7 @@ public:
   virtual ~Printable() {}
 
 public:
-  virtual void Print(ColorfulStream &os,
+  virtual void Print(ColorStream &os,
                      const PrintingPolicy *policy = nullptr) const = 0;
 };
 

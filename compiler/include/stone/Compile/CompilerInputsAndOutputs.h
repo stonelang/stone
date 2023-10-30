@@ -1,9 +1,8 @@
 #ifndef STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 #define STONE_COMPILE_LANGINPUTSANDOUTPUTS_H
 
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Compile/CompilerInputFile.h"
-#include "stone/Compile/PrimaryFileSpecificPaths.h"
-#include "stone/Compile/SupplementaryOutputPaths.h"
 
 #include "llvm/ADT/Hashing.h"
 #include "llvm/ADT/StringMap.h"

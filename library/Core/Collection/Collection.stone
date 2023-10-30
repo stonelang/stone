@@ -1,0 +1,6 @@
+// Core.Collections
+
+public interface Collection<T> {
+	fun Add(T t)-> void; 
+
+}

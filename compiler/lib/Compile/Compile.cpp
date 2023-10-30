@@ -1,6 +1,4 @@
-#include "stone/Compile/Compile.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/LLVMContext.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/CodeCompletionListener.h"
@@ -10,22 +8,18 @@
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
-#include "stone/Gen/Gen.h"
-#include "stone/Parse/Parse.h"
-#include "stone/Sem/TypeCheck.h"
-#include "stone/Sem/UsingResolution.h"
+#include "stone/Public.h"
 #include "stone/Session/ModeKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
-#include "stone/Syntax/SyntaxFactory.h"
 
 #include "clang/Basic/TargetInfo.h"
 
 #include "llvm/IR/Module.h"
+#include "llvm/Support/Casting.h"
 
 using namespace stone;
 using namespace stone::syn;
-using namespace stone::sem;
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
@@ -53,13 +47,11 @@ public:
 
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                    void *mainAddr, CompilerListener *listener) {
+
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  auto Finish = [&](int status = 0) -> int {
-    int err = 1;
-    return status ? status : err;
-  };
+  auto Finish = [&](Error err = Error()) -> int { return err.GetFlag(); };
 
   auto programPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto programName = file::GetStem(programPath);
@@ -70,38 +62,38 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (args.empty()) {
     invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
                                                      diag::err_no_input_files);
-    return Finish(1);
+    return Finish(Error(true));
   }
   // We setup clang now -- this just loads the instance.
-  invocation.SetupClang(args, arg0);
+  if (invocation.SetupClang(args, arg0).Has()) {
+
+    return Finish(Error(true));
+  }
 
   // Setup the custom formatting to be able to handle syntax diagnostics
-  auto diagFormatter = std::make_unique<SyntaxDiagnosticFormatter>();
-  auto diagEmitter =
-      std::make_unique<TextDiagnosticEmitter>(std::move(diagFormatter));
+  SyntaxDiagnosticFormatter diagFormatter;
+  SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
+  TextDiagnosticListener diagListener(diagEmitter);
 
-  TextDiagnosticListener diagListener(std::move(diagEmitter));
-  invocation.GetLangContext().GetDiagUnit().GetDiagEngine().AddListener(
-      diagListener);
+  invocation.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
+
+  ConfigurationFileBuffers configurationFileBuffers;
 
   // Parse arguments.
-  llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>
-      configurationFileBuffers;
-
   auto ial = invocation.ParseArgs(args);
   if (!ial) {
-    return Finish(1);
+    return Finish(Error(true));
   }
   if (invocation.HasError()) {
-    return Finish(1);
+    return Finish(Error(true));
   }
   if (invocation.ComputeOptions(*ial).Has()) {
-    return Finish(1);
+    return Finish(Error(true));
   }
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
     invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
                                                      diag::err_alien_mode);
-    Finish(1);
+    Finish(Error(true));
   }
   if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
     // TODO: invocation.PrintHelp(invocation.GetOpts());
@@ -109,133 +101,106 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   if (invocation.GetCompilerOptions().GetMode().IsPrintVersion()) {
     invocation.PrintVersion();
-    return Finish();
+    return Finish(Error(true));
   }
   if (!invocation.GetCompilerOptions().GetMode().CanCompile()) {
     /// invocation.PrintD()
-    return Finish(1);
+    return Finish();
   }
   if (invocation.GetListener()) {
     invocation.GetListener()->OnCompileConfigured(invocation);
   }
   if (invocation.CreateSourceBuffers().Has()) {
-    return Finish(1);
+    return Finish();
   }
 
-  CompilerInstance compiler(invocation);
-  CompileStatus status = compiler.Compile();
+  CompilerInstance compilerInstance(invocation);
 
-  if (invocation.HasError()) {
-    return Finish(1);
+ 
+  auto status = compilerInstance.Compile();
+
+  if (status.IsError() || invocation.HasError()) {
+    return Finish(Error(true));
   }
   return Finish();
 }
 
-static CompileStatus DumpIR(CompilerInstance &compiler, CodeGenContext &cgc,
-                            IRCodeGenResult &result) {
-  CompileStatus::MakeSuccess();
+
+static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
 }
 
-static CompileStatus PrintIR(CompilerInstance &compiler, CodeGenContext &cgc,
-                             IRCodeGenResult &result) {
-  CompileStatus::MakeSuccess();
+static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
 }
 
-static CompileStatus CompileWithGenIR(CompilerInstance &compiler,
-                                      stone::ModuleSyntaxFileUnion msf,
-                                      CodeGenContext &cgc,
-                                      IRCodeGenCompletedCallback fn) {
-  CompileStatus status;
-  switch (compiler.GetModuleOutputMode()) {
-  case ModuleOutputMode::Single: {
-    if (auto sf = msf.dyn_cast<SyntaxFile *>()) {
-      auto result = stone::GenIR(
-          cgc, *sf, compiler.GetInvocation().GetLangContext(), nullptr);
-      status |= fn(compiler, cgc, *result);
+Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
+                                          IRCodeGenCompletedCallback notifiy) {
+  const auto &invocation = GetInvocation();
+  const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
+
+  if (IsWholeModuleCodeGen()) {
+    auto *mainModule = GetModuleSystem().GetMainModule();
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+                       primaryFileSpecificPaths);
+  } else if (IsSyntaxFileCodeGen()) {
+    for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
+      stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+                             primarySyntaxFile, primaryFileSpecificPaths);
     }
-    return status;
-  }
-  case ModuleOutputMode::Whole: {
-    if (auto mod = msf.get<syn::Module *>()) {
-      auto result = stone::GenIR(
-          cgc, *mod, compiler.GetInvocation().GetLangContext(), nullptr);
-      status |= fn(compiler, cgc, *result);
-    }
-    return status;
-  }
-  default:
-    stone::Panic("Unable to GenIR -- invalid IR ouput");
   }
 
-  return CompileStatus::MakeError();
+  if (notifiy) {
+    notifiy(*this, cgc);
+  }
+  Status::Error();
+}
+static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
+  return Status::Success();
 }
 
-static CompileStatus GenModule(CompilerInstance &compiler, CodeGenContext &cgc,
-                               IRCodeGenResult &result) {
-  return CompileStatus::MakeSuccess();
+Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
+
+  auto result = stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
+                                 GetInvocation().GetListener());
+  return Status::Success();
 }
 
-static CompileStatus CompileWithGenNative(CompilerInstance &compiler,
-                                          CodeGenContext &cgc,
-                                          IRCodeGenResult &result) {
+Status CompilerInstance::CompileWithCodeGen() {
 
-  // TODO: Move to CompilerInstance
-  auto targetMachine = stone::CreateTargetMachine(
-      compiler.GetInvocation().GetLangContext().GetDiagUnit().GetDiagEngine(),
-      compiler.GetInvocation().GetCodeGenOptions(),
-      compiler.GetInvocation().GetTargetOptions(),
-      compiler.GetInvocation().GetLangContext().GetLangOptions(),
-      compiler.GetSyntaxContext());
-
-  auto ComputeNativeModeKind = [&](CompilerInstance &compiler) -> void {
-    switch (compiler.GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
-    case ModeKind::None:
-    case ModeKind::EmitObject:
-      compiler.GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitObject;
-      break;
-    case ModeKind::EmitBC:
-      compiler.GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitBC;
-      break;
-    case ModeKind::EmitAssembly:
-      compiler.GetInvocation().GetCodeGenOptions().nativeModeKind =
-          NativeModeKind::EmitAssembly;
-      break;
-    default:
-      stone::Panic("Unknown Native mode kind");
-    }
-  };
-  ComputeNativeModeKind(compiler);
-  auto err =
-      stone::GenNative(cgc, compiler.GetSyntaxContext(), result, nullptr);
-
-  return CompileStatus::MakeSuccess();
-}
-
-CompileStatus CompilerInstance::CompileWithCodeGen() {
-
-  assert(GetInvocation().GetCompilerOptions().GetMode().CanCodeGen());
-
-  auto *mainModule = GetModuleSystem().GetMainModule();
+  assert(CanCodeGen() && "Mode does not support code gen");
 
   // We are performing some low level code generation
-  CodeGenContext cgc(stone::GetLLVMContext(),
-                     GetInvocation().GetCodeGenOptions(),
-                     GetInvocation().GetLangContext());
+  CodeGenContext cgc(
+      GetInvocation().GetCodeGenOptions(), GetInvocation().GetModuleOptions(),
+      GetInvocation().GetTargetOptions(), GetInvocation().GetLangContext(),
+      GetInvocation().GetClangContext());
 
-  clang::TargetInfo &targetInfo =
-      GetInvocation().GetClangInstance().getTarget();
+  // auto *Module = IGM.getModule();
+  // assert(Module && "Expected llvm:Module for IR generation!");
 
-  // Setup the empty module
-  cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
-  cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
+  // Module->setTargetTriple(IGM.Triple.str());
 
-  const auto &sdkVersion = targetInfo.getSDKVersion();
+  // // Set the module's string representation.
+  // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
 
-  if (!sdkVersion.empty()) {
-    cgc.GetLLVMModule().setSDKVersion(sdkVersion);
-  }
+  // clang::TargetInfo &targetInfo =
+  //     GetInvocation().GetClangContext().GetInstance().getTarget();
+
+  // // Setup the empty module
+  // cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
+  // cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
+
+  // const auto &sdkVersion = targetInfo.getSDKVersion();
+
+  // if (!sdkVersion.empty()) {
+  //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
+  // }
 
   // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
   //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
@@ -244,160 +209,118 @@ CompileStatus CompilerInstance::CompileWithCodeGen() {
   // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
   //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
   // }
-  // switch
-  // (invocation.GetCompilerOptions().moduleOutputMode)
 
-  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
-  case ModeKind::EmitModule:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return GenModule(compiler, cgc, result);
-                            });
-  case ModeKind::EmitIR:
+  switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
+  case CodeGenOutputKind::LLVMModule:
     return CompileWithGenIR(
-        *this, mainModule, cgc,
-        [&](CompilerInstance &compiler, CodeGenContext &cgc,
-            IRCodeGenResult &result) { return DumpIR(compiler, cgc, result); });
-  case ModeKind::PrintIR:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return PrintIR(compiler, cgc, result);
-                            });
+        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return GenModule(*this, cgc);
+        });
+  case CodeGenOutputKind::LLVMIRPreOptimization:
+  case CodeGenOutputKind::LLVMIRPostOptimization:
+    return CompileWithGenIR(
+        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return DumpIR(*this, cgc);
+        });
+  // case CodeGenOutputKind::PrintIR:
+  //   return CompileWithGenIR(
+  //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //         return PrintIR(*this, cgc);
+  //       });
   default:
-    return CompileWithGenIR(*this, mainModule, cgc,
-                            [&](CompilerInstance &compiler, CodeGenContext &cgc,
-                                IRCodeGenResult &result) {
-                              return CompileWithGenNative(compiler, cgc,
-                                                          result);
-                            });
+    return CompileWithGenIR(
+        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return CompileWithGenNative(cgc);
+        });
   }
 }
 
-static CompileStatus DumpSyntax(syn::SyntaxFile &sf) {
-  return CompileStatus::MakeSuccess();
+static Status DumpSyntax(CompilerInstance &compiler, syn::SyntaxFile &sf) {
+  return Status::Success();
 }
 
-static CompileStatus PrintSyntax(CompilerInstance &compiler) {
-  return CompileStatus::MakeSuccess();
+static Status PrintSyntax(CompilerInstance &compiler) {
+  return Status::Success();
 }
 
-void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+Status CompilerInstance::CompileWithParsing() {
+  return CompileWithParsing(
+      [&](syn::SyntaxFile &) { return Status::Success(); });
+}
 
-  switch (invocation.GetTypeCheckMode()) {
-  case TypeCheckMode::WholeModule: {
-    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
-      if (syntaxFile) {
-        client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-               invocation.GetListener());
+Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
+
+  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+                             invocation.GetListener());
+      if (notifiy) {
+        notifiy(*syntaxFile);
       }
     }
-    break;
-  }
-  case TypeCheckMode::EachFile: {
-    for (auto *syntaxFile :
-         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-             invocation.GetListener());
-    }
-    break;
-  }
-  default: {
-  }
-  }
-}
-CompileStatus CompilerInstance::CompileWithParsing() {
-  return CompileWithParsing(
-      [&](syn::SyntaxFile &) { return CompileStatus::MakeSuccess(); });
-}
-
-CompileStatus
-CompilerInstance::CompileWithParsing(ParsingCompletedCallback fn) {
-
-  for (auto sourceBufferID : invocation.GetSourceBufferIDs()) {
-    auto syntaxFile = SyntaxFileFactory::Create(
-        SyntaxFileKind::Library, sourceBufferID,
-        *GetModuleSystem().GetMainModule(), GetSyntaxContext());
-
-    syn::Parse(*syntaxFile, GetSyntaxContext(), invocation.GetListener());
-    assert(syntaxFile);
-    fn(*syntaxFile);
   }
 
-  if (!invocation.GetCompilerOptions().GetMode().JustParse()) {
-    ResolveUsings();
+  if (!GetMode().JustParse()) {
+    ResolveImports();
   }
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
   }
-  return CompileStatus::MakeSuccess();
+  return Status::Success();
 }
 
-void CompilerInstance::ResolveUsings() {
-  // Resolve imports for all the source files.
-  for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile))
-      sem::ResolveUsings(*syntaxFile);
-  }
-}
-CompileStatus CompilerInstance::CompileWithTypeChecking() {
+Status CompilerInstance::CompileWithTypeChecking() {
   return CompileWithTypeChecking(
-      [&](CompilerInstance &) { return CompileStatus::MakeSuccess(); });
+      [&](CompilerInstance &) { return Status::Success(); });
 }
 
-CompileStatus
-CompilerInstance::CompileWithTypeChecking(TypeCheckingCompletedCallback fn) {
+Status CompilerInstance::CompileWithTypeChecking(
+    TypeCheckingCompletedCallback notifiy) {
 
-  CompileStatus status = CompileWithParsing();
+  auto status = CompileWithParsing();
   if (status.IsError()) {
     return status;
   }
   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
                         TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
-    sem::TypeCheck(syntaxFile, typeCheckerOpts, listener);
+    stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
   });
 
   // TODO: FinishTypeCheck();
   if (invocation.GetListener()) {
     invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
   }
-  return fn(*this);
+  return notifiy(*this);
 }
-
-CompileStatus CompilerInstance::Compile() {
+Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
+  llvm::TimeTraceScope compileTimeScope("Compile");
 
-  // if (GetInvocation().GetListener()) {
-  //   GetInvocation().GetListener()->OnCompileStarted(*this);
-  // }
-  // TODO: Future CreateSyntax();
-
-  CompileStatus status;
-  switch (GetInvocation().GetCompilerOptions().GetMode().GetKind()) {
+  if (GetInvocation().GetListener()) {
+    GetInvocation().GetListener()->OnCompileStarted(*this);
+  }
+  Status status;
+  switch (GetMode().GetKind()) {
   case ModeKind::Parse:
-    status |= CompileWithParsing();
+    status = CompileWithParsing();
     break;
   case ModeKind::DumpSyntax:
-    status |=
-        CompileWithParsing([&](syn::SyntaxFile &sf) { return DumpSyntax(sf); });
+    status = CompileWithParsing(
+        [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
     break;
   case ModeKind::TypeCheck:
-    status |= CompileWithTypeChecking();
+    status = CompileWithTypeChecking();
     break;
   case ModeKind::PrintSyntax:
-    status |= CompileWithTypeChecking(
+    status = CompileWithTypeChecking(
         [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
     break;
   default:
-    status |= CompileWithTypeChecking([&](CompilerInstance &compiler) {
-      return CompileStatus::MakeSuccess(); /*return CompileWithCodeGen();*/
-    });
+    status = CompileWithTypeChecking(
+        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
-  // For now
   return status;
 }

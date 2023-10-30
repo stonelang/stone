@@ -1,0 +1,4 @@
+// Core.Collection
+
+public struct Array<T> : List<T> {
+}

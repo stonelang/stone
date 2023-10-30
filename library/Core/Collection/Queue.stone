@@ -1,0 +1,11 @@
+// Core.Collection
+
+public struct Queue<T> : Collection <T> {
+}
+
+public fun Queue::Push(T* item) -> void {
+}
+
+public fun Queue::Pop() -> T* {
+	
+}

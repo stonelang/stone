@@ -3,7 +3,6 @@
 // def BuiltinType : TypeNode<Type>, LeafType;
 // def ComplexType : TypeNode<Type>;
 // def PointerType : TypeNode<Type>;
-// def BlockPointerType : TypeNode<Type>;
 // def ReferenceType : TypeNode<Type, 1>;
 // def LValueReferenceType : TypeNode<ReferenceType>;
 // def RValueReferenceType : TypeNode<ReferenceType>;
@@ -74,7 +73,7 @@
 ///   This type is a builtin type. The default behavior is
 ///   CANONICAL_TYPE(id, parent).
 
-/// SUGARED_TYPE(id, parent)
+/// SWEET_TYPE(id, parent)
 ///   This type is never canonical.  It provides an efficient accessor,
 ///   getSinglyDesugaredType(), which removes one level of sugar.  This
 ///   process does not necessarily converge to the canonical type, however.
@@ -108,8 +107,8 @@
 #define BUILTIN_TYPE(id, parent) CANONICAL_TYPE(id, parent)
 #endif
 
-#ifndef SUGARED_TYPE
-#define SUGARED_TYPE(id, parent) TYPE(id, parent)
+#ifndef SWEET_TYPE
+#define SWEET_TYPE(id, parent) TYPE(id, parent)
 #endif
 
 #ifndef UNCHECKED_TYPE
@@ -126,8 +125,8 @@
 #define ABSTRACT_TYPE(Id, Parent)
 #endif
 
-#ifndef ABSTRACT_SUGARED_TYPE
-#define ABSTRACT_SUGARED_TYPE(Id, Parent) ABSTRACT_TYPE(Id, Parent)
+#ifndef ABSTRACT_SWEET_TYPE
+#define ABSTRACT_SWEET_TYPE(Id, Parent) ABSTRACT_TYPE(Id, Parent)
 #endif
 
 /// A convenience for determining the range of types.  These will always
@@ -140,52 +139,85 @@
 #define LAST_TYPE(Id)
 #endif
 
-TYPE(Error, Type)
-TYPE(LValue, Type)
-TYPE(RValue, Type)
-TYPE(Tuple, Type)
+// TYPE(Error, Type)
+// TYPE(LValue, Type)
+// TYPE(RValue, Type)
+// TYPE(Tuple, Type)
+
+
+// ABSTRACT_TYPE(Identifier, Type)
+//   ABSTRACT_TYPEREPR(ComponentIdentifier, Identifier)
+//     TYPEREPR(SimpleIdent, ComponentIdentTypeRepr)
+//     TYPEREPR(GenericIdent, ComponentIdentTypeRepr)
+//   TYPEREPR(CompoundIdent, IdentTypeRepr)
+
 
 ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(AbstractNumber,  BuiltinType)
-    BUILTIN_TYPE(Integer,         AbstractNumberType)
-    BUILTIN_TYPE(UInteger,        AbstractNumberType)
-    BUILTIN_TYPE(Float,           AbstractNumberType)
-    BUILTIN_TYPE(Void,            AbstractNumberType)
-    BUILTIN_TYPE(Complex,         AbstractNumberType)
-    BUILTIN_TYPE(Imaginary,       AbstractNumberType)
-    TYPE_RANGE(AbstractNumber, Integer, Imaginary) 
+  ABSTRACT_TYPE(Scalar,  BuiltinType)
+    ABSTRACT_TYPE(Number,  ScalarType)
+      BUILTIN_TYPE(Integer,         NumberType)
+      BUILTIN_TYPE(UInteger,        NumberType)
+      BUILTIN_TYPE(Float,           NumberType)
+      BUILTIN_TYPE(Complex,         NumberType)
+      BUILTIN_TYPE(Imaginary,       NumberType)
+      TYPE_RANGE(Number, Integer, Imaginary) 
+
+    BUILTIN_TYPE(Bool, ScalarType)
+    BUILTIN_TYPE(Char, ScalarType)
+    TYPE_RANGE(Scalar, Integer, Char) 
+
   BUILTIN_TYPE(Null, BuiltinType)
-TYPE_RANGE(Builtin, Integer, Null) 
+  BUILTIN_TYPE(Void, BuiltinType)
+  //BUILTIN_TYPE(String, BuiltinType)
+
+  TYPE_RANGE(Builtin, Integer, Void) 
+
+CANONICAL_TYPE(Module, Type)
 
 ABSTRACT_TYPE(AbstractPointer, Type)
   TYPE(Pointer, AbstractPointerType)
-  TYPE(BlockPointer, AbstractPointerType)
   TYPE(MemberPointer, AbstractPointerType)
-TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
+  TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
 
-// ABSTRACT_TYPE(Deduced, Type)
-//   TYPE(Auto, DeducedType)
-// TYPE_RANGE(Deduced, Auto)
+ABSTRACT_TYPE(Reference, Type)
+  TYPE(RValueReference, ReferenceType)
+  TYPE(LValueReference, ReferenceType)
+  TYPE_RANGE(Reference, RValueReference, LValueReference)
 
-ABSTRACT_TYPE(AbstractFunction, Type)
-  TYPE(Function, AbstractFunctionType)
-  TYPE(GenericFunction, FunctionType)
-TYPE_RANGE(AbstractFunction, Function, GenericFunction)
+
+ABSTRACT_TYPE(Sweet, Type)
+  ABSTRACT_TYPE(SyntaxSweet, SweetType)
+    SWEET_TYPE(Dictionary, SyntaxSweetType)
+    TYPE_RANGE(SyntaxSweetType, Dictionary, Dictionary)
+  SWEET_TYPE(Alias, SweetType)
+  TYPE_RANGE(Sweet, Dictionary, Alias)
+
+
+ABSTRACT_TYPE(Deduced, Type)
+  TYPE(Auto, DeducedType)
+  TYPE_RANGE(Deduced, Auto, Auto)
+
+ABSTRACT_TYPE(Function, Type)
+  TYPE(Fun, FunctionType)
+  //TYPE(GenericFunction, FunctionType)
+  TYPE_RANGE(Function, Fun, Fun)
 
 ABSTRACT_TYPE(Nominal, Type)
-      TYPE(Enum, NominalType)
-      TYPE(Struct, NominalType)
-      TYPE(Interface, NominalType)
-TYPE_RANGE(Nominal, Enum, Interface)
+  TYPE(Enum, NominalType)
+  TYPE(Struct, NominalType)
+  TYPE(Interface, NominalType)
+  TYPE_RANGE(Nominal, Enum, Interface)
+
 LAST_TYPE(Interface)
 
 #undef TYPE_RANGE
-#undef ABSTRACT_SUGARED_TYPE
+#undef ABSTRACT_SWEET_TYPE
 #undef ABSTRACT_TYPE
 #undef UNCHECKED_TYPE
 #undef ARTIFICIAL_TYPE
-#undef SUGARED_TYPE
+#undef SWEET_TYPE
 #undef BUILTIN_TYPE
 #undef CANONICAL_TYPE
 #undef TYPE
 #undef LAST_TYPE
+

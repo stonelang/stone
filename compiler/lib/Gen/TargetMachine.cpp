@@ -1,8 +1,12 @@
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/TargetOptions.h"
+#include "stone/Foreign/ClangContext.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Syntax/SyntaxContext.h"
 
-#include "llvm/Support/TargetRegistry.h"
+#include "llvm/MC/SubtargetFeature.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 
@@ -10,26 +14,24 @@ using namespace stone;
 
 // TODO: This is something you can get from clang
 
-static stone::Error InitLLVMTargetOptions(DiagnosticEngine &de,
-                                          llvm::TargetOptions &llvmTargetOpts,
-                                          const CodeGenOptions &codeGenOpts,
-                                          const LangOptions &langOpts) {
+static Error InitLLVMTargetOptions(CodeGenContext &cgc,
+                                   llvm::TargetOptions &llvmTargetOpts) {
 
-  // switch (langOpts.GetThreadModel()) {
-  // case CompilerOptions::ThreadModelKind::POSIX:
-  //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
-  //   break;
-  // case CompilerOptions::ThreadModelKind::Single:
-  //   llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
-  //   break;
-  // }
-
-  return stone::Error();
+  switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
+  case LangOptions::ThreadModelKind::POSIX:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
+    break;
+  case LangOptions::ThreadModelKind::Single:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
+    break;
+  }
+  return Error();
 }
 
 static Optional<llvm::CodeModel::Model>
-GetCodeModel(const CodeGenOptions &cgc) {
-  unsigned codeModel = llvm::StringSwitch<unsigned>(cgc.codeModel)
+GetCodeModel(const CodeGenOptions &codeGenOpts) {
+
+  unsigned codeModel = llvm::StringSwitch<unsigned>(codeGenOpts.codeModel)
                            .Case("tiny", llvm::CodeModel::Tiny)
                            .Case("small", llvm::CodeModel::Small)
                            .Case("kernel", llvm::CodeModel::Kernel)
@@ -61,40 +63,97 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
   }
 }
 
-std::unique_ptr<llvm::TargetMachine> stone::CreateTargetMachine(
-    DiagnosticEngine &de, const CodeGenOptions &codeGenOpts,
-    const TargetOptions &targetOpts, const LangOptions &langOpts,
-    syn::SyntaxContext &sc) {
+// std::unique_ptr<llvm::TargetMachine>
+// stone::CreateTargetMachine(CodeGenContext &cgc) {
 
-  llvm::TargetOptions targetOptions;
-  std::unique_ptr<llvm::TargetMachine> targetMachine;
+//   std::string error;
+//   std::string triple = cgc.GetLLVMModule().getTargetTriple();
+//   const llvm::Target *llvmTarget =
+//       llvm::TargetRegistry::lookupTarget(triple, error);
+//   if (llvmTarget) {
 
-  llvm::Triple Triple(langOpts.Target);
+//     llvm::Optional<llvm::CodeModel::Model> codeModel =
+//         GetCodeModel(cgc.GetCodeGenOptions());
 
-  // Create the TargetMachine for generating code.
-  // std::string error;
-  // std::string triple = llvmModule.getTargetTriple();
-  // const llvm::Target *llvmTarget =
-  //     llvm::TargetRegistry::lookupTarget(triple, error);
+//     std::string features =
+//         llvm::join(cgc.GetTargetOptions().features.begin(),
+//                    cgc.GetTargetOptions().features.end(), ",");
 
-  // llvm::Optional<llvm::CodeModel::Model> codeModel =
-  // GetCodeModel(codeGenOpts); std::string features =
-  //     llvm::join(targetOpts.features.begin(), targetOpts.features.end(),
-  //     ",");
+//     llvm::Reloc::Model relocationModel =
+//         cgc.GetCodeGenOptions().relocationModel;
 
-  // llvm::Reloc::Model relocationModel = codeGenOpts.relocationModel;
-  // llvm::CodeGenOpt::Level codeGenOptLevel =
-  // GetOptimizationLevel(codeGenOpts);
+//     llvm::CodeGenOpt::Level codeGenOptLevel =
+//         GetOptimizationLevel(cgc.GetCodeGenOptions());
 
-  // llvm::TargetOptions llvmTargetOpts;
-  // if (InitLLVMTargetOptions(de, llvmTargetOpts, codeGenOpts, langOpts).Has())
-  // {
-  //   return nullptr;
-  // }
+//     llvm::TargetOptions llvmTargetOpts;
+//     auto error = InitLLVMTargetOptions(cgc, llvmTargetOpts);
+//     if (error.Has()) {
+//       return nullptr;
+//     }
 
-  // tm.reset(llvmTarget->createTargetMachine(triple, targetOpts.cpu, features,
-  //                                          llvmTargetOpts, relocationModel,
-  //                                          codeModel, codeGenOptLevel));
+//     auto targetMachine = llvmTarget->createTargetMachine(
+//         triple, cgc.GetTargetOptions().cpu, features, llvmTargetOpts,
+//         relocationModel, codeModel, codeGenOptLevel);
 
-  return targetMachine;
+//     return std::unique_ptr<llvm::TargetMachine>(targetMachine);
+//   }
+//   return nullptr;
+// }
+
+std::unique_ptr<llvm::TargetMachine>
+stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
+
+  std::string targetFeatures;
+  if (!codeGenOpts.targetFeatures.empty()) {
+    llvm::SubtargetFeatures features;
+    for (const std::string &feature : codeGenOpts.targetFeatures)
+      if (!stone::ShouldRemoveTargetFeature(feature)) {
+        features.AddFeature(feature);
+      }
+    targetFeatures = features.getString();
+  }
+
+  std::string error;
+  const llvm::Triple &effectiveTriple =
+      llvm::Triple(codeGenOpts.effectiveClangTriple);
+
+  const llvm::Target *target =
+      llvm::TargetRegistry::lookupTarget(effectiveTriple.str(), error);
+  if (!target) {
+    assert(false && "Could not create target");
+    // Ctx.Diags.diagnose(SourceLoc(), diag::no_llvm_target,
+    // effectiveTriple.str(),
+    //                    Error);
+    // return nullptr;
+  }
+
+  llvm::CodeGenOpt::Level optLevel = codeGenOpts.ShouldOptimize()
+                                         ? llvm::CodeGenOpt::Default // -Os
+                                         : llvm::CodeGenOpt::None;
+
+  // // On Cygwin 64 bit, dlls are loaded above the max address for 32 bits.
+  // // This means that the default CodeModel causes generated code to segfault
+  // // when run.
+  llvm::Optional<llvm::CodeModel::Model> codeModel = llvm::None;
+  if (effectiveTriple.isArch64Bit() &&
+      effectiveTriple.isWindowsCygwinEnvironment()) {
+    codeModel = llvm::CodeModel::Large;
+  }
+  // TODO:
+  //  else {
+  //    codeModel = GetCodeModel(codeGenOpts);
+  //  }
+
+  // // Create a target machine.
+  llvm::TargetMachine *targetMachine = target->createTargetMachine(
+      effectiveTriple.str(), codeGenOpts.targetCPU, targetFeatures,
+      codeGenOpts.llvmTargetOpts, codeGenOpts.relocationModel, codeModel,
+      optLevel);
+  if (!targetMachine) {
+    // Ctx.Diags.diagnose(SourceLoc(), diag::no_llvm_target,
+    //                    EffectiveTriple.str(), "no LLVM target machine");
+    assert(false && "Could not create target machine");
+    // return nullptr;
+  }
+  return std::unique_ptr<llvm::TargetMachine>(targetMachine);
 }

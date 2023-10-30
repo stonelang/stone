@@ -112,22 +112,33 @@ public:
 
   void reset() { MaybeRef = optional_none_tag(); }
 
+  bool has_value() const { return MaybeRef.hasOptionalValue(); }
   bool hasValue() const { return MaybeRef.hasOptionalValue(); }
 
-  RefTy &getValue() LLVM_LVALUE_FUNCTION {
-    assert(hasValue());
+  RefTy &value() & {
+    assert(has_value());
     return MaybeRef;
   }
-  RefTy const &getValue() const LLVM_LVALUE_FUNCTION {
-    assert(hasValue());
+  RefTy &getValue() & {
+    assert(has_value());
     return MaybeRef;
   }
-#if LLVM_HAS_RVALUE_REFERENCE_THIS
-  RefTy &&getValue() && {
-    assert(hasValue());
+  RefTy const &value() const & {
+    assert(has_value());
+    return MaybeRef;
+  }
+  RefTy const &getValue() const & {
+    assert(has_value());
+    return MaybeRef;
+  }
+  RefTy &&value() && {
+    assert(has_value());
     return std::move(MaybeRef);
   }
-#endif
+  RefTy &&getValue() && {
+    assert(has_value());
+    return std::move(MaybeRef);
+  }
 
   template <class... Args> void emplace(Args &&...args) {
     MaybeRef = RefTy(std::forward<Args>(args)...);

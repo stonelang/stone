@@ -1,9 +1,5 @@
 
-space Syntax.If {
-
 public fun F0() -> void {
 	if (true) {
 	}
-}
-
 }

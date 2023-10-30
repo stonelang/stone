@@ -1,16 +1,35 @@
+#include "stone/Basic/OptionSet.h"
+#include "stone/Sem/TypeCheckAccess.h"
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/SyntaxVisitor.h"
 
 using stone::sem::TypeChecker;
 
-class DeclChecker final : public DeclVisitor<DeclChecker> {
+class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;
+  SyntaxContext &sc;
+  SyntaxFile *sf;
 
 public:
-  DeclChecker(TypeChecker &checker) : checker(checker) {}
+  DeclChecking(TypeChecker &checker, SyntaxContext &sc, SyntaxFile *sf)
+      : checker(checker), sc(sc), sf(sf) {}
 
 public:
-  void Visit(Decl *d) {}
+  void Visit(Decl *d) {
+
+    DeclVisitor<DeclChecking>::Visit(d);
+    checker.CheckTypes(d);
+  }
+
+public:
+  void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
+
+  void VisitImportDecl(ImportDecl *importDecl) {}
+  void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
 };
 
-void TypeChecker::CheckDecl(Decl *d) { DeclChecker(*this).Visit(d); }
+void TypeChecker::CheckDecl(Decl *d) {
+
+  auto *sf = d->GetDeclContext()->GetParentSyntaxFile();
+  DeclChecking(*this, d->GetSyntaxContext(), sf).Visit(d);
+}

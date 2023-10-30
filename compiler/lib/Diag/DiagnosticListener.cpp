@@ -2,7 +2,8 @@
 
 using stone::DiagnosticListener;
 
-DiagnosticListener::DiagnosticListener() : colorfulStream() {}
+DiagnosticListener::DiagnosticListener(DiagnosticEmitter &emitter)
+    : emitter(emitter) {}
 
 DiagnosticListener::~DiagnosticListener() {}
 
@@ -14,6 +15,4 @@ void DiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
 
 /// Callback to inform the diagnostic client that processing of all
 /// source files has ended.
-void DiagnosticListener::Finish() {}
-
-void DiagnosticListener::Flush() {}
+bool DiagnosticListener::Finish() { return false; }

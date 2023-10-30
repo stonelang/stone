@@ -39,7 +39,7 @@ class ParserStats final : public Stats {
 public:
   ParserStats(const Parser &parser)
       : Stats("parser statistics:"), parser(parser) {}
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 class Parser final {
@@ -80,16 +80,13 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  // /// Factory object for creating ParsedAttribute objects.
-  AttributeFactory attributeFactory;
-
   ParsingToken parsingTok;
 
   ScopeCache scopeCache;
 
-  UInt16 ParenCount = 0;
-  UInt16 BraceCount = 0;
-  UInt16 BrackeCount = 0;
+  // UInt16 ParenCount = 0;
+  // UInt16 BraceCount = 0;
+  // UInt16 BrackeCount = 0;
 
 private:
   // Identifiers
@@ -113,7 +110,6 @@ public:
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  AttributeFactory &GetAttributeFactory() { return attributeFactory; }
   LangContext &GetLangContext() { return sc.GetLangContext(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
@@ -155,36 +151,33 @@ public:
   SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
   SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
-  SyntaxStatus CollectTypeQualifier(ParsingDeclCollector &collector);
 
-  bool IsTypePattern(const Token &tk);
-  SyntaxStatus CollectTypePattern(ParsingDeclCollector &collector);
-  SyntaxStatus CollectTypePatterns(ParsingDeclCollector &collector);
-
-  SyntaxStatus CollectBasicTypeDecl(ParsingDeclCollector &collector);
-  SyntaxStatus CollectNominalTypeDecl(ParsingDeclCollector &collector);
+  bool IsTypeThunk(const Token &tk);
+  SyntaxStatus CollectTypeThunk(TypeCollector &collector);
+  SyntaxStatus CollectTypeThunks(TypeCollector &collector);
+  SyntaxStatus CollectBasicTypeDecl(TypeCollector &collector);
+  SyntaxStatus CollectNominalTypeDecl(TypeCollector &collector);
+  SyntaxStatus CollectTypeQualifiers(TypeCollector &collector);
+  SyntaxStatus CollectTypeQualifier(TypeCollector &collector);
+  SyntaxStatus CollectTypeOperator(TypeCollector &collector);
   SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
   SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
   SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//
+
   bool IsBasicType(tok kind) const;
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  SyntaxResult<TypeRep> ParseType(ParsingDeclCollector &collector,
-                                  Diag<> diagID);
-  SyntaxResult<TypeRep> ParseFunctionType(ParsingDeclCollector &collector,
-                                          Diag<> diagID);
-
-  SyntaxResult<TypeRep> ParseDeclResultType(ParsingDeclCollector &collector,
-                                            Diag<> diagID);
-
-  SyntaxResult<TypeRep> ParseBasicType(ParsingDeclCollector &collector,
-                                       Diag<> diagID);
-
-  void ParseIdentifierType(TypeSpecifierCollector &collector, Diag<> diagID);
+  Type ParseType(TypeCollector &collector, Diag<> diagID);
+  Type ParseFunctionType(TypeCollector &collector, Diag<> diagID);
+  Type ParsePointerType(TypeCollector &collector, Diag<> diagID);
+  Type ParseReferenceType(TypeCollector &collector, Diag<> diagID);
+  Type ParseDeclResultType(TypeCollector &collector, Diag<> diagID);
+  Type ParseBasicType(TypeCollector &collector, Diag<> diagID);
+  Type ParseIdentifierType(TypeCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//
@@ -202,7 +195,7 @@ private:
   //                                       bool &reasync,
   //                                       SourceLoc &throws,
   //                                       bool &rethrows,
-  //                                       TypeRepr *&retType);
+  //                                       Typer *&retType);
 
   SyntaxStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
   SyntaxStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,

@@ -1,44 +1,40 @@
+// Light.stone
+space Cosmology {
+	public struct Light {
+	}
+}
+// BlackHole.stone 
+space Cosmology {
+	public struct BlackHole {
+	}
+	public fun BlackHole::TrapLight(Light& light) -> void {
+	}
+}
 
-// project/Stone/Physics/Light.stone  ...::N => N is the file 
-// module Stone::Physics::Light;
+// vs 
 
-// space MyLight {
-// 	struct Speed {
-// 	}
-// 	struct Light {
-// 	}
-// }
+space Cosmology;
 
-// // project/Stone/Physics/BlackHole.stone  ...::N => N is the file 
+public struct Light {
+}
 
+// BlackHole.stone 
+space Cosmology;
 
-// module Stone::Physics::BlackHole;
-// using Stone::Physics::Light;
-
-
-// space MyBlackHole {
-// 	public struct BlackHole {
-// 	}
-// 	public fun BlackHole::TrapLight(const MySpace::Light* light) -> void {
-
-// 	}
-// 	public static fun PrintBlackHole(const BlackHole* bh) -> void {
-
-// 	}
-// }
-
-// // project/Main.stone 
-
-// using Stone.Physics::Light;
-// using Stone::Physics::BlackHole;
-
-// public fun Main() -> int {
-
-// 	MyBlackHole::BlackHole bh; 
-// 	MyLight::Light light; 
-// 	bh.TrapLight(ref light); 
-
-// }
+public struct BlackHole {
+}
+public fun BlackHole::TrapLight(Light& light) -> void {
+}
 
 
 
+// Main.stone 
+import System.Physics;
+
+public fun Main() -> int {
+
+	Cosmology.BlackHole bh; 
+	Cosmology.Light light; 
+
+	bh.TrapLight(light); 
+}

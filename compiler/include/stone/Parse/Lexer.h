@@ -62,7 +62,7 @@ public:
   LexerStats(const Lexer &lexer) : Stats("lexer statistics:"), lexer(lexer) {}
 
   const Lexer &GetLexer() { return lexer; }
-  void Print(ColorfulStream &stream) override;
+  void Print(ColorStream &stream) override;
 };
 
 // TODO: ParsingOptions

@@ -17,9 +17,9 @@ private:
   Error &operator=(const Error &other) = delete;
 
 public:
-  Error() : err(false) {}
-  Error(bool err) : err(err) {}
+  Error(bool e = false) : err(e) {}
   bool Has() { return err; }
+  int GetFlag() { Has() ? 1 : 0; }
 };
 
 inline void Panic(const char *msg) { llvm_unreachable(msg); }

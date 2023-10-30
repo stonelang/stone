@@ -156,6 +156,7 @@ public:
     switch (kind) {
     case tok::kw_void:
     case tok::kw_any:
+    case tok::kw_char:
     case tok::kw_int8:
     case tok::kw_int16:
     case tok::kw_int32:
@@ -225,13 +226,14 @@ public:
 
   bool IsQualifier() const {
     return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
-                 tok::kw_final, tok::kw_mutable, tok::kw_pure);
+                 tok::kw_final, tok::kw_mutable, tok::kw_pure, tok::kw_default,
+                 tok::kw_delete);
   }
   bool IsAccessLevel() const {
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
 
-  bool IsTypePattern() const { return (IsStar() || IsAmp()); }
+  bool IsTypeThunk() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }
