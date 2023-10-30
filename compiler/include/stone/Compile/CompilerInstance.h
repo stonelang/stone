@@ -42,12 +42,12 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     &result)>;
 
 class CompilerInstance final {
-  Safe<CompilerInstanceStats> stats;
+  std::unique_ptr<CompilerInstanceStats> stats;
 
   CompilerInvocation &invocation;
 
-  Safe<syn::SyntaxContext> sc;
-  Safe<ModuleSystem> ms;
+  std::unique_ptr<syn::SyntaxContext> sc;
+  std::unique_ptr<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -61,6 +61,8 @@ class CompilerInstance final {
 
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
+
+  mutable syn::ModuleDecl *mainModule = nullptr;
 
 public:
   CompilerInstance(const CompilerInstance &) = delete;

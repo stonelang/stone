@@ -122,9 +122,6 @@ public:
   // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
-
-  stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
-
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
   void Finish() override;
@@ -177,7 +174,7 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
-  DiagUnit &GetDiagUnit() { GetLangContext().GetDiagUnit(); }
+  DiagUnit &GetDiagnoticEngine() { GetLangContext().GetDiagnoticEngine(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
