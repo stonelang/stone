@@ -188,18 +188,18 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
     // Do some logging
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
 
   if (collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
 
   // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
 
   ParserStatus status;
@@ -216,14 +216,14 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
-      return ast::MakeASTError();
+      return parser::MakeParserError();
     }
     // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
-      return ast::MakeASTError();
+      return parser::MakeParserError();
     }
     // TODO: That identifier should already exist
     // status = ParseIdentifier(parentName, parentNameLoc);
@@ -232,7 +232,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
       collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
 
   DeclName fullName;
@@ -255,7 +255,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Apply what what collected
   // collector.Apply();
   // Create the function
-  auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
+  auto funDecl = FunDecl::Create(collector, sc, GetCurDeclContext());
   assert(funDecl);
 
   // TODO: Find a better place for this -- maybe pass as parameter
@@ -270,7 +270,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return ast::MakeParserResult<Decl>(funDecl);
+  return parser::MakeParserResult<Decl>(funDecl);
 }
 
 ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -362,7 +362,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
 
   if (GetTok().IsRParen()) {
@@ -370,9 +370,9 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return ast::MakeASTError();
+    return parser::MakeParserError();
   }
-  return ast::MakeASTSuccess();
+  return parser::MakeParserSuccess();
 }
 
 ParserStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
@@ -414,7 +414,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
          "Attempting to parse a struct without a struct declaration.");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    return parser::MakeASTError();
+    return parser::MakeParserError();
   }
 
   auto structLoc =
