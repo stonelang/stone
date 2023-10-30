@@ -28,7 +28,7 @@
 namespace stone {
 class Tool;
 class Job;
-class Phase;
+class JobAction;
 class TaskQueue;
 class Compilation;
 class ToolChain;
@@ -90,7 +90,7 @@ class Job {
   llvm::SmallVector<const Job *> inputs;
   /// The phase which caused the creation of this Job, and the conditions
   /// under which it must be run.
-  llvm::PointerIntPair<const Phase *, 2, JobCondition> phaseAndCondition;
+  llvm::PointerIntPair<const JobAction *, 2, JobCondition> phaseAndCondition;
 
 protected:
   LangContext &ctx;
@@ -104,7 +104,7 @@ public:
 
 public:
   Job() = delete;
-  Job(const Phase &phase, LangContext &ctx,
+  Job(const JobAction &phase, LangContext &ctx,
       llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType);
   virtual ~Job();
 
@@ -115,7 +115,7 @@ public:
   // TODO: Think about
   void AddInput(const Job *input) { inputs.push_back(input); }
 
-  const Phase &GetPhase() const { return *phaseAndCondition.getPointer(); }
+  const JobAction &GetJobAction() const { return *phaseAndCondition.getPointer(); }
   JobCondition GetJobCondition() const { return phaseAndCondition.getInt(); }
   void SetJobCondition(JobCondition jc) { phaseAndCondition.setInt(jc); }
 
@@ -210,7 +210,7 @@ public:
   /// These are the top-level jobs -- we use them recursively to build
   llvm::SmallVector<const Job *, 16> forTopLevel;
 
-  // llvm::DenseMap<std::pair<const PhaseInput *, const ToolChain *>,
+  // llvm::DenseMap<std::pair<const JobActionInput *, const ToolChain *>,
   // job::Input *>;
 
 public:
@@ -239,9 +239,9 @@ public:
   ~ImageBaseName() = delete;
 };
 
-/// A map for caching Jobs for a given Phase/ToolChain pair
+/// A map for caching Jobs for a given JobAction/ToolChain pair
 using JobCacheMap =
-    llvm::DenseMap<std::pair<const Phase *, const ToolChain *>, Job *>;
+    llvm::DenseMap<std::pair<const JobAction *, const ToolChain *>, Job *>;
 
 } // namespace stone
 

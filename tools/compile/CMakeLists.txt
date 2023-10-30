@@ -1,5 +1,5 @@
 add_stone_tool(stone-compile
-  main.cpp
+  compile.cpp
 )
 target_link_libraries(stone-compile
 	PRIVATE

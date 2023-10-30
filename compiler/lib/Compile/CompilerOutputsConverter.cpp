@@ -218,7 +218,7 @@ CompilerOutputFilesComputer::DeriveOutputFileFromInput(
 
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
-    // Assuming CompilerOptions::doesPhaseProduceOutput(RequestedPhase)
+    // Assuming CompilerOptions::doesJobActionProduceOutput(RequestedJobAction)
     de.PrintD(SrcLoc(), diag::err_no_output_filename_specified,
               diag::LLVMStr(OutputInfo.PrettyName));
     return llvm::None;

@@ -96,21 +96,21 @@ std::unique_ptr<Tool> DarwinToolChain::BuildGit() {
   return nullptr;
 }
 
-JobDetail DarwinToolChain::ConstructDetail(const CompilePhase &action) {
+JobDetail DarwinToolChain::ConstructDetail(const CompileJobAction &action) {
   return ToolChain::ConstructDetail(action);
 }
 
-JobDetail DarwinToolChain::ConstructDetail(const DynamicLinkPhase &action) {
+JobDetail DarwinToolChain::ConstructDetail(const DynamicLinkJobAction &action) {
 
   return JobDetail();
 }
 
-JobDetail DarwinToolChain::ConstructDetail(const StaticLinkPhase &action) {
+JobDetail DarwinToolChain::ConstructDetail(const StaticLinkJobAction &action) {
 
   return JobDetail();
 }
 
-JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkPhase &action) {
+JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkJobAction &action) {
   return JobDetail();
 }
 

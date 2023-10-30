@@ -106,27 +106,27 @@ ToolChain::FindProgramRelativeToStoneImpl(llvm::StringRef executableName) {
   return {};
 }
 
-JobDetail ToolChain::ConstructDetail(const CompilePhase &action) {
+JobDetail ToolChain::ConstructDetail(const CompileJobAction &action) {
   return JobDetail();
 }
 
 std::unique_ptr<Job>
-ToolChain::ConstructJob(const Phase &action, Compilation &compilation,
+ToolChain::ConstructJob(const JobAction &action, Compilation &compilation,
                         std::unique_ptr<CommandOutput> output,
                         const OutputOptions &outputOptions) {
 
   auto jobDetail = [&]() -> JobDetail {
     switch (action.GetKind()) {
-    case PhaseKind::Compile:
-      return ConstructDetail(llvm::cast<CompilePhase>(action));
-    case PhaseKind::StaticLink:
-      return ConstructDetail(llvm::cast<StaticLinkPhase>(action));
-    case PhaseKind::DynamicLink:
-      return ConstructDetail(llvm::cast<DynamicLinkPhase>(action));
-    case PhaseKind::ExecutableLink:
-      return ConstructDetail(llvm::cast<ExecutableLinkPhase>(action));
+    case JobActionKind::Compile:
+      return ConstructDetail(llvm::cast<CompileJobAction>(action));
+    case JobActionKind::StaticLink:
+      return ConstructDetail(llvm::cast<StaticLinkJobAction>(action));
+    case JobActionKind::DynamicLink:
+      return ConstructDetail(llvm::cast<DynamicLinkJobAction>(action));
+    case JobActionKind::ExecutableLink:
+      return ConstructDetail(llvm::cast<ExecutableLinkJobAction>(action));
     default:
-      stone::Panic("No 'Phase' to build Job");
+      stone::Panic("No 'JobAction' to build Job");
     }
   }();
 

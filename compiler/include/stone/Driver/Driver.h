@@ -9,7 +9,7 @@
 #include "stone/Drive/CompilationListener.h"
 #include "stone/Drive/CompilationModel.h"
 #include "stone/Drive/DriverOptions.h"
-#include "stone/Drive/Phase.h"
+#include "stone/Drive/JobAction.h"
 #include "stone/Drive/ToolChain.h"
 #include "stone/Session/Session.h"
 
@@ -21,13 +21,43 @@ class TaskQueue;
 class Compilation;
 
 class HotCache final {
-  PhaseCache actionCache;
+  JobActionCache actionCache;
   JobCache jobCache;
 
 public:
-  PhaseCache &GetPhaseCache() { return actionCache; }
+  JobActionCache &GetJobActionCache() { return actionCache; }
   JobCache &GetJobCache() { return jobCache; }
 };
+
+/// Expand response files in the argument list with retrying.
+/// This function is a wrapper of lvm::cl::ExpandResponseFiles. It will
+/// retry calling the function if the previous expansion failed.
+void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
+                                  llvm::SmallVectorImpl<const char *> &Args);
+
+/// Generates the list of arguments that would be passed to the compiler
+/// invocation from the given driver arguments.
+///
+/// \param ArgList The driver arguments (i.e. normal arguments for \c stonec).
+/// \param Diags The DiagnosticEngine used to report any errors parsing the
+/// arguments.
+/// \param JobAction Called with the list of invocation arguments if there were no
+/// errors in processing \p ArgList. This is a callback rather than a return
+/// value to avoid copying the arguments more than necessary.
+/// \param ForceNoOutputs If true, override the output mode to "-typecheck" and
+/// produce no outputs. For example, this disables "-emit-module" and "-c" and
+/// prevents the creation of temporary files.
+///
+/// \returns True on error, or if \p JobAction returns true.
+///
+/// \note This function is not intended to create invocations which are
+/// suitable for use in REPL or immediate modes.
+bool GetSingleCompilerInvocationFromDriverArguments(
+    ArrayRef<const char *> ArgList, DiagnosticEngine &Diags,
+    llvm::function_ref<bool(ArrayRef<const char *> CompilerArgs)> JobAction,
+    bool ForceNoOutputs = false);
+
+} // end namespace stone
 
 class Driver final : public Session {
 
@@ -48,7 +78,7 @@ class Driver final : public Session {
   // llvm::SmallVector<std::function<void(Compilation &compilation,
   //  HotCache &hc,const Request *input)>,32> listeners;
 
-  llvm::SmallVector<std::unique_ptr<const Phase>, 32> actionions;
+  llvm::SmallVector<std::unique_ptr<const JobAction>, 32> actionions;
 
 public:
   Driver(const Driver &) = delete;
@@ -62,7 +92,7 @@ public:
   void Finish();
 
 public:
-  template <typename T, typename... Args> T *MakePhase(Args &&...args) {
+  template <typename T, typename... Args> T *MakeJobAction(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
     actionions.emplace_back(result);
     return result;
@@ -144,7 +174,7 @@ public:
   // &imageBaseName);
 
   llvm::StringRef ComputeOutputFilename(
-      // const JobPhase *JA,
+      // const JobJobAction *JA,
       // const TypeToPathMap *OutputMap,
       // StringRef workingDirectory,
       // bool AtTopLevel,

@@ -10,12 +10,12 @@
 	DarwinTaskQueue.cpp
 	DarwinToolChain.cpp
 	DebugCompilationListener.cpp
-	Drive.cpp
+	Main.cpp
 	Driver.cpp
 	DriverUtil.cpp
 	Job.cpp
 	TaskQueue.cpp
-	Phase.cpp
+	JobAction.cpp
 	LinkJob.cpp
 	LinuxTaskQueue.cpp
 	LinuxToolChain.cpp
