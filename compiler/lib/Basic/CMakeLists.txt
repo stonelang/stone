@@ -12,9 +12,6 @@ set(stone_basic_sources
 	Cache.cpp
 	BumpTable.cpp
 	Char.cpp
-	DarwinDirWatcher.cpp
-	DirScanner.cpp
-	DirWatcher.cpp
 	EditorPlaceholder.cpp
 	File.cpp
 	FileEntry.cpp
@@ -32,9 +29,7 @@ set(stone_basic_sources
 	StableHasher.cpp
 	Timer.cpp
 	TokenKind.cpp
-	UnixDirWatcher.cpp
 	Version.cpp
-	WinDirWatcher.cpp
 
 )
 add_stone_library(StoneBasic

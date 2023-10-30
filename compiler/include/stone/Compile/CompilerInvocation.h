@@ -55,7 +55,7 @@ struct ModuleBuffers {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-class CompilerInvocation final : public Session {
+class CompilerInvocation final {
 
   CompilerListener *listener = nullptr;
   llvm::StringRef programName;

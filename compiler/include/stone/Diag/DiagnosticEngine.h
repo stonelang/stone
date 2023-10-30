@@ -31,6 +31,12 @@ class SavedDiagnostic;
 class DiagnosticState;
 class Tokenable;
 
+
+class PrintingPolicy {
+public:
+};
+
+
 class DiagnosticState {
   /// Whether we should continue to emit diagnostics, even after a
   /// fatal error
@@ -420,6 +426,9 @@ public:
          typename detail::PassArgument<ArgTypes>::type... args) {
     return PrintD(loc, Diagnostic(id, std::move(args)...), tokenable);
   }
+
+public:
+  void Print(ColorStream &os, const PrintingPolicy *policy = nullptr);
 };
 class DiagnosticStateRAII final {
   llvm::SaveAndRestore<DiagnosticLevel> prevLevel;
