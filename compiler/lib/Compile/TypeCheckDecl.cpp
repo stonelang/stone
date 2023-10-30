@@ -1,17 +1,17 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Sem/TypeCheckAccess.h"
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Syntax/SyntaxVisitor.h"
+#include "stone/AST/ASTVisitor.h"
 
 using stone::sem::TypeChecker;
 
 class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;
-  SyntaxContext &sc;
-  SyntaxFile *sf;
+  ASTContext &sc;
+  ASTFile *sf;
 
 public:
-  DeclChecking(TypeChecker &checker, SyntaxContext &sc, SyntaxFile *sf)
+  DeclChecking(TypeChecker &checker, ASTContext &sc, ASTFile *sf)
       : checker(checker), sc(sc), sf(sf) {}
 
 public:
@@ -30,6 +30,6 @@ public:
 
 void TypeChecker::CheckDecl(Decl *d) {
 
-  auto *sf = d->GetDeclContext()->GetParentSyntaxFile();
-  DeclChecking(*this, d->GetSyntaxContext(), sf).Visit(d);
+  auto *sf = d->GetDeclContext()->GetParentASTFile();
+  DeclChecking(*this, d->GetASTContext(), sf).Visit(d);
 }

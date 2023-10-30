@@ -2,8 +2,8 @@
 #define STONE_GEN_IRCODEGENBUILDER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/CodeGenContext.h"
-#include "stone/Syntax/Module.h"
+#include "stone/CodeGen/CodeGenContext.h"
+#include "stone/AST/Module.h"
 
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"

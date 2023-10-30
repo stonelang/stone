@@ -71,7 +71,7 @@ HelpText<"Parse input file(s)">, ModeOpt,
 Flags<[CompilerOption]>;
 
 
-def DumpSyntax : Flag<["-"], "dump-syntax">,
+def DumpAST : Flag<["-"], "dump-syntax">,
 HelpText<"Parse and dump syntax tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
@@ -80,7 +80,7 @@ HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 
-def PrintSyntax : Flag<["-"], "print-syntax">,
+def PrintAST : Flag<["-"], "print-syntax">,
 HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 

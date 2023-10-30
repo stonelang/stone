@@ -7,11 +7,11 @@
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Session/ModeKind.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxDiagnosticArgument.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTDiagnosticArgument.h"
 
 #include "clang/Basic/TargetInfo.h"
 
@@ -71,8 +71,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // Setup the custom formatting to be able to handle syntax diagnostics
-  SyntaxDiagnosticFormatter diagFormatter;
-  SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
+  ASTDiagnosticFormatter diagFormatter;
+  ASTDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
   invocation.GetDiagEngine().AddListener(diagListener);
@@ -142,12 +142,12 @@ Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
 
     stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
                        primaryFileSpecificPaths);
-  } else if (IsSyntaxFileCodeGen()) {
-    for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
+  } else if (IsASTFileCodeGen()) {
+    for (auto *primaryASTFile : GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-      stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
-                             primarySyntaxFile, primaryFileSpecificPaths);
+          GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
+      stone::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+                             primaryASTFile, primaryFileSpecificPaths);
     }
   }
 
@@ -162,7 +162,7 @@ static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
 
 Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
-  auto result = stone::GenNative(cgc, GetSyntaxContext(), llvm::StringRef(),
+  auto result = stone::GenNative(cgc, GetASTContext(), llvm::StringRef(),
                                  GetInvocation().GetListener());
   return Status::Success();
 }
@@ -231,24 +231,24 @@ Status CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static Status DumpSyntax(CompilerInstance &compiler, syn::SyntaxFile &sf) {
+static Status DumpAST(CompilerInstance &compiler, syn::ASTFile &sf) {
   return Status::Success();
 }
 
-static Status PrintSyntax(CompilerInstance &compiler) {
+static Status PrintAST(CompilerInstance &compiler) {
   return Status::Success();
 }
 
 Status CompilerInstance::CompileWithParsing() {
   return CompileWithParsing(
-      [&](syn::SyntaxFile &) { return Status::Success(); });
+      [&](syn::ASTFile &) { return Status::Success(); });
 }
 
 Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+    if (auto *syntaxFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
+      stone::ParseASTFile(*syntaxFile, GetASTContext(),
                              invocation.GetListener());
       if (notifiy) {
         notifiy(*syntaxFile);
@@ -260,7 +260,7 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
     ResolveImports();
   }
   if (invocation.GetListener()) {
-    invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
+    invocation.GetListener()->OnASTAnalysisCompleted(*this);
   }
   return Status::Success();
 }
@@ -277,10 +277,10 @@ Status CompilerInstance::CompileWithTypeChecking(
   if (status.IsError()) {
     return status;
   }
-  ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
+  ForEachASTFile([&](ASTFile &syntaxFile,
                         TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
-    stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+    stone::TypeCheckASTFile(syntaxFile, typeCheckerOpts, listener);
   });
 
   // TODO: FinishTypeCheck();
@@ -302,16 +302,16 @@ Status CompilerInstance::Compile() {
   case ModeKind::Parse:
     status = CompileWithParsing();
     break;
-  case ModeKind::DumpSyntax:
+  case ModeKind::DumpAST:
     status = CompileWithParsing(
-        [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
+        [&](syn::ASTFile &sf) { return DumpAST(*this, sf); });
     break;
   case ModeKind::TypeCheck:
     status = CompileWithTypeChecking();
     break;
-  case ModeKind::PrintSyntax:
+  case ModeKind::PrintAST:
     status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
+        [&](CompilerInstance &compiler) { return PrintAST(*this); });
     break;
   default:
     status = CompileWithTypeChecking(

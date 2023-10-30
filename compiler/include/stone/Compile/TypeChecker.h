@@ -3,8 +3,8 @@
 
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTContext.h"
 
 #include <memory>
 
@@ -15,7 +15,7 @@ class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
-class SyntaxFile;
+class ASTFile;
 class Expr;
 class Decl;
 class Stmt;
@@ -40,7 +40,7 @@ public:
 class TypeChecker final {
   friend TypeCheckerStats;
 
-  SyntaxContext &sc;
+  ASTContext &sc;
   TypeCheckerOptions &typeCheckerOpts;
   std::unique_ptr<TypeCheckerStats> stats;
   TypeCheckerListener *pipeline;
@@ -51,12 +51,12 @@ public:
   ~TypeChecker();
 
 public:
-  /// TODO: Pass in Syntax so that you can create the Nodes
-  TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
+  /// TODO: Pass in AST so that you can create the Nodes
+  TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
               TypeCheckerListener *pipeline = nullptr);
 
 public:
-  void CheckSyntaxNode(SyntaxNode &syntaxNode, DeclContext *dc,
+  void CheckASTNode(ASTNode &syntaxNode, DeclContext *dc,
                        bool checkBody = false);
 
 public:

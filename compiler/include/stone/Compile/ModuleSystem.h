@@ -6,8 +6,8 @@
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTContext.h"
 
 namespace stone {
 
@@ -23,11 +23,11 @@ public:
 
 class CompilerInvocation;
 
-// TODO: Move to Syntax
+// TODO: Move to AST
 class ModuleSystem final {
   // TODO: We need built-in information
   CompilerInvocation &invocation;
-  syn::SyntaxContext &sc;
+  syn::ASTContext &sc;
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
 
@@ -37,28 +37,28 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(CompilerInvocation &invocation, syn::SyntaxContext &sc);
+  ModuleSystem(CompilerInvocation &invocation, syn::ASTContext &sc);
   ~ModuleSystem();
 
 public:
   syn::ModuleDecl *GetMainModule() const;
   void SetMainModule(syn::ModuleDecl *mod);
 
-  Error CreateSyntaxFilesForMainModule(
+  Error CreateASTFilesForMainModule(
       syn::ModuleDecl *mod,
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 
-  syn::SyntaxFile *
-  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod,
-                                syn::SyntaxFileKind fileKind, unsigned bufferID,
+  syn::ASTFile *
+  CreateASTFileForMainModule(syn::ModuleDecl *mod,
+                                syn::ASTFileKind fileKind, unsigned bufferID,
                                 bool isMainBuffer = false) const;
 
-  syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
+  syn::ASTFile *ComputeMainASTFileForModule(syn::ModuleDecl *mod) const;
 
   CompilerInvocation &GetCompilerInvocation() { return invocation; }
 
-  syn::SyntaxFile::ParsingOptions
-  GetSyntaxFileParsingOptions(bool forPrimary) const;
+  syn::ASTFile::ParsingOptions
+  GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);

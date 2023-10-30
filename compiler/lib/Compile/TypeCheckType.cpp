@@ -1,12 +1,12 @@
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Syntax/SyntaxWalker.h"
-#include "stone/Syntax/TypeVisitor.h"
+#include "stone/AST/ASTWalker.h"
+#include "stone/AST/TypeVisitor.h"
 
 using namespace stone::sem;
 using namespace stone::syn;
 
 class TypeChecking final : public TypeVisitor<TypeChecking>,
-                           public SyntaxWalker {
+                           public ASTWalker {
 public:
 };
 
@@ -16,11 +16,11 @@ void TypeChecker::CheckTypes(Decl *d) {
   //     return;
   // }
   // auto syntaxFile = d->GetDeclContext()->GetParentSourceFile();
-  // if (syntaxFile && syntaxFile->GetKind() == SyntaxFileKind::Interface) {
+  // if (syntaxFile && syntaxFile->GetKind() == ASTFileKind::Interface) {
   //   return;
   // }
 
-  auto &ctx = d->GetSyntaxContext();
+  auto &ctx = d->GetASTContext();
 }
 
 void TypeChecker::CheckTypes(Stmt *stmt, DeclContext *dc) {}

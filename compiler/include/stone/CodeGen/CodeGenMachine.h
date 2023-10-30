@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_BACKENDCODEGEN_H
 #define STONE_GEN_BACKENDCODEGEN_H
 
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Public.h"
 
 namespace llvm {
@@ -16,12 +16,12 @@ class TargetMachine;
 namespace stone {
 namespace syn {
 class Module;
-class SyntaxContext;
+class ASTContext;
 } // namespace syn
 
 class CodeGenMachine final {
   CodeGenContext &cgc;
-  syn::SyntaxContext &sc;
+  syn::ASTContext &sc;
 
   // llvm::Optional<raw_fd_ostream> rawStream;
 public:
@@ -29,11 +29,11 @@ public:
   void operator=(const CodeGenMachine &) = delete;
 
 public:
-  CodeGenMachine(CodeGenContext &cgc, syn::SyntaxContext &sc);
+  CodeGenMachine(CodeGenContext &cgc, syn::ASTContext &sc);
   ~CodeGenMachine();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  syn::SyntaxContext &GetSyntaxContext() { return sc; }
+  syn::ASTContext &GetASTContext() { return sc; }
 };
 } // namespace stone
 

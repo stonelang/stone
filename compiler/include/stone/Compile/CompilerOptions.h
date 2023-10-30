@@ -10,7 +10,7 @@
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Session/Options.h"
 #include "stone/Session/SessionOptions.h"
-#include "stone/Syntax/SearchPath.h"
+#include "stone/AST/SearchPath.h"
 
 namespace stone {
 

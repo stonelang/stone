@@ -1,10 +1,10 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Gen/CodeGen.h"
-#include "stone/Gen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenModule.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTContext.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -79,18 +79,18 @@ using namespace stone::syn;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
-                  syn::SyntaxFile *sf, CodeGenListener *listener) {
+                  syn::ASTFile *sf, CodeGenListener *listener) {
 
   CodeGen cg(cgc, listener);
   CodeGenModule cgm(cg, moduleName, paths.outputFilename);
 
   if (sf) {
-    cgm.EmitSyntaxFile(*sf);
+    cgm.EmitASTFile(*sf);
   } else if (md) {
     for (auto *moduleFile : md->GetFiles()) {
-      if (auto *nextSyntaxFile = llvm::dyn_cast<SyntaxFile>(moduleFile)) {
-        if (nextSyntaxFile->stage >= SyntaxFileStage::TypeChecked)
-          cgm.EmitSyntaxFile(*nextSyntaxFile);
+      if (auto *nextASTFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
+        if (nextASTFile->stage >= ASTFileStage::TypeChecked)
+          cgm.EmitASTFile(*nextASTFile);
       } else {
         // File->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
         //   IGM.addLinkLibrary(LinkLib);
@@ -100,8 +100,8 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void stone::GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                            syn::SyntaxFile *sf,
+void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                            syn::ASTFile *sf,
                             const PrimaryFileSpecificPaths paths,
                             CodeGenListener *listener) {
   assert(sf);

@@ -12,7 +12,7 @@ namespace stone {
 
 class SrcID;
 class SrcMgr;
-class SyntaxListener;
+class ASTListener;
 
 namespace syn {
 class Token;
@@ -74,7 +74,7 @@ class Lexer final : public Tokenable {
   const SrcMgr &sm;
   stone::DiagnosticEngine *de;
   StatisticEngine *se;
-  SyntaxListener *listener;
+  ASTListener *listener;
   LexingState state;
 
   std::unique_ptr<LexerStats> stats;
@@ -146,7 +146,7 @@ class Lexer final : public Tokenable {
         stone::DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention,
-        SyntaxListener *listener = nullptr);
+        ASTListener *listener = nullptr);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -177,17 +177,17 @@ public:
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia,
-      SyntaxListener *listener = nullptr);
+      ASTListener *listener = nullptr);
 
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatisticEngine *se, SyntaxListener *listener = nullptr);
+        StatisticEngine *se, ASTListener *listener = nullptr);
 
   /// Create a lexer that scans a subrange of the source buffer.
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
         StatisticEngine *se, LexerMode LexMode, HashbangMode HashbangAllowed,
         CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention, unsigned Offset,
-        unsigned EndOffset, SyntaxListener *listener = nullptr);
+        unsigned EndOffset, ASTListener *listener = nullptr);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.

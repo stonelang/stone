@@ -1,8 +1,8 @@
-#include "stone/Gen/CodeGen.h"
-#include "stone/Gen/CodeGenFunction.h"
-#include "stone/Gen/CodeGenModule.h"
-#include "stone/Syntax/Decl.h"
-#include "stone/Syntax/Global.h"
+#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenFunction.h"
+#include "stone/CodeGen/CodeGenModule.h"
+#include "stone/AST/Decl.h"
+#include "stone/AST/Global.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -28,21 +28,21 @@ void CodeGenModule::EmitGlobalDecl(Decl *d) {
 // void CodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
 
 namespace {
-class PrettySyntaxFileEmission : public llvm::PrettyStackTraceEntry {
-  const syn::SyntaxFile &sf;
+class PrettyASTFileEmission : public llvm::PrettyStackTraceEntry {
+  const syn::ASTFile &sf;
 
 public:
-  explicit PrettySyntaxFileEmission(const SyntaxFile &sf) : sf(sf) {}
+  explicit PrettyASTFileEmission(const ASTFile &sf) : sf(sf) {}
   void print(raw_ostream &os) const override {
     // os << "While emitting IR for syntax file " << SF.GetFilename() << '\n';
   }
 };
 } // end anonymous namespace
 
-void CodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
+void CodeGenModule::EmitASTFile(syn::ASTFile &sf) {
 
-  PrettySyntaxFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<syn::SyntaxFile *> setCurSyntaxFile(curSyntaxFile, &sf);
+  PrettyASTFileEmission stackEntry(sf);
+  llvm::SaveAndRestore<syn::ASTFile *> setCurASTFile(curASTFile, &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {

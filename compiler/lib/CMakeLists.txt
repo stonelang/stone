@@ -7,5 +7,5 @@ add_subdirectory(Gen)
 add_subdirectory(Parse)
 add_subdirectory(Sem)
 add_subdirectory(Session)
-add_subdirectory(Syntax)
+add_subdirectory(AST)
 

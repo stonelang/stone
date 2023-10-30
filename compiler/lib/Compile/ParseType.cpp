@@ -1,9 +1,9 @@
-#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/ASTDiagnostic.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/Type.h"
-#include "stone/Syntax/Types.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTNode.h"
+#include "stone/AST/Type.h"
+#include "stone/AST/Types.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -27,9 +27,9 @@ Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
   //          "Function can have only 'pure' type-specifier at this point");
   // }
 
-  // SyntaxStatus status;
+  // ASTStatus status;
 
-  // SyntaxResult<Type> type =
+  // ASTResult<Type> type =
   //     ParseType(collector, diag::err_expected_type_for_function_result);
 
   // if (!collector.GetTypeSpecifierCollector().HasAny()) {
@@ -46,8 +46,8 @@ Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 
   // TODO: Call parseType to get the actual type
 
-  // auto qualType = new (GetSyntaxContext()) QualifierType();
-  // auto functionType = new (GetSyntaxContext()) FunctionType(qualType);
+  // auto qualType = new (GetASTContext()) QualifierType();
+  // auto functionType = new (GetASTContext()) FunctionType(qualType);
 
   return result;
 }
@@ -111,7 +111,7 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   TypeThunkList *chunks = nullptr;
   if (collector.GetTypeThunkCollector().HasAny()) {
     chunks = TypeThunkList::Create(
-        collector.GetTypeThunkCollector().GetTypeThunks(), GetSyntaxContext());
+        collector.GetTypeThunkCollector().GetTypeThunks(), GetASTContext());
   }
 
   Type ty;
@@ -120,28 +120,28 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
-    ty = GetSyntaxContext().GetBuiltinContext().BuiltinVoidType;
+    ty = GetASTContext().GetBuiltinContext().BuiltinVoidType;
     break;
   }
 
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
-    ty = GetSyntaxContext().GetBuiltinContext().BuiltinIntType;
+    ty = GetASTContext().GetBuiltinContext().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
     assert(collector.GetTypeSpecifierCollector().IsInt16());
-    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt16Type;
+    ty = GetASTContext().GetBuiltinContext().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
     assert(collector.GetTypeSpecifierCollector().IsInt32());
-    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt32Type;
+    ty = GetASTContext().GetBuiltinContext().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
     assert(collector.GetTypeSpecifierCollector().IsInt64());
-    ty = GetSyntaxContext().GetBuiltinContext().BuiltinInt64Type;
+    ty = GetASTContext().GetBuiltinContext().BuiltinInt64Type;
     break;
   }
   }

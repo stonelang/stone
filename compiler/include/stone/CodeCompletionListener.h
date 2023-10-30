@@ -22,7 +22,7 @@ class Stmt;
 class Expr;
 class Module;
 class Token;
-class SyntaxFile;
+class ASTFile;
 
 } // namespace syn
 
@@ -41,10 +41,10 @@ public:
   virtual void OnToken(const syn::Token *token) {}
 };
 
-class SyntaxListener : public CodeCompletionListener {
+class ASTListener : public CodeCompletionListener {
 public:
-  SyntaxListener() = default;
-  virtual ~SyntaxListener() = default;
+  ASTListener() = default;
+  virtual ~ASTListener() = default;
 
 public:
   virtual void OnDone() {}
@@ -59,7 +59,7 @@ public:
 public:
   virtual void OnParseError() {}
   virtual void OnParseStarted() {}
-  virtual void OnParseSyntaxFile(syn::SyntaxFile *sf) {}
+  virtual void OnParseASTFile(syn::ASTFile *sf) {}
   virtual void OnParseCompleted() {}
 };
 
@@ -75,7 +75,7 @@ public:
 
 public:
   virtual void OnTypeCheckError();
-  virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnASTFileTypeChecked(syn::ASTFile *syntaxFile) {}
   virtual void OnModuleTypeChecked(syn::Module *mod) {}
 
 public:
@@ -106,7 +106,7 @@ public:
 class CompilerInstance;
 class CompilerInvocation;
 class CompilerListener : public LexerListener,
-                         public SyntaxListener,
+                         public ASTListener,
                          public TypeCheckerListener,
                          public CodeGenListener {
 public:
@@ -116,7 +116,7 @@ public:
 public:
   virtual void OnCompileConfigured(CompilerInvocation &invocation) {}
   virtual void OnCompileStarted(CompilerInstance &instance) {}
-  virtual void OnSyntaxAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnASTAnalysisCompleted(CompilerInstance &instance) {}
   virtual void OnSemanticAnalysisCompleted(CompilerInstance &instance) {}
   virtual void OnCodeGenCompleted(CompilerInstance &instance) {}
   virtual void OnCompileCompleted(CompilerInstance &instance) {}

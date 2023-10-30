@@ -3,7 +3,7 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/AST/ASTContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -20,10 +20,10 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+using ModuleASTFileUnion =
+    llvm::PointerUnion<syn::ModuleDecl *, syn::ASTFile *>;
 
-using ParsingCompletedCallback = llvm::function_ref<Status(syn::SyntaxFile &)>;
+using ParsingCompletedCallback = llvm::function_ref<Status(syn::ASTFile &)>;
 
 using TypeCheckingCompletedCallback =
     llvm::function_ref<Status(CompilerInstance &)>;
@@ -34,8 +34,8 @@ using CodeGenCompletedCallback =
 using BackendCodeGenCompletedCallback =
     llvm::function_ref<void(CompilerInstance &)>;
 
-using EachSyntaxFileCallback = llvm::function_ref<void(
-    syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+using EachASTFileCallback = llvm::function_ref<void(
+    syn::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 // using CompileWithGenIRCallback = llvm::function_ref<void(
 //     CompilerInvocation&invocation, CodeGenContext &cgc, CodeGenResult
@@ -46,7 +46,7 @@ class CompilerInstance final {
 
   CompilerInvocation &invocation;
 
-  std::unique_ptr<syn::SyntaxContext> sc;
+  std::unique_ptr<syn::ASTContext> sc;
   std::unique_ptr<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
@@ -77,7 +77,7 @@ public:
   void Finish();
 
 public:
-  syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
+  syn::ASTContext &GetASTContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
 
@@ -113,15 +113,15 @@ private:
   Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
-  void ForEachSyntaxFile(EachSyntaxFileCallback fn);
+  void ForEachASTFile(EachASTFileCallback fn);
   void ResolveImports();
 
 public:
-  syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
+  syn::ModuleDecl *CastToModuleDecl(stone::ModuleASTFileUnion msf) {
     return msf.get<syn::ModuleDecl *>();
   }
-  syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
-    msf.dyn_cast<syn::SyntaxFile *>();
+  syn::ASTFile *CastToASTFile(stone::ModuleASTFileUnion msf) {
+    msf.dyn_cast<syn::ASTFile *>();
   }
 
   Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
@@ -143,7 +143,7 @@ public:
                 ? false
                 : true);
   }
-  bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
+  bool IsASTFileCodeGen() { return !GetPrimaryASTFiles().empty(); }
 
 public:
   //== Utils ==//
@@ -153,14 +153,14 @@ public:
   void ComputeCodeCodeGenOutputKind();
 
 public:
-  /// Gets the set of SyntaxFiles which are the primary inputs for this
+  /// Gets the set of ASTFiles which are the primary inputs for this
   /// CompilerInstance.
-  llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
-    return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  llvm::ArrayRef<syn::ASTFile *> GetPrimaryASTFiles() const {
+    return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
   }
 
-  // bool HasPrimarySyntaxFiles() const {
-  //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
+  // bool HasPrimaryASTFiles() const {
+  //   return GetModuleSystem().GetMainModule()->HasPrimaryASTFiles();
   // }
 
   const PrimaryFileSpecificPaths &
@@ -173,7 +173,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
+  GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const;
 
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);

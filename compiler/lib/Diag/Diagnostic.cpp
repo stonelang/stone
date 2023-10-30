@@ -20,7 +20,7 @@ using stone::InFlightDiagnostic;
 //     break;
 //   case diag::ArgumentKind::TokenType:
 //     break;
-//   case diag::ArgumentKind::Syntax:
+//   case diag::ArgumentKind::AST:
 //     // Ignore and handle elswhere
 //     break;
 //   default:

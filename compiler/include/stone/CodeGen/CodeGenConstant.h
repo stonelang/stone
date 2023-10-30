@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_IRCODEGENCONST_H
 #define STONE_GEN_IRCODEGENCONST_H
 
-#include "stone/Gen/CodeGenFunction.h"
-#include "stone/Gen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGenFunction.h"
+#include "stone/CodeGen/CodeGenModule.h"
 
 namespace stone {
 

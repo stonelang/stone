@@ -1,8 +1,8 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/SyntaxResult.h"
+#include "stone/AST/ASTResult.h"
 
 using namespace stone::syn;
 
-SyntaxResult<Expr> Parser::ParseExpr() {
-  return syn::MakeSyntaxResult<Expr>(nullptr);
+ASTResult<Expr> Parser::ParseExpr() {
+  return syn::MakeASTResult<Expr>(nullptr);
 }

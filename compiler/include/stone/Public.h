@@ -26,7 +26,7 @@ class GlobalVariable;
 } // namespace llvm
 
 namespace stone {
-class SyntaxListener;
+class ASTListener;
 class CodeGenOptions;
 class CodeGenContext;
 class CodeGenScope;
@@ -42,8 +42,8 @@ class PrimaryFileSpecificPaths;
 class CompilerOptions;
 
 namespace syn {
-class SyntaxContext;
-class SyntaxFile;
+class ASTContext;
+class ASTFile;
 class ModuleDecl;
 } // namespace syn
 } // namespace stone
@@ -96,14 +96,14 @@ namespace stone {
 class CodeGenContext;
 class CompilerInstance;
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+using ModuleASTFileUnion =
+    llvm::PointerUnion<syn::ModuleDecl *, syn::ASTFile *>;
 
-// using ParseSyntaxFileListener =
-//      llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
+// using ParseASTFileListener =
+//      llvm::function_ref<void(syn::ASTFile &syntaxFile, bool *error)>;
 
 // using SemanticConsumer = llvm::function_ref<void(
-//     CompilerInstance &instance, ModuleSyntaxFileUnion moduleSyntaxFileUnion,
+//     CompilerInstance &instance, ModuleASTFileUnion moduleASTFileUnion,
 //     bool *error)>;
 
 // using CodeGenConsumer = llvm::function_ref<Status(
@@ -122,29 +122,29 @@ class CompilerInstance;
 // bool CompileFrontend(CompilerInstance &instance);
 // bool CompileBackend(CompilerInstance &instance);
 
-/// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
+/// Parse, type-check, resolve imports, and generate IR for the ASTFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true is successfull
-bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, CompilerInstance &instance,
+bool CompileASTFile(syn::ASTFile &syntaxFile, CompilerInstance &instance,
                        CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
-                     SyntaxListener *listener = nullptr);
+void ParseASTFile(syn::ASTFile &syntaxFile, syn::ASTContext &context,
+                     ASTListener *listener = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile);
+void ResolveASTFileImports(syn::ASTFile &syntaxFile);
 
 /// Once import resolution is complete, this walks the syntax to resolve types
 /// and diagnose problems therein.
 /// Returns true is successfull
-void TypeCheckSyntaxFile(
-    syn::SyntaxFile &syntaxFile, TypeCheckerOptions &opts,
+void TypeCheckASTFile(
+    syn::ASTFile &syntaxFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
-        nullptr /*, TypeCheckSyntaxFileCallback* callback = nullptr*/);
+        nullptr /*, TypeCheckASTFileCallback* callback = nullptr*/);
 
 /// Now that we have type-checked an entire module, perform any type
 /// checking that requires the full module.
@@ -159,15 +159,15 @@ void TypeCheckWholeModule(
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
 /// Returns true is successfull
-void SerializeSyntaxFile(syn::SyntaxFile &syntaxFile);
+void SerializeASTFile(syn::ASTFile &syntaxFile);
 
 /// Returns true is successfull
 void SerializeModuleDecl(syn::ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                     syn::SyntaxFile *sf,
+void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                     syn::ASTFile *sf,
                      const PrimaryFileSpecificPaths specificPaths,
                      CodeGenListener *listener = nullptr);
 
@@ -178,7 +178,7 @@ void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                  const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener = nullptr);
 
-bool EmitImportedModules(syn::SyntaxContext &context,
+bool EmitImportedModules(syn::ASTContext &context,
                          syn::ModuleDecl *mainModule,
                          const CompilerOptions &opts);
 
@@ -188,7 +188,7 @@ bool EmitImportedModules(syn::SyntaxContext &context,
 namespace stone {
 /// Returns true is successfull
 // bool CompileBackend(CodeGenContext &codeGenConext,
-//                     syn::SyntaxContext &syntaxContext,
+//                     syn::ASTContext &syntaxContext,
 //                     CodeGenListener *listener = nullptr);
 
 // std::unique_ptr<llvm::TargetMachine>
@@ -208,12 +208,12 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 LangContext &langContext, llvm::TargetMachine *target);
 
 /// Returns true is successfull
-bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
                llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
-                           const syn::SyntaxContext &Context,
+                           const syn::ASTContext &Context,
                            const CodeGenOptions &opts);
 
 /// Run the LLVM passes. In multi-threaded compilation this will be done for
@@ -227,7 +227,7 @@ bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
 /// \param TargetMachine target of code gen, required.
 /// \param OutputFilename Filename for output.
 
-bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
                llvm::GlobalVariable *hashGlobal,
                CodeGenListener *listener = nullptr);

@@ -12,11 +12,11 @@ enum class ModeKind : unsigned {
   ///< Parse and resolve use(s) only
   ResolveImports,
   ///< Parse and dump syntax tree
-  DumpSyntax,
+  DumpAST,
   ///< Parse and type-check only
   TypeCheck,
   ///< Parse, type-check, and  pretty print syntax tree
-  PrintSyntax,
+  PrintAST,
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
   //</ Parse, type-check, and emit LLVM IR pre optimization

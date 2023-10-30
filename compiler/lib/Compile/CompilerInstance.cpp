@@ -10,11 +10,11 @@ using namespace stone;
 
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
-      sc(new syn::SyntaxContext(invocation.GetLangContext(),
+      sc(new syn::ASTContext(invocation.GetLangContext(),
                                 invocation.GetSearchPathOptions(),
                                 invocation.GetClangContext())),
       stats(new CompilerInstanceStats(*this)),
-      ms(new ModuleSystem(invocation, GetSyntaxContext())) {
+      ms(new ModuleSystem(invocation, GetASTContext())) {
 
   invocation.GetLangContext().GetStatEngine().Register(stats.get());
 
@@ -64,8 +64,8 @@ CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
-    const syn::SyntaxFile &sf) const {
+CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
+    const syn::ASTFile &sf) const {
   return invocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -74,17 +74,17 @@ CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
 void CompilerInstance::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile))
+    if (auto *syntaxFile = dyn_cast<syn::ASTFile>(moduleFile))
       sem::ResolveImports(*syntaxFile);
   }
 }
 
-void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+void CompilerInstance::ForEachASTFile(EachASTFileCallback client) {
 
   switch (invocation.GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
+      auto *syntaxFile = dyn_cast<syn::ASTFile>(moduleFile);
       if (syntaxFile) {
         client(*syntaxFile, invocation.GetTypeCheckerOptions(),
                invocation.GetListener());
@@ -94,7 +94,7 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   }
   case TypeCheckMode::EachFile: {
     for (auto *syntaxFile :
-         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
+         GetModuleSystem().GetMainModule()->GetPrimaryASTFiles()) {
       client(*syntaxFile, invocation.GetTypeCheckerOptions(),
              invocation.GetListener());
     }

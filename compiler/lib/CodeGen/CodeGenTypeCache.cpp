@@ -1,7 +1,7 @@
-#include "stone/Gen/CodeGen.h"
+#include "stone/CodeGen/CodeGen.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/Module.h"
 
 #include "llvm/IR/Module.h"
 

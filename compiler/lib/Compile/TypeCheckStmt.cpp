@@ -1,5 +1,5 @@
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Syntax/SyntaxVisitor.h"
+#include "stone/AST/ASTVisitor.h"
 
 using namespace stone::sem;
 

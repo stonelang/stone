@@ -9,14 +9,14 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Session/Mode.h"
 #include "stone/Session/Session.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxOptions.h"
-#include "stone/Syntax/TypeCheckerOptions.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTOptions.h"
+#include "stone/AST/TypeCheckerOptions.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -76,7 +76,7 @@ class CompilerInvocation final {
 
   ModuleOptions moduleOpts;
 
-  SyntaxOptions syntaxOpts;
+  ASTOptions syntaxOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -119,7 +119,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
-  // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
@@ -147,8 +147,8 @@ public:
   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
-  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+  ASTOptions &GetASTOptions() { return syntaxOpts; }
+  const ASTOptions &GetASTOptions() const { return syntaxOpts; }
 
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {

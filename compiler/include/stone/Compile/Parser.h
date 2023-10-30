@@ -8,25 +8,25 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Syntax/Attribute.h"
-#include "stone/Syntax/Expr.h"
-#include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/SyntaxOptions.h"
-#include "stone/Syntax/SyntaxResult.h"
+#include "stone/AST/Attribute.h"
+#include "stone/AST/Expr.h"
+#include "stone/AST/Identifier.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/Specifier.h"
+#include "stone/AST/Stmt.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTNode.h"
+#include "stone/AST/ASTOptions.h"
+#include "stone/AST/ASTResult.h"
 
 #include "llvm/Support/Timer.h"
 
 namespace stone {
-class SyntaxListener;
+class ASTListener;
 namespace syn {
 
 class BraceStmt;
-class Syntax;
+class AST;
 class Parser;
 class Scope;
 class PairDelimiterBalancer;
@@ -48,31 +48,31 @@ class Parser final {
 
   // friend PairDelimiterBalancer;
 
-  SyntaxListener *listener;
+  ASTListener *listener;
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  SyntaxContext &sc;
-  SyntaxFile &sf;
+  ASTContext &sc;
+  ASTFile &sf;
   DeclContext *curDC;
 
   /// This is the current curTok being considered by the parser.
   Token curTok;
 
   /// leading trivias for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
+  /// Always empty if !SF.shouldBuildASTTree().
   // Trivia leadingTrivia;
 
   /// trailing trivias for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
+  /// Always empty if !SF.shouldBuildASTTree().
   // Trivia trailingTrivia;
 
   /// Leading trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
+  /// Always empty if !SF.shouldBuildASTTree().
   llvm::StringRef leadingTrivia;
 
   /// Trailing trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
+  /// Always empty if !SF.shouldBuildASTTree().
   llvm::StringRef trailingTrivia;
 
   /// The location of the previous tok.
@@ -93,11 +93,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lexer,
-         SyntaxListener *listener = nullptr);
+  Parser(ASTFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
+         ASTListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener = nullptr);
+  Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener = nullptr);
 
   ~Parser();
 
@@ -105,9 +105,9 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
-  SyntaxContext &GetSyntaxContext() { return sc; }
+  ASTContext &GetASTContext() { return sc; }
 
-  void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
+  void SetASTListener(ASTListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
   LangContext &GetLangContext() { return sc.GetLangContext(); }
@@ -124,45 +124,45 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
+  void ParseTopLevelDecls(llvm::SmallVector<ASTResult<Decl>> &results);
 
 private:
-  SyntaxResult<Decl> ParseTopLevelDecl();
+  ASTResult<Decl> ParseTopLevelDecl();
 
 public:
   // TODO: We only need on ParseDecl
-  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
+  ASTResult<Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
   void ParseDeclName();
 
-  // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
+  // ASTStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
-  SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
+  ASTResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
 public:
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
-  SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
+  ASTResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
+  ASTResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
 public:
   // === Collectors === ///
-  SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
-  SyntaxStatus CollectUsingDecl(ParsingDeclCollector &collector);
-  SyntaxStatus CollectAccessLevel(ParsingDeclCollector &collector);
+  ASTStatus CollectDecl(ParsingDeclCollector &collector);
+  ASTStatus CollectUsingDecl(ParsingDeclCollector &collector);
+  ASTStatus CollectAccessLevel(ParsingDeclCollector &collector);
 
   bool IsTypeThunk(const Token &tk);
-  SyntaxStatus CollectTypeThunk(TypeCollector &collector);
-  SyntaxStatus CollectTypeThunks(TypeCollector &collector);
-  SyntaxStatus CollectBasicTypeDecl(TypeCollector &collector);
-  SyntaxStatus CollectNominalTypeDecl(TypeCollector &collector);
-  SyntaxStatus CollectTypeQualifiers(TypeCollector &collector);
-  SyntaxStatus CollectTypeQualifier(TypeCollector &collector);
-  SyntaxStatus CollectTypeOperator(TypeCollector &collector);
-  SyntaxStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
-  SyntaxStatus CollectFunctionDecl(ParsingDeclCollector &collector);
-  SyntaxStatus VerifyDeclCollected(ParsingDeclCollector &collector);
+  ASTStatus CollectTypeThunk(TypeCollector &collector);
+  ASTStatus CollectTypeThunks(TypeCollector &collector);
+  ASTStatus CollectBasicTypeDecl(TypeCollector &collector);
+  ASTStatus CollectNominalTypeDecl(TypeCollector &collector);
+  ASTStatus CollectTypeQualifiers(TypeCollector &collector);
+  ASTStatus CollectTypeQualifier(TypeCollector &collector);
+  ASTStatus CollectTypeOperator(TypeCollector &collector);
+  ASTStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
+  ASTStatus CollectFunctionDecl(ParsingDeclCollector &collector);
+  ASTStatus VerifyDeclCollected(ParsingDeclCollector &collector);
 
 public:
   // === Type Parsing ===//
@@ -181,10 +181,10 @@ public:
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
+  ASTResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDeclCollector &collector,
+  ASTStatus ParseFunctionSignature(ParsingDeclCollector &collector,
                                       Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
@@ -197,8 +197,8 @@ private:
   //                                       bool &rethrows,
   //                                       Typer *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
-  SyntaxStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
+  ASTStatus ParseFunctionArguments(ParsingDeclCollector &collectorifier);
+  ASTStatus ParseFunctionBody(ParsingDeclCollector &collectorifier,
                                  FunctionDecl &functionDecl);
 
   BraceStmt *ParseFunctionBodyImpl(ParsingDeclCollector &collectorifier,
@@ -206,19 +206,19 @@ private:
 
 public:
   //== using ==//
-  SyntaxResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
+  ASTResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== struct ==//
-  SyntaxResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
+  ASTResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== enum== //
-  SyntaxResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
+  ASTResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== interface ==//
-  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
+  ASTResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -227,16 +227,16 @@ private:
   }
 
 public:
-  SyntaxResult<Decl> ParseSpaceDecl();
+  ASTResult<Decl> ParseSpaceDecl();
 
 public:
   bool IsStartOfStmt();
   /// Stmt
-  SyntaxResult<Stmt> ParseStmt();
+  ASTResult<Stmt> ParseStmt();
 
 public:
   /// Expr
-  SyntaxResult<Expr> ParseExpr();
+  ASTResult<Expr> ParseExpr();
 
 public:
   /// Stop parsing now.
@@ -315,13 +315,13 @@ public:
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
 
-  SyntaxStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
+  ASTStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
   SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:
   // == Skipping ==/
 
-  SyntaxStatus SkipUntil(tok T1, tok T2 = tok::MAX);
+  ASTStatus SkipUntil(tok T1, tok T2 = tok::MAX);
   void SkipUntilAnyOperator();
 
   /// Skip until a curTok that starts with '>', and consume it if found.
@@ -346,7 +346,7 @@ public:
   ///
   /// Returns a parser status that can capture whether a code completion curTok
   /// was returned.
-  SyntaxStatus SkipSingle();
+  ASTStatus SkipSingle();
   /// Skip until the next '#else', '#endif' or until eof.
   void SkipUntilConditionalBlockClose();
 
@@ -396,7 +396,7 @@ public:
   InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
-  static Scope *CreateScope(ScopeKind kind, SyntaxContext &sc,
+  static Scope *CreateScope(ScopeKind kind, ASTContext &sc,
                             DiagnosticEngine &diags, Scope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }

@@ -1,8 +1,8 @@
-#include "stone/Gen/CodeGenTypeResolver.h"
-#include "stone/Gen/CodeGen.h"
-#include "stone/Gen/CodeGenABI.h"
-#include "stone/Gen/CodeGenModule.h"
-#include "stone/Syntax/Type.h"
+#include "stone/CodeGen/CodeGenTypeResolver.h"
+#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenABI.h"
+#include "stone/CodeGen/CodeGenModule.h"
+#include "stone/AST/Type.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Analysis/ValueTracking.h"

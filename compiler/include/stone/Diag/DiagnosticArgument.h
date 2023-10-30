@@ -55,7 +55,7 @@ enum class ArgumentKind {
   TokenKind,
 
   /// custom argument
-  Syntax,
+  AST,
 
 };
 
@@ -148,7 +148,7 @@ public:
   tok GetVal() const { return val; }
 };
 
-enum class SyntaxArgumentKind {
+enum class ASTArgumentKind {
   None,
   Decl,
   DeclContext,
@@ -156,14 +156,14 @@ enum class SyntaxArgumentKind {
   Identifier,
   Token
 };
-struct SyntaxArgument : public Argument {
-  SyntaxArgumentKind kind = SyntaxArgumentKind::None;
+struct ASTArgument : public Argument {
+  ASTArgumentKind kind = ASTArgumentKind::None;
 
 public:
-  SyntaxArgument() = delete;
-  explicit SyntaxArgument(SyntaxArgumentKind kind)
-      : Argument(ArgumentKind::Syntax), kind(kind) {}
-  SyntaxArgumentKind GetSyntaxArgumentKind() const { return kind; }
+  ASTArgument() = delete;
+  explicit ASTArgument(ASTArgumentKind kind)
+      : Argument(ArgumentKind::AST), kind(kind) {}
+  ASTArgumentKind GetASTArgumentKind() const { return kind; }
 };
 
 } // namespace diag

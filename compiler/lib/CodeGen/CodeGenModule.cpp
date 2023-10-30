@@ -1,8 +1,8 @@
-#include "stone/Gen/CodeGenModule.h"
-#include "stone/Gen/CodeGen.h"
-#include "stone/Gen/CodeGenABI.h"
+#include "stone/CodeGen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenABI.h"
 
-#include "stone/Syntax/Decl.h"
+#include "stone/AST/Decl.h"
 
 using namespace stone;
 using namespace stone::syn;

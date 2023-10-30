@@ -3,9 +3,9 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
-#include "stone/Gen/CodeGenBuilder.h"
-#include "stone/Gen/CodeGenModule.h"
-#include "stone/Syntax/SyntaxVisitor.h"
+#include "stone/CodeGen/CodeGenBuilder.h"
+#include "stone/CodeGen/CodeGenModule.h"
+#include "stone/AST/ASTVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/CallingConv.h"
@@ -84,7 +84,7 @@ class CodeGenBuilder;
 class CodeGenFunctionInvocation final {
 public:
 };
-class CodeGenFunction final : public SyntaxVisitor<CodeGenFunction> {
+class CodeGenFunction final : public ASTVisitor<CodeGenFunction> {
 
   CodeGenModule &cgm;
   CodeGenBuilder builder;

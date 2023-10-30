@@ -3,12 +3,12 @@
 
 namespace stone {
 namespace syn {
-class SyntaxFile;
+class ASTFile;
 } // namespace syn
 
 namespace sem {
 // TODO: ModuleResolution
-void ResolveImports(syn::SyntaxFile &syntaxFile);
+void ResolveImports(syn::ASTFile &syntaxFile);
 } // namespace sem
 } // namespace stone
 

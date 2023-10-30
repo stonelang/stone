@@ -1,5 +1,5 @@
 #include "stone/Sem/ImportResolution.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/Module.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -8,8 +8,8 @@ using namespace stone::syn;
 //  class UseResolver final : public DeclVisitor<UseResolver> {
 //    friend DeclVisitor<UseResolver>;
 
-//   SyntaxFile &SF;
-//   SyntaxContext &ctx;
+//   ASTFile &SF;
+//   ASTContext &ctx;
 // };
 
-void sem::ResolveImports(SyntaxFile &syntaxFile) {}
+void sem::ResolveImports(ASTFile &syntaxFile) {}

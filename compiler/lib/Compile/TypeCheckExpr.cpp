@@ -1,6 +1,6 @@
 #include "stone/Sem/TypeChecker.h"
-#include "stone/Syntax/Expr.h"
-#include "stone/Syntax/SyntaxVisitor.h"
+#include "stone/AST/Expr.h"
+#include "stone/AST/ASTVisitor.h"
 
 using namespace stone::sem;
 using namespace stone::syn;

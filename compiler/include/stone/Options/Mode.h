@@ -27,8 +27,8 @@ public:
 
   bool CanOutput() const {
     switch (GetKind()) {
-    case ModeKind::DumpSyntax:
-    case ModeKind::PrintSyntax:
+    case ModeKind::DumpAST:
+    case ModeKind::PrintAST:
     case ModeKind::EmitIR:
     case ModeKind::EmitBC:
     case ModeKind::EmitObject:
@@ -45,9 +45,9 @@ public:
     case ModeKind::None:
     case ModeKind::Parse:
     case ModeKind::ResolveImports:
-    case ModeKind::DumpSyntax:
+    case ModeKind::DumpAST:
     case ModeKind::TypeCheck:
-    case ModeKind::PrintSyntax:
+    case ModeKind::PrintAST:
     case ModeKind::EmitIR:
     case ModeKind::EmitBC:
     case ModeKind::EmitObject:
@@ -87,7 +87,7 @@ public:
   bool JustParse() {
     switch (GetKind()) {
     case ModeKind::Parse:
-    case ModeKind::DumpSyntax:
+    case ModeKind::DumpAST:
       return true;
       break;
       return false;
@@ -96,7 +96,7 @@ public:
   bool JustTypeCheck() {
     switch (GetKind()) {
     case ModeKind::TypeCheck:
-    case ModeKind::PrintSyntax:
+    case ModeKind::PrintAST:
       return true;
       break;
       return false;
@@ -119,9 +119,9 @@ public:
   bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
   bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }
   bool IsParse() { return GetKind() == ModeKind::Parse; }
-  bool IsDumpSyntax() { return GetKind() == ModeKind::DumpSyntax; }
+  bool IsDumpAST() { return GetKind() == ModeKind::DumpAST; }
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
-  bool IsPrintSyntax() { return GetKind() == ModeKind::PrintSyntax; }
+  bool IsPrintAST() { return GetKind() == ModeKind::PrintAST; }
   bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
   bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
   bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }

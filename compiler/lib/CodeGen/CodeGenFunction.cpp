@@ -1,6 +1,6 @@
-#include "stone/Gen/CodeGenFunction.h"
-#include "stone/Gen/CodeGen.h"
-#include "stone/Gen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGenFunction.h"
+#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
 

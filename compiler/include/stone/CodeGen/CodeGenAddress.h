@@ -2,7 +2,7 @@
 #define STONE_GEN_IRCODEGENADDRESS_H
 
 #include "stone/Basic/Mem.h"
-#include "stone/Syntax/CodeGenAlignment.h"
+#include "stone/AST/CodeGenAlignment.h"
 
 #include "clang/AST/CharUnits.h"
 #include "llvm/ADT/PointerIntPair.h"

@@ -3,11 +3,11 @@
 
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Gen/CodeGenMetadata.h"
-#include "stone/Gen/CodeGenTypeCache.h"
-#include "stone/Gen/CodeGenTypeResolver.h"
-#include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxVisitor.h"
+#include "stone/CodeGen/CodeGenMetadata.h"
+#include "stone/CodeGen/CodeGenTypeCache.h"
+#include "stone/CodeGen/CodeGenTypeResolver.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ASTVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -61,7 +61,7 @@ class TargetMachine;
 
 namespace stone {
 namespace syn {
-class SyntaxFile;
+class ASTFile;
 class Decl;
 class GlobalDecl;
 class FunDecl;
@@ -70,7 +70,7 @@ class StructDecl;
 class EnumDecl;
 class VarDecl;
 class AutoDecl;
-class SyntaxFile;
+class ASTFile;
 class NominalTypeDecl;
 } // namespace syn
 
@@ -98,7 +98,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class CodeGenModule final : public SyntaxVisitor<CodeGenModule> {
+class CodeGenModule final : public ASTVisitor<CodeGenModule> {
 
   CodeGenContext &cgc;
   CodeGenTypeCache typeCache;
@@ -109,7 +109,7 @@ class CodeGenModule final : public SyntaxVisitor<CodeGenModule> {
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
 
-  SyntaxFile *curSyntaxFile = nullptr;
+  ASTFile *curASTFile = nullptr;
 
   // llvm::SetVector<CanType> builtinTypes;
   //  /// Opaque but fixed-size types for which we also emit builtin type
@@ -159,7 +159,7 @@ public:
   // CodeGenDebug &GetCodeGenDebug() { return debug; }
 
 public:
-  void EmitSyntaxFile(SyntaxFile &sf);
+  void EmitASTFile(ASTFile &sf);
 
   void EmitGlobalDecl(Decl *d);
 

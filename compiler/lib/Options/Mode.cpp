@@ -15,12 +15,12 @@ static ModeKind GetModeKind(const unsigned modeID) {
   switch (modeID) {
   case opts::Parse:
     return ModeKind::Parse;
-  case opts::DumpSyntax:
-    return ModeKind::DumpSyntax;
+  case opts::DumpAST:
+    return ModeKind::DumpAST;
   case opts::TypeCheck:
     return ModeKind::TypeCheck;
-  case opts::PrintSyntax:
-    return ModeKind::PrintSyntax;
+  case opts::PrintAST:
+    return ModeKind::PrintAST;
   case opts::PrintIR:
     return ModeKind::PrintIR;
   case opts::EmitIR:
@@ -80,9 +80,9 @@ file::Type Mode::GetOutputFileTypeByModeKind(ModeKind kind) {
   case ModeKind::ResolveImports:
   case ModeKind::TypeCheck:
   // case ModeKind::TypecheckModuleFromInterface:
-  case ModeKind::DumpSyntax:
+  case ModeKind::DumpAST:
   // case ModeKind::DumpInterfaceHash:
-  case ModeKind::PrintSyntax:
+  case ModeKind::PrintAST:
   case ModeKind::PrintIR:
   // case ModeKind::DumpScopeMaps:
   // case ModeKind::DumpTypeRefinementContexts:

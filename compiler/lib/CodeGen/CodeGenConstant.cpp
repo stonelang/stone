@@ -1,4 +1,4 @@
-#include "stone/Gen/CodeGenConstant.h"
+#include "stone/CodeGen/CodeGenConstant.h"
 
 using namespace stone;
 

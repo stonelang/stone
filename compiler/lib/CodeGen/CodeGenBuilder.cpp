@@ -1,6 +1,6 @@
-#include "stone/Gen/CodeGenBuilder.h"
-#include "stone/Gen/CodeGenContext.h"
-#include "stone/Gen/CodeGenTypeCache.h"
+#include "stone/CodeGen/CodeGenBuilder.h"
+#include "stone/CodeGen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenTypeCache.h"
 
 using namespace stone;
 

@@ -1,4 +1,4 @@
-#include "stone/Gen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
 

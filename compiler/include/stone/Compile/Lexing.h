@@ -1,5 +1,5 @@
-#ifndef STONE_PARSE_SYNTAXLEXING_H
-#define STONE_PARSE_SYNTAXLEXING_H
+#ifndef STONE_PARSE_/AST/LEXING_H
+#define STONE_PARSE_/AST/LEXING_H
 
 #include "stone/Basic/SrcLoc.h"
 

@@ -4,11 +4,11 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/AttributeKind.h"
-#include "stone/Syntax/Availability.h"
-#include "stone/Syntax/AvailabilitySpec.h"
-#include "stone/Syntax/DeclContext.h"
-#include "stone/Syntax/Identifier.h"
+#include "stone/AST/AttributeKind.h"
+#include "stone/AST/Availability.h"
+#include "stone/AST/AvailabilitySpec.h"
+#include "stone/AST/DeclContext.h"
+#include "stone/AST/Identifier.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
@@ -20,7 +20,7 @@ class TypeCheckerListener;
 
 namespace syn {
 class Decl;
-class SyntaxFile;
+class ASTFile;
 class Module;
 // class ApplyExpr;
 class AvailableAttribute;

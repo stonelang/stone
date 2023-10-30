@@ -8,7 +8,7 @@
 #include "CompilerDiagnostic.def"
 #include "DriverDiagnostic.def"
 #include "SemDiagnostic.def"
-#include "SyntaxDiagnostic.def"
+#include "ASTDiagnostic.def"
 
 #undef DIAG_NO_UNDEF
 

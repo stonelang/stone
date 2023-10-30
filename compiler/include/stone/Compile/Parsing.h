@@ -4,10 +4,10 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Parse/Lexing.h"
-#include "stone/Syntax/DeclCollector.h"
-#include "stone/Syntax/Scope.h"
-#include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxResult.h"
+#include "stone/AST/DeclCollector.h"
+#include "stone/AST/Scope.h"
+#include "stone/AST/Specifier.h"
+#include "stone/AST/ASTResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -154,7 +154,7 @@ public:
   Parser &GetParser() { return parser; }
 
 public:
-  SyntaxStatus Verify();
+  ASTStatus Verify();
 };
 
 enum class ParsingContextKind : UInt8 {

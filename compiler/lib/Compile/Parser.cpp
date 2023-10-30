@@ -2,16 +2,16 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/ASTDiagnostic.h"
 #include "stone/Public.h"
-#include "stone/Syntax/Scope.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/AST/Scope.h"
+#include "stone/AST/ASTContext.h"
 
 using namespace stone;
 using namespace stone::syn;
 using namespace stone::mem;
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
+Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
     : Parser(sf, sc,
              Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
@@ -19,8 +19,8 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
                            &sc.GetLangContext().GetStatEngine())),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
-               SyntaxListener *listener)
+Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
+               ASTListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
 
@@ -113,8 +113,8 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
-SyntaxStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
-  SyntaxStatus status;
+ASTStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
+  ASTStatus status;
 
   assert(GetTok().IsIdentifierOrUnderscore());
   resultLoc = ConsumeIdentifier(result);
@@ -165,7 +165,7 @@ void Parser::EnterScope(ScopeKind kind) {
 }
 
 Scope *Parser::CreateScope(ScopeKind kind, Scope *parent) {
-  return Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), parent);
+  return Parser::CreateScope(kind, GetASTContext(), GetDiags(), parent);
 }
 /// ExitScope - pop a scope off the scope stack.
 void Parser::ExitScope() {
@@ -176,7 +176,7 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
+Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
                            DiagnosticEngine &diags, Scope *parent) {
   return new (sc) Scope(kind, diags, parent);
 }

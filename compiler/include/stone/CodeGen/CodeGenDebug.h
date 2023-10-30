@@ -2,8 +2,8 @@
 #define STONE_GEN_IRCODEGDEBUG_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/CodeGenContext.h"
-#include "stone/Syntax/Module.h"
+#include "stone/CodeGen/CodeGenContext.h"
+#include "stone/AST/Module.h"
 
 #include "llvm/IR/PassManager.h"
 

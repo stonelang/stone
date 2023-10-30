@@ -1,8 +1,8 @@
 #ifndef STONE_SEM_TYPECHECKACCESS_H
 #define STONE_SEM_TYPECHECKACCESS_H
 
-#include "stone/Syntax/Attribute.h"
-#include "stone/Syntax/Availability.h"
+#include "stone/AST/Attribute.h"
+#include "stone/AST/Availability.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -12,7 +12,7 @@ class TypeCheckerListener;
 
 namespace syn {
 class Decl;
-class SyntaxFile;
+class ASTFile;
 class Module;
 // class ApplyExpr;
 // class AvailableAttr;
