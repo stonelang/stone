@@ -218,8 +218,8 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 }
 
 // std::unique_ptr<OutputFile>
-// CompilerInvocation::ComputeOutputFile(CompilerUnit &source) {
-//   stone::Panic("ComputeSourceOutputFile not implemented");
+// CompilerInvocation::ParseOutputFile(CompilerUnit &source) {
+//   stone::Panic("ParseSourceOutputFile not implemented");
 // }
 
 Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
@@ -271,7 +271,7 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
 
 using namespace stone;
 
-static Error ComputeCompilerOptions(
+static Error ParseCompilerOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
     CompilerOptions &compilerOpts, ModuleOptions &moduleOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
@@ -282,7 +282,7 @@ static Error ComputeCompilerOptions(
   return Error(converter.Convert(buffers));
 }
 
-static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
+static Error ParseLangOptions(llvm::opt::InputArgList &ial,
                                 DiagnosticEngine &de,
                                 CompilerOptions &compilerOpts,
                                 LangOptions &langOpts) {
@@ -290,7 +290,7 @@ static Error ComputeLangOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 
-static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
+static void ParseCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
                                          CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
@@ -365,7 +365,7 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-static Error ComputeTargetOptions(llvm::opt::InputArgList &ial,
+static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
                                   DiagnosticEngine &de,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts,
@@ -382,57 +382,81 @@ static Error ComputeTargetOptions(llvm::opt::InputArgList &ial,
   // }
   return Error();
 }
-static Error ComputeCodeGenOptions(llvm::opt::InputArgList &ial,
+static Error ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                    DiagnosticEngine &de,
                                    CompilerOptions &compilerOpts,
                                    CodeGenOptions &codeGenOpts,
                                    LangOptions &langOpts, ClangContext &cc) {
-  ComputeCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
+  ParseCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
 
   return Error();
 }
 
-static Error ComputeTypeCheckerOptions(llvm::opt::InputArgList &ial,
+static Error ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
                                        DiagnosticEngine &de,
                                        CompilerOptions &compilerOpts,
                                        TypeCheckerOptions &typeCheckerOpts) {
   return Error();
 }
 
-static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
+static Error ParseSearchPathOptions(llvm::opt::InputArgList &ial,
                                       DiagnosticEngine &de,
                                       CompilerOptions &compilerOpts,
                                       SearchPathOptions &searchPathOpts) {
   return Error();
 }
 
-Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
+Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
+
+  auto ial = std::make_unique<llvm::opt::InputArgList>(
+      GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
+                          includedFlagsBitmask, excludedFlagsBitmask));
+  assert(ial && "No input argument list.");
+  // Check for missing argument error.
+  if (missingArgCount) {
+    GetLangContext().GetDiagUnit().PrintD(
+        SrcLoc(), diag::err_missing_arg_value,
+        diag::LLVMStr(ial->getArgString(missingArgIndex)),
+        diag::UInt(missingArgCount));
+    return nullptr;
+  }
+  // Check for unknown arguments.
+  for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
+    GetLangContext().GetDiagEngine().PrintD(
+        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
+    return nullptr;
+  }
+
   compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
   if (compilerOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  auto compilerOptsErr = ComputeCompilerOptions(
+  auto compilerOptsErr = ParseCompilerOptions(
       ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
       GetLangContext().GetLangOptions(), *compilerOpts, GetModuleOptions(),
       nullptr /* pass null for now*/);
   if (compilerOptsErr.Has()) {
   }
-  ComputeLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+  ParseLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                      *compilerOpts, GetLangContext().GetLangOptions());
 
-  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+  ParseTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                             *compilerOpts, typeCheckerOpts);
-  ComputeSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+  ParseSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                            *compilerOpts, searchPathOpts);
 
-  ComputeCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+  ParseCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                         *compilerOpts, codeGenOpts,
                         GetLangContext().GetLangOptions(), *clangContext);
 
-  ComputeTargetOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
+  ParseTargetOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
                        *compilerOpts, codeGenOpts,
                        GetLangContext().GetLangOptions(), *clangContext);
-  return Error();
+
+  
+  return Status::Success();
+
+
 }
 
 void CompilerInvocation::Finish() {

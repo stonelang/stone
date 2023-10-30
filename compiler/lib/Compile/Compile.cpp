@@ -75,21 +75,19 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
-  invocation.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
+  invocation.GetDiagEngine().AddListener(diagListener);
 
   ConfigurationFileBuffers configurationFileBuffers;
 
   // Parse arguments.
-  auto ial = invocation.ParseArgs(args);
-  if (!ial) {
+  auto status = invocation.ParseArgs(args);
+  if (status.IsError()) {
     return Finish(Error(true));
   }
   if (invocation.HasError()) {
     return Finish(Error(true));
   }
-  if (invocation.ComputeOptions(*ial).Has()) {
-    return Finish(Error(true));
-  }
+
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
     invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
                                                      diag::err_alien_mode);
@@ -115,8 +113,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   CompilerInstance compilerInstance(invocation);
-
- 
   auto status = compilerInstance.Compile();
 
   if (status.IsError() || invocation.HasError()) {

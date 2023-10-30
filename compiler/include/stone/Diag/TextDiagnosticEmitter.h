@@ -5,7 +5,7 @@
 #include "stone/Diag/TextDiagnosticFormatter.h"
 
 namespace stone {
-class DiagnosticEvent;
+class DiagnosticMessage;
 
 class TextDiagnosticEmitter : public DiagnosticEmitter {
 public:
@@ -15,7 +15,7 @@ public:
 
 public:
   virtual void EmitLevel() override;
-  virtual void EmitDiagnostic(const DiagnosticEvent &diagnostic) override;
+  virtual void EmitDiagnostic(const DiagnosticMessage &diagnostic) override;
   virtual void EmitLoc() override;
 };
 } // namespace stone

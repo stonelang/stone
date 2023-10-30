@@ -43,6 +43,20 @@ static ModeKind GetModeKind(const unsigned modeID) {
     return ModeKind::Alien;
   }
 }
+
+static llvm::StringRef GetModeName(ModeKind kind) {
+  switch (kind) {
+  case ModeKind::Parse:
+    return "parse";
+  default:
+  }
+}
+
+Mode::Mode(ModeKind kind, llvm::StringRef name)
+    : kind(kind), name(name),  timer(new stone::Timer(GetModeName(kind), "mode timer")) {}
+Mode::~Mode() {}
+
+
 std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {

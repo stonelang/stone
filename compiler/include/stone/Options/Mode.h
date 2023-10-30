@@ -10,14 +10,14 @@ namespace stone {
 class Mode final {
   friend class Session;
   ModeKind kind;
+  std::unique_ptr<stone::Timer> timer;
 
 private:
   llvm::StringRef name;
   void SetName(llvm::StringRef v) { name = v; }
 
 public:
-  Mode(ModeKind kind, llvm::StringRef name = llvm::StringRef())
-      : kind(kind), name(name) {}
+  Mode(ModeKind kind, llvm::StringRef name = llvm::StringRef());
 
 public:
   ModeKind GetKind() const { return kind; }

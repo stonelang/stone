@@ -5,9 +5,9 @@
 
 #include "llvm/Support/Chrono.h"
 #include "llvm/Support/Timer.h"
+
 namespace stone {
 
-// TODO: Replace with llvm/Support/Timer.h"
 class Timer final {
 public:
   enum class TimeKind {
@@ -23,15 +23,13 @@ public:
 private:
   llvm::StringRef name;
   llvm::StringRef desc;
-  // TODO:
-  llvm::Timer time;
-  llvm::sys::TimePoint<> startTime;
-  llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
+  std::unique_ptr<llvm::Timer> timer;
 
-  // timerGroup =
-  //     std::make_unique<llvm::TimerGroup>(GetSessionName(), GetSessionDesc());
-  // timer = std::make_unique<llvm::Timer>(GetSessionName(), GetSessionDesc(),
-  //                                       *timerGroup);
+private:
+  llvm::Timer &GetTimer() { return *timer; }
+
+public:
+  Timer(llvm::StringRef name, llvm::StringRef desc);
 
 public:
   void PrintSeconds();
@@ -40,7 +38,6 @@ public:
   void PrintMicroSeconds();
 
 public:
-  Timer(llvm::StringRef name, llvm::StringRef desc) : name(name), desc(desc) {}
   void Start();
   void Stop();
   void Print();

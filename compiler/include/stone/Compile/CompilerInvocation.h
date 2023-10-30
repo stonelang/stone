@@ -191,6 +191,10 @@ public:
 
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
+
+
+public:
+  std::unique_ptr<llvm::opt::InputArgList> ParseArgs(llvm::ArrayRef<const char *> args);
 };
 
 } // namespace stone

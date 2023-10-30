@@ -38,6 +38,15 @@ public:
 
   OutputOptions outputOptions;
 
+  /// a SmallVector of ctx files
+  file::Files inputFiles;
+
+  /// The file input type
+  file::Type inputFileType = file::Type::None;
+
+  /// The output file type which should be used for the sc
+  file::Type outputFileType = file::Type::None;
+
 public:
   DriverOptions(std::unique_ptr<Mode> mode) : SessionOptions(std::move(mode)) {}
 };

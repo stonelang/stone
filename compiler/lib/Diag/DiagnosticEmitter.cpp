@@ -9,5 +9,5 @@ DiagnosticEmitter::DiagnosticEmitter(DiagnosticFormatter &formatter)
 DiagnosticEmitter::~DiagnosticEmitter() {}
 
 void DiagnosticEmitter::EmitLevel() {}
-void DiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &diagnostic) {}
+void DiagnosticEmitter::EmitDiagnostic(const DiagnosticMessage &diagnostic) {}
 void DiagnosticEmitter::EmitLoc() {}

@@ -49,7 +49,7 @@ class DiagnosticState {
   bool anyErrorOccurred = false;
 
   /// Track the previous emitted Behavior, useful for notes
-  diag::Level prevLevel = diag::Level::None;
+  DiagnosticLevel prevLevel = DiagnosticLevel::None;
 
   /// Track which diagnostics should be ignored.
   llvm::BitVector ignoredDiagnostics;
@@ -61,7 +61,7 @@ public:
 
   /// Figure out the Behavior for the given diagnostic, taking current
   /// state such as fatality into account.
-  diag::Level DetermineLevel(const Diagnostic &diag);
+  DiagnosticLevel DetermineLevel(const Diagnostic &diag);
 
   bool HadAnyError() const { return anyErrorOccurred; }
   bool HasFatalErrorOccurred() const { return fatalErrorOccurred; }
@@ -249,7 +249,7 @@ class DiagnosticEngine final : public Printable {
   ///
   /// This is used to emit continuation diagnostics with the same level as the
   /// diagnostic that they follow.
-  diag::Level lastLevel;
+  DiagnosticLevel lastLevel;
 
   /// Number of warnings reported
   unsigned numWarnings;
@@ -341,9 +341,9 @@ public:
   }
  
 public:
-  /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
-  llvm::Optional<DiagnosticEvent>
-  CreateDiagnosticEvent(const Diagnostic &diagnostic);
+  /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
+  llvm::Optional<DiagnosticMessage>
+  CreateDiagnosticMessage(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
   void EmitDiagnostic(const Diagnostic &diagnostic);
@@ -377,7 +377,7 @@ private:
                                               Tokenable *tokenable = nullptr) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
-    curDiagnostic->GetDetail().SetLoc(loc);
+    curDiagnostic->SetLoc(loc);
     return InFlightDiagnostic(*this, tokenable);
   }
 
@@ -390,20 +390,20 @@ public:
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(diagID, args)), tokenable);
+    return PrintD(loc, Diagnostic(diagID, args), tokenable);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
     return PrintD(
         loc,
-        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
+        Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
         tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
     return PrintD(
         SrcLoc(),
-        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
+        Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
         tokenable);
   }
 
@@ -411,19 +411,18 @@ public:
   InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)));
+    return PrintD(loc, Diagnostic(id, std::move(args)...));
   }
 
   template <typename... ArgTypes>
   InFlightDiagnostic
   PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)),
-                  tokenable);
+    return PrintD(loc, Diagnostic(id, std::move(args)...), tokenable);
   }
 };
 class DiagnosticStateRAII final {
-  llvm::SaveAndRestore<diag::Level> prevLevel;
+  llvm::SaveAndRestore<DiagnosticLevel> prevLevel;
 
 public:
   DiagnosticStateRAII(DiagnosticEngine &de) : prevLevel(de.state.prevLevel) {}
@@ -520,7 +519,7 @@ public:
 // };
 class SavedDiagnostic final {
   // unsigned diagIdentifier;
-  // diag::Level level;
+  // DiagnosticLevel level;
   // FullSourceLoc loc;
   // std::string message;
   // std::vector<CharSrcRange> ranges;

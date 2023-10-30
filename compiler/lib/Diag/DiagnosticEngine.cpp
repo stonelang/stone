@@ -30,16 +30,16 @@ enum class LocalOptions {
 };
 
 struct LocalDiagnostic {
-  diag::Level severity : 2;
+  DiagnosticLevel severity : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
 
-  constexpr LocalDiagnostic(diag::Level severity, bool firstBadToken,
+  constexpr LocalDiagnostic(DiagnosticLevel severity, bool firstBadToken,
                             bool fatal)
 
       : severity(severity), pointsToFirstBadToken(firstBadToken),
         isFatal(fatal) {}
-  constexpr LocalDiagnostic(diag::Level severity, LocalOptions opts)
+  constexpr LocalDiagnostic(DiagnosticLevel severity, LocalOptions opts)
       : LocalDiagnostic(severity, opts == LocalOptions::PointsToFirstBadToken,
                         opts == LocalOptions::Fatal) {}
 };
@@ -56,11 +56,11 @@ enum LocalDiagID : uint32_t {
 // TODO: categorization
 static const constexpr LocalDiagnostic LocalDiagnostics[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
-  LocalDiagnostic(diag::Level::Error, LocalOptions::Options),
+  LocalDiagnostic(DiagnosticLevel::Error, LocalOptions::Options),
 #define WARN(ID, Options, Text, Signature)                                     \
-  LocalDiagnostic(diag::Level::Warn, LocalOptions::Options),
+  LocalDiagnostic(DiagnosticLevel::Warn, LocalOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
-  LocalDiagnostic(diag::Level::Note, LocalOptions::Options),
+  LocalDiagnostic(DiagnosticLevel::Note, LocalOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
   LocalDiagnostic(dia::Level::Remark, LocalOptions::Options),
 #include "stone/Diag/DiagnosticEngine.def"
@@ -95,16 +95,16 @@ static constexpr const char *const CodeFixStrings[] = {
     "<not a fix-it>",
 };
 
-static diag::Level ToDiagnosticLevel(diag::Level severity, bool isFatal) {
+static DiagnosticLevel ToDiagnosticLevel(DiagnosticLevel severity, bool isFatal) {
   switch (severity) {
-  case diag::Level::Note:
-    return diag::Level::Note;
-  case diag::Level::Error:
-    return isFatal ? diag::Level::Fatal : diag::Level::Error;
-  case diag::Level::Warn:
-    return diag::Level::Warn;
-  case diag::Level::Remark:
-    return diag::Level::Remark;
+  case DiagnosticLevel::Note:
+    return DiagnosticLevel::Note;
+  case DiagnosticLevel::Error:
+    return isFatal ? DiagnosticLevel::Fatal : DiagnosticLevel::Error;
+  case DiagnosticLevel::Warn:
+    return DiagnosticLevel::Warn;
+  case DiagnosticLevel::Remark:
+    return DiagnosticLevel::Remark;
   }
   llvm_unreachable("Unhandled diagnostic severity in switch.");
 }
@@ -122,7 +122,7 @@ DiagnosticState::DiagnosticState() {
   ignoredDiagnostics.resize(LocalDiagID::MAX);
 }
 
-diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
+DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diag) {
   // We determine how to handle a diagnostic based on the following rules
   //   1) Map the diagnostic to its "intended" behavior, applying the behavior
   //      limit for this particular emission
@@ -135,45 +135,45 @@ diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
   //   1) Map the diagnostic to its "intended" behavior, applying the behavior
   //      limit for this particular emission
   auto diagnostic = LocalDiagnostics[(unsigned)diag.GetDetail().GetID()];
-  diag::Level lvl =
+  DiagnosticLevel lvl =
       std::max(ToDiagnosticLevel(diagnostic.severity, diagnostic.isFatal),
                diag.GetDetail().GetLevelLimit());
-  assert(lvl != diag::Level::None);
+  assert(lvl != DiagnosticLevel::None);
 
   //   2) If current state dictates a certain behavior, follow that
 
   // Notes relating to ignored diagnostics should also be ignored
-  if (prevLevel == diag::Level::Ignore && lvl == diag::Level::Note)
-    lvl = diag::Level::Ignore;
+  if (prevLevel == DiagnosticLevel::Ignore && lvl == DiagnosticLevel::Note)
+    lvl = DiagnosticLevel::Ignore;
 
   // Suppress diagnostics when in a fatal state, except for follow-on notes
   if (fatalErrorOccurred)
-    if (!showDiagnosticsAfterFatalError && lvl != diag::Level::Note)
-      lvl = diag::Level::Ignore;
+    if (!showDiagnosticsAfterFatalError && lvl != DiagnosticLevel::Note)
+      lvl = DiagnosticLevel::Ignore;
 
   //   3) If the user ignored this specific diagnostic, follow that
   if (ignoredDiagnostics[(unsigned)diag.GetDetail().GetID()])
-    lvl = diag::Level::Ignore;
+    lvl = DiagnosticLevel::Ignore;
 
   //   4) If the user substituted a different behavior for this behavior, apply
   //      that change
-  if (lvl == diag::Level::Warn) {
+  if (lvl == DiagnosticLevel::Warn) {
     if (warningsAsErrors)
-      lvl = diag::Level::Error;
+      lvl = DiagnosticLevel::Error;
     if (suppressWarnings)
-      lvl = diag::Level::Ignore;
+      lvl = DiagnosticLevel::Ignore;
   }
 
   //   5) Update current state for use during the next diagnostic
-  if (lvl == diag::Level::Fatal) {
+  if (lvl == DiagnosticLevel::Fatal) {
     fatalErrorOccurred = true;
     anyErrorOccurred = true;
-  } else if (lvl == diag::Level::Error) {
+  } else if (lvl == DiagnosticLevel::Error) {
     anyErrorOccurred = true;
   }
 
   assert((!AssertOnError || !anyErrorOccurred) && "We emitted an error?!");
-  assert((!AssertOnWarn || (lvl != diag::Level::Warn)) &&
+  assert((!AssertOnWarn || (lvl != DiagnosticLevel::Warn)) &&
          "We emitted a warning?!");
 
   prevLevel = lvl;
@@ -192,7 +192,7 @@ DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm)
     : diagOpts(diagOpts), sm(sm), curDiagnostic() {}
 
 // TODO:
-//  diag::Level DiagnosticEngine::GetSeverityByDiagID(const DiagID id) {
+//  DiagnosticLevel DiagnosticEngine::GetSeverityByDiagID(const DiagID id) {
 //    return LocalDiagnostics[(unsigned)id].severity;
 //  }
 
@@ -234,7 +234,7 @@ void DiagnosticEngine::Print(ColorStream &os,
 
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
-  auto diagnosticEvent = CreateDiagnosticEvent(diagnostic);
+  auto diagnosticEvent = CreateDiagnosticMessage(diagnostic);
   for (auto &listener : listeners) {
     listener->OnDiagnostic(*diagnosticEvent);
   }
@@ -246,11 +246,11 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
   EmitDiagnostic(*curDiagnostic);
 }
 
-llvm::Optional<DiagnosticEvent>
-DiagnosticEngine::CreateDiagnosticEvent(const Diagnostic &diagnostic) {
-  return DiagnosticEvent(
-      /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
-      GetDiagString(diagnostic.GetDetail().GetID(), true),
+llvm::Optional<DiagnosticMessage>
+DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
+  return DiagnosticMessage(
+      /*TODO*/ DiagnosticLevel::Warn, diagnostic, GetSrcMgr(),
+      GetDiagString(diagnostic.GetID(), true),
       /*TODO*/ llvm::StringRef());
 }
 

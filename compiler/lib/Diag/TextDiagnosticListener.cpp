@@ -10,14 +10,14 @@ TextDiagnosticListener::TextDiagnosticListener(TextDiagnosticEmitter &emitter)
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
-void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
+void TextDiagnosticListener::OnDiagnostic(const DiagnosticMessage &diagMsg) {
 
-  // DiagnosticListener::OnDiagnostic(diagEvent);
+  // DiagnosticListener::OnDiagnostic(diagMsg);
 
-  // switch(diagEvent.GetDiagLevel()){
+  // switch(diagMsg.GetDiagLevel()){
 
   // }
-  GetEmitter().EmitDiagnostic(diagEvent);
+  GetEmitter().EmitDiagnostic(diagMsg);
 }
 
 bool TextDiagnosticListener::Finish() { return false; }

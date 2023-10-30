@@ -65,7 +65,7 @@ public:
   /// Prevent the diagnostic from behaving more severely than \p limit. For
   /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
   /// emitted as a warning, but a note will still be emitted as a note.
-  InFlightDiagnostic &CapDiagLevel(diag::Level level);
+  InFlightDiagnostic &CapDiagLevel(DiagnosticLevel level);
 
   /// Add a token-based range to the currently-active diagnostic.
   InFlightDiagnostic &Highlight(SrcRange R);
@@ -189,12 +189,17 @@ struct DiagnosticFormatOptions {
   }
 };
 
-// TODO: Free Detail
-class DiagnosticDetail {
+class Diagnostic {
+
+  friend class DiagnosticEngine;
+  friend class InFlightDiagnostic;
+
+
+
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
   SrcLoc loc;
-  diag::Level levelLimit = diag::Level::None;
+  DiagnosticLevel levelLimit = DiagnosticLevel::None;
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
@@ -233,8 +238,15 @@ public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  void SetLevelLimit(diag::Level limit) { levelLimit = limit; }
-  diag::Level GetLevelLimit() { return levelLimit; }
+  void SetLevelLimit(DiagnosticLevel limit) { levelLimit = limit; }
+  DiagnosticLevel GetLevelLimit() { return levelLimit; }
+
+
+  public:
+  template <typename... otherArgTypes>
+  bool IsEqual(Diag<otherArgTypes...> other) const {
+    return GetID() == other.GetID();
+  }
 
   void Clear() {
     args.clear();
@@ -242,65 +254,26 @@ public:
     fixes.clear();
   }
 };
-class Diagnostic {
 
-  friend class DiagnosticEngine;
-  friend class InFlightDiagnostic;
 
-protected:
-  mutable DiagnosticDetail detail;
-
-public:
-  explicit Diagnostic(DiagnosticDetail detail) : detail(detail) {}
-
-public:
-  DiagnosticDetail &GetDetail() const { return detail; }
-
-  // TODO: UB
-  void AddChild(Diagnostic &&diagnostic);
-
-public:
-  template <typename... otherArgTypes>
-  bool IsEqual(Diag<otherArgTypes...> other) const {
-    return detail.GetID() == other.GetDetail().GetID();
-  }
-
-public:
-  /// The result is appended onto the \p OutStr array.
-  // virtual void Format(llvm::SmallVectorImpl<char> &outStr,
-  //                     const DiagnosticFormatOptions &fmtOptions) const;
-
-  // /// Format the given format-string into the output buffer using the
-  // /// arguments stored in this diagnostic.
-  // virtual void Format(const char *diagStr, const char *diagEnd,
-  //                     llvm::SmallVectorImpl<char> &outStr,
-  //                     const DiagnosticFormatOptions &fmtOptions) const;
-
-  // static void formatDiagnosticText(
-  //       llvm::raw_ostream &Out, StringRef InText,
-  //       ArrayRef<DiagnosticArgument> FormatArgs,
-  //       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
-};
-
-class DiagnosticEvent final {
-  diag::Level level;
+class DiagnosticMessage final {
+  DiagnosticLevel level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
   const Diagnostic &diagnostic;
   SrcMgr &sm;
 
 public:
-  DiagnosticEvent(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
+  DiagnosticMessage(DiagnosticLevel level, const Diagnostic &diagnostic, SrcMgr &sm,
                   llvm::StringRef formatMessage, llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}
-
 public:
   llvm::StringRef GetCategory() { return category; }
   llvm::StringRef GetFormatMessage() { return formatMessage; }
   const Diagnostic &GetDiagnostic() const { return diagnostic; }
   SrcMgr &GetSrcMgr() { return sm; }
-  diag::Level GetLevel() { return level; }
+  DiagnosticLevel GetLevel() { return level; }
 
   // public:
   //   // TODO: Think about

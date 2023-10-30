@@ -5,7 +5,7 @@
 
 namespace stone {
 namespace diag {
-enum class Level : uint8_t {
+enum class DiagnosticLevel : uint8_t {
   None = 0,
   // Highest
   Fatal,
@@ -30,7 +30,7 @@ public:
   // diagnostics.
   FormattingStyle formattingStyle = FormattingStyle::LLVM;
 
-  diag::Level diagnosticLevel = diag::Level::None;
+  DiagnosticLevel diagnosticLevel = DiagnosticLevel::None;
 
   /// TODO: This is a copy of what is in DiagnosticEngine -- may live here.
   // Treat fatal errors like errors.
