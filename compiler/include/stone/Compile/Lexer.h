@@ -4,8 +4,8 @@
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Parse/Lexing.h"
-#include "stone/Parse/Trivia.h"
+#include "stone/Compile/Lexing.h"
+#include "stone/Compile/Trivia.h"
 #include "stone/Public.h"
 
 namespace stone {
@@ -14,7 +14,7 @@ class SrcID;
 class SrcMgr;
 class ASTListener;
 
-namespace ast {
+namespace parser {
 class Token;
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
 /// advance the lexer past it.  This returns the encoded character or ~0U if

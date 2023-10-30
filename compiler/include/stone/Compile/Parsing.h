@@ -3,7 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Parse/Lexing.h"
+#include "stone/Compile/Lexing.h"
 #include "stone/AST/DeclCollector.h"
 #include "stone/AST/Scope.h"
 #include "stone/AST/Specifier.h"
@@ -12,7 +12,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace ast {
+namespace parser {
 
 class Parser;
 class ParsingScope;

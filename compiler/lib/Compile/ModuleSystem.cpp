@@ -1,6 +1,6 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Parse/Lexer.h"
+#include "stone/Compile/Lexer.h"
 #include "stone/AST/DeclFactory.h"
 
 using namespace stone;

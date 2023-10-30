@@ -1,4 +1,4 @@
-#include "stone/Parse/Lexing.h"
+#include "stone/Compile/Lexing.h"
 
 using namespace stone;
 using namespace stone::ast;

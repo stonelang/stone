@@ -9,7 +9,7 @@
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Public.h"
-#include "stone/Session/ModeKind.h"
+#include "stone/Options/ModeKind.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/ASTDiagnosticArgument.h"
 

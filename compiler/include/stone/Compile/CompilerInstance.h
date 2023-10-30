@@ -20,9 +20,6 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using ModuleASTFileUnion =
-    llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
-
 using ParsingCompletedCallback = llvm::function_ref<Status(ast::ASTFile &)>;
 
 using TypeCheckingCompletedCallback =

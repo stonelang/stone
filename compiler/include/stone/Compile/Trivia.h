@@ -6,7 +6,7 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace ast {
+namespace parser {
 
 enum class TriviaKind : uint8_t {
   BlockComment,

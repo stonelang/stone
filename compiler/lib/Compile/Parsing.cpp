@@ -1,4 +1,4 @@
-#include "stone/Parse/Parser.h"
+#include "stone/Compile/Parser.h"
 
 using namespace stone;
 using namespace stone::ast;

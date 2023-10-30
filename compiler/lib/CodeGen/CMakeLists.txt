@@ -11,6 +11,14 @@ set( LLVM_LINK_COMPONENTS
 set(stone_gen_sources
 	CodeGenMachine.cpp
 	CodeGenContext.cpp
+	CodeGenConstant.cpp
+	CodeGenDebug.cpp
+	CodeGenBuilder.cpp
+	CodeGenFunction.cpp
+	CodegenModule.cpp
+	CodeGenMetadata.cpp
+	CodeGenTypeResolver.cpp
+	CodeGenTypeCache.cpp
 	GenCall.cpp
 	GenDecl.cpp
 	GenStmt.cpp
@@ -20,14 +28,7 @@ set(stone_gen_sources
 	GenNative.cpp
 	GenType.cpp
 	GenABI.cpp
-	CodeGen.cpp
-	CodeGenConstant.cpp
-	CodeGenDebug.cpp
-	CodeGenBuilder.cpp
-	CodeGenFunction.cpp
-	CodegenModule.cpp
-	CodeGenMetadata.cpp
-	CodeGenTypeResolver.cpp
+	
 	OptimizeIR.cpp
 	TargetMachine.cpp
 	

@@ -1,4 +1,4 @@
-#include "stone/Parse/Parser.h"
+#include "stone/Compile/Parser.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"

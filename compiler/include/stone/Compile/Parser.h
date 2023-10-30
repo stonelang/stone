@@ -6,8 +6,8 @@
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/CodeCompletionListener.h"
-#include "stone/Parse/Lexer.h"
-#include "stone/Parse/Parsing.h"
+#include "stone/Compile/Lexer.h"
+#include "stone/Compile/Parsing.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
@@ -24,11 +24,12 @@
 namespace stone {
 class ASTListener;
 namespace ast {
-
-class BraceStmt;
-class AST;
-class Parser;
 class Scope;
+class BraceStmt;
+}
+
+
+class Parser;
 class PairDelimiterBalancer;
 class ParsingDeclCollector;
 class ParsingDeclarator;

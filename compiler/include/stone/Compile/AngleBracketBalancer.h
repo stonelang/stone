@@ -4,7 +4,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace ast {
+namespace parser {
 class Parser;
 
 struct AngleBracketBalancer final {

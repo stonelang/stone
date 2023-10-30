@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "stone/Session/Mode.h"
+#include "stone/Options/Mode.h"
 
 namespace llvm {
 namespace opt {
@@ -36,7 +36,7 @@ enum OptID : unsigned {
 #define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
                HELPTEXT, METAVAR, VALUES)                                      \
   ID,
-#include "stone/Session/StoneOptions.inc"
+#include "stone/Options/StoneOptions.inc"
   LAST
 #undef OPTION
 };

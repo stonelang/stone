@@ -4,7 +4,7 @@
 #include "stone/Basic/SrcLoc.h"
 
 namespace stone {
-namespace ast {
+namespace parser {
 
 class LexingState final {
 public:

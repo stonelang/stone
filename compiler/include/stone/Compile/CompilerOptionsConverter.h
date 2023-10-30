@@ -5,7 +5,7 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
 #include "stone/Public.h"
-#include "stone/Session/Options.h"
+#include "stone/Options/Options.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {

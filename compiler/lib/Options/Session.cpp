@@ -1,7 +1,7 @@
-#include "stone/Session/Session.h"
+#include "stone/Options/Session.h"
 #include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Public.h"
-#include "stone/Session/Options.h"
+#include "stone/Options/Options.h"
 #include "llvm/Option/Option.h"
 
 using namespace stone;

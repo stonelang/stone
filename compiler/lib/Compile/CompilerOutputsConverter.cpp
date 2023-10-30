@@ -7,8 +7,8 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
 
-#include "stone/Session/Options.h"
-// #include "stone/Session/SanitizerOptions.h"
+#include "stone/Options/Options.h"
+// #include "stone/Options/SanitizerOptions.h"
 
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/Triple.h"

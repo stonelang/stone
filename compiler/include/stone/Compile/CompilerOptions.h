@@ -8,8 +8,8 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Session/Options.h"
-#include "stone/Session/SessionOptions.h"
+#include "stone/Options/Options.h"
+#include "stone/Options/SessionOptions.h"
 #include "stone/AST/SearchPath.h"
 
 namespace stone {

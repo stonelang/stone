@@ -1,4 +1,4 @@
-#include "stone/Session/SessionOptions.h"
+#include "stone/Options/SessionOptions.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"

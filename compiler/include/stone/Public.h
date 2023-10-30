@@ -96,7 +96,7 @@ namespace stone {
 class CodeGenContext;
 class CompilerInstance;
 
-using ModuleASTFileUnion =
+using ModuleDeclOrASTFile =
     llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 // using ParseASTFileListener =

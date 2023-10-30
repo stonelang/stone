@@ -1,5 +1,5 @@
 #include "stone/CodeCompletionListener.h"
-#include "stone/Parse/Parser.h"
+#include "stone/Compile/Parser.h"
 #include "stone/Public.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/ASTContext.h"

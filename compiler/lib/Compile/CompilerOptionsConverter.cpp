@@ -5,9 +5,9 @@
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Session/Options.h"
-// #include "stone/Session/SanitizerOptions.h"
-#include "stone/Parse/Lexer.h"
+#include "stone/Options/Options.h"
+// #include "stone/Options/SanitizerOptions.h"
+#include "stone/Compile/Lexer.h"
 // #include "stone/Strings.h"
 
 #include "llvm/ADT/STLExtras.h"

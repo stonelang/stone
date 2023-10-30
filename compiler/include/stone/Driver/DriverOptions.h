@@ -3,7 +3,7 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Drive/OutputOptions.h"
-#include "stone/Session/SessionOptions.h"
+#include "stone/Options/SessionOptions.h"
 
 namespace stone {
 
