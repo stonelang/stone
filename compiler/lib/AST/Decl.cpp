@@ -189,8 +189,7 @@ bool FunDecl::HasReturn() const { return false; }
 
 void DeclStats::Print(ColorStream &stream) {}
 
-FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, ASTContext &sc,
-                                  DeclContext *parent) {
+FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc, DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
@@ -225,8 +224,15 @@ ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc, bool isMainModul
   return ::new (declPtr) ast::ModuleDecl(name, sc);
 }
 
+StructDecl *StructDecl::Create(DeclName name, SrcLoc loc,
+                                        ASTContext &sc, DeclContext *dc) {
+  size_t size = sizeof(ast::StructDecl);
+  auto declPtr = ast::AllocateDeclMem<StructDecl>(sc, size);
+  // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);
+  return nullptr;
+}
 
-VarDecl *DeclFactory::MakeVarDecl(ASTContext &sc) {
+VarDecl *VarDecl::Create(ASTContext &sc) {
   // auto declPtr = ast::AllocateDeclMem<ast::VarDecl>(sc,
   // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);
   return nullptr;

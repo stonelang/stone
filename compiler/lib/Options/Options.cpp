@@ -58,3 +58,15 @@ stone::opts::CreateInputArgList(llvm::ArrayRef<const char *> args, unsigned incl
   return ial;
 
 }
+
+stone::Result<std::string>
+stone::opts::GetOptEqualValue(opts::OptID optID,
+                          const llvm::opt::InputArgList &ial) {
+  if (ial.hasArg(optID)) {
+    auto arg = ial.getLastArg(optID);
+    if (arg) {
+      return stone::Result<std::string>(arg->getValue());
+    }
+  }
+  return stone::Result<std::string>();
+}

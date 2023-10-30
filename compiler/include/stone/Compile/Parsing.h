@@ -187,52 +187,7 @@ public:
   // void SetParsing() { status = ParsingContextStatus::Parsing; }
   // void SetDone() { status = ParsingContextStatus::Done; }
 };
-
 // class ParsingDeclRep final : public DeclRep {};
-
-struct ParsingToken final {
-private:
-  Parser &parser;
-
-public:
-  ParsingToken(Parser &parser) : parser(parser) {}
-
-public:
-  bool IsPeriod();
-  bool IsDoublePipe();
-  bool IsPipe();
-  bool IsPipeEqual();
-  bool IsEllipsis();
-  bool IsSemi();
-  bool IsEquality();
-  bool IsDoubleEquality();
-  bool IsPound();
-  bool IsAmp();
-  bool IsArrow();
-  bool IsBackTick();
-  bool IsExcliam();
-  bool IsDoubleColon();
-  bool IsTilde();
-  bool IsFun();
-  bool IsStruct();
-  bool IsInterface();
-  bool IsPure();
-  bool IsInline();
-  bool IsEnum();
-  bool IsStar();
-  bool IsQualifier();
-  bool IsAccessLevel();
-  bool IsIf();
-  bool IsElse();
-  bool IsWhile();
-  bool IsRightParen();
-  bool IsLeftParen();
-  bool IsIntegerLiteral();
-  bool IsFloatingLiteral();
-  bool IsStringLiteral();
-  bool IsImaginaryLiteral();
-  bool IsRegexLiteral();
-};
 
 } // namespace ast
 } // namespace stone

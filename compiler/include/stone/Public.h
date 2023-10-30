@@ -76,7 +76,7 @@ public:
   FileSystemOptions &GetFileSystemOptions() { return fsOpts; }
   const FileSystemOptions &GetFileSystemOptions() const { return fsOpts; }
 
-  DiagnosticEngine &GetDiagnoticEngine() { return de; }
+  DiagnosticEngine &GetDiagnosticEngine() { return de; }
 
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }

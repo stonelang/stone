@@ -235,21 +235,18 @@ public:
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return GetLangContext().GetDiagUnit().PrintD(
-        loc, ASTDiagnostic(
-                 DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())));
+        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetLangContext().GetDiagUnit().PrintD(
-        loc, ASTDiagnostic(DiagnosticDetail(diagID, args)));
+    return GetLangContext().GetDiagnoticEngine().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLangContext().GetDiagUnit().PrintD(
-        loc, ASTDiagnostic(DiagnosticDetail(id, std::move(args)...)));
+    return GetLangContext().GetDiagnoticEngine().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
   }
 };
 } // namespace ast

@@ -414,7 +414,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
          "Attempting to parse a struct without a struct declaration.");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    return ast::MakeASTError();
+    return parser::MakeASTError();
   }
 
   auto structLoc =

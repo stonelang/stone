@@ -24,6 +24,7 @@ public:
   llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
   file::Type GetOutputFileType() const;
+  llvm::Timer& GetTimer() { return *timer; }
 
   bool CanOutput() const {
     switch (GetKind()) {

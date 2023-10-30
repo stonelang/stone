@@ -182,7 +182,7 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
+  return GetLangContext().GetDiagnosticEngine().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
