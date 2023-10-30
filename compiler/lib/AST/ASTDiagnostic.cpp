@@ -30,20 +30,20 @@ ASTDiagnostic::~ASTDiagnostic() {}
 // void DeclDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
 //   // TODO: UB -- this may be too expensive
-//   auto arg = static_cast<const syn::Decl *>(val);
+//   auto arg = static_cast<const ast::Decl *>(val);
 //   de.Issue(arg->GetLoc(), 1) << "test";
 // }
 
 // void TypeDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
-//   auto arg = static_cast<const syn::Type *>(val);
+//   auto arg = static_cast<const ast::Type *>(val);
 // }
 
 // void DeclContextDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
-//   auto arg = static_cast<const syn::DeclContext *>(val);
+//   auto arg = static_cast<const ast::DeclContext *>(val);
 // }
 // void IdentifierDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
-//   auto arg = static_cast<const syn::Identifier *>(val);
+//   auto arg = static_cast<const ast::Identifier *>(val);
 // }
 
 ASTDiagnosticFormatter::ASTDiagnosticFormatter() {}
@@ -52,7 +52,7 @@ void ASTDiagnosticFormatter::Format(ColorStream &out,
                                        DiagnosticDetail &detail,
                                        DiagnosticFormatOptions fmtOpts) {
 
-  // printf("%s\n", "Hello syntax formatting");
+  // printf("%s\n", "Hello asttax formatting");
 }
 
 void ASTDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,

@@ -6,7 +6,7 @@
 #include "stone/Basic/STDAlias.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 // TODO: You may not need this part
 enum class ImportKind : UInt8 {
@@ -32,7 +32,7 @@ class ImportSearchPath final : public ImportSearchPathBase {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

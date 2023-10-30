@@ -5,15 +5,15 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Stmt;
 class IfStmt;
 class SwitchStmt;
 class ASTNode;
 
-} // namespace syn
+} // namespace ast
 
-namespace syn {
+namespace ast {
 
 struct StmtFactory final {
   static BraceStmt *MakeBraceStmt(SrcLoc lbloc,
@@ -22,7 +22,7 @@ struct StmtFactory final {
                                   llvm::Optional<bool> implicit = llvm::None);
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

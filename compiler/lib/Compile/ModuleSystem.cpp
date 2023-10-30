@@ -4,15 +4,15 @@
 #include "stone/AST/DeclFactory.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
-                           syn::ASTContext &sc)
+                           ast::ASTContext &sc)
     : invocation(invocation), sc(sc) {}
 
 ModuleSystem::~ModuleSystem() {}
 
-syn::ModuleDecl *ModuleSystem::GetMainModule() const {
+ast::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
 
     assert(invocation.GetModuleOptions().HasModuleName());
@@ -27,7 +27,7 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     sc.AddLoadedModule(mainModule);
 
     // Create and add the module's files.
-    llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
+    llvm::SmallVector<ast::ModuleFile *, 16> moduleFiles;
 
     if (!CreateASTFilesForMainModule(mainModule, moduleFiles).Has()) {
       for (auto *moduleFile : moduleFiles)
@@ -45,12 +45,12 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 }
 
 Error ModuleSystem::CreateASTFilesForMainModule(
-    syn::ModuleDecl *mod,
-    llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
+    ast::ModuleDecl *mod,
+    llvm::SmallVectorImpl<ast::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
   llvm::Optional<unsigned> mainBufferID = llvm::None;
-  if (syn::ASTFile *mainASTFile = ComputeMainASTFileForModule(mod)) {
+  if (ast::ASTFile *mainASTFile = ComputeMainASTFileForModule(mod)) {
     mainBufferID = mainASTFile->GetSrcID();
     resultFiles.push_back(mainASTFile);
   }
@@ -74,13 +74,13 @@ Error ModuleSystem::CreateASTFilesForMainModule(
     }
 
     auto *libraryFile = CreateASTFileForMainModule(
-        mod, syn::ASTFileKind::Library, bufferID);
+        mod, ast::ASTFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
   return Error();
 }
 
-syn::ASTFile *
+ast::ASTFile *
 ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
 
   if (invocation.GetCompilerOptions().parsingInputMode ==
@@ -91,14 +91,14 @@ ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
   return nullptr;
 }
 
-syn::ASTFile *ModuleSystem::CreateASTFileForMainModule(
-    ModuleDecl *mod, syn::ASTFileKind syntaxFileKind, unsigned bufferID,
+ast::ASTFile *ModuleSystem::CreateASTFileForMainModule(
+    ModuleDecl *mod, ast::ASTFileKind asttaxFileKind, unsigned bufferID,
     bool isMainBuffer) const {
 
   auto isPrimary = bufferID && invocation.IsPrimarySourceID(bufferID);
   auto parsingOpts = GetASTFileParsingOptions(isPrimary);
 
-  auto syntaxFile = ASTFile::Make(syntaxFileKind, bufferID, *mod, sc);
+  auto asttaxFile = ASTFile::Make(asttaxFileKind, bufferID, *mod, sc);
 
   // if (isMainBuffer)
   //   inputFile->ASTParsingCache =
@@ -106,10 +106,10 @@ syn::ASTFile *ModuleSystem::CreateASTFileForMainModule(
 
   // return inputFile;
 
-  return syntaxFile;
+  return asttaxFile;
 }
 
-syn::ASTFile::ParsingOptions
+ast::ASTFile::ParsingOptions
 ModuleSystem::GetASTFileParsingOptions(bool forPrimary) const {
 
   auto parsingOpts = ASTFile::GetDefaultParsingOptions(
@@ -137,7 +137,7 @@ Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   return Error();
 }
 
-bool stone::EmitImportedModules(syn::ASTContext &context,
+bool stone::EmitImportedModules(ast::ASTContext &context,
                                 ModuleDecl *mainModule,
                                 const CompilerOptions &opts) {
   return false;

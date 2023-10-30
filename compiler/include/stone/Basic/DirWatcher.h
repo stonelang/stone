@@ -15,7 +15,7 @@ namespace stone {
 ///
 /// Invokes client-provided function on every filesystem event in the watched
 /// directory. Initially the the watched directory is scanned and for every file
-/// found, an event is synthesized as if the file was added.
+/// found, an event is astthesized as if the file was added.
 ///
 /// This is not a general purpose directory monitoring tool - list of
 /// limitations follows.

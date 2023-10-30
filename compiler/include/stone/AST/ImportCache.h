@@ -2,13 +2,13 @@
 #define STONE_AST_IMPORTCACHE_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ImportCache {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

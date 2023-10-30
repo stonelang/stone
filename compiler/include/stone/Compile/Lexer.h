@@ -14,7 +14,7 @@ class SrcID;
 class SrcMgr;
 class ASTListener;
 
-namespace syn {
+namespace ast {
 class Token;
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
 /// advance the lexer past it.  This returns the encoded character or ~0U if
@@ -620,7 +620,7 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

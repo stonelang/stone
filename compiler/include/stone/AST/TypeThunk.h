@@ -11,7 +11,7 @@
 #include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class TypeThunkKind {
   None,
@@ -24,7 +24,7 @@ enum class TypeThunkKind {
   Pipe,
 };
 class alignas(1 << TypeAlignInBits) TypeThunk
-    : syn::ASTAllocation<TypeThunk> {
+    : ast::ASTAllocation<TypeThunk> {
   SrcLoc loc;
   TypeThunkKind kind;
 
@@ -172,6 +172,6 @@ public:
   void Verify();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

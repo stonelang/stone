@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 namespace stone {
-namespace syn {
+namespace ast {
 /// Given a UTF-8 codepoint, determines whether it appears on the Unicode
 /// specification table of confusable characters and maps to punctuation,
 /// and either returns either the expected ASCII character or 0.
@@ -15,7 +15,7 @@ char ConvertConfusableCharacterToASCII(uint32_t codepoint);
 std::pair<llvm::StringRef, llvm::StringRef>
 GetConfusableAndBaseCodepointNames(uint32_t codepoint);
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

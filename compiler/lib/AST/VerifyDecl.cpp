@@ -1,7 +1,7 @@
 #include "stone/AST/Decl.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
-// void syn::VerifyFunDecl(Decl *d) {}
-// void syn::VerifyDecl(Decl *d) {}
+// void ast::VerifyFunDecl(Decl *d) {}
+// void ast::VerifyDecl(Decl *d) {}

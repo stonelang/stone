@@ -14,14 +14,14 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Module;
 class ASTContext;
-} // namespace syn
+} // namespace ast
 
 class CodeGenMachine final {
   CodeGenContext &cgc;
-  syn::ASTContext &sc;
+  ast::ASTContext &sc;
 
   // llvm::Optional<raw_fd_ostream> rawStream;
 public:
@@ -29,11 +29,11 @@ public:
   void operator=(const CodeGenMachine &) = delete;
 
 public:
-  CodeGenMachine(CodeGenContext &cgc, syn::ASTContext &sc);
+  CodeGenMachine(CodeGenContext &cgc, ast::ASTContext &sc);
   ~CodeGenMachine();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  syn::ASTContext &GetASTContext() { return sc; }
+  ast::ASTContext &GetASTContext() { return sc; }
 };
 } // namespace stone
 

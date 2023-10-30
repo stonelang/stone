@@ -18,7 +18,7 @@
 #include <iterator>
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Decl;
 class ASTContext;
 
@@ -357,14 +357,14 @@ private:
   DeclTy *Ptr = nullptr;
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 namespace llvm {
 
 template <typename DeclTy>
-struct DenseMapInfo<stone::syn::CanonicalDeclPtr<DeclTy>> {
-  using CanonicalDeclPtr = stone::syn::CanonicalDeclPtr<DeclTy>;
+struct DenseMapInfo<stone::ast::CanonicalDeclPtr<DeclTy>> {
+  using CanonicalDeclPtr = stone::ast::CanonicalDeclPtr<DeclTy>;
   using BaseInfo = DenseMapInfo<DeclTy *>;
 
   static CanonicalDeclPtr getEmptyKey() {
@@ -392,13 +392,13 @@ struct DenseMapInfo<stone::syn::CanonicalDeclPtr<DeclTy>> {
 };
 
 template <typename DeclTy>
-struct PointerLikeTypeTraits<stone::syn::CanonicalDeclPtr<DeclTy>> {
-  static inline void *getAsVoidPointer(stone::syn::CanonicalDeclPtr<DeclTy> P) {
+struct PointerLikeTypeTraits<stone::ast::CanonicalDeclPtr<DeclTy>> {
+  static inline void *getAsVoidPointer(stone::ast::CanonicalDeclPtr<DeclTy> P) {
     return P.Ptr;
   }
-  static inline stone::syn::CanonicalDeclPtr<DeclTy>
+  static inline stone::ast::CanonicalDeclPtr<DeclTy>
   getFromVoidPointer(void *P) {
-    stone::syn::CanonicalDeclPtr<DeclTy> C;
+    stone::ast::CanonicalDeclPtr<DeclTy> C;
     C.Ptr = PointerLikeTypeTraits<DeclTy *>::getFromVoidPtr(P);
     return C;
   }

@@ -10,7 +10,7 @@ using namespace stone;
 
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
-      sc(new syn::ASTContext(invocation.GetLangContext(),
+      sc(new ast::ASTContext(invocation.GetLangContext(),
                                 invocation.GetSearchPathOptions(),
                                 invocation.GetClangContext())),
       stats(new CompilerInstanceStats(*this)),
@@ -65,7 +65,7 @@ CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
 }
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
-    const syn::ASTFile &sf) const {
+    const ast::ASTFile &sf) const {
   return invocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -74,8 +74,8 @@ CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
 void CompilerInstance::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = dyn_cast<syn::ASTFile>(moduleFile))
-      sem::ResolveImports(*syntaxFile);
+    if (auto *asttaxFile = dyn_cast<ast::ASTFile>(moduleFile))
+      sem::ResolveImports(*asttaxFile);
   }
 }
 
@@ -84,18 +84,18 @@ void CompilerInstance::ForEachASTFile(EachASTFileCallback client) {
   switch (invocation.GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<syn::ASTFile>(moduleFile);
-      if (syntaxFile) {
-        client(*syntaxFile, invocation.GetTypeCheckerOptions(),
+      auto *asttaxFile = dyn_cast<ast::ASTFile>(moduleFile);
+      if (asttaxFile) {
+        client(*asttaxFile, invocation.GetTypeCheckerOptions(),
                invocation.GetListener());
       }
     }
     break;
   }
   case TypeCheckMode::EachFile: {
-    for (auto *syntaxFile :
+    for (auto *asttaxFile :
          GetModuleSystem().GetMainModule()->GetPrimaryASTFiles()) {
-      client(*syntaxFile, invocation.GetTypeCheckerOptions(),
+      client(*asttaxFile, invocation.GetTypeCheckerOptions(),
              invocation.GetListener());
     }
     break;

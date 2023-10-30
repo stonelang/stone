@@ -6,7 +6,7 @@
 #include "stone/AST/Types.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 // fun Do() -> '() -> int'
 Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
@@ -120,28 +120,28 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
-    ty = GetASTContext().GetBuiltinContext().BuiltinVoidType;
+    ty = GetASTContext().GetBuiltin().BuiltinVoidType;
     break;
   }
 
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
-    ty = GetASTContext().GetBuiltinContext().BuiltinIntType;
+    ty = GetASTContext().GetBuiltin().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
     assert(collector.GetTypeSpecifierCollector().IsInt16());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt16Type;
+    ty = GetASTContext().GetBuiltin().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
     assert(collector.GetTypeSpecifierCollector().IsInt32());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt32Type;
+    ty = GetASTContext().GetBuiltin().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
     assert(collector.GetTypeSpecifierCollector().IsInt64());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt64Type;
+    ty = GetASTContext().GetBuiltin().BuiltinInt64Type;
     break;
   }
   }

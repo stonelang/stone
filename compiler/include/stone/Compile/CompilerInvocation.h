@@ -76,7 +76,7 @@ class CompilerInvocation final {
 
   ModuleOptions moduleOpts;
 
-  ASTOptions syntaxOpts;
+  ASTOptions asttaxOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -119,7 +119,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
-  // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<ast::ASTFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
@@ -147,8 +147,8 @@ public:
   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-  ASTOptions &GetASTOptions() { return syntaxOpts; }
-  const ASTOptions &GetASTOptions() const { return syntaxOpts; }
+  ASTOptions &GetASTOptions() { return asttaxOpts; }
+  const ASTOptions &GetASTOptions() const { return asttaxOpts; }
 
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {

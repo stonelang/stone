@@ -11,7 +11,7 @@ static const char *const TokenNames[] = {
 #include "stone/Basic/TokenKind.def"
     nullptr};
 
-const char *syn::Token::GetName() { return stone::GetTokenNameByKind(kind); }
+const char *ast::Token::GetName() { return stone::GetTokenNameByKind(kind); }
 
 bool stone::IsTokenTextDetermined(tok kind) { return false; }
 

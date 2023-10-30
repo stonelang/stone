@@ -14,7 +14,7 @@
 #include "llvm/Support/MemoryBuffer.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 //===----------------------------------------------------------------------===//
 // UTF8 Validation/Encoding/Decoding helper functions
@@ -78,7 +78,7 @@ static bool isStartOfUTF8Character(unsigned char C) {
 /// validateUTF8CharacterAndAdvance - Given a pointer to the starting byte of a
 /// UTF8 character, validate it and advance the lexer past it.  This returns the
 /// encoded character or ~0U if the encoding is invalid.
-uint32_t syn::validateUTF8CharacterAndAdvance(const char *&Ptr,
+uint32_t ast::validateUTF8CharacterAndAdvance(const char *&Ptr,
                                               const char *End) {
   if (Ptr >= End)
     return ~0U;
@@ -261,7 +261,7 @@ void Lexer::formToken(tok Kind, const char *TokStart) {
 
   // When we are lexing a subrange from the middle of a file buffer, we will
   // run past the end of the range, but will stay within the file.  Check if
-  // we are past the imaginary EOF, and synthesize a tok::eof in this case.
+  // we are past the imaginary EOF, and astthesize a tok::eof in this case.
   if (Kind != tok::eof && TokStart >= ArtificialEOF) {
     Kind = tok::eof;
   }
@@ -2199,13 +2199,13 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
       .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), " ");
 
   char ExpectedCodepoint;
-  if ((ExpectedCodepoint = syn::ConvertConfusableCharacterToASCII(Codepoint))) {
+  if ((ExpectedCodepoint = ast::ConvertConfusableCharacterToASCII(Codepoint))) {
 
     llvm::SmallString<4> ConfusedChar;
     EncodeToUTF8(Codepoint, ConfusedChar);
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
-    auto charNames = syn::GetConfusableAndBaseCodepointNames(Codepoint);
+    auto charNames = ast::GetConfusableAndBaseCodepointNames(Codepoint);
     PrintD(CurPtr - 1, diag::lex_confusable_character,
            diag::LLVMStr(ConfusedChar), diag::LLVMStr(charNames.first),
            diag::LLVMStr(ExpectedChar), diag::LLVMStr(charNames.second))
@@ -3249,7 +3249,7 @@ Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
   return Pieces;
 }
 
-llvm::ArrayRef<Token> stone::syn::slice_token_array(ArrayRef<Token> AllTokens,
+llvm::ArrayRef<Token> stone::ast::slice_token_array(ArrayRef<Token> AllTokens,
                                                     SrcLoc StartLoc,
                                                     SrcLoc EndLoc) {
   assert(StartLoc.isValid() && EndLoc.isValid());

@@ -25,7 +25,7 @@ namespace stone {
 class SrcLoc;
 class LangOptions;
 
-namespace syn {
+namespace ast {
 
 class DeclName;
 class DeclNameTable;
@@ -262,8 +262,8 @@ namespace detail {
 /// DeclNameExtra is tightly coupled to DeclName and any change
 /// here is very likely to require changes in DeclName(Table).
 class alignas(IdentifierAlignment) SpecialDeclName {
-  friend class stone::syn::DeclName;
-  friend class stone::syn::DeclNameTable;
+  friend class stone::ast::DeclName;
+  friend class stone::ast::DeclNameTable;
 
 protected:
   /// The kind of "extra" information stored in the DeclName. See
@@ -292,39 +292,39 @@ protected:
 };
 
 } // namespace detail
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 namespace llvm {
 
-raw_ostream &operator<<(raw_ostream &OS, stone::syn::Identifier I);
+raw_ostream &operator<<(raw_ostream &OS, stone::ast::Identifier I);
 // Identifiers hash just like pointers.
-template <> struct DenseMapInfo<stone::syn::Identifier> {
-  static stone::syn::Identifier getEmptyKey() {
-    return stone::syn::Identifier::getEmptyKey();
+template <> struct DenseMapInfo<stone::ast::Identifier> {
+  static stone::ast::Identifier getEmptyKey() {
+    return stone::ast::Identifier::getEmptyKey();
   }
-  static stone::syn::Identifier getTombstoneKey() {
-    return stone::syn::Identifier::getTombstoneKey();
+  static stone::ast::Identifier getTombstoneKey() {
+    return stone::ast::Identifier::getTombstoneKey();
   }
-  static unsigned getHashValue(stone::syn::Identifier Val) {
+  static unsigned getHashValue(stone::ast::Identifier Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetPointer());
   }
-  static bool isEqual(stone::syn::Identifier LHS, stone::syn::Identifier RHS) {
+  static bool isEqual(stone::ast::Identifier LHS, stone::ast::Identifier RHS) {
     return LHS == RHS;
   }
 };
 
 // An Identifier is "pointer like".
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::syn::Identifier> {
+template <> struct PointerLikeTypeTraits<stone::ast::Identifier> {
 public:
-  static inline void *getAsVoidPointer(stone::syn::Identifier I) {
+  static inline void *getAsVoidPointer(stone::ast::Identifier I) {
     return const_cast<void *>(I.GetAsOpaquePointer());
   }
-  static inline stone::syn::Identifier getFromVoidPointer(void *P) {
-    return stone::syn::Identifier::GetFromOpaquePointer(P);
+  static inline stone::ast::Identifier getFromVoidPointer(void *P) {
+    return stone::ast::Identifier::GetFromOpaquePointer(P);
   }
-  enum { NumLowBitsAvailable = stone::syn::Identifier::NumLowBitsAvailable };
+  enum { NumLowBitsAvailable = stone::ast::Identifier::NumLowBitsAvailable };
 };
 
 } // namespace llvm

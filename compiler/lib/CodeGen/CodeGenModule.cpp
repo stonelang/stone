@@ -5,7 +5,7 @@
 #include "stone/AST/Decl.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 CodeGenModule::CodeGenModule(CodeGenContext &cgc,
                                  llvm::StringRef moduleName,
@@ -25,7 +25,7 @@ llvm::StringRef CodeGenModule::GetMangledName(Decl &d) { return ""; }
 
 llvm::Constant *
 CodeGenModule::CreateFunction(llvm::StringRef mangledName,
-                                syn::FunctionDecl *fd, llvm::Type *fnTy,
+                                ast::FunctionDecl *fd, llvm::Type *fnTy,
                                 const EmitFunctionOptions emitFunctionOpts,
                                 llvm::AttributeList extraAttrs) {
 
@@ -51,7 +51,7 @@ CodeGenModule::CreateFunction(llvm::StringRef mangledName,
 }
 llvm::Constant *
 CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
-                                     syn::FunctionDecl *fd, llvm::Type *fnTy,
+                                     ast::FunctionDecl *fd, llvm::Type *fnTy,
                                      const EmitFunctionOptions emitFunctionOpts,
                                      llvm::AttributeList extraAttrs) {
 
@@ -60,7 +60,7 @@ CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
 }
 
 llvm::Constant *CodeGenModule::GetFunctionAddress(
-    syn::FunctionDecl *fd, llvm::Type *fnTy,
+    ast::FunctionDecl *fd, llvm::Type *fnTy,
     const EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
@@ -76,12 +76,12 @@ llvm::Constant *CodeGenModule::GetFunctionAddress(
   return GetOrCreateFunction("mangledName", fd, fnTy, emitFunctionOpts);
 }
 
-void CodeGenModule::SetFunctionLinkage(syn::FunctionDecl *fd,
+void CodeGenModule::SetFunctionLinkage(ast::FunctionDecl *fd,
                                          llvm::Function *fn) {
   fn->setLinkage(GetFunctionLinkage(fd));
 }
 llvm::GlobalValue::LinkageTypes
-CodeGenModule::GetFunctionLinkage(syn::FunctionDecl *fd) {
+CodeGenModule::GetFunctionLinkage(ast::FunctionDecl *fd) {
 
   // TODO: FOR NOW
   return llvm::GlobalValue::InternalLinkage;

@@ -2,7 +2,7 @@
 #define STONE_AST_VIRTUALTABLE_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class VirtualTable final {
 public:
@@ -10,6 +10,6 @@ public:
   ~VirtualTable();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

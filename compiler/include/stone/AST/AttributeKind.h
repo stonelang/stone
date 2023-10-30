@@ -2,7 +2,7 @@
 #define STONE_AST_ATTRIBUTEKIND_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class AttributeKind {};
 

@@ -17,7 +17,7 @@
 
 namespace stone {
 class DiagnosticEngine;
-namespace syn {
+namespace ast {
 class ASTContext;
 class GenericParamList;
 class NormalInterfaceConformance;
@@ -80,7 +80,7 @@ enum class InterfaceConformanceState {
 /// InterfaceConformance is an abstract base class, implemented by subclasses
 /// for the various kinds of conformance (normal, specialized, inherited).
 // class alignas(1 << DeclAlignInBits) InterfaceConformance
-//     : public syn::ASTAllocation<InterfaceConformance> {
+//     : public ast::ASTAllocation<InterfaceConformance> {
 //   /// The kind of protocol conformance.
 //   InterfaceConformanceKind Kind;
 
@@ -556,7 +556,7 @@ enum class InterfaceConformanceState {
 //   /// defines the conforming type.
 //   bool isRetroactive() const;
 
-//   /// Whether this conformance was synthesized automatically in multiple
+//   /// Whether this conformance was astthesized automatically in multiple
 //   /// modules, but in a manner that ensures that all copies are equivalent.
 //   bool isSynthesizedNonUnique() const;
 
@@ -1010,15 +1010,15 @@ enum class InterfaceConformanceState {
 
 // /// Describes the kind of a builtin conformance.
 // enum class BuiltinConformanceKind {
-//   // A builtin conformance that has been synthesized by the implementation.
+//   // A builtin conformance that has been astthesized by the implementation.
 //   Synthesized = 0,
-//   // A missing conformance that we have nonetheless synthesized so that
+//   // A missing conformance that we have nonetheless astthesized so that
 //   // we can diagnose it later.
 //   Missing,
 // };
 
 // /// A builtin conformance appears when a non-nominal type has a
-// /// conformance that is synthesized by the implementation.
+// /// conformance that is astthesized by the implementation.
 // class BuiltinInterfaceConformance final : public RootInterfaceConformance,
 //       private llvm::TrailingObjects<BuiltinInterfaceConformance, Requirement>
 //       {
@@ -1140,7 +1140,7 @@ enum class InterfaceConformanceState {
 // void simple_display(llvm::raw_ostream &out, const InterfaceConformance
 // *conf);
 
-} // namespace syn
+} // namespace ast
 
 } // end namespace stone
 

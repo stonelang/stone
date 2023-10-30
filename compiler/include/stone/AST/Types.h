@@ -47,7 +47,7 @@
 #include <string>
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class Type;
 class TypeWalker;
@@ -395,8 +395,8 @@ class AliasType : public SweetType {
 public:
 };
 
-/// A type with a special syntax that is always sugar for a library type. The
-/// library type may have multiple base types. For unary syntax sugar, see
+/// A type with a special asttax that is always sugar for a library type. The
+/// library type may have multiple base types. For unary asttax sugar, see
 /// UnaryASTSweetType.
 ///
 /// The prime examples are:
@@ -406,7 +406,7 @@ class ASTSweetType : public SweetType {
 public:
 };
 
-/// The dictionary type [K : V], which is syntactic sugar for Dictionary<K, V>.
+/// The dictionary type [K : V], which is asttactic sugar for Dictionary<K, V>.
 ///
 /// Example:
 /// \code
@@ -420,6 +420,6 @@ public:
 // public:
 // };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

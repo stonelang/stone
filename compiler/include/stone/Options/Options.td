@@ -71,8 +71,8 @@ HelpText<"Parse input file(s)">, ModeOpt,
 Flags<[CompilerOption]>;
 
 
-def DumpAST : Flag<["-"], "dump-syntax">,
-HelpText<"Parse and dump syntax tree">, ModeOpt,
+def DumpAST : Flag<["-"], "dump-asttax">,
+HelpText<"Parse and dump asttax tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 def TypeCheck : Flag<["-"], "type-check">,
@@ -80,8 +80,8 @@ HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 
-def PrintAST : Flag<["-"], "print-syntax">,
-HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
+def PrintAST : Flag<["-"], "print-asttax">,
+HelpText<"Parse, type-check input file(s) and pretty print asttax tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 def EmitLibrary : Flag<["-"], "emit-library">,
@@ -203,9 +203,9 @@ HelpText<"Generate code for a particular CPU variant">;
 
 // DEV OPTIONS 
 
-def SyncJob : Flag<["-"], "sync-job">,
+def SyncJob : Flag<["-"], "astc-job">,
 Flags<[DebugOption]>,
-HelpText<"Run jobs synchronously -- default is asynchronous">;
+HelpText<"Run jobs astchronously -- default is aastchronous">;
 
 def PrintMode : Flag<["-"], "print-mode">,
 Flags<[DebugOption]>,

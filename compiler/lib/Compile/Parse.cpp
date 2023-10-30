@@ -5,9 +5,9 @@
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
-void stone::ParseASTFile(syn::ASTFile &sf, syn::ASTContext &sc,
+void stone::ParseASTFile(ast::ASTFile &sf, ast::ASTContext &sc,
                             ASTListener *listener) {
 
   Parser parser(sf, sc, listener);

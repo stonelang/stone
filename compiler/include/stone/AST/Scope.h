@@ -9,7 +9,7 @@
 #include "llvm/ADT/SmallPtrSet.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Decl;
 
 // TODO: Think about
@@ -17,7 +17,7 @@ enum class ScopeKind : UInt8 {
   None = 0,
 
   TopLevel,
-  /// A syntax file , which is the root of a scope.
+  /// A asttax file , which is the root of a scope.
   ASTFile,
 
   Decl,
@@ -99,7 +99,7 @@ enum class ScopeKind : UInt8 {
 
 };
 
-class Scope final : public syn::ASTAllocation<Scope> {
+class Scope final : public ast::ASTAllocation<Scope> {
   ScopeKind kind;
   DiagnosticEngine &diags;
   Scope *parent = nullptr;
@@ -124,6 +124,6 @@ private:
 public:
   static const char *GetName(ScopeKind kind);
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

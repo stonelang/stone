@@ -5,7 +5,7 @@
 #include "stone/AST/Global.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 void CodeGenModule::EmitGlobalDecl(Decl *d) {
 
@@ -25,25 +25,25 @@ void CodeGenModule::EmitGlobalDecl(Decl *d) {
   }
 }
 
-// void CodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+// void CodeGenModule::EmitGlobalDecl(ast::GlobalDecl *gd) {}
 
 namespace {
 class PrettyASTFileEmission : public llvm::PrettyStackTraceEntry {
-  const syn::ASTFile &sf;
+  const ast::ASTFile &sf;
 
 public:
   explicit PrettyASTFileEmission(const ASTFile &sf) : sf(sf) {}
   void print(raw_ostream &os) const override {
-    // os << "While emitting IR for syntax file " << SF.GetFilename() << '\n';
+    // os << "While emitting IR for asttax file " << SF.GetFilename() << '\n';
   }
 };
 } // end anonymous namespace
 
-void CodeGenModule::EmitASTFile(syn::ASTFile &sf) {
+void CodeGenModule::EmitASTFile(ast::ASTFile &sf) {
 
   PrettyASTFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<syn::ASTFile *> setCurASTFile(curASTFile, &sf);
-  // Walk through the syntax file and call emit
+  llvm::SaveAndRestore<ast::ASTFile *> setCurASTFile(curASTFile, &sf);
+  // Walk through the asttax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {
     EmitGlobalDecl(d);

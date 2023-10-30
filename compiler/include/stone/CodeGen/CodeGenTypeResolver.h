@@ -9,12 +9,12 @@ class PointerType;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Type;
 class Decl;
 class FunctionDecl;
 class MemberPointerType;
-} // namespace syn
+} // namespace ast
 
 class CodeGenModule;
 
@@ -25,10 +25,10 @@ public:
   CodeGenTypeResolver(CodeGenModule &cgm);
 
 public:
-  llvm::Type *GetType(const syn::Type ty);
+  llvm::Type *GetType(const ast::Type ty);
 
-  // llvm::Type *GetType(const syn::MemberPointerType *mpt);
-  llvm::FunctionType *GetFunctionType(const syn::FunctionDecl *fd);
+  // llvm::Type *GetType(const ast::MemberPointerType *mpt);
+  llvm::FunctionType *GetFunctionType(const ast::FunctionDecl *fd);
 };
 
 } // namespace stone

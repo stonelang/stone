@@ -16,7 +16,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
-#include "stone/AST/BuiltinContext.h"
+#include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Import.h"
@@ -58,7 +58,7 @@
 namespace stone {
 class DiagnosticEngine;
 
-namespace syn {
+namespace ast {
 
 class BlockExpr;
 class LangABI;
@@ -70,7 +70,7 @@ class Expr;
 class MangleContext;
 class Module;
 class Stmt;
-class BuiltinContext;
+class Builtin;
 class ASTContext;
 class Decl;
 class DeclContext;
@@ -87,7 +87,7 @@ class ASTContextStats final : public Stats {
 
 public:
   ASTContextStats(const ASTContext &sc)
-      : Stats("syntax context stats:"), sc(sc) {}
+      : Stats("asttax context stats:"), sc(sc) {}
   void Print(ColorStream &stream) override;
 };
 
@@ -111,7 +111,7 @@ class ASTContext final {
   /// The search path options
   const SearchPathOptions &searchPathOpts;
 
-  BuiltinContext builtinContext;
+  Builtin builtinContext;
   /// The allocator used to create ASTContext objects.
   /// ASTContext objects are never destructed; rather, all memory associated
   /// with the ASTContext objects will be released when the ASTContext
@@ -127,7 +127,7 @@ class ASTContext final {
   mutable llvm::SmallVector<Type *, 0> types;
 
   /// The standard library module.
-  mutable syn::ModuleDecl *stdlibModule = nullptr;
+  mutable ast::ModuleDecl *stdlibModule = nullptr;
 
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
@@ -135,7 +135,7 @@ class ASTContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier, syn::ModuleDecl *> loadedModules;
+  llvm::MapVector<Identifier, ast::ModuleDecl *> loadedModules;
 
   /// Set if a `-module-alias` was passed. Used to store mapping between module
   /// aliases and their corresponding real names, and vice versa for a reverse
@@ -170,7 +170,7 @@ public:
 
   DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
-  const BuiltinContext &GetBuiltinContext() const;
+  const Builtin &GetBuiltin() const;
 
   LangContext &GetLangContext() { return lc; }
   const LangContext &GetLangContext() const { return lc; }
@@ -252,7 +252,7 @@ public:
         loc, ASTDiagnostic(DiagnosticDetail(id, std::move(args)...)));
   }
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

@@ -1,7 +1,7 @@
 #include "stone/AST/DeclName.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 constexpr const Identifier::Aligner DeclNameBase::BasicIdentifierAligner{};
 constexpr const Identifier::Aligner

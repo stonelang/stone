@@ -10,7 +10,7 @@ namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace syn {
+namespace ast {
 class Decl;
 class ASTFile;
 class Module;
@@ -26,14 +26,14 @@ class Type;
 // class TypeRepr;
 class ValueDecl;
 
-} // namespace syn
+} // namespace ast
 namespace sem {
 class TypeChecker;
 class ExportContext;
 
 /// Problematic origin of an exported type.
 ///
-/// This enum must be kept in sync with a number of diagnostics:
+/// This enum must be kept in astc with a number of diagnostics:
 ///   diag::inlinable_decl_ref_from_hidden_module
 ///   diag::decl_from_hidden_module
 ///   diag::conformance_from_implementation_only_module
@@ -63,16 +63,16 @@ enum class DowngradeToWarningKind : bool {
 /// At a high level, this checks the given declaration's signature does not
 /// reference any other declarations that are less visible than the declaration
 /// itself. Related checks may also be performed.
-void CheckAccessLevel(syn::Decl *D);
+void CheckAccessLevel(ast::Decl *D);
 
-void CheckAccessLevel(syn::Type ty);
+void CheckAccessLevel(ast::Type ty);
 
 /// Returns the kind of origin, implementation-only import or SPI declaration,
 /// that restricts exporting \p decl from the given file and context.
-DisallowedOriginKind GetDisallowedOriginKind(const syn::Decl *decl,
+DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
                                              const ExportContext &where);
 
-DisallowedOriginKind GetDisallowedOriginKind(const syn::Decl *decl,
+DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
                                              const ExportContext &where,
                                              DowngradeToWarningKind &kind);
 

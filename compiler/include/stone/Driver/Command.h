@@ -197,7 +197,7 @@ public:
 
 public:
   static int ExecuteSync(const Command &c, Context *ctx = nullptr);
-  static int ExecuteAsync(const Command &c, Context *ctx = nullptr);
+  static int ExecuteAastc(const Command &c, Context *ctx = nullptr);
 };
 
 class CommandInvocation final {
@@ -230,7 +230,7 @@ public:
 
 namespace job {
 int RunSync(const Command &command, Context *ctx = nullptr);
-int RunAsync(const Command &command, Context *ctx = nullptr);
+int RunAastc(const Command &command, Context *ctx = nullptr);
 } // namespace job
 
 } // namespace stone

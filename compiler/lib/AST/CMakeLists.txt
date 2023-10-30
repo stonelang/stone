@@ -4,9 +4,9 @@ set(LLVM_LINK_COMPONENTS
   Support
  )
 
-set(stone_syn_sources
+set(stone_ast_sources
 	Availability.cpp
-	BuiltinContext.cpp
+	Builtin.cpp
 	Comment.cpp
 	Decl.cpp
 	DeclCollector.cpp
@@ -44,7 +44,7 @@ set(stone_syn_sources
 
 )
 add_stone_library(StoneAST
-	${stone_syn_sources}
+	${stone_ast_sources}
 )
 
 

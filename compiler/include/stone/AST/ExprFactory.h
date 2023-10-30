@@ -5,16 +5,16 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Expr;
-} // namespace syn
+} // namespace ast
 
-namespace syn {
+namespace ast {
 struct ExprFactory final {
   NewExpr *MakeNewExpr();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

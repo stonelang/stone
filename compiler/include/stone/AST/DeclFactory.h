@@ -8,7 +8,7 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Decl;
 class DeclContext;
 class ASTContext;
@@ -23,9 +23,9 @@ class AST;
 class ASTFile;
 struct DeclNameContext;
 
-} // namespace syn
+} // namespace ast
 
-namespace syn {
+namespace ast {
 template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
@@ -62,7 +62,7 @@ struct DeclFactory final {
   // }
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

@@ -1,7 +1,7 @@
 #include "stone/AST/TypeQualifier.h"
 #include "stone/AST/ASTContext.h"
 
-using namespace stone::syn;
+using namespace stone::ast;
 
 // ConstTypeQualifier ConstTypeQualifier::Create(SrcLoc loc) {
 //   ConstTypeQualifier qualifier(loc);

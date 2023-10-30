@@ -1,3 +1,3 @@
 #include "stone/AST/ASTWalker.h"
 
-using stone::syn::ASTWalker;
+using stone::ast::ASTWalker;

@@ -2,8 +2,8 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTResult.h"
 
-using namespace stone::syn;
+using namespace stone::ast;
 
 ASTResult<Stmt> Parser::ParseStmt() {
-  return syn::MakeASTResult<Stmt>(nullptr);
+  return ast::MakeASTResult<Stmt>(nullptr);
 }

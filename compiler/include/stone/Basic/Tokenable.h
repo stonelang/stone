@@ -6,7 +6,7 @@ namespace stone {
 class SrcLoc;
 class SrcMgr;
 
-namespace syn {
+namespace ast {
 class Token;
 }
 
@@ -15,7 +15,7 @@ public:
   virtual ~Tokenable() {}
 
 public:
-  virtual syn::Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) = 0;
+  virtual ast::Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) = 0;
   virtual SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) = 0;
 };
 } // namespace stone

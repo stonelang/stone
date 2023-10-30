@@ -8,7 +8,7 @@
 #include <string>
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class TypeWalkerAction { None = 0, Continue, SkipChildren, Stop };
 
@@ -47,5 +47,5 @@ protected:
 //   }
 // };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone

@@ -13,7 +13,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 /// Describes the kind of unqualified-id parsed.
 enum class UnqualifiedIdKind {
@@ -363,6 +363,6 @@ public:
   void Apply();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

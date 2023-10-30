@@ -5,7 +5,7 @@
 #include "stone/AST/InlineBitfield.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class TypeKind : UInt8 {
 #define TYPE(id, parent) id,
@@ -20,6 +20,6 @@ enum : unsigned {
       stone::CountBitsUsed(static_cast<unsigned>(TypeKind::Last_Type))
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

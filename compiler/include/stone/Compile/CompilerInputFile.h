@@ -40,7 +40,7 @@ public:
   /// Constructs an input file from the provided data.
   ///
   /// \warning This entrypoint infers the type of the file from its extension
-  /// and is therefore not suitable for most clients that use files synthesized
+  /// and is therefore not suitable for most clients that use files astthesized
   /// from memory buffers. Use the overload of this constructor accepting a
   /// memory buffer and an explicit \c file_types::ID instead.
   CompilerInputFile(llvm::StringRef name, bool isPrimary,

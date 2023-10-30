@@ -40,7 +40,7 @@
 
 namespace stone {
 class DiagnosticEngine;
-namespace syn {
+namespace ast {
 
 class Decl;
 class Stmt;
@@ -82,7 +82,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public syn::ASTAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public ast::ASTAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -113,7 +113,7 @@ protected:
           /// DeclContext of an active #if config clause.
           IsEscapedFromIfConfig : 1,
 
-          /// Whether this declaration is syntactically scoped inside of
+          /// Whether this declaration is asttactically scoped inside of
           /// a local context, but should behave like a top-level
           /// declaration for name lookup purposes. This is used by
           /// lldb.
@@ -135,7 +135,7 @@ protected:
         /// a.storage for lazy var a is a decl that cannot be accessed.
         IsUserAccessible : 1,
 
-        /// Whether this member was synthesized as part of a derived
+        /// Whether this member was astthesized as part of a derived
         /// protocol conformance.
         IsSynthesized : 1);
 
@@ -307,7 +307,7 @@ public:
     return GetDeclContextForModule();
   }
 
-  syn::Module *GetModuleContext() const;
+  ast::Module *GetModuleContext() const;
 
   ASTContext &GetASTContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
@@ -465,7 +465,7 @@ public:
     /// written in the source.
     Parsed = 0,
     /// The stored generic parameters represent generic parameters that are
-    /// synthesized by the type checker but were not written in the source.
+    /// astthesized by the type checker but were not written in the source.
     TypeChecked = 1,
     /// The stored generic parameters represent both the parsed and
     /// type-checked generic parameters.
@@ -547,7 +547,7 @@ class TypeParamDecl : public TypeDecl {};
 // This is really your function prototye
 class FunctionDecl : public GenericContext,
                      public ValueDecl
-/*, public syn::Redeclarable<FunctionDecl>*/ {
+/*, public ast::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -573,7 +573,7 @@ public:
     /// Function body is not available, although it was written in the source.
     Skipped,
 
-    /// Function body will be synthesized on demand.
+    /// Function body will be astthesized on demand.
     Synthesize,
 
     /// Function body is present and type-checked.
@@ -740,7 +740,7 @@ class ImportDecl final : public NameableDecl {
   ImportKind importKind;
 
 public:
-  // syn::Module *mod = nullptr;
+  // ast::Module *mod = nullptr;
 };
 
 class TrustDecl final
@@ -809,6 +809,6 @@ class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

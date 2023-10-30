@@ -14,7 +14,7 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ModuleDecl;
 
@@ -107,7 +107,7 @@ public:
     /// and the associated language option.
     DisablePoundIfEvaluation = 1 << 1,
 
-    /// Whether to build a syntax tree.
+    /// Whether to build a asttax tree.
     BuildASTTree = 1 << 2,
 
     /// Whether to save the file's parsed tokens.
@@ -132,7 +132,7 @@ public:
   std::vector<Decl *> Decls;
 
 public:
-  ASTFile(ASTFileKind kind, syn::ModuleDecl &owner,
+  ASTFile(ASTFileKind kind, ast::ModuleDecl &owner,
              llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~ASTFile();
@@ -170,7 +170,7 @@ public:
   // void Print(raw_ostream &stream, const ASTPrintOptions &PO);
 
 public:
-  static syn::ASTFile *Make(ASTFileKind kind, unsigned srcID,
+  static ast::ASTFile *Make(ASTFileKind kind, unsigned srcID,
                                ModuleDecl &owner, ASTContext &tc,
                                bool isPrimary = false);
 
@@ -202,7 +202,7 @@ public:
   ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
 public:
-  using syn::Decl::GetASTContext;
+  using ast::Decl::GetASTContext;
   llvm::SmallVector<ModuleFile *, 2> files;
 
   // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
@@ -262,7 +262,7 @@ public:
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

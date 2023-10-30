@@ -21,12 +21,12 @@ using namespace stone;
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *CodeGenTypeResolver::GetType(const syn::Type ty) {
+llvm::Type *CodeGenTypeResolver::GetType(const ast::Type ty) {
   return nullptr;
 }
 
 llvm::FunctionType *
-CodeGenTypeResolver::GetFunctionType(const syn::FunctionDecl *fd) {
+CodeGenTypeResolver::GetFunctionType(const ast::FunctionDecl *fd) {
 
   // llvm::SmallVector<llvm::Type*, 8> argTypes(IRFunctionArgs.totalIRArgs());
 
@@ -37,12 +37,12 @@ CodeGenTypeResolver::GetFunctionType(const syn::FunctionDecl *fd) {
       {}, false);
 }
 
-// llvm::Type *CodeGenTypeResolver::GetType(const syn::MemberPointerType mpty)
+// llvm::Type *CodeGenTypeResolver::GetType(const ast::MemberPointerType mpty)
 // {
 //   return nullptr;
 // }
 
 // llvm::FunctionType *CodeGenTypeResolver::GetFunctionType(const
-// syn::FunctionType fty) {
+// ast::FunctionType fty) {
 //   return nullptr;
 // }

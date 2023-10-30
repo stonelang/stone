@@ -12,7 +12,7 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class Parser;
 class ParsingScope;
@@ -234,6 +234,6 @@ public:
   bool IsRegexLiteral();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

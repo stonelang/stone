@@ -3,7 +3,7 @@
 #include "stone/AST/TypeVisitor.h"
 
 using namespace stone::sem;
-using namespace stone::syn;
+using namespace stone::ast;
 
 class TypeChecking final : public TypeVisitor<TypeChecking>,
                            public ASTWalker {
@@ -15,8 +15,8 @@ void TypeChecker::CheckTypes(Decl *d) {
   // if (!decl || decl->IsInvalid()){
   //     return;
   // }
-  // auto syntaxFile = d->GetDeclContext()->GetParentSourceFile();
-  // if (syntaxFile && syntaxFile->GetKind() == ASTFileKind::Interface) {
+  // auto asttaxFile = d->GetDeclContext()->GetParentSourceFile();
+  // if (asttaxFile && asttaxFile->GetKind() == ASTFileKind::Interface) {
   //   return;
   // }
 

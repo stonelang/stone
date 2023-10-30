@@ -8,7 +8,7 @@
 #include <utility>
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class Decl;
 class Stmt;
@@ -254,6 +254,6 @@ protected:
   virtual ~ASTWalker() = default;
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

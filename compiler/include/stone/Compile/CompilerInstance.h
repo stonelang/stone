@@ -21,9 +21,9 @@ public:
 };
 
 using ModuleASTFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::ASTFile *>;
+    llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
-using ParsingCompletedCallback = llvm::function_ref<Status(syn::ASTFile &)>;
+using ParsingCompletedCallback = llvm::function_ref<Status(ast::ASTFile &)>;
 
 using TypeCheckingCompletedCallback =
     llvm::function_ref<Status(CompilerInstance &)>;
@@ -35,7 +35,7 @@ using BackendCodeGenCompletedCallback =
     llvm::function_ref<void(CompilerInstance &)>;
 
 using EachASTFileCallback = llvm::function_ref<void(
-    syn::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+    ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 // using CompileWithGenIRCallback = llvm::function_ref<void(
 //     CompilerInvocation&invocation, CodeGenContext &cgc, CodeGenResult
@@ -46,7 +46,7 @@ class CompilerInstance final {
 
   CompilerInvocation &invocation;
 
-  std::unique_ptr<syn::ASTContext> sc;
+  std::unique_ptr<ast::ASTContext> sc;
   std::unique_ptr<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
@@ -62,7 +62,7 @@ class CompilerInstance final {
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
 
-  mutable syn::ModuleDecl *mainModule = nullptr;
+  mutable ast::ModuleDecl *mainModule = nullptr;
 
 public:
   CompilerInstance(const CompilerInstance &) = delete;
@@ -77,7 +77,7 @@ public:
   void Finish();
 
 public:
-  syn::ASTContext &GetASTContext() { return *sc.get(); }
+  ast::ASTContext &GetASTContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
 
@@ -117,11 +117,11 @@ public:
   void ResolveImports();
 
 public:
-  syn::ModuleDecl *CastToModuleDecl(stone::ModuleASTFileUnion msf) {
-    return msf.get<syn::ModuleDecl *>();
+  ast::ModuleDecl *CastToModuleDecl(stone::ModuleASTFileUnion msf) {
+    return msf.get<ast::ModuleDecl *>();
   }
-  syn::ASTFile *CastToASTFile(stone::ModuleASTFileUnion msf) {
-    msf.dyn_cast<syn::ASTFile *>();
+  ast::ASTFile *CastToASTFile(stone::ModuleASTFileUnion msf) {
+    msf.dyn_cast<ast::ASTFile *>();
   }
 
   Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
@@ -155,7 +155,7 @@ public:
 public:
   /// Gets the set of ASTFiles which are the primary inputs for this
   /// CompilerInstance.
-  llvm::ArrayRef<syn::ASTFile *> GetPrimaryASTFiles() const {
+  llvm::ArrayRef<ast::ASTFile *> GetPrimaryASTFiles() const {
     return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
   }
 
@@ -173,7 +173,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const;
+  GetPrimaryFileSpecificPathsForASTFile(const ast::ASTFile &sf) const;
 
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);

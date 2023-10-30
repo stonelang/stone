@@ -10,7 +10,7 @@
 #include "stone/AST/ASTNode.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 void Parser::ParseTopLevelDecls(
     llvm::SmallVector<ASTResult<Decl>> &results) {
@@ -188,18 +188,18 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
     // Do some logging
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   if (collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   ASTStatus status;
@@ -216,14 +216,14 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
-      return syn::MakeASTError();
+      return ast::MakeASTError();
     }
     // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
-      return syn::MakeASTError();
+      return ast::MakeASTError();
     }
     // TODO: That identifier should already exist
     // status = ParseIdentifier(parentName, parentNameLoc);
@@ -232,7 +232,7 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
       collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   DeclName fullName;
@@ -270,7 +270,7 @@ ASTResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return syn::MakeASTResult<Decl>(funDecl);
+  return ast::MakeASTResult<Decl>(funDecl);
 }
 
 ASTStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -362,7 +362,7 @@ ASTStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   if (GetTok().IsRParen()) {
@@ -370,9 +370,9 @@ ASTStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 ASTStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
@@ -414,7 +414,7 @@ ASTResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
          "Attempting to parse a struct without a struct declaration.");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    return syn::MakeASTError();
+    return ast::MakeASTError();
   }
 
   auto structLoc =

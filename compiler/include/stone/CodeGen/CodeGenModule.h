@@ -28,7 +28,7 @@
 #include <atomic>
 #include <memory>
 
-using namespace stone::syn;
+using namespace stone::ast;
 
 namespace llvm {
 class Constant;
@@ -60,7 +60,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+namespace ast {
 class ASTFile;
 class Decl;
 class GlobalDecl;
@@ -72,7 +72,7 @@ class VarDecl;
 class AutoDecl;
 class ASTFile;
 class NominalTypeDecl;
-} // namespace syn
+} // namespace ast
 
 class CodeGen;
 class CodeGenListener;
@@ -167,7 +167,7 @@ public:
   /// they are externally visible.
   // void EmitGlobalTopLevel(const std::vector<std::string> &linkerDirectives);
 
-  // void EmitGlobalDecl(syn::GlobalDecl *gd);
+  // void EmitGlobalDecl(ast::GlobalDecl *gd);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
   void EmitEnumDecl(EnumDecl *d);
@@ -179,11 +179,11 @@ public:
 
 private:
   llvm::Constant *
-  CreateFunction(llvm::StringRef mangledName, syn::FunctionDecl *fd,
+  CreateFunction(llvm::StringRef mangledName, ast::FunctionDecl *fd,
                  llvm::Type *fnTy, const EmitFunctionOptions emitFunctionOpts,
                  llvm::AttributeList extraAttrs = llvm::AttributeList());
   llvm::Constant *
-  GetOrCreateFunction(llvm::StringRef mangledName, syn::FunctionDecl *fd,
+  GetOrCreateFunction(llvm::StringRef mangledName, ast::FunctionDecl *fd,
                       llvm::Type *fnTy,
                       const EmitFunctionOptions emitFunctionOpts,
                       llvm::AttributeList extraAttrs = llvm::AttributeList());
@@ -192,15 +192,15 @@ public:
   void EmitFunDecl(FunDecl *fd, llvm::GlobalValue *globalValue = nullptr);
 
   llvm::Constant *
-  GetFunctionAddress(syn::FunctionDecl *fd, llvm::Type *functionTy,
+  GetFunctionAddress(ast::FunctionDecl *fd, llvm::Type *functionTy,
                      const EmitFunctionOptions emitFunctionOpts);
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
 
   // See Clang CodeGenModule
-  void SetFunctionLinkage(syn::FunctionDecl *fd, llvm::Function *fn);
-  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(syn::FunctionDecl *fd);
+  void SetFunctionLinkage(ast::FunctionDecl *fd, llvm::Function *fn);
+  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(ast::FunctionDecl *fd);
 
 public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,

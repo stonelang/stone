@@ -19,7 +19,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+namespace ast {
 class MemberPointerType;
 }
 class CodeGenModule;
@@ -27,13 +27,13 @@ class CodeGenModule;
 class CodeGenABI final {
   CodeGenModule &cgm;
 
-  std::unique_ptr<syn::MangleContext> mangleContext;
+  std::unique_ptr<ast::MangleContext> mangleContext;
 
 public:
   CodeGenABI(CodeGenModule &cgm);
 
 public:
-  llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType mpt);
+  llvm::Type *ResolveMemberPointerType(const ast::MemberPointerType mpt);
 };
 
 } // namespace stone

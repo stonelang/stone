@@ -2,13 +2,13 @@
 #define STONE_AST_CACHE_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ASTCache {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

@@ -4,15 +4,15 @@
 #include "stone/AST/Types.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class ASTContext;
 
-class BuiltinContext final {
+class Builtin final {
   ASTContext &sc;
 
 public:
-  BuiltinContext(const BuiltinContext &) = delete;
-  void operator=(const BuiltinContext &) = delete;
+  Builtin(const Builtin &) = delete;
+  void operator=(const Builtin &) = delete;
 
 public:
   const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
@@ -40,8 +40,8 @@ public:
   const CanType BuiltinBoolType;
 
 public:
-  BuiltinContext(ASTContext &sc);
-  ~BuiltinContext();
+  Builtin(ASTContext &sc);
+  ~Builtin();
 
 private:
   void Initialize();
@@ -49,6 +49,6 @@ private:
 public:
   Type GetType(llvm::StringRef name);
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

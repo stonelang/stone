@@ -3,7 +3,7 @@
 #include "stone/AST/ASTVisitor.h"
 
 using namespace stone::sem;
-using namespace stone::syn;
+using namespace stone::ast;
 
 class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;

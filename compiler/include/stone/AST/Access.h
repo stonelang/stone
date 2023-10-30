@@ -10,7 +10,7 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class DeclContext;
 
 // TODO: All you need is Public and Local
@@ -108,6 +108,6 @@ public:
     return llvm::None;
   }
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

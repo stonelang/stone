@@ -2,7 +2,7 @@
 #define STONE_AST_BUILTINID_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 // enum class BuiltinTypeKind : std::underlying_type<TypeKind>::type {
 // #define TYPE(id, parent)
@@ -30,6 +30,6 @@ class BuiltinProfile {
   const char *features;
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

@@ -41,8 +41,8 @@ stone::Error Compilation::RunJobs() {
   // while (!GetQueue().IsEmpty()) {
   //   auto job = GetQueue().Front();
   //   if (job) {
-  //     if (job->IsAsync()) {
-  //       job->ExecuteAsync();
+  //     if (job->IsAastc()) {
+  //       job->ExecuteAastc();
   //     } else {
   //       job->ExecuteSync();
   //     }

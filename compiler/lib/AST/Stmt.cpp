@@ -3,7 +3,7 @@
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 // ASTResult<Stmt *> AST::CreateIfStmt() { return StmtEmpty(); }
 

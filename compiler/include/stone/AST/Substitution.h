@@ -4,7 +4,7 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 /// Flags that can be passed when substituting into a type.
 // enum class SubstitutionFlags {
@@ -48,7 +48,7 @@ class SubstitutionMap {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

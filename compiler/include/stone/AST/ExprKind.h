@@ -4,7 +4,7 @@
 #include "stone/AST/InlineBitfield.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class ExprKind : uint8_t {
 #define EXPR(Id, Parent) Id,
@@ -18,6 +18,6 @@ enum : unsigned {
       stone::CountBitsUsed(static_cast<unsigned>(ExprKind::Last_Expr))
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

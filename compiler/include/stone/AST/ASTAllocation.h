@@ -5,7 +5,7 @@
 #include <cstddef>
 
 namespace stone {
-namespace syn {
+namespace ast {
 class ASTContext;
 }
 /// The arena in which a particular ASTContext allocation will go.
@@ -24,12 +24,12 @@ enum class AllocationArena {
   Temporary
 };
 
-namespace syn {
-void *AllocateInASTContext(size_t bytes, const syn::ASTContext &ctx,
+namespace ast {
+void *AllocateInASTContext(size_t bytes, const ast::ASTContext &ctx,
                               AllocationArena arena, unsigned alignment);
 }
 
-namespace syn {
+namespace ast {
 /// Types inheriting from this class are intended to be allocated in an
 /// \c ASTContext allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
@@ -45,10 +45,10 @@ public:
 
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const syn::ASTContext &ctx,
+  void *operator new(size_t bytes, const ast::ASTContext &ctx,
                      AllocationArena arena = AllocationArena::Permanent,
                      unsigned alignment = alignof(AlignTy)) {
-    return syn::AllocateInASTContext(bytes, ctx, arena, alignment);
+    return ast::AllocateInASTContext(bytes, ctx, arena, alignment);
   }
 
   void *operator new(size_t bytes, void *mem) throw() {
@@ -57,7 +57,7 @@ public:
   }
 };
 
-} // namespace syn
+} // namespace ast
 
 } // namespace stone
 

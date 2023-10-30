@@ -21,7 +21,7 @@ int Command::ExecuteSync(const Command &c, Context *ctx) {
       c.GetTool().GetFullName(), llvm::ArrayRef<llvm::StringRef>(c.args), c.env,
       c.redirects, c.waitSecs, c.memLimit, c.errMsg, c.failed);
 }
-int Command::ExecuteAsync(const Command &c, Context *ctx) {
+int Command::ExecuteAastc(const Command &c, Context *ctx) {
   assert(c.waitSecs == 0 && "Wait seconds must be equal to 0");
   return llvm::sys::ExecuteAndWait(
       c.GetTool().GetFullName(), llvm::ArrayRef<llvm::StringRef>(c.args), c.env,

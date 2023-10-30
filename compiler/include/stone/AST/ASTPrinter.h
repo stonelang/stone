@@ -2,13 +2,13 @@
 #define STONE_AST_PRINTER_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ASTPrinter {
 public:
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

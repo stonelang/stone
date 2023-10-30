@@ -4,7 +4,7 @@
 #include "stone/Basic/STDAlias.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class DeclKind : UInt8 {
   None,
@@ -34,7 +34,7 @@ enum class PrettyDeclKind : UInt8 {
 };
 
 // llvm::StringRef GetDeclKindName(DeclKind kind);
-} // namespace syn
+} // namespace ast
 
 } // namespace stone
 #endif

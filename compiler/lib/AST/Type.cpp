@@ -5,7 +5,7 @@
 #include "stone/AST/TypeQualifier.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 // == TypeBase ==//
 bool TypeBase::IsBasic() {

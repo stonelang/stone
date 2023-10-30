@@ -1,7 +1,7 @@
 #include "stone/Parse/Parser.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 // ==Scope == //
 

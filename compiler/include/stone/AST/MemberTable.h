@@ -33,7 +33,7 @@
 #include <utility>
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class MemberTable final {
 
@@ -54,6 +54,6 @@ public:
   void AddMember(Decl *member);
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

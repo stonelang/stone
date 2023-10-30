@@ -5,7 +5,7 @@
 
 using namespace stone;
 using namespace stone::sem;
-using namespace stone::syn;
+using namespace stone::ast;
 
 TypeChecker::TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)

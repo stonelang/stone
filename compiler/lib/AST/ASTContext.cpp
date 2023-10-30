@@ -13,7 +13,7 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 ASTContext::ASTContext(stone::LangContext &lc,
                              const SearchPathOptions &spOpts,
@@ -31,11 +31,11 @@ ASTContext::~ASTContext() {
   }
 }
 
-const BuiltinContext &ASTContext::GetBuiltinContext() const {
+const Builtin &ASTContext::GetBuiltin() const {
   return builtinContext;
 }
 
-void *syn::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
+void *ast::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
                                    AllocationArena arena, unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }

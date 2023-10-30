@@ -23,7 +23,7 @@
 
 namespace stone {
 class ASTListener;
-namespace syn {
+namespace ast {
 
 class BraceStmt;
 class AST;
@@ -191,8 +191,8 @@ private:
   //                                       DeclName &fullName,
   //                                       ParameterList *&bodyParams,
   //                                       DefaultArgumentInfo &defaultArgs,
-  //                                       SourceLoc &asyncLoc,
-  //                                       bool &reasync,
+  //                                       SourceLoc &aastcLoc,
+  //                                       bool &reaastc,
   //                                       SourceLoc &throws,
   //                                       bool &rethrows,
   //                                       Typer *&retType);
@@ -422,6 +422,6 @@ public:
   Identifier GetIdentifier(llvm::StringRef text);
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

@@ -45,7 +45,7 @@ public:
 // The process ID
 using JobID = int64_t;
 enum class JobStage : uint8_t { None = 0, Running, Finished, Error };
-enum class ThreadMode : uint8_t { None = 0, Sync, Async };
+enum class ThreadMode : uint8_t { None = 0, Sync, Aastc };
 
 class JobDetail final {
   llvm::StringRef execPath;

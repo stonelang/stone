@@ -19,7 +19,7 @@
 #include "llvm/Support/Casting.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
@@ -70,7 +70,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(Error(true));
   }
 
-  // Setup the custom formatting to be able to handle syntax diagnostics
+  // Setup the custom formatting to be able to handle asttax diagnostics
   ASTDiagnosticFormatter diagFormatter;
   ASTDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
@@ -231,7 +231,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   }
 }
 
-static Status DumpAST(CompilerInstance &compiler, syn::ASTFile &sf) {
+static Status DumpAST(CompilerInstance &compiler, ast::ASTFile &sf) {
   return Status::Success();
 }
 
@@ -241,17 +241,17 @@ static Status PrintAST(CompilerInstance &compiler) {
 
 Status CompilerInstance::CompileWithParsing() {
   return CompileWithParsing(
-      [&](syn::ASTFile &) { return Status::Success(); });
+      [&](ast::ASTFile &) { return Status::Success(); });
 }
 
 Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
-      stone::ParseASTFile(*syntaxFile, GetASTContext(),
+    if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
+      stone::ParseASTFile(*asttaxFile, GetASTContext(),
                              invocation.GetListener());
       if (notifiy) {
-        notifiy(*syntaxFile);
+        notifiy(*asttaxFile);
       }
     }
   }
@@ -277,10 +277,10 @@ Status CompilerInstance::CompileWithTypeChecking(
   if (status.IsError()) {
     return status;
   }
-  ForEachASTFile([&](ASTFile &syntaxFile,
+  ForEachASTFile([&](ASTFile &asttaxFile,
                         TypeCheckerOptions &typeCheckerOpts,
                         stone::TypeCheckerListener *listener) {
-    stone::TypeCheckASTFile(syntaxFile, typeCheckerOpts, listener);
+    stone::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
   });
 
   // TODO: FinishTypeCheck();
@@ -304,7 +304,7 @@ Status CompilerInstance::Compile() {
     break;
   case ModeKind::DumpAST:
     status = CompileWithParsing(
-        [&](syn::ASTFile &sf) { return DumpAST(*this, sf); });
+        [&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
     break;
   case ModeKind::TypeCheck:
     status = CompileWithTypeChecking();

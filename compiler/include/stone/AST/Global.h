@@ -5,7 +5,7 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 class Decl;
 class VarDecl;
 class NameableDecl;
@@ -43,6 +43,6 @@ public:
 public:
   const Decl *GetDecl() const { return val.getPointer(); }
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

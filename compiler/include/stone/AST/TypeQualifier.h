@@ -11,7 +11,7 @@
 #include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 // NOTES:
 // Array types are considered to have the same cv-qualification as their element
@@ -164,7 +164,7 @@ public:
 public:
   TypeQualifierList *GetTypeQualifiers() { HasAny() ? this : nullptr; }
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

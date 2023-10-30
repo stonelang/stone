@@ -4,7 +4,7 @@
 #include "stone/Basic/SrcLoc.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class LexingState final {
 public:
@@ -29,6 +29,6 @@ public:
   ~LexingCache();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

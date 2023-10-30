@@ -2,7 +2,7 @@
 #define STONE_AST_STMTBITS_H
 
 namespace stone {
-namespace syn {}
+namespace ast {}
 } // namespace stone
 
 #endif

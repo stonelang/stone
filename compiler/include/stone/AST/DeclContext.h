@@ -23,7 +23,7 @@ class raw_ostream;
 }
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ASTContext;
 class CanQualType;
@@ -219,6 +219,6 @@ public:
   // InterfaceDecl *GetThisInterfaceDecl() const;
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

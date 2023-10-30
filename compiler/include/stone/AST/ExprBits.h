@@ -3,7 +3,7 @@
 
 namespace stone {
 
-namespace syn {}
+namespace ast {}
 
 } // namespace stone
 

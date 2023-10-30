@@ -12,7 +12,7 @@ class FoldingSetNodeID;
 }
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 // class GenericEnvironment;
 // class GenericParamList;
@@ -335,7 +335,7 @@ public:
 //                                     ProtocolDecl *proto) const;
 // };
 
-} // namespace syn
+} // namespace ast
 } // end namespace stone
 
 // namespace llvm {

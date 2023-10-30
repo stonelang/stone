@@ -2,13 +2,13 @@
 #define STONE_SEM_IMPORTRESOLUTION_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 class ASTFile;
-} // namespace syn
+} // namespace ast
 
 namespace sem {
 // TODO: ModuleResolution
-void ResolveImports(syn::ASTFile &syntaxFile);
+void ResolveImports(ast::ASTFile &asttaxFile);
 } // namespace sem
 } // namespace stone
 

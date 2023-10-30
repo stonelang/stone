@@ -1,6 +1,6 @@
 #include "stone/AST/Scope.h"
 
-using namespace stone::syn;
+using namespace stone::ast;
 
 static const auto &GetScopeNameTable() {
   static const std::pair<ScopeKind, const char *> Table[] = {

@@ -8,18 +8,18 @@
 
 #include <memory>
 
-using namespace stone::syn;
+using namespace stone::ast;
 
 namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace syn {
+namespace ast {
 class ASTFile;
 class Expr;
 class Decl;
 class Stmt;
-} // namespace syn
+} // namespace ast
 
 namespace sem {
 class TypeChecker;
@@ -56,7 +56,7 @@ public:
               TypeCheckerListener *pipeline = nullptr);
 
 public:
-  void CheckASTNode(ASTNode &syntaxNode, DeclContext *dc,
+  void CheckASTNode(ASTNode &asttaxNode, DeclContext *dc,
                        bool checkBody = false);
 
 public:

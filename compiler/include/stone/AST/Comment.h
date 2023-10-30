@@ -4,13 +4,13 @@
 #include "stone/AST/Identifier.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class Comment {
 public:
   Comment();
   ~Comment();
 };
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

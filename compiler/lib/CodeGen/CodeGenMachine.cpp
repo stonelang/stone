@@ -4,7 +4,7 @@
 
 using namespace stone;
 
-CodeGenMachine::CodeGenMachine(CodeGenContext &cgc, syn::ASTContext &sc)
+CodeGenMachine::CodeGenMachine(CodeGenContext &cgc, ast::ASTContext &sc)
     : cgc(cgc), sc(sc) {}
 
 CodeGenMachine::~CodeGenMachine() {}

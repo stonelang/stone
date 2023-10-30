@@ -4,7 +4,7 @@
 #define STONE_AST_CANTYPE_H
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class CanType final {
   QualType qualType;
@@ -16,7 +16,7 @@ public:
   explicit CanType(QualType qualType) : qualType(qualType) {}
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif

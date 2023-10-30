@@ -9,7 +9,7 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 enum class TypeSpecifierKind : uint8_t {
   None = 0,
@@ -265,6 +265,6 @@ public:
   void Apply();
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

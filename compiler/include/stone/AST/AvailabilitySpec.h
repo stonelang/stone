@@ -9,7 +9,7 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ASTContext;
 
@@ -198,13 +198,13 @@ public:
   }
 
   void *
-  operator new(size_t Bytes, syn::ASTContext &C,
+  operator new(size_t Bytes, ast::ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
     return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
                                           Alignment);
   }
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

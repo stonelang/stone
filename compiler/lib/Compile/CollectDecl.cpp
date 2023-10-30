@@ -8,7 +8,7 @@
 #include "stone/AST/ASTNode.h"
 
 using namespace stone;
-using namespace stone::syn;
+using namespace stone::ast;
 
 ASTStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
 
@@ -52,9 +52,9 @@ ASTStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
     collector.GetUsingDeclarationCollector().AddUsing(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 ASTStatus Parser::CollectTypeOperator(TypeCollector &collector) {
@@ -68,9 +68,9 @@ ASTStatus Parser::CollectTypeOperator(TypeCollector &collector) {
     collector.GetTypeOperatorCollector().AddDelete(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 ASTStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
@@ -85,9 +85,9 @@ ASTStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
     collector.GetAccessLevelCollector().AddPrivate(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 // TODO: Dulicate check
@@ -119,9 +119,9 @@ ASTStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   case tok::kw_pure:
     collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 bool Parser::IsTypeThunk(const Token &tk) {
@@ -143,9 +143,9 @@ ASTStatus Parser::CollectTypeThunk(TypeCollector &collector) {
     collector.GetTypeThunkCollector().AddReference(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
@@ -154,7 +154,7 @@ ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
   if (!GetTok().IsTypeThunk() && GetTok().IsIdentifierOrUnderscore()) {
     collector.GetTypeThunkCollector().AddValue();
-    return syn::MakeASTSuccess();
+    return ast::MakeASTSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   ASTStatus status;
@@ -169,7 +169,7 @@ ASTStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 ASTStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
 
   if (!GetTok().IsBasicType()) {
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
   switch (GetTok().GetKind()) {
   // TODO: Think about void here
@@ -237,9 +237,9 @@ ASTStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 ASTStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -253,9 +253,9 @@ ASTStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 ASTStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -266,9 +266,9 @@ ASTStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
     collector.GetStorageSpecifierCollector().AddRegister(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 ASTStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -279,11 +279,11 @@ ASTStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
     collector.GetFunctionSpecifierCollector().AddInline(ConsumeToken());
     break;
   default:
-    return syn::MakeASTCodeCompletionStatus();
+    return ast::MakeASTCodeCompletionStatus();
   }
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }
 
 ASTStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
-  return syn::MakeASTSuccess();
+  return ast::MakeASTSuccess();
 }

@@ -31,7 +31,7 @@
 namespace stone {
 class SrcMgr;
 
-namespace syn {
+namespace ast {
 class Decl;
 class FunDecl;
 class VarDecl;
@@ -188,6 +188,6 @@ public:
   }
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 #endif

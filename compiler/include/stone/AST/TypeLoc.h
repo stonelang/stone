@@ -8,7 +8,7 @@
 #include "llvm/ADT/PointerIntPair.h"
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class TypeRep;
 class ASTContext;
@@ -41,7 +41,7 @@ public:
   void SetType(Type ty);
 };
 
-} // namespace syn
+} // namespace ast
 } // namespace stone
 
 #endif
