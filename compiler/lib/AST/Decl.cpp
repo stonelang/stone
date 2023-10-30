@@ -219,6 +219,13 @@ ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, ASTContext &sc,
   return ::new (declPtr) ast::ModuleDecl(name, sc);
 }
 
+ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc, bool isMainModule) {
+  size_t size = sizeof(ast::ModuleDecl);
+  auto declPtr = ast::AllocateDeclMem<ast::ModuleDecl>(sc, size);
+  return ::new (declPtr) ast::ModuleDecl(name, sc);
+}
+
+
 VarDecl *DeclFactory::MakeVarDecl(ASTContext &sc) {
   // auto declPtr = ast::AllocateDeclMem<ast::VarDecl>(sc,
   // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);

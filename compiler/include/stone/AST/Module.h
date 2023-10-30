@@ -258,6 +258,9 @@ public:
   static bool classof(const Decl *D) {
     return D->GetKind() == DeclKind::Module;
   }
+
+public:
+  static int Create(Identifier name, ASTContext &sc bool isMainModule);
 };
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }

@@ -107,7 +107,6 @@ bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &context,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
-  CodeGenScope nativeScope(cgc.GetCodeGenOptions());
   // EmbedBitcode(mod, nativeScope);
 
   return true;
@@ -119,11 +118,12 @@ bool stone::WriteEmptyOutputFiles(
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &sc,
+bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
                       llvm::StringRef outputFilename,
                       llvm::sys::Mutex *diagMutex,
                       llvm::GlobalVariable *hashGlobal,
                       CodeGenListener *listener) {
+
 
   llvm::Optional<llvm::raw_fd_ostream> rawOS;
   if (!outputFilename.empty()) {

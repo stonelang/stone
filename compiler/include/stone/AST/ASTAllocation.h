@@ -1,5 +1,5 @@
-#ifndef STONE_/AST/CTX_/AST/ALLOCATION_H
-#define STONE_/AST/CTX_/AST/ALLOCATION_H
+#ifndef STONE_AST_ALLOCATION_H
+#define STONE_AST_ALLOCATION_H
 
 #include <cassert>
 #include <cstddef>
