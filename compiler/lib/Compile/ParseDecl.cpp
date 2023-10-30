@@ -156,7 +156,7 @@ ParserResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeThunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
-  auto varDecl = DeclFactory::MakeVarDecl(GetASTContext());
+  auto varDecl = VarDecl::Create(GetASTContext());
 
   return result;
 }

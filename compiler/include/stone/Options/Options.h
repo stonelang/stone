@@ -40,7 +40,6 @@ enum OptID : unsigned {
   LAST
 #undef OPTION
 };
-
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 std::unique_ptr<llvm::opt::InputArgList> CreateInputArgList(llvm::ArrayRef<const char *> args, 
   unsigned includedFlagsBitmask = 0, unsigned excludedFlagsBitmask =0, unsigned missingArgIndex, unsigned missingArgCount);
