@@ -135,7 +135,7 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
 }
 
 Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
-                                          IRCodeGenCompletedCallback notifiy) {
+                                          CodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 

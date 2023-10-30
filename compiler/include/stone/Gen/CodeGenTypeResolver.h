@@ -16,13 +16,13 @@ class FunctionDecl;
 class MemberPointerType;
 } // namespace syn
 
-class IRCodeGenModule;
+class CodeGenModule;
 
-class IRCodeGenTypeResolver final {
-  IRCodeGenModule &cgm;
+class CodeGenTypeResolver final {
+  CodeGenModule &cgm;
 
 public:
-  IRCodeGenTypeResolver(IRCodeGenModule &cgm);
+  CodeGenTypeResolver(CodeGenModule &cgm);
 
 public:
   llvm::Type *GetType(const syn::Type ty);

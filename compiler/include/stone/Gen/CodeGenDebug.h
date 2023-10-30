@@ -21,20 +21,20 @@ class TargetMachine;
 namespace stone {
 class SrcLoc;
 class ClangContext;
-class IRCodeGenModule;
+class CodeGenModule;
 
-class IRCodeGenDebug final {
+class CodeGenDebug final {
   CodeGenContext &cgc;
 
   SrcLoc curLoc;
 
 public:
-  IRCodeGenDebug(CodeGenContext &cgc, IRCodeGenModule &cgm,
+  CodeGenDebug(CodeGenContext &cgc, CodeGenModule &cgm,
                  ClangContext &clangContext,
                  llvm::StringRef mainOutputFilenameForDebug,
                  llvm::StringRef privateDiscriminator);
 
-  ~IRCodeGenDebug();
+  ~CodeGenDebug();
 
 public:
   /// Helper functions for getOrCreateType.

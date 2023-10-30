@@ -1,4 +1,4 @@
-  set(stone_drive_sources
+  set(stone_driver_sources
 	
 	BuildSystem.cpp
 	Command.cpp
@@ -27,7 +27,7 @@
 	LINK_LIBS 
 	StoneSession
 )
-add_stone_library(StoneDrive
+add_stone_library(StoneDriver
 	${stone_drive_sources}
 
 	DEPENDS

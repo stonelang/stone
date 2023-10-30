@@ -1,4 +1,4 @@
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGen.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"
@@ -7,8 +7,8 @@
 
 using namespace stone;
 
-// TODO: Ok for now -- may move to IRCodeGenMoulde
-IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
+// TODO: Ok for now -- may move to CodeGenMoulde
+CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 
   VoidTy = llvm::Type::getVoidTy(llvmContext);
   Int8Ty = llvm::Type::getInt8Ty(llvmContext);
@@ -21,7 +21,7 @@ IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
   // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
 }
 
-IRCodeGen::IRCodeGen(CodeGenContext &cgc, CodeGenListener *listener)
+CodeGen::CodeGen(CodeGenContext &cgc, CodeGenListener *listener)
     : cgc(cgc), listener(listener) {}
 
-IRCodeGen::~IRCodeGen() {}
+CodeGen::~CodeGen() {}

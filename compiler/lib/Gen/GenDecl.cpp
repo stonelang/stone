@@ -1,13 +1,13 @@
-#include "stone/Gen/IRCodeGen.h"
-#include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/CodeGen.h"
+#include "stone/Gen/CodeGenFunction.h"
+#include "stone/Gen/CodeGenModule.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
+void CodeGenModule::EmitGlobalDecl(Decl *d) {
 
   assert(d->IsTopLevel() && "Not a top-level declaration");
 
@@ -25,7 +25,7 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
   }
 }
 
-// void IRCodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+// void CodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
 
 namespace {
 class PrettySyntaxFileEmission : public llvm::PrettyStackTraceEntry {
@@ -39,7 +39,7 @@ public:
 };
 } // end anonymous namespace
 
-void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
+void CodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
 
   PrettySyntaxFileEmission stackEntry(sf);
   llvm::SaveAndRestore<syn::SyntaxFile *> setCurSyntaxFile(curSyntaxFile, &sf);
@@ -50,12 +50,12 @@ void IRCodeGenModule::EmitSyntaxFile(syn::SyntaxFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
+void CodeGenModule::EmitFunDecl(FunDecl *funDecl,
                                   llvm::GlobalValue *globalValue) {
 
   assert(funDecl && "Null FundDecl");
 
-  auto funDeclType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
+  auto funDeclType = GetCodeGenTypeResolver().GetFunctionType(funDecl);
 
   EmitFunctionOptions emitFunctionOpts;
   emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;
@@ -69,15 +69,15 @@ void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
   auto *llvmFunction = cast<llvm::Function>(globalValue);
 
   SetFunctionLinkage(funDecl, llvmFunction);
-  IRCodeGenFunction(*this, llvmFunction).EmitFunction(funDecl);
+  CodeGenFunction(*this, llvmFunction).EmitFunction(funDecl);
 }
 
-void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
+void CodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
 
-void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
+void CodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
 
-void IRCodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}
+void CodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}
 
-void IRCodeGenModule::EmitConstructorDecl(ConstructorDecl *d) {}
+void CodeGenModule::EmitConstructorDecl(ConstructorDecl *d) {}
 
-void IRCodeGenModule::EmitDestructorDecl(DestructorDecl *d) {}
+void CodeGenModule::EmitDestructorDecl(DestructorDecl *d) {}

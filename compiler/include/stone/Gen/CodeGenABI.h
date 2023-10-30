@@ -22,15 +22,15 @@ namespace stone {
 namespace syn {
 class MemberPointerType;
 }
-class IRCodeGenModule;
+class CodeGenModule;
 
-class IRCodeGenABI final {
-  IRCodeGenModule &cgm;
+class CodeGenABI final {
+  CodeGenModule &cgm;
 
   std::unique_ptr<syn::MangleContext> mangleContext;
 
 public:
-  IRCodeGenABI(IRCodeGenModule &cgm);
+  CodeGenABI(CodeGenModule &cgm);
 
 public:
   llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType mpt);

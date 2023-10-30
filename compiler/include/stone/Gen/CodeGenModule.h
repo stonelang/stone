@@ -3,9 +3,9 @@
 
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Gen/IRCodeGenMetadata.h"
-#include "stone/Gen/IRCodeGenTypeCache.h"
-#include "stone/Gen/IRCodeGenTypeResolver.h"
+#include "stone/Gen/CodeGenMetadata.h"
+#include "stone/Gen/CodeGenTypeCache.h"
+#include "stone/Gen/CodeGenTypeResolver.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxVisitor.h"
 
@@ -74,12 +74,12 @@ class SyntaxFile;
 class NominalTypeDecl;
 } // namespace syn
 
-class IRCodeGen;
+class CodeGen;
 class CodeGenListener;
 
-// class IRCodeGenLoop {};
-// class IRCodeGenCall {};
-class IRCodeGenBlocks final {
+// class CodeGenLoop {};
+// class CodeGenCall {};
+class CodeGenBlocks final {
 public:
 };
 
@@ -98,13 +98,13 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
+class CodeGenModule final : public SyntaxVisitor<CodeGenModule> {
 
-  IRCodeGen &irCodeGen;
-  IRCodeGenTypeCache typeCache;
-  IRCodeGenTypeResolver typeResolver;
-  IRCodeGenMetadata metadata;
-  // IRCodeGenDebug debug;
+  CodeGenContext &cgc;
+  CodeGenTypeCache typeCache;
+  CodeGenTypeResolver typeResolver;
+  CodeGenMetadata metadata;
+  // CodeGenDebug debug;
 
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
@@ -125,13 +125,13 @@ class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
   //  llvm::SetVector<const StructDecl *> importedStructs;
 
 private:
-  IRCodeGenModule(const IRCodeGenModule &) = delete;
-  void operator=(const IRCodeGenModule &) = delete;
+  CodeGenModule(const CodeGenModule &) = delete;
+  void operator=(const CodeGenModule &) = delete;
 
 public:
-  IRCodeGenModule(IRCodeGen &irCodeGen, llvm::StringRef moduleName,
+  CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
                   llvm::StringRef outputFilename);
-  ~IRCodeGenModule();
+  ~CodeGenModule();
 
 public:
   enum IsForFunctionDefintion : bool {
@@ -152,11 +152,11 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  IRCodeGen &GetIRCodeGen() { return irCodeGen; }
-  IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
-  IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
-  IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
-  // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
+  CodeGen &GetCodeGen() { return irCodeGen; }
+  CodeGenTypeCache &GetCodeGenTypeCache() { return typeCache; }
+  CodeGenTypeResolver &GetCodeGenTypeResolver() { return typeResolver; }
+  CodeGenMetadata &GetCodeGenMetadata() { return metadata; }
+  // CodeGenDebug &GetCodeGenDebug() { return debug; }
 
 public:
   void EmitSyntaxFile(SyntaxFile &sf);

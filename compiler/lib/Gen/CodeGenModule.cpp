@@ -1,30 +1,30 @@
-#include "stone/Gen/IRCodeGenModule.h"
-#include "stone/Gen/IRCodeGen.h"
-#include "stone/Gen/IRCodeGenABI.h"
+#include "stone/Gen/CodeGenModule.h"
+#include "stone/Gen/CodeGen.h"
+#include "stone/Gen/CodeGenABI.h"
 
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
+CodeGenModule::CodeGenModule(CodeGenContext &cgc,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
-    : typeCache(*irCodeGen.GetCodeGenContext().GetLLVMContext()),
+    : typeCache(*cgc.GetLLVMContext()),
       irCodeGen(irCodeGen), moduleName(moduleName),
       outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
-IRCodeGenModule::~IRCodeGenModule() {}
+CodeGenModule::~CodeGenModule() {}
 
-llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
+llvm::StringRef CodeGenModule::GetMangledName(Decl &d) { return ""; }
 
-// llvm::GlobalValue *IRCodeGenModule::GetGlobalValue(llvm::StringRef name) {
+// llvm::GlobalValue *CodeGenModule::GetGlobalValue(llvm::StringRef name) {
 //   return GetCodeGenContext().GetLLVMModule()->getNamedValue(Name);
 // }
 
 llvm::Constant *
-IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
+CodeGenModule::CreateFunction(llvm::StringRef mangledName,
                                 syn::FunctionDecl *fd, llvm::Type *fnTy,
                                 const EmitFunctionOptions emitFunctionOpts,
                                 llvm::AttributeList extraAttrs) {
@@ -38,19 +38,19 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
     llvmFunctionType = llvm::cast<llvm::FunctionType>(fnTy);
   } else {
     llvmFunctionType =
-        llvm::FunctionType::get(GetIRCodeGenTypeCache().VoidTy, false);
+        llvm::FunctionType::get(GetCodeGenTypeCache().VoidTy, false);
     isIncompleteFunction = true;
   }
 
   llvm::Function *llvmFunction = llvm::Function::Create(
       llvmFunctionType, llvm::Function::ExternalLinkage,
       entry ? llvm::StringRef() : mangledName,
-      *GetIRCodeGen().GetCodeGenContext().GetLLVMModule());
+      *GetCodeGen().GetCodeGenContext().GetLLVMModule());
 
   return llvmFunction;
 }
 llvm::Constant *
-IRCodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
+CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
                                      syn::FunctionDecl *fd, llvm::Type *fnTy,
                                      const EmitFunctionOptions emitFunctionOpts,
                                      llvm::AttributeList extraAttrs) {
@@ -59,7 +59,7 @@ IRCodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
   return CreateFunction(mangledName, fd, fnTy, emitFunctionOpts, extraAttrs);
 }
 
-llvm::Constant *IRCodeGenModule::GetFunctionAddress(
+llvm::Constant *CodeGenModule::GetFunctionAddress(
     syn::FunctionDecl *fd, llvm::Type *fnTy,
     const EmitFunctionOptions emitFunctionOpts) {
 
@@ -67,7 +67,7 @@ llvm::Constant *IRCodeGenModule::GetFunctionAddress(
   // If there was no specific requested type, just convert it now.
   // if (!functionTy) {
   //   const auto *FD = llvm::cast<FunctionDecl>(GD.getDecl());
-  //   functionTy = GetIRCodeGenTypeResolver().ResolveType(fd->GetType());
+  //   functionTy = GetCodeGenTypeResolver().ResolveType(fd->GetType());
   // }
 
   if (emitFunctionOpts.contains(EmitFunctionFlags::IsForDefinition)) {
@@ -76,17 +76,17 @@ llvm::Constant *IRCodeGenModule::GetFunctionAddress(
   return GetOrCreateFunction("mangledName", fd, fnTy, emitFunctionOpts);
 }
 
-void IRCodeGenModule::SetFunctionLinkage(syn::FunctionDecl *fd,
+void CodeGenModule::SetFunctionLinkage(syn::FunctionDecl *fd,
                                          llvm::Function *fn) {
   fn->setLinkage(GetFunctionLinkage(fd));
 }
 llvm::GlobalValue::LinkageTypes
-IRCodeGenModule::GetFunctionLinkage(syn::FunctionDecl *fd) {
+CodeGenModule::GetFunctionLinkage(syn::FunctionDecl *fd) {
 
   // TODO: FOR NOW
   return llvm::GlobalValue::InternalLinkage;
 }
 
-llvm::StringRef IRCodeGenModule::GetMangledNameOfGlobalDecl(Decl *d) {
+llvm::StringRef CodeGenModule::GetMangledNameOfGlobalDecl(Decl *d) {
   const auto *nd = llvm::cast<NameableDecl>(d);
 }

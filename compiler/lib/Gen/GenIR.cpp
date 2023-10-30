@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Gen/IRCodeGen.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/CodeGen.h"
+#include "stone/Gen/CodeGenModule.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
@@ -81,8 +81,8 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
                   syn::SyntaxFile *sf, CodeGenListener *listener) {
 
-  IRCodeGen cg(cgc, listener);
-  IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
+  CodeGen cg(cgc, listener);
+  CodeGenModule cgm(cg, moduleName, paths.outputFilename);
 
   if (sf) {
     cgm.EmitSyntaxFile(*sf);

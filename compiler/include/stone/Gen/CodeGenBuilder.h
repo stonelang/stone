@@ -22,16 +22,16 @@ class TargetMachine;
 
 namespace stone {
 
-class IRCodeGenFunction;
-struct IRCodeGenTypeCache;
+class CodeGenFunction;
+struct CodeGenTypeCache;
 
-class IRCodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
+class CodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
 private:
-  IRCodeGenFunction *cgf = nullptr;
+  CodeGenFunction *cgf = nullptr;
 
 public:
-  IRCodeGenBuilderInserter() = default;
-  explicit IRCodeGenBuilderInserter(IRCodeGenFunction *cgf) : cgf(cgf) {}
+  CodeGenBuilderInserter() = default;
+  explicit CodeGenBuilderInserter(CodeGenFunction *cgf) : cgf(cgf) {}
 
   /// This forwards to CodeGenFunction::InsertHelper.
   void InsertHelper(llvm::Instruction *instruction, const llvm::Twine &name,
@@ -39,27 +39,27 @@ public:
                     llvm::BasicBlock::iterator insertPt) const override;
 };
 
-using IRCodeGenBuilderBase =
-    llvm::IRBuilder<llvm::ConstantFolder, IRCodeGenBuilderInserter>;
+using CodeGenBuilderBase =
+    llvm::IRBuilder<llvm::ConstantFolder, CodeGenBuilderInserter>;
 
-class IRCodeGenBuilder final : public IRCodeGenBuilderBase {
+class CodeGenBuilder final : public CodeGenBuilderBase {
   CodeGenContext &cgc;
-  const IRCodeGenTypeCache &typeCache;
+  const CodeGenTypeCache &typeCache;
 
 public:
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache);
+  CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
                    const llvm::ConstantFolder &constFoler,
-                   const IRCodeGenBuilderInserter &inserter);
+                   const CodeGenBuilderInserter &inserter);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
                    llvm::Instruction *instruction);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
                    llvm::BasicBlock *basicBlock);
 
-  ~IRCodeGenBuilder();
+  ~CodeGenBuilder();
 
 public:
   // llvm::ConstantInt *GetSize(clang::CharUnits N) {

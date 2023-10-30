@@ -1,7 +1,7 @@
-#include "stone/Gen/IRCodeGenTypeResolver.h"
-#include "stone/Gen/IRCodeGen.h"
-#include "stone/Gen/IRCodeGenABI.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/CodeGenTypeResolver.h"
+#include "stone/Gen/CodeGen.h"
+#include "stone/Gen/CodeGenABI.h"
+#include "stone/Gen/CodeGenModule.h"
 #include "stone/Syntax/Type.h"
 
 #include "llvm/ADT/StringExtras.h"
@@ -18,31 +18,31 @@
 
 using namespace stone;
 
-// TODO: Ok for now -- may move to IRCodeGenMoulde
-IRCodeGenTypeResolver::IRCodeGenTypeResolver(IRCodeGenModule &cgm) : cgm(cgm) {}
+// TODO: Ok for now -- may move to CodeGenMoulde
+CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *IRCodeGenTypeResolver::GetType(const syn::Type ty) {
+llvm::Type *CodeGenTypeResolver::GetType(const syn::Type ty) {
   return nullptr;
 }
 
 llvm::FunctionType *
-IRCodeGenTypeResolver::GetFunctionType(const syn::FunctionDecl *fd) {
+CodeGenTypeResolver::GetFunctionType(const syn::FunctionDecl *fd) {
 
   // llvm::SmallVector<llvm::Type*, 8> argTypes(IRFunctionArgs.totalIRArgs());
 
   // TODO: Just for now
   return llvm::FunctionType::get(
       llvm::Type::getVoidTy(
-          *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext()),
+          *cgm.GetCodeGen().GetCodeGenContext().GetLLVMContext()),
       {}, false);
 }
 
-// llvm::Type *IRCodeGenTypeResolver::GetType(const syn::MemberPointerType mpty)
+// llvm::Type *CodeGenTypeResolver::GetType(const syn::MemberPointerType mpty)
 // {
 //   return nullptr;
 // }
 
-// llvm::FunctionType *IRCodeGenTypeResolver::GetFunctionType(const
+// llvm::FunctionType *CodeGenTypeResolver::GetFunctionType(const
 // syn::FunctionType fty) {
 //   return nullptr;
 // }

@@ -19,18 +19,18 @@ class Module;
 class SyntaxContext;
 } // namespace syn
 
-class NativeCodeGen final {
+class CodeGenMachine final {
   CodeGenContext &cgc;
   syn::SyntaxContext &sc;
 
   // llvm::Optional<raw_fd_ostream> rawStream;
 public:
-  NativeCodeGen(const NativeCodeGen &) = delete;
-  void operator=(const NativeCodeGen &) = delete;
+  CodeGenMachine(const CodeGenMachine &) = delete;
+  void operator=(const CodeGenMachine &) = delete;
 
 public:
-  NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
-  ~NativeCodeGen();
+  CodeGenMachine(CodeGenContext &cgc, syn::SyntaxContext &sc);
+  ~CodeGenMachine();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
   syn::SyntaxContext &GetSyntaxContext() { return sc; }

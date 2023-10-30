@@ -23,12 +23,12 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-class IRCodeGenModule;
-class IRCodeGenMetadata final {
-  IRCodeGenModule &cgm;
+class CodeGenModule;
+class CodeGenMetadata final {
+  CodeGenModule &cgm;
 
 public:
-  IRCodeGenMetadata(IRCodeGenModule &cgm);
+  CodeGenMetadata(CodeGenModule &cgm);
 };
 
 } // namespace stone

@@ -111,11 +111,11 @@ using ModuleSyntaxFileUnion =
 //     CompilerInstance &instance, ModuleSyntaxFileUnion moduleSyntaxFileUnion,
 //     bool *error)>;
 
-// using IRCodeGenConsumer = llvm::function_ref<Status(
+// using CodeGenConsumer = llvm::function_ref<Status(
 //     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
 //     *error)>;
 
-// using NativeCodeGenConsumer = llvm::function_ref<void(
+// using CodeGenMachineConsumer = llvm::function_ref<void(
 //     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
 //     *error)>;
 

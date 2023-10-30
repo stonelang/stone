@@ -1,7 +1,7 @@
-#include "stone/Gen/IRCodeGenABI.h"
+#include "stone/Gen/CodeGenABI.h"
 
 using namespace stone;
 
 // stone::GenABI();
 
-IRCodeGenABI::IRCodeGenABI(IRCodeGenModule &cgm) : cgm(cgm) {}
+CodeGenABI::CodeGenABI(CodeGenModule &cgm) : cgm(cgm) {}

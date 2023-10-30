@@ -3,8 +3,8 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
-#include "stone/Gen/IRCodeGenBuilder.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/CodeGenBuilder.h"
+#include "stone/Gen/CodeGenModule.h"
 #include "stone/Syntax/SyntaxVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
@@ -78,27 +78,27 @@ enum class ABIArgKind {
   LastKind = InAlloca
 };
 
-class IRCodeGenModule;
-class IRCodeGenBuilder;
+class CodeGenModule;
+class CodeGenBuilder;
 
-class IRCodeGenFunctionInvocation final {
+class CodeGenFunctionInvocation final {
 public:
 };
-class IRCodeGenFunction final : public SyntaxVisitor<IRCodeGenFunction> {
+class CodeGenFunction final : public SyntaxVisitor<CodeGenFunction> {
 
-  IRCodeGenModule &cgm;
-  IRCodeGenBuilder builder;
+  CodeGenModule &cgm;
+  CodeGenBuilder builder;
 
   llvm::Function *fn = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
-  IRCodeGenFunction(const IRCodeGenFunction &) = delete;
-  void operator=(const IRCodeGenFunction &) = delete;
+  CodeGenFunction(const CodeGenFunction &) = delete;
+  void operator=(const CodeGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn);
-  ~IRCodeGenFunction();
+  CodeGenFunction(CodeGenModule &cgm, llvm::Function *fn);
+  ~CodeGenFunction();
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
@@ -114,8 +114,8 @@ public:
   // Alignment align,
   //                      const llvm::Twine &name = "");
 
-  IRCodeGenModule &GetIRCodeGenModule() { return cgm; }
-  IRCodeGenBuilder &GetIRCodeGenBuilder() { return builder; }
+  CodeGenModule &GetCodeGenModule() { return cgm; }
+  CodeGenBuilder &GetCodeGenBuilder() { return builder; }
 
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
@@ -129,8 +129,8 @@ public:
   void EmitEpilogue();
 
 public:
-  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src, IRCodeGenSize size,
-  //                  IRCodeGenAlignment align);
+  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src, CodeGenSize size,
+  //                  CodeGenAlignment align);
 
   // void EmitMemCopy(llvm::Value *dest, llvm::Value *src,
   //                 llvm::Value *size, Alignment align);

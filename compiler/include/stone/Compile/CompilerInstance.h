@@ -9,7 +9,7 @@
 
 namespace stone {
 class CodeGenContext;
-class IRCodeGenResult;
+class CodeGenResult;
 
 class CompilerInstanceStats final : public Stats {
   const CompilerInstance &compiler;
@@ -28,7 +28,7 @@ using ParsingCompletedCallback = llvm::function_ref<Status(syn::SyntaxFile &)>;
 using TypeCheckingCompletedCallback =
     llvm::function_ref<Status(CompilerInstance &)>;
 
-using IRCodeGenCompletedCallback =
+using CodeGenCompletedCallback =
     llvm::function_ref<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
 
 using BackendCodeGenCompletedCallback =
@@ -38,7 +38,7 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 // using CompileWithGenIRCallback = llvm::function_ref<void(
-//     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
+//     CompilerInvocation&invocation, CodeGenContext &cgc, CodeGenResult
 //     &result)>;
 
 class CompilerInstance final {
@@ -106,7 +106,7 @@ private:
 
   Status CompileWithCodeGen();
   Status CompileWithGenIR(CodeGenContext &cgc,
-                          IRCodeGenCompletedCallback notifiy);
+                          CodeGenCompletedCallback notifiy);
 
   Status CompileWithGenNative(CodeGenContext &cgc);
 
