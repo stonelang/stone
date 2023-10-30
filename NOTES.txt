@@ -72,6 +72,14 @@ performIRGeneration() in IRGen.cpp
 *** Where you are ***
 
 
+TypeQualifiers:
+
+Easier way to deal with type qualififers 
+
+
+Given a Type(TypeQualifiers qualifiers)
+
+TypeQualifiers& GetQualifiers()
 
 
 

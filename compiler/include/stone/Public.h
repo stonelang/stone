@@ -124,15 +124,8 @@ namespace stone {
 class ClangContext;
 class CompilerInstance;
 
-/// Parse, type-check and generate IR for syntax files.
-/// Returns true is successfull
-// bool CompileFrontend(
-//     CompilerInstance
-//         &instance /*, CompileFrontendCallback callback = nullptr*/);
-
-bool CompileFrontend(CompilerInstance &instance);
-
-bool CompileBackend(CompilerInstance &instance);
+// bool CompileFrontend(CompilerInstance &instance);
+// bool CompileBackend(CompilerInstance &instance);
 
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing

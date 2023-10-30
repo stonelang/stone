@@ -8,7 +8,6 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-
 class CodeGenContext;
 class IRCodeGenResult;
 
@@ -94,6 +93,9 @@ public:
 public:
   /// Perform code analysis and code generation
   Status Compile();
+  
+  // Status CompileFrontend();
+  // Status CompileBackend();
 
 private:
   Status CompileWithParsing();

@@ -47,6 +47,7 @@ public:
 
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                    void *mainAddr, CompilerListener *listener) {
+
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
@@ -124,9 +125,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-// int stone::CompileBackend(BackendInstance& instance){
-//   return 0;
-// }
 
 static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
@@ -303,11 +301,6 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-
-
-  // auto result = stone::CompileFrontend(compilerInstance);
-  // auto result = stone::CompileBackend(compilerInstance)
-
   Status status;
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
