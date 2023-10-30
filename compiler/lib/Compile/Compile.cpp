@@ -171,9 +171,9 @@ Status CompilerInstance::CompileWithCodeGen() {
 
   assert(CanCodeGen() && "Mode does not support code gen");
 
-  // We are performing some low level code generation
+  auto llvmContext = std::make_unique<llvm::LLVMContext>();
   CodeGenContext cgc(
-      GetInvocation().GetCodeGenOptions(), GetInvocation().GetModuleOptions(),
+      GetInvocation().GetCodeGenOptions(), *llvmContext, GetInvocation().GetModuleOptions(),
       GetInvocation().GetTargetOptions(), GetInvocation().GetLangContext(),
       GetInvocation().GetClangContext());
 
