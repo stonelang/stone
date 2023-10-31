@@ -68,7 +68,7 @@ using namespace stone;
 // }
 
 void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
-                       LangContext &langContext,
+                       Lang &lang,
                        llvm::TargetMachine *targetMachine) {
 
   // if (codeGenOpts.useLegacyPassManager) {

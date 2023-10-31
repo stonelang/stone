@@ -139,13 +139,13 @@ Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-    Lang::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+    Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
                       primaryFileSpecificPaths);
   } else if (IsASTFileCodeGen()) {
     for (auto *primaryASTFile : GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      Lang::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename,
                          primaryASTFile, primaryFileSpecificPaths);
     }
   }
@@ -174,7 +174,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   CodeGenContext cgc(
       GetInvocation().GetCodeGenOptions(), *llvmContext,
       GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
-      GetInvocation().GetLang(), GetInvocation().GetClangContext());
+      GetInvocation().GetLang(), GetInvocation().GetClang());
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
@@ -185,7 +185,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
 
   // clang::TargetInfo &targetInfo =
-  //     GetInvocation().GetClangContext().GetInstance().getTarget();
+  //     GetInvocation().GetClang().GetInstance().getTarget();
 
   // // Setup the empty module
   // cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());

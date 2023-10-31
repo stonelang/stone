@@ -145,7 +145,7 @@ public:
 public:
   //== Utils ==//
   static std::unique_ptr<llvm::raw_fd_ostream>
-  GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
+  GetFileOutputStream(llvm::StringRef outputFilename, Lang &ctx);
 
   void ComputeCodeCodeGenOutputKind();
 

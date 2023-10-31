@@ -58,6 +58,9 @@ class NewExpr final : public Expr,
 
 public:
   NewExpr() : Expr(StmtKind::New) {}
+
+public:
+  static NewExpr* Create();
 };
 
 // class ThisExpr : public Expr {

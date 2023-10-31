@@ -19,7 +19,7 @@ public:
 
 class DarwinTaskQueue final : public TaskQueue {
 public:
-  DarwinTaskQueue(LangContext &ctx) : TaskQueue(TaskQueueKind::Darwin, ctx) {}
+  DarwinTaskQueue(Lang &ctx) : TaskQueue(TaskQueueKind::Darwin, ctx) {}
 };
 } // namespace darwin
 } // namespace stone

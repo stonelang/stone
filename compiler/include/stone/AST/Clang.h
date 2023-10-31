@@ -13,13 +13,13 @@
 
 namespace stone {
 
-class ClangContext final : public ClangModuleImporter {
+class Clang final : public ClangModuleImporter {
 
   Safe<clang::CompilerInstance> clangInstance;
   Safe<clang::CodeGenerator> clangCodeGen;
 
 public:
-  ClangContext();
+  Clang();
 
 public:
   clang::CompilerInstance &GetInstance() { return *clangInstance; }

@@ -3,14 +3,14 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Drive/CompilationJob.h"
 #include "stone/Drive/Phase.h"
-#include "stone/LangContext.h"
+#include "stone/Lang.h"
 #include "gtest/gtest.h"
 
 using namespace stone;
 
 class DriverTest : public ::testing::Test {
 public:
-  LangContext ctx;
+  Lang ctx;
   const ToolChain *GetToolChain() const { return nullptr; }
 };
 

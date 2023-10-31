@@ -18,7 +18,7 @@
 #include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/FrontendDiagnostic.h"
 #include "clang/Frontend/TextDiagnosticBuffer.h"
-#include "clang/Frontend/TextDiagnosticPrinter.h"
+#include "clang/Frontend/TextDiagnosticEmitter.h"
 #include "clang/Frontend/Utils.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -43,7 +43,7 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : Session(programName, programPath), listener(listener),
-      clangContext(new ClangContext()) {
+      clang(new Clang()) {
   excludedFlagsBitmask = opts::NoCompilerOption;
 }
 CompilerInvocation::~CompilerInvocation() {}
@@ -233,38 +233,38 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
-      GetClangContext().GetInstance().getInvocation(), argv, Diags, arg0);
+      GetClang().GetInstance().getInvocation(), argv, Diags, arg0);
   if (!Success) {
     return Error(true);
   }
 
   // Create the actual diagnostics engine.
-  GetClangContext().GetInstance().createDiagnostics();
-  if (!GetClangContext().GetInstance().hasDiagnostics()) {
+  GetClang().GetInstance().createDiagnostics();
+  if (!GetClang().GetInstance().hasDiagnostics()) {
     return Error(true);
   }
 
   DiagsBuffer->FlushDiagnostics(
-      GetClangContext().GetInstance().getDiagnostics());
+      GetClang().GetInstance().getDiagnostics());
   if (!Success) {
-    GetClangContext().GetInstance().getDiagnosticClient().finish();
+    GetClang().GetInstance().getDiagnosticClient().finish();
     return Error(true);
   }
   // If there were errors in processing arguments, don't do anything else.
-  if (GetClangContext().GetInstance().getDiagnostics().hasErrorOccurred()) {
+  if (GetClang().GetInstance().getDiagnostics().hasErrorOccurred()) {
     return Error(true);
   }
 
   // Set up the file and source managers, if needed.
-  if (!GetClangContext().GetInstance().hasFileManager()) {
-    assert(GetClangContext().GetInstance().createFileManager());
+  if (!GetClang().GetInstance().hasFileManager()) {
+    assert(GetClang().GetInstance().createFileManager());
   }
-  if (!GetClangContext().GetInstance().hasSourceManager()) {
-    GetClangContext().GetInstance().createSourceManager(
-        GetClangContext().GetInstance().getFileManager());
+  if (!GetClang().GetInstance().hasSourceManager()) {
+    GetClang().GetInstance().createSourceManager(
+        GetClang().GetInstance().getFileManager());
   }
 
-  assert(GetClangContext().GetInstance().createTarget());
+  assert(GetClang().GetInstance().createTarget());
 
   return Error();
 }
@@ -355,7 +355,7 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
 }
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,
-                                          ClangContext &cc) {
+                                          Clang &cc) {
   llvm::TargetOptions llvmTargetOpts;
   InitLLVMTargetOptions(llvmTargetOpts, codeGenOpts, langOpts);
 
@@ -369,7 +369,7 @@ static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
                                 DiagnosticEngine &de,
                                 CompilerOptions &compilerOpts,
                                 CodeGenOptions &codeGenOpts,
-                                LangOptions &langOpts, ClangContext &cc) {
+                                LangOptions &langOpts, Clang &cc) {
 
   std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
            codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
@@ -386,7 +386,7 @@ static Error ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                  DiagnosticEngine &de,
                                  CompilerOptions &compilerOpts,
                                  CodeGenOptions &codeGenOpts,
-                                 LangOptions &langOpts, ClangContext &cc) {
+                                 LangOptions &langOpts, Clang &cc) {
   ParseCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
 
   return Error();
@@ -428,10 +428,10 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   ParseSearchPathOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetSearchPathOptions());
 
   ParseCodeGenOptions(ial, GetLang().GetDiags(), GetCompilerOptions(), GetClodeGenOptions(),
-                      GetLang().GetLangOptions(), GetClangContext());
+                      GetLang().GetLangOptions(), GetClang());
 
   ParseTargetOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetClodeGenOptions(),
-                     GetLang().GetLangOptions(), GetClangContext());
+                     GetLang().GetLangOptions(), GetClang());
 
   return Status::Success();
 }

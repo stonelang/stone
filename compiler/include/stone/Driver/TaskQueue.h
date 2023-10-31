@@ -84,7 +84,7 @@ class TaskQueue {
 protected:
   std::unique_ptr<TaskQueueStats> stats;
   TaskQueueKind kind;
-  LangContext &ctx;
+  Lang &ctx;
 
   /// Jobs which have not begun execution.
   std::queue<std::unique_ptr<sys::Task>> runQueue;
@@ -96,7 +96,7 @@ protected:
   unsigned parallelTaskCount;
 
 public:
-  TaskQueue(TaskQueueKind kind, LangContext &ctx);
+  TaskQueue(TaskQueueKind kind, Lang &ctx);
 
 public:
   /// A callback which will be executed when each task begins execution

@@ -14,7 +14,7 @@ using namespace stone;
 
 class DiagTest : public ::testing::Test {
 public:
-  LangContext ctx;
+  Lang ctx;
 
 public:
 };

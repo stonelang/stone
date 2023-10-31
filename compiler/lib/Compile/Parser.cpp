@@ -16,7 +16,7 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
              Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
                            &sc.GetLang().GetDiagUnit().GetDiagEngine(),
-                           &sc.GetLang().GetStatEngine())),
+                           &sc.GetLang().GetStats())),
              listener) {}
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
@@ -24,7 +24,7 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
 
-  GetLang().GetStatEngine().Register(stats.get());
+  GetLang().GetStats().Register(stats.get());
 }
 
 Parser::~Parser() {}
@@ -182,7 +182,7 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLang().GetDiagnosticEngine().PrintD(loc, diagID);
+  return GetLang().GetDiags().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

@@ -1,5 +1,5 @@
 #include "stone/CodeGen/CodeGenContext.h"
-#include "stone/AST/ClangContext.h"
+#include "stone/AST/Clang.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Lang.h"
@@ -12,19 +12,19 @@ using namespace stone;
 // CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
 //                                llvm::LLVMContext &llvmContext,
 //                                const stone::TargetOptions &targetOpts,
-//                                const LangContext &langContext,
-//                                ClangContext &clangContext,
+//                                const Lang &lang,
+//                                Clang &clang,
 //                                llvm::GlobalVariable **outModuleHash)
 //     : CodeGenContext(
-//           genOpts, targetOpts, langContext, clangContext,
+//           genOpts, targetOpts, lang, clang,
 //           std::make_unique<llvm::Module>(moduleOpts.moduleName, llvmContext),
 //           outModuleHash) {}
 
 // CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
 //                                llvm::LLVMContext &llvmContext,
 //                                const stone::TargetOptions &targetOpts,
-//                                const LangContext &langContext,
-//                                ClangContext &clangContext,
+//                                const Lang &lang,
+//                                Clang &clang,
 //                                std::unique_ptr<llvm::Module> llvmMod,
 //                                llvm::GlobalVariable **outModuleHash)
 //     : codeGenOpts(codeGenOpts), llvmContext(llvmContext),

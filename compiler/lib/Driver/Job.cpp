@@ -6,13 +6,13 @@
 
 using namespace stone;
 
-Job::Job(const JobAction &phase, LangContext &ctx,
+Job::Job(const JobAction &phase, Lang &ctx,
          llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType)
     : phaseAndCondition(&phase, JobCondition::Always), ctx(ctx),
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);
-  ctx.GetStatEngine().Register(stats.get());
+  ctx.GetStats().Register(stats.get());
 }
 
 Job::~Job() {}

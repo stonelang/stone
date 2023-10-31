@@ -204,20 +204,6 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
   return funDecl;
 }
 
-StructDecl *DeclFactory::MakeStructDecl(DeclName name, SrcLoc loc,
-                                        ASTContext &sc, DeclContext *dc) {
-  size_t size = sizeof(ast::StructDecl);
-  auto declPtr = ast::AllocateDeclMem<StructDecl>(sc, size);
-  // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);
-  return nullptr;
-}
-
-ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, ASTContext &sc,
-                                        bool isMainModule) {
-  size_t size = sizeof(ast::ModuleDecl);
-  auto declPtr = ast::AllocateDeclMem<ast::ModuleDecl>(sc, size);
-  return ::new (declPtr) ast::ModuleDecl(name, sc);
-}
 
 ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
                                bool isMainModule) {
@@ -239,3 +225,6 @@ VarDecl *VarDecl::Create(ASTContext &sc) {
   // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);
   return nullptr;
 }
+
+
+

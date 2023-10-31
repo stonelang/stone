@@ -35,7 +35,7 @@ set(stone_ast_sources
 	VerifyDecl.cpp
 	VirtualTable.cpp
 
-	ClangContext.cpp
+	Clang.cpp
 	ClangModuleImporter.cpp
 	ClangAST.cpp
 	

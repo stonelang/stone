@@ -110,7 +110,7 @@ public:
   void SetASTListener(ASTListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  LangContext &GetLang() { return sc.GetLang(); }
+  Lang &GetLang() { return sc.GetLang(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.

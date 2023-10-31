@@ -4,7 +4,7 @@
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Frontend/CompilerInvocation.h"
-#include "clang/Frontend/TextDiagnosticPrinter.h"
+#include "clang/Frontend/TextDiagnosticEmitter.h"
 
 using namespace stone;
 
@@ -12,11 +12,11 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
       sc(new ast::ASTContext(invocation.GetLang(),
                              invocation.GetSearchPathOptions(),
-                             invocation.GetClangContext())),
+                             invocation.GetClang())),
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation, GetASTContext())) {
 
-  invocation.GetLang().GetStatEngine().Register(stats.get());
+  invocation.GetLang().GetStats().Register(stats.get());
 
   // CreateCodeGenContext();
 }
@@ -24,7 +24,7 @@ CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
 CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
-                                      LangContext &lc) {
+                                      Lang &lc) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);

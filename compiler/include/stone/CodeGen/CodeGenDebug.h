@@ -20,7 +20,7 @@ class TargetMachine;
 
 namespace stone {
 class SrcLoc;
-class ClangContext;
+class Clang;
 class CodeGenModule;
 
 class CodeGenDebug final {
@@ -30,7 +30,7 @@ class CodeGenDebug final {
 
 public:
   CodeGenDebug(CodeGenContext &cgc, CodeGenModule &cgm,
-               ClangContext &clangContext,
+               Clang &clang,
                llvm::StringRef mainOutputFilenameForDebug,
                llvm::StringRef privateDiscriminator);
 

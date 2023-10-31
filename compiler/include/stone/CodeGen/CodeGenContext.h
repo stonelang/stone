@@ -21,8 +21,8 @@ class TargetMachine;
 
 namespace stone {
 
-class LangContext;
-class ClangContext;
+class Lang;
+class Clang;
 class CodeGenOptions;
 class ModuleOptions;
 class TargetOptions;
@@ -52,16 +52,16 @@ private:
 private:
   CodeGenContext::CodeGenContext(
       const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
-      const stone::TargetOptions &targetOpts, const LangContext &langContext,
-      ASTContext &astContext, ClangContext &clangContext,
+      const stone::TargetOptions &targetOpts, const Lang &lang,
+      ASTContext &astContext, Clang &clang,
       std::unique_ptr<llvm::Module> llvmMod,
       llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
                  const stone::TargetOptions &targetOpts,
-                 const LangContext &langContext, ASTContext &astContext,
-                 ClangContext &clangContext,
+                 const Lang &lang, ASTContext &astContext,
+                 Clang &clang,
                  llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:

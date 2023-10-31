@@ -2,7 +2,6 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/CodeGen/CodeGenMachine.h"
-#include "stone/CodeGen/CodeGenScope.h"
 #include "stone/Lang.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -177,6 +176,6 @@ void Lang::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
   //   }
 
   // if (parentScope) {
-  //   parentScope->GetLegacyPassManager().run(cgc->GetLLVMModule());
+  //   cgc.GetLegacyPassManager().run(cgc.GetLLVMModule());
   // }
 }

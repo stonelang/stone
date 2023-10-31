@@ -100,14 +100,14 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                          ast::ASTFile *sf, const PrimaryFileSpecificPaths paths,
                          CodeGenListener *listener) {
   assert(sf);
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }
 
-void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                         ast::ModuleDecl *md,
                         const PrimaryFileSpecificPaths paths,
                         CodeGenListener *listener) {

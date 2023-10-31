@@ -32,7 +32,7 @@ class JobAction;
 class TaskQueue;
 class Compilation;
 class ToolChain;
-class LangContext;
+class Lang;
 
 class JobStats final : public Stats {
   const Job &job;
@@ -93,7 +93,7 @@ class Job {
   llvm::PointerIntPair<const JobAction *, 2, JobCondition> phaseAndCondition;
 
 protected:
-  LangContext &ctx;
+  Lang &ctx;
   // Updated by the TaskQueue if or when the job is queued.
   JobID jobID = -1;
   void SetID(JobID jid) { jobID = jid; }
@@ -104,7 +104,7 @@ public:
 
 public:
   Job() = delete;
-  Job(const JobAction &phase, LangContext &ctx,
+  Job(const JobAction &phase, Lang &ctx,
       llvm::SmallVectorImpl<const Job *> &&inputs, file::Type outputFileType);
   virtual ~Job();
 

@@ -27,7 +27,7 @@ Compilation::Compilation(Driver &driver, ToolChain &tc,
     : driver(driver), tc(tc), dal(std::move(dal)) {
 
   stats = std::make_unique<CompilationStats>(*this);
-  driver.GetLang().GetStatEngine().Register(stats.get());
+  driver.GetLang().GetStats().Register(stats.get());
 
   switch (tc.GetKind()) {
   case ToolChainKind::Darwin:

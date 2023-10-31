@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "stone/Lang.h"
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
@@ -19,20 +20,21 @@
 #include "stone/AST/LangABI.h"
 #include "stone/AST/SearchPath.h"
 #include "stone/AST/Types.h"
+#include "stone/AST/VirtualTable.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Lang.h"
 
 #include "stone/AST/ASTDiagnosticArgument.h"
-#include "stone/AST/ClangContext.h"
+#include "stone/AST/Clang.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Specifier.h"
 #include "stone/AST/Types.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
+
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -103,9 +105,9 @@ class ASTContext final {
 
   /// The language options used to create the AST associated with
   ///  this ASTContext object.
-  LangContext &lc;
+  Lang &lc;
 
-  ClangContext &clangContext;
+  Clang &clang;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;
@@ -147,6 +149,9 @@ class ASTContext final {
   mutable llvm::DenseMap<Identifier, std::pair<Identifier, bool>>
       moduleAliasMap;
 
+  std::unique_ptr<VirtualTable> virtualTable; 
+
+
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.
   std::vector<std::function<void(void)>> cleanups;
@@ -155,15 +160,15 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(LangContext &lc, const SearchPathOptions &searchPathOpts,
-             ClangContext &clangContext);
+  ASTContext(Lang &lc, const SearchPathOptions &searchPathOpts,
+             Clang &clang);
   ~ASTContext();
 
   /// Add a cleanup function to be called when the ASTContext is deallocated.
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
-  ClangContext &GetClangContext() { return clangContext; }
+  Clang &GetClang() { return clang; }
   ///
   Identifier GetIdentifier(llvm::StringRef name);
 
@@ -171,8 +176,8 @@ public:
   ///
   const Builtin &GetBuiltin() const;
 
-  LangContext &GetLang() { return lc; }
-  const LangContext &GetLang() const { return lc; }
+  Lang &GetLang() { return lc; }
+  const Lang &GetLang() const { return lc; }
   ///
   LangABI *GetLangABI() const;
   //
@@ -181,6 +186,8 @@ public:
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
   ASTContextStats &GetStats() { return *stats.get(); }
+
+  VirtualTable& GetVirtualTable() { return *virtualTable;}
 
 public:
   //==Module stuff==//
@@ -233,12 +240,12 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLang().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiags().PrintD(
         loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetLang().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiags().PrintD(
         loc, ASTDiagnostic(diagID, args));
   }
 
@@ -246,7 +253,7 @@ public:
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLang().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiags().PrintD(
         loc, ASTDiagnostic(id, std::move(args)...));
   }
 };

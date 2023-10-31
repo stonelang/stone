@@ -1,5 +1,5 @@
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/ClangContext.h"
+#include "stone/AST/Clang.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/CodeGen/CodeGenContext.h"

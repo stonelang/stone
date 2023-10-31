@@ -94,7 +94,7 @@ class CompilerInvocation final {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
-  std::unique_ptr<ClangContext> clangContext;
+  std::unique_ptr<Clang> clang;
 
   OptUtil optUtil;
 
@@ -138,7 +138,7 @@ public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
 
-  ClangContext &GetClangContext() { return *clangContext; }
+  Clang &GetClang() { return *clang; }
 
   CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
   const CompilerOptions &GetCompilerOptions() const {
@@ -182,7 +182,7 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
-  DiagUnit &GetDiagnoticEngine() { GetLang().GetDiagnoticEngine(); }
+  DiagUnit &GetDiags() { GetLang().GetDiags(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);

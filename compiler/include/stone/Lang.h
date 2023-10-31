@@ -51,7 +51,7 @@ namespace stone {
 class CompilerListener;
 class CodeGenContext;
 class CompilerInstance;
-class ClangContext;
+class Clang;
 class CompilationListener;
 
 class Lang final {
@@ -85,7 +85,7 @@ public:
   SrcMgr &GetSrcMgr() { return sm; }
 
 public:
-  using ModuleDeclOrASTFile =
+  using ModuleOrASTFile =
       llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 public:
@@ -98,12 +98,16 @@ public:
 public:
   /// This walks the asttax to resolve imports.
   /// Returns true is successfull
-  static void ParseASTFile(ast::ASTFile &asttaxFile, ast::ASTContext &context,
+  static void ParseASTFile(ast::ASTFile &astFile, ast::ASTContext &context,
                            ASTListener *listener = nullptr);
 
   /// This walks the asttax to resolve imports.
   /// Returns true is successfull
-  static void ResolveASTFileImports(ast::ASTFile &asttaxFile);
+  static void ResolveASTFileImports(ast::ASTFile &astFile);
+
+  static void DumpAST(ast::ASTFile &astFile, ast::ASTContext &context);
+
+  static void PrintAST(ast::ASTFile &astFile, ast::ASTContext &context);
 
   /// Once import resolution is complete, this walks the asttax to resolve types
   /// and diagnose problems therein.
@@ -120,39 +124,37 @@ public:
   /// provide a somewhat defined order in which diagnostics should be
   /// emitted.
   /// Returns true is successfull
-  void TypeCheckWholeModule(
+  static void TypeCheckWholeModule(
       ast::ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
       TypeCheckerListener *listener =
           nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
   /// Returns true is successfull
-  void SerializeASTFile(ast::ASTFile &asttaxFile);
+  static void SerializeASTFile(ast::ASTFile &asttaxFile);
 
   /// Returns true is successfull
-  void SerializeModuleDecl(ast::ModuleDecl &moduleDecl);
+  static void SerializeModuleDecl(ast::ModuleDecl &moduleDecl);
 
-  /// GenIR for the ModuleFile
-  /// Returns true is successfull
-  void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+  /// GenIR just for an ASTFile 
+  static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                     ast::ASTFile *sf,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
-  /// Gen IR for the Module
-  /// Returns true is successfull
-  void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+  /// GenIR for the entire module 
+  static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                    ast::ModuleDecl *mod,
                    const PrimaryFileSpecificPaths specificPaths,
                    CodeGenListener *listener = nullptr);
 
-  bool EmitImportedModules(ast::ASTContext &context,
+  static bool EmitImportedModules(ast::ASTContext &context,
                            ast::ModuleDecl *mainModule,
                            const CompilerOptions &opts);
 
 public:
   static IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                             const LangOptions &langOpts,
-                                            ClangContext &cc);
+                                            Clang &cc);
 
   /// Disable thumb-mode until debugger support is there.
   static bool ShouldRemoveTargetFeature(llvm::StringRef feature);
@@ -161,17 +163,20 @@ public:
   CreateTargetMachine(const CodeGenOptions &opts);
 
   static void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
-                         LangContext &langContext, llvm::TargetMachine *target);
+                         Lang &lang, llvm::TargetMachine *target);
 
-  /// Returns true is successfull
-  static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
-                        llvm::StringRef outputFilename,
-                        CodeGenListener *listener = nullptr);
+ 
 
   static bool
   WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
                         const ast::ASTContext &Context,
                         const CodeGenOptions &opts);
+
+
+  /// Returns true is successfull
+  static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
+                        llvm::StringRef outputFilename,
+                        CodeGenListener *listener = nullptr);
 
   /// Run the LLVM passes. In multi-threaded compilation this will be done for
   /// multiple LLVM modules in parallel.
@@ -184,7 +189,6 @@ public:
   /// \param Module LLVM module to code gen, required.
   /// \param TargetMachine target of code gen, required.
   /// \param OutputFilename Filename for output.
-
   static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
                         llvm::StringRef outputFilename,
                         llvm::sys::Mutex *diagMutex,
@@ -195,6 +199,8 @@ public:
   static void WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
                           llvm::sys::Mutex *diagMutex = nullptr,
                           CodeGenScope *parentScope = nullptr);
+
+
 };
 } // namespace stone
 #endif

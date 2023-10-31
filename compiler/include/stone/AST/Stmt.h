@@ -12,7 +12,6 @@
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/IfConfig.h"
-#include "stone/AST/StmtBits.h"
 #include "stone/AST/StmtKind.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
@@ -38,6 +37,7 @@ class VarDecl;
 class Expr;
 class StringLiteral;
 class ASTContext;
+
 
 class Stmt : public ASTAllocation<Stmt> {
   StmtKind kind;
@@ -101,6 +101,11 @@ public:
   static bool classof(const Stmt *stmt) {
     return stmt->GetKind() == StmtKind::Brace;
   }
+
+public:
+  BraceStmt *Create(SrcLoc lbloc,llvm::ArrayRef<ASTNode> elements,
+                                  SrcLoc rbloc, ASTContext &sc,
+                                  llvm::Optional<bool> implicit = llvm::None);
 };
 
 class SwitchCaseStmt : public Stmt {

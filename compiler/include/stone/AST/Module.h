@@ -258,7 +258,7 @@ public:
   }
 
 public:
-  static int Create(Identifier name, ASTContext &sc bool isMainModule);
+  static int Create(Identifier name, ASTContext &ac, bool isMainModule);
 };
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }

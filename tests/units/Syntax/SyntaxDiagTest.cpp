@@ -1,5 +1,5 @@
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/LangContext.h"
+#include "stone/Basic/Lang.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
@@ -18,7 +18,7 @@ using namespace stone;
 
 class SyntaxDiagTest : public ::testing::Test {
 protected:
-  LangContext ctx;
+  Lang ctx;
   //   SearchPathOptions pathOpts;
   //   Syntax syntax;
   //   SrcMgr sm;

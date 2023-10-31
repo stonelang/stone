@@ -20,7 +20,7 @@ public:
 
 class UnixTaskQueue final : public TaskQueue {
 public:
-  UnixTaskQueue(LangContext &ctx) : TaskQueue(TaskQueueKind::Unix, ctx) {}
+  UnixTaskQueue(Lang &ctx) : TaskQueue(TaskQueueKind::Unix, ctx) {}
 };
 } // namespace unix
 } // namespace stone
