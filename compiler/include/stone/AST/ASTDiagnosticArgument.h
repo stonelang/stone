@@ -75,7 +75,7 @@ public:
 
 class ASTDiagnostic : public Diagnostic {
 public:
-  explicit ASTDiagnostic(Diagnostic detail) : Diagnostic(detail) {}
+  explicit ASTDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args) : Diagnostic(diagID, args) {}
   ~ASTDiagnostic();
 
 public:
@@ -87,7 +87,7 @@ public:
 
 public:
   void
-  Format(ColorStream &out, Diagnostic &detail,
+  Format(ColorStream &out, Diagnostic &diagnostic,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void

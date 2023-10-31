@@ -300,7 +300,7 @@ public:
   Type GetType() { return type; }
 };
 
-class DeclCollector {
+class ASTCollector {
 
   AttributeCollector attributeCollector;
   TypeCollector typeCollector;

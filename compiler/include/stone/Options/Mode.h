@@ -3,7 +3,6 @@
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/Timer.h"
-#include "stone/Options/ModeKind.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
@@ -51,7 +50,6 @@ enum class ModeKind : unsigned {
 };
 
 class Mode final {
-  friend class Session;
   ModeKind kind;
   std::unique_ptr<stone::Timer> timer;
 

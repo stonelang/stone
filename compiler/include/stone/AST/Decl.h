@@ -682,6 +682,8 @@ public:
       return classof(d);
     return false;
   }
+public:
+  static FunDecl* Create(DeclCollector &collector, ASTContext &sc, DeclContext *parent);
 };
 
 class ConstructorDecl : public FunctionDecl {

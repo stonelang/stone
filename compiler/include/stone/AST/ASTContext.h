@@ -105,7 +105,7 @@ class ASTContext final {
 
   /// The language options used to create the AST associated with
   ///  this ASTContext object.
-  Lang &lc;
+  Lang &lang;
 
   Clang &clang;
 
@@ -160,7 +160,7 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(Lang &lc, const SearchPathOptions &searchPathOpts,
+  ASTContext(Lang &lang, const SearchPathOptions &searchPathOpts,
              Clang &clang);
   ~ASTContext();
 
@@ -176,12 +176,12 @@ public:
   ///
   const Builtin &GetBuiltin() const;
 
-  Lang &GetLang() { return lc; }
-  const Lang &GetLang() const { return lc; }
+  Lang &GetLang() { return lang; }
+  const Lang &GetLang() const { return lang; }
   ///
   LangABI *GetLangABI() const;
   //
-  SrcMgr &GetSrcMgr() { return lc.GetSrcMgr(); }
+  SrcMgr &GetSrcMgr() { return lang.GetSrcMgr(); }
 
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
@@ -240,21 +240,17 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLang().GetDiags().PrintD(
-        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
+    return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                                   llvm::ArrayRef<diag::Argument> args) {
-    return GetLang().GetDiags().PrintD(
-        loc, ASTDiagnostic(diagID, args));
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID, llvm::ArrayRef<diag::Argument> args) {
+    return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLang().GetDiags().PrintD(
-        loc, ASTDiagnostic(id, std::move(args)...));
+    return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
   }
 };
 } // namespace ast

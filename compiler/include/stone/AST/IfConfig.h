@@ -1,6 +1,10 @@
 #ifndef STONE_ASTIFCONFIG_H
 #define STONE_ASTIFCONFIG_H
 
+
+#include "stone/Basic/SrcLoc.h"
+
+
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
