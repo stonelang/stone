@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_MODULEDEPENDENCIES_H
 #define STONE_COMPILE_MODULEDEPENDENCIES_H
 
-#include "stone/Compile/CompilerOptions.h"
-#include "stone/AST/Module.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
+#include "stone/Compile/CompilerOptions.h"
 
 namespace stone {
 

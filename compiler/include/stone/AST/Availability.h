@@ -1,9 +1,9 @@
 #ifndef STONE_ASTAVAILABILITY_H
 #define STONE_ASTAVAILABILITY_H
 
-#include "stone/Basic/LLVM.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Type.h"
+#include "stone/Basic/LLVM.h"
 
 #include "llvm/ADT/Optional.h"
 #include "llvm/Support/VersionTuple.h"
@@ -327,8 +327,8 @@ public:
   /// Returns the context for which the declaration
   /// is annotated as available, or None if the declaration
   /// has no availability annotation.
-  static Optional<AvailabilityContext>
-  annotatedAvailableRange(const Decl *D, ASTContext &C);
+  static Optional<AvailabilityContext> annotatedAvailableRange(const Decl *D,
+                                                               ASTContext &C);
 
   static AvailabilityContext
   annotatedAvailableRangeForAttr(const SpecializeAttribute *attr,

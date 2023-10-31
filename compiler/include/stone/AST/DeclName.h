@@ -1,12 +1,10 @@
-#ifndef STONE_ASTDECLNAME_H
-#define STONE_ASTDECLNAME_H
+#ifndef STONE_AST_DECLNAME_H
+#define STONE_AST_DECLNAME_H
 
-#include "stone/Basic/Dumpable.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/OperatorKind.h"
-#include "stone/Basic/Printable.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Type.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/OperatorKind.h"
 
 #include "llvm/ADT/FoldingSet.h"
 

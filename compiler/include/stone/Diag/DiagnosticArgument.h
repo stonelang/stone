@@ -148,14 +148,7 @@ public:
   tok GetVal() const { return val; }
 };
 
-enum class ASTArgumentKind {
-  None,
-  Decl,
-  DeclContext,
-  Type,
-  Identifier,
-  Token
-};
+enum class ASTArgumentKind { None, Decl, DeclContext, Type, Identifier, Token };
 struct ASTArgument : public Argument {
   ASTArgumentKind kind = ASTArgumentKind::None;
 

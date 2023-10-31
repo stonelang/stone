@@ -1,6 +1,6 @@
 #include "stone/Options/Mode.h"
-#include "stone/Public.h"
 #include "stone/Options/Options.h"
+#include "stone/Public.h"
 #include "llvm/Option/Option.h"
 
 using namespace stone;
@@ -53,9 +53,9 @@ static llvm::StringRef GetModeName(ModeKind kind) {
 }
 
 Mode::Mode(ModeKind kind, llvm::StringRef name)
-    : kind(kind), name(name),  timer(new stone::Timer(GetModeName(kind), "mode timer")) {}
+    : kind(kind), name(name),
+      timer(new stone::Timer(GetModeName(kind), "mode timer")) {}
 Mode::~Mode() {}
-
 
 std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
   auto modeArg = ial.getLastArg(opts::ModeGroup);

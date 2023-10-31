@@ -3,9 +3,9 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Compile/Lexing.h"
 #include "stone/Compile/Trivia.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Public.h"
 
 namespace stone {
@@ -145,8 +145,7 @@ class Lexer final : public Tokenable {
   Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
         stone::DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention,
-        ASTListener *listener = nullptr);
+        TriviaRetentionMode TriviaRetention, ASTListener *listener = nullptr);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -522,8 +521,8 @@ private:
   template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(
-                           DiagID, std::forward<ArgTypes>(Args)...)));
+    return PrintD(
+        loc, Diagnostic(Diagnostic(DiagID, std::forward<ArgTypes>(Args)...)));
   }
 
   void formToken(tok Kind, const char *TokStart);
@@ -620,7 +619,7 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
 
-} // namespace ast
+} // namespace parser
 } // namespace stone
 
 #endif

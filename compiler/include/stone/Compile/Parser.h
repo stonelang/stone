@@ -3,21 +3,21 @@
 
 #include <memory>
 
+#include "stone/AST/AST.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTOptions.h"
+#include "stone/AST/Attribute.h"
+#include "stone/AST/Expr.h"
+#include "stone/AST/Identifier.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/ParserResult.h"
+#include "stone/AST/Specifier.h"
+#include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/Lexer.h"
 #include "stone/Compile/Parsing.h"
-#include "stone/AST/Attribute.h"
-#include "stone/AST/Expr.h"
-#include "stone/AST/Identifier.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/Specifier.h"
-#include "stone/AST/Stmt.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/ASTNode.h"
-#include "stone/AST/ASTOptions.h"
-#include "stone/AST/ParserResult.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -27,7 +27,6 @@ namespace ast {
 class Scope;
 class BraceStmt;
 }
-
 
 class Parser;
 class PairDelimiterBalancer;

@@ -1,9 +1,9 @@
 #ifndef STONE_GEN_IRCODEGENBUILDER_H
 #define STONE_GEN_IRCODEGENBUILDER_H
 
+#include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/CodeGen/CodeGenContext.h"
-#include "stone/AST/Module.h"
 
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
@@ -50,14 +50,14 @@ public:
   CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache);
 
   CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
-                   const llvm::ConstantFolder &constFoler,
-                   const CodeGenBuilderInserter &inserter);
+                 const llvm::ConstantFolder &constFoler,
+                 const CodeGenBuilderInserter &inserter);
 
   CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
-                   llvm::Instruction *instruction);
+                 llvm::Instruction *instruction);
 
   CodeGenBuilder(CodeGenContext &cgc, const CodeGenTypeCache &typeCache,
-                   llvm::BasicBlock *basicBlock);
+                 llvm::BasicBlock *basicBlock);
 
   ~CodeGenBuilder();
 

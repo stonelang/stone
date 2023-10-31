@@ -1,7 +1,7 @@
 #include "stone/CodeGen/CodeGenContext.h"
+#include "stone/AST/ClangContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/AST/ClangContext.h"
 #include "stone/Public.h"
 
 using namespace stone;

@@ -1,10 +1,10 @@
 #ifndef STONE_ASTAVAILABILITYSPEC_H
 #define STONE_ASTAVAILABILITYSPEC_H
 
+#include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Identifier.h"
 #include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/Identifier.h"
-#include "stone/AST/ASTAllocation.h"
 
 #include "llvm/Support/VersionTuple.h"
 

@@ -7,13 +7,12 @@
 using namespace stone;
 using namespace stone::ast;
 
-CodeGenModule::CodeGenModule(CodeGenContext &cgc,
-                                 llvm::StringRef moduleName,
-                                 llvm::StringRef outputFilename)
+CodeGenModule::CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
+                             llvm::StringRef outputFilename)
 
-    : typeCache(*cgc.GetLLVMContext()),
-      irCodeGen(irCodeGen), moduleName(moduleName),
-      outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
+    : typeCache(*cgc.GetLLVMContext()), irCodeGen(irCodeGen),
+      moduleName(moduleName), outputFilename(outputFilename),
+      typeResolver(*this), metadata(*this) {}
 
 CodeGenModule::~CodeGenModule() {}
 
@@ -25,9 +24,9 @@ llvm::StringRef CodeGenModule::GetMangledName(Decl &d) { return ""; }
 
 llvm::Constant *
 CodeGenModule::CreateFunction(llvm::StringRef mangledName,
-                                ast::FunctionDecl *fd, llvm::Type *fnTy,
-                                const EmitFunctionOptions emitFunctionOpts,
-                                llvm::AttributeList extraAttrs) {
+                              ast::FunctionDecl *fd, llvm::Type *fnTy,
+                              const EmitFunctionOptions emitFunctionOpts,
+                              llvm::AttributeList extraAttrs) {
 
   llvm::GlobalValue *entry; //= GetGlobalValue(MangledName);
 
@@ -42,26 +41,26 @@ CodeGenModule::CreateFunction(llvm::StringRef mangledName,
     isIncompleteFunction = true;
   }
 
-  llvm::Function *llvmFunction = llvm::Function::Create(
-      llvmFunctionType, llvm::Function::ExternalLinkage,
-      entry ? llvm::StringRef() : mangledName,
-      *GetCodeGen().GetCodeGenContext().GetLLVMModule());
+  llvm::Function *llvmFunction =
+      llvm::Function::Create(llvmFunctionType, llvm::Function::ExternalLinkage,
+                             entry ? llvm::StringRef() : mangledName,
+                             *GetCodeGen().GetCodeGenContext().GetLLVMModule());
 
   return llvmFunction;
 }
 llvm::Constant *
 CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
-                                     ast::FunctionDecl *fd, llvm::Type *fnTy,
-                                     const EmitFunctionOptions emitFunctionOpts,
-                                     llvm::AttributeList extraAttrs) {
+                                   ast::FunctionDecl *fd, llvm::Type *fnTy,
+                                   const EmitFunctionOptions emitFunctionOpts,
+                                   llvm::AttributeList extraAttrs) {
 
   // TODO: Ignoring forDefinition for now -- just creating
   return CreateFunction(mangledName, fd, fnTy, emitFunctionOpts, extraAttrs);
 }
 
-llvm::Constant *CodeGenModule::GetFunctionAddress(
-    ast::FunctionDecl *fd, llvm::Type *fnTy,
-    const EmitFunctionOptions emitFunctionOpts) {
+llvm::Constant *
+CodeGenModule::GetFunctionAddress(ast::FunctionDecl *fd, llvm::Type *fnTy,
+                                  const EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
   // If there was no specific requested type, just convert it now.
@@ -77,7 +76,7 @@ llvm::Constant *CodeGenModule::GetFunctionAddress(
 }
 
 void CodeGenModule::SetFunctionLinkage(ast::FunctionDecl *fd,
-                                         llvm::Function *fn) {
+                                       llvm::Function *fn) {
   fn->setLinkage(GetFunctionLinkage(fd));
 }
 llvm::GlobalValue::LinkageTypes

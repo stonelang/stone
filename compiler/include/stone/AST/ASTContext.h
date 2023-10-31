@@ -11,29 +11,28 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Mem.h"
-#include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/StatisticEngine.h"
-#include "stone/Public.h"
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Import.h"
 #include "stone/AST/LangABI.h"
 #include "stone/AST/SearchPath.h"
-#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/Mem.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/StatisticEngine.h"
+#include "stone/Public.h"
 
-#include "stone/Basic/SrcLoc.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/ClangContext.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Specifier.h"
-#include "stone/AST/ASTDiagnosticArgument.h"
-#include "stone/AST/ParserResult.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -157,7 +156,7 @@ public:
   ASTContext &operator=(const ASTContext &) = delete;
 
   ASTContext(LangContext &lc, const SearchPathOptions &searchPathOpts,
-                ClangContext &clangContext);
+             ClangContext &clangContext);
   ~ASTContext();
 
   /// Add a cleanup function to be called when the ASTContext is deallocated.
@@ -234,19 +233,21 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLangContext().GetDiagUnit().PrintD(
+    return GetLangContext().GetDiagnoticEngine().PrintD(
         loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetLangContext().GetDiagnoticEngine().PrintD(loc, ASTDiagnostic(diagID, args));
+    return GetLangContext().GetDiagnoticEngine().PrintD(
+        loc, ASTDiagnostic(diagID, args));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLangContext().GetDiagnoticEngine().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
+    return GetLangContext().GetDiagnoticEngine().PrintD(
+        loc, ASTDiagnostic(id, std::move(args)...));
   }
 };
 } // namespace ast

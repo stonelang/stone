@@ -110,7 +110,8 @@ JobDetail DarwinToolChain::ConstructDetail(const StaticLinkJobAction &action) {
   return JobDetail();
 }
 
-JobDetail DarwinToolChain::ConstructDetail(const ExecutableLinkJobAction &action) {
+JobDetail
+DarwinToolChain::ConstructDetail(const ExecutableLinkJobAction &action) {
   return JobDetail();
 }
 

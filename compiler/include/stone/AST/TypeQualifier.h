@@ -1,9 +1,9 @@
 #ifndef STONE_ASTTYPEQUALIFIER_H
 #define STONE_ASTTYPEQUALIFIER_H
 
+#include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

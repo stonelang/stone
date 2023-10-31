@@ -1,6 +1,6 @@
 #include "stone/AST/ASTContext.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/AST/Module.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/Statistic.h"
@@ -15,9 +15,8 @@
 using namespace stone;
 using namespace stone::ast;
 
-ASTContext::ASTContext(stone::LangContext &lc,
-                             const SearchPathOptions &spOpts,
-                             ClangContext &clangContext)
+ASTContext::ASTContext(stone::LangContext &lc, const SearchPathOptions &spOpts,
+                       ClangContext &clangContext)
     : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
       builtinContext(*this), stats(new ASTContextStats(*this)),
       clangContext(clangContext) {
@@ -31,12 +30,10 @@ ASTContext::~ASTContext() {
   }
 }
 
-const Builtin &ASTContext::GetBuiltin() const {
-  return builtinContext;
-}
+const Builtin &ASTContext::GetBuiltin() const { return builtinContext; }
 
 void *ast::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
-                                   AllocationArena arena, unsigned alignment) {
+                                AllocationArena arena, unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 
@@ -55,9 +52,8 @@ void ASTContext::AddLoadedModule(ModuleDecl *mod) {
   loadedModules[mod->GetRealName()] = mod;
 }
 
-Identifier
-ASTContext::GetRealModuleName(Identifier key,
-                                 ModuleAliasLookupOption option) const {
+Identifier ASTContext::GetRealModuleName(Identifier key,
+                                         ModuleAliasLookupOption option) const {
 
   auto found = moduleAliasMap.find(key);
   if (found == moduleAliasMap.end()) {

@@ -2,8 +2,7 @@
 
 using namespace stone;
 
-CodeGenConstant::CodeGenConstant(CodeGenModule &cgm,
-                                     CodeGenFunction *cgf)
+CodeGenConstant::CodeGenConstant(CodeGenModule &cgm, CodeGenFunction *cgf)
     : cgm(cgm), cgf(cgf) {}
 
 /// Initialize this emission in the context of the given function.

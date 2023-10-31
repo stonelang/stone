@@ -80,5 +80,5 @@ struct AngleBracketBalancer final {
   }
 };
 
-} // namespace ast
+} // namespace parser
 } // namespace stone

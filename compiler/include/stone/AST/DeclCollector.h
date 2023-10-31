@@ -1,7 +1,6 @@
 #ifndef STONE_ASTDECLCOLLECTOR_H
 #define STONE_ASTDECLCOLLECTOR_H
 
-#include "stone/Basic/OptionSet.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Generics.h"
@@ -9,6 +8,7 @@
 #include "stone/AST/TypeQualifier.h"
 #include "stone/AST/TypeThunk.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/OptionSet.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

@@ -1,14 +1,14 @@
 #ifndef STONE_SEM_TYPECHECKAVAILABILITY_H
 #define STONE_SEM_TYPECHECKAVAILABILITY_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/OptionSet.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/AttributeKind.h"
 #include "stone/AST/Availability.h"
 #include "stone/AST/AvailabilitySpec.h"
 #include "stone/AST/DeclContext.h"
 #include "stone/AST/Identifier.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/OptionSet.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"

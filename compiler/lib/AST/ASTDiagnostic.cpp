@@ -1,5 +1,5 @@
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/AST/ASTDiagnosticArgument.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 using namespace stone;
 
@@ -48,24 +48,24 @@ ASTDiagnostic::~ASTDiagnostic() {}
 
 ASTDiagnosticFormatter::ASTDiagnosticFormatter() {}
 
-void ASTDiagnosticFormatter::Format(ColorStream &out,
-                                       DiagnosticDetail &detail,
-                                       DiagnosticFormatOptions fmtOpts) {
+void ASTDiagnosticFormatter::Format(ColorStream &out, Diagnostic &detail,
+                                    DiagnosticFormatOptions fmtOpts) {
 
   // printf("%s\n", "Hello asttax formatting");
 }
 
 void ASTDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
-                                       llvm::ArrayRef<diag::Argument> args,
-                                       DiagnosticFormatOptions fmtOpts) {}
+                                    llvm::ArrayRef<diag::Argument> args,
+                                    DiagnosticFormatOptions fmtOpts) {}
 
-void ASTDiagnosticFormatter::FormatArgument(
-    ColorStream &out, llvm::StringRef modifier,
-    llvm::StringRef modifierArguments, ArrayRef<diag::Argument> args,
-    unsigned argIndex, DiagnosticFormatOptions fmtOpts) {}
+void ASTDiagnosticFormatter::FormatArgument(ColorStream &out,
+                                            llvm::StringRef modifier,
+                                            llvm::StringRef modifierArguments,
+                                            ArrayRef<diag::Argument> args,
+                                            unsigned argIndex,
+                                            DiagnosticFormatOptions fmtOpts) {}
 
-ASTDiagnosticEmitter::ASTDiagnosticEmitter(
-    ASTDiagnosticFormatter &formatter)
+ASTDiagnosticEmitter::ASTDiagnosticEmitter(ASTDiagnosticFormatter &formatter)
     : TextDiagnosticEmitter(formatter) {}
 
 // ASTDiagnosticEmitter::ASTDiagnosticEmitter() {}

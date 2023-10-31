@@ -1,8 +1,8 @@
 #ifndef STONE_ASTTYPEKIND_H
 #define STONE_ASTTYPEKIND_H
 
-#include "stone/Basic/STDAlias.h"
 #include "stone/AST/InlineBitfield.h"
+#include "stone/Basic/STDAlias.h"
 
 namespace stone {
 namespace ast {

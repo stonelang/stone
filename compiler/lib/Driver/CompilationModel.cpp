@@ -6,17 +6,16 @@ using namespace stone;
 
 JobAction *
 CompilationModel::ConstructCompileJobAction(ToolChain &tc, JobActionInput input,
-                                        const OutputOptions &outputOpts) {
+                                            const OutputOptions &outputOpts) {
   JobAction *phase = nullptr;
   auto tool = tc.GetSC();
-  phase = tc.GetDriver().MakeJobAction<CompileJobAction>(*tool, input,
-                                                 outputOpts.outputFileType);
+  phase = tc.GetDriver().MakeJobAction<CompileJobAction>(
+      *tool, input, outputOpts.outputFileType);
   assert(phase);
   return phase;
 }
-JobAction *
-CompilationModel::ConstructStaticLinkJobAction(ToolChain &tc, JobActionInputList inputs,
-                                           const OutputOptions &outputOpts) {
+JobAction *CompilationModel::ConstructStaticLinkJobAction(
+    ToolChain &tc, JobActionInputList inputs, const OutputOptions &outputOpts) {
 
   JobAction *phase = nullptr;
   auto tool = tc.GetLD();
@@ -25,9 +24,8 @@ CompilationModel::ConstructStaticLinkJobAction(ToolChain &tc, JobActionInputList
   return phase;
 }
 
-JobAction *
-CompilationModel::ConstructExecLinkJobAction(ToolChain &tc, JobActionInputList inputs,
-                                         const OutputOptions &outputOpts) {
+JobAction *CompilationModel::ConstructExecLinkJobAction(
+    ToolChain &tc, JobActionInputList inputs, const OutputOptions &outputOpts) {
 
   JobAction *phase = nullptr;
   auto tool = tc.GetLD();
@@ -44,8 +42,9 @@ JobAction *CompilationModel::ConstructDynamicLinkJobAction(
 
 //  TODO: Look into the JobActionCache instead of the JobActionInput
 /// GOAL: Build the link phase and CacheForTopLevel(..)
-JobAction *CompilationModel::BuildLinkJobAction(ToolChain &tc, JobActionCache &ac,
-                                        const OutputOptions &outputOpts) {
+JobAction *
+CompilationModel::BuildLinkJobAction(ToolChain &tc, JobActionCache &ac,
+                                     const OutputOptions &outputOpts) {
 
   JobAction *phase = nullptr;
   // Make sure that we can link
@@ -72,9 +71,9 @@ JobAction *CompilationModel::BuildLinkJobAction(ToolChain &tc, JobActionCache &a
   return phase;
 }
 
-JobAction *CompilationModel::BuildLinkJobAction(ToolChain &tc,
-                                        const file::Files &inputs,
-                                        const OutputOptions &outputOpts) {
+JobAction *
+CompilationModel::BuildLinkJobAction(ToolChain &tc, const file::Files &inputs,
+                                     const OutputOptions &outputOpts) {
   JobAction *phase = nullptr;
   assert(tc.GetDriver().JustLink() && "The current mode is only for linking");
   return nullptr;
@@ -84,9 +83,9 @@ void QuadraticCompilationModel::BuildCompileJobActions(
     ToolChain &tc, const file::Files &inputs, JobActionCache &ac,
     const OutputOptions &outputOpts) {
 
-  auto BuildCompileJobAction = [&](const file::File &primaryInput,
-                               const file::Files &inputs,
-                               const OutputOptions &outputOpts) -> JobAction * {
+  auto BuildCompileJobAction =
+      [&](const file::File &primaryInput, const file::Files &inputs,
+          const OutputOptions &outputOpts) -> JobAction * {
     auto phase = ConstructCompileJobAction(
         tc, const_cast<file::File *>(&primaryInput), outputOpts);
     assert(phase);
@@ -102,10 +101,9 @@ void QuadraticCompilationModel::BuildCompileJobActions(
     ac.CacheForCompile(phase);
   }
 }
-void QuadraticCompilationModel::BuildJobActions(ToolChain &tc,
-                                            const file::Files &inputs,
-                                            JobActionCache &pc,
-                                            const OutputOptions &outputOpts) {
+void QuadraticCompilationModel::BuildJobActions(
+    ToolChain &tc, const file::Files &inputs, JobActionCache &pc,
+    const OutputOptions &outputOpts) {
 
   if (tc.GetDriver().CanCompile()) {
     BuildCompileJobActions(tc, inputs, pc, outputOpts);
@@ -150,7 +148,8 @@ void QuadraticCompilationModel::BuildCompileJobs(
 
   };
   for (auto input : pc.forCompile) {
-    jc.CacheForCompile(BuildCompileJob(tc, *InputToJobAction(input), outputOpts));
+    jc.CacheForCompile(
+        BuildCompileJob(tc, *InputToJobAction(input), outputOpts));
   }
 }
 
@@ -222,8 +221,9 @@ std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
 
 // std::unique_ptr<Compilation>
 // FlatCompilationModel::BuildCompilation(Driver &driver,
-//                                        const file::Files &inputs, JobActionCache
-//                                        &ic, const OutputOptions &outputOpts)
+//                                        const file::Files &inputs,
+//                                        JobActionCache &ic, const
+//                                        OutputOptions &outputOpts)
 //                                        {
 
 //   BuildJobActions(driver, inputs, ic, outputOpts);
@@ -246,8 +246,9 @@ std::unique_ptr<Compilation> QuadraticCompilationModel::BuildCompilation(
 // }
 
 // void SingleCompilationModel::BuildJobActions(Compilation& compilation,
-//                                        const file::Files &inputs, JobActionCache
-//                                        &ic, const OutputOptions &outputOpts)
+//                                        const file::Files &inputs,
+//                                        JobActionCache &ic, const
+//                                        OutputOptions &outputOpts)
 //                                        {}
 
 // std::unique_ptr<Compilation> SingleCompilationModel::BuildCompilation(

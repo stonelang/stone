@@ -1,22 +1,22 @@
 #ifndef STONE_COMPILE_COMPILERINVOCATION_H
 #define STONE_COMPILE_COMPILERINVOCATION_H
 
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTOptions.h"
+#include "stone/AST/Module.h"
+#include "stone/AST/TypeCheckerOptions.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/CodeGen/CodeGenContext.h"
-#include "stone/Public.h"
 #include "stone/Options/Mode.h"
 #include "stone/Options/Session.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/ASTOptions.h"
-#include "stone/AST/TypeCheckerOptions.h"
+#include "stone/Public.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -76,7 +76,7 @@ class CompilerInvocation final {
 
   ModuleOptions moduleOpts;
 
-  ASTOptions asttaxOpts;
+  ASTOptions astOpts;
 
   /// The main executable path of the running program
   std::string mainExecutablePath;
@@ -95,6 +95,10 @@ class CompilerInvocation final {
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
   std::unique_ptr<ClangContext> clangContext;
+
+  OptUtil optUtil;
+
+  Lang lang;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -155,8 +159,12 @@ public:
     return typeCheckerOpts;
   }
 
+  Lang &GetLang() { return lang; }
+
   LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
-  const LangOptions &GetLangOptions() const { return GetCompilerOptions().langOpts; }
+  const LangOptions &GetLangOptions() const {
+    return GetCompilerOptions().langOpts;
+  }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
@@ -189,9 +197,9 @@ public:
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
 
-
 public:
-  std::unique_ptr<llvm::opt::InputArgList> ParseArgs(llvm::ArrayRef<const char *> args);
+  std::unique_ptr<llvm::opt::InputArgList>
+  ParseArgs(llvm::ArrayRef<const char *> args);
 };
 
 } // namespace stone

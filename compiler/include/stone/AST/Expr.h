@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "stone/AST/Stmt.h"
 #include "stone/AST/ASTWalker.h"
+#include "stone/AST/Stmt.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

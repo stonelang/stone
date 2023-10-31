@@ -1,10 +1,10 @@
 #ifndef STONE_SEM_TYPECHECKER_H
 #define STONE_SEM_TYPECHECKER_H
 
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTContext.h"
 
 #include <memory>
 
@@ -57,7 +57,7 @@ public:
 
 public:
   void CheckASTNode(ASTNode &asttaxNode, DeclContext *dc,
-                       bool checkBody = false);
+                    bool checkBody = false);
 
 public:
   void CheckDecl(Decl *d);

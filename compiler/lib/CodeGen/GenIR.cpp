@@ -1,10 +1,10 @@
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/Public.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTContext.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -101,9 +101,8 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                            ast::ASTFile *sf,
-                            const PrimaryFileSpecificPaths paths,
-                            CodeGenListener *listener) {
+                         ast::ASTFile *sf, const PrimaryFileSpecificPaths paths,
+                         CodeGenListener *listener) {
   assert(sf);
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }

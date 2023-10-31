@@ -3,15 +3,15 @@
 
 #include <type_traits>
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDAlias.h"
-#include "stone/Basic/SrcLoc.h"
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/DeclBits.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/PointerEmbeddedInt.h"
 #include "llvm/ADT/PointerIntPair.h"

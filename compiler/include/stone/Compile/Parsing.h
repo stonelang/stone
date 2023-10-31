@@ -1,13 +1,13 @@
 #ifndef STONE_PARSE_PARSINGSUPPORT_H
 #define STONE_PARSE_PARSINGSUPPORT_H
 
+#include "stone/AST/DeclCollector.h"
+#include "stone/AST/ParserResult.h"
+#include "stone/AST/Scope.h"
+#include "stone/AST/Specifier.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Compile/Lexing.h"
-#include "stone/AST/DeclCollector.h"
-#include "stone/AST/Scope.h"
-#include "stone/AST/Specifier.h"
-#include "stone/AST/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -189,6 +189,6 @@ public:
 };
 // class ParsingDeclRep final : public DeclRep {};
 
-} // namespace ast
+} // namespace parser
 } // namespace stone
 #endif

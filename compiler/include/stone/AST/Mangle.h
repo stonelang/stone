@@ -31,8 +31,7 @@ class MangleContext {
   const MangleContextKind kind;
 
 public:
-  MangleContext(MangleContextKind kind, ASTContext &sc)
-      : kind(kind), sc(sc) {}
+  MangleContext(MangleContextKind kind, ASTContext &sc) : kind(kind), sc(sc) {}
 
 public:
   /// Generates a unique string for an externally visible type for use with TBAA

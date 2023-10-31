@@ -54,8 +54,7 @@ public:
   explicit DeclGroupRef(DeclGroup *dg)
       : D((Decl *)(reinterpret_cast<uintptr_t>(dg) | DeclGroupKind)) {}
 
-  static DeclGroupRef Create(ASTContext &C, Decl **Decls,
-                             unsigned NumDecls) {
+  static DeclGroupRef Create(ASTContext &C, Decl **Decls, unsigned NumDecls) {
     if (NumDecls == 0)
       return DeclGroupRef();
     if (NumDecls == 1)

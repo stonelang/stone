@@ -1,10 +1,10 @@
 #ifndef STONE_ASTSCOPE_H
 #define STONE_ASTSCOPE_H
 
+#include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Decl.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/AST/Decl.h"
-#include "stone/AST/ASTAllocation.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 

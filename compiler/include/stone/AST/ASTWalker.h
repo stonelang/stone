@@ -1,7 +1,7 @@
-#ifndef STONE_ASTWALKER_H
-#define STONE_ASTWALKER_H
+#ifndef STONE_AST_WALKER_H
+#define STONE_AST_WALKER_H
 
-#include "stone/AST/ASTDescription.h"
+#include "stone/AST/AST.h"
 
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -36,13 +36,11 @@ public:
     void *Ptr = nullptr;
 
   public:
-    ParentASTNode(Module *M)
-        : parentKind(ASTDescription::Module), Ptr(M) {}
+    ParentASTNode(Module *M) : parentKind(ASTDescription::Module), Ptr(M) {}
     ParentASTNode(Decl *D) : parentKind(ASTDescription::Decl), Ptr(D) {}
     ParentASTNode(Stmt *S) : parentKind(ASTDescription::Stmt), Ptr(S) {}
     ParentASTNode(Expr *E) : parentKind(ASTDescription::Expr), Ptr(E) {}
-    ParentASTNode(QualType *Q)
-        : parentKind(ASTDescription::QualType), Ptr(Q) {}
+    ParentASTNode(QualType *Q) : parentKind(ASTDescription::QualType), Ptr(Q) {}
 
     bool IsNull() const { return Ptr == nullptr; }
 
@@ -52,21 +50,20 @@ public:
     }
 
     Module *CastToModule() const {
-      return (parentKind == ASTDescription::Module)
-                 ? static_cast<Module *>(Ptr)
-                 : nullptr;
+      return (parentKind == ASTDescription::Module) ? static_cast<Module *>(Ptr)
+                                                    : nullptr;
     }
     Decl *CastToDecl() const {
       return (parentKind == ASTDescription::Decl) ? static_cast<Decl *>(Ptr)
-                                                     : nullptr;
+                                                  : nullptr;
     }
     Stmt *CastToStmt() const {
       return (parentKind == ASTDescription::Stmt) ? static_cast<Stmt *>(Ptr)
-                                                     : nullptr;
+                                                  : nullptr;
     }
     Expr *CastToExpr() const {
       return parentKind == ASTDescription::Expr ? static_cast<Expr *>(Ptr)
-                                                   : nullptr;
+                                                : nullptr;
     }
     QualType *CastToQualType() const {
       return (parentKind == ASTDescription::QualType)

@@ -36,11 +36,10 @@ struct DeclFactory final {
 
   static FunDecl *MakeFunDecl(DeclCollector &collector, ASTContext &sc,
                               DeclContext *parent);
-  static FunDecl *MakeFunDeclImplicit(DeclCollector &collector,
-                                      ASTContext &sc, DeclContext *parent);
+  static FunDecl *MakeFunDeclImplicit(DeclCollector &collector, ASTContext &sc,
+                                      DeclContext *parent);
 
-  static StructDecl *MakeStructDecl(DeclName name, SrcLoc loc,
-                                    ASTContext &sc,
+  static StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, ASTContext &sc,
                                     DeclContext *parent = nullptr);
 
   static InterfaceDecl *MakeInterfaceDecl(DeclName name, SrcLoc loc,

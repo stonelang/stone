@@ -1,9 +1,9 @@
-#include "stone/Basic/CodeGenOptions.h"
-#include "stone/CodeGen/CodeGenScope.h"
-#include "stone/CodeGen/CodeGenMachine.h"
-#include "stone/Public.h"
-#include "stone/AST/Module.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
+#include "stone/Basic/CodeGenOptions.h"
+#include "stone/CodeGen/CodeGenMachine.h"
+#include "stone/CodeGen/CodeGenScope.h"
+#include "stone/Lang.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -103,27 +103,26 @@ static void EmitAssembly(const CodeGenContext &cgc, ast::ASTContext &sc,
 static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
 
 /// Returns true is successfull
-bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &context,
-                      llvm::StringRef outputFilename,
-                      CodeGenListener *listener) {
+bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &context,
+                     llvm::StringRef outputFilename,
+                     CodeGenListener *listener) {
 
   // EmbedBitcode(mod, nativeScope);
 
   return true;
 }
 
-bool stone::WriteEmptyOutputFiles(
+bool Lang::WriteEmptyOutputFiles(
     std::vector<std::string> &parallelOutputFilenames,
     const ast::ASTContext &Context, const CodeGenOptions &opts) {
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
-                      llvm::StringRef outputFilename,
-                      llvm::sys::Mutex *diagMutex,
-                      llvm::GlobalVariable *hashGlobal,
-                      CodeGenListener *listener) {
-
+bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
+                     llvm::StringRef outputFilename,
+                     llvm::sys::Mutex *diagMutex,
+                     llvm::GlobalVariable *hashGlobal,
+                     CodeGenListener *listener) {
 
   llvm::Optional<llvm::raw_fd_ostream> rawOS;
   if (!outputFilename.empty()) {
@@ -154,9 +153,8 @@ bool stone::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
 }
 
 /// Returns true is successfull
-void stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
-                        llvm::sys::Mutex *diagMutex,
-                        CodeGenScope *parentScope) {
+void Lang::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
+                       llvm::sys::Mutex *diagMutex, CodeGenScope *parentScope) {
 
   // switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
   //   case CodeGenOutputKind::ObjectFile:

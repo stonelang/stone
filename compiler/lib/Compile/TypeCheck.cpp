@@ -1,15 +1,15 @@
-#include "stone/CodeCompletionListener.h"
-#include "stone/Public.h"
-#include "stone/Sem/TypeChecker.h"
 #include "stone/AST/TypeCheckerOptions.h"
+#include "stone/CodeCompletionListener.h"
+#include "stone/Compile/TypeChecker.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 using namespace stone::ast;
 using namespace stone::sem;
 
-void stone::TypeCheckASTFile(ast::ASTFile &sf,
-                                stone::TypeCheckerOptions &typeCheckerOpts,
-                                TypeCheckerListener *listener) {
+void Lang::TypeCheckASTFile(ast::ASTFile &sf,
+                            stone::TypeCheckerOptions &typeCheckerOpts,
+                            TypeCheckerListener *listener) {
 
   if (sf.stage == ASTFileStage::TypeChecked) {
     return;
@@ -24,14 +24,14 @@ void stone::TypeCheckASTFile(ast::ASTFile &sf,
   sf.stage = ASTFileStage::TypeChecked;
 }
 
-void stone::TypeCheckWholeModule(ast::ModuleDecl &md,
-                                 stone::TypeCheckerOptions &typeCheckerOpts,
-                                 TypeCheckerListener *listener) {
+void Lang::TypeCheckWholeModule(ast::ModuleDecl &md,
+                                stone::TypeCheckerOptions &typeCheckerOpts,
+                                TypeCheckerListener *listener) {
 
   // Go through all the files and type-check -- OK for now
   for (auto *moduleFile : md.GetFiles()) {
     if (auto *nextASTFile = dyn_cast<ASTFile>(moduleFile)) {
-      stone::TypeCheckASTFile(*nextASTFile, typeCheckerOpts, listener);
+      Lang::TypeCheckASTFile(*nextASTFile, typeCheckerOpts, listener);
     }
   }
 }

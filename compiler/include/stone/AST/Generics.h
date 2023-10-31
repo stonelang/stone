@@ -1,12 +1,12 @@
 #ifndef STONE_ASTGENERICS_H
 #define STONE_ASTGENERICS_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/DeclContext.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

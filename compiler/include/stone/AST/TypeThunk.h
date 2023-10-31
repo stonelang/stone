@@ -1,8 +1,8 @@
 #ifndef STONE_ASTTYPETHUNK_H
 #define STONE_ASTTYPETHUNK_H
 
-#include "stone/AST/Specifier.h"
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Specifier.h"
 #include "stone/AST/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -23,8 +23,7 @@ enum class TypeThunkKind {
   Paren,
   Pipe,
 };
-class alignas(1 << TypeAlignInBits) TypeThunk
-    : ast::ASTAllocation<TypeThunk> {
+class alignas(1 << TypeAlignInBits) TypeThunk : ast::ASTAllocation<TypeThunk> {
   SrcLoc loc;
   TypeThunkKind kind;
 

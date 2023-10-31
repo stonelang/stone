@@ -1,11 +1,11 @@
 #ifndef STONE_ASTATTRIBUTE_H
 #define STONE_ASTATTRIBUTE_H
 
-#include "stone/Basic/SrcLoc.h"
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/AttributeKind.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"

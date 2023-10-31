@@ -9,25 +9,25 @@ void CodeGenBuilderInserter::InsertHelper(
     llvm::BasicBlock *basicBlock, llvm::BasicBlock::iterator insertPt) const {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
-                                   const CodeGenTypeCache &typeCache)
+                               const CodeGenTypeCache &typeCache)
     : CodeGenBuilderBase(*cgc.GetLLVMContext()), cgc(cgc),
       typeCache(typeCache) {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
-                                   const CodeGenTypeCache &typeCache,
-                                   const llvm::ConstantFolder &constFoler,
-                                   const CodeGenBuilderInserter &inserter)
-    : CodeGenBuilderBase(*cgc.GetLLVMContext(), constFoler, inserter),
-      cgc(cgc), typeCache(typeCache) {}
+                               const CodeGenTypeCache &typeCache,
+                               const llvm::ConstantFolder &constFoler,
+                               const CodeGenBuilderInserter &inserter)
+    : CodeGenBuilderBase(*cgc.GetLLVMContext(), constFoler, inserter), cgc(cgc),
+      typeCache(typeCache) {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
-                                   const CodeGenTypeCache &typeCache,
-                                   llvm::Instruction *instruction)
+                               const CodeGenTypeCache &typeCache,
+                               llvm::Instruction *instruction)
     : CodeGenBuilderBase(instruction), cgc(cgc), typeCache(typeCache) {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
-                                   const CodeGenTypeCache &typeCache,
-                                   llvm::BasicBlock *basicBlock)
+                               const CodeGenTypeCache &typeCache,
+                               llvm::BasicBlock *basicBlock)
     : CodeGenBuilderBase(basicBlock), cgc(cgc), typeCache(typeCache) {}
 
 CodeGenBuilder::~CodeGenBuilder() {}

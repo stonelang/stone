@@ -1,11 +1,11 @@
-#include "stone/Basic/Defer.h"
-#include "stone/Diag/ASTDiagnostic.h"
-#include "stone/Compile/Parser.h"
-#include "stone/Compile/Parsing.h"
+#include "stone/AST/AST.h"
+#include "stone/AST/ASTContext.h"
 #include "stone/AST/DeclFactory.h"
 #include "stone/AST/Stmt.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/ASTNode.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Compile/Parser.h"
+#include "stone/Compile/Parsing.h"
+#include "stone/Diag/ASTDiagnostic.h"
 
 using namespace stone;
 using namespace stone::ast;

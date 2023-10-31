@@ -4,7 +4,8 @@
 using namespace stone;
 using namespace stone::ast;
 
-Builtin::Builtin(ASTContext &sc): sc(sc),
+Builtin::Builtin(ASTContext &sc)
+    : sc(sc),
 
       BuiltinVoidType(VoidType::Create(sc)),
       BuiltinNullType(new(sc, AllocationArena::Permanent) NullType(sc)),

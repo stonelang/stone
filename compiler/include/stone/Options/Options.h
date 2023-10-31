@@ -40,9 +40,25 @@ enum OptID : unsigned {
   LAST
 #undef OPTION
 };
+
+struct OptParsingFlags {
+  unsigned includedFlagsBitmask;
+  unsigned excludedFlagsBitmask;
+  unsigned missingArgIndex;
+  unsigned missingArgCount;
+  OptParsingFlags(unsigned includedFlagsBitmask, unsigned excludedFlagsBitmask,
+                  unsigned missingArgIndex, unsigned missingArgCount)
+      : includedFlagsBitmask(includedFlagsBitmask),
+        excludedFlagsBitmask(excludedFlagsBitmask),
+        missingArgIndex(missingArgIndex), missingArgCount(missingArgCount) {}
+};
+using OptTableAndInputArgs =
+    std::pair<std::unique_ptr<llvm::opt::OptTable>,
+              std::unique_ptr<llvm::opt::InputArgList>>;
+
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
-std::unique_ptr<llvm::opt::InputArgList> CreateInputArgList(llvm::ArrayRef<const char *> args, 
-  unsigned includedFlagsBitmask = 0, unsigned excludedFlagsBitmask =0, unsigned missingArgIndex, unsigned missingArgCount);
+OptTableAndInputArgs ParseArgs(llvm::ArrayRef<const char *> args,
+                               OptParsingFlags flags);
 } // namespace opts
 } // namespace stone
 

@@ -10,8 +10,6 @@ set( LLVM_LINK_COMPONENTS
  )
 set(stone_option_sources
 	Mode.cpp
-	Session.cpp	
-	SessionOptions.cpp
 	Options.cpp
 
 	LINK_LIBS 

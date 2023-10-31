@@ -1,14 +1,14 @@
 #include "stone/AST/Decl.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/SrcLoc.h"
+#include "stone/AST/ASTContext.h"
 #include "stone/AST/DeclFactory.h"
 #include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
-#include "stone/AST/ASTContext.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -189,7 +189,8 @@ bool FunDecl::HasReturn() const { return false; }
 
 void DeclStats::Print(ColorStream &stream) {}
 
-FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc, DeclContext *parent) {
+FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
+                         DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
@@ -218,14 +219,15 @@ ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, ASTContext &sc,
   return ::new (declPtr) ast::ModuleDecl(name, sc);
 }
 
-ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc, bool isMainModule) {
+ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
+                               bool isMainModule) {
   size_t size = sizeof(ast::ModuleDecl);
   auto declPtr = ast::AllocateDeclMem<ast::ModuleDecl>(sc, size);
   return ::new (declPtr) ast::ModuleDecl(name, sc);
 }
 
-StructDecl *StructDecl::Create(DeclName name, SrcLoc loc,
-                                        ASTContext &sc, DeclContext *dc) {
+StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                               DeclContext *dc) {
   size_t size = sizeof(ast::StructDecl);
   auto declPtr = ast::AllocateDeclMem<StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);

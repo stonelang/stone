@@ -11,8 +11,8 @@ using namespace stone;
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
       sc(new ast::ASTContext(invocation.GetLangContext(),
-                                invocation.GetSearchPathOptions(),
-                                invocation.GetClangContext())),
+                             invocation.GetSearchPathOptions(),
+                             invocation.GetClangContext())),
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation, GetASTContext())) {
 

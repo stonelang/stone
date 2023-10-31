@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_IRCODEGENADDRESS_H
 #define STONE_GEN_IRCODEGENADDRESS_H
 
-#include "stone/Basic/Mem.h"
 #include "stone/AST/CodeGenAlignment.h"
+#include "stone/Basic/Mem.h"
 
 #include "clang/AST/CharUnits.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -34,7 +34,7 @@ class CodeGenAddress {
 
 public:
   CodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
-                   CodeGenAlignment alignment)
+                 CodeGenAlignment alignment)
       : addr(addr), elementType(elementType), alignment(alignment) {}
 
 public:

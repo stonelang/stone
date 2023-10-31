@@ -14,7 +14,7 @@ public:
 
 public:
   void
-  Format(ColorStream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, Diagnostic &diagnostic,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void

@@ -1,17 +1,17 @@
+#include "stone/AST/ASTDiagnosticArgument.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
-#include "stone/CodeGen/CodeGenContext.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 #include "stone/Options/ModeKind.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTDiagnosticArgument.h"
 
 #include "clang/Basic/TargetInfo.h"
 
@@ -45,8 +45,8 @@ public:
   }
 };
 
-int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
-                   void *mainAddr, CompilerListener *listener) {
+int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
+                  void *mainAddr, CompilerListener *listener) {
 
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
@@ -121,7 +121,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-
 static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
@@ -140,14 +139,14 @@ Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-    stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
-                       primaryFileSpecificPaths);
+    Lang::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+                      primaryFileSpecificPaths);
   } else if (IsASTFileCodeGen()) {
     for (auto *primaryASTFile : GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      stone::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
-                             primaryASTFile, primaryFileSpecificPaths);
+      Lang::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+                         primaryASTFile, primaryFileSpecificPaths);
     }
   }
 
@@ -162,8 +161,8 @@ static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
 
 Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
-  auto result = stone::GenNative(cgc, GetASTContext(), llvm::StringRef(),
-                                 GetInvocation().GetListener());
+  auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
+                                GetInvocation().GetListener());
   return Status::Success();
 }
 
@@ -173,9 +172,9 @@ Status CompilerInstance::CompileWithCodeGen() {
 
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
   CodeGenContext cgc(
-      GetInvocation().GetCodeGenOptions(), *llvmContext, GetInvocation().GetModuleOptions(),
-      GetInvocation().GetTargetOptions(), GetInvocation().GetLangContext(),
-      GetInvocation().GetClangContext());
+      GetInvocation().GetCodeGenOptions(), *llvmContext,
+      GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
+      GetInvocation().GetLangContext(), GetInvocation().GetClangContext());
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
@@ -235,13 +234,10 @@ static Status DumpAST(CompilerInstance &compiler, ast::ASTFile &sf) {
   return Status::Success();
 }
 
-static Status PrintAST(CompilerInstance &compiler) {
-  return Status::Success();
-}
+static Status PrintAST(CompilerInstance &compiler) { return Status::Success(); }
 
 Status CompilerInstance::CompileWithParsing() {
-  return CompileWithParsing(
-      [&](ast::ASTFile &) { return Status::Success(); });
+  return CompileWithParsing([&](ast::ASTFile &) { return Status::Success(); });
 }
 
 Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
@@ -249,7 +245,7 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
       stone::ParseASTFile(*asttaxFile, GetASTContext(),
-                             invocation.GetListener());
+                          invocation.GetListener());
       if (notifiy) {
         notifiy(*asttaxFile);
       }
@@ -277,9 +273,8 @@ Status CompilerInstance::CompileWithTypeChecking(
   if (status.IsError()) {
     return status;
   }
-  ForEachASTFile([&](ASTFile &asttaxFile,
-                        TypeCheckerOptions &typeCheckerOpts,
-                        stone::TypeCheckerListener *listener) {
+  ForEachASTFile([&](ASTFile &asttaxFile, TypeCheckerOptions &typeCheckerOpts,
+                     stone::TypeCheckerListener *listener) {
     stone::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
   });
 

@@ -29,44 +29,44 @@ public:
 };
 } // namespace stone
 
-std::unique_ptr<OptTable> stone::opts::CreateOptTable() {
-  return std::unique_ptr<OptTable>(new stone::StoneOptTable());
+std::unique_ptr<llvm::opt::OptTable> stone::opts::CreateOptTable() {
+  return std::unique_ptr<llvm::opt::OptTable>(new stone::StoneOptTable());
 }
 
-std::unique_ptr<llvm::opt::InputArgList> 
-stone::opts::CreateInputArgList(llvm::ArrayRef<const char *> args, unsigned includedFlagsBitmask, 
-  unsigned excludedFlagsBitmask, unsigned missingArgIndex, unsigned missingArgCount){
-
+OptTableAndInputArgs stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
+                                            OptParsingFlags flags) {
+  auto opts = stone::opts::CreateOptTable();
   auto ial = std::make_unique<llvm::opt::InputArgList>(
-      GetOpts().ParseArgs(args, missingArgIndex, missingArgCount,
-                          includedFlagsBitmask, excludedFlagsBitmask));
-  assert(ial && "No input argument list.");
-  // Check for missing argument error.
-  if (missingArgCount) {
-    GetLangContext().GetDiagEngine().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(ial->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
-    return nullptr;
-  }
-  // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetLangContext().GetDiagUnit().PrintD(
-        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
-    return nullptr;
-  }
-  return ial;
+      opts.ParseArgs(args, flags.missingArgIndex, flags.missingArgCount,
+                     flags.includedFlagsBitmask, flags.excludedFlagsBitmask));
 
+  //   assert(ial && "No input argument list.");
+  //   // Check for missing argument error.
+  //   if (missingArgCount) {
+  //     GetLangContext().GetDiagnosticEngine().PrintD(
+  //         SrcLoc(), diag::err_missing_arg_value,
+  //         diag::LLVMStr(ial->getArgString(missingArgIndex)),
+  //         diag::UInt(missingArgCount));
+  //     return nullptr;
+  //   }
+  //   // Check for unknown arguments.
+  //   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
+  //     GetLangContext().GetDiagnosticEngine().PrintD(
+  //         SrcLoc(), diag::err_unknown_arg,
+  //         diag::LLVMStr(arg->getAsString(*ial)));
+  //     return nullptr;
+  //   }
+  return std::make_pair(std::move(opts), std::move(ial));
 }
 
-stone::Result<std::string>
-stone::opts::GetOptEqualValue(opts::OptID optID,
-                          const llvm::opt::InputArgList &ial) {
-  if (ial.hasArg(optID)) {
-    auto arg = ial.getLastArg(optID);
-    if (arg) {
-      return stone::Result<std::string>(arg->getValue());
-    }
-  }
-  return stone::Result<std::string>();
-}
+// stone::Result<std::string>
+// stone::opts::GetOptEqualValue(opts::OptID optID,
+//                           const llvm::opt::InputArgList &ial) {
+//   if (ial.hasArg(optID)) {
+//     auto arg = ial.getLastArg(optID);
+//     if (arg) {
+//       return stone::Result<std::string>(arg->getValue());
+//     }
+//   }
+//   return stone::Result<std::string>();
+// }

@@ -2,6 +2,7 @@
 #define STONE_SESSION_MODE_H
 
 #include "stone/Basic/File.h"
+#include "stone/Basic/Timer.h"
 #include "stone/Options/ModeKind.h"
 #include "llvm/Option/ArgList.h"
 
@@ -18,13 +19,14 @@ private:
 
 public:
   Mode(ModeKind kind, llvm::StringRef name = llvm::StringRef());
+  ~Mode();
 
 public:
   ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
   file::Type GetOutputFileType() const;
-  llvm::Timer& GetTimer() { return *timer; }
+  stone::Timer &GetTimer() { return *timer; }
 
   bool CanOutput() const {
     switch (GetKind()) {

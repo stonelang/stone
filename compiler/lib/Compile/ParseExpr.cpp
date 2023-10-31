@@ -1,5 +1,5 @@
-#include "stone/Compile/Parser.h"
 #include "stone/AST/ParserResult.h"
+#include "stone/Compile/Parser.h"
 
 using namespace stone::ast;
 

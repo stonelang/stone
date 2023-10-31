@@ -226,7 +226,7 @@ template <typename T> ParserResult<T>::ParserResult(ParserStatus Status) {
     SetHasCodeCompletion();
   }
 }
-} // namespace ast
+} // namespace parser
 } // namespace stone
 
 #endif

@@ -282,16 +282,16 @@ static Error ParseCompilerOptions(
   return Error(converter.Convert(buffers));
 }
 
-static Error ParseLangOptions(llvm::opt::InputArgList &ial,
-                                DiagnosticEngine &de,
-                                CompilerOptions &compilerOpts,
-                                LangOptions &langOpts) {
+static Status ParseLangOptions(llvm::opt::InputArgList &ial,
+                               DiagnosticEngine &de,
+                               CompilerOptions &compilerOpts,
+                               LangOptions &langOpts) {
 
-  return Error();
+  return Status::Success();
 }
 
 static void ParseCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
-                                         CodeGenOptions &codeGenOpts) {
+                                       CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
   switch (compilerOpts.GetMode().GetKind()) {
@@ -366,10 +366,10 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
 }
 
 static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
-                                  DiagnosticEngine &de,
-                                  CompilerOptions &compilerOpts,
-                                  CodeGenOptions &codeGenOpts,
-                                  LangOptions &langOpts, ClangContext &cc) {
+                                DiagnosticEngine &de,
+                                CompilerOptions &compilerOpts,
+                                CodeGenOptions &codeGenOpts,
+                                LangOptions &langOpts, ClangContext &cc) {
 
   std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
            codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
@@ -383,62 +383,57 @@ static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
   return Error();
 }
 static Error ParseCodeGenOptions(llvm::opt::InputArgList &ial,
-                                   DiagnosticEngine &de,
-                                   CompilerOptions &compilerOpts,
-                                   CodeGenOptions &codeGenOpts,
-                                   LangOptions &langOpts, ClangContext &cc) {
+                                 DiagnosticEngine &de,
+                                 CompilerOptions &compilerOpts,
+                                 CodeGenOptions &codeGenOpts,
+                                 LangOptions &langOpts, ClangContext &cc) {
   ParseCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
 
   return Error();
 }
 
 static Error ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
-                                       DiagnosticEngine &de,
-                                       CompilerOptions &compilerOpts,
-                                       TypeCheckerOptions &typeCheckerOpts) {
+                                     DiagnosticEngine &de,
+                                     CompilerOptions &compilerOpts,
+                                     TypeCheckerOptions &typeCheckerOpts) {
   return Error();
 }
 
 static Error ParseSearchPathOptions(llvm::opt::InputArgList &ial,
-                                      DiagnosticEngine &de,
-                                      CompilerOptions &compilerOpts,
-                                      SearchPathOptions &searchPathOpts) {
+                                    DiagnosticEngine &de,
+                                    CompilerOptions &compilerOpts,
+                                    SearchPathOptions &searchPathOpts) {
   return Error();
 }
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  auto ial = stone::opts::CreateInputArgList(args);
-  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
-  if (compilerOpts->GetMode().IsAlien()) {
+  auto optTableAndInputArgs =
+      opts::ParseArgs(args, OptParsingFlags(0, 0, 0, 0));
+
+  compilerOpts = std::make_unique<CompilerOptions>(
+      Mode::Create(optTableAndInputArgs.first));
+
+  if (GetCompilerOpts().GetMode().IsAlien()) {
     return Status::Error();
   }
   auto compilerOptsErr = ParseCompilerOptions(
-      ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-      GetLangContext().GetLangOptions(), *compilerOpts, GetModuleOptions(),
-      nullptr /* pass null for now*/);
+      ial, GetLang().GetDiags(), GetLang().GetLangOptions(),
+      GetCompilerOptions(), GetModuleOptions(), nullptr /* pass null for now*/);
   if (compilerOptsErr.Has()) {
   }
-  ParseLangOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                     *compilerOpts, GetLangContext().GetLangOptions());
+  ParseLangOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetLang().GetLangOptions();
 
-  ParseTypeCheckerOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                            *compilerOpts, typeCheckerOpts);
-  ParseSearchPathOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                           *compilerOpts, searchPathOpts);
+  ParseTypeCheckerOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetTypeCheckerOptions());
+  ParseSearchPathOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetSearchPathOptions());
 
-  ParseCodeGenOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                        *compilerOpts, codeGenOpts,
-                        GetLangContext().GetLangOptions(), *clangContext);
+  ParseCodeGenOptions(ial, GetLang().GetDiags(), GetCompilerOptions(), GetClodeGenOptions(),
+                      GetLang().GetLangOptions(), GetClangContext());
 
-  ParseTargetOptions(ial, GetLangContext().GetDiagUnit().GetDiagEngine(),
-                       *compilerOpts, codeGenOpts,
-                       GetLangContext().GetLangOptions(), *clangContext);
+  ParseTargetOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetClodeGenOptions(),
+                     GetLang().GetLangOptions(), GetClangContext());
 
-  
   return Status::Success();
-
-
 }
 
 void CompilerInvocation::Finish() {

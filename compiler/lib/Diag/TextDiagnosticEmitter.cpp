@@ -24,7 +24,7 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticMessage &de) {
   // printf("%s\n", ed.GetFormatMessage().data());
 
   ColorStream cs;
-  GetFormatter().Format(cs, de.GetDiagnostic().GetDetail());
+  // GetFormatter().Format(cs, de.GetDiagnostic());
 
   // formatter.FormatText()
 

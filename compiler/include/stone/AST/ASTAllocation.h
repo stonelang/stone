@@ -26,7 +26,7 @@ enum class AllocationArena {
 
 namespace ast {
 void *AllocateInASTContext(size_t bytes, const ast::ASTContext &ctx,
-                              AllocationArena arena, unsigned alignment);
+                           AllocationArena arena, unsigned alignment);
 }
 
 namespace ast {

@@ -1,11 +1,11 @@
 #ifndef STONE_GEN_IRCODEGENFUNCTION_H
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
+#include "stone/AST/ASTVisitor.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
 #include "stone/CodeGen/CodeGenBuilder.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/AST/ASTVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/CallingConv.h"

@@ -4,8 +4,8 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
-#include "stone/Public.h"
 #include "stone/Options/Options.h"
+#include "stone/Public.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {

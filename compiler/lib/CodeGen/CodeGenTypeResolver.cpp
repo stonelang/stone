@@ -1,8 +1,8 @@
 #include "stone/CodeGen/CodeGenTypeResolver.h"
+#include "stone/AST/Type.h"
 #include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenABI.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/AST/Type.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -21,9 +21,7 @@ using namespace stone;
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *CodeGenTypeResolver::GetType(const ast::Type ty) {
-  return nullptr;
-}
+llvm::Type *CodeGenTypeResolver::GetType(const ast::Type ty) { return nullptr; }
 
 llvm::FunctionType *
 CodeGenTypeResolver::GetFunctionType(const ast::FunctionDecl *fd) {

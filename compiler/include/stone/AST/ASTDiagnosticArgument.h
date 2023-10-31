@@ -1,12 +1,12 @@
 #ifndef STONE_ASTDIAGARGUMENT_H
 #define STONE_ASTDIAGARGUMENT_H
 
+#include "stone/AST/Decl.h"
+#include "stone/AST/Identifier.h"
 #include "stone/Diag/DiagnosticArgument.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/TextDiagnosticEmitter.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
-#include "stone/AST/Decl.h"
-#include "stone/AST/Identifier.h"
 
 using stone::Diagnostic;
 
@@ -75,7 +75,7 @@ public:
 
 class ASTDiagnostic : public Diagnostic {
 public:
-  explicit ASTDiagnostic(DiagnosticDetail detail) : Diagnostic(detail) {}
+  explicit ASTDiagnostic(Diagnostic detail) : Diagnostic(detail) {}
   ~ASTDiagnostic();
 
 public:
@@ -87,7 +87,7 @@ public:
 
 public:
   void
-  Format(ColorStream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, Diagnostic &detail,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void

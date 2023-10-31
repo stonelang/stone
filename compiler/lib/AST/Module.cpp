@@ -1,6 +1,6 @@
 #include "stone/AST/Module.h"
-#include "stone/AST/DeclFactory.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/DeclFactory.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -85,7 +85,7 @@ llvm::ArrayRef<ASTFile *> &ModuleDecl::GetPrimaryASTFiles() const {
 }
 
 ASTFile::ASTFile(ASTFileKind kind, ast::ModuleDecl &owner,
-                       llvm::Optional<unsigned> srcID, bool isPrimary)
+                 llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::AST, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
@@ -111,8 +111,8 @@ llvm::StringRef ASTFile::GetFilename() const {
 }
 
 ast::ASTFile *ast::ASTFile::Make(ASTFileKind kind, unsigned srcID,
-                                       ast::ModuleDecl &owner,
-                                       ASTContext &sc, bool isPrimary) {
+                                 ast::ModuleDecl &owner, ASTContext &sc,
+                                 bool isPrimary) {
   return new (sc) ASTFile(kind, owner, srcID, isPrimary);
 }
 

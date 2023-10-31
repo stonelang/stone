@@ -16,10 +16,9 @@ enum class DiagnosticLevel : uint8_t {
   // Lowest
   Ignore,
 };
-}
+
 /// Options for controlling diagnostics.
-class DiagnosticOptions
-    final /*: public llvm::RefCountedBase<DiagnosticOptions>*/ {
+class DiagnosticOptions final {
 public:
   // TODO: remove this note: (d1Start = 1, d1End = d1Start + max)
   // (d2Start = d1End + 1  , d2End = d1End + max)
@@ -55,7 +54,7 @@ public:
 
   bool ownsListener = false;
 };
-
+} // namespace diag
 } // namespace stone
 
 #endif

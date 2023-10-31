@@ -115,7 +115,9 @@ public:
   // TODO: Think about
   void AddInput(const Job *input) { inputs.push_back(input); }
 
-  const JobAction &GetJobAction() const { return *phaseAndCondition.getPointer(); }
+  const JobAction &GetJobAction() const {
+    return *phaseAndCondition.getPointer();
+  }
   JobCondition GetJobCondition() const { return phaseAndCondition.getInt(); }
   void SetJobCondition(JobCondition jc) { phaseAndCondition.setInt(jc); }
 

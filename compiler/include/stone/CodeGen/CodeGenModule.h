@@ -1,13 +1,13 @@
 #ifndef STONE_GEN_IRCODEGENMODULE_H
 #define STONE_GEN_IRCODEGENMODULE_H
 
+#include "stone/AST/ASTVisitor.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/CodeGen/CodeGenMetadata.h"
 #include "stone/CodeGen/CodeGenTypeCache.h"
 #include "stone/CodeGen/CodeGenTypeResolver.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -130,7 +130,7 @@ private:
 
 public:
   CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  llvm::StringRef outputFilename);
+                llvm::StringRef outputFilename);
   ~CodeGenModule();
 
 public:

@@ -1,9 +1,9 @@
 #ifndef STONE_GEN_IRCODEGDEBUG_H
 #define STONE_GEN_IRCODEGDEBUG_H
 
+#include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/CodeGen/CodeGenContext.h"
-#include "stone/AST/Module.h"
 
 #include "llvm/IR/PassManager.h"
 
@@ -30,9 +30,9 @@ class CodeGenDebug final {
 
 public:
   CodeGenDebug(CodeGenContext &cgc, CodeGenModule &cgm,
-                 ClangContext &clangContext,
-                 llvm::StringRef mainOutputFilenameForDebug,
-                 llvm::StringRef privateDiscriminator);
+               ClangContext &clangContext,
+               llvm::StringRef mainOutputFilenameForDebug,
+               llvm::StringRef privateDiscriminator);
 
   ~CodeGenDebug();
 

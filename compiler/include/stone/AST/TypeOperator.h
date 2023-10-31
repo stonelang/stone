@@ -1,8 +1,8 @@
 #ifndef STONE_ASTTYPEOPERATOR_H
 #define STONE_ASTTYPEOPERATOR_H
 
-#include "stone/AST/Specifier.h"
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Specifier.h"
 #include "stone/AST/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"

@@ -65,7 +65,7 @@ public:
   /// Prevent the diagnostic from behaving more severely than \p limit. For
   /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
   /// emitted as a warning, but a note will still be emitted as a note.
-  InFlightDiagnostic &CapDiagLevel(DiagnosticLevel level);
+  InFlightDiagnostic &CapDiagLevel(diag::DiagnosticLevel level);
 
   /// Add a token-based range to the currently-active diagnostic.
   InFlightDiagnostic &Highlight(SrcRange R);
@@ -193,22 +193,20 @@ class Diagnostic {
 
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
-
-
-
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
+
   SrcLoc loc;
-  DiagnosticLevel levelLimit = DiagnosticLevel::None;
+  diag::DiagnosticLevel levelLimit = diag::DiagnosticLevel::None;
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
-  // llvm::SmallVector<DiagnosticDetail *> deps;
+  // llvm::SmallVector<Diagnostic *> deps;
 
 public:
   template <typename... ArgTypes>
-  DiagnosticDetail(Diag<ArgTypes...> d,
-                   typename detail::PassArgument<ArgTypes>::type... vArgs)
+  Diagnostic(Diag<ArgTypes...> d,
+             typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
     diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
 
@@ -216,33 +214,32 @@ public:
   }
 
 public:
-  DiagnosticDetail(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+  Diagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
       : diagID(diagID), args(args.begin(), args.end()) {}
 
 public:
-  DiagID GetID() { return diagID; }
+  DiagID GetID() const { return diagID; }
   llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
-  // llvm::ArrayRef<DiagnosticDetail *> GetDeps() const { return deps; }
+  // llvm::ArrayRef<Diagnostic *> GetDeps() const { return deps; }
 
 public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
   void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
 
-  // void AddDep(DiagnosticDetail *dep) { deps.push_back(dep); }
+  // void AddDep(Diagnostic *dep) { deps.push_back(dep); }
 
   void AddArgument(diag::Argument &&arg) { args.push_back(std::move(arg)); }
 
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  void SetLevelLimit(DiagnosticLevel limit) { levelLimit = limit; }
-  DiagnosticLevel GetLevelLimit() { return levelLimit; }
+  void SetLevelLimit(diag::DiagnosticLevel limit) { levelLimit = limit; }
+  diag::DiagnosticLevel GetLevelLimit() const { return levelLimit; }
 
-
-  public:
+public:
   template <typename... otherArgTypes>
   bool IsEqual(Diag<otherArgTypes...> other) const {
     return GetID() == other.GetID();
@@ -255,25 +252,26 @@ public:
   }
 };
 
-
 class DiagnosticMessage final {
-  DiagnosticLevel level;
+  diag::DiagnosticLevel level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
   const Diagnostic &diagnostic;
   SrcMgr &sm;
 
 public:
-  DiagnosticMessage(DiagnosticLevel level, const Diagnostic &diagnostic, SrcMgr &sm,
-                  llvm::StringRef formatMessage, llvm::StringRef category)
+  DiagnosticMessage(diag::DiagnosticLevel level, const Diagnostic &diagnostic,
+                    SrcMgr &sm, llvm::StringRef formatMessage,
+                    llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}
+
 public:
   llvm::StringRef GetCategory() { return category; }
   llvm::StringRef GetFormatMessage() { return formatMessage; }
   const Diagnostic &GetDiagnostic() const { return diagnostic; }
   SrcMgr &GetSrcMgr() { return sm; }
-  DiagnosticLevel GetLevel() { return level; }
+  diag::DiagnosticLevel GetLevel() { return level; }
 
   // public:
   //   // TODO: Think about

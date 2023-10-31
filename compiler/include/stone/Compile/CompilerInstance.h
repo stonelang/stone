@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
+#include "stone/AST/ASTContext.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/AST/ASTContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -92,7 +92,7 @@ public:
 public:
   /// Perform code analysis and code generation
   Status Compile();
-  
+
   // Status CompileFrontend();
   // Status CompileBackend();
 

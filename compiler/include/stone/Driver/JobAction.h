@@ -55,7 +55,7 @@ public:
 public:
   JobAction() = delete;
   JobAction(JobActionKind kind, const Tool &tool, JobActionInputList inputs,
-        file::Type outputFileType);
+            file::Type outputFileType);
 
   virtual ~JobAction();
 
@@ -90,7 +90,8 @@ class CompileJobAction final : public JobAction {
 
 public:
   CompileJobAction(const Tool &tool, file::Type outputFileType);
-  CompileJobAction(const Tool &tool, JobActionInput input, file::Type outputFileType);
+  CompileJobAction(const Tool &tool, JobActionInput input,
+                   file::Type outputFileType);
 
 public:
   JobActionInput GetPrimaryInput() { return primaryInput; }
@@ -107,7 +108,7 @@ class DynamicLinkJobAction final : public JobAction {
 
 public:
   DynamicLinkJobAction(const Tool &tool, JobActionInputList inputs,
-                   bool withLTO = false);
+                       bool withLTO = false);
 
   bool WithLTO() { return withLTO; }
 
@@ -157,7 +158,8 @@ public:
   // void CacheForLink(JobActionInput input) { forLink.push_back(input); }
 
   // bool HasTopLevel() { return forTopLevel.size(); }
-  // void CacheForTopLevel(JobActionInput input) { forTopLevel.push_back(input); }
+  // void CacheForTopLevel(JobActionInput input) { forTopLevel.push_back(input);
+  // }
 };
 
 } // namespace stone

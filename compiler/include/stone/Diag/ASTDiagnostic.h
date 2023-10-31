@@ -1,5 +1,5 @@
-#ifndef STONE_DIAG_/AST/DIAGNOSTIC_H
-#define STONE_DIAG_/AST/DIAGNOSTIC_H
+#ifndef STONE_DIAG_ / AST / DIAGNOSTIC_H
+#define STONE_DIAG_ / AST / DIAGNOSTIC_H
 
 #include "stone/Diag/CoreDiagnostic.h"
 

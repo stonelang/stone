@@ -1,8 +1,8 @@
+#include "stone/AST/Decl.h"
+#include "stone/AST/Global.h"
 #include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenFunction.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/AST/Decl.h"
-#include "stone/AST/Global.h"
 
 using namespace stone;
 using namespace stone::ast;
@@ -51,7 +51,7 @@ void CodeGenModule::EmitASTFile(ast::ASTFile &sf) {
 }
 
 void CodeGenModule::EmitFunDecl(FunDecl *funDecl,
-                                  llvm::GlobalValue *globalValue) {
+                                llvm::GlobalValue *globalValue) {
 
   assert(funDecl && "Null FundDecl");
 

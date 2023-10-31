@@ -3,7 +3,6 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
-#include "stone/Basic/Printable.h"
 #include "stone/Basic/Version.h"
 #include "stone/Diag/Diagnostic.h"
 #include "stone/Diag/DiagnosticFormatter.h"
@@ -31,11 +30,9 @@ class SavedDiagnostic;
 class DiagnosticState;
 class Tokenable;
 
-
 class PrintingPolicy {
 public:
 };
-
 
 class DiagnosticState {
   /// Whether we should continue to emit diagnostics, even after a
@@ -55,7 +52,7 @@ class DiagnosticState {
   bool anyErrorOccurred = false;
 
   /// Track the previous emitted Behavior, useful for notes
-  DiagnosticLevel prevLevel = DiagnosticLevel::None;
+  diag::DiagnosticLevel prevLevel = diag::DiagnosticLevel::None;
 
   /// Track which diagnostics should be ignored.
   llvm::BitVector ignoredDiagnostics;
@@ -67,7 +64,7 @@ public:
 
   /// Figure out the Behavior for the given diagnostic, taking current
   /// state such as fatality into account.
-  DiagnosticLevel DetermineLevel(const Diagnostic &diag);
+  diag::DiagnosticLevel DetermineLevel(const Diagnostic &diag);
 
   bool HadAnyError() const { return anyErrorOccurred; }
   bool HasFatalErrorOccurred() const { return fatalErrorOccurred; }
@@ -196,7 +193,7 @@ public:
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public Printable {
+class DiagnosticEngine final {
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
@@ -212,7 +209,7 @@ class DiagnosticEngine final : public Printable {
   llvm::Optional<Diagnostic> curDiagnostic;
 
   // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
-  DiagnosticOptions &diagOpts;
+  diag::DiagnosticOptions &diagOpts;
 
   SrcMgr &sm;
 
@@ -255,7 +252,7 @@ class DiagnosticEngine final : public Printable {
   ///
   /// This is used to emit continuation diagnostics with the same level as the
   /// diagnostic that they follow.
-  DiagnosticLevel lastLevel;
+  diag::DiagnosticLevel lastLevel;
 
   /// Number of warnings reported
   unsigned numWarnings;
@@ -271,7 +268,7 @@ class DiagnosticEngine final : public Printable {
   friend class DiagnosticStateRAII;
 
 public:
-  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm);
+  explicit DiagnosticEngine(diag::DiagnosticOptions &diagOpts, SrcMgr &sm);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
@@ -282,7 +279,7 @@ public:
   bool HasError();
   SrcMgr &GetSrcMgr() { return sm; }
 
-  void Print(ColorStream &os, const PrintingPolicy *policy) const override;
+  void Print(ColorStream &os, const PrintingPolicy *policy) const;
 
   /// Specify a limit for the number of errors we should
   /// emit before giving up.
@@ -345,7 +342,7 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
- 
+
 public:
   /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
   llvm::Optional<DiagnosticMessage>
@@ -388,7 +385,7 @@ private:
   }
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic,
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic diagnostic,
                             Tokenable *tokenable = nullptr) {
     return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
   }
@@ -401,16 +398,13 @@ public:
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(
-        loc,
-        Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
-    return PrintD(
-        SrcLoc(),
-        Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(SrcLoc(),
+                  Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
 
   template <typename... ArgTypes>
@@ -426,12 +420,9 @@ public:
          typename detail::PassArgument<ArgTypes>::type... args) {
     return PrintD(loc, Diagnostic(id, std::move(args)...), tokenable);
   }
-
-public:
-  void Print(ColorStream &os, const PrintingPolicy *policy = nullptr);
 };
 class DiagnosticStateRAII final {
-  llvm::SaveAndRestore<DiagnosticLevel> prevLevel;
+  llvm::SaveAndRestore<diag::DiagnosticLevel> prevLevel;
 
 public:
   DiagnosticStateRAII(DiagnosticEngine &de) : prevLevel(de.state.prevLevel) {}
@@ -528,7 +519,7 @@ public:
 // };
 class SavedDiagnostic final {
   // unsigned diagIdentifier;
-  // DiagnosticLevel level;
+  // diag::DiagnosticLevel level;
   // FullSourceLoc loc;
   // std::string message;
   // std::vector<CharSrcRange> ranges;

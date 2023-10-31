@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_LANGOPTIONS_H
 #define STONE_COMPILE_LANGOPTIONS_H
 
+#include "stone/AST/SearchPath.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/ModuleOptions.h"
@@ -10,7 +11,6 @@
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Options/Options.h"
 #include "stone/Options/SessionOptions.h"
-#include "stone/AST/SearchPath.h"
 
 namespace stone {
 

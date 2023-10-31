@@ -8,6 +8,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
+using namespace stone::diag;
 
 using stone::DiagnosticEngine;
 using stone::InFlightDiagnostic;
@@ -95,7 +96,8 @@ static constexpr const char *const CodeFixStrings[] = {
     "<not a fix-it>",
 };
 
-static DiagnosticLevel ToDiagnosticLevel(DiagnosticLevel severity, bool isFatal) {
+static DiagnosticLevel ToDiagnosticLevel(DiagnosticLevel severity,
+                                         bool isFatal) {
   switch (severity) {
   case DiagnosticLevel::Note:
     return DiagnosticLevel::Note;
@@ -122,7 +124,7 @@ DiagnosticState::DiagnosticState() {
   ignoredDiagnostics.resize(LocalDiagID::MAX);
 }
 
-DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diag) {
+DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diagnostic) {
   // We determine how to handle a diagnostic based on the following rules
   //   1) Map the diagnostic to its "intended" behavior, applying the behavior
   //      limit for this particular emission
@@ -134,10 +136,10 @@ DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diag) {
 
   //   1) Map the diagnostic to its "intended" behavior, applying the behavior
   //      limit for this particular emission
-  auto diagnostic = LocalDiagnostics[(unsigned)diag.GetDetail().GetID()];
-  DiagnosticLevel lvl =
-      std::max(ToDiagnosticLevel(diagnostic.severity, diagnostic.isFatal),
-               diag.GetDetail().GetLevelLimit());
+  auto localDiagnostic = LocalDiagnostics[(unsigned)diagnostic.GetID()];
+  DiagnosticLevel lvl = std::max(
+      ToDiagnosticLevel(localDiagnostic.severity, localDiagnostic.isFatal),
+      diagnostic.GetLevelLimit());
   assert(lvl != DiagnosticLevel::None);
 
   //   2) If current state dictates a certain behavior, follow that
@@ -152,7 +154,7 @@ DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diag) {
       lvl = DiagnosticLevel::Ignore;
 
   //   3) If the user ignored this specific diagnostic, follow that
-  if (ignoredDiagnostics[(unsigned)diag.GetDetail().GetID()])
+  if (ignoredDiagnostics[(unsigned)diagnostic.GetID()])
     lvl = DiagnosticLevel::Ignore;
 
   //   4) If the user substituted a different behavior for this behavior, apply
@@ -254,7 +256,7 @@ DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
       /*TODO*/ llvm::StringRef());
 }
 
-bool DiagnosticEngine::Finish() { 
+bool DiagnosticEngine::Finish() {
   bool hadError = false;
   for (auto &listener : listeners) {
     hadError |= listener->Finish();

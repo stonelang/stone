@@ -1,13 +1,12 @@
 #include "stone/Compile/ModuleSystem.h"
+#include "stone/AST/DeclFactory.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/Lexer.h"
-#include "stone/AST/DeclFactory.h"
 
 using namespace stone;
 using namespace stone::ast;
 
-ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
-                           ast::ASTContext &sc)
+ModuleSystem::ModuleSystem(CompilerInvocation &invocation, ast::ASTContext &sc)
     : invocation(invocation), sc(sc) {}
 
 ModuleSystem::~ModuleSystem() {}
@@ -73,15 +72,14 @@ Error ModuleSystem::CreateASTFilesForMainModule(
       continue;
     }
 
-    auto *libraryFile = CreateASTFileForMainModule(
-        mod, ast::ASTFileKind::Library, bufferID);
+    auto *libraryFile =
+        CreateASTFileForMainModule(mod, ast::ASTFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
   return Error();
 }
 
-ast::ASTFile *
-ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
+ast::ASTFile *ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
 
   if (invocation.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
@@ -112,8 +110,8 @@ ast::ASTFile *ModuleSystem::CreateASTFileForMainModule(
 ast::ASTFile::ParsingOptions
 ModuleSystem::GetASTFileParsingOptions(bool forPrimary) const {
 
-  auto parsingOpts = ASTFile::GetDefaultParsingOptions(
-      sc.GetLangContext().GetLangOptions());
+  auto parsingOpts =
+      ASTFile::GetDefaultParsingOptions(sc.GetLangContext().GetLangOptions());
   return parsingOpts;
 }
 

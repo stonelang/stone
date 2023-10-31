@@ -1,13 +1,13 @@
 #ifndef STONE_COMPILE_MODULESYSTEM_H
 #define STONE_COMPILE_MODULESYSTEM_H
 
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/Error.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
-#include "stone/AST/Module.h"
-#include "stone/AST/ASTContext.h"
 
 namespace stone {
 
@@ -48,17 +48,16 @@ public:
       ast::ModuleDecl *mod,
       llvm::SmallVectorImpl<ast::ModuleFile *> &files) const;
 
-  ast::ASTFile *
-  CreateASTFileForMainModule(ast::ModuleDecl *mod,
-                                ast::ASTFileKind fileKind, unsigned bufferID,
-                                bool isMainBuffer = false) const;
+  ast::ASTFile *CreateASTFileForMainModule(ast::ModuleDecl *mod,
+                                           ast::ASTFileKind fileKind,
+                                           unsigned bufferID,
+                                           bool isMainBuffer = false) const;
 
   ast::ASTFile *ComputeMainASTFileForModule(ast::ModuleDecl *mod) const;
 
   CompilerInvocation &GetCompilerInvocation() { return invocation; }
 
-  ast::ASTFile::ParsingOptions
-  GetASTFileParsingOptions(bool forPrimary) const;
+  ast::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);

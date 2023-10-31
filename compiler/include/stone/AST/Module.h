@@ -1,16 +1,15 @@
 #ifndef STONE_ASTMODULE_H
 #define STONE_ASTMODULE_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/List.h"
-#include "stone/Basic/OptionSet.h"
-#include "stone/Basic/Printable.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Scope.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/ASTWalker.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/OptionSet.h"
+#include "stone/Basic/STDAlias.h"
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -60,7 +59,7 @@ enum class ASTFileStage : uint8_t {
   TypeChecked,
 };
 
-class ASTFile final : public ModuleFile /*, public Printable*/ {
+class ASTFile final : public ModuleFile {
 private:
   friend ASTContext;
   // llvm::NullablePtr<Scope> scope = nullptr;
@@ -133,7 +132,7 @@ public:
 
 public:
   ASTFile(ASTFileKind kind, ast::ModuleDecl &owner,
-             llvm::Optional<unsigned> srcID, bool isPrimary = false);
+          llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~ASTFile();
 
@@ -170,9 +169,8 @@ public:
   // void Print(raw_ostream &stream, const ASTPrintOptions &PO);
 
 public:
-  static ast::ASTFile *Make(ASTFileKind kind, unsigned srcID,
-                               ModuleDecl &owner, ASTContext &tc,
-                               bool isPrimary = false);
+  static ast::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+                            ASTContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::AST;
