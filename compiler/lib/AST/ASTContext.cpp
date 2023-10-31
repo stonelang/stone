@@ -15,13 +15,13 @@
 using namespace stone;
 using namespace stone::ast;
 
-ASTContext::ASTContext(stone::Lang &lc, const SearchPathOptions &spOpts,
+ASTContext::ASTContext(stone::Lang &lang, const SearchPathOptions &spOpts,
                        Clang &clang)
-    : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
+    : lang(lang), searchPathOpts(spOpts), identifiers(allocator),
       builtinContext(*this), stats(new ASTContextStats(*this)), clang(clang),
       virtualTable(new VirtualTable()) {
 
-  lc.GetStats().Register(stats.get());
+  lang.GetStats().Register(stats.get());
 }
 
 ASTContext::~ASTContext() {

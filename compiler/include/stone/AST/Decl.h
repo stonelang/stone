@@ -43,6 +43,7 @@ class DiagnosticEngine;
 namespace ast {
 
 class Decl;
+class DeclCollector;
 class Stmt;
 class ModuleDecl;
 class BraceStmt;
@@ -709,6 +710,10 @@ public:
 
 public:
   void AddMember(Decl *d);
+
+public:
+  StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                                 DeclContext *dc);
 };
 
 class InterfaceDecl final : public NominalTypeDecl {
@@ -716,11 +721,19 @@ public:
   static bool classof(const Decl *d) {
     return d->GetKind() == DeclKind::Interface;
   }
+
+public:
+  InterfaceDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                        DeclContext *parent = nullptr);
 };
 
 class EnumDecl final : public NominalTypeDecl {
 public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
+
+public:
+  static EnumDecl *EnumDecl(DeclName name, SrcLoc loc, ASTContext &sc,
+                            DeclContext *parent = nullptr)
 };
 
 // Declarators and the like

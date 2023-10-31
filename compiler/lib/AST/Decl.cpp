@@ -204,6 +204,12 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
   return funDecl;
 }
 
+FunDecl *FunDecl::CreateFunDeclImplicit(DeclCollector &collector,
+                                        ASTContext &sc, DeclContext *parent) {
+
+  return nullptr;
+}
+
 ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
                                bool isMainModule) {
   size_t size = sizeof(ast::ModuleDecl);
@@ -222,5 +228,17 @@ StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
 VarDecl *VarDecl::Create(ASTContext &sc) {
   // auto declPtr = ast::AllocateDeclMem<ast::VarDecl>(sc,
   // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);
+  return nullptr;
+}
+
+VarDecl *VarDecl::Create(ASTContext &sc) { return nullptr; }
+
+InterfaceDecl *InterfaceDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                                     DeclContext *parent = nullptr) {
+  return nullptr;
+}
+
+EnumDecl *EnumDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                           DeclContext *parent = nullptr) {
   return nullptr;
 }
