@@ -32,7 +32,6 @@ set(stone_ast_sources
 	TypeQualifier.cpp
 	TypeThunk.cpp
 	TypeOperator.cpp
-	VerifyDecl.cpp
 	VirtualTable.cpp
 
 	Clang.cpp
