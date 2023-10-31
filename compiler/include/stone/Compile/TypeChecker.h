@@ -4,7 +4,7 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include <memory>
 

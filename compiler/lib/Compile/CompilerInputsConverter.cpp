@@ -3,7 +3,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

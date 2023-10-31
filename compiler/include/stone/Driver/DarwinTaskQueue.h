@@ -5,7 +5,7 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Drive/Task.h"
 #include "stone/Drive/TaskQueue.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"

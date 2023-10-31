@@ -10,13 +10,13 @@ using namespace stone;
 
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
-      sc(new ast::ASTContext(invocation.GetLangContext(),
+      sc(new ast::ASTContext(invocation.GetLang(),
                              invocation.GetSearchPathOptions(),
                              invocation.GetClangContext())),
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation, GetASTContext())) {
 
-  invocation.GetLangContext().GetStatEngine().Register(stats.get());
+  invocation.GetLang().GetStatEngine().Register(stats.get());
 
   // CreateCodeGenContext();
 }
@@ -109,7 +109,7 @@ void CompilerInstance::ForEachASTFile(EachASTFileCallback client) {
 
 void CompilerInstanceStats::Print(ColorStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
-  //   // GetLangContext().Out() << GetName() << '\n';
+  //   // GetLang().Out() << GetName() << '\n';
   //   return;
   // }
 }

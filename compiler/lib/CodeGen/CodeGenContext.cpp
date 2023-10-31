@@ -2,7 +2,7 @@
 #include "stone/AST/ClangContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 

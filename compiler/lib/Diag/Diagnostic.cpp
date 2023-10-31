@@ -56,7 +56,7 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 //                                              llvm::StringRef code,
 //                                              bool beforePreviousInsertions) {
 
-//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLangContext().AddFix(
+//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLang().AddFix(
 //       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
 //               CharSrcRange(), code, beforePreviousInsertions));
 
@@ -70,7 +70,7 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 //                                                bool beforePreviousInsertions)
 //                                                {
 
-//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLangContext().AddFix(
+//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLang().AddFix(
 //       CodeFix(CharSrcRange::getCharRange(insertionLoc, insertionLoc),
 //       fromRange,
 //               llvm::StringRef(), beforePreviousInsertions));
@@ -80,7 +80,7 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 /// source range.
 // InFlightDiagnostic &CodeFixer::RemoveRange(CharSrcRange removeRange) {
 
-//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLangContext().AddFix(
+//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLang().AddFix(
 //       CodeFix(CharSrcRange(), removeRange, llvm::StringRef()));
 
 //   return inFlightDiag;
@@ -94,7 +94,7 @@ llvm::StringRef CodeFixer::GetFixIDString(const FixID fixID) {
 // InFlightDiagnostic &CodeFixer::Replace(CharSrcRange removeRange,
 //                                        llvm::StringRef code) {
 
-//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLangContext().AddFix(
+//   inFlightDiag.GetDiagUnit().GetCurrentDiagnostic().GetLang().AddFix(
 //       CodeFix(CharSrcRange(), removeRange, code));
 
 //   return inFlightDiag;

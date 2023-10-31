@@ -110,7 +110,7 @@ public:
   void SetASTListener(ASTListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
 
-  LangContext &GetLangContext() { return sc.GetLangContext(); }
+  LangContext &GetLang() { return sc.GetLang(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
@@ -244,9 +244,9 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLang().GetDiagUnit().HasError(); }
   DiagnosticEngine &GetDiags() {
-    return GetLangContext().GetDiagUnit().GetDiagEngine();
+    return GetLang().GetDiagUnit().GetDiagEngine();
   }
 
 public:

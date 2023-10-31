@@ -27,11 +27,11 @@ Compilation::Compilation(Driver &driver, ToolChain &tc,
     : driver(driver), tc(tc), dal(std::move(dal)) {
 
   stats = std::make_unique<CompilationStats>(*this);
-  driver.GetLangContext().GetStatEngine().Register(stats.get());
+  driver.GetLang().GetStatEngine().Register(stats.get());
 
   switch (tc.GetKind()) {
   case ToolChainKind::Darwin:
-    tq = std::make_unique<darwin::DarwinTaskQueue>(driver.GetLangContext());
+    tq = std::make_unique<darwin::DarwinTaskQueue>(driver.GetLang());
     break;
   default:
     stone::Panic("Unknown ToolChain Kind -- cannot create TaskQueue");
@@ -53,7 +53,7 @@ stone::Error Compilation::RunJobs() {
 }
 
 void Compilation::PrintJobs() {
-  // driver.GetLangContext().Out() << '\n';
+  // driver.GetLang().Out() << '\n';
   // while (!GetQueue().IsEmpty()) {
   //   auto job = GetQueue().Front();
   //   if (job) {
@@ -67,9 +67,9 @@ void Compilation::PrintJobs() {
 
 void CompilationStats::Print(ColorStream &stream) {
   if (compilation.GetDriver()
-          .GetLangContext()
+          .GetLang()
           .GetLangOptions()
           .printStatistics) {
-    // GetLangContext().Out() << compilation.GetSessionName() << '\n';
+    // GetLang().Out() << compilation.GetSessionName() << '\n';
   }
 }

@@ -111,7 +111,7 @@ ast::ASTFile::ParsingOptions
 ModuleSystem::GetASTFileParsingOptions(bool forPrimary) const {
 
   auto parsingOpts =
-      ASTFile::GetDefaultParsingOptions(sc.GetLangContext().GetLangOptions());
+      ASTFile::GetDefaultParsingOptions(sc.GetLang().GetLangOptions());
   return parsingOpts;
 }
 

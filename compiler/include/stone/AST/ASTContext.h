@@ -23,7 +23,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/ClangContext.h"
@@ -171,8 +171,8 @@ public:
   ///
   const Builtin &GetBuiltin() const;
 
-  LangContext &GetLangContext() { return lc; }
-  const LangContext &GetLangContext() const { return lc; }
+  LangContext &GetLang() { return lc; }
+  const LangContext &GetLang() const { return lc; }
   ///
   LangABI *GetLangABI() const;
   //
@@ -233,12 +233,12 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLangContext().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiagnoticEngine().PrintD(
         loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return GetLangContext().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiagnoticEngine().PrintD(
         loc, ASTDiagnostic(diagID, args));
   }
 
@@ -246,7 +246,7 @@ public:
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLangContext().GetDiagnoticEngine().PrintD(
+    return GetLang().GetDiagnoticEngine().PrintD(
         loc, ASTDiagnostic(id, std::move(args)...));
   }
 };

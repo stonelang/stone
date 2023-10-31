@@ -1,6 +1,6 @@
 #include "stone/Drive/JobAction.h"
 #include "stone/Basic/Color.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 
@@ -202,7 +202,7 @@ void JobAction::Print(ColorStream &stream, llvm::StringRef terminator) const {
 //   // Let just handle top level
 //   if (hc.GetJobActionCache().ForTop()) {
 //     for (auto &request : hc.GetJobActionCache().forTop) {
-//       request->Print(GetLangContext().Out());
+//       request->Print(GetLang().Out());
 //     }
 //   }
 // }

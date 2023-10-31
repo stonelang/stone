@@ -4,7 +4,7 @@
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"

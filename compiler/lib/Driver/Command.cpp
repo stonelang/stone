@@ -1,7 +1,7 @@
 #include "stone/Drive/Command.h"
 
 #include "stone/Drive/ToolChain.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/Program.h"

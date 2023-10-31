@@ -2,7 +2,7 @@
 #define STONE_COMPILE_LANINPUTSSBUILDER_H
 
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"

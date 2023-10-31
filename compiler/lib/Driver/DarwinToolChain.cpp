@@ -134,17 +134,17 @@ DarwinToolChain::ConstructDetail(const ExecutableLinkJobAction &action) {
 //   switch (driver.GetLinkMode()) {
 //   case LinkMode::EmitExecutable: {
 //     return driver.GetCompilation().CreateJob<ExecutableLinkJob>(
-//         driver.GetLangContext(), *tool,
+//         driver.GetLang(), *tool,
 //         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   case LinkMode::EmitDynamicLibrary: {
 //     return driver.GetCompilation().CreateJob<DynamicLinkJob>(
-//         driver.GetLangContext(), *tool,
+//         driver.GetLang(), *tool,
 //         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   case LinkMode::EmitStaticLibrary: {
 //     return driver.GetCompilation().CreateJob<StaticLinkJob>(
-//         driver.GetLangContext(), *tool,
+//         driver.GetLang(), *tool,
 //         driver.GetDriverOptions().RequiresLTO());
 //   }
 //   default:

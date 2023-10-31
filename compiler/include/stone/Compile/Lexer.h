@@ -6,7 +6,7 @@
 #include "stone/Compile/Lexing.h"
 #include "stone/Compile/Trivia.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 namespace stone {
 

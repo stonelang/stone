@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "clang/Basic/Stack.h"
 #include "clang/Basic/TargetOptions.h"

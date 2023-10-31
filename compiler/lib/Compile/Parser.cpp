@@ -5,7 +5,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/ASTDiagnostic.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 using namespace stone::ast;
@@ -15,8 +15,8 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
     : Parser(sf, sc,
              Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                           &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
-                           &sc.GetLangContext().GetStatEngine())),
+                           &sc.GetLang().GetDiagUnit().GetDiagEngine(),
+                           &sc.GetLang().GetStatEngine())),
              listener) {}
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
@@ -24,7 +24,7 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
 
-  GetLangContext().GetStatEngine().Register(stats.get());
+  GetLang().GetStatEngine().Register(stats.get());
 }
 
 Parser::~Parser() {}
@@ -182,7 +182,7 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLangContext().GetDiagnosticEngine().PrintD(loc, diagID);
+  return GetLang().GetDiagnosticEngine().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

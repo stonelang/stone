@@ -2,7 +2,7 @@
 #include "stone/AST/Module.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/Parser.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 using namespace stone::ast;

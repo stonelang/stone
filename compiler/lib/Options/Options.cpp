@@ -43,7 +43,7 @@ OptTableAndInputArgs stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
   //   assert(ial && "No input argument list.");
   //   // Check for missing argument error.
   //   if (missingArgCount) {
-  //     GetLangContext().GetDiagnosticEngine().PrintD(
+  //     GetLang().GetDiagnosticEngine().PrintD(
   //         SrcLoc(), diag::err_missing_arg_value,
   //         diag::LLVMStr(ial->getArgString(missingArgIndex)),
   //         diag::UInt(missingArgCount));
@@ -51,7 +51,7 @@ OptTableAndInputArgs stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
   //   }
   //   // Check for unknown arguments.
   //   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-  //     GetLangContext().GetDiagnosticEngine().PrintD(
+  //     GetLang().GetDiagnosticEngine().PrintD(
   //         SrcLoc(), diag::err_unknown_arg,
   //         diag::LLVMStr(arg->getAsString(*ial)));
   //     return nullptr;

@@ -16,7 +16,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Options/Mode.h"
 #include "stone/Options/Session.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -182,7 +182,7 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
-  DiagUnit &GetDiagnoticEngine() { GetLangContext().GetDiagnoticEngine(); }
+  DiagUnit &GetDiagnoticEngine() { GetLang().GetDiagnoticEngine(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
@@ -192,7 +192,7 @@ public:
 
   llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLang().GetDiagUnit().HasError(); }
 
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }

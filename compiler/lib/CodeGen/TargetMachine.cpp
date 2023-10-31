@@ -3,7 +3,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/CodeGen/CodeGenContext.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 
 #include "llvm/MC/SubtargetFeature.h"
 #include "llvm/MC/TargetRegistry.h"
@@ -17,7 +17,7 @@ using namespace stone;
 static Error InitLLVMTargetOptions(CodeGenContext &cgc,
                                    llvm::TargetOptions &llvmTargetOpts) {
 
-  switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
+  switch (cgc.GetLang().GetLangOptions().threadModelKind) {
   case LangOptions::ThreadModelKind::POSIX:
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
     break;

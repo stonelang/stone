@@ -3,7 +3,7 @@
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
-#include "stone/Public.h"
+#include "stone/Lang.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
 using stone::diag::Decl;

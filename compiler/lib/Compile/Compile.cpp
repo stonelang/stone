@@ -60,7 +60,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { invocation.Finish(); };
 
   if (args.empty()) {
-    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    invocation.GetLang().GetDiagUnit().PrintD(SrcLoc(),
                                                      diag::err_no_input_files);
     return Finish(Error(true));
   }
@@ -89,7 +89,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
-    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    invocation.GetLang().GetDiagUnit().PrintD(SrcLoc(),
                                                      diag::err_alien_mode);
     Finish(Error(true));
   }
@@ -174,7 +174,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   CodeGenContext cgc(
       GetInvocation().GetCodeGenOptions(), *llvmContext,
       GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
-      GetInvocation().GetLangContext(), GetInvocation().GetClangContext());
+      GetInvocation().GetLang(), GetInvocation().GetClangContext());
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
@@ -209,7 +209,7 @@ Status CompilerInstance::CompileWithCodeGen() {
   case CodeGenOutputKind::LLVMModule:
     return CompileWithGenIR(
         cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return GenModule(*this, cgc);
+          return Lang::GenModule(*this, cgc);
         });
   case CodeGenOutputKind::LLVMIRPreOptimization:
   case CodeGenOutputKind::LLVMIRPostOptimization:
@@ -244,7 +244,7 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
-      stone::ParseASTFile(*asttaxFile, GetASTContext(),
+      Lang::ParseASTFile(*asttaxFile, GetASTContext(),
                           invocation.GetListener());
       if (notifiy) {
         notifiy(*asttaxFile);
@@ -275,7 +275,7 @@ Status CompilerInstance::CompileWithTypeChecking(
   }
   ForEachASTFile([&](ASTFile &asttaxFile, TypeCheckerOptions &typeCheckerOpts,
                      stone::TypeCheckerListener *listener) {
-    stone::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
+    Lang::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
   });
 
   // TODO: FinishTypeCheck();
