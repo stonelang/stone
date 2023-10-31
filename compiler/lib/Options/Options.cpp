@@ -38,7 +38,7 @@ OptTableAndInputArgs stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
   auto opts = stone::opts::CreateOptTable();
   auto ial = std::make_unique<llvm::opt::InputArgList>(
       opts->ParseArgs(args, flags.missingArgIndex, flags.missingArgCount,
-                     flags.includedFlagsBitmask, flags.excludedFlagsBitmask));
+                      flags.includedFlagsBitmask, flags.excludedFlagsBitmask));
 
   //   assert(ial && "No input argument list.");
   //   // Check for missing argument error.

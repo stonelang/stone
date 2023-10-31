@@ -1,6 +1,6 @@
 #include "stone/Options/Mode.h"
-#include "stone/Options/Options.h"
 #include "stone/Lang.h"
+#include "stone/Options/Options.h"
 #include "llvm/Option/Option.h"
 
 using namespace stone;

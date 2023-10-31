@@ -85,8 +85,7 @@ public:
   SrcMgr &GetSrcMgr() { return sm; }
 
 public:
-  using ModuleOrASTFile =
-      llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
+  using ModuleOrASTFile = llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 public:
   static int Compile(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -135,21 +134,21 @@ public:
   /// Returns true is successfull
   static void SerializeModuleDecl(ast::ModuleDecl &moduleDecl);
 
-  /// GenIR just for an ASTFile 
+  /// GenIR just for an ASTFile
   static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                     ast::ASTFile *sf,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
-  /// GenIR for the entire module 
+  /// GenIR for the entire module
   static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                   ast::ModuleDecl *mod,
-                   const PrimaryFileSpecificPaths specificPaths,
-                   CodeGenListener *listener = nullptr);
+                    ast::ModuleDecl *mod,
+                    const PrimaryFileSpecificPaths specificPaths,
+                    CodeGenListener *listener = nullptr);
 
   static bool EmitImportedModules(ast::ASTContext &context,
-                           ast::ModuleDecl *mainModule,
-                           const CompilerOptions &opts);
+                                  ast::ModuleDecl *mainModule,
+                                  const CompilerOptions &opts);
 
 public:
   static IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
@@ -165,13 +164,10 @@ public:
   static void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                          Lang &lang, llvm::TargetMachine *target);
 
- 
-
   static bool
   WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
                         const ast::ASTContext &Context,
                         const CodeGenOptions &opts);
-
 
   /// Returns true is successfull
   static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
@@ -199,8 +195,6 @@ public:
   static void WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
                           llvm::sys::Mutex *diagMutex = nullptr,
                           CodeGenScope *parentScope = nullptr);
-
-
 };
 } // namespace stone
 #endif

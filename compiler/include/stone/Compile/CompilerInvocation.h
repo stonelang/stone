@@ -14,9 +14,9 @@
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleSystem.h"
+#include "stone/Lang.h"
 #include "stone/Options/Mode.h"
 #include "stone/Options/Session.h"
-#include "stone/Lang.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"

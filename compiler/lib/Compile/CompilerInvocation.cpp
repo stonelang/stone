@@ -244,8 +244,7 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
     return Error(true);
   }
 
-  DiagsBuffer->FlushDiagnostics(
-      GetClang().GetInstance().getDiagnostics());
+  DiagsBuffer->FlushDiagnostics(GetClang().GetInstance().getDiagnostics());
   if (!Success) {
     GetClang().GetInstance().getDiagnosticClient().finish();
     return Error(true);

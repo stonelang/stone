@@ -13,10 +13,9 @@ using namespace stone::mem;
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
     : Parser(sf, sc,
-             Safe<Lexer>(
-                 new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                           &sc.GetLang().GetDiagUnit().GetDiagEngine(),
-                           &sc.GetLang().GetStats())),
+             Safe<Lexer>(new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
+                                   &sc.GetLang().GetDiagUnit().GetDiagEngine(),
+                                   &sc.GetLang().GetStats())),
              listener) {}
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,

@@ -29,8 +29,7 @@ class CodeGenDebug final {
   SrcLoc curLoc;
 
 public:
-  CodeGenDebug(CodeGenContext &cgc, CodeGenModule &cgm,
-               Clang &clang,
+  CodeGenDebug(CodeGenContext &cgc, CodeGenModule &cgm, Clang &clang,
                llvm::StringRef mainOutputFilenameForDebug,
                llvm::StringRef privateDiscriminator);
 

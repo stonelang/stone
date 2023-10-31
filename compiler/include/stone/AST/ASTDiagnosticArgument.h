@@ -75,7 +75,8 @@ public:
 
 class ASTDiagnostic : public Diagnostic {
 public:
-  explicit ASTDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args) : Diagnostic(diagID, args) {}
+  explicit ASTDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+      : Diagnostic(diagID, args) {}
   ~ASTDiagnostic();
 
 public:

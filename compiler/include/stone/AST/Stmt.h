@@ -38,7 +38,6 @@ class Expr;
 class StringLiteral;
 class ASTContext;
 
-
 class Stmt : public ASTAllocation<Stmt> {
   StmtKind kind;
 
@@ -103,9 +102,9 @@ public:
   }
 
 public:
-  BraceStmt *Create(SrcLoc lbloc,llvm::ArrayRef<ASTNode> elements,
-                                  SrcLoc rbloc, ASTContext &sc,
-                                  llvm::Optional<bool> implicit = llvm::None);
+  BraceStmt *Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
+                    SrcLoc rbloc, ASTContext &sc,
+                    llvm::Optional<bool> implicit = llvm::None);
 };
 
 class SwitchCaseStmt : public Stmt {

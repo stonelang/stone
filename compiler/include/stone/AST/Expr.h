@@ -60,7 +60,7 @@ public:
   NewExpr() : Expr(StmtKind::New) {}
 
 public:
-  static NewExpr* Create();
+  static NewExpr *Create();
 };
 
 // class ThisExpr : public Expr {

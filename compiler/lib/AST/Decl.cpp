@@ -204,7 +204,6 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
   return funDecl;
 }
 
-
 ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
                                bool isMainModule) {
   size_t size = sizeof(ast::ModuleDecl);
@@ -225,6 +224,3 @@ VarDecl *VarDecl::Create(ASTContext &sc) {
   // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);
   return nullptr;
 }
-
-
-

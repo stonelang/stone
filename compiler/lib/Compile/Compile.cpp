@@ -61,7 +61,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   if (args.empty()) {
     invocation.GetLang().GetDiagUnit().PrintD(SrcLoc(),
-                                                     diag::err_no_input_files);
+                                              diag::err_no_input_files);
     return Finish(Error(true));
   }
   // We setup clang now -- this just loads the instance.
@@ -89,8 +89,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
-    invocation.GetLang().GetDiagUnit().PrintD(SrcLoc(),
-                                                     diag::err_alien_mode);
+    invocation.GetLang().GetDiagUnit().PrintD(SrcLoc(), diag::err_alien_mode);
     Finish(Error(true));
   }
   if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
@@ -129,8 +128,8 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
 
-Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
-                                          CodeGenCompletedCallback notifiy) {
+Status CompilerInstance::GenIR(CodeGenContext &cgc,
+                               CodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
@@ -140,13 +139,13 @@ Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
         GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
     Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
-                      primaryFileSpecificPaths);
+                primaryFileSpecificPaths);
   } else if (IsASTFileCodeGen()) {
     for (auto *primaryASTFile : GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename,
-                         primaryASTFile, primaryFileSpecificPaths);
+      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, primaryASTFile,
+                  primaryFileSpecificPaths);
     }
   }
 
@@ -159,22 +158,22 @@ static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
   return Status::Success();
 }
 
-Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
+Status CompilerInstance::GenNative(CodeGenContext &cgc) {
 
   auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
                                 GetInvocation().GetListener());
   return Status::Success();
 }
 
-Status CompilerInstance::CompileWithCodeGen() {
+Status CompilerInstance::GenCode() {
 
   assert(CanCodeGen() && "Mode does not support code gen");
 
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
-  CodeGenContext cgc(
-      GetInvocation().GetCodeGenOptions(), *llvmContext,
-      GetInvocation().GetModuleOptions(), GetInvocation().GetTargetOptions(),
-      GetInvocation().GetLang(), GetInvocation().GetClang());
+  CodeGenContext cgc(GetInvocation().GetCodeGenOptions(), *llvmContext,
+                     GetInvocation().GetModuleOptions(),
+                     GetInvocation().GetTargetOptions(),
+                     GetInvocation().GetLang(), GetInvocation().GetClang());
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
@@ -207,26 +206,23 @@ Status CompilerInstance::CompileWithCodeGen() {
 
   switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
   case CodeGenOutputKind::LLVMModule:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return Lang::GenModule(*this, cgc);
-        });
+    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+      return Lang::GenModule(*this, cgc);
+    });
   case CodeGenOutputKind::LLVMIRPreOptimization:
   case CodeGenOutputKind::LLVMIRPostOptimization:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return DumpIR(*this, cgc);
-        });
+    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+      return DumpIR(*this, cgc);
+    });
   // case CodeGenOutputKind::PrintIR:
-  //   return CompileWithGenIR(
+  //   return GenIR(
   //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
   //         return PrintIR(*this, cgc);
   //       });
   default:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return CompileWithGenNative(cgc);
-        });
+    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+      return GenNative(cgc);
+    });
   }
 }
 
@@ -236,16 +232,16 @@ static Status DumpAST(CompilerInstance &compiler, ast::ASTFile &sf) {
 
 static Status PrintAST(CompilerInstance &compiler) { return Status::Success(); }
 
-Status CompilerInstance::CompileWithParsing() {
-  return CompileWithParsing([&](ast::ASTFile &) { return Status::Success(); });
+Status CompilerInstance::Parse() {
+  return Parse([&](ast::ASTFile &) { return Status::Success(); });
 }
 
-Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
+Status CompilerInstance::Parse(ParsingCompletedCallback notifiy) {
 
   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
       Lang::ParseASTFile(*asttaxFile, GetASTContext(),
-                          invocation.GetListener());
+                         invocation.GetListener());
       if (notifiy) {
         notifiy(*asttaxFile);
       }
@@ -261,15 +257,13 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
   return Status::Success();
 }
 
-Status CompilerInstance::CompileWithTypeChecking() {
-  return CompileWithTypeChecking(
-      [&](CompilerInstance &) { return Status::Success(); });
+Status CompilerInstance::CheckTypes() {
+  return CheckTypes([&](CompilerInstance &) { return Status::Success(); });
 }
 
-Status CompilerInstance::CompileWithTypeChecking(
-    TypeCheckingCompletedCallback notifiy) {
+Status CompilerInstance::CheckTypes(TypeCheckingCompletedCallback notifiy) {
 
-  auto status = CompileWithParsing();
+  auto status = Parse();
   if (status.IsError()) {
     return status;
   }
@@ -295,22 +289,20 @@ Status CompilerInstance::Compile() {
   Status status;
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
-    status = CompileWithParsing();
+    status = Parse();
     break;
   case ModeKind::DumpAST:
-    status = CompileWithParsing(
-        [&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
+    status = Parse([&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
     break;
   case ModeKind::TypeCheck:
-    status = CompileWithTypeChecking();
+    status = CheckTypes();
     break;
   case ModeKind::PrintAST:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return PrintAST(*this); });
+    status =
+        CheckTypes([&](CompilerInstance &compiler) { return PrintAST(*this); });
     break;
   default:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
+    status = CheckTypes([&](CompilerInstance &compiler) { return GenCode(); });
     break;
   }
   return status;

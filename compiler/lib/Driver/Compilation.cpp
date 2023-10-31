@@ -66,10 +66,7 @@ void Compilation::PrintJobs() {
 }
 
 void CompilationStats::Print(ColorStream &stream) {
-  if (compilation.GetDriver()
-          .GetLang()
-          .GetLangOptions()
-          .printStatistics) {
+  if (compilation.GetDriver().GetLang().GetLangOptions().printStatistics) {
     // GetLang().Out() << compilation.GetSessionName() << '\n';
   }
 }

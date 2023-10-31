@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Lang.h"
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
@@ -25,6 +24,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/Lang.h"
 
 #include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/Clang.h"
@@ -34,7 +34,6 @@
 #include "stone/AST/Types.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
-
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -149,8 +148,7 @@ class ASTContext final {
   mutable llvm::DenseMap<Identifier, std::pair<Identifier, bool>>
       moduleAliasMap;
 
-  std::unique_ptr<VirtualTable> virtualTable; 
-
+  std::unique_ptr<VirtualTable> virtualTable;
 
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.
@@ -160,8 +158,7 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(Lang &lang, const SearchPathOptions &searchPathOpts,
-             Clang &clang);
+  ASTContext(Lang &lang, const SearchPathOptions &searchPathOpts, Clang &clang);
   ~ASTContext();
 
   /// Add a cleanup function to be called when the ASTContext is deallocated.
@@ -187,7 +184,7 @@ public:
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
   ASTContextStats &GetStats() { return *stats.get(); }
 
-  VirtualTable& GetVirtualTable() { return *virtualTable;}
+  VirtualTable &GetVirtualTable() { return *virtualTable; }
 
 public:
   //==Module stuff==//
@@ -240,9 +237,11 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
+    return GetLang().GetDiags().PrintD(
+        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID, llvm::ArrayRef<diag::Argument> args) {
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+                                   llvm::ArrayRef<diag::Argument> args) {
     return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 
@@ -250,7 +249,8 @@ public:
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetLang().GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
+    return GetLang().GetDiags().PrintD(loc,
+                                       ASTDiagnostic(id, std::move(args)...));
   }
 };
 } // namespace ast

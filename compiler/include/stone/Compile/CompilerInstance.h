@@ -93,21 +93,16 @@ public:
   /// Perform code analysis and code generation
   Status Compile();
 
-  // Status CompileFrontend();
-  // Status CompileBackend();
+private:
+  Status Parse();
+  Status Parse(ParsingCompletedCallback notifiy);
+  Status CheckTypes();
+  Status CheckTypes(TypeCheckingCompletedCallback notifiy);
 
 private:
-  Status CompileWithParsing();
-  Status CompileWithParsing(ParsingCompletedCallback notifiy);
-
-  Status CompileWithTypeChecking();
-  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
-
-  Status CompileWithCodeGen();
-  Status CompileWithGenIR(CodeGenContext &cgc,
-                          CodeGenCompletedCallback notifiy);
-
-  Status CompileWithGenNative(CodeGenContext &cgc);
+  Status GenCode();
+  Status GenIR(CodeGenContext &cgc, CodeGenCompletedCallback notifiy);
+  Status GenNative(CodeGenContext &cgc);
 
 public:
   void ForEachASTFile(EachASTFileCallback fn);

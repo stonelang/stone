@@ -59,9 +59,8 @@ private:
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
-                 const stone::TargetOptions &targetOpts,
-                 const Lang &lang, ASTContext &astContext,
-                 Clang &clang,
+                 const stone::TargetOptions &targetOpts, const Lang &lang,
+                 ASTContext &astContext, Clang &clang,
                  llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:

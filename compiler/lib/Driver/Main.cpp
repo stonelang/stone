@@ -27,8 +27,7 @@ int Lang::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { driver.Finish(); };
 
   if (args.empty()) {
-    driver.GetLang().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_no_input_files);
+    driver.GetLang().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
     return Error(true);
   }
   if (listener) {
@@ -49,8 +48,7 @@ int Lang::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (driver.GetDriverOptions().GetMode().IsAlien()) {
-    driver.GetLang().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_alien_mode);
+    driver.GetLang().GetDiagUnit().PrintD(SrcLoc(), diag::err_alien_mode);
     return Error(true);
   }
   if (driver.GetDriverOptions().GetMode().IsPrintHelp()) {

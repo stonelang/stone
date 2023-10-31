@@ -18,8 +18,8 @@ using namespace stone::ast;
 ASTContext::ASTContext(stone::Lang &lc, const SearchPathOptions &spOpts,
                        Clang &clang)
     : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
-      builtinContext(*this), stats(new ASTContextStats(*this)),
-      clang(clang), virtualTable(new VirtualTable()) {
+      builtinContext(*this), stats(new ASTContextStats(*this)), clang(clang),
+      virtualTable(new VirtualTable()) {
 
   lc.GetStats().Register(stats.get());
 }
