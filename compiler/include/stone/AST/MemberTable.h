@@ -35,6 +35,7 @@
 namespace stone {
 namespace ast {
 
+/// This table will hold the following: SomeType::DoSomething() 
 class MemberTable final {
 
   using Entries = llvm::DenseMap<DeclName, llvm::TinyPtrVector<ValueDecl *>>;

@@ -1,6 +1,6 @@
 #include "stone/AST/Decl.h"
+#include "stone/AST/DeclCollector.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/DeclFactory.h"
 #include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
@@ -194,7 +194,7 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  auto memPtr = ast::AllocateDeclMem<FunDecl>(sc, size);
+  auto memPtr = ast::AllocateDeclMem<ast::FunDecl>(sc, size);
   auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
       collector.GetDeclName(), collector.GetDeclNameLoc(),
@@ -220,7 +220,7 @@ ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
 StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
                                DeclContext *dc) {
   size_t size = sizeof(ast::StructDecl);
-  auto declPtr = ast::AllocateDeclMem<StructDecl>(sc, size);
+  auto declPtr = ast::AllocateDeclMem<ast::StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);
   return nullptr;
 }
@@ -231,14 +231,12 @@ VarDecl *VarDecl::Create(ASTContext &sc) {
   return nullptr;
 }
 
-VarDecl *VarDecl::Create(ASTContext &sc) { return nullptr; }
-
 InterfaceDecl *InterfaceDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
-                                     DeclContext *parent = nullptr) {
+                                     DeclContext *parent) {
   return nullptr;
 }
 
 EnumDecl *EnumDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
-                           DeclContext *parent = nullptr) {
+                           DeclContext *parent) {
   return nullptr;
 }

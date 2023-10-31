@@ -712,7 +712,7 @@ public:
   void AddMember(Decl *d);
 
 public:
-  StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
+  StructDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
                                  DeclContext *dc);
 };
 
@@ -732,8 +732,8 @@ public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
 
 public:
-  static EnumDecl *EnumDecl(DeclName name, SrcLoc loc, ASTContext &sc,
-                            DeclContext *parent = nullptr)
+  static EnumDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                            DeclContext *parent = nullptr);
 };
 
 // Declarators and the like
@@ -746,10 +746,13 @@ public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
   // QualType GetQualType() const;
+public:
+  static VarDecl *Create(ASTContext &sc);
 };
 
 class ParamDecl : public VarDecl {
 public:
+
 };
 
 class ImportDecl final : public NameableDecl {
