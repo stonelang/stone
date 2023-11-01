@@ -30,9 +30,8 @@ CodeGenTypeResolver::GetFunctionType(const ast::FunctionDecl *fd) {
 
   // TODO: Just for now
   return llvm::FunctionType::get(
-      llvm::Type::getVoidTy(
-          *cgm.GetCodeGen().GetCodeGenContext().GetLLVMContext()),
-      {}, false);
+      llvm::Type::getVoidTy(cgm.GetCodeGenContext().GetLLVMContext()), {},
+      false);
 }
 
 // llvm::Type *CodeGenTypeResolver::GetType(const ast::MemberPointerType mpty)

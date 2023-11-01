@@ -5,6 +5,7 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenMetadata.h"
 #include "stone/CodeGen/CodeGenTypeCache.h"
 #include "stone/CodeGen/CodeGenTypeResolver.h"

@@ -268,6 +268,19 @@ public:
   bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
 
+class QualType {
+  const Type *typePtr = nullptr;
+  TypeQualifierList qualifiers;
+
+public:
+  QualType() = default;
+  explicit QualType(const Type *typePtr, TypeQualifierList qualifiers)
+      : typePtr(typePtr), qualifiers(qualifiers) {}
+
+public:
+  const Type *GetTypePtr() const { return typePtr; }
+};
+
 } // namespace ast
 } // namespace stone
 #endif

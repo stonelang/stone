@@ -81,8 +81,7 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, ast::ModuleDecl *md,
                   ast::ASTFile *sf, CodeGenListener *listener) {
 
-  CodeGen cg(cgc, listener);
-  CodeGenModule cgm(cg, moduleName, paths.outputFilename);
+  CodeGenModule cgm(cgc, moduleName, paths.outputFilename);
 
   if (sf) {
     cgm.EmitASTFile(*sf);
@@ -100,21 +99,31 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                 ast::ASTFile *sf, const PrimaryFileSpecificPaths paths,
-                 CodeGenListener *listener) {
-  assert(sf);
-  GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
-}
+void Lang::GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+                 ast::ASTFile *sf, const PrimaryFileSpecificPaths specificPaths,
+                 CodeGenListener *listener) {}
 
-void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                 ast::ModuleDecl *md, const PrimaryFileSpecificPaths paths,
-                 CodeGenListener *listener) {
+/// GenIR for the entire module
+void Lang::GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+                 ast::ModuleDecl *mod,
+                 const PrimaryFileSpecificPaths specificPaths,
+                 CodeGenListener *listener) {}
 
-  GenIR(cgc, moduleName, paths, md, nullptr, listener);
-}
+// void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+//                  ast::ASTFile *sf, const PrimaryFileSpecificPaths paths,
+//                  CodeGenListener *listener) {
+//   assert(sf);
+//   GenIR(cgc, moduleName, sf->GetParentModule(), paths, sf, listener);
+// }
+
+// void Lang::GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+//                  ast::ModuleDecl *md, const PrimaryFileSpecificPaths paths,
+//                  CodeGenListener *listener) {
+
+//   GenIR(cgc, moduleName, paths, md, nullptr, listener);
+// }
 
 /// Disable thumb-mode until debugger support is there.
-bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
+bool Lang::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";
 }

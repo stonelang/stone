@@ -1,7 +1,7 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/CodeGen/CodeGenMachine.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Lang.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -100,11 +100,10 @@ static void EmitAssembly(const CodeGenContext &cgc, ast::ASTContext &sc,
 //   }
 // }
 
-static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
+static void EmbedBitcode(llvm::Module *mod, CodeGenContext &cgc) {}
 
 /// Returns true is successfull
-bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &context,
-                     llvm::StringRef outputFilename,
+bool Lang::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                      CodeGenListener *listener) {
 
   // EmbedBitcode(mod, nativeScope);
@@ -118,8 +117,7 @@ bool Lang::WriteEmptyOutputFiles(
   return true;
 }
 
-bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
-                     llvm::StringRef outputFilename,
+bool Lang::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                      llvm::sys::Mutex *diagMutex,
                      llvm::GlobalVariable *hashGlobal,
                      CodeGenListener *listener) {

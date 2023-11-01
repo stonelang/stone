@@ -162,8 +162,7 @@ public:
   static std::unique_ptr<llvm::TargetMachine>
   CreateTargetMachine(const CodeGenOptions &opts, ast::ASTContext &ac);
 
-  static void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
-                         Lang &lang, llvm::TargetMachine *target);
+  static void OptimizeIR(codegen::CodeGenContext &cgc);
 
   static bool
   WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
@@ -171,7 +170,7 @@ public:
                         const CodeGenOptions &opts);
 
   /// Returns true is successfull
-  static bool GenNative(codegen::CodeGenContext &cgc, ast::ASTContext &context,
+  static bool GenNative(codegen::CodeGenContext &cgc,
                         llvm::StringRef outputFilename,
                         CodeGenListener *listener = nullptr);
 
@@ -186,7 +185,7 @@ public:
   /// \param Module LLVM module to code gen, required.
   /// \param TargetMachine target of code gen, required.
   /// \param OutputFilename Filename for output.
-  static bool GenNative(codegen::CodeGenContext &cgc, ast::ASTContext &context,
+  static bool GenNative(codegen::CodeGenContext &cgc,
                         llvm::StringRef outputFilename,
                         llvm::sys::Mutex *diagMutex,
                         llvm::GlobalVariable *hashGlobal,

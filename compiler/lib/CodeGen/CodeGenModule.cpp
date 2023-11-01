@@ -1,5 +1,4 @@
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenABI.h"
 
 #include "stone/AST/Decl.h"
@@ -11,9 +10,8 @@ using namespace stone::codegen;
 CodeGenModule::CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
                              llvm::StringRef outputFilename)
 
-    : typeCache(*cgc.GetLLVMContext()), cgc(cgc),
-      moduleName(moduleName), outputFilename(outputFilename),
-      typeResolver(*this), metadata(*this) {}
+    : typeCache(cgc.GetLLVMContext()), cgc(cgc), moduleName(moduleName),
+      outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
 CodeGenModule::~CodeGenModule() {}
 
@@ -45,7 +43,7 @@ CodeGenModule::CreateFunction(llvm::StringRef mangledName,
   llvm::Function *llvmFunction =
       llvm::Function::Create(llvmFunctionType, llvm::Function::ExternalLinkage,
                              entry ? llvm::StringRef() : mangledName,
-                             *GetCodeGen().GetCodeGenContext().GetLLVMModule());
+                             GetCodeGenContext().GetLLVMModule());
 
   return llvmFunction;
 }

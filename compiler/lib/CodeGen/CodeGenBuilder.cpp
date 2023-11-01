@@ -4,7 +4,6 @@
 using namespace stone;
 using namespace stone::codegen;
 
-
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 
@@ -19,15 +18,14 @@ CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
   // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
 }
 
-
 void CodeGenBuilderInserter::InsertHelper(
     llvm::Instruction *instruction, const llvm::Twine &name,
     llvm::BasicBlock *basicBlock, llvm::BasicBlock::iterator insertPt) const {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
                                const CodeGenTypeCache &typeCache)
-    : CodeGenBuilderBase(cgc.GetLLVMContext()), cgc(cgc),
-      typeCache(typeCache) {}
+    : CodeGenBuilderBase(cgc.GetLLVMContext()), cgc(cgc), typeCache(typeCache) {
+}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenContext &cgc,
                                const CodeGenTypeCache &typeCache,

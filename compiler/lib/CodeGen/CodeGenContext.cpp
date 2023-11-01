@@ -2,6 +2,7 @@
 #include "stone/AST/Clang.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Basic/Status.h"
 #include "stone/Lang.h"
 
 #include "llvm/MC/SubtargetFeature.h"
@@ -10,26 +11,32 @@
 #include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
+using namespace stone::ast;
 using namespace stone::codegen;
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
-                               llvm::LLVMContext &llvmContext,
+CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
+                               const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,
-                               const Lang &lang, Clang &clang,
+                               llvm::LLVMContext &llvmContext,
+                               ASTContext &astContext, Lang &lang,
+                               Clang &clangInstance,
                                llvm::GlobalVariable **outModuleHash)
     : CodeGenContext(
-          genOpts, targetOpts, lang, clang,
+          codeGenOpts, moduleOpts, targetOpts, llvmContext, astContext, lang,
+          clangInstance,
           std::make_unique<llvm::Module>(moduleOpts.moduleName, llvmContext),
           outModuleHash) {}
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
-                               llvm::LLVMContext &llvmContext,
-                               const stone::TargetOptions &targetOpts,
-                               const Lang &lang, Clang &clang,
-                               std::unique_ptr<llvm::Module> llvmMod,
-                               llvm::GlobalVariable **outModuleHash)
-    : codeGenOpts(codeGenOpts), llvmContext(llvmContext),
-      llvmModule(llvmMod.release()) {
+CodeGenContext::CodeGenContext(
+    const CodeGenOptions &codeGenOpts, const ModuleOptions &moduleOpts,
+    const stone::TargetOptions &targetOpts, llvm::LLVMContext &llvmContext,
+    ast::ASTContext &astContext, Lang &lang, Clang &clangInstance,
+    std::unique_ptr<llvm::Module> llvmMod, llvm::GlobalVariable **outModuleHash)
+    : codeGenOpts(codeGenOpts), moduleOpts(moduleOpts),
+      llvmContext(llvmContext), targetOpts(targetOpts), lang(lang),
+      clangInstance(clangInstance), astContext(astContext),
+      llvmModule(llvmMod.release()), outModuleHash(outModuleHash),
+      lfpm(GetLLVMModule()) {
 
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
@@ -42,8 +49,8 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
   mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
 }
 
-static Error InitLLVMTargetOptions(CodeGenContext &cgc,
-                                   llvm::TargetOptions &llvmTargetOpts) {
+static Status InitLLVMTargetOptions(CodeGenContext &cgc,
+                                    llvm::TargetOptions &llvmTargetOpts) {
 
   switch (cgc.GetLang().GetLangOptions().threadModelKind) {
   case LangOptions::ThreadModelKind::POSIX:
@@ -53,7 +60,7 @@ static Error InitLLVMTargetOptions(CodeGenContext &cgc,
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
     break;
   }
-  return Error();
+  return Status();
 }
 
 static Optional<llvm::CodeModel::Model>
@@ -135,7 +142,7 @@ Lang::CreateTargetMachine(const CodeGenOptions &codeGenOpts, ASTContext &ac) {
   if (!codeGenOpts.targetFeatures.empty()) {
     llvm::SubtargetFeatures features;
     for (const std::string &feature : codeGenOpts.targetFeatures)
-      if (!stone::ShouldRemoveTargetFeature(feature)) {
+      if (!Lang::ShouldRemoveTargetFeature(feature)) {
         features.AddFeature(feature);
       }
     targetFeatures = features.getString();

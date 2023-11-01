@@ -29,6 +29,13 @@ namespace codegen {
 
 class CodeGenContext final {
 private:
+  Lang &lang;
+  Clang &clangInstance;
+
+  const CodeGenOptions &codeGenOpts;
+  const ModuleOptions &moduleOpts;
+  const stone::TargetOptions &targetOpts;
+
   ast::ASTContext &astContext;
   llvm::LLVMContext &llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
@@ -47,17 +54,20 @@ private:
   llvm::FunctionPassManager fpm;
 
 private:
-  CodeGenContext(
-      const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
-      const stone::TargetOptions &targetOpts, const Lang &lang,
-      ast::ASTContext &astContext, Clang &clang,
-      std::unique_ptr<llvm::Module> llvmMod,
-      llvm::GlobalVariable **outModuleHash = nullptr);
+  CodeGenContext(const CodeGenOptions &codeGenOpts,
+                 const ModuleOptions &moduleOpts,
+                 const stone::TargetOptions &targetOpts,
+                 llvm::LLVMContext &llvmContext, ast::ASTContext &astContext,
+                 Lang &lang, Clang &clangInstance,
+                 std::unique_ptr<llvm::Module> llvmMod,
+                 llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:
-  CodeGenContext(const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
-                 const stone::TargetOptions &targetOpts, const Lang &lang,
-                 ast::ASTContext &astContext, Clang &clang,
+  CodeGenContext(const CodeGenOptions &codeGenOpts,
+                 const ModuleOptions &moduleOpts,
+                 const stone::TargetOptions &targetOpts,
+                 llvm::LLVMContext &llvmContext, ast::ASTContext &astContext,
+                 Lang &lang, Clang &clangInstance,
                  llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:
@@ -76,6 +86,16 @@ public:
   llvm::TargetMachine &GetLLVMTargetMachine() { return *llvmTargetMachine; }
   llvm::LLVMContext &GetLLVMContext() { return llvmContext; }
   ast::ASTContext &GetASTContext() { return astContext; }
+
+  Lang &GetLang() { return lang; }
+  Clang &GetClang() { return clangInstance; }
+
+  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+
+  llvm::GlobalVariable **GetOutModuleHash() { outModuleHash; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }

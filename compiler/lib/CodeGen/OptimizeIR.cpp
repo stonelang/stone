@@ -2,7 +2,6 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/CodeGen/CodeGenScope.h"
 #include "stone/Lang.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -67,8 +66,7 @@ using namespace stone::codegen;
 //   //     *mod, optimizeIRScope.GetModulePassManager());
 // }
 
-void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
-                       Lang &lang, llvm::TargetMachine *targetMachine) {
+void Lang::OptimizeIR(CodeGenContext &cgc) {
 
   // if (codeGenOpts.useLegacyPassManager) {
   //   OptimizeIRUsingLegacyPassManger(mod, codeGenOpts, targetMachine);
