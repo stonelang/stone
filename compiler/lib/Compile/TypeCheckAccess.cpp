@@ -4,7 +4,7 @@
 
 using namespace stone;
 using namespace stone::ast;
-using namespace stone::sem;
+using namespace stone::typecheck;
 
 /// \see checkTypeAccess
 using CheckTypeAccessLevelCallback = void(AccessScope, const Type *);

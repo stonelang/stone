@@ -21,9 +21,9 @@ class Decl;
 class Stmt;
 } // namespace ast
 
-namespace sem {
-class TypeChecker;
+namespace typecheck {
 
+class TypeChecker;
 class TypeCheckerStats final : public Stats {
   const TypeChecker &checker;
 
@@ -89,6 +89,6 @@ public:
   /// \returns true if \c t1 is a subtype of \c t2.
   bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
-} // namespace sem
+} // namespace typecheck
 } // namespace stone
 #endif

@@ -1,7 +1,6 @@
 #include "stone/AST/Stmt.h"
 #include "stone/AST/ASTContext.h"
 
-
 using namespace stone;
 using namespace stone::ast;
 

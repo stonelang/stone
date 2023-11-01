@@ -74,6 +74,7 @@
 
 using namespace stone;
 using namespace stone::ast;
+using namespace stone::codegen;
 
 static void GenNativeWithParallelization() {}
 
@@ -123,6 +124,8 @@ bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
                      llvm::GlobalVariable *hashGlobal,
                      CodeGenListener *listener) {
 
+  //  Module->setDataLayout(Clang->getTargetInfo().getDataLayout());
+
   llvm::Optional<llvm::raw_fd_ostream> rawOS;
   if (!outputFilename.empty()) {
     // Try to open the output file.  Clobbering an existing file is fine.
@@ -153,7 +156,7 @@ bool Lang::GenNative(CodeGenContext &cgc, ast::ASTContext &ac,
 
 /// Returns true is successfull
 void Lang::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
-                       llvm::sys::Mutex *diagMutex, CodeGenScope *parentScope) {
+                       llvm::sys::Mutex *diagMutex) {
 
   // switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
   //   case CodeGenOutputKind::ObjectFile:

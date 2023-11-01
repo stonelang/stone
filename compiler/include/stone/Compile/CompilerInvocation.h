@@ -94,11 +94,8 @@ class CompilerInvocation final {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
-  std::unique_ptr<Clang> clang;
-
-  OptUtil optUtil;
-
   Lang lang;
+  std::unique_ptr<Clang> clang;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -132,7 +129,7 @@ public:
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
@@ -182,7 +179,7 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
-  DiagUnit &GetDiags() { GetLang().GetDiags(); }
+  DiagnosticEngine &GetDiags() { GetLang().GetDiags(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);

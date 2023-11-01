@@ -2,8 +2,8 @@
 #include "stone/AST/Expr.h"
 #include "stone/Sem/TypeChecker.h"
 
-using namespace stone::sem;
 using namespace stone::ast;
+using namespace stone::typecheck;
 
 class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;

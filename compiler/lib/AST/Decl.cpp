@@ -1,6 +1,7 @@
 #include "stone/AST/Decl.h"
-#include "stone/AST/DeclCollector.h"
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/DeclCollector.h"
 #include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"

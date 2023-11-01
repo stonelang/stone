@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/AST/ASTContext.h"
+#include "stone/Basic/Lang.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
 
@@ -109,10 +110,10 @@ public:
   void ResolveImports();
 
 public:
-  ast::ModuleDecl *CastToModuleDecl(stone::ModuleASTFileUnion msf) {
+  ast::ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
     return msf.get<ast::ModuleDecl *>();
   }
-  ast::ASTFile *CastToASTFile(stone::ModuleASTFileUnion msf) {
+  ast::ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
     msf.dyn_cast<ast::ASTFile *>();
   }
 

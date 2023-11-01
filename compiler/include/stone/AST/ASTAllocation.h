@@ -57,6 +57,10 @@ public:
   }
 };
 
+template <typename DeclTy, typename AllocatorTy>
+void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
+                      bool extraSace = false);
+
 } // namespace ast
 
 } // namespace stone

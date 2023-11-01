@@ -1,7 +1,5 @@
 #include "stone/AST/Type.h"
-#include "stone/AST/TypeFactory.h"
 #include "stone/AST/TypeLoc.h"
-
 #include "stone/AST/TypeQualifier.h"
 
 using namespace stone;

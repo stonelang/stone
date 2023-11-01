@@ -685,8 +685,11 @@ public:
   }
 
 public:
-  static FunDecl *Create(DeclCollector &collector, ASTContext &sc,
+  static FunDecl *Create(DeclCollector &collector, ASTContext &ac,
                          DeclContext *parent);
+
+  static FunDecl *CreateFunDeclImplicit(DeclCollector &collector,
+                                        ASTContext &sc, DeclContext *parent);
 };
 
 class ConstructorDecl : public FunctionDecl {
@@ -713,7 +716,7 @@ public:
 
 public:
   StructDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
-                                 DeclContext *dc);
+                     DeclContext *dc);
 };
 
 class InterfaceDecl final : public NominalTypeDecl {
@@ -733,7 +736,7 @@ public:
 
 public:
   static EnumDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
-                            DeclContext *parent = nullptr);
+                          DeclContext *parent = nullptr);
 };
 
 // Declarators and the like
@@ -752,7 +755,6 @@ public:
 
 class ParamDecl : public VarDecl {
 public:
-
 };
 
 class ImportDecl final : public NameableDecl {

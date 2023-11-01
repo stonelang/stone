@@ -62,7 +62,7 @@ llvm::Optional<unsigned> CompilerInvocation::CreateCodeCompletionBuffer() {
   return codeCompletionBufferID;
 }
 
-Error CompilerInvocation::CreateSourceBuffers() {
+Status CompilerInvocation::CreateSourceBuffers() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
@@ -86,10 +86,10 @@ Error CompilerInvocation::CreateSourceBuffers() {
     RecordPrimarySourceID(*bufferID);
   }
   if (hasFailed) {
-    return stone::Error(true);
+    return Status::Error();
   }
 
-  return stone::Error();
+  return Status();
 }
 
 llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
@@ -222,8 +222,8 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 //   stone::Panic("ParseSourceOutputFile not implemented");
 // }
 
-Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                     const char *arg0) {
+Status CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
+                                      const char *arg0) {
   // Setup the clang diagnostics
   clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
       new clang::DiagnosticIDs());
@@ -235,23 +235,23 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   bool Success = clang::CompilerInvocation::CreateFromArgs(
       GetClang().GetInstance().getInvocation(), argv, Diags, arg0);
   if (!Success) {
-    return Error(true);
+    return Status::Error();
   }
 
   // Create the actual diagnostics engine.
   GetClang().GetInstance().createDiagnostics();
   if (!GetClang().GetInstance().hasDiagnostics()) {
-    return Error(true);
+    return Status::Error();
   }
 
   DiagsBuffer->FlushDiagnostics(GetClang().GetInstance().getDiagnostics());
   if (!Success) {
     GetClang().GetInstance().getDiagnosticClient().finish();
-    return Error(true);
+    return Status::Error();
   }
   // If there were errors in processing arguments, don't do anything else.
   if (GetClang().GetInstance().getDiagnostics().hasErrorOccurred()) {
-    return Error(true);
+    return Status::Error();
   }
 
   // Set up the file and source managers, if needed.
@@ -265,12 +265,12 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
 
   assert(GetClang().GetInstance().createTarget());
 
-  return Error();
+  return Status();
 }
 
 using namespace stone;
 
-static Error ParseCompilerOptions(
+static Status ParseCompilerOptions(
     llvm::opt::InputArgList &ial, DiagnosticEngine &de, LangOptions &langOpts,
     CompilerOptions &compilerOpts, ModuleOptions &moduleOpts,
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
@@ -286,7 +286,7 @@ static Status ParseLangOptions(llvm::opt::InputArgList &ial,
                                CompilerOptions &compilerOpts,
                                LangOptions &langOpts) {
 
-  return Status::Success();
+  return Status()
 }
 
 static void ParseCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
@@ -364,11 +364,11 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
-                                DiagnosticEngine &de,
-                                CompilerOptions &compilerOpts,
-                                CodeGenOptions &codeGenOpts,
-                                LangOptions &langOpts, Clang &cc) {
+static Status ParseTargetOptions(llvm::opt::InputArgList &ial,
+                                 DiagnosticEngine &de,
+                                 CompilerOptions &compilerOpts,
+                                 CodeGenOptions &codeGenOpts,
+                                 LangOptions &langOpts, Clang &cc) {
 
   std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
            codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
@@ -379,30 +379,30 @@ static Error ParseTargetOptions(llvm::opt::InputArgList &ial,
   //   &>(codeGenOpts).pointerAuth,
   //                          cc.GetInstance().getCodeGenOpts().PointerAuth);
   // }
-  return Error();
+  return Status();
 }
-static Error ParseCodeGenOptions(llvm::opt::InputArgList &ial,
-                                 DiagnosticEngine &de,
-                                 CompilerOptions &compilerOpts,
-                                 CodeGenOptions &codeGenOpts,
-                                 LangOptions &langOpts, Clang &cc) {
+static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
+                                  DiagnosticEngine &de,
+                                  CompilerOptions &compilerOpts,
+                                  CodeGenOptions &codeGenOpts,
+                                  LangOptions &langOpts, Clang &cc) {
   ParseCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
 
-  return Error();
+  return Status();
 }
 
-static Error ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
+static Status ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
+                                      DiagnosticEngine &de,
+                                      CompilerOptions &compilerOpts,
+                                      TypeCheckerOptions &typeCheckerOpts) {
+  return Status();
+}
+
+static Status ParseSearchPathOptions(llvm::opt::InputArgList &ial,
                                      DiagnosticEngine &de,
                                      CompilerOptions &compilerOpts,
-                                     TypeCheckerOptions &typeCheckerOpts) {
-  return Error();
-}
-
-static Error ParseSearchPathOptions(llvm::opt::InputArgList &ial,
-                                    DiagnosticEngine &de,
-                                    CompilerOptions &compilerOpts,
-                                    SearchPathOptions &searchPathOpts) {
-  return Error();
+                                     SearchPathOptions &searchPathOpts) {
+  return Status();
 }
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {

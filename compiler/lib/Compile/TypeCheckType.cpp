@@ -2,8 +2,8 @@
 #include "stone/AST/TypeVisitor.h"
 #include "stone/Sem/TypeChecker.h"
 
-using namespace stone::sem;
 using namespace stone::ast;
+using namespace stone::typecheck;
 
 class TypeChecking final : public TypeVisitor<TypeChecking>, public ASTWalker {
 public:

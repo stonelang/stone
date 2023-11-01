@@ -30,7 +30,6 @@ set(stone_gen_sources
 	GenABI.cpp
 	
 	OptimizeIR.cpp
-	TargetMachine.cpp
 	
 	LINK_LIBS
 	StoneAST

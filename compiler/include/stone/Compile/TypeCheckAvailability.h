@@ -35,7 +35,7 @@ class Type;
 class ValueDecl;
 
 } // namespace ast
-namespace sem {
+namespace typecheck {
 class ExportContext;
 
 enum class DeclAvailabilityFlag : uint8_t {
@@ -269,6 +269,6 @@ void CheckExplicitAvailability(ast::Decl *decl);
 /// flag -check-api-availability-only.
 bool ShouldCheckAvailability(const ast::Decl *D);
 
-} // namespace sem
+} // namespace typecheck
 } // namespace stone
 #endif

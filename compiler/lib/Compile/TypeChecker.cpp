@@ -4,8 +4,8 @@
 #include "stone/CodeCompletionListener.h"
 
 using namespace stone;
-using namespace stone::sem;
 using namespace stone::ast;
+using namespace stone::typecheck;
 
 TypeChecker::TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)

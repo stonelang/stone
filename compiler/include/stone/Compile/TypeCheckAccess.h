@@ -27,7 +27,8 @@ class Type;
 class ValueDecl;
 
 } // namespace ast
-namespace sem {
+namespace typecheck {
+
 class TypeChecker;
 class ExportContext;
 
@@ -76,6 +77,6 @@ DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
                                              const ExportContext &where,
                                              DowngradeToWarningKind &kind);
 
-} // namespace sem
+} // namespace typecheck
 } // namespace stone
 #endif

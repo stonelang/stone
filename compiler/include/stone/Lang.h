@@ -24,21 +24,30 @@ class GlobalVariable;
 } // namespace llvm
 
 namespace stone {
+class Clang;
 class ASTListener;
+class CompilerListener;
+class CodeGenListener;
+class TypeCheckerListener;
+class CompilationListener;
 class CodeGenOptions;
-class CodeGenContext;
-class CodeGenScope;
 class TargetOptions;
 class LangOptions;
 class DiagnosticEngine;
 class CompilerInstance;
-class TypeCheckerListener;
-class CodeGenListener;
 class TypeCheckerOptions;
-class CodeGenListener;
 class PrimaryFileSpecificPaths;
 class CompilerOptions;
 
+} // namespace stone
+
+namespace stone {
+namespace codegen {
+class CodeGenContext;
+}
+} // namespace stone
+
+namespace stone {
 namespace ast {
 class ASTContext;
 class ASTFile;
@@ -47,12 +56,7 @@ class ModuleDecl;
 } // namespace stone
 
 namespace stone {
-
-class CompilerListener;
-class CodeGenContext;
-class CompilerInstance;
-class Clang;
-class CompilationListener;
+using ModuleOrASTFile = llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 class Lang final {
   FileMgr fm;
@@ -83,9 +87,6 @@ public:
 
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
-
-public:
-  using ModuleOrASTFile = llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 public:
   static int Compile(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -135,13 +136,13 @@ public:
   static void SerializeModuleDecl(ast::ModuleDecl &moduleDecl);
 
   /// GenIR just for an ASTFile
-  static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+  static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
                     ast::ASTFile *sf,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
   /// GenIR for the entire module
-  static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+  static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
                     ast::ModuleDecl *mod,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
@@ -159,7 +160,7 @@ public:
   static bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 
   static std::unique_ptr<llvm::TargetMachine>
-  CreateTargetMachine(const CodeGenOptions &opts);
+  CreateTargetMachine(const CodeGenOptions &opts, ast::ASTContext &ac);
 
   static void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                          Lang &lang, llvm::TargetMachine *target);
@@ -170,7 +171,7 @@ public:
                         const CodeGenOptions &opts);
 
   /// Returns true is successfull
-  static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
+  static bool GenNative(codegen::CodeGenContext &cgc, ast::ASTContext &context,
                         llvm::StringRef outputFilename,
                         CodeGenListener *listener = nullptr);
 
@@ -185,16 +186,16 @@ public:
   /// \param Module LLVM module to code gen, required.
   /// \param TargetMachine target of code gen, required.
   /// \param OutputFilename Filename for output.
-  static bool GenNative(CodeGenContext &cgc, ast::ASTContext &context,
+  static bool GenNative(codegen::CodeGenContext &cgc, ast::ASTContext &context,
                         llvm::StringRef outputFilename,
                         llvm::sys::Mutex *diagMutex,
                         llvm::GlobalVariable *hashGlobal,
                         CodeGenListener *listener = nullptr);
 
   /// Returns true is successfull
-  static void WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
-                          llvm::sys::Mutex *diagMutex = nullptr,
-                          CodeGenScope *parentScope = nullptr);
+  static void WriteNative(codegen::CodeGenContext &cgc,
+                          llvm::raw_pwrite_stream &out,
+                          llvm::sys::Mutex *diagMutex = nullptr);
 };
 } // namespace stone
 #endif

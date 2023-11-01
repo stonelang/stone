@@ -5,7 +5,7 @@
 
 using namespace stone;
 using namespace stone::ast;
-using namespace stone::sem;
+using namespace stone::typecheck;
 
 void Lang::TypeCheckASTFile(ast::ASTFile &sf,
                             stone::TypeCheckerOptions &typeCheckerOpts,
