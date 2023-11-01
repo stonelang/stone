@@ -3,6 +3,7 @@
 
 #include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/SrcLoc.h"
 #include "stone/CodeGen/CodeGenContext.h"
 
 #include "llvm/IR/PassManager.h"

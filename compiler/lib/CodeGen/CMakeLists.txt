@@ -17,7 +17,6 @@ set(stone_gen_sources
 	CodegenModule.cpp
 	CodeGenMetadata.cpp
 	CodeGenTypeResolver.cpp
-	CodeGenTypeCache.cpp
 	GenCall.cpp
 	GenDecl.cpp
 	GenStmt.cpp
@@ -33,7 +32,7 @@ set(stone_gen_sources
 	LINK_LIBS
 	StoneAST
 )
-add_stone_library(StoneGen
+add_stone_library(StoneCodeGen
 	${stone_gen_sources}
 )
 

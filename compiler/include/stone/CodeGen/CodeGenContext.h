@@ -3,6 +3,7 @@
 
 #include "stone/AST/ASTContext.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/TargetOptions.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -19,14 +20,11 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-
 class Lang;
 class Clang;
 class CodeGenOptions;
 class ModuleOptions;
 class TargetOptions;
-
-namespace stone {
 namespace codegen {
 
 class CodeGenContext final {
@@ -49,7 +47,7 @@ private:
   llvm::FunctionPassManager fpm;
 
 private:
-  CodeGenContext::CodeGenContext(
+  CodeGenContext(
       const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
       const stone::TargetOptions &targetOpts, const Lang &lang,
       ast::ASTContext &astContext, Clang &clang,
@@ -76,10 +74,8 @@ public:
     return *llvmTargetMachine;
   }
   llvm::TargetMachine &GetLLVMTargetMachine() { return *llvmTargetMachine; }
-
-  LLVMContext &GetLLVMContext() { return llvmContext; }
-
-  ASTContext &GetASTContext() { return astContext; }
+  llvm::LLVMContext &GetLLVMContext() { return llvmContext; }
+  ast::ASTContext &GetASTContext() { return astContext; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -97,3 +93,5 @@ public:
 
 } // namespace codegen
 } // namespace stone
+
+#endif

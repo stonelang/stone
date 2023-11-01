@@ -1,28 +1,30 @@
-#ifndef STONE_GEN_CODEGENBUILDER_H
-#define STONE_GEN_CODEGENBUILDER_H
-
+#ifndef STONE_CODEGEN_CODEGENBUILDER_H
+#define STONE_CODEGEN_CODEGENBUILDER_H
 
 #include "stone/CodeGen/CodeGenContext.h"
-#include "stone/CodeGen/CodeGenTypeCache.h"
 
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Type.h"
 
-namespace llvm {
-class IRBuilder;
-class ConstantFolder;
-class Instruction;
-class Twine;
-class IRBuilderDefaultInserter;
-class BasicBlock;
+// namespace llvm {
+// class IRBuilder;
+// class ConstantFolder;
+// class Instruction;
+// class Twine;
+// class IRBuilderDefaultInserter;
+// class BasicBlock;
 
-} // namespace llvm
+// class Type;
+// class IntegerType;
+// class PointerType;
+// class LLVMContext;
 
+// } // namespace llvm
 
 namespace stone {
 namespace codegen {
-  
+
 class CodeGenFunction;
 
 class CodeGenTypeCache {
