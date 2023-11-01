@@ -83,6 +83,8 @@ enum class ScalarTypeKind {
 };
 
 class Type {
+  friend class TypeCollector;
+
   TypeBase *typePtr = nullptr;
   TypeQualifierList *qualifiers;
   TypeThunkList *thunks = nullptr;
