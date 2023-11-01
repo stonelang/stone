@@ -1,7 +1,6 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/CodeGen/CodeGenScope.h"
 #include "stone/Lang.h"
@@ -45,6 +44,7 @@
 #include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 // static void
 // OptimizeIRUsingLegacyPassManger(llvm::Module *mod, CodeGenOptions

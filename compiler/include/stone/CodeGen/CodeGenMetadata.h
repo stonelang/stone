@@ -23,6 +23,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+namespace codegen {
 class CodeGenModule;
 class CodeGenMetadata final {
   CodeGenModule &cgm;
@@ -30,7 +31,7 @@ class CodeGenMetadata final {
 public:
   CodeGenMetadata(CodeGenModule &cgm);
 };
-
+} // namespace codegen
 } // namespace stone
 
 #endif

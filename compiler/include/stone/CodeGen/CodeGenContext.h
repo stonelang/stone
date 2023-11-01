@@ -1,9 +1,8 @@
 #ifndef STONE_GEN_CODEGENCONTEXT_H
 #define STONE_GEN_CODEGENCONTEXT_H
 
+#include "stone/AST/ASTContext.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Error.h"
-#include "stone/Basic/STDAlias.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -32,7 +31,7 @@ namespace codegen {
 
 class CodeGenContext final {
 private:
-  ASTContext &astContext;
+  ast::ASTContext &astContext;
   llvm::LLVMContext &llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
@@ -53,14 +52,14 @@ private:
   CodeGenContext::CodeGenContext(
       const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
       const stone::TargetOptions &targetOpts, const Lang &lang,
-      ASTContext &astContext, Clang &clang,
+      ast::ASTContext &astContext, Clang &clang,
       std::unique_ptr<llvm::Module> llvmMod,
       llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, llvm::LLVMContext &llvmContext,
                  const stone::TargetOptions &targetOpts, const Lang &lang,
-                 ASTContext &astContext, Clang &clang,
+                 ast::ASTContext &astContext, Clang &clang,
                  llvm::GlobalVariable **outModuleHash = nullptr);
 
 public:
@@ -73,17 +72,13 @@ public:
   const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
   llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 
-  const llvm::LLVMContext *GetLLVMContext() const { return llvmContext.get(); }
-  llvm::LLVMContext *GetLLVMContext() { return llvmContext.get(); }
-
-  const llvm::TargetMachine *GetLLVMTargetMachine() const {
-    return llvmTargetMachine.get();
+  const llvm::TargetMachine &GetLLVMTargetMachine() const {
+    return *llvmTargetMachine;
   }
-  llvm::TargetMachine *GetLLVMTargetMachine() {
-    return llvmTargetMachine.get();
-  }
+  llvm::TargetMachine &GetLLVMTargetMachine() { return *llvmTargetMachine; }
 
   LLVMContext &GetLLVMContext() { return llvmContext; }
+
   ASTContext &GetASTContext() { return astContext; }
 
 public:

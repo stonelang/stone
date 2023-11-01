@@ -16,8 +16,8 @@ class FunctionDecl;
 class MemberPointerType;
 } // namespace ast
 
+namespace codegen {
 class CodeGenModule;
-
 class CodeGenTypeResolver final {
   CodeGenModule &cgm;
 
@@ -30,6 +30,6 @@ public:
   // llvm::Type *GetType(const ast::MemberPointerType *mpt);
   llvm::FunctionType *GetFunctionType(const ast::FunctionDecl *fd);
 };
-
+} // namespace codegen
 } // namespace stone
 #endif

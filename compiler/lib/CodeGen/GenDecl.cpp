@@ -1,11 +1,11 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/Global.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenFunction.h"
 #include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
 using namespace stone::ast;
+using namespace stone::codegen;
 
 void CodeGenModule::EmitGlobalDecl(Decl *d) {
 

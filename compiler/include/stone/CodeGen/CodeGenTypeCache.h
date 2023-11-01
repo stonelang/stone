@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_IRCODEGENTYPECACHE_H
-#define STONE_GEN_IRCODEGENTYPECACHE_H
+#ifndef STONE_GEN_CODEGENTYPECACHE_H
+#define STONE_GEN_CODEGENTYPECACHE_H
 
 namespace llvm {
 class Type;
@@ -9,7 +9,7 @@ class LLVMContext;
 } // namespace llvm
 
 namespace stone {
-
+namespace codegen {
 class CodeGenTypeCache {
 public:
   llvm::Type *VoidTy;
@@ -25,6 +25,7 @@ public:
   llvm::PointerType *Int32PtrTy; /// i32*
   llvm::PointerType *Int64PtrTy; /// i64*
 
+public:
   llvm::IntegerType *CharTy; /// char
 
   // LLVM Address types
@@ -34,6 +35,6 @@ public:
 public:
   explicit CodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
-
+} // namespace codegen
 } // namespace stone
 #endif

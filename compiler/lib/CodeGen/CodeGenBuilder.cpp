@@ -3,6 +3,7 @@
 #include "stone/CodeGen/CodeGenTypeCache.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 void CodeGenBuilderInserter::InsertHelper(
     llvm::Instruction *instruction, const llvm::Twine &name,

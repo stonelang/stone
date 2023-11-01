@@ -1,8 +1,8 @@
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenFunction.h"
 #include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 void CodeGenFunction::EmitIfStmt(const IfStmt &stmt) {}
 

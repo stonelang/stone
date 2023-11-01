@@ -1,6 +1,5 @@
 #include "stone/CodeGen/CodeGenTypeResolver.h"
 #include "stone/AST/Type.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenABI.h"
 #include "stone/CodeGen/CodeGenModule.h"
 
@@ -17,6 +16,7 @@
 #include "llvm/Transforms/Utils/Local.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}

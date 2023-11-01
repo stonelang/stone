@@ -6,11 +6,12 @@
 
 using namespace stone;
 using namespace stone::ast;
+using namespace stone::codegen;
 
 CodeGenModule::CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
                              llvm::StringRef outputFilename)
 
-    : typeCache(*cgc.GetLLVMContext()), irCodeGen(irCodeGen),
+    : typeCache(*cgc.GetLLVMContext()), cgc(cgc),
       moduleName(moduleName), outputFilename(outputFilename),
       typeResolver(*this), metadata(*this) {}
 

@@ -5,7 +5,7 @@
 #include "stone/CodeGen/CodeGenModule.h"
 
 namespace stone {
-
+namespace codegen {
 class CodeGenConstant final {
 public:
   CodeGenModule &cgm;
@@ -25,6 +25,6 @@ public:
 
   ~CodeGenConstant();
 };
-
+} // namespace codegen
 } // namespace stone
 #endif

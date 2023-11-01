@@ -2,7 +2,6 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/Lang.h"
 
@@ -76,6 +75,7 @@
 
 using namespace stone;
 using namespace stone::ast;
+using namespace stone::codegen;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, ast::ModuleDecl *md,

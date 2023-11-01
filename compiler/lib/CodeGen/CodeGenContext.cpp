@@ -10,9 +10,7 @@
 #include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
-
-// using namespace stone;
-// using namespace stone::codegen;
+using namespace stone::codegen;
 
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                llvm::LLVMContext &llvmContext,

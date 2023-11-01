@@ -73,10 +73,9 @@ class AutoDecl;
 class ASTFile;
 class NominalTypeDecl;
 } // namespace ast
-
-class CodeGen;
 class CodeGenListener;
 
+namespace codegen {
 // class CodeGenLoop {};
 // class CodeGenCall {};
 class CodeGenBlocks final {
@@ -98,7 +97,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class CodeGenModule final : public ASTVisitor<CodeGenModule> {
+class CodeGenModule final : public ast::ASTVisitor<CodeGenModule> {
 
   CodeGenContext &cgc;
   CodeGenTypeCache typeCache;
@@ -152,7 +151,7 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  CodeGen &GetCodeGen() { return irCodeGen; }
+  CodeGenContext &GetCodeGenContext() { return cgc; }
   CodeGenTypeCache &GetCodeGenTypeCache() { return typeCache; }
   CodeGenTypeResolver &GetCodeGenTypeResolver() { return typeResolver; }
   CodeGenMetadata &GetCodeGenMetadata() { return metadata; }
@@ -236,6 +235,7 @@ public:
     return std::min(high, std::max(low, val));
   }
 };
+} // namespace codegen
 } // namespace stone
 
 #endif

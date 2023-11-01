@@ -1,6 +1,7 @@
 #include "stone/CodeGen/CodeGenConstant.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 CodeGenConstant::CodeGenConstant(CodeGenModule &cgm, CodeGenFunction *cgf)
     : cgm(cgm), cgf(cgf) {}

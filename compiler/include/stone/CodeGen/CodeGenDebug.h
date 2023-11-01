@@ -21,6 +21,8 @@ class TargetMachine;
 namespace stone {
 class SrcLoc;
 class Clang;
+
+namespace codegen {
 class CodeGenModule;
 
 class CodeGenDebug final {
@@ -159,6 +161,8 @@ public:
   /// to the IRBuilder's current DebugLoc.
   SrcLoc GetLoc() const { return curLoc; }
 };
+
+} // namespace codegen
 } // namespace stone
 
 #endif

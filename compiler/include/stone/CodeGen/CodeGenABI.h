@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_IRCODEGENABI_H
-#define STONE_GEN_IRCODEGENABI_H
+#ifndef STONE_GEN_CODEGENABI_H
+#define STONE_GEN_CODEGENABI_H
 
 #include "stone/AST/Mangle.h"
 
@@ -19,9 +19,11 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+
 namespace ast {
 class MemberPointerType;
 }
+namespace codegen {
 class CodeGenModule;
 
 class CodeGenABI final {
@@ -35,7 +37,7 @@ public:
 public:
   llvm::Type *ResolveMemberPointerType(const ast::MemberPointerType mpt);
 };
-
+} // namespace codegen
 } // namespace stone
 
 #endif

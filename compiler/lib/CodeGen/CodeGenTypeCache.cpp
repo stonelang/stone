@@ -1,11 +1,11 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/CodeGen/CodeGen.h"
 #include "stone/Lang.h"
 
 #include "llvm/IR/Module.h"
 
 using namespace stone;
+using namespace stone::codegen;
 
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
@@ -20,8 +20,3 @@ CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 
   // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
 }
-
-CodeGen::CodeGen(CodeGenContext &cgc, CodeGenListener *listener)
-    : cgc(cgc), listener(listener) {}
-
-CodeGen::~CodeGen() {}

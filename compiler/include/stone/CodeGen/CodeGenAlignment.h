@@ -24,6 +24,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+namespace codegen {
 
 /// An alignment value, in eight-bit units.
 class CodGenAlignment {
@@ -81,5 +82,5 @@ public:
     return result;
   }
 };
-
+} // namespace codegen
 } // namespace stone

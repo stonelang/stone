@@ -9,7 +9,6 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_gen_sources
-	CodeGenMachine.cpp
 	CodeGenContext.cpp
 	CodeGenConstant.cpp
 	CodeGenDebug.cpp

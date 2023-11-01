@@ -1,5 +1,7 @@
 #include "stone/CodeGen/CodeGenModule.h"
 
+using namespace stone::codegen;
+
 class TypeCodeGen final {
 public:
   TypeCodeGen(const TypeCodeGen &) = delete;

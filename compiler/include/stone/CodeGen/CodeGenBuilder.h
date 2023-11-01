@@ -1,29 +1,55 @@
-#ifndef STONE_GEN_IRCODEGENBUILDER_H
-#define STONE_GEN_IRCODEGENBUILDER_H
+#ifndef STONE_GEN_CODEGENBUILDER_H
+#define STONE_GEN_CODEGENBUILDER_H
 
-#include "stone/AST/Module.h"
-#include "stone/Basic/LLVM.h"
+
 #include "stone/CodeGen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenTypeCache.h"
 
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Type.h"
 
-#include <memory>
-
 namespace llvm {
-class raw_pwrite_stream;
-class GlobalVariable;
-class MemoryBuffer;
-class Module;
-class TargetOptions;
-class TargetMachine;
+class IRBuilder;
+class ConstantFolder;
+class Instruction;
+class Twine;
+class IRBuilderDefaultInserter;
+class BasicBlock;
+
 } // namespace llvm
 
-namespace stone {
 
+namespace stone {
+namespace codegen {
+  
 class CodeGenFunction;
-struct CodeGenTypeCache;
+
+class CodeGenTypeCache {
+public:
+  llvm::Type *VoidTy;
+
+  llvm::IntegerType *Int8Ty;  /// i8
+  llvm::IntegerType *Int16Ty; /// i16
+  llvm::IntegerType *Int32Ty; /// i32
+  llvm::IntegerType *Int64Ty; /// i64
+  llvm::IntegerType *IntTy;   /// int
+
+  llvm::PointerType *Int8PtrTy;  ///  i8*
+  llvm::PointerType *Int16PtrTy; /// i16*
+  llvm::PointerType *Int32PtrTy; /// i32*
+  llvm::PointerType *Int64PtrTy; /// i64*
+
+public:
+  llvm::IntegerType *CharTy; /// char
+
+  // LLVM Address types
+  llvm::IntegerType *RelativeAddressTy;
+  llvm::PointerType *RelativeAddressPtrTy;
+
+public:
+  explicit CodeGenTypeCache(llvm::LLVMContext &llvmContext);
+};
 
 class CodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
 private:
@@ -88,6 +114,7 @@ public:
   //                            Name);
   // }
 };
+} // namespace codegen
 } // namespace stone
 
 #endif

@@ -19,6 +19,7 @@ class Function;
 } // namespace llvm
 
 namespace stone {
+namespace codegen {
 
 enum class ABIArgKind {
 
@@ -138,7 +139,7 @@ public:
   // void EmitMemCopy(Address dest, Address src, Size size);
   // void EmitMemCopy(Address dest, Address src, llvm::Value *size);
 };
-
+} // namespace codegen
 } // namespace stone
 
 #endif
