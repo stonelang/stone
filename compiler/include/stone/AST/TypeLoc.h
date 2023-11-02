@@ -2,7 +2,7 @@
 #define STONE_ASTTYPELOC_H
 
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/PointerIntPair.h"
@@ -10,7 +10,6 @@
 namespace stone {
 namespace ast {
 
-class TypeRep;
 class ASTContext;
 
 /// Example: int a = 0;  The start loc is i and the range is i ...t

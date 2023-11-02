@@ -1,11 +1,12 @@
 #ifndef STONE_ASTBUILTINCONTEXT_H
 #define STONE_ASTBUILTINCONTEXT_H
 
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 
 namespace stone {
 namespace ast {
 class ASTContext;
+class QualType;
 
 class Builtin final {
   ASTContext &sc;

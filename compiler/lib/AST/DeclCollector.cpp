@@ -7,7 +7,7 @@ DeclCollector::DeclCollector() {}
 
 void DeclCollector::Apply() {
 
-  GetTypeCollector().Apply();
+  // GetTypeCollector().Apply();
 
   // // if (GetTypeQualifierCollector().HasAny()) {
   // //   GetTypeQualifierCollector().Apply();
@@ -24,10 +24,10 @@ void DeclCollector::Apply() {
   // }
 }
 
-void TypeCollector::Apply() {}
+// void TypeCollector::Apply() {}
 
-void StorageSpecifierCollector::Apply() {}
+// void StorageSpecifierCollector::Apply() {}
 
-void FunctionSpecifierCollector::Apply() {}
+// void FunctionSpecifierCollector::Apply() {}
 
-void AccessLevelCollector::Apply() {}
+// void AccessLevelCollector::Apply() {}

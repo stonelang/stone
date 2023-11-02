@@ -4,9 +4,7 @@
 #include "stone/AST/Attribute.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Generics.h"
-#include "stone/AST/TypeChunk.h"
-#include "stone/AST/TypeOperator.h"
-#include "stone/AST/TypeQualifier.h"
+#include "stone/AST/TypeCollector.h"
 #include "stone/AST/Types.h"
 #include "stone/Basic/OptionSet.h"
 
@@ -257,47 +255,6 @@ public:
   void AddUsing(SrcLoc inputLoc) { loc = inputLoc; }
   bool HasUsing() { return loc.isValid(); }
   SrcLoc GetLoc() { return loc; }
-};
-
-class TypeCollector final {
-  QualType type;
-  TypeSpecifierCollector typeSpecifierCollector;
-  TypeQualifierCollector typeQualifierCollector;
-  TypeChunkCollector typeChunkCollector;
-  TypeOperatorCollector typeOperatorCollector;
-
-public:
-  TypeCollector() {}
-
-  TypeQualifierCollector &GetTypeQualifierCollector() {
-    return typeQualifierCollector;
-  }
-  const TypeQualifierCollector &GetTypeQualifierCollector() const {
-    return typeQualifierCollector;
-  }
-  TypeSpecifierCollector &GetTypeSpecifierCollector() {
-    return typeSpecifierCollector;
-  }
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return typeSpecifierCollector;
-  }
-
-  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
-  const TypeChunkCollector &GetTypeChunkCollector() const {
-    return typeChunkCollector;
-  }
-  TypeOperatorCollector &GetTypeOperatorCollector() {
-    return typeOperatorCollector;
-  }
-  const TypeOperatorCollector &GetTypeOperatorCollector() const {
-    return typeOperatorCollector;
-  }
-
-  void Apply();
-
-public:
-  void SetType(QualType inputType) { type = inputType; }
-  QualType GetType() { return type; }
 };
 
 class DeclCollector {

@@ -21,7 +21,8 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
 
 ModuleDecl::ModuleDecl(Identifier name, ASTContext &sc, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, SrcLoc(), QualType(), &sc), parent(parent) {
+      TypeDecl(DeclKind::Module, name, SrcLoc(), QualType(), &sc),
+      parent(parent) {
 
   SetAccessLevel(AccessLevel::Public);
 

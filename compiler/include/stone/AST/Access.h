@@ -108,6 +108,48 @@ public:
     return llvm::None;
   }
 };
+
+// class AccessLevelCollector final {
+//   SrcLoc loc;
+//   AccessLevel level;
+
+// private:
+//   void AddAccessLevel(AccessLevel inputLevel, SrcLoc inputLoc) {
+//     assert(level == AccessLevel::None);
+//     level = inputLevel;
+//     loc = inputLoc;
+//   }
+
+// public:
+//   AccessLevelCollector() : level(AccessLevel::None) {}
+
+// public:
+//   void AddPublic(SrcLoc inputLoc) {
+//     AddAccessLevel(AccessLevel::Public, inputLoc);
+//   }
+//   bool HasPublic() { return (level == AccessLevel::Public && loc.isValid());
+//   }
+
+//   void AddPrivate(SrcLoc inputLoc) {
+//     AddAccessLevel(AccessLevel::Private, inputLoc);
+//   }
+//   bool HasPrivate() { return (level == AccessLevel::Private &&
+//   loc.isValid()); }
+
+//   void AddInternal(SrcLoc inputLoc) {
+//     AddAccessLevel(AccessLevel::Internal, inputLoc);
+//   }
+//   bool HasInternal() {
+//     return (level == AccessLevel::Internal && loc.isValid());
+//   }
+
+//   bool HasAny() { return (HasPublic() || HasPrivate() || HasInternal()); }
+//   SrcLoc GetLoc() { return loc; }
+//   AccessLevel GetAccessLevel() { return level; }
+
+//   void Apply();
+// };
+
 } // namespace ast
 } // namespace stone
 #endif
