@@ -1,12 +1,15 @@
-#ifndef STONE_ASTTYPEQUALIFIER_H
-#define STONE_ASTTYPEQUALIFIER_H
+#ifndef STONE_AST_TYPEQUALIFIER_H
+#define STONE_AST_TYPEQUALIFIER_H
 
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
 namespace ast {
+class Type;
+class ASTContext;
 
 enum class TypeQualifierKind : UInt8 {
   None = 0,

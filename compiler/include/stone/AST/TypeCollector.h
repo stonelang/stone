@@ -10,51 +10,51 @@
 namespace stone {
 namespace ast {
 
-class QualType;
-class ASTContext;
+// class QualType;
+// class ASTContext;
 
-class TypeCollector final {
-  QualType qualType;
+// class TypeCollector final {
+//   QualType qualType;
 
-  TypeSpecifierCollector typeSpecifierCollector;
-  TypeQualifierCollector typeQualifierCollector;
-  TypeChunkCollector typeChunkCollector;
-  TypeOperatorCollector typeOperatorCollector;
+//   TypeSpecifierCollector typeSpecifierCollector;
+//   TypeQualifierCollector typeQualifierCollector;
+//   TypeChunkCollector typeChunkCollector;
+//   TypeOperatorCollector typeOperatorCollector;
 
-public:
-  TypeCollector() {}
+// public:
+//   TypeCollector() {}
 
-  TypeQualifierCollector &GetTypeQualifierCollector() {
-    return typeQualifierCollector;
-  }
-  const TypeQualifierCollector &GetTypeQualifierCollector() const {
-    return typeQualifierCollector;
-  }
-  TypeSpecifierCollector &GetTypeSpecifierCollector() {
-    return typeSpecifierCollector;
-  }
-  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
-    return typeSpecifierCollector;
-  }
+//   TypeQualifierCollector &GetTypeQualifierCollector() {
+//     return typeQualifierCollector;
+//   }
+//   const TypeQualifierCollector &GetTypeQualifierCollector() const {
+//     return typeQualifierCollector;
+//   }
+//   TypeSpecifierCollector &GetTypeSpecifierCollector() {
+//     return typeSpecifierCollector;
+//   }
+//   const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+//     return typeSpecifierCollector;
+//   }
 
-  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
-  const TypeChunkCollector &GetTypeChunkCollector() const {
-    return typeChunkCollector;
-  }
-  TypeOperatorCollector &GetTypeOperatorCollector() {
-    return typeOperatorCollector;
-  }
-  const TypeOperatorCollector &GetTypeOperatorCollector() const {
-    return typeOperatorCollector;
-  }
+//   TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+//   const TypeChunkCollector &GetTypeChunkCollector() const {
+//     return typeChunkCollector;
+//   }
+//   TypeOperatorCollector &GetTypeOperatorCollector() {
+//     return typeOperatorCollector;
+//   }
+//   const TypeOperatorCollector &GetTypeOperatorCollector() const {
+//     return typeOperatorCollector;
+//   }
 
-public:
-  void SetType(QualType qualType);
-  QualType GetType();
+// public:
+//   void SetType(QualType qualType);
+//   QualType GetType();
 
-public:
-  QualType Apply(const ast::ASTContext &astContext, QualType qualType) const;
-};
+// public:
+//   QualType Apply(const ast::ASTContext &astContext, QualType qualType) const;
+// };
 
 } // namespace ast
 } // namespace stone

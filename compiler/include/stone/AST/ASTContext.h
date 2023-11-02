@@ -83,11 +83,11 @@ class Expr;
 class ASTFile;
 
 class ASTContextStats final : public Stats {
-  const ASTContext &sc;
+  const ASTContext &astContext;
 
 public:
-  ASTContextStats(const ASTContext &sc)
-      : Stats("asttax context stats:"), sc(sc) {}
+  ASTContextStats(const ASTContext &astContext)
+      : Stats("asttax context stats:"), astContext(astContext) {}
   void Print(ColorStream &stream) override;
 };
 

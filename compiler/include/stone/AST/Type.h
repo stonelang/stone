@@ -2,6 +2,7 @@
 #define STONE_AST_TYPE_H
 
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/CanType.h"
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
@@ -83,99 +84,11 @@ enum class ScalarTypeKind {
   FixedPoint
 };
 
-class alignas(1 << TypeAlignInBits) Type
-    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
-
-  friend class ASTContext;
-
-  Type(const Type &) = delete;
-  void operator=(const Type &) = delete;
-
-  TypeKind kind;
-
-  /// This union contains to the ASTContext for canonical types, and is
-  /// otherwise lazily populated by ASTContext when the canonical form of a
-  /// non-canonical type is requested. The disposition of the union is stored
-  /// outside of the union for performance. See Bits.Type.IsCanonical.
-  union {
-    CanType canType;
-    const ASTContext *sc;
-  };
-
-protected:
-  union {
-    uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8) + 1 + 1,
-                               Kind
-                               : stone::BitMax(NumTypeKindBits, 8),
-
-                                 /// Whether this type is canonical or not.
-                                 IsCanonical : 1,
-                                 // Whether this type can have qualifiers
-                                 AllowQuals : 1);
-
-    STONE_INLINE_BITFIELD(SweetType, Type, 1, HasCachedType : 1);
-
-  } Bits;
-
-public:
-  Type(TypeKind kind, const ASTContext *canTypeContext)
-      : kind(kind), sc(nullptr) {
-
-    Bits.Type.Kind = static_cast<unsigned>(kind);
-
-    /// TODO: I do not like this ....
-    if (canTypeContext) {
-      // Bits.Type.IsCanonical = true;
-      sc = canTypeContext;
-    }
-  }
-
-public:
-  bool IsBasic();
-  bool IsNominalType();
-
-  /// getASTContext - Return the ASTContext that this type belongs to.
-  ASTContext &GetASTContext();
-
-public:
-  TypeKind GetKind() const { return kind; }
-
-  // TypeKind GetKind() const { return
-  // static_cast<TypeKind>(Bits.Type.Kind); }
-
-  // We can do this because all types are generally cannonical types.
-  // CanType GetCanType();
-
-  /// isCanonical - Return true if this is a canonical type.
-  bool IsCanType() const { return Bits.Type.IsCanonical; }
-
-  bool AllowQuals() const { return Bits.Type.AllowQuals; }
-
-  bool HasQuals() const;
-
-  /// hasCanonicalTypeComputed - Return true if we've already computed a
-  /// canonical version of this type.
-  bool IsCanTypeComputed() const { return !canType.IsNull(); }
-
-private:
-  CanType ComputeCanType();
-};
-
-// TODO: Think about
-//  class AnyType : public Type {
-//  public:
-
-//   AnyType(TypeKind kind, ASTContext *canTypeCtx)
-//       : Type(kind, canTypeCtx) {}
-// };
-
+class Type;
 class QualType {
   friend class TypeCollector;
 
   Type *typePtr = nullptr;
-  TypeChunkList *thunks = nullptr;
-  // TypeOperatorList* ops = nullptr;
 
   TypeQualifier constTypeQual{TypeQualifierKind::Const};
   TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
@@ -185,10 +98,10 @@ class QualType {
   TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
 
 public:
-  QualType(Type *typePtr = nullptr) : QualType(typePtr, nullptr) {}
+  QualType(Type *typePtr = nullptr) : typePtr(typePtr) {}
 
-  QualType(Type *typePtr, TypeChunkList *thunks = nullptr)
-      : typePtr(typePtr), thunks(thunks) {}
+  // QualType(Type *typePtr, TypeChunkList *thunks = nullptr)
+  //     : typePtr(typePtr), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -202,15 +115,12 @@ public:
   }
   explicit operator bool() const { return typePtr != nullptr; }
 
-  void SetTypeChunks(TypeChunkList *inputs) { thunks = inputs; }
-  TypeChunkList *GetTypeChunks() { return thunks; }
-
 public:
   /// Walk this Type.
   ///
   /// Returns true if the walk was aborted.
-  bool Walk(TypeWalker &walker) const;
-  bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+  // bool Walk(TypeWalker &walker) const;
+  // bool Walk(TypeWalker &&walker) const { return Walk(walker); }
 
 public:
   /// Look through the given Type and its children to find a Type
@@ -335,10 +245,10 @@ public:
     GetMutable().Clear();
   }
 
-private:
-  // Direct comparison is disabled for types, because they may not be canonical.
-  void operator==(QualType T) const = delete;
-  void operator!=(QualType T) const = delete;
+  // private:
+  //   // Direct comparison is disabled for types, because they may not be
+  //   canonical. void operator==(QualType T) const = delete; void
+  //   operator!=(QualType T) const = delete;
 };
 
 class CanType final : public QualType {
@@ -347,7 +257,7 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(Type *typePtr) : QualType(typePtr, nullptr) {
+  explicit CanType(Type *typePtr) : QualType(typePtr) {
 
     //   assert(IsCanTypeOrNull() &&
     //          "Forming a CanType out of a non-canonical type!");
@@ -384,10 +294,139 @@ private:
 
 public:
   // Direct comparison is allowed for CanTypes - they are known canonical.
-  bool operator==(CanType T) const { return GetPtr() == T.GetPtr(); }
-  bool operator!=(CanType T) const { return !operator==(T); }
-  bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
+  // bool operator==(CanType T) const { return GetPtr() == T.GetPtr(); }
+  // bool operator!=(CanType T) const { return !operator==(T); }
+  // bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
+
+class TypeCollector final {
+  QualType qualType;
+
+  TypeSpecifierCollector typeSpecifierCollector;
+  TypeQualifierCollector typeQualifierCollector;
+  TypeChunkCollector typeChunkCollector;
+  TypeOperatorCollector typeOperatorCollector;
+
+public:
+  TypeCollector() {}
+
+  TypeQualifierCollector &GetTypeQualifierCollector() {
+    return typeQualifierCollector;
+  }
+  const TypeQualifierCollector &GetTypeQualifierCollector() const {
+    return typeQualifierCollector;
+  }
+  TypeSpecifierCollector &GetTypeSpecifierCollector() {
+    return typeSpecifierCollector;
+  }
+  const TypeSpecifierCollector &GetTypeSpecifierCollector() const {
+    return typeSpecifierCollector;
+  }
+
+  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+  const TypeChunkCollector &GetTypeChunkCollector() const {
+    return typeChunkCollector;
+  }
+  TypeOperatorCollector &GetTypeOperatorCollector() {
+    return typeOperatorCollector;
+  }
+  const TypeOperatorCollector &GetTypeOperatorCollector() const {
+    return typeOperatorCollector;
+  }
+
+public:
+  void SetType(QualType qualType);
+  QualType GetType();
+
+public:
+  QualType Apply(const ast::ASTContext &astContext, QualType qualType) const;
+};
+
+class alignas(1 << TypeAlignInBits) Type
+    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
+
+  friend class ASTContext;
+
+  Type(const Type &) = delete;
+  void operator=(const Type &) = delete;
+
+  TypeKind kind;
+
+  // /// This union contains to the ASTContext for canonical types, and is
+  // /// otherwise lazily populated by ASTContext when the canonical form of a
+  // /// non-canonical type is requested. The disposition of the union is stored
+  // /// outside of the union for performance. See Bits.Type.IsCanonical.
+  // union {
+  //   CanType canType;
+  //   const ASTContext *sc;
+  // };
+
+  CanType canType;
+
+protected:
+  union {
+    uint64_t OpaqueBits;
+    STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8) + 1 + 1,
+                               Kind
+                               : stone::BitMax(NumTypeKindBits, 8),
+
+                                 /// Whether this type is canonical or not.
+                                 IsCanonical : 1,
+                                 // Whether this type can have qualifiers
+                                 AllowQuals : 1);
+
+    STONE_INLINE_BITFIELD(SweetType, Type, 1, HasCachedType : 1);
+
+  } Bits;
+
+public:
+  Type(TypeKind kind, const ASTContext *canTypeContext) : kind(kind) {
+    Bits.Type.Kind = static_cast<unsigned>(kind);
+    /// TODO: I do not like this ....
+    // if (canTypeContext) {
+    //   // Bits.Type.IsCanonical = true;
+    //   sc = canTypeContext;
+    // }
+  }
+
+public:
+  bool IsBasic();
+  bool IsNominalType();
+
+  /// getASTContext - Return the ASTContext that this type belongs to.
+  ASTContext &GetASTContext();
+
+public:
+  TypeKind GetKind() const { return kind; }
+
+  // TypeKind GetKind() const { return
+  // static_cast<TypeKind>(Bits.Type.Kind); }
+
+  // We can do this because all types are generally cannonical types.
+  // CanType GetCanType();
+
+  /// isCanonical - Return true if this is a canonical type.
+  bool IsCanType() const { return Bits.Type.IsCanonical; }
+
+  bool AllowQuals() const { return Bits.Type.AllowQuals; }
+
+  bool HasQuals() const;
+
+  /// hasCanonicalTypeComputed - Return true if we've already computed a
+  /// canonical version of this type.
+  bool IsCanTypeComputed() const { return !canType.IsNull(); }
+
+private:
+  CanType ComputeCanType();
+};
+
+// TODO: Think about
+//  class AnyType : public Type {
+//  public:
+
+//   AnyType(TypeKind kind, ASTContext *canTypeCtx)
+//       : Type(kind, canTypeCtx) {}
+// };
 
 class FunctionType : public Type {
   QualType result;
