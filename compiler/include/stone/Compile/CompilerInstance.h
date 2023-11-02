@@ -39,6 +39,19 @@ using EachASTFileCallback = llvm::function_ref<void(
 //     CompilerInvocation&invocation, CodeGenContext &cgc, CodeGenResult
 //     &result)>;
 
+struct ExecuteAnalysisFlags final {
+  ExecuteAnalysisFlags() = delete;
+  /// Flags that control the parsing of declarations.
+  enum ID {
+    Default = 0,
+    Parse = 1 << 1,
+    ResolveImports = 1 << 2,
+    TypeCheck = 1 << 3
+  };
+};
+/// Options that controls analysis execution
+using ExecuteAnalysisOptions = stone::OptionSet<ExecuteAnalysisFlags::ID>;
+
 class CompilerInstance final {
   std::unique_ptr<CompilerInstanceStats> stats;
 
@@ -93,6 +106,9 @@ public:
 public:
   /// Perform code analysis and code generation
   Status Compile();
+
+  void ExecuteAnalysis(ExecuteAnalysisOptions executeAnalysisOpts);
+  void ExecuteCodeGen();
 
 private:
   Status Parse();

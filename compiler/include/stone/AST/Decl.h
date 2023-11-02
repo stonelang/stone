@@ -53,6 +53,7 @@ class ValueDecl;
 class VarDecl;
 struct ASTNode;
 class Type;
+class QualType;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
@@ -377,17 +378,17 @@ public:
 
 class ValueDecl : public NameableDecl {
 
-  Type type;
+  QualType type;
   AccessLevel level;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType type,
             UnifiedContext context)
       : NameableDecl(kind, name, nameLoc, context), type(type) {}
 
 public:
-  void SetType(Type inputType) { type = inputType; }
-  Type GetType() { return type; }
+  void SetType(QualType inputType) { type = inputType; }
+  QualType GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
@@ -428,6 +429,7 @@ public:
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
 
+  // Populates typeForDecl
   friend class ASTContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
@@ -441,7 +443,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, QualType type,
            UnifiedContext context)
       : ValueDecl(kind, name, nameLoc, type, context) {}
 
@@ -495,7 +497,7 @@ public:
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
   GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
-                  Type type,
+                  QualType type,
                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
                   GenericParamList *genericParams = nullptr);
 };
@@ -585,7 +587,7 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType retType,
                DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, retType, parent) {}
@@ -643,7 +645,7 @@ class FunDecl : public FunctionDecl {
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-          Type result, DeclContext *parent)
+          QualType result, DeclContext *parent)
       : FunctionDecl(kind, name, nameLoc, result, parent) {}
 
 public:

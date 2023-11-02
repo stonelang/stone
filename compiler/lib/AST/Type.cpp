@@ -6,30 +6,30 @@ using namespace stone;
 using namespace stone::ast;
 
 // == TypeBase ==//
-bool TypeBase::IsBasic() {
-  switch (GetKind()) {
-  case TypeKind::Float:
-  case TypeKind::Integer:
-    return true;
-  default:
-    return false;
-  }
-}
+// bool TypeBase::IsBasic() {
+//   switch (GetKind()) {
+//   case TypeKind::Float:
+//   case TypeKind::Integer:
+//     return true;
+//   default:
+//     return false;
+//   }
+// }
 
-TypeKind Type::GetKind() const {
-  assert(GetPtr());
-  return GetPtr()->GetKind();
-}
+// TypeKind Type::GetKind() const {
+//   assert(GetPtr());
+//   return GetPtr()->GetKind();
+// }
 
-bool TypeBase::IsNominalType() {
-  switch (GetKind()) {
-  case TypeKind::Interface:
-  case TypeKind::Struct:
-    return true;
-  default:
-    return false;
-  }
-}
+// bool TypeBase::IsNominalType() {
+//   switch (GetKind()) {
+//   case TypeKind::Interface:
+//   case TypeKind::Struct:
+//     return true;
+//   default:
+//     return false;
+//   }
+// }
 
 VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
   return new (sc, arena) VoidType(sc);
@@ -43,17 +43,17 @@ VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
 // }
 
 // == Type == //
-bool Type::Walk(TypeWalker &walker) const {}
+// bool Type::Walk(TypeWalker &walker) const {}
 
-bool Type::IsBuiltinType() const {}
+// bool Type::IsBuiltinType() const {}
 
-bool Type::IsFunType() const {}
+// bool Type::IsFunType() const {}
 
-bool Type::IsStructType() const {}
+// bool Type::IsStructType() const {}
 
-bool Type::IsPointerType() const {}
+// bool Type::IsPointerType() const {}
 
-bool Type::IsReferenceType() const {}
+// bool Type::IsReferenceType() const {}
 
 // == TypeQualifierCollector == //
 
@@ -89,9 +89,9 @@ SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
 
 SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
-void TypeLoc::SetType(Type ty) {}
+void TypeLoc::SetType(QualType ty) {}
 
-FunType::FunType(Type result, const ASTContext *sc)
+FunType::FunType(QualType result, const ASTContext *sc)
     : FunctionType(TypeKind::Fun, result, sc) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);

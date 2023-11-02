@@ -4,9 +4,9 @@
 #include "stone/AST/Attribute.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Generics.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeOperator.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeChunk.h"
 #include "stone/AST/Types.h"
 #include "stone/Basic/OptionSet.h"
 
@@ -260,7 +260,7 @@ public:
 };
 
 class TypeCollector final {
-  Type type;
+  QualType type;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   TypeChunkCollector typeChunkCollector;
@@ -296,8 +296,8 @@ public:
   void Apply();
 
 public:
-  void SetType(Type inputType) { type = inputType; }
-  Type GetType() { return type; }
+  void SetType(QualType inputType) { type = inputType; }
+  QualType GetType() { return type; }
 };
 
 class DeclCollector {

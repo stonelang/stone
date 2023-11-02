@@ -56,6 +56,7 @@ class ModuleDecl;
 } // namespace stone
 
 namespace stone {
+
 using ModuleOrASTFile = llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
 
 class Lang final {

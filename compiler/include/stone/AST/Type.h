@@ -5,9 +5,9 @@
 #include "stone/AST/Foreign.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeChunk.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -47,12 +47,11 @@ namespace stone {
 namespace ast {
 
 class ASTPrinter;
-class CanQualType;
+class CanType;
 class EnumDecl;
 class ModuleDecl;
 class InterfaceType;
 class StructDecl;
-class TypeBase;
 class Type;
 class TypeWalker;
 
@@ -82,27 +81,29 @@ enum class ScalarTypeKind {
   FixedPoint
 };
 
-class Type {
+class QualType {
   friend class TypeCollector;
 
-  TypeBase *typePtr = nullptr;
+  Type *typePtr = nullptr;
   TypeQualifierList *qualifiers;
   TypeChunkList *thunks = nullptr;
   // TypeOperatorList* ops = nullptr;
 
 public:
-  Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
-  Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-       TypeChunkList *thunks = nullptr)
+  QualType(Type *typePtr = nullptr) : QualType(typePtr, nullptr, nullptr) {}
+
+
+  QualType(Type *typePtr, TypeQualifierList *qualifiers = nullptr,
+           TypeChunkList *thunks = nullptr)
       : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
-  TypeBase *GetPtr() const { return typePtr; }
+  Type *GetPtr() const { return typePtr; }
 
   TypeKind GetKind() const;
 
-  TypeBase *operator->() const {
+  Type *operator->() const {
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
   }
@@ -132,7 +133,7 @@ public:
   ///
   /// \returns true if the predicate returns true for the given Type or
   /// any of its children.
-  bool FindIf(llvm::function_ref<bool(Type)> pred) const;
+  bool FindIf(llvm::function_ref<bool(QualType)> pred) const;
 
   /// Transform the given Type by applying the user-provided function to
   /// each Type.
@@ -150,7 +151,7 @@ public:
   /// a null Type.
   ///
   /// \returns the result of transforming the Type.
-  Type Transform(llvm::function_ref<Type(Type)> fn) const;
+  QualType Transform(llvm::function_ref<QualType(QualType)> fn) const;
 
   /// Transform the given Type by applying the user-provided function to
   /// each Type.
@@ -166,7 +167,7 @@ public:
   /// If the function returns \c None, the transform operation will
   ///
   /// \param fn A function object with the signature
-  /// \c Optional<Type>(TypeBase *), which accepts a Type
+  /// \c Optional<Type>(Type *), which accepts a Type
   /// pointer and returns a transformed Type, a null Type (which
   /// will propagate the null Type to the outermost \c transform() call),
   /// or None (to indicate that the transform operation should recursively
@@ -174,12 +175,12 @@ public:
   /// rather \c getAs, because the transform itself handles desugaring.
   ///
   /// \returns the result of transforming the Type.
-  Type
-  TransformRec(llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
+  QualType
+  TransformRec(llvm::function_ref<llvm::Optional<QualType>(Type *)> fn) const;
 
   /// Look through the given Type and its children and apply fn to them.
-  void Visit(llvm::function_ref<void(Type)> fn) const {
-    FindIf([&fn](Type t) -> bool {
+  void Visit(llvm::function_ref<void(QualType)> fn) const {
+    FindIf([&fn](QualType t) -> bool {
       fn(t);
       return false;
     });
@@ -224,44 +225,51 @@ public:
 
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
-  void operator==(Type T) const = delete;
-  void operator!=(Type T) const = delete;
+  void operator==(QualType T) const = delete;
+  void operator!=(QualType T) const = delete;
 };
 
-class CanType final : public Type {
+class CanType final : public QualType {
 public:
   /// Constructs a NULL canonical type.
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : CanType(ty, nullptr, nullptr) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-                   TypeChunkList *thunks)
-      : Type(ty, quals, thunks) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(Type ty) : Type(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
+  explicit CanType(Type *typePtr) : QualType(typePtr, nullptr,  nullptr) {
+
+
+  //   assert(IsCanTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
   }
 
+  // explicit CanType(Type ty) : Type(ty) {
+  //   assert(IsCanTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
+
+  // explicit CanType(Type *ty, TypeQualifierList *quals,
+  //                  TypeChunkList *thunks)
+  //     : CanType(ty, quals, thunks) {
+  //   assert(IsCanTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
+  // explicit CanType(QualType ty) : QualType(ty) {
+  //   assert(IsCanTypeOrNull() &&
+  //          "Forming a CanType out of a non-canonical type!");
+  // }
 private:
-  bool IsCanTypeOrNull() const { return true; }
+  //bool IsCanTypeOrNull() const { return true; }
 
-public:
-  void Visit(llvm::function_ref<void(CanType)> fn) const {
-    FindIf([&fn](Type t) -> bool {
-      fn(CanType(t));
-      return false;
-    });
-  }
-  bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
-    return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
-  }
+// public:
+//   void Visit(llvm::function_ref<void(CanType)> fn) const {
+//     FindIf([&fn](QualType t) -> bool {
+//       fn(CanType(t));
+//       return false;
+//     });
+//   }
+//   bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
+//     return QualType::FindIf([&fn](QualType t) { return fn(CanType(t)); });
+//   }
 
 public:
   // Direct comparison is allowed for CanTypes - they are known canonical.
@@ -270,47 +278,47 @@ public:
   bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
 
-class QualType {
-  friend class TypeQualifierCollector;
-  const Type *typePtr = nullptr;
+// class QualType {
+//   friend class TypeQualifierCollector;
+//   const Type *typePtr = nullptr;
 
-  TypeQualifier constTypeQual{TypeQualifierKind::Const};
-  TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
-  TypeQualifier volatileTypeQual{TypeQualifierKind::Volatile};
-  TypeQualifier pureTypeQual{TypeQualifierKind::Pure};
-  TypeQualifier immutableTypeQual{TypeQualifierKind::Immutable};
-  TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
+//   TypeQualifier constTypeQual{TypeQualifierKind::Const};
+//   TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
+//   TypeQualifier volatileTypeQual{TypeQualifierKind::Volatile};
+//   TypeQualifier pureTypeQual{TypeQualifierKind::Pure};
+//   TypeQualifier immutableTypeQual{TypeQualifierKind::Immutable};
+//   TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
 
-public:
-  QualType() = default;
-  explicit QualType(const Type *typePtr) : typePtr(typePtr) {}
+// public:
+//   QualType() = default;
+//   explicit QualType(const Type *typePtr) : typePtr(typePtr) {}
 
-public:
-  const Type *GetTypePtr() const { return typePtr; }
+// public:
+//   const Type *GetTypePtr() const { return typePtr; }
 
-public:
-  TypeQualifier &GetConst() { return constTypeQual; }
-  TypeQualifier &GetRestrict() { return restrictTypeQual; }
-  TypeQualifier &GetVolatile() { return volatileTypeQual; }
-  TypeQualifier &GetPure() { return pureTypeQual; }
-  TypeQualifier &GetImmutable() { return immutableTypeQual; }
-  TypeQualifier &GetMutable() { return mutableTypeQual; }
+// public:
+//   TypeQualifier &GetConst() { return constTypeQual; }
+//   TypeQualifier &GetRestrict() { return restrictTypeQual; }
+//   TypeQualifier &GetVolatile() { return volatileTypeQual; }
+//   TypeQualifier &GetPure() { return pureTypeQual; }
+//   TypeQualifier &GetImmutable() { return immutableTypeQual; }
+//   TypeQualifier &GetMutable() { return mutableTypeQual; }
 
-public:
-  bool HasAny() {
-    return GetConst().IsValid() || GetRestrict().IsValid() ||
-           GetVolatile().IsValid() || GetPure().IsValid() ||
-           GetImmutable().IsValid() || GetMutable().IsValid();
-  }
-  void ClearAll() {
-    GetConst().Clear();
-    GetRestrict().Clear();
-    GetVolatile().Clear();
-    GetPure().Clear();
-    GetImmutable().Clear();
-    GetMutable().Clear();
-  }
-};
+// public:
+//   bool HasAny() {
+//     return GetConst().IsValid() || GetRestrict().IsValid() ||
+//            GetVolatile().IsValid() || GetPure().IsValid() ||
+//            GetImmutable().IsValid() || GetMutable().IsValid();
+//   }
+//   void ClearAll() {
+//     GetConst().Clear();
+//     GetRestrict().Clear();
+//     GetVolatile().Clear();
+//     GetPure().Clear();
+//     GetImmutable().Clear();
+//     GetMutable().Clear();
+//   }
+// };
 
 } // namespace ast
 } // namespace stone

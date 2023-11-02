@@ -188,9 +188,9 @@ public:
 };
 
 class TypeQualifierCollector final {
-  
-  class QualType; 
-  
+
+  class QualType;
+
   SrcLoc constLoc;
   SrcLoc restrictLoc;
   SrcLoc volatileLoc;

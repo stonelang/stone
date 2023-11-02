@@ -120,6 +120,29 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
+using ParsingCompletedCallback = std::function<stonde::Status(ast::ASTFile &)>;
+static void CompileWithParsing(CompilerInstance &compiler,
+                               ParsingCompletedCallback notifiy) {}
+
+// void CompilerInstance::ExecuteAnalysis(ExecuteAnalysisOptions
+// executeAnalysisOpts) {
+
+//   if(executeAnalysisOpts.contains(ExecuteAnalysisOptions::Parse)){
+//   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+//     if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
+//       Lang::ParseASTFile(*asttaxFile, GetASTContext(),
+//                          invocation.GetListener());
+
+//       if(executeAnalysisOpts.contains(ExecuteAnalysisOptions::TypeCheck)){
+
+//       }
+//     }
+//   }
+
+// }
+}
+void CompilerInstance::ExecuteCodeGen() {}
+
 static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
@@ -286,7 +309,9 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-  Status status;
+  ExecuteAnalysisOptions executeAnalysisOpts;
+
+  ExecuteAnalysis(executeAnalysisOpts) Status status;
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
     status = Parse();

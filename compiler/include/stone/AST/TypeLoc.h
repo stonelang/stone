@@ -17,11 +17,11 @@ class ASTContext;
 class alignas(1 << TypeAlignInBits) TypeLoc {
   // TODO: This may actually be QualType instead of jus Type
   // But since QualType implements Type, it may not matter.
-  Type ty;
+  QualType ty;
 
 public:
   TypeLoc() {}
-  TypeLoc(Type ty) : ty(ty) {}
+  TypeLoc(QualType ty) : ty(ty) {}
   // TypeLoc(TypeRep *tyRep, QualType ty) : tyRep(tyRep) { SetType(ty); }
 
   bool WasValidated() const { return !ty.IsNull(); }
@@ -35,10 +35,10 @@ public:
 
   // bool HasLoc() const { return tyRep != nullptr; }
 
-  Type GetType() const { return ty; }
+  QualType GetType() const { return ty; }
 
   // bool IsNull() const { return GetType().IsNull() && tyRep == nullptr; }
-  void SetType(Type ty);
+  void SetType(QualType ty);
 };
 
 } // namespace ast

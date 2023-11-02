@@ -7,9 +7,9 @@
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeChunk.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -50,17 +50,18 @@ namespace stone {
 namespace ast {
 
 class Type;
+class QualType;
 class TypeWalker;
 class CanType;
 class SweetType;
 
-class alignas(1 << TypeAlignInBits) TypeBase
+class alignas(1 << TypeAlignInBits) Type
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
 
   friend class ASTContext;
 
-  TypeBase(const TypeBase &) = delete;
-  void operator=(const TypeBase &) = delete;
+  Type(const Type &) = delete;
+  void operator=(const Type &) = delete;
 
   TypeKind kind;
 
@@ -76,8 +77,8 @@ class alignas(1 << TypeAlignInBits) TypeBase
 protected:
   union {
     uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(TypeBase,
-                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
+    STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8) + 1 + 1,
+                               Kind
                                : stone::BitMax(NumTypeKindBits, 8),
 
                                  /// Whether this type is canonical or not.
@@ -85,15 +86,15 @@ protected:
                                  // Whether this type can have qualifiers
                                  AllowQuals : 1);
 
-    STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
+    STONE_INLINE_BITFIELD(SweetType, Type, 1, HasCachedType : 1);
 
   } Bits;
 
 public:
-  TypeBase(TypeKind kind, const ASTContext *canTypeContext)
+  Type(TypeKind kind, const ASTContext *canTypeContext)
       : kind(kind), sc(nullptr) {
 
-    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
+    Bits.Type.Kind = static_cast<unsigned>(kind);
 
     /// TODO: I do not like this ....
     if (canTypeContext) {
@@ -119,9 +120,9 @@ public:
   // CanType GetCanType();
 
   /// isCanonical - Return true if this is a canonical type.
-  bool IsCanType() const { return Bits.TypeBase.IsCanonical; }
+  bool IsCanType() const { return Bits.Type.IsCanonical; }
 
-  bool AllowQuals() const { return Bits.TypeBase.AllowQuals; }
+  bool AllowQuals() const { return Bits.Type.AllowQuals; }
 
   bool HasQuals() const;
 
@@ -134,37 +135,37 @@ private:
 };
 
 // TODO: Think about
-//  class AnyType : public TypeBase {
+//  class AnyType : public Type {
 //  public:
 
 //   AnyType(TypeKind kind, ASTContext *canTypeCtx)
-//       : TypeBase(kind, canTypeCtx) {}
+//       : Type(kind, canTypeCtx) {}
 // };
 
-class FunctionType : public TypeBase {
-  Type result;
+class FunctionType : public Type {
+  QualType result;
 
 public:
-  FunctionType(TypeKind kind, Type result, const ASTContext *canTypeCtx)
-      : TypeBase(kind, canTypeCtx) {}
+  FunctionType(TypeKind kind, QualType result, const ASTContext *canTypeCtx)
+      : Type(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be QualType
 class FunType : public FunctionType,
-                private llvm::TrailingObjects<FunType, Type> {
+                private llvm::TrailingObjects<FunType, QualType> {
   friend TrailingObjects;
 
 public:
-  FunType(Type result, const ASTContext *sc);
+  FunType(QualType result, const ASTContext *sc);
 };
 
-class NominalType : public TypeBase {
+class NominalType : public Type {
 protected:
   friend ASTContext;
 
 public:
   // Implement isa/cast/dyncast/etc.
-  static bool classof(const TypeBase *ty) {
+  static bool classof(const Type *ty) {
     return ty->GetKind() >= TypeKind::First_NominalType &&
            ty->GetKind() <= TypeKind::Last_NominalType;
   }
@@ -180,7 +181,7 @@ public:
 
 class EnumType final : public NominalType {};
 
-class DeducedType : public TypeBase {
+class DeducedType : public Type {
 protected:
   friend class ASTContext; // ASTContext creates these
 };
@@ -192,12 +193,12 @@ public:
 // class TemplateParmType : public Type{
 // };
 
-class BuiltinType : public TypeBase {
+class BuiltinType : public Type {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {}
+  BuiltinType(TypeKind kind, const ASTContext &sc) : Type(kind, &sc) {}
 };
 
-class IdentifierType : public TypeBase {};
+class IdentifierType : public Type {};
 
 class ScalarType : public BuiltinType {
 public:
@@ -318,9 +319,7 @@ public:
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
-  static bool classof(const TypeBase *T) {
-    return T->GetKind() == TypeKind::Float;
-  }
+  static bool classof(const Type *T) { return T->GetKind() == TypeKind::Float; }
 };
 
 class VoidType : public BuiltinType {
@@ -337,12 +336,11 @@ public:
   NullType(const ASTContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
-class ChunkType : public TypeBase, public llvm::FoldingSetNode {};
+class ChunkType : public Type, public llvm::FoldingSetNode {};
 
-class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
+class AbstractPointerType : public Type, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const ASTContext &sc)
-      : TypeBase(kind, &sc) {}
+  AbstractPointerType(TypeKind kind, const ASTContext &sc) : Type(kind, &sc) {}
 };
 
 class PointerType : public AbstractPointerType {
@@ -353,13 +351,13 @@ class MemberPointerType : public AbstractPointerType {
 public:
 };
 
-class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
+class ReferenceType : public Type, public llvm::FoldingSetNode {};
 
 class LValueReferenceType final : public ReferenceType {};
 
 class RValueReferenceType final : public ReferenceType {};
 
-class ModuleType : public TypeBase {
+class ModuleType : public Type {
   ModuleDecl *const mod;
 
 public:
@@ -368,16 +366,16 @@ public:
   ModuleDecl *GetModule() const { return mod; }
 
   // Implement isa/cast/dyncast/etc.
-  static bool classof(const TypeBase *ty) {
+  static bool classof(const Type *ty) {
     return ty->GetKind() == TypeKind::Module;
   }
 
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &sc)
-      : TypeBase(TypeKind::Module, &sc), mod(mod) {}
+      : Type(TypeKind::Module, &sc), mod(mod) {}
 };
 
-class SweetType : public TypeBase {
+class SweetType : public Type {
   // The state of this union is known via Bits.SweetType.HasCachedType so that
   // we can avoid masking the pointer on the fast path.
   union {
