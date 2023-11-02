@@ -8,11 +8,11 @@
 #include "clang/CodeGen/ConstantInitFuture.h"
 #include "llvm/ADT/ilist.h"
 #include "llvm/IR/Argument.h"
-#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/DerivedType.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Value.h"
-#include "llvm/Support/DataTypes.h"
+#include "llvm/Support/DataType.h"
 
 namespace llvm {
 class raw_pwrite_stream;

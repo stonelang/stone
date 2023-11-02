@@ -5,7 +5,7 @@
 // #include "stone/AST/Decl.h"
 // #include "stone/AST/Type.h"
 // #include "stone/AST/TypeAlignments.h"
-// #include "stone/AST/Types.h"
+// #include "stone/AST/Type.h"
 // #include "stone/AST/Witness.h"
 // #include "stone/Basic/Compiler.h"
 // #include "stone/Basic/Debug.h"

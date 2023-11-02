@@ -5,7 +5,6 @@
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
-#include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeCollector.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/Basic/STDAlias.h"
@@ -48,9 +47,9 @@ namespace stone {
 namespace ast {
 
 class Type;
+class CanType;
 class QualType;
 class TypeWalker;
-class CanType;
 class SweetType;
 class ASTPrinter;
 class EnumDecl;

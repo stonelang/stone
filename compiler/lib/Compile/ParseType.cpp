@@ -1,7 +1,7 @@
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Type.h"
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "stone/Compile/Parser.h"
 #include "stone/Diag/ASTDiagnostic.h"
 

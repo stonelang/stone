@@ -5,7 +5,7 @@
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Generics.h"
 #include "stone/AST/TypeCollector.h"
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "stone/Basic/OptionSet.h"
 
 #include "llvm/ADT/ArrayRef.h"

@@ -11,7 +11,7 @@
 
 #include "llvm/ADT/ilist.h"
 #include "llvm/IR/Argument.h"
-#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/DerivedType.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Value.h"

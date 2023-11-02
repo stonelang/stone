@@ -1,5 +1,5 @@
-#ifndef STONE_ASTTREECONTEXT_H
-#define STONE_ASTTREECONTEXT_H
+#ifndef STONE_AST_ASTCONTEXT_H
+#define STONE_AST_ASTCONTEXT_H
 
 #include <cassert>
 #include <cstddef>
@@ -18,7 +18,7 @@
 #include "stone/AST/Import.h"
 #include "stone/AST/LangABI.h"
 #include "stone/AST/SearchPath.h"
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "stone/AST/VirtualTable.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Mem.h"
@@ -31,7 +31,7 @@
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Specifier.h"
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
 
