@@ -5,8 +5,6 @@
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
-#include "stone/AST/Type.h"
-#include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeCollector.h"
 #include "stone/AST/TypeKind.h"
