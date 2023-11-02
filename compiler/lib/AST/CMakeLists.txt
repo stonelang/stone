@@ -30,7 +30,7 @@ set(stone_ast_sources
 	Generics.cpp
 	Type.cpp
 	TypeQualifier.cpp
-	TypeThunk.cpp
+	TypeChunk.cpp
 	TypeOperator.cpp
 	VirtualTable.cpp
 

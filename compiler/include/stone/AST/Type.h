@@ -7,7 +7,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeThunk.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -87,13 +87,13 @@ class Type {
 
   TypeBase *typePtr = nullptr;
   TypeQualifierList *qualifiers;
-  TypeThunkList *thunks = nullptr;
+  TypeChunkList *thunks = nullptr;
   // TypeOperatorList* ops = nullptr;
 
 public:
   Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
   Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-       TypeThunkList *thunks = nullptr)
+       TypeChunkList *thunks = nullptr)
       : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
@@ -113,8 +113,8 @@ public:
   }
   TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
 
-  void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
-  TypeThunkList *GetTypeThunks() { return thunks; }
+  void SetTypeChunks(TypeChunkList *inputs) { thunks = inputs; }
+  TypeChunkList *GetTypeChunks() { return thunks; }
 
 public:
   /// Walk this Type.
@@ -239,7 +239,7 @@ public:
            "Forming a CanType out of a non-canonical type!");
   }
   explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-                   TypeThunkList *thunks)
+                   TypeChunkList *thunks)
       : Type(ty, quals, thunks) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
@@ -271,16 +271,45 @@ public:
 };
 
 class QualType {
+  friend class TypeQualifierCollector;
   const Type *typePtr = nullptr;
-  TypeQualifierList qualifiers;
+
+  TypeQualifier constTypeQual{TypeQualifierKind::Const};
+  TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
+  TypeQualifier volatileTypeQual{TypeQualifierKind::Volatile};
+  TypeQualifier pureTypeQual{TypeQualifierKind::Pure};
+  TypeQualifier immutableTypeQual{TypeQualifierKind::Immutable};
+  TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
 
 public:
   QualType() = default;
-  explicit QualType(const Type *typePtr, TypeQualifierList qualifiers)
-      : typePtr(typePtr), qualifiers(qualifiers) {}
+  explicit QualType(const Type *typePtr) : typePtr(typePtr) {}
 
 public:
   const Type *GetTypePtr() const { return typePtr; }
+
+public:
+  TypeQualifier &GetConst() { return constTypeQual; }
+  TypeQualifier &GetRestrict() { return restrictTypeQual; }
+  TypeQualifier &GetVolatile() { return volatileTypeQual; }
+  TypeQualifier &GetPure() { return pureTypeQual; }
+  TypeQualifier &GetImmutable() { return immutableTypeQual; }
+  TypeQualifier &GetMutable() { return mutableTypeQual; }
+
+public:
+  bool HasAny() {
+    return GetConst().IsValid() || GetRestrict().IsValid() ||
+           GetVolatile().IsValid() || GetPure().IsValid() ||
+           GetImmutable().IsValid() || GetMutable().IsValid();
+  }
+  void ClearAll() {
+    GetConst().Clear();
+    GetRestrict().Clear();
+    GetVolatile().Clear();
+    GetPure().Clear();
+    GetImmutable().Clear();
+    GetMutable().Clear();
+  }
 };
 
 } // namespace ast

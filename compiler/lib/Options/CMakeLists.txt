@@ -16,9 +16,9 @@ set(stone_option_sources
 	StoneBasic
 	StoneDiag
 )
-add_stone_library(StoneSession
+add_stone_library(StoneOptions
 	${stone_option_sources}
 
 	DEPENDS
-	StoneOptions
+	StoneOpts
 )

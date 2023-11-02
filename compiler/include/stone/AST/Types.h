@@ -9,7 +9,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeThunk.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -131,10 +131,6 @@ public:
 
 private:
   CanType ComputeCanType();
-};
-
-class SourType : public TypeBase {
-public:
 };
 
 // TODO: Think about

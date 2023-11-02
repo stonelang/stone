@@ -51,3 +51,13 @@ using namespace stone::ast;
 // }
 
 TypeQualifierCollector::TypeQualifierCollector() {}
+
+// QualType TypeQualifierCollector::Apply(const ast::ASTContext &astContext,
+//                                        const Type *typePtr) const {
+
+//   QualType qualType(typePtr);
+//   if (GetConst().IsValid()) {
+//     qualType.AddConst(GetConst());
+//   }
+//   return qualType;
+// }

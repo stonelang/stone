@@ -6,7 +6,7 @@
 #include "stone/AST/Generics.h"
 #include "stone/AST/TypeOperator.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeThunk.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/AST/Types.h"
 #include "stone/Basic/OptionSet.h"
 
@@ -263,7 +263,7 @@ class TypeCollector final {
   Type type;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
-  TypeThunkCollector typeChunkCollector;
+  TypeChunkCollector typeChunkCollector;
   TypeOperatorCollector typeOperatorCollector;
 
 public:
@@ -282,8 +282,8 @@ public:
     return typeSpecifierCollector;
   }
 
-  TypeThunkCollector &GetTypeThunkCollector() { return typeChunkCollector; }
-  const TypeThunkCollector &GetTypeThunkCollector() const {
+  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+  const TypeChunkCollector &GetTypeChunkCollector() const {
     return typeChunkCollector;
   }
   TypeOperatorCollector &GetTypeOperatorCollector() {

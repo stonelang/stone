@@ -31,6 +31,8 @@ set(stone_gen_sources
 	
 	LINK_LIBS
 	StoneAST
+	StoneOptions
+	
 )
 add_stone_library(StoneCodeGen
 	${stone_gen_sources}
