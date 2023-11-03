@@ -9,7 +9,7 @@ class ASTContext;
 class QualType;
 
 class Builtin final {
-  ASTContext &sc;
+  ASTContext &astContext;
 
 public:
   Builtin(const Builtin &) = delete;
@@ -41,7 +41,7 @@ public:
   const CanType BuiltinBoolType;
 
 public:
-  Builtin(ASTContext &sc);
+  Builtin(ASTContext &astContext);
   ~Builtin();
 
 private:
