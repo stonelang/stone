@@ -215,14 +215,6 @@ public:
   //                 SubstOptions options = None) const;
 
 public:
-  bool IsBuiltinType() const;
-  bool IsFunType() const;
-  bool IsStructType() const;
-  bool IsPointerType() const;
-  bool IsReferenceType() const;
-
-public:
-public:
   TypeQualifier &GetConst() { return constTypeQual; }
   TypeQualifier &GetRestrict() { return restrictTypeQual; }
   TypeQualifier &GetVolatile() { return volatileTypeQual; }
@@ -352,16 +344,10 @@ class alignas(1 << TypeAlignInBits) Type
 
   TypeKind kind;
 
-  // /// This union contains to the ASTContext for canonical types, and is
-  // /// otherwise lazily populated by ASTContext when the canonical form of a
-  // /// non-canonical type is requested. The disposition of the union is stored
-  // /// outside of the union for performance. See Bits.Type.IsCanonical.
-  // union {
-  //   CanType canType;
-  //   const ASTContext *sc;
-  // };
-
-  CanType canType;
+  /// canType - This field is always set to the ASTContext for canonical
+  /// types, and is otherwise lazily populated by ASTContext when the canonical
+  /// form of a non-canonical type is requested.
+  llvm::PointerUnion<Type *, const ASTContext *> canonicalType;
 
 protected:
   union {
@@ -380,13 +366,12 @@ protected:
   } Bits;
 
 public:
-  Type(TypeKind kind, const ASTContext *canTypeContext) : kind(kind) {
+  Type(TypeKind kind, const ASTContext *canType)
+      : kind(kind), canonicalType((Type *)nullptr) {
     Bits.Type.Kind = static_cast<unsigned>(kind);
-    /// TODO: I do not like this ....
-    // if (canTypeContext) {
-    //   // Bits.Type.IsCanonical = true;
-    //   sc = canTypeContext;
-    // }
+    if (canType) {
+      canonicalType = canType;
+    }
   }
 
 public:
@@ -404,36 +389,46 @@ public:
 
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
-
-  /// isCanonical - Return true if this is a canonical type.
-  bool IsCanType() const { return Bits.Type.IsCanonical; }
-
+  
   bool AllowQuals() const { return Bits.Type.AllowQuals; }
 
   bool HasQuals() const;
 
+
+/// isCanonical - Return true if this is a canonical type.
+  bool IsCanType() const { return canonicalType.is<const ASTContext *>(); }
+
   /// hasCanonicalTypeComputed - Return true if we've already computed a
   /// canonical version of this type.
-  bool IsCanTypeComputed() const { return !canType.IsNull(); }
+  bool IsCanTypeComputed() const { return !canonicalType.isNull(); }
 
 private:
   CanType ComputeCanType();
+
+public:
+  bool IsBuiltinType() const;
+  bool IsFunType() const;
+  bool IsStructType() const;
+  bool IsPointerType() const;
+  bool IsReferenceType() const;
+
+public:
 };
 
 // TODO: Think about
 //  class AnyType : public Type {
 //  public:
 
-//   AnyType(TypeKind kind, ASTContext *canTypeCtx)
-//       : Type(kind, canTypeCtx) {}
+//   AnyType(TypeKind kind, ASTContext *canType)
+//       : Type(kind, canType) {}
 // };
 
 class FunctionType : public Type {
   QualType result;
 
 public:
-  FunctionType(TypeKind kind, QualType result, const ASTContext *canTypeCtx)
-      : Type(kind, canTypeCtx) {}
+  FunctionType(TypeKind kind, QualType result, const ASTContext *canType)
+      : Type(kind, canType) {}
 };
 
 // You are returning Type for now, it may have to be QualType
@@ -481,29 +476,34 @@ public:
 
 class BuiltinType : public Type {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &sc) : Type(kind, &sc) {}
+  BuiltinType(TypeKind kind, const ASTContext &astContext)
+      : Type(kind, &astContext) {}
 };
 
 class IdentifierType : public Type {};
 
 class ScalarType : public BuiltinType {
 public:
-  ScalarType(TypeKind kind, const ASTContext &sc) : BuiltinType(kind, sc) {}
+  ScalarType(TypeKind kind, const ASTContext &astContext)
+      : BuiltinType(kind, astContext) {}
 };
 
 class CharType : public ScalarType {
 public:
-  CharType(const ASTContext &sc) : ScalarType(TypeKind::Char, sc) {}
+  CharType(const ASTContext &astContext)
+      : ScalarType(TypeKind::Char, astContext) {}
 };
 
 class BoolType : public ScalarType {
 public:
-  BoolType(const ASTContext &sc) : ScalarType(TypeKind::Bool, sc) {}
+  BoolType(const ASTContext &astContext)
+      : ScalarType(TypeKind::Bool, astContext) {}
 };
 
 // class StringType : public BuiltinType {
 // public:
-//   StringType(const ASTContext &sc) : ScalarType(TypeKind::String, sc) {}
+//   StringType(const ASTContext &astContext) : ScalarType(TypeKind::String,
+//   astContext) {}
 // };
 
 struct NumberBitWidth final {
@@ -543,8 +543,8 @@ class NumberType : public ScalarType {
 
 public:
   NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-             const ASTContext &sc)
-      : ScalarType(kind, sc), bitWidthKind(bitWidthKind) {}
+             const ASTContext &astContext)
+      : ScalarType(kind, astContext), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -559,49 +559,49 @@ class IntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Integer, bitWidthKind, sc) {}
+  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Integer, bitWidthKind, astContext) {}
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &sc);
+                             const ASTContext &astContext);
 };
 
 class UIntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
+  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
 
-      : NumberType(TypeKind::UInteger, bitWidthKind, sc) {}
+      : NumberType(TypeKind::UInteger, bitWidthKind, astContext) {}
 };
 
 class ComplexType : public NumberType {
   friend class ASTContext;
 
 public:
-  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
+  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Complex, bitWidthKind, astContext) {}
 };
 
 class ImaginaryType : public NumberType {
   friend class ASTContext;
 
 public:
-  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Imaginary, bitWidthKind, sc) {}
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Imaginary, bitWidthKind, astContext) {}
 };
 
 class FloatType : public NumberType {
   friend class ASTContext;
 
 public:
-  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Float, bitWidthKind, sc) {}
+  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Float, bitWidthKind, astContext) {}
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const ASTContext &sc);
+                           const ASTContext &astContext);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -610,23 +610,26 @@ public:
 
 class VoidType : public BuiltinType {
 public:
-  VoidType(const ASTContext &sc) : BuiltinType(TypeKind::Void, sc) {}
+  VoidType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Void, astContext) {}
 
 public:
-  static VoidType *Create(const ASTContext &sc,
+  static VoidType *Create(const ASTContext &astContext,
                           AllocationArena arena = AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {
 public:
-  NullType(const ASTContext &sc) : BuiltinType(TypeKind::Null, sc) {}
+  NullType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Null, astContext) {}
 };
 
 class ChunkType : public Type, public llvm::FoldingSetNode {};
 
 class AbstractPointerType : public Type, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const ASTContext &sc) : Type(kind, &sc) {}
+  AbstractPointerType(TypeKind kind, const ASTContext &astContext)
+      : Type(kind, &astContext) {}
 };
 
 class PointerType : public AbstractPointerType {
@@ -657,8 +660,8 @@ public:
   }
 
 private:
-  ModuleType(ModuleDecl *mod, const ASTContext &sc)
-      : Type(TypeKind::Module, &sc), mod(mod) {}
+  ModuleType(ModuleDecl *mod, const ASTContext &astContext)
+      : Type(TypeKind::Module, &astContext), mod(mod) {}
 };
 
 class SweetType : public Type {
