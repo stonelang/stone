@@ -21,36 +21,16 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using ParsingCompletedCallback = llvm::function_ref<Status(ast::ASTFile &)>;
+using ParsingCompletedCallback = st::function<Status(ast::ASTFile &)>;
 
-using TypeCheckingCompletedCallback =
-    llvm::function_ref<Status(CompilerInstance &)>;
-
+using TypeCheckingCompletedCallback =std::function<Status(CompilerInstance &)>;
+ 
 using CodeGenCompletedCallback =
-    llvm::function_ref<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
+    std::function<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
 
-using BackendCodeGenCompletedCallback =
-    llvm::function_ref<void(CompilerInstance &)>;
 
-using EachASTFileCallback = llvm::function_ref<void(
+using EachASTFileCallback = std::function<void(
     ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
-
-// using CompileWithGenIRCallback = llvm::function_ref<void(
-//     CompilerInvocation&invocation, CodeGenContext &cgc, CodeGenResult
-//     &result)>;
-
-struct ExecuteAnalysisFlags final {
-  ExecuteAnalysisFlags() = delete;
-  /// Flags that control the parsing of declarations.
-  enum ID {
-    Default = 0,
-    Parse = 1 << 1,
-    ResolveImports = 1 << 2,
-    TypeCheck = 1 << 3
-  };
-};
-/// Options that controls analysis execution
-using ExecuteAnalysisOptions = stone::OptionSet<ExecuteAnalysisFlags::ID>;
 
 class CompilerInstance final {
   std::unique_ptr<CompilerInstanceStats> stats;
@@ -107,19 +87,16 @@ public:
   /// Perform code analysis and code generation
   Status Compile();
 
-  void ExecuteAnalysis(ExecuteAnalysisOptions executeAnalysisOpts);
-  void ExecuteCodeGen();
+private:
+  Status CompileWithParsing();
+  Status CompileWithParsing(ParsingCompletedCallback notifiy);
+  Status CompileWithTypeChecking();
+  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
 
 private:
-  Status Parse();
-  Status Parse(ParsingCompletedCallback notifiy);
-  Status CheckTypes();
-  Status CheckTypes(TypeCheckingCompletedCallback notifiy);
-
-private:
-  Status GenCode();
-  Status GenIR(CodeGenContext &cgc, CodeGenCompletedCallback notifiy);
-  Status GenNative(CodeGenContext &cgc);
+  Status CompileWitCodeGen();
+  Status CompileWithGenIR(CodeGenContext &cgc, CodeGenCompletedCallback notifiy);
+  Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
   void ForEachASTFile(EachASTFileCallback fn);

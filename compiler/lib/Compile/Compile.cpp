@@ -120,29 +120,6 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-using ParsingCompletedCallback = std::function<stonde::Status(ast::ASTFile &)>;
-static void CompileWithParsing(CompilerInstance &compiler,
-                               ParsingCompletedCallback notifiy) {}
-
-// void CompilerInstance::ExecuteAnalysis(ExecuteAnalysisOptions
-// executeAnalysisOpts) {
-
-//   if(executeAnalysisOpts.contains(ExecuteAnalysisOptions::Parse)){
-//   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
-//       Lang::ParseASTFile(*asttaxFile, GetASTContext(),
-//                          invocation.GetListener());
-
-//       if(executeAnalysisOpts.contains(ExecuteAnalysisOptions::TypeCheck)){
-
-//       }
-//     }
-//   }
-
-// }
-}
-void CompilerInstance::ExecuteCodeGen() {}
-
 static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
@@ -151,7 +128,7 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
 }
 
-Status CompilerInstance::GenIR(CodeGenContext &cgc,
+Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
                                CodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
@@ -177,18 +154,15 @@ Status CompilerInstance::GenIR(CodeGenContext &cgc,
   }
   Status::Error();
 }
-static Status GenModule(CompilerInstance &compiler, CodeGenContext &cgc) {
-  return Status::Success();
-}
 
-Status CompilerInstance::GenNative(CodeGenContext &cgc) {
+Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
   auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
                                 GetInvocation().GetListener());
   return Status::Success();
 }
 
-Status CompilerInstance::GenCode() {
+Status CompilerInstance::CompileWithCodeGen() {
 
   assert(CanCodeGen() && "Mode does not support code gen");
 
@@ -228,13 +202,13 @@ Status CompilerInstance::GenCode() {
   // }
 
   switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
-  case CodeGenOutputKind::LLVMModule:
-    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-      return Lang::GenModule(*this, cgc);
-    });
+  // case CodeGenOutputKind::LLVMModule:
+  //   return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //     return Lang::GenModule(*this, cgc);
+  //   });
   case CodeGenOutputKind::LLVMIRPreOptimization:
   case CodeGenOutputKind::LLVMIRPostOptimization:
-    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+    return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
       return DumpIR(*this, cgc);
     });
   // case CodeGenOutputKind::PrintIR:
@@ -243,8 +217,8 @@ Status CompilerInstance::GenCode() {
   //         return PrintIR(*this, cgc);
   //       });
   default:
-    return GenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-      return GenNative(cgc);
+    return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+      return CompileWithGenNative(cgc);
     });
   }
 }
@@ -255,52 +229,6 @@ static Status DumpAST(CompilerInstance &compiler, ast::ASTFile &sf) {
 
 static Status PrintAST(CompilerInstance &compiler) { return Status::Success(); }
 
-Status CompilerInstance::Parse() {
-  return Parse([&](ast::ASTFile &) { return Status::Success(); });
-}
-
-Status CompilerInstance::Parse(ParsingCompletedCallback notifiy) {
-
-  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *asttaxFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
-      Lang::ParseASTFile(*asttaxFile, GetASTContext(),
-                         invocation.GetListener());
-      if (notifiy) {
-        notifiy(*asttaxFile);
-      }
-    }
-  }
-
-  if (!GetMode().JustParse()) {
-    ResolveImports();
-  }
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnASTAnalysisCompleted(*this);
-  }
-  return Status::Success();
-}
-
-Status CompilerInstance::CheckTypes() {
-  return CheckTypes([&](CompilerInstance &) { return Status::Success(); });
-}
-
-Status CompilerInstance::CheckTypes(TypeCheckingCompletedCallback notifiy) {
-
-  auto status = Parse();
-  if (status.IsError()) {
-    return status;
-  }
-  ForEachASTFile([&](ASTFile &asttaxFile, TypeCheckerOptions &typeCheckerOpts,
-                     stone::TypeCheckerListener *listener) {
-    Lang::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
-  });
-
-  // TODO: FinishTypeCheck();
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
-  }
-  return notifiy(*this);
-}
 Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
@@ -309,25 +237,23 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-  ExecuteAnalysisOptions executeAnalysisOpts;
 
-  ExecuteAnalysis(executeAnalysisOpts) Status status;
   switch (GetMode().GetKind()) {
   case ModeKind::Parse:
-    status = Parse();
+    status = CompileWithParsing();
     break;
   case ModeKind::DumpAST:
-    status = Parse([&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
+    status = CompileWithParsing([&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
     break;
   case ModeKind::TypeCheck:
-    status = CheckTypes();
+    status = CompileWithTypeChecking();
     break;
   case ModeKind::PrintAST:
     status =
-        CheckTypes([&](CompilerInstance &compiler) { return PrintAST(*this); });
+        CompileWithTypeChecking([&](CompilerInstance &compiler) { return PrintAST(*this); });
     break;
   default:
-    status = CheckTypes([&](CompilerInstance &compiler) { return GenCode(); });
+    status = CompileWithTypeChecking([&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
   return status;
