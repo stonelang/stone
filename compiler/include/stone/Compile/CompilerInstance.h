@@ -23,16 +23,13 @@ public:
 
 using ParsingCompletedCallback = st::function<Status(ast::ASTFile &)>;
 
-using TypeCheckingCompletedCallback =std::function<Status(CompilerInstance &)>;
- 
+using TypeCheckingCompletedCallback = std::function<Status(CompilerInstance &)>;
+
 using CodeGenCompletedCallback =
     std::function<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
 
-
 using EachASTFileCallback = std::function<void(
     ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
-
-
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
@@ -107,7 +104,8 @@ private:
 
 private:
   Status CompileWitCodeGen();
-  Status CompileWithGenIR(CodeGenContext &cgc, CodeGenCompletedCallback notifiy);
+  Status CompileWithGenIR(CodeGenContext &cgc,
+                          CodeGenCompletedCallback notifiy);
   Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:

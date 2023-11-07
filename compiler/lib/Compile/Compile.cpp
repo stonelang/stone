@@ -21,10 +21,10 @@
 using namespace stone;
 using namespace stone::ast;
 
+static bool PerformSyntaxAnalysis(CompilerInstance &compiler) {
 
-static bool PerformSyntaxAnalysis(CompilerInstance &compiler){
-
-  for (auto moduleFile : compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
+  for (auto moduleFile :
+       compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *astFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
       Lang::ParseASTFile(*asttaxFile, GetASTContext(),
                          invocation.GetListener());
@@ -34,53 +34,38 @@ static bool PerformSyntaxAnalysis(CompilerInstance &compiler){
     compiler.GetInvocation().GetListener()->OnASTAnalysisCompleted(*this);
   }
   return Status::Success();
-
 }
-static bool PerformSyntaxAnalysisAndImportResoltuion(CompilerInstance &compiler) {
+static bool
+PerformSyntaxAnalysisAndImportResoltuion(CompilerInstance &compiler) {
   auto status = PerformSyntaxAnalysis(compiler);
-
 }
 
-static bool PerformDumpAST(CompilerInstance &compiler) {
-
-
-}
-
-static bool PerformImportResolution(CompilerInstance &compiler) {
-
-
-}
+static bool PerformDumpAST(CompilerInstance &compiler) {}
 
 static void PerformSemanticAnalysis(CompilerInstance &compiler) {
 
+  compiler.ForEachASTFile([&](ASTFile &astFile,
+                              TypeCheckerOptions &typeCheckerOpts,
+                              stone::TypeCheckerListener *listener) {
+    Lang::TypeCheckASTFile(astFile, typeCheckerOpts, listener);
+  });
 
+  if (compiler.GetInvocation().GetListener()) {
+    compiler.GetInvocation().GetListener()->OnSemanticAnalysisCompleted(*this);
+  }
 }
 
-static bool PerformPrintAST(CompilerInstance &compiler) {
+static bool PerformPrintAST(CompilerInstance &compiler) {}
 
+static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {}
 
-}
-
-static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {
-
-
-}
-
-static bool PerformCodeGeneration(CompilerInstance &compiler) {
-
-
-}
+static bool PerformCodeGeneration(CompilerInstance &compiler) {}
 
 static bool PerformIRGeneration(CompilerInstance &compiler,
-                         CodeGenContext &codeGenContext) {
-
-
-}
+                                CodeGenContext &codeGenContext) {}
 
 bool PerformNativeGeneration(CompilerInstance &compiler,
-                             CodeGenContext &codeGenContext) {
-
-}
+                             CodeGenContext &codeGenContext) {}
 
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
@@ -166,7 +151,7 @@ static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
 }
 
 Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
-                               CodeGenCompletedCallback notifiy) {
+                                          CodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
@@ -240,31 +225,28 @@ Status CompilerInstance::CompileWithCodeGen() {
 
   switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
   // case CodeGenOutputKind::LLVMModule:
-  //   return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //   return CompileWithGenIR(cgc, [&](CompilerInstance &compiler,
+  //   CodeGenContext &cgc) {
   //     return Lang::GenModule(*this, cgc);
   //   });
   case CodeGenOutputKind::LLVMIRPreOptimization:
   case CodeGenOutputKind::LLVMIRPostOptimization:
-    return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-      return DumpIR(*this, cgc);
-    });
+    return CompileWithGenIR(
+        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return DumpIR(*this, cgc);
+        });
   // case CodeGenOutputKind::PrintIR:
   //   return GenIR(
   //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
   //         return PrintIR(*this, cgc);
   //       });
   default:
-    return CompileWithGenIR(cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-      return CompileWithGenNative(cgc);
-    });
+    return CompileWithGenIR(
+        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+          return CompileWithGenNative(cgc);
+        });
   }
 }
-
-static Status DumpAST(CompilerInstance &compiler, ast::ASTFile &sf) {
-  return Status::Success();
-}
-
-static Status PrintAST(CompilerInstance &compiler) { return Status::Success(); }
 
 Status CompilerInstance::Compile() {
 
@@ -280,17 +262,19 @@ Status CompilerInstance::Compile() {
     status = CompileWithParsing();
     break;
   case ModeKind::DumpAST:
-    status = CompileWithParsing([&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
+    status = CompileWithParsing(
+        [&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
     break;
   case ModeKind::TypeCheck:
     status = CompileWithTypeChecking();
     break;
   case ModeKind::PrintAST:
-    status =
-        CompileWithTypeChecking([&](CompilerInstance &compiler) { return PrintAST(*this); });
+    status = CompileWithTypeChecking(
+        [&](CompilerInstance &compiler) { return PrintAST(*this); });
     break;
   default:
-    status = CompileWithTypeChecking([&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
+    status = CompileWithTypeChecking(
+        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
   return status;

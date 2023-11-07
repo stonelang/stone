@@ -8,29 +8,6 @@ using namespace stone::ast;
 using namespace stone::typecheck;
 
 
-Status CompilerInstance::CompileWithTypeChecking() {
-  return CompileWithTypeChecking([&](CompilerInstance &) { return Status::Success(); });
-}
-
-Status CompilerInstance::CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy) {
-
-  auto status = CompileWithParsing();
-  if (status.IsError()) {
-    return status;
-  }
-  ForEachASTFile([&](ASTFile &asttaxFile, TypeCheckerOptions &typeCheckerOpts,
-                     stone::TypeCheckerListener *listener) {
-    Lang::TypeCheckASTFile(asttaxFile, typeCheckerOpts, listener);
-  });
-
-  // TODO: FinishTypeCheck();
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
-  }
-  return notifiy(*this);
-}
-
-
 void Lang::TypeCheckASTFile(ast::ASTFile &sf,
                             stone::TypeCheckerOptions &typeCheckerOpts,
                             TypeCheckerListener *listener) {

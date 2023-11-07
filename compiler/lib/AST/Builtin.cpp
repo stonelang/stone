@@ -8,8 +8,10 @@ Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext),
 
       BuiltinVoidType(VoidType::Create(astContext)),
-      BuiltinNullType(new(astContext, AllocationArena::Permanent) NullType(astContext)),
-      BuiltinBoolType(new(astContext, AllocationArena::Permanent) BoolType(astContext)),
+      BuiltinNullType(new(astContext, AllocationArena::Permanent)
+                          NullType(astContext)),
+      BuiltinBoolType(new(astContext, AllocationArena::Permanent)
+                          BoolType(astContext)),
       BuiltinFloat16Type(new(astContext, AllocationArena::Permanent)
                              FloatType(NumberBitWidth::N16, astContext)),
       BuiltinFloat32Type(new(astContext, AllocationArena::Permanent)

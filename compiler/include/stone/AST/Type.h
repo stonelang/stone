@@ -389,13 +389,12 @@ public:
 
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
-  
+
   bool AllowQuals() const { return Bits.Type.AllowQuals; }
 
   bool HasQuals() const;
 
-
-/// isCanonical - Return true if this is a canonical type.
+  /// isCanonical - Return true if this is a canonical type.
   bool IsCanType() const { return canonicalType.is<const ASTContext *>(); }
 
   /// hasCanonicalTypeComputed - Return true if we've already computed a
