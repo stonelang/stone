@@ -24,9 +24,20 @@ using namespace stone::ast;
 
 static bool PerformSyntaxAnalysis(CompilerInstance &compiler){
 
+  for (auto moduleFile : compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *astFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
+      Lang::ParseASTFile(*asttaxFile, GetASTContext(),
+                         invocation.GetListener());
+    }
+  }
+  if (compiler.GetInvocation().GetListener()) {
+    compiler.GetInvocation().GetListener()->OnASTAnalysisCompleted(*this);
+  }
+  return Status::Success();
 
 }
 static bool PerformSyntaxAnalysisAndImportResoltuion(CompilerInstance &compiler) {
+  auto status = PerformSyntaxAnalysis(compiler);
 
 }
 
