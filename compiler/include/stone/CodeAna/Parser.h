@@ -1,5 +1,5 @@
-#ifndef STONE_PARSE_PARSER_H
-#define STONE_PARSE_PARSER_H
+#ifndef STONE_CODEANA_PARSER_H
+#define STONE_CODEANA_PARSER_H
 
 #include <memory>
 
@@ -16,8 +16,8 @@
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/CodeCompletionListener.h"
-#include "stone/Compile/Lexer.h"
-#include "stone/Compile/Parsing.h"
+#include "stone/CodeAna/Lexer.h"
+#include "stone/CodeAna/Parsing.h"
 
 #include "llvm/Support/Timer.h"
 

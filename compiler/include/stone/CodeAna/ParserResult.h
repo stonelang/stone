@@ -1,5 +1,5 @@
-#ifndef STONE_ASTRESULT_H
-#define STONE_ASTRESULT_H
+#ifndef STONE_CODEANA_PARSERRESULT_H
+#define STONE_CODEANA_PARSERRESULT_H
 
 #include "llvm/ADT/PointerIntPair.h"
 #include <type_traits>

@@ -1,5 +1,5 @@
-#ifndef STONE_PARSE_ / AST / LEXING_H
-#define STONE_PARSE_ / AST / LEXING_H
+#ifndef STONE_CODEANA_LEXING_H
+#define STONE_CODEANA_LEXING_H
 
 #include "stone/Basic/SrcLoc.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SEM_TYPECHECKER_H
-#define STONE_SEM_TYPECHECKER_H
+#ifndef STONE_CODEANA_TYPECHECKER_H
+#define STONE_CODEANA_TYPECHECKER_H
 
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"

@@ -1,5 +1,5 @@
-#ifndef STONE_SEM_TYPECHECKACCESS_H
-#define STONE_SEM_TYPECHECKACCESS_H
+#ifndef STONE_CODEANA_TYPECHECKACCESS_H
+#define STONE_CODEANA_TYPECHECKACCESS_H
 
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Availability.h"

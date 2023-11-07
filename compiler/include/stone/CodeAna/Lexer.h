@@ -1,10 +1,10 @@
-#ifndef STONE_PARSE_LEXER_H
-#define STONE_PARSE_LEXER_H
+#ifndef STONE_CODEANA_LEXER_H
+#define STONE_CODEANA_LEXER_H
 
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Compile/Lexing.h"
-#include "stone/Compile/Trivia.h"
+#include "stone/CodeAna/Lexing.h"
+#include "stone/CodeAna/Trivia.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Lang.h"
 

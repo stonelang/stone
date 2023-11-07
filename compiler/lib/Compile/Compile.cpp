@@ -3,12 +3,13 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/CodeCompletionListener.h"
-#include "stone/Compile/CompilerInstance.h"
-#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Basic/TextDiagnosticFormatter.h"
 #include "stone/Basic/TextDiagnosticListener.h"
+#include "stone/CodeCompletionListener.h"
+#include "stone/Compile/CompilerInstance.h"
+#include "stone/Compile/CompilerInvocation.h"
+
 #include "stone/Lang.h"
 #include "stone/Options/ModeKind.h"
 
