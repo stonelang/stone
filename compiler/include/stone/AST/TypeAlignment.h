@@ -11,6 +11,7 @@ class Expr;
 class Stmt;
 class ValueDecl;
 class Type;
+class TypeBase;
 class TypeDecl;
 class QualType;
 class InterfaceDecl;

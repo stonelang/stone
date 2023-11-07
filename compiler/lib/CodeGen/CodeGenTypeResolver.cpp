@@ -1,5 +1,5 @@
-#include "stone/AST/Type.h"
 #include "stone/CodeGen/CodeGenTypeResolver.h"
+#include "stone/AST/Type.h"
 #include "stone/CodeGen/CodeGenABI.h"
 #include "stone/CodeGen/CodeGenModule.h"
 

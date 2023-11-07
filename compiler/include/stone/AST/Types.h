@@ -1,12 +1,10 @@
-#ifndef STONE_AST_TYPE_H
-#define STONE_AST_TYPE_H
+#ifndef STONE_AST_TYPES_H
+#define STONE_AST_TYPES_H
 
 #include "stone/AST/ASTAllocation.h"
-#include "stone/AST/CanType.h"
-#include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
-#include "stone/AST/TypeCollector.h"
+#include "stone/AST/Type.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
@@ -48,6 +46,7 @@ namespace stone {
 namespace ast {
 
 class Type;
+class TypeBase;
 class CanType;
 class QualType;
 class TypeWalker;
@@ -57,32 +56,6 @@ class EnumDecl;
 class ModuleDecl;
 class InterfaceType;
 class StructDecl;
-
-enum class GCKind : UInt8 { None = 0, Weak, Strong };
-
-/// ref-qualifier associated with a function Type.
-/// This determines whether a member function's "this" object can be an
-/// lvalue, rvalue, or neither.
-enum class RefQualifierKind : UInt8 {
-  /// No ref-qualifier was provided.
-  None = 0,
-  /// An lvalue ref-qualifier was provided (\c &).
-  LValue,
-
-  /// An rvalue ref-qualifier was provided (\c &&).
-  RValue
-};
-enum class ScalarTypeKind {
-  Pointer,
-  BlockPointer,
-  MemberPointer,
-  Bool,
-  Integral,
-  Floating,
-  IntegralComplex,
-  FloatingComplex,
-  FixedPoint
-};
 
 class alignas(1 << TypeAlignInBits) TypeBase
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
@@ -97,7 +70,7 @@ class alignas(1 << TypeAlignInBits) TypeBase
   /// canType - This field is always set to the ASTContext for canonical
   /// types, and is otherwise lazily populated by ASTContext when the canonical
   /// form of a non-canonical type is requested.
-  llvm::PointerUnion<Type *, const ASTContext *> canonicalType;
+  llvm::PointerUnion<TypeBase *, const ASTContext *> canonicalType;
 
 protected:
   union {
@@ -211,7 +184,7 @@ public:
 
 class EnumType final : public NominalType {};
 
-class DeducedType : public Type {
+class DeducedType : public TypeBase {
 protected:
   friend class ASTContext; // ASTContext creates these
 };

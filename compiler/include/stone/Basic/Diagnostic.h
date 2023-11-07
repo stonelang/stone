@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/DiagnosticOptions.h"
+#include "stone/Basic/SrcMgr.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

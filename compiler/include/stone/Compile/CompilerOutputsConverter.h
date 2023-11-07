@@ -1,11 +1,11 @@
 #ifndef STONE_COMPILE_LANGOUTPUTSCONVERTER_H
 #define STONE_COMPILE_LANGOUTPUTSCONVERTER_H
 
+#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Basic/DiagnosticEngine.h"
-#include "stone/Basic/DiagnosticListener.h"
 #include "stone/Options/Mode.h"
 #include "stone/Options/Options.h"
 #include "llvm/Option/ArgList.h"

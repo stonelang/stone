@@ -2,12 +2,12 @@
 #define STONE_LANG_H
 
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Basic/DiagnosticEngine.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"

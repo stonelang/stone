@@ -3,8 +3,8 @@
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Decl.h"
-#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 

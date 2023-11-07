@@ -1,10 +1,10 @@
 #include "stone/Drive/Drive.h"
 
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/LLVMInit.h"
-#include "stone/Basic/MainExecutablePath.h"
 #include "stone/Basic/DiagUnit.h"
 #include "stone/Basic/DriverDiagnostic.h"
+#include "stone/Basic/LLVMInit.h"
+#include "stone/Basic/MainExecutablePath.h"
 #include "stone/Drive/Compilation.h"
 #include "stone/Drive/DebugCompilationListener.h"
 #include "stone/Drive/Driver.h"

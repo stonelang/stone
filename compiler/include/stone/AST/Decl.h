@@ -1,5 +1,5 @@
-#ifndef STONE_ASTDECL_H
-#define STONE_ASTDECL_H
+#ifndef STONE_AST_DECL_H
+#define STONE_AST_DECL_H
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Access.h"
@@ -12,12 +12,12 @@
 #include "stone/AST/Import.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Specifier.h"
-#include "stone/AST/Type.h"
 #include "stone/AST/TypeLoc.h"
+#include "stone/AST/Types.h"
 #include "stone/Basic/AddressSpace.h"
+#include "stone/Basic/DiagnosticArgument.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/DiagnosticArgument.h"
 
 // #include "stone/AST/Redeclarable.h"
 

@@ -1,10 +1,10 @@
 #ifndef STONE_COMPILE_LANGOPTIONSBUILDER_H
 #define STONE_COMPILE_LANGOPTIONSBUILDER_H
 
-#include "stone/Basic/Status.h"
-#include "stone/Compile/CompilerOptions.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/DiagnosticListener.h"
+#include "stone/Basic/Status.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Lang.h"
 #include "stone/Options/Options.h"
 #include "llvm/Option/ArgList.h"

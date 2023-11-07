@@ -1,11 +1,11 @@
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Lang.h"
 
 #include "clang/Basic/Stack.h"

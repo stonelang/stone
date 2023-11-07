@@ -10,6 +10,7 @@
 namespace stone {
 namespace ast {
 
+class QualType;
 class TypeCollector final {
   QualType qualType;
   TypeSpecifierCollector typeSpecifierCollector;

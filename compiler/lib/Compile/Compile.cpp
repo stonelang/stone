@@ -1,9 +1,9 @@
 #include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/Module.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Basic/TextDiagnosticFormatter.h"
 #include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/CodeCompletionListener.h"
@@ -113,7 +113,7 @@ bool CompilerInstance::Compile() {
   Compiling::CompilePostCodeAnalysis(*this);
 
   NotifyCompileFinished();
-  
+
   return Finish();
 }
 
@@ -218,7 +218,7 @@ void Compiling::PerformPrintAST(CompilerInstance &compiler) {}
 
 Status Compiling::CompilePostCompiling(CompilerInstance &compiler) {
 
-  // Some other things here 
+  // Some other things here
   Compiling::CompileWithCodeGeneration(compiler);
 }
 
@@ -259,8 +259,7 @@ bool Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
 
   /// --emit-object ....
   // If we are here, we are outputing something native
-  if (Compiling::PerformNativeGeneration(compiler, codeGenContext)
-          .IsError()) {
+  if (Compiling::PerformNativeGeneration(compiler, codeGenContext).IsError()) {
     return Status::Error();
   }
 

@@ -1,8 +1,8 @@
 #include "stone/Compile/CompilerInputsConverter.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Lang.h"
 
 #include "llvm/Option/Arg.h"

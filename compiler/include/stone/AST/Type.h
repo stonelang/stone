@@ -1,15 +1,13 @@
 #ifndef STONE_AST_TYPE_H
 #define STONE_AST_TYPE_H
 
-#include "stone/Basic/Result.h"
-#include "stone/Basic/SrcLoc.h"
-
-#include "stone/AST/Ownership.h"
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Ownership.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
-#include "stone/AST/TypeThunk.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -45,7 +43,7 @@
 #include <string>
 
 namespace stone {
-namespace syn {
+namespace ast {
 
 class ASTPrinter;
 class CanQualType;
@@ -53,8 +51,8 @@ class EnumDecl;
 class ModuleDecl;
 class InterfaceType;
 class StructDecl;
-class TypeBase;
 class Type;
+class TypeBase;
 class TypeWalker;
 
 enum class GCKind : UInt8 { None = 0, Weak, Strong };
@@ -87,12 +85,11 @@ class Type {
   TypeBase *typePtr = nullptr;
 
 public:
-  Type(TypeBase *typePtr = nullptr) : Type(typePtr) {} : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
   TypeBase *GetPtr() const { return typePtr; }
-
   TypeKind GetKind() const;
 
   TypeBase *operator->() const {
@@ -221,11 +218,8 @@ private:
   void operator!=(Type T) const = delete;
 };
 
-
 class QualType : public Type {
   friend class TypeCollector;
-
-  Type *typePtr = nullptr;
 
   TypeQualifier constTypeQual{TypeQualifierKind::Const};
   TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
@@ -235,19 +229,7 @@ class QualType : public Type {
   TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
 
 public:
-  QualType(Type *typePtr = nullptr) : Type(typePtr) {}
-
-public:
-  bool IsNull() const { return typePtr == nullptr; }
-  Type *GetPtr() const { return typePtr; }
-
-  TypeKind GetKind() const;
-
-  Type *operator->() const {
-    assert(typePtr && "Cannot dereference a null Type!");
-    return typePtr;
-  }
-  explicit operator bool() const { return typePtr != nullptr; }
+  QualType(TypeBase *typePtr = nullptr) : Type(typePtr) {}
 
 public:
   TypeQualifier &GetConst() { return constTypeQual; }
@@ -278,7 +260,6 @@ public:
   //   operator!=(QualType T) const = delete;
 };
 
-
 class CanType final : public QualType {
 public:
   /// Constructs a NULL canonical type.
@@ -302,10 +283,10 @@ public:
            "Forming a CanType out of a non-canonical type!");
   }
 
-explicit CanType(QualType ty) : QualType(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
+  // explicit CanType(QualType ty) : QualType(ty) {
+  //     assert(IsCanTypeOrNull() &&
+  //            "Forming a CanType out of a non-canonical type!");
+  //   }
 private:
   bool IsCanTypeOrNull() const { return true; }
 

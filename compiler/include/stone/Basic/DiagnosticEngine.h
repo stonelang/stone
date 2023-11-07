@@ -1,13 +1,13 @@
 #ifndef STONE_DIAG_DIAGNOSTICENGINE_H
 #define STONE_DIAG_DIAGNOSTICENGINE_H
 
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/List.h"
-#include "stone/Basic/Version.h"
 #include "stone/Basic/Diagnostic.h"
 #include "stone/Basic/DiagnosticFormatter.h"
 #include "stone/Basic/DiagnosticListener.h"
 #include "stone/Basic/DiagnosticLocalization.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/Version.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
