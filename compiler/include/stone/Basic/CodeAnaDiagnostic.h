@@ -1,5 +1,5 @@
-#ifndef STONE_DIAG_SEMDIAGNOSTIC_H
-#define STONE_DIAG_SEMDIAGNOSTIC_H
+#ifndef STONE_DIAG_CODEANADIAGNOSTIC_H
+#define STONE_DIAG_CODEANADIAGNOSTIC_H
 
 #include "stone/Basic/CoreDiagnostic.h"
 
@@ -8,7 +8,7 @@ namespace diag {
 // Declare common diagnostics objects with their appropriate types.
 #define DIAG(KIND, ID, Options, Text, Signature)                               \
   extern detail::DiagWithArguments<void Signature>::type ID;
-#include "SemDiagnostic.def"
+#include "CodeAnaDiagnostic.def"
 } // namespace diag
 } // namespace stone
 

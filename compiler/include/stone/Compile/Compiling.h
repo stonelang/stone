@@ -1,8 +1,11 @@
 #ifndef STONE_COMPILE_COMPILING_H
 #define STONE_COMPILE_COMPILING_H
 
+#include "stone/Basic/Status.h"
+
 namespace stone {
 
+class CompilerInstance;
 class Compiling final {
 public:
   static Status PerformSyntaxAnalysis(CompilerInstance &compiler);

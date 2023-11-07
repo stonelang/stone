@@ -12,4 +12,4 @@ using namespace stone::ast;
 //   ASTContext &ctx;
 // };
 
-void sem::ResolveImports(ASTFile &asttaxFile) {}
+void codeana::ResolveImports(ASTFile &asttaxFile) {}
