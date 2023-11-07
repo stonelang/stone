@@ -57,15 +57,17 @@ static void PerformSemanticAnalysis(CompilerInstance &compiler) {
 
 static bool PerformPrintAST(CompilerInstance &compiler) {}
 
-static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {}
+static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {
+  status = PerformCodeGeneration(compiler);
+}
 
 static bool PerformCodeGeneration(CompilerInstance &compiler) {
 
-  assert(CanCodeGen() && "Mode does not support code gen");
+  assert(compiler.CanCodeGen() && "Mode does not support code gen");
 
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
   CodeGenContext codeGenContext(
-      GetInvocation().GetCodeGenOptions(), *llvmContext,
+      compiler.GetInvocation().GetCodeGenOptions(), *llvmContext,
       compiler.GetInvocation().GetModuleOptions(),
       compiler.GetInvocation().GetTargetOptions(),
       compiler.GetInvocation().GetLang(), compiler.GetInvocation().GetClang());
@@ -247,33 +249,6 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish(Error(true));
   }
   return Finish();
-}
-
-Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
-                                          CodeGenCompletedCallback notifiy) {
-  const auto &invocation = GetInvocation();
-  const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
-
-  if (IsWholeModuleCodeGen()) {
-    auto *mainModule = GetModuleSystem().GetMainModule();
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-        GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-
-    Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
-                primaryFileSpecificPaths);
-  } else if (IsASTFileCodeGen()) {
-    for (auto *primaryASTFile : GetPrimaryASTFiles()) {
-      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, primaryASTFile,
-                  primaryFileSpecificPaths);
-    }
-  }
-
-  if (notifiy) {
-    notifiy(*this, cgc);
-  }
-  Status::Error();
 }
 
 Status CompilerInstance::Compile() {
