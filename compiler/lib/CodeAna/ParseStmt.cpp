@@ -1,6 +1,6 @@
 #include "stone/AST/ASTContext.h"
-#include "stone/CodeAna/ParserResult.h"
 #include "stone/CodeAna/Parser.h"
+#include "stone/CodeAna/ParserResult.h"
 
 using namespace stone::ast;
 

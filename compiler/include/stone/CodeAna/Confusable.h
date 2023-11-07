@@ -15,7 +15,7 @@ char ConvertConfusableCharacterToASCII(uint32_t codepoint);
 std::pair<llvm::StringRef, llvm::StringRef>
 GetConfusableAndBaseCodepointNames(uint32_t codepoint);
 
-} // namespace parser
+} // namespace codeana
 } // namespace stone
 
 #endif

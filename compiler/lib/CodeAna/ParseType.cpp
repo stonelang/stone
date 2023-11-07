@@ -1,8 +1,8 @@
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Type.h"
-#include "stone/CodeAna/Parser.h"
 #include "stone/Basic/ASTDiagnostic.h"
+#include "stone/CodeAna/Parser.h"
 
 using namespace stone;
 using namespace stone::ast;

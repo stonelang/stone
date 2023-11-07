@@ -1,11 +1,11 @@
 #ifndef STONE_CODEANA_LEXER_H
 #define STONE_CODEANA_LEXER_H
 
+#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/CodeAna/Lexing.h"
 #include "stone/CodeAna/Trivia.h"
-#include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Lang.h"
 
 namespace stone {
@@ -619,7 +619,7 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
 
-} // namespace codeana 
+} // namespace codeana
 } // namespace stone
 
 #endif

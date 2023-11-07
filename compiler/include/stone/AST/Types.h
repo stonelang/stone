@@ -62,8 +62,8 @@ class alignas(1 << TypeAlignInBits) TypeBase
 
   friend class ASTContext;
 
-  TypeBase(const Type &) = delete;
-  void operator=(const Type &) = delete;
+  TypeBase(const TypeBase &) = delete;
+  void operator=(const TypeBase &) = delete;
 
   TypeKind kind;
 
@@ -75,8 +75,8 @@ class alignas(1 << TypeAlignInBits) TypeBase
 protected:
   union {
     uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8) + 1 + 1,
-                               Kind
+    STONE_INLINE_BITFIELD_BASE(TypeBase,
+                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
                                : stone::BitMax(NumTypeKindBits, 8),
 
                                  /// Whether this type is canonical or not.
@@ -84,14 +84,14 @@ protected:
                                  // Whether this type can have qualifiers
                                  AllowQuals : 1);
 
-    STONE_INLINE_BITFIELD(SweetType, Type, 1, HasCachedType : 1);
+    STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
   } Bits;
 
 public:
   TypeBase(TypeKind kind, const ASTContext *canType)
-      : kind(kind), canonicalType((Type *)nullptr) {
-    Bits.Type.Kind = static_cast<unsigned>(kind);
+      : kind(kind), canonicalType((TypeBase *)nullptr) {
+    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
     if (canType) {
       canonicalType = canType;
     }
@@ -113,7 +113,7 @@ public:
   // We can do this because all types are generally cannonical types.
   // CanType GetCanType();
 
-  bool AllowQuals() const { return Bits.Type.AllowQuals; }
+  bool AllowQuals() const { return Bits.TypeBase.AllowQuals; }
 
   bool HasQuals() const;
 
@@ -150,7 +150,7 @@ class FunctionType : public TypeBase {
 
 public:
   FunctionType(TypeKind kind, QualType result, const ASTContext *canType)
-      : Type(kind, canType) {}
+      : TypeBase(kind, canType) {}
 };
 
 // You are returning Type for now, it may have to be QualType
@@ -199,7 +199,7 @@ public:
 class BuiltinType : public TypeBase {
 protected:
   BuiltinType(TypeKind kind, const ASTContext &astContext)
-      : Type(kind, &astContext) {}
+      : TypeBase(kind, &astContext) {}
 };
 
 class IdentifierType : public Type {};
@@ -346,12 +346,15 @@ public:
       : BuiltinType(TypeKind::Null, astContext) {}
 };
 
-class ChunkType : public Type, public llvm::FoldingSetNode {};
+// This is how you deal with chunks
+class ChunkType : public TypeBase, public llvm::FoldingSetNode {
+public:
+};
 
-class AbstractPointerType : public Type, public llvm::FoldingSetNode {
+class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
   AbstractPointerType(TypeKind kind, const ASTContext &astContext)
-      : Type(kind, &astContext) {}
+      : TypeBase(kind, &astContext) {}
 };
 
 class PointerType : public AbstractPointerType {
@@ -383,7 +386,7 @@ public:
 
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &astContext)
-      : Type(TypeKind::Module, &astContext), mod(mod) {}
+      : TypeBase(TypeKind::Module, &astContext), mod(mod) {}
 };
 
 class SweetType : public Type {

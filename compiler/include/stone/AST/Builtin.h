@@ -1,7 +1,7 @@
-#ifndef STONE_ASTBUILTINCONTEXT_H
-#define STONE_ASTBUILTINCONTEXT_H
+#ifndef STONE_AST_BUILTIN_H
+#define STONE_AST_BUILTIN_H
 
-#include "stone/AST/Type.h"
+#include "stone/AST/Types.h"
 
 namespace stone {
 namespace ast {

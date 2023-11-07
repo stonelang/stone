@@ -1,7 +1,7 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
-#include "stone/CodeCompletionListener.h"
 #include "stone/CodeAna/Parser.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Lang.h"
 
 using namespace stone;

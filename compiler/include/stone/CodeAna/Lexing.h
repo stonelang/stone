@@ -29,6 +29,6 @@ public:
   ~LexingCache();
 };
 
-} // namespace parser
+} // namespace codeana
 } // namespace stone
 #endif

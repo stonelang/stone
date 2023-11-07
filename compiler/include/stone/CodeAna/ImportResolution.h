@@ -9,7 +9,7 @@ class ASTFile;
 namespace codeana {
 // TODO: ModuleResolution
 void ResolveImports(ast::ASTFile &asttaxFile);
-} // namespace sem
+} // namespace codeana
 } // namespace stone
 
 #endif

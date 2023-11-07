@@ -189,6 +189,6 @@ public:
 };
 // class ParsingDeclRep final : public DeclRep {};
 
-} // namespace parser
+} // namespace codeana
 } // namespace stone
 #endif

@@ -98,14 +98,6 @@ public:
   }
   explicit operator bool() const { return typePtr != nullptr; }
 
-  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
-    qualifiers = inputQualifiers;
-  }
-  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
-
-  void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
-  TypeThunkList *GetTypeThunks() { return thunks; }
-
 public:
   /// Walk this Type.
   ///
@@ -266,9 +258,9 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : CanType(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
+  explicit CanType(TypeBase *ty) : QualType(ty) {
+    // assert(IsCanTypeOrNull() &&
+    //        "Forming a CanType out of a non-canonical type!");
   }
 
   // explicit CanType(TypeBase *ty, TypeQualifierList *quals,
@@ -278,11 +270,10 @@ public:
   //          "Forming a CanType out of a non-canonical type!");
   // }
 
-  explicit CanType(Type ty) : QualType(ty) {
+  explicit CanType(QualType ty) : QualType(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-
   // explicit CanType(QualType ty) : QualType(ty) {
   //     assert(IsCanTypeOrNull() &&
   //            "Forming a CanType out of a non-canonical type!");
@@ -291,15 +282,15 @@ private:
   bool IsCanTypeOrNull() const { return true; }
 
 public:
-  void Visit(llvm::function_ref<void(CanType)> fn) const {
-    FindIf([&fn](Type t) -> bool {
-      fn(CanType(t));
-      return false;
-    });
-  }
-  bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
-    return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
-  }
+  // void Visit(llvm::function_ref<void(CanType)> fn) const {
+  //   FindIf([&fn](QualType t) -> bool {
+  //     fn(CanType(t));
+  //     return false;
+  //   });
+  // }
+  // bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
+  //   return Type::FindIf([&fn](QualType t) { return fn(CanType(t)); });
+  // }
 
 public:
   // Direct comparison is allowed for CanTypes - they are known canonical.

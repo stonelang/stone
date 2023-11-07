@@ -1,10 +1,10 @@
+#include "stone/CodeAna/Lexer.h"
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Char.h"
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/CodeAnaDiagnostic.h"
-#include "stone/CodeCompletionListener.h"
-#include "stone/CodeAna/Lexer.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/CodeAna/Confusable.h"
+#include "stone/CodeCompletionListener.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -79,7 +79,7 @@ static bool isStartOfUTF8Character(unsigned char C) {
 /// UTF8 character, validate it and advance the lexer past it.  This returns the
 /// encoded character or ~0U if the encoding is invalid.
 uint32_t codeana::validateUTF8CharacterAndAdvance(const char *&Ptr,
-                                              const char *End) {
+                                                  const char *End) {
   if (Ptr >= End)
     return ~0U;
 
@@ -2199,7 +2199,8 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
       .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), " ");
 
   char ExpectedCodepoint;
-  if ((ExpectedCodepoint = codeana::ConvertConfusableCharacterToASCII(Codepoint))) {
+  if ((ExpectedCodepoint =
+           codeana::ConvertConfusableCharacterToASCII(Codepoint))) {
 
     llvm::SmallString<4> ConfusedChar;
     EncodeToUTF8(Codepoint, ConfusedChar);

@@ -98,7 +98,7 @@ struct Trivia {
   }
   bool operator!=(const Trivia &other) const { return !(*this == other); }
 };
-} // namespace parser
+} // namespace codeana
 } // namespace stone
 
 #endif

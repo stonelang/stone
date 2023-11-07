@@ -14,10 +14,10 @@
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/CodeCompletionListener.h"
 #include "stone/CodeAna/Lexer.h"
-#include "stone/CodeAna/Parsing.h"
 #include "stone/CodeAna/ParserResult.h"
+#include "stone/CodeAna/Parsing.h"
+#include "stone/CodeCompletionListener.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -28,7 +28,6 @@ namespace ast {
 class Scope;
 class BraceStmt;
 }
-
 
 namespace codeana {
 class Parser;
@@ -425,6 +424,6 @@ public:
   Identifier GetIdentifier(llvm::StringRef text);
 };
 }
-} 
+}
 } // namespace stone
 #endif

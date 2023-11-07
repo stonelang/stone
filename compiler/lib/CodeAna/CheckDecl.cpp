@@ -3,10 +3,8 @@
 #include "stone/CodeAna/TypeCheckAccess.h"
 #include "stone/CodeAna/TypeChecker.h"
 
-
 using namespace stone;
 using namespace stone::codeana;
-
 
 class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;

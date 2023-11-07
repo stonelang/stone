@@ -1,6 +1,6 @@
-#include "stone/AST/Type.h"
 #include "stone/AST/TypeLoc.h"
 #include "stone/AST/TypeQualifier.h"
+#include "stone/AST/Types.h"
 
 using namespace stone;
 using namespace stone::ast;
