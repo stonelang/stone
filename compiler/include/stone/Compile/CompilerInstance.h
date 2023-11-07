@@ -32,6 +32,18 @@ using CodeGenCompletedCallback =
 using EachASTFileCallback = std::function<void(
     ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
+
+
+/// A PrettyStackTraceEntry to print compiling information
+class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+  const CompilerInvocation &invocation;
+
+public:
+  CompilerPrettyStackTrace(const CompilerInvocation &invocation)
+      : invocation(invocation) {}
+  void print(llvm::raw_ostream &os) const override;
+};
+
 class CompilerInstance final {
   std::unique_ptr<CompilerInstanceStats> stats;
 

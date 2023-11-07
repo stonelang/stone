@@ -21,29 +21,55 @@
 using namespace stone;
 using namespace stone::ast;
 
-/// A PrettyStackTraceEntry to print compiling information
-class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
-  const CompilerInvocation &invocation;
 
-public:
-  CompilerPrettyStackTrace(const CompilerInvocation &invocation)
-      : invocation(invocation) {}
+static bool PerformSyntaxAnalysis(CompilerInstance &compiler){
 
-  void print(llvm::raw_ostream &os) const override {
 
-    //   auto effective =
-    //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
-    //   != version::Version::GetCurrentCompilerVersion()) {
-    //     os << "Compiling with effective version " << effective;
-    //   } else {
-    //     os << "Compiling with the current invocationuage version";
-    //   }
-    //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
-    //     os << " while allowing modules with compiler errors";
-    //   }
-    //   os << "\n";
-  }
-};
+}
+static bool PerformSyntaxAnalysisAndImportResoltuion(CompilerInstance &compiler) {
+
+}
+
+static bool PerformDumpAST(CompilerInstance &compiler) {
+
+
+}
+
+static bool PerformImportResolution(CompilerInstance &compiler) {
+
+
+}
+
+static void PerformSemanticAnalysis(CompilerInstance &compiler) {
+
+
+}
+
+static bool PerformPrintAST(CompilerInstance &compiler) {
+
+
+}
+
+static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {
+
+
+}
+
+static bool PerformCodeGeneration(CompilerInstance &compiler) {
+
+
+}
+
+static bool PerformIRGeneration(CompilerInstance &compiler,
+                         CodeGenContext &codeGenContext) {
+
+
+}
+
+bool PerformNativeGeneration(CompilerInstance &compiler,
+                             CodeGenContext &codeGenContext) {
+
+}
 
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
