@@ -5,6 +5,7 @@ namespace stone {
 
 class SrcLoc;
 class SrcMgr;
+class Token;
 
 class Tokenable {
 public:
