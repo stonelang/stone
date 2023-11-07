@@ -28,7 +28,7 @@ CompilerOptionsConverter::CompilerOptionsConverter(
     : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts),
       moduleOpts(moduleOpts) {}
 
-stone::Error CompilerOptionsConverter::Convert(
+Status CompilerOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   // TODO: OK for now
@@ -40,7 +40,7 @@ stone::Error CompilerOptionsConverter::Convert(
 
   // None here means error, not just "no inputs". Propagage unconditionally.
   if (!inputsAndOutputs) {
-    return stone::Error(true);
+    return Status::Error();
   }
 
   bool haveNewInputsAndOutputs = false;
@@ -66,14 +66,13 @@ stone::Error CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
-  if (ComputeModuleName().Has()) {
-    return stone::Error(true);
+  if (ComputeModuleName().IsError()) {
+    return Status::Error();
   }
 
-  return stone::Error();
+  return Status();
 }
-
-stone::Error CompilerOptionsConverter::ComputeModuleName() {
+Status CompilerOptionsConverter::ComputeModuleName() {
   // Module name must be computed before computing module
   // aliases. Instead of asserting, clearing ModuleAliasMap
   // here since it can be called redundantly in batch-mode
@@ -89,20 +88,20 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
     // Note: this code path will only be taken when running the invocation
     // directly; the driver should always pass -module-name when invoking the
     // invocation.
-    if (ComputeFallbackModuleName().Has())
-      return stone::Error(true);
+    if (ComputeFallbackModuleName().IsError())
+      return Status::Error();
   }
 
-  if (!ModuleSystem::IsValidModuleName(moduleOpts.moduleName).Has()) {
-    return stone::Error();
+  if (!ModuleSystem::IsValidModuleName(moduleOpts.moduleName).IsError()) {
+    return Status();
   }
 
   if (moduleOpts.moduleName != strings::StdLibName) {
-    return stone::Error();
+    return Status();
   }
 
   if (compilerOpts.shouldParseAsStdLib) {
-    return stone::Error();
+    return Status();
   }
 
   // TODO:
@@ -125,10 +124,10 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
   //  not
   //  // have to.
 
-  return stone::Error();
+  return Status();
 }
 
-stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
+Status CompilerOptionsConverter::ComputeFallbackModuleName() {
 
   llvm::Optional<std::vector<std::string>> outputFilenames =
       CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
@@ -143,5 +142,5 @@ stone::Error CompilerOptionsConverter::ComputeFallbackModuleName() {
 
   moduleOpts.moduleName = llvm::sys::path::stem(nameToStem).str();
 
-  return stone::Error();
+  return Status();
 }

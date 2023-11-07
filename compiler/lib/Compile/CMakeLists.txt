@@ -14,11 +14,11 @@ set(stone_compile_sources
 	TypeCheck.cpp
 	TypeCheckAccess.cpp
 	TypeCheckAvailability.cpp
-	TypeCheckDecl.cpp
+	CheckDecl.cpp
 	TypeChecker.cpp
-	TypeCheckExpr.cpp
-	TypeCheckStmt.cpp
-	TypeCheckType.cpp
+	CheckExpr.cpp
+	CheckStmt.cpp
+	CheckType.cpp
 	ImportResolution.cpp
 
 	Confusable.cpp
@@ -34,15 +34,14 @@ set(stone_compile_sources
 	Parsing.cpp
 
 	LINK_LIBS
-	StoneGen
-	StoneParse
-	StoneSem
-	StoneSession
+	StoneAST
+	StoneBasic
+	StoneCodeGen
 	clangFrontend
 
 
 	DEPENDS
-	StoneOptions
+	StoneOpts
 )
 add_stone_library(StoneCompile
 	${stone_compile_sources}

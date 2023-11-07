@@ -3,7 +3,6 @@
 
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
-#include "stone/Basic/Error.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
@@ -44,7 +43,7 @@ public:
   ast::ModuleDecl *GetMainModule() const;
   void SetMainModule(ast::ModuleDecl *mod);
 
-  Error CreateASTFilesForMainModule(
+  Status CreateASTFilesForMainModule(
       ast::ModuleDecl *mod,
       llvm::SmallVectorImpl<ast::ModuleFile *> &files) const;
 

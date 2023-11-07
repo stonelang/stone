@@ -2,7 +2,7 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/AST/ASTContext.h"
-#include "stone/Basic/Lang.h"
+#include "stone/Lang.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
 
@@ -95,18 +95,6 @@ public:
 public:
   /// Perform code analysis and code generation
   Status Compile();
-
-private:
-  Status CompileWithParsing();
-  Status CompileWithParsing(ParsingCompletedCallback notifiy);
-  Status CompileWithTypeChecking();
-  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
-
-private:
-  Status CompileWitCodeGen();
-  Status CompileWithGenIR(CodeGenContext &cgc,
-                          CodeGenCompletedCallback notifiy);
-  Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
   void ForEachASTFile(EachASTFileCallback fn);

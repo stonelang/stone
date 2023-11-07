@@ -306,7 +306,7 @@ Optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
     const {
 
-  stone::Panic("Not implemented");
+  assert(false && "Not implemented");
 
   // auto moduleOutput =
   //     GetSupplementaryFilenamesFromArguments(opts::EmitModulePath);

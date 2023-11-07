@@ -7,7 +7,6 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
-namespace ast {
 class Token final {
   /// The token kind
   tok kind;
@@ -304,7 +303,6 @@ public:
            "custom string delimiter length > 255");
   }
 };
-} // namespace ast
 } // namespace stone
 
 namespace llvm {

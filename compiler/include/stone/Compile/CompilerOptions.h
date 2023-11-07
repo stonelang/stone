@@ -10,7 +10,6 @@
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Options/Options.h"
-#include "stone/Options/SessionOptions.h"
 
 namespace stone {
 

@@ -1,7 +1,7 @@
 #include "stone/AST/ASTVisitor.h"
 #include "stone/Basic/OptionSet.h"
-#include "stone/Sem/TypeCheckAccess.h"
-#include "stone/Sem/TypeChecker.h"
+#include "stone/Compile/TypeCheckAccess.h"
+#include "stone/Compile/TypeChecker.h"
 
 using stone::typecheck::TypeChecker;
 

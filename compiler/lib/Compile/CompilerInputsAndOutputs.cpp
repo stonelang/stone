@@ -190,7 +190,7 @@ bool CompilerInputsAndOutputs::ShouldTreatAsModuleInterface() const {
 
 bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
                                             bool isNoneRequested) const {
-  stone::Panic("TODO: VerifyInputs");
+  assert(false && "TODO: VerifyInputs");
 
   AssertMustNotBeMoreThanOnePrimaryInput();
   if (!isNoneRequested && !HasInputs()) {

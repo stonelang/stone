@@ -7,6 +7,7 @@
 #include "stone/Lang.h"
 #include "stone/Options/Options.h"
 #include "llvm/Option/ArgList.h"
+#include "stone/Basic/Status.h"
 
 namespace stone {
 
@@ -23,10 +24,10 @@ private:
 
   void HandleDebugCrashGroupArguments();
   void ComputeDebugTimeOptions();
-  Error ComputeFallbackModuleName();
-  Error ComputeModuleName();
-  Error ComputeModuleAliases();
-  Error ComputeMainAndSupplementaryOutputFilenames();
+  Status ComputeFallbackModuleName();
+  Status ComputeModuleName();
+  Status ComputeModuleAliases();
+  Status ComputeMainAndSupplementaryOutputFilenames();
   void ComputeDumpScopeMapLocations();
   void ComputeHelpOptions();
   void ComputeImplicitImportModuleNames(llvm::opt::OptSpecifier id,
@@ -36,9 +37,9 @@ private:
   void ComputePrintStatsOptions();
   void ComputeTBDOptions();
 
-  Error SetUpImmediateArgs();
-  Error CheckUnusedSupplementaryOutputPaths() const;
-  Error CheckForUnusedOutputPaths() const;
+  Status SetUpImmediateArgs();
+  Status CheckUnusedSupplementaryOutputPaths() const;
+  Status CheckForUnusedOutputPaths() const;
 
 public:
   CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
@@ -46,7 +47,7 @@ public:
                            ModuleOptions &moduleOpts);
 
 public:
-  Error
+  Status
   Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 };
 } // namespace stone

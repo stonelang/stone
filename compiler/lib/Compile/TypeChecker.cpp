@@ -1,4 +1,4 @@
-#include "stone/Sem/TypeChecker.h"
+#include "stone/Compile/TypeChecker.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/TypeCheckerOptions.h"
 #include "stone/CodeCompletionListener.h"

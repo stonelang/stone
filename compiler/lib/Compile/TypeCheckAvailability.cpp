@@ -1,1 +1,1 @@
-#include "stone/Sem/TypeCheckAvailability.h"
+#include "stone/Compile/TypeCheckAvailability.h"

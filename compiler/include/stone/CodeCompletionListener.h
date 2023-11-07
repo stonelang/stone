@@ -1,11 +1,10 @@
 #ifndef STONE_BASIC_CODECOMPLETIONLISTENER_H
 #define STONE_BASIC_CODECOMPLETIONLISTENER_H
 
-#include "stone/Basic/Error.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Result.h"
+#include "stone/Basic/Status.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Diag/DiagUnit.h"

@@ -13,9 +13,9 @@ namespace stone {
 class SrcID;
 class SrcMgr;
 class ASTListener;
-
-namespace parser {
 class Token;
+namespace parser {
+
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
 /// advance the lexer past it.  This returns the encoded character or ~0U if
 /// the encoding is invalid.

@@ -1,6 +1,6 @@
-#include "stone/Sem/TypeCheckAccess.h"
+#include "stone/Compile/TypeCheckAccess.h"
 #include "stone/AST/ASTVisitor.h"
-#include "stone/Sem/TypeChecker.h"
+#include "stone/Compile/TypeChecker.h"
 
 using namespace stone;
 using namespace stone::ast;

@@ -1,5 +1,4 @@
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/AST/DeclFactory.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/Lexer.h"
 
@@ -20,7 +19,7 @@ ast::ModuleDecl *ModuleSystem::GetMainModule() const {
     Identifier moduleIdentifier =
         sc.GetIdentifier(invocation.GetModuleOptions().moduleName);
 
-    mainModule = DeclFactory::MakeModuleDecl(moduleIdentifier, sc, true);
+    mainModule = ModuleDecl::Create(moduleIdentifier, sc, true);
 
     // Register the main module with the AST context.
     sc.AddLoadedModule(mainModule);
@@ -43,7 +42,7 @@ ast::ModuleDecl *ModuleSystem::GetMainModule() const {
   return mainModule;
 }
 
-Error ModuleSystem::CreateASTFilesForMainModule(
+Status ModuleSystem::CreateASTFilesForMainModule(
     ast::ModuleDecl *mod,
     llvm::SmallVectorImpl<ast::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
@@ -76,7 +75,7 @@ Error ModuleSystem::CreateASTFilesForMainModule(
         CreateASTFileForMainModule(mod, ast::ASTFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
-  return Error();
+  return Status();
 }
 
 ast::ASTFile *ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
@@ -123,16 +122,20 @@ void ModuleSystem::SetMainModule(ModuleDecl *mod) {
   sc.AddLoadedModule(mod);
 }
 
-Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
+Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
 
-  llvm::SmallVector<llvm::StringRef, 4> results;
-  moduleName.split(results, ".");
-  for (auto identifier : results) {
-    if (!Lexer::isIdentifier(identifier)) {
-      return stone::Error(true);
-    }
+  // llvm::SmallVector<llvm::StringRef, 4> results;
+  // moduleName.split(results, ".");
+  // for (auto identifier : results) {
+  //   if (!Lexer::isIdentifier(identifier)) {
+  //     return stone::Error(true);
+  //   }
+  // }
+
+  if(!Lexer::isIdentifier(identifier)){
+    return Status::Error();
   }
-  return Error();
+  return Status();
 }
 
 bool stone::EmitImportedModules(ast::ASTContext &context,
