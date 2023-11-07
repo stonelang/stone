@@ -112,54 +112,7 @@ bool CompilerInstance::Compile() {
   Compiling::CompilePostCodeAnalysis(*this);
 
   NotifyCompileFinished();
-
-  // CompilingSession compillingSession();
-  // compillingSession.NotifyCompileStarted(*this);
-
-  // // At this point, everything requires syntax analysis.
-  // if (GetMode().IsParse()) {
-  //   if (compillingSession.PerformSyntaxAnalysis(*this).IsError()) {
-  //     return Status::Error();
-  //   }
-  // }
-
-  // // Otherwise, default to performing syntax analysis with import resoltuion.
-  // if (compillingSession.PerformSyntaxAnalysisAndImportResoltuion(*this)
-  //         .IsError()) {
-  //   return Status::Error();
-  // }
-
-  // if (GetMode().IsResolveImports()) {
-  //   return Status::Success();
-  // }
-
-  // // Are we trying to dump the AST?
-  // if (GetMode().IsDumpAST()) {
-  //   if (compillingSession.PerformDumpAST(*this).IsError()) {
-  //     return Status::Error();
-  //   }
-  //   return Status();
-  // }
-  // // At this point, everything requires type-checking
-  // if (compillingSession.PerformSemanticAnalysis(*this).IsError()) {
-  //   return Status::Error();
-  // }
-
-  // if (GetMode().IsTypeCheck()) {
-  //   return Status::Success();
-  // }
-  // // Are we trying to print the AST?
-  // if (GetMode().IsPrintAST()) {
-  //   if (compillingSession.PerformPrintAST(*this).IsError()) {
-  //     return Status::Error();
-  //   }
-  // }
-
-  // if (compillingSession.PerformCompileAfterCompiling(*this).IsError()) {
-  //   return Status::Error();
-  // }
-  // compillingSession.NotifyCompileFinished(*this);
-
+  
   return Finish();
 }
 
@@ -263,6 +216,8 @@ void Compiling::PerformDumpTypeInfo(CompilerInstance &compiler) {}
 void Compiling::PerformPrintAST(CompilerInstance &compiler) {}
 
 Status Compiling::CompilePostCompiling(CompilerInstance &compiler) {
+
+  // Some other things here 
   Compiling::CompileWithCodeGeneration(compiler);
 }
 
@@ -284,26 +239,26 @@ bool Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
   //  compiler.GetCompilerOptions().InputsAndOutputs.copyOutputFilenames();
 
   // At this point, everhing requires IR generations
-  if (CodeGeneration::PerformIRGeneration(compiler, codeGenContext).IsError()) {
+  if (Compiling::PerformIRGeneration(compiler, codeGenContext).IsError()) {
     return Status::Error();
   }
 
   // --emit-ir
   if (compiler.GetMode().IsEmitIR()) {
-    CodeGeneration::PerformDumpIR(compiler, codeGenContext);
+    Compiling::PerformDumpIR(compiler, codeGenContext);
     return status;
   }
 
   // --print-ir
   if (compiler.GetMode().IsPrintIR()) {
-    CodeGeneration::PerformPrintIR(compiler, codeGenContext);
+    Compiling::PerformPrintIR(compiler, codeGenContext);
     return status;
   }
   /// Do some othere things
 
   /// --emit-object ....
   // If we are here, we are outputing something native
-  if (CodeGeneration::PerformNativeGeneration(compiler, codeGenContext)
+  if (Compiling::PerformNativeGeneration(compiler, codeGenContext)
           .IsError()) {
     return Status::Error();
   }
