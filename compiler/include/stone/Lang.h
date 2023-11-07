@@ -1,5 +1,5 @@
-#ifndef STONE_PUBLIC_H
-#define STONE_PUBLIC_H
+#ifndef STONE_LANG_H
+#define STONE_LANG_H
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileMgr.h"
@@ -7,7 +7,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"

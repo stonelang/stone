@@ -6,9 +6,9 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
-#include "stone/Diag/TextDiagnosticListener.h"
+#include "stone/Basic/CompilerDiagnostic.h"
+#include "stone/Basic/TextDiagnosticFormatter.h"
+#include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Lang.h"
 #include "stone/Options/ModeKind.h"
 

@@ -1,8 +1,8 @@
-#include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/SyntaxDiagnostic.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
-#include "stone/Diag/TextDiagnosticListener.h"
+#include "stone/Basic/CompilerDiagnostic.h"
+#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/SyntaxDiagnostic.h"
+#include "stone/Basic/TextDiagnosticFormatter.h"
+#include "stone/Basic/TextDiagnosticListener.h"
 #include "stone/Lang.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 

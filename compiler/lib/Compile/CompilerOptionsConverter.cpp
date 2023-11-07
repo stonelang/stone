@@ -1,7 +1,7 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Basic/Strings.h"
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"

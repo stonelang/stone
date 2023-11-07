@@ -3,10 +3,10 @@
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
-#include "stone/Diag/DiagnosticArgument.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/TextDiagnosticEmitter.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Basic/DiagnosticArgument.h"
+#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/TextDiagnosticEmitter.h"
+#include "stone/Basic/TextDiagnosticFormatter.h"
 
 using stone::Diagnostic;
 

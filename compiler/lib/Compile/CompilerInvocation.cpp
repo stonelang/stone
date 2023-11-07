@@ -5,7 +5,7 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Lang.h"
 
 #include "clang/Basic/Stack.h"

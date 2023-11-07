@@ -1,5 +1,5 @@
 #include "stone/Compile/CompilerInstance.h"
-#include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 #include "stone/Sem/ImportResolution.h"
 
 #include "clang/Basic/FileManager.h"

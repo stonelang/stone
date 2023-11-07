@@ -1,6 +1,6 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/Statistic.h"

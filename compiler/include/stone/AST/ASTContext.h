@@ -33,7 +33,7 @@
 #include "stone/AST/Specifier.h"
 #include "stone/AST/Type.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"

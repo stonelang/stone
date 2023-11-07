@@ -4,7 +4,7 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Decl.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 

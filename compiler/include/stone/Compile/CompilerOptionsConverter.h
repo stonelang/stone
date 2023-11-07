@@ -3,8 +3,8 @@
 
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DiagnosticListener.h"
+#include "stone/Basic/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticListener.h"
 #include "stone/Lang.h"
 #include "stone/Options/Options.h"
 #include "llvm/Option/ArgList.h"

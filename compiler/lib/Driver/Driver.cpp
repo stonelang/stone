@@ -1,5 +1,5 @@
 #include "stone/Drive/Driver.h"
-#include "stone/Diag/CoreDiagnostic.h"
+#include "stone/Basic/CoreDiagnostic.h"
 #include "stone/Drive/Compilation.h"
 #include "stone/Drive/DarwinToolChain.h"
 #include "stone/Drive/Job.h"

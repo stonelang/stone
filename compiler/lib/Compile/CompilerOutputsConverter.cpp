@@ -1,7 +1,7 @@
 
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/Strings.h"
-#include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Basic/CompilerDiagnostic.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOptionsConverter.h"

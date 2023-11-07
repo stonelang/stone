@@ -1,5 +1,5 @@
 #include "stone/AST/ASTDiagnosticArgument.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 using namespace stone;
 

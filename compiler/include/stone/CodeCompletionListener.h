@@ -7,7 +7,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/Status.h"
-#include "stone/Diag/DiagUnit.h"
+#include "stone/Basic/DiagnosticEngine.h"
 
 namespace llvm {
 class Module;

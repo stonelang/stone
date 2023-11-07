@@ -8,6 +8,8 @@ set( LLVM_LINK_COMPONENTS
   IPO
   Option
   )
+
+
 set(stone_basic_sources
 	Cache.cpp
 	BumpTable.cpp
@@ -30,10 +32,21 @@ set(stone_basic_sources
 	Timer.cpp
 	TokenKind.cpp
 	Version.cpp
-
+)
+set(stone_diag_sources
+	DiagIDList.cpp
+  Diagnostic.cpp
+  DiagnosticEmitter.cpp
+  DiagnosticFormatter.cpp
+  DiagnosticEngine.cpp
+  DiagnosticListener.cpp
+  TextDiagnosticEmitter.cpp
+  TextDiagnosticFormatter.cpp
+  TextDiagnosticListener.cpp
 )
 add_stone_library(StoneBasic
 	${stone_basic_sources}
+	${stone_diag_sources}
 )
 
 
