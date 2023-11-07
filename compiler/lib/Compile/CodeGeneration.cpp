@@ -86,17 +86,21 @@ bool Lang::CompileWithCodeGeneration(CompilerInstance &compiler) {
   if (CodeGeneration::PerformIRGeneration(compiler, codeGenContext).IsError()) {
     return Status::Error();
   }
+
+  // --emit-ir 
   if (compiler.GetMode().IsEmitIR()) {
     CodeGeneration::PerformDumpIR(compiler, codeGenContext);
     return status;
   }
 
+	// --print-ir
   if (compiler.GetMode().IsPrintIR()) {
     CodeGeneration::PerformPrintIR(compiler, codeGenContext);
     return status;
   }
   /// Do some othere things
 
+  /// --emit-object ....
   // If we are here, we are outputing something native
   if (CodeGeneration::PerformNativeGeneration(compiler, codeGenContext)
           .IsError()) {

@@ -50,7 +50,7 @@ Status CodeAnalysis::PerformSyntaxAnalysisAndImportResoltuion(
     return Status::Error();
   }
 }
-void NotifySyntaxAnalysisCompleted(CompilerInstance &compiler) {
+void CodeAnalysis::NotifySyntaxAnalysisCompleted(CompilerInstance &compiler) {
   if (compiler.GetInvocation().GetListener()) {
     compiler.GetInvocation().GetListener()->OnSyntaxAnalysisCompleted(compiler);
   }
