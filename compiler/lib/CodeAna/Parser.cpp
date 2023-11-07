@@ -4,7 +4,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/ASTDiagnostic.h"
+#include "stone/Basic/CodeAnaDiagnostic.h"
 #include "stone/Lang.h"
 
 using namespace stone;

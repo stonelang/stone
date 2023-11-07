@@ -2,7 +2,7 @@
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/ASTDiagnostic.h"
+#include "stone/Basic/CodeAnaDiagnostic.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/CodeAna/Lexer.h"
 #include "stone/CodeAna/Confusable.h"
@@ -2201,13 +2201,13 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
       .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), " ");
 
   char ExpectedCodepoint;
-  if ((ExpectedCodepoint = ast::ConvertConfusableCharacterToASCII(Codepoint))) {
+  if ((ExpectedCodepoint = codeana::ConvertConfusableCharacterToASCII(Codepoint))) {
 
     llvm::SmallString<4> ConfusedChar;
     EncodeToUTF8(Codepoint, ConfusedChar);
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
-    auto charNames = ast::GetConfusableAndBaseCodepointNames(Codepoint);
+    auto charNames = codeana::GetConfusableAndBaseCodepointNames(Codepoint);
     PrintD(CurPtr - 1, diag::lex_confusable_character,
            diag::LLVMStr(ConfusedChar), diag::LLVMStr(charNames.first),
            diag::LLVMStr(ExpectedChar), diag::LLVMStr(charNames.second))
