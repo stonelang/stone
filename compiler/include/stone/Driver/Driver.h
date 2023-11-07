@@ -44,7 +44,7 @@ void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
 /// \param JobAction Called with the list of invocation arguments if there were
 /// no errors in processing \p ArgList. This is a callback rather than a return
 /// value to avoid copying the arguments more than necessary.
-/// \param ForceNoOutputs If true, override the output mode to "-typecheck" and
+/// \param ForceNoOutputs If true, override the output mode to "-codeana" and
 /// produce no outputs. For example, this disables "-emit-module" and "-c" and
 /// prevents the creation of temporary files.
 ///

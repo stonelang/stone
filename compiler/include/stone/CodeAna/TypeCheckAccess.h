@@ -77,6 +77,6 @@ DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
                                              const ExportContext &where,
                                              DowngradeToWarningKind &kind);
 
-} // namespace typecheck
+} // namespace codeana
 } // namespace stone
 #endif

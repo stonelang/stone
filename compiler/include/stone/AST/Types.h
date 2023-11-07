@@ -1,0 +1,457 @@
+#ifndef STONE_AST_TYPE_H
+#define STONE_AST_TYPE_H
+
+#include "stone/AST/ASTAllocation.h"
+#include "stone/AST/CanType.h"
+#include "stone/AST/Foreign.h"
+#include "stone/AST/InlineBitfield.h"
+#include "stone/AST/Ownership.h"
+#include "stone/AST/TypeCollector.h"
+#include "stone/AST/TypeKind.h"
+#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/SrcLoc.h"
+
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/APInt.h"
+#include "llvm/ADT/APSInt.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/DenseMapInfo.h"
+#include "llvm/ADT/FoldingSet.h"
+#include "llvm/ADT/Hashing.h"
+#include "llvm/ADT/None.h"
+#include "llvm/ADT/Optional.h"
+#include "llvm/ADT/PointerIntPair.h"
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/Twine.h"
+#include "llvm/ADT/iterator_range.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/Compiler.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/PointerLikeTypeTraits.h"
+#include "llvm/Support/TrailingObjects.h"
+#include "llvm/Support/type_traits.h"
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <type_traits>
+#include <utility>
+
+#include <string>
+
+namespace stone {
+namespace ast {
+
+class Type;
+class CanType;
+class QualType;
+class TypeWalker;
+class SweetType;
+class ASTPrinter;
+class EnumDecl;
+class ModuleDecl;
+class InterfaceType;
+class StructDecl;
+
+enum class GCKind : UInt8 { None = 0, Weak, Strong };
+
+/// ref-qualifier associated with a function Type.
+/// This determines whether a member function's "this" object can be an
+/// lvalue, rvalue, or neither.
+enum class RefQualifierKind : UInt8 {
+  /// No ref-qualifier was provided.
+  None = 0,
+  /// An lvalue ref-qualifier was provided (\c &).
+  LValue,
+
+  /// An rvalue ref-qualifier was provided (\c &&).
+  RValue
+};
+enum class ScalarTypeKind {
+  Pointer,
+  BlockPointer,
+  MemberPointer,
+  Bool,
+  Integral,
+  Floating,
+  IntegralComplex,
+  FloatingComplex,
+  FixedPoint
+};
+
+class alignas(1 << TypeAlignInBits) TypeBase
+    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
+
+  friend class ASTContext;
+
+  TypeBase(const Type &) = delete;
+  void operator=(const Type &) = delete;
+
+  TypeKind kind;
+
+  /// canType - This field is always set to the ASTContext for canonical
+  /// types, and is otherwise lazily populated by ASTContext when the canonical
+  /// form of a non-canonical type is requested.
+  llvm::PointerUnion<Type *, const ASTContext *> canonicalType;
+
+protected:
+  union {
+    uint64_t OpaqueBits;
+    STONE_INLINE_BITFIELD_BASE(Type, stone::BitMax(NumTypeKindBits, 8) + 1 + 1,
+                               Kind
+                               : stone::BitMax(NumTypeKindBits, 8),
+
+                                 /// Whether this type is canonical or not.
+                                 IsCanonical : 1,
+                                 // Whether this type can have qualifiers
+                                 AllowQuals : 1);
+
+    STONE_INLINE_BITFIELD(SweetType, Type, 1, HasCachedType : 1);
+
+  } Bits;
+
+public:
+  TypeBase(TypeKind kind, const ASTContext *canType)
+      : kind(kind), canonicalType((Type *)nullptr) {
+    Bits.Type.Kind = static_cast<unsigned>(kind);
+    if (canType) {
+      canonicalType = canType;
+    }
+  }
+
+public:
+  bool IsBasic();
+  bool IsNominalType();
+
+  /// getASTContext - Return the ASTContext that this type belongs to.
+  ASTContext &GetASTContext();
+
+public:
+  TypeKind GetKind() const { return kind; }
+
+  // TypeKind GetKind() const { return
+  // static_cast<TypeKind>(Bits.Type.Kind); }
+
+  // We can do this because all types are generally cannonical types.
+  // CanType GetCanType();
+
+  bool AllowQuals() const { return Bits.Type.AllowQuals; }
+
+  bool HasQuals() const;
+
+  /// isCanonical - Return true if this is a canonical type.
+  bool IsCanType() const { return canonicalType.is<const ASTContext *>(); }
+
+  /// hasCanonicalTypeComputed - Return true if we've already computed a
+  /// canonical version of this type.
+  bool IsCanTypeComputed() const { return !canonicalType.isNull(); }
+
+private:
+  CanType ComputeCanType();
+
+public:
+  bool IsBuiltinType() const;
+  bool IsFunType() const;
+  bool IsStructType() const;
+  bool IsPointerType() const;
+  bool IsReferenceType() const;
+
+public:
+};
+
+// TODO: Think about
+//  class AnyType : public Type {
+//  public:
+
+//   AnyType(TypeKind kind, ASTContext *canType)
+//       : Type(kind, canType) {}
+// };
+
+class FunctionType : public TypeBase {
+  QualType result;
+
+public:
+  FunctionType(TypeKind kind, QualType result, const ASTContext *canType)
+      : Type(kind, canType) {}
+};
+
+// You are returning Type for now, it may have to be QualType
+class FunType : public FunctionType,
+                private llvm::TrailingObjects<FunType, QualType> {
+  friend TrailingObjects;
+
+public:
+  FunType(QualType result, const ASTContext *astContext);
+};
+
+class NominalType : public TypeBase {
+protected:
+  friend ASTContext;
+
+public:
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const Type *ty) {
+    return ty->GetKind() >= TypeKind::First_NominalType &&
+           ty->GetKind() <= TypeKind::Last_NominalType;
+  }
+};
+
+class StructType final : public NominalType {
+public:
+};
+
+class InterfaceType final : public NominalType {
+public:
+};
+
+class EnumType final : public NominalType {};
+
+class DeducedType : public Type {
+protected:
+  friend class ASTContext; // ASTContext creates these
+};
+
+class AutoType final : public DeducedType, public llvm::FoldingSetNode {
+public:
+};
+
+// class TemplateParmType : public Type{
+// };
+
+class BuiltinType : public TypeBase {
+protected:
+  BuiltinType(TypeKind kind, const ASTContext &astContext)
+      : Type(kind, &astContext) {}
+};
+
+class IdentifierType : public Type {};
+
+class ScalarType : public BuiltinType {
+public:
+  ScalarType(TypeKind kind, const ASTContext &astContext)
+      : BuiltinType(kind, astContext) {}
+};
+
+class CharType : public ScalarType {
+public:
+  CharType(const ASTContext &astContext)
+      : ScalarType(TypeKind::Char, astContext) {}
+};
+
+class BoolType : public ScalarType {
+public:
+  BoolType(const ASTContext &astContext)
+      : ScalarType(TypeKind::Bool, astContext) {}
+};
+
+// class StringType : public BuiltinType {
+// public:
+//   StringType(const ASTContext &astContext) : ScalarType(TypeKind::String,
+//   astContext) {}
+// };
+
+struct NumberBitWidth final {
+  enum Kind : UInt8 {
+    Platform = 0,
+    N8,
+    N16,
+    N32,
+    N64,
+    N80,
+    N128,
+  };
+  static unsigned GetNumberBitWidth(NumberBitWidth::Kind kind) {
+    switch (kind) {
+    case NumberBitWidth::Platform:
+      return 0;
+    case NumberBitWidth::N8:
+      return 8;
+    case NumberBitWidth::N16:
+      return 16;
+    case NumberBitWidth::N32:
+      return 32;
+    case NumberBitWidth::N64:
+      return 64;
+    case NumberBitWidth::N80:
+      return 80;
+    case NumberBitWidth::N128:
+      return 128;
+    }
+    llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
+  }
+};
+using NumberBitWidthKind = NumberBitWidth::Kind;
+/// An abstract base class for integers and floats
+class NumberType : public ScalarType {
+  NumberBitWidthKind bitWidthKind;
+
+public:
+  NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
+             const ASTContext &astContext)
+      : ScalarType(kind, astContext), bitWidthKind(bitWidthKind) {}
+
+public:
+  unsigned GetNumberBitWidth() const {
+    return NumberBitWidth::GetNumberBitWidth(bitWidthKind);
+  }
+  bool UsePlatformNumberBitWidth() {
+    return GetNumberBitWidth() == NumberBitWidth::Platform;
+  }
+};
+
+class IntegerType : public NumberType {
+  friend class ASTContext;
+
+public:
+  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Integer, bitWidthKind, astContext) {}
+
+public:
+  static IntegerType *Create(NumberBitWidthKind bitWidthKind,
+                             const ASTContext &astContext);
+};
+
+class UIntegerType : public NumberType {
+  friend class ASTContext;
+
+public:
+  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+
+      : NumberType(TypeKind::UInteger, bitWidthKind, astContext) {}
+};
+
+class ComplexType : public NumberType {
+  friend class ASTContext;
+
+public:
+  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Complex, bitWidthKind, astContext) {}
+};
+
+class ImaginaryType : public NumberType {
+  friend class ASTContext;
+
+public:
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Imaginary, bitWidthKind, astContext) {}
+};
+
+class FloatType : public NumberType {
+  friend class ASTContext;
+
+public:
+  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+      : NumberType(TypeKind::Float, bitWidthKind, astContext) {}
+
+public:
+  static FloatType *Create(NumberBitWidthKind bitWidthKind,
+                           const ASTContext &astContext);
+
+public:
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
+  static bool classof(const Type *T) { return T->GetKind() == TypeKind::Float; }
+};
+
+class VoidType : public BuiltinType {
+public:
+  VoidType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Void, astContext) {}
+
+public:
+  static VoidType *Create(const ASTContext &astContext,
+                          AllocationArena arena = AllocationArena::Permanent);
+};
+
+class NullType : public BuiltinType {
+public:
+  NullType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Null, astContext) {}
+};
+
+class ChunkType : public Type, public llvm::FoldingSetNode {};
+
+class AbstractPointerType : public Type, public llvm::FoldingSetNode {
+public:
+  AbstractPointerType(TypeKind kind, const ASTContext &astContext)
+      : Type(kind, &astContext) {}
+};
+
+class PointerType : public AbstractPointerType {
+public:
+};
+
+class MemberPointerType : public AbstractPointerType {
+public:
+};
+
+class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
+
+class LValueReferenceType final : public ReferenceType {};
+
+class RValueReferenceType final : public ReferenceType {};
+
+class ModuleType : public TypeBase {
+  ModuleDecl *const mod;
+
+public:
+  /// get - Return the ModuleType for the specified module.
+  static ModuleType *Get(ModuleDecl *mod);
+  ModuleDecl *GetModule() const { return mod; }
+
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const Type *ty) {
+    return ty->GetKind() == TypeKind::Module;
+  }
+
+private:
+  ModuleType(ModuleDecl *mod, const ASTContext &astContext)
+      : Type(TypeKind::Module, &astContext), mod(mod) {}
+};
+
+class SweetType : public Type {
+  // The state of this union is known via Bits.SweetType.HasCachedType so that
+  // we can avoid masking the pointer on the fast path.
+  union {
+    Type *underlyingType;
+    const ASTContext *Context;
+  };
+};
+/// An alias to a type
+/// alias Int = int; My using use using Int = int;
+class AliasType : public SweetType {
+public:
+};
+
+/// A type with a special asttax that is always sugar for a library type. The
+/// library type may have multiple base types. For unary asttax sugar, see
+/// UnaryASTSweetType.
+///
+/// The prime examples are:
+/// Arrays: [T] -> Array<T>
+/// Dictionaries: [K : V]  -> Dictionary<K, V>
+class ASTSweetType : public SweetType {
+public:
+};
+
+/// The dictionary type [K : V], which is asttactic sugar for Dictionary<K, V>.
+///
+/// Example:
+/// \code
+/// auto dict: [string : int] = ["hello" : 0, "world" : 1]
+/// \endcode
+class DictionaryType : public ASTSweetType {
+public:
+};
+
+// class ArrayType : public Type, public llvm::FoldingSetNode {
+// public:
+// };
+
+} // namespace ast
+} // namespace stone
+#endif

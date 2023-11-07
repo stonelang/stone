@@ -10,7 +10,6 @@
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
-#include "stone/AST/ParserResult.h"
 #include "stone/AST/Specifier.h"
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
@@ -18,6 +17,7 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/CodeAna/Lexer.h"
 #include "stone/CodeAna/Parsing.h"
+#include "stone/CodeAna/ParserResult.h"
 
 #include "llvm/Support/Timer.h"
 

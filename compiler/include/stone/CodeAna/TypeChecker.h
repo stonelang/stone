@@ -89,6 +89,6 @@ public:
   /// \returns true if \c t1 is a subtype of \c t2.
   bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
-} // namespace typecheck
+} // namespace codeana
 } // namespace stone
 #endif

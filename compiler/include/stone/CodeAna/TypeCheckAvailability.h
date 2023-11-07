@@ -269,6 +269,6 @@ void CheckExplicitAvailability(ast::Decl *decl);
 /// flag -check-api-availability-only.
 bool ShouldCheckAvailability(const ast::Decl *D);
 
-} // namespace typecheck
+} // namespace codeana
 } // namespace stone
 #endif
