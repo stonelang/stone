@@ -4,5 +4,5 @@
 using namespace stone::ast;
 
 ParserResult<Expr> Parser::ParseExpr() {
-  return parser::MakeParserResult<Expr>(nullptr);
+  return codeana::MakeParserResult<Expr>(nullptr);
 }

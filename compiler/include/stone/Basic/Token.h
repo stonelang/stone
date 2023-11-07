@@ -307,7 +307,7 @@ public:
 
 namespace llvm {
 template <typename T> struct isPodLike;
-template <> struct isPodLike<stone::ast::Token> {
+template <> struct isPodLike<stone::Token> {
   static const bool value = true;
 };
 } // end namespace llvm

@@ -5,7 +5,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
-using stone::ast::Token;
+using stone::Token;
 
 void SrcMgr::verifyAllBuffers() const {
   llvm::PrettyStackTraceString backtrace{

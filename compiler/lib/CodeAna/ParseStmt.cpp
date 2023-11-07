@@ -5,5 +5,5 @@
 using namespace stone::ast;
 
 ParserResult<Stmt> Parser::ParseStmt() {
-  return parser::MakeParserResult<Stmt>(nullptr);
+  return codeana::MakeParserResult<Stmt>(nullptr);
 }

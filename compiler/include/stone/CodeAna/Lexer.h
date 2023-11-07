@@ -13,7 +13,7 @@ namespace stone {
 class SrcID;
 class SrcMgr;
 class ASTListener;
-class Token;
+
 namespace codeana {
 
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
@@ -619,7 +619,7 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
 
-} // namespace parser
+} // namespace codeana 
 } // namespace stone
 
 #endif

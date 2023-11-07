@@ -25,6 +25,7 @@ set(stone_codeana_sources
 	LINK_LIBS
 	StoneAST
 	StoneBasic
+	StoneOptions
 
 	DEPENDS
 	StoneOpts
