@@ -28,6 +28,7 @@ public:
 
 public:
   static Status PerformSemanticAnalysis(CompilerInstance &compiler);
+  static Status FinishSemanticAnalysis(CompilerInstance &compiler);
   static void NotifySemanticAnalysisCompleted(CompilerInstance &compiler);
   static void PerformPrintAST(CompilerInstance &compiler);
 };
@@ -67,6 +68,10 @@ Status CodeAnalysis::PerformSemanticAnalysis(CompilerInstance &compiler) {
   });
 
   NotifySemanticAnalysisCompleted(compiler);
+}
+
+Status CodeAnalysis::FinishSemanticAnalysis(CompilerInstance &compiler) {
+	return Success::Success();
 }
 
 void CodeAnalysis::NotifySemanticAnalysisCompleted(CompilerInstance &compiler) {

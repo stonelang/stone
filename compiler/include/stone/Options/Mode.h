@@ -20,6 +20,8 @@ enum class ModeKind : unsigned {
   TypeCheck,
   ///< Parse, type-check, and  pretty print asttax tree
   PrintAST,
+  ///< Parse, type-check, and  dump type-into ( --dump-typeinfo)
+  DumpTypeInfo,
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
   //</ Parse, type-check, and emit LLVM IR pre optimization

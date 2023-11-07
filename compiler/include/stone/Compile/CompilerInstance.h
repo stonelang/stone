@@ -94,7 +94,7 @@ public:
 
 public:
   /// Perform code analysis and code generation
-  Status Compile();
+  bool Compile();
 
 public:
   void ForEachASTFile(EachASTFileCallback fn);

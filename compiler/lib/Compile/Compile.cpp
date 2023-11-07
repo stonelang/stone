@@ -97,10 +97,14 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-Status CompilerInstance::Compile() {
+bool CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
   llvm::TimeTraceScope compileTimeScope("Compile");
+
+   auto Finish = [&](Status status = Status::Success()) -> int {
+    return status.GetFlag();
+  };
 
   NotifyCompileStarted();
 
@@ -158,4 +162,6 @@ Status CompilerInstance::Compile() {
   //   return Status::Error();
   // }
   // compillingSession.NotifyCompileFinished(*this);
+
+    return Finish();
 }
