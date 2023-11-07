@@ -11,25 +11,12 @@ set(stone_compile_sources
 	ModuleDependencies.cpp
 	Serialization.cpp
 
-
-	Confusable.cpp
-	CollectDecl.cpp
-	Lexer.cpp
-	Parse.cpp
-	ParseDecl.cpp
-	ParseExpr.cpp
-	Parser.cpp
-	ParseStmt.cpp
-	ParseType.cpp
-	Lexing.cpp
-	Parsing.cpp
-
 	LINK_LIBS
 	StoneAST
 	StoneBasic
+	StoneCodeAna
 	StoneCodeGen
 	clangFrontend
-
 
 	DEPENDS
 	StoneOpts

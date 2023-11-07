@@ -21,13 +21,6 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using ParsingCompletedCallback = st::function<Status(ast::ASTFile &)>;
-
-using TypeCheckingCompletedCallback = std::function<Status(CompilerInstance &)>;
-
-using CodeGenCompletedCallback =
-    std::function<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
-
 using EachASTFileCallback = std::function<void(
     ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 

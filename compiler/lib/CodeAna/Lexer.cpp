@@ -1,10 +1,11 @@
-#include "stone/CodeAna/Lexer.h"
+
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/CodeCompletionListener.h"
-#include "stone/CodeAna/Confusable.h"
 #include "stone/Basic/ASTDiagnostic.h"
+#include "stone/CodeCompletionListener.h"
+#include "stone/CodeAna/Lexer.h"
+#include "stone/CodeAna/Confusable.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"

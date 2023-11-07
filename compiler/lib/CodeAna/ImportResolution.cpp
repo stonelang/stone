@@ -1,5 +1,5 @@
-#include "stone/Sem/ImportResolution.h"
 #include "stone/AST/Module.h"
+#include "stone/CodeAna/ImportResolution.h"
 
 using namespace stone;
 using namespace stone::ast;

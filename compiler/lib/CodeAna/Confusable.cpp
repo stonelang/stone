@@ -1,6 +1,6 @@
 #include "stone/CodeAna/Confusable.h"
 
-char stone::parser::ConvertConfusableCharacterToASCII(uint32_t codepoint) {
+char stone::codeana::ConvertConfusableCharacterToASCII(uint32_t codepoint) {
   switch (codepoint) {
 #define CONFUSABLE(CONFUSABLE_POINT, CONFUSABLE_NAME, BASE_POINT, BASE_NAME)   \
   case CONFUSABLE_POINT:                                                       \
@@ -12,7 +12,7 @@ char stone::parser::ConvertConfusableCharacterToASCII(uint32_t codepoint) {
 }
 
 std::pair<llvm::StringRef, llvm::StringRef>
-stone::parser::GetConfusableAndBaseCodepointNames(uint32_t codepoint) {
+stone::codeana::GetConfusableAndBaseCodepointNames(uint32_t codepoint) {
   switch (codepoint) {
 #define CONFUSABLE(CONFUSABLE_POINT, CONFUSABLE_NAME, BASE_POINT, BASE_NAME)   \
   case CONFUSABLE_POINT:                                                       \
