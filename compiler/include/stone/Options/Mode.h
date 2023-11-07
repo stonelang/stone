@@ -166,6 +166,7 @@ public:
   bool IsParse() { return GetKind() == ModeKind::Parse; }
   bool IsDumpAST() { return GetKind() == ModeKind::DumpAST; }
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
+  bool IsDumpTypeInfo() { return GetKind() == ModeKind::DumpTypeInfo; }
   bool IsPrintAST() { return GetKind() == ModeKind::PrintAST; }
   bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
   bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }

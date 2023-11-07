@@ -93,8 +93,11 @@ public:
   static int Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                      void *mainAddr, CompilerListener *listener = nullptr);
 
-  //// Execute only the analysis part of the compiler
+  //// Executes only the analysis part of the compiler
   static bool CompileWithCodeAnalysis(CompilerInstance &compiler);
+
+  /// Performs non-analysis stuff and then calls code generation
+  static bool CompileAfterCodeAnalysis(CompilerInstance &compiler);
 
   /// Execute only the code generation
   static bool CompileWithCodeGeneration(CompilerInstance &compiler);
