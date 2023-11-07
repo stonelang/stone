@@ -2,9 +2,9 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/AST/ASTContext.h"
-#include "stone/Lang.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Lang.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -161,6 +161,18 @@ public:
 
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);
+
+private:
+  void NotifyCompileStarted() {
+    if (GetInvocation().GetListener()) {
+      GetInvocation().GetListener()->OnCompileStarted(*this);
+    }
+  }
+  void NotifyCompileFinished() {
+    if (GetInvocation().GetListener()) {
+      GetInvocation().GetListener()->OnCompileFinished(*this);
+    }
+  }
 };
 
 } // namespace stone

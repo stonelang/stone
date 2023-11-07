@@ -132,7 +132,7 @@ Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   //   }
   // }
 
-  if(!Lexer::isIdentifier(identifier)){
+  if (!Lexer::isIdentifier(identifier)) {
     return Status::Error();
   }
   return Status();

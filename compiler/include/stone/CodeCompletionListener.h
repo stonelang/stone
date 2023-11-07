@@ -4,9 +4,9 @@
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Status.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/Basic/Status.h"
 #include "stone/Diag/DiagUnit.h"
 
 namespace llvm {

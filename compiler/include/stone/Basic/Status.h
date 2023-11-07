@@ -26,6 +26,9 @@ public:
     }
   }
   bool IsError() const { return isError; }
+
+  int GetFlag() { IsError() ? 1 : 0; }
+
   /// Return true if we found a code completion token while parsing this.
   bool HasCompletion() const { return isCompletion; }
   /// Return true if either 1) no errors were encountered while parsing this,

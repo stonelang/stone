@@ -189,15 +189,32 @@ public:
 
   llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetLang().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLang().GetDiagnoticEngine().HasError(); }
 
-  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+  DiagnosticEngine &GetDiagnoticEngine(){return GetLang().GetDiagnoticEngine()}
+
+  std::vector<unsigned> &GetSourceBufferIDs() {
+    return sourceBufferIDs;
+  }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
 
 public:
   std::unique_ptr<llvm::opt::InputArgList>
   ParseArgs(llvm::ArrayRef<const char *> args);
-};
+
+public:
+  bool IsAlien() { return GetCompilerOptions().GetMode().IsAlien(); }
+  bool IsPrintHelp() { return GetCompilerOptions().GetMode().IsPrintHelp(); }
+  bool IsPrintVersion() {
+    return GetCompilerOptions().GetMode().IsPrintVersion();
+  }
+  bool CanCompile() { return GetCompilerOptions().GetMode().CanCompile(); }
+
+  void NotifyCompileConfigure() {
+    if (invocation.GetListener()) {
+      GetListener()->OnCompileConfigured(*this);
+    }
+  };
 
 } // namespace stone
 

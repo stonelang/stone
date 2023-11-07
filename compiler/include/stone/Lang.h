@@ -93,6 +93,13 @@ public:
   static int Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                      void *mainAddr, CompilerListener *listener = nullptr);
 
+  //// Execute only the analysis part of the compiler
+  static bool CompileWithCodeAnalysis(CompilerInstance &compiler);
+
+  /// Execute only the code generation
+  static bool CompileWithCodeGeneration(CompilerInstance &compiler);
+
+public:
   static int Main(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilationListener *listener);
 
@@ -106,9 +113,8 @@ public:
   /// Returns true is successfull
   static void ResolveASTFileImports(ast::ASTFile &astFile);
 
+  /// Just dump the AST created
   static void DumpAST(ast::ASTFile &astFile, ast::ASTContext &context);
-
-  static void PrintAST(ast::ASTFile &astFile, ast::ASTContext &context);
 
   /// Once import resolution is complete, this walks the asttax to resolve types
   /// and diagnose problems therein.
@@ -130,6 +136,9 @@ public:
       TypeCheckerListener *listener =
           nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
+  /// Dump the AST created after type-checking
+  static void PrintAST(ast::ASTFile &astFile, ast::ASTContext &context);
+
   /// Returns true is successfull
   static void SerializeASTFile(ast::ASTFile &asttaxFile);
 
@@ -147,6 +156,9 @@ public:
                     ast::ModuleDecl *mod,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
+
+  /// Emit the IR generated to the output screen
+  static void EmitIR();
 
   static bool EmitImportedModules(ast::ASTContext &context,
                                   ast::ModuleDecl *mainModule,
