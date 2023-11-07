@@ -59,13 +59,120 @@ static bool PerformPrintAST(CompilerInstance &compiler) {}
 
 static bool PerformCompileAfterSemtanticAnalysis(CompilerInstance &compiler) {}
 
-static bool PerformCodeGeneration(CompilerInstance &compiler) {}
+static bool PerformCodeGeneration(CompilerInstance &compiler) {
+
+  assert(CanCodeGen() && "Mode does not support code gen");
+
+  auto llvmContext = std::make_unique<llvm::LLVMContext>();
+  CodeGenContext codeGenContext(
+      GetInvocation().GetCodeGenOptions(), *llvmContext,
+      compiler.GetInvocation().GetModuleOptions(),
+      compiler.GetInvocation().GetTargetOptions(),
+      compiler.GetInvocation().GetLang(), compiler.GetInvocation().GetClang());
+
+  // At this point, everhing requires IR generations
+  auto status = PerformIRGeneration(compiler, codeGenContext);
+
+  /// Do some othere things
+
+  // If we are here, we are outputing something native
+  status = PerformNativeGeneration(compiler, codeGenContext);
+
+
+  // auto *Module = IGM.getModule();
+  // assert(Module && "Expected llvm:Module for IR generation!");
+
+  // Module->setTargetTriple(IGM.Triple.str());
+
+  // // Set the module's string representation.
+  // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
+
+  // clang::TargetInfo &targetInfo =
+  //     GetInvocation().GetClang().GetInstance().getTarget();
+
+  // // Setup the empty module
+  // cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
+  // cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
+
+  // const auto &sdkVersion = targetInfo.getSDKVersion();
+
+  // if (!sdkVersion.empty()) {
+  //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
+  // }
+
+  // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
+  //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
+  // }
+
+  // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
+  //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
+  // }
+
+  // switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
+  // // case CodeGenOutputKind::LLVMModule:
+  // //   return CompileWithGenIR(cgc, [&](CompilerInstance &compiler,
+  // //   CodeGenContext &cgc) {
+  // //     return Lang::GenModule(*this, cgc);
+  // //   });
+  // case CodeGenOutputKind::LLVMIRPreOptimization:
+  // case CodeGenOutputKind::LLVMIRPostOptimization:
+  //   return CompileWithGenIR(
+  //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //         return DumpIR(*this, cgc);
+  //       });
+  // // case CodeGenOutputKind::PrintIR:
+  // //   return GenIR(
+  // //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  // //         return PrintIR(*this, cgc);
+  // //       });
+  // default:
+  //   return CompileWithGenIR(
+  //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
+  //         return CompileWithGenNative(cgc);
+  //       });
+  // }
+
+}
 
 static bool PerformIRGeneration(CompilerInstance &compiler,
-                                CodeGenContext &codeGenContext) {}
+                                CodeGenContext &codeGenContext) {
+
+  const auto &invocation = GetInvocation();
+  const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
+
+  if (compiler.IsWholeModuleCodeGen()) {
+    auto *mainModule = compiler.GetModuleSystem().GetMainModule();
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        compiler.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+                primaryFileSpecificPaths);
+  } else if (compiler.IsASTFileCodeGen()) {
+    for (auto *primaryASTFile : GetPrimaryASTFiles()) {
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          compiler.GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
+      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, primaryASTFile,
+                  primaryFileSpecificPaths);
+    }
+  }
+  return Status();
+}
+
+static Status PerformDumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
+}
+
+static Status PerformPrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
+  Status::Success();
+}
 
 bool PerformNativeGeneration(CompilerInstance &compiler,
-                             CodeGenContext &codeGenContext) {}
+                             CodeGenContext &codeGenContext) {
+
+  auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
+                                GetInvocation().GetListener());
+  return Status::Success();
+}
 
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
@@ -142,14 +249,6 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
-  Status::Success();
-}
-
-static Status PrintIR(CompilerInstance &compiler, CodeGenContext &cgc) {
-  Status::Success();
-}
-
 Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
                                           CodeGenCompletedCallback notifiy) {
   const auto &invocation = GetInvocation();
@@ -177,77 +276,6 @@ Status CompilerInstance::CompileWithGenIR(CodeGenContext &cgc,
   Status::Error();
 }
 
-Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
-
-  auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
-                                GetInvocation().GetListener());
-  return Status::Success();
-}
-
-Status CompilerInstance::CompileWithCodeGen() {
-
-  assert(CanCodeGen() && "Mode does not support code gen");
-
-  auto llvmContext = std::make_unique<llvm::LLVMContext>();
-  CodeGenContext cgc(GetInvocation().GetCodeGenOptions(), *llvmContext,
-                     GetInvocation().GetModuleOptions(),
-                     GetInvocation().GetTargetOptions(),
-                     GetInvocation().GetLang(), GetInvocation().GetClang());
-
-  // auto *Module = IGM.getModule();
-  // assert(Module && "Expected llvm:Module for IR generation!");
-
-  // Module->setTargetTriple(IGM.Triple.str());
-
-  // // Set the module's string representation.
-  // Module->setDataLayout(IGM.DataLayout.getStringRepresentation());
-
-  // clang::TargetInfo &targetInfo =
-  //     GetInvocation().GetClang().GetInstance().getTarget();
-
-  // // Setup the empty module
-  // cgc.GetLLVMModule().setTargetTriple(targetInfo.getTriple().getTriple());
-  // cgc.GetLLVMModule().setDataLayout(targetInfo.getDataLayoutString());
-
-  // const auto &sdkVersion = targetInfo.getSDKVersion();
-
-  // if (!sdkVersion.empty()) {
-  //   cgc.GetLLVMModule().setSDKVersion(sdkVersion);
-  // }
-
-  // if (const auto *tvt = targetInfo.getDarwinTargetVariantTriple()) {
-  //   cgc.GetModule().setDarwinTargetVariantTriple(tvt->getTriple());
-  // }
-
-  // if (auto TVSDKVersion = targetInfo.getDarwinTargetVariantSDKVersion()) {
-  //   cgc.GetModule().setDarwinTargetVariantSDKVersion(*TVSDKVersion);
-  // }
-
-  switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
-  // case CodeGenOutputKind::LLVMModule:
-  //   return CompileWithGenIR(cgc, [&](CompilerInstance &compiler,
-  //   CodeGenContext &cgc) {
-  //     return Lang::GenModule(*this, cgc);
-  //   });
-  case CodeGenOutputKind::LLVMIRPreOptimization:
-  case CodeGenOutputKind::LLVMIRPostOptimization:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return DumpIR(*this, cgc);
-        });
-  // case CodeGenOutputKind::PrintIR:
-  //   return GenIR(
-  //       cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-  //         return PrintIR(*this, cgc);
-  //       });
-  default:
-    return CompileWithGenIR(
-        cgc, [&](CompilerInstance &compiler, CodeGenContext &cgc) {
-          return CompileWithGenNative(cgc);
-        });
-  }
-}
-
 Status CompilerInstance::Compile() {
 
   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
@@ -257,25 +285,62 @@ Status CompilerInstance::Compile() {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
 
-  switch (GetMode().GetKind()) {
-  case ModeKind::Parse:
-    status = CompileWithParsing();
-    break;
-  case ModeKind::DumpAST:
-    status = CompileWithParsing(
-        [&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
-    break;
-  case ModeKind::TypeCheck:
-    status = CompileWithTypeChecking();
-    break;
-  case ModeKind::PrintAST:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return PrintAST(*this); });
-    break;
-  default:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
-    break;
+  // At this point, everything requires syntax analysis.
+  if (GetMode().IsParse()) {
+    status = PerformSyntaxAnalysis(*this);
+    if (status.HasError()) {
+      return status;
+    }
   }
+
+  // Otherwise, default to performing syntax analysis with import resoltuion.
+  status = PerformSyntaxAnalysisAndImportResoltuion(*this);
+  if (status.HasError()) {
+    return status;
+  }
+  // Are we trying to dump the AST?
+  if (GetMode().IsDumpAST()) {
+    status = PerformDumpAST(*this);
+    if (status.HasError()) {
+      return status;
+    }
+  }
+  // At this point, everything requires type-checking
+  status = PerformSemanticAnalysis(*this);
+  if (status.HasError()) {
+    return status;
+  }
+
+  // Are we trying to print the AST?
+  if (GetMode().IsPrintAST()) {
+    status = PerformPrintAST(*this);
+    if (status.HasError()) {
+      return status;
+    }
+  }
+
+  status = PerformCompileAfterSemtanticAnalysis(*this);
+
+  // switch (GetMode().GetKind()) {
+  // case ModeKind::Parse:
+  //   status = CompileWithParsing();
+  //   break;
+  // case ModeKind::DumpAST:
+  //   status = CompileWithParsing(
+  //       [&](ast::ASTFile &sf) { return DumpAST(*this, sf); });
+  //   break;
+  // case ModeKind::TypeCheck:
+  //   status = CompileWithTypeChecking();
+  //   break;
+  // case ModeKind::PrintAST:
+  //   status = CompileWithTypeChecking(
+  //       [&](CompilerInstance &compiler) { return PrintAST(*this); });
+  //   break;
+  // default:
+  //   status = CompileWithTypeChecking(
+  //       [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
+  //   break;
+  // }
+
   return status;
 }
