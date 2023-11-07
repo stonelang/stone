@@ -152,7 +152,7 @@
 //   TYPEREPR(CompoundIdent, IdentTypeRepr)
 
 
-ABSTRACT_TYPE(Builtin, Type)
+ABSTRACT_TYPE(Builtin, TypeBase)
   ABSTRACT_TYPE(Scalar,  BuiltinType)
     ABSTRACT_TYPE(Number,  ScalarType)
       BUILTIN_TYPE(Integer,         NumberType)
@@ -172,20 +172,20 @@ ABSTRACT_TYPE(Builtin, Type)
 
   TYPE_RANGE(Builtin, Integer, Void) 
 
-CANONICAL_TYPE(Module, Type)
+CANONICAL_TYPE(Module, TypeBase)
 
-ABSTRACT_TYPE(AbstractPointer, Type)
+ABSTRACT_TYPE(AbstractPointer, TypeBase)
   TYPE(Pointer, AbstractPointerType)
   TYPE(MemberPointer, AbstractPointerType)
   TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
 
-ABSTRACT_TYPE(Reference, Type)
+ABSTRACT_TYPE(Reference, TypeBase)
   TYPE(RValueReference, ReferenceType)
   TYPE(LValueReference, ReferenceType)
   TYPE_RANGE(Reference, RValueReference, LValueReference)
 
 
-ABSTRACT_TYPE(Sweet, Type)
+ABSTRACT_TYPE(Sweet, TypeBase)
   ABSTRACT_TYPE(ASTSweet, SweetType)
     SWEET_TYPE(Dictionary, ASTSweetType)
     TYPE_RANGE(ASTSweetType, Dictionary, Dictionary)
@@ -193,16 +193,16 @@ ABSTRACT_TYPE(Sweet, Type)
   TYPE_RANGE(Sweet, Dictionary, Alias)
 
 
-ABSTRACT_TYPE(Deduced, Type)
+ABSTRACT_TYPE(Deduced, TypeBase)
   TYPE(Auto, DeducedType)
   TYPE_RANGE(Deduced, Auto, Auto)
 
-ABSTRACT_TYPE(Function, Type)
+ABSTRACT_TYPE(Function, TypeBase)
   TYPE(Fun, FunctionType)
   //TYPE(GenericFunction, FunctionType)
   TYPE_RANGE(Function, Fun, Fun)
 
-ABSTRACT_TYPE(Nominal, Type)
+ABSTRACT_TYPE(Nominal, TypeBase)
   TYPE(Enum, NominalType)
   TYPE(Struct, NominalType)
   TYPE(Interface, NominalType)

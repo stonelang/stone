@@ -2,12 +2,12 @@
 #define STONE_CODEANA_PARSING_H
 
 #include "stone/AST/DeclCollector.h"
-#include "stone/AST/ParserResult.h"
 #include "stone/AST/Scope.h"
 #include "stone/AST/Specifier.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/CodeAna/Lexing.h"
+#include "stone/CodeAna/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

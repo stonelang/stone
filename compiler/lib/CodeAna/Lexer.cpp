@@ -14,6 +14,7 @@
 #include "llvm/Support/MemoryBuffer.h"
 
 using namespace stone;
+using namespace stone::ast; // for Identifier FIXME
 using namespace stone::codeana;
 
 //===----------------------------------------------------------------------===//
