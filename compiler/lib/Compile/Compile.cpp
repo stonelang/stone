@@ -74,12 +74,19 @@ static bool PerformCodeGeneration(CompilerInstance &compiler) {
 
   // At this point, everhing requires IR generations
   auto status = PerformIRGeneration(compiler, codeGenContext);
+  if (compiler.GetMode().IsEmitIR()) {
+    PerformDumpIR(compiler, codeGenContext);
+    return status;
+  }
 
+  if (compiler.GetMode().IsPrintIR()) {
+    PerformPrintIR(compiler, codeGenContext);
+    return status;
+  }
   /// Do some othere things
 
   // If we are here, we are outputing something native
   status = PerformNativeGeneration(compiler, codeGenContext);
-
 
   // auto *Module = IGM.getModule();
   // assert(Module && "Expected llvm:Module for IR generation!");
@@ -133,7 +140,6 @@ static bool PerformCodeGeneration(CompilerInstance &compiler) {
   //         return CompileWithGenNative(cgc);
   //       });
   // }
-
 }
 
 static bool PerformIRGeneration(CompilerInstance &compiler,
