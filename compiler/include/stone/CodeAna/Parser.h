@@ -45,7 +45,7 @@ public:
 
 class Parser final {
   friend ParserStats;
-  
+
   // friend PairDelimiterBalancer;
 
   ASTListener *listener;
@@ -243,9 +243,7 @@ public:
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
   bool HasError() { return GetLang().GetDiags().HasError(); }
-  DiagnosticEngine &GetDiags() {
-    return GetLang().GetDiags();
-  }
+  DiagnosticEngine &GetDiags() { return GetLang().GetDiags(); }
 
 public:
   //===--------------------------------------------------------------------===//
@@ -394,7 +392,8 @@ public:
 
 private:
   static ASTScope *CreateScope(ASTScopeKind kind, ASTContext &sc,
-                            DiagnosticEngine &diags, ASTScope *parent = nullptr);
+                               DiagnosticEngine &diags,
+                               ASTScope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }
   SrcLoc GetLoc() { return curTok.GetLoc(); }

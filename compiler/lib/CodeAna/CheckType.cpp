@@ -4,7 +4,6 @@
 
 using namespace stone;
 
-
 class TypeChecking final : public TypeVisitor<TypeChecking>, public ASTWalker {
 public:
 };

@@ -25,7 +25,6 @@
 
 namespace stone {
 
-
 class CodeGenFunction;
 class CodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
 private:

@@ -4,7 +4,6 @@
 
 using namespace stone;
 
-
 class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;
 

@@ -75,8 +75,6 @@
 
 using namespace stone;
 
-
-
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, stone::ModuleDecl *md,
                   stone::ASTFile *sf, CodeGenListener *listener) {
@@ -100,7 +98,8 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void Lang::GenIR(stone::CodeGenContext &cgc, llvm::StringRef moduleName,
-                 stone::ASTFile *sf, const PrimaryFileSpecificPaths specificPaths,
+                 stone::ASTFile *sf,
+                 const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener) {}
 
 /// GenIR for the entire module

@@ -2,7 +2,6 @@
 
 using namespace stone;
 
-
 CodeGenConstant::CodeGenConstant(CodeGenModule &cgm, CodeGenFunction *cgf)
     : cgm(cgm), cgf(cgf) {}
 

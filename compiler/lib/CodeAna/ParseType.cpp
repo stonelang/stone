@@ -6,7 +6,6 @@
 
 using namespace stone;
 
-
 // fun Do() -> '() -> int'
 QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 

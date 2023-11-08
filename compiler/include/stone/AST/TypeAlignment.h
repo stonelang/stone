@@ -59,14 +59,11 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::ValueDecl, stone::DeclAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::ASTContext,
-                            stone::ASTContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::ASTContext, stone::ASTContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext,
-                            stone::DeclContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext, stone::DeclContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile,
-                            stone::ASTContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile, stone::ASTContextAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeBase, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)

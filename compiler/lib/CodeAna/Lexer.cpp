@@ -78,7 +78,7 @@ static bool isStartOfUTF8Character(unsigned char C) {
 /// UTF8 character, validate it and advance the lexer past it.  This returns the
 /// encoded character or ~0U if the encoding is invalid.
 uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
-                                                  const char *End) {
+                                                const char *End) {
   if (Ptr >= End)
     return ~0U;
 
@@ -3250,8 +3250,7 @@ Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
 }
 
 llvm::ArrayRef<Token> stone::slice_token_array(ArrayRef<Token> AllTokens,
-                                                    SrcLoc StartLoc,
-                                                    SrcLoc EndLoc) {
+                                               SrcLoc StartLoc, SrcLoc EndLoc) {
   assert(StartLoc.isValid() && EndLoc.isValid());
   auto StartIt = token_lower_bound(AllTokens, StartLoc);
   auto EndIt = token_lower_bound(AllTokens, EndLoc);

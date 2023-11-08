@@ -26,7 +26,6 @@ class CodeGenOptions;
 class ModuleOptions;
 class TargetOptions;
 
-
 class CodeGenContext final {
 private:
   Lang &lang;

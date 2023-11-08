@@ -22,7 +22,6 @@ class ModuleDecl;
 class Token;
 class ASTFile;
 
-
 class CodeCompletionListener {
 public:
   CodeCompletionListener() = default;

@@ -396,7 +396,7 @@ class SweetType : public TypeBase {
     const ASTContext *Context;
   };
 
-  //llvm::PointerUnion<
+  // llvm::PointerUnion<
 };
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;

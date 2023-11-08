@@ -1,8 +1,6 @@
 #include "stone/AST/ASTVisitor.h"
 #include "stone/CodeAna/TypeChecker.h"
 
-
-
 class StmtChecking final : public StmtVisitor<StmtChecking> {
   TypeChecker &checker;
 

@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-
 // TODO:
 //  class UseResolver final : public DeclVisitor<UseResolver> {
 //    friend DeclVisitor<UseResolver>;

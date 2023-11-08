@@ -2,10 +2,10 @@
 #define STONE_ASTMODULE_H
 
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/ASTScope.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
@@ -168,8 +168,9 @@ public:
   // void Print(raw_ostream &stream, const ASTPrintOptions &PO);
 
 public:
-  static stone::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
-                            ASTContext &tc, bool isPrimary = false);
+  static stone::ASTFile *Make(ASTFileKind kind, unsigned srcID,
+                              ModuleDecl &owner, ASTContext &tc,
+                              bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::AST;

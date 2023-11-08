@@ -4,7 +4,6 @@
 
 using namespace stone;
 
-
 ParserResult<Expr> Parser::ParseExpr() {
   return stone::MakeParserResult<Expr>(nullptr);
 }

@@ -18,7 +18,6 @@
 
 using namespace stone;
 
-
 DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
     : declContextKind(declContextKind), parent(parent) {
 

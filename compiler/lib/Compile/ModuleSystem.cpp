@@ -4,7 +4,8 @@
 
 using namespace stone;
 
-ModuleSystem::ModuleSystem(CompilerInvocation &invocation, stone::ASTContext &sc)
+ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
+                           stone::ASTContext &sc)
     : invocation(invocation), sc(sc) {}
 
 ModuleSystem::~ModuleSystem() {}
@@ -77,7 +78,8 @@ Status ModuleSystem::CreateASTFilesForMainModule(
   return Status();
 }
 
-stone::ASTFile *ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
+stone::ASTFile *
+ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
 
   if (invocation.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {

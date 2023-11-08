@@ -4,7 +4,6 @@
 
 using namespace stone;
 
-
 /// \see checkTypeAccess
 using CheckTypeAccessLevelCallback = void(AccessScope, const Type *);
 

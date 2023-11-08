@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-
 void CodeGenFunction::EmitIfStmt(const IfStmt &stmt) {}
 
 Status CodeGenFunction::EmitBasicBlock(llvm::BasicBlock *bb) {

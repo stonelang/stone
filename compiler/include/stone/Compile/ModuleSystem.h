@@ -48,15 +48,16 @@ public:
       llvm::SmallVectorImpl<stone::ModuleFile *> &files) const;
 
   stone::ASTFile *CreateASTFileForMainModule(stone::ModuleDecl *mod,
-                                           stone::ASTFileKind fileKind,
-                                           unsigned bufferID,
-                                           bool isMainBuffer = false) const;
+                                             stone::ASTFileKind fileKind,
+                                             unsigned bufferID,
+                                             bool isMainBuffer = false) const;
 
   stone::ASTFile *ComputeMainASTFileForModule(stone::ModuleDecl *mod) const;
 
   CompilerInvocation &GetCompilerInvocation() { return invocation; }
 
-  stone::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
+  stone::ASTFile::ParsingOptions
+  GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);

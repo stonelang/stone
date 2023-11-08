@@ -22,7 +22,6 @@ enum class AllocationArena {
   Temporary
 };
 
-
 void *AllocateInASTContext(size_t bytes, const ASTContext &ctx,
                            AllocationArena arena, unsigned alignment);
 

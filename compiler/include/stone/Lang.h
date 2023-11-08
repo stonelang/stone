@@ -43,7 +43,8 @@ class ASTContext;
 class ASTFile;
 class ModuleDecl;
 
-using ModuleOrASTFile = llvm::PointerUnion<stone::ModuleDecl *, stone::ASTFile *>;
+using ModuleOrASTFile =
+    llvm::PointerUnion<stone::ModuleDecl *, stone::ASTFile *>;
 
 class Lang final {
   FileMgr fm;

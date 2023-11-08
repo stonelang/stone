@@ -395,8 +395,7 @@ struct PointerLikeTypeTraits<stone::CanonicalDeclPtr<DeclTy>> {
   static inline void *getAsVoidPointer(stone::CanonicalDeclPtr<DeclTy> P) {
     return P.Ptr;
   }
-  static inline stone::CanonicalDeclPtr<DeclTy>
-  getFromVoidPointer(void *P) {
+  static inline stone::CanonicalDeclPtr<DeclTy> getFromVoidPointer(void *P) {
     stone::CanonicalDeclPtr<DeclTy> C;
     C.Ptr = PointerLikeTypeTraits<DeclTy *>::getFromVoidPtr(P);
     return C;

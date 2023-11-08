@@ -11,8 +11,8 @@ using namespace stone;
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
       sc(new stone::ASTContext(invocation.GetLang(),
-                             invocation.GetSearchPathOptions(),
-                             invocation.GetClang())),
+                               invocation.GetSearchPathOptions(),
+                               invocation.GetClang())),
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation, GetASTContext())) {
 
@@ -30,8 +30,8 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
     lc.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_opening_output,
-                            diag::LLVMStr(outputFilename),
-                            diag::LLVMStr(errCode.message()));
+                                    diag::LLVMStr(outputFilename),
+                                    diag::LLVMStr(errCode.message()));
     return nullptr;
   }
   return os;

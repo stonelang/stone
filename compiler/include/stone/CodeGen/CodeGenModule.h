@@ -76,7 +76,6 @@ class NominalTypeDecl;
 } // namespace ast
 class CodeGenListener;
 
-
 // class CodeGenLoop {};
 // class CodeGenCall {};
 class CodeGenBlocks final {

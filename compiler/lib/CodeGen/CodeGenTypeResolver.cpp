@@ -17,11 +17,12 @@
 
 using namespace stone;
 
-
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *CodeGenTypeResolver::GetType(const stone::Type ty) { return nullptr; }
+llvm::Type *CodeGenTypeResolver::GetType(const stone::Type ty) {
+  return nullptr;
+}
 
 llvm::FunctionType *
 CodeGenTypeResolver::GetFunctionType(const stone::FunctionDecl *fd) {

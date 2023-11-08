@@ -19,7 +19,8 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
                ASTListener *listener)
-    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener), stats(new ParserStats(*this)) {
+    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
+      stats(new ParserStats(*this)) {
 
   GetLang().GetStats().Register(stats.get());
 }
@@ -174,7 +175,7 @@ void Parser::ExitScope() {
   }
 }
 ASTScope *Parser::CreateScope(ASTScopeKind kind, ASTContext &sc,
-                           DiagnosticEngine &diags, ASTScope *parent) {
+                              DiagnosticEngine &diags, ASTScope *parent) {
   return new (sc) ASTScope(kind, diags, parent);
 }
 

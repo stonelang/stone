@@ -22,7 +22,8 @@ enum class TypeChunkKind {
   Paren,
   Pipe,
 };
-class alignas(1 << TypeAlignInBits) TypeChunk : stone::ASTAllocation<TypeChunk> {
+class alignas(1 << TypeAlignInBits) TypeChunk
+    : stone::ASTAllocation<TypeChunk> {
   SrcLoc loc;
   TypeChunkKind kind;
 

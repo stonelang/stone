@@ -74,7 +74,6 @@
 
 using namespace stone;
 
-
 static void GenNativeWithParallelization() {}
 
 static void EmitObject(CodeGenContext &cgc, stone::ASTContext &sc,

@@ -9,7 +9,6 @@
 
 namespace stone {
 
-
 class CodeGenTypeCache {
 public:
   llvm::Type *VoidTy;

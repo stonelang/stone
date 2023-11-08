@@ -20,7 +20,6 @@
 
 using namespace stone;
 
-
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
 

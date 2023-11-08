@@ -150,8 +150,9 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
       ctx.GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    ctx.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                             diag::LLVMStr(input.GetFileName()));
+    ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
+                                     diag::err_unable_to_open_buffer_for_file,
+                                     diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
 
@@ -204,8 +205,9 @@ unsigned
 CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
-    ctx.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                             diag::LLVMStr(input.GetFileName()));
+    ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
+                                     diag::err_unable_to_open_buffer_for_file,
+                                     diag::LLVMStr(input.GetFileName()));
   }
   auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");

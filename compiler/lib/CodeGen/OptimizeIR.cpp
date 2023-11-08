@@ -44,7 +44,6 @@
 
 using namespace stone;
 
-
 // static void
 // OptimizeIRUsingLegacyPassManger(llvm::Module *mod, CodeGenOptions
 // &codeGenOpts,

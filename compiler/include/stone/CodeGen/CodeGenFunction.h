@@ -20,7 +20,6 @@ class Function;
 
 namespace stone {
 
-
 enum class ABIArgKind {
 
   /// Direct - Pass the argument directly using the normal converted LLVM

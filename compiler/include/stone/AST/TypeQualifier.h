@@ -7,9 +7,9 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
-  class ASTContext;
-  class Type;
-  class QualType;
+class ASTContext;
+class Type;
+class QualType;
 
 struct FastTypeQualifierFlags final {
   FastTypeQualifierFlags() = delete;
@@ -30,16 +30,17 @@ struct FastTypeQualifierFlags final {
 class FastTypeQualifiers {
 
   UInt32 qualifiers = 0;
+
 public:
   FastTypeQualifiers() : qualifiers(0) {}
 
 public:
   bool HasConst() const { return qualifiers & FastTypeQualifierFlags::Const; }
-  bool HasConstOnly() const { return qualifiers == FastTypeQualifierFlags::Const; }
-  void RemoveConst() { qualifiers &= ~FastTypeQualifierFlags::Const; }
-  void AddConst() {
-    qualifiers |= FastTypeQualifierFlags::Const;
+  bool HasConstOnly() const {
+    return qualifiers == FastTypeQualifierFlags::Const;
   }
+  void RemoveConst() { qualifiers &= ~FastTypeQualifierFlags::Const; }
+  void AddConst() { qualifiers |= FastTypeQualifierFlags::Const; }
 
 public:
   bool HasImmutable() const {
@@ -49,46 +50,45 @@ public:
     return qualifiers == FastTypeQualifierFlags::Immutable;
   }
   void RemoveImmutable() { qualifiers &= ~FastTypeQualifierFlags::Immutable; }
-  void AddImmutable() {
-    qualifiers |= FastTypeQualifierFlags::Immutable;
-  }
+  void AddImmutable() { qualifiers |= FastTypeQualifierFlags::Immutable; }
+
 public:
-  bool HasMutable() const { return qualifiers & FastTypeQualifierFlags::Mutable; }
+  bool HasMutable() const {
+    return qualifiers & FastTypeQualifierFlags::Mutable;
+  }
   bool HasMutableOnly() const {
     return qualifiers == FastTypeQualifierFlags::Mutable;
   }
   void RemoveMutable() { qualifiers &= ~FastTypeQualifierFlags::Mutable; }
-  void AddMutable() {
-    qualifiers |= FastTypeQualifierFlags::Mutable;
-  }
+  void AddMutable() { qualifiers |= FastTypeQualifierFlags::Mutable; }
 
 public:
-  bool HasRestrict() const { return qualifiers & FastTypeQualifierFlags::Restrict; }
+  bool HasRestrict() const {
+    return qualifiers & FastTypeQualifierFlags::Restrict;
+  }
   bool HasRestrictOnly() const {
     return qualifiers == FastTypeQualifierFlags::Restrict;
   }
   void RemoveRestrict() { qualifiers &= ~FastTypeQualifierFlags::Restrict; }
-  void AddRestrict() {
-    qualifiers |= FastTypeQualifierFlags::Restrict;
-  }
+  void AddRestrict() { qualifiers |= FastTypeQualifierFlags::Restrict; }
 
 public:
-  bool HasVolatile() const { return qualifiers & FastTypeQualifierFlags::Volatile; }
+  bool HasVolatile() const {
+    return qualifiers & FastTypeQualifierFlags::Volatile;
+  }
   bool HasVolatileOnly() const {
     return qualifiers == FastTypeQualifierFlags::Volatile;
   }
   void RemoveVolatile() { qualifiers &= ~FastTypeQualifierFlags::Volatile; }
-  void AddVolatile() {
-    qualifiers |= FastTypeQualifierFlags::Volatile;
-  }
+  void AddVolatile() { qualifiers |= FastTypeQualifierFlags::Volatile; }
 
 public:
   bool HasPure() const { return qualifiers & FastTypeQualifierFlags::Pure; }
-  bool HasPureOnly() const { return qualifiers == FastTypeQualifierFlags::Pure; }
-  void RemovePure() { qualifiers &= ~FastTypeQualifierFlags::Pure; }
-  void AddPure() {
-    qualifiers |= FastTypeQualifierFlags::Pure;
+  bool HasPureOnly() const {
+    return qualifiers == FastTypeQualifierFlags::Pure;
   }
+  void RemovePure() { qualifiers &= ~FastTypeQualifierFlags::Pure; }
+  void AddPure() { qualifiers |= FastTypeQualifierFlags::Pure; }
 
 public:
   bool HasDelete() const { return qualifiers & FastTypeQualifierFlags::Delete; }
@@ -96,19 +96,17 @@ public:
     return qualifiers == FastTypeQualifierFlags::Delete;
   }
   void RemoveDelete() { qualifiers &= ~FastTypeQualifierFlags::Delete; }
-  void AddDelete() {
-    qualifiers |= FastTypeQualifierFlags::Delete;
-  }
-  
+  void AddDelete() { qualifiers |= FastTypeQualifierFlags::Delete; }
+
 public:
-  bool HasDefault() const { return qualifiers & FastTypeQualifierFlags::Default; }
+  bool HasDefault() const {
+    return qualifiers & FastTypeQualifierFlags::Default;
+  }
   bool HasDefaultOnly() const {
     return qualifiers == FastTypeQualifierFlags::Default;
   }
   void RemoveDefault() { qualifiers &= ~FastTypeQualifierFlags::Pure; }
-  void AddDefault() {
-    qualifiers |= FastTypeQualifierFlags::Default;
-  }
+  void AddDefault() { qualifiers |= FastTypeQualifierFlags::Default; }
 
 public:
   bool HasAny() {
@@ -164,37 +162,55 @@ public:
   TypeQualifierCollector();
 
 public:
-  void AddConst(SrcLoc loc = SrcLoc()) { constLoc = loc; fastQuals.AddConst(); }
+  void AddConst(SrcLoc loc = SrcLoc()) {
+    constLoc = loc;
+    fastQuals.AddConst();
+  }
   SrcLoc GetConst() { return constLoc; }
   bool HasConst() { return constLoc.isValid(); }
 
 public:
-  void AddImmutable(SrcLoc loc = SrcLoc()) { immutableLoc = loc; fastQuals.AddImmutable();}
+  void AddImmutable(SrcLoc loc = SrcLoc()) {
+    immutableLoc = loc;
+    fastQuals.AddImmutable();
+  }
   SrcLoc GetImmutable() { return immutableLoc; }
   bool HasImmutable() { return immutableLoc.isValid(); }
 
 public:
-  void AddMutable(SrcLoc loc = SrcLoc()) { mutableLoc = loc; fastQuals.AddMutable();}
+  void AddMutable(SrcLoc loc = SrcLoc()) {
+    mutableLoc = loc;
+    fastQuals.AddMutable();
+  }
   SrcLoc GetMutable() { return mutableLoc; }
   bool HasMutable() { return mutableLoc.isValid(); }
 
 public:
-  void AddRestrict(SrcLoc loc = SrcLoc()) { restrictLoc = loc; fastQuals.AddRestrict(); }
+  void AddRestrict(SrcLoc loc = SrcLoc()) {
+    restrictLoc = loc;
+    fastQuals.AddRestrict();
+  }
   SrcLoc GetRestrict() { return restrictLoc; }
   bool HasRestrict() { return restrictLoc.isValid(); }
 
 public:
-  void AddVolatile(SrcLoc loc = SrcLoc()) { volatileLoc = loc; fastQuals.AddVolatile();}
+  void AddVolatile(SrcLoc loc = SrcLoc()) {
+    volatileLoc = loc;
+    fastQuals.AddVolatile();
+  }
   SrcLoc GetVolatile() { return volatileLoc; }
   bool HasVolatile() { return volatileLoc.isValid(); }
 
 public:
-  void AddPure(SrcLoc loc = SrcLoc()) { pureLoc = loc; fastQuals.AddPure();}
+  void AddPure(SrcLoc loc = SrcLoc()) {
+    pureLoc = loc;
+    fastQuals.AddPure();
+  }
   SrcLoc GetPure() { return pureLoc; }
   bool HasPure() { return pureLoc.isValid(); }
 
 public:
-  FastTypeQualifiers& GetFastQuals() { return fastQuals;}
+  FastTypeQualifiers &GetFastQuals() { return fastQuals; }
 
 public:
   QualType Apply(const stone::ASTContext &astContext, QualType ty) const;

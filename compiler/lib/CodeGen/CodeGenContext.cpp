@@ -13,7 +13,6 @@
 using namespace stone;
 using namespace stone;
 
-
 CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
                                const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,

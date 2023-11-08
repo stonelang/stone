@@ -590,8 +590,7 @@ template <> struct DenseMapInfo<stone::DeclNameBase> {
   static unsigned getHashValue(stone::DeclNameBase Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetAsOpaquePointer());
   }
-  static bool isEqual(stone::DeclNameBase LHS,
-                      stone::DeclNameBase RHS) {
+  static bool isEqual(stone::DeclNameBase LHS, stone::DeclNameBase RHS) {
     return LHS == RHS;
   }
 };

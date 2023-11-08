@@ -50,5 +50,4 @@ public:
       : CodeGenAddress(addr, elementType, alignment) {}
 };
 
-
 } // namespace stone

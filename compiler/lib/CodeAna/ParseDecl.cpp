@@ -182,8 +182,14 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
   // At this stage, only the pure modifier is allowed
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny() &&
-      !collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasPureOnly()) {
+  if (collector.GetTypeCollector()
+          .GetTypeQualifierCollector()
+          .GetFastQuals()
+          .HasAny() &&
+      !collector.GetTypeCollector()
+           .GetTypeQualifierCollector()
+           .GetFastQuals()
+           .HasPureOnly()) {
     // Do some logging
     return stone::MakeParserError();
   }
@@ -300,7 +306,10 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
 
-    if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny()) {
+    if (collector.GetTypeCollector()
+            .GetTypeQualifierCollector()
+            .GetFastQuals()
+            .HasAny()) {
       // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       //   // TODO: Log
       //   status.SetHasCodeCompletion();
@@ -410,7 +419,10 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny()) {
+  if (collector.GetTypeCollector()
+          .GetTypeQualifierCollector()
+          .GetFastQuals()
+          .HasAny()) {
     return stone::MakeParserError();
   }
 
@@ -434,7 +446,10 @@ ParserResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+  if (collector.GetTypeCollector()
+          .GetTypeQualifierCollector()
+          .GetFastQuals()
+          .HasAny()) {
     return result;
   }
 
@@ -465,7 +480,10 @@ ParserResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   ParsingScope enumDeclScope(*this, ASTScopeKind::UsingDecl,
                              "parsing enum-declaration");
 
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+  if (collector.GetTypeCollector()
+          .GetTypeQualifierCollector()
+          .GetFastQuals()
+          .HasAny()) {
     return result;
   }
   return result;

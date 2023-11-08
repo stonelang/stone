@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {
 

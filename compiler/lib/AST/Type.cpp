@@ -4,7 +4,6 @@
 
 using namespace stone;
 
-
 // == TypeBase ==//
 // bool TypeBase::IsBasic() {
 //   switch (GetKind()) {

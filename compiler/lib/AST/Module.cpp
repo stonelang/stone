@@ -15,7 +15,6 @@
 
 using namespace stone;
 
-
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
@@ -111,8 +110,8 @@ llvm::StringRef ASTFile::GetFilename() const {
 }
 
 stone::ASTFile *stone::ASTFile::Make(ASTFileKind kind, unsigned srcID,
-                                 stone::ModuleDecl &owner, ASTContext &sc,
-                                 bool isPrimary) {
+                                     stone::ModuleDecl &owner, ASTContext &sc,
+                                     bool isPrimary) {
   return new (sc) ASTFile(kind, owner, srcID, isPrimary);
 }
 

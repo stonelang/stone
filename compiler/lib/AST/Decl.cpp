@@ -32,7 +32,7 @@ using namespace stone;
 
 template <typename DeclTy, typename AllocatorTy>
 void *stone::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
-                           bool extraSace) {
+                             bool extraSace) {
   static_assert(alignof(DeclTy) >= sizeof(void *),
                 "A pointer must fit in the alignment of the DeclTy!");
 

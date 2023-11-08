@@ -5,7 +5,6 @@
 
 using namespace stone;
 
-
 CodeGenModule::CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
                              llvm::StringRef outputFilename)
 
