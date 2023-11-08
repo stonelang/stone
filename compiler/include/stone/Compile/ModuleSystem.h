@@ -60,7 +60,7 @@ public:
   GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
-  static Error IsValidModuleName(const llvm::StringRef moduleName);
+  static Status IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

@@ -7,7 +7,7 @@
 #include "stone/Compile/CompilerOutputsConverter.h"
 #include "stone/Options/Options.h"
 // #include "stone/Options/SanitizerOptions.h"
-#include "stone/Compile/Lexer.h"
+#include "stone/CodeAna/Lexer.h"
 // #include "stone/Strings.h"
 
 #include "llvm/ADT/STLExtras.h"

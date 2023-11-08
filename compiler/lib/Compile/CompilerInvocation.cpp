@@ -14,11 +14,12 @@
 #include "clang/Config/config.h"
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
+
+
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/FrontendDiagnostic.h"
 #include "clang/Frontend/TextDiagnosticBuffer.h"
-#include "clang/Frontend/TextDiagnosticEmitter.h"
 #include "clang/Frontend/Utils.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -287,14 +288,14 @@ static Status ParseLangOptions(llvm::opt::InputArgList &ial,
                                CompilerOptions &compilerOpts,
                                LangOptions &langOpts) {
 
-  return Status()
+  return Status();
 }
 
 static void ParseCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
                                        CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
-  switch (compilerOpts.GetMode().GetKind()) {
+  switch (GetMode().GetKind()) {
   case ModeKind::EmitModule:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
   case ModeKind::EmitIRPre:
@@ -409,7 +410,7 @@ static Status ParseSearchPathOptions(llvm::opt::InputArgList &ial,
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   auto optTableAndInputArgs =
-      opts::ParseArgs(args, OptParsingFlags(0, 0, 0, 0));
+      opts::ParseArgs(args, OptParsingFlags(1, 0, 0, 0));
 
   compilerOpts = std::make_unique<CompilerOptions>(
       Mode::Create(optTableAndInputArgs.first));
@@ -420,9 +421,10 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   auto compilerOptsErr = ParseCompilerOptions(
       ial, GetLang().GetDiags(), GetLang().GetLangOptions(),
       GetCompilerOptions(), GetModuleOptions(), nullptr /* pass null for now*/);
+
   if (compilerOptsErr.Has()) {
   }
-  ParseLangOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetLang().GetLangOptions();
+  ParseLangOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetLang().GetLangOptions());
 
   ParseTypeCheckerOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetTypeCheckerOptions());
   ParseSearchPathOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetSearchPathOptions());

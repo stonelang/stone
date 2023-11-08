@@ -11,7 +11,7 @@
 #include "stone/Compile/CompilerInvocation.h"
 
 #include "stone/Lang.h"
-#include "stone/Options/ModeKind.h"
+#include "stone/Options/Mode.h"
 
 #include "clang/Basic/TargetInfo.h"
 

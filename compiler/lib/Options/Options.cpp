@@ -40,22 +40,22 @@ OptTableAndInputArgs stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
       opts->ParseArgs(args, flags.missingArgIndex, flags.missingArgCount,
                       flags.includedFlagsBitmask, flags.excludedFlagsBitmask));
 
-  //   assert(ial && "No input argument list.");
-  //   // Check for missing argument error.
-  //   if (missingArgCount) {
-  //     GetLang().GetDiags().PrintD(
-  //         SrcLoc(), diag::err_missing_arg_value,
-  //         diag::LLVMStr(ial->getArgString(missingArgIndex)),
-  //         diag::UInt(missingArgCount));
-  //     return nullptr;
-  //   }
-  //   // Check for unknown arguments.
-  //   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-  //     GetLang().GetDiags().PrintD(
-  //         SrcLoc(), diag::err_unknown_arg,
-  //         diag::LLVMStr(arg->getAsString(*ial)));
-  //     return nullptr;
-  //   }
+    assert(ial && "No input argument list.");
+    // Check for missing argument error.
+    // if (flags.missingArgCount) {
+    //   GetLang().GetDiags().PrintD(
+    //       SrcLoc(), diag::err_missing_arg_value,
+    //       diag::LLVMStr(ial->getArgString(missingArgIndex)),
+    //       diag::UInt(missingArgCount));
+    //   return nullptr;
+    // }
+    // // Check for unknown arguments.
+    // for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
+    //   GetLang().GetDiags().PrintD(
+    //       SrcLoc(), diag::err_unknown_arg,
+    //       diag::LLVMStr(arg->getAsString(*ial)));
+    //   return nullptr;
+    // }
   return std::make_pair(std::move(opts), std::move(ial));
 }
 

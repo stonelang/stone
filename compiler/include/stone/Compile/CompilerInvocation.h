@@ -16,7 +16,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Lang.h"
 #include "stone/Options/Mode.h"
-#include "stone/Options/Session.h"
+#include "stone/Options/Options.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -106,7 +106,7 @@ public:
   // llvm::ArrayRef<CompilerUnit *> BuildSources(const file::Files &inputs);
   // CompilerUnit *BuildSource(const file::File &input);
 
-  Error CreateSourceBuffers();
+  Status CreateSourceBuffers();
 
   // TODO: You may not need this anymore
   unsigned CreateSourceBuffer(const CompilerInputFile &input);
@@ -125,7 +125,7 @@ public:
   // }
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
-  void Finish() override;
+  void Finish();
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
@@ -148,8 +148,8 @@ public:
   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-  ASTOptions &GetASTOptions() { return asttaxOpts; }
-  const ASTOptions &GetASTOptions() const { return asttaxOpts; }
+  ASTOptions &GetASTOptions() { return astOpts; }
+  const ASTOptions &GetASTOptions() const { return astOpts; }
 
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {
@@ -189,9 +189,9 @@ public:
 
   llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetLang().GetDiagnoticEngine().HasError(); }
+  bool HasError() { return GetLang().GetDiags().HasError(); }
 
-  DiagnosticEngine &GetDiagnoticEngine(){return GetLang().GetDiagnoticEngine()}
+  DiagnosticEngine &GetDiagnoticEngine(){return GetLang().GetDiags();}
 
   std::vector<unsigned> &GetSourceBufferIDs() {
     return sourceBufferIDs;
@@ -214,7 +214,9 @@ public:
     if (invocation.GetListener()) {
       GetListener()->OnCompileConfigured(*this);
     }
-  };
+  }
+
+};
 
 } // namespace stone
 

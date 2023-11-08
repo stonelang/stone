@@ -132,7 +132,6 @@ Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   //     return stone::Error(true);
   //   }
   // }
-
   if (!Lexer::isIdentifier(identifier)) {
     return Status::Error();
   }
