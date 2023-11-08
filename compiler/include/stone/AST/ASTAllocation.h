@@ -1,13 +1,11 @@
-#ifndef STONE_ASTALLOCATION_H
-#define STONE_ASTALLOCATION_H
+#ifndef STONE_AST_ALLOCATION_H
+#define STONE_AST_ALLOCATION_H
 
 #include <cassert>
 #include <cstddef>
 
 namespace stone {
-namespace ast {
 class ASTContext;
-}
 /// The arena in which a particular ASTContext allocation will go.
 enum class AllocationArena {
   /// The permanent arena, which is tied to the lifetime of
@@ -60,8 +58,6 @@ public:
 template <typename DeclTy, typename AllocatorTy>
 void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                       bool extraSace = false);
-
-} // namespace ast
 
 } // namespace stone
 

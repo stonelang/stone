@@ -58,8 +58,6 @@
 namespace stone {
 class DiagnosticEngine;
 
-namespace ast {
-
 class BlockExpr;
 class LangABI;
 class Decl;
@@ -253,7 +251,6 @@ public:
                                        ASTDiagnostic(id, std::move(args)...));
   }
 };
-} // namespace ast
 } // namespace stone
 
 #endif

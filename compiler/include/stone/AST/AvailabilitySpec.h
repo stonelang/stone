@@ -9,10 +9,8 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace ast {
 
 class ASTContext;
-
 enum class VersionComparison { None = 0, GreaterThanEqual };
 
 enum class AvailabilitySpecKind {
@@ -205,6 +203,5 @@ public:
   }
 };
 
-} // namespace ast
 } // namespace stone
 #endif

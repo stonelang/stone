@@ -8,7 +8,6 @@
 #include "stone/AST/Type.h"
 
 namespace stone {
-namespace ast {
 class Decl;
 class Stmt;
 class Expr;
@@ -52,6 +51,6 @@ using ExprVisitor = ASTVisitor<ImplTy, void, ExprRetTy, void, void, Args...>;
 template <typename ImplTy, typename StmtRetTy = void, typename... Args>
 using StmtVisitor = ASTVisitor<ImplTy, void, void, StmtRetTy, void, Args...>;
 
-} // namespace ast
+
 } // namespace stone
 #endif

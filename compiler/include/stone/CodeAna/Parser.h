@@ -26,7 +26,9 @@ namespace stone {
 class ASTListener;
 namespace ast {
 class Scope;
+class Decl;
 class BraceStmt;
+class DeclContext;
 }
 
 namespace codeana {
@@ -54,9 +56,9 @@ class Parser final {
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  ASTContext &sc;
-  ASTFile &sf;
-  DeclContext *curDC;
+  ast::ASTContext &sc;
+  ast::ASTFile &sf;
+  ast::DeclContext *curDC;
 
   /// This is the current curTok being considered by the parser.
   Token curTok;
@@ -95,11 +97,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(ASTFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
+  Parser(ast::ASTFile &sf, ast::ASTContext &sc, std::unique_ptr<Lexer> lexer,
          ASTListener *listener = nullptr);
 
 public:
-  Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener = nullptr);
+  Parser(ast::ASTFile &sf, ast::ASTContext &sc, ASTListener *listener = nullptr);
 
   ~Parser();
 
@@ -107,10 +109,10 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
-  ASTContext &GetASTContext() { return sc; }
+  ast::ASTContext &GetASTContext() { return sc; }
 
   void SetASTListener(ASTListener *sl) { listener = sl; }
-  DeclContext *GetCurDeclContext() { return curDC; }
+  ast::DeclContext *GetCurDeclContext() { return curDC; }
 
   Lang &GetLang() { return sc.GetLang(); }
 
@@ -126,14 +128,14 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  void ParseTopLevelDecls(llvm::SmallVector<ParserResult<Decl>> &results);
+  void ParseTopLevelDecls(llvm::SmallVector<ParserResult<ast::Decl>> &results);
 
 private:
-  ParserResult<Decl> ParseTopLevelDecl();
+  ParserResult<ast::Decl> ParseTopLevelDecl();
 
 public:
   // TODO: We only need on ParseDecl
-  ParserResult<Decl> ParseDecl(ParsingDeclOptions flags,
+  ParserResult<ast::Decl> ParseDecl(ParsingDeclOptions flags,
                                ParsingDeclCollector *collector = nullptr);
 
   void ParseDeclName();
@@ -141,12 +143,12 @@ public:
   // ParserStatus CollectDecl(ParsingDeclCollector &collector);
 
 private:
-  ParserResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
+  ParserResult<ast::Decl> ParseDeclInternal(ParsingDeclCollector &collector);
 
 public:
   // TODO: Param should be constant
-  ParserResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
-  ParserResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
+  ParserResult<ast::Decl> ParseVarDecl(ParsingDeclCollector &collector);
+  ParserResult<ast::Decl> ParseAutoDecl(ParsingDeclCollector &collector);
 
 public:
   // === Collectors === ///
@@ -155,13 +157,13 @@ public:
   ParserStatus CollectAccessLevel(ParsingDeclCollector &collector);
 
   bool IsTypeChunk(const Token &tk);
-  ParserStatus CollectTypeChunk(TypeCollector &collector);
-  ParserStatus CollectTypeChunks(TypeCollector &collector);
-  ParserStatus CollectBasicTypeDecl(TypeCollector &collector);
-  ParserStatus CollectNominalTypeDecl(TypeCollector &collector);
-  ParserStatus CollectTypeQualifiers(TypeCollector &collector);
-  ParserStatus CollectTypeQualifier(TypeCollector &collector);
-  ParserStatus CollectTypeOperator(TypeCollector &collector);
+  ParserStatus CollectTypeChunk(ast::TypeCollector &collector);
+  ParserStatus CollectTypeChunks(ast::TypeCollector &collector);
+  ParserStatus CollectBasicTypeDecl(ast::TypeCollector &collector);
+  ParserStatus CollectNominalTypeDecl(ast::TypeCollector &collector);
+  ParserStatus CollectTypeQualifiers(ast::TypeCollector &collector);
+  ParserStatus CollectTypeQualifier(ast::TypeCollector &collector);
+  ParserStatus CollectTypeOperator(ast::TypeCollector &collector);
   ParserStatus CollectStorageSpecifier(ParsingDeclCollector &collector);
   ParserStatus CollectFunctionDecl(ParsingDeclCollector &collector);
   ParserStatus VerifyDeclCollected(ParsingDeclCollector &collector);
@@ -173,17 +175,17 @@ public:
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  Type ParseType(TypeCollector &collector, Diag<> diagID);
-  Type ParseFunctionType(TypeCollector &collector, Diag<> diagID);
-  Type ParsePointerType(TypeCollector &collector, Diag<> diagID);
-  Type ParseReferenceType(TypeCollector &collector, Diag<> diagID);
-  Type ParseDeclResultType(TypeCollector &collector, Diag<> diagID);
-  Type ParseBasicType(TypeCollector &collector, Diag<> diagID);
-  Type ParseIdentifierType(TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseFunctionType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParsePointerType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseReferenceType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseDeclResultType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseBasicType(ast::TypeCollector &collector, Diag<> diagID);
+  ast::QualType ParseIdentifierType(ast::TypeCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//
-  ParserResult<Decl> ParseFunDecl(ParsingDeclCollector &collector);
+  ParserResult<ast::Decl> ParseFunDecl(ParsingDeclCollector &collector);
 
 private:
   ParserStatus ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -208,19 +210,19 @@ private:
 
 public:
   //== using ==//
-  ParserResult<Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<ast::Decl> ParseUsingDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== struct ==//
-  ParserResult<Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<ast::Decl> ParseStructDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== enum== //
-  ParserResult<Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<ast::Decl> ParseEnumDecl(ParsingDeclCollector &collectorifier);
 
 public:
   //== interface ==//
-  ParserResult<Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
+  ParserResult<ast::Decl> ParseInterfaceDecl(ParsingDeclCollector &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -229,7 +231,7 @@ private:
   }
 
 public:
-  ParserResult<Decl> ParseSpaceDecl();
+  ParserResult<ast::Decl> ParseSpaceDecl();
 
 public:
   bool IsStartOfStmt();

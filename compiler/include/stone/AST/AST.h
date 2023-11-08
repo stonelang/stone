@@ -9,7 +9,6 @@ namespace stone {
 class SrcLoc;
 class SrcRange;
 
-namespace ast {
 
 class Expr;
 class Stmt;
@@ -54,8 +53,6 @@ struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   void Walk(ASTWalker &walker);
   void Walk(ASTWalker &&walker) { Walk(walker); }
 };
-
-} // namespace ast
 } // namespace stone
 
 // namespace llvm {

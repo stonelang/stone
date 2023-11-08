@@ -1,5 +1,5 @@
-#ifndef STONE_ASTACCESS_H
-#define STONE_ASTACCESS_H
+#ifndef STONE_AST_ACCESS_H
+#define STONE_AST_ACCESS_H
 
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/LLVM.h"
@@ -10,9 +10,8 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace ast {
-class DeclContext;
 
+class DeclContext;
 // TODO: All you need is Public and Local
 enum class AccessLevel : UInt8 {
   None = 0,
@@ -150,6 +149,5 @@ public:
 //   void Apply();
 // };
 
-} // namespace ast
 } // namespace stone
 #endif

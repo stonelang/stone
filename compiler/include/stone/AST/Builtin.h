@@ -4,7 +4,7 @@
 #include "stone/AST/Types.h"
 
 namespace stone {
-namespace ast {
+
 class ASTContext;
 class QualType;
 
@@ -50,6 +50,5 @@ private:
 public:
   Type GetType(llvm::StringRef name);
 };
-} // namespace ast
 } // namespace stone
 #endif

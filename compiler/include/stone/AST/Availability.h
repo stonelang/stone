@@ -9,10 +9,9 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace ast {
 
-class ASTContext;
 class Decl;
+class ASTContext;
 
 /// A lattice of version ranges of the form [x.y.z, +Inf).
 class VersionRange {
@@ -334,7 +333,6 @@ public:
   annotatedAvailableRangeForAttr(const SpecializeAttribute *attr,
                                  ASTContext &ctx);
 };
-} // namespace ast
 } // end namespace stone
 
 #endif
