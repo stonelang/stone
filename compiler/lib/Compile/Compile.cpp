@@ -9,6 +9,7 @@
 #include "stone/CodeCompletionListener.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Compile/Compiling.h"
 
 #include "stone/Lang.h"
 #include "stone/Options/Mode.h"
@@ -37,12 +38,11 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { invocation.Finish(); };
 
   if (args.empty()) {
-    invocation.GetDiagnoticEngine().PrintD(SrcLoc(), diag::err_no_input_files);
+    invocation.GetLang().GetDiags().PrintD(SrcLoc(), diag::err_no_input_files);
     return Finish(Status::Error());
   }
   // We setup clang now -- this just loads the instance.
-  if (invocation.SetupClang(args, arg0).Has()) {
-
+  if (invocation.SetupClang(args, arg0).IsError()) {
     return Finish(Status::Error());
   }
 
@@ -51,7 +51,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   ASTDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
-  invocation.GetDiagEngine().AddListener(diagListener);
+  invocation.GetLang().GetDiags().AddListener(diagListener);
 
   ConfigurationFileBuffers configurationFileBuffers;
 
@@ -65,7 +65,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (invocation.IsAlien()) {
-    invocation.GetDiagnoticEngine().PrintD(SrcLoc(), diag::err_alien_mode);
+    invocation.GetLang().GetDiags().PrintD(SrcLoc(), diag::err_alien_mode);
     Finish(Status::Error());
   }
   if (invocation.IsPrintHelp()) {
@@ -73,7 +73,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
   if (invocation.IsPrintVersion()) {
-    invocation.PrintVersion();
+    //invocation.PrintVersion();
     return Finish();
   }
   if (!invocation.CanCompile()) {
@@ -87,7 +87,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   CompilerInstance compilerInstance(invocation);
-  auto status = compilerInstance.Compile();
+  status = compilerInstance.Compile();
 
   if (status.IsError() || invocation.HasError()) {
     return Finish(Status::Error());
@@ -117,7 +117,7 @@ bool CompilerInstance::Compile() {
 }
 
 //// Execute only the analysis part of the compiler
-bool Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
+Status Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
 
   // At this point, everything requires syntax analysis.
   if (compiler.GetMode().IsParse()) {
@@ -132,35 +132,29 @@ bool Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
   }
 
   if (compiler.GetMode().IsResolveImports()) {
-    return Status::Success();
+    return Status();
   }
 
   // Are we trying to dump the AST?
   if (compiler.GetMode().IsDumpAST()) {
-    if (Compiling::PerformDumpAST(compiler).IsError()) {
-      return Status::Error();
-    }
-    return Status();
+    Compiling::PerformDumpAST(compiler);
+    return Finish();
   }
   // At this point, everything requires type-checking
   if (Compiling::PerformSemanticAnalysis(compiler).IsError()) {
     return Status::Error();
   }
 
-  if (GetMode().IsTypeCheck()) {
-    return Status::Success();
+  if (compiler.GetMode().IsTypeCheck()) {
+    return Status();
   }
   // Are we trying to print the AST?
-  if (GetMode().IsPrintAST()) {
-    if (Compiling::PerformPrintAST(compiler).IsError()) {
-      return Status::Error();
-    }
+  if (compiler.GetMode().IsPrintAST()) {
+    Compiling::PerformPrintAST(compiler);
   }
 
-  if (GetMode().IsDumpTypeInfo()) {
-    if (Compiling::PerformDumpTypeInfo(compiler).IsError()) {
-      return Status::Error();
-    }
+  if (compiler.GetMode().IsDumpTypeInfo()) {
+    Compiling::PerformDumpTypeInfo(compiler);
   }
 }
 
@@ -169,11 +163,13 @@ Status Compiling::PerformSyntaxAnalysis(CompilerInstance &compiler) {
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *astFile = llvm::dyn_cast<stone::ASTFile>(moduleFile)) {
-      Lang::ParseASTFile(*asttaxFile, GetASTContext(),
+      Lang::ParseASTFile(*astFile, GetASTContext(),
                          invocation.GetListener());
     }
   }
   Compiling::NotifySyntaxAnalysisCompleted(compiler);
+
+  return Status();
 }
 
 Status Compiling::PerformSyntaxAnalysisAndImportResoltuion(
@@ -215,13 +211,13 @@ void Compiling::PerformDumpTypeInfo(CompilerInstance &compiler) {}
 
 void Compiling::PerformPrintAST(CompilerInstance &compiler) {}
 
-Status Compiling::CompilePostCompiling(CompilerInstance &compiler) {
+Status Compiling::CompilePostCodeAnalysis(CompilerInstance &compiler) {
 
   // Some other things here
   Compiling::CompileWithCodeGeneration(compiler);
 }
 
-bool Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
+Status Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
 
   assert(compiler.CanCodeGen() && "Mode does not support code gen");
 
@@ -246,13 +242,13 @@ bool Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
   // --emit-ir
   if (compiler.GetMode().IsEmitIR()) {
     Compiling::PerformDumpIR(compiler, codeGenContext);
-    return status;
+    return Status();
   }
 
   // --print-ir
   if (compiler.GetMode().IsPrintIR()) {
     Compiling::PerformPrintIR(compiler, codeGenContext);
-    return status;
+    return Status();
   }
   /// Do some othere things
 
@@ -316,10 +312,10 @@ bool Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
   // }
 }
 
-bool Compiling::PerformIRGeneration(CompilerInstance &compiler,
+Status Compiling::PerformIRGeneration(CompilerInstance &compiler,
                                     CodeGenContext &codeGenContext) {
 
-  const auto &invocation = GetInvocation();
+  const auto &invocation = compiler.GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 
   if (compiler.IsWholeModuleCodeGen()) {
@@ -327,27 +323,27 @@ bool Compiling::PerformIRGeneration(CompilerInstance &compiler,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compiler.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-    Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, mainModule,
+    Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename, mainModule,
                 primaryFileSpecificPaths);
   } else if (compiler.IsASTFileCodeGen()) {
-    for (auto *primaryASTFile : GetPrimaryASTFiles()) {
+    for (auto *primaryASTFile : compiler.GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           compiler.GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      Lang::GenIR(cgc, primaryFileSpecificPaths.outputFilename, primaryASTFile,
+      Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename, primaryASTFile,
                   primaryFileSpecificPaths);
     }
   }
   return Status();
 }
 
-bool Compiling::PerformNativeGeneration(CompilerInstance &compiler,
+Status Compiling::PerformNativeGeneration(CompilerInstance &compiler,
                                         CodeGenContext &codeGenContext) {
 
-  auto result = Lang::GenNative(cgc, GetASTContext(), llvm::StringRef(),
-                                GetInvocation().GetListener());
+  auto result = Lang::GenNative(codeGenContext, llvm::StringRef()/*TODO*/,
+                                compiler.GetInvocation().GetListener());
   return Status::Success();
 
   NotifyNativeGenerationCompleted();
 }
 
-bool Compiling::NotifyNativeGenerationCompleted(CompilerInstance &compiler) {}
+void Compiling::NotifyNativeGenerationCompleted(CompilerInstance &compiler) {}

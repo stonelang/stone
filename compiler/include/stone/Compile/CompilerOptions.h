@@ -65,6 +65,7 @@ public:
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
+  Mode &GetMode() { return *mode; }
 };
 
 } // namespace stone

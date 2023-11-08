@@ -168,6 +168,7 @@ public:
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
   bool IsDumpTypeInfo() { return GetKind() == ModeKind::DumpTypeInfo; }
   bool IsPrintAST() { return GetKind() == ModeKind::PrintAST; }
+  bool IsPrintIR() { return GetKind() == ModeKind::PrintIR; }
   bool IsEmitIR() { return GetKind() == ModeKind::EmitIR; }
   bool IsEmitModule() { return GetKind() == ModeKind::EmitModule; }
   bool IsEmitLibrary() { return GetKind() == ModeKind::EmitLibrary; }

@@ -97,6 +97,8 @@ class CompilerInvocation final {
   Lang lang;
   std::unique_ptr<Clang> clang;
 
+  OptTableAndInputArgs optTableAndInputArgs;
+
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
                      CompilerListener *listener = nullptr);
@@ -158,9 +160,9 @@ public:
 
   Lang &GetLang() { return lang; }
 
-  LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
+  LangOptions &GetLangOptions() { return GetLang().GetLangOptions(); }
   const LangOptions &GetLangOptions() const {
-    return GetCompilerOptions().langOpts;
+    return GetLang().GetLangOptions();
   }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
@@ -191,16 +193,14 @@ public:
 
   bool HasError() { return GetLang().GetDiags().HasError(); }
 
-  DiagnosticEngine &GetDiagnoticEngine(){return GetLang().GetDiags();}
+  DiagnosticEngine &GetDiagnoticEngine() { return GetLang().GetDiags(); }
 
-  std::vector<unsigned> &GetSourceBufferIDs() {
-    return sourceBufferIDs;
-  }
+  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
 
 public:
-  std::unique_ptr<llvm::opt::InputArgList>
-  ParseArgs(llvm::ArrayRef<const char *> args);
+  Status ParseArgs(llvm::ArrayRef<const char *> args);
+  llvm::opt::InputArgList &GetInputArgList() { *optTableAndInputArgs.second; }
 
 public:
   bool IsAlien() { return GetCompilerOptions().GetMode().IsAlien(); }
@@ -208,6 +208,11 @@ public:
   bool IsPrintVersion() {
     return GetCompilerOptions().GetMode().IsPrintVersion();
   }
+
+  Mode& GetMode() {
+    return GetCompilerOptions().GetMode();
+  }
+
   bool CanCompile() { return GetCompilerOptions().GetMode().CanCompile(); }
 
   void NotifyCompileConfigure() {
@@ -215,7 +220,6 @@ public:
       GetListener()->OnCompileConfigured(*this);
     }
   }
-
 };
 
 } // namespace stone

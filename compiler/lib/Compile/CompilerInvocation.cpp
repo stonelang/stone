@@ -15,7 +15,6 @@
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
 
-
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/FrontendDiagnostic.h"
@@ -96,7 +95,8 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
     const CompilerInputFile &input, const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
-            ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
+            GetLang().GetSrcMgr().getIDForBufferIdentifier(
+                input.GetFileName())) {
       return existingBufferID;
     }
   }
@@ -127,8 +127,8 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
   // assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
 
   // Transfer ownership of the MemoryBuffer to the SourceMgr.
-  unsigned bufferID =
-      ctx.GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
+  unsigned bufferID = GetLang().GetSrcMgr().addNewSourceBuffer(
+      std::move(buffers->moduleBuffer));
 
   sourceBufferIDs.push_back(bufferID);
   return bufferID;
@@ -148,19 +148,19 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
   InputFileOrError inputFileOrError =
-      ctx.GetFileMgr().getBufferForFile(input.GetFileName());
+      GetLang().GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
-                                     diag::err_unable_to_open_buffer_for_file,
-                                     diag::LLVMStr(input.GetFileName()));
+    GetLang().GetDiags().PrintD(SrcLoc(),
+                              diag::err_unable_to_open_buffer_for_file,
+                              diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
 
   // Just return the file buffer for now
   return ModuleBuffers(std::move(*inputFileOrError));
   // if (!fb) {
-  //   ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
+  //   GetLang().GetDiags().PrintD(SrcLoc(),
   //   diag::err_unable_to_open_buffer_for_file,
   //                            diag::LLVMStr(input.GetFileName()));
   // }
@@ -198,19 +198,19 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  GetCompilerOptions().langOpts.SetTarget(triple);
+  GetLangOptions().SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
 unsigned
 CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
-  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
+  auto fb = GetLang().GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
-    ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
-                                     diag::err_unable_to_open_buffer_for_file,
-                                     diag::LLVMStr(input.GetFileName()));
+    GetLang().GetDiags().PrintD(SrcLoc(),
+                                diag::err_unable_to_open_buffer_for_file,
+                                diag::LLVMStr(input.GetFileName()));
   }
-  auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  auto srcID = GetLang().GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
   return srcID;
 }
@@ -280,7 +280,7 @@ static Status ParseCompilerOptions(
   CompilerOptionsConverter converter(de, ial, langOpts, compilerOpts,
                                      moduleOpts);
 
-  return Error(converter.Convert(buffers));
+  return converter.Convert(buffers);
 }
 
 static Status ParseLangOptions(llvm::opt::InputArgList &ial,
@@ -354,6 +354,8 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
   //         .Case("hard", llvm::FloatABI::Hard)
   //         .Default(llvm::FloatABI::Default);
 }
+
+
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,
                                           Clang &cc) {
@@ -409,30 +411,34 @@ static Status ParseSearchPathOptions(llvm::opt::InputArgList &ial,
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  auto optTableAndInputArgs =
-      opts::ParseArgs(args, OptParsingFlags(1, 0, 0, 0));
+  optTableAndInputArgs = opts::ParseArgs(args, OptParsingFlags(1, 0, 0, 0));
 
   compilerOpts = std::make_unique<CompilerOptions>(
-      Mode::Create(optTableAndInputArgs.first));
+      Mode::Create(*optTableAndInputArgs.second));
 
-  if (GetCompilerOpts().GetMode().IsAlien()) {
+  if (GetCompilerOptions().GetMode().IsAlien()) {
     return Status::Error();
   }
-  auto compilerOptsErr = ParseCompilerOptions(
-      ial, GetLang().GetDiags(), GetLang().GetLangOptions(),
-      GetCompilerOptions(), GetModuleOptions(), nullptr /* pass null for now*/);
-
-  if (compilerOptsErr.Has()) {
+  if (ParseCompilerOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                           GetLang().GetLangOptions(), GetCompilerOptions(),
+                           GetModuleOptions(), nullptr /* pass null for now*/)
+          .IsError()) {
+    return Status::Error();
   }
-  ParseLangOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetLang().GetLangOptions());
+  ParseLangOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                   GetCompilerOptions(), GetLang().GetLangOptions());
 
-  ParseTypeCheckerOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetTypeCheckerOptions());
-  ParseSearchPathOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetSearchPathOptions());
+  ParseTypeCheckerOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                          GetCompilerOptions(), GetTypeCheckerOptions());
+  ParseSearchPathOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                         GetCompilerOptions(), GetSearchPathOptions());
 
-  ParseCodeGenOptions(ial, GetLang().GetDiags(), GetCompilerOptions(), GetClodeGenOptions(),
+  ParseCodeGenOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                      GetCompilerOptions(), GetCodeGenOptions(),
                       GetLang().GetLangOptions(), GetClang());
 
-  ParseTargetOptions(ial, GetLang().GetDiags(), GetCompilerOpts(), GetClodeGenOptions(),
+  ParseTargetOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+                     GetCompilerOptions(), GetCodeGenOptions(),
                      GetLang().GetLangOptions(), GetClang());
 
   return Status::Success();
