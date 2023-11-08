@@ -388,13 +388,15 @@ private:
       : TypeBase(TypeKind::Module, &astContext), mod(mod) {}
 };
 
-class SweetType : public Type {
+class SweetType : public TypeBase {
   // The state of this union is known via Bits.SweetType.HasCachedType so that
   // we can avoid masking the pointer on the fast path.
   union {
     Type *underlyingType;
     const ASTContext *Context;
   };
+
+  //llvm::PointerUnion<
 };
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
@@ -404,12 +406,12 @@ public:
 
 /// A type with a special asttax that is always sugar for a library type. The
 /// library type may have multiple base types. For unary asttax sugar, see
-/// UnaryASTSweetType.
+/// UnarySyntaxSweetType.
 ///
 /// The prime examples are:
 /// Arrays: [T] -> Array<T>
 /// Dictionaries: [K : V]  -> Dictionary<K, V>
-class ASTSweetType : public SweetType {
+class SyntaxSweetType : public SweetType {
 public:
 };
 
@@ -419,7 +421,7 @@ public:
 /// \code
 /// auto dict: [string : int] = ["hello" : 0, "world" : 1]
 /// \endcode
-class DictionaryType : public ASTSweetType {
+class DictionaryType : public SyntaxSweetType {
 public:
 };
 

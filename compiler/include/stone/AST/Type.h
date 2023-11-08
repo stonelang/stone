@@ -212,6 +212,8 @@ private:
 class QualType : public Type {
   friend class TypeCollector;
 
+  FastTypeQualifiers fastQuals;
+
   TypeQualifier constTypeQual{TypeQualifierKind::Const};
   TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
   TypeQualifier volatileTypeQual{TypeQualifierKind::Volatile};
@@ -244,7 +246,7 @@ public:
     GetImmutable().Clear();
     GetMutable().Clear();
   }
-
+  FastTypeQualifiers FastTypeQualifiers() { return fastQuals; }
   // private:
   //   // Direct comparison is disabled for types, because they may not be
   //   canonical. void operator==(QualType T) const = delete; void

@@ -1,5 +1,5 @@
 #include "stone/AST/Stmt.h"
-#include "stone/Basic/ASTDiagnostic.h"
+#include "stone/Basic/CodeAnaDiagnostic.h"
 #include "stone/Basic/Defer.h"
 #include "stone/CodeAna/Parser.h"
 #include "stone/CodeAna/Parsing.h"
@@ -182,8 +182,8 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
   // At this stage, only the pure modifier is allowed
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
-      !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny() &&
+      !collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasPureOnly()) {
     // Do some logging
     return stone::MakeParserError();
   }
@@ -300,7 +300,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
 
-    if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+    if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny()) {
       // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       //   // TODO: Log
       //   status.SetHasCodeCompletion();
@@ -410,7 +410,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().GetFastQuals().HasAny()) {
     return stone::MakeParserError();
   }
 
