@@ -32,7 +32,7 @@ Parser::~Parser() {}
 //   return nullptr;
 // }
 
-// void Parser::EnterScope(ScopeKind scopeKind) {}
+// void Parser::EnterScope(ASTScopeKind scopeKind) {}
 // void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
@@ -147,10 +147,10 @@ SrcLoc Parser::ConsumeStartingGreater() {
 }
 
 /// EnterScope - start a new scope.
-void Parser::EnterScope(ScopeKind kind) {
+void Parser::EnterScope(ASTScopeKind kind) {
 
   if (!GetCurScope()) {
-    assert(kind == ScopeKind::TopLevel);
+    assert(kind == ASTScopeKind::TopLevel);
   }
   // Create the new scope
   auto curScope = CreateScope(kind, GetCurScope());
@@ -162,7 +162,7 @@ void Parser::EnterScope(ScopeKind kind) {
   PushCurScope(curScope);
 }
 
-Scope *Parser::CreateScope(ScopeKind kind, Scope *parent) {
+ASTScope *Parser::CreateScope(ASTScopeKind kind, ASTScope *parent) {
   return Parser::CreateScope(kind, GetASTContext(), GetDiags(), parent);
 }
 /// ExitScope - pop a scope off the scope stack.
@@ -174,7 +174,7 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
+Scope *Parser::CreateScope(ASTScopeKind kind, ASTContext &sc,
                            DiagnosticEngine &diags, Scope *parent) {
   return new (sc) Scope(kind, diags, parent);
 }

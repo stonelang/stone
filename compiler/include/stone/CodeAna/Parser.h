@@ -1,8 +1,6 @@
 #ifndef STONE_CODEANA_PARSER_H
 #define STONE_CODEANA_PARSER_H
 
-#include <memory>
-
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTOptions.h"
@@ -20,6 +18,8 @@
 #include "stone/CodeCompletionListener.h"
 
 #include "llvm/Support/Timer.h"
+
+#include <memory>
 
 namespace stone {
 
@@ -376,14 +376,14 @@ public:
 
 public:
   /// EnterScope - start a new scope.
-  void EnterScope(ScopeKind scopeKind);
+  void EnterScope(ASTScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
 
-  Scope *CreateScope(ScopeKind kind, Scope *parent);
+  ASTScope *CreateScope(ASTScopeKind kind, Scope *parent);
 
-  Scope *GetCurScope() const {
+  ASTScope *GetCurScope() const {
     if (HasCurScope()) {
       return scopeCache.back();
     }
@@ -391,15 +391,15 @@ public:
   }
   bool HasCurScope() const { return (scopeCache.size() > 0); }
   void PopCurScope() { scopeCache.pop_back(); }
-  void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
+  void PushCurScope(ASTScope *scope) { scopeCache.push_back(scope); }
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
   InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
-  static Scope *CreateScope(ScopeKind kind, ASTContext &sc,
-                            DiagnosticEngine &diags, Scope *parent = nullptr);
+  static ASTScope *CreateScope(ASTScopeKind kind, ASTContext &sc,
+                            DiagnosticEngine &diags, ASTScope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }
   SrcLoc GetLoc() { return curTok.GetLoc(); }

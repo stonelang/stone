@@ -2,7 +2,7 @@
 #define STONE_CODEANA_PARSING_H
 
 #include "stone/AST/DeclCollector.h"
-#include "stone/AST/Scope.h"
+#include "stone/AST/ASTScope.h"
 #include "stone/AST/Specifier.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
@@ -58,7 +58,7 @@ public:
 //   ~ParenBalancer() { parser.ParenCount = count; }
 // };
 
-using ScopeCache = llvm::SmallVector<stone::Scope *, 16>;
+using ScopeCache = llvm::SmallVector<ASTScope *, 16>;
 class ParsingScope final {
   Parser &self;
   llvm::StringRef description;
@@ -71,13 +71,13 @@ public:
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass Scope
-  ParsingScope(Parser &self, stone::ScopeKind scopeKind,
+  ParsingScope(Parser &self, ASTScopeKind scopeKind,
                llvm::StringRef description);
   ~ParsingScope();
 
 private:
   /// EnterScope - start a new scope.
-  void EnterScope(stone::ScopeKind scopeKind);
+  void EnterScope(ASTScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();

@@ -5,12 +5,12 @@ using namespace stone;
 
 // ==Scope == //
 
-ParsingScope::ParsingScope(Parser &self, ScopeKind scopeKind,
+ParsingScope::ParsingScope(Parser &self, ASTScopeKind scopeKind,
                            llvm::StringRef description)
     : self(self), description(description) {
   EnterScope(scopeKind);
 }
-void ParsingScope::EnterScope(ScopeKind scopeKind) {
+void ParsingScope::EnterScope(ASTScopeKind scopeKind) {
   self.EnterScope(scopeKind);
 }
 // Exit - Exit the scope associated with this object now, rather
