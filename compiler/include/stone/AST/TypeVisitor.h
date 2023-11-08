@@ -17,7 +17,7 @@
 #ifndef STONE_ASTTYPEVISITOR_H
 #define STONE_ASTTYPEVISITOR_H
 
-#include "stone/AST/Type.h"
+#include "stone/AST/Types.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace stone {

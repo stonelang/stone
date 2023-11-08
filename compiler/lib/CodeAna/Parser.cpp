@@ -13,14 +13,13 @@ using namespace stone::mem;
 Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                                   &sc.GetLang().GetDiagnosticEngine().GetDiagEngine(),
+                                   &sc.GetLang().GetDiags(),
                                    &sc.GetLang().GetStats())),
              listener) {}
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
                ASTListener *listener)
-    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
-      parsingTok(*this), stats(new ParserStats(*this)) {
+    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener), stats(new ParserStats(*this)) {
 
   GetLang().GetStats().Register(stats.get());
 }

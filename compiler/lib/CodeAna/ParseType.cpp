@@ -11,7 +11,7 @@ using namespace stone;
 QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 
   QualType result;
-  ParsingScope parsingType(*this, ASTASTScopeKind::FunctionType, "parsing type");
+  ParsingScope parsingType(*this, ASTScopeKind::FunctionType, "parsing type");
   // TODO: We are asserting these for now but we may just want to log some ass
   // erros
 

@@ -80,8 +80,6 @@ class Parser final {
 
   // PairDelimiterCount pairDelimiterCount;
 
-  ParsingToken parsingTok;
-
   ScopeCache scopeCache;
 
   // UInt16 ParenCount = 0;
@@ -244,9 +242,9 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLang().GetDiagnosticEngine().HasError(); }
+  bool HasError() { return GetLang().GetDiags().HasError(); }
   DiagnosticEngine &GetDiags() {
-    return GetLang().GetDiagnosticEngine().GetDiagEngine();
+    return GetLang().GetDiags();
   }
 
 public:
@@ -379,8 +377,7 @@ public:
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
 
-  ASTScope *CreateScope(ASTScopeKind kind, Scope *parent);
-
+  ASTScope *CreateScope(ASTScopeKind kind, ASTScope *parent);
   ASTScope *GetCurScope() const {
     if (HasCurScope()) {
       return scopeCache.back();

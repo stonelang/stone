@@ -52,27 +52,33 @@ public:
 
 public:
   void AddConst(SrcLoc loc = SrcLoc()) { constLoc = loc; }
-  SrcLoc GetConstLoc() { return constLoc; }
+  SrcLoc GetConst() { return constLoc; }
+  bool HasConst() { return constLoc.isValid(); }
 
 public:
   void AddImmutable(SrcLoc loc = SrcLoc()) { immutableLoc = loc; }
-  SrcLoc GetImmutableLoc() { return immutableLoc; }
+  SrcLoc GetImmutable() { return immutableLoc; }
+  bool HasImmutable() { return immutableLoc.isValid(); }
 
 public:
   void AddMutable(SrcLoc loc = SrcLoc()) { mutableLoc = loc; }
-  SrcLoc GetMutableLoc() { return mutableLoc; }
+  SrcLoc GetMutable() { return mutableLoc; }
+  bool HasMutable() { return mutableLoc.isValid(); }
 
 public:
   void AddRestrict(SrcLoc loc = SrcLoc()) { restrictLoc = loc; }
-  SrcLoc GetRestrictLoc() { return restrictLoc; }
+  SrcLoc GetRestrict() { return restrictLoc; }
+  bool HasRestrict() { return restrictLoc.isValid(); }
 
 public:
   void AddVolatile(SrcLoc loc = SrcLoc()) { volatileLoc = loc; }
-  SrcLoc GetVolatileLoc() { return volatileLoc; }
+  SrcLoc GetVolatile() { return volatileLoc; }
+  SrcLoc HasVolatile() { return volatileLoc.isValid(); }
 
 public:
   void AddPure(SrcLoc loc = SrcLoc()) { pureLoc = loc; }
-  SrcLoc GetPureLoc() { return pureLoc; }
+  SrcLoc GetPure() { return pureLoc; }
+  bool HasPure() { return pureLoc.isValid(); }
 
 public:
   QualType Apply(const stone::ASTContext &astContext, QualType ty) const;
