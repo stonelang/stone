@@ -5,8 +5,6 @@
 #include <type_traits>
 
 namespace stone {
-namespace codeana {
-
 class ParserStatus;
 /// A wrapper for a parser AST node result (Decl, Stmt, Expr,
 /// etc.)
@@ -227,7 +225,6 @@ template <typename T> ParserResult<T>::ParserResult(ParserStatus Status) {
     SetHasCodeCompletion();
   }
 }
-} // namespace codeana
 } // namespace stone
 
 #endif

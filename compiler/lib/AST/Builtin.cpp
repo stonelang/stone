@@ -2,7 +2,6 @@
 #include "stone/AST/ASTAllocation.h"
 
 using namespace stone;
-using namespace stone::ast;
 
 Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext),

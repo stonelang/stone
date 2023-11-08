@@ -2,7 +2,7 @@
 #include "stone/AST/Module.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 // TODO:
 //  class UseResolver final : public DeclVisitor<UseResolver> {
@@ -12,4 +12,4 @@ using namespace stone::ast;
 //   ASTContext &ctx;
 // };
 
-void codeana::ResolveImports(ASTFile &asttaxFile) {}
+void stone::ResolveImports(ASTFile &asttaxFile) {}

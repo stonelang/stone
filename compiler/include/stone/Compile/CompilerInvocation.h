@@ -120,7 +120,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
-  // llvm::ArrayRef<ast::ASTFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<stone::ASTFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);

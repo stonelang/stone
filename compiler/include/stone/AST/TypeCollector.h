@@ -8,7 +8,6 @@
 #include "stone/AST/TypeQualifier.h"
 
 namespace stone {
-namespace ast {
 
 class QualType;
 class TypeCollector final {
@@ -50,10 +49,9 @@ public:
   QualType GetType();
 
 public:
-  QualType Apply(const ast::ASTContext &astContext, QualType qualType) const;
+  QualType Apply(const stone::ASTContext &astContext, QualType qualType) const;
 };
 
-} // namespace ast
 } // namespace stone
 
 #endif

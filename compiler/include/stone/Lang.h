@@ -57,7 +57,7 @@ class ModuleDecl;
 
 namespace stone {
 
-using ModuleOrASTFile = llvm::PointerUnion<ast::ModuleDecl *, ast::ASTFile *>;
+using ModuleOrASTFile = llvm::PointerUnion<stone::ModuleDecl *, stone::ASTFile *>;
 
 class Lang final {
   FileMgr fm;
@@ -109,21 +109,21 @@ public:
 public:
   /// This walks the asttax to resolve imports.
   /// Returns true is successfull
-  static void ParseASTFile(ast::ASTFile &astFile, ast::ASTContext &context,
+  static void ParseASTFile(stone::ASTFile &astFile, stone::ASTContext &context,
                            ASTListener *listener = nullptr);
 
   /// This walks the asttax to resolve imports.
   /// Returns true is successfull
-  static void ResolveASTFileImports(ast::ASTFile &astFile);
+  static void ResolveASTFileImports(stone::ASTFile &astFile);
 
   /// Just dump the AST created
-  static void DumpAST(ast::ASTFile &astFile, ast::ASTContext &context);
+  static void DumpAST(stone::ASTFile &astFile, stone::ASTContext &context);
 
   /// Once import resolution is complete, this walks the asttax to resolve types
   /// and diagnose problems therein.
   /// Returns true is successfull
   static void TypeCheckASTFile(
-      ast::ASTFile &astFile, TypeCheckerOptions &opts,
+      stone::ASTFile &astFile, TypeCheckerOptions &opts,
       TypeCheckerListener *listener =
           nullptr /*, TypeCheckASTFileCallback* callback = nullptr*/);
 
@@ -135,36 +135,36 @@ public:
   /// emitted.
   /// Returns true is successfull
   static void TypeCheckWholeModule(
-      ast::ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
+      stone::ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
       TypeCheckerListener *listener =
           nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
   /// Dump the AST created after type-checking
-  static void PrintAST(ast::ASTFile &astFile, ast::ASTContext &context);
+  static void PrintAST(stone::ASTFile &astFile, stone::ASTContext &context);
 
   /// Returns true is successfull
-  static void SerializeASTFile(ast::ASTFile &asttaxFile);
+  static void SerializeASTFile(stone::ASTFile &asttaxFile);
 
   /// Returns true is successfull
-  static void SerializeModuleDecl(ast::ModuleDecl &moduleDecl);
+  static void SerializeModuleDecl(stone::ModuleDecl &moduleDecl);
 
   /// GenIR just for an ASTFile
   static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
-                    ast::ASTFile *sf,
+                    stone::ASTFile *sf,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
   /// GenIR for the entire module
   static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
-                    ast::ModuleDecl *mod,
+                    stone::ModuleDecl *mod,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
   /// Emit the IR generated to the output screen
   static void EmitIR();
 
-  static bool EmitImportedModules(ast::ASTContext &context,
-                                  ast::ModuleDecl *mainModule,
+  static bool EmitImportedModules(stone::ASTContext &context,
+                                  stone::ModuleDecl *mainModule,
                                   const CompilerOptions &opts);
 
 public:
@@ -176,13 +176,13 @@ public:
   static bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 
   static std::unique_ptr<llvm::TargetMachine>
-  CreateTargetMachine(const CodeGenOptions &opts, ast::ASTContext &ac);
+  CreateTargetMachine(const CodeGenOptions &opts, stone::ASTContext &ac);
 
   static void OptimizeIR(codegen::CodeGenContext &cgc);
 
   static bool
   WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
-                        const ast::ASTContext &Context,
+                        const stone::ASTContext &Context,
                         const CodeGenOptions &opts);
 
   /// Returns true is successfull

@@ -10,7 +10,6 @@ namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace ast {
 class Decl;
 class ASTFile;
 class Module;
@@ -25,9 +24,6 @@ class Stmt;
 class Type;
 // class TypeRepr;
 class ValueDecl;
-
-} // namespace ast
-namespace codeana {
 
 class TypeChecker;
 class ExportContext;
@@ -64,19 +60,18 @@ enum class DowngradeToWarningKind : bool {
 /// At a high level, this checks the given declaration's signature does not
 /// reference any other declarations that are less visible than the declaration
 /// itself. Related checks may also be performed.
-void CheckAccessLevel(ast::Decl *D);
+void CheckAccessLevel(Decl *D);
 
-void CheckAccessLevel(ast::Type ty);
+void CheckAccessLevel(Type ty);
 
 /// Returns the kind of origin, implementation-only import or SPI declaration,
 /// that restricts exporting \p decl from the given file and context.
-DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
+DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
                                              const ExportContext &where);
 
-DisallowedOriginKind GetDisallowedOriginKind(const ast::Decl *decl,
+DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
                                              const ExportContext &where,
                                              DowngradeToWarningKind &kind);
 
-} // namespace codeana
 } // namespace stone
 #endif

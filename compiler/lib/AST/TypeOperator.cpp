@@ -1,7 +1,7 @@
 #include "stone/AST/TypeOperator.h"
 #include "stone/AST/ASTContext.h"
 
-using namespace stone::ast;
+using namespace stone;
 
 NewTypeOperator NewTypeOperator::Create(SrcLoc loc) {
   NewTypeOperator op(loc);

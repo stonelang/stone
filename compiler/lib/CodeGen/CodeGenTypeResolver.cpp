@@ -16,15 +16,15 @@
 #include "llvm/Transforms/Utils/Local.h"
 
 using namespace stone;
-using namespace stone::codegen;
+
 
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeResolver::CodeGenTypeResolver(CodeGenModule &cgm) : cgm(cgm) {}
 
-llvm::Type *CodeGenTypeResolver::GetType(const ast::Type ty) { return nullptr; }
+llvm::Type *CodeGenTypeResolver::GetType(const stone::Type ty) { return nullptr; }
 
 llvm::FunctionType *
-CodeGenTypeResolver::GetFunctionType(const ast::FunctionDecl *fd) {
+CodeGenTypeResolver::GetFunctionType(const stone::FunctionDecl *fd) {
 
   // llvm::SmallVector<llvm::Type*, 8> argTypes(IRFunctionArgs.totalIRArgs());
 
@@ -34,12 +34,12 @@ CodeGenTypeResolver::GetFunctionType(const ast::FunctionDecl *fd) {
       false);
 }
 
-// llvm::Type *CodeGenTypeResolver::GetType(const ast::MemberPointerType mpty)
+// llvm::Type *CodeGenTypeResolver::GetType(const stone::MemberPointerType mpty)
 // {
 //   return nullptr;
 // }
 
 // llvm::FunctionType *CodeGenTypeResolver::GetFunctionType(const
-// ast::FunctionType fty) {
+// stone::FunctionType fty) {
 //   return nullptr;
 // }

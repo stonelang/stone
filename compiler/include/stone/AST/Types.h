@@ -43,7 +43,6 @@
 #include <string>
 
 namespace stone {
-namespace ast {
 
 class Type;
 class TypeBase;
@@ -428,6 +427,5 @@ public:
 // public:
 // };
 
-} // namespace ast
 } // namespace stone
 #endif

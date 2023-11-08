@@ -5,12 +5,12 @@
 #include "stone/CodeAna/Parser.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 // fun Do() -> '() -> int'
-Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 
-  Type result;
+  QualType result;
   ParsingScope parsingType(*this, ScopeKind::FunctionType, "parsing type");
   // TODO: We are asserting these for now but we may just want to log some ass
   // erros
@@ -52,8 +52,8 @@ Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 }
 
 // Similar to ParseDeclSpecifiers
-Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
-  Type result;
+QualType Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
+  QualType result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
   // if (collector.GetFunctionSpecifierCollector().HasFun() &&
@@ -87,11 +87,11 @@ Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   return result;
 }
 
-Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   // Collect the type -- only basic types for now (TODO: user type  and function
@@ -113,7 +113,7 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
         collector.GetTypeChunkCollector().GetTypeChunks(), GetASTContext());
   }
 
-  Type ty;
+  QualType ty;
   // TypeBase *ty = nullptr;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
 
@@ -154,11 +154,11 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   // if (chunks) {
   //   ty.SetTypeChunks(chunks);
   // }
-  
+
   return ty;
 }
 
-Type Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
-  Type result;
+QualType Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
+  QualType result;
   return result;
 }

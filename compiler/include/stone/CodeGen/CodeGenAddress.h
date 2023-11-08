@@ -26,7 +26,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace codegen {
+
 class CodeGenAddress {
   llvm::Value *addr;
   llvm::Type *elementType;
@@ -50,6 +50,5 @@ public:
       : CodeGenAddress(addr, elementType, alignment) {}
 };
 
-} // namespace codegen
 
 } // namespace stone

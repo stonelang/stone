@@ -7,8 +7,6 @@
 #include "stone/CodeAna/Parsing.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codeana;
 
 ParserStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
 
@@ -52,9 +50,9 @@ ParserStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
     collector.GetUsingDeclarationCollector().AddUsing(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 ParserStatus Parser::CollectTypeOperator(TypeCollector &collector) {
@@ -68,9 +66,9 @@ ParserStatus Parser::CollectTypeOperator(TypeCollector &collector) {
     collector.GetTypeOperatorCollector().AddDelete(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 ParserStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
@@ -85,9 +83,9 @@ ParserStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
     collector.GetAccessLevelCollector().AddPrivate(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 // TODO: Dulicate check
@@ -119,9 +117,9 @@ ParserStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   case tok::kw_pure:
     collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 bool Parser::IsTypeChunk(const Token &tk) {
@@ -143,9 +141,9 @@ ParserStatus Parser::CollectTypeChunk(TypeCollector &collector) {
     collector.GetTypeChunkCollector().AddReference(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 ParserStatus Parser::CollectTypeChunks(TypeCollector &collector) {
 
@@ -154,7 +152,7 @@ ParserStatus Parser::CollectTypeChunks(TypeCollector &collector) {
 
   if (!GetTok().IsTypeChunk() && GetTok().IsIdentifierOrUnderscore()) {
     collector.GetTypeChunkCollector().AddValue();
-    return codeana::MakeParserSuccess();
+    return stone::MakeParserSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   ParserStatus status;
@@ -169,7 +167,7 @@ ParserStatus Parser::CollectTypeChunks(TypeCollector &collector) {
 ParserStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
 
   if (!GetTok().IsBasicType()) {
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
   switch (GetTok().GetKind()) {
   // TODO: Think about void here
@@ -237,9 +235,9 @@ ParserStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 ParserStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -253,9 +251,9 @@ ParserStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 ParserStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -266,9 +264,9 @@ ParserStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
     collector.GetStorageSpecifierCollector().AddRegister(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 ParserStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -279,11 +277,11 @@ ParserStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
     collector.GetFunctionSpecifierCollector().AddInline(ConsumeToken());
     break;
   default:
-    return codeana::MakeParserCodeCompletionStatus();
+    return stone::MakeParserCodeCompletionStatus();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 ParserStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }

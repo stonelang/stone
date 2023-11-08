@@ -26,9 +26,9 @@ class CompilerInvocation;
 class ModuleSystem final {
   // TODO: We need built-in information
   CompilerInvocation &invocation;
-  ast::ASTContext &sc;
+  stone::ASTContext &sc;
   /// This is the main module that will be created
-  mutable ast::ModuleDecl *mainModule = nullptr;
+  mutable stone::ModuleDecl *mainModule = nullptr;
 
   /// Contains \c MemoryBuffers for partial serialized module files and
   /// corresponding partial serialized module documentation files. This is
@@ -36,27 +36,27 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(CompilerInvocation &invocation, ast::ASTContext &sc);
+  ModuleSystem(CompilerInvocation &invocation, stone::ASTContext &sc);
   ~ModuleSystem();
 
 public:
-  ast::ModuleDecl *GetMainModule() const;
-  void SetMainModule(ast::ModuleDecl *mod);
+  stone::ModuleDecl *GetMainModule() const;
+  void SetMainModule(stone::ModuleDecl *mod);
 
   Status CreateASTFilesForMainModule(
-      ast::ModuleDecl *mod,
-      llvm::SmallVectorImpl<ast::ModuleFile *> &files) const;
+      stone::ModuleDecl *mod,
+      llvm::SmallVectorImpl<stone::ModuleFile *> &files) const;
 
-  ast::ASTFile *CreateASTFileForMainModule(ast::ModuleDecl *mod,
-                                           ast::ASTFileKind fileKind,
+  stone::ASTFile *CreateASTFileForMainModule(stone::ModuleDecl *mod,
+                                           stone::ASTFileKind fileKind,
                                            unsigned bufferID,
                                            bool isMainBuffer = false) const;
 
-  ast::ASTFile *ComputeMainASTFileForModule(ast::ModuleDecl *mod) const;
+  stone::ASTFile *ComputeMainASTFileForModule(stone::ModuleDecl *mod) const;
 
   CompilerInvocation &GetCompilerInvocation() { return invocation; }
 
-  ast::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
+  stone::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Error IsValidModuleName(const llvm::StringRef moduleName);

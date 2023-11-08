@@ -4,8 +4,6 @@
 #include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codegen;
 
 void CodeGenModule::EmitGlobalDecl(Decl *d) {
 
@@ -25,11 +23,11 @@ void CodeGenModule::EmitGlobalDecl(Decl *d) {
   }
 }
 
-// void CodeGenModule::EmitGlobalDecl(ast::GlobalDecl *gd) {}
+// void CodeGenModule::EmitGlobalDecl(stone::GlobalDecl *gd) {}
 
 namespace {
 class PrettyASTFileEmission : public llvm::PrettyStackTraceEntry {
-  const ast::ASTFile &sf;
+  const stone::ASTFile &sf;
 
 public:
   explicit PrettyASTFileEmission(const ASTFile &sf) : sf(sf) {}
@@ -39,10 +37,10 @@ public:
 };
 } // end anonymous namespace
 
-void CodeGenModule::EmitASTFile(ast::ASTFile &sf) {
+void CodeGenModule::EmitASTFile(stone::ASTFile &sf) {
 
   PrettyASTFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<ast::ASTFile *> setCurASTFile(curASTFile, &sf);
+  llvm::SaveAndRestore<stone::ASTFile *> setCurASTFile(curASTFile, &sf);
   // Walk through the asttax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {

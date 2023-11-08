@@ -1,7 +1,6 @@
 #include "stone/AST/DeclCollector.h"
 
 using namespace stone;
-using namespace stone::ast;
 
 DeclCollector::DeclCollector() {}
 

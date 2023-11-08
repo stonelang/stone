@@ -33,7 +33,6 @@
 #include <utility>
 
 namespace stone {
-namespace ast {
 
 /// This table will hold the following: SomeType::DoSomething()
 class MemberTable final {
@@ -55,6 +54,5 @@ public:
   void AddMember(Decl *member);
 };
 
-} // namespace ast
 } // namespace stone
 #endif

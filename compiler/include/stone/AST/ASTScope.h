@@ -9,11 +9,9 @@
 #include "llvm/ADT/SmallPtrSet.h"
 
 namespace stone {
-namespace ast {
 class Decl;
-
 // TODO: Think about
-enum class ScopeKind : UInt8 {
+enum class ASTScopeKind : UInt8 {
   None = 0,
 
   TopLevel,
@@ -38,7 +36,7 @@ enum class ScopeKind : UInt8 {
   /// The body of a function.
   FunctionBody,
 
-  /// Scope for a closure.
+  /// ASTScope for a closure.
   Closure,
   /// This is a while, do, switch, for, etc that can have break
   /// statements embedded into it.
@@ -55,8 +53,8 @@ enum class ScopeKind : UInt8 {
   StructDecl,
   /// This is a scope that corresponds to a block/closure object.
   /// Blocks serve as top-level scopes for some objects like labels, they
-  /// also prevent things like break and continue.  BlockScopes always have
-  /// the FunScope and DeclScope flags set as well.
+  /// also prevent things like break and continue.  BlockASTScopes always have
+  /// the FunASTScope and DeclASTScope flags set as well.
   Block,
   /// This is a scope that corresponds to the
   /// template parameters of a C++ template. Template parameter
@@ -99,21 +97,22 @@ enum class ScopeKind : UInt8 {
 
 };
 
-class Scope final : public ast::ASTAllocation<Scope> {
-  ScopeKind kind;
+class ASTScope final : public ASTAllocation<ASTScope> {
+  ASTScopeKind kind;
   DiagnosticEngine &diags;
-  Scope *parent = nullptr;
+  ASTScope *parent = nullptr;
 
   using DeclSet = llvm::SmallPtrSet<Decl *, 32>;
   DeclSet scopeDecls;
 
 public:
-  Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent = nullptr);
-  ~Scope();
+  ASTScope(ASTScopeKind kind, DiagnosticEngine &diags,
+           ASTScope *parent = nullptr);
+  ~ASTScope();
 
-  ScopeKind GetKind() { return kind; }
-  Scope *GetParent() { return parent; }
-  const char *GetName() { return Scope::GetName(GetKind()); }
+  ASTScopeKind GetKind() { return kind; }
+  ASTScope *GetParent() { return parent; }
+  const char *GetName() { return ASTScope::GetName(GetKind()); }
 
   void AddDecl(Decl *d) { scopeDecls.insert(d); }
   void RemoveDecl(Decl *d) { scopeDecls.erase(d); }
@@ -122,8 +121,8 @@ private:
   void Initialize();
 
 public:
-  static const char *GetName(ScopeKind kind);
+  static const char *GetName(ASTScopeKind kind);
 };
-} // namespace ast
+
 } // namespace stone
 #endif

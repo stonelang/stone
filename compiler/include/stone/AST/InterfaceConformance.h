@@ -80,7 +80,7 @@ enum class InterfaceConformanceState {
 /// InterfaceConformance is an abstract base class, implemented by subclasses
 /// for the various kinds of conformance (normal, specialized, inherited).
 // class alignas(1 << DeclAlignInBits) InterfaceConformance
-//     : public ast::ASTAllocation<InterfaceConformance> {
+//     : public stone::ASTAllocation<InterfaceConformance> {
 //   /// The kind of protocol conformance.
 //   InterfaceConformanceKind Kind;
 

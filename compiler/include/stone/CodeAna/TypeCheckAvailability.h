@@ -18,7 +18,6 @@ class InFlightDiagnostic;
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace ast {
 class Decl;
 class ASTFile;
 class Module;
@@ -34,8 +33,6 @@ class Type;
 // class TypeRepr;
 class ValueDecl;
 
-} // namespace ast
-namespace codeana {
 class ExportContext;
 
 enum class DeclAvailabilityFlag : uint8_t {
@@ -103,9 +100,9 @@ enum class ExportabilityReason : unsigned {
 /// without producing a warning or error, respectively.
 class ExportContext final {
 
-  ast::DeclContext *DC;
-  ast::AvailabilityContext runningOSVersion;
-  ast::FragileFunction fragileFunction;
+  DeclContext *DC;
+  AvailabilityContext runningOSVersion;
+  FragileFunction fragileFunction;
 
   unsigned SPI : 1;
   unsigned Exported : 1;
@@ -115,8 +112,8 @@ class ExportContext final {
   unsigned Platform : 8;
   unsigned Reason : 3;
 
-  ExportContext(ast::DeclContext *DC, ast::AvailabilityContext runningOSVersion,
-                ast::FragileFunction fragileFunction, bool spi, bool exported,
+  ExportContext(DeclContext *DC, AvailabilityContext runningOSVersion,
+                FragileFunction fragileFunction, bool spi, bool exported,
                 bool implicit, bool deprecated,
                 llvm::Optional<PlatformKind> unavailablePlatformKind);
 
@@ -126,7 +123,7 @@ public:
   ///
   /// If the declaration is exported, the resulting context is restricted to
   /// referencing exported types only. Otherwise it can reference anything.
-  static ExportContext ForDeclSignature(ast::Decl *D);
+  static ExportContext ForDeclSignature(Decl *D);
 
   /// Create an instance describing the declarations that can be referenced
   /// from the given function's body.
@@ -135,13 +132,12 @@ public:
   /// referencing ABI-public declarations only. Furthermore, if the function
   /// is exported, referenced declarations must also be exported. Otherwise
   /// it can reference anything.
-  static ExportContext ForFunctionBody(ast::DeclContext *DC, SrcLoc loc);
+  static ExportContext ForFunctionBody(DeclContext *DC, SrcLoc loc);
 
   /// Create an instance describing associated conformances that can be
   /// referenced from the conformance defined by the given DeclContext,
   /// which must be a NominalTypeDecl or ExtensionDecl.
-  static ExportContext ForConformance(ast::DeclContext *DC,
-                                      ast::InterfaceDecl *D);
+  static ExportContext ForConformance(DeclContext *DC, InterfaceDecl *D);
 
   /// Produce a new context with the same properties as this one, except
   /// changing the ExportabilityReason. This only affects diagnostics.
@@ -155,14 +151,14 @@ public:
   /// That is, this will perform a 'bitwise and' on the 'exported' bit.
   ExportContext WithExported(bool exported) const;
 
-  ast::DeclContext *GetDeclContext() const { return DC; }
+  DeclContext *GetDeclContext() const { return DC; }
 
-  ast::AvailabilityContext GetAvailabilityContext() const {
+  AvailabilityContext GetAvailabilityContext() const {
     return runningOSVersion;
   }
 
   /// If not 'None', the context has the inlinable function body restriction.
-  ast::FragileFunction GetFragileFunction() const { return fragileFunction; }
+  FragileFunction GetFragileFunction() const { return fragileFunction; }
 
   /// If true, the context is part of a astthesized declaration, and
   /// availability checking should be disabled.
@@ -193,59 +189,57 @@ public:
 
 /// Check if a declaration is exported as part of a module's external interface.
 /// This includes public and @usableFromInline decls.
-bool IsExported(const ast::ValueDecl *VD);
+bool IsExported(const ValueDecl *VD);
 // bool isExported(const ExtensionDecl *ED);
-bool IsExported(const ast::Decl *D);
+bool IsExported(const Decl *D);
 
 /// Diagnose uses of unavailable declarations in expressions.
-void DiagnoseExprAvailability(const ast::Expr *E, ast::DeclContext *DC);
+void DiagnoseExprAvailability(const Expr *E, DeclContext *DC);
 
 /// Diagnose uses of unavailable declarations in statements (via patterns, etc)
 /// but not expressions, unless \p walkRecursively was specified.
 ///
 /// \param walkRecursively Whether nested statements and expressions should
 /// be visited, too.
-void DiagnoseStmtAvailability(const ast::Stmt *S, ast::DeclContext *DC,
+void DiagnoseStmtAvailability(const Stmt *S, DeclContext *DC,
                               bool walkRecursively = false);
 
 /// Diagnose uses of unavailable conformances in types.
-void DiagnoseTypeAvailability(ast::Type T, SrcLoc loc,
-                              const ExportContext &context,
+void DiagnoseTypeAvailability(Type T, SrcLoc loc, const ExportContext &context,
                               DeclAvailabilityFlags flags = None);
 
 bool DiagnoseConformanceAvailability(
-    SrcLoc loc, ast::InterfaceConformanceRef conformance,
-    const ExportContext &context, ast::Type depTy = ast::Type(),
-    ast::Type replacementTy = ast::Type(),
+    SrcLoc loc, InterfaceConformanceRef conformance,
+    const ExportContext &context, Type depTy = Type(),
+    Type replacementTy = Type(),
     bool useConformanceAvailabilityErrorsOption = false);
 
 bool DiagnoseSubstitutionMapAvailability(
-    SrcLoc loc, ast::SubstitutionMap subs, const ExportContext &context,
-    ast::Type depTy = ast::Type(), ast::Type replacementTy = ast::Type(),
+    SrcLoc loc, SubstitutionMap subs, const ExportContext &context,
+    Type depTy = Type(), Type replacementTy = Type(),
     bool useConformanceAvailabilityErrorsOption = false,
     bool suppressParameterizationCheckForOptional = false);
 
 /// Diagnose uses of unavailable declarations. Returns true if a diagnostic
 /// was emitted.
-bool DiagnoseDeclAvailability(const ast::ValueDecl *D, SrcRange R,
-                              const ast::Expr *call, const ExportContext &where,
+bool DiagnoseDeclAvailability(const ValueDecl *D, SrcRange R, const Expr *call,
+                              const ExportContext &where,
                               DeclAvailabilityFlags flags = None);
 
-void DiagnoseUnavailableOverride(ast::ValueDecl *override,
-                                 const ast::ValueDecl *base,
-                                 const ast::AvailableAttribute *attr);
+void DiagnoseUnavailableOverride(ValueDecl *override, const ValueDecl *base,
+                                 const AvailableAttribute *attr);
 
 /// Emit a diagnostic for references to declarations that have been
 /// marked as unavailable, either through "unavailable" or "obsoleted:".
-bool DiagnoseExplicitUnavailability(const ast::ValueDecl *D, SrcRange R,
+bool DiagnoseExplicitUnavailability(const ValueDecl *D, SrcRange R,
                                     const ExportContext &Where,
-                                    const ast::Expr *call,
+                                    const Expr *call,
                                     DeclAvailabilityFlags Flags = None);
 
 /// Emit a diagnostic for references to declarations that have been
 /// marked as unavailable, either through "unavailable" or "obsoleted:".
 bool DiagnoseExplicitUnavailability(
-    const ast::ValueDecl *D, SrcRange R, const ExportContext &Where,
+    const ValueDecl *D, SrcRange R, const ExportContext &Where,
     DeclAvailabilityFlags Flags,
     llvm::function_ref<void(InFlightDiagnostic &)> attachRenameFixIts);
 
@@ -259,16 +253,15 @@ bool DiagnoseExplicitUnavailability(
 /// Diagnose uses of the runtime features of parameterized protools. Returns
 /// \c true if a diagnostic was emitted.
 bool DiagnoseParameterizedProtocolAvailability(SrcRange loc,
-                                               const ast::DeclContext *DC);
+                                               const DeclContext *DC);
 
 /// Check if \p decl has a introduction version required by
 /// -require-explicit-availability
-void CheckExplicitAvailability(ast::Decl *decl);
+void CheckExplicitAvailability(Decl *decl);
 
 /// Check if \p D needs to be checked for correct availability depending on the
 /// flag -check-api-availability-only.
-bool ShouldCheckAvailability(const ast::Decl *D);
+bool ShouldCheckAvailability(const Decl *D);
 
-} // namespace codeana
 } // namespace stone
 #endif

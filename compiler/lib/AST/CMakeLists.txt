@@ -24,7 +24,7 @@ set(stone_ast_sources
 	Substituion.cpp
 	ASTContext.cpp
 	ASTDiagnostic.cpp
-	Scope.cpp
+	ASTScope.cpp
 	ASTVisitor.cpp
 	ASTWalker.cpp
 	Generics.cpp

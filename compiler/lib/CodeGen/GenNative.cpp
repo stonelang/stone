@@ -73,21 +73,20 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codegen;
+
 
 static void GenNativeWithParallelization() {}
 
-static void EmitObject(CodeGenContext &cgc, ast::ASTContext &sc,
+static void EmitObject(CodeGenContext &cgc, stone::ASTContext &sc,
                        llvm::StringRef outputFilename) {}
 
-static void EmitBC(const CodeGenContext &cgc, ast::ASTContext &sc,
+static void EmitBC(const CodeGenContext &cgc, stone::ASTContext &sc,
                    llvm::StringRef outputFilename) {}
 
-static void EmitAssembly(const CodeGenContext &cgc, ast::ASTContext &sc,
+static void EmitAssembly(const CodeGenContext &cgc, stone::ASTContext &sc,
                          llvm::StringRef outputFilename) {}
 
-// void stone::GenNative(CodeGenContext &cgc, ast::ASTContext &sc,
+// void stone::GenNative(CodeGenContext &cgc, stone::ASTContext &sc,
 //                       llvm::StringRef outputFilename,
 //                       CodeGenListener *listener) {
 
@@ -113,7 +112,7 @@ bool Lang::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
 
 bool Lang::WriteEmptyOutputFiles(
     std::vector<std::string> &parallelOutputFilenames,
-    const ast::ASTContext &Context, const CodeGenOptions &opts) {
+    const stone::ASTContext &Context, const CodeGenOptions &opts) {
   return true;
 }
 

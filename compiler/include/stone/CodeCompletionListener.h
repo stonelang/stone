@@ -37,7 +37,7 @@ public:
   virtual ~LexerListener() = default;
 
 public:
-  virtual void OnToken(const ast::Token *token) {}
+  virtual void OnToken(const stone::Token *token) {}
 };
 
 class ASTListener : public CodeCompletionListener {
@@ -50,15 +50,15 @@ public:
   virtual void OnError() {}
 
 public:
-  virtual void OnDecl(const ast::Decl *decl, bool isTopLevel = false);
-  virtual void OnStmt(const ast::Stmt *stmt);
-  virtual void OnExpr(const ast::Expr *expr);
-  virtual void OnToken(const ast::Token *token);
+  virtual void OnDecl(const stone::Decl *decl, bool isTopLevel = false);
+  virtual void OnStmt(const stone::Stmt *stmt);
+  virtual void OnExpr(const stone::Expr *expr);
+  virtual void OnToken(const stone::Token *token);
 
 public:
   virtual void OnParseError() {}
   virtual void OnParseStarted() {}
-  virtual void OnParseASTFile(ast::ASTFile *sf) {}
+  virtual void OnParseASTFile(stone::ASTFile *sf) {}
   virtual void OnParseCompleted() {}
 };
 
@@ -68,14 +68,14 @@ public:
   virtual ~TypeCheckerListener() = default;
 
 public:
-  virtual void OnDeclTypeChecked(ast::Decl *decl, bool isTopLvel = false);
-  virtual void OnStmtTypeChecked(ast::Stmt *stmt) {}
-  virtual void OnExprTypeChecked(ast::Expr *expr) {}
+  virtual void OnDeclTypeChecked(stone::Decl *decl, bool isTopLvel = false);
+  virtual void OnStmtTypeChecked(stone::Stmt *stmt) {}
+  virtual void OnExprTypeChecked(stone::Expr *expr) {}
 
 public:
   virtual void OnTypeCheckError();
-  virtual void OnASTFileTypeChecked(ast::ASTFile *asttaxFile) {}
-  virtual void OnModuleTypeChecked(ast::Module *mod) {}
+  virtual void OnASTFileTypeChecked(stone::ASTFile *asttaxFile) {}
+  virtual void OnModuleTypeChecked(stone::Module *mod) {}
 
 public:
 };

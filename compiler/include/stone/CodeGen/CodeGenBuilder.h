@@ -24,7 +24,7 @@
 // } // namespace llvm
 
 namespace stone {
-namespace codegen {
+
 
 class CodeGenFunction;
 class CodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
@@ -90,7 +90,6 @@ public:
   //                            Name);
   // }
 };
-} // namespace codegen
 } // namespace stone
 
 #endif

@@ -8,7 +8,6 @@
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
-using namespace stone::ast;
 
 void Parser::ParseTopLevelDecls(
     llvm::SmallVector<ParserResult<Decl>> &results) {
@@ -186,18 +185,18 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
     // Do some logging
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   if (collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   ParserStatus status;
@@ -214,14 +213,14 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
-      return codeana::MakeParserError();
+      return stone::MakeParserError();
     }
     // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
-      return codeana::MakeParserError();
+      return stone::MakeParserError();
     }
     // TODO: That identifier should already exist
     // status = ParseIdentifier(parentName, parentNameLoc);
@@ -230,7 +229,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
       collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   DeclName fullName;
@@ -268,7 +267,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return codeana::MakeParserResult<Decl>(funDecl);
+  return stone::MakeParserResult<Decl>(funDecl);
 }
 
 ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -360,7 +359,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   if (GetTok().IsRParen()) {
@@ -368,9 +367,9 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
-  return codeana::MakeParserSuccess();
+  return stone::MakeParserSuccess();
 }
 
 ParserStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
@@ -412,7 +411,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
          "Attempting to parse a struct without a struct declaration.");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    return codeana::MakeParserError();
+    return stone::MakeParserError();
   }
 
   auto structLoc =

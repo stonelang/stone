@@ -8,7 +8,6 @@
 #include <string>
 
 namespace stone {
-namespace ast {
 
 enum class TypeWalkerAction { None = 0, Continue, SkipChildren, Stop };
 
@@ -47,5 +46,4 @@ protected:
 //   }
 // };
 
-} // namespace ast
 } // namespace stone

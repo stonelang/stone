@@ -2,7 +2,7 @@
 #include "stone/CodeGen/CodeGenContext.h"
 
 using namespace stone;
-using namespace stone::codegen;
+
 
 // TODO: Ok for now -- may move to CodeGenMoulde
 CodeGenTypeCache::CodeGenTypeCache(llvm::LLVMContext &llvmContext) {

@@ -36,7 +36,6 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
-using namespace stone::ast;
 using namespace stone::opts;
 
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,

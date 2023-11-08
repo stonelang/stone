@@ -43,7 +43,7 @@
 #include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
-using namespace stone::codegen;
+
 
 // static void
 // OptimizeIRUsingLegacyPassManger(llvm::Module *mod, CodeGenOptions

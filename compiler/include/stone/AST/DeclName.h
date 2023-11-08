@@ -11,8 +11,6 @@
 namespace stone {
 class PrintingPolicy;
 
-namespace ast {
-
 class ASTContext;
 class DeclName;
 class DeclNameTable;
@@ -573,46 +571,44 @@ public:
 //   return DeclName::Compare(LHS, RHS) >= 0;
 // }
 
-} // namespace ast
-
 } // namespace stone
 
 namespace llvm {
 
-raw_ostream &operator<<(raw_ostream &OS, stone::ast::DeclNameBase D);
-raw_ostream &operator<<(raw_ostream &OS, stone::ast::DeclName I);
+raw_ostream &operator<<(raw_ostream &OS, stone::stone::DeclNameBase D);
+raw_ostream &operator<<(raw_ostream &OS, stone::stone::DeclName I);
 // raw_ostream &operator<<(raw_ostream &OS, swift::DeclNameRef I);
 
 // DeclBaseNames hash just like pointers.
-template <> struct DenseMapInfo<stone::ast::DeclNameBase> {
-  static stone::ast::DeclNameBase getEmptyKey() {
-    return stone::ast::Identifier::getEmptyKey();
+template <> struct DenseMapInfo<stone::stone::DeclNameBase> {
+  static stone::stone::DeclNameBase getEmptyKey() {
+    return stone::stone::Identifier::getEmptyKey();
   }
-  static stone::ast::DeclNameBase getTombstoneKey() {
-    return stone::ast::Identifier::getTombstoneKey();
+  static stone::stone::DeclNameBase getTombstoneKey() {
+    return stone::stone::Identifier::getTombstoneKey();
   }
-  static unsigned getHashValue(stone::ast::DeclNameBase Val) {
+  static unsigned getHashValue(stone::stone::DeclNameBase Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetAsOpaquePointer());
   }
-  static bool isEqual(stone::ast::DeclNameBase LHS,
-                      stone::ast::DeclNameBase RHS) {
+  static bool isEqual(stone::stone::DeclNameBase LHS,
+                      stone::stone::DeclNameBase RHS) {
     return LHS == RHS;
   }
 };
 
 // A DeclBaseName is "pointer like".
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::ast::DeclNameBase> {
+template <> struct PointerLikeTypeTraits<stone::stone::DeclNameBase> {
 public:
-  static inline void *getAsVoidPointer(stone::ast::DeclNameBase D) {
+  static inline void *getAsVoidPointer(stone::stone::DeclNameBase D) {
     return const_cast<void *>(D.GetAsOpaquePointer());
   }
-  static inline stone::ast::DeclNameBase getFromVoidPointer(void *P) {
-    return stone::ast::DeclNameBase::GetFromOpaquePointer(P);
+  static inline stone::stone::DeclNameBase getFromVoidPointer(void *P) {
+    return stone::stone::DeclNameBase::GetFromOpaquePointer(P);
   }
   enum {
     NumLowBitsAvailable =
-        PointerLikeTypeTraits<stone::ast::Identifier>::NumLowBitsAvailable
+        PointerLikeTypeTraits<stone::stone::Identifier>::NumLowBitsAvailable
   };
 };
 } // end namespace llvm

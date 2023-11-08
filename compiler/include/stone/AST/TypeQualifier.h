@@ -7,7 +7,7 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {
-namespace ast {
+
 class Type;
 class ASTContext;
 
@@ -75,10 +75,10 @@ public:
   SrcLoc GetPureLoc() { return pureLoc; }
 
 public:
-  QualType Apply(const ast::ASTContext &astContext, QualType ty) const;
-  QualType Apply(const ast::ASTContext &astContext, const Type *ty) const;
+  QualType Apply(const stone::ASTContext &astContext, QualType ty) const;
+  QualType Apply(const stone::ASTContext &astContext, const Type *ty) const;
 };
-} // namespace ast
+
 } // namespace stone
 
 #endif

@@ -22,7 +22,6 @@
 
 namespace stone {
 
-namespace ast {
 /// TypeVisitor - This is a simple Visitor class for Swift types.
 template <typename ImplTy, typename RetTy = void, typename... Args>
 class TypeVisitor {
@@ -100,7 +99,7 @@ public:
 // #include "stone/AST/TypeKind.def"
 // };
 // } // namespace ast
-} // namespace ast
+
 } // end namespace stone
 
 #endif

@@ -23,7 +23,7 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace ast {
+
 class ASTWalker;
 
 class Expr : public ValueStmt {
@@ -132,6 +132,5 @@ class IdentityExpr : public Expr {
 // DotThis
 class DotThisExpr : public IdentityExpr {};
 
-} // namespace ast
 } // namespace stone
 #endif

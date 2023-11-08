@@ -3,7 +3,7 @@
 #include "stone/AST/Types.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 // == TypeBase ==//
 // bool TypeBase::IsBasic() {

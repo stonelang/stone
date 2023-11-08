@@ -8,7 +8,6 @@
 #include "llvm/ADT/PointerIntPair.h"
 
 namespace stone {
-namespace ast {
 
 class QualType;
 class ASTContext;
@@ -41,7 +40,6 @@ public:
   void SetType(QualType ty);
 };
 
-} // namespace ast
 } // namespace stone
 
 #endif

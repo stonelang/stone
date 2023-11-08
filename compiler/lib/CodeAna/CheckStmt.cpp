@@ -1,7 +1,7 @@
 #include "stone/AST/ASTVisitor.h"
 #include "stone/CodeAna/TypeChecker.h"
 
-using namespace stone::codeana;
+
 
 class StmtChecking final : public StmtVisitor<StmtChecking> {
   TypeChecker &checker;

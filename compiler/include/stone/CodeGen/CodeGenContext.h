@@ -25,7 +25,7 @@ class Clang;
 class CodeGenOptions;
 class ModuleOptions;
 class TargetOptions;
-namespace codegen {
+
 
 class CodeGenContext final {
 private:
@@ -36,7 +36,7 @@ private:
   const ModuleOptions &moduleOpts;
   const stone::TargetOptions &targetOpts;
 
-  ast::ASTContext &astContext;
+  ASTContext &astContext;
   llvm::LLVMContext &llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
@@ -57,7 +57,7 @@ private:
   CodeGenContext(const CodeGenOptions &codeGenOpts,
                  const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
-                 llvm::LLVMContext &llvmContext, ast::ASTContext &astContext,
+                 llvm::LLVMContext &llvmContext, ASTContext &astContext,
                  Lang &lang, Clang &clangInstance,
                  std::unique_ptr<llvm::Module> llvmMod,
                  llvm::GlobalVariable **outModuleHash = nullptr);
@@ -66,7 +66,7 @@ public:
   CodeGenContext(const CodeGenOptions &codeGenOpts,
                  const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
-                 llvm::LLVMContext &llvmContext, ast::ASTContext &astContext,
+                 llvm::LLVMContext &llvmContext, ASTContext &astContext,
                  Lang &lang, Clang &clangInstance,
                  llvm::GlobalVariable **outModuleHash = nullptr);
 
@@ -85,7 +85,7 @@ public:
   }
   llvm::TargetMachine &GetLLVMTargetMachine() { return *llvmTargetMachine; }
   llvm::LLVMContext &GetLLVMContext() { return llvmContext; }
-  ast::ASTContext &GetASTContext() { return astContext; }
+  ASTContext &GetASTContext() { return astContext; }
 
   Lang &GetLang() { return lang; }
   Clang &GetClang() { return clangInstance; }
@@ -111,7 +111,6 @@ public:
   llvm::FunctionPassManager &GetFunctionPassManager() { return fpm; }
 };
 
-} // namespace codegen
 } // namespace stone
 
 #endif

@@ -2,8 +2,8 @@
 #include "stone/AST/Expr.h"
 #include "stone/CodeAna/TypeChecker.h"
 
-using namespace stone::ast;
-using namespace stone::codeana;
+using namespace stone;
+
 
 class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;

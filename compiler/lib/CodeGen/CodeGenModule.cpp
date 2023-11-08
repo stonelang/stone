@@ -4,8 +4,7 @@
 #include "stone/AST/Decl.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codegen;
+
 
 CodeGenModule::CodeGenModule(CodeGenContext &cgc, llvm::StringRef moduleName,
                              llvm::StringRef outputFilename)
@@ -23,7 +22,7 @@ llvm::StringRef CodeGenModule::GetMangledName(Decl &d) { return ""; }
 
 llvm::Constant *
 CodeGenModule::CreateFunction(llvm::StringRef mangledName,
-                              ast::FunctionDecl *fd, llvm::Type *fnTy,
+                              stone::FunctionDecl *fd, llvm::Type *fnTy,
                               const EmitFunctionOptions emitFunctionOpts,
                               llvm::AttributeList extraAttrs) {
 
@@ -49,7 +48,7 @@ CodeGenModule::CreateFunction(llvm::StringRef mangledName,
 }
 llvm::Constant *
 CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
-                                   ast::FunctionDecl *fd, llvm::Type *fnTy,
+                                   stone::FunctionDecl *fd, llvm::Type *fnTy,
                                    const EmitFunctionOptions emitFunctionOpts,
                                    llvm::AttributeList extraAttrs) {
 
@@ -58,7 +57,7 @@ CodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
 }
 
 llvm::Constant *
-CodeGenModule::GetFunctionAddress(ast::FunctionDecl *fd, llvm::Type *fnTy,
+CodeGenModule::GetFunctionAddress(stone::FunctionDecl *fd, llvm::Type *fnTy,
                                   const EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
@@ -74,12 +73,12 @@ CodeGenModule::GetFunctionAddress(ast::FunctionDecl *fd, llvm::Type *fnTy,
   return GetOrCreateFunction("mangledName", fd, fnTy, emitFunctionOpts);
 }
 
-void CodeGenModule::SetFunctionLinkage(ast::FunctionDecl *fd,
+void CodeGenModule::SetFunctionLinkage(stone::FunctionDecl *fd,
                                        llvm::Function *fn) {
   fn->setLinkage(GetFunctionLinkage(fd));
 }
 llvm::GlobalValue::LinkageTypes
-CodeGenModule::GetFunctionLinkage(ast::FunctionDecl *fd) {
+CodeGenModule::GetFunctionLinkage(stone::FunctionDecl *fd) {
 
   // TODO: FOR NOW
   return llvm::GlobalValue::InternalLinkage;

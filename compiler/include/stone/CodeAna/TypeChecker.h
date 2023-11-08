@@ -8,20 +8,16 @@
 
 #include <memory>
 
-using namespace stone::ast;
+using namespace stone;
 
 namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace ast {
 class ASTFile;
 class Expr;
 class Decl;
 class Stmt;
-} // namespace ast
-
-namespace codeana {
 
 class TypeChecker;
 class TypeCheckerStats final : public Stats {
@@ -89,6 +85,6 @@ public:
   /// \returns true if \c t1 is a subtype of \c t2.
   bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
-} // namespace codeana
+
 } // namespace stone
 #endif

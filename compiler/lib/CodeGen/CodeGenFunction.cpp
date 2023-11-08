@@ -2,7 +2,6 @@
 #include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
-using namespace stone::codegen;
 
 CodeGenFunction::CodeGenFunction(CodeGenModule &cgm, llvm::Function *fn)
     : cgm(cgm), fn(fn), builder(cgm.GetCodeGenContext(),

@@ -11,7 +11,6 @@
 #include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
-namespace ast {
 
 enum class TypeOperatorKind : UInt8 {
   None = 0,
@@ -20,7 +19,7 @@ enum class TypeOperatorKind : UInt8 {
   Default,
 };
 class alignas(1 << TypeAlignInBits) TypeOperator
-    : ast::ASTAllocation<TypeOperator> {
+    : stone::ASTAllocation<TypeOperator> {
   SrcLoc loc;
   TypeOperatorKind kind;
 
@@ -100,6 +99,5 @@ public:
   // void Verify();
 };
 
-} // namespace ast
 } // namespace stone
 #endif

@@ -14,7 +14,6 @@ class raw_ostream;
 }
 
 namespace stone {
-namespace ast {
 
 class ASTContext;
 class ConstructorDecl;
@@ -59,7 +58,6 @@ public:
       : MangleContext(MangleContextKind::Microsoft, sc) {}
 };
 
-} // namespace ast
 } // namespace stone
 
 #endif

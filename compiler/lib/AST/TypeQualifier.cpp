@@ -1,7 +1,7 @@
 #include "stone/AST/TypeQualifier.h"
 #include "stone/AST/ASTContext.h"
 
-using namespace stone::ast;
+using namespace stone;
 
 // ConstTypeQualifier ConstTypeQualifier::Create(SrcLoc loc) {
 //   ConstTypeQualifier qualifier(loc);
@@ -52,7 +52,7 @@ using namespace stone::ast;
 
 TypeQualifierCollector::TypeQualifierCollector() {}
 
-// QualType TypeQualifierCollector::Apply(const ast::ASTContext &astContext,
+// QualType TypeQualifierCollector::Apply(const stone::ASTContext &astContext,
 //                                        const Type *typePtr) const {
 
 //   QualType qualType(typePtr);

@@ -4,9 +4,8 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace codeana {
-class Parser;
 
+class Parser;
 struct AngleBracketBalancer final {
   /// Flags used to rank candidate template names when there is more than one
   /// '<' in a scope.
@@ -80,5 +79,4 @@ struct AngleBracketBalancer final {
   }
 };
 
-} // namespace codeana
 } // namespace stone

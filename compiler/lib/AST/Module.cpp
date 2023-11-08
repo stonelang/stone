@@ -14,7 +14,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
@@ -84,7 +84,7 @@ llvm::ArrayRef<ASTFile *> &ModuleDecl::GetPrimaryASTFiles() const {
   primaries;
 }
 
-ASTFile::ASTFile(ASTFileKind kind, ast::ModuleDecl &owner,
+ASTFile::ASTFile(ASTFileKind kind, stone::ModuleDecl &owner,
                  llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::AST, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
@@ -110,8 +110,8 @@ llvm::StringRef ASTFile::GetFilename() const {
   return sm.getIdentifierForBuffer(srcID);
 }
 
-ast::ASTFile *ast::ASTFile::Make(ASTFileKind kind, unsigned srcID,
-                                 ast::ModuleDecl &owner, ASTContext &sc,
+stone::ASTFile *stone::ASTFile::Make(ASTFileKind kind, unsigned srcID,
+                                 stone::ModuleDecl &owner, ASTContext &sc,
                                  bool isPrimary) {
   return new (sc) ASTFile(kind, owner, srcID, isPrimary);
 }

@@ -9,7 +9,6 @@ namespace stone {
 class SrcLoc;
 class SrcRange;
 
-
 class Expr;
 class Stmt;
 class Decl;
@@ -56,13 +55,13 @@ struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
 } // namespace stone
 
 // namespace llvm {
-// using stone::ast::ASTNode;
+// using stone::stone::ASTNode;
 // template <> struct DenseMapInfo<ASTNode> {
 //   static inline ASTNode getEmptyKey() {
-//     return DenseMapInfo<stone::ast::Expr *>::getEmptyKey();
+//     return DenseMapInfo<stone::stone::Expr *>::getEmptyKey();
 //   }
 //   static inline ASTNode getTombstoneKey() {
-//     return DenseMapInfo<stone::ast::Expr *>::getTombstoneKey();
+//     return DenseMapInfo<stone::stone::Expr *>::getTombstoneKey();
 //   }
 //   static unsigned getHashValue(const ASTNode Val) {
 //     return DenseMapInfo<void *>::getHashValue(Val.getOpaqueValue());

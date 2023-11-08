@@ -39,7 +39,6 @@
 
 namespace stone {
 class DiagnosticEngine;
-namespace ast {
 
 class Decl;
 class DeclCollector;
@@ -83,7 +82,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public ast::ASTAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public stone::ASTAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -308,7 +307,7 @@ public:
     return GetDeclContextForModule();
   }
 
-  ast::Module *GetModuleContext() const;
+  stone::Module *GetModuleContext() const;
 
   ASTContext &GetASTContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
@@ -549,7 +548,7 @@ class TypeParamDecl : public TypeDecl {};
 // This is really your function prototye
 class FunctionDecl : public GenericContext,
                      public ValueDecl
-/*, public ast::Redeclarable<FunctionDecl>*/ {
+/*, public stone::Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -763,7 +762,7 @@ class ImportDecl final : public NameableDecl {
   ImportKind importKind;
 
 public:
-  // ast::Module *mod = nullptr;
+  // stone::Module *mod = nullptr;
 };
 
 class TrustDecl final
@@ -832,6 +831,5 @@ class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };
 
-} // namespace ast
 } // namespace stone
 #endif

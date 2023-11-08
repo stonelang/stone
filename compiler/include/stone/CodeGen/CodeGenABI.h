@@ -20,24 +20,20 @@ class TargetMachine;
 
 namespace stone {
 
-namespace ast {
 class MemberPointerType;
-}
-namespace codegen {
 class CodeGenModule;
 
 class CodeGenABI final {
   CodeGenModule &cgm;
 
-  std::unique_ptr<ast::MangleContext> mangleContext;
+  std::unique_ptr<MangleContext> mangleContext;
 
 public:
   CodeGenABI(CodeGenModule &cgm);
 
 public:
-  llvm::Type *ResolveMemberPointerType(const ast::MemberPointerType mpt);
+  llvm::Type *ResolveMemberPointerType(const MemberPointerType mpt);
 };
-} // namespace codegen
 } // namespace stone
 
 #endif

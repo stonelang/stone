@@ -4,10 +4,8 @@
 #include "stone/Lang.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codeana;
 
-void Lang::TypeCheckASTFile(ast::ASTFile &sf,
+void Lang::TypeCheckASTFile(stone::ASTFile &sf,
                             stone::TypeCheckerOptions &typeCheckerOpts,
                             TypeCheckerListener *listener) {
 
@@ -24,7 +22,7 @@ void Lang::TypeCheckASTFile(ast::ASTFile &sf,
   sf.stage = ASTFileStage::TypeChecked;
 }
 
-void Lang::TypeCheckWholeModule(ast::ModuleDecl &md,
+void Lang::TypeCheckWholeModule(stone::ModuleDecl &md,
                                 stone::TypeCheckerOptions &typeCheckerOpts,
                                 TypeCheckerListener *listener) {
 

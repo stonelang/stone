@@ -2,14 +2,11 @@
 #define STONE_CODEANA_IMPORTRESOLUTION_H
 
 namespace stone {
-namespace ast {
-class ASTFile;
-} // namespace ast
 
-namespace codeana {
+class ASTFile;
 // TODO: ModuleResolution
-void ResolveImports(ast::ASTFile &asttaxFile);
-} // namespace codeana
+void ResolveImports(stone::ASTFile &asttaxFile);
+
 } // namespace stone
 
 #endif

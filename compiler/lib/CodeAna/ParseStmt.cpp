@@ -2,8 +2,8 @@
 #include "stone/CodeAna/Parser.h"
 #include "stone/CodeAna/ParserResult.h"
 
-using namespace stone::ast;
+using namespace stone;
 
 ParserResult<Stmt> Parser::ParseStmt() {
-  return codeana::MakeParserResult<Stmt>(nullptr);
+  return stone::MakeParserResult<Stmt>(nullptr);
 }

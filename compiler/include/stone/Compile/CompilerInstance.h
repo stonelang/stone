@@ -22,7 +22,7 @@ public:
 };
 
 using EachASTFileCallback = std::function<void(
-    ast::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+    stone::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
@@ -39,7 +39,7 @@ class CompilerInstance final {
 
   CompilerInvocation &invocation;
 
-  std::unique_ptr<ast::ASTContext> sc;
+  std::unique_ptr<stone::ASTContext> sc;
   std::unique_ptr<ModuleSystem> ms;
 
   // /// Contains buffer IDs for input source code files.
@@ -55,7 +55,7 @@ class CompilerInstance final {
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
 
-  mutable ast::ModuleDecl *mainModule = nullptr;
+  mutable stone::ModuleDecl *mainModule = nullptr;
 
 public:
   CompilerInstance(const CompilerInstance &) = delete;
@@ -70,7 +70,7 @@ public:
   void Finish();
 
 public:
-  ast::ASTContext &GetASTContext() { return *sc.get(); }
+  stone::ASTContext &GetASTContext() { return *sc.get(); }
   ModuleSystem &GetModuleSystem() { return *ms.get(); }
   const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
 
@@ -94,11 +94,11 @@ public:
   void ResolveImports();
 
 public:
-  ast::ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
-    return msf.get<ast::ModuleDecl *>();
+  stone::ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
+    return msf.get<stone::ModuleDecl *>();
   }
-  ast::ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
-    msf.dyn_cast<ast::ASTFile *>();
+  stone::ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
+    msf.dyn_cast<stone::ASTFile *>();
   }
 
   Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
@@ -132,7 +132,7 @@ public:
 public:
   /// Gets the set of ASTFiles which are the primary inputs for this
   /// CompilerInstance.
-  llvm::ArrayRef<ast::ASTFile *> GetPrimaryASTFiles() const {
+  llvm::ArrayRef<stone::ASTFile *> GetPrimaryASTFiles() const {
     return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
   }
 
@@ -150,7 +150,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForASTFile(const ast::ASTFile &sf) const;
+  GetPrimaryFileSpecificPathsForASTFile(const stone::ASTFile &sf) const;
 
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);

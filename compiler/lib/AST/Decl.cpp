@@ -29,10 +29,9 @@
 #include <utility>
 
 using namespace stone;
-using namespace stone::ast;
 
 template <typename DeclTy, typename AllocatorTy>
-void *ast::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
+void *stone::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
                            bool extraSace) {
   static_assert(alignof(DeclTy) >= sizeof(void *),
                 "A pointer must fit in the alignment of the DeclTy!");
@@ -48,13 +47,13 @@ void *ast::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 }
 
 // // Only allow allocation of Decls using the allocator in ASTContext.
-// void *ast::Decl::operator new(std::size_t bytes, const ASTContext &tc,
+// void *stone::Decl::operator new(std::size_t bytes, const ASTContext &tc,
 //                               unsigned alignment) {
 //   return tc.Allocate(bytes, alignment);
 // }
 
 // // Only allow allocation of Modules using the allocator in ASTContext.
-// void *ast::Module::operator new(std::size_t bytes, const ASTContext &tc,
+// void *stone::Module::operator new(std::size_t bytes, const ASTContext &tc,
 //                                 unsigned alignment) {
 //   return tc.Allocate(bytes, alignment);
 // }
@@ -195,7 +194,7 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &sc,
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
-  auto memPtr = ast::AllocateDeclMem<ast::FunDecl>(sc, size);
+  auto memPtr = stone::AllocateDeclMem<stone::FunDecl>(sc, size);
   auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
       collector.GetDeclName(), collector.GetDeclNameLoc(),
@@ -213,22 +212,22 @@ FunDecl *FunDecl::CreateFunDeclImplicit(DeclCollector &collector,
 
 ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &sc,
                                bool isMainModule) {
-  size_t size = sizeof(ast::ModuleDecl);
-  auto declPtr = ast::AllocateDeclMem<ast::ModuleDecl>(sc, size);
-  return ::new (declPtr) ast::ModuleDecl(name, sc);
+  size_t size = sizeof(stone::ModuleDecl);
+  auto declPtr = stone::AllocateDeclMem<stone::ModuleDecl>(sc, size);
+  return ::new (declPtr) stone::ModuleDecl(name, sc);
 }
 
 StructDecl *StructDecl::Create(DeclName name, SrcLoc loc, ASTContext &sc,
                                DeclContext *dc) {
-  size_t size = sizeof(ast::StructDecl);
-  auto declPtr = ast::AllocateDeclMem<ast::StructDecl>(sc, size);
+  size_t size = sizeof(stone::StructDecl);
+  auto declPtr = stone::AllocateDeclMem<stone::StructDecl>(sc, size);
   // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);
   return nullptr;
 }
 
 VarDecl *VarDecl::Create(ASTContext &sc) {
-  // auto declPtr = ast::AllocateDeclMem<ast::VarDecl>(sc,
-  // sizeof(ast::VarDecl)); return ::new (declPtr) ast::VarDecl(sc);
+  // auto declPtr = stone::AllocateDeclMem<stone::VarDecl>(sc,
+  // sizeof(stone::VarDecl)); return ::new (declPtr) stone::VarDecl(sc);
   return nullptr;
 }
 

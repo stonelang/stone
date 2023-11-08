@@ -2,8 +2,8 @@
 #include "stone/AST/TypeVisitor.h"
 #include "stone/CodeAna/TypeChecker.h"
 
-using namespace stone::ast;
-using namespace stone::codeana;
+using namespace stone;
+
 
 class TypeChecking final : public TypeVisitor<TypeChecking>, public ASTWalker {
 public:

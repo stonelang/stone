@@ -1,6 +1,6 @@
-#include "stone/AST/Scope.h"
+#include "stone/AST/ASTScope.h"
 
-using namespace stone::ast;
+using namespace stone;
 
 static const auto &GetScopeNameTable() {
   static const std::pair<ScopeKind, const char *> Table[] = {
@@ -12,7 +12,7 @@ static const auto &GetScopeNameTable() {
   return Table;
 }
 
-const char *Scope::GetName(ScopeKind kind) {
+const char *ASTScope::GetName(ScopeKind kind) {
   for (const auto &item : GetScopeNameTable()) {
     if (item.first == kind) {
       return item.second;
@@ -21,10 +21,10 @@ const char *Scope::GetName(ScopeKind kind) {
   assert(false && "Invalid ScopeKind");
 }
 
-Scope::Scope(ScopeKind kind, DiagnosticEngine &diags, Scope *parent)
+ASTScope::ASTScope(ASTScopeKind kind, DiagnosticEngine &diags, Scope *parent)
     : kind(kind), diags(diags), parent(parent) {
   Initialize();
 }
-Scope::~Scope() {}
+ASTScope::~ASTScope() {}
 
-void Scope::Initialize() { scopeDecls.clear(); }
+void ASTScope::Initialize() { scopeDecls.clear(); }

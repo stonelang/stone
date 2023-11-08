@@ -29,7 +29,7 @@
 #include <atomic>
 #include <memory>
 
-using namespace stone::ast;
+using namespace stone;
 
 namespace llvm {
 class Constant;
@@ -61,7 +61,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace ast {
+
 class ASTFile;
 class Decl;
 class GlobalDecl;
@@ -76,7 +76,7 @@ class NominalTypeDecl;
 } // namespace ast
 class CodeGenListener;
 
-namespace codegen {
+
 // class CodeGenLoop {};
 // class CodeGenCall {};
 class CodeGenBlocks final {
@@ -98,7 +98,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class CodeGenModule final : public ast::ASTVisitor<CodeGenModule> {
+class CodeGenModule final : public stone::ASTVisitor<CodeGenModule> {
 
   CodeGenContext &cgc;
   CodeGenTypeCache typeCache;
@@ -167,7 +167,7 @@ public:
   /// they are externally visible.
   // void EmitGlobalTopLevel(const std::vector<std::string> &linkerDirectives);
 
-  // void EmitGlobalDecl(ast::GlobalDecl *gd);
+  // void EmitGlobalDecl(stone::GlobalDecl *gd);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
   void EmitEnumDecl(EnumDecl *d);
@@ -179,11 +179,11 @@ public:
 
 private:
   llvm::Constant *
-  CreateFunction(llvm::StringRef mangledName, ast::FunctionDecl *fd,
+  CreateFunction(llvm::StringRef mangledName, stone::FunctionDecl *fd,
                  llvm::Type *fnTy, const EmitFunctionOptions emitFunctionOpts,
                  llvm::AttributeList extraAttrs = llvm::AttributeList());
   llvm::Constant *
-  GetOrCreateFunction(llvm::StringRef mangledName, ast::FunctionDecl *fd,
+  GetOrCreateFunction(llvm::StringRef mangledName, stone::FunctionDecl *fd,
                       llvm::Type *fnTy,
                       const EmitFunctionOptions emitFunctionOpts,
                       llvm::AttributeList extraAttrs = llvm::AttributeList());
@@ -192,15 +192,15 @@ public:
   void EmitFunDecl(FunDecl *fd, llvm::GlobalValue *globalValue = nullptr);
 
   llvm::Constant *
-  GetFunctionAddress(ast::FunctionDecl *fd, llvm::Type *functionTy,
+  GetFunctionAddress(stone::FunctionDecl *fd, llvm::Type *functionTy,
                      const EmitFunctionOptions emitFunctionOpts);
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
 
   // See Clang CodeGenModule
-  void SetFunctionLinkage(ast::FunctionDecl *fd, llvm::Function *fn);
-  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(ast::FunctionDecl *fd);
+  void SetFunctionLinkage(stone::FunctionDecl *fd, llvm::Function *fn);
+  llvm::GlobalValue::LinkageTypes GetFunctionLinkage(stone::FunctionDecl *fd);
 
 public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,
@@ -236,7 +236,6 @@ public:
     return std::min(high, std::max(low, val));
   }
 };
-} // namespace codegen
 } // namespace stone
 
 #endif

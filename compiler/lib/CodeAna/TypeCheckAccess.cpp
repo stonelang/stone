@@ -3,8 +3,7 @@
 #include "stone/CodeAna/TypeChecker.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codeana;
+
 
 /// \see checkTypeAccess
 using CheckTypeAccessLevelCallback = void(AccessScope, const Type *);
@@ -82,7 +81,7 @@ public:
 
 void TypeChecker::CheckAccessLevel(Decl *d) {
 
-  // if (llvm::isa<ast::ValueDecl>(d)) {
+  // if (llvm::isa<stone::ValueDecl>(d)) {
   //   sem::CheckAccessLevel(d)
   // }
   AccessLevelChecking(*this).Visit(d);

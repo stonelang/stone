@@ -23,7 +23,7 @@ enum class AllocationArena {
 };
 
 namespace ast {
-void *AllocateInASTContext(size_t bytes, const ast::ASTContext &ctx,
+void *AllocateInASTContext(size_t bytes, const stone::ASTContext &ctx,
                            AllocationArena arena, unsigned alignment);
 }
 
@@ -43,10 +43,10 @@ public:
 
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const ast::ASTContext &ctx,
+  void *operator new(size_t bytes, const stone::ASTContext &ctx,
                      AllocationArena arena = AllocationArena::Permanent,
                      unsigned alignment = alignof(AlignTy)) {
-    return ast::AllocateInASTContext(bytes, ctx, arena, alignment);
+    return stone::AllocateInASTContext(bytes, ctx, arena, alignment);
   }
 
   void *operator new(size_t bytes, void *mem) throw() {

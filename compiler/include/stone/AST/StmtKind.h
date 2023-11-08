@@ -2,7 +2,6 @@
 #define STONE_ASTSTMTKIND_H
 
 namespace stone {
-namespace ast {
 
 enum class StmtKind : uint8_t {
 
@@ -19,6 +18,6 @@ enum class StmtKind : uint8_t {
 #include "stone/AST/ExprKind.def"
 
 };
-} // namespace ast
+
 } // namespace stone
 #endif

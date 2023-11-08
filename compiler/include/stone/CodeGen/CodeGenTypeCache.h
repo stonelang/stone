@@ -8,7 +8,7 @@
 #include "llvm/IR/Type.h"
 
 namespace stone {
-namespace codegen {
+
 
 class CodeGenTypeCache {
 public:
@@ -35,6 +35,6 @@ public:
 public:
   explicit CodeGenTypeCache(llvm::LLVMContext &llvmContext);
 };
-} // namespace codegen
+
 } // namespace stone
 #endif

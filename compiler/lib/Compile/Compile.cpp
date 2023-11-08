@@ -19,7 +19,7 @@
 #include "llvm/Support/Casting.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
@@ -169,7 +169,7 @@ Status Compiling::PerformSyntaxAnalysis(CompilerInstance &compiler) {
 
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *astFile = llvm::dyn_cast<ast::ASTFile>(moduleFile)) {
+    if (auto *astFile = llvm::dyn_cast<stone::ASTFile>(moduleFile)) {
       Lang::ParseASTFile(*asttaxFile, GetASTContext(),
                          invocation.GetListener());
     }

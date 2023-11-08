@@ -12,7 +12,6 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-namespace codeana {
 
 class Parser;
 class ParsingScope;
@@ -59,7 +58,7 @@ public:
 //   ~ParenBalancer() { parser.ParenCount = count; }
 // };
 
-using ScopeCache = llvm::SmallVector<ast::Scope *, 16>;
+using ScopeCache = llvm::SmallVector<stone::Scope *, 16>;
 class ParsingScope final {
   Parser &self;
   llvm::StringRef description;
@@ -72,12 +71,13 @@ public:
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass Scope
-  ParsingScope(Parser &self, ast::ScopeKind scopeKind, llvm::StringRef description);
+  ParsingScope(Parser &self, stone::ScopeKind scopeKind,
+               llvm::StringRef description);
   ~ParsingScope();
 
 private:
   /// EnterScope - start a new scope.
-  void EnterScope(ast::ScopeKind scopeKind);
+  void EnterScope(stone::ScopeKind scopeKind);
 
   /// ExitScope - pop a scope off the scope stack.
   void ExitScope();
@@ -189,6 +189,5 @@ public:
 };
 // class ParsingDeclRep final : public DeclRep {};
 
-} // namespace codeana
 } // namespace stone
 #endif

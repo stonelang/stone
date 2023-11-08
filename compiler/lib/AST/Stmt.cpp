@@ -2,7 +2,6 @@
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
-using namespace stone::ast;
 
 // ParserResult<Stmt *> AST::CreateIfStmt() { return StmtEmpty(); }
 

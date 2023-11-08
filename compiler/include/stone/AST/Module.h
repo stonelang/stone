@@ -13,7 +13,6 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace ast {
 
 class ModuleDecl;
 
@@ -131,7 +130,7 @@ public:
   std::vector<Decl *> Decls;
 
 public:
-  ASTFile(ASTFileKind kind, ast::ModuleDecl &owner,
+  ASTFile(ASTFileKind kind, stone::ModuleDecl &owner,
           llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
   ~ASTFile();
@@ -169,7 +168,7 @@ public:
   // void Print(raw_ostream &stream, const ASTPrintOptions &PO);
 
 public:
-  static ast::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+  static stone::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
                             ASTContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
@@ -200,7 +199,7 @@ public:
   ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
 public:
-  using ast::Decl::GetASTContext;
+  using stone::Decl::GetASTContext;
   llvm::SmallVector<ModuleFile *, 2> files;
 
   // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
@@ -263,7 +262,6 @@ public:
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 
-} // namespace ast
 } // namespace stone
 
 #endif

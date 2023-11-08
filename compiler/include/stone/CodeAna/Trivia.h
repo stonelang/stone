@@ -6,7 +6,6 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace codeana {
 
 enum class TriviaKind : uint8_t {
   BlockComment,
@@ -98,7 +97,7 @@ struct Trivia {
   }
   bool operator!=(const Trivia &other) const { return !(*this == other); }
 };
-} // namespace codeana
+
 } // namespace stone
 
 #endif

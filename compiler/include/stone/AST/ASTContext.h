@@ -125,7 +125,7 @@ class ASTContext final {
   mutable llvm::SmallVector<Type *, 0> types;
 
   /// The standard library module.
-  mutable ast::ModuleDecl *stdlibModule = nullptr;
+  mutable stone::ModuleDecl *stdlibModule = nullptr;
 
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
@@ -133,7 +133,7 @@ class ASTContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier, ast::ModuleDecl *> loadedModules;
+  llvm::MapVector<Identifier, stone::ModuleDecl *> loadedModules;
 
   /// Set if a `-module-alias` was passed. Used to store mapping between module
   /// aliases and their corresponding real names, and vice versa for a reverse

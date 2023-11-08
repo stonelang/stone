@@ -16,7 +16,6 @@
 
 namespace stone {
 
-
 class alignas(1 << AttributeAlignInBits) Attribute
     : public ASTAllocation<Attribute> {
 public:

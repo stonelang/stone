@@ -7,11 +7,8 @@
 
 namespace stone {
 class SrcLoc;
-
-namespace ast {
 class Expr;
 struct ASTNode;
-} // namespace ast
 
 /// This represents one part of a #if block.  If the condition field is
 /// non-null, then this represents a #if or a #elseif, otherwise it represents
@@ -22,16 +19,16 @@ struct IfConfigClause {
 
   /// The condition guarding this #if or #elseif block.  If this is null, this
   /// is a #else clause.
-  ast::Expr *cond;
+  stone::Expr *cond;
 
   /// Elements inside the clause
-  llvm::ArrayRef<ast::ASTNode> elements;
+  llvm::ArrayRef<stone::ASTNode> elements;
 
   /// True if this is the active clause of the #if block.
   const bool isActive;
 
-  IfConfigClause(SrcLoc loc, ast::Expr *cond,
-                 llvm::ArrayRef<ast::ASTNode> elements, bool isActive)
+  IfConfigClause(SrcLoc loc, stone::Expr *cond,
+                 llvm::ArrayRef<stone::ASTNode> elements, bool isActive)
       : loc(loc), cond(cond), elements(elements), isActive(isActive) {}
 };
 

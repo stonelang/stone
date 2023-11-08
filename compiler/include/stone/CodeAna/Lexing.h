@@ -4,7 +4,6 @@
 #include "stone/Basic/SrcLoc.h"
 
 namespace stone {
-namespace codeana {
 
 class LexingState final {
 public:
@@ -29,6 +28,5 @@ public:
   ~LexingCache();
 };
 
-} // namespace codeana
 } // namespace stone
 #endif

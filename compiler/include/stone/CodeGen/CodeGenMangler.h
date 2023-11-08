@@ -9,10 +9,9 @@ class LLVMContext;
 } // namespace llvm
 
 namespace stone {
-namespace codegen {
+
 class CodeGenManagler {
 public:
 };
-} // namespace codegen
 } // namespace stone
 #endif

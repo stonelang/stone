@@ -8,7 +8,6 @@
 #include "stone/Lang.h"
 
 using namespace stone;
-using namespace stone::ast;
 using namespace stone::mem;
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)

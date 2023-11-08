@@ -1,7 +1,7 @@
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/ASTContext.h"
 
-using namespace stone::ast;
+using namespace stone;
 
 PointerTypeChunk PointerTypeChunk::Create(SrcLoc loc) {
   PointerTypeChunk chunk(loc);

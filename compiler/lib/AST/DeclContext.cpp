@@ -17,7 +17,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
-using namespace stone::ast;
+
 
 DeclContext::DeclContext(DeclContextKind declContextKind, DeclContext *parent)
     : declContextKind(declContextKind), parent(parent) {
@@ -35,7 +35,7 @@ ASTContext &DeclContext::GetASTContext() const {
   return GetParentModule()->GetASTContext();
 }
 
-ast::ModuleDecl *DeclContext::GetParentModule() const {
+stone::ModuleDecl *DeclContext::GetParentModule() const {
   const DeclContext *dc = this;
   while (!dc->IsModuleContext()) {
     dc = dc->GetParent();
@@ -43,7 +43,7 @@ ast::ModuleDecl *DeclContext::GetParentModule() const {
   return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(dc));
 }
 
-ast::ASTFile *DeclContext::GetParentASTFile() const {
+stone::ASTFile *DeclContext::GetParentASTFile() const {
   const DeclContext *dc = this;
   while (!dc->IsModuleFileContext()) {
     dc = dc->GetParent();
@@ -52,8 +52,8 @@ ast::ASTFile *DeclContext::GetParentASTFile() const {
 }
 
 DeclContext *Decl::GetDeclContextForModule() const {
-  if (auto module = dyn_cast<ast::ModuleDecl>(this)) {
-    return const_cast<ast::ModuleDecl *>(module);
+  if (auto module = dyn_cast<stone::ModuleDecl>(this)) {
+    return const_cast<stone::ModuleDecl *>(module);
   }
   return nullptr;
 }

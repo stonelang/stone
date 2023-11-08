@@ -51,6 +51,5 @@ using ExprVisitor = ASTVisitor<ImplTy, void, ExprRetTy, void, void, Args...>;
 template <typename ImplTy, typename StmtRetTy = void, typename... Args>
 using StmtVisitor = ASTVisitor<ImplTy, void, void, StmtRetTy, void, Args...>;
 
-
 } // namespace stone
 #endif

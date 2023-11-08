@@ -1,10 +1,10 @@
 #include "stone/AST/Expr.h"
-#include "stone/CodeAna/ParserResult.h"
 #include "stone/CodeAna/Parser.h"
+#include "stone/CodeAna/ParserResult.h"
 
-using namespace stone::ast;
-using namespace stone::codeana;
+using namespace stone;
+
 
 ParserResult<Expr> Parser::ParseExpr() {
-  return codeana::MakeParserResult<Expr>(nullptr);
+  return stone::MakeParserResult<Expr>(nullptr);
 }

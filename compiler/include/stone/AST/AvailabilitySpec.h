@@ -196,7 +196,7 @@ public:
   }
 
   void *
-  operator new(size_t Bytes, ast::ASTContext &C,
+  operator new(size_t Bytes, stone::ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
     return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
                                           Alignment);

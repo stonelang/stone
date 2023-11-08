@@ -23,7 +23,6 @@ namespace stone {
 class SrcLoc;
 class Clang;
 
-namespace codegen {
 class CodeGenModule;
 
 class CodeGenDebug final {
@@ -163,7 +162,6 @@ public:
   SrcLoc GetLoc() const { return curLoc; }
 };
 
-} // namespace codegen
 } // namespace stone
 
 #endif

@@ -10,7 +10,7 @@ using namespace stone;
 
 CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
     : invocation(invocation),
-      sc(new ast::ASTContext(invocation.GetLang(),
+      sc(new stone::ASTContext(invocation.GetLang(),
                              invocation.GetSearchPathOptions(),
                              invocation.GetClang())),
       stats(new CompilerInstanceStats(*this)),
@@ -65,7 +65,7 @@ CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
 }
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
-    const ast::ASTFile &sf) const {
+    const stone::ASTFile &sf) const {
   return invocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -74,7 +74,7 @@ CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
 void CompilerInstance::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *asttaxFile = dyn_cast<ast::ASTFile>(moduleFile))
+    if (auto *asttaxFile = dyn_cast<stone::ASTFile>(moduleFile))
       sem::ResolveImports(*asttaxFile);
   }
 }
@@ -84,7 +84,7 @@ void CompilerInstance::ForEachASTFile(EachASTFileCallback client) {
   switch (invocation.GetTypeCheckMode()) {
   case TypeCheckMode::WholeModule: {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *asttaxFile = dyn_cast<ast::ASTFile>(moduleFile);
+      auto *asttaxFile = dyn_cast<stone::ASTFile>(moduleFile);
       if (asttaxFile) {
         client(*asttaxFile, invocation.GetTypeCheckerOptions(),
                invocation.GetListener());

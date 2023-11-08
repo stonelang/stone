@@ -11,8 +11,8 @@
 #include "llvm/Target/TargetOptions.h"
 
 using namespace stone;
-using namespace stone::ast;
-using namespace stone::codegen;
+using namespace stone;
+
 
 CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
                                const ModuleOptions &moduleOpts,
@@ -30,7 +30,7 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
 CodeGenContext::CodeGenContext(
     const CodeGenOptions &codeGenOpts, const ModuleOptions &moduleOpts,
     const stone::TargetOptions &targetOpts, llvm::LLVMContext &llvmContext,
-    ast::ASTContext &astContext, Lang &lang, Clang &clangInstance,
+    stone::ASTContext &astContext, Lang &lang, Clang &clangInstance,
     std::unique_ptr<llvm::Module> llvmMod, llvm::GlobalVariable **outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOpts(moduleOpts),
       llvmContext(llvmContext), targetOpts(targetOpts), lang(lang),

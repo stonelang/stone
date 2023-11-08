@@ -30,20 +30,20 @@ ASTDiagnostic::~ASTDiagnostic() {}
 // void DeclDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
 //   // TODO: UB -- this may be too expensive
-//   auto arg = static_cast<const ast::Decl *>(val);
+//   auto arg = static_cast<const stone::Decl *>(val);
 //   de.Issue(arg->GetLoc(), 1) << "test";
 // }
 
 // void TypeDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
-//   auto arg = static_cast<const ast::Type *>(val);
+//   auto arg = static_cast<const stone::Type *>(val);
 // }
 
 // void DeclContextDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
-//   auto arg = static_cast<const ast::DeclContext *>(val);
+//   auto arg = static_cast<const stone::DeclContext *>(val);
 // }
 // void IdentifierDiagnosticArgument::PrintD(DiagnosticEngine &de) const {
 
-//   auto arg = static_cast<const ast::Identifier *>(val);
+//   auto arg = static_cast<const stone::Identifier *>(val);
 // }
 
 ASTDiagnosticFormatter::ASTDiagnosticFormatter() {}

@@ -5,9 +5,8 @@
 #include "stone/Lang.h"
 
 using namespace stone;
-using namespace stone::ast;
 
-void Lang::ParseASTFile(ast::ASTFile &sf, ast::ASTContext &sc,
+void Lang::ParseASTFile(stone::ASTFile &sf, stone::ASTContext &sc,
                         ASTListener *listener) {
 
   Parser parser(sf, sc, listener);
