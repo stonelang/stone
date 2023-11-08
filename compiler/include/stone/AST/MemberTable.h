@@ -6,7 +6,7 @@
 // #include "stone/AST/ClangImporter.h"
 // #include "stone/AST/NameLookup.h"
 // #include "stone/AST/ASTContext.h"
-// #include "stone/AST/Scope.h"
+// #include "stone/AST/ASTScope.h"
 
 // #include "stone/AST/ASTVisitor.h"
 // #include "stone/AST/DebuggerClient.h"

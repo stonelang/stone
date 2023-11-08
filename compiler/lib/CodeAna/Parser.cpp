@@ -1,6 +1,6 @@
 #include "stone/CodeAna/Parser.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/Scope.h"
+#include "stone/AST/ASTScope.h"
 #include "stone/Basic/CodeAnaDiagnostic.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
@@ -13,7 +13,7 @@ using namespace stone::mem;
 Parser::Parser(ASTFile &sf, ASTContext &sc, ASTListener *listener)
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                                   &sc.GetLang().GetDiagUnit().GetDiagEngine(),
+                                   &sc.GetLang().GetDiagnosticEngine().GetDiagEngine(),
                                    &sc.GetLang().GetStats())),
              listener) {}
 

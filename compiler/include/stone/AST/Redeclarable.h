@@ -362,8 +362,8 @@ private:
 namespace llvm {
 
 template <typename DeclTy>
-struct DenseMapInfo<stone::stone::CanonicalDeclPtr<DeclTy>> {
-  using CanonicalDeclPtr = stone::stone::CanonicalDeclPtr<DeclTy>;
+struct DenseMapInfo<stone::CanonicalDeclPtr<DeclTy>> {
+  using CanonicalDeclPtr = stone::CanonicalDeclPtr<DeclTy>;
   using BaseInfo = DenseMapInfo<DeclTy *>;
 
   static CanonicalDeclPtr getEmptyKey() {
@@ -391,13 +391,13 @@ struct DenseMapInfo<stone::stone::CanonicalDeclPtr<DeclTy>> {
 };
 
 template <typename DeclTy>
-struct PointerLikeTypeTraits<stone::stone::CanonicalDeclPtr<DeclTy>> {
-  static inline void *getAsVoidPointer(stone::stone::CanonicalDeclPtr<DeclTy> P) {
+struct PointerLikeTypeTraits<stone::CanonicalDeclPtr<DeclTy>> {
+  static inline void *getAsVoidPointer(stone::CanonicalDeclPtr<DeclTy> P) {
     return P.Ptr;
   }
-  static inline stone::stone::CanonicalDeclPtr<DeclTy>
+  static inline stone::CanonicalDeclPtr<DeclTy>
   getFromVoidPointer(void *P) {
-    stone::stone::CanonicalDeclPtr<DeclTy> C;
+    stone::CanonicalDeclPtr<DeclTy> C;
     C.Ptr = PointerLikeTypeTraits<DeclTy *>::getFromVoidPtr(P);
     return C;
   }

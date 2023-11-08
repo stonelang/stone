@@ -52,7 +52,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   if (inputs.empty()) {
-    GetLang().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
+    GetLang().GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
 

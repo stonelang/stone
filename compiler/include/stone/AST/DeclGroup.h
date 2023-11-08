@@ -123,13 +123,13 @@ namespace llvm {
 
 // DeclGroupRef is "like a pointer", implement PointerLikeTypeTraits.
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::stone::DeclGroupRef> {
-  static inline void *getAsVoidPointer(stone::stone::DeclGroupRef P) {
+template <> struct PointerLikeTypeTraits<stone::DeclGroupRef> {
+  static inline void *getAsVoidPointer(stone::DeclGroupRef P) {
     return P.getAsOpaquePtr();
   }
 
-  static inline stone::stone::DeclGroupRef getFromVoidPointer(void *P) {
-    return stone::stone::DeclGroupRef::getFromOpaquePtr(P);
+  static inline stone::DeclGroupRef getFromVoidPointer(void *P) {
+    return stone::DeclGroupRef::getFromOpaquePtr(P);
   }
 
   static constexpr int NumLowBitsAvailable = 0;

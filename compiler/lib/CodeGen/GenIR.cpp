@@ -99,12 +99,12 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void Lang::GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+void Lang::GenIR(stone::CodeGenContext &cgc, llvm::StringRef moduleName,
                  stone::ASTFile *sf, const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener) {}
 
 /// GenIR for the entire module
-void Lang::GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+void Lang::GenIR(stone::CodeGenContext &cgc, llvm::StringRef moduleName,
                  stone::ModuleDecl *mod,
                  const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener) {}

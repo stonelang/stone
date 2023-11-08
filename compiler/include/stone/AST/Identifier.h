@@ -260,8 +260,8 @@ namespace detail {
 /// DeclNameExtra is tightly coupled to DeclName and any change
 /// here is very likely to require changes in DeclName(Table).
 class alignas(IdentifierAlignment) SpecialDeclName {
-  friend class stone::stone::DeclName;
-  friend class stone::stone::DeclNameTable;
+  friend class stone::DeclName;
+  friend class stone::DeclNameTable;
 
 protected:
   /// The kind of "extra" information stored in the DeclName. See
@@ -294,34 +294,34 @@ protected:
 
 namespace llvm {
 
-raw_ostream &operator<<(raw_ostream &OS, stone::stone::Identifier I);
+raw_ostream &operator<<(raw_ostream &OS, stone::Identifier I);
 // Identifiers hash just like pointers.
-template <> struct DenseMapInfo<stone::stone::Identifier> {
-  static stone::stone::Identifier getEmptyKey() {
-    return stone::stone::Identifier::getEmptyKey();
+template <> struct DenseMapInfo<stone::Identifier> {
+  static stone::Identifier getEmptyKey() {
+    return stone::Identifier::getEmptyKey();
   }
-  static stone::stone::Identifier getTombstoneKey() {
-    return stone::stone::Identifier::getTombstoneKey();
+  static stone::Identifier getTombstoneKey() {
+    return stone::Identifier::getTombstoneKey();
   }
-  static unsigned getHashValue(stone::stone::Identifier Val) {
+  static unsigned getHashValue(stone::Identifier Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetPointer());
   }
-  static bool isEqual(stone::stone::Identifier LHS, stone::stone::Identifier RHS) {
+  static bool isEqual(stone::Identifier LHS, stone::Identifier RHS) {
     return LHS == RHS;
   }
 };
 
 // An Identifier is "pointer like".
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::stone::Identifier> {
+template <> struct PointerLikeTypeTraits<stone::Identifier> {
 public:
-  static inline void *getAsVoidPointer(stone::stone::Identifier I) {
+  static inline void *getAsVoidPointer(stone::Identifier I) {
     return const_cast<void *>(I.GetAsOpaquePointer());
   }
-  static inline stone::stone::Identifier getFromVoidPointer(void *P) {
-    return stone::stone::Identifier::GetFromOpaquePointer(P);
+  static inline stone::Identifier getFromVoidPointer(void *P) {
+    return stone::Identifier::GetFromOpaquePointer(P);
   }
-  enum { NumLowBitsAvailable = stone::stone::Identifier::NumLowBitsAvailable };
+  enum { NumLowBitsAvailable = stone::Identifier::NumLowBitsAvailable };
 };
 
 } // namespace llvm

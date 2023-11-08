@@ -159,7 +159,7 @@ public:
 
 public:
   CodeFixer &WithFix() { return fixer; }
-  DiagnosticEngine &GetDiagUnit() { return *de; }
+  DiagnosticEngine &GetDiagnosticEngine() { return *de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.
   void Flush();

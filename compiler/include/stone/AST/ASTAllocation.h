@@ -22,12 +22,10 @@ enum class AllocationArena {
   Temporary
 };
 
-namespace ast {
-void *AllocateInASTContext(size_t bytes, const stone::ASTContext &ctx,
-                           AllocationArena arena, unsigned alignment);
-}
 
-namespace ast {
+void *AllocateInASTContext(size_t bytes, const ASTContext &ctx,
+                           AllocationArena arena, unsigned alignment);
+
 /// Types inheriting from this class are intended to be allocated in an
 /// \c ASTContext allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
@@ -43,7 +41,7 @@ public:
 
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const stone::ASTContext &ctx,
+  void *operator new(size_t bytes, const ASTContext &ctx,
                      AllocationArena arena = AllocationArena::Permanent,
                      unsigned alignment = alignof(AlignTy)) {
     return stone::AllocateInASTContext(bytes, ctx, arena, alignment);

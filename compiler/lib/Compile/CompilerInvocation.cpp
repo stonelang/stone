@@ -150,7 +150,7 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
       ctx.GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+    ctx.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
                              diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
@@ -158,7 +158,7 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   // Just return the file buffer for now
   return ModuleBuffers(std::move(*inputFileOrError));
   // if (!fb) {
-  //   ctx.GetDiagUnit().PrintD(SrcLoc(),
+  //   ctx.GetDiagnosticEngine().PrintD(SrcLoc(),
   //   diag::err_unable_to_open_buffer_for_file,
   //                            diag::LLVMStr(input.GetFileName()));
   // }
@@ -204,7 +204,7 @@ unsigned
 CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
-    ctx.GetDiagUnit().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+    ctx.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
                              diag::LLVMStr(input.GetFileName()));
   }
   auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));

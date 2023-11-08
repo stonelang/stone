@@ -24,8 +24,7 @@
 namespace stone {
 
 class ASTListener;
-
-class Scope;
+class ASTScope;
 class Decl;
 class BraceStmt;
 class DeclContext;
@@ -46,8 +45,7 @@ public:
 
 class Parser final {
   friend ParserStats;
-  friend ParsingToken;
-
+  
   // friend PairDelimiterBalancer;
 
   ASTListener *listener;
@@ -246,9 +244,9 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLang().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLang().GetDiagnosticEngine().HasError(); }
   DiagnosticEngine &GetDiags() {
-    return GetLang().GetDiagUnit().GetDiagEngine();
+    return GetLang().GetDiagnosticEngine().GetDiagEngine();
   }
 
 public:

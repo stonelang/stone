@@ -55,13 +55,13 @@ struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
 } // namespace stone
 
 // namespace llvm {
-// using stone::stone::ASTNode;
+// using stone::ASTNode;
 // template <> struct DenseMapInfo<ASTNode> {
 //   static inline ASTNode getEmptyKey() {
-//     return DenseMapInfo<stone::stone::Expr *>::getEmptyKey();
+//     return DenseMapInfo<stone::Expr *>::getEmptyKey();
 //   }
 //   static inline ASTNode getTombstoneKey() {
-//     return DenseMapInfo<stone::stone::Expr *>::getTombstoneKey();
+//     return DenseMapInfo<stone::Expr *>::getTombstoneKey();
 //   }
 //   static unsigned getHashValue(const ASTNode Val) {
 //     return DenseMapInfo<void *>::getHashValue(Val.getOpaqueValue());

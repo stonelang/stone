@@ -43,7 +43,7 @@ void Parser::ParseTopLevelDecls(
 ParserResult<Decl> Parser::ParseTopLevelDecl() {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");
-  ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
+  ParsingScope topLevelScope(*this, ASTScopeKind::TopLevel,
                              "parsing top-level declaration");
 
   return ParseDecl(ParsingDeclFlags::AllowTopLevel);
@@ -65,7 +65,7 @@ ParserResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   ParserStatus status;
   ParserResult<Decl> result;
-  ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
+  ParsingScope declScope(*this, ASTScopeKind::Decl, "parsing declaration");
 
   while (result.IsNull() && IsParsing()) {
     /// Collect using(s), qualifier(s), and specifier.
@@ -134,7 +134,7 @@ void Parser::ParseDeclName() {}
 ParserResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 
   ParserResult<Decl> result;
-  ParsingScope varDeclScope(*this, ScopeKind::VarDecl,
+  ParsingScope varDeclScope(*this, ASTScopeKind::VarDecl,
                             "parsing var declaration");
 
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny() &&
@@ -161,11 +161,11 @@ ParserResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
 ParserResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
 
   ParserResult<Decl> result;
-  ParsingScope autoDeclScope(*this, ScopeKind::AutoDecl,
+  ParsingScope autoDeclScope(*this, ASTScopeKind::AutoDecl,
                              "parsing auto storage declaration");
 
   // ParsingDeclaratorCollector declaratorCollector(collector,
-  // DeclaratorScopeKind::Variable); auto status =
+  // DeclaratorASTScopeKind::Variable); auto status =
   // ParseDeclarator(declaratorCollector);
 
   return result;
@@ -173,7 +173,7 @@ ParserResult<Decl> Parser::ParseAutoDecl(ParsingDeclCollector &collector) {
 
 ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
-  ParsingScope funDeclScope(*this, ScopeKind::FunDecl,
+  ParsingScope funDeclScope(*this, ASTScopeKind::FunDecl,
                             "parsing fun declaration");
 
   assert(collector.GetFunctionSpecifierCollector().HasFun() &&
@@ -274,7 +274,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
                                             Identifier basicName,
                                             DeclName &fullName) {
   ParserStatus status;
-  ParsingScope funSigScope(*this, ScopeKind::FunctionSignature,
+  ParsingScope funSigScope(*this, ASTScopeKind::FunctionSignature,
                            "parsing fun signature");
 
   status |= ParseFunctionArguments(collector);
@@ -287,7 +287,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
 
   SrcLoc arrowLoc;
   if (GetTok().IsArrow()) {
-    ParsingScope functionResult(*this, ScopeKind::ReturnClause,
+    ParsingScope functionResult(*this, ASTScopeKind::ReturnClause,
                                 "parsing result");
 
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
@@ -347,7 +347,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   SrcLoc rParenLoc;
 
   // ParenTracker
-  ParsingScope funArgScope(*this, ScopeKind::FunctionArguments,
+  ParsingScope funArgScope(*this, ASTScopeKind::FunctionArguments,
                            "parsing fun arguments");
 
   // ParenPair
@@ -379,7 +379,7 @@ ParserStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
 
   // This is where you what to start a BracePairDelimeter
   ParserStatus status;
-  ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
+  ParsingScope funBodyScope(*this, ASTScopeKind::FunctionBody,
                             "parsing fun arguments");
 
   assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
@@ -404,7 +404,7 @@ BraceStmt *Parser::ParseFunctionBodyImpl(ParsingDeclCollector &collector,
 ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   ParserResult<Decl> result;
-  ParsingScope structDeclScope(*this, ScopeKind::StructDecl,
+  ParsingScope structDeclScope(*this, ASTScopeKind::StructDecl,
                                "parsing struct-declaration");
 
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsStruct() &&
@@ -428,7 +428,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 ParserResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   ParserResult<Decl> result;
 
-  ParsingScope enumDeclScope(*this, ScopeKind::EnumDecl,
+  ParsingScope enumDeclScope(*this, ASTScopeKind::EnumDecl,
                              "parsing enum-declaration");
 
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsEnum() &&
@@ -456,13 +456,13 @@ ParserResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   ParserResult<Decl> result;
 
-  ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
+  ParsingScope interfaceDeclScope(*this, ASTScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
   assert(
       collector.GetTypeCollector().GetTypeSpecifierCollector().IsInterface() &&
       "Attempting to parse a struct without a struct declaration.");
 
-  ParsingScope enumDeclScope(*this, ScopeKind::UsingDecl,
+  ParsingScope enumDeclScope(*this, ASTScopeKind::UsingDecl,
                              "parsing enum-declaration");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {

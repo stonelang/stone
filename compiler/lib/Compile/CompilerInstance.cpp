@@ -29,7 +29,7 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
-    lc.GetDiagUnit().PrintD(SrcLoc(), diag::err_opening_output,
+    lc.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_opening_output,
                             diag::LLVMStr(outputFilename),
                             diag::LLVMStr(errCode.message()));
     return nullptr;

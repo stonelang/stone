@@ -5,7 +5,7 @@
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Scope.h"
+#include "stone/AST/ASTScope.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"

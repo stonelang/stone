@@ -15,15 +15,13 @@ class Module;
 
 namespace stone {
 
-namespace ast {
 class Decl;
 class Stmt;
 class Expr;
-class Module;
+class ModuleDecl;
 class Token;
 class ASTFile;
 
-} // namespace ast
 
 class CodeCompletionListener {
 public:
@@ -75,7 +73,7 @@ public:
 public:
   virtual void OnTypeCheckError();
   virtual void OnASTFileTypeChecked(stone::ASTFile *asttaxFile) {}
-  virtual void OnModuleTypeChecked(stone::Module *mod) {}
+  virtual void OnModuleTypeChecked(stone::ModuleDecl *mod) {}
 
 public:
 };

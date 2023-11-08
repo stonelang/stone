@@ -38,24 +38,10 @@ class CompilerInstance;
 class TypeCheckerOptions;
 class PrimaryFileSpecificPaths;
 class CompilerOptions;
-
-} // namespace stone
-
-namespace stone {
-namespace codegen {
 class CodeGenContext;
-}
-} // namespace stone
-
-namespace stone {
-namespace ast {
 class ASTContext;
 class ASTFile;
 class ModuleDecl;
-} // namespace ast
-} // namespace stone
-
-namespace stone {
 
 using ModuleOrASTFile = llvm::PointerUnion<stone::ModuleDecl *, stone::ASTFile *>;
 
@@ -149,13 +135,13 @@ public:
   static void SerializeModuleDecl(stone::ModuleDecl &moduleDecl);
 
   /// GenIR just for an ASTFile
-  static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+  static void GenIR(stone::CodeGenContext &cgc, llvm::StringRef moduleName,
                     stone::ASTFile *sf,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
 
   /// GenIR for the entire module
-  static void GenIR(codegen::CodeGenContext &cgc, llvm::StringRef moduleName,
+  static void GenIR(stone::CodeGenContext &cgc, llvm::StringRef moduleName,
                     stone::ModuleDecl *mod,
                     const PrimaryFileSpecificPaths specificPaths,
                     CodeGenListener *listener = nullptr);
@@ -178,7 +164,7 @@ public:
   static std::unique_ptr<llvm::TargetMachine>
   CreateTargetMachine(const CodeGenOptions &opts, stone::ASTContext &ac);
 
-  static void OptimizeIR(codegen::CodeGenContext &cgc);
+  static void OptimizeIR(stone::CodeGenContext &cgc);
 
   static bool
   WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
@@ -186,7 +172,7 @@ public:
                         const CodeGenOptions &opts);
 
   /// Returns true is successfull
-  static bool GenNative(codegen::CodeGenContext &cgc,
+  static bool GenNative(stone::CodeGenContext &cgc,
                         llvm::StringRef outputFilename,
                         CodeGenListener *listener = nullptr);
 
@@ -201,14 +187,14 @@ public:
   /// \param Module LLVM module to code gen, required.
   /// \param TargetMachine target of code gen, required.
   /// \param OutputFilename Filename for output.
-  static bool GenNative(codegen::CodeGenContext &cgc,
+  static bool GenNative(stone::CodeGenContext &cgc,
                         llvm::StringRef outputFilename,
                         llvm::sys::Mutex *diagMutex,
                         llvm::GlobalVariable *hashGlobal,
                         CodeGenListener *listener = nullptr);
 
   /// Returns true is successfull
-  static void WriteNative(codegen::CodeGenContext &cgc,
+  static void WriteNative(stone::CodeGenContext &cgc,
                           llvm::raw_pwrite_stream &out,
                           llvm::sys::Mutex *diagMutex = nullptr);
 };

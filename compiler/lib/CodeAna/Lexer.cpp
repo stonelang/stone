@@ -3249,7 +3249,7 @@ Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
   return Pieces;
 }
 
-llvm::ArrayRef<Token> stone::stone::slice_token_array(ArrayRef<Token> AllTokens,
+llvm::ArrayRef<Token> stone::slice_token_array(ArrayRef<Token> AllTokens,
                                                     SrcLoc StartLoc,
                                                     SrcLoc EndLoc) {
   assert(StartLoc.isValid() && EndLoc.isValid());

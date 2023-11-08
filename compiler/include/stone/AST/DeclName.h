@@ -575,40 +575,40 @@ public:
 
 namespace llvm {
 
-raw_ostream &operator<<(raw_ostream &OS, stone::stone::DeclNameBase D);
-raw_ostream &operator<<(raw_ostream &OS, stone::stone::DeclName I);
+raw_ostream &operator<<(raw_ostream &OS, stone::DeclNameBase D);
+raw_ostream &operator<<(raw_ostream &OS, stone::DeclName I);
 // raw_ostream &operator<<(raw_ostream &OS, swift::DeclNameRef I);
 
 // DeclBaseNames hash just like pointers.
-template <> struct DenseMapInfo<stone::stone::DeclNameBase> {
-  static stone::stone::DeclNameBase getEmptyKey() {
-    return stone::stone::Identifier::getEmptyKey();
+template <> struct DenseMapInfo<stone::DeclNameBase> {
+  static stone::DeclNameBase getEmptyKey() {
+    return stone::Identifier::getEmptyKey();
   }
-  static stone::stone::DeclNameBase getTombstoneKey() {
-    return stone::stone::Identifier::getTombstoneKey();
+  static stone::DeclNameBase getTombstoneKey() {
+    return stone::Identifier::getTombstoneKey();
   }
-  static unsigned getHashValue(stone::stone::DeclNameBase Val) {
+  static unsigned getHashValue(stone::DeclNameBase Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetAsOpaquePointer());
   }
-  static bool isEqual(stone::stone::DeclNameBase LHS,
-                      stone::stone::DeclNameBase RHS) {
+  static bool isEqual(stone::DeclNameBase LHS,
+                      stone::DeclNameBase RHS) {
     return LHS == RHS;
   }
 };
 
 // A DeclBaseName is "pointer like".
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::stone::DeclNameBase> {
+template <> struct PointerLikeTypeTraits<stone::DeclNameBase> {
 public:
-  static inline void *getAsVoidPointer(stone::stone::DeclNameBase D) {
+  static inline void *getAsVoidPointer(stone::DeclNameBase D) {
     return const_cast<void *>(D.GetAsOpaquePointer());
   }
-  static inline stone::stone::DeclNameBase getFromVoidPointer(void *P) {
-    return stone::stone::DeclNameBase::GetFromOpaquePointer(P);
+  static inline stone::DeclNameBase getFromVoidPointer(void *P) {
+    return stone::DeclNameBase::GetFromOpaquePointer(P);
   }
   enum {
     NumLowBitsAvailable =
-        PointerLikeTypeTraits<stone::stone::Identifier>::NumLowBitsAvailable
+        PointerLikeTypeTraits<stone::Identifier>::NumLowBitsAvailable
   };
 };
 } // end namespace llvm

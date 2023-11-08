@@ -52,26 +52,26 @@ template <class T> struct PointerLikeTypeTraits;
       : public MoreAlignedPointerTraits<CLASS, ALIGNMENT> {};                  \
   }
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::Decl, stone::DeclAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::InterfaceDecl, stone::DeclAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::TypeDecl, stone::DeclAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::ValueDecl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Decl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::InterfaceDecl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeDecl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::ValueDecl, stone::DeclAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::Stmt, stone::StmtAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::Expr, stone::ExprAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::ASTContext,
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::ASTContext,
                             stone::ASTContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::DeclContext,
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext,
                             stone::DeclContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::ModuleFile,
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile,
                             stone::ASTContextAlignInBits)
 
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::TypeBase, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::Type, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::QualType, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::stone::Attribute, stone::AttributeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeBase, stone::TypeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::QualType, stone::TypeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Attribute, stone::AttributeAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 
