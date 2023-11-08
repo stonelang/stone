@@ -71,8 +71,6 @@
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
 // TODO: #include "llvm/Transforms/Core/UniqueInternalLinkageNames.h"
 
-#include <memory>
-
 using namespace stone;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,

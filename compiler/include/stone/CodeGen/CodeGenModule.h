@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_IRCODEGENMODULE_H
-#define STONE_GEN_IRCODEGENMODULE_H
+#ifndef STONE_GEN_CODEGENMODULE_H
+#define STONE_GEN_CODEGENMODULE_H
 
 #include "stone/AST/ASTVisitor.h"
 #include "stone/AST/Module.h"
@@ -73,7 +73,6 @@ class VarDecl;
 class AutoDecl;
 class ASTFile;
 class NominalTypeDecl;
-} // namespace ast
 class CodeGenListener;
 
 // class CodeGenLoop {};
