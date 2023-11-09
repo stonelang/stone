@@ -208,7 +208,7 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : CanType(ty) {
+  explicit CanType(TypeBase *ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
