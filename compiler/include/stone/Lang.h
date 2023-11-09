@@ -81,10 +81,10 @@ public:
                      void *mainAddr, CompilerListener *listener = nullptr);
 
   //// Executes only the analysis part of the compiler
-  static bool CompileWithCodeAnalysis(CompilerInstance &compiler);
+  static bool CompileWithCompilelysis(CompilerInstance &compiler);
 
   /// Performs non-analysis stuff and then calls code generation
-  static bool CompileAfterCodeAnalysis(CompilerInstance &compiler);
+  static bool CompileAfterCompilelysis(CompilerInstance &compiler);
 
   /// Execute only the code generation
   static bool CompileWithCodeGeneration(CompilerInstance &compiler);

@@ -106,10 +106,10 @@ bool CompilerInstance::Compile() {
 
   NotifyCompileStarted();
 
-  Compiling::CompileWithCodeAnalysis(*this);
+  Compiling::CompileWithCompilelysis(*this);
 
   // Some work here before code generation
-  Compiling::CompilePostCodeAnalysis(*this);
+  Compiling::CompilePostCompilelysis(*this);
 
   NotifyCompileFinished();
 
@@ -117,7 +117,7 @@ bool CompilerInstance::Compile() {
 }
 
 //// Execute only the analysis part of the compiler
-Status Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
+Status Compiling::CompileWithCompilelysis(CompilerInstance &compiler) {
 
   // At this point, everything requires syntax analysis.
   if (compiler.GetMode().IsParse()) {
@@ -211,7 +211,7 @@ void Compiling::PerformDumpTypeInfo(CompilerInstance &compiler) {}
 
 void Compiling::PerformPrintAST(CompilerInstance &compiler) {}
 
-Status Compiling::CompilePostCodeAnalysis(CompilerInstance &compiler) {
+Status Compiling::CompilePostCompilelysis(CompilerInstance &compiler) {
 
   // Some other things here
   Compiling::CompileWithCodeGeneration(compiler);

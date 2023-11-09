@@ -1,9 +1,9 @@
-#include "stone/CodeAna/Lexer.h"
+#include "stone/Compile/Lexer.h"
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Char.h"
-#include "stone/Basic/CodeAnaDiagnostic.h"
+#include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/CodeAna/Confusable.h"
+#include "stone/Compile/Confusable.h"
 #include "stone/CodeCompletionListener.h"
 
 #include "llvm/ADT/SmallString.h"

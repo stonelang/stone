@@ -1,6 +1,6 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
-#include "stone/CodeAna/Parser.h"
+#include "stone/Compile/Parser.h"
 #include "stone/CodeCompletionListener.h"
 #include "stone/Lang.h"
 

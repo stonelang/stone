@@ -4,7 +4,7 @@
 #define DIAG_NO_UNDEF
 
 #include "CoreDiagnostic.def"
-#include "CodeAnaDiagnostic.def"
+#include "CompileDiagnostic.def"
 #include "CodeGenDiagnostic.def"
 #include "CompilerDiagnostic.def"
 #include "DriverDiagnostic.def"

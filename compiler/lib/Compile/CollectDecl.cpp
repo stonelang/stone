@@ -1,10 +1,10 @@
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Stmt.h"
-#include "stone/Basic/CodeAnaDiagnostic.h"
+#include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/Defer.h"
-#include "stone/CodeAna/Parser.h"
-#include "stone/CodeAna/Parsing.h"
+#include "stone/Compile/Parser.h"
+#include "stone/Compile/Parsing.h"
 
 using namespace stone;
 

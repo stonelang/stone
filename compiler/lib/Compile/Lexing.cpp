@@ -1,4 +1,4 @@
-#include "stone/CodeAna/Lexing.h"
+#include "stone/Compile/Lexing.h"
 
 using namespace stone;
 

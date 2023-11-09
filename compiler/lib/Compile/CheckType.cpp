@@ -1,6 +1,6 @@
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/TypeVisitor.h"
-#include "stone/CodeAna/TypeChecker.h"
+#include "stone/Compile/TypeChecker.h"
 
 using namespace stone;
 

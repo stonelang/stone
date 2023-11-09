@@ -4,8 +4,8 @@
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/CodeAna/Lexing.h"
-#include "stone/CodeAna/Trivia.h"
+#include "stone/Compile/Lexing.h"
+#include "stone/Compile/Trivia.h"
 #include "stone/Lang.h"
 
 namespace stone {

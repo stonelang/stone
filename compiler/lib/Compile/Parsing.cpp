@@ -1,4 +1,4 @@
-#include "stone/CodeAna/Parser.h"
+#include "stone/Compile/Parser.h"
 
 using namespace stone;
 

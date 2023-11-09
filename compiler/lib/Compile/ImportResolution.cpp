@@ -1,4 +1,4 @@
-#include "stone/CodeAna/ImportResolution.h"
+#include "stone/Compile/ImportResolution.h"
 #include "stone/AST/Module.h"
 
 using namespace stone;

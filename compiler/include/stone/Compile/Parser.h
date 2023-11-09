@@ -12,9 +12,9 @@
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/CodeAna/Lexer.h"
-#include "stone/CodeAna/ParserResult.h"
-#include "stone/CodeAna/Parsing.h"
+#include "stone/Compile/Lexer.h"
+#include "stone/Compile/ParserResult.h"
+#include "stone/Compile/Parsing.h"
 #include "stone/CodeCompletionListener.h"
 
 #include "llvm/Support/Timer.h"

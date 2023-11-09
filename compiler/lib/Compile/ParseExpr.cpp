@@ -1,6 +1,6 @@
 #include "stone/AST/Expr.h"
-#include "stone/CodeAna/Parser.h"
-#include "stone/CodeAna/ParserResult.h"
+#include "stone/Compile/Parser.h"
+#include "stone/Compile/ParserResult.h"
 
 using namespace stone;
 

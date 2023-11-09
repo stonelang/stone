@@ -6,8 +6,8 @@
 #include "stone/AST/Specifier.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/CodeAna/Lexing.h"
-#include "stone/CodeAna/ParserResult.h"
+#include "stone/Compile/Lexing.h"
+#include "stone/Compile/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
