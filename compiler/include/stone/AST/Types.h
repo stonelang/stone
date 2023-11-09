@@ -430,7 +430,6 @@ public:
 // };
 
 
-
 class QualifierType : public TypeBase {
 
   friend class TypeBase;

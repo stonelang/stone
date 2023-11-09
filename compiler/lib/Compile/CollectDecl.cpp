@@ -105,17 +105,20 @@ ParserStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   case tok::kw_const:
     collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
     break;
-  case tok::kw_restrict:
-    collector.GetTypeQualifierCollector().AddRestrict(ConsumeToken());
+  case tok::kw_own:
+    collector.GetTypeQualifierCollector().AddOwn(ConsumeToken());
     break;
-  case tok::kw_volatile:
-    collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
-    break;
+  // case tok::kw_restrict:
+  //   collector.GetTypeQualifierCollector().AddRestrict(ConsumeToken());
+  //   break;
+  // case tok::kw_volatile:
+  //   collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
+  //   break;
   case tok::kw_mutable:
     collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
     break;
-  case tok::kw_pure:
-    collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
+  // case tok::kw_pure:
+  //   collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
     return stone::MakeParserCodeCompletionStatus();
   }
