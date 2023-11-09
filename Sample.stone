@@ -1,0 +1,43 @@
+
+
+
+space Diagnostics;
+
+
+public struct Diagnostic {
+}
+
+public interface DiagnosticEngine {
+	fun PrintD(SrcLoc loc, const Diagnostic& diagnostic) -> InflightDiagnostic; 
+}
+
+public struct DiagnosticEngineImpl : DiagnosticEngine {
+	private const DiagnosticOptions& diagOptions;
+}
+
+private DiagnosticEngineImpl::DiagnosticEngineImpl() {}
+
+
+public DiagnosticEngineImpl::DiagnosticEngineImpl(const DiagnosticOptions& diagOptions) {
+	this.diagOptions = diagOptions; 
+}
+
+public fun DiagnosticEngineImpl::GetDiagnosticOptions() -> const DiagnosticOptions& {
+	return diagOptions; 
+}
+
+public fun DiagnosticEngineImpl::Print(SrcLoc loc, const Diagnostic& diagnostic) -> InflightDiagnostic& {
+
+}
+
+fun Main() -> int {
+
+ auto diagnosticEngine = new DiagnosticEngineImpl();
+ defer{
+ 	if(diagnosticEngine){
+ 		delete diagnosticEngine;
+ 	}
+ }
+ diagnosticEngine.Print(SrcLoc(), Diagnostic());
+
+}
