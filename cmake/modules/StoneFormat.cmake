@@ -1,21 +1,19 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/CodeAna/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/CodeGen/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Options/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/AST/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/CodeGen/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Options/*.h
 	
 )
 set(stone_lib_files
-	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/CodeAna/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/CodeGen/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/AST/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/CodeGen/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Options/*.cpp
 )
 set(stone_tools_files
