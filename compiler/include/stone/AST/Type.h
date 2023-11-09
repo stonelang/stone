@@ -212,13 +212,8 @@ private:
 class QualType : public Type {
   friend class TypeCollector;
 
-  FastTypeQualifiers fastQuals;
-
-  TypeQualifier constTypeQual{TypeQualifierKind::Const};
-  TypeQualifier restrictTypeQual{TypeQualifierKind::Restrict};
-  TypeQualifier volatileTypeQual{TypeQualifierKind::Volatile};
-  TypeQualifier pureTypeQual{TypeQualifierKind::Pure};
-  TypeQualifier immutableTypeQual{TypeQualifierKind::Immutable};
+  TypeQualifier constTypeQual{TypeQualifierKind::Const};;
+  TypeQualifier ownTypeQual{TypeQualifierKind::Pure};
   TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
 
 public:
@@ -226,10 +221,7 @@ public:
 
 public:
   TypeQualifier &GetConst() { return constTypeQual; }
-  TypeQualifier &GetRestrict() { return restrictTypeQual; }
-  TypeQualifier &GetVolatile() { return volatileTypeQual; }
-  TypeQualifier &GetPure() { return pureTypeQual; }
-  TypeQualifier &GetImmutable() { return immutableTypeQual; }
+  TypeQualifier &GetOwn() { return immutableTypeQual; }
   TypeQualifier &GetMutable() { return mutableTypeQual; }
 
 public:

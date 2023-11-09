@@ -192,6 +192,12 @@ ABSTRACT_TYPE(Sweet, Type)
   SWEET_TYPE(Alias, SweetType)
   TYPE_RANGE(Sweet, Dictionary, Alias)
 
+  ABSTRACT_TYPE(Qualifier, Type)
+    TYPE(Const, QualifierType)
+    TYPE(Mutable, QualifierType)
+    TYPE(Own, QualifierType)
+  TYPE_RANGE(Qualifier, Const, Own)
+
 
 ABSTRACT_TYPE(Deduced, Type)
   TYPE(Auto, DeducedType)
