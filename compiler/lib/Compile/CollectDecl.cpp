@@ -125,7 +125,7 @@ ParserStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   return stone::MakeParserSuccess();
 }
 
-bool Parser::IsTypeChunk(const Token &tk) {
+bool Parser::IsTypeSlab(const Token &tk) {
   switch (tk.GetKind()) {
   case tok::star:
   case tok::amp:
@@ -135,32 +135,32 @@ bool Parser::IsTypeChunk(const Token &tk) {
   }
 }
 
-ParserStatus Parser::CollectTypeChunk(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeSlab(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
-    collector.GetTypeChunkCollector().AddPointer(ConsumeToken());
+    collector.GetTypeSlabCollector().AddPointer(ConsumeToken());
     break;
   case tok::amp:
-    collector.GetTypeChunkCollector().AddReference(ConsumeToken());
+    collector.GetTypeSlabCollector().AddReference(ConsumeToken());
     break;
   default:
     return stone::MakeParserCodeCompletionStatus();
   }
   return stone::MakeParserSuccess();
 }
-ParserStatus Parser::CollectTypeChunks(TypeCollector &collector) {
+ParserStatus Parser::CollectTypeSlabs(TypeCollector &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
-  if (!GetTok().IsTypeChunk() && GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypeChunkCollector().AddValue();
+  if (!GetTok().IsTypeSlab() && GetTok().IsIdentifierOrUnderscore()) {
+    collector.GetTypeSlabCollector().AddValue();
     return stone::MakeParserSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   ParserStatus status;
-  while (GetTok().IsTypeChunk()) {
-    status = CollectTypeChunk(collector);
+  while (GetTok().IsTypeSlab()) {
+    status = CollectTypeSlab(collector);
     if (status.HasCodeCompletion()) {
       return status;
     }

@@ -3,7 +3,7 @@
 
 #include "stone/AST/Specifier.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeChunk.h"
+#include "stone/AST/TypeSlab.h"
 #include "stone/AST/TypeOperator.h"
 #include "stone/AST/TypeQualifier.h"
 
@@ -14,7 +14,7 @@ class TypeCollector final {
   QualType qualType;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
-  TypeChunkCollector typeChunkCollector;
+  TypeSlabCollector typeChunkCollector;
   TypeOperatorCollector typeOperatorCollector;
 
 public:
@@ -33,8 +33,8 @@ public:
     return typeSpecifierCollector;
   }
 
-  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
-  const TypeChunkCollector &GetTypeChunkCollector() const {
+  TypeSlabCollector &GetTypeSlabCollector() { return typeChunkCollector; }
+  const TypeSlabCollector &GetTypeSlabCollector() const {
     return typeChunkCollector;
   }
   TypeOperatorCollector &GetTypeOperatorCollector() {

@@ -4,7 +4,7 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeChunk.h"
+#include "stone/AST/TypeSlab.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
 #include "stone/Basic/SrcLoc.h"

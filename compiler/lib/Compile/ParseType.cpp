@@ -37,10 +37,10 @@ QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
   // }
 
   // // Collect the type pattersn
-  // CollectTypeChunks(collector);
+  // CollectTypeSlabs(collector);
 
   // // Requires at least a direct type pattern which is just the type by
-  // itself. assert(collector.GetTypeChunkCollector().HasAny());
+  // itself. assert(collector.GetTypeSlabCollector().HasAny());
 
   // TODO: Call parseType to get the actual type
 
@@ -105,11 +105,11 @@ QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
     // TODO: nothing to do
   }
 
-  CollectTypeChunks(collector);
-  TypeChunkList *chunks = nullptr;
-  if (collector.GetTypeChunkCollector().HasAny()) {
-    chunks = TypeChunkList::Create(
-        collector.GetTypeChunkCollector().GetTypeChunks(), GetASTContext());
+  CollectTypeSlabs(collector);
+  TypeSlabList *chunks = nullptr;
+  if (collector.GetTypeSlabCollector().HasAny()) {
+    chunks = TypeSlabList::Create(
+        collector.GetTypeSlabCollector().GetTypeSlabs(), GetASTContext());
   }
 
   QualType ty;
@@ -151,7 +151,7 @@ QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   //       collector.GetTypeQualifierCollector().GetTypeQualifiers());
   // }
   // if (chunks) {
-  //   ty.SetTypeChunks(chunks);
+  //   ty.SetTypeSlabs(chunks);
   // }
 
   return ty;

@@ -1,56 +1,56 @@
-#include "stone/AST/TypeChunk.h"
+#include "stone/AST/TypeSlab.h"
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
 
-PointerTypeChunk PointerTypeChunk::Create(SrcLoc loc) {
-  PointerTypeChunk chunk(loc);
+PointerTypeSlab PointerTypeSlab::Create(SrcLoc loc) {
+  PointerTypeSlab chunk(loc);
   return chunk;
 }
 
-ReferenceTypeChunk ReferenceTypeChunk::Create(SrcLoc loc) {
-  ReferenceTypeChunk chunk(loc);
+ReferenceTypeSlab ReferenceTypeSlab::Create(SrcLoc loc) {
+  ReferenceTypeSlab chunk(loc);
   return chunk;
 }
 
-ValueTypeChunk ValueTypeChunk::Create() {
-  ValueTypeChunk chunk;
+ValueTypeSlab ValueTypeSlab::Create() {
+  ValueTypeSlab chunk;
   return chunk;
 }
 
-ArrayTypeChunk ArrayTypeChunk::Create(SrcLoc loc) {
-  ArrayTypeChunk chunk(loc);
+ArrayTypeSlab ArrayTypeSlab::Create(SrcLoc loc) {
+  ArrayTypeSlab chunk(loc);
   return chunk;
 }
 
-void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
+void TypeSlabCollector::AddValue() { AddTypeSlab(ValueTypeSlab::Create()); }
 
-void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {
-  AddTypeChunk(PointerTypeChunk::Create(inputLoc));
+void TypeSlabCollector::AddPointer(SrcLoc inputLoc) {
+  AddTypeSlab(PointerTypeSlab::Create(inputLoc));
 }
-void TypeChunkCollector::AddReference(SrcLoc inputLoc) {
-  AddTypeChunk(ReferenceTypeChunk::Create(inputLoc));
+void TypeSlabCollector::AddReference(SrcLoc inputLoc) {
+  AddTypeSlab(ReferenceTypeSlab::Create(inputLoc));
 }
-void TypeChunkCollector::AddArray(SrcLoc inputLoc) {
-  AddTypeChunk(ArrayTypeChunk::Create(inputLoc));
+void TypeSlabCollector::AddArray(SrcLoc inputLoc) {
+  AddTypeSlab(ArrayTypeSlab::Create(inputLoc));
 }
 
-void TypeChunkCollector::AddParen(SrcLoc inputLoc) {}
+void TypeSlabCollector::AddParen(SrcLoc inputLoc) {}
 
-void TypeChunkCollector::AddPipe(SrcLoc inputLoc) {}
+void TypeSlabCollector::AddPipe(SrcLoc inputLoc) {}
 
-void TypeChunkCollector::Apply() {}
+void TypeSlabCollector::Apply() {}
 
-TypeChunkList::TypeChunkList(llvm::ArrayRef<TypeChunk> chunks) {
+TypeSlabList::TypeSlabList(llvm::ArrayRef<TypeSlab> chunks) {
   std::uninitialized_copy(chunks.begin(), chunks.end(),
-                          getTrailingObjects<TypeChunk>());
+                          getTrailingObjects<TypeSlab>());
 }
 
-TypeChunkList *TypeChunkList::Create(llvm::ArrayRef<TypeChunk> chunks,
+TypeSlabList *TypeSlabList::Create(llvm::ArrayRef<TypeSlab> chunks,
                                      ASTContext &sc) {
 
   unsigned sizeToAlloc =
-      TypeChunkList::totalSizeToAlloc<TypeChunk>(chunks.size());
-  void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeChunkList));
-  return new (memPtr) TypeChunkList(llvm::MutableArrayRef<TypeChunk>());
+      TypeSlabList::totalSizeToAlloc<TypeSlab>(chunks.size());
+  void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeSlabList));
+  return new (memPtr) TypeSlabList(llvm::MutableArrayRef<TypeSlab>());
 }

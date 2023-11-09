@@ -150,9 +150,9 @@ public:
   ParserStatus CollectUsingDecl(ParsingDeclCollector &collector);
   ParserStatus CollectAccessLevel(ParsingDeclCollector &collector);
 
-  bool IsTypeChunk(const Token &tk);
-  ParserStatus CollectTypeChunk(TypeCollector &collector);
-  ParserStatus CollectTypeChunks(TypeCollector &collector);
+  bool IsTypeSlab(const Token &tk);
+  ParserStatus CollectTypeSlab(TypeCollector &collector);
+  ParserStatus CollectTypeSlabs(TypeCollector &collector);
   ParserStatus CollectBasicTypeDecl(TypeCollector &collector);
   ParserStatus CollectNominalTypeDecl(TypeCollector &collector);
   ParserStatus CollectTypeQualifiers(TypeCollector &collector);
