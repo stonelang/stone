@@ -257,8 +257,8 @@ public:
   }
 
   // explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-  //                  TypeThunkList *thunks)
-  //     : QualType(ty, quals, thunks) {
+  //                  TypeSlabList *slabs)
+  //     : QualType(ty, quals, slabs) {
   //   assert(IsCanTypeOrNull() &&
   //          "Forming a CanType out of a non-canonical type!");
   // }

@@ -104,10 +104,10 @@ public:
   TypeSlabList &operator=(const TypeSlabList &) = delete;
 
 public:
-  TypeSlabList(llvm::ArrayRef<TypeSlab> thunks);
+  TypeSlabList(llvm::ArrayRef<TypeSlab> slabs);
 
 public:
-  static TypeSlabList *Create(llvm::ArrayRef<TypeSlab> thunks,
+  static TypeSlabList *Create(llvm::ArrayRef<TypeSlab> slabs,
                                ASTContext &sc);
 };
 
@@ -116,8 +116,8 @@ class TypeSlabCollector final {
   /// This holds each type-patter that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
-  /// thunks.back() will be the least closely bound to the type.
-  llvm::SmallVector<TypeSlab, 8> thunks;
+  /// slabs.back() will be the least closely bound to the type.
+  llvm::SmallVector<TypeSlab, 8> slabs;
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
@@ -128,7 +128,7 @@ private:
   /// Add a thunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the thunk.
   void AddTypeSlab(const TypeSlab thunk) {
-    thunks.push_back(thunk);
+    slabs.push_back(thunk);
     // TODO:
     //  if (!EndLoc.isInvalid())
     //    SetRangeEnd(EndLoc);
@@ -146,27 +146,27 @@ public:
 
 public:
   /// int** -- the '*' toucing int
-  const TypeSlab *GetInnermostNonParenThunk() const {
-    for (unsigned i = thunks.size(), i_end = 0; i != i_end; --i) {
-      if (thunks[i - 1].GetKind() != TypeSlabKind::Paren) {
-        return &thunks[i - 1];
+  const TypeSlab *GetInnermostNonParenSlab() const {
+    for (unsigned i = slabs.size(), i_end = 0; i != i_end; --i) {
+      if (slabs[i - 1].GetKind() != TypeSlabKind::Paren) {
+        return &slabs[i - 1];
       }
     }
     return nullptr;
   }
 
   /// int** -- the '*' farthest from int
-  const TypeSlab *GetOutermostNonParenThunk() const {
-    for (unsigned i = 0, i_end = thunks.size(); i < i_end; ++i) {
-      if (thunks[i].GetKind() != TypeSlabKind::Paren) {
-        return &thunks[i];
+  const TypeSlab *GetOutermostNonParenSlab() const {
+    for (unsigned i = 0, i_end = slabs.size(); i < i_end; ++i) {
+      if (slabs[i].GetKind() != TypeSlabKind::Paren) {
+        return &slabs[i];
       }
     }
     return nullptr;
   }
 
-  bool HasAny() { return thunks.size() > 0; }
-  llvm::ArrayRef<TypeSlab> GetTypeSlabs() { return thunks; }
+  bool HasAny() { return slabs.size() > 0; }
+  llvm::ArrayRef<TypeSlab> GetTypeSlabs() { return slabs; }
   void Apply();
   void Verify();
 };

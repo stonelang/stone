@@ -4,23 +4,23 @@
 using namespace stone;
 
 PointerTypeSlab PointerTypeSlab::Create(SrcLoc loc) {
-  PointerTypeSlab chunk(loc);
-  return chunk;
+  PointerTypeSlab slab(loc);
+  return slab;
 }
 
 ReferenceTypeSlab ReferenceTypeSlab::Create(SrcLoc loc) {
-  ReferenceTypeSlab chunk(loc);
-  return chunk;
+  ReferenceTypeSlab slab(loc);
+  return slab;
 }
 
 ValueTypeSlab ValueTypeSlab::Create() {
-  ValueTypeSlab chunk;
-  return chunk;
+  ValueTypeSlab slab;
+  return slab;
 }
 
 ArrayTypeSlab ArrayTypeSlab::Create(SrcLoc loc) {
-  ArrayTypeSlab chunk(loc);
-  return chunk;
+  ArrayTypeSlab slab(loc);
+  return slab;
 }
 
 void TypeSlabCollector::AddValue() { AddTypeSlab(ValueTypeSlab::Create()); }
@@ -41,16 +41,16 @@ void TypeSlabCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeSlabCollector::Apply() {}
 
-TypeSlabList::TypeSlabList(llvm::ArrayRef<TypeSlab> chunks) {
-  std::uninitialized_copy(chunks.begin(), chunks.end(),
+TypeSlabList::TypeSlabList(llvm::ArrayRef<TypeSlab> slabs) {
+  std::uninitialized_copy(slabs.begin(), slabs.end(),
                           getTrailingObjects<TypeSlab>());
 }
 
-TypeSlabList *TypeSlabList::Create(llvm::ArrayRef<TypeSlab> chunks,
+TypeSlabList *TypeSlabList::Create(llvm::ArrayRef<TypeSlab> slabs,
                                      ASTContext &sc) {
 
   unsigned sizeToAlloc =
-      TypeSlabList::totalSizeToAlloc<TypeSlab>(chunks.size());
+      TypeSlabList::totalSizeToAlloc<TypeSlab>(slabs.size());
   void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeSlabList));
   return new (memPtr) TypeSlabList(llvm::MutableArrayRef<TypeSlab>());
 }
