@@ -39,21 +39,21 @@ public:
   /// Return these properties as a bitfield.
   unsigned GetBits() const { return Bits; }
 
-  bool AddConst() const { return Bits |= HasMutableQualifier; }
+  bool AddConst() { return Bits |= HasConstQualifier; }
   bool HasConst() const { return Bits & HasConstQualifier; }
-  bool ClearConst() const { return Bits &= ~HasConstQualifier; }
+  bool ClearConst() { return Bits &= ~HasConstQualifier; }
 
-  bool AddPerm() const { return Bits |= HasPermQualifier; }
+  bool AddPerm() { return Bits |= HasPermQualifier; }
   bool HasPerm() const { return Bits & HasPermQualifier; }
-  bool ClearPerm() const { return Bits &= ~HasPermQualifier; }
+  bool ClearPerm() { return Bits &= ~HasPermQualifier; }
 
-  bool AddOwn() const { return Bits != HasOwnQualifier; }
+  bool AddOwn() { return Bits != HasOwnQualifier; }
   bool HasOwn() const { return Bits & HasOwnQualifier; }
-  bool ClearOwn() const { return Bits &= ~HasOwnQualifier; }
+  bool ClearOwn() { return Bits &= ~HasOwnQualifier; }
 
-  bool AddMutable() const { return Bits != HasMutableQualifier; }
+  bool AddMutable() { return Bits != HasMutableQualifier; }
   bool HasMutable() const { return Bits & HasMutableQualifier; }
-  bool ClearMutable() const { return Bits &= ~HasMutableQualifier; }
+  bool ClearMutable() { return Bits &= ~HasMutableQualifier; }
 
   /// Returns the set of properties present in either set.
   friend TypeQualifiers operator|(TypeQualifier lhs, TypeQualifier rhs) {
@@ -81,6 +81,7 @@ class TypeQualifierCollector final {
 
   SrcLoc constLoc;
   SrcLoc ownLoc;
+  SrcLoc permLoc;
   SrcLoc mutableLoc;
 
 public:
@@ -90,19 +91,33 @@ public:
   void AddConst(SrcLoc loc = SrcLoc()) { constLoc = loc; }
   SrcLoc GetConst() { return constLoc; }
   bool HasConst() { return constLoc.isValid(); }
-  bool HasConstOnly() { return HasConst() && (!HasMutable() || !HasOwn()); }
+  bool HasConstOnly() {
+    return HasConst() && (!HasMutable() || !HasOwn() || !HasPerm());
+  }
 
 public:
   void AddMutable(SrcLoc loc = SrcLoc()) { mutableLoc = loc; }
   SrcLoc GetMutable() { return mutableLoc; }
   bool HasMutable() { return mutableLoc.isValid(); }
-  bool HasMutableOnly() { return HasMutable() && (!HasConst() || !HasOwn()); }
+  bool HasMutableOnly() {
+    return HasMutable() && (!HasConst() || !HasOwn() || !HasPerm());
+  }
 
 public:
   void AddOwn(SrcLoc loc = SrcLoc()) { mutableLoc = loc; }
   SrcLoc GetOwn() { return mutableLoc; }
   bool HasOwn() { return mutableLoc.isValid(); }
-  bool HasOwnOnly() { return HasOwn() && (!HasConst() || !HasMutable()); }
+  bool HasOwnOnly() {
+    return HasOwn() && (!HasConst() || !HasMutable() || !HasPerm());
+  }
+
+public:
+  void AddPerm(SrcLoc loc = SrcLoc()) { mutableLoc = loc; }
+  SrcLoc GetPerm() { return mutableLoc; }
+  bool HasPerm() { return mutableLoc.isValid(); }
+  bool HasPermOnly() {
+    return HasOwn() && (!HasConst() || !HasMutable() || !HasOwn());
+  }
 
 public:
   bool HasAny() { return (HasConst() || HasMutable() || HasOwn()); }

@@ -30,16 +30,44 @@ using namespace stone;
 //   }
 // }
 
-VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
-  return new (sc, arena) VoidType(sc);
+VoidType *VoidType::Create(const ASTContext &astContext, AllocationArena arena,
+                           TypeQualifiers qualifiers) {
+  return new (astContext, arena) VoidType(astContext, qualifiers);
 }
 
-// NullType* NullType::Create(const ASTContext& sc, AllocationArena arena) {
-//   return new(sc, arena) NullType(sc);
-// }
-// BoolType* BoolType::Create(const ASTContext& sc, AllocationArena arena) {
-//   return new(sc, arena) BoolType(sc);
-// }
+NullType *NullType::Create(const ASTContext &astContext,
+                           AllocationArena arena) {
+  return new (astContext, arena) NullType(astContext);
+}
+
+BoolType *BoolType::Create(const ASTContext &astContext, AllocationArena arena,
+                           TypeQualifiers qualifiers) {
+  return new (astContext, arena) BoolType(astContext, qualifiers);
+}
+
+IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
+                                 AllocationArena arena,
+                                 const ASTContext &astContext,
+                                 TypeQualifiers qualifiers) {
+
+  return new (astContext, arena)
+      IntegerType(bitWidthKind, astContext, qualifiers);
+}
+
+FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
+                             const ASTContext &astContext,
+                             AllocationArena arena, TypeQualifiers qualifiers) {
+  return new (astContext, arena)
+      FloatType(bitWidthKind, astContext, qualifiers);
+}
+
+FloatType *UIntegerType::Create(NumberBitWidthKind bitWidthKind,
+                                const ASTContext &astContext,
+                                AllocationArena arena,
+                                TypeQualifiers qualifiers) {
+  return new (astContext, arena)
+      UIntegerType(bitWidthKind, astContext, qualifiers);
+}
 
 // == Type == //
 // bool Type::Walk(TypeWalker &walker) const {}
@@ -90,7 +118,8 @@ SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
 void TypeLoc::SetType(Type ty) {}
 
-FunType::FunType(Type result, const ASTContext *astContext, TypeQualifiers qualifiers)
+FunType::FunType(Type result, const ASTContext *astContext,
+                 TypeQualifiers qualifiers)
     : FunctionType(TypeKind::Fun, result, astContext, qualifiers) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);
@@ -99,13 +128,3 @@ FunType::FunType(Type result, const ASTContext *astContext, TypeQualifiers quali
 //                                  const ASTContext &sc) {
 //   return new (sc) IntegerType(bitWidthKind, sc);
 // }
-
-IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                 const ASTContext &sc) {
-  return new (sc) IntegerType(bitWidthKind, sc);
-}
-
-FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &sc) {
-  return new (sc) FloatType(bitWidthKind, sc);
-}

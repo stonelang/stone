@@ -53,3 +53,8 @@ TypeSlabList *TypeSlabList::Create(llvm::ArrayRef<TypeSlab> slabs,
   void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeSlabList));
   return new (memPtr) TypeSlabList(llvm::MutableArrayRef<TypeSlab>());
 }
+
+TypeSlabs TypeSlabCollector::ComputeSlabs() {
+  TypeSlabs slabs;
+  return slabs;
+}

@@ -6,47 +6,66 @@ using namespace stone;
 Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext),
 
-      BuiltinVoidType(VoidType::Create(astContext)),
-      BuiltinNullType(new(astContext, AllocationArena::Permanent)
-                          NullType(astContext)),
-      BuiltinBoolType(new(astContext, AllocationArena::Permanent)
-                          BoolType(astContext)),
-      BuiltinFloat16Type(new(astContext, AllocationArena::Permanent)
-                             FloatType(NumberBitWidth::N16, astContext)),
-      BuiltinFloat32Type(new(astContext, AllocationArena::Permanent)
-                             FloatType(NumberBitWidth::N32, astContext)),
-      BuiltinFloat64Type(new(astContext, AllocationArena::Permanent)
-                             FloatType(NumberBitWidth::N64, astContext)),
-      BuiltinFloat128Type(new(astContext, AllocationArena::Permanent)
-                              FloatType(NumberBitWidth::N128, astContext)),
-      BuiltinFloatType(new(astContext, AllocationArena::Permanent)
-                           FloatType(NumberBitWidth::Platform, astContext)),
+      BuiltinVoidType(VoidType::Create(astContext, AllocationArena::Permanent,
+                                       TypeQualifiers())),
+      BuiltinNullType(NullType::Create(astContext, AllocationArena::Permanent,
+                                       TypeQualifiers())),
+      BuiltinBoolType(BoolType::Create(astContext, AllocationArena::Permanent,
+                                       TypeQualifiers())),
 
-      BuiltinInt8Type(new(astContext, AllocationArena::Permanent)
-                          IntegerType(NumberBitWidth::N16, astContext)),
-      BuiltinInt16Type(new(astContext, AllocationArena::Permanent)
-                           IntegerType(NumberBitWidth::N16, astContext)),
-      BuiltinInt32Type(new(astContext, AllocationArena::Permanent)
-                           IntegerType(NumberBitWidth::N32, astContext)),
-      BuiltinInt64Type(new(astContext, AllocationArena::Permanent)
-                           IntegerType(NumberBitWidth::N64, astContext)),
-      BuiltinInt128Type(new(astContext, AllocationArena::Permanent)
-                            IntegerType(NumberBitWidth::N128, astContext)),
-      BuiltinIntType(new(astContext, AllocationArena::Permanent)
-                         IntegerType(NumberBitWidth::Platform, astContext)),
+      BuiltinFloat16Type(FloatType::Create(NumberBitWidth::N16, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinFloat32Type(FloatType::Create(NumberBitWidth::N32, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinFloat64Type(FloatType::Create(NumberBitWidth::N64, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinFloat128Type(FloatType::Create(NumberBitWidth::N128, astContext,
+                                            AllocationArena::Permanent,
+                                            TypeQualifiers())),
+      BuiltinFloatType(FloatType::Create(NumberBitWidth::Platform, astContext,
+                                         AllocationArena::Permanent,
+                                         TypeQualifiers())),
 
-      BuiltinUInt8Type(new(astContext, AllocationArena::Permanent)
-                           UIntegerType(NumberBitWidth::N8, astContext)),
-      BuiltinUInt16Type(new(astContext, AllocationArena::Permanent)
-                            UIntegerType(NumberBitWidth::N16, astContext)),
-      BuiltinUInt32Type(new(astContext, AllocationArena::Permanent)
-                            UIntegerType(NumberBitWidth::N32, astContext)),
-      BuiltinUInt64Type(new(astContext, AllocationArena::Permanent)
-                            UIntegerType(NumberBitWidth::N64, astContext)),
-      BuiltinUInt128Type(new(astContext, AllocationArena::Permanent)
-                             UIntegerType(NumberBitWidth::N128, astContext)),
-      BuiltinUIntType(new(astContext, AllocationArena::Permanent)
-                          UIntegerType(NumberBitWidth::Platform, astContext)) {}
+      BuiltinInt8Type(IntegerType::Create(NumberBitWidth::N16, astContext,
+                                          AllocationArena::Permanent,
+                                          TypeQualifiers())),
+      BuiltinInt16Type(IntegerType::Create(NumberBitWidth::N16, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinInt32Type(IntegerType::Create(NumberBitWidth::N32, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinInt64Type(IntegerType::Create(NumberBitWidth::N64, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())),
+      BuiltinInt128Type(IntegerType::Create(NumberBitWidth::N128, astContext,
+                                            AllocationArena::Permanent,
+                                            TypeQualifiers())),
+      BuiltinIntType(IntegerType::Create(NumberBitWidth::Platform, astContext,
+                                         AllocationArena::Permanent,
+                                         TypeQualifiers())),
+
+      BuiltinUInt8Type(UIntegerType::Create(NumberBitWidth::N8, astContext,
+                                            AllocationArena::Permanent,
+                                            TypeQualifiers())),
+      BuiltinUInt16Type(UIntegerType::Create(NumberBitWidth::N16, astContext,
+                                             AllocationArena::Permanent,
+                                             TypeQualifiers())),
+      BuiltinUInt32Type(UIntegerType::Create(NumberBitWidth::N32, astContext,
+                                             AllocationArena::Permanent,
+                                             TypeQualifiers())),
+      BuiltinUInt64Type(UIntegerType::Create(NumberBitWidth::N64, astContext,
+                                             AllocationArena::Permanent,
+                                             TypeQualifiers())),
+      BuiltinUInt128Type(UIntegerType::Create(NumberBitWidth::N128, astContext,
+                                              AllocationArena::Permanent,
+                                              TypeQualifiers())),
+      BuiltinUIntType(UIntegerType::Create(NumberBitWidth::Platform, astContext,
+                                           AllocationArena::Permanent,
+                                           TypeQualifiers())) {}
 
 void Builtin::Initialize() {}
 

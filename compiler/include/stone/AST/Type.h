@@ -196,13 +196,6 @@ public:
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
 
-public:
-  bool IsBuiltinType() const;
-  bool IsFunType() const;
-  bool IsStructType() const;
-  bool IsPointerType() const;
-  bool IsReferenceType() const;
-
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
@@ -216,10 +209,6 @@ public:
 
 public:
   explicit CanType(TypeBase *ty) : CanType(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(TypeBase *ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

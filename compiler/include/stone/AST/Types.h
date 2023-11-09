@@ -77,7 +77,7 @@ protected:
   union {
     uint64_t OpaqueBits;
 
-    SWIFT_INLINE_BITFIELD_BASE(TypeBase,
+    STONE_INLINE_BITFIELD_BASE(TypeBase,
                                stone::BitMax(NumTypeKindBits, 8) +
                                    TypeQualifiers::BitWidth + 1 + 1,
                                /// Kind - The discriminator that indicates what
@@ -108,8 +108,8 @@ public:
   }
 
   void SetQualifiers(TypeQualifiers qualifiers) {
-    Bits.TypeBase.Qualifiers = qualifiers.GetBits();
-    assert(Bits.TypeBase.Qualifiers == qualifiers.GetBits() && "Bits dropped!");
+    Bits.TypeBase.qualifiers = qualifiers.GetBits();
+    assert(Bits.TypeBase.qualifiers == qualifiers.GetBits() && "Bits dropped!");
   }
 
   /// getRecursiveProperties - Returns the properties defined on the
@@ -121,6 +121,11 @@ public:
 public:
   bool IsBasic();
   bool IsNominalType();
+  bool IsBuiltinType() const;
+  bool IsFunType() const;
+  bool IsStructType() const;
+  bool IsPointerType() const;
+  bool IsReferenceType() const;
 
   /// getASTContext - Return the ASTContext that this type belongs to.
   ASTContext &GetASTContext();
@@ -165,15 +170,7 @@ public:
 
 private:
   CanType ComputeCanType();
-
-public:
-  // Types
-  bool IsBuiltinType() const;
-  bool IsFunType() const;
-  bool IsStructType() const;
-  bool IsPointerType() const;
-  bool IsReferenceType() const;
-
+  
 public:
 };
 
@@ -186,20 +183,25 @@ public:
 // };
 
 class FunctionType : public TypeBase {
-  QualType result;
+  Type result;
 
 public:
-  FunctionType(TypeKind kind, QualType result, const ASTContext *canType, TypeQualifiers qualifiers)
+  FunctionType(TypeKind kind, Type result, const ASTContext *canType,
+               TypeQualifiers qualifiers)
       : TypeBase(kind, canType, qualifiers) {}
 };
 
-// You are returning Type for now, it may have to be QualType
+// You are returning Type for now, it may have to be Type
 class FunType : public FunctionType,
-                private llvm::TrailingObjects<FunType, QualType> {
+                private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 
 public:
-  FunType(QualType result, const ASTContext *astContext, TypeQualifiers qualifiers);
+  FunType(Type result, const ASTContext *astContext, TypeQualifiers qualifiers);
+
+public:
+  static FunType *Create(Type result, const ASTContext &astContext,
+                         TypeQualifiers qualifiers = TypeQualifiers());
 };
 
 class NominalType : public TypeBase {
@@ -238,7 +240,8 @@ public:
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  BuiltinType(TypeKind kind, const ASTContext &astContext,
+              TypeQualifiers qualifiers)
       : TypeBase(kind, &astContext, qualifiers) {}
 };
 
@@ -246,20 +249,25 @@ class IdentifierType : public Type {};
 
 class ScalarType : public BuiltinType {
 public:
-  ScalarType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  ScalarType(TypeKind kind, const ASTContext &astContext,
+             TypeQualifiers qualifiers)
       : BuiltinType(kind, astContext, qualifiers) {}
 };
 
 class CharType : public ScalarType {
 public:
-  CharType(const ASTContext &astContext)
-      : ScalarType(TypeKind::Char, astContext) {}
+  CharType(const ASTContext &astContext, TypeQualifiers qualifiers)
+      : ScalarType(TypeKind::Char, astContext, qualifiers) {}
 };
 
 class BoolType : public ScalarType {
 public:
-  BoolType(const ASTContext &astContext)
-      : ScalarType(TypeKind::Bool, astContext) {}
+  BoolType(const ASTContext &astContext, TypeQualifiers qualifiers)
+      : ScalarType(TypeKind::Bool, astContext, qualifiers) {}
+
+public:
+  static BoolType *Create(const ASTContext &astContext,
+                          TypeQualifiers qualifiers = TypeQualifiers());
 };
 
 // class StringType : public BuiltinType {
@@ -301,6 +309,7 @@ struct NumberBitWidth final {
 using NumberBitWidthKind = NumberBitWidth::Kind;
 /// An abstract base class for integers and floats
 class NumberType : public ScalarType {
+
   NumberBitWidthKind bitWidthKind;
 
 public:
@@ -321,28 +330,36 @@ class IntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+              TypeQualifiers qualifiers)
       : NumberType(TypeKind::Integer, bitWidthKind, astContext) {}
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &astContext);
+                             const ASTContext &astContext,
+                             AllocationArena aread, TypeQualifiers qualifiers);
 };
 
 class UIntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+               TypeQualifiers qualifiers)
 
       : NumberType(TypeKind::UInteger, bitWidthKind, astContext, qualifiers) {}
+
+public:
+  static UIntegerType *Create(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+                              AllocationArena aread, TypeQualifiers qualifiers);
 };
 
 class ComplexType : public NumberType {
   friend class ASTContext;
 
 public:
-  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+              TypeQualifiers qualifiers)
       : NumberType(TypeKind::Complex, bitWidthKind, astContext, qualifiers) {}
 };
 
@@ -350,20 +367,29 @@ class ImaginaryType : public NumberType {
   friend class ASTContext;
 
 public:
-  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+                TypeQualifiers qualifiers)
       : NumberType(TypeKind::Imaginary, bitWidthKind, astContext, qualifiers) {}
+
+public:
+  static ImaginaryType *Create(NumberBitWidthKind bitWidthKind,
+                               const ASTContext &astContext,
+                               AllocationArena aread,
+                               TypeQualifiers qualifiers);
 };
 
 class FloatType : public NumberType {
   friend class ASTContext;
 
 public:
-  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
-      : NumberType(TypeKind::Float, bitWidthKind, astContext,  qualifiers) {}
+  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+            TypeQualifiers qualifiers)
+      : NumberType(TypeKind::Float, bitWidthKind, astContext, qualifiers) {}
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const ASTContext &astContext);
+                           const ASTContext &astContext, AllocationArena aread,
+                           TypeQualifiers qualifiers);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -376,14 +402,17 @@ public:
       : BuiltinType(TypeKind::Void, astContext, qualifiers) {}
 
 public:
-  static VoidType *Create(const ASTContext &astContext,
-                          AllocationArena arena = AllocationArena::Permanent);
+  static VoidType *Create(const ASTContext &astContext, AllocationArena arena,
+                          TypeQualifiers qualifiers);
 };
 
 class NullType : public BuiltinType {
 public:
   NullType(const ASTContext &astContext)
       : BuiltinType(TypeKind::Null, astContext, TypeQualifiers()) {}
+
+public:
+  static NullType *Create(const ASTContext &astContext, AllocationArena aread);
 };
 
 // This is how you deal with chunks
@@ -393,7 +422,8 @@ public:
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+  AbstractPointerType(TypeKind kind, const ASTContext &astContext,
+                      TypeQualifiers qualifiers)
       : TypeBase(kind, &astContext, qualifiers) {}
 };
 
@@ -427,8 +457,8 @@ public:
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &astContext)
       : TypeBase(TypeKind::Module, &astContext, TypeQualifiers()), mod(mod) {
-        Bits.TypeBase.AllowQualifiers = false;
-      }
+    Bits.TypeBase.AllowQualifiers = false;
+  }
 };
 
 class SweetType : public TypeBase {

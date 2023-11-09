@@ -1,4 +1,11 @@
 
+const fun Print() -> void {
 
+}
+
+fun GetAny() -> const Any* {
+
+}
 fun Main() -> void {
+	Print();
 }
