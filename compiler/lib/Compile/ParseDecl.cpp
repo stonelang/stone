@@ -181,15 +181,11 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
 
-  // At this stage, only the pure modifier is allowed
-  if (collector.GetTypeCollector()
-          .GetTypeQualifierCollector()
-          .GetFastQuals()
-          .HasAny() &&
+  // At this stage, only the const modifier is allowed
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeCollector()
            .GetTypeQualifierCollector()
-           .GetFastQuals()
-           .HasPureOnly()) {
+           .HasConstOnly()) {
     // Do some logging
     return stone::MakeParserError();
   }

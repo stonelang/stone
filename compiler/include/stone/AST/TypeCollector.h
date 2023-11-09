@@ -9,9 +9,9 @@
 
 namespace stone {
 
-class QualType;
+class Type;
 class TypeCollector final {
-  QualType qualType;
+  Type ty;
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   TypeSlabCollector typeChunkCollector;
@@ -45,11 +45,11 @@ public:
   }
 
 public:
-  void SetType(QualType qualType);
-  QualType GetType();
+  void SetType(Type ty);
+  Type GetType();
 
 public:
-  QualType Apply(const stone::ASTContext &astContext, QualType qualType) const;
+  QualType Apply(const stone::ASTContext &astContext, Type ty) const;
 };
 
 } // namespace stone

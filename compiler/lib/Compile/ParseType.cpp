@@ -106,9 +106,9 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
 
   CollectTypeSlabs(collector);
-  TypeSlabList *chunks = nullptr;
+  TypeSlabList *slabs = nullptr;
   if (collector.GetTypeSlabCollector().HasAny()) {
-    chunks = TypeSlabList::Create(
+    slabs = TypeSlabList::Create(
         collector.GetTypeSlabCollector().GetTypeSlabs(), GetASTContext());
   }
 
@@ -150,8 +150,8 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   //   ty.SetTypeQualifiers(
   //       collector.GetTypeQualifierCollector().GetTypeQualifiers());
   // }
-  // if (chunks) {
-  //   ty.SetTypeSlabs(chunks);
+  // if (slabs) {
+  //   ty.SetTypeSlabs(slabs);
   // }
 
   return ty;

@@ -47,9 +47,10 @@ namespace stone {
 class Type;
 class TypeBase;
 class CanType;
-class QualType;
+class TypeCollector;
 class TypeWalker;
 class SweetType;
+class ASTContext;
 class ASTPrinter;
 class EnumDecl;
 class ModuleDecl;
@@ -59,7 +60,8 @@ class StructDecl;
 class alignas(1 << TypeAlignInBits) TypeBase
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
 
-  friend class ASTContext;
+  friend ASTContext;
+  friend TypeCollector;
 
   TypeBase(const TypeBase &) = delete;
   void operator=(const TypeBase &) = delete;
@@ -74,26 +76,46 @@ class alignas(1 << TypeAlignInBits) TypeBase
 protected:
   union {
     uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(TypeBase,
-                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
+
+    SWIFT_INLINE_BITFIELD_BASE(TypeBase,
+                               stone::BitMax(NumTypeKindBits, 8) +
+                                   TypeQualifiers::BitWidth + 1 + 1,
+                               /// Kind - The discriminator that indicates what
+                               /// subclass of type this is.
+                               kind
                                : stone::BitMax(NumTypeKindBits, 8),
+
+                                 qualifiers
+                               : TypeQualifiers::BitWidth,
 
                                  /// Whether this type is canonical or not.
                                  IsCanonical : 1,
-                                 // Whether this type can have qualifiers
-                                 AllowQuals : 1);
+
+                                 AllowQualifiers : 1);
 
     STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
   } Bits;
 
 public:
-  TypeBase(TypeKind kind, const ASTContext *canType)
+  TypeBase(TypeKind kind, const ASTContext *canType, TypeQualifiers qualifiers)
       : kind(kind), canonicalType((TypeBase *)nullptr) {
     Bits.TypeBase.Kind = static_cast<unsigned>(kind);
     if (canType) {
       canonicalType = canType;
     }
+    SetQualifiers(qualifiers);
+  }
+
+  void SetQualifiers(TypeQualifiers qualifiers) {
+    Bits.TypeBase.Qualifiers = qualifiers.GetBits();
+    assert(Bits.TypeBase.Qualifiers == qualifiers.GetBits() && "Bits dropped!");
+  }
+
+  /// getRecursiveProperties - Returns the properties defined on the
+  /// structure of this type.
+  TypeQualifiers GetQualifiers() const {
+    return TypeQualifiers(Bits.TypeBase.qualifiers);
   }
 
 public:
@@ -109,13 +131,21 @@ public:
   // TypeKind GetKind() const { return
   // static_cast<TypeKind>(Bits.Type.Kind); }
 
-  // We can do this because all types are generally cannonical types.
-  // CanType GetCanType();
+public:
+  // Qualifiers
+  bool AllowQualifiers()() const { return Bits.TypeBase.AllowQualifiers; }
 
-  bool AllowQuals() const { return Bits.TypeBase.AllowQuals; }
+  bool HasConstQualifer() const { return GetQualifiers().HasCont(); }
 
-  bool HasQuals() const;
+  bool HasPermQualifer() const { return GetQualifiers().HasPerm(); }
 
+  bool HasOwnQualifer() const { return GetQualifiers().HasOwn(); }
+
+  bool HasMutableQualifer() const { return GetQualifiers().HasMutable(); }
+
+public:
+  /// isCanonical - Return true if this is a canonical type.
+  bool IsCanonical() const { return Bits.TypeBase.IsCanonical; }
   /// isCanonical - Return true if this is a canonical type.
   bool IsCanType() const { return canonicalType.is<const ASTContext *>(); }
 
@@ -123,10 +153,21 @@ public:
   /// canonical version of this type.
   bool IsCanTypeComputed() const { return !canonicalType.isNull(); }
 
+  CanType GetCanType() const {
+    if (IsCanonical()) {
+      return CanType(const_cast<TypeBase *>(this));
+    }
+    if (IsCanTypeComputed()) {
+      return canonicalType;
+    }
+    return const_cast<TypeBase *>(this)->ComputeCanType();
+  }
+
 private:
   CanType ComputeCanType();
 
 public:
+  // Types
   bool IsBuiltinType() const;
   bool IsFunType() const;
   bool IsStructType() const;
@@ -148,8 +189,8 @@ class FunctionType : public TypeBase {
   QualType result;
 
 public:
-  FunctionType(TypeKind kind, QualType result, const ASTContext *canType)
-      : TypeBase(kind, canType) {}
+  FunctionType(TypeKind kind, QualType result, const ASTContext *canType, TypeQualifiers qualifiers)
+      : TypeBase(kind, canType, qualifiers) {}
 };
 
 // You are returning Type for now, it may have to be QualType
@@ -158,7 +199,7 @@ class FunType : public FunctionType,
   friend TrailingObjects;
 
 public:
-  FunType(QualType result, const ASTContext *astContext);
+  FunType(QualType result, const ASTContext *astContext, TypeQualifiers qualifiers);
 };
 
 class NominalType : public TypeBase {
@@ -197,16 +238,16 @@ public:
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &astContext)
-      : TypeBase(kind, &astContext) {}
+  BuiltinType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : TypeBase(kind, &astContext, qualifiers) {}
 };
 
 class IdentifierType : public Type {};
 
 class ScalarType : public BuiltinType {
 public:
-  ScalarType(TypeKind kind, const ASTContext &astContext)
-      : BuiltinType(kind, astContext) {}
+  ScalarType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : BuiltinType(kind, astContext, qualifiers) {}
 };
 
 class CharType : public ScalarType {
@@ -264,8 +305,8 @@ class NumberType : public ScalarType {
 
 public:
   NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-             const ASTContext &astContext)
-      : ScalarType(kind, astContext), bitWidthKind(bitWidthKind) {}
+             const ASTContext &astContext, TypeQualifiers qualifiers)
+      : ScalarType(kind, astContext, qualifiers), bitWidthKind(bitWidthKind) {}
 
 public:
   unsigned GetNumberBitWidth() const {
@@ -280,7 +321,7 @@ class IntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
       : NumberType(TypeKind::Integer, bitWidthKind, astContext) {}
 
 public:
@@ -292,33 +333,33 @@ class UIntegerType : public NumberType {
   friend class ASTContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
+  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
 
-      : NumberType(TypeKind::UInteger, bitWidthKind, astContext) {}
+      : NumberType(TypeKind::UInteger, bitWidthKind, astContext, qualifiers) {}
 };
 
 class ComplexType : public NumberType {
   friend class ASTContext;
 
 public:
-  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
-      : NumberType(TypeKind::Complex, bitWidthKind, astContext) {}
+  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : NumberType(TypeKind::Complex, bitWidthKind, astContext, qualifiers) {}
 };
 
 class ImaginaryType : public NumberType {
   friend class ASTContext;
 
 public:
-  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
-      : NumberType(TypeKind::Imaginary, bitWidthKind, astContext) {}
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : NumberType(TypeKind::Imaginary, bitWidthKind, astContext, qualifiers) {}
 };
 
 class FloatType : public NumberType {
   friend class ASTContext;
 
 public:
-  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext)
-      : NumberType(TypeKind::Float, bitWidthKind, astContext) {}
+  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : NumberType(TypeKind::Float, bitWidthKind, astContext,  qualifiers) {}
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
@@ -331,8 +372,8 @@ public:
 
 class VoidType : public BuiltinType {
 public:
-  VoidType(const ASTContext &astContext)
-      : BuiltinType(TypeKind::Void, astContext) {}
+  VoidType(const ASTContext &astContext, TypeQualifiers qualifiers)
+      : BuiltinType(TypeKind::Void, astContext, qualifiers) {}
 
 public:
   static VoidType *Create(const ASTContext &astContext,
@@ -342,18 +383,18 @@ public:
 class NullType : public BuiltinType {
 public:
   NullType(const ASTContext &astContext)
-      : BuiltinType(TypeKind::Null, astContext) {}
+      : BuiltinType(TypeKind::Null, astContext, TypeQualifiers()) {}
 };
 
 // This is how you deal with chunks
-class ChunkType : public TypeBase, public llvm::FoldingSetNode {
+class SlabType : public TypeBase, public llvm::FoldingSetNode {
 public:
 };
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const ASTContext &astContext)
-      : TypeBase(kind, &astContext) {}
+  AbstractPointerType(TypeKind kind, const ASTContext &astContext, TypeQualifiers qualifiers)
+      : TypeBase(kind, &astContext, qualifiers) {}
 };
 
 class PointerType : public AbstractPointerType {
@@ -385,7 +426,9 @@ public:
 
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &astContext)
-      : TypeBase(TypeKind::Module, &astContext), mod(mod) {}
+      : TypeBase(TypeKind::Module, &astContext, TypeQualifiers()), mod(mod) {
+        Bits.TypeBase.AllowQualifiers = false;
+      }
 };
 
 class SweetType : public TypeBase {
@@ -428,80 +471,6 @@ public:
 // class ArrayType : public Type, public llvm::FoldingSetNode {
 // public:
 // };
-
-class QualifierType : public TypeBase {
-
-  friend class TypeBase;
-
-  TypeBase *typeBase;
-  SrcLoc qualifierLoc;
-
-public:
-  QualifierType(TypeKind kind, TypeBase *typeBase, SrcLoc qualifierLoc,
-                ASTContext &astContext)
-      : Type(Kind, astContext), typeBase(typeBase), qualifierLoc(qualifierLoc) {
-  }
-
-  TypeBase *GetBase() const { return typeBase; }
-  SourceLoc GetSrcLoc() const { return qualifierLoc; }
-
-  static bool classof(const TypeBase *typeBase) {
-    return typeBase->GetKind() == TypeKind::Const ||
-           typeBase->GetKind() == TypeKind::Mutable ||
-           typeBase->GetKind() == TypeKind::Own;
-  }
-  static bool classof(const QualifierType *T) { return true; }
-
-private:
-  // SrcLoc GetStartLocImpl() const { return SpecifierLoc; }
-  // SrcLoc GetEndLocImpl() const { return typeBase->getEndLoc(); }
-
-  // void PrintImpl(ASTPrinter &Printer, const PrintOptions &Opts) const;
-};
-
-class OwnedType : public QualifierType {
-public:
-  OwnedType(TypeBase *typeBase, SrcLoc ownLoc, ASTContext &astContext)
-      : QualifierType(TypeKind::Own, typeBase, ownLoc, astContext) {}
-
-  static bool classof(const TypeBase *T) {
-    return T->GetKind() == TypeKind::Owned;
-  }
-  static bool classof(const OwnedType *T) { return true; }
-
-public:
-  static OwnedType *Create();
-};
-
-class ConstType : public QualifierType {
-public:
-  ConstType(TypeBase *typeBase, SrcLoc constLoc, ASTContext &astContext)
-      : QualifierType(TypeKind::Const, typeBase, constLoc, astContext) {}
-
-public:
-  static bool classof(const TypeBase *T) {
-    return T->GetKind() == TypeKind::Const;
-  }
-  static bool classof(const ConstType *T) { return true; }
-
-public:
-  static ConstType *Create();
-};
-
-class MutableType : public QualifierType {
-public:
-  MutableType(TypeBase *typeBase, SrcLoc mutableLoc, ASTContext &astContext)
-      : QualifierType(TypeKind::Mutable, typeBase, mutableLoc, astContext) {}
-
-public:
-  static bool classof(const TypeBase *T) {
-    return T->GetKind() == TypeKind::Mutable;
-  }
-  static bool classof(const ConstType *T) { return true; }
-
-public:
-  static MutableType *Create();
-};
 
 } // namespace stone
 #endif

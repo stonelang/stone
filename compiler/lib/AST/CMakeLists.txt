@@ -31,6 +31,7 @@ set(stone_ast_sources
 	Type.cpp
 	TypeQualifier.cpp
 	TypeSlab.cpp
+	TypeWalker.cpp
 	TypeOperator.cpp
 	VirtualTable.cpp
 

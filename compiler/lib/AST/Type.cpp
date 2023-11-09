@@ -59,7 +59,7 @@ VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
 /// Collect any qualifiers on the given type and return an
 /// unqualified type.  The qualifiers are assumed to be consistent
 /// with those already in the type.
-// const Type *TypeQualifierCollector::StripQualsFromType(QualType type) {
+// const Type *TypeQualifierCollector::StripQualsFromType(Type type) {
 //   // TODO:
 //   //  AddFastQualifiers(type.GetLocalFastQualifiers());
 //   //  if (!type.HasLocalNonFastQualifiers()){
@@ -68,16 +68,16 @@ VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
 //   return nullptr;
 // }
 
-// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
-//                                                   QualType qt) const {
+// Type TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
+//                                                   Type qt) const {
 //   // You can do this because the type was saved in the ASTContext
 //   // So, look up the type from the context and apple the qualifiers to it.
-//   return QualType();
+//   return Type();
 // }
 
 // // THINK about this
 // /// Apply the collected qualifiers to the given type.
-// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext
+// Type TypeQualifierCollector::ApplyQualsToType(const ASTContext
 // &Context,
 //                                        const Type *ty) const {}
 
@@ -88,10 +88,10 @@ SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
 
 SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
-void TypeLoc::SetType(QualType ty) {}
+void TypeLoc::SetType(Type ty) {}
 
-FunType::FunType(QualType result, const ASTContext *sc)
-    : FunctionType(TypeKind::Fun, result, sc) {}
+FunType::FunType(Type result, const ASTContext *astContext, TypeQualifiers qualifiers)
+    : FunctionType(TypeKind::Fun, result, astContext, qualifiers) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);
 
