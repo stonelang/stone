@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANA_TYPECHECKACCESS_H
-#define STONE_CODEANA_TYPECHECKACCESS_H
+#ifndef STONE_COMPILE_TYPECHECKACCESS_H
+#define STONE_COMPILE_TYPECHECKACCESS_H
 
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Availability.h"

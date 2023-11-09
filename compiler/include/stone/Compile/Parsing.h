@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANA_PARSING_H
-#define STONE_CODEANA_PARSING_H
+#ifndef STONE_COMPILE_PARSING_H
+#define STONE_COMPILE_PARSING_H
 
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/DeclCollector.h"

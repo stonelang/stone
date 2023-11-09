@@ -1,5 +1,5 @@
-#ifndef STONE_CODEANA_PARSER_H
-#define STONE_CODEANA_PARSER_H
+#ifndef STONE_COMPILE_PARSER_H
+#define STONE_COMPILE_PARSER_H
 
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
