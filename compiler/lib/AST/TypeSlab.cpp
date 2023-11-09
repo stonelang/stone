@@ -47,10 +47,9 @@ TypeSlabList::TypeSlabList(llvm::ArrayRef<TypeSlab> slabs) {
 }
 
 TypeSlabList *TypeSlabList::Create(llvm::ArrayRef<TypeSlab> slabs,
-                                     ASTContext &sc) {
+                                   ASTContext &sc) {
 
-  unsigned sizeToAlloc =
-      TypeSlabList::totalSizeToAlloc<TypeSlab>(slabs.size());
+  unsigned sizeToAlloc = TypeSlabList::totalSizeToAlloc<TypeSlab>(slabs.size());
   void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeSlabList));
   return new (memPtr) TypeSlabList(llvm::MutableArrayRef<TypeSlab>());
 }

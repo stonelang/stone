@@ -12,10 +12,10 @@
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Compile/Lexer.h"
 #include "stone/Compile/ParserResult.h"
 #include "stone/Compile/Parsing.h"
-#include "stone/CodeCompletionListener.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -169,13 +169,13 @@ public:
 
   // TODO: Passing ParsingDeclCollector -- may just want to pass the Type
   // collectors in the furture. This is ok for now.
-  QualType ParseType(TypeCollector &collector, Diag<> diagID);
-  QualType ParseFunctionType(TypeCollector &collector, Diag<> diagID);
-  QualType ParsePointerType(TypeCollector &collector, Diag<> diagID);
-  QualType ParseReferenceType(TypeCollector &collector, Diag<> diagID);
-  QualType ParseDeclResultType(TypeCollector &collector, Diag<> diagID);
-  QualType ParseBasicType(TypeCollector &collector, Diag<> diagID);
-  QualType ParseIdentifierType(TypeCollector &collector, Diag<> diagID);
+  Type ParseType(TypeCollector &collector, Diag<> diagID);
+  Type ParseFunctionType(TypeCollector &collector, Diag<> diagID);
+  Type ParsePointerType(TypeCollector &collector, Diag<> diagID);
+  Type ParseReferenceType(TypeCollector &collector, Diag<> diagID);
+  Type ParseDeclResultType(TypeCollector &collector, Diag<> diagID);
+  Type ParseBasicType(TypeCollector &collector, Diag<> diagID);
+  Type ParseIdentifierType(TypeCollector &collector, Diag<> diagID);
 
 public:
   //== fun ==//

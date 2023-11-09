@@ -4,9 +4,9 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeSlab.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
+#include "stone/AST/TypeSlab.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -209,81 +209,38 @@ private:
   void operator!=(Type T) const = delete;
 };
 
-class QualType : public Type {
-  friend class TypeCollector;
-
-  TypeQualifier constTypeQual{TypeQualifierKind::Const};;
-  TypeQualifier ownTypeQual{TypeQualifierKind::Pure};
-  TypeQualifier mutableTypeQual{TypeQualifierKind::Mutable};
-
-public:
-  QualType(TypeBase *typePtr = nullptr) : Type(typePtr) {}
-
-public:
-  TypeQualifier &GetConst() { return constTypeQual; }
-  TypeQualifier &GetOwn() { return immutableTypeQual; }
-  TypeQualifier &GetMutable() { return mutableTypeQual; }
-
-public:
-  bool HasAny() {
-    return GetConst().IsValid() || GetRestrict().IsValid() ||
-           GetVolatile().IsValid() || GetPure().IsValid() ||
-           GetImmutable().IsValid() || GetMutable().IsValid();
-  }
-  void ClearAll() {
-    GetConst().Clear();
-    GetRestrict().Clear();
-    GetVolatile().Clear();
-    GetPure().Clear();
-    GetImmutable().Clear();
-    GetMutable().Clear();
-  }
-  FastTypeQualifiers FastTypeQualifiers() { return fastQuals; }
-  // private:
-  //   // Direct comparison is disabled for types, because they may not be
-  //   canonical. void operator==(QualType T) const = delete; void
-  //   operator!=(QualType T) const = delete;
-};
-
-class CanType final : public QualType {
+class CanType final : public Type {
 public:
   /// Constructs a NULL canonical type.
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : QualType(ty) {
-    // assert(IsCanTypeOrNull() &&
-    //        "Forming a CanType out of a non-canonical type!");
-  }
-
-  // explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-  //                  TypeSlabList *slabs)
-  //     : QualType(ty, quals, slabs) {
-  //   assert(IsCanTypeOrNull() &&
-  //          "Forming a CanType out of a non-canonical type!");
-  // }
-
-  explicit CanType(QualType ty) : QualType(ty) {
+  explicit CanType(TypeBase *ty) : CanType(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  // explicit CanType(QualType ty) : QualType(ty) {
-  //     assert(IsCanTypeOrNull() &&
-  //            "Forming a CanType out of a non-canonical type!");
-  //   }
+  explicit CanType(TypeBase *ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+  explicit CanType(Type ty) : Type(ty) {
+    assert(IsCanTypeOrNull() &&
+           "Forming a CanType out of a non-canonical type!");
+  }
+
 private:
   bool IsCanTypeOrNull() const { return true; }
 
 public:
-  // void Visit(llvm::function_ref<void(CanType)> fn) const {
-  //   FindIf([&fn](QualType t) -> bool {
-  //     fn(CanType(t));
-  //     return false;
-  //   });
-  // }
-  // bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
-  //   return Type::FindIf([&fn](QualType t) { return fn(CanType(t)); });
-  // }
+  void Visit(llvm::function_ref<void(CanType)> fn) const {
+    FindIf([&fn](Type t) -> bool {
+      fn(CanType(t));
+      return false;
+    });
+  }
+  bool FindIf(llvm::function_ref<bool(CanType)> fn) const {
+    return Type::FindIf([&fn](Type t) { return fn(CanType(t)); });
+  }
 
 public:
   // Direct comparison is allowed for CanTypes - they are known canonical.

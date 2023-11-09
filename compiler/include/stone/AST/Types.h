@@ -429,7 +429,6 @@ public:
 // public:
 // };
 
-
 class QualifierType : public TypeBase {
 
   friend class TypeBase;
@@ -438,20 +437,21 @@ class QualifierType : public TypeBase {
   SrcLoc qualifierLoc;
 
 public:
-  QualifierType(TypeKind kind, TypeBase *typeBase, SrcLoc qualifierLoc, ASTContext& astContext)
-    : Type(Kind, astContext), typeBase(typeBase), qualifierLoc(qualifierLoc) {
+  QualifierType(TypeKind kind, TypeBase *typeBase, SrcLoc qualifierLoc,
+                ASTContext &astContext)
+      : Type(Kind, astContext), typeBase(typeBase), qualifierLoc(qualifierLoc) {
   }
-  
+
   TypeBase *GetBase() const { return typeBase; }
   SourceLoc GetSrcLoc() const { return qualifierLoc; }
-  
+
   static bool classof(const TypeBase *typeBase) {
     return typeBase->GetKind() == TypeKind::Const ||
            typeBase->GetKind() == TypeKind::Mutable ||
            typeBase->GetKind() == TypeKind::Own;
   }
   static bool classof(const QualifierType *T) { return true; }
-  
+
 private:
   // SrcLoc GetStartLocImpl() const { return SpecifierLoc; }
   // SrcLoc GetEndLocImpl() const { return typeBase->getEndLoc(); }
@@ -461,7 +461,7 @@ private:
 
 class OwnedType : public QualifierType {
 public:
-  OwnedType(TypeBase *typeBase, SrcLoc ownLoc, ASTContext& astContext)
+  OwnedType(TypeBase *typeBase, SrcLoc ownLoc, ASTContext &astContext)
       : QualifierType(TypeKind::Own, typeBase, ownLoc, astContext) {}
 
   static bool classof(const TypeBase *T) {
@@ -470,12 +470,12 @@ public:
   static bool classof(const OwnedType *T) { return true; }
 
 public:
-  static OwnedType* Create();
+  static OwnedType *Create();
 };
 
 class ConstType : public QualifierType {
 public:
-  ConstType(TypeBase *typeBase, SrcLoc constLoc, ASTContext& astContext)
+  ConstType(TypeBase *typeBase, SrcLoc constLoc, ASTContext &astContext)
       : QualifierType(TypeKind::Const, typeBase, constLoc, astContext) {}
 
 public:
@@ -484,13 +484,13 @@ public:
   }
   static bool classof(const ConstType *T) { return true; }
 
- public:
-  static ConstType* Create();
+public:
+  static ConstType *Create();
 };
 
 class MutableType : public QualifierType {
 public:
-  MutableType(TypeBase *typeBase, SrcLoc mutableLoc, ASTContext& astContext)
+  MutableType(TypeBase *typeBase, SrcLoc mutableLoc, ASTContext &astContext)
       : QualifierType(TypeKind::Mutable, typeBase, mutableLoc, astContext) {}
 
 public:
@@ -498,10 +498,10 @@ public:
     return T->GetKind() == TypeKind::Mutable;
   }
   static bool classof(const ConstType *T) { return true; }
-public:
-  static MutableType* Create();
-};
 
+public:
+  static MutableType *Create();
+};
 
 } // namespace stone
 #endif

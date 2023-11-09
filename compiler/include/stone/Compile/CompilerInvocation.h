@@ -209,9 +209,7 @@ public:
     return GetCompilerOptions().GetMode().IsPrintVersion();
   }
 
-  Mode& GetMode() {
-    return GetCompilerOptions().GetMode();
-  }
+  Mode &GetMode() { return GetCompilerOptions().GetMode(); }
 
   bool CanCompile() { return GetCompilerOptions().GetMode().CanCompile(); }
 

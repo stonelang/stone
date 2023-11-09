@@ -73,7 +73,7 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
   if (invocation.IsPrintVersion()) {
-    //invocation.PrintVersion();
+    // invocation.PrintVersion();
     return Finish();
   }
   if (!invocation.CanCompile()) {
@@ -163,8 +163,7 @@ Status Compiling::PerformSyntaxAnalysis(CompilerInstance &compiler) {
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *astFile = llvm::dyn_cast<stone::ASTFile>(moduleFile)) {
-      Lang::ParseASTFile(*astFile, GetASTContext(),
-                         invocation.GetListener());
+      Lang::ParseASTFile(*astFile, GetASTContext(), invocation.GetListener());
     }
   }
   Compiling::NotifySyntaxAnalysisCompleted(compiler);
@@ -313,7 +312,7 @@ Status Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
 }
 
 Status Compiling::PerformIRGeneration(CompilerInstance &compiler,
-                                    CodeGenContext &codeGenContext) {
+                                      CodeGenContext &codeGenContext) {
 
   const auto &invocation = compiler.GetInvocation();
   const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
@@ -323,23 +322,23 @@ Status Compiling::PerformIRGeneration(CompilerInstance &compiler,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compiler.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-    Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename, mainModule,
-                primaryFileSpecificPaths);
+    Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename,
+                mainModule, primaryFileSpecificPaths);
   } else if (compiler.IsASTFileCodeGen()) {
     for (auto *primaryASTFile : compiler.GetPrimaryASTFiles()) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
           compiler.GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-      Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename, primaryASTFile,
-                  primaryFileSpecificPaths);
+      Lang::GenIR(codeGenContext, primaryFileSpecificPaths.outputFilename,
+                  primaryASTFile, primaryFileSpecificPaths);
     }
   }
   return Status();
 }
 
 Status Compiling::PerformNativeGeneration(CompilerInstance &compiler,
-                                        CodeGenContext &codeGenContext) {
+                                          CodeGenContext &codeGenContext) {
 
-  auto result = Lang::GenNative(codeGenContext, llvm::StringRef()/*TODO*/,
+  auto result = Lang::GenNative(codeGenContext, llvm::StringRef() /*TODO*/,
                                 compiler.GetInvocation().GetListener());
   return Status::Success();
 

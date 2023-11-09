@@ -22,8 +22,7 @@ enum class TypeSlabKind {
   Paren,
   Pipe,
 };
-class alignas(1 << TypeAlignInBits) TypeSlab
-    : stone::ASTAllocation<TypeSlab> {
+class alignas(1 << TypeAlignInBits) TypeSlab : stone::ASTAllocation<TypeSlab> {
   SrcLoc loc;
   TypeSlabKind kind;
 
@@ -107,8 +106,7 @@ public:
   TypeSlabList(llvm::ArrayRef<TypeSlab> slabs);
 
 public:
-  static TypeSlabList *Create(llvm::ArrayRef<TypeSlab> slabs,
-                               ASTContext &sc);
+  static TypeSlabList *Create(llvm::ArrayRef<TypeSlab> slabs, ASTContext &sc);
 };
 
 class TypeSlabCollector final {

@@ -3,8 +3,8 @@
 #include "stone/Basic/Char.h"
 #include "stone/Basic/CompileDiagnostic.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/Confusable.h"
 #include "stone/CodeCompletionListener.h"
+#include "stone/Compile/Confusable.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"

@@ -51,7 +51,6 @@ class ValueDecl;
 class VarDecl;
 struct ASTNode;
 class Type;
-class QualType;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
@@ -376,17 +375,17 @@ public:
 
 class ValueDecl : public NameableDecl {
 
-  QualType type;
+  Type type;
   AccessLevel level;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType type,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
             UnifiedContext context)
       : NameableDecl(kind, name, nameLoc, context), type(type) {}
 
 public:
-  void SetType(QualType inputType) { type = inputType; }
-  QualType GetType() { return type; }
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
@@ -441,7 +440,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, QualType type,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
            UnifiedContext context)
       : ValueDecl(kind, name, nameLoc, type, context) {}
 
@@ -495,7 +494,7 @@ public:
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
   GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
-                  QualType type,
+                  Type type,
                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
                   GenericParamList *genericParams = nullptr);
 };
@@ -585,7 +584,7 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType retType,
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type retType,
                DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, retType, parent) {}
@@ -637,13 +636,13 @@ class FunDecl : public FunctionDecl {
   bool hasLBrace;
 
   /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
-  /// and Oject* is the QualType which is the resultType
+  /// and Oject* is the Type which is the resultType
   TypeLoc result;
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-          QualType result, DeclContext *parent)
+          Type result, DeclContext *parent)
       : FunctionDecl(kind, name, nameLoc, result, parent) {}
 
 public:
@@ -748,7 +747,7 @@ class VarDecl : public StorageDecl {
 public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
-  // QualType GetQualType() const;
+  // Type GetType() const;
 public:
   static VarDecl *Create(ASTContext &sc);
 };

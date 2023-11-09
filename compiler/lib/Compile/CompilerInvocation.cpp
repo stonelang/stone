@@ -152,8 +152,8 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (!inputFileOrError) {
     GetLang().GetDiags().PrintD(SrcLoc(),
-                              diag::err_unable_to_open_buffer_for_file,
-                              diag::LLVMStr(input.GetFileName()));
+                                diag::err_unable_to_open_buffer_for_file,
+                                diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
 
@@ -354,7 +354,6 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
   //         .Case("hard", llvm::FloatABI::Hard)
   //         .Default(llvm::FloatABI::Default);
 }
-
 
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,

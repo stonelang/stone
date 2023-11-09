@@ -3,9 +3,9 @@
 
 #include "stone/AST/Specifier.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeSlab.h"
 #include "stone/AST/TypeOperator.h"
 #include "stone/AST/TypeQualifier.h"
+#include "stone/AST/TypeSlab.h"
 
 namespace stone {
 

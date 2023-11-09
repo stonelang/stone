@@ -37,7 +37,7 @@ set(stone_compile_sources
 	LINK_LIBS
 	StoneAST
 	StoneBasic
-	StoneCompile
+	StoneOptions
 	StoneCodeGen
 	clangFrontend
 

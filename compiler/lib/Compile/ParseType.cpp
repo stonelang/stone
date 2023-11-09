@@ -7,9 +7,9 @@
 using namespace stone;
 
 // fun Do() -> '() -> int'
-QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 
-  QualType result;
+  Type result;
   ParsingScope parsingType(*this, ASTScopeKind::FunctionType, "parsing type");
   // TODO: We are asserting these for now but we may just want to log some ass
   // erros
@@ -51,8 +51,8 @@ QualType Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 }
 
 // Similar to ParseDeclSpecifiers
-QualType Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
-  QualType result;
+Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
+  Type result;
   ParsingScope parsingType(*this, ASTScopeKind::Type, "parsing type");
 
   // if (collector.GetFunctionSpecifierCollector().HasFun() &&
@@ -68,7 +68,7 @@ QualType Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   }
 
   // if (collector.GetTypeQualifierCollector().HasAny()) {
-  //   QualType qualType(type);
+  //   Type qualType(type);
   // }
   // assert(IsBasicType(curTok.GetKind()) &&
   //        "The current token is not a basic type");
@@ -86,11 +86,11 @@ QualType Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   return result;
 }
 
-QualType Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   // Collect the type -- only basic types for now (TODO: user type  and function
@@ -112,7 +112,7 @@ QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
         collector.GetTypeSlabCollector().GetTypeSlabs(), GetASTContext());
   }
 
-  QualType ty;
+  Type ty;
   // TypeBase *ty = nullptr;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
 
@@ -157,7 +157,7 @@ QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   return ty;
 }
 
-QualType Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
-  QualType result;
+Type Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
+  Type result;
   return result;
 }

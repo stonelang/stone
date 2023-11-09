@@ -30,8 +30,10 @@ public:
 
   static Status PerformIRGeneration(CompilerInstance &compiler,
                                     CodeGenContext &codeGenContext);
-  static void PerformDumpIR(CompilerInstance& compiler, CodeGenContext &codeGenContext);
-  static void PerformPrintIR(CompilerInstance& compiler, CodeGenContext &codeGenContext);
+  static void PerformDumpIR(CompilerInstance &compiler,
+                            CodeGenContext &codeGenContext);
+  static void PerformPrintIR(CompilerInstance &compiler,
+                             CodeGenContext &codeGenContext);
   static Status PerformNativeGeneration(CompilerInstance &compiler,
                                         CodeGenContext &codeGenContext);
   static void NotifyNativeGenerationCompleted(CompilerInstance &compiler);
