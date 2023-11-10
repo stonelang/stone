@@ -8,7 +8,7 @@ namespace diag {
 // Declare common diagnostics objects with their appropriate types.
 #define DIAG(KIND, ID, Options, Text, Signature)                               \
   extern detail::DiagWithArguments<void Signature>::type ID;
-#include "CompileDiagnostic.def"
+#include "AnalysisDiagnostic.def"
 } // namespace diag
 } // namespace stone
 
