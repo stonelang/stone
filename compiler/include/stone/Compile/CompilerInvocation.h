@@ -196,7 +196,9 @@ public:
 public:
   Status ParseArgs(llvm::ArrayRef<const char *> args);
   llvm::opt::OptTable &GetOptTable() { *optTableAndInputArgListPair.first; }
-  llvm::opt::InputArgList &GetInputArgList() { *optTableAndInputArgListPair.second; }
+  llvm::opt::InputArgList &GetInputArgList() {
+    *optTableAndInputArgListPair.second;
+  }
 
 public:
   bool IsAlien() { return GetCompilerOptions().GetMode().IsAlien(); }

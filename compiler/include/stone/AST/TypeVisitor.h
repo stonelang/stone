@@ -22,7 +22,6 @@
 
 namespace stone {
 
-
 // template<typename ImplClass, typename RetTy = void, typename... Args>
 // class CanTypeVisitor {
 // public:
@@ -44,11 +43,13 @@ namespace stone {
 //     }
 //     llvm_unreachable("Not reachable, all cases handled");
 //   }
-  
+
 //   // Provide default implementations of abstract "visit" implementations that
 //   // just chain to their base class.  This allows visitors to just implement
-//   // the base behavior and handle all subclasses if they desire.  Since this is
-//   // a template, it will only instantiate cases that are used and thus we still
+//   // the base behavior and handle all subclasses if they desire.  Since this
+//   is
+//   // a template, it will only instantiate cases that are used and thus we
+//   still
 //   // require full coverage of the AST nodes by the visitor.
 // #define ABSTRACT_TYPE(CLASS, PARENT)                           \
 //   RetTy visit##CLASS##Type(Can##CLASS##Type T, Args... args) { \
@@ -66,8 +67,6 @@ namespace stone {
 //   }
 // #include "stone/AST/TypeKind.def"
 // };
-
-
 
 /// TypeVisitor - This is a simple Visitor class for Swift types.
 template <typename ImplTy, typename RetTy = void, typename... Args>

@@ -82,6 +82,10 @@ Given a Type(TypeQualifiers qualifiers)
 TypeQualifiers& GetQualifiers()
 
 
+// auto compiler = Compiler::Create(llvm::ArrayRef<const char *> args, CompilerListener *listener);
+compiler.Compile();
+
+
 
 
 

@@ -10,12 +10,12 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/Specifier.h"
 #include "stone/AST/Stmt.h"
-#include "stone/Basic/StableHasher.h"
-#include "stone/Basic/StatisticEngine.h"
-#include "stone/CodeCompletionListener.h"
 #include "stone/Analysis/Lexer.h"
 #include "stone/Analysis/ParserResult.h"
 #include "stone/Analysis/Parsing.h"
+#include "stone/Basic/StableHasher.h"
+#include "stone/Basic/StatisticEngine.h"
+#include "stone/CodeCompletionListener.h"
 
 #include "llvm/Support/Timer.h"
 

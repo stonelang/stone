@@ -1,5 +1,5 @@
-#ifndef STONE_SESSION_MODE_H
-#define STONE_SESSION_MODE_H
+#ifndef STONE_OPTIONS_MODE_H
+#define STONE_OPITONS_MODE_H
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/Timer.h"

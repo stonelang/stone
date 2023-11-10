@@ -3,13 +3,15 @@
 
 using namespace stone;
 
-void TypeSlabCollector::AddValue() { AddTypeSlab(TypeSlab(TypeSlabKind::Value, SrcLoc())); }
+void TypeSlabCollector::AddValue() {
+  AddTypeSlab(TypeSlab(TypeSlabKind::Value, SrcLoc()));
+}
 
 void TypeSlabCollector::AddPointer(SrcLoc inputLoc) {
   AddTypeSlab(TypeSlab(TypeSlabKind::Pointer, inputLoc));
 }
 void TypeSlabCollector::AddReference(SrcLoc inputLoc) {
-   AddTypeSlab(TypeSlab(TypeSlabKind::Reference, inputLoc));
+  AddTypeSlab(TypeSlab(TypeSlabKind::Reference, inputLoc));
 }
 void TypeSlabCollector::AddArray(SrcLoc inputLoc) {
   AddTypeSlab(TypeSlab(TypeSlabKind::Array, inputLoc));
@@ -24,7 +26,6 @@ void TypeSlabCollector::AddParen(SrcLoc inputLoc) {}
 void TypeSlabCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeSlabCollector::Apply() {}
-
 
 // TypeSlabs TypeSlabCollector::ComputeSlabs() {
 //   TypeSlabs slabs;

@@ -4,10 +4,10 @@
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/DeclCollector.h"
 #include "stone/AST/Specifier.h"
-#include "stone/Basic/OptionSet.h"
-#include "stone/Basic/STDAlias.h"
 #include "stone/Analysis/Lexing.h"
 #include "stone/Analysis/ParserResult.h"
+#include "stone/Basic/OptionSet.h"
+#include "stone/Basic/STDAlias.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

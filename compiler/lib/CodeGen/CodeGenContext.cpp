@@ -19,7 +19,7 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
                                llvm::LLVMContext &llvmContext,
                                ASTContext &astContext, Lang &lang,
                                Clang &clangInstance,
-                               llvm::GlobalVariable **outModuleHash)
+                               llvm::GlobalVariable *outModuleHash)
     : CodeGenContext(
           codeGenOpts, moduleOpts, targetOpts, llvmContext, astContext, lang,
           clangInstance,
@@ -30,7 +30,7 @@ CodeGenContext::CodeGenContext(
     const CodeGenOptions &codeGenOpts, const ModuleOptions &moduleOpts,
     const stone::TargetOptions &targetOpts, llvm::LLVMContext &llvmContext,
     stone::ASTContext &astContext, Lang &lang, Clang &clangInstance,
-    std::unique_ptr<llvm::Module> llvmMod, llvm::GlobalVariable **outModuleHash)
+    std::unique_ptr<llvm::Module> llvmMod, llvm::GlobalVariable *outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOpts(moduleOpts),
       llvmContext(llvmContext), targetOpts(targetOpts), lang(lang),
       clangInstance(clangInstance), astContext(astContext),

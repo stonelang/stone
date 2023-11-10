@@ -5,7 +5,12 @@
 
 namespace stone {
 
-enum class TypeWalkerAction : unsigned { None = 0, Continue, SkipChildren, Stop };
+enum class TypeWalkerAction : unsigned {
+  None = 0,
+  Continue,
+  SkipChildren,
+  Stop
+};
 
 /// An abstract class used to traverse a Type.
 class TypeWalker {

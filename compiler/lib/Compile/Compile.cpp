@@ -21,6 +21,17 @@
 
 using namespace stone;
 
+// class Compiling final {
+//   Compiler& compiler;
+//   std::unique_ptr<stone::ASTContext> astContext;
+//   std::unique_ptr<ModuleSystem> moduleSystem;
+// public:
+//   Compiling(Compiler& compiler) : compiler(compiler){}
+
+//  public:
+
+// };
+
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
 
@@ -107,7 +118,7 @@ bool CompilerInstance::Compile() {
   NotifyCompileStarted();
 
   auto status = Compiling::CompileWithCodeAnalysis(*this);
-  if(status.IsError() || status.HasCompletion()){
+  if (status.IsError() || status.HasCompletion()) {
     return Finish(status);
   }
 
@@ -176,7 +187,8 @@ Status Compiling::PerformSyntaxAnalysis(CompilerInstance &compiler) {
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *astFile = llvm::dyn_cast<stone::ASTFile>(moduleFile)) {
-      Lang::ParseASTFile(*astFile, compiler.GetASTContext(), compiler.GetInvocation().GetListener());
+      Lang::ParseASTFile(*astFile, compiler.GetASTContext(),
+                         compiler.GetInvocation().GetListener());
     }
   }
   Compiling::NotifySyntaxAnalysisCompleted(compiler);
@@ -234,14 +246,14 @@ Status Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
 
   assert(compiler.CanCodeGen() && "Mode does not support code gen");
 
-  llvm::GlobalVariable **hashGlobal;
+  llvm::GlobalVariable *hashGlobal;
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
   CodeGenContext codeGenContext(
-      compiler.GetInvocation().GetCodeGenOptions(), *llvmContext,
+      compiler.GetInvocation().GetCodeGenOptions(),
       compiler.GetInvocation().GetModuleOptions(),
-      compiler.GetInvocation().GetTargetOptions(),
-      compiler.GetInvocation().GetLang(), compiler.GetInvocation().GetClang(),
-      hashGlobal);
+      compiler.GetInvocation().GetTargetOptions(), *llvmContext,
+      compiler.GetASTContext(), compiler.GetInvocation().GetLang(),
+      compiler.GetInvocation().GetClang(), hashGlobal);
 
   //  llvm::StringRef outputFilename = PSPs.OutputFilename;
   //  std::vector<std::string> parallelOutputFilenames =

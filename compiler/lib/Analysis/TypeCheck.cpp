@@ -1,6 +1,6 @@
 #include "stone/AST/TypeCheckerOptions.h"
-#include "stone/CodeCompletionListener.h"
 #include "stone/Analysis/TypeChecker.h"
+#include "stone/CodeCompletionListener.h"
 #include "stone/Lang.h"
 
 using namespace stone;

@@ -33,8 +33,9 @@ std::unique_ptr<llvm::opt::OptTable> stone::opts::CreateOptTable() {
   return std::unique_ptr<llvm::opt::OptTable>(new stone::StoneOptTable());
 }
 
-OptTableAndInputArgListPair stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
-                                            OptParsingFlags flags) {
+OptTableAndInputArgListPair
+stone::opts::ParseArgs(llvm::ArrayRef<const char *> args,
+                       OptParsingFlags flags) {
   auto opts = stone::opts::CreateOptTable();
   auto ial = std::make_unique<llvm::opt::InputArgList>(
       opts->ParseArgs(args, flags.missingArgIndex, flags.missingArgCount,

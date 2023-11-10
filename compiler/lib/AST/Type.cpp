@@ -47,7 +47,7 @@ BoolType *BoolType::Create(const ASTContext &astContext, AllocationArena arena,
 
 IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
                                  const ASTContext &astContext,
-                                  AllocationArena arena,
+                                 AllocationArena arena,
                                  TypeQualifiers qualifiers) {
 
   return new (astContext, arena)
@@ -62,9 +62,9 @@ FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
 }
 
 UIntegerType *UIntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                const ASTContext &astContext,
-                                AllocationArena arena,
-                                TypeQualifiers qualifiers) {
+                                   const ASTContext &astContext,
+                                   AllocationArena arena,
+                                   TypeQualifiers qualifiers) {
   return new (astContext, arena)
       UIntegerType(bitWidthKind, astContext, qualifiers);
 }

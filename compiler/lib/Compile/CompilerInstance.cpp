@@ -1,7 +1,6 @@
+#include "stone/Compile/CompilerInstance.h"
 #include "stone/Analysis/ImportResolution.h"
 #include "stone/Basic/CompilerDiagnostic.h"
-#include "stone/Compile/CompilerInstance.h"
-
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -30,8 +29,8 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
     lang.GetDiags().PrintD(SrcLoc(), diag::err_opening_output,
-                                    diag::LLVMStr(outputFilename),
-                                    diag::LLVMStr(errCode.message()));
+                           diag::LLVMStr(outputFilename),
+                           diag::LLVMStr(errCode.message()));
     return nullptr;
   }
   return os;
@@ -114,17 +113,17 @@ void CompilerInstanceStats::Print(ColorStream &stream) {
   // }
 }
 
-//void CompilerInstance::print(llvm::raw_ostream &os) const override {
+// void CompilerInstance::print(llvm::raw_ostream &os) const override {
 
-  //   auto effective =
-  //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
-  //   != version::Version::GetCurrentCompilerVersion()) {
-  //     os << "Compiling with effective version " << effective;
-  //   } else {
-  //     os << "Compiling with the current invocationuage version";
-  //   }
-  //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
-  //     os << " while allowing modules with compiler errors";
-  //   }
-  //   os << "\n";
+//   auto effective =
+//   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
+//   != version::Version::GetCurrentCompilerVersion()) {
+//     os << "Compiling with effective version " << effective;
+//   } else {
+//     os << "Compiling with the current invocationuage version";
+//   }
+//   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
+//     os << " while allowing modules with compiler errors";
+//   }
+//   os << "\n";
 //}

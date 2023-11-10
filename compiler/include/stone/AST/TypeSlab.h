@@ -47,7 +47,7 @@ enum class TypeSlabKind {
 //   void AddValue() {
 //       slabs.push_back(TypeSlabKind::Value))
 //   }
-//   bool HasValue() { 
+//   bool HasValue() {
 //     return FindSlab(TypeSlabKind::Value);
 //   }
 // public:
@@ -58,7 +58,6 @@ enum class TypeSlabKind {
 //   void AddReference() {
 //       slabs.push_back(TypeSlabKind::Reference))
 //   }
-
 
 // public:
 //   /// int** -- the '*' closest to int
@@ -82,7 +81,7 @@ enum class TypeSlabKind {
 //   }
 // }
 
-class alignas(1 << TypeAlignInBits) TypeSlab  {
+class alignas(1 << TypeAlignInBits) TypeSlab {
   SrcLoc loc;
   TypeSlabKind kind;
 
@@ -110,9 +109,8 @@ public:
 private:
   /// Add a thunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the thunk.
-  void AddTypeSlab(const TypeSlab slab) {
-      slabs.push_back(slab);
-  }
+  void AddTypeSlab(const TypeSlab slab) { slabs.push_back(slab); }
+
 public:
   // Value has no source loc
   void AddValue();
@@ -126,22 +124,22 @@ public:
 public:
   /// int** -- the '*' toucing int
   const TypeSlab *GetInnermostNonParenSlab() const {
-      for (unsigned i = slabs.size(), i_end = 0; i != i_end; --i) {
-        if (slabs[i - 1].GetKind() != TypeSlabKind::Paren) {
-          return &slabs[i - 1];
-        }
+    for (unsigned i = slabs.size(), i_end = 0; i != i_end; --i) {
+      if (slabs[i - 1].GetKind() != TypeSlabKind::Paren) {
+        return &slabs[i - 1];
       }
-      return nullptr;
+    }
+    return nullptr;
   }
 
   /// int** -- the '*' farthest from int
   const TypeSlab *GetOutermostNonParenSlab() const {
-      for (unsigned i = 0, i_end = slabs.size(); i < i_end; ++i) {
-        if (slabs[i].GetKind() != TypeSlabKind::Paren) {
-          return &slabs[i];
-        }
+    for (unsigned i = 0, i_end = slabs.size(); i < i_end; ++i) {
+      if (slabs[i].GetKind() != TypeSlabKind::Paren) {
+        return &slabs[i];
       }
-      return nullptr;
+    }
+    return nullptr;
   }
 
   bool HasAny() { return slabs.size() > 0; }

@@ -1,7 +1,7 @@
 #include "stone/AST/ASTVisitor.h"
-#include "stone/Basic/OptionSet.h"
 #include "stone/Analysis/TypeCheckAccess.h"
 #include "stone/Analysis/TypeChecker.h"
+#include "stone/Basic/OptionSet.h"
 
 using namespace stone;
 

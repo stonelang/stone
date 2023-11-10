@@ -42,9 +42,7 @@ CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
     : programName(programName), programPath(programPath), listener(listener),
-      clang(new Clang()) {
-
-}
+      clang(new Clang()) {}
 CompilerInvocation::~CompilerInvocation() {}
 
 llvm::Optional<unsigned> CompilerInvocation::CreateCodeCompletionBuffer() {
@@ -198,7 +196,7 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  GetLangOptions().SetTarget(triple);
+  GetLang().GetLangOptions().SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
@@ -355,9 +353,9 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
   //         .Default(llvm::FloatABI::Default);
 }
 
-IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
-                                          const LangOptions &langOpts,
-                                          Clang &cc) {
+IRTargetOptions Lang::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
+                                         const LangOptions &langOpts,
+                                         Clang &cc) {
   llvm::TargetOptions llvmTargetOpts;
   InitLLVMTargetOptions(llvmTargetOpts, codeGenOpts, langOpts);
 
@@ -371,11 +369,11 @@ static Status ParseTargetOptions(llvm::opt::InputArgList &ial,
                                  DiagnosticEngine &de,
                                  CompilerOptions &compilerOpts,
                                  CodeGenOptions &codeGenOpts,
-                                 LangOptions &langOpts, Clang &cc) {
+                                 LangOptions &langOpts, Clang &clangInstance) {
 
   std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
            codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
-      stone::GetIRTargetOptions(codeGenOpts, langOpts, cc);
+      Lang::GetIRTargetOptions(codeGenOpts, langOpts, clangInstance);
 
   // if (cc.GetInstance().getLangOpts().PointerAuthCalls) {
   //   SetPointerAuthOptions(const_cast<CodeGenOptions
@@ -388,7 +386,7 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                   DiagnosticEngine &de,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts,
-                                  LangOptions &langOpts, Clang &cc) {
+                                  LangOptions &langOpts, Clang &clangInstance) {
   ParseCodeCodeGenOutputKind(compilerOpts, codeGenOpts);
 
   return Status();
@@ -410,9 +408,11 @@ static Status ParseSearchPathOptions(llvm::opt::InputArgList &ial,
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  optTableAndInputArgListPair = opts::ParseArgs(args, OptParsingFlags(0, opts::NoCompilerOption, 0, 0));
-  // TODO 
-  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(GetInputArgList()));
+  optTableAndInputArgListPair =
+      opts::ParseArgs(args, OptParsingFlags(0, opts::NoCompilerOption, 0, 0));
+  // TODO
+  compilerOpts =
+      std::make_unique<CompilerOptions>(Mode::Create(GetInputArgList()));
 
   if (GetCompilerOptions().GetMode().IsAlien()) {
     return Status::Error();

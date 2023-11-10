@@ -1,11 +1,11 @@
 #ifndef STONE_ANALYSIS_LEXER_H
 #define STONE_ANALYSIS_LEXER_H
 
+#include "stone/Analysis/Lexing.h"
+#include "stone/Analysis/Trivia.h"
 #include "stone/Basic/DiagnosticEngine.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Analysis/Lexing.h"
-#include "stone/Analysis/Trivia.h"
 #include "stone/Lang.h"
 
 namespace stone {

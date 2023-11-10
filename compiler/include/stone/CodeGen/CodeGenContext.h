@@ -39,7 +39,7 @@ private:
   llvm::LLVMContext &llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
-  llvm::GlobalVariable **outModuleHash;
+  llvm::GlobalVariable *outModuleHash;
 
 private:
   llvm::PassBuilder pb;
@@ -59,7 +59,7 @@ private:
                  llvm::LLVMContext &llvmContext, ASTContext &astContext,
                  Lang &lang, Clang &clangInstance,
                  std::unique_ptr<llvm::Module> llvmMod,
-                 llvm::GlobalVariable **outModuleHash = nullptr);
+                 llvm::GlobalVariable *outModuleHash = nullptr);
 
 public:
   CodeGenContext(const CodeGenOptions &codeGenOpts,
@@ -67,7 +67,7 @@ public:
                  const stone::TargetOptions &targetOpts,
                  llvm::LLVMContext &llvmContext, ASTContext &astContext,
                  Lang &lang, Clang &clangInstance,
-                 llvm::GlobalVariable **outModuleHash = nullptr);
+                 llvm::GlobalVariable *outModuleHash = nullptr);
 
 public:
   CodeGenContext(const CodeGenContext &) = delete;
@@ -94,7 +94,7 @@ public:
 
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
-  llvm::GlobalVariable **GetOutModuleHash() { outModuleHash; }
+  llvm::GlobalVariable *GetOutModuleHash() { outModuleHash; }
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }

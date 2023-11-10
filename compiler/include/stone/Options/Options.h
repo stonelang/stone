@@ -59,7 +59,7 @@ using OptTableAndInputArgListPair =
 
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 OptTableAndInputArgListPair ParseArgs(llvm::ArrayRef<const char *> args,
-                               OptParsingFlags flags);
+                                      OptParsingFlags flags);
 } // namespace opts
 } // namespace stone
 

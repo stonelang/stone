@@ -65,9 +65,8 @@ public:
                                                 : nullptr;
     }
     Type *CastToType() const {
-      return (parentKind == ASTDescription::Type)
-                 ? static_cast<Type *>(Ptr)
-                 : nullptr;
+      return (parentKind == ASTDescription::Type) ? static_cast<Type *>(Ptr)
+                                                  : nullptr;
     }
   };
 

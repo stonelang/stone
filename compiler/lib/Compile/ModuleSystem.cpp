@@ -1,6 +1,6 @@
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Analysis/Lexer.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Lang.h"
 
 using namespace stone;
@@ -133,14 +133,14 @@ Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   //     return stone::Error(true);
   //   }
   // }
-  if (!Lexer::isIdentifier(identifier)) {
+  if (!Lexer::isIdentifier(moduleName)) {
     return Status::Error();
   }
   return Status();
 }
 
-bool stone::EmitImportedModules(stone::ASTContext &context,
-                                ModuleDecl *mainModule,
-                                const CompilerOptions &opts) {
+bool Lang::EmitImportedModules(stone::ASTContext &context,
+                               ModuleDecl *mainModule,
+                               const CompilerOptions &opts) {
   return false;
 }

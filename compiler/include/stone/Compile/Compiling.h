@@ -40,3 +40,5 @@ public:
 };
 
 } // namespace stone
+
+#endif

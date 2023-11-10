@@ -9,7 +9,8 @@ Builtin::Builtin(ASTContext &astContext)
       BuiltinVoidType(VoidType::Create(astContext, AllocationArena::Permanent,
                                        TypeQualifiers())),
       BuiltinNullType(NullType::Create(astContext, AllocationArena::Permanent)),
-      BuiltinBoolType(BoolType::Create(astContext, AllocationArena::Permanent, TypeQualifiers())),
+      BuiltinBoolType(BoolType::Create(astContext, AllocationArena::Permanent,
+                                       TypeQualifiers())),
 
       BuiltinFloat16Type(FloatType::Create(NumberBitWidth::N16, astContext,
                                            AllocationArena::Permanent,

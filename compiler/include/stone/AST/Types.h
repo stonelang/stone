@@ -332,7 +332,7 @@ class IntegerType : public NumberType {
 public:
   IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
               TypeQualifiers qualifiers)
-      : NumberType(TypeKind::Integer, bitWidthKind, astContext,qualifiers) {}
+      : NumberType(TypeKind::Integer, bitWidthKind, astContext, qualifiers) {}
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
@@ -350,7 +350,8 @@ public:
       : NumberType(TypeKind::UInteger, bitWidthKind, astContext, qualifiers) {}
 
 public:
-  static UIntegerType *Create(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
+  static UIntegerType *Create(NumberBitWidthKind bitWidthKind,
+                              const ASTContext &astContext,
                               AllocationArena aread, TypeQualifiers qualifiers);
 };
 
@@ -415,7 +416,7 @@ public:
   static NullType *Create(const ASTContext &astContext, AllocationArena aread);
 };
 
-// // This is how you deal with 
+// // This is how you deal with
 // class SlabType : public TypeBase, public llvm::FoldingSetNode {
 // public:
 // };
@@ -457,7 +458,7 @@ public:
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &astContext)
       : TypeBase(TypeKind::Module, &astContext, TypeQualifiers()), mod(mod) {
-    //Bits.TypeBase.AllowQualifiers = false;
+    // Bits.TypeBase.AllowQualifiers = false;
   }
 };
 

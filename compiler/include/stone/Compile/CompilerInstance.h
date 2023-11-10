@@ -57,6 +57,8 @@ class CompilerInstance final {
 
   mutable stone::ModuleDecl *mainModule = nullptr;
 
+  bool isCompiling = false;
+
 public:
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
@@ -105,6 +107,7 @@ public:
   const Mode &GetMode() const {
     return invocation.GetCompilerOptions().GetMode();
   }
+  bool IsCompiling() { return isCompiling; }
 
 public:
   // TODO: Consider moving to the Compiler

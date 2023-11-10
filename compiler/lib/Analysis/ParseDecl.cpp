@@ -1,8 +1,8 @@
 #include "stone/AST/Stmt.h"
-#include "stone/Basic/AnalysisDiagnostic.h"
-#include "stone/Basic/Defer.h"
 #include "stone/Analysis/Parser.h"
 #include "stone/Analysis/Parsing.h"
+#include "stone/Basic/AnalysisDiagnostic.h"
+#include "stone/Basic/Defer.h"
 // #include "stone/AST/Using.h"
 #include "stone/AST/AST.h"
 #include "stone/AST/ASTContext.h"
@@ -301,9 +301,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
     }
 
-    if (collector.GetTypeCollector()
-            .GetTypeQualifierCollector()
-            .HasAny()) {
+    if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
       // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       //   // TODO: Log
       //   status.SetHasCodeCompletion();
@@ -413,9 +411,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeCollector()
-          .GetTypeQualifierCollector()
-          .HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
     return stone::MakeParserError();
   }
 
@@ -439,9 +435,7 @@ ParserResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeSpecifierCollector().IsEnum() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeCollector()
-          .GetTypeQualifierCollector()
-          .HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
     return result;
   }
 
@@ -472,9 +466,7 @@ ParserResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
   ParsingScope enumDeclScope(*this, ASTScopeKind::UsingDecl,
                              "parsing enum-declaration");
 
-  if (collector.GetTypeCollector()
-          .GetTypeQualifierCollector()
-          .HasAny()) {
+  if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
     return result;
   }
   return result;

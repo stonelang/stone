@@ -1,9 +1,9 @@
 #ifndef STONE_AST_TYPEQUALIFIER_H
 #define STONE_AST_TYPEQUALIFIER_H
 
+#include "stone/AST/InlineBitfield.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/InlineBitfield.h"
 
 #include "llvm/ADT/StringRef.h"
 
