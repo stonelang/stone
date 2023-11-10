@@ -159,7 +159,7 @@ public:
   }
 
   Lang &GetLang() { return lang; }
-  
+
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
@@ -210,7 +210,7 @@ public:
   bool CanCompile() { return GetCompilerOptions().GetMode().CanCompile(); }
 
   void NotifyCompileConfigure() {
-    if (invocation.GetListener()) {
+    if (GetListener()) {
       GetListener()->OnCompileConfigured(*this);
     }
   }

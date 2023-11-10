@@ -27,9 +27,8 @@ public fun BlackHole::TrapLight(Light& light) -> void {
 }
 
 
-
 // Main.stone 
-import System.Physics;
+import Physics;
 
 public fun Main() -> int {
 

@@ -3,34 +3,23 @@
 public struct S0 {
 
 }
+fun UseS0(S0* s) -> void {
+
+}
+
 public struct S1 {
 	internal own S0* s0 = null; 
 }
 
-S1::S1(own S0* s){
+S1::S1(own S0* s) {
+	this.s0 = s0;
 }
 
-fun UseS1(S1* s) -> void {
-
-}
-fun TakeS1(own S1* s) -> void {
-	
-	S0 s0(s); // Now S0 own s
-
-}
-
-struct Quark {
-}
 fun Main() -> int {
 	// This will auto free 
 	own S0* s0 = new S0();
+	UseS0(s0);
 
-	own S1* s1 = new S0(s0); 
-
-	UseS1(s1);
-
-	// Behaves like std::unique_ptr 
-	own Quark* quark = new Quark(); 
-
+	own S1* s1 = new S1(give s0); 
 }
 

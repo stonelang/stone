@@ -7,8 +7,8 @@
 //reference initialization: char& c = s[0];
 
 struct S0 {
+	int i;
 }
-
 
 fun Main() -> i32 {
 	

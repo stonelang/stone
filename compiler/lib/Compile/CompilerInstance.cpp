@@ -29,7 +29,7 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
-    lang.GetDiags()().PrintD(SrcLoc(), diag::err_opening_output,
+    lang.GetDiags().PrintD(SrcLoc(), diag::err_opening_output,
                                     diag::LLVMStr(outputFilename),
                                     diag::LLVMStr(errCode.message()));
     return nullptr;
@@ -74,8 +74,8 @@ CompilerInstance::GetPrimaryFileSpecificPathsForASTFile(
 void CompilerInstance::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *asttaxFile = dyn_cast<stone::ASTFile>(moduleFile))
-      sem::ResolveImports(*asttaxFile);
+    if (auto *astFile = dyn_cast<stone::ASTFile>(moduleFile))
+      stone::ResolveImports(*astFile);
   }
 }
 
@@ -93,9 +93,9 @@ void CompilerInstance::ForEachASTFile(EachASTFileCallback client) {
     break;
   }
   case TypeCheckMode::EachFile: {
-    for (auto *asttaxFile :
+    for (auto *astFile :
          GetModuleSystem().GetMainModule()->GetPrimaryASTFiles()) {
-      client(*asttaxFile, invocation.GetTypeCheckerOptions(),
+      client(*astFile, invocation.GetTypeCheckerOptions(),
              invocation.GetListener());
     }
     break;
@@ -114,7 +114,7 @@ void CompilerInstanceStats::Print(ColorStream &stream) {
   // }
 }
 
-void CompilerInstance::print(llvm::raw_ostream &os) const override {
+//void CompilerInstance::print(llvm::raw_ostream &os) const override {
 
   //   auto effective =
   //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
@@ -127,4 +127,4 @@ void CompilerInstance::print(llvm::raw_ostream &os) const override {
   //     os << " while allowing modules with compiler errors";
   //   }
   //   os << "\n";
-}
+//}

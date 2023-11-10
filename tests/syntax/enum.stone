@@ -3,3 +3,16 @@ enum Day {
 	uint8 Monday = 0, 
 	Tuesday,
 }
+
+public fun Day::GetString() -> string {
+	match(this){
+		case Monday:
+			return "Monday";
+		case Tuesday:
+			return "Tuesday";
+	}
+}
+
+public fun Day::GetString(Day day) -> string {
+
+}

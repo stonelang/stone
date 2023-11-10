@@ -2,7 +2,7 @@
 public fun F0() -> void {
 
 	uint32 i = 1; 
-	switch(i) {
+	match(i) {
 		case 1:
 		// Automatically break out 
 		case 2:
@@ -10,7 +10,7 @@ public fun F0() -> void {
 		default: 
 	}
 
-	switch (i) {
+	match (i) {
 		case 1:
 			next;
 		case 2;

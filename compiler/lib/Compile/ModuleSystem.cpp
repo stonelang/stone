@@ -1,6 +1,7 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Analysis/Lexer.h"
+#include "stone/Lang.h"
 
 using namespace stone;
 

@@ -163,7 +163,7 @@ private:
   }
   void NotifyCompileFinished() {
     if (GetInvocation().GetListener()) {
-      GetInvocation().GetListener()->OnCompileFinished(*this);
+      GetInvocation().GetListener()->OnCompileCompleted(*this);
     }
   }
 };

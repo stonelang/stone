@@ -16,12 +16,7 @@ public struct Proton : Particle {
 public Proton::Proton(const ParticleDetail* particleDetail) {
 		this.particleDetail = particleDetail; 
  }
-public Proton::~Proton() {
-	if(particleDetail){
-		delete particleDetail; 
 
-	}
-}
 public fun Proton::GetParticleDetail() -> ParticleDetail* {
 	return particleDetail;  
 }
@@ -66,9 +61,6 @@ public fun Fire(Particle* particle) -> bool {
 	return false; 
 }
 
-
-// code/Main.stone
-module Main; 
 using Stone.Physics.Particle; 
 
 public fun Main() -> int32 {	

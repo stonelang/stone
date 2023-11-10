@@ -10,5 +10,6 @@ Boson::Boson(float64 mass) {
 	this.mass = mass; 
 }
 
-Boson::~Boson() {
-}
+
+//Boson::~Boson() {
+//}
