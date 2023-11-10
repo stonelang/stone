@@ -1,6 +1,6 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Compile/Lexer.h"
+#include "stone/Analysis/Lexer.h"
 
 using namespace stone;
 
@@ -27,7 +27,7 @@ stone::ModuleDecl *ModuleSystem::GetMainModule() const {
     // Create and add the module's files.
     llvm::SmallVector<stone::ModuleFile *, 16> moduleFiles;
 
-    if (!CreateASTFilesForMainModule(mainModule, moduleFiles).Has()) {
+    if (CreateASTFilesForMainModule(mainModule, moduleFiles).IsSuccess()) {
       for (auto *moduleFile : moduleFiles)
         mainModule->AddFile(*moduleFile);
     } else {

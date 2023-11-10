@@ -97,7 +97,7 @@ class CompilerInvocation final {
   Lang lang;
   std::unique_ptr<Clang> clang;
 
-  OptTableAndInputArgs optTableAndInputArgs;
+  opts::OptTableAndInputArgListPair optTableAndInputArgListPair;
 
 public:
   CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
@@ -159,12 +159,7 @@ public:
   }
 
   Lang &GetLang() { return lang; }
-
-  LangOptions &GetLangOptions() { return GetLang().GetLangOptions(); }
-  const LangOptions &GetLangOptions() const {
-    return GetLang().GetLangOptions();
-  }
-
+  
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
@@ -200,7 +195,8 @@ public:
 
 public:
   Status ParseArgs(llvm::ArrayRef<const char *> args);
-  llvm::opt::InputArgList &GetInputArgList() { *optTableAndInputArgs.second; }
+  llvm::opt::OptTable &GetOptTable() { *optTableAndInputArgListPair.first; }
+  llvm::opt::InputArgList &GetInputArgList() { *optTableAndInputArgListPair.second; }
 
 public:
   bool IsAlien() { return GetCompilerOptions().GetMode().IsAlien(); }

@@ -52,12 +52,13 @@ struct OptParsingFlags {
         excludedFlagsBitmask(excludedFlagsBitmask),
         missingArgIndex(missingArgIndex), missingArgCount(missingArgCount) {}
 };
-using OptTableAndInputArgs =
+
+using OptTableAndInputArgListPair =
     std::pair<std::unique_ptr<llvm::opt::OptTable>,
               std::unique_ptr<llvm::opt::InputArgList>>;
 
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
-OptTableAndInputArgs ParseArgs(llvm::ArrayRef<const char *> args,
+OptTableAndInputArgListPair ParseArgs(llvm::ArrayRef<const char *> args,
                                OptParsingFlags flags);
 } // namespace opts
 } // namespace stone

@@ -164,6 +164,7 @@ public:
   bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
   bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }
   bool IsParse() { return GetKind() == ModeKind::Parse; }
+  bool IsResolveImports() { return GetKind() == ModeKind::ResolveImports; }
   bool IsDumpAST() { return GetKind() == ModeKind::DumpAST; }
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }
   bool IsDumpTypeInfo() { return GetKind() == ModeKind::DumpTypeInfo; }

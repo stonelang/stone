@@ -1,10 +1,10 @@
-#include "stone/Compile/CompilerInstance.h"
+#include "stone/Analysis/ImportResolution.h"
 #include "stone/Basic/CompilerDiagnostic.h"
-#include "stone/Sem/ImportResolution.h"
+#include "stone/Compile/CompilerInstance.h"
+
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Frontend/CompilerInvocation.h"
-#include "clang/Frontend/TextDiagnosticEmitter.h"
 
 using namespace stone;
 
@@ -24,12 +24,12 @@ CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
 CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
-                                      Lang &lc) {
+                                      Lang &lang) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
-    lc.GetDiagnosticEngine().PrintD(SrcLoc(), diag::err_opening_output,
+    lang.GetDiags()().PrintD(SrcLoc(), diag::err_opening_output,
                                     diag::LLVMStr(outputFilename),
                                     diag::LLVMStr(errCode.message()));
     return nullptr;

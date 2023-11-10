@@ -107,12 +107,12 @@ bool CompilerInstance::Compile() {
   NotifyCompileStarted();
 
   auto status = Compiling::CompileWithCodeAnalysis(*this);
-  if(status.IsError() || status.HasCodeCompletion()){
+  if(status.IsError() || status.HasCompletion()){
     return Finish(status);
   }
 
   // Some work here before code generation
-  status = Compiling::CompilePosCodeAnalysis(*this);
+  status = Compiling::CompilePostCodeAnalysis(*this);
 
   NotifyCompileFinished();
 
@@ -137,14 +137,14 @@ Status Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
   }
 
   if (compiler.GetMode().IsResolveImports()) {
-    status.SetHasCodeCompletion();
+    status.SetHasCompletion();
     return status;
   }
 
   // Are we trying to dump the AST?
   if (compiler.GetMode().IsDumpAST()) {
     Compiling::PerformDumpAST(compiler);
-    status.SetHasCodeCompletion();
+    status.SetHasCompletion();
     return status;
   }
   // At this point, everything requires type-checking
@@ -154,19 +154,19 @@ Status Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
   }
 
   if (compiler.GetMode().IsTypeCheck()) {
-    status.SetHasCodeCompletion();
+    status.SetHasCompletion();
     return status;
   }
   // Are we trying to print the AST?
   if (compiler.GetMode().IsPrintAST()) {
     Compiling::PerformPrintAST(compiler);
-    status.SetHasCodeCompletion();
+    status.SetHasCompletion();
     return status;
   }
 
   if (compiler.GetMode().IsDumpTypeInfo()) {
     Compiling::PerformDumpTypeInfo(compiler);
-    status.SetHasCodeCompletion();
+    status.SetHasCompletion();
     return status;
   }
 }
@@ -176,7 +176,7 @@ Status Compiling::PerformSyntaxAnalysis(CompilerInstance &compiler) {
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *astFile = llvm::dyn_cast<stone::ASTFile>(moduleFile)) {
-      Lang::ParseASTFile(*astFile, GetASTContext(), invocation.GetListener());
+      Lang::ParseASTFile(*astFile, compiler.GetASTContext(), compiler.GetInvocation().GetListener());
     }
   }
   Compiling::NotifySyntaxAnalysisCompleted(compiler);
@@ -192,7 +192,7 @@ Status Compiling::PerformSyntaxAnalysisAndImportResoltuion(
 }
 void Compiling::NotifySyntaxAnalysisCompleted(CompilerInstance &compiler) {
   if (compiler.GetInvocation().GetListener()) {
-    compiler.GetInvocation().GetListener()->OnSyntaxAnalysisCompleted(compiler);
+    // compiler.GetInvocation().GetListener()->OnSyntaxAnalysisCompleted(compiler);
   }
 }
 
@@ -210,20 +210,21 @@ Status Compiling::PerformSemanticAnalysis(CompilerInstance &compiler) {
 }
 
 Status Compiling::FinishSemanticAnalysis(CompilerInstance &compiler) {
-  return Success::Success();
+  return Status();
 }
 
 void Compiling::NotifySemanticAnalysisCompleted(CompilerInstance &compiler) {
   if (compiler.GetInvocation().GetListener()) {
-    compiler.GetInvocation().GetListener()->OnSemanticAnalysisCompleted(
-        compiler);
+
+    // compiler.GetInvocation().GetListener()->OnSemanticAnalysisCompleted(
+    //     compiler);
   }
 }
 void Compiling::PerformDumpTypeInfo(CompilerInstance &compiler) {}
 
 void Compiling::PerformPrintAST(CompilerInstance &compiler) {}
 
-Status Compiling::CompilePostCompilelysis(CompilerInstance &compiler) {
+Status Compiling::CompilePostCodeAnalysis(CompilerInstance &compiler) {
 
   // Some other things here
   Compiling::CompileWithCodeGeneration(compiler);
@@ -233,7 +234,7 @@ Status Compiling::CompileWithCodeGeneration(CompilerInstance &compiler) {
 
   assert(compiler.CanCodeGen() && "Mode does not support code gen");
 
-  llvm::GlobalVariable *hashGlobal;
+  llvm::GlobalVariable **hashGlobal;
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
   CodeGenContext codeGenContext(
       compiler.GetInvocation().GetCodeGenOptions(), *llvmContext,
@@ -353,9 +354,9 @@ Status Compiling::PerformNativeGeneration(CompilerInstance &compiler,
 
   auto result = Lang::GenNative(codeGenContext, llvm::StringRef() /*TODO*/,
                                 compiler.GetInvocation().GetListener());
-  return Status::Success();
 
-  NotifyNativeGenerationCompleted();
+  NotifyNativeGenerationCompleted(compiler);
+  return Status::Success();
 }
 
 void Compiling::NotifyNativeGenerationCompleted(CompilerInstance &compiler) {}

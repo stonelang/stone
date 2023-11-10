@@ -22,7 +22,7 @@ public:
   static Status CompileWithCodeAnalysis(CompilerInstance &compiler);
 
 public:
-  static Status CompilePosCodeAnalysis(CompilerInstance &compiler);
+  static Status CompilePostCodeAnalysis(CompilerInstance &compiler);
 
 public:
   // Some work here before code generation

@@ -41,9 +41,9 @@ using namespace stone::opts;
 CompilerInvocation::CompilerInvocation(llvm::StringRef programName,
                                        llvm::StringRef programPath,
                                        CompilerListener *listener)
-    : Session(programName, programPath), listener(listener),
+    : programName(programName), programPath(programPath), listener(listener),
       clang(new Clang()) {
-  excludedFlagsBitmask = opts::NoCompilerOption;
+
 }
 CompilerInvocation::~CompilerInvocation() {}
 
@@ -295,7 +295,7 @@ static void ParseCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
                                        CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
-  switch (GetMode().GetKind()) {
+  switch (compilerOpts.GetMode().GetKind()) {
   case ModeKind::EmitModule:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
   case ModeKind::EmitIRPre:
@@ -410,33 +410,32 @@ static Status ParseSearchPathOptions(llvm::opt::InputArgList &ial,
 
 Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
-  optTableAndInputArgs = opts::ParseArgs(args, OptParsingFlags(1, 0, 0, 0));
-
-  compilerOpts = std::make_unique<CompilerOptions>(
-      Mode::Create(*optTableAndInputArgs.second));
+  optTableAndInputArgListPair = opts::ParseArgs(args, OptParsingFlags(0, opts::NoCompilerOption, 0, 0));
+  // TODO 
+  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(GetInputArgList()));
 
   if (GetCompilerOptions().GetMode().IsAlien()) {
     return Status::Error();
   }
-  if (ParseCompilerOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  if (ParseCompilerOptions(GetInputArgList(), GetLang().GetDiags(),
                            GetLang().GetLangOptions(), GetCompilerOptions(),
                            GetModuleOptions(), nullptr /* pass null for now*/)
           .IsError()) {
     return Status::Error();
   }
-  ParseLangOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  ParseLangOptions(GetInputArgList(), GetLang().GetDiags(),
                    GetCompilerOptions(), GetLang().GetLangOptions());
 
-  ParseTypeCheckerOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  ParseTypeCheckerOptions(GetInputArgList(), GetLang().GetDiags(),
                           GetCompilerOptions(), GetTypeCheckerOptions());
-  ParseSearchPathOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  ParseSearchPathOptions(GetInputArgList(), GetLang().GetDiags(),
                          GetCompilerOptions(), GetSearchPathOptions());
 
-  ParseCodeGenOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  ParseCodeGenOptions(GetInputArgList(), GetLang().GetDiags(),
                       GetCompilerOptions(), GetCodeGenOptions(),
                       GetLang().GetLangOptions(), GetClang());
 
-  ParseTargetOptions(*optTableAndInputArgs.second, GetLang().GetDiags(),
+  ParseTargetOptions(GetInputArgList(), GetLang().GetDiags(),
                      GetCompilerOptions(), GetCodeGenOptions(),
                      GetLang().GetLangOptions(), GetClang());
 
