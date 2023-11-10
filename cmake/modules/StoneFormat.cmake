@@ -1,5 +1,6 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Analysis/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/AST/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
@@ -9,6 +10,7 @@ set(stone_include_files
 	
 )
 set(stone_lib_files
+	${STONE_SOURCE_DIR}/compiler/lib/Analysis/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/AST/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
@@ -33,7 +35,7 @@ set(stone_tests_files
 find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
 	if(CLANG_FORMAT)
 	add_custom_target(
-		stone-fmt
+		stone-format
 		clang-format
 		-i
 		-style=llvm
