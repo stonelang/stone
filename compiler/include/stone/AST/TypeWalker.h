@@ -1,15 +1,11 @@
 #ifndef STONE_ASTTYPEWALKER_H
 #define STONE_ASTTYPEWALKER_H
 
-#include "stone/AST/ASTAllocation.h"
-#include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeKind.h"
-
-#include <string>
+#include "stone/AST/Type.h"
 
 namespace stone {
 
-enum class TypeWalkerAction { None = 0, Continue, SkipChildren, Stop };
+enum class TypeWalkerAction : unsigned { None = 0, Continue, SkipChildren, Stop };
 
 /// An abstract class used to traverse a Type.
 class TypeWalker {
@@ -47,3 +43,5 @@ protected:
 // };
 
 } // namespace stone
+
+#endif

@@ -153,10 +153,10 @@ public:
 //   friend class DeclNameTable;
 
 //   /// The type associated with this declaration name.
-//   QualType ty;
+//   Type ty;
 
 // public:
-//   SpecialDeclNameExtra(QualType inputTy) : ty(inputTy) {}
+//   SpecialDeclNameExtra(Type inputTy) : ty(inputTy) {}
 //   void Profile(llvm::FoldingSetNodeID &ID) {
 //     // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
 //   }
@@ -328,7 +328,7 @@ public:
   // Declame GetDestructorDeclName(Identifier identifier);
 
   // DeclName GetSpecialName(Special::NameKind Kind,
-  //                                   CanQualType Ty);
+  //                                   CanType Ty);
 };
 
 // struct DeclNameBase final {
@@ -513,19 +513,19 @@ public:
 //   }
 
 //   /// Returns the name of a constructor for the given Type.
-//   DeclName GetConstructorName(CanQualType Ty);
+//   DeclName GetConstructorName(CanType Ty);
 
 //   /// Returns the name of a destructor for the given Type.
-//   DeclName GetDestructorName(CanQualType Ty);
+//   DeclName GetDestructorName(CanType Ty);
 
 /// Returns the name of a destructor for the given Type.
-// DeclName GetUsingName(CanQualType Ty);
+// DeclName GetUsingName(CanType Ty);
 
 /// Returns the name of a deduction guide for the given template.
 // DeclName GDeductionGuideName(TemplateDecl *TD);
 
 /// Returns the name of a conversion function for the given Type.
-// DeclName GConversionFunctionName(CanQualType Ty);
+// DeclName GConversionFunctionName(CanType Ty);
 
 /// Returns a declaration name for special kind of C++ name,
 /// e.g., for a constructor, destructor, or conversion function.
@@ -534,7 +534,7 @@ public:
 ///   * DeclName::DestructorName or
 ///   * DeclName::ConversionFunctionName
 // TODO: What about using A.B.C;
-// DeclName GetSpecialName(DeclNameKind declNameTy, CanQualType canQualTy);
+// DeclName GetSpecialName(DeclNameKind declNameTy, CanType canQualTy);
 
 /// Get the name of the overloadable C++ operator corresponding to Op.
 // DeclName getCXXOperatorName(OverloadedOperatorKind Op) {

@@ -49,7 +49,7 @@ public:
   Type GetType();
 
 public:
-  QualType Apply(const stone::ASTContext &astContext, Type ty) const;
+  Type Apply(const stone::ASTContext &astContext, Type ty) const;
 };
 
 } // namespace stone

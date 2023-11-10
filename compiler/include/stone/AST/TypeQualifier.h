@@ -3,6 +3,7 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/AST/InlineBitfield.h"
 
 #include "llvm/ADT/StringRef.h"
 

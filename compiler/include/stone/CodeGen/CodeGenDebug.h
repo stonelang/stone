@@ -47,7 +47,7 @@ public:
   // llvm::DIType *CreateType(const AutoType *Ty);
   // llvm::DIType *CreateType(const BitIntType *Ty);
 
-  // llvm::DIType *CreateQualifiedType(QualType Ty, llvm::DIFile *Fg);
+  // llvm::DIType *CreateQualifiedType(Type Ty, llvm::DIFile *Fg);
   // llvm::DIType *CreateQualifiedType(const FunctionProtoType *Ty,
   //                                   llvm::DIFile *Fg);
 
@@ -87,12 +87,12 @@ public:
   /// never happen though, since creating a type for the implicit self
   /// argument implies that we already parsed the interface definition
   /// and the ivar declarations in the implementation.
-  // llvm::DIType *CreateSelfType(const QualType &QualTy, llvm::DIType *Ty);
+  // llvm::DIType *CreateSelfType(const Type &QualTy, llvm::DIType *Ty);
   /// @}
 
   /// Get the type from the cache or return null type if it doesn't
   /// exist.
-  // llvm::DIType *GetTypeOrNull(const QualType);
+  // llvm::DIType *GetTypeOrNull(const Type);
   /// Return the debug type for a C++ method.
   /// \arg CXXMethodDecl is of FunctionType. This function type is
   /// not updated to include implicit \c this pointer. Use this routine
@@ -100,13 +100,13 @@ public:
   // llvm::DISubroutineType *GetOrCreateMethodType(const MethodDecl *method,
   // llvm::DIFile *F, bool decl);
   // llvm::DISubroutineType *
-  // GetOrCreateInstanceMethodType(QualType
+  // GetOrCreateInstanceMethodType(Type
   // thisPtr, const
   // FunctionProtoType *Func,
   //                               llvm::DIFile *Unit, bool decl);
   // llvm::DISubroutineType *
   // getOrCreateFunctionType(const
-  // Decl *D, QualType FnType,
+  // Decl *D, Type FnType,
   // llvm::DIFile *F);
   // /// \return debug info
   // descriptor for vtable.
@@ -123,7 +123,7 @@ public:
   // llvm::DIType
   // *CreatePointerLikeType(llvm::dwarf::Tag
   // Tag, const Type *Ty,
-  //                                     QualType PointeeTy, llvm::DIFile *F);
+  //                                     Type PointeeTy, llvm::DIFile *F);
   // llvm::DIType
   // *getOrCreateStructPtrType(StringRef
   // Name, llvm::DIType

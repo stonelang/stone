@@ -9,10 +9,9 @@ class Decl;
 class Expr;
 class Stmt;
 class ValueDecl;
-class Type;
 class TypeBase;
 class TypeDecl;
-class QualType;
+class Type;
 class InterfaceDecl;
 class ASTContext;
 class DeclContext;
@@ -67,7 +66,6 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile, stone::ASTContextAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeBase, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::QualType, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Attribute, stone::AttributeAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");

@@ -24,7 +24,7 @@ class raw_ostream;
 namespace stone {
 
 class ASTContext;
-class CanQualType;
+class CanType;
 class Decl;
 class DeclContext;
 class EnumDecl;

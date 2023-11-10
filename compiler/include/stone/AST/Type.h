@@ -45,7 +45,7 @@
 namespace stone {
 
 class ASTPrinter;
-class CanQualType;
+class CanType;
 class EnumDecl;
 class ModuleDecl;
 class InterfaceType;

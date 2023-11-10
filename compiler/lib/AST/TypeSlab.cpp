@@ -26,7 +26,7 @@ void TypeSlabCollector::AddPipe(SrcLoc inputLoc) {}
 void TypeSlabCollector::Apply() {}
 
 
-TypeSlabs TypeSlabCollector::ComputeSlabs() {
-  TypeSlabs slabs;
-  return slabs;
-}
+// TypeSlabs TypeSlabCollector::ComputeSlabs() {
+//   TypeSlabs slabs;
+//   return slabs;
+// }

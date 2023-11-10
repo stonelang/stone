@@ -112,11 +112,7 @@ private:
   /// EndLoc, which should be the last token of the thunk.
   void AddTypeSlab(const TypeSlab slab) {
       slabs.push_back(slab);
-      // TODO:
-      //  if (!EndLoc.isInvalid())
-      //    SetRangeEnd(EndLoc);
   }
-
 public:
   // Value has no source loc
   void AddValue();
@@ -149,7 +145,6 @@ public:
   }
 
   bool HasAny() { return slabs.size() > 0; }
-  llvm::ArrayRef<TypeSlab> GetTypeSlabs() { return slabs; }
   void Apply();
   void Verify();
 };

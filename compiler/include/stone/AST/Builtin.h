@@ -6,7 +6,7 @@
 namespace stone {
 
 class ASTContext;
-class QualType;
+class Type;
 
 class Builtin final {
   ASTContext &astContext;

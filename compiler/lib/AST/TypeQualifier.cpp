@@ -25,10 +25,10 @@ TypeQualifiers TypeQualifierCollector::ComputeTypeQaulifiers() {
   return qualifiers;
 }
 
-// QualType TypeQualifierCollector::Apply(const stone::ASTContext &astContext,
+// Type TypeQualifierCollector::Apply(const stone::ASTContext &astContext,
 //                                        const Type *typePtr) const {
 
-//   QualType qualType(typePtr);
+//   Type qualType(typePtr);
 //   if (GetConst().IsValid()) {
 //     qualType.AddConst(GetConst());
 //   }
