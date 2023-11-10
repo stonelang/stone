@@ -145,8 +145,7 @@ ParserResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   // it if mutable is added
 
   if (!collector.GetTypeCollector().GetTypeQualifierCollector().HasMutable()) {
-    collector.GetTypeCollector().GetTypeQualifierCollector().AddImmutable(
-        SrcLoc());
+    collector.GetTypeCollector().GetTypeQualifierCollector().AddPerm(SrcLoc());
   }
 
   CollectTypeSlabs(collector.GetTypeCollector());
@@ -304,7 +303,6 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
 
     if (collector.GetTypeCollector()
             .GetTypeQualifierCollector()
-            .GetFastQuals()
             .HasAny()) {
       // if (!collector.GetTypeQualifierCollector().HasPureOnly()) {
       //   // TODO: Log
@@ -417,7 +415,6 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
 
   if (collector.GetTypeCollector()
           .GetTypeQualifierCollector()
-          .GetFastQuals()
           .HasAny()) {
     return stone::MakeParserError();
   }
@@ -444,7 +441,6 @@ ParserResult<Decl> Parser::ParseEnumDecl(ParsingDeclCollector &collector) {
 
   if (collector.GetTypeCollector()
           .GetTypeQualifierCollector()
-          .GetFastQuals()
           .HasAny()) {
     return result;
   }
@@ -478,7 +474,6 @@ ParserResult<Decl> Parser::ParseInterfaceDecl(ParsingDeclCollector &collector) {
 
   if (collector.GetTypeCollector()
           .GetTypeQualifierCollector()
-          .GetFastQuals()
           .HasAny()) {
     return result;
   }

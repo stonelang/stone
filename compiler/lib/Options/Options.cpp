@@ -10,7 +10,7 @@ using namespace stone::opts;
 using namespace llvm::opt;
 
 #define PREFIX(NAME, VALUE) static const char *const NAME[] = VALUE;
-#include "stone/Options/StoneOptions.inc"
+#include "stone/Options/StoneOpts.inc"
 #undef PREFIX
 
 static const OptTable::Info InfoTable[] = {
@@ -18,7 +18,7 @@ static const OptTable::Info InfoTable[] = {
                HELPTEXT, METAVAR, VALUES)                                      \
   {PREFIX, NAME,  HELPTEXT, METAVAR, ID,        Option::KIND##Class,           \
    PARAM,  FLAGS, GROUP,    ALIAS,   ALIASARGS, VALUES},
-#include "stone/Options/StoneOptions.inc"
+#include "stone/Options/StoneOpts.inc"
 #undef OPTION
 };
 

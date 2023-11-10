@@ -106,11 +106,12 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
 
   CollectTypeSlabs(collector);
-  TypeSlabList *slabs = nullptr;
-  if (collector.GetTypeSlabCollector().HasAny()) {
-    slabs = TypeSlabList::Create(
-        collector.GetTypeSlabCollector().GetTypeSlabs(), GetASTContext());
-  }
+  //TODO: 
+  // TypeSlabList *slabs = nullptr;
+  // if (collector.GetTypeSlabCollector().HasAny()) {
+  //   slabs = TypeSlabList::Create(
+  //       collector.GetTypeSlabCollector().GetTypeSlabs(), GetASTContext());
+  // }
 
   Type ty;
   // TypeBase *ty = nullptr;
