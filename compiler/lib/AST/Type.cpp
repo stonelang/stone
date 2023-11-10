@@ -61,7 +61,7 @@ FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
       FloatType(bitWidthKind, astContext, qualifiers);
 }
 
-FloatType *UIntegerType::Create(NumberBitWidthKind bitWidthKind,
+UIntegerType *UIntegerType::Create(NumberBitWidthKind bitWidthKind,
                                 const ASTContext &astContext,
                                 AllocationArena arena,
                                 TypeQualifiers qualifiers) {

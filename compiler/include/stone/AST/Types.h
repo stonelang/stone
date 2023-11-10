@@ -100,7 +100,7 @@ protected:
 public:
   TypeBase(TypeKind kind, const ASTContext *canType, TypeQualifiers qualifiers)
       : kind(kind), canonicalType((TypeBase *)nullptr) {
-    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
+    Bits.TypeBase.kind = static_cast<unsigned>(kind);
     if (canType) {
       canonicalType = canType;
     }
@@ -138,9 +138,9 @@ public:
 
 public:
   // Qualifiers
-  bool AllowQualifiers()() const { return Bits.TypeBase.AllowQualifiers; }
+  bool AllowQualifiers() const { return Bits.TypeBase.AllowQualifiers; }
 
-  bool HasConstQualifer() const { return GetQualifiers().HasCont(); }
+  bool HasConstQualifer() const { return GetQualifiers().HasConst(); }
 
   bool HasPermQualifer() const { return GetQualifiers().HasPerm(); }
 
@@ -158,19 +158,19 @@ public:
   /// canonical version of this type.
   bool IsCanTypeComputed() const { return !canonicalType.isNull(); }
 
-  CanType GetCanType() const {
-    if (IsCanonical()) {
-      return CanType(const_cast<TypeBase *>(this));
-    }
-    if (IsCanTypeComputed()) {
-      return canonicalType;
-    }
-    return const_cast<TypeBase *>(this)->ComputeCanType();
-  }
+  // CanType GetCanType() const {
+  //   if (IsCanonical()) {
+  //     return CanType(const_cast<TypeBase *>(this));
+  //   }
+  //   if (IsCanTypeComputed()) {
+  //     return canonicalType;
+  //   }
+  //   return const_cast<TypeBase *>(this)->ComputeCanType();
+  // }
 
 private:
   CanType ComputeCanType();
-  
+
 public:
 };
 
@@ -266,7 +266,7 @@ public:
       : ScalarType(TypeKind::Bool, astContext, qualifiers) {}
 
 public:
-  static BoolType *Create(const ASTContext &astContext,
+  static BoolType *Create(const ASTContext &astContext, AllocationArena aread,
                           TypeQualifiers qualifiers = TypeQualifiers());
 };
 
@@ -332,7 +332,7 @@ class IntegerType : public NumberType {
 public:
   IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &astContext,
               TypeQualifiers qualifiers)
-      : NumberType(TypeKind::Integer, bitWidthKind, astContext) {}
+      : NumberType(TypeKind::Integer, bitWidthKind, astContext,qualifiers) {}
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
@@ -420,7 +420,7 @@ class SlabType : public TypeBase, public llvm::FoldingSetNode {
 public:
 };
 
-class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
+class AbstractPointerType : public SlabType {
 public:
   AbstractPointerType(TypeKind kind, const ASTContext &astContext,
                       TypeQualifiers qualifiers)

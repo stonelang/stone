@@ -203,9 +203,6 @@ private:
 };
 
 class CanType final : public Type {
-public:
-  /// Constructs a NULL canonical type.
-  CanType() = default;
 
 public:
   explicit CanType(TypeBase *ty) : Type(ty) {
