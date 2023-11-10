@@ -415,12 +415,12 @@ public:
   static NullType *Create(const ASTContext &astContext, AllocationArena aread);
 };
 
-// This is how you deal with chunks
-class SlabType : public TypeBase, public llvm::FoldingSetNode {
-public:
-};
+// // This is how you deal with 
+// class SlabType : public TypeBase, public llvm::FoldingSetNode {
+// public:
+// };
 
-class AbstractPointerType : public SlabType {
+class AbstractPointerType : public TypeBase {
 public:
   AbstractPointerType(TypeKind kind, const ASTContext &astContext,
                       TypeQualifiers qualifiers)
@@ -457,7 +457,7 @@ public:
 private:
   ModuleType(ModuleDecl *mod, const ASTContext &astContext)
       : TypeBase(TypeKind::Module, &astContext, TypeQualifiers()), mod(mod) {
-    Bits.TypeBase.AllowQualifiers = false;
+    //Bits.TypeBase.AllowQualifiers = false;
   }
 };
 

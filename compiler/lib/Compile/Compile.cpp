@@ -106,10 +106,13 @@ bool CompilerInstance::Compile() {
 
   NotifyCompileStarted();
 
-  Compiling::CompileWithCompilelysis(*this);
+  auto status = Compiling::CompileWithCodeAnalysis(*this);
+  if(status.IsError() || status.HasCodeCompletion()){
+    return Finish(status);
+  }
 
   // Some work here before code generation
-  Compiling::CompilePostCompilelysis(*this);
+  status = Compiling::CompilePosCodeAnalysis(*this);
 
   NotifyCompileFinished();
 
@@ -117,8 +120,9 @@ bool CompilerInstance::Compile() {
 }
 
 //// Execute only the analysis part of the compiler
-Status Compiling::CompileWithCompilelysis(CompilerInstance &compiler) {
+Status Compiling::CompileWithCodeAnalysis(CompilerInstance &compiler) {
 
+  Status status;
   // At this point, everything requires syntax analysis.
   if (compiler.GetMode().IsParse()) {
     if (Compiling::PerformSyntaxAnalysis(compiler).IsError()) {
@@ -128,33 +132,42 @@ Status Compiling::CompileWithCompilelysis(CompilerInstance &compiler) {
 
   // Otherwise, default to performing syntax analysis with import resoltuion.
   if (Compiling::PerformSyntaxAnalysisAndImportResoltuion(compiler).IsError()) {
-    return Status::Error();
+    status.SetIsError();
+    return status;
   }
 
   if (compiler.GetMode().IsResolveImports()) {
-    return Status();
+    status.SetHasCodeCompletion();
+    return status;
   }
 
   // Are we trying to dump the AST?
   if (compiler.GetMode().IsDumpAST()) {
     Compiling::PerformDumpAST(compiler);
-    return Finish();
+    status.SetHasCodeCompletion();
+    return status;
   }
   // At this point, everything requires type-checking
   if (Compiling::PerformSemanticAnalysis(compiler).IsError()) {
-    return Status::Error();
+    status.SetIsError();
+    return status;
   }
 
   if (compiler.GetMode().IsTypeCheck()) {
-    return Status();
+    status.SetHasCodeCompletion();
+    return status;
   }
   // Are we trying to print the AST?
   if (compiler.GetMode().IsPrintAST()) {
     Compiling::PerformPrintAST(compiler);
+    status.SetHasCodeCompletion();
+    return status;
   }
 
   if (compiler.GetMode().IsDumpTypeInfo()) {
     Compiling::PerformDumpTypeInfo(compiler);
+    status.SetHasCodeCompletion();
+    return status;
   }
 }
 

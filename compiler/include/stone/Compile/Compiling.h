@@ -19,10 +19,10 @@ public:
   static void PerformPrintAST(CompilerInstance &compiler);
   static void PerformDumpTypeInfo(CompilerInstance &compiler);
 
-  static Status CompileWithCompilelysis(CompilerInstance &compiler);
+  static Status CompileWithCodeAnalysis(CompilerInstance &compiler);
 
 public:
-  static Status CompilePostCompilelysis(CompilerInstance &compiler);
+  static Status CompilePosCodeAnalysis(CompilerInstance &compiler);
 
 public:
   // Some work here before code generation
