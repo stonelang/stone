@@ -46,8 +46,8 @@ BoolType *BoolType::Create(const ASTContext &astContext, AllocationArena arena,
 }
 
 IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                 AllocationArena arena,
                                  const ASTContext &astContext,
+                                  AllocationArena arena,
                                  TypeQualifiers qualifiers) {
 
   return new (astContext, arena)
@@ -121,10 +121,3 @@ void TypeLoc::SetType(Type ty) {}
 FunType::FunType(Type result, const ASTContext *astContext,
                  TypeQualifiers qualifiers)
     : FunctionType(TypeKind::Fun, result, astContext, qualifiers) {}
-
-// FunType *TypeFactory::MakeFunType(Type result);
-
-// IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
-//                                  const ASTContext &sc) {
-//   return new (sc) IntegerType(bitWidthKind, sc);
-// }
