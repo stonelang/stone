@@ -234,7 +234,7 @@ void DiagnosticEngine::Print(ColorStream &os,
 
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
-  auto diagnosticEvent = CreateDiagnosticEvent(diagnostic);
+  auto diagnosticEvent = CreateDiagnosticMessage(diagnostic);
   for (auto &listener : listeners) {
     listener->OnDiagnostic(*diagnosticEvent);
   }
@@ -246,9 +246,9 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
   EmitDiagnostic(*curDiagnostic);
 }
 
-llvm::Optional<DiagnosticEvent>
-DiagnosticEngine::CreateDiagnosticEvent(const Diagnostic &diagnostic) {
-  return DiagnosticEvent(
+llvm::Optional<DiagnosticMessage>
+DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
+  return DiagnosticMessage(
       /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
       GetDiagString(diagnostic.GetDetail().GetID(), true),
       /*TODO*/ llvm::StringRef());

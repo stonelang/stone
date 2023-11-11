@@ -282,7 +282,7 @@ public:
   //       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 };
 
-class DiagnosticEvent final {
+class DiagnosticMessage final {
   diag::Level level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
@@ -290,7 +290,7 @@ class DiagnosticEvent final {
   SrcMgr &sm;
 
 public:
-  DiagnosticEvent(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
+  DiagnosticMessage(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
                   llvm::StringRef formatMessage, llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}

@@ -6,7 +6,7 @@
 
 namespace stone {
 
-class DiagnosticEvent;
+class DiagnosticMessage;
 
 class DiagnosticListener {
 
@@ -47,7 +47,7 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void OnDiagnostic(const DiagnosticEvent &diagEvent) = 0; 
+  virtual void OnDiagnostic(const DiagnosticMessage &diagEvent) = 0; 
 
   // void SetFormatter(DiagnosticFormatter *diagFormatter) {
   //   assert(diagFormatter);
@@ -64,7 +64,7 @@ public:
 // public:
 
 // public:
-//   void OnDiagnostic(const DiagnosticEvent &diagEvent) override {}
+//   void OnDiagnostic(const DiagnosticMessage &diagEvent) override {}
 // };
 
 } // namespace stone

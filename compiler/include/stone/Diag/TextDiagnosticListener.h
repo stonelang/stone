@@ -7,7 +7,7 @@
 #include "stone/Diag/TextDiagnosticEmitter.h"
 
 namespace stone {
-class DiagnosticEvent;
+class DiagnosticMessage;
 
 class TextDiagnosticListener : public DiagnosticListener {
 
@@ -18,7 +18,7 @@ public:
   ~TextDiagnosticListener();
 
 public:
-  void OnDiagnostic(const DiagnosticEvent &diagnostic) override;
+  void OnDiagnostic(const DiagnosticMessage &diagnostic) override;
   bool Finish() override;
 
   // void ForceColors() {

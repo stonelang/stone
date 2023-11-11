@@ -341,9 +341,9 @@ public:
   }
  
 public:
-  /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
-  llvm::Optional<DiagnosticEvent>
-  CreateDiagnosticEvent(const Diagnostic &diagnostic);
+  /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
+  llvm::Optional<DiagnosticMessage>
+  CreateDiagnosticMessage(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
   void EmitDiagnostic(const Diagnostic &diagnostic);

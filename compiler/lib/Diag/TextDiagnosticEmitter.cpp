@@ -18,9 +18,9 @@ TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
 void TextDiagnosticEmitter::EmitLevel() {}
 
-void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticEvent &de) {
+void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticMessage &de) {
 
-  // auto ed = const_cast<DiagnosticEvent &>(de);
+  // auto ed = const_cast<DiagnosticMessage &>(de);
   // printf("%s\n", ed.GetFormatMessage().data());
 
   ColorStream cs;
