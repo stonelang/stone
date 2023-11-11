@@ -1,6 +1,6 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Drive/Drive.h"
+#include "stone/Driver/Main.h"
 
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/CommandLine.h"
@@ -28,7 +28,7 @@ int main(int argc, const char **args) {
       argsToExpand);
 
   llvm::ArrayRef<const char *> argv(argsToExpand);
-  return stone::Drive(
+  return stone::Main(
       llvm::makeArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
       (void *)(intptr_t)stone::GetMainExecutablePath, nullptr);
 }

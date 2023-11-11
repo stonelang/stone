@@ -27,7 +27,7 @@
 	LINK_LIBS 
 	StoneSession
 )
-add_stone_library(StoneDrive
+add_stone_library(StoneDriver
 	${stone_drive_sources}
 
 	DEPENDS
