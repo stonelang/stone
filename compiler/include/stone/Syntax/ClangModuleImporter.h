@@ -1,7 +1,7 @@
 #ifndef STONE_CLANG_CLANGMODULEIMPORTER_H
 #define STONE_CLANG_CLANGMODULEIMPORTER_H
 
-#include "stone/Foreign/ClangModuleLoader.h"
+#include "stone/Syntax/ClangModuleLoader.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

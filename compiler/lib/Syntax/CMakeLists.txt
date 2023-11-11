@@ -34,6 +34,11 @@ set(stone_syn_sources
 	TypeOperator.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
+
+	ClangContext.cpp
+	ClangModuleImporter.cpp
+	ClangAST.cpp
+
 	
 	LINK_LIBS
 	StoneDiag

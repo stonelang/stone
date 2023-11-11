@@ -2,7 +2,7 @@
 #define STONE_FOREIGN_CLANG_H
 
 #include "stone/Basic/STDAlias.h"
-#include "stone/Foreign/ClangModuleImporter.h"
+#include "stone/Syntax/ClangModuleImporter.h"
 
 #include "clang/Basic/TargetInfo.h"
 #include "clang/CodeGen/ModuleBuilder.h"
