@@ -1,28 +1,28 @@
 #ifndef STONE_OPTIONS_ACTION_H
-#define STONE_OPITONS_ACTION_H
+#define STONE_OPTIONS_ACTION_H
 
 namespace stone {
-// The modes that the system supports
+// The actions the compiler suppors
 enum class ActionKind : unsigned {
   ///< No mode
   None = 0,
-  ///< Parse only
+  ///< Parse only (--parse)
   Parse,
-  ///< Parse and resolve use(s) only
+  ///< Parse and resolve use(s) only (--resolve-imports)
   ResolveImports,
-  ///< Parse and dump asttax tree
+  ///< Parse and dump asttax tree (--dump-ast)
   DumpAST,
-  ///< Parse and type-check only
+  ///< Parse and type-check only (--type-check)
   TypeCheck,
-  ///< Parse, type-check, and  pretty print asttax tree
+  ///< Parse, type-check, and  pretty print asttax tree (--print-ast)
   PrintAST,
-  ///< Parse, type-check, and  dump type-into ( --dump-typeinfo)
+  ///< Parse, type-check, and  dump type-into (--dump-typeinfo)
   DumpTypeInfo,
-  //</ Parse, type-check, and pretty print llvm-ir
+  //</ Parse, type-check, and pretty print llvm-ir (--print-ir)
   PrintIR,
-  //</ Parse, type-check, and emit LLVM IR pre optimization
+  //</ Parse, type-check, and emit LLVM IR (--emit-ir)
   EmitIRPre,
-  //</ Parse, type-check, and emit LLVM IR post optimization
+  //</ Parse, type-check, and emit LLVM IR ( --emit-ir-
   EmitIR,
   //< Parse, type-check, and emit LLVM BC
   EmitBC,
@@ -46,17 +46,16 @@ enum class ActionKind : unsigned {
   //< Alien
   Alien,
 };
-
 class Action {
   ActionKind kind;
   llvm::StringRef name;
 
 protected:
-  void SetName(llvm::StringRef v) { name = v; }
   void SetKind(ActionKind inputKind) { kind = inputKind; }
+  void SetName(llvm::StringRef inputName) { name = inputName }
 
 public:
-  Action() {}
+  Action() : kind(ActionKind::None) {}
   ~Action() {}
 
 public:
@@ -66,104 +65,104 @@ public:
 
 public:
   bool CanCompile() const {
-  case ActionKind::None:
-  case ActionKind::Parse:
-  case ActionKind::ResolveImports:
-  case ActionKind::DumpAST:
-  case ActionKind::TypeCheck:
-  case ActionKind::PrintAST:
-  case ActionKind::EmitIR:
-  case ActionKind::EmitBC:
-  case ActionKind::EmitObject:
-  case ActionKind::EmitAssembly:
-  case ActionKind::EmitModule:
-  case ActionKind::EmitLibrary:
-    return true;
-  default:
-    return false;
+    switch (GetKind()) {
+    case ActionKind::None:
+    case ActionKind::Parse:
+    case ActionKind::ResolveImports:
+    case ActionKind::DumpAST:
+    case ActionKind::TypeCheck:
+    case ActionKind::PrintAST:
+    case ActionKind::EmitIR:
+    case ActionKind::EmitBC:
+    case ActionKind::EmitObject:
+    case ActionKind::EmitAssembly:
+    case ActionKind::EmitModule:
+    case ActionKind::EmitLibrary:
+      return true;
+    default:
+      return false;
+    }
   }
-}
-
-
   bool CanOutput() const {
-  switch (GetKind()) {
-  case ActionKind::DumpAST:
-  case ActionKind::PrintAST:
-  case ActionKind::EmitIR:
-  case ActionKind::EmitBC:
-  case ActionKind::EmitObject:
-  case ActionKind::EmitAssembly:
-  case ActionKind::EmitModule:
-  case ActionKind::EmitLibrary:
-    return true;
-  default:
-    return false;
+    switch (GetKind()) {
+    case ActionKind::DumpAST:
+    case ActionKind::PrintAST:
+    case ActionKind::EmitIR:
+    case ActionKind::EmitBC:
+    case ActionKind::EmitObject:
+    case ActionKind::EmitAssembly:
+    case ActionKind::EmitModule:
+    case ActionKind::EmitLibrary:
+      return true;
+    default:
+      return false;
+    }
   }
-}
-bool CanCodeGen() const {
+  bool CanCodeGen() const {
+    switch (GetKind()) {
+    case ActionKind::None:
+    case ActionKind::EmitIR:
+    case ActionKind::EmitBC:
+    case ActionKind::EmitObject:
+    case ActionKind::EmitAssembly:
+    case ActionKind::EmitModule:
+    case ActionKind::EmitLibrary:
+      return true;
+    default:
+      return false;
+    }
+  }
+  bool IsImmediateOnly() {
+    switch (GetKind()) {
+    case ActionKind::PrintHelp:
+    case ActionKind::PrintVersion:
+      return true;
+    default:
+      return false;
+    }
+  }
 
-  switch (GetKind()) {
-  case ActionKind::None:
-  case ActionKind::EmitIR:
-  case ActionKind::EmitBC:
-  case ActionKind::EmitObject:
-  case ActionKind::EmitAssembly:
-  case ActionKind::EmitModule:
-  case ActionKind::EmitLibrary:
-    return true;
-  default:
-    return false;
+  bool IsParseOnly() {
+    switch (GetKind()) {
+    case ActionKind::Parse:
+    case ActionKind::DumpAST:
+      return true;
+      break;
+      return false;
+    }
   }
-}
-bool IsImmediateOnly() {
-  switch (GetKind()) {
-  case ActionKind::PrintHelp:
-  case ActionKind::PrintVersion:
-    return true;
-  default:
-    return false;
+  bool IsTypeCheckOnly() {
+    switch (GetKind()) {
+    case ActionKind::TypeCheck:
+    case ActionKind::PrintAST:
+      return true;
+      break;
+      return false;
+    }
   }
-}
-
-bool IsParseOnly() {
-  switch (GetKind()) {
-  case ActionKind::Parse:
-  case ActionKind::DumpAST:
-    return true;
-    break;
-    return false;
-  }
-}
-bool IsTypeCheckOnly() {
-  switch (GetKind()) {
-  case ActionKind::TypeCheck:
-  case ActionKind::PrintAST:
-    return true;
-    break;
-    return false;
-  }
-}
 
 public:
-// Convenience
-bool IsNone() const { return GetKind() == ActionKind::None; }
-bool IsPrintHelp() { return GetKind() == ActionKind::PrintHelp; }
-bool IsPrintVersion() { return GetKind() == ActionKind::PrintVersion; }
-bool IsParse() { return GetKind() == ActionKind::Parse; }
-bool IsResolveImports() { return GetKind() == ActionKind::ResolveImports; }
-bool IsDumpAST() { return GetKind() == ActionKind::DumpAST; }
-bool IsTypeCheck() { return GetKind() == ActionKind::TypeCheck; }
-bool IsDumpTypeInfo() { return GetKind() == ActionKind::DumpTypeInfo; }
-bool IsPrintAST() { return GetKind() == ActionKind::PrintAST; }
-bool IsPrintIR() { return GetKind() == ActionKind::PrintIR; }
-bool IsEmitIR() { return GetKind() == ActionKind::EmitIR; }
-bool IsEmitModule() { return GetKind() == ActionKind::EmitModule; }
-bool IsEmitLibrary() { return GetKind() == ActionKind::EmitLibrary; }
-bool IsEmitBC() { return GetKind() == ActionKind::EmitBC; }
-bool IsEmitObject() { return GetKind() == ActionKind::EmitObject; }
-bool IsEmitAssembly() { return GetKind() == ActionKind::EmitAssembly; }
-bool IsAlien() { return GetKind() == ActionKind::Alien; }
-
+  // Convenience
+  bool IsNone() const { return GetKind() == ActionKind::None; }
+  bool IsPrintHelp() { return GetKind() == ActionKind::PrintHelp; }
+  bool IsPrintVersion() { return GetKind() == ActionKind::PrintVersion; }
+  bool IsParse() { return GetKind() == ActionKind::Parse; }
+  bool IsResolveImports() { return GetKind() == ActionKind::ResolveImports; }
+  bool IsDumpAST() { return GetKind() == ActionKind::DumpAST; }
+  bool IsTypeCheck() { return GetKind() == ActionKind::TypeCheck; }
+  bool IsDumpTypeInfo() { return GetKind() == ActionKind::DumpTypeInfo; }
+  bool IsPrintAST() { return GetKind() == ActionKind::PrintAST; }
+  bool IsPrintIR() { return GetKind() == ActionKind::PrintIR; }
+  bool IsEmitIR() { return GetKind() == ActionKind::EmitIR; }
+  bool IsEmitModule() { return GetKind() == ActionKind::EmitModule; }
+  bool IsEmitLibrary() { return GetKind() == ActionKind::EmitLibrary; }
+  bool IsEmitBC() { return GetKind() == ActionKind::EmitBC; }
+  bool IsEmitObject() { return GetKind() == ActionKind::EmitObject; }
+  bool IsEmitAssembly() { return GetKind() == ActionKind::EmitAssembly; }
+  bool IsAlien() { return GetKind() == ActionKind::Alien; }
 };
+namespace action {
+ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
+}
 } // namespace stone
 #endif

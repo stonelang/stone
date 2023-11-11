@@ -1,8 +1,6 @@
 #include "stone/Options/Options.h"
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/Option/OptTable.h"
-#include "llvm/Option/Option.h"
 
 using namespace stone;
 using namespace stone::opts;

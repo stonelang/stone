@@ -80,15 +80,6 @@ public:
   static int Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                      void *mainAddr, CompilerListener *listener = nullptr);
 
-  //// Executes only the analysis part of the compiler
-  static bool CompileWithCompilelysis(CompilerInstance &compiler);
-
-  /// Performs non-analysis stuff and then calls code generation
-  static bool CompileAfterCompilelysis(CompilerInstance &compiler);
-
-  /// Execute only the code generation
-  static bool CompileWithCodeGeneration(CompilerInstance &compiler);
-
 public:
   static int Main(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilationListener *listener);
@@ -199,5 +190,6 @@ public:
                           llvm::raw_pwrite_stream &out,
                           llvm::sys::Mutex *diagMutex = nullptr);
 };
+
 } // namespace stone
 #endif

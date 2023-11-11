@@ -1,5 +1,5 @@
 #ifndef STONE_OPTIONS_MODE_H
-#define STONE_OPITONS_MODE_H
+#define STONE_OPTIONS_MODE_H
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/Timer.h"
@@ -64,7 +64,8 @@ public:
   ~Mode();
 
 public:
-  ModeKind GetKind() const { return kind; }
+  ModeKind GetKind() { return kind; }
+  const ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
   bool Is(ModeKind k) const { return kind == k; }
   file::Type GetOutputFileType() const;

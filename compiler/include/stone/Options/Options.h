@@ -1,9 +1,10 @@
-#ifndef STONE_SESSION_OPTIONS_H
-#define STONE_SESSION_OPTIONS_H
+#ifndef STONE_OPTIONS_OPTIONS_H
+#define STONE_OPTIONS_OPTIONS_H
+
+#include "llvm/Option/ArgList.h"
+#include "llvm/Option/OptTable.h"
 
 #include <memory>
-
-#include "stone/Options/Mode.h"
 
 namespace llvm {
 namespace opt {

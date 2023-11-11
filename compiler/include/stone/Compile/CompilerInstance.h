@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_COMPILER_H
-#define STONE_COMPILE_COMPILER_H
+#ifndef STONE_COMPILE_COMPILERINSTANCE_H
+#define STONE_COMPILE_COMPILERINSTANCE_H
 
 #include "stone/AST/ASTContext.h"
 #include "stone/Basic/Mem.h"
@@ -54,8 +54,6 @@ class CompilerInstance final {
 
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
-
-  mutable stone::ModuleDecl *mainModule = nullptr;
 
   bool isCompiling = false;
 

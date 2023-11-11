@@ -21,17 +21,6 @@
 
 using namespace stone;
 
-// class Compiling final {
-//   Compiler& compiler;
-//   std::unique_ptr<stone::ASTContext> astContext;
-//   std::unique_ptr<ModuleSystem> moduleSystem;
-// public:
-//   Compiling(Compiler& compiler) : compiler(compiler){}
-
-//  public:
-
-// };
-
 int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                   void *mainAddr, CompilerListener *listener) {
 
@@ -41,6 +30,34 @@ int Lang::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto Finish = [&](Status status = Status::Success()) -> int {
     return status.GetFlag();
   };
+
+  // Compiler compiler;
+
+  // /// Check to make sure we have args
+  // if (args.empty()) {
+  //   compiler.GetBasic().GetDiags().PrintD(SrcLoc(),
+  //   diag::err_no_input_files); return Finish(Status::Error());
+  // }
+  // // setup the exectuing program name and path.
+  // compiler.GetCompilerOptions().ExecutingProgramPath =
+  //     llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  // compiler.GetCompilerOptions().ExecutingProgramName =
+  //     file::GetStem(programPath);
+
+  // // if (args.empty()) {
+  //   compiler.GetBasic().GetDiags().PrintD(SrcLoc(),
+  //   diag::err_no_input_files); return Finish(Status::Error());
+  // }
+  // STONE_DEFER { compiler.Finish(); };
+
+  // auto status = compiler.ParseCommandLine(args);
+
+  // if(compiler.GetAction().IsAlien()) {
+  //   compiler.GetDiags().PrintD(SrcLoc(), diag::err_alien_mode);
+  //   Finish(Status::Error());
+  // }
+
+  // compiler.Compile();
 
   auto programPath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   auto programName = file::GetStem(programPath);
@@ -372,3 +389,31 @@ Status Compiling::PerformNativeGeneration(CompilerInstance &compiler,
 }
 
 void Compiling::NotifyNativeGenerationCompleted(CompilerInstance &compiler) {}
+
+Status Compiling::WithParsing() { return Status::Success(); }
+Status
+Compiling::WithParsingAndImportResoltuion(CodeAnalysisCompletion notify) {
+  return Status::Success();
+  notify();
+}
+
+void Compiling::WithASTDumping() {}
+
+Status Compiling::WithTypeChecking() { return Status::Success(); }
+void Compiling::FinishTypeChecking() {}
+
+void Compiling::WithASTPrinting() { return Status::Success(); }
+Status Compiling::WithTypeInfoDumping() { return Status::Success(); }
+Status Compiling::WithIRGeneration(CodeGenContext &codeGenContext) {
+  return Status::Success();
+}
+Status Compiling::WithCodeAnalysis() { return Status::Success(); }
+Status Compiling::WithCodeGeneration(CodeGenContext &codeGenContext) {
+  return Status::Success();
+}
+void Compiling::WitIRDumping(CodeGenContext &codeGenContext) {}
+void Compiling::WithIRPrinting(CodeGenContext &codeGenContext) {}
+
+Status Compiling::WithNativeGeneration(CodeGenContext &codeGenContext) {
+  return Status::Success();
+}

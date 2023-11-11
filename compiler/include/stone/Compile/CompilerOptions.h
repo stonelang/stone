@@ -9,6 +9,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
+#include "stone/Options/Mode.h"
 #include "stone/Options/Options.h"
 
 namespace stone {
@@ -43,6 +44,12 @@ class CompilerOptions final {
   /// to warnings.
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool DowngradeInterfaceVerificationError = false;
+
+  /// The path the executing program
+  llvm::StringRef ExecutingProgramPath;
+
+  /// The name of the executing program
+  llvm::String ExecutingProgramName;
 
 public:
   enum class LibOutputMode { Dynamic, Static };

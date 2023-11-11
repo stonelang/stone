@@ -1,4 +1,5 @@
-#include "stone/Compile/Compiler.h"
+// #include "stone/Compile/Compiler.h"
 
-using namespace stone;
+// using namespace stone;
 
+// //Compiler::Compiler() : compiling(*this) {}
