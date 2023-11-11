@@ -11,7 +11,7 @@
 
 using namespace stone;
 
-int stone::Drive(llvm::ArrayRef<const char *> args, const char *arg0,
+int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
                  void *mainAddr, CompilationListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
   FINISH_LLVM_INIT();
