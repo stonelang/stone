@@ -382,7 +382,7 @@ private:
   }
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic,
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic diagnostic,
                             Tokenable *tokenable = nullptr) {
     return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
   }
