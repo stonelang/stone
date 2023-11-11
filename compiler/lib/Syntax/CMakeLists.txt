@@ -39,10 +39,9 @@ set(stone_syn_sources
 	ClangModuleImporter.cpp
 	ClangAST.cpp
 
-	
+
 	LINK_LIBS
 	StoneDiag
-	StoneForeign
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

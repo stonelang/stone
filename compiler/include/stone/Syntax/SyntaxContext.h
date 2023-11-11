@@ -27,7 +27,7 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Foreign/ClangContext.h"
+#include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"

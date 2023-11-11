@@ -1,7 +1,7 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/Foreign/ClangContext.h"
+#include "stone/Syntax/ClangContext.h"
 #include "stone/Gen/CodeGenScope.h"
 #include "stone/Public.h"
 

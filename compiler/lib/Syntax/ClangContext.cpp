@@ -1,4 +1,4 @@
-#include "stone/Foreign/ClangContext.h"
+#include "stone/Syntax/ClangContext.h"
 
 using namespace stone;
 

@@ -1,4 +1,4 @@
-#include "stone/Foreign/ClangAST.h"
+#include "stone/Syntax/ClangAST.h"
 
 using namespace stone;
 
