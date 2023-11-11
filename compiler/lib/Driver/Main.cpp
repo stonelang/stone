@@ -1,4 +1,4 @@
-#include "stone/Driver/Drive.h"
+#include "stone/Driver/Main.h"
 
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
