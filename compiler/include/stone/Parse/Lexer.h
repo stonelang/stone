@@ -522,7 +522,7 @@ private:
   template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(
+    return PrintD(loc, Diagnostic(Diagnostic(
                            DiagID, std::forward<ArgTypes>(Args)...)));
   }
 

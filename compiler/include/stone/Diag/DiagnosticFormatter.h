@@ -11,7 +11,7 @@
 #include <assert.h>
 
 namespace stone {
-class DiagnosticDetail;
+class Diagnostic;
 
 class DiagnosticFormatter {
 
@@ -20,7 +20,7 @@ public:
   virtual ~DiagnosticFormatter();
 
   virtual void
-  Format(ColorStream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, const Diagnostic &diagnostic,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) {}
 
   virtual void

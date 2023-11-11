@@ -134,10 +134,10 @@ diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
 
   //   1) Map the diagnostic to its "intended" behavior, applying the behavior
   //      limit for this particular emission
-  auto diagnostic = LocalDiagnostics[(unsigned)diag.GetDetail().GetID()];
+  auto diagnostic = LocalDiagnostics[(unsigned)diag.GetID()];
   diag::Level lvl =
       std::max(ToDiagnosticLevel(diagnostic.severity, diagnostic.isFatal),
-               diag.GetDetail().GetLevelLimit());
+               diag.GetLevelLimit());
   assert(lvl != diag::Level::None);
 
   //   2) If current state dictates a certain behavior, follow that
@@ -152,7 +152,7 @@ diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
       lvl = diag::Level::Ignore;
 
   //   3) If the user ignored this specific diagnostic, follow that
-  if (ignoredDiagnostics[(unsigned)diag.GetDetail().GetID()])
+  if (ignoredDiagnostics[(unsigned)diag.GetID()])
     lvl = diag::Level::Ignore;
 
   //   4) If the user substituted a different behavior for this behavior, apply
@@ -250,7 +250,7 @@ llvm::Optional<DiagnosticMessage>
 DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
   return DiagnosticMessage(
       /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),
-      GetDiagString(diagnostic.GetDetail().GetID(), true),
+      GetDiagString(diagnostic.GetID(), true),
       /*TODO*/ llvm::StringRef());
 }
 

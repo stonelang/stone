@@ -23,7 +23,7 @@ public:
 
 public:
   virtual void EmitLevel();
-  virtual void EmitDiagnostic(const DiagnosticMessage &de);
+  virtual void EmitDiagnostic(const DiagnosticMessage &msg);
   virtual void EmitLoc();
 
 public:

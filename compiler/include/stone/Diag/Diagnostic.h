@@ -189,21 +189,24 @@ struct DiagnosticFormatOptions {
   }
 };
 
-// TODO: Free Detail
-class DiagnosticDetail {
+class Diagnostic {
+
+  friend class DiagnosticEngine;
+  friend class InFlightDiagnostic;
   // This ID will be used to look up the string vis GetDiagString(DiagID ...)
   DiagID diagID;
+
   SrcLoc loc;
   diag::Level levelLimit = diag::Level::None;
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<CodeFix, 2> fixes;
-  // llvm::SmallVector<DiagnosticDetail *> deps;
+  // llvm::SmallVector<Diagnostic *> deps;
 
 public:
   template <typename... ArgTypes>
-  DiagnosticDetail(Diag<ArgTypes...> d,
-                   typename detail::PassArgument<ArgTypes>::type... vArgs)
+  Diagnostic(Diag<ArgTypes...> d,
+             typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
     diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
 
@@ -211,22 +214,22 @@ public:
   }
 
 public:
-  DiagnosticDetail(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+  Diagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
       : diagID(diagID), args(args.begin(), args.end()) {}
 
 public:
-  DiagID GetID() { return diagID; }
+  DiagID GetID() const { return diagID; }
   llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
-  // llvm::ArrayRef<DiagnosticDetail *> GetDeps() const { return deps; }
+  // llvm::ArrayRef<Diagnostic *> GetDeps() const { return deps; }
 
 public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
   void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
 
-  // void AddDep(DiagnosticDetail *dep) { deps.push_back(dep); }
+  // void AddDep(Diagnostic *dep) { deps.push_back(dep); }
 
   void AddArgument(diag::Argument &&arg) { args.push_back(std::move(arg)); }
 
@@ -234,7 +237,13 @@ public:
   SrcLoc GetLoc() { return loc; }
 
   void SetLevelLimit(diag::Level limit) { levelLimit = limit; }
-  diag::Level GetLevelLimit() { return levelLimit; }
+  diag::Level GetLevelLimit() const { return levelLimit; }
+
+public:
+  template <typename... otherArgTypes>
+  bool IsEqual(Diag<otherArgTypes...> other) const {
+    return GetID() == other.GetID();
+  }
 
   void Clear() {
     args.clear();
@@ -242,45 +251,7 @@ public:
     fixes.clear();
   }
 };
-class Diagnostic {
 
-  friend class DiagnosticEngine;
-  friend class InFlightDiagnostic;
-
-protected:
-  mutable DiagnosticDetail detail;
-
-public:
-  explicit Diagnostic(DiagnosticDetail detail) : detail(detail) {}
-
-public:
-  DiagnosticDetail &GetDetail() const { return detail; }
-
-  // TODO: UB
-  void AddChild(Diagnostic &&diagnostic);
-
-public:
-  template <typename... otherArgTypes>
-  bool IsEqual(Diag<otherArgTypes...> other) const {
-    return detail.GetID() == other.GetDetail().GetID();
-  }
-
-public:
-  /// The result is appended onto the \p OutStr array.
-  // virtual void Format(llvm::SmallVectorImpl<char> &outStr,
-  //                     const DiagnosticFormatOptions &fmtOptions) const;
-
-  // /// Format the given format-string into the output buffer using the
-  // /// arguments stored in this diagnostic.
-  // virtual void Format(const char *diagStr, const char *diagEnd,
-  //                     llvm::SmallVectorImpl<char> &outStr,
-  //                     const DiagnosticFormatOptions &fmtOptions) const;
-
-  // static void formatDiagnosticText(
-  //       llvm::raw_ostream &Out, StringRef InText,
-  //       ArrayRef<DiagnosticArgument> FormatArgs,
-  //       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
-};
 
 class DiagnosticMessage final {
   diag::Level level;

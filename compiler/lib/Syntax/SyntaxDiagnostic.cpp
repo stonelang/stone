@@ -49,7 +49,7 @@ SyntaxDiagnostic::~SyntaxDiagnostic() {}
 SyntaxDiagnosticFormatter::SyntaxDiagnosticFormatter() {}
 
 void SyntaxDiagnosticFormatter::Format(ColorStream &out,
-                                       DiagnosticDetail &detail,
+                                       const Diagnostic &detail,
                                        DiagnosticFormatOptions fmtOpts) {
 
   // printf("%s\n", "Hello syntax formatting");
