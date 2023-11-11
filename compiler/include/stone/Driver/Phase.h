@@ -4,7 +4,7 @@
 #include "stone/Basic/Color.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Drive/DriverOptions.h"
+#include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/StringMap.h"

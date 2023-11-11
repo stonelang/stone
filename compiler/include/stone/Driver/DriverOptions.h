@@ -2,7 +2,7 @@
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
 #include "stone/Basic/LangOptions.h"
-#include "stone/Drive/OutputOptions.h"
+#include "stone/Driver/OutputOptions.h"
 #include "stone/Session/SessionOptions.h"
 
 namespace stone {

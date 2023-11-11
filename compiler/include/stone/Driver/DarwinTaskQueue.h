@@ -3,8 +3,8 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Drive/Task.h"
-#include "stone/Drive/TaskQueue.h"
+#include "stone/Driver/Task.h"
+#include "stone/Driver/TaskQueue.h"
 #include "stone/Public.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"

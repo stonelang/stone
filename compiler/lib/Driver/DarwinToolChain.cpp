@@ -1,7 +1,7 @@
-#include "stone/Drive/DarwinToolChain.h"
-#include "stone/Drive/Compilation.h"
-#include "stone/Drive/Driver.h"
-#include "stone/Drive/ToolChain.h"
+#include "stone/Driver/DarwinToolChain.h"
+#include "stone/Driver/Compilation.h"
+#include "stone/Driver/Driver.h"
+#include "stone/Driver/ToolChain.h"
 
 using namespace stone;
 using namespace stone::darwin;

@@ -1,8 +1,8 @@
-#include "stone/Drive/Driver.h"
+#include "stone/Driver/Driver.h"
 #include "stone/Diag/CoreDiagnostic.h"
-#include "stone/Drive/Compilation.h"
-#include "stone/Drive/DarwinToolChain.h"
-#include "stone/Drive/Job.h"
+#include "stone/Driver/Compilation.h"
+#include "stone/Driver/DarwinToolChain.h"
+#include "stone/Driver/Job.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"

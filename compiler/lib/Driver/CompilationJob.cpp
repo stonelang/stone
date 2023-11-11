@@ -1,7 +1,7 @@
-#include "stone/Drive/CompilationJob.h"
+#include "stone/Driver/CompilationJob.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Drive/Compilation.h"
-#include "stone/Drive/Driver.h"
+#include "stone/Driver/Compilation.h"
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 

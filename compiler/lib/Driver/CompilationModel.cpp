@@ -1,6 +1,6 @@
-#include "stone/Drive/CompilationModel.h"
-#include "stone/Drive/Driver.h"
-#include "stone/Drive/ToolChain.h"
+#include "stone/Driver/CompilationModel.h"
+#include "stone/Driver/Driver.h"
+#include "stone/Driver/ToolChain.h"
 
 using namespace stone;
 

@@ -2,7 +2,7 @@
 #define STONE_DRIVER_OUTPUTOPTIONS_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Drive/Command.h"
+#include "stone/Driver/Command.h"
 
 namespace stone {
 

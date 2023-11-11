@@ -1,6 +1,6 @@
-#include "stone/Drive/DriverOptions.h"
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Basic/Error.h"
-#include "stone/Drive/Driver.h"
+#include "stone/Driver/Driver.h"
 
 #include "llvm/Option/Arg.h"
 

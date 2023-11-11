@@ -5,12 +5,12 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Drive/BuildSystem.h"
-#include "stone/Drive/CompilationListener.h"
-#include "stone/Drive/CompilationModel.h"
-#include "stone/Drive/DriverOptions.h"
-#include "stone/Drive/Phase.h"
-#include "stone/Drive/ToolChain.h"
+#include "stone/Driver/BuildSystem.h"
+#include "stone/Driver/CompilationListener.h"
+#include "stone/Driver/CompilationModel.h"
+#include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Phase.h"
+#include "stone/Driver/ToolChain.h"
 #include "stone/Session/Session.h"
 
 namespace stone {

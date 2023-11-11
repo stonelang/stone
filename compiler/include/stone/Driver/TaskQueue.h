@@ -8,7 +8,7 @@
 #include "stone/Basic/JSONSerialization.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Drive/Task.h"
+#include "stone/Driver/Task.h"
 #include "stone/Public.h"
 
 #include "llvm/ADT/ArrayRef.h"

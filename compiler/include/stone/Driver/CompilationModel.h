@@ -4,8 +4,8 @@
 #include "stone/Basic/File.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
-#include "stone/Drive/Compilation.h"
-#include "stone/Drive/OutputOptions.h"
+#include "stone/Driver/Compilation.h"
+#include "stone/Driver/OutputOptions.h"
 
 namespace stone {
 

@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILATION_DEBUGCOMPILATIONLISTENER_H
 #define STONE_COMPILATION_DEBUGCOMPILATIONLISTENER_H
 
-#include "stone/Drive/CompilationListener.h"
+#include "stone/Driver/CompilationListener.h"
 
 namespace stone {
 
