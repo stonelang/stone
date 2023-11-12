@@ -176,12 +176,12 @@ namespace stone {
 class LangContext final {
   FileMgr fm;
   SrcMgr sm;
-  LangOptions langOpts;
   StatisticEngine se;
   ColorStream cos;
   FileSystemOptions fsOpts;
   DiagnosticEngine de;
   DiagnosticOptions diagOpts;
+  LangOptions langOpts;
 
 public:
   LangContext() : fm(fsOpts), de(diagOpts, sm), cos(llvm::outs()) {}

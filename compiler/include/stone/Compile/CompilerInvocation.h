@@ -6,13 +6,11 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Public.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/Option/Action.h"
 #include "stone/Public.h"
-#include "stone/Option/Mode.h"
-#include "stone/Option/Session.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
@@ -57,7 +55,8 @@ struct ModuleBuffers {
 
 using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
-class CompilerInvocation final {
+
+class CompilerInvocation {
 
   CompilerOptions compilerOpts;
 
@@ -70,7 +69,7 @@ class CompilerInvocation final {
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
 
-  stone::TargetOptions targetOpts;
+  LangTargetOptions targetOpts;
 
   ModuleOptions moduleOpts;
 
@@ -89,6 +88,8 @@ class CompilerInvocation final {
 
   mutable llvm::BumpPtrAllocator bumpAlloc;
 
+  LangContext langContext;
+
   std::unique_ptr<ClangContext> clangContext;
 
 public:
@@ -96,7 +97,7 @@ public:
   ~CompilerInvocation();
 
 public:
-  Status ParseOptions(llvm::opt::InputArgList &args);
+  Status ParseOptions(llvm::ArrayRef<const char *> args);
 
 public:
   // llvm::ArrayRef<CompilerUnit *> BuildSources(const file::Files &inputs);
@@ -122,26 +123,28 @@ public:
 
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
-  void Finish() override;
+  void Finish();
 
   // TODO: update CompilerOptions
   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  stone::Error SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
 
+  LangContext &GetLangContext() { return langContext; }
+
   ClangContext &GetClangContext() { return *clangContext; }
 
-  CompilerOptions GetCompilerOptions() { return compilerOpts; }
+  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
-  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
-  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+  LangTargetOptions &GetTargetOptions() { return targetOpts; }
+  const LangTargetOptions &GetTargetOptions() const { return targetOpts; }
 
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
@@ -151,9 +154,9 @@ public:
     return typeCheckerOpts;
   }
 
-  LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
+  LangOptions &GetLangOptions() { return GetLangContext().GetLangOptions(); }
   const LangOptions &GetLangOptions() const {
-    return GetCompilerOptions().langOpts;
+    return GetLangContext().GetLangOptions();
   }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
@@ -169,7 +172,7 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  DiagUnit &GetDiags() { GetLangContext().GetDiags(); }
+  DiagnosticEngine &GetDiags() { GetLangContext().GetDiags(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
@@ -195,7 +198,7 @@ private:
   Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
   Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
   Status ParseTargetOptions(llvm::opt::InputArgList &args);
-  llvm::StringRef ParseWorkDirectory(llvm::opt::InputArgList &args);
+  llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
 
 public:
   void PrintHelp();

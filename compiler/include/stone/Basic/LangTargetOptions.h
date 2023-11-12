@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_TARGETOPTIONS_H
-#define STONE_BASIC_TARGETOPTIONS_H
+#ifndef STONE_BASIC_LANGTARGETOPTIONS_H
+#define STONE_BASIC_LANGTARGETOPTIONS_H
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/VersionTuple.h"
@@ -10,7 +10,7 @@
 
 namespace stone {
 /// Options for controlling the target.
-class TargetOptions final {
+class LangTargetOptions final {
 public:
   /// The name of the target triple to compile for.
   std::string triple;

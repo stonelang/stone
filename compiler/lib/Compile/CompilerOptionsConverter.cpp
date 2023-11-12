@@ -66,8 +66,8 @@ Status CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
-  if (ComputeModuleName().Has()) {
-    return Status::Error()
+  if (ComputeModuleName().IsError()) {
+    return Status::Error();
   }
 
   return Status();

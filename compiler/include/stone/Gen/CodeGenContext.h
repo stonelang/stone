@@ -4,6 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
+#include "stone/Basic/LangTargetOptions.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -31,7 +32,7 @@ class CodeGenContext final {
 
   const CodeGenOptions &genOpts;
   const ModuleOptions &moduleOpts;
-  const stone::TargetOptions &targetOpts;
+  const LangTargetOptions &targetOpts;
 
   const LangContext &langContext;
   ClangContext &clangContext;
@@ -44,7 +45,7 @@ class CodeGenContext final {
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
-                 const stone::TargetOptions &targetOpts,
+                 const LangTargetOptions &targetOpts,
                  const LangContext &langContext, ClangContext &clangContext,
                  llvm::GlobalVariable **outModuleHash = nullptr);
   ~CodeGenContext();
@@ -52,7 +53,7 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
-  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+  const LangTargetOptions &GetTargetOptions() const { return targetOpts; }
   const LangContext &GetLangContext() const { return langContext; }
   ClangContext &GetClangContext() { return clangContext; }
 

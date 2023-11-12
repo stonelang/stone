@@ -2,7 +2,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Public.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
@@ -90,7 +89,8 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
     const CompilerInputFile &input, const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
-            ctx.GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
+            GetLangContext().GetSrcMgr().getIDForBufferIdentifier(
+                input.GetFileName())) {
       return existingBufferID;
     }
   }
@@ -121,8 +121,8 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
   // assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
 
   // Transfer ownership of the MemoryBuffer to the SourceMgr.
-  unsigned bufferID =
-      ctx.GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
+  unsigned bufferID = GetLangContext().GetSrcMgr().addNewSourceBuffer(
+      std::move(buffers->moduleBuffer));
 
   sourceBufferIDs.push_back(bufferID);
   return bufferID;
@@ -142,22 +142,24 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
   InputFileOrError inputFileOrError =
-      ctx.GetFileMgr().getBufferForFile(input.GetFileName());
+      GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    ctx.GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                          diag::LLVMStr(input.GetFileName()));
+    GetLangContext.GetDiags().PrintD(SrcLoc(),
+                                     diag::err_unable_to_open_buffer_for_file,
+                                     diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
 
   // Just return the file buffer for now
   return ModuleBuffers(std::move(*inputFileOrError));
   // if (!fb) {
-  //   ctx.GetDiags().PrintD(SrcLoc(),
+  //   GetLangContext().GetDiags().PrintD(SrcLoc(),
   //   diag::err_unable_to_open_buffer_for_file,
   //                            diag::LLVMStr(input.GetFileName()));
   // }
-  // auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  // auto srcID =
+  // GetLangContext().GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   // assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
   // return srcID;
 
@@ -191,18 +193,19 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  GetCompilerOptions().langOpts.SetTarget(triple);
+  GetLangContext()().GetLangOptions().SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
 unsigned
 CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
-  auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
+  auto fb = GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
-    ctx.GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                          diag::LLVMStr(input.GetFileName()));
+    GetLangContext().GetDiags().PrintD(SrcLoc(),
+                                       diag::err_unable_to_open_buffer_for_file,
+                                       diag::LLVMStr(input.GetFileName()));
   }
-  auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  auto srcID = GetLangContext().GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
   return srcID;
 }
@@ -338,9 +341,11 @@ Status CompilerInvocation::ParseOptions(llvm::ArrayRef<const char *> args) {
     return Status::Error();
   }
   // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                                       diag::LLVMStr(arg->getAsString(*ial)));
+  for (const llvm::opt::Arg *arg :
+       compilerInputArgList->filtered(opts::UNKNOWN)) {
+    GetLangContext().GetDiags().PrintD(
+        SrcLoc(), diag::err_unknown_arg,
+        diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
   // Ok for now.
   if (GetDiags().HasError()) {
@@ -455,7 +460,7 @@ Status CompilerInvocation::ParseTargetOptions(llvm::opt::InputArgList &args) {
 }
 
 llvm::StringRef
-CompilerInvocation::ParserWorkDirectory(const llvm::opt::InputArgList &args) {
+CompilerInvocation::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
   if (auto *arg = ial.getLastArg(opts::WorkDir)) {
     llvm::SmallString<128> smallStr;
     smallStr = arg->getValue();
@@ -474,7 +479,7 @@ void CompilerInvocation::PrintHelp() {
 
     std::unique_ptr<llvm::opt::OptTable> optTable(opts::CreateOptTable());
     optTable->printHelp(llvm::outs(),
-                        GetCompilerOptions().EexecutingProgramName.data(),
+                        GetCompilerOptions().ExecutingProgramName.data(),
                         "stone-compile", IncludedFlagsBitmask,
                         ExcludedFlagsBitmask, /*ShowAllAliases*/ false);
   }

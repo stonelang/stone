@@ -1,15 +1,15 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Public.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Compile/Compiling.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/TextDiagnosticListener.h"
 #include "stone/Gen/CodeGenContext.h"
+#include "stone/Option/Action.h"
 #include "stone/Public.h"
-#include "stone/Option/ActionKind.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
@@ -35,8 +35,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto programName = file::GetStem(programPath);
 
   CompilerInvocation invocation;
-  invocation.GetCompilerOptions().EexecutingProgramName = programName;
-  invocation.GetCompilerOptions().EexecutingProgramPath = programPath;
+  // TODO: SetMainExecutingPath
+  // invocation.GetCompilerOptions().ExecutingProgramName = programName;
+  // invocation.GetCompilerOptions().ExecutingProgramPath = programPath;
 
   // TODO: Set by default in CompilerInvocation
   llvm::sys::fs::current_path(invocation.GetCompilerOptions().workDirectory);
@@ -88,14 +89,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     /// invocation.PrintD()
     return Finish();
   }
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnCompileConfigured(invocation);
+  if (listener) {
+    listener->OnCompileConfigured(invocation);
   }
   if (invocation.CreateSourceBuffers().IsError()) {
     return Finish(Status::Error());
   }
 
-  CompilerInstance compiler;
+  CompilerInstance compiler(listener);
   compiler.Initialize(invocation);
 
   if (compiling::Compile(compiler).IsError()) {
@@ -145,8 +146,8 @@ Status compiling::Compile(CompilerInstance &compiler) {
     return status;
   }
   // Are we trying to print the AST?
-  if (compiler.GetAction().IsPrintAST()) {
-    compiling::PrintAST(compiler);
+  if (compiler.GetAction().IsPrintSyntax()) {
+    compiling::PrintSyntax(compiler);
     status.SetHasCompletion();
     return status;
   }
@@ -190,19 +191,20 @@ Status compiling::Parse(CompilerInstance &compiler) {
   SyntaxListener *syntaxListener = nullptr;
   LexerListener *lexerListener = nullptr;
 
-  if (invocation.GetListener()) {
-    syntaxListener = invocation.GetListener()->GetSyntaxListener();
-    lexerListener = invocation.GetListener()->GetLexerListener();
+  if (compiler.GetListener()) {
+    syntaxListener = compiler.GetListener()->GetSyntaxListener();
+    lexerListener = compiler.GetListener()->GetLexerListener();
   }
-  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+  for (auto moduleFile :
+       compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(), syntaxListener,
-                             lexerListener);
+      stone::ParseSyntaxFile(*syntaxFile, compiler.GetSyntaxContext(),
+                             syntaxListener, lexerListener);
       *syntaxFile.stage = SyntaxFileStage::Parsed;
     }
   }
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
+  if (compiler.GetListener()) {
+    compiler.GetListener()->OnSyntaxAnalysisCompleted(compiler);
   }
   return Status();
 }
@@ -212,7 +214,7 @@ Status compiling::ParseAndImportResolution(CompilerInstance &compiler) {
   if (compiling::Parse(compiler).IsError()) {
     return Status::Error();
   }
-  if (!GetAction().IsParse()) {
+  if (!compiler.GetAction().IsParse()) {
     compiler.ResolveImports();
   }
   return Status();
@@ -226,8 +228,8 @@ Status compiling::DumpSyntax(CompilerInstance &compiler,
 Status compiling::TypeCheck(CompilerInstance &compiler) {
 
   TypeCheckerListener *listener = nullptr;
-  if (invocation.GetListener()) {
-    listener = invocation.GetListener()->GetTypeCheckerListener();
+  if (compiler.GetListener()) {
+    listener = compiler.GetListener()->GetTypeCheckerListener();
   }
 
   compiler.ForEachSyntaxFileToTypeCheck(
@@ -240,20 +242,21 @@ Status compiling::TypeCheck(CompilerInstance &compiler) {
 
   compiling::FinishTypeCheck(compiler);
 
-  if (invocation.GetListener()) {
-    invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
+  if (compiler.GetListener()) {
+    compiler.GetListener()->OnSemanticAnalysisCompleted(compiler);
   }
 
   return Status();
 }
 
 Status compiling::FinishTypeCheck(CompilerInstance &compiler) {
-  return Status()
+  return Status();
 }
-void compiling::PrintSyntax(CompilerInstance &compiler) { return Status(); }
+Status compiling::PrintSyntax(CompilerInstance &compiler) { return Status(); }
 
 Status compiling::CompileAfterTypeChecking(CompilerInstance &compiler) {
 
+  Status status;
   // Create the CodeGenContext
   CodeGenContext codeGenContext(compiler.GetInvocation().GetCodeGenOptions(),
                                 compiler.GetInvocation().GetModuleOptions(),
@@ -274,7 +277,7 @@ Status compiling::CompileAfterTypeChecking(CompilerInstance &compiler) {
   assert(compiler.CanCodeGen() &&
          "The current action does not suport generating code.");
 
-  compiling::GenCode(compiler, codegenContext);
+  compiling::GenCode(compiler, codeGenContext);
 }
 
 Status compiling::GenIR(CompilerInstance &compiler,
@@ -320,8 +323,8 @@ Status compiling::GenCode(CompilerInstance &compiler,
   // }
 
   CodeGenListener *codeGenListener = nullptr;
-  if (compiler.GetInvocation().GetListener()) {
-    codeGenListener = compiler.GetInvocation().GetListener();
+  if (compiler.GetListener()) {
+    codeGenListener = compiler.GetListener();
   }
   auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
                                  llvm::StringRef(), codeGenListener);
@@ -459,9 +462,9 @@ Status compiling::GenCode(CompilerInstance &compiler,
 //   SyntaxListener *syntaxListener = nullptr;
 //   LexerListener *lexerListener = nullptr;
 
-//   if (invocation.GetListener()) {
-//     syntaxListener = invocation.GetListener()->GetSyntaxListener();
-//     lexerListener = invocation.GetListener()->GetLexerListener();
+//   if (compiler.GetListener()) {
+//     syntaxListener = compiler.GetListener()->GetSyntaxListener();
+//     lexerListener = compiler.GetListener()->GetLexerListener();
 //   }
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
@@ -477,8 +480,8 @@ Status compiling::GenCode(CompilerInstance &compiler,
 //   if (!GetAction().IsParseOnly()) {
 //     ResolveImports();
 //   }
-//   if (invocation.GetListener()) {
-//     invocation.GetListener()->OnSyntaxAnalysisCompleted(*this);
+//   if (compiler.GetListener()) {
+//     compiler.GetListener()->OnSyntaxAnalysisCompleted(*this);
 //   }
 //   return Status::Success();
 // }
@@ -497,8 +500,8 @@ Status compiling::GenCode(CompilerInstance &compiler,
 //   }
 
 //   // TypeCheckerListener *typeCheckerListener = nullptr;
-//   // if (invocation.GetListener()) {
-//   //   invocation.GetListener()->GetTypeCheckerListener();
+//   // if (compiler.GetListener()) {
+//   //   compiler.GetListener()->GetTypeCheckerListener();
 //   // }
 
 //   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
@@ -508,8 +511,8 @@ Status compiling::GenCode(CompilerInstance &compiler,
 //   });
 
 //   // TODO: FinishTypeCheck();
-//   if (invocation.GetListener()) {
-//     invocation.GetListener()->OnSemanticAnalysisCompleted(*this);
+//   if (compiler.GetListener()) {
+//     compiler.GetListener()->OnSemanticAnalysisCompleted(*this);
 //   }
 //   return notifiy(*this);
 // }

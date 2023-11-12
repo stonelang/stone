@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
-#include "stone/Option/Mode.h"
+#include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 #include "llvm/Option/ArgList.h"
 

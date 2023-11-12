@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "stone/Basic/Status.h"
 #include "stone/Basic/Color.h"
+#include "stone/Basic/Status.h"
 #include "stone/Option/Action.h"
 
 namespace llvm {

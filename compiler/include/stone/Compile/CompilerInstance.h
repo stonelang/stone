@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_COMPILER_H
-#define STONE_COMPILE_COMPILER_H
+#ifndef STONE_COMPILE_COMPILERINSTANCE_H
+#define STONE_COMPILE_COMPILERINSTANCE_H
 
 #include "stone/Basic/Mem.h"
 #include "stone/Compile/CompilerInvocation.h"
@@ -26,17 +26,22 @@ using EachSyntaxFileToTypeCheckCallback = std::function<Status(
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
-  const CompilerInvocation &invocation;
+  const CompilerInvocation &compilerInvocation;
 
 public:
-  CompilerPrettyStackTrace(const CompilerInvocation &invocation)
-      : invocation(invocation) {}
+  CompilerPrettyStackTrace(CompilerInvocation &compilerInvocation)
+      : compilerInvocation(compilerInvocation) {}
   void print(llvm::raw_ostream &os) const override;
 };
 
-class CompilerInstance final {
+class CompilerConfiguration {
+public:
+};
+class CompilerInstance final : public CompilerConfiguration {
 
-  CompilerInvocation &invocation;
+  CompilerListener *listener;
+  CompilerInvocation compilerInvocation;
+
   std::unique_ptr<CompilerInstanceStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
@@ -60,25 +65,28 @@ public:
   CompilerInstance(CompilerInstance &&) = delete;
   void operator=(CompilerInstance &&) = delete;
 
-  CompilerInstance();
+public:
+  CompilerInstance() = delete;
+  CompilerInstance(CompilerListener *listener = nullptr);
   ~CompilerInstance();
 
 public:
-  void Initialize(const CompilerInvocation &invocation);
+  void Initialize(const CompilerInvocation &compilerInvocation);
   void Finalize();
 
 public:
-  syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
-  ModuleSystem &GetModuleSystem() { return *ms.get(); }
-  const ModuleSystem &GetModuleSystem() const { return *ms.get(); }
+  syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
+  ModuleSystem &GetModuleSystem() { return *moduleSystem; }
+  const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
 
-  CompilerInvocation &GetInvocation() { return invocation; }
+  CompilerInvocation &GetInvocation() { return compilerInvocation; }
+  CompilerListener *GetListener() { return listener; }
 
   bool CanCompile() {
-    return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
+    return GetInvocation().GetCompilerOptions().GetAction().CanCompile();
   }
   bool CanCodeGen() {
-    return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
+    return GetInvocation().GetCompilerOptions().GetAction().CanCodeGen();
   }
 
   bool IsActionPostTypeChecking() {
@@ -107,17 +115,17 @@ public:
   // Status CompileBackend();
 
 private:
-  Status CompileWithParsing();
-  Status CompileWithParsing(ParsingCompletedCallback notifiy);
+  // Status CompileWithParsing();
+  // Status CompileWithParsing(ParsingCompletedCallback notifiy);
 
-  Status CompileWithTypeChecking();
-  Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
+  // Status CompileWithTypeChecking();
+  // Status CompileWithTypeChecking(TypeCheckingCompletedCallback notifiy);
 
-  Status CompileWithCodeGen();
-  Status CompileWithGenIR(CodeGenContext &cgc,
-                          IRCodeGenCompletedCallback notifiy);
+  // Status CompileWithCodeGen();
+  // Status CompileWithGenIR(CodeGenContext &cgc,
+  //                         IRCodeGenCompletedCallback notifiy);
 
-  Status CompileWithGenNative(CodeGenContext &cgc);
+  // Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
   Status ForEachSyntaxFile(EachSyntaxFileCallback fn);
@@ -134,10 +142,10 @@ public:
   }
 
   CompilerAction &GetAction() {
-    return invocation.GetCompilerOptions().GetAction();
+    return compilerInvocation.GetCompilerOptions().GetAction();
   }
   const CompilerAction &GetAction() const {
-    return return invocation.GetCompilerOptions().GetAction();
+    return compilerInvocation.GetCompilerOptions().GetAction();
   }
 
 public:
@@ -148,7 +156,7 @@ public:
   }
 
   bool IsWholeModuleCodeGen() {
-    return ((invocation.GetCompilerOptions()
+    return ((compilerInvocation.GetCompilerOptions()
                  .GetInputsAndOutputs()
                  .HasPrimaryInputs())
                 ? false

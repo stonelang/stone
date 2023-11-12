@@ -79,7 +79,7 @@ static Error ComputeDriverOptions(llvm::opt::InputArgList &ial,
                                   DriverOptions &driverOpts) {
 
   // Since the mode has already been created
-  // switch(GetMode().GetKind().)
+  // switch(GetAction().GetKind().)
   driverOpts.outputFileType = file::Type::Object;
 
   // TODO:
@@ -102,7 +102,7 @@ static Error ComputeDriverOptions(llvm::opt::InputArgList &ial,
 Error Driver::ComputeOptions(llvm::opt::InputArgList &ial) {
 
   driverOpts = std::make_unique<DriverOptions>(Mode::Create(ial));
-  if (driverOpts->GetMode().IsAlien()) {
+  if (driverOpts->GetAction().IsAlien()) {
     return Error(true);
   }
   if (ComputeDriverOptions(ial, *driverOpts.get()).Has()) {

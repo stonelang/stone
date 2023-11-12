@@ -1,4 +1,3 @@
-#include "stone/Public.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"

@@ -166,7 +166,7 @@ void QuadraticCompilationModel::BuildJobs(ToolChain &tc, const Phase &phase,
 // if(tc.GetDriver().JustCompile()){
 
 // }
-// if (tc.GetDriver().GetMode().CanCompile()) {
+// if (tc.GetDriver().GetAction().CanCompile()) {
 //   BuildCompilePhases(driver, tc, inputs, ic, outputOpts);
 //   if (tc.GetDriver().JustCompile()) {
 //     return;

@@ -15,8 +15,7 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc,
                SyntaxListener *syntaxListener, LexerListener *lexerListener)
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(
-                 sf.GetSrcID(), sc.GetSrcMgr(),
-                 &sc.GetLangContext().GetDiags(),
+                 sf.GetSrcID(), sc.GetSrcMgr(), &sc.GetLangContext().GetDiags(),
                  &sc.GetLangContext().GetStatEngine(), lexerListener)),
              listener) {}
 
@@ -43,7 +42,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
   if (notification == ParsingNotification::TokenConsumed) {
-    if(lexerListener){
+    if (lexerListener) {
       lexerListener->OnToken(&curTok);
     }
   }

@@ -9,7 +9,7 @@ using namespace stone;
 
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
-                               const stone::TargetOptions &targetOpts,
+                               const LangTargetOptions &targetOpts,
                                const LangContext &langContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable **outModuleHash)

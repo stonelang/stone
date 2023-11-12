@@ -44,7 +44,7 @@ public:
   syn::ModuleDecl *GetMainModule() const;
   void SetMainModule(syn::ModuleDecl *mod);
 
-  Error CreateSyntaxFilesForMainModule(
+  Status CreateSyntaxFilesForMainModule(
       syn::ModuleDecl *mod,
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 

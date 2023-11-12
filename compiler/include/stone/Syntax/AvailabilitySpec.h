@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_AVAILABILITYSPEC_H
 #define STONE_SYNTAX_AVAILABILITYSPEC_H
 
-#include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/Mem.h"
+#include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/SyntaxAllocation.h"
@@ -115,8 +115,8 @@ public:
   void *operator new(
       size_t Bytes, SyntaxContext &C,
       unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, mem::AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, mem::AllocationArena::Permanent, Alignment);
   }
 };
 
@@ -166,8 +166,8 @@ public:
   void *operator new(size_t Bytes, SyntaxContext &C,
                      unsigned Alignment = alignof(
                          PlatformAgnosticVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, mem::AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, mem::AllocationArena::Permanent, Alignment);
   }
 };
 
@@ -201,8 +201,8 @@ public:
   void *
   operator new(size_t Bytes, syn::SyntaxContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, mem::AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, mem::AllocationArena::Permanent, Alignment);
   }
 };
 

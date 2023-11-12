@@ -5,9 +5,9 @@
 
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Public.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
@@ -99,7 +99,8 @@ private:
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener, LexerListener *lexerListener);
+  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener,
+         LexerListener *lexerListener);
 
   ~Parser();
 
@@ -247,9 +248,7 @@ public:
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
   bool HasError() { return GetLangContext().GetDiags().HasError(); }
-  DiagnosticEngine &GetDiags() {
-    return GetLangContext().GetDiags();
-  }
+  DiagnosticEngine &GetDiags() { return GetLangContext().GetDiags(); }
 
 public:
   //===--------------------------------------------------------------------===//

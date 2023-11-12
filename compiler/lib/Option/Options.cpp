@@ -4,8 +4,8 @@
 #include "llvm/Option/OptTable.h"
 #include "llvm/Option/Option.h"
 
-#include "llvm/Support/Path.h"
 #include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Path.h"
 
 using namespace stone;
 using namespace stone::opts;

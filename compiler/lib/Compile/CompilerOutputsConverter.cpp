@@ -30,7 +30,7 @@ bool CompilerOutputsConverter::Convert(
   Optional<CompilerOutputFilesComputer> ofc =
       CompilerOutputFilesComputer::Create(
           args, de, inputsAndOutputs,
-          {"output", opts::o, opts::OutputFileList, "-o"}, mode);
+          {"output", opts::o, opts::OutputFileList, "-o"}, action);
 
   if (!ofc) {
     return true;
@@ -49,7 +49,7 @@ bool CompilerOutputsConverter::Convert(
             args, de, inputsAndOutputs,
             {"index unit output path", opts::IndexUnitOutputPath,
              opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
-            mode);
+            action);
 
     if (!iuofc) {
       return true;
@@ -64,7 +64,7 @@ bool CompilerOutputsConverter::Convert(
 
   llvm::Optional<std::vector<SupplementaryOutputPaths>> supplementaries =
       SupplementaryOutputPathsComputer(args, de, inputsAndOutputs, *mains,
-                                       moduleName, mode)
+                                       moduleName, action)
           .ComputeOutputPaths();
 
   if (!supplementaries) {
@@ -149,7 +149,7 @@ llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
 
   return CompilerOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
-      outputDirectoryArgument, firstInput, mode,
+      outputDirectoryArgument, firstInput, action,
       args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
       action.CanOutput(), optInfo);
 }
@@ -164,7 +164,7 @@ CompilerOutputFilesComputer::CompilerOutputFilesComputer(
     : de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFileArguments(outputFileArguments),
       OutputDirectoryArgument(outputDirectoryArgument), FirstInput(firstInput),
-      mode(mode), moduleNameArg(moduleNameArg), Suffix(suffix),
+      action(action), moduleNameArg(moduleNameArg), Suffix(suffix),
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
 llvm::Optional<std::vector<std::string>>
@@ -258,9 +258,10 @@ CompilerOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
 SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     const ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
-    ArrayRef<std::string> outputFiles, StringRef moduleName, const Action &action)
+    ArrayRef<std::string> outputFiles, StringRef moduleName,
+    const Action &action)
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
-      OutputFiles(outputFiles), moduleName(moduleName), mode(mode) {}
+      OutputFiles(outputFiles), moduleName(moduleName), action(action) {}
 
 llvm::Optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
@@ -305,7 +306,7 @@ Optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
     const {
 
-  stone::Panic("Not implemented");
+  assert(false && "Not implemented");
 
   // auto moduleOutput =
   //     GetSupplementaryFilenamesFromArguments(opts::EmitModulePath);
@@ -571,8 +572,9 @@ void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
 
   emitOption = opts::EmitModule;
 
-  bool canUseMainOutputForModule = action.GetKind() == ActionKind::MergeModules ||
-                                   action.GetKind() == ActionKind::EmitModule;
+  bool canUseMainOutputForModule =
+      action.GetKind() == ActionKind::MergeModules ||
+      action.GetKind() == ActionKind::EmitModule;
 
   extension = file::GetTypeExt(file::Type::StoneModule).str();
 

@@ -48,15 +48,15 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return Error(true);
   }
 
-  if (driver.GetDriverOptions().GetMode().IsAlien()) {
+  if (driver.GetDriverOptions().GetAction().IsAlien()) {
     driver.GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_alien_mode);
     return Error(true);
   }
-  if (driver.GetDriverOptions().GetMode().IsPrintHelp()) {
+  if (driver.GetDriverOptions().GetAction().IsPrintHelp()) {
     driver.PrintHelp(driver.GetOpts());
     return Error();
   }
-  if (driver.GetDriverOptions().GetMode().IsPrintVersion()) {
+  if (driver.GetDriverOptions().GetAction().IsPrintVersion()) {
     driver.PrintVersion();
     return Error();
   }

@@ -18,6 +18,8 @@ enum class ActionKind : unsigned {
   DumpSyntax,
   ///< Parse and type-check only
   TypeCheck,
+  ///< TODO
+  DumpTypeInfo,
   ///< Parse, type-check, and  pretty print syntax tree
   PrintSyntax,
   //</ Parse, type-check, and pretty print llvm-ir
@@ -51,7 +53,7 @@ enum class ActionKind : unsigned {
   Alien,
 };
 
-class Action final {
+class Action {
   ActionKind kind;
 
 protected:
@@ -149,6 +151,7 @@ public:
   bool IsParse() const { return GetKind() == ActionKind::Parse; }
   bool IsDumpSyntax() const { return GetKind() == ActionKind::DumpSyntax; }
   bool IsTypeCheck() const { return GetKind() == ActionKind::TypeCheck; }
+  bool IsDumpTypeInfo() const { return GetKind() == ActionKind::DumpTypeInfo; }
   bool IsPrintSyntax() const { return GetKind() == ActionKind::PrintSyntax; }
   bool IsEmitIRAfter() const { return GetKind() == ActionKind::EmitIRAfter; }
   bool IsEmitIRBefore() const { return GetKind() == ActionKind::EmitIRBefore; }

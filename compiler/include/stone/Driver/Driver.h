@@ -79,21 +79,23 @@ public:
   }
 
   bool JustLink() const {
-    return (!GetDriverOptions().GetMode().CanCompile() &&
+    return (!GetDriverOptions().GetAction().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool CanLink() const {
-    return (GetDriverOptions().GetMode().CanCompile() &&
+    return (GetDriverOptions().GetAction().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode != LinkMode::None));
   }
 
   bool JustCompile() const {
-    return (GetDriverOptions().GetMode().CanCompile() &&
+    return (GetDriverOptions().GetAction().CanCompile() &&
             (GetDriverOptions().outputOptions.linkMode == LinkMode::None));
   }
 
-  bool CanCompile() const { return GetDriverOptions().GetMode().CanCompile(); }
+  bool CanCompile() const {
+    return GetDriverOptions().GetAction().CanCompile();
+  }
 
   void ComputeOptions(const llvm::opt::InputArgList &ial);
 

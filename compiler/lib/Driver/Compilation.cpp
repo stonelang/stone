@@ -17,10 +17,10 @@
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
 
+using stone::ActionKind;
 using stone::Compilation;
 using stone::CompilationStats;
 using stone::Job;
-using stone::ActionKind;
 
 Compilation::Compilation(Driver &driver, ToolChain &tc,
                          std::unique_ptr<llvm::opt::DerivedArgList> dal)

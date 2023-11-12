@@ -10,19 +10,20 @@
 using namespace stone;
 using namespace stone::syn;
 
-CompilerInstance::CompilerInstance() = default;
+CompilerInstance::CompilerInstance(CompilerListener *listener)
+    : listener(listener) {}
 CompilerInstance::~CompilerInstance() = default;
 
 void CompilerInstance::Initialize(const CompilerInvocation &inputInvocation) {
-  invocation = inputInvocation;
+  compilerInvocation = inputInvocation;
 
-  syntaxContext.reset(new SyntaxContext(invocation.GetLangContext(),
-                                        invocation.GetSearchPathOptions(),
-                                        invocation.GetClangContext()));
+  syntaxContext.reset(
+      new SyntaxContext(compilerInvocation.GetLangContext(),
+                        compilerInvocation.GetSearchPathOptions(),
+                        compilerInvocation.GetClangContext()));
 
   compilerStats.reset(new CompilerInstanceStats(*this));
-
-  invocation.GetLangContext().GetStats().Register(compilerStats);
+  compilerInvocation.GetLangContext().GetStats().Register(compilerStats);
 }
 
 std::unique_ptr<llvm::raw_fd_ostream>
@@ -55,21 +56,21 @@ CompilerInstance::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode()
 }
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
-  return invocation.GetCompilerOptions()
+  return compilerInvocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
 }
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
     StringRef filename) const {
-  return invocation.GetCompilerOptions()
+  return compilerInvocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
 CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
     const syn::SyntaxFile &sf) const {
-  return invocation.GetCompilerOptions()
+  return compilerInvocation.GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }
@@ -82,25 +83,25 @@ void CompilerInstance::ResolveImports() {
   }
 }
 
-void CompilerInstance::ForEachSyntaxFileToTypeCheck(
+Status CompilerInstance::ForEachSyntaxFileToTypeCheck(
     EachSyntaxFileToTypeCheckCallback notify) {
 
-  if (invocation.GetTypeCheckMode() == TypeCheckMode::WholeModule) {
+  if (compilerInvocation.GetTypeCheckMode() == TypeCheckMode::WholeModule) {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
       if (!syntaxFile) {
         continue;
       }
-      if (notify(*syntaxFile, invocation.GetTypeCheckerOptions(),
-                 invocation.GetListener().IsError())) {
+      if (notify(*syntaxFile, compilerInvocation.GetTypeCheckerOptions(),
+                 GetListener().IsError())) {
         return Status::Error();
       }
     }
   } else {
     for (auto *syntaxFile :
          GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      if (notify(*syntaxFile, invocation.GetTypeCheckerOptions(),
-                 invocation.GetListener())
+      if (notify(*syntaxFile, compilerInvocation.GetTypeCheckerOptions(),
+                 GetListener())
               .IsError()) {
         return Status::Error();
       }
@@ -108,9 +109,9 @@ void CompilerInstance::ForEachSyntaxFileToTypeCheck(
   }
 
   Status CompilerInstance::ForEachSyntaxFile(
-      std::function<Status(SourceFile &)> notify) {
+      std::function<Status(SyntaxFile &)> notify) {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<SourceFile>(moduleFile);
+      auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
       if (!syntaxFile) {
         continue;
       }
@@ -120,32 +121,35 @@ void CompilerInstance::ForEachSyntaxFileToTypeCheck(
     }
     return Status();
   }
+}
 
-  void *stone::AllocateInCompilerInstance(
-      size_t bytes, const CompilerInstance &compiler,
-      mem::AllocationArena arena, unsigned alignment) {
-    return nullptr;
-  }
+void *stone::AllocateInCompilerInstance(size_t bytes,
+                                        const CompilerInstance &compiler,
+                                        mem::AllocationArena arena,
+                                        unsigned alignment) {
+  return nullptr;
+}
 
-  // CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
+// CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
 
-  void CompilerPrettyStackTrace::print(llvm::raw_ostream & os) const override {
+void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const override {
 
-    //   auto effective =
-    //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
-    //   != version::Version::GetCurrentCompilerVersion()) {
-    //     os << "Compiling with effective version " << effective;
-    //   } else {
-    //     os << "Compiling with the current invocationuage version";
-    //   }
-    //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
-    //     os << " while allowing modules with compiler errors";
-    //   }
-    //   os << "\n";
-  }
-  void CompilerInstanceStats::Print(ColorStream & stream) {
-    // if (sc.GetCompilerOpts().printStats) {
-    //   // GetLangContext().Out() << GetName() << '\n';
-    //   return;
-    // }
-  }
+  //   auto effective =
+  //   compilerInvocation.GetCompilerOptions().effectiveCompilerVersion; if
+  //   (effective
+  //   != version::Version::GetCurrentCompilerVersion()) {
+  //     os << "Compiling with effective version " << effective;
+  //   } else {
+  //     os << "Compiling with the current compilerInvocationuage version";
+  //   }
+  //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
+  //     os << " while allowing modules with compiler errors";
+  //   }
+  //   os << "\n";
+}
+void CompilerInstanceStats::Print(ColorStream &stream) {
+  // if (sc.GetCompilerOpts().printStats) {
+  //   // GetLangContext().Out() << GetName() << '\n';
+  //   return;
+  // }
+}

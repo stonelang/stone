@@ -28,11 +28,13 @@ Status WithTypeChecking(CompilerInstance &Instance,
                         bool typeCheckDespiteErrors = false);
 
 Status FinishTypeCheck(CompilerInstance &compiler);
-void PrintSyntax(CompilerInstance &compiler);
+
+// Replace with void
+Status PrintSyntax(CompilerInstance &compiler);
 Status CompileAfterTypeChecking(CompilerInstance &compiler);
 
 /// Code generation
-Status GenCode(CompilerInstance &compiler);
+Status GenCode(CompilerInstance &compiler, CodeGenContext &codeGenContext);
 Status GenIR(CompilerInstance &compiler, CodeGenContext &codeGenContext);
 void DumpIR(CompilerInstance &compiler, CodeGenContext &codeGenContext);
 void PrintIR(CompilerInstance &compiler, CodeGenContext &codeGenContext);

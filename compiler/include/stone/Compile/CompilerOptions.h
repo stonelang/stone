@@ -6,12 +6,16 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/TargetOptions.h"
+#include "stone/Basic/LangTargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Option/Options.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
+
+class CompilerInvocation;
+class CompilerOptionsConverter;
+class CompilerInputsConverter;
 
 class CompilerAction final : public Action {
 
@@ -29,9 +33,9 @@ public:
 
 class CompilerOptions final {
 
-  friend class CompilerInvocation;
-  friend class CompilerOptionsConverter;
-  friend class CompilerInputsConverter;
+  friend CompilerInvocation;
+  friend CompilerOptionsConverter;
+  friend CompilerInputsConverter;
 
   CompilerAction action;
 
@@ -60,12 +64,12 @@ public:
   bool DowngradeInterfaceVerificationError = false;
 
   /// The path the executing program
-  llvm::StringRef ExecutingProgramPath;
+  StringRef ExecutingProgramPath;
 
   /// The name of the executing program
-  llvm::String ExecutingProgramName;
+  String ExecutingProgramName;
 
-  llvm::SmallString<128> workDirectory;
+  SmallString<128> workDirectory;
 
 public:
   enum class LibOutputMode { Dynamic, Static };

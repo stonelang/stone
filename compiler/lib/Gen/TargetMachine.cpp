@@ -1,5 +1,5 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/TargetOptions.h"
+#include "stone/Basic/LangTargetOptions.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ClangContext.h"
@@ -15,7 +15,7 @@ using namespace stone;
 // TODO: This is something you can get from clang
 
 static Status InitLLVMTargetOptions(CodeGenContext &cgc,
-                                   llvm::TargetOptions &llvmTargetOpts) {
+                                    llvm::TargetOptions &llvmTargetOpts) {
 
   switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
   case LangOptions::ThreadModelKind::POSIX:

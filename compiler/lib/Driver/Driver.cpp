@@ -18,9 +18,9 @@
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
 
+using stone::ActionKind;
 using stone::Driver;
 using stone::Job;
-using stone::ActionKind;
 
 using namespace stone;
 
@@ -91,7 +91,7 @@ Driver::BuildTaskQueue(const Compilation &compilation) {
 
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
-  switch (GetDriverOptions().GetMode().GetKind()) {
+  switch (GetDriverOptions().GetAction().GetKind()) {
   case ActionKind::None:
     GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
     break;

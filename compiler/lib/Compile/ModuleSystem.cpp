@@ -30,22 +30,24 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     // Create and add the module's files.
     llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
 
-    if (!CreateSyntaxFilesForMainModule(mainModule, moduleFiles).Has()) {
-      for (auto *moduleFile : moduleFiles)
-        mainModule->AddFile(*moduleFile);
-    } else {
+    if (CreateSyntaxFilesForMainModule(mainModule, moduleFiles).IsError()) {
       // If we failed to load a partial module, mark the main module as having
       // "failed to load", as it will contain no files. Note that we don'ttry
       // to add any of the successfully loaded partial modules. This ensures
       // that we don't encounter cases where we try to resolve a cross-reference
       // into a partial module that failed to load.
       // mainModule->SetFailedToLoad();
+    } else {
+      for (auto *moduleFile : moduleFiles) {
+        mainModule->AddFile(*moduleFile);
+      }
     }
   }
   return mainModule;
 }
 
-Error ModuleSystem::CreateSyntaxFilesForMainModule(
+// TODO:
+Status ModuleSystem::CreateSyntaxFilesForMainModule(
     syn::ModuleDecl *mod,
     llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
@@ -78,7 +80,7 @@ Error ModuleSystem::CreateSyntaxFilesForMainModule(
         mod, syn::SyntaxFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
-  return Error();
+  return Status();
 }
 
 syn::SyntaxFile *
