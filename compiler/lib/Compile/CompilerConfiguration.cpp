@@ -61,8 +61,8 @@ llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {
   return codeCompletionBufferID;
 }
 
-
-void CompilerConfiguration::SetMainExecutable(const char *arg0, void *mainAddr) {
+void CompilerConfiguration::SetMainExecutable(const char *arg0,
+                                              void *mainAddr) {
 
   GetCompilerOptions().MainExecutablePath =
       llvm::sys::fs::getMainExecutable(arg0, mainAddr);

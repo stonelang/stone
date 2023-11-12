@@ -1,10 +1,15 @@
 #ifndef STONE_COMPILE_COMPILERTASK_H
 #define STONE_COMPILE_COMPILERTASK_H
 
+#include "stone/Compile/CompilerAllocation.h"
+
 namespace stone {
 
 class Compiler;
-class CompilerTask : public CompilerAllocation {
+constexpr size_t CompilerTaskAlignInBits = 3;
+
+class alignas(1 << CompilerTaskAlignInBits) CompilerTask
+    : public CompilerAllocation<std::aligned_storage<8, 8>::type> {
 public:
   virtual Status Execute(Compiler &compiler) {}
 };

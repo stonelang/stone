@@ -121,14 +121,11 @@ Status Compiler::ForEachSyntaxFileToTypeCheck(
   }
 }
 
-
 void Compiler::SetupDiagnostics(DiagnosticListener listener) {
   compiler.GetDiags().AddListener(diagListener);
 }
 
-size_t Compiler::GetgetTotalMemUsed() {
-  return bumpAlloc.getTotalMemory();
-}
+size_t Compiler::GetgetTotalMemUsed() { return bumpAlloc.getTotalMemory(); }
 
 void Compiler::PrintVersion() {}
 void Compiler::PrintTimers() {}

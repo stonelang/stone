@@ -7,7 +7,6 @@ namespace syn {
 class SyntaxFile;
 }
 
-
 namespace compiling {
 
 Status Compile(Compiler &compiler);

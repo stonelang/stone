@@ -22,6 +22,8 @@
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
 
+#include <queue>
+
 namespace llvm {
 class raw_pwrite_stream;
 class GlobalVariable;
@@ -196,7 +198,6 @@ public:
   Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
                                          const bool shouldRecover,
                                          bool &failed);
-
 
   bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
@@ -381,45 +382,12 @@ public:
   GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
 
 public:
-  // Reporting
-  InFlightDiagnostic Report(const Diagnostic &diagnostic) {
-    return PrintD(SrcLoc(), diagnostic);
-  }
-  InFlightDiagnostic Report(SrcLoc loc, const Diagnostic &diagnostic) {
-    return GetDiags().PrintD(loc, diagnostic);
-  }
-
-  InFlightDiagnostic Report(DiagID diagID,
-                            llvm::ArrayRef<diag::Argument> args) {
-    return Report(SrcLoc(), diagID, args);
-  }
-  InFlightDiagnostic Report(SrcLoc loc, DiagID diagID,
-                            llvm::ArrayRef<diag::Argument> args) {
-    return GetDiags().PrintD(loc, diagID, args);
-  }
-
-  InFlightDiagnostic Report(DiagID diagID) { return Report(SrcLoc(), diagID); }
-
-  InFlightDiagnostic Report(SrcLoc loc, DiagID diagID) {
-    return GetDiags().PrintD(loc, diagID);
-  }
-  template <typename... ArgTypes>
-  InFlightDiagnostic
-  Report(SrcLoc loc, Diag<ArgTypes...> id,
-         typename detail::PassArgument<ArgTypes>::type... args) {
-    return GetDiags().PrintD(loc, id, std::forward<ArgTypes>(args)...);
-  }
-
-public:
-  void PrintHelp(ColorStream &out, const llvm::opt::OptTable &opts);
-  void PrintVersion();
   void PrintTimers();
   void PrintDiagnostics();
   void PrintStatistics();
 
-
 public:
-  public:
+public:
   /// Return the total amount of physical memory allocated for representing
   /// AST nodes and type information.
   size_t GetTotalMemUsed() const;

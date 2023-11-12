@@ -209,7 +209,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   return Status();
 // }
 
-// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile &syntaxFile) {
+// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile &syntaxFile)
+// {
 //   return Status();
 // }
 
@@ -272,10 +273,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 // void compiling::DumpIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
 
-// void compiling::PrintIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
+// void compiling::PrintIR(Compiler &compiler, CodeGenContext &codeGenContext)
+// {}
 
 /// Code generation
-Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {
+//Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {
 
   //   if(GetInvocation().GetCodeGenOptions().codeGenOutputKind ==
 
@@ -303,14 +305,14 @@ Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {
   //         });
   // }
 
-  CodeGenListener *codeGenListener = nullptr;
-  if (compiler.GetListener()) {
-    codeGenListener = compiler.GetListener()->GetCodeGenListener();
-  }
-  auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
-                                 llvm::StringRef(), codeGenListener);
+  // CodeGenListener *codeGenListener = nullptr;
+  // if (compiler.GetListener()) {
+  //   codeGenListener = compiler.GetListener()->GetCodeGenListener();
+  // }
+  // auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
+  //                                llvm::StringRef(), codeGenListener);
 
-  return Status();
+  // return Status();
 }
 
 // static Status DumpIR(Compiler &compiler, CodeGenContext &cgc) {
@@ -497,18 +499,18 @@ Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {
 //   }
 //   return notifiy(*this);
 // }
-Status Compiler::Compile() {
+// Status Compiler::Compile() {
 
-  assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
-  llvm::TimeTraceScope compileTimeScope("Compile");
+//   assert(CanCompile() && "Unknown mode -- cannot continue with compile!");
+//   llvm::TimeTraceScope compileTimeScope("Compile");
 
-  if (GetListener()) {
-    GetListener()->OnCompileStarted(*this);
-  }
-  Status status;
+//   if (GetListener()) {
+//     GetListener()->OnCompileStarted(*this);
+//   }
+//   Status status;
 
-  BuildTasks();
-  RunTasks();
+//   BuildTasks();
+//   RunTasks();
 
   // switch (GetAction().GetKind()) {
   // case ActionKind::Parse:
@@ -531,8 +533,8 @@ Status Compiler::Compile() {
   //   break;
   // }
 
-  return status;
-}
-Status Compiler::BuildTasks() { GetQueue().Add(PrintTask()); }
+//   return status;
+// }
+// Status Compiler::BuildTasks() { GetQueue().Add(PrintTask()); }
 
-void Compiler::RunTasks() {}
+// void Compiler::RunTasks() {}
