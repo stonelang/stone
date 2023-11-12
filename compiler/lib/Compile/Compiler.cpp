@@ -1,4 +1,4 @@
-#include "stone/Compile/CompilerInstance.h"
+#include "stone/Compile/Compiler.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Sem/ImportResolution.h"
@@ -10,25 +10,26 @@
 using namespace stone;
 using namespace stone::syn;
 
-CompilerInstance::CompilerInstance(CompilerListener *listener)
-    : listener(listener) {}
-CompilerInstance::~CompilerInstance() = default;
+Compiler::Compiler() : config(*this), queue(*this) {}
+Compiler::~Compiler() = default;
 
-void CompilerInstance::Initialize(const CompilerInvocation &inputInvocation) {
-  compilerInvocation = inputInvocation;
+void Compiler::Setup() {
 
-  syntaxContext.reset(
-      new SyntaxContext(compilerInvocation.GetLangContext(),
-                        compilerInvocation.GetSearchPathOptions(),
-                        compilerInvocation.GetClangContext()));
+  compilerStats.reset(new CompilerStats(*this));
+  GetLangContext().GetStats().Register(compilerStats);
 
-  compilerStats.reset(new CompilerInstanceStats(*this));
-  compilerInvocation.GetLangContext().GetStats().Register(compilerStats);
+  SetupSyntaxContext();
+}
+
+/// Setup SyntaxContext based on the action
+void Compiler::SetupSyntaxContext() {
+
+  syntaxContext.reset(new SyntaxContext(
+      GetLangContext(), GetSearchPathOptions(), GetClangContext()));
 }
 
 std::unique_ptr<llvm::raw_fd_ostream>
-CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
-                                      LangContext &lc) {
+Compiler::GetFileOutputStream(llvm::StringRef outputFilename, LangContext &lc) {
   std::error_code errCode;
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
@@ -41,41 +42,39 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   return os;
 }
 
-// void CompilerInstance::FinishTypeCheck() {
+// void Compiler::FinishTypeCheck() {
 // }
 
-// llvm::StringRef CompilerInstance::ComputeSourceOutputFile(unsigned srcID) {
+// llvm::StringRef Compiler::ComputeSourceOutputFile(unsigned srcID) {
 //   assert(false && "Not implemented");
 //   return llvm::StringRef();
 // }
 
 const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode()
-    const {
+Compiler::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const {
   return GetPrimaryFileSpecificPathsForAtMostOnePrimary();
 }
 const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
-  return compilerInvocation.GetCompilerOptions()
+Compiler::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
 }
 const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForPrimary(
-    StringRef filename) const {
-  return compilerInvocation.GetCompilerOptions()
+Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
-CompilerInstance::GetPrimaryFileSpecificPathsForSyntaxFile(
+Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
     const syn::SyntaxFile &sf) const {
-  return compilerInvocation.GetCompilerOptions()
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }
 
-void CompilerInstance::ResolveImports() {
+void Compiler::ResolveImports() {
   // Resolve imports for all the source files.
   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile))
@@ -83,16 +82,16 @@ void CompilerInstance::ResolveImports() {
   }
 }
 
-Status CompilerInstance::ForEachSyntaxFileToTypeCheck(
+Status Compiler::ForEachSyntaxFileToTypeCheck(
     EachSyntaxFileToTypeCheckCallback notify) {
 
-  if (compilerInvocation.GetTypeCheckMode() == TypeCheckMode::WholeModule) {
+  if (GetTypeCheckMode() == TypeCheckMode::WholeModule) {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
       if (!syntaxFile) {
         continue;
       }
-      if (notify(*syntaxFile, compilerInvocation.GetTypeCheckerOptions(),
+      if (notify(*syntaxFile, GetTypeCheckerOptions(),
                  GetListener().IsError())) {
         return Status::Error();
       }
@@ -100,15 +99,14 @@ Status CompilerInstance::ForEachSyntaxFileToTypeCheck(
   } else {
     for (auto *syntaxFile :
          GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      if (notify(*syntaxFile, compilerInvocation.GetTypeCheckerOptions(),
-                 GetListener())
+      if (notify(*syntaxFile, GetTypeCheckerOptions(), GetListener())
               .IsError()) {
         return Status::Error();
       }
     }
   }
 
-  Status CompilerInstance::ForEachSyntaxFile(
+  Status Compiler::ForEachSyntaxFile(
       std::function<Status(SyntaxFile &)> notify) {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
@@ -123,19 +121,38 @@ Status CompilerInstance::ForEachSyntaxFileToTypeCheck(
   }
 }
 
-void *stone::AllocateInCompilerInstance(size_t bytes,
-                                        const CompilerInstance &compiler,
-                                        mem::AllocationArena arena,
-                                        unsigned alignment) {
+void Compiler::SetMainExecutable(const char *arg0, void *mainAddr) {
+
+  GetCompilerOptions().MainExecutablePath =
+      llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  GetCompilerOptions().MainExecutableName =
+      file::GetStem(GetCompilerOptions().MainExecutablePath);
+}
+void Compiler::SetupWorkingDirector() {
+  llvm::sys::fs::current_path(compiler.GetCompilerOptions().workDirectory);
+}
+
+void Compiler::SetupDiagnostics(DiagnosticListener listener) {
+  compiler.GetDiags().AddListener(diagListener);
+}
+
+void Compiler::PrintVersion() {}
+void Compiler::PrintTimers() {}
+void Compiler::PrintDiagnostics() {}
+void Compiler::PrintStatistics() {}
+
+void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
+                                mem::AllocationArena arena,
+                                unsigned alignment) {
   return nullptr;
 }
 
-// CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
+// CodeGenContext &Compiler::GetCodeGenContext() { return *cgc; }
 
 void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const override {
 
   //   auto effective =
-  //   compilerInvocation.GetCompilerOptions().effectiveCompilerVersion; if
+  //   GetCompilerOptions().effectiveCompilerVersion; if
   //   (effective
   //   != version::Version::GetCurrentCompilerVersion()) {
   //     os << "Compiling with effective version " << effective;
@@ -147,7 +164,7 @@ void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const override {
   //   }
   //   os << "\n";
 }
-void CompilerInstanceStats::Print(ColorStream &stream) {
+void CompilerStats::Print(ColorStream &stream) {
   // if (sc.GetCompilerOpts().printStats) {
   //   // GetLangContext().Out() << GetName() << '\n';
   //   return;

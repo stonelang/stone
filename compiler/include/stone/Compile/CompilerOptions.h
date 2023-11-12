@@ -3,23 +3,23 @@
 
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/LangTargetOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/LangTargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Option/Options.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
 
-class CompilerInvocation;
+class CompilerConfiguration;
 class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
 class CompilerAction final : public Action {
 
-  friend CompilerInvocation;
+  friend CompilerConfiguration;
 
 public:
   CompilerAction(const CompilerAction &) = delete;
@@ -33,7 +33,7 @@ public:
 
 class CompilerOptions final {
 
-  friend CompilerInvocation;
+  friend CompilerConfiguration;
   friend CompilerOptionsConverter;
   friend CompilerInputsConverter;
 
@@ -64,12 +64,15 @@ public:
   bool DowngradeInterfaceVerificationError = false;
 
   /// The path the executing program
-  StringRef ExecutingProgramPath;
+  StringRef MainExecutablePath;
 
   /// The name of the executing program
-  String ExecutingProgramName;
+  String MainExecutableName;
 
-  SmallString<128> workDirectory;
+  getMainExecutable
+
+      SmallString<128>
+          workDirectory;
 
 public:
   enum class LibOutputMode { Dynamic, Static };
@@ -91,6 +94,7 @@ public:
     return inputsAndOutputs;
   }
   CompilerAction &GetAction() { return action; }
+  const CompilerAction &GetAction() const { return action; }
 };
 
 } // namespace stone

@@ -32,7 +32,7 @@ class CodeGenScope;
 class TargetOptions;
 class LangOptions;
 class DiagnosticEngine;
-class CompilerInstance;
+class Compiler;
 class TypeCheckerListener;
 class CodeGenListener;
 class TypeCheckerOptions;
@@ -40,8 +40,8 @@ class CodeGenListener;
 class PrimaryFileSpecificPaths;
 class CompilerOptions;
 class InFlightDiagnostic;
-class CompilerInstance;
-class CompilerInvocation;
+class Compiler;
+class CompilerConfiguration;
 class ClangContext;
 
 namespace syn {
@@ -163,12 +163,12 @@ public:
   CodeGenListener *GetCodeGenListener() { return codeGenListener; }
 
 public:
-  virtual void OnCompileConfigured(CompilerInvocation &invocation) {}
-  virtual void OnCompileStarted(CompilerInstance &instance) {}
-  virtual void OnSyntaxAnalysisCompleted(CompilerInstance &instance) {}
-  virtual void OnSemanticAnalysisCompleted(CompilerInstance &instance) {}
-  virtual void OnCodeGenCompleted(CompilerInstance &instance) {}
-  virtual void OnCompileCompleted(CompilerInstance &instance) {}
+  virtual void OnCompileConfigured(CompilerConfiguration &invocation) {}
+  virtual void OnCompileStarted(Compiler &instance) {}
+  virtual void OnSyntaxAnalysisCompleted(Compiler &instance) {}
+  virtual void OnSemanticAnalysisCompleted(Compiler &instance) {}
+  virtual void OnCodeGenCompleted(Compiler &instance) {}
+  virtual void OnCompileCompleted(Compiler &instance) {}
 };
 } // namespace stone
 
@@ -257,7 +257,7 @@ using ModuleSyntaxFileUnion =
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true is successfull
-bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, CompilerInstance &instance,
+bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, Compiler &instance,
                        CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.

@@ -59,6 +59,7 @@ class Action {
 protected:
   llvm::StringRef name;
   void SetName(llvm::StringRef v) { name = v; }
+  void SetKind(ActionKind inputKind) { kind = inputKind; }
 
 public:
   Action();
@@ -140,6 +141,13 @@ public:
     return false;
   }
 
+  bool IsSupport() {
+    if (IsPrintHelp() || IsPrintHelpHidden() || IsPrintVersion()) {
+      return true;
+    }
+    return false;
+  }
+
 public:
   // Convenience
   bool IsNone() const { return GetKind() == ActionKind::None; }
@@ -149,6 +157,9 @@ public:
   }
   bool IsPrintVersion() const { return GetKind() == ActionKind::PrintVersion; }
   bool IsParse() const { return GetKind() == ActionKind::Parse; }
+  bool IsResolveImports() const {
+    return GetKind() == ActionKind::ResolveImports;
+  }
   bool IsDumpSyntax() const { return GetKind() == ActionKind::DumpSyntax; }
   bool IsTypeCheck() const { return GetKind() == ActionKind::TypeCheck; }
   bool IsDumpTypeInfo() const { return GetKind() == ActionKind::DumpTypeInfo; }

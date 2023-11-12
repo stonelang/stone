@@ -1,25 +1,25 @@
 #include "stone/Compile/ModuleSystem.h"
-#include "stone/Compile/CompilerInvocation.h"
+#include "stone/Compile/Compiler.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Syntax/DeclFactory.h"
 
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
+ModuleSystem::ModuleSystem(Compiler &compiler,
                            syn::SyntaxContext &syntaxContext)
-    : invocation(invocation), syntaxContext(syntaxContext) {}
+    : compiler(compiler), syntaxContext(syntaxContext) {}
 
 ModuleSystem::~ModuleSystem() {}
 
 syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
 
-    assert(invocation.GetModuleOptions().HasModuleName());
+    assert(compiler.GetModuleOptions().HasModuleName());
 
     // TODO: Check to make sure that we have the correct Identifier
     Identifier moduleIdentifier =
-        syntaxContext.GetIdentifier(invocation.GetModuleOptions().moduleName);
+        syntaxContext.GetIdentifier(compiler.GetModuleOptions().moduleName);
 
     mainModule =
         DeclFactory::MakeModuleDecl(moduleIdentifier, syntaxContext, true);
@@ -70,7 +70,7 @@ Status ModuleSystem::CreateSyntaxFilesForMainModule(
   // FIXME: This is the only demand point for InputSourceCodeBufferIDs. We
   // should compute this list of source files lazily.
 
-  for (auto bufferID : invocation.GetSourceBufferIDs()) {
+  for (auto bufferID : compiler.GetSourceBufferIDs()) {
     // Skip the main buffer, we've already handled it.
     if (bufferID == mainBufferID) {
       continue;
@@ -86,7 +86,7 @@ Status ModuleSystem::CreateSyntaxFilesForMainModule(
 syn::SyntaxFile *
 ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
 
-  if (invocation.GetCompilerOptions().parsingInputMode ==
+  if (compiler.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
     return nullptr;
   }
@@ -98,7 +98,7 @@ syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
     ModuleDecl *mod, syn::SyntaxFileKind syntaxFileKind, unsigned bufferID,
     bool isMainBuffer) const {
 
-  auto isPrimary = bufferID && invocation.IsPrimarySourceID(bufferID);
+  auto isPrimary = bufferID && compiler.IsPrimarySourceID(bufferID);
   auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
 
   auto syntaxFile =

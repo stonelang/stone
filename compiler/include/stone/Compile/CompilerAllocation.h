@@ -5,12 +5,11 @@
 #include <cstddef>
 
 namespace stone {
-class CompilerInstance;
-void *AllocateInCompilerInstance(size_t bytes, const CompilerInstance &compiler,
-                                 mem::AllocationArena arena,
-                                 unsigned alignment);
+class Compiler;
+void *AllocateInCompiler(size_t bytes, const Compiler &compiler,
+                         mem::AllocationArena arena, unsigned alignment);
 /// Types inheriting from this class are intended to be allocated in an
-/// \c CompilerInstance allocator; you cannot allocate them by using a normal \c
+/// \c Compiler allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
 /// \c new.
 ///
@@ -25,10 +24,10 @@ public:
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
   void *
-  operator new(size_t bytes, const CompilerInstance &compiler,
+  operator new(size_t bytes, const Compiler &compiler,
                mem::AllocationArena arena = mem::AllocationArena::Permanent,
                unsigned alignment = alignof(AlignTy)) {
-    return stone::AllocateInCompilerInstance(bytes, compiler, arena, alignment);
+    return stone::AllocateInCompiler(bytes, compiler, arena, alignment);
   }
 
   void *operator new(size_t bytes, void *mem) throw() {

@@ -1,7 +1,7 @@
-#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
@@ -38,15 +38,16 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-CompilerInvocation::CompilerInvocation() : clangContext(new ClangContext()) {}
-CompilerInvocation::~CompilerInvocation() {}
+CompilerConfiguration::CompilerConfiguration()
+    : clangContext(new ClangContext()) {}
+CompilerConfiguration::~CompilerConfiguration() {}
 
-llvm::Optional<unsigned> CompilerInvocation::CreateCodeCompletionBuffer() {
+llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {
   llvm::Optional<unsigned> codeCompletionBufferID;
   // auto codeCompletePoint = GetCodeCompletionPoint();
   // if (codeCompletePoint.first) {
   //   auto memBuf = codeCompletePoint.first;
-  //   // CompilerInvocation doesn't own the buffers, copy to a new buffer.
+  //   // CompilerConfiguration doesn't own the buffers, copy to a new buffer.
   //   codeCompletionBufferID = SourceMgr.addMemBufferCopy(memBuf);
   //   InputSourceCodeBufferIDs.push_back(*codeCompletionBufferID);
   //   SourceMgr.setCodeCompletionPoint(*codeCompletionBufferID,
@@ -55,7 +56,7 @@ llvm::Optional<unsigned> CompilerInvocation::CreateCodeCompletionBuffer() {
   return codeCompletionBufferID;
 }
 
-Status CompilerInvocation::CreateSourceBuffers() {
+Status CompilerConfiguration::CreateSourceBuffers() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
@@ -85,7 +86,7 @@ Status CompilerInvocation::CreateSourceBuffers() {
   return stone::Status();
 }
 
-llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
+llvm::Optional<unsigned> CompilerConfiguration::GetRecordedBufferID(
     const CompilerInputFile &input, const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (llvm::Optional<unsigned> existingBufferID =
@@ -129,8 +130,8 @@ llvm::Optional<unsigned> CompilerInvocation::GetRecordedBufferID(
 }
 
 // TODO:
-llvm::Optional<ModuleBuffers>
-CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
+llvm::Optional<ModuleBuffers> CompilerConfiguration::GetInputBuffersIfPresent(
+    const CompilerInputFile &input) {
 
   if (auto b = input.GetBuffer()) {
     return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
@@ -189,16 +190,16 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   // return llvm::None;
 }
 
-void CompilerInvocation::SetTargetTriple(StringRef Triple) {
+void CompilerConfiguration::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
-void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  GetLangContext()().GetLangOptions().SetTarget(triple);
+void CompilerConfiguration::SetTargetTriple(const llvm::Triple &triple) {
+  GetLangContext().GetLangOptions().SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
 unsigned
-CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
+CompilerConfiguration::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
     GetLangContext().GetDiags().PrintD(SrcLoc(),
@@ -210,17 +211,17 @@ CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   return srcID;
 }
 
-void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
+void CompilerConfiguration::RecordPrimarySourceID(unsigned primarySourceID) {
   primarySourceIDs.insert(primarySourceID);
 }
 
 // std::unique_ptr<OutputFile>
-// CompilerInvocation::ComputeOutputFile(CompilerUnit &source) {
+// CompilerConfiguration::ComputeOutputFile(CompilerUnit &source) {
 //   stone::Panic("ComputeSourceOutputFile not implemented");
 // }
 
-Status CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                      const char *arg0) {
+Status CompilerConfiguration::SetupClang(llvm::ArrayRef<const char *> argv,
+                                         const char *arg0) {
   // Setup the clang diagnostics
   clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
       new clang::DiagnosticIDs());
@@ -294,6 +295,7 @@ static void InitLLVMTargetOptions(llvm::TargetOptions &llvmTargetOpts,
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
     break;
   }
+  // TODO:
   // Set float ABI type.
   // assert((CodeGenOpts.FloatABI == "soft" || CodeGenOpts.FloatABI == "softfp"
   // ||
@@ -318,12 +320,17 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-Status CompilerInvocation::ParseOptions(llvm::ArrayRef<const char *> args) {
+Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
   unsigned missingArgIndex;
   unsigned missingArgCount;
+
+  /// May want to do this last?
+  if (SetupClang(args, arg0).IsError()) {
+    return Status::Error();
+  }
 
   auto compilerOptionTable = opts::CreateOptTable();
   auto compilerInputArgList =
@@ -381,7 +388,8 @@ Status CompilerInvocation::ParseOptions(llvm::ArrayRef<const char *> args) {
   return Status();
 }
 
-Status CompilerInvocation::ParseCompilerAction(llvm::opt::InputArgList &args) {
+Status
+CompilerConfiguration::ParseCompilerAction(llvm::opt::InputArgList &args) {
   auto actionArg = args.getLastArg(opts::ModeGroup);
   if (actionArg) {
     auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
@@ -394,24 +402,25 @@ Status CompilerInvocation::ParseCompilerAction(llvm::opt::InputArgList &args) {
   return Status();
 }
 
-Status CompilerInvocation::ParseCompilerOptions(llvm::opt::InputArgList &args,
-                                                MemoryBuffers *buffers) {
+Status
+CompilerConfiguration::ParseCompilerOptions(llvm::opt::InputArgList &args,
+                                            MemoryBuffers *buffers) {
 
   CompilerOptionsConverter converter(GetLangContext().GetDiags(), args,
                                      GetLangContext().GetLangOptions(),
                                      GetCompilerOptions(), GetModuleOptions());
   return converter.Convert(buffers);
 }
-Status CompilerInvocation::ParseLangOptions(llvm::opt::InputArgList &args) {
+Status CompilerConfiguration::ParseLangOptions(llvm::opt::InputArgList &args) {
   return Status();
 }
 
 Status
-CompilerInvocation::ParseTypeCheckerOptions(llvm::opt::InputArgList &args) {
+CompilerConfiguration::ParseTypeCheckerOptions(llvm::opt::InputArgList &args) {
   return Status();
 }
 Status
-CompilerInvocation::ParseSearchPathOptions(llvm::opt::InputArgList &args) {
+CompilerConfiguration::ParseSearchPathOptions(llvm::opt::InputArgList &args) {
   return Status();
 }
 
@@ -437,13 +446,15 @@ static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
     break;
   }
 }
-Status CompilerInvocation::ParseCodeGenOptions(llvm::opt::InputArgList &args) {
+Status
+CompilerConfiguration::ParseCodeGenOptions(llvm::opt::InputArgList &args) {
 
   ComputeCodeCodeGenOutputKind(GetCompilerOptions(), GetCodeGenOptions());
 
   return Status();
 }
-Status CompilerInvocation::ParseTargetOptions(llvm::opt::InputArgList &args) {
+Status
+CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
 
   std::tie(GetCodeGenOptions().llvmTargetOpts, GetCodeGenOptions().targetCPU,
            GetCodeGenOptions().targetFeatures,
@@ -460,7 +471,7 @@ Status CompilerInvocation::ParseTargetOptions(llvm::opt::InputArgList &args) {
 }
 
 llvm::StringRef
-CompilerInvocation::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
+CompilerConfiguration::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
   if (auto *arg = ial.getLastArg(opts::WorkDir)) {
     llvm::SmallString<128> smallStr;
     smallStr = arg->getValue();
@@ -470,7 +481,7 @@ CompilerInvocation::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
   return llvm::StringRef();
 }
 
-void CompilerInvocation::PrintHelp() {
+void CompilerConfiguration::PrintHelp() {
 
   if (GetAction().IsPrintHelp() || GetAction().IsPrintHelpHidden()) {
     unsigned IncludedFlagsBitmask = opts::CompilerOption;

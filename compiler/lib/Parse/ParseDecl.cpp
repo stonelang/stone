@@ -72,11 +72,11 @@ SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
 
   while (result.IsNull() && IsParsing()) {
     /// Collect using(s), qualifier(s), and specifier.
-    status |= CollectDecl(collector);
+    status = CollectDecl(collector);
     if (status.HasCodeCompletion()) {
       goto EndParse;
     }
-    status |= VerifyDeclCollected(collector);
+    status = VerifyDeclCollected(collector);
     if (status.IsError()) {
       goto EndParse;
     }

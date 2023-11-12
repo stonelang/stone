@@ -20,12 +20,12 @@ public:
   void AddDep(llvm::StringRef depFile, bool isSystem);
 };
 
-class CompilerInvocation;
+class CompilerConfiguration;
 
 // TODO: Move to Syntax
 class ModuleSystem final {
   // TODO: We need built-in information
-  CompilerInvocation &invocation;
+  Compiler &compiler;
   syn::SyntaxContext &syntaxContext;
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
@@ -36,8 +36,7 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(CompilerInvocation &invocation,
-               syn::SyntaxContext &syntaxContext);
+  ModuleSystem(Compiler &compiler, syn::SyntaxContext &syntaxContext);
   ~ModuleSystem();
 
 public:
@@ -55,7 +54,7 @@ public:
 
   syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
 
-  CompilerInvocation &GetCompilerInvocation() { return invocation; }
+  Compiler &GetCompiler() { return compiler; }
 
   syn::SyntaxFile::ParsingOptions
   GetSyntaxFileParsingOptions(bool forPrimary) const;

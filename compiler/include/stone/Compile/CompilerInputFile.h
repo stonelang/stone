@@ -13,10 +13,10 @@ namespace stone {
 /// An \c CompilerInputFile encapsulates information about an input passed to
 /// the invocation.
 ///
-/// CompilerInstance inputs are usually passed on the command line without a
-/// leading flag. However, there are clients that use the \c CompilerInvocation
-/// as a library like LLDB and SourceKit that generate their own \c
-/// CompilerInputFile instances programmatically. Note that an \c
+/// Compiler inputs are usually passed on the command line without a
+/// leading flag. However, there are clients that use the \c
+/// CompilerConfiguration as a library like LLDB and SourceKit that generate
+/// their own \c CompilerInputFile instances programmatically. Note that an \c
 /// CompilerInputFile need not actually be backed by a physical file, nor does
 /// its file name actually reflect its contents. \c CompilerInputFile has a
 /// constructor that will try to figure out the file type from the file name if

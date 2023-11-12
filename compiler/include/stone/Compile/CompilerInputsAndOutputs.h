@@ -20,7 +20,7 @@ class DiagnosticEngine;
 /// Information about all the inputs and outputs to the invocation.
 
 class CompilerInputsAndOutputs {
-  friend class CompilerInvocationInputsConverter;
+  friend class CompilerInputsConverter;
 
   std::vector<CompilerInputFile> inputs;
 
@@ -167,7 +167,7 @@ public:
 
   // Outputs
 private:
-  friend class CompilerInvocationOptionsConverter;
+  friend class CompilerConfigurationOptionsConverter;
   friend struct InterfaceSubContextDelegateImpl;
 
   void SetMainAndSupplementaryOutputs(
