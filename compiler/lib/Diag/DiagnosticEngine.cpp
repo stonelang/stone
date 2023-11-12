@@ -188,8 +188,7 @@ InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
     : de(&de), fixer(*this), isActive(true), isForceFlush(false),
       tokenable(tokenable) {}
 
-DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm)
-    : diagOpts(diagOpts), sm(sm), curDiagnostic() {}
+DiagnosticEngine::DiagnosticEngine(SrcMgr &sm) :  sm(sm), curDiagnostic() {}
 
 // TODO:
 //  diag::Level DiagnosticEngine::GetSeverityByDiagID(const DiagID id) {

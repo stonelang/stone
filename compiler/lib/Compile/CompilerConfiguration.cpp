@@ -38,8 +38,9 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-CompilerConfiguration::CompilerConfiguration()
-    : clangContext(new ClangContext()) {}
+CompilerConfiguration::CompilerConfiguration(Compiler& compiler)
+    : compiler(compiler), clangContext(new ClangContext()), langContext(langOpts) {}
+
 CompilerConfiguration::~CompilerConfiguration() {}
 
 llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {

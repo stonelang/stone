@@ -95,7 +95,9 @@ class CompilerConfiguration final {
   /// The options for type-checking
   TypeCheckerOptions typeCheckerOpts;
 
-  LangTargetOptions targetOpts;
+  LangOptions langOpts;
+
+  stone::TargetOptions targetOpts;
 
   ModuleOptions moduleOpts;
 
@@ -165,8 +167,8 @@ public:
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
-  LangTargetOptions &GetTargetOptions() { return targetOpts; }
-  const LangTargetOptions &GetTargetOptions() const { return targetOpts; }
+  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
@@ -174,11 +176,6 @@ public:
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {
     return typeCheckerOpts;
-  }
-
-  LangOptions &GetLangOptions() { return GetLangContext().GetLangOptions(); }
-  const LangOptions &GetLangOptions() const {
-    return GetLangContext().GetLangOptions();
   }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }

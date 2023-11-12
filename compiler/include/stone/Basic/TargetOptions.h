@@ -10,7 +10,7 @@
 
 namespace stone {
 /// Options for controlling the target.
-class LangTargetOptions final {
+class TargetOptions final {
 public:
   /// The name of the target triple to compile for.
   std::string triple;

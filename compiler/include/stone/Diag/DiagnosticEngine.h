@@ -197,6 +197,9 @@ class DiagnosticEngine final {
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
 
+
+  SrcMgr &sm;
+
   /// The
   unsigned int diagnosticSeen = 0;
 
@@ -206,11 +209,6 @@ class DiagnosticEngine final {
 
   /// The current diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
-
-  // llvm::IntrusiveRefCntPtr<DiagnosticOptions> diagOptions;
-  DiagnosticOptions &diagOpts;
-
-  SrcMgr &sm;
 
   /// The initial diagnostic state.
   DiagnosticState state;
@@ -267,7 +265,7 @@ class DiagnosticEngine final {
   friend class DiagnosticStateRAII;
 
 public:
-  explicit DiagnosticEngine(DiagnosticOptions &diagOpts, SrcMgr &sm);
+  explicit DiagnosticEngine(SrcMgr &sm);
 
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;

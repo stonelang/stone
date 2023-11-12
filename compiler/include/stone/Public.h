@@ -174,42 +174,33 @@ public:
 
 namespace stone {
 class LangContext final {
-  FileMgr fm;
-  SrcMgr sm;
-  StatisticEngine se;
-  ColorStream cos;
-  FileSystemOptions fsOpts;
-  DiagnosticEngine de;
-  DiagnosticOptions diagOpts;
-  LangOptions langOpts;
+  
+  SrcMgr srcMgr;
+  DiagnosticEngine diagEngine{srcMgr};
+  StatisticEngine statEngine;
+  LangOptions& langOpts;
 
 public:
-  LangContext() : fm(fsOpts), de(diagOpts, sm), cos(llvm::outs()) {}
+  LangContext(LangOptions& langOpts) :  langOpts(langOpts) {}
   ~LangContext() {}
 
 public:
-  ColorStream &Out() { return cos; }
 
-  StatisticEngine &GetStatEngine() { return se; }
-  const StatisticEngine &GeStatEngine() const { return se; }
+  StatisticEngine &GetStats() { return statEngine; }
+  const StatisticEngine &GeStats() const { return statEngine; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
-  FileSystemOptions &GetFileSystemOptions() { return fsOpts; }
-  const FileSystemOptions &GetFileSystemOptions() const { return fsOpts; }
-
-  DiagnosticEngine &GetDiags() { return de; }
-  const DiagnosticEngine &GetDiags() const { return de; }
+  DiagnosticEngine &GetDiags() { return diagEngine; }
+  const DiagnosticEngine &GetDiags() const { return diagEngine; }
 
   DiagnosticOptions &GetDiagOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
 
-  bool HasError() { return de.HasError(); }
-
-  FileMgr &GetFileMgr() { return fm; }
-  SrcMgr &GetSrcMgr() { return sm; }
-
+  bool HasError() { return GetDiags.HasError(); }
+  SrcMgr &GetSrcMgr() { return srcMgr; }
+  
 public:
   InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
     return PrintD(SrcLoc(), diagnostic);

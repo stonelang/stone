@@ -3,7 +3,7 @@
 
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/LangTargetOptions.h"
+#include "stone/Basic/stone::TargetOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
