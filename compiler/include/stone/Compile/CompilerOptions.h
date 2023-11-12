@@ -69,10 +69,7 @@ public:
   /// The name of the executing program
   String MainExecutableName;
 
-  getMainExecutable
-
-      SmallString<128>
-          workDirectory;
+  llvm::SmallString<128> workDirectory;
 
 public:
   enum class LibOutputMode { Dynamic, Static };

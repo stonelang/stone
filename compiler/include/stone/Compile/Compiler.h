@@ -290,7 +290,7 @@ private:
 public:
   CompilerQueue &GetQueue() { return queue; }
   CompilerConfiguration &GetConfig() { return config; }
-  llvm::BumpPtrAllocator &GetBumpAllocator() { return bumpAlloc; }
+  llvm::BumpPtrAllocator &GetAllocator() { return bumpAlloc; }
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
