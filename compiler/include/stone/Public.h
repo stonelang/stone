@@ -50,12 +50,6 @@ class ModuleDecl;
 
 namespace stone {
 
-// struct Public final {
-//   DiagnosticEngine diagnosticEngine;
-//   StatisticEngine statisticEngine;
-//   Public() : diagnosticEngine(DiagnosticOptions()) {}
-// };
-
 class LangContext final {
   FileMgr fm;
   SrcMgr sm;
@@ -65,8 +59,12 @@ class LangContext final {
   ColorStream cos;
   FileSystemOptions fsOpts;
 
+  DiagnosticEngine de;
+  DiagnosticOptions diagOpts;
+ 
+
 public:
-  LangContext() : fm(fsOpts), du(sm), cos(llvm::outs()) {}
+  LangContext() : fm(fsOpts), du(sm), de(diagOpts, sm), cos(llvm::outs()) {}
   ~LangContext() {}
 
 public:
@@ -83,6 +81,14 @@ public:
 
   DiagUnit &GetDiagUnit() { return du; }
 
+  DiagnosticEngine &GetDiags() { return de; }
+  const DiagnosticEngine &GetDiags() const { return de; }
+
+  DiagnosticOptions &GetDiagOptions() { return diagOpts; }
+  const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
+
+  bool HasError() { return de.HasError(); }
+  
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
 };

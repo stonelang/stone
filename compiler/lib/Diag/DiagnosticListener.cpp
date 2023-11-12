@@ -9,7 +9,7 @@ DiagnosticListener::~DiagnosticListener() {}
 
 bool DiagnosticListener::IncludeInDiagnosticCounts() const {}
 
-void DiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagnostic) {
+void DiagnosticListener::OnDiagnostic(const DiagnosticMessage &diagnostic) {
   // TODO: Diag stuff there like warnnings and errors
 }
 

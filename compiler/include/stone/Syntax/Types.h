@@ -3,7 +3,7 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Foreign/Foreign.h"
+#include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxAllocation.h"

@@ -2,7 +2,6 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Diag/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Foreign/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Drive/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Gen/*.h
@@ -15,7 +14,6 @@ set(stone_include_files
 set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/Foreign/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Drive/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Gen/*.cpp
@@ -42,7 +40,7 @@ set(stone_tests_files
 find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
 	if(CLANG_FORMAT)
 	add_custom_target(
-		stone-fmt
+		stone-format
 		clang-format
 		-i
 		-style=llvm

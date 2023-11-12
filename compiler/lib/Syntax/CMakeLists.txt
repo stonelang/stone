@@ -34,10 +34,14 @@ set(stone_syn_sources
 	TypeOperator.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
-	
+
+	ClangContext.cpp
+	ClangModuleImporter.cpp
+	ClangAST.cpp
+
+
 	LINK_LIBS
 	StoneDiag
-	StoneForeign
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

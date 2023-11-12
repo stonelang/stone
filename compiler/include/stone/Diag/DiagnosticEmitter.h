@@ -8,7 +8,7 @@
 
 namespace stone {
 
-class DiagnosticEvent;
+class DiagnosticMessage;
 class DiagnosticFormatter;
 
 class DiagnosticEmitter {
@@ -23,7 +23,7 @@ public:
 
 public:
   virtual void EmitLevel();
-  virtual void EmitDiagnostic(const DiagnosticEvent &de);
+  virtual void EmitDiagnostic(const DiagnosticMessage &msg);
   virtual void EmitLoc();
 
 public:

@@ -1,2 +1,2 @@
 add_subdirectory(compile)
-add_subdirectory(drive)
+add_subdirectory(driver)

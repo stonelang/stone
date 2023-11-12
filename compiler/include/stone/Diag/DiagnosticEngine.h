@@ -341,9 +341,9 @@ public:
   }
  
 public:
-  /// Generate DiagnosticEvent for a Diagnostic to be passed to listeners.
-  llvm::Optional<DiagnosticEvent>
-  CreateDiagnosticEvent(const Diagnostic &diagnostic);
+  /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
+  llvm::Optional<DiagnosticMessage>
+  CreateDiagnosticMessage(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic listeners.
   void EmitDiagnostic(const Diagnostic &diagnostic);
@@ -377,12 +377,12 @@ private:
                                               Tokenable *tokenable = nullptr) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
-    curDiagnostic->GetDetail().SetLoc(loc);
+    curDiagnostic->SetLoc(loc);
     return InFlightDiagnostic(*this, tokenable);
   }
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic,
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic diagnostic,
                             Tokenable *tokenable = nullptr) {
     return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
   }
@@ -390,20 +390,18 @@ public:
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(diagID, args)), tokenable);
+    return PrintD(loc, Diagnostic(Diagnostic(diagID, args)), tokenable);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
     return PrintD(
-        loc,
-        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
+        loc,Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
         tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
     return PrintD(
-        SrcLoc(),
-        Diagnostic(DiagnosticDetail(diagID, llvm::ArrayRef<diag::Argument>())),
+        SrcLoc(),Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
         tokenable);
   }
 
@@ -411,14 +409,14 @@ public:
   InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)));
+    return PrintD(loc, Diagnostic(Diagnostic(id, std::move(args)...)));
   }
 
   template <typename... ArgTypes>
   InFlightDiagnostic
   PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(DiagnosticDetail(id, std::move(args)...)),
+    return PrintD(loc, Diagnostic(Diagnostic(id, std::move(args)...)),
                   tokenable);
   }
 };

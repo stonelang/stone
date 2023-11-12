@@ -75,11 +75,13 @@ public:
 
 class SyntaxDiagnostic : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(DiagnosticDetail detail) : Diagnostic(detail) {}
+  explicit SyntaxDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+      : Diagnostic(diagID, args) {}
   ~SyntaxDiagnostic();
 
 public:
 };
+
 
 class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {
 public:
@@ -87,7 +89,7 @@ public:
 
 public:
   void
-  Format(ColorStream &out, DiagnosticDetail &detail,
+  Format(ColorStream &out, const Diagnostic &diagnostic,
          DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
 
   void

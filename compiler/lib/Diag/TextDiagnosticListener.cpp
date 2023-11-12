@@ -10,7 +10,7 @@ TextDiagnosticListener::TextDiagnosticListener(TextDiagnosticEmitter &emitter)
 
 TextDiagnosticListener::~TextDiagnosticListener() {}
 
-void TextDiagnosticListener::OnDiagnostic(const DiagnosticEvent &diagEvent) {
+void TextDiagnosticListener::OnDiagnostic(const DiagnosticMessage &diagEvent) {
 
   // DiagnosticListener::OnDiagnostic(diagEvent);
 
