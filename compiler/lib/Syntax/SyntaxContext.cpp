@@ -22,7 +22,7 @@ SyntaxContext::SyntaxContext(stone::LangContext &lc,
       builtinContext(*this), stats(new SyntaxContextStats(*this)),
       clangContext(clangContext) {
 
-  lc.GetStatEngine().Register(stats.get());
+  lc.GetStats().Register(stats.get());
 }
 
 SyntaxContext::~SyntaxContext() {

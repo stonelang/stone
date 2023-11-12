@@ -277,9 +277,6 @@ public:
   /// Specify a limit for the number of errors we should
   /// emit before giving up.
   ///
-  /// Zero disables the limit.
-  void SetErrorLimit(unsigned limit) { diagOpts.errorLimit = limit; }
-
   void Print(ColorStream &os, const PrintingPolicy *policy) const;
 
 public:

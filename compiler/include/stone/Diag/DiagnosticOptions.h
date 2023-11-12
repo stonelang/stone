@@ -18,8 +18,7 @@ enum class Level : uint8_t {
 };
 }
 /// Options for controlling diagnostics.
-class DiagnosticOptions
-    final /*: public llvm::RefCountedBase<DiagnosticOptions>*/ {
+class DiagnosticOptions final {
 public:
   // TODO: remove this note: (d1Start = 1, d1End = d1Start + max)
   // (d2Start = d1End + 1  , d2End = d1End + max)

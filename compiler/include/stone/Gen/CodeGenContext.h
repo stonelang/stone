@@ -4,7 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Basic/stone::TargetOptions.h"
+#include "stone/Basic/TargetOptions.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"

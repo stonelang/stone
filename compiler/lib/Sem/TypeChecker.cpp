@@ -12,7 +12,7 @@ TypeChecker::TypeChecker(SyntaxContext &sc, TypeCheckerOptions &typeCheckerOpts,
     : sc(sc), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
 
   stats.reset(new TypeCheckerStats(*this));
-  sc.GetLangContext().GetStatEngine().Register(stats.get());
+  sc.GetLangContext().GetStats().Register(stats.get());
 }
 
 TypeChecker::~TypeChecker() {}

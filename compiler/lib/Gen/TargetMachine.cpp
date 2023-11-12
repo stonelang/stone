@@ -1,5 +1,5 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/stone::TargetOptions.h"
+#include "stone/Basic/TargetOptions.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ClangContext.h"

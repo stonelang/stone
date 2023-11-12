@@ -16,7 +16,7 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc,
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(
                  sf.GetSrcID(), sc.GetSrcMgr(), &sc.GetLangContext().GetDiags(),
-                 &sc.GetLangContext().GetStatEngine(), lexerListener)),
+                 &sc.GetLangContext().GetStats(), lexerListener)),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
@@ -24,7 +24,7 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
 
-  GetLangContext().GetStatEngine().Register(stats.get());
+  GetLangContext().GetStats().Register(stats.get());
 }
 
 Parser::~Parser() {}

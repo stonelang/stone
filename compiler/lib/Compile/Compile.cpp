@@ -277,42 +277,43 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 // {}
 
 /// Code generation
-//Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {
+// Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext)
+// {
 
-  //   if(GetInvocation().GetCodeGenOptions().codeGenOutputKind ==
+//   if(GetInvocation().GetCodeGenOptions().codeGenOutputKind ==
 
-  //   switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
-  //   case CodeGenOutputKind::LLVMModule:
-  //     return CompileWithGenIR(
-  //         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
-  //           return GenModule(*this, cgc);
-  //         });
-  //   case CodeGenOutputKind::LLVMIRPreOptimization:
-  //   case CodeGenOutputKind::LLVMIRPostOptimization:
-  //     return CompileWithGenIR(
-  //         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
-  //           return DumpIR(*this, cgc);
-  //         });
-  //   // case CodeGenOutputKind::PrintIR:
-  //   //   return CompileWithGenIR(
-  //   //       cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
-  //   //         return PrintIR(*this, cgc);
-  //   //       });
-  //   default:
-  //     return CompileWithGenIR(
-  //         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
-  //           return CompileWithGenNative(cgc);
-  //         });
-  // }
+//   switch (GetInvocation().GetCodeGenOptions().codeGenOutputKind) {
+//   case CodeGenOutputKind::LLVMModule:
+//     return CompileWithGenIR(
+//         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
+//           return GenModule(*this, cgc);
+//         });
+//   case CodeGenOutputKind::LLVMIRPreOptimization:
+//   case CodeGenOutputKind::LLVMIRPostOptimization:
+//     return CompileWithGenIR(
+//         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
+//           return DumpIR(*this, cgc);
+//         });
+//   // case CodeGenOutputKind::PrintIR:
+//   //   return CompileWithGenIR(
+//   //       cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
+//   //         return PrintIR(*this, cgc);
+//   //       });
+//   default:
+//     return CompileWithGenIR(
+//         cgc, [&](Compiler &compiler, CodeGenContext &cgc) {
+//           return CompileWithGenNative(cgc);
+//         });
+// }
 
-  // CodeGenListener *codeGenListener = nullptr;
-  // if (compiler.GetListener()) {
-  //   codeGenListener = compiler.GetListener()->GetCodeGenListener();
-  // }
-  // auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
-  //                                llvm::StringRef(), codeGenListener);
+// CodeGenListener *codeGenListener = nullptr;
+// if (compiler.GetListener()) {
+//   codeGenListener = compiler.GetListener()->GetCodeGenListener();
+// }
+// auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
+//                                llvm::StringRef(), codeGenListener);
 
-  // return Status();
+// return Status();
 }
 
 // static Status DumpIR(Compiler &compiler, CodeGenContext &cgc) {
@@ -512,26 +513,26 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   BuildTasks();
 //   RunTasks();
 
-  // switch (GetAction().GetKind()) {
-  // case ActionKind::Parse:
-  //   status = CompileWithParsing();
-  //   break;
-  // case ActionKind::DumpSyntax:
-  //   status = CompileWithParsing(
-  //       [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
-  //   break;
-  // case ActionKind::TypeCheck:
-  //   status = CompileWithTypeChecking();
-  //   break;
-  // case ActionKind::PrintSyntax:
-  //   status = CompileWithTypeChecking(
-  //       [&](Compiler &compiler) { return PrintSyntax(*this); });
-  //   break;
-  // default:
-  //   status = CompileWithTypeChecking(
-  //       [&](Compiler &compiler) { return CompileWithCodeGen(); });
-  //   break;
-  // }
+// switch (GetAction().GetKind()) {
+// case ActionKind::Parse:
+//   status = CompileWithParsing();
+//   break;
+// case ActionKind::DumpSyntax:
+//   status = CompileWithParsing(
+//       [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
+//   break;
+// case ActionKind::TypeCheck:
+//   status = CompileWithTypeChecking();
+//   break;
+// case ActionKind::PrintSyntax:
+//   status = CompileWithTypeChecking(
+//       [&](Compiler &compiler) { return PrintSyntax(*this); });
+//   break;
+// default:
+//   status = CompileWithTypeChecking(
+//       [&](Compiler &compiler) { return CompileWithCodeGen(); });
+//   break;
+// }
 
 //   return status;
 // }

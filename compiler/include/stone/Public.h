@@ -176,8 +176,8 @@ namespace stone {
 class LangContext final {
 
   SrcMgr srcMgr;
-  DiagnosticEngine diagEngine{srcMgr};
-  StatisticEngine statEngine;
+  DiagnosticEngine diags{srcMgr};
+  StatisticEngine stats;
   LangOptions &langOpts;
 
 public:
@@ -185,19 +185,16 @@ public:
   ~LangContext() {}
 
 public:
-  StatisticEngine &GetStats() { return statEngine; }
-  const StatisticEngine &GeStats() const { return statEngine; }
+  StatisticEngine &GetStats() { return stats; }
+  const StatisticEngine &GeStats() const { return stats; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
-  DiagnosticEngine &GetDiags() { return diagEngine; }
-  const DiagnosticEngine &GetDiags() const { return diagEngine; }
+  DiagnosticEngine &GetDiags() { return diags; }
+  const DiagnosticEngine &GetDiags() const { return diags; }
 
-  DiagnosticOptions &GetDiagOptions() { return diagOpts; }
-  const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
-
-  bool HasError() { return GetDiags.HasError(); }
+  bool HasError() { return GetDiags().HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
 
 public:

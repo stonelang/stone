@@ -105,6 +105,8 @@ class CompilerConfiguration final {
 
   SyntaxOptions syntaxOpts;
 
+  DiagnosticOptions diagOpts;
+
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> sourceBufferIDs;
 
@@ -182,6 +184,10 @@ public:
   const SearchPathOptions &GetSearchPathOptions() const {
     return searchPathOpts;
   }
+
+  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
