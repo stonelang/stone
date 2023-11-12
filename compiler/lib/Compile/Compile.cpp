@@ -94,185 +94,185 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
-Status compiling::Compile(Compiler &compiler) {
+// Status compiling::Compile(Compiler &compiler) {
 
-  Status status;
+//   Status status;
 
-  // At this point, everything requires syntax analysis.
-  compiling::VerifyCompilerInputFileTypes(compiler);
+//   // At this point, everything requires syntax analysis.
+//   compiling::VerifyCompilerInputFileTypes(compiler);
 
-  if (compiler.GetAction().IsParse()) {
-    if (compiling::Parse(compiler).IsError()) {
-      return Status::Error();
-    }
-  }
+//   if (compiler.GetAction().IsParse()) {
+//     if (compiling::Parse(compiler).IsError()) {
+//       return Status::Error();
+//     }
+//   }
 
-  // Otherwise, default to performing syntax analysis with import resoltuion.
-  if (compiling::ParseAndImportResolution(compiler).IsError()) {
-    status.SetIsError();
-    return status;
-  }
+//   // Otherwise, default to performing syntax analysis with import resoltuion.
+//   if (compiling::ParseAndImportResolution(compiler).IsError()) {
+//     status.SetIsError();
+//     return status;
+//   }
 
-  if (compiler.GetAction().IsResolveImports()) {
-    status.SetHasCompletion();
-    return status;
-  }
+//   if (compiler.GetAction().IsResolveImports()) {
+//     status.SetHasCompletion();
+//     return status;
+//   }
 
-  if (compiler.GetAction().IsDumpAST()) {
-    compiling::DumpAST(compiler);
-    status.SetHasCompletion();
-    return status;
-  }
+//   if (compiler.GetAction().IsDumpAST()) {
+//     compiling::DumpAST(compiler);
+//     status.SetHasCompletion();
+//     return status;
+//   }
 
-  // At this point, everything requires type-checking
-  if (compiling::TypeCheck(compiler).IsError()) {
-    status.SetIsError();
-    return status;
-  }
+//   // At this point, everything requires type-checking
+//   if (compiling::TypeCheck(compiler).IsError()) {
+//     status.SetIsError();
+//     return status;
+//   }
 
-  if (compiler.GetAction().IsTypeCheck()) {
-    status.SetHasCompletion();
-    return status;
-  }
-  // Are we trying to print the AST?
-  if (compiler.GetAction().IsPrintSyntax()) {
-    compiling::PrintSyntax(compiler);
-    status.SetHasCompletion();
-    return status;
-  }
+//   if (compiler.GetAction().IsTypeCheck()) {
+//     status.SetHasCompletion();
+//     return status;
+//   }
+//   // Are we trying to print the AST?
+//   if (compiler.GetAction().IsPrintSyntax()) {
+//     compiling::PrintSyntax(compiler);
+//     status.SetHasCompletion();
+//     return status;
+//   }
 
-  if (compiler.GetAction().IsDumpTypeInfo()) {
-    compiling::DumpTypeInfo(compiler);
-    status.SetHasCompletion();
-    return status;
-  }
+//   if (compiler.GetAction().IsDumpTypeInfo()) {
+//     compiling::DumpTypeInfo(compiler);
+//     status.SetHasCompletion();
+//     return status;
+//   }
 
-  // Everyting from now on requires type checking
-  if (compiler.IsActionPostTypeChecking()) {
-    if (compiling::CompileAfterTypeChecking(compiler).IsError()) {
-      status.SetHasCompletion();
-      return status;
-    }
-  }
-  return Status();
-}
+//   // Everyting from now on requires type checking
+//   if (compiler.IsActionPostTypeChecking()) {
+//     if (compiling::CompileAfterTypeChecking(compiler).IsError()) {
+//       status.SetHasCompletion();
+//       return status;
+//     }
+//   }
+//   return Status();
+// }
 
-void compiling::VerifyCompilerInputFileTypes(Compiler &compiler) {
+// void compiling::VerifyCompilerInputFileTypes(Compiler &compiler) {
 
-  assert([&]() -> bool {
-    if (compiler.GetAction().IsParse()) {
-      // Parsing gets triggered lazily, but let's make sure we have the right
-      // input kind.
-      return llvm::all_of(
-          compiler.GetCompilerOptions().inputsAndOutputs.GetInputs(),
-          [](const CompilerInputFile &cif) {
-            const auto fileType = cif.GetType();
-            return fileType == file::Type::Stone ||
-                   fileType == file::Type::StoneModuleInterface;
-          });
-    }
-    return true;
-  }() && "Only supports parsing .stone files");
-}
+//   assert([&]() -> bool {
+//     if (compiler.GetAction().IsParse()) {
+//       // Parsing gets triggered lazily, but let's make sure we have the right
+//       // input kind.
+//       return llvm::all_of(
+//           compiler.GetCompilerOptions().inputsAndOutputs.GetInputs(),
+//           [](const CompilerInputFile &cif) {
+//             const auto fileType = cif.GetType();
+//             return fileType == file::Type::Stone ||
+//                    fileType == file::Type::StoneModuleInterface;
+//           });
+//     }
+//     return true;
+//   }() && "Only supports parsing .stone files");
+// }
 
-Status compiling::Parse(Compiler &compiler) {
+// Status compiling::Parse(Compiler &compiler) {
 
-  SyntaxListener *syntaxListener = nullptr;
-  LexerListener *lexerListener = nullptr;
+//   SyntaxListener *syntaxListener = nullptr;
+//   LexerListener *lexerListener = nullptr;
 
-  if (compiler.GetListener()) {
-    syntaxListener = compiler.GetListener()->GetSyntaxListener();
-    lexerListener = compiler.GetListener()->GetLexerListener();
-  }
-  for (auto moduleFile :
-       compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, compiler.GetSyntaxContext(),
-                             syntaxListener, lexerListener);
-      syntaxFile->stage = SyntaxFileStage::Parsed;
-    }
-  }
-  if (compiler.GetListener()) {
-    compiler.GetListener()->OnSyntaxAnalysisCompleted(compiler);
-  }
-  return Status();
-}
+//   if (compiler.GetListener()) {
+//     syntaxListener = compiler.GetListener()->GetSyntaxListener();
+//     lexerListener = compiler.GetListener()->GetLexerListener();
+//   }
+//   for (auto moduleFile :
+//        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
+//     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+//       stone::ParseSyntaxFile(*syntaxFile, compiler.GetSyntaxContext(),
+//                              syntaxListener, lexerListener);
+//       syntaxFile->stage = SyntaxFileStage::Parsed;
+//     }
+//   }
+//   if (compiler.GetListener()) {
+//     compiler.GetListener()->OnSyntaxAnalysisCompleted(compiler);
+//   }
+//   return Status();
+// }
 
-Status compiling::ParseAndImportResolution(Compiler &compiler) {
+// Status compiling::ParseAndImportResolution(Compiler &compiler) {
 
-  if (compiling::Parse(compiler).IsError()) {
-    return Status::Error();
-  }
-  if (!compiler.GetAction().IsParse()) {
-    compiler.ResolveImports();
-  }
-  return Status();
-}
+//   if (compiling::Parse(compiler).IsError()) {
+//     return Status::Error();
+//   }
+//   if (!compiler.GetAction().IsParse()) {
+//     compiler.ResolveImports();
+//   }
+//   return Status();
+// }
 
-Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile &syntaxFile) {
-  return Status();
-}
+// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile &syntaxFile) {
+//   return Status();
+// }
 
-Status compiling::TypeCheck(Compiler &compiler) {
+// Status compiling::TypeCheck(Compiler &compiler) {
 
-  TypeCheckerListener *listener = nullptr;
-  if (compiler.GetListener()) {
-    listener = compiler.GetListener()->GetTypeCheckerListener();
-  }
+//   TypeCheckerListener *listener = nullptr;
+//   if (compiler.GetListener()) {
+//     listener = compiler.GetListener()->GetTypeCheckerListener();
+//   }
 
-  compiler.ForEachSyntaxFileToTypeCheck(
-      [&](SyntaxFile &syntaxFile, TypeCheckerOptions &typeCheckerOpts,
-          stone::TypeCheckerListener *listener) {
-        stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
-        // TODO: Check for errors
-        syntaxFile.stage = SyntaxFileStage::TypeChecked;
-      });
+//   compiler.ForEachSyntaxFileToTypeCheck(
+//       [&](SyntaxFile &syntaxFile, TypeCheckerOptions &typeCheckerOpts,
+//           stone::TypeCheckerListener *listener) {
+//         stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+//         // TODO: Check for errors
+//         syntaxFile.stage = SyntaxFileStage::TypeChecked;
+//       });
 
-  compiling::FinishTypeCheck(compiler);
+//   compiling::FinishTypeCheck(compiler);
 
-  if (compiler.GetListener()) {
-    compiler.GetListener()->OnSemanticAnalysisCompleted(compiler);
-  }
+//   if (compiler.GetListener()) {
+//     compiler.GetListener()->OnSemanticAnalysisCompleted(compiler);
+//   }
 
-  return Status();
-}
+//   return Status();
+// }
 
-Status compiling::FinishTypeCheck(Compiler &compiler) { return Status(); }
-Status compiling::PrintSyntax(Compiler &compiler) { return Status(); }
+// Status compiling::FinishTypeCheck(Compiler &compiler) { return Status(); }
+// Status compiling::PrintSyntax(Compiler &compiler) { return Status(); }
 
-Status compiling::CompileAfterTypeChecking(Compiler &compiler) {
+// Status compiling::CompileAfterTypeChecking(Compiler &compiler) {
 
-  Status status;
-  // Create the CodeGenContext
-  CodeGenContext codeGenContext(
-      compiler.GetCodeGenOptions(), compiler.GetModuleOptions(),
-      compiler.GetTargetOptions(), compiler.GetLangContext(),
-      compiler.GetClangContext());
+//   Status status;
+//   // Create the CodeGenContext
+//   CodeGenContext codeGenContext(
+//       compiler.GetCodeGenOptions(), compiler.GetModuleOptions(),
+//       compiler.GetTargetOptions(), compiler.GetLangContext(),
+//       compiler.GetClangContext());
 
-  // If we are here, we need to GenIR
-  if (compiling::GenIR(compiler, codeGenContext).IsError()) {
-    status.SetHasCompletion();
-  }
-  if (compiler.GetAction().IsEmitIRAfter() ||
-      compiler.GetAction().IsEmitIRBefore()) {
-    status.SetHasCompletion();
-    return status;
-  }
+//   // If we are here, we need to GenIR
+//   if (compiling::GenIR(compiler, codeGenContext).IsError()) {
+//     status.SetHasCompletion();
+//   }
+//   if (compiler.GetAction().IsEmitIRAfter() ||
+//       compiler.GetAction().IsEmitIRBefore()) {
+//     status.SetHasCompletion();
+//     return status;
+//   }
 
-  assert(compiler.CanCodeGen() &&
-         "The current action does not suport generating code.");
+//   assert(compiler.CanCodeGen() &&
+//          "The current action does not suport generating code.");
 
-  compiling::GenCode(compiler, codeGenContext);
-}
+//   compiling::GenCode(compiler, codeGenContext);
+// }
 
-Status compiling::GenIR(Compiler &compiler, CodeGenContext &codeGenContext) {
+// Status compiling::GenIR(Compiler &compiler, CodeGenContext &codeGenContext) {
 
-  return Status();
-}
+//   return Status();
+// }
 
-void compiling::DumpIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
+// void compiling::DumpIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
 
-void compiling::PrintIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
+// void compiling::PrintIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
 
 /// Code generation
 Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext) {

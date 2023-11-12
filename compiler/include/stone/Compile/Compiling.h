@@ -7,67 +7,6 @@ namespace syn {
 class SyntaxFile;
 }
 
-class CompilerQueue final {};
-
-class CompilerTask : public CompilerAllocation {
-public:
-  virtual Status Execute(Compiler &compiler);
-  virtual void Report();
-};
-
-void PrintHelp(ColorStream &out, const llvm::opt::OptTable &opts);
-void PrintVersion();
-void PrintTimers();
-void PrintDiagnostics();
-void PrintStatistics();
-
-class CompilerStatsTask : public CompilerTask {};
-
-class VerifyInputFileTypesTask : public CompilerTask {};
-
-class SyntaxTask : public CompilerTask {
-  virtual Status Execute(Compiler &compiler)
-};
-
-class ParseTask : public SyntaxTask {
-  virtual Status Execute(Compiler &compiler)
-};
-
-class ParseAndImportResolutionTask : public SyntaxTask {
-  virtual Status Execute(Compiler &compiler)
-
-      public : static ParseAndImportResolutionTask *Create();
-};
-
-class TypeCheckTask : public SyntaxTask {
-  virtual Status Execute(Compiler &compiler)
-
-      public : static ParseAndImportResolutionTask *Create();
-};
-
-// class EmitIRTask : public SyntaxTask {
-//   virtual Status Execute(Compiler &compiler)
-// };
-
-class CodeGenTask : public SyntaxTask {
-  virtual Status Execute(Compiler &compiler)
-};
-
-class IRCodeGenTask : public CodeGenTask {
-  virtual Status Execute(Compiler &compiler)
-};
-class MachineCodeGenTask : public CodeGenTask {
-  virtual Status Execute(Compiler &compiler)
-};
-
-compiler.AddTask(ParseTask::Create(compiler));
-compiler.AddTask(ParseAndImportResolutionTask::Create(compiler));
-
-compiler.AddTask(TypeCheckTask());
-compiler.AddTask(EmitIRTask());
-compiler.AddTask(EmitObjectTask());
-
-compiler.GetQueue().Run();
 
 namespace compiling {
 

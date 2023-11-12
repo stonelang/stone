@@ -9,42 +9,42 @@ public:
   virtual Status Execute(Compiler &compiler) {}
 };
 
-class CompilerStatsTask : public CompilerTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
-};
+// class CompilerStatsTask : public CompilerTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
+// };
 
-class VerifyInputFileTypesTask : public CompilerTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
-};
+// class VerifyInputFileTypesTask : public CompilerTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
+// };
 
-class SyntaxTask : public CompilerTask {
+// class SyntaxTask : public CompilerTask {
 
-public:
-  virtual Status Execute(Compiler &compiler) override;
-};
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
+// };
 
-class ParseTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
-};
+// class ParseTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
+// };
 
-class ParseAndImportResolutionTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
+// class ParseAndImportResolutionTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-public:
-  static ParseAndImportResolutionTask *Create();
-};
+// public:
+//   static ParseAndImportResolutionTask *Create();
+// };
 
-class TypeCheckTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler);
+// class TypeCheckTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler);
 
-public:
-  static ParseAndImportResolutionTask *Create();
-};
+// public:
+//   static ParseAndImportResolutionTask *Create();
+// };
 
 // class EmitIRTask : public SyntaxTask {
 //   virtual Status Execute(Compiler &compiler)
