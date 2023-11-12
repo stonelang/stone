@@ -197,7 +197,6 @@ class DiagnosticEngine final {
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
 
-
   SrcMgr &sm;
 
   /// The

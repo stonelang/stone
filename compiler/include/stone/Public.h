@@ -174,18 +174,17 @@ public:
 
 namespace stone {
 class LangContext final {
-  
+
   SrcMgr srcMgr;
   DiagnosticEngine diagEngine{srcMgr};
   StatisticEngine statEngine;
-  LangOptions& langOpts;
+  LangOptions &langOpts;
 
 public:
-  LangContext(LangOptions& langOpts) :  langOpts(langOpts) {}
+  LangContext(LangOptions &langOpts) : langOpts(langOpts) {}
   ~LangContext() {}
 
 public:
-
   StatisticEngine &GetStats() { return statEngine; }
   const StatisticEngine &GeStats() const { return statEngine; }
 
@@ -200,7 +199,7 @@ public:
 
   bool HasError() { return GetDiags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
-  
+
 public:
   InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
     return PrintD(SrcLoc(), diagnostic);

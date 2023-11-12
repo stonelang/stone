@@ -33,13 +33,17 @@
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/TargetParser/Triple.h"
 
 using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-CompilerConfiguration::CompilerConfiguration(Compiler& compiler)
-    : compiler(compiler), clangContext(new ClangContext()), langContext(langOpts) {}
+CompilerConfiguration::CompilerConfiguration(Compiler &compiler)
+    : compiler(compiler), clangContext(new ClangContext()),
+      langContext(langOpts) {
+  SetTargetTriple(llvm::sys::getDefaultTargetTriple());
+}
 
 CompilerConfiguration::~CompilerConfiguration() {}
 
@@ -55,6 +59,19 @@ llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {
   //                                    codeCompletePoint.second);
   // }
   return codeCompletionBufferID;
+}
+
+
+void CompilerConfiguration::SetMainExecutable(const char *arg0, void *mainAddr) {
+
+  GetCompilerOptions().MainExecutablePath =
+      llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  GetCompilerOptions().MainExecutableName =
+      file::GetStem(GetCompilerOptions().MainExecutablePath);
+}
+
+void CompilerConfiguration::SetupWorkingDirector() {
+  llvm::sys::fs::current_path(compiler.GetCompilerOptions().workDirectory);
 }
 
 Status CompilerConfiguration::CreateSourceBuffers() {

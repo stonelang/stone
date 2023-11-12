@@ -114,8 +114,6 @@ class CompilerConfiguration final {
   /// source file.  Valid only if \c isCodeCompletion() == true.
   unsigned codeCompletionOffset = ~0U;
 
-  mutable llvm::BumpPtrAllocator bumpAlloc;
-
   LangContext langContext;
 
   std::unique_ptr<ClangContext> clangContext;
@@ -199,7 +197,6 @@ public:
                                          const bool shouldRecover,
                                          bool &failed);
 
-  llvm::BumpPtrAllocator &GetBumpAllocator() { return bumpAlloc; }
 
   bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
@@ -225,8 +222,9 @@ public:
 
 class CompilerQueue final {
 
-// Simple queue for now.
-  std::queue<CompilerTask*> runQueue;
+  // Simple queue for now.
+  std::queue<CompilerTask *> runQueue;
+
 public:
   CompilerQueue(Compiler &compiler);
 
@@ -261,6 +259,9 @@ class Compiler final {
 
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
+
+  mutable llvm::BumpPtrAllocator bumpAlloc;
+
 public:
   Compiler();
   ~Compiler();
@@ -282,6 +283,7 @@ private:
 public:
   CompilerQueue &GetQueue() { return queue; }
   CompilerConfiguration &GetConfig() { return config; }
+  llvm::BumpPtrAllocator &GetBumpAllocator() { return bumpAlloc; }
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
@@ -414,6 +416,21 @@ public:
   void PrintTimers();
   void PrintDiagnostics();
   void PrintStatistics();
+
+
+public:
+  public:
+  /// Return the total amount of physical memory allocated for representing
+  /// AST nodes and type information.
+  size_t GetTotalMemUsed() const;
+
+  void *Allocate(size_t size, unsigned align = 8) const {
+    return GetAllocator().Allocate(size, align);
+  }
+  template <typename T> T *Allocate(size_t num = 1) const {
+    return static_cast<T *>(Allocate(num * sizeof(T), alignof(T)));
+  }
+  void Deallocate(void *Ptr) const {}
 };
 
 } // namespace stone

@@ -121,19 +121,13 @@ Status Compiler::ForEachSyntaxFileToTypeCheck(
   }
 }
 
-void Compiler::SetMainExecutable(const char *arg0, void *mainAddr) {
-
-  GetCompilerOptions().MainExecutablePath =
-      llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  GetCompilerOptions().MainExecutableName =
-      file::GetStem(GetCompilerOptions().MainExecutablePath);
-}
-void Compiler::SetupWorkingDirector() {
-  llvm::sys::fs::current_path(compiler.GetCompilerOptions().workDirectory);
-}
 
 void Compiler::SetupDiagnostics(DiagnosticListener listener) {
   compiler.GetDiags().AddListener(diagListener);
+}
+
+size_t Compiler::GetgetTotalMemUsed() {
+  return bumpAlloc.getTotalMemory();
 }
 
 void Compiler::PrintVersion() {}
