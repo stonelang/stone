@@ -36,7 +36,8 @@ const BuiltinContext &SyntaxContext::GetBuiltinContext() const {
 }
 
 void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
-                                   AllocationArena arena, unsigned alignment) {
+                                   mem::AllocationArena arena,
+                                   unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 

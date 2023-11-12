@@ -1,4 +1,3 @@
-
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Basic/Strings.h"
 #include "stone/Diag/CompilerDiagnostic.h"
@@ -7,8 +6,8 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
 
-#include "stone/Session/Options.h"
-// #include "stone/Session/SanitizerOptions.h"
+#include "stone/Option/Options.h"
+// #include "stone/Option/SanitizerOptions.h"
 
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/Triple.h"
@@ -26,7 +25,7 @@ bool CompilerOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
     std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
-    const Mode &mode) {
+    const Action &action) {
 
   Optional<CompilerOutputFilesComputer> ofc =
       CompilerOutputFilesComputer::Create(
@@ -117,7 +116,7 @@ CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     const llvm::opt::ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
-    CompilerOutputOptInfo optInfo, const Mode &mode) {
+    CompilerOutputOptInfo optInfo, const Action &action) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -146,20 +145,20 @@ llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     return llvm::None;
   }
 
-  auto outputType = mode.GetOutputFileType();
+  auto outputType = action.GetOutputFileType();
 
   return CompilerOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, mode,
       args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
-      mode.CanOutput(), optInfo);
+      action.CanOutput(), optInfo);
 }
 
 CompilerOutputFilesComputer::CompilerOutputFilesComputer(
     DiagnosticEngine &de, const CompilerInputsAndOutputs &inputsAndOutputs,
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
-    const Mode &mode, const llvm::opt::Arg *moduleNameArg,
+    const Action &action, const llvm::opt::Arg *moduleNameArg,
     const StringRef suffix, const bool hasTextualOutput,
     CompilerOutputOptInfo optInfo)
     : de(de), inputsAndOutputs(inputsAndOutputs),
@@ -195,7 +194,7 @@ llvm::Optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
   // The invocation does not currently produce a diagnostic
   // if a -o argument is present for such an action
   // for instance stonec -invocation -o foo -interpret foo.stone
-  if (!mode.CanOutput()) {
+  if (!action.CanOutput()) {
     return std::string();
   }
   if (!OutputDirectoryArgument.empty()) {
@@ -259,7 +258,7 @@ CompilerOutputFilesComputer::DeriveOutputFileFromParts(StringRef dir,
 SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     const ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
-    ArrayRef<std::string> outputFiles, StringRef moduleName, const Mode &mode)
+    ArrayRef<std::string> outputFiles, StringRef moduleName, const Action &action)
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFiles(outputFiles), moduleName(moduleName), mode(mode) {}
 
@@ -572,8 +571,8 @@ void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
 
   emitOption = opts::EmitModule;
 
-  bool canUseMainOutputForModule = mode.GetKind() == ModeKind::MergeModules ||
-                                   mode.GetKind() == ModeKind::EmitModule;
+  bool canUseMainOutputForModule = action.GetKind() == ActionKind::MergeModules ||
+                                   action.GetKind() == ActionKind::EmitModule;
 
   extension = file::GetTypeExt(file::Type::StoneModule).str();
 

@@ -1,4 +1,4 @@
-#include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Public.h"
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/TypeCheckerOptions.h"

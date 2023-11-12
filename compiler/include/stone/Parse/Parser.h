@@ -5,7 +5,7 @@
 
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Attribute.h"
@@ -49,6 +49,8 @@ class Parser final {
   // friend PairDelimiterBalancer;
 
   SyntaxListener *listener;
+  LexerListener *lexerListener;
+
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
@@ -97,7 +99,7 @@ private:
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener = nullptr);
+  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener, LexerListener *lexerListener);
 
   ~Parser();
 
@@ -244,9 +246,9 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiags().HasError(); }
   DiagnosticEngine &GetDiags() {
-    return GetLangContext().GetDiagUnit().GetDiagEngine();
+    return GetLangContext().GetDiags();
   }
 
 public:

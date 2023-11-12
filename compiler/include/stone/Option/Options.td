@@ -120,7 +120,11 @@ def PrintIR : Flag<["-"], "print-ir">,
 HelpText<"Print LLVM IR file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
-def EmitIR : Flag<["-"], "emit-ir">,
+def EmitIRBefore : Flag<["-"], "emit-ir-before">,
+HelpText<"Emit LLVM IR file(s)">, ModeOpt,
+Flags<[CompilerOption, DriverOption]>;
+
+def EmitIRAfter : Flag<["-"], "emit-ir-after">,
 HelpText<"Emit LLVM IR file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 

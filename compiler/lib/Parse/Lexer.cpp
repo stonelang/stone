@@ -1,7 +1,7 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Basic/Char.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Diag/SyntaxDiagnostic.h"
 #include "stone/Parse/Confusable.h"
 #include "stone/Syntax/Identifier.h"
@@ -143,7 +143,7 @@ Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
              stone::DiagnosticEngine *de, StatisticEngine *se,
              LexerMode LexMode, HashbangMode HashbangAllowed,
              CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention, SyntaxListener *listener)
+             TriviaRetentionMode TriviaRetention, LexerListener *listener)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
       IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
       RetainComments(RetainComments), TriviaRetention(TriviaRetention),
@@ -194,7 +194,7 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
              StatisticEngine *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention, SyntaxListener *listener)
+             TriviaRetentionMode TriviaRetention, LexerListener *listener)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
             RetainComments, TriviaRetention, listener) {
 
@@ -204,7 +204,7 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
 }
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-             StatisticEngine *se, SyntaxListener *listener)
+             StatisticEngine *se, LexerListener *listener)
     : Lexer(BufferID, sm, de, se, LexerMode::Stone, HashbangMode::Disallowed,
             CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia,
             listener) {}
@@ -213,7 +213,7 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
              StatisticEngine *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
              TriviaRetentionMode TriviaRetention, unsigned Offset,
-             unsigned EndOffset, SyntaxListener *listener)
+             unsigned EndOffset, LexerListener *listener)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
             RetainComments, TriviaRetention, listener) {
 

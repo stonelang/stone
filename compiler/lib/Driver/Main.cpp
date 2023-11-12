@@ -12,7 +12,7 @@
 using namespace stone;
 
 int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
-                 void *mainAddr, CompilationListener *listener) {
+                void *mainAddr, CompilationListener *listener) {
   llvm::PrettyStackTraceString crashInfo("Driver construction.");
   FINISH_LLVM_INIT();
 
@@ -27,8 +27,8 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { driver.Finish(); };
 
   if (args.empty()) {
-    driver.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_no_input_files);
+    driver.GetLangContext().GetDiags().PrintD(SrcLoc(),
+                                              diag::err_no_input_files);
     return Error(true);
   }
   if (listener) {
@@ -49,8 +49,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (driver.GetDriverOptions().GetMode().IsAlien()) {
-    driver.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
-                                                 diag::err_alien_mode);
+    driver.GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_alien_mode);
     return Error(true);
   }
   if (driver.GetDriverOptions().GetMode().IsPrintHelp()) {

@@ -2,8 +2,8 @@
 #define STONE_GEN_CODEGENCONTEXT_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Error.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Status.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"

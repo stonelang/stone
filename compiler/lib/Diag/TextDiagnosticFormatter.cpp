@@ -6,7 +6,8 @@ TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 
 TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
-void TextDiagnosticFormatter::Format(ColorStream &out, const Diagnostic &diagnostic,
+void TextDiagnosticFormatter::Format(ColorStream &out,
+                                     const Diagnostic &diagnostic,
                                      DiagnosticFormatOptions fmtOpts) {}
 
 void TextDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,

@@ -1,10 +1,8 @@
 #ifndef STONE_SYNTAX_DECLNAME_H
 #define STONE_SYNTAX_DECLNAME_H
 
-#include "stone/Basic/Dumpable.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/OperatorKind.h"
-#include "stone/Basic/Printable.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Type.h"
 
@@ -19,9 +17,8 @@ class SyntaxContext;
 class DeclName;
 class DeclNameTable;
 
-class TemplateDecl;
+class GenericDecl;
 // class TypeSourceInfo
-class UseDecl;
 
 enum class DeclNameKind : UInt8 {
   Basic = 0,
@@ -526,7 +523,7 @@ public:
 // DeclName GetUsingName(CanQualType Ty);
 
 /// Returns the name of a deduction guide for the given template.
-// DeclName GDeductionGuideName(TemplateDecl *TD);
+// DeclName GDeductionGuideName(GenericDecl *TD);
 
 /// Returns the name of a conversion function for the given Type.
 // DeclName GConversionFunctionName(CanQualType Ty);

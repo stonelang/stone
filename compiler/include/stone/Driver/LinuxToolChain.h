@@ -12,7 +12,7 @@ public:
   Tool *BuildLinkTool() override const;
   Tool *BuildStaticLibTool() override const;
   Tool *BuildDynamicLibTool() override const;
-  Tool *GetTool(ModeKind modeType) override const;
+  Tool *GetTool(ActionKind modeType) override const;
 };
 
 */

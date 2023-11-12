@@ -20,7 +20,7 @@
 
 using stone::Driver;
 using stone::Job;
-using stone::ModeKind;
+using stone::ActionKind;
 
 using namespace stone;
 
@@ -52,7 +52,7 @@ Driver::BuildCompilation(ToolChain &toolChain, llvm::opt::InputArgList &ial) {
   }
 
   if (inputs.empty()) {
-    GetLangContext().GetDiagUnit().PrintD(SrcLoc(), diag::err_no_input_files);
+    GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_no_input_files);
     return nullptr;
   }
 
@@ -92,10 +92,10 @@ Driver::BuildTaskQueue(const Compilation &compilation) {
 void Driver::ComputeLinkMode(const llvm::opt::InputArgList &ial) {
 
   switch (GetDriverOptions().GetMode().GetKind()) {
-  case ModeKind::None:
+  case ActionKind::None:
     GetDriverOptions().outputOptions.linkMode = LinkMode::EmitExecutable;
     break;
-  case ModeKind::EmitLibrary: {
+  case ActionKind::EmitLibrary: {
     if (ial.hasArg(opts::Static)) {
       GetDriverOptions().outputOptions.linkMode = LinkMode::EmitStaticLibrary;
       break;

@@ -1,8 +1,11 @@
 #include "stone/Syntax/BuiltinContext.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Syntax/SyntaxAllocation.h"
 
 using namespace stone;
 using namespace stone::syn;
+
+using namespace stone::mem;
 
 BuiltinContext::BuiltinContext(SyntaxContext &sc)
     : sc(sc),

@@ -2,14 +2,13 @@
 #define STONE_PUBLIC_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Error.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Result.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Diag/DiagUnit.h"
+#include "stone/Basic/Status.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
@@ -40,31 +39,152 @@ class TypeCheckerOptions;
 class CodeGenListener;
 class PrimaryFileSpecificPaths;
 class CompilerOptions;
+class InFlightDiagnostic;
+class CompilerInstance;
+class CompilerInvocation;
+class ClangContext;
 
 namespace syn {
 class SyntaxContext;
-class SyntaxFile;
 class ModuleDecl;
+class Decl;
+class Stmt;
+class Expr;
+class Module;
+class Token;
+class SyntaxFile;
 } // namespace syn
 } // namespace stone
 
 namespace stone {
+class CodeCompletionListener {
+public:
+  CodeCompletionListener() = default;
+  virtual ~CodeCompletionListener() = default;
+};
 
+class LexerListener : public CodeCompletionListener {
+public:
+  LexerListener() = default;
+  virtual ~LexerListener() = default;
+
+public:
+  virtual void OnToken(const syn::Token *token) {}
+};
+
+class SyntaxListener : public CodeCompletionListener {
+public:
+  SyntaxListener() = default;
+  virtual ~SyntaxListener() = default;
+
+public:
+  virtual void OnDone() {}
+  virtual void OnError() {}
+
+public:
+  virtual void OnDecl(const syn::Decl *decl, bool isTopLevel = false);
+  virtual void OnStmt(const syn::Stmt *stmt);
+  virtual void OnExpr(const syn::Expr *expr);
+
+public:
+  virtual void OnParseError() {}
+  virtual void OnParseStarted() {}
+  virtual void OnParseSyntaxFile(syn::SyntaxFile *sf) {}
+  virtual void OnParseCompleted() {}
+};
+
+class TypeCheckerListener : public CodeCompletionListener {
+public:
+  TypeCheckerListener() = default;
+  virtual ~TypeCheckerListener() = default;
+
+public:
+  virtual void OnDeclTypeChecked(syn::Decl *decl, bool isTopLvel = false);
+  virtual void OnStmtTypeChecked(syn::Stmt *stmt) {}
+  virtual void OnExprTypeChecked(syn::Expr *expr) {}
+
+public:
+  virtual void OnTypeCheckError();
+  virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnModuleTypeChecked(syn::Module *mod) {}
+
+public:
+};
+
+class CodeGenListener : public CodeCompletionListener {
+public:
+  CodeGenListener() = default;
+  virtual ~CodeGenListener() = default;
+
+public:
+  virtual void OnEmitIRError() {}
+  virtual void OnEmitIRCompleted(llvm::Module *m) {}
+  virtual void OnEmitObjectError() {}
+  virtual void OnEmitObject() {}
+  virtual void OnEmitObjectCompleted() {}
+  virtual void OnEmitBitCodeError() {}
+  virtual void OnEmitBitCode() {}
+  virtual void OnEmitBitCodeCompleted() {}
+  virtual void OnEmitModuleError() {}
+  virtual void OnEmitModule() {}
+  virtual void OnEmitModuleCompleted() {}
+  virtual void OnEmitLibraryError() {}
+  virtual void OnEmitLibrary() {}
+  virtual void OnEmitLibraryCompleted() {}
+};
+
+class CompilerListener final {
+  LexerListener *lexerListener = nullptr;
+  SyntaxListener *syntaxListener = nullptr;
+  TypeCheckerListener *typeCheckerListener = nullptr;
+  CodeGenListener *codeGenListener = nullptr;
+
+public:
+  CompilerListener() = default;
+  virtual ~CompilerListener() = default;
+
+public:
+  void SetLexerListener(LexerListener *listener) { lexerListener = listener; }
+  LexerListener *GetLexerListener() { return lexerListener; }
+
+  void SetSyntaxListener(SyntaxListener *listener) {
+    syntaxListener = listener;
+  }
+  SyntaxListener *GetSyntaxListener() { return syntaxListener; }
+
+  void SetTypeCheckerListener(TypeCheckerListener *listener) {
+    typeCheckerListener = listener;
+  }
+  TypeCheckerListener *GetTypeCheckerListener() { return typeCheckerListener; }
+
+  void SetCodeGenListener(CodeGenListener *listener) {
+    codeGenListener = listener;
+  }
+  CodeGenListener *GetCodeGenListener() { return codeGenListener; }
+
+public:
+  virtual void OnCompileConfigured(CompilerInvocation &invocation) {}
+  virtual void OnCompileStarted(CompilerInstance &instance) {}
+  virtual void OnSyntaxAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnSemanticAnalysisCompleted(CompilerInstance &instance) {}
+  virtual void OnCodeGenCompleted(CompilerInstance &instance) {}
+  virtual void OnCompileCompleted(CompilerInstance &instance) {}
+};
+} // namespace stone
+
+namespace stone {
 class LangContext final {
   FileMgr fm;
   SrcMgr sm;
-  DiagUnit du;
   LangOptions langOpts;
   StatisticEngine se;
   ColorStream cos;
   FileSystemOptions fsOpts;
-
   DiagnosticEngine de;
   DiagnosticOptions diagOpts;
- 
 
 public:
-  LangContext() : fm(fsOpts), du(sm), de(diagOpts, sm), cos(llvm::outs()) {}
+  LangContext() : fm(fsOpts), de(diagOpts, sm), cos(llvm::outs()) {}
   ~LangContext() {}
 
 public:
@@ -79,8 +199,6 @@ public:
   FileSystemOptions &GetFileSystemOptions() { return fsOpts; }
   const FileSystemOptions &GetFileSystemOptions() const { return fsOpts; }
 
-  DiagUnit &GetDiagUnit() { return du; }
-
   DiagnosticEngine &GetDiags() { return de; }
   const DiagnosticEngine &GetDiags() const { return de; }
 
@@ -88,9 +206,38 @@ public:
   const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
 
   bool HasError() { return de.HasError(); }
-  
+
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
+
+public:
+  InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
+    return PrintD(SrcLoc(), diagnostic);
+  }
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic) {
+    return GetDiags().PrintD(loc, diagnostic);
+  }
+
+  InFlightDiagnostic PrintD(DiagID diagID,
+                            llvm::ArrayRef<diag::Argument> args) {
+    return PrintD(SrcLoc(), diagID, args);
+  }
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+                            llvm::ArrayRef<diag::Argument> args) {
+    return GetDiags().PrintD(loc, diagID, args);
+  }
+
+  InFlightDiagnostic PrintD(DiagID diagID) { return PrintD(SrcLoc(), diagID); }
+
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+    return GetDiags().PrintD(loc, diagID);
+  }
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
+         typename detail::PassArgument<ArgTypes>::type... args) {
+    return GetDiags().PrintD(loc, id, std::forward<ArgTypes>(args)...);
+  }
 };
 } // namespace stone
 
@@ -103,35 +250,8 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 } // namespace stone
 
 namespace stone {
-
-class CodeGenContext;
-class CompilerInstance;
-
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
-
-// using ParseSyntaxFileListener =
-//      llvm::function_ref<void(syn::SyntaxFile &syntaxFile, bool *error)>;
-
-// using SemanticConsumer = llvm::function_ref<void(
-//     CompilerInstance &instance, ModuleSyntaxFileUnion moduleSyntaxFileUnion,
-//     bool *error)>;
-
-// using IRCodeGenConsumer = llvm::function_ref<Status(
-//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
-//     *error)>;
-
-// using NativeCodeGenConsumer = llvm::function_ref<void(
-//     CompilerInstance &instance, CodeGenContext &codeGenContext, bool
-//     *error)>;
-
-} // namespace stone
-namespace stone {
-class ClangContext;
-class CompilerInstance;
-
-// bool CompileFrontend(CompilerInstance &instance);
-// bool CompileBackend(CompilerInstance &instance);
 
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing
@@ -143,7 +263,8 @@ bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, CompilerInstance &instance,
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
 void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
-                     SyntaxListener *listener = nullptr);
+                     SyntaxListener *syntaxListener,
+                     LexerListener *lexerListener);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull

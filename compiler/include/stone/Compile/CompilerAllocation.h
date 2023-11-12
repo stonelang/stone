@@ -1,30 +1,22 @@
-#ifndef STONE_SYNTAXCTX_SYNTAXALLOCATION_H
-#define STONE_SYNTAXCTX_SYNTAXALLOCATION_H
-
-#include "stone/Basic/Mem.h"
+#ifndef STONE_COMPILE_COMPILEALLOCATION_H
+#define STONE_COMPILE_COMPILEALLOCATION_H
 
 #include <cassert>
 #include <cstddef>
 
 namespace stone {
-namespace syn {
-class SyntaxContext;
-}
-
-namespace syn {
-void *AllocateInSyntaxContext(size_t bytes, const syn::SyntaxContext &ctx,
-                              mem::AllocationArena arena, unsigned alignment);
-}
-
-namespace syn {
+class CompilerInstance;
+void *AllocateInCompilerInstance(size_t bytes, const CompilerInstance &compiler,
+                                 mem::AllocationArena arena,
+                                 unsigned alignment);
 /// Types inheriting from this class are intended to be allocated in an
-/// \c SyntaxContext allocator; you cannot allocate them by using a normal \c
+/// \c CompilerInstance allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
 /// \c new.
 ///
 /// The template parameter is a type with the desired alignment. It is usually,
 /// but not always, the type that is inheriting \c ASTAllocated.
-template <typename AlignTy> class SyntaxAllocation {
+template <typename AlignTy> class CompilerAllocation {
 public:
   // Make vanilla new/delete illegal.
   void *operator new(size_t bytes) throw() = delete;
@@ -33,10 +25,10 @@ public:
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
   void *
-  operator new(size_t bytes, const syn::SyntaxContext &ctx,
+  operator new(size_t bytes, const CompilerInstance &compiler,
                mem::AllocationArena arena = mem::AllocationArena::Permanent,
                unsigned alignment = alignof(AlignTy)) {
-    return syn::AllocateInSyntaxContext(bytes, ctx, arena, alignment);
+    return stone::AllocateInCompilerInstance(bytes, compiler, arena, alignment);
   }
 
   void *operator new(size_t bytes, void *mem) throw() {
@@ -44,9 +36,6 @@ public:
     return mem;
   }
 };
-
-} // namespace syn
-
 } // namespace stone
 
 #endif

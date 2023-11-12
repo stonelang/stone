@@ -13,6 +13,22 @@
 
 namespace stone {
 namespace mem {
+/// The arena in which a particular allocation object will go.
+enum class AllocationArena {
+  /// The permanent arena, which is tied to the lifetime of
+  /// the object
+  ///
+  /// All global declarations and types need to be allocated into this arena.
+  /// At present, everything that is not a type involving a type variable is
+  /// allocated in this arena.
+  Permanent,
+  /// The constraint solver's temporary arena, which is tied to the
+  /// lifetime of a particular instance of the constraint solver.
+  ///
+  /// Any type involving a type variable is allocated in this arena.
+  Temporary
+};
+
 // FIXME: Use C11 aligned_alloc if available.
 inline void *AlignedAlloc(size_t size, size_t align) {
   // posix_memalign only accepts alignments greater than sizeof(void*).

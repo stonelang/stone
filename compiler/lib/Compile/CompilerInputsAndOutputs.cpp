@@ -5,7 +5,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Public.h"
-#include "stone/Session/Options.h"
+#include "stone/Option/Options.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
@@ -190,7 +190,7 @@ bool CompilerInputsAndOutputs::ShouldTreatAsModuleInterface() const {
 
 bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
                                             bool isNoneRequested) const {
-  stone::Panic("TODO: VerifyInputs");
+  assert(false && "TODO: VerifyInputs");
 
   AssertMustNotBeMoreThanOnePrimaryInput();
   if (!isNoneRequested && !HasInputs()) {

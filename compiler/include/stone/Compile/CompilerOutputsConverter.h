@@ -6,8 +6,8 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticListener.h"
-#include "stone/Session/Mode.h"
-#include "stone/Session/Options.h"
+#include "stone/Option/Mode.h"
+#include "stone/Option/Options.h"
 #include "llvm/Option/ArgList.h"
 
 #include <vector>
@@ -35,7 +35,7 @@ public:
   bool Convert(std::vector<std::string> &mainOutputs,
                std::vector<std::string> &mainOutputsForIndexUnits,
                std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
-               const Mode &mode);
+               const Action &action);
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
@@ -56,7 +56,7 @@ class CompilerOutputFilesComputer {
   const std::vector<std::string> OutputFileArguments;
   const std::string OutputDirectoryArgument;
   const std::string FirstInput;
-  const Mode &mode;
+  const Action &action;
   const llvm::opt::Arg *const moduleNameArg;
   const StringRef Suffix;
   const bool HasTextualOutput;
@@ -66,7 +66,7 @@ class CompilerOutputFilesComputer {
                               const CompilerInputsAndOutputs &inputsAndOutputs,
                               std::vector<std::string> outputFileArguments,
                               StringRef outputDirectoryArgument,
-                              StringRef firstInput, const Mode &mode,
+                              StringRef firstInput, const Action &action,
                               const llvm::opt::Arg *moduleNameArg,
                               StringRef suffix, bool hasTextualOutput,
                               CompilerOutputOptInfo optInfo);
@@ -75,7 +75,7 @@ public:
   static Optional<CompilerOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
          const CompilerInputsAndOutputs &inputsAndOutputs,
-         CompilerOutputOptInfo optInfo, const Mode &mode);
+         CompilerOutputOptInfo optInfo, const Action &action);
 
   /// \return the output filenames on the command line or in the output
   /// filelist. If there
@@ -120,14 +120,14 @@ class SupplementaryOutputPathsComputer {
   const CompilerInputsAndOutputs &inputsAndOutputs;
   ArrayRef<std::string> OutputFiles;
   StringRef moduleName;
-  const Mode &mode;
+  const Action &action;
 
 public:
   SupplementaryOutputPathsComputer(
       const llvm::opt::ArgList &args, DiagnosticEngine &de,
       const CompilerInputsAndOutputs &inputsAndOutputs,
       ArrayRef<std::string> outputFiles, StringRef moduleName,
-      const Mode &mode);
+      const Action &action);
 
   Optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
 

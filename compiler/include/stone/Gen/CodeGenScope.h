@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_CODEGENSCOPE_H
 #define STONE_GEN_CODEGENSCOPE_H
 
-#include "stone/Basic/Error.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Status.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"

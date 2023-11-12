@@ -233,8 +233,7 @@ public:
   void Deallocate(void *Ptr) const {}
 
 public:
-
-   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return lc.GetDiags().PrintD(
         loc, SyntaxDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
@@ -249,7 +248,6 @@ public:
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
     return lc.GetDiags().PrintD(loc, SyntaxDiagnostic(id, std::move(args)...));
   }
-
 };
 } // namespace syn
 } // namespace stone

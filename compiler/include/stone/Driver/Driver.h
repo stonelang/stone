@@ -11,7 +11,7 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Phase.h"
 #include "stone/Driver/ToolChain.h"
-#include "stone/Session/Session.h"
+#include "stone/Option/Session.h"
 
 namespace stone {
 

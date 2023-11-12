@@ -1,4 +1,4 @@
-#include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"
@@ -7,10 +7,12 @@
 using namespace stone;
 using namespace stone::syn;
 
-void stone::ParseSyntaxFile(syn::SyntaxFile &sf, syn::SyntaxContext &sc,
-                            SyntaxListener *listener) {
+void stone::ParseSyntaxFile(syn::SyntaxFile &syntaxFile,
+                            syn::SyntaxContext &syntaxContext,
+                            SyntaxListener *syntaxListener,
+                            LexerListener *lexerListener) {
 
-  Parser parser(sf, sc, listener);
+  Parser parser(syntaxFile, syntaxContext, syntaxListener, lexerListener);
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 
@@ -21,6 +23,6 @@ void stone::ParseSyntaxFile(syn::SyntaxFile &sf, syn::SyntaxContext &sc,
     if (result.IsNull()) {
       return;
     }
-    sf.AddTopLevelDecl(result.Get());
+    syntaxFile.AddTopLevelDecl(result.Get());
   }
 }

@@ -1,10 +1,11 @@
 #include "stone/Syntax/Type.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Syntax/TypeFactory.h"
 #include "stone/Syntax/TypeLoc.h"
-
 #include "stone/Syntax/TypeQualifier.h"
 
 using namespace stone;
+using namespace stone::mem;
 using namespace stone::syn;
 
 // == TypeBase ==//

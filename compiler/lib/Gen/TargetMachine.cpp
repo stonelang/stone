@@ -1,8 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/TargetOptions.h"
-#include "stone/Syntax/ClangContext.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/MC/SubtargetFeature.h"
@@ -14,7 +14,7 @@ using namespace stone;
 
 // TODO: This is something you can get from clang
 
-static Error InitLLVMTargetOptions(CodeGenContext &cgc,
+static Status InitLLVMTargetOptions(CodeGenContext &cgc,
                                    llvm::TargetOptions &llvmTargetOpts) {
 
   switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
@@ -25,7 +25,7 @@ static Error InitLLVMTargetOptions(CodeGenContext &cgc,
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
     break;
   }
-  return Error();
+  return Status();
 }
 
 static Optional<llvm::CodeModel::Model>

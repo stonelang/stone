@@ -1,4 +1,5 @@
 #include "stone/Compile/CompilerInstance.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Sem/ImportResolution.h"
 
@@ -7,20 +8,22 @@
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 
 using namespace stone;
+using namespace stone::syn;
 
-CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
-    : invocation(invocation),
-      sc(new syn::SyntaxContext(invocation.GetLangContext(),
-                                invocation.GetSearchPathOptions(),
-                                invocation.GetClangContext())),
-      stats(new CompilerInstanceStats(*this)),
-      ms(new ModuleSystem(invocation, GetSyntaxContext())) {
+CompilerInstance::CompilerInstance() = default;
+CompilerInstance::~CompilerInstance() = default;
 
-  invocation.GetLangContext().GetStatEngine().Register(stats.get());
+void CompilerInstance::Initialize(const CompilerInvocation &inputInvocation) {
+  invocation = inputInvocation;
 
-  // CreateCodeGenContext();
+  syntaxContext.reset(new SyntaxContext(invocation.GetLangContext(),
+                                        invocation.GetSearchPathOptions(),
+                                        invocation.GetClangContext()));
+
+  compilerStats.reset(new CompilerInstanceStats(*this));
+
+  invocation.GetLangContext().GetStats().Register(compilerStats);
 }
-CompilerInstance::~CompilerInstance() {}
 
 std::unique_ptr<llvm::raw_fd_ostream>
 CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
@@ -29,9 +32,9 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
-    lc.GetDiagUnit().PrintD(SrcLoc(), diag::err_opening_output,
-                            diag::LLVMStr(outputFilename),
-                            diag::LLVMStr(errCode.message()));
+    lc.GetDiags().PrintD(SrcLoc(), diag::err_opening_output,
+                         diag::LLVMStr(outputFilename),
+                         diag::LLVMStr(errCode.message()));
     return nullptr;
   }
   return os;
@@ -79,37 +82,70 @@ void CompilerInstance::ResolveImports() {
   }
 }
 
-void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
+void CompilerInstance::ForEachSyntaxFileToTypeCheck(
+    EachSyntaxFileToTypeCheckCallback notify) {
 
-  switch (invocation.GetTypeCheckMode()) {
-  case TypeCheckMode::WholeModule: {
+  if (invocation.GetTypeCheckMode() == TypeCheckMode::WholeModule) {
     for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
       auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
-      if (syntaxFile) {
-        client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-               invocation.GetListener());
+      if (!syntaxFile) {
+        continue;
+      }
+      if (notify(*syntaxFile, invocation.GetTypeCheckerOptions(),
+                 invocation.GetListener().IsError())) {
+        return Status::Error();
       }
     }
-    break;
-  }
-  case TypeCheckMode::EachFile: {
+  } else {
     for (auto *syntaxFile :
          GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      client(*syntaxFile, invocation.GetTypeCheckerOptions(),
-             invocation.GetListener());
+      if (notify(*syntaxFile, invocation.GetTypeCheckerOptions(),
+                 invocation.GetListener())
+              .IsError()) {
+        return Status::Error();
+      }
     }
-    break;
   }
-  default: {
-  }
-  }
-}
 
-// CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
+  Status CompilerInstance::ForEachSyntaxFile(
+      std::function<Status(SourceFile &)> notify) {
+    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+      auto *syntaxFile = dyn_cast<SourceFile>(moduleFile);
+      if (!syntaxFile) {
+        continue;
+      }
+      if (notify(*syntaxFile).IsError()) {
+        return Status::Error();
+      }
+    }
+    return Status();
+  }
 
-void CompilerInstanceStats::Print(ColorStream &stream) {
-  // if (sc.GetCompilerOpts().printStats) {
-  //   // GetLangContext().Out() << GetName() << '\n';
-  //   return;
-  // }
-}
+  void *stone::AllocateInCompilerInstance(
+      size_t bytes, const CompilerInstance &compiler,
+      mem::AllocationArena arena, unsigned alignment) {
+    return nullptr;
+  }
+
+  // CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
+
+  void CompilerPrettyStackTrace::print(llvm::raw_ostream & os) const override {
+
+    //   auto effective =
+    //   invocation.GetCompilerOptions().effectiveCompilerVersion; if (effective
+    //   != version::Version::GetCurrentCompilerVersion()) {
+    //     os << "Compiling with effective version " << effective;
+    //   } else {
+    //     os << "Compiling with the current invocationuage version";
+    //   }
+    //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
+    //     os << " while allowing modules with compiler errors";
+    //   }
+    //   os << "\n";
+  }
+  void CompilerInstanceStats::Print(ColorStream & stream) {
+    // if (sc.GetCompilerOpts().printStats) {
+    //   // GetLangContext().Out() << GetName() << '\n';
+    //   return;
+    // }
+  }

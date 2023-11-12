@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_TYPES_H
 #define STONE_SYNTAX_TYPES_H
 
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/Foreign.h"
@@ -332,8 +333,9 @@ public:
   VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 
 public:
-  static VoidType *Create(const SyntaxContext &sc,
-                          AllocationArena arena = AllocationArena::Permanent);
+  static VoidType *
+  Create(const SyntaxContext &sc,
+         mem::AllocationArena arena = mem::AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {

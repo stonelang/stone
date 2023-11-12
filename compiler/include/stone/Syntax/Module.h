@@ -4,13 +4,13 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
-#include "stone/Basic/Printable.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxWalker.h"
+
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
@@ -54,13 +54,18 @@ enum class SyntaxFileKind : uint8_t {
   Main
 };
 
-enum class SyntaxFileStage : uint8_t {
-  None = 0,
-  ImportsResolved,
-  TypeChecked,
+enum class SyntaxFileStage {
+  /// Parsing is underway.
+  Parsing = 0,
+  /// Parsing has completed.
+  Parsed,
+  /// Name binding has completed.
+  NameBound,
+  /// Type checking has completed.
+  TypeChecked
 };
 
-class SyntaxFile final : public ModuleFile /*, public Printable*/ {
+class SyntaxFile final : public ModuleFile {
 private:
   friend SyntaxContext;
   // llvm::NullablePtr<Scope> scope = nullptr;
@@ -119,6 +124,7 @@ public:
     /// Whether to suppress warnings when parsing. This is set for secondary
     /// files, as they get parsed multiple times.
     SuppressWarnings = 1 << 5,
+
   };
   using ParsingOptions = OptionSet<ParsingFlags>;
 
@@ -127,7 +133,7 @@ public:
 
 public:
   SyntaxFileKind kind = SyntaxFileKind::None;
-  SyntaxFileStage stage = SyntaxFileStage::None;
+  SyntaxFileStage stage = SyntaxFileStage::Parsing;
 
   std::vector<Decl *> Decls;
 
@@ -157,8 +163,10 @@ public:
   /// Otherwise, return an empty string.
   llvm::StringRef GetFilename() const;
 
+  /// Retrieve the scope that describes this source file.
+  syn::Scope &GetScope();
+
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
-  // override;
 
   // void Dump(raw_ostream &os, bool parseIfNeeded = false) const;
 

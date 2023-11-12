@@ -3,7 +3,6 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
-#include "stone/Basic/Printable.h"
 #include "stone/Basic/Version.h"
 #include "stone/Diag/Diagnostic.h"
 #include "stone/Diag/DiagnosticFormatter.h"
@@ -31,6 +30,9 @@ class SavedDiagnostic;
 class DiagnosticState;
 class Tokenable;
 
+class PrintingPolicy {
+public:
+};
 class DiagnosticState {
   /// Whether we should continue to emit diagnostics, even after a
   /// fatal error
@@ -156,7 +158,7 @@ public:
 
 public:
   CodeFixer &WithFix() { return fixer; }
-  DiagnosticEngine &GetDiagUnit() { return *de; }
+  DiagnosticEngine &GetDiags() { return *de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.
   void Flush();
@@ -190,7 +192,7 @@ public:
 /// as errors" and passes them off to the DiagnosticConsumer for reporting to
 /// the user. Diagnostics is tied to one translation unit and one
 /// SrcMgr.
-class DiagnosticEngine final : public Printable {
+class DiagnosticEngine final {
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
   friend struct diag::Argument;
@@ -275,14 +277,13 @@ public:
 public:
   bool HasError();
   SrcMgr &GetSrcMgr() { return sm; }
-
-  void Print(ColorStream &os, const PrintingPolicy *policy) const override;
-
   /// Specify a limit for the number of errors we should
   /// emit before giving up.
   ///
   /// Zero disables the limit.
   void SetErrorLimit(unsigned limit) { diagOpts.errorLimit = limit; }
+
+  void Print(ColorStream &os, const PrintingPolicy *policy) const;
 
 public:
   //==State management==//
@@ -339,7 +340,7 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
- 
+
 public:
   /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
   llvm::Optional<DiagnosticMessage>
@@ -395,14 +396,13 @@ public:
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(
-        loc,Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
-    return PrintD(
-        SrcLoc(),Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(SrcLoc(),
+                  Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
 
   template <typename... ArgTypes>

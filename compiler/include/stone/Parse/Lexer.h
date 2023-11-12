@@ -74,7 +74,7 @@ class Lexer final : public Tokenable {
   const SrcMgr &sm;
   stone::DiagnosticEngine *de;
   StatisticEngine *se;
-  SyntaxListener *listener;
+  LexerListener *listener;
   LexingState state;
 
   std::unique_ptr<LexerStats> stats;
@@ -145,8 +145,7 @@ class Lexer final : public Tokenable {
   Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
         stone::DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention,
-        SyntaxListener *listener = nullptr);
+        TriviaRetentionMode TriviaRetention, LexerListener *listener = nullptr);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -177,17 +176,17 @@ public:
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia,
-      SyntaxListener *listener = nullptr);
+      LexerListener *listener = nullptr);
 
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatisticEngine *se, SyntaxListener *listener = nullptr);
+        StatisticEngine *se, LexerListener *listener = nullptr);
 
   /// Create a lexer that scans a subrange of the source buffer.
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
         StatisticEngine *se, LexerMode LexMode, HashbangMode HashbangAllowed,
         CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention, unsigned Offset,
-        unsigned EndOffset, SyntaxListener *listener = nullptr);
+        unsigned EndOffset, LexerListener *listener = nullptr);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.
@@ -522,8 +521,8 @@ private:
   template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-    return PrintD(loc, Diagnostic(Diagnostic(
-                           DiagID, std::forward<ArgTypes>(Args)...)));
+    return PrintD(
+        loc, Diagnostic(Diagnostic(DiagID, std::forward<ArgTypes>(Args)...)));
   }
 
   void formToken(tok Kind, const char *TokStart);

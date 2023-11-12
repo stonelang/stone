@@ -1,7 +1,6 @@
 #ifndef STONE_COMPILE_MODULESYSTEM_H
 #define STONE_COMPILE_MODULESYSTEM_H
 
-#include "stone/Basic/Error.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
@@ -27,7 +26,7 @@ class CompilerInvocation;
 class ModuleSystem final {
   // TODO: We need built-in information
   CompilerInvocation &invocation;
-  syn::SyntaxContext &sc;
+  syn::SyntaxContext &syntaxContext;
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
 
@@ -37,7 +36,8 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(CompilerInvocation &invocation, syn::SyntaxContext &sc);
+  ModuleSystem(CompilerInvocation &invocation,
+               syn::SyntaxContext &syntaxContext);
   ~ModuleSystem();
 
 public:
@@ -61,7 +61,7 @@ public:
   GetSyntaxFileParsingOptions(bool forPrimary) const;
 
 public:
-  static Error IsValidModuleName(const llvm::StringRef moduleName);
+  static Status IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

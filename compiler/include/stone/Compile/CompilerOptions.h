@@ -8,18 +8,34 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Session/Options.h"
-#include "stone/Session/SessionOptions.h"
+#include "stone/Option/Options.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
 
-class CompilerOptions final : public SessionOptions {
+class CompilerAction final : public Action {
+
+  friend CompilerInvocation;
+
+public:
+  CompilerAction(const CompilerAction &) = delete;
+  void operator=(const CompilerAction &) = delete;
+  CompilerAction(CompilerAction &&) = delete;
+  void operator=(CompilerAction &&) = delete;
+
+public:
+  CompilerAction();
+};
+
+class CompilerOptions final {
 
   friend class CompilerInvocation;
   friend class CompilerOptionsConverter;
   friend class CompilerInputsConverter;
 
+  CompilerAction action;
+
+public:
   /// A list of arbitrary modules to import and make implicitly visible.
   Vector<Pair<String, bool /*testable*/>> implicitModuleNames;
 
@@ -43,6 +59,14 @@ class CompilerOptions final : public SessionOptions {
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool DowngradeInterfaceVerificationError = false;
 
+  /// The path the executing program
+  llvm::StringRef ExecutingProgramPath;
+
+  /// The name of the executing program
+  llvm::String ExecutingProgramName;
+
+  llvm::SmallString<128> workDirectory;
+
 public:
   enum class LibOutputMode { Dynamic, Static };
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;
@@ -55,16 +79,14 @@ public:
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
-  CompilerOptions(std::unique_ptr<Mode> mode)
-      : SessionOptions(std::move(mode)) {
-    GetInputsAndOutputs().ClearInputs();
-  }
+  CompilerOptions() { GetInputsAndOutputs().ClearInputs(); }
 
 public:
   CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
+  CompilerAction &GetAction() { return action; }
 };
 
 } // namespace stone

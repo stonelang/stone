@@ -20,7 +20,7 @@
 using stone::Compilation;
 using stone::CompilationStats;
 using stone::Job;
-using stone::ModeKind;
+using stone::ActionKind;
 
 Compilation::Compilation(Driver &driver, ToolChain &tc,
                          std::unique_ptr<llvm::opt::DerivedArgList> dal)

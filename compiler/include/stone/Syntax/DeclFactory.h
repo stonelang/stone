@@ -19,7 +19,6 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class Syntax;
 class SyntaxFile;
 struct DeclNameContext;
 

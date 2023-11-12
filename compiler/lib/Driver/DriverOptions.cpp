@@ -1,5 +1,5 @@
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Basic/Error.h"
+#include "stone/Basic/Status.h"
 #include "stone/Driver/Driver.h"
 
 #include "llvm/Option/Arg.h"

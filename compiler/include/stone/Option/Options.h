@@ -3,7 +3,9 @@
 
 #include <memory>
 
-#include "stone/Session/Mode.h"
+#include "stone/Basic/Status.h"
+#include "stone/Basic/Color.h"
+#include "stone/Option/Action.h"
 
 namespace llvm {
 namespace opt {
@@ -36,14 +38,21 @@ enum OptID : unsigned {
 #define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
                HELPTEXT, METAVAR, VALUES)                                      \
   ID,
-#include "stone/Session/StoneOptions.inc"
+#include "stone/Option/Options.inc"
   LAST
 #undef OPTION
 };
 
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
-} // namespace opts
+ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
+llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,
+                                        const llvm::opt::InputArgList &args);
 
+const unsigned GetArgID(llvm::opt::Arg *arg);
+llvm::StringRef GetArgName(llvm::opt::Arg *arg);
+void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
+
+} // namespace opts
 } // namespace stone
 
 #endif

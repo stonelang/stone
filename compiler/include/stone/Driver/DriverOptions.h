@@ -3,15 +3,30 @@
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Driver/OutputOptions.h"
-#include "stone/Session/SessionOptions.h"
+#include "stone/Option/SessionOptions.h"
 
 namespace stone {
-
-// TODO: a lot of what is in DriverOutputProfile can go here
-class DriverOptions final : public SessionOptions {
-  friend class Driver;
+class Driver;
+class DriverAction final : public Action {
+  friend Driver;
 
 public:
+  DriverAction(const DriverAction &) = delete;
+  void operator=(const DriverAction &) = delete;
+  DriverAction(DriverAction &&) = delete;
+  void operator=(DriverAction &&) = delete;
+
+public:
+  DriverAction();
+};
+// TODO: a lot of what is in DriverOutputProfile can go here
+class DriverOptions final {
+  friend Driver;
+
+public:
+  /// The input action entered. e.g., --parse ...
+  DriverAction action;
+
   /// Print the jobs in the TaskQueue
   bool printJobs = false;
 
@@ -38,8 +53,17 @@ public:
 
   OutputOptions outputOptions;
 
+  /// a SmallVector of ctx files
+  file::Files inputFiles;
+
+  /// The file input type
+  file::Type inputFileType = file::Type::None;
+
+  /// The output file type which should be used for the sc
+  file::Type outputFileType = file::Type::None;
+
 public:
-  DriverOptions(std::unique_ptr<Mode> mode) : SessionOptions(std::move(mode)) {}
+  DriverOptions();
 };
 } // namespace stone
 

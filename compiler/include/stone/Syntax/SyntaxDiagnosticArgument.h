@@ -82,7 +82,6 @@ public:
 public:
 };
 
-
 class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {
 public:
   SyntaxDiagnosticFormatter();

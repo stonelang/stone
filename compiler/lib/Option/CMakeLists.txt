@@ -9,16 +9,14 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_option_sources
-	Mode.cpp
-	Session.cpp	
-	SessionOptions.cpp
+	Action.cpp
 	Options.cpp
 
 	LINK_LIBS 
 	StoneBasic
 	StoneDiag
 )
-add_stone_library(StoneSession
+add_stone_library(StoneOption
 	${stone_option_sources}
 
 	DEPENDS

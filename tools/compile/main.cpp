@@ -11,7 +11,6 @@
 #include "llvm/Support/StringSaver.h"
 #include "llvm/Support/TargetSelect.h"
 
-
 using namespace stone;
 
 int main(int argc, const char **args) {

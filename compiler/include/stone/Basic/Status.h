@@ -65,5 +65,19 @@ public:
   }
 };
 
+template <typename T> class Result final {
+  T any;
+  Status status;
+
+public:
+  Result() : status(Status::Error()) {}
+  Result(T any) : any(any) {}
+
+public:
+  Status &GetStatus() { return status; }
+  T &GetRef() const { return *any; }
+  template <typename A> A *GetAs() { return static_cast<A *>(any.get()); }
+};
+
 } // namespace stone
 #endif

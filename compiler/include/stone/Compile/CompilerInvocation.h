@@ -6,13 +6,13 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/CodeCompletionListener.h"
+#include "stone/Public.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
-#include "stone/Session/Mode.h"
-#include "stone/Session/Session.h"
+#include "stone/Option/Mode.h"
+#include "stone/Option/Session.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/SyntaxOptions.h"
@@ -55,13 +55,11 @@ struct ModuleBuffers {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-class CompilerInvocation final : public Session {
+using MemoryBuffers =
+    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
+class CompilerInvocation final {
 
-  CompilerListener *listener = nullptr;
-  llvm::StringRef programName;
-  llvm::StringRef programPath;
-
-  std::unique_ptr<CompilerOptions> compilerOpts;
+  CompilerOptions compilerOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -77,9 +75,6 @@ class CompilerInvocation final : public Session {
   ModuleOptions moduleOpts;
 
   SyntaxOptions syntaxOpts;
-
-  /// The main executable path of the running program
-  std::string mainExecutablePath;
 
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> sourceBufferIDs;
@@ -97,15 +92,17 @@ class CompilerInvocation final : public Session {
   std::unique_ptr<ClangContext> clangContext;
 
 public:
-  CompilerInvocation(llvm::StringRef programName, llvm::StringRef programPath,
-                     CompilerListener *listener = nullptr);
+  CompilerInvocation();
   ~CompilerInvocation();
+
+public:
+  Status ParseOptions(llvm::opt::InputArgList &args);
 
 public:
   // llvm::ArrayRef<CompilerUnit *> BuildSources(const file::Files &inputs);
   // CompilerUnit *BuildSource(const file::File &input);
 
-  Error CreateSourceBuffers();
+  Status CreateSourceBuffers();
 
   // TODO: You may not need this anymore
   unsigned CreateSourceBuffer(const CompilerInputFile &input);
@@ -123,8 +120,6 @@ public:
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
 
-  stone::Error ComputeOptions(llvm::opt::InputArgList &args) override;
-
   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
   void Finish() override;
@@ -139,10 +134,8 @@ public:
 
   ClangContext &GetClangContext() { return *clangContext; }
 
-  CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
-  const CompilerOptions &GetCompilerOptions() const {
-    return *compilerOpts.get();
-  }
+  CompilerOptions GetCompilerOptions() { return compilerOpts; }
+  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
@@ -159,7 +152,9 @@ public:
   }
 
   LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
-  const LangOptions &GetLangOptions() const { return GetCompilerOptions().langOpts; }
+  const LangOptions &GetLangOptions() const {
+    return GetCompilerOptions().langOpts;
+  }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
@@ -174,10 +169,7 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  CompilerListener *GetListener() { return listener; }
-  void SetListener(CompilerListener *l) { listener = l; }
-
-  DiagUnit &GetDiagUnit() { GetLangContext().GetDiagUnit(); }
+  DiagUnit &GetDiags() { GetLangContext().GetDiags(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
@@ -185,12 +177,28 @@ public:
                                          const bool shouldRecover,
                                          bool &failed);
 
-  llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
+  llvm::BumpPtrAllocator &GetBumpAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
+
+  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
+
+private:
+  Status ParseCompilerAction(llvm::opt::InputArgList &args);
+  Status ParseCompilerOptions(llvm::opt::InputArgList &args,
+                              MemoryBuffers *buffers);
+  Status ParseLangOptions(llvm::opt::InputArgList &args);
+  Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
+  Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
+  Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
+  Status ParseTargetOptions(llvm::opt::InputArgList &args);
+  llvm::StringRef ParseWorkDirectory(llvm::opt::InputArgList &args);
+
+public:
+  void PrintHelp();
 };
 
 } // namespace stone

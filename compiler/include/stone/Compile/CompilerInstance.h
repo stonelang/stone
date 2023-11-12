@@ -8,8 +8,9 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
+
 class CodeGenContext;
-class IRCodeGenResult;
+class CompilerInstance;
 
 class CompilerInstanceStats final : public Stats {
   const CompilerInstance &compiler;
@@ -20,34 +21,25 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
-
-using ParsingCompletedCallback = llvm::function_ref<Status(syn::SyntaxFile &)>;
-
-using TypeCheckingCompletedCallback =
-    llvm::function_ref<Status(CompilerInstance &)>;
-
-using IRCodeGenCompletedCallback =
-    llvm::function_ref<Status(CompilerInstance &compiler, CodeGenContext &cgc)>;
-
-using BackendCodeGenCompletedCallback =
-    llvm::function_ref<void(CompilerInstance &)>;
-
-using EachSyntaxFileCallback = llvm::function_ref<void(
+using EachSyntaxFileToTypeCheckCallback = std::function<Status(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
-// using CompileWithGenIRCallback = llvm::function_ref<void(
-//     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
-//     &result)>;
+/// A PrettyStackTraceEntry to print compiling information
+class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
+  const CompilerInvocation &invocation;
+
+public:
+  CompilerPrettyStackTrace(const CompilerInvocation &invocation)
+      : invocation(invocation) {}
+  void print(llvm::raw_ostream &os) const override;
+};
 
 class CompilerInstance final {
-  Safe<CompilerInstanceStats> stats;
 
   CompilerInvocation &invocation;
-
-  Safe<syn::SyntaxContext> sc;
-  Safe<ModuleSystem> ms;
+  std::unique_ptr<CompilerInstanceStats> compilerStats;
+  std::unique_ptr<ModuleSystem> moduleSystem;
+  std::unique_ptr<syn::SyntaxContext> syntaxContext;
 
   // /// Contains buffer IDs for input source code files.
   // std::vector<unsigned> inputSourceBufferIDs;
@@ -68,11 +60,12 @@ public:
   CompilerInstance(CompilerInstance &&) = delete;
   void operator=(CompilerInstance &&) = delete;
 
-  CompilerInstance(CompilerInvocation &invocation);
+  CompilerInstance();
   ~CompilerInstance();
 
 public:
-  void Finish();
+  void Initialize(const CompilerInvocation &invocation);
+  void Finalize();
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *sc.get(); }
@@ -87,13 +80,29 @@ public:
   bool CanCodeGen() {
     return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
   }
+
+  bool IsActionPostTypeChecking() {
+    switch (GetAction().GetKind()) {
+    case ActionKind::EmitModule:
+    case ActionKind::MergeModules:
+    case ActionKind::EmitAssembly:
+    case ActionKind::EmitIRAfter:
+    case ActionKind::EmitIRBefore:
+    case ActionKind::EmitBC:
+    case ActionKind::EmitObject:
+    case ActionKind::DumpTypeInfo:
+      return true;
+    default:
+      return false;
+    }
+  }
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
 public:
   /// Perform code analysis and code generation
   Status Compile();
-  
+
   // Status CompileFrontend();
   // Status CompileBackend();
 
@@ -111,7 +120,9 @@ private:
   Status CompileWithGenNative(CodeGenContext &cgc);
 
 public:
-  void ForEachSyntaxFile(EachSyntaxFileCallback fn);
+  Status ForEachSyntaxFile(EachSyntaxFileCallback fn);
+  Status ForEachSyntaxFileToTypeCheck(EachSyntaxFileToTypeCheckCallback notify);
+
   void ResolveImports();
 
 public:
@@ -122,9 +133,11 @@ public:
     msf.dyn_cast<syn::SyntaxFile *>();
   }
 
-  Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
-  const Mode &GetMode() const {
-    return invocation.GetCompilerOptions().GetMode();
+  CompilerAction &GetAction() {
+    return invocation.GetCompilerOptions().GetAction();
+  }
+  const CompilerAction &GetAction() const {
+    return return invocation.GetCompilerOptions().GetAction();
   }
 
 public:
@@ -174,7 +187,11 @@ public:
   GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
 
 public:
-  void PrintHelp(const llvm::opt::OptTable &opts);
+  void PrintHelp(ColorStream &out, const llvm::opt::OptTable &opts);
+  // void PrintVersion();
+  // void PrintTimers();
+  // void PrintDiagnostics();
+  // void PrintStatistics();
 };
 
 } // namespace stone

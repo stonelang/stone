@@ -7,8 +7,8 @@ using namespace stone;
 using namespace stone::syn;
 
 ModuleSystem::ModuleSystem(CompilerInvocation &invocation,
-                           syn::SyntaxContext &sc)
-    : invocation(invocation), sc(sc) {}
+                           syn::SyntaxContext &syntaxContext)
+    : invocation(invocation), syntaxContext(syntaxContext) {}
 
 ModuleSystem::~ModuleSystem() {}
 
@@ -19,12 +19,13 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 
     // TODO: Check to make sure that we have the correct Identifier
     Identifier moduleIdentifier =
-        sc.GetIdentifier(invocation.GetModuleOptions().moduleName);
+        syntaxContext.GetIdentifier(invocation.GetModuleOptions().moduleName);
 
-    mainModule = DeclFactory::MakeModuleDecl(moduleIdentifier, sc, true);
+    mainModule =
+        DeclFactory::MakeModuleDecl(moduleIdentifier, syntaxContext, true);
 
     // Register the main module with the AST context.
-    sc.AddLoadedModule(mainModule);
+    syntaxContext.AddLoadedModule(mainModule);
 
     // Create and add the module's files.
     llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
@@ -98,7 +99,8 @@ syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
   auto isPrimary = bufferID && invocation.IsPrimarySourceID(bufferID);
   auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
 
-  auto syntaxFile = SyntaxFile::Make(syntaxFileKind, bufferID, *mod, sc);
+  auto syntaxFile =
+      SyntaxFile::Make(syntaxFileKind, bufferID, *mod, syntaxContext);
 
   // if (isMainBuffer)
   //   inputFile->SyntaxParsingCache =
@@ -113,7 +115,7 @@ syn::SyntaxFile::ParsingOptions
 ModuleSystem::GetSyntaxFileParsingOptions(bool forPrimary) const {
 
   auto parsingOpts = SyntaxFile::GetDefaultParsingOptions(
-      sc.GetLangContext().GetLangOptions());
+      syntaxContext.GetLangContext().GetLangOptions());
   return parsingOpts;
 }
 
@@ -122,19 +124,23 @@ void ModuleSystem::SetMainModule(ModuleDecl *mod) {
   // TODO: This defaults to true for now
   assert(mod->IsMainModule());
   mainModule = mod;
-  sc.AddLoadedModule(mod);
+  syntaxContext.AddLoadedModule(mod);
 }
 
-Error ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
+Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
 
-  llvm::SmallVector<llvm::StringRef, 4> results;
-  moduleName.split(results, ".");
-  for (auto identifier : results) {
-    if (!Lexer::isIdentifier(identifier)) {
-      return stone::Error(true);
-    }
+  // llvm::SmallVector<llvm::StringRef, 4> results;
+  // moduleName.split(results, ".");
+  // for (auto identifier : results) {
+  //   if (!Lexer::isIdentifier(identifier)) {
+  //     return stone::Error(true);
+  //   }
+  // }
+  // return Error();
+  if (!Lexer::isIdentifier(moduleName)) {
+    return Status::Error();
   }
-  return Error();
+  return Status();
 }
 
 bool stone::EmitImportedModules(syn::SyntaxContext &context,

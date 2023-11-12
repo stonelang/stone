@@ -11,12 +11,13 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::mem;
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
+Parser::Parser(SyntaxFile &sf, SyntaxContext &sc,
+               SyntaxListener *syntaxListener, LexerListener *lexerListener)
     : Parser(sf, sc,
-             Safe<Lexer>(
-                 new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                           &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
-                           &sc.GetLangContext().GetStatEngine())),
+             Safe<Lexer>(new Lexer(
+                 sf.GetSrcID(), sc.GetSrcMgr(),
+                 &sc.GetLangContext().GetDiags(),
+                 &sc.GetLangContext().GetStatEngine(), lexerListener)),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
@@ -41,8 +42,10 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
   auto loc = curTok.GetLoc();
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
-  if ((notification == ParsingNotification::TokenConsumed) && listener) {
-    listener->OnToken(&curTok);
+  if (notification == ParsingNotification::TokenConsumed) {
+    if(lexerListener){
+      lexerListener->OnToken(&curTok);
+    }
   }
   Lex(curTok, leadingTrivia, trailingTrivia);
   prevTokLoc = loc;
@@ -182,7 +185,7 @@ Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
+  return GetLangContext().GetDiags().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
