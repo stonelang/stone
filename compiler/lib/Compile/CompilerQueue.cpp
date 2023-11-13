@@ -13,7 +13,7 @@ PrintHelpTask *PrintHelpTask::Create(const Compiler &compiler) {
 }
 
 void CompilerQueue::RunTasks() {
-	for(auto task : runQueue){
-		task->Execute(GetCompiler());
-	}
+  for (auto task : runQueue) {
+    task->Execute(GetCompiler());
+  }
 }

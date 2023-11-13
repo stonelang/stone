@@ -20,7 +20,8 @@ void TextDiagnosticConsumer::Consume(const DiagnosticMessage &diagEvent) {
   GetEmitter().EmitDiagnostic(diagEvent);
 }
 
-void TextDiagnosticConsumer::Consume(const TextDiagnosticEmitter& emitter, const DiagnosticMessage &diagEvent) {
+void TextDiagnosticConsumer::Consume(const TextDiagnosticEmitter &emitter,
+                                     const DiagnosticMessage &diagEvent) {
 
   // DiagnosticConsumer::Listen(diagEvent);
 

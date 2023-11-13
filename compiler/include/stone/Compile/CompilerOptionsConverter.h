@@ -2,8 +2,8 @@
 #define STONE_COMPILE_LANGOPTIONSBUILDER_H
 
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticConsumer.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Option/Options.h"
 #include "stone/Public.h"
 #include "llvm/Option/ArgList.h"

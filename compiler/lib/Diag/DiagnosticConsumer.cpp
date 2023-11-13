@@ -13,7 +13,8 @@ void DiagnosticConsumer::Consume(const DiagnosticMessage &diagnostic) {
   // TODO: Diag stuff there like warnnings and errors
 }
 
-void DiagnosticConsumer::Consume(const DiagnosticEmitter &emitter, const DiagnosticMessage &diagnostic) {
+void DiagnosticConsumer::Consume(const DiagnosticEmitter &emitter,
+                                 const DiagnosticMessage &diagnostic) {
   // TODO: Diag stuff there like warnnings and errors
 }
 /// Callback to inform the diagnostic client that processing of all

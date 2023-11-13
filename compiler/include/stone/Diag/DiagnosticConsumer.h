@@ -48,8 +48,9 @@ public:
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
   virtual void Consume(const DiagnosticMessage &msg) = 0;
-  virtual void Consume(const TextDiagnosticEmitter& emiiter, const DiagnosticMessage &msg) = 0;
- 
+  virtual void Consume(const DiagnosticEmitter &emiiter,
+                       const DiagnosticMessage &msg) = 0;
+
   // void SetFormatter(DiagnosticFormatter *diagFormatter) {
   //   assert(diagFormatter);
   //   formatter = diagFormatter;

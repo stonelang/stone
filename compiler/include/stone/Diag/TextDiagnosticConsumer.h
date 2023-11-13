@@ -19,7 +19,8 @@ public:
 
 public:
   void Consume(const DiagnosticMessage &msg) override;
-  void Consume(const TextDiagnosticEmitter& emiiter, const DiagnosticMessage &msg) override;
+  void Consume(const TextDiagnosticEmitter &emiiter,
+               const DiagnosticMessage &msg) override;
   bool Finish() override;
 
   // void ForceColors() {

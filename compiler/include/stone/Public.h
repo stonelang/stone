@@ -186,7 +186,7 @@ public:
 public:
   StatisticEngine &GetStats() { return stats; }
   DiagnosticEngine &GetDiags() { return diags; }
-  
+
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 

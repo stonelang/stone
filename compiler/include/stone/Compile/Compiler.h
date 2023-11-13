@@ -23,8 +23,8 @@
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
 
-#include <queue>
 #include <deque>
+#include <queue>
 
 namespace llvm {
 class raw_pwrite_stream;
@@ -237,6 +237,7 @@ class CompilerQueue final {
   Compiler &compiler;
   // Simple queue for now.
   std::deque<CompilerTask *> runQueue;
+
 public:
   CompilerQueue(Compiler &compiler);
 
@@ -246,7 +247,7 @@ public:
   void RunTasks();
 
 public:
-  Compiler& GetCompiler() { return compiler;}
+  Compiler &GetCompiler() { return compiler; }
 };
 
 class Compiler final {

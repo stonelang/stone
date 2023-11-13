@@ -5,8 +5,8 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/Version.h"
 #include "stone/Diag/Diagnostic.h"
-#include "stone/Diag/DiagnosticFormatter.h"
 #include "stone/Diag/DiagnosticConsumer.h"
+#include "stone/Diag/DiagnosticFormatter.h"
 #include "stone/Diag/DiagnosticLocalization.h"
 
 #include "llvm/ADT/BitVector.h"
