@@ -17,8 +17,8 @@ using namespace stone::syn;
 Compiler::Compiler() = default;
 Compiler::~Compiler() = default;
 
-Status Compiler::Configure(std::unique_ptr<CompilerContext> compilerContext) {
-  compilerContext = std::move(compilerContext);
+Status Compiler::Configure(std::unique_ptr<CompilerContext> inputCompilerContext) {
+  compilerContext = std::move(inputCompilerContext);
   compilerStats.reset(new CompilerStats(*this));
   compilerQueue.reset(new CompilerQueue(*this));
 
