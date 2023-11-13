@@ -341,7 +341,8 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args,
+Status
+CompilerConfiguration::ParseCommandLine(llvm::ArrayRef<const char *> args,
                                         const char *arg0) {
 
   unsigned includedFlagsBitmask = 0;
@@ -407,6 +408,9 @@ Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args,
   if (ParseTargetOptions(*compilerInputArgList).IsError()) {
     return Status::Error();
   }
+
+  // CreateSourceBuffers();
+
   return Status();
 }
 

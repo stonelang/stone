@@ -31,36 +31,57 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status.GetFlag();
   };
 
-  Compiler compiler;
-  compiler.GetConfig().SetupWorkingDirectory();
-  compiler.GetConfig().SetMainExecutable(arg0, mainAddr);
+  // Compiler compiler;
+  // compiler.GetConfig().SetupWorkingDirectory();
+  // compiler.GetConfig().SetMainExecutable(arg0, mainAddr);
 
-  // Setup the custom formatting to be able to handle syntax diagnostics such as
-  // printing of decls.
-  SyntaxDiagnosticFormatter formatter;
-  SyntaxDiagnosticEmitter emitter(formatter);
-  TextDiagnosticConsumer consumer(emitter);
+  // // Setup the custom formatting to be able to handle syntax diagnostics such as
+  // // printing of decls.
+  // SyntaxDiagnosticFormatter formatter;
+  // SyntaxDiagnosticEmitter emitter(formatter);
+  // TextDiagnosticConsumer consumer(emitter);
+  // compiler.SetupDiagnostics(consumer);
 
-  compiler.SetupDiagnostics(consumer);
+  // STONE_DEFER { compiler.Finish(); };
 
-  STONE_DEFER { compiler.Finish(); };
+  // if (args.empty()) {
+  //   compiler.GetDiags().PrintD(diag::error_no_compile_args);
+  //   return Finish(Status::Error());
+  // }
 
-  if (args.empty()) {
-    compiler.GetDiags().PrintD(diag::err_no_input_files);
-    return Finish(Status::Error());
-  }
+  // ConfigurationFileBuffers configurationFileBuffers;
+  // // Configure the compiler
+  // if (compiler.GetConfig().ParseCommandLine(args, arg0).IsError()) {
+  //   return Finish(Status::Error());
+  // }
 
-  ConfigurationFileBuffers configurationFileBuffers;
-  // Configure the compiler
-  if (compiler.GetConfig().Configure(args, arg0).IsError()) {
-    return Finish(Status::Error());
-  }
+  // if (listener) {
+  //   listener->CompletedCommandLineParsing(compiler.GetConfig());
+  // }
 
-  compiler.BuildTasks();
-  if (compiler.HasError()) {
-    return Finish(Status::Error());
-  }
-  compiler.RunTasks();
+  // // The user has entered an action that the compiler does not know about.
+  // if (compiler.GetAction().IsAlien()) {
+  //   compiler.GetDiags().PrintD(diag::err_alien_mode);
+  //   return Finish(Status::Error());
+  // }
+
+  // // // Now, we are ready to setup the compiler.
+  // compiler.Setup();
+  // compiler.SetListener(listener);
+
+  // // Notifity that the compiler is configured
+  // if (listener) {
+  //   listener->CompletedConfiguration(compiler);
+  // }
+
+  // // Build all the compiler tasks
+  // compiler.BuildTasks();
+  // if (compiler.HasError()) {
+  //   return Finish(Status::Error());
+  // }
+
+  // // Run compiler tasks
+  // compiler.RunTasks();
 
   // if (compiler.GetAction().IsAlien()) {
   //   compiler.Report(diag::err_alien_mode);
@@ -82,6 +103,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // if (listener) {
   //   listener->OnCompileConfigured(compiler);
   // }
+
+  /// This should be called internally
   // if (compiler.CreateSourceBuffers().IsError()) {
   //   return Finish(Status::Error());
   // }
@@ -146,31 +169,31 @@ void Compiler::AddTask(ActionKind kind) {
   // }
   // case ActionKind::MergeModules: {
   //   AddTask(ActionKind::TypeCheck);
-  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   GetQueue().AddTask(MergeModulesTask::Create(*this));
   //   break;
   // }
   // case ActionKind::EmitIRBefore: {
   //   AddTask(ActionKind::TypeCheck);
-  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   GetQueue().AddTask(EmitIRBeforeTask::Create(*this));
   //   break;
   // }
   // case ActionKind::EmitIRAfter: {
   //   AddTask(ActionKind::TypeCheck);
-  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   GetQueue().AddTask(EmitIRAfterTask::Create(*this));
   //   break;
   // }
   // case ActionKind::EmitBC: {
-  //   AddTask(ActionKind::TypeCheck);
+  //   AddTask(ActionKind::EmitIRAfter);
   //   GetQueue().AddTask(EmitBCTask::Create(*this));
   //   break;
   // }
   // case ActionKind::EmitObject: {
-  //   AddTask(ActionKind::TypeCheck);
+  //   AddTask(ActionKind::EmitIRAfter);
   //   GetQueue().AddTask(EmitObjectTask::Create(*this));
   //   break;
   // }
   // case ActionKind::DumpTypeInfo: {
-  //   AddTask(ActionKind::TypeCheck);
+  //   AddTask(ActionKind::EmitIRAfter);
   //   GetQueue().AddTask(DumpTypeInfoTask::Create(*this));
   //   break;
   // }

@@ -89,6 +89,96 @@ struct ModuleBuffers {
 using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
+class CompilerCommandLine;
+class CompilerContext final {
+  friend CompilerCommandLine;
+
+private:
+  CompilerOptions compilerOpts;
+
+  /// Options for generating code
+  CodeGenOptions codeGenOpts;
+
+  /// The options for searching libs
+  SearchPathOptions searchPathOpts;
+
+  /// The options for type-checking
+  TypeCheckerOptions typeCheckerOpts;
+
+  LangOptions langOpts;
+
+  stone::TargetOptions targetOpts;
+
+  ModuleOptions moduleOpts;
+
+  SyntaxOptions syntaxOpts;
+
+  DiagnosticOptions diagOpts;
+
+public:
+  // CompilerContext() { SetTargetTriple(llvm::sys::getDefaultTargetTriple()) }
+
+public:
+  void SetTargetTriple(llvm::StringRef triple);
+  void SetTargetTriple(const llvm::Triple &Triple);
+
+public:
+  LangContext &GetLangContext() { return langContext; }
+  const LangContext &GetLangContext() const { return langContext; }
+
+  ClangContext &GetClangContext() { return *clangContext; }
+
+  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
+  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
+
+  CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
+  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
+
+  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
+  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+
+  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
+  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+
+  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+  const TypeCheckerOptions &GetTypeCheckerOptions() const {
+    return typeCheckerOpts;
+  }
+
+  SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
+  const SearchPathOptions &GetSearchPathOptions() const {
+    return searchPathOpts;
+  }
+
+  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+
+  ModuleOptions &GetModuleOptions() { return moduleOpts; }
+  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+
+  void SetupWorkingDirectory();
+};
+
+class CompilerCommandLine {
+public:
+  CompilerCommandLine();
+
+public:
+  Status ParseCompilerAction(llvm::opt::InputArgList &args);
+  Status ParseCompilerOptions(llvm::opt::InputArgList &args,
+                              MemoryBuffers *buffers);
+  Status ParseLangOptions(llvm::opt::InputArgList &args);
+  Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
+  Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
+  Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
+  Status ParseTargetOptions(llvm::opt::InputArgList &args);
+  llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
+
+public:
+  static std::unique_ptr<CompilerContext>
+  Parse(llvm::ArrayRef<const char *> args, const char *arg0);
+};
+
 class CompilerConfiguration final {
 
   CompilerOptions compilerOpts;
@@ -132,7 +222,7 @@ public:
   ~CompilerConfiguration();
 
 public:
-  Status Configure(llvm::ArrayRef<const char *> args, const char *arg0);
+  Status ParseCommandLine(llvm::ArrayRef<const char *> args, const char *arg0);
   void SetMainExecutable(const char *arg0, void *mainAddr);
   void SetupWorkingDirectory();
 
@@ -250,8 +340,9 @@ public:
   Compiler &GetCompiler() { return compiler; }
 };
 
-class Compiler final {
+class Compiler final /*: public CompilerContext*/ {
   friend CompilerTask;
+  friend CompilerCommandLineParser;
 
   CompilerListener *listener;
   std::unique_ptr<CompilerStats> stats;
@@ -299,8 +390,6 @@ private:
 public:
   // TODO: May want to pass by pointer
   void SetupDiagnostics(DiagnosticConsumer &listener);
-
-private:
   void SetListener(CompilerListener *listener);
   CompilerListener *GetListener() { return listener; }
 

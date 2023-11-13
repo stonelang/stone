@@ -56,13 +56,8 @@ class SyntaxFile;
 } // namespace stone
 
 namespace stone {
-class CodeCompletionListener {
-public:
-  CodeCompletionListener() = default;
-  virtual ~CodeCompletionListener() = default;
-};
 
-class LexerListener : public CodeCompletionListener {
+class LexerListener {
 public:
   LexerListener() = default;
   virtual ~LexerListener() = default;
@@ -71,7 +66,7 @@ public:
   virtual void OnToken(const syn::Token *token) {}
 };
 
-class SyntaxListener : public CodeCompletionListener {
+class SyntaxListener {
 public:
   SyntaxListener() = default;
   virtual ~SyntaxListener() = default;
@@ -92,7 +87,7 @@ public:
   virtual void OnParseCompleted() {}
 };
 
-class TypeCheckerListener : public CodeCompletionListener {
+class TypeCheckerListener {
 public:
   TypeCheckerListener() = default;
   virtual ~TypeCheckerListener() = default;
@@ -110,7 +105,7 @@ public:
 public:
 };
 
-class CodeGenListener : public CodeCompletionListener {
+class CodeGenListener {
 public:
   CodeGenListener() = default;
   virtual ~CodeGenListener() = default;
@@ -162,15 +157,13 @@ public:
   CodeGenListener *GetCodeGenListener() { return codeGenListener; }
 
 public:
-  virtual void OnCompileConfigured(CompilerConfiguration &invocation) {}
-  virtual void OnCompileStarted(Compiler &instance) {}
-  virtual void OnSyntaxAnalysisCompleted(Compiler &instance) {}
-  virtual void OnSemanticAnalysisCompleted(Compiler &instance) {}
-  virtual void OnCodeGenCompleted(Compiler &instance) {}
-  virtual void OnCompileCompleted(Compiler &instance) {}
+  virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
+  virtual void CompletedConfiguration(Compiler &compiler) {}
+  virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}
+  virtual void CompletedSemanticAnalysis(Compiler &compiler) {}
+  virtual void CompletedCodeGeneration(Compiler &compiler) {}
 };
 } // namespace stone
-
 namespace stone {
 class LangContext final {
 
@@ -226,7 +219,7 @@ public:
 
 // Parsing and type-checking
 namespace stone {
-class CompilerListener;
+class CompilerPipeline;
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             CompilerListener *listener = nullptr);
 
@@ -239,7 +232,7 @@ using ModuleSyntaxFileUnion =
 /// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
-/// Returns true is successfull
+/// Returns true if successfull
 bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, Compiler &instance,
                        CodeGenContext *cgc = nullptr);
 
@@ -301,13 +294,6 @@ bool EmitImportedModules(syn::SyntaxContext &context,
 
 // Code generation
 namespace stone {
-/// Returns true is successfull
-// bool CompileBackend(CodeGenContext &codeGenConext,
-//                     syn::SyntaxContext &syntaxContext,
-//                     CodeGenListener *listener = nullptr);
-
-// std::unique_ptr<llvm::TargetMachine>
-// CreateTargetMachine(CodeGenContext &context);
 
 IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                    const LangOptions &langOpts,

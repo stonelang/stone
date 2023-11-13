@@ -4,6 +4,9 @@
 
 ERROR(err_no_compile_mode, none, "no compile mode", ())
 
+
+ERROR(error_no_compile_args, none, "no arguments provided to 'stone-compile'", ())
+
 ERROR(err_cannot_have_input_files_with_file_list,none,
       "cannot have input files with file list", ())
 
