@@ -127,7 +127,7 @@ public:
 //   static ParseAndImportResolutionTask *Create();
 // };
 
-// class EmitIRTask : public SyntaxTask {
+// class EmittingTask : public SyntaxTask {
 //   virtual Status Execute(Compiler &compiler)
 // };
 // class CodeGenTask : public SyntaxTask {

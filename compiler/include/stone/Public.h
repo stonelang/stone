@@ -185,13 +185,10 @@ public:
 
 public:
   StatisticEngine &GetStats() { return stats; }
-  const StatisticEngine &GeStats() const { return stats; }
-
+  DiagnosticEngine &GetDiags() { return diags; }
+  
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
-
-  DiagnosticEngine &GetDiags() { return diags; }
-  const DiagnosticEngine &GetDiags() const { return diags; }
 
   bool HasError() { return GetDiags().HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
