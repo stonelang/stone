@@ -3,7 +3,7 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/CompilerCommandLine.h"
+#include "stone/Compile/CompilerContext.h"
 #include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"

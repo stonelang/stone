@@ -142,37 +142,43 @@ public:
   static PrintVersionTask *Create(const Compiler &compiler);
 };
 
-// class VerifyInputFileTypesTask : public CompilerTask {
-// public:
-//   virtual Status Execute(Compiler &compiler) override;
-// };
+class VerifyInputFileTypesTask : public CompilerTask {
+public:
+  virtual Status Execute(Compiler &compiler) override;
 
-// class SyntaxTask : public CompilerTask {
+public:
+  static VerifyInputFileTypesTask *Create(const Compiler &compiler);
+};
 
-// public:
-//   virtual Status Execute(Compiler &compiler) override;
-// };
+class SyntaxTask : public CompilerTask {
 
-// class ParseTask : public SyntaxTask {
-// public:
-//   virtual Status Execute(Compiler &compiler) override;
-// };
+public:
+  virtual Status Execute(Compiler &compiler) override;
+};
 
-// class ResolveImportsTask : public SyntaxTask {
-// public:
-//   virtual Status Execute(Compiler &compiler) override;
+class ParseTask : public SyntaxTask {
+public:
+  virtual Status Execute(Compiler &compiler) override;
 
-// public:
-//   static ParseAndImportResolutionTask *Create();
-// };
+public:
+  static ParseTask *Create();
+};
 
-// class TypeCheckTask : public SyntaxTask {
-// public:
-//   virtual Status Execute(Compiler &compiler);
+class ResolveImportsTask : public SyntaxTask {
+public:
+  virtual Status Execute(Compiler &compiler) override;
 
-// public:
-//   static ParseAndImportResolutionTask *Create();
-// };
+public:
+  static ResolveImportsTask *Create();
+};
+
+class TypeCheckTask : public SyntaxTask {
+public:
+  virtual Status Execute(Compiler &compiler);
+
+public:
+  static TypeCheckTask *Create();
+};
 
 // class EmittingTask : public SyntaxTask {
 //   virtual Status Execute(Compiler &compiler)

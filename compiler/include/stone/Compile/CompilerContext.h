@@ -27,6 +27,7 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
+class CompilerContextBuilder;
 
 struct CompilerModuleBuffers {
 
@@ -47,10 +48,9 @@ struct CompilerModuleBuffers {
 using CompilerMemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
-class CompilerCommandLine;
 
-class CompilerContext {
-  friend CompilerCommandLine;
+class CompilerContext final {
+  friend CompilerContextBuilder;
 
 private:
   CompilerOptions compilerOpts;
@@ -111,12 +111,12 @@ public:
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 };
 
-class CompilerCommandLine final {
+class CompilerContextBuilder final {
 public:
-  CompilerCommandLine();
+  CompilerContextBuilder();
 
 public:
-  std::unique_ptr<CompilerContext> Parse(llvm::ArrayRef<const char *> args,
+  std::unique_ptr<CompilerContext> Build(llvm::ArrayRef<const char *> args,
                                          DiagnosticEngine &diags);
 
 public:

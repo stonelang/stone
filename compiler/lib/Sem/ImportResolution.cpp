@@ -1,4 +1,4 @@
-#include "stone/Sem/ImportResolution.h"
+#include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
@@ -12,4 +12,4 @@ using namespace stone::syn;
 //   SyntaxContext &ctx;
 // };
 
-void sem::ResolveImports(SyntaxFile &syntaxFile) {}
+void stone::ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile) {}

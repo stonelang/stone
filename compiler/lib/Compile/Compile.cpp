@@ -38,8 +38,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto compiler = std::make_unique<Compiler>();
   compiler->AddDiagnosticConsumer(consumer);
 
-  CompilerCommandLine commandLine;
-  auto compilerContext = commandLine.Parse(args, compiler->GetDiags());
+  CompilerContextBuilder compilerContextBuilder;
+  auto compilerContext =
+      compilerContextBuilder.Build(args, compiler->GetDiags());
   compilerContext->SetMainExecutable(arg0, mainAddr);
 
   if (!compilerContext) {

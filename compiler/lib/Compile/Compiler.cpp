@@ -1,7 +1,7 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Sem/ImportResolution.h"
+#include "stone/Public.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -97,7 +97,7 @@ Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
 //   // Resolve imports for all the source files.
 //   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
 //     if (auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile))
-//       sem::ResolveImports(*syntaxFile);
+//       stone::ResolveSyntaxFileImports(*syntaxFile);
 //   }
 // }
 
@@ -163,6 +163,8 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
 }
 
 void Compiler::Finish() {}
+
+void stone::ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile) {}
 
 CompilerAction::CompilerAction() {}
 
