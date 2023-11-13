@@ -6,7 +6,7 @@
 #include "stone/Compile/Compiling.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
-#include "stone/Diag/TextDiagnosticListener.h"
+#include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Option/Action.h"
 #include "stone/Public.h"
@@ -39,8 +39,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // printing of decls.
   SyntaxDiagnosticFormatter formatter;
   SyntaxDiagnosticEmitter emitter(formatter);
-  TextDiagnosticListener diagListener(emitter);
-  compiler.SetupDiagnostics(diagListener);
+  TextDiagnosticConsumer consumer(emitter);
+
+  compiler.SetupDiagnostics(consumer);
 
   STONE_DEFER { compiler.Finish(); };
 

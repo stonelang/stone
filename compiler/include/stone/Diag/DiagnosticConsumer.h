@@ -8,7 +8,7 @@ namespace stone {
 
 class DiagnosticMessage;
 
-class DiagnosticListener {
+class DiagnosticConsumer {
 
 protected:
   DiagnosticEmitter &emitter;
@@ -21,8 +21,8 @@ protected:
 
 public:
   // TODO: May just waht to pass by value
-  DiagnosticListener(DiagnosticEmitter &emitter);
-  virtual ~DiagnosticListener();
+  DiagnosticConsumer(DiagnosticEmitter &emitter);
+  virtual ~DiagnosticConsumer();
 
   unsigned GetNumErrors() const { return numErrors; }
   unsigned GetNumWarnings() const { return numWarnings; }
@@ -35,7 +35,7 @@ public:
   virtual bool Finish();
 
   /// Indicates whether the diagnostics handled by this
-  /// DiagnosticListener should be included in the number of diagnostics
+  /// DiagnosticConsumer should be included in the number of diagnostics
   /// reported by DiagnosticEngine.
   ///
   /// The default implementation returns true.
@@ -47,8 +47,10 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void OnDiagnostic(const DiagnosticMessage &diagEvent) = 0;
+  virtual void Consume(const DiagnosticMessage &msg) = 0;
 
+  virtual void Consume(const TextDiagnosticEmitter& emiiter, const DiagnosticMessage &msg) = 0;
+ 
   // void SetFormatter(DiagnosticFormatter *diagFormatter) {
   //   assert(diagFormatter);
   //   formatter = diagFormatter;
@@ -59,12 +61,12 @@ public:
   void SetForceColors(bool useColors = false) { forceColors = useColors; }
 };
 
-// class FakeDiagnosticListener final : public DiagnosticListener {
+// class FakeDiagnosticConsumer final : public DiagnosticConsumer {
 
 // public:
 
 // public:
-//   void OnDiagnostic(const DiagnosticMessage &diagEvent) override {}
+//   void Listen(const DiagnosticMessage &diagEvent) override {}
 // };
 
 } // namespace stone

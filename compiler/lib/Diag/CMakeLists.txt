@@ -14,10 +14,10 @@ set(stone_diag_sources
   DiagnosticEmitter.cpp
   DiagnosticFormatter.cpp
   DiagnosticEngine.cpp
-  DiagnosticListener.cpp
+  DiagnosticConsumer.cpp
   TextDiagnosticEmitter.cpp
   TextDiagnosticFormatter.cpp
-  TextDiagnosticListener.cpp
+  TextDiagnosticConsumer.cpp
 
 	LINK_LIBS 
 	StoneBasic

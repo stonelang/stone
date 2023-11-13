@@ -1,8 +1,8 @@
 #include "stone/Diag/DiagnosticEmitter.h"
-#include "stone/Diag/DiagnosticListener.h"
+#include "stone/Diag/DiagnosticConsumer.h"
 
 using stone::DiagnosticEmitter;
-using stone::DiagnosticListener;
+using stone::DiagnosticConsumer;
 
 DiagnosticEmitter::DiagnosticEmitter(DiagnosticFormatter &formatter)
     : formatter(formatter) {}

@@ -6,7 +6,7 @@
 #include "stone/Basic/Version.h"
 #include "stone/Diag/Diagnostic.h"
 #include "stone/Diag/DiagnosticFormatter.h"
-#include "stone/Diag/DiagnosticListener.h"
+#include "stone/Diag/DiagnosticConsumer.h"
 #include "stone/Diag/DiagnosticLocalization.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -23,7 +23,7 @@ namespace stone {
 class SrcMgr;
 class DiagnosticEngine;
 class InFlightDiagnostic;
-class DiagnosticListener;
+class DiagnosticConsumer;
 class LangOptions;
 class Version;
 class SavedDiagnostic;
@@ -169,14 +169,14 @@ public:
   bool IsForceFlush() const { return isForceFlush; }
 };
 
-class DiagnosticListener;
+class DiagnosticConsumer;
 class DiagnosticEngine;
 
 /// RAII class that suppresses diagnostics by temporarily disabling all of
 /// the diagnostic consumers.
 class DiagnosticSuppression {
   DiagnosticEngine &diags;
-  std::vector<DiagnosticListener *> listeners;
+  std::vector<DiagnosticConsumer *> listeners;
 
   DiagnosticSuppression(const DiagnosticSuppression &) = delete;
   DiagnosticSuppression &operator=(const DiagnosticSuppression &) = delete;
@@ -204,7 +204,7 @@ class DiagnosticEngine final {
 
   /// The diagnostic listeners(s) that will be responsible for actually
   /// emitting diagnostics.
-  llvm::SmallVector<DiagnosticListener *, 2> listeners;
+  llvm::SmallVector<DiagnosticConsumer *, 2> listeners;
 
   /// The current diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
@@ -313,25 +313,25 @@ public:
   llvm::StringRef GetDiagIDStringByDiagID(const DiagID diagID);
 
 public:
-  /// Add an additional DiagnosticListener to receive diagnostics.
-  void AddListener(DiagnosticListener &listener) {
+  /// Add an additional DiagnosticConsumer to receive diagnostics.
+  void AddListener(DiagnosticConsumer &listener) {
     listeners.push_back(&listener);
   }
-  /// Remove a specific DiagnosticListener.
-  void RemoveListener(DiagnosticListener &listener) {
+  /// Remove a specific DiagnosticConsumer.
+  void RemoveListener(DiagnosticConsumer &listener) {
     listeners.erase(std::remove(listeners.begin(), listeners.end(), &listener));
   }
 
-  /// Remove and return all \c DiagnosticListener.
-  std::vector<DiagnosticListener *> TakeListeners() {
+  /// Remove and return all \c DiagnosticConsumer.
+  std::vector<DiagnosticConsumer *> TakeListeners() {
     auto result =
-        std::vector<DiagnosticListener *>(listeners.begin(), listeners.end());
+        std::vector<DiagnosticConsumer *>(listeners.begin(), listeners.end());
     listeners.clear();
     return result;
   }
 
-  /// Return all \c DiagnosticListener.
-  llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
+  /// Return all \c DiagnosticConsumer.
+  llvm::ArrayRef<DiagnosticConsumer *> GetListeners() const {
     return listeners;
   }
 

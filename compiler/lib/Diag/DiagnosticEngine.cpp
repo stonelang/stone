@@ -235,7 +235,7 @@ void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
   auto diagnosticEvent = CreateDiagnosticMessage(diagnostic);
   for (auto &listener : listeners) {
-    listener->OnDiagnostic(*diagnosticEvent);
+    listener->Listen(*diagnosticEvent);
   }
 }
 

@@ -297,7 +297,7 @@ private:
 
 public:
   // TODO: May want to pass by pointer
-  void SetupDiagnostics(DiagnosticListener &listener);
+  void SetupDiagnostics(DiagnosticConsumer &listener);
 
 private:
   void SetListener(CompilerListener *listener);
