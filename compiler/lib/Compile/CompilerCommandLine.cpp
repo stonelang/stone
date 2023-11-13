@@ -1,21 +1,5 @@
-
-#include "stone/Compile/Compiler.h"
-#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerCommandLine.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Diag/CompilerDiagnostic.h"
-
-#include "clang/Basic/Stack.h"
-#include "clang/Basic/TargetOptions.h"
-#include "clang/CodeGen/ObjectFilePCHContainerOperations.h"
-#include "clang/Config/config.h"
-#include "clang/Driver/DriverDiagnostic.h"
-#include "clang/Driver/Options.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Frontend/CompilerInvocation.h"
-#include "clang/Frontend/FrontendDiagnostic.h"
-#include "clang/Frontend/TextDiagnosticBuffer.h"
-#include "clang/Frontend/TextDiagnosticPrinter.h"
-#include "clang/Frontend/Utils.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -33,11 +17,19 @@
 
 using namespace stone;
 
+CompilerContext::CompilerContext() {
+  SetTargetTriple(llvm::sys::getDefaultTargetTriple());
+}
+
+void CompilerContext::SetTargetTriple(llvm::StringRef triple) {}
+void CompilerContext::SetTargetTriple(const llvm::Triple &Triple) {}
+void CompilerContext::SetWorkingDirectory() {}
+
 CompilerCommandLine::CompilerCommandLine() {}
 
-std::unique_ptr<CompilerContext> CompilerCommandLine::Parse() {
+std::unique_ptr<CompilerContext>
+CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
   auto compilerContext = std::make_unique<CompilerContext>();
-
   return compilerContext;
 }
 
@@ -45,7 +37,7 @@ Status CompilerCommandLine::ParseCompilerAction(llvm::opt::InputArgList &args) {
 
 }
 Status CompilerCommandLine::ParseCompilerOptions(llvm::opt::InputArgList &args,
-                                                 MemoryBuffers *buffers) {}
+                                                 CompilerMemoryBuffers *buffers) {}
 
 Status CompilerCommandLine::ParseLangOptions(llvm::opt::InputArgList &args) {}
 

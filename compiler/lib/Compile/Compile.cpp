@@ -31,11 +31,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status.GetFlag();
   };
 
-  // Compiler compiler;
-  // compiler.GetConfig().SetupWorkingDirectory();
-  // compiler.GetConfig().SetMainExecutable(arg0, mainAddr);
+  // ERROR(error_no_compile_args, none, "no arguments provided to
+  // 'stone-compile'", ())
+  //  Compiler compiler;
+  //  compiler.GetConfig().SetupWorkingDirectory();
+  //  compiler.GetConfig().SetMainExecutable(arg0, mainAddr);
 
-  // // Setup the custom formatting to be able to handle syntax diagnostics such as
+  // // Setup the custom formatting to be able to handle syntax diagnostics such
+  // as
   // // printing of decls.
   // SyntaxDiagnosticFormatter formatter;
   // SyntaxDiagnosticEmitter emitter(formatter);
