@@ -24,6 +24,7 @@
 #include "llvm/Option/ArgList.h"
 
 #include <queue>
+#include <deque>
 
 namespace llvm {
 class raw_pwrite_stream;
@@ -237,15 +238,17 @@ class CompilerQueue final {
 
   Compiler &compiler;
   // Simple queue for now.
-  std::queue<CompilerTask *> runQueue;
-
+  std::deque<CompilerTask *> runQueue;
 public:
   CompilerQueue(Compiler &compiler);
 
 public:
-  void AddTask(CompilerTask* task);
+  void AddTask(CompilerTask *task);
   void RemoveTask();
   void RunTasks();
+
+public:
+  Compiler& GetCompiler() { return compiler;}
 };
 
 class Compiler final {
