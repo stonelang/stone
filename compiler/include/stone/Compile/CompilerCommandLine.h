@@ -28,8 +28,6 @@ class TargetMachine;
 
 namespace stone {
 
-
-
 struct CompilerModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
@@ -48,7 +46,6 @@ struct CompilerModuleBuffers {
 
 using CompilerMemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
-
 
 class CompilerCommandLine;
 class CompilerContext final {
@@ -118,7 +115,8 @@ public:
   CompilerCommandLine();
 
 public:
-  std::unique_ptr<CompilerContext> Parse(llvm::ArrayRef<const char *> args);
+  std::unique_ptr<CompilerContext> Parse(llvm::ArrayRef<const char *> args,
+                                         DiagnosticEngine &diags);
 
 public:
   Status ParseCompilerAction(llvm::opt::InputArgList &args);

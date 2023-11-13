@@ -31,6 +31,24 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status.GetFlag();
   };
 
+
+  SyntaxDiagnosticFormatter formatter;
+  SyntaxDiagnosticEmitter emitter(formatter);
+  TextDiagnosticConsumer consumer(emitter);
+  
+  auto compiler = std::make_unique<Compiler>();
+  compiler->AddDiagnosticConsumer(consumer);
+
+  // CompilerCommandLine commandLine;
+  // auto compilerContext = commandLine.Parse(args);
+
+  // if (listener && compilerContext) {
+  //   listener->CompletedCommandLineParsing(commandLine, *compilerContext);
+  // }
+
+  // Compiler compiler;
+  // compiler.Configure(compilerContext);
+
   // ERROR(error_no_compile_args, none, "no arguments provided to
   // 'stone-compile'", ())
   //  Compiler compiler;
@@ -126,12 +144,12 @@ void Compiler::BuildTasks() { AddTask(GetAction().GetKind()); }
 
 void Compiler::AddTask(ActionKind kind) {
 
-  switch (GetAction().GetKind()) {
-  case ActionKind::PrintHelp: {
-  case ActionKind::PrintHelpHidden:
-    GetQueue().AddTask(PrintHelpTask::Create(*this));
-    break;
-  }
+  // switch (GetAction().GetKind()) {
+  // case ActionKind::PrintHelp: {
+  // case ActionKind::PrintHelpHidden:
+  //   GetQueue().AddTask(PrintHelpTask::Create(*this));
+  //   break;
+  // }
   // case ActionKind::PrintVersion: {
   //   GetQueue().AddTask(PrintVersionTask::Create(*this));
   //   break;
@@ -200,14 +218,14 @@ void Compiler::AddTask(ActionKind kind) {
   //   GetQueue().AddTask(DumpTypeInfoTask::Create(*this));
   //   break;
   // }
-  default: {
-  } break;
-  }
+  // default: {
+  // } break;
+  // }
 }
 
-Status PrintHelpTask::Execute(Compiler &compiler) { return Status(); }
-
 void Compiler::RunTasks() { GetQueue().RunTasks(); }
+
+Status PrintHelpTask::Execute(Compiler &compiler) { return Status(); }
 
 // Status compiling::Compile(Compiler &compiler) {
 

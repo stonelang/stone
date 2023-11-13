@@ -1,20 +1,15 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/Mem.h"
-#include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerCommandLine.h"
 #include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxOptions.h"
-#include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -250,19 +245,54 @@ public:
   Compiler &GetCompiler() { return compiler; }
 };
 
-class Compiler final /*: public CompilerConfiguration */ {
+class CompilerBase {
+
+protected:
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
+
+  CompilerContext compilerContext;
+
+  /// Contains buffer IDs for input source code files.
+  std::vector<unsigned> sourceBufferIDs;
+
+  // The primary Sources
+  llvm::SetVector<unsigned> primarySourceIDs;
+
+  llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
+  /// Code completion offset in bytes from the beginning of the main
+  /// source file.  Valid only if \c isCodeCompletion() == true.
+  unsigned codeCompletionOffset = ~0U;
+
+public:
+  SrcMgr &GetSrcMgr() { return srcMgr; }
+  DiagnosticEngine &GetDiags() { return diags; }
+  CompilerContext &GetCompilerContext() { return compilerContext; }
+  const CompilerContext &GetCompilerContext() const { return compilerContext; }
+
+public:
+  unsigned CreateSourceBuffer(const CompilerInputFile &input);
+  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+
+  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+  bool IsPrimarySourceID(unsigned primarySourceID) const {
+    return primarySourceIDs.count(primarySourceID) != 0;
+  }
+  void RecordPrimarySourceID(unsigned primarySourceID);
+  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+};
+
+class Compiler final : public CompilerBase {
   friend CompilerTask;
 
   CompilerListener *listener;
+
   std::unique_ptr<CompilerStats> stats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
+  std::unique_ptr<CompilerQueue> compilerQueue;
 
-  /// Runs tasks
-  CompilerQueue queue;
-
-  /// Configures the compiler
-  CompilerConfiguration config;
+  mutable llvm::BumpPtrAllocator allocator;
 
   // llvm::sys::TimePoint<> startTime;
   // llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
@@ -280,136 +310,140 @@ class Compiler final /*: public CompilerConfiguration */ {
   // /// The stream for verbose output.
   // raw_ostream *VerboseOutputStream = &llvm::errs();
 
-  mutable llvm::BumpPtrAllocator bumpAlloc;
-
 public:
   Compiler();
   ~Compiler();
 
 public:
-  void Setup();
+  Compiler(const Compiler &) = delete;
+  void operator=(const Compiler &) = delete;
+  Compiler(Compiler &&) = delete;
+  void operator=(Compiler &&) = delete;
+
+public:
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
+  Status Configure(const CompilerContext &compilerContext);
   void Finish();
 
+public:
   void BuildTasks();
+  void AddTask(ActionKind kind);
   void RunTasks();
 
-private:
-  void AddTask(ActionKind kind);
+  // public:
+  //   // TODO: May want to pass by pointer
+  //   void SetupDiagnostics(DiagnosticConsumer &listener);
+  //   void SetListener(CompilerListener *listener);
+  //   CompilerListener *GetListener() { return listener; }
+
+  //   void SetupSyntaxContext();
+  //   void SetupOutputBackend();
 
 public:
-  // TODO: May want to pass by pointer
-  void SetupDiagnostics(DiagnosticConsumer &listener);
-  void SetListener(CompilerListener *listener);
-  CompilerListener *GetListener() { return listener; }
+  CompilerQueue &GetQueue() { return *compilerQueue; }
+  llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
 
-  void SetupSyntaxContext();
-  void SetupOutputBackend();
+  //   DiagnosticEngine &GetDiags() {
+  //     return GetConfig().GetLangContext().GetDiags();
+  //   }
+  //   StatisticEngine &GetStats() {
+  //     return GetConfig().GetLangContext().GetStats();
+  //   }
+  //   bool HasError() { return
+  //   GetConfig().GetLangContext().GetDiags().HasError(); }
 
-public:
-  CompilerQueue &GetQueue() { return queue; }
-  CompilerConfiguration &GetConfig() { return config; }
-  const CompilerConfiguration &GetConfig() const { return config; }
-  llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
+  // public:
+  //   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
+  //   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
+  //   const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
 
-  DiagnosticEngine &GetDiags() {
-    return GetConfig().GetLangContext().GetDiags();
-  }
-  StatisticEngine &GetStats() {
-    return GetConfig().GetLangContext().GetStats();
-  }
-  bool HasError() { return GetConfig().GetLangContext().GetDiags().HasError(); }
+  //   bool CanCompile() const {
+  //     return GetConfig().GetCompilerOptions().GetAction().CanCompile();
+  //   }
+  //   bool CanCodeGen() const {
+  //     return GetConfig().GetCompilerOptions().GetAction().CanCodeGen();
+  //   }
 
-public:
-  syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
-  ModuleSystem &GetModuleSystem() { return *moduleSystem; }
-  const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
+  //   bool IsActionPostTypeChecking() {
+  //     switch (GetAction().GetKind()) {
+  //     case ActionKind::EmitModule:
+  //     case ActionKind::MergeModules:
+  //     case ActionKind::EmitAssembly:
+  //     case ActionKind::EmitIRAfter:
+  //     case ActionKind::EmitIRBefore:
+  //     case ActionKind::EmitBC:
+  //     case ActionKind::EmitObject:
+  //     case ActionKind::DumpTypeInfo:
+  //       return true;
+  //     default:
+  //       return false;
+  //     }
+  //   }
 
-  bool CanCompile() const {
-    return GetConfig().GetCompilerOptions().GetAction().CanCompile();
-  }
-  bool CanCodeGen() const {
-    return GetConfig().GetCompilerOptions().GetAction().CanCodeGen();
-  }
+  //   // llvm::StringRef CreateOutputFile(unsigned srcID);
+  //   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
-  bool IsActionPostTypeChecking() {
-    switch (GetAction().GetKind()) {
-    case ActionKind::EmitModule:
-    case ActionKind::MergeModules:
-    case ActionKind::EmitAssembly:
-    case ActionKind::EmitIRAfter:
-    case ActionKind::EmitIRBefore:
-    case ActionKind::EmitBC:
-    case ActionKind::EmitObject:
-    case ActionKind::DumpTypeInfo:
-      return true;
-    default:
-      return false;
-    }
-  }
+  // public:
+  //   /// Perform code analysis and code generation
+  //   Status Compile();
+  //   void ResolveImports();
 
-  // llvm::StringRef CreateOutputFile(unsigned srcID);
-  // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
+  // public:
+  //   Status ForEachSyntaxFile(EachSyntaxFileCallback fn);
+  //   Status ForEachSyntaxFileToTypeCheck(EachSyntaxFileToTypeCheckCallback
+  //   notify);
 
-public:
-  /// Perform code analysis and code generation
-  Status Compile();
-  void ResolveImports();
-
-public:
-  Status ForEachSyntaxFile(EachSyntaxFileCallback fn);
-  Status ForEachSyntaxFileToTypeCheck(EachSyntaxFileToTypeCheckCallback notify);
-
-public:
-  syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
-    return msf.get<syn::ModuleDecl *>();
-  }
-  syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
-    msf.dyn_cast<syn::SyntaxFile *>();
-  }
+  // public:
+  //   syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
+  //     return msf.get<syn::ModuleDecl *>();
+  //   }
+  //   syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
+  //     msf.dyn_cast<syn::SyntaxFile *>();
+  //   }
 
   CompilerAction &GetAction() {
-    return GetConfig().GetCompilerOptions().GetAction();
+    return compilerContext.GetCompilerOptions().GetAction();
   }
   const CompilerAction &GetAction() const {
-    return GetConfig().GetCompilerOptions().GetAction();
+    return compilerContext.GetCompilerOptions().GetAction();
   }
 
-public:
-  // TODO: Consider moving to the Compiler
-  ModuleOutputMode GetModuleOutputMode() {
-    // TODO: This must be computed in the future.
-    return GetConfig().GetModuleOptions().moduleOutputMode;
-  }
+  // public:
+  //   // TODO: Consider moving to the Compiler
+  //   ModuleOutputMode GetModuleOutputMode() {
+  //     // TODO: This must be computed in the future.
+  //     return GetConfig().GetModuleOptions().moduleOutputMode;
+  //   }
 
-  bool IsWholeModuleCodeGen() {
-    return ((GetConfig()
-                 .GetCompilerOptions()
-                 .GetInputsAndOutputs()
-                 .HasPrimaryInputs())
-                ? false
-                : true);
-  }
-  bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
+  //   bool IsWholeModuleCodeGen() {
+  //     return ((GetConfig()
+  //                  .GetCompilerOptions()
+  //                  .GetInputsAndOutputs()
+  //                  .HasPrimaryInputs())
+  //                 ? false
+  //                 : true);
+  //   }
+  //   bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
 
-public:
-  //== Utils ==//
-  static std::unique_ptr<llvm::raw_fd_ostream>
-  GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
+  // public:
+  //   //== Utils ==//
+  //   static std::unique_ptr<llvm::raw_fd_ostream>
+  //   GetFileOutputStream(llvm::StringRef outputFilename, LangContext &ctx);
 
-  void ComputeCodeCodeGenOutputKind();
+  //   void ComputeCodeCodeGenOutputKind();
 
-public:
-  /// Gets the set of SyntaxFiles which are the primary inputs for this
-  /// Compiler.
-  llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
-    return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
-  }
+  // public:
+  //   /// Gets the set of SyntaxFiles which are the primary inputs for this
+  //   /// Compiler.
+  //   llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
+  //     return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  //   }
 
-  // bool HasPrimarySyntaxFiles() const {
-  //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
-  // }
+  //   // bool HasPrimarySyntaxFiles() const {
+  //   //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
+  //   // }
 
-public:
+  // public:
   const PrimaryFileSpecificPaths &
   GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
 
@@ -422,16 +456,15 @@ public:
   const PrimaryFileSpecificPaths &
   GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
 
-public:
-  void PrintTimers();
-  void PrintDiagnostics();
-  void PrintStatistics();
+  // public:
+  //   void PrintTimers();
+  //   void PrintDiagnostics();
+  //   void PrintStatistics();
 
 public:
   /// Return the total amount of physical memory allocated for representing
   /// AST nodes and type information.
   size_t GetTotalMemUsed() const;
-
   void *Allocate(size_t size, unsigned align = 8) const {
     return GetAllocator().Allocate(size, align);
   }
