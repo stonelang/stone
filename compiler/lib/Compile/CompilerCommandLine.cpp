@@ -19,12 +19,13 @@
 using namespace stone;
 
 CompilerContext::CompilerContext() {
+  llvm::sys::fs::current_path(GetCompilerOptions().workDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
 
 void CompilerContext::SetTargetTriple(llvm::StringRef triple) {}
 void CompilerContext::SetTargetTriple(const llvm::Triple &Triple) {}
-void CompilerContext::SetWorkingDirectory() {}
+void CompilerContext::SetMainExecutable(const char *arg0, void *mainAddr) {}
 
 CompilerCommandLine::CompilerCommandLine() {}
 

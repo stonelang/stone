@@ -80,7 +80,7 @@ public:
 public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
-  void SetWorkingDirectory();
+  void SetMainExecutable(const char *arg0, void *mainAddr);
 
 public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }

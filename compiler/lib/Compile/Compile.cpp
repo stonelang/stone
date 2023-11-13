@@ -40,6 +40,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   CompilerCommandLine commandLine;
   auto compilerContext = commandLine.Parse(args, compiler->GetDiags());
+  compilerContext->SetMainExecutable(arg0, mainAddr);
 
   if (!compilerContext) {
     return Finish(Status::Error());
@@ -64,19 +65,16 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     listener->CompletedBuildingTasks(*compiler);
   }
 
-  // ERROR(error_no_compile_args, none, "no arguments provided to
-  // 'stone-compile'", ())
-  //  Compiler compiler;
-  //  compiler.GetConfig().SetupWorkingDirectory();
-  //  compiler.GetConfig().SetMainExecutable(arg0, mainAddr);
+  // Run compiler tasks
+  compiler->RunTasks();
+  if (compiler->HasError()) {
+    return Finish(Status::Error());
+  }
+  if (listener) {
+    listener->CompletedRunningTasks(*compiler);
+  }
 
-  // // Setup the custom formatting to be able to handle syntax diagnostics such
-  // as
-  // // printing of decls.
-  // SyntaxDiagnosticFormatter formatter;
-  // SyntaxDiagnosticEmitter emitter(formatter);
-  // TextDiagnosticConsumer consumer(emitter);
-  // compiler.SetupDiagnostics(consumer);
+  // ERROR(error_no_compile_args, none, "no arguments provided to
 
   // STONE_DEFER { compiler.Finish(); };
 
