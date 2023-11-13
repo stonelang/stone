@@ -160,9 +160,11 @@ public:
 public:
   virtual void CompletedCommandLineParsing(CompilerContext &context) {}
   virtual void CompletedConfiguration(Compiler &compiler) {}
+  virtual void CompletedBuildingTasks(Compiler &compiler) {}
   virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}
   virtual void CompletedSemanticAnalysis(Compiler &compiler) {}
   virtual void CompletedCodeGeneration(Compiler &compiler) {}
+  virtual void CompletedRunningTasks(Compiler &compiler) {}
 };
 } // namespace stone
 namespace stone {

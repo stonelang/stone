@@ -278,6 +278,9 @@ public:
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+
+public:
+  bool HasError() { return diags.HasError(); }
 };
 
 class Compiler final : public CompilerBase {
@@ -347,7 +350,6 @@ public:
   //   StatisticEngine &GetStats() {
   //     return GetConfig().GetLangContext().GetStats();
   //   }
-  //   bool HasError() { return
   //   GetConfig().GetLangContext().GetDiags().HasError(); }
 
   // public:

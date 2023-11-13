@@ -49,11 +49,19 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     listener->CompletedCommandLineParsing(*compilerContext);
   }
   auto status = compiler->Configure(std::move(compilerContext));
-  if(status.IsError()){
+  if (status.IsError()) {
     return Finish(Status::Error());
   }
   if (listener) {
     listener->CompletedConfiguration(*compiler);
+  }
+
+  compiler->BuildTasks();
+  if (compiler->HasError()) {
+    return Finish(Status::Error());
+  }
+  if (listener) {
+    listener->CompletedBuildingTasks(*compiler);
   }
 
   // ERROR(error_no_compile_args, none, "no arguments provided to
