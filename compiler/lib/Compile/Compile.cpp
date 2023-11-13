@@ -31,23 +31,20 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return status.GetFlag();
   };
 
-
   SyntaxDiagnosticFormatter formatter;
   SyntaxDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
-  
+
   auto compiler = std::make_unique<Compiler>();
   compiler->AddDiagnosticConsumer(consumer);
 
-  // CompilerCommandLine commandLine;
-  // auto compilerContext = commandLine.Parse(args);
+  CompilerCommandLine commandLine;
+  auto compilerContext = commandLine.Parse(args, compiler->GetDiags());
 
-  // if (listener && compilerContext) {
-  //   listener->CompletedCommandLineParsing(commandLine, *compilerContext);
-  // }
-
-  // Compiler compiler;
-  // compiler.Configure(compilerContext);
+  if (listener && compilerContext) {
+    //listener->CompletedCommandLineParsing(commandLine, *compilerContext);
+  }
+  compiler->Configure(std::move(compilerContext));
 
   // ERROR(error_no_compile_args, none, "no arguments provided to
   // 'stone-compile'", ())

@@ -48,7 +48,8 @@ using CompilerMemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
 class CompilerCommandLine;
-class CompilerContext final {
+
+class CompilerContext {
   friend CompilerCommandLine;
 
 private:

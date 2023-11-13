@@ -17,9 +17,13 @@ using namespace stone::syn;
 Compiler::Compiler() = default;
 Compiler::~Compiler() = default;
 
-// void Compiler::Configure(const CompilerContext &context) {
-//   compilerContext = context;
-// }
+Status Compiler::Configure(std::unique_ptr<CompilerContext> compilerContext) {
+  compilerContext = std::move(compilerContext);
+  compilerStats.reset(new CompilerStats(*this));
+  compilerQueue.reset(new CompilerQueue(*this));
+
+  return Status();
+}
 
 // void Compiler::Setup() {
 

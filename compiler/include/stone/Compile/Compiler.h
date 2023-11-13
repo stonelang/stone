@@ -246,12 +246,11 @@ public:
 };
 
 class CompilerBase {
-
 protected:
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
-  CompilerContext compilerContext;
+  std::unique_ptr<CompilerContext> compilerContext;
 
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> sourceBufferIDs;
@@ -267,8 +266,7 @@ protected:
 public:
   SrcMgr &GetSrcMgr() { return srcMgr; }
   DiagnosticEngine &GetDiags() { return diags; }
-  CompilerContext &GetCompilerContext() { return compilerContext; }
-  const CompilerContext &GetCompilerContext() const { return compilerContext; }
+  const CompilerContext &GetCompilerContext() const { return *compilerContext; }
 
 public:
   unsigned CreateSourceBuffer(const CompilerInputFile &input);
@@ -287,7 +285,7 @@ class Compiler final : public CompilerBase {
 
   CompilerListener *listener;
 
-  std::unique_ptr<CompilerStats> stats;
+  std::unique_ptr<CompilerStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
@@ -322,7 +320,7 @@ public:
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
-  Status Configure(const CompilerContext &compilerContext);
+  Status Configure(std::unique_ptr<CompilerContext> compilerContext);
   void Finish();
 
 public:
@@ -402,10 +400,10 @@ public:
   //   }
 
   CompilerAction &GetAction() {
-    return compilerContext.GetCompilerOptions().GetAction();
+    return compilerContext->GetCompilerOptions().GetAction();
   }
   const CompilerAction &GetAction() const {
-    return compilerContext.GetCompilerOptions().GetAction();
+    return compilerContext->GetCompilerOptions().GetAction();
   }
 
   // public:
