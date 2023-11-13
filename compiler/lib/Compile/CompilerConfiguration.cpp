@@ -377,7 +377,7 @@ Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args,
         diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
   // Ok for now.
-  if (GetDiags().HasError()) {
+  if (GetLangContext().GetDiags().HasError()) {
     return Status::Error();
   }
   if (ParseCompilerAction(*compilerInputArgList).IsError()) {

@@ -204,8 +204,6 @@ public:
     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
   }
 
-  DiagnosticEngine &GetDiags() { GetLangContext().GetDiags(); }
-
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
   Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
