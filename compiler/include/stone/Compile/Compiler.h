@@ -243,7 +243,7 @@ public:
   CompilerQueue(Compiler &compiler);
 
 public:
-  void AddTask();
+  void AddTask(CompilerTask* task);
   void RemoveTask();
   void RunTasks();
 };
@@ -295,8 +295,8 @@ private:
   void AddTask(ActionKind kind);
 
 public:
-  //TODO: May want to pass by pointer 
-  void SetupDiagnostics(DiagnosticListener& listener);
+  // TODO: May want to pass by pointer
+  void SetupDiagnostics(DiagnosticListener &listener);
 
 private:
   void SetListener(CompilerListener *listener);

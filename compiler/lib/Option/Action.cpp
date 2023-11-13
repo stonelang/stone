@@ -101,4 +101,4 @@ file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
   assert(false && "No file-type found for this particular mode-kind");
 }
 
-Action::Action(){}
+Action::Action() {}

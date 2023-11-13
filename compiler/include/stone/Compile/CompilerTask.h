@@ -78,6 +78,9 @@ public:
 
 public:
   virtual Status Execute(Compiler &compiler) override;
+
+public:
+  static PrintHelpTask* Create(const Compiler& compiler);
 };
 
 class PrintVersionTask final : public CompilerTask {

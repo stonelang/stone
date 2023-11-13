@@ -62,10 +62,10 @@ llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {
 void CompilerConfiguration::SetMainExecutable(const char *arg0,
                                               void *mainAddr) {
 
-  //TODO: 
-  // GetCompilerOptions().MainExecutablePath(llvm::sys::fs::getMainExecutable(arg0, mainAddr));
-  // GetCompilerOptions().MainExecutableName =
-  //     file::GetStem(GetCompilerOptions().MainExecutablePath);
+  // TODO:
+  //  GetCompilerOptions().MainExecutablePath(llvm::sys::fs::getMainExecutable(arg0,
+  //  mainAddr)); GetCompilerOptions().MainExecutableName =
+  //      file::GetStem(GetCompilerOptions().MainExecutablePath);
 }
 
 void CompilerConfiguration::SetupWorkingDirectory() {
@@ -158,8 +158,9 @@ llvm::Optional<ModuleBuffers> CompilerConfiguration::GetInputBuffersIfPresent(
   // // FIXME: Working with filenames is fragile, maybe use the real path
   // // or have some kind of FileManager.
 
-  // using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
-  // InputFileOrError inputFileOrError =
+  // using InputFileOrError =
+  // llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>; InputFileOrError
+  // inputFileOrError =
   //     GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
 
   // if (!inputFileOrError) {
@@ -480,8 +481,9 @@ CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
   std::tie(GetCodeGenOptions().llvmTargetOpts, GetCodeGenOptions().targetCPU,
            GetCodeGenOptions().targetFeatures,
            GetCodeGenOptions().effectiveClangTriple) =
-      stone::GetIRTargetOptions(
-          GetCodeGenOptions(), GetLangContext().GetLangOptions(), *clangContext);
+      stone::GetIRTargetOptions(GetCodeGenOptions(),
+                                GetLangContext().GetLangOptions(),
+                                *clangContext);
 
   // if (clangContext.GetInstance().getLangOpts().PointerAuthCalls) {
   //   SetPointerAuthOptions(const_cast<CodeGenOptions

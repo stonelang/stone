@@ -131,7 +131,7 @@ Status Compiler::ForEachSyntaxFile(EachSyntaxFileCallback notify) {
   return Status();
 }
 
-void Compiler::SetupDiagnostics(DiagnosticListener& listener) {
+void Compiler::SetupDiagnostics(DiagnosticListener &listener) {
   GetDiags().AddListener(listener);
 }
 
@@ -147,13 +147,8 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
   return nullptr;
 }
 
-void Compiler::Finish() {
-
-
-}
-CompilerAction::CompilerAction() {
-
-}
+void Compiler::Finish() {}
+CompilerAction::CompilerAction() {}
 // CodeGenContext &Compiler::GetCodeGenContext() { return *cgc; }
 
 void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const {
