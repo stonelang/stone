@@ -41,10 +41,20 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   CompilerCommandLine commandLine;
   auto compilerContext = commandLine.Parse(args, compiler->GetDiags());
 
-  if (listener && compilerContext) {
-    //listener->CompletedCommandLineParsing(commandLine, *compilerContext);
+  if (!compilerContext) {
+    return Finish(Status::Error());
   }
-  compiler->Configure(std::move(compilerContext));
+
+  if (listener) {
+    listener->CompletedCommandLineParsing(*compilerContext);
+  }
+  auto status = compiler->Configure(std::move(compilerContext));
+  if(status.IsError()){
+    return Finish(Status::Error());
+  }
+  if (listener) {
+    listener->CompletedConfiguration(*compiler);
+  }
 
   // ERROR(error_no_compile_args, none, "no arguments provided to
   // 'stone-compile'", ())
