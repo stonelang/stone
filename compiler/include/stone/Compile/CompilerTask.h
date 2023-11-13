@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_COMPILERTASK_H
 #define STONE_COMPILE_COMPILERTASK_H
 
+#include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerAllocation.h"
 
 namespace stone {

@@ -37,9 +37,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   // Setup the custom formatting to be able to handle syntax diagnostics such as
   // printing of decls.
-  SyntaxDiagnosticFormatter diagFormatter;
-  SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
-  TextDiagnosticListener diagListener(diagEmitter);
+  SyntaxDiagnosticFormatter formatter;
+  SyntaxDiagnosticEmitter emitter(formatter);
+  TextDiagnosticListener diagListener(emitter);
   compiler.SetupDiagnostics(diagListener);
 
   STONE_DEFER { compiler.Finish(); };

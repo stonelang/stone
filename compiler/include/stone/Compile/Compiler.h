@@ -127,7 +127,7 @@ class CompilerConfiguration final {
   std::unique_ptr<ClangContext> clangContext;
 
 public:
-  CompilerConfiguration(Compiler &compiler);
+  CompilerConfiguration();
   ~CompilerConfiguration();
 
 public:
@@ -235,6 +235,7 @@ public:
 
 class CompilerQueue final {
 
+  Compiler &compiler;
   // Simple queue for now.
   std::queue<CompilerTask *> runQueue;
 
@@ -251,7 +252,7 @@ class Compiler final {
   friend CompilerTask;
 
   CompilerListener *listener;
-  std::unique_ptr<CompilerStats> compilerStats;
+  std::unique_ptr<CompilerStats> stats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
 
@@ -294,7 +295,8 @@ private:
   void AddTask(ActionKind kind);
 
 public:
-  void SetupDiagnostics(DiagnosticListener listener);
+  //TODO: May want to pass by pointer 
+  void SetupDiagnostics(DiagnosticListener& listener);
 
 private:
   void SetListener(CompilerListener *listener);

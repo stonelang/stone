@@ -38,9 +38,8 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::opts;
 
-CompilerConfiguration::CompilerConfiguration(Compiler &compiler)
-    : compiler(compiler), clangContext(new ClangContext()),
-      langContext(langOpts) {
+CompilerConfiguration::CompilerConfiguration()
+    : clangContext(new ClangContext()), langContext(langOpts) {
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
 
@@ -63,10 +62,10 @@ llvm::Optional<unsigned> CompilerConfiguration::CreateCodeCompletionBuffer() {
 void CompilerConfiguration::SetMainExecutable(const char *arg0,
                                               void *mainAddr) {
 
-  GetCompilerOptions().MainExecutablePath =
-      llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  GetCompilerOptions().MainExecutableName =
-      file::GetStem(GetCompilerOptions().MainExecutablePath);
+  //TODO: 
+  // GetCompilerOptions().MainExecutablePath(llvm::sys::fs::getMainExecutable(arg0, mainAddr));
+  // GetCompilerOptions().MainExecutableName =
+  //     file::GetStem(GetCompilerOptions().MainExecutablePath);
 }
 
 void CompilerConfiguration::SetupWorkingDirectory() {
@@ -77,30 +76,31 @@ Status CompilerConfiguration::CreateSourceBuffers() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
-  const llvm::Optional<unsigned> codeCompletionBufferID =
-      CreateCodeCompletionBuffer();
+  // const llvm::Optional<unsigned> codeCompletionBufferID =
+  //     CreateCodeCompletionBuffer();
 
-  const auto &inputs = GetCompilerOptions().inputsAndOutputs.GetInputs();
-  const bool shouldRecover =
-      GetCompilerOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
+  // const auto &inputs = GetCompilerOptions().inputsAndOutputs.GetInputs();
+  // const bool shouldRecover =
+  //     GetCompilerOptions().inputsAndOutputs.ShouldRecoverMissingInputs();
 
-  bool hasFailed = false;
-  for (const CompilerInputFile &input : inputs) {
-    bool failed = false;
-    llvm::Optional<unsigned> bufferID =
-        GetRecordedBufferID(input, shouldRecover, failed);
-    hasFailed |= failed;
+  // bool hasFailed = false;
+  // for (const CompilerInputFile &input : inputs) {
+  //   bool failed = false;
+  //   llvm::Optional<unsigned> bufferID =
+  //       GetRecordedBufferID(input, shouldRecover, failed);
+  //   hasFailed |= failed;
 
-    if (!bufferID.hasValue() || !input.IsPrimary()) {
-      continue;
-    }
-    RecordPrimarySourceID(*bufferID);
-  }
-  if (hasFailed) {
-    return Status::Error();
-  }
+  //   if (!bufferID.hasValue() || !input.IsPrimary()) {
+  //     continue;
+  //   }
+  //   RecordPrimarySourceID(*bufferID);
+  // }
+  // if (hasFailed) {
+  //   return Status::Error();
+  // }
 
-  return stone::Status();
+  // return stone::Status();
+  return Status();
 }
 
 llvm::Optional<unsigned> CompilerConfiguration::GetRecordedBufferID(
@@ -150,27 +150,27 @@ llvm::Optional<unsigned> CompilerConfiguration::GetRecordedBufferID(
 llvm::Optional<ModuleBuffers> CompilerConfiguration::GetInputBuffersIfPresent(
     const CompilerInputFile &input) {
 
-  if (auto b = input.GetBuffer()) {
-    return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
-        b->getBuffer(), b->getBufferIdentifier()));
-  }
+  // if (auto b = input.GetBuffer()) {
+  //   return ModuleBuffers(llvm::MemoryBuffer::getMemBufferCopy(
+  //       b->getBuffer(), b->getBufferIdentifier()));
+  // }
 
-  // FIXME: Working with filenames is fragile, maybe use the real path
-  // or have some kind of FileManager.
+  // // FIXME: Working with filenames is fragile, maybe use the real path
+  // // or have some kind of FileManager.
 
-  using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
-  InputFileOrError inputFileOrError =
-      GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
+  // using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
+  // InputFileOrError inputFileOrError =
+  //     GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
 
-  if (!inputFileOrError) {
-    GetLangContext().GetDiags().PrintD(SrcLoc(),
-                                     diag::err_unable_to_open_buffer_for_file,
-                                     diag::LLVMStr(input.GetFileName()));
-    return llvm::None;
-  }
+  // if (!inputFileOrError) {
+  //   GetLangContext().GetDiags().PrintD(SrcLoc(),
+  //                                      diag::err_unable_to_open_buffer_for_file,
+  //                                      diag::LLVMStr(input.GetFileName()));
+  //   return llvm::None;
+  // }
 
-  // Just return the file buffer for now
-  return ModuleBuffers(std::move(*inputFileOrError));
+  // // Just return the file buffer for now
+  // return ModuleBuffers(std::move(*inputFileOrError));
   // if (!fb) {
   //   GetLangContext().GetDiags().PrintD(SrcLoc(),
   //   diag::err_unable_to_open_buffer_for_file,
@@ -204,7 +204,7 @@ llvm::Optional<ModuleBuffers> CompilerConfiguration::GetInputBuffersIfPresent(
   //                      nullptr, sourceinfo.hasValue() ?
   //                      std::move(sourceinfo.getValue()) : nullptr);
 
-  // return llvm::None;
+  return llvm::None;
 }
 
 void CompilerConfiguration::SetTargetTriple(StringRef Triple) {
@@ -217,15 +217,18 @@ void CompilerConfiguration::SetTargetTriple(const llvm::Triple &triple) {
 
 unsigned
 CompilerConfiguration::CreateSourceBuffer(const CompilerInputFile &input) {
-  auto fb = GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
-  if (!fb) {
-    GetLangContext().GetDiags().PrintD(SrcLoc(),
-                                       diag::err_unable_to_open_buffer_for_file,
-                                       diag::LLVMStr(input.GetFileName()));
-  }
-  auto srcID = GetLangContext().GetSrcMgr().addNewSourceBuffer(std::move(*fb));
-  assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
-  return srcID;
+  // TODO: Remove
+  //  auto fb =
+  //  GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName()); if
+  //  (!fb) {
+  //    GetLangContext().GetDiags().PrintD(SrcLoc(),
+  //                                       diag::err_unable_to_open_buffer_for_file,
+  //                                       diag::LLVMStr(input.GetFileName()));
+  //  }
+  //  auto srcID =
+  //  GetLangContext().GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  //  assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
+  //  return srcID;
 }
 
 void CompilerConfiguration::RecordPrimarySourceID(unsigned primarySourceID) {
@@ -337,7 +340,8 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args, const char *arg0) {
+Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args,
+                                        const char *arg0) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
@@ -476,8 +480,8 @@ CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
   std::tie(GetCodeGenOptions().llvmTargetOpts, GetCodeGenOptions().targetCPU,
            GetCodeGenOptions().targetFeatures,
            GetCodeGenOptions().effectiveClangTriple) =
-      stone::GetIRTargetOptions(GetCodeGenOptions(), GetLangContext().GetLangOptions(),
-                                clangContext);
+      stone::GetIRTargetOptions(
+          GetCodeGenOptions(), GetLangContext().GetLangOptions(), *clangContext);
 
   // if (clangContext.GetInstance().getLangOpts().PointerAuthCalls) {
   //   SetPointerAuthOptions(const_cast<CodeGenOptions
@@ -486,7 +490,6 @@ CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
   // }
   return Status();
 }
-
 
 // TODO: Look at SetupWorkingDirectory
 llvm::StringRef

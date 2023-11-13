@@ -10,15 +10,16 @@
 using namespace stone;
 using namespace stone::syn;
 
-Compiler::Compiler() : config(*this), queue(*this) {}
+Compiler::Compiler() : queue(*this), stats(new CompilerStats(*this)) {
+  GetConfig().GetLangContext().GetStats().Register(stats.get());
+}
 Compiler::~Compiler() = default;
 
 void Compiler::Setup() {
 
-  compilerStats.reset(new CompilerStats(*this));
-  GetConfig().GetLangContext().GetStats().Register(compilerStats);
-
-  SetupSyntaxContext();
+  // compilerStats.reset(new CompilerStats(*this));
+  // GetConfig().GetLangContext().GetStats().Register(compilerStats);
+  // SetupSyntaxContext();
 }
 
 /// Setup SyntaxContext based on the action
@@ -130,8 +131,8 @@ Status Compiler::ForEachSyntaxFile(EachSyntaxFileCallback notify) {
   return Status();
 }
 
-void Compiler::SetupDiagnostics(DiagnosticListener listener) {
-  GetDiags().AddListener(diagListener);
+void Compiler::SetupDiagnostics(DiagnosticListener& listener) {
+  GetDiags().AddListener(listener);
 }
 
 size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }
@@ -146,6 +147,13 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
   return nullptr;
 }
 
+void Compiler::Finish() {
+
+
+}
+CompilerAction::CompilerAction() {
+
+}
 // CodeGenContext &Compiler::GetCodeGenContext() { return *cgc; }
 
 void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const {

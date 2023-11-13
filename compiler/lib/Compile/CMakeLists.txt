@@ -7,6 +7,7 @@ set(stone_compile_sources
 	CompilerInputsConverter.cpp
 	CompilerOptionsConverter.cpp
 	CompilerOutputsConverter.cpp
+	CompilerQueue.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	Serialization.cpp
@@ -15,7 +16,7 @@ set(stone_compile_sources
 	StoneGen
 	StoneParse
 	StoneSem
-	StoneSession
+	StoneOption
 	clangFrontend
 
 
