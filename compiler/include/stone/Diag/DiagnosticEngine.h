@@ -408,6 +408,13 @@ public:
 
   template <typename... ArgTypes>
   InFlightDiagnostic
+  PrintD(Diag<ArgTypes...> id,
+         typename detail::PassArgument<ArgTypes>::type... args) {
+    return PrintD(SrcLoc(), Diagnostic(Diagnostic(id, std::move(args)...)));
+  }
+
+  template <typename... ArgTypes>
+  InFlightDiagnostic
   PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
     return PrintD(loc, Diagnostic(Diagnostic(id, std::move(args)...)),

@@ -7,6 +7,7 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
@@ -36,7 +37,9 @@ class TargetMachine;
 namespace stone {
 
 class Compiler;
+class CompilerTask;
 class CodeGenContext;
+class CompilerConfiguration;
 
 class CompilerStats final : public Stats {
   const Compiler &compiler;
@@ -47,16 +50,17 @@ public:
   void Print(ColorStream &stream) override;
 };
 
+using EachSyntaxFileCallback = std::function<Status(syn::SyntaxFile &)>;
+
 using EachSyntaxFileToTypeCheckCallback = std::function<Status(
     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
-  const CompilerConfiguration &compilerInvocation;
+  const CompilerConfiguration &config;
 
 public:
-  CompilerPrettyStackTrace(CompilerConfiguration &compilerInvocation)
-      : compilerInvocation(compilerInvocation) {}
+  CompilerPrettyStackTrace(CompilerConfiguration &config) : config(config) {}
   void print(llvm::raw_ostream &os) const override;
 };
 
@@ -127,7 +131,9 @@ public:
   ~CompilerConfiguration();
 
 public:
-  Status Configure(llvm::ArrayRef<const char *> args);
+  Status Configure(llvm::ArrayRef<const char *> args, const char *arg0);
+  void SetMainExecutable(const char *arg0, void *mainAddr);
+  void SetupWorkingDirectory();
 
 public:
   Status CreateSourceBuffers();
@@ -242,13 +248,17 @@ public:
 };
 
 class Compiler final {
+  friend CompilerTask;
 
   CompilerListener *listener;
   std::unique_ptr<CompilerStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
 
+  /// Runs tasks
   CompilerQueue queue;
+
+  /// Configures the compiler
   CompilerConfiguration config;
 
   // llvm::sys::TimePoint<> startTime;
@@ -277,29 +287,47 @@ public:
   void Setup();
   void Finish();
 
+  void BuildTasks();
+  void RunTasks();
+
+private:
+  void AddTask(ActionKind kind);
+
 public:
-  void SetMainExecutable(const char *arg0, void *mainAddr);
-  void SetupWorkingDirectory();
   void SetupDiagnostics(DiagnosticListener listener);
 
 private:
   void SetListener(CompilerListener *listener);
+  CompilerListener *GetListener() { return listener; }
+
   void SetupSyntaxContext();
   void SetupOutputBackend();
 
 public:
   CompilerQueue &GetQueue() { return queue; }
   CompilerConfiguration &GetConfig() { return config; }
-  llvm::BumpPtrAllocator &GetAllocator() { return bumpAlloc; }
+  const CompilerConfiguration &GetConfig() const { return config; }
+  llvm::BumpPtrAllocator &GetAllocator() const { return bumpAlloc; }
+
+  DiagnosticEngine &GetDiags() {
+    return GetConfig().GetLangContext().GetDiags();
+  }
+  StatisticEngine &GetStats() {
+    return GetConfig().GetLangContext().GetStats();
+  }
+  bool HasError() { return GetConfig().GetLangContext().GetDiags().HasError(); }
 
 public:
   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
   const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
-  CompilerListener *GetListener() { return listener; }
 
-  bool CanCompile() { return GetCompilerOptions().GetAction().CanCompile(); }
-  bool CanCodeGen() { return GetCompilerOptions().GetAction().CanCodeGen(); }
+  bool CanCompile() const {
+    return GetConfig().GetCompilerOptions().GetAction().CanCompile();
+  }
+  bool CanCodeGen() const {
+    return GetConfig().GetCompilerOptions().GetAction().CanCodeGen();
+  }
 
   bool IsActionPostTypeChecking() {
     switch (GetAction().GetKind()) {
@@ -337,20 +365,25 @@ public:
     msf.dyn_cast<syn::SyntaxFile *>();
   }
 
-  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
+  CompilerAction &GetAction() {
+    return GetConfig().GetCompilerOptions().GetAction();
+  }
   const CompilerAction &GetAction() const {
-    return GetCompilerOptions().GetAction();
+    return GetConfig().GetCompilerOptions().GetAction();
   }
 
 public:
   // TODO: Consider moving to the Compiler
   ModuleOutputMode GetModuleOutputMode() {
     // TODO: This must be computed in the future.
-    return GetModuleOptions().moduleOutputMode;
+    return GetConfig().GetModuleOptions().moduleOutputMode;
   }
 
   bool IsWholeModuleCodeGen() {
-    return ((GetCompilerOptions().GetInputsAndOutputs().HasPrimaryInputs())
+    return ((GetConfig()
+                 .GetCompilerOptions()
+                 .GetInputsAndOutputs()
+                 .HasPrimaryInputs())
                 ? false
                 : true);
   }
@@ -392,7 +425,6 @@ public:
   void PrintDiagnostics();
   void PrintStatistics();
 
-public:
 public:
   /// Return the total amount of physical memory allocated for representing
   /// AST nodes and type information.

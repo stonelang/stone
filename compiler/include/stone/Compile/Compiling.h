@@ -40,10 +40,5 @@ void PrintIR(Compiler &compiler, CodeGenContext &codeGenContext);
 
 } // namespace compiling
 
-class CompilerRequest {};
-
-class SyntaxParingCompilerRequest() {}
-class TypeCheckingCompilerRequest {};
-
 } // namespace stone
 #endif

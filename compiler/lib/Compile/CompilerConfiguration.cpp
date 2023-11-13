@@ -33,7 +33,6 @@
 #include "llvm/Support/TimeProfiler.h"
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/TargetParser/Triple.h"
 
 using namespace stone;
 using namespace stone::syn;
@@ -70,8 +69,8 @@ void CompilerConfiguration::SetMainExecutable(const char *arg0,
       file::GetStem(GetCompilerOptions().MainExecutablePath);
 }
 
-void CompilerConfiguration::SetupWorkingDirector() {
-  llvm::sys::fs::current_path(compiler.GetCompilerOptions().workDirectory);
+void CompilerConfiguration::SetupWorkingDirectory() {
+  llvm::sys::fs::current_path(GetCompilerOptions().workDirectory);
 }
 
 Status CompilerConfiguration::CreateSourceBuffers() {
@@ -164,7 +163,7 @@ llvm::Optional<ModuleBuffers> CompilerConfiguration::GetInputBuffersIfPresent(
       GetLangContext().GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    GetLangContext.GetDiags().PrintD(SrcLoc(),
+    GetLangContext().GetDiags().PrintD(SrcLoc(),
                                      diag::err_unable_to_open_buffer_for_file,
                                      diag::LLVMStr(input.GetFileName()));
     return llvm::None;
@@ -338,7 +337,7 @@ IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                          clangTargetOpts.Features, clangTargetOpts.Triple);
 }
 
-Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args) {
+Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args, const char *arg0) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
@@ -477,7 +476,7 @@ CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
   std::tie(GetCodeGenOptions().llvmTargetOpts, GetCodeGenOptions().targetCPU,
            GetCodeGenOptions().targetFeatures,
            GetCodeGenOptions().effectiveClangTriple) =
-      stone::GetIRTargetOptions(GetCodeGenOptions(), GetLangOptions(),
+      stone::GetIRTargetOptions(GetCodeGenOptions(), GetLangContext().GetLangOptions(),
                                 clangContext);
 
   // if (clangContext.GetInstance().getLangOpts().PointerAuthCalls) {
@@ -488,9 +487,11 @@ CompilerConfiguration::ParseTargetOptions(llvm::opt::InputArgList &args) {
   return Status();
 }
 
+
+// TODO: Look at SetupWorkingDirectory
 llvm::StringRef
 CompilerConfiguration::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
-  if (auto *arg = ial.getLastArg(opts::WorkDir)) {
+  if (auto *arg = args.getLastArg(opts::WorkDir)) {
     llvm::SmallString<128> smallStr;
     smallStr = arg->getValue();
     llvm::sys::fs::make_absolute(smallStr);
@@ -499,6 +500,7 @@ CompilerConfiguration::ParseWorkDirectory(const llvm::opt::InputArgList &args) {
   return llvm::StringRef();
 }
 
+// TODO: PrintHelpTask
 void CompilerConfiguration::PrintHelp() {
 
   if (GetAction().IsPrintHelp() || GetAction().IsPrintHelpHidden()) {
@@ -508,7 +510,7 @@ void CompilerConfiguration::PrintHelp() {
 
     std::unique_ptr<llvm::opt::OptTable> optTable(opts::CreateOptTable());
     optTable->printHelp(llvm::outs(),
-                        GetCompilerOptions().ExecutingProgramName.data(),
+                        GetCompilerOptions().MainExecutableName.data(),
                         "stone-compile", IncludedFlagsBitmask,
                         ExcludedFlagsBitmask, /*ShowAllAliases*/ false);
   }

@@ -16,7 +16,7 @@ Compiler::~Compiler() = default;
 void Compiler::Setup() {
 
   compilerStats.reset(new CompilerStats(*this));
-  GetLangContext().GetStats().Register(compilerStats);
+  GetConfig().GetLangContext().GetStats().Register(compilerStats);
 
   SetupSyntaxContext();
 }
@@ -24,8 +24,9 @@ void Compiler::Setup() {
 /// Setup SyntaxContext based on the action
 void Compiler::SetupSyntaxContext() {
 
-  syntaxContext.reset(new SyntaxContext(
-      GetLangContext(), GetSearchPathOptions(), GetClangContext()));
+  syntaxContext.reset(new SyntaxContext(GetConfig().GetLangContext(),
+                                        GetConfig().GetSearchPathOptions(),
+                                        GetConfig().GetClangContext()));
 }
 
 std::unique_ptr<llvm::raw_fd_ostream>
@@ -56,20 +57,23 @@ Compiler::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const {
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
-  return GetCompilerOptions()
+  return GetConfig()
+      .GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
-  return GetCompilerOptions()
+  return GetConfig()
+      .GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
     const syn::SyntaxFile &sf) const {
-  return GetCompilerOptions()
+  return GetConfig()
+      .GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }
@@ -85,49 +89,53 @@ void Compiler::ResolveImports() {
 Status Compiler::ForEachSyntaxFileToTypeCheck(
     EachSyntaxFileToTypeCheckCallback notify) {
 
-  if (GetTypeCheckMode() == TypeCheckMode::WholeModule) {
-    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
-      if (!syntaxFile) {
-        continue;
-      }
-      if (notify(*syntaxFile, GetTypeCheckerOptions(),
-                 GetListener().IsError())) {
-        return Status::Error();
-      }
-    }
-  } else {
-    for (auto *syntaxFile :
-         GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-      if (notify(*syntaxFile, GetTypeCheckerOptions(), GetListener())
-              .IsError()) {
-        return Status::Error();
-      }
-    }
-  }
+  // if (GetConfig().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
 
-  Status Compiler::ForEachSyntaxFile(
-      std::function<Status(SyntaxFile &)> notify) {
-    for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-      auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
-      if (!syntaxFile) {
-        continue;
-      }
-      if (notify(*syntaxFile).IsError()) {
-        return Status::Error();
-      }
-    }
-    return Status();
-  }
+  //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+  //     auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
+  //     if (!syntaxFile) {
+  //       continue;
+  //     }
+  //     if (notify(*syntaxFile, GetConfig().GetTypeCheckerOptions(),
+  //                GetListener())
+  //             .IsError()) {
+  //       return Status::Error();
+  //     }
+  //   }
+  // } else {
+  //   for (auto *syntaxFile :
+  //        GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
+  //     if (notify(*syntaxFile, GetConfig().GetTypeCheckerOptions(),
+  //                GetListener())
+  //             .IsError()) {
+  //       return Status::Error();
+  //     }
+  //   }
+  // }
+
+  return Status();
+}
+
+Status Compiler::ForEachSyntaxFile(EachSyntaxFileCallback notify) {
+
+  // for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+  //   auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
+  //   if (!syntaxFile) {
+  //     continue;
+  //   }
+  //   if (notify(*syntaxFile).IsError()) {
+  //     return Status::Error();
+  //   }
+  // }
+  return Status();
 }
 
 void Compiler::SetupDiagnostics(DiagnosticListener listener) {
-  compiler.GetDiags().AddListener(diagListener);
+  GetDiags().AddListener(diagListener);
 }
 
-size_t Compiler::GetgetTotalMemUsed() { return bumpAlloc.getTotalMemory(); }
+size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }
 
-void Compiler::PrintVersion() {}
 void Compiler::PrintTimers() {}
 void Compiler::PrintDiagnostics() {}
 void Compiler::PrintStatistics() {}
@@ -140,17 +148,19 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
 
 // CodeGenContext &Compiler::GetCodeGenContext() { return *cgc; }
 
-void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const override {
+void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const {
 
   //   auto effective =
-  //   GetCompilerOptions().effectiveCompilerVersion; if
+  //   GetConfig().GetCompilerOptions().effectiveCompilerVersion; if
   //   (effective
   //   != version::Version::GetCurrentCompilerVersion()) {
   //     os << "Compiling with effective version " << effective;
   //   } else {
   //     os << "Compiling with the current compilerInvocationuage version";
   //   }
-  //   if (Invocation.GetCompilerOptions().allowModuleWithCompilerErrors) {
+  //   if
+  //   (Invocation.GetConfig().GetCompilerOptions().allowModuleWithCompilerErrors)
+  //   {
   //     os << " while allowing modules with compiler errors";
   //   }
   //   os << "\n";

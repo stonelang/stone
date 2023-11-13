@@ -32,7 +32,6 @@ class CodeGenScope;
 class TargetOptions;
 class LangOptions;
 class DiagnosticEngine;
-class Compiler;
 class TypeCheckerListener;
 class CodeGenListener;
 class TypeCheckerOptions;

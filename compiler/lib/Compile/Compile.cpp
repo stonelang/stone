@@ -2,6 +2,7 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/Compiling.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
@@ -44,7 +45,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { compiler.Finish(); };
 
   if (args.empty()) {
-    compiler.Report(diag::err_no_input_files);
+    compiler.GetDiags().PrintD(diag::err_no_input_files);
     return Finish(Status::Error());
   }
 
@@ -94,6 +95,90 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return Finish();
 }
 
+void Compiler::BuildTasks() { AddTask(GetAction().GetKind()); }
+
+void Compiler::AddTask(ActionKind kind) {
+
+  // switch (GetAction().GetKind()) {
+  // case ActionKind::PrintHelp: {
+  // case ActionKind::PrintHelpHidden:
+  //   GetQueue().AddTask(PrintHelpTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::PrintVersion: {
+  //   GetQueue().AddTask(PrintVersionTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::Parse: {
+  //   GetQueue().AddTask(ParseTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::ResolveImports: {
+  //   AddTask(ActionKind::Parse);
+  //   GetQueue().AddTask(ResolveImportsTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::DumpSyntax: {
+  //   AddTask(ActionKind::Parse);
+  //   GetQueue().AddTask(DumpSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::TypeCheck: {
+  //   AddTask(ActionKind::ResolveImports);
+  //   GetQueue().AddTask(TypeCheckTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::PrintSyntax: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::PrintSyntax: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::EmitModule: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(EmitModuleTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::MergeModules: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::EmitIRBefore: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::EmitIRAfter: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(PrintSyntaxTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::EmitBC: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(EmitBCTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::EmitObject: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(EmitObjectTask::Create(*this));
+  //   break;
+  // }
+  // case ActionKind::DumpTypeInfo: {
+  //   AddTask(ActionKind::TypeCheck);
+  //   GetQueue().AddTask(DumpTypeInfoTask::Create(*this));
+  //   break;
+  // }
+  // default:
+  //   break;
+}
+
+void Compiler::RunTasks() {}
+
 // Status compiling::Compile(Compiler &compiler) {
 
 //   Status status;
@@ -107,8 +192,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //     }
 //   }
 
-//   // Otherwise, default to performing syntax analysis with import resoltuion.
-//   if (compiling::ParseAndImportResolution(compiler).IsError()) {
+//   // Otherwise, default to performing syntax analysis with import
+//   resoltuion. if (compiling::ParseAndImportResolution(compiler).IsError())
+//   {
 //     status.SetIsError();
 //     return status;
 //   }
@@ -161,7 +247,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 //   assert([&]() -> bool {
 //     if (compiler.GetAction().IsParse()) {
-//       // Parsing gets triggered lazily, but let's make sure we have the right
+//       // Parsing gets triggered lazily, but let's make sure we have the
+//       right
 //       // input kind.
 //       return llvm::all_of(
 //           compiler.GetCompilerOptions().inputsAndOutputs.GetInputs(),
@@ -209,7 +296,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   return Status();
 // }
 
-// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile &syntaxFile)
+// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile
+// &syntaxFile)
 // {
 //   return Status();
 // }
@@ -266,18 +354,21 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //   compiling::GenCode(compiler, codeGenContext);
 // }
 
-// Status compiling::GenIR(Compiler &compiler, CodeGenContext &codeGenContext) {
+// Status compiling::GenIR(Compiler &compiler, CodeGenContext &codeGenContext)
+// {
 
 //   return Status();
 // }
 
-// void compiling::DumpIR(Compiler &compiler, CodeGenContext &codeGenContext) {}
+// void compiling::DumpIR(Compiler &compiler, CodeGenContext &codeGenContext)
+// {}
 
 // void compiling::PrintIR(Compiler &compiler, CodeGenContext &codeGenContext)
 // {}
 
 /// Code generation
-// Status compiling::GenCode(Compiler &compiler, CodeGenContext &codeGenContext)
+// Status compiling::GenCode(Compiler &compiler, CodeGenContext
+// &codeGenContext)
 // {
 
 //   if(GetInvocation().GetCodeGenOptions().codeGenOutputKind ==
@@ -314,7 +405,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 //                                llvm::StringRef(), codeGenListener);
 
 // return Status();
-}
+//}
 
 // static Status DumpIR(Compiler &compiler, CodeGenContext &cgc) {
 //   Status::Success();
