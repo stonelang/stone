@@ -20,4 +20,14 @@ void TextDiagnosticConsumer::Consume(const DiagnosticMessage &diagEvent) {
   GetEmitter().EmitDiagnostic(diagEvent);
 }
 
+void TextDiagnosticConsumer::Consume(const TextDiagnosticEmitter& emitter, const DiagnosticMessage &diagEvent) {
+
+  // DiagnosticConsumer::Listen(diagEvent);
+
+  // switch(diagEvent.GetDiagLevel()){
+
+  // }
+  GetEmitter().EmitDiagnostic(diagEvent);
+}
+
 bool TextDiagnosticConsumer::Finish() { return false; }
