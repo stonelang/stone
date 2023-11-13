@@ -131,8 +131,8 @@ Status Compiler::ForEachSyntaxFile(EachSyntaxFileCallback notify) {
   return Status();
 }
 
-void Compiler::SetupDiagnostics(DiagnosticConsumer &listener) {
-  GetDiags().AddListener(listener);
+void Compiler::SetupDiagnostics(DiagnosticConsumer &consumer) {
+  GetDiags().AddConsumer(consumer);
 }
 
 size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }

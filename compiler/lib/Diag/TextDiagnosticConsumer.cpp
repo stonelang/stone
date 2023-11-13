@@ -10,25 +10,15 @@ TextDiagnosticConsumer::TextDiagnosticConsumer(TextDiagnosticEmitter &emitter)
 
 TextDiagnosticConsumer::~TextDiagnosticConsumer() {}
 
-void TextDiagnosticConsumer::Consume(const DiagnosticMessage &diagEvent) {
-
+void TextDiagnosticConsumer::Consume(const DiagnosticMessage &msg,
+                                     DiagnosticFormatter *formatter) {
+  if (formatter) {
+    // use this one else use DiagnosticEngine::Format(msg)
+  }
   // DiagnosticConsumer::Listen(diagEvent);
-
   // switch(diagEvent.GetDiagLevel()){
-
   // }
-  GetEmitter().EmitDiagnostic(diagEvent);
-}
-
-void TextDiagnosticConsumer::Consume(const TextDiagnosticEmitter &emitter,
-                                     const DiagnosticMessage &diagEvent) {
-
-  // DiagnosticConsumer::Listen(diagEvent);
-
-  // switch(diagEvent.GetDiagLevel()){
-
-  // }
-  GetEmitter().EmitDiagnostic(diagEvent);
+  // GetEmitter().EmitDiagnostic(msg);
 }
 
 bool TextDiagnosticConsumer::Finish() { return false; }

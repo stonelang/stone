@@ -314,11 +314,11 @@ public:
 
 public:
   /// Add an additional DiagnosticConsumer to receive diagnostics.
-  void AddListener(DiagnosticConsumer &listener) {
+  void AddConsumer(DiagnosticConsumer &listener) {
     listeners.push_back(&listener);
   }
   /// Remove a specific DiagnosticConsumer.
-  void RemoveListener(DiagnosticConsumer &listener) {
+  void RemoveConsumer(DiagnosticConsumer &listener) {
     listeners.erase(std::remove(listeners.begin(), listeners.end(), &listener));
   }
 
