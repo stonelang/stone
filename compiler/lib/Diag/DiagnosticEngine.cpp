@@ -234,8 +234,8 @@ void DiagnosticEngine::Print(ColorStream &os,
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
   auto diagnosticEvent = CreateDiagnosticMessage(diagnostic);
-  for (auto &listener : listeners) {
-    listener->Consume(*diagnosticEvent);
+  for (auto &consumer : consumers) {
+    consumer->Consume(*diagnosticEvent);
   }
 }
 
@@ -255,8 +255,8 @@ DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
 
 bool DiagnosticEngine::Finish() {
   bool hadError = false;
-  for (auto &listener : listeners) {
-    hadError |= listener->Finish();
+  for (auto &consumer : consumers) {
+    hadError |= consumer->Finish();
   }
   return hadError;
 }

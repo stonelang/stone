@@ -42,7 +42,6 @@ class InFlightDiagnostic;
 class Compiler;
 class CompilerConfiguration;
 class ClangContext;
-class CompilerContext;
 
 namespace syn {
 class SyntaxContext;
@@ -158,7 +157,7 @@ public:
   CodeGenListener *GetCodeGenListener() { return codeGenListener; }
 
 public:
-  virtual void CompletedCommandLineParsing(CompilerContext &context) {}
+  virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
   virtual void CompletedConfiguration(Compiler &compiler) {}
   virtual void CompletedBuildingTasks(Compiler &compiler) {}
   virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}

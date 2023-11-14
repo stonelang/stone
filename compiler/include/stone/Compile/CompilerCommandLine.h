@@ -29,7 +29,7 @@ class TargetMachine;
 
 namespace stone {
 
-class CompilerContext;
+class CompilerConfiguration;
 class CompilerCommandLine;
 
 using ConfigurationFileBuffers =
@@ -54,7 +54,7 @@ struct ModuleBuffers {
 using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
-class CompilerContext {
+class CompilerConfiguration {
   friend CompilerCommandLine;
 
 protected:
@@ -83,7 +83,7 @@ protected:
   DiagnosticEngine diags{srcMgr};
 
 public:
-  CompilerContext();
+  CompilerConfiguration();
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
@@ -125,13 +125,48 @@ public:
 
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+
+public:
+  InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
+    return PrintD(SrcLoc(), diagnostic);
+  }
+  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic) {
+    return GetDiags().PrintD(loc, diagnostic);
+  }
+
+  InFlightDiagnostic PrintD(DiagID diagID,
+                            llvm::ArrayRef<diag::Argument> args) {
+    return PrintD(SrcLoc(), diagID, args);
+  }
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+                            llvm::ArrayRef<diag::Argument> args) {
+    return GetDiags().PrintD(loc, diagID, args);
+  }
+
+  InFlightDiagnostic PrintD(DiagID diagID) { return PrintD(SrcLoc(), diagID); }
+
+  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+    return GetDiags().PrintD(loc, diagID);
+  }
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
+         typename detail::PassArgument<ArgTypes>::type... args) {
+    return GetDiags().PrintD(loc, id, std::forward<ArgTypes>(args)...);
+  }
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  PrintD(Diag<ArgTypes...> id,
+         typename detail::PassArgument<ArgTypes>::type... args) {
+    return GetDiags().PrintD(SrcLoc(), id, std::forward<ArgTypes>(args)...);
+  }
 };
 
 class CompilerCommandLine final {
-  CompilerContext &compilerContext;
+  CompilerConfiguration &config;
 
 public:
-  CompilerCommandLine(CompilerContext &compilerContext);
+  CompilerCommandLine(CompilerConfiguration &config);
 
 public:
   Status Parse(llvm::ArrayRef<const char *> args);

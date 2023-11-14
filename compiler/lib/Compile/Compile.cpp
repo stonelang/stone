@@ -27,10 +27,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  auto Finish = [&](Status status = Status::Success()) -> int {
-    return status.GetFlag();
-  };
-
   SyntaxDiagnosticFormatter formatter;
   SyntaxDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
@@ -38,19 +34,26 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   Compiler compiler;
   compiler.AddDiagnosticConsumer(consumer);
 
-  // If the args are empty, it is pointless to move forward. 
-  if (args.empty()) {
-    compiler.GetDiags().PrintD(diag::err_no_compile_args);
-    return Finish(Status::Error());
-  }
+  auto FinishCompile = [&](Status status = Status::Success()) -> int {
+    auto err = compiler.GetDiags().Finish();
+    if (status.IsError()) {
+      return status.GetFlag();
+    }
+    return err;
+  };
 
+  // If the args are empty, it is pointless to move forward.
+  if (args.empty()) {
+    compiler.PrintD(diag::err_no_compile_args);
+    return FinishCompile(Status::Error());
+  }
   compiler.SetMainExecutable(arg0, mainAddr);
 
   CompilerCommandLine commandLine(compiler);
   auto status = commandLine.Parse(args);
 
   if (status.IsError()) {
-    return Finish(Status::Error());
+    return FinishCompile(Status::Error());
   }
 
   if (listener) {
@@ -58,7 +61,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   status = compiler.Configure();
   if (status.IsError()) {
-    return Finish(Status::Error());
+    return FinishCompile(Status::Error());
   }
   if (listener) {
     listener->CompletedConfiguration(compiler);
@@ -66,7 +69,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   compiler.BuildTasks();
   if (compiler.HasError()) {
-    return Finish(Status::Error());
+    return FinishCompile(Status::Error());
   }
   if (listener) {
     listener->CompletedBuildingTasks(compiler);
@@ -75,7 +78,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // Run compiler tasks
   compiler.RunTasks();
   if (compiler.HasError()) {
-    return Finish(Status::Error());
+    return FinishCompile(Status::Error());
   }
   if (listener) {
     listener->CompletedRunningTasks(compiler);
@@ -152,7 +155,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // if (compiling::Compile(compiler).IsError()) {
   //   return Finish(Status::Error());
   // }
-  return Finish();
+  return FinishCompile();
 }
 
 void Compiler::BuildTasks() { AddTask(GetAction().GetKind()); }
@@ -240,7 +243,10 @@ void Compiler::AddTask(ActionKind kind) {
 
 void Compiler::RunTasks() { GetQueue().RunTasks(); }
 
-Status PrintHelpTask::Execute(Compiler &compiler) { return Status(); }
+Status PrintHelpTask::Execute(Compiler &compiler, CompilerTask *dep) {
+  assert(dep && "PrintHelpTask has no dependency");
+  return Status();
+}
 
 // Status compiling::Compile(Compiler &compiler) {
 

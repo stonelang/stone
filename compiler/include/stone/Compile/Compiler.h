@@ -230,7 +230,7 @@ public:
 //   SrcMgr srcMgr;
 //   DiagnosticEngine diags{srcMgr};
 
-//   std::unique_ptr<CompilerContext> compilerContext;
+//   std::unique_ptr<CompilerConfiguration> config;
 
 //   /// Contains buffer IDs for input source code files.
 //   std::vector<unsigned> sourceBufferIDs;
@@ -246,8 +246,8 @@ public:
 // public:
 //   SrcMgr &GetSrcMgr() { return srcMgr; }
 //   DiagnosticEngine &GetDiags() { return diags; }
-//   const CompilerContext &GetCompilerContext() const { return
-//   *compilerContext; }
+//   const CompilerConfiguration &GetCompilerConfiguration() const { return
+//   *config; }
 
 // public:
 //   unsigned CreateSourceBuffer(const CompilerInputFile &input);
@@ -264,7 +264,7 @@ public:
 //   bool HasError() { return diags.HasError(); }
 // };
 
-class Compiler final : public CompilerContext {
+class Compiler final : public CompilerConfiguration {
   friend CompilerTask;
 
   CompilerListener *listener;
@@ -274,7 +274,7 @@ class Compiler final : public CompilerContext {
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
-  std::unique_ptr<CompilerContext> compilerContext;
+  std::unique_ptr<CompilerConfiguration> config;
 
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -468,9 +468,9 @@ public:
   GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
 
   // public:
-  //   void PrintTimers();
-  //   void PrintDiagnostics();
-  //   void PrintStatistics();
+  void PrintTimers();
+  void PrintDiagnostics();
+  void PrintStatistics();
 
 public:
   /// Return the total amount of physical memory allocated for representing

@@ -157,7 +157,14 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
   return nullptr;
 }
 
-void Compiler::Finish() {}
+void Compiler::Finish() {
+
+  PrintDiagnostics();
+  PrintStatistics();
+}
+
+void Compiler::PrintDiagnostics() { GetDiags().Finish(); }
+void Compiler::PrintStatistics() {}
 
 CompilerAction::CompilerAction() {}
 

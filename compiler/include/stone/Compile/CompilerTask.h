@@ -20,6 +20,8 @@ enum class CompilerTaskKind {
   PrintTimers,
   // < Print the statistics
   PrintStatistics,
+  ///< Check to make sure we are compiling .stone, .stonemoduleinterface files
+  PrepareForParse,
   ///< Parse only
   ParseOnly,
   ///< Parse and resolve use(s) only
@@ -35,7 +37,7 @@ enum class CompilerTaskKind {
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
   // </ Complete any work before emitting.
-  BeforeEmit,
+  PrepareForEmit,
   //</ Parse, type-check, and emit LLVM IR pre optimization
   EmitIRBefore,
   //</ Parse, type-check, and emit LLVM IR post optimization
@@ -58,127 +60,103 @@ enum class CompilerTaskKind {
 };
 class alignas(1 << CompilerTaskAlignInBits) CompilerTask
     : public CompilerAllocation<std::aligned_storage<8, 8>::type> {
-public:
-  // TODO: used these in the future -- this allows you to add more tasks.
-  enum ID : unsigned {
-    ///< Print help
-    PrintHelp = 0,
-    ///< Print hidden help
-    PrintHelpHidden,
-    //< Print language version
-    PrintVersion,
-    //< Print the timers
-    PrintTimers,
-    // < Print the statistics
-    PrintStatistics,
-    ///< Parse only
-    ParseOnly,
-    ///< Parse and resolve use(s) only
-    ResolveImports,
-    ///< Parse and dump syntax tree
-    DumpSyntax,
-    ///< Parse and type-check only
-    TypeCheck,
-    ///< TODO
-    DumpTypeInfo,
-    ///< Parse, type-check, and  pretty print syntax tree
-    PrintSyntax,
-    //</ Parse, type-check, and pretty print llvm-ir
-    PrintIR,
-    // </ Complete any work before emitting.
-    BeforeEmit,
-    //</ Parse, type-check, and emit LLVM IR pre optimization
-    EmitIRBefore,
-    //</ Parse, type-check, and emit LLVM IR post optimization
-    EmitIRAfter,
-    ///< Parse, type-check, and emit a library.
-    ///< Default => platform specific. But, with -static => 'any.a'
-    EmitLibrary,
-    ///< Create a module fule
-    InitModule,
-    //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
-    EmitModule,
-    //< Parse, type-check, and emit LLVM BC
-    EmitBC,
-    //< Parse, type-check, and emit assembly
-    EmitAssembly,
-    ///< Parse, type-check, and emit native object code
-    EmitObject,
-    ///< Merge all modules
-    MergeModules
-  };
-  using CompilerTaskDescription = CompilerTask::ID;
-  CompilerTaskDescription description;
+  CompilerTaskKind kind;
+
+protected:
+  bool hasDependency = false;
+  bool isCompleted = false;
 
 public:
-  CompilerTask(CompilerTaskDescription description)
-      : description(description) {}
+  CompilerTask(CompilerTaskKind kind) : kind(kind) {}
 
 public:
-  virtual Status Execute(Compiler &compiler) {}
+  bool HasDependency() { return hasDependency; }
+  bool IsCompleted() { return isCompleted; }
+  CompilerTaskKind GetKind() { return kind; }
+
+public:
+  virtual Status Execute(Compiler &compiler, CompilerTask *dep = nullptr) = 0;
 };
 
 class PrintHelpTask final : public CompilerTask {
 
 public:
-  PrintHelpTask() : CompilerTask(CompilerTaskDescription::PrintHelp) {}
+  PrintHelpTask() : CompilerTask(CompilerTaskKind::PrintHelp) {
+    hasDependency = false;
+  }
 
 public:
-  virtual Status Execute(Compiler &compiler) override;
+  virtual Status Execute(Compiler &compiler,
+                         CompilerTask *dep = nullptr) override;
 
 public:
   static PrintHelpTask *Create(const Compiler &compiler);
 };
 
-class PrintVersionTask final : public CompilerTask {
+// class PrintVersionTask final : public CompilerTask {
 
-public:
-  PrintVersionTask() : CompilerTask(CompilerTaskDescription::PrintVersion) {}
+// public:
+//   PrintVersionTask() : CompilerTask(CompilerTaskKind::PrintVersion) {}
 
-public:
-  virtual Status Execute(Compiler &compiler) override;
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-public:
-  static PrintVersionTask *Create(const Compiler &compiler);
-};
+// public:
+//   static PrintVersionTask *Create(const Compiler &compiler);
+// };
 
-class VerifyInputFileTypesTask : public CompilerTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
+// class PrepareForParseTask : public CompilerTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-public:
-  static VerifyInputFileTypesTask *Create(const Compiler &compiler);
-};
+// public:
+//   static VerifyInputFileTypesTask *Create(const Compiler &compiler);
+// };
 
-class SyntaxTask : public CompilerTask {
+// class SyntaxTask : public CompilerTask {
 
-public:
-  virtual Status Execute(Compiler &compiler) override;
-};
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
+// };
 
-class ParseTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
+// class SetupParseTask : public CompilerTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-public:
-  static ParseTask *Create();
-};
+// public:
+//   static ParseTask *Create();
+// };
+// class ParseTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-class ResolveImportsTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler) override;
+// public:
+//   static ParseTask *Create();
+// };
 
-public:
-  static ResolveImportsTask *Create();
-};
+// class ResolveImportsTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler) override;
 
-class TypeCheckTask : public SyntaxTask {
-public:
-  virtual Status Execute(Compiler &compiler);
+// public:
+//   static ResolveImportsTask *Create();
+// };
 
-public:
-  static TypeCheckTask *Create();
-};
+// class TypeCheckTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler);
+
+// public:
+//   static TypeCheckTask *Create();
+// };
+
+// class PrepareForEmitTask : public SyntaxTask {
+// public:
+//   virtual Status Execute(Compiler &compiler);
+
+// public:
+//   static PrepareForEmitTask *Create();
+// };
 
 // class EmittingTask : public SyntaxTask {
 //   virtual Status Execute(Compiler &compiler)

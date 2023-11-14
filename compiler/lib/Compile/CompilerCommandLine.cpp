@@ -18,17 +18,18 @@
 
 using namespace stone;
 
-CompilerContext::CompilerContext() {
+CompilerConfiguration::CompilerConfiguration() {
   llvm::sys::fs::current_path(GetCompilerOptions().workDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
 
-void CompilerContext::SetTargetTriple(llvm::StringRef triple) {}
-void CompilerContext::SetTargetTriple(const llvm::Triple &Triple) {}
-void CompilerContext::SetMainExecutable(const char *arg0, void *mainAddr) {}
+void CompilerConfiguration::SetTargetTriple(llvm::StringRef triple) {}
+void CompilerConfiguration::SetTargetTriple(const llvm::Triple &Triple) {}
+void CompilerConfiguration::SetMainExecutable(const char *arg0,
+                                              void *mainAddr) {}
 
-CompilerCommandLine::CompilerCommandLine(CompilerContext &compilerContext)
-    : compilerContext(compilerContext) {}
+CompilerCommandLine::CompilerCommandLine(CompilerConfiguration &config)
+    : config(config) {}
 
 Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
 
@@ -46,7 +47,7 @@ Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
   assert(compilerInputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    compilerContext.GetDiags().PrintD(
+    config.GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
         diag::LLVMStr(compilerInputArgList->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
@@ -55,12 +56,12 @@ Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg :
        compilerInputArgList->filtered(opts::UNKNOWN)) {
-    compilerContext.GetDiags().PrintD(
+    config.GetDiags().PrintD(
         SrcLoc(), diag::err_unknown_arg,
         diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
   // Ok for now.
-  // if (compilerContext.GetDiags().HasError()) {
+  // if (config.GetDiags().HasError()) {
   //   return nullptr;
   // }
   // if (ParseCompilerAction(*compilerInputArgList).IsError()) {

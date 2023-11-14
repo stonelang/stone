@@ -176,7 +176,7 @@ class DiagnosticEngine;
 /// the diagnostic consumers.
 class DiagnosticSuppression {
   DiagnosticEngine &diags;
-  std::vector<DiagnosticConsumer *> listeners;
+  std::vector<DiagnosticConsumer *> consumers;
 
   DiagnosticSuppression(const DiagnosticSuppression &) = delete;
   DiagnosticSuppression &operator=(const DiagnosticSuppression &) = delete;
@@ -202,9 +202,9 @@ class DiagnosticEngine final {
   /// The
   unsigned int diagnosticSeen = 0;
 
-  /// The diagnostic listeners(s) that will be responsible for actually
+  /// The diagnostic consumers(s) that will be responsible for actually
   /// emitting diagnostics.
-  llvm::SmallVector<DiagnosticConsumer *, 2> listeners;
+  llvm::SmallVector<DiagnosticConsumer *, 2> consumers;
 
   /// The current diagnostic, if there is one.
   llvm::Optional<Diagnostic> curDiagnostic;
@@ -315,32 +315,32 @@ public:
 public:
   /// Add an additional DiagnosticConsumer to receive diagnostics.
   void AddConsumer(DiagnosticConsumer &listener) {
-    listeners.push_back(&listener);
+    consumers.push_back(&listener);
   }
   /// Remove a specific DiagnosticConsumer.
   void RemoveConsumer(DiagnosticConsumer &listener) {
-    listeners.erase(std::remove(listeners.begin(), listeners.end(), &listener));
+    consumers.erase(std::remove(consumers.begin(), consumers.end(), &listener));
   }
 
   /// Remove and return all \c DiagnosticConsumer.
   std::vector<DiagnosticConsumer *> TakeListeners() {
     auto result =
-        std::vector<DiagnosticConsumer *>(listeners.begin(), listeners.end());
-    listeners.clear();
+        std::vector<DiagnosticConsumer *>(consumers.begin(), consumers.end());
+    consumers.clear();
     return result;
   }
 
   /// Return all \c DiagnosticConsumer.
   llvm::ArrayRef<DiagnosticConsumer *> GetListeners() const {
-    return listeners;
+    return consumers;
   }
 
 public:
-  /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
+  /// Generate DiagnosticMessage for a Diagnostic to be passed to consumers.
   llvm::Optional<DiagnosticMessage>
   CreateDiagnosticMessage(const Diagnostic &diagnostic);
 
-  // Send \c diag to all diagnostic listeners.
+  // Send \c diag to all diagnostic consumers.
   void EmitDiagnostic(const Diagnostic &diagnostic);
 
   /// Send all tentative diagnostics to all diagnostic consumers and
