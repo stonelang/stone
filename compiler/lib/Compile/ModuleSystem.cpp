@@ -15,11 +15,11 @@ ModuleSystem::~ModuleSystem() {}
 syn::ModuleDecl *ModuleSystem::GetMainModule() const {
   if (!mainModule) {
 
-    assert(compiler.GetCompilerContext().GetModuleOptions().HasModuleName());
+    assert(compiler.GetModuleOptions().HasModuleName());
 
     // TODO: Check to make sure that we have the correct Identifier
-    Identifier moduleIdentifier = syntaxContext.GetIdentifier(
-        compiler.GetCompilerContext().GetModuleOptions().moduleName);
+    Identifier moduleIdentifier =
+        syntaxContext.GetIdentifier(compiler.GetModuleOptions().moduleName);
 
     mainModule =
         DeclFactory::MakeModuleDecl(moduleIdentifier, syntaxContext, true);
@@ -70,7 +70,7 @@ Status ModuleSystem::CreateSyntaxFilesForMainModule(
   // FIXME: This is the only demand point for InputSourceCodeBufferIDs. We
   // should compute this list of source files lazily.
 
-  for (auto bufferID : compiler.GetSourceBufferIDs()) {
+  for (auto bufferID : compiler.GetInputSourceBufferIDs()) {
     // Skip the main buffer, we've already handled it.
     if (bufferID == mainBufferID) {
       continue;
@@ -86,7 +86,7 @@ Status ModuleSystem::CreateSyntaxFilesForMainModule(
 syn::SyntaxFile *
 ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
 
-  if (compiler.GetCompilerContext().GetCompilerOptions().parsingInputMode ==
+  if (compiler.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
     return nullptr;
   }

@@ -35,44 +35,43 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
 
-  auto compiler = std::make_unique<Compiler>();
-  compiler->AddDiagnosticConsumer(consumer);
+  Compiler compiler;
+  compiler.AddDiagnosticConsumer(consumer);
+  compiler.SetMainExecutable(arg0, mainAddr);
 
-  CompilerContextBuilder compilerContextBuilder;
-  auto compilerContext =
-      compilerContextBuilder.Build(args, compiler->GetDiags());
-  compilerContext->SetMainExecutable(arg0, mainAddr);
+  CompilerCommandLine commandLine(compiler);
+  auto status = commandLine.Parse(args);
 
-  if (!compilerContext) {
+  if (status.IsError()) {
     return Finish(Status::Error());
   }
 
   if (listener) {
-    listener->CompletedCommandLineParsing(*compilerContext);
+    listener->CompletedCommandLineParsing(compiler);
   }
-  auto status = compiler->Configure(std::move(compilerContext));
+  status = compiler.Configure();
   if (status.IsError()) {
     return Finish(Status::Error());
   }
   if (listener) {
-    listener->CompletedConfiguration(*compiler);
+    listener->CompletedConfiguration(compiler);
   }
 
-  compiler->BuildTasks();
-  if (compiler->HasError()) {
+  compiler.BuildTasks();
+  if (compiler.HasError()) {
     return Finish(Status::Error());
   }
   if (listener) {
-    listener->CompletedBuildingTasks(*compiler);
+    listener->CompletedBuildingTasks(compiler);
   }
 
   // Run compiler tasks
-  compiler->RunTasks();
-  if (compiler->HasError()) {
+  compiler.RunTasks();
+  if (compiler.HasError()) {
     return Finish(Status::Error());
   }
   if (listener) {
-    listener->CompletedRunningTasks(*compiler);
+    listener->CompletedRunningTasks(compiler);
   }
 
   // ERROR(error_no_compile_args, none, "no arguments provided to

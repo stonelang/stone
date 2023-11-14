@@ -3,7 +3,7 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/CompilerContext.h"
+#include "stone/Compile/CompilerCommandLine.h"
 #include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -35,197 +35,177 @@ namespace stone {
 class Compiler;
 class CompilerTask;
 class CodeGenContext;
-class CompilerConfiguration;
+class CompilerCommandLine;
+class CompilerListener;
 
+// using EachSyntaxFileCallback = std::function<Status(syn::SyntaxFile &)>;
+
+// using EachSyntaxFileToTypeCheckCallback = std::function<Status(
+//     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+
+/// The compiler stats
 class CompilerStats final : public Stats {
   const Compiler &compiler;
 
 public:
   CompilerStats(const Compiler &compiler)
-      : Stats("CompilerConfigurationstatistics:"), compiler(compiler) {}
+      : Stats("Compiler statistics:"), compiler(compiler) {}
   void Print(ColorStream &stream) override;
 };
 
-using EachSyntaxFileCallback = std::function<Status(syn::SyntaxFile &)>;
-
-using EachSyntaxFileToTypeCheckCallback = std::function<Status(
-    syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
-
 /// A PrettyStackTraceEntry to print compiling information
 class CompilerPrettyStackTrace : public llvm::PrettyStackTraceEntry {
-  const CompilerConfiguration &config;
+  const Compiler &compiler;
 
 public:
-  CompilerPrettyStackTrace(CompilerConfiguration &config) : config(config) {}
+  CompilerPrettyStackTrace(Compiler &compiler) : compiler(compiler) {}
   void print(llvm::raw_ostream &os) const override;
 };
 
-class CompilerListener;
+// class CompilerConfiguration final {
 
-using ConfigurationFileBuffers =
-    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
+//   CompilerOptions compilerOpts;
 
-struct ModuleBuffers {
+//   /// Options for generating code
+//   CodeGenOptions codeGenOpts;
 
-  std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
-  std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
-  std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
+//   /// The options for searching libs
+//   SearchPathOptions searchPathOpts;
 
-  // Constructor
-  ModuleBuffers(
-      std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
-      std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer = nullptr,
-      std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer = nullptr)
-      : moduleBuffer(std::move(moduleBuffer)),
-        moduleDocBuffer(std::move(moduleDocBuffer)),
-        moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
-};
+//   /// The options for type-checking
+//   TypeCheckerOptions typeCheckerOpts;
 
-using MemoryBuffers =
-    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
+//   LangOptions langOpts;
 
-class CompilerConfiguration final {
+//   stone::TargetOptions targetOpts;
 
-  CompilerOptions compilerOpts;
+//   ModuleOptions moduleOpts;
 
-  /// Options for generating code
-  CodeGenOptions codeGenOpts;
+//   SyntaxOptions syntaxOpts;
 
-  /// The options for searching libs
-  SearchPathOptions searchPathOpts;
+//   DiagnosticOptions diagOpts;
 
-  /// The options for type-checking
-  TypeCheckerOptions typeCheckerOpts;
+//   /// Contains buffer IDs for input source code files.
+//   std::vector<unsigned> sourceBufferIDs;
 
-  LangOptions langOpts;
+//   // The primary Sources
+//   llvm::SetVector<unsigned> primarySourceBufferIDs;
 
-  stone::TargetOptions targetOpts;
+//   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
+//   /// Code completion offset in bytes from the beginning of the main
+//   /// source file.  Valid only if \c isCodeCompletion() == true.
+//   unsigned codeCompletionOffset = ~0U;
 
-  ModuleOptions moduleOpts;
+//   LangContext langContext;
 
-  SyntaxOptions syntaxOpts;
+//   std::unique_ptr<ClangContext> clangContext;
 
-  DiagnosticOptions diagOpts;
+// public:
+//   CompilerConfiguration();
+//   ~CompilerConfiguration();
 
-  /// Contains buffer IDs for input source code files.
-  std::vector<unsigned> sourceBufferIDs;
+// public:
+//   Status ParseCommandLine(llvm::ArrayRef<const char *> args, const char
+//   *arg0); void SetMainExecutable(const char *arg0, void *mainAddr); void
+//   SetupWorkingDirectory();
 
-  // The primary Sources
-  llvm::SetVector<unsigned> primarySourceIDs;
+// public:
+//   Status CreateSourceBuffers();
+//   // TODO: You may not need this anymore
+//   unsigned CreateSourceBuffer(const CompilerInputFile &input);
 
-  llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
-  /// Code completion offset in bytes from the beginning of the main
-  /// source file.  Valid only if \c isCodeCompletion() == true.
-  unsigned codeCompletionOffset = ~0U;
+//   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+//   bool IsPrimarySourceID(unsigned primarySourceID) const {
+//     return primarySourceBufferIDs.count(primarySourceID) != 0;
+//   }
+//   void RecordPrimarySourceID(unsigned primarySourceID);
+//   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
 
-  LangContext langContext;
+// public:
+//   /// Gets the set of SourceFiles which are the primary inputs for this
+//   /// Compiler.
+//   // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+//   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
+//   // }
 
-  std::unique_ptr<ClangContext> clangContext;
+//   // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
 
-public:
-  CompilerConfiguration();
-  ~CompilerConfiguration();
+//   // TODO: update CompilerOptions
+//   void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
+//   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
 
-public:
-  Status ParseCommandLine(llvm::ArrayRef<const char *> args, const char *arg0);
-  void SetMainExecutable(const char *arg0, void *mainAddr);
-  void SetupWorkingDirectory();
+// public:
+//   void SetTargetTriple(llvm::StringRef triple);
+//   void SetTargetTriple(const llvm::Triple &Triple);
 
-public:
-  Status CreateSourceBuffers();
-  // TODO: You may not need this anymore
-  unsigned CreateSourceBuffer(const CompilerInputFile &input);
+//   LangContext &GetLangContext() { return langContext; }
+//   const LangContext &GetLangContext() const { return langContext; }
 
-  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
-  bool IsPrimarySourceID(unsigned primarySourceID) const {
-    return primarySourceIDs.count(primarySourceID) != 0;
-  }
-  void RecordPrimarySourceID(unsigned primarySourceID);
-  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+//   ClangContext &GetClangContext() { return *clangContext; }
 
-public:
-  /// Gets the set of SourceFiles which are the primary inputs for this
-  /// Compiler.
-  // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
-  //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
-  // }
+//   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
+//   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
-  // std::unique_ptr<OutputFile> ComputeOutputFile(CompilerUnit &source);
+//   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
+//   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
-  // TODO: update CompilerOptions
-  void ComputeModuleOutputMode() { assert(false && "Not implemented"); }
-  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+//   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
+//   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-public:
-  void SetTargetTriple(llvm::StringRef triple);
-  void SetTargetTriple(const llvm::Triple &Triple);
+//   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
+//   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
 
-  LangContext &GetLangContext() { return langContext; }
-  const LangContext &GetLangContext() const { return langContext; }
+//   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+//   const TypeCheckerOptions &GetTypeCheckerOptions() const {
+//     return typeCheckerOpts;
+//   }
 
-  ClangContext &GetClangContext() { return *clangContext; }
+//   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
+//   const SearchPathOptions &GetSearchPathOptions() const {
+//     return searchPathOpts;
+//   }
 
-  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
-  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
+//   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+//   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
-  CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
-  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
+//   ModuleOptions &GetModuleOptions() { return moduleOpts; }
+//   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 
-  stone::TargetOptions &GetTargetOptions() { return targetOpts; }
-  const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+//   TypeCheckMode GetTypeCheckMode() {
+//     return (primarySourceBufferIDs.empty() ? TypeCheckMode::WholeModule
+//                                      : TypeCheckMode::EachFile);
+//     // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
+//   }
 
-  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
-  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+//   Optional<ModuleBuffers>
+//   GetInputBuffersIfPresent(const CompilerInputFile &input);
+//   Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
+//                                          const bool shouldRecover,
+//                                          bool &failed);
 
-  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
-  const TypeCheckerOptions &GetTypeCheckerOptions() const {
-    return typeCheckerOpts;
-  }
+//   bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
-  SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
-  const SearchPathOptions &GetSearchPathOptions() const {
-    return searchPathOpts;
-  }
+//   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+//   // std::vector<unsigned> &GetPrimarySourceIDs() { return
+//   primarySourceBufferIDs;
+//   }
 
-  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
-  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+//   CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
 
-  ModuleOptions &GetModuleOptions() { return moduleOpts; }
-  const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+// private:
+//   Status ParseCompilerAction(llvm::opt::InputArgList &args);
+//   Status ParseCompilerOptions(llvm::opt::InputArgList &args,
+//                               MemoryBuffers *buffers);
+//   Status ParseLangOptions(llvm::opt::InputArgList &args);
+//   Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
+//   Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
+//   Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
+//   Status ParseTargetOptions(llvm::opt::InputArgList &args);
+//   llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
 
-  TypeCheckMode GetTypeCheckMode() {
-    return (primarySourceIDs.empty() ? TypeCheckMode::WholeModule
-                                     : TypeCheckMode::EachFile);
-    // TODO: Set in ParseArgs return GetTypeCheckerOptions().typeCheckMode;
-  }
-
-  Optional<ModuleBuffers>
-  GetInputBuffersIfPresent(const CompilerInputFile &input);
-  Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
-                                         const bool shouldRecover,
-                                         bool &failed);
-
-  bool HasError() { return GetLangContext().GetDiags().HasError(); }
-
-  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
-  // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }
-
-  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
-
-private:
-  Status ParseCompilerAction(llvm::opt::InputArgList &args);
-  Status ParseCompilerOptions(llvm::opt::InputArgList &args,
-                              MemoryBuffers *buffers);
-  Status ParseLangOptions(llvm::opt::InputArgList &args);
-  Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
-  Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
-  Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
-  Status ParseTargetOptions(llvm::opt::InputArgList &args);
-  llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
-
-public:
-  void PrintHelp();
-};
+// public:
+//   void PrintHelp();
+// };
 
 class CompilerQueue final {
 
@@ -245,45 +225,46 @@ public:
   Compiler &GetCompiler() { return compiler; }
 };
 
-class CompilerBase {
-protected:
-  SrcMgr srcMgr;
-  DiagnosticEngine diags{srcMgr};
+// class CompilerBase {
+// protected:
+//   SrcMgr srcMgr;
+//   DiagnosticEngine diags{srcMgr};
 
-  std::unique_ptr<CompilerContext> compilerContext;
+//   std::unique_ptr<CompilerContext> compilerContext;
 
-  /// Contains buffer IDs for input source code files.
-  std::vector<unsigned> sourceBufferIDs;
+//   /// Contains buffer IDs for input source code files.
+//   std::vector<unsigned> sourceBufferIDs;
 
-  // The primary Sources
-  llvm::SetVector<unsigned> primarySourceIDs;
+//   // The primary Sources
+//   llvm::SetVector<unsigned> primarySourceBufferIDs;
 
-  llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
-  /// Code completion offset in bytes from the beginning of the main
-  /// source file.  Valid only if \c isCodeCompletion() == true.
-  unsigned codeCompletionOffset = ~0U;
+//   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
+//   /// Code completion offset in bytes from the beginning of the main
+//   /// source file.  Valid only if \c isCodeCompletion() == true.
+//   unsigned codeCompletionOffset = ~0U;
 
-public:
-  SrcMgr &GetSrcMgr() { return srcMgr; }
-  DiagnosticEngine &GetDiags() { return diags; }
-  const CompilerContext &GetCompilerContext() const { return *compilerContext; }
+// public:
+//   SrcMgr &GetSrcMgr() { return srcMgr; }
+//   DiagnosticEngine &GetDiags() { return diags; }
+//   const CompilerContext &GetCompilerContext() const { return
+//   *compilerContext; }
 
-public:
-  unsigned CreateSourceBuffer(const CompilerInputFile &input);
-  std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
+// public:
+//   unsigned CreateSourceBuffer(const CompilerInputFile &input);
+//   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
 
-  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
-  bool IsPrimarySourceID(unsigned primarySourceID) const {
-    return primarySourceIDs.count(primarySourceID) != 0;
-  }
-  void RecordPrimarySourceID(unsigned primarySourceID);
-  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+//   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+//   bool IsPrimarySourceID(unsigned primarySourceID) const {
+//     return primarySourceBufferIDs.count(primarySourceID) != 0;
+//   }
+//   void RecordPrimarySourceID(unsigned primarySourceID);
+//   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
 
-public:
-  bool HasError() { return diags.HasError(); }
-};
+// public:
+//   bool HasError() { return diags.HasError(); }
+// };
 
-class Compiler final : public CompilerBase {
+class Compiler final : public CompilerContext {
   friend CompilerTask;
 
   CompilerListener *listener;
@@ -292,24 +273,27 @@ class Compiler final : public CompilerBase {
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
+  std::unique_ptr<CodeGenContext> codeGenContext;
+  std::unique_ptr<CompilerContext> compilerContext;
 
   mutable llvm::BumpPtrAllocator allocator;
 
-  // llvm::sys::TimePoint<> startTime;
-  // llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
+  llvm::sys::TimePoint<> startTime;
 
-  // /// Contains buffer IDs for input source code files.
-  // std::vector<unsigned> inputSourceBufferIDs;
+  llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
-  // /// Identifies the set of input buffers in the SourceManager that are
-  // /// considered primaries.
-  // llvm::SetVector<unsigned> primaryBufferIDs;
+  /// Contains buffer IDs for input source code files.
+  std::vector<unsigned> inputSourceBufferIDs;
+
+  /// Identifies the set of input buffers in the SourceManager that are
+  /// considered primaries.
+  llvm::SetVector<unsigned> primarySourceBufferIDs;
 
   /// The stream for verbose output if owned, otherwise nullptr.
-  // Safe<raw_ostream> OwnedVerboseOutputStream;
+  std::unique_ptr<raw_ostream> ownedVerboseOutputStream;
 
-  // /// The stream for verbose output.
-  // raw_ostream *VerboseOutputStream = &llvm::errs();
+  /// The stream for verbose output.
+  raw_ostream *verboseOutputStream = &llvm::errs();
 
 public:
   Compiler();
@@ -323,7 +307,7 @@ public:
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
-  Status Configure(std::unique_ptr<CompilerContext> compilerContext);
+  Status Configure();
   void Finish();
 
 public:
@@ -343,20 +327,49 @@ public:
 public:
   CompilerQueue &GetQueue() { return *compilerQueue; }
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
+  CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
+  syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
+  ModuleSystem &GetModuleSystem() { return *moduleSystem; }
+  const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
 
-  //   DiagnosticEngine &GetDiags() {
-  //     return GetConfig().GetLangContext().GetDiags();
-  //   }
+public:
+  Status CreateSourceBuffers();
+  unsigned CreateSourceBuffer(const CompilerInputFile &input);
+
+  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+  bool IsPrimarySourceID(unsigned primarySourceID) const {
+    return primarySourceBufferIDs.count(primarySourceID) != 0;
+  }
+  void RecordPrimarySourceID(unsigned primarySourceID);
+  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+
+  /// Gets the set of SourceFiles which are the primary inputs for this
+  /// Compiler.
+  // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+  //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
+  // }
+
+  std::vector<unsigned> &GetInputSourceBufferIDs() {
+    return inputSourceBufferIDs;
+  }
+  llvm::SetVector<unsigned> &GetPrimaryBufferSourceIDs() {
+    return primarySourceBufferIDs;
+  }
+
+  Optional<ModuleBuffers>
+  GetInputBuffersIfPresent(const CompilerInputFile &input);
+
+  Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
+                                         const bool shouldRecover,
+                                         bool &failed);
+
+public:
   //   StatisticEngine &GetStats() {
   //     return GetConfig().GetLangContext().GetStats();
   //   }
   //   GetConfig().GetLangContext().GetDiags().HasError(); }
 
-  // public:
-  //   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
-  //   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
-  //   const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
-
+public:
   //   bool CanCompile() const {
   //     return GetConfig().GetCompilerOptions().GetAction().CanCompile();
   //   }
@@ -401,11 +414,9 @@ public:
   //     msf.dyn_cast<syn::SyntaxFile *>();
   //   }
 
-  CompilerAction &GetAction() {
-    return compilerContext->GetCompilerOptions().GetAction();
-  }
+  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
   const CompilerAction &GetAction() const {
-    return compilerContext->GetCompilerOptions().GetAction();
+    return GetCompilerOptions().GetAction();
   }
 
   // public:

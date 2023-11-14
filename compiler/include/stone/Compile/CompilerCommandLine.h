@@ -6,6 +6,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerOptions.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
@@ -27,16 +28,21 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-class CompilerContextBuilder;
 
-struct CompilerModuleBuffers {
+class CompilerContext;
+class CompilerCommandLine;
+
+using ConfigurationFileBuffers =
+    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
+
+struct ModuleBuffers {
 
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
   std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
   std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
 
   // Constructor
-  CompilerModuleBuffers(
+  ModuleBuffers(
       std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
       std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer = nullptr,
       std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer = nullptr)
@@ -45,14 +51,13 @@ struct CompilerModuleBuffers {
         moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
 };
 
-using CompilerMemoryBuffers =
+using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
+class CompilerContext {
+  friend CompilerCommandLine;
 
-class CompilerContext final {
-  friend CompilerContextBuilder;
-
-private:
+protected:
   CompilerOptions compilerOpts;
 
   /// Options for generating code
@@ -74,6 +79,9 @@ private:
 
   DiagnosticOptions diagOpts;
 
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
+
 public:
   CompilerContext();
 
@@ -81,6 +89,9 @@ public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
   void SetMainExecutable(const char *arg0, void *mainAddr);
+
+  // void SetSDKPath(const std::string &sdkPath);
+  // llvm::StringRef GetSDKPath() const { return searchPathOpts.GetSDKPath(); }
 
 public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
@@ -107,22 +118,28 @@ public:
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
+  DiagnosticEngine &GetDiags() { return diags; }
+  bool HasError() { return diags.HasError(); }
+
+  SrcMgr &GetSrcMgr() { return srcMgr; }
+
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
 };
 
-class CompilerContextBuilder final {
-public:
-  CompilerContextBuilder();
+class CompilerCommandLine final {
+  CompilerContext &compilerContext;
 
 public:
-  std::unique_ptr<CompilerContext> Build(llvm::ArrayRef<const char *> args,
-                                         DiagnosticEngine &diags);
+  CompilerCommandLine(CompilerContext &compilerContext);
+
+public:
+  Status Parse(llvm::ArrayRef<const char *> args);
 
 public:
   Status ParseCompilerAction(llvm::opt::InputArgList &args);
   Status ParseCompilerOptions(llvm::opt::InputArgList &args,
-                              CompilerMemoryBuffers *buffers);
+                              ModuleBuffers *buffers);
   Status ParseLangOptions(llvm::opt::InputArgList &args);
   Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
   Status ParseSearchPathOptions(llvm::opt::InputArgList &args);

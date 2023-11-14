@@ -17,9 +17,7 @@ using namespace stone::syn;
 Compiler::Compiler() = default;
 Compiler::~Compiler() = default;
 
-Status
-Compiler::Configure(std::unique_ptr<CompilerContext> inputCompilerContext) {
-  compilerContext = std::move(inputCompilerContext);
+Status Compiler::Configure() {
   compilerStats.reset(new CompilerStats(*this));
   compilerQueue.reset(new CompilerQueue(*this));
 
@@ -72,23 +70,20 @@ Compiler::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const {
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
-  return GetCompilerContext()
-      .GetCompilerOptions()
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
-  return GetCompilerContext()
-      .GetCompilerOptions()
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
 Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
     const syn::SyntaxFile &sf) const {
-  return GetCompilerContext()
-      .GetCompilerOptions()
+  return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }

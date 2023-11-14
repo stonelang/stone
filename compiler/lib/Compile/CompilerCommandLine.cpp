@@ -1,4 +1,4 @@
-#include "stone/Compile/CompilerContextBuilder.h"
+#include "stone/Compile/CompilerCommandLine.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
@@ -27,18 +27,16 @@ void CompilerContext::SetTargetTriple(llvm::StringRef triple) {}
 void CompilerContext::SetTargetTriple(const llvm::Triple &Triple) {}
 void CompilerContext::SetMainExecutable(const char *arg0, void *mainAddr) {}
 
-CompilerContextBuilder::CompilerContextBuilder() {}
+CompilerCommandLine::CompilerCommandLine(CompilerContext &compilerContext)
+    : compilerContext(compilerContext) {}
 
-std::unique_ptr<CompilerContext>
-CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
-                              DiagnosticEngine &diags) {
+Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask;
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
-  auto compilerContext = std::make_unique<CompilerContext>();
   auto compilerOptionTable = opts::CreateOptTable();
   auto compilerInputArgList =
       std::make_unique<llvm::opt::InputArgList>(compilerOptionTable->ParseArgs(
@@ -48,20 +46,21 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
   assert(compilerInputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    diags.PrintD(
+    compilerContext.GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
         diag::LLVMStr(compilerInputArgList->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
-    return nullptr;
+    return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg :
        compilerInputArgList->filtered(opts::UNKNOWN)) {
-    diags.PrintD(SrcLoc(), diag::err_unknown_arg,
-                 diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
+    compilerContext.GetDiags().PrintD(
+        SrcLoc(), diag::err_unknown_arg,
+        diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
   // Ok for now.
-  // if (diags.HasError()) {
+  // if (compilerContext.GetDiags().HasError()) {
   //   return nullptr;
   // }
   // if (ParseCompilerAction(*compilerInputArgList).IsError()) {
@@ -94,10 +93,10 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
 
   // CreateSourceBuffers();
 
-  return compilerContext;
+  return Status();
 }
 
-// Status CompilerContextBuilder::ParseCompilerAction(llvm::opt::InputArgList
+// Status CompilerCommandLine::ParseCompilerAction(llvm::opt::InputArgList
 // &args) {
 //   auto actionArg = args.getLastArg(opts::ModeGroup);
 //   if (actionArg) {
@@ -112,7 +111,7 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
 //   return Status();
 // }
 
-// Status CompilerContextBuilder::ParseCompilerOptions(llvm::opt::InputArgList
+// Status CompilerCommandLine::ParseCompilerOptions(llvm::opt::InputArgList
 // &args,
 //                                                  MemoryBuffers *buffers) {
 
@@ -122,18 +121,18 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
 //                                      GetModuleOptions());
 //   return converter.Convert(buffers);
 // }
-// Status CompilerContextBuilder::ParseLangOptions(llvm::opt::InputArgList
+// Status CompilerCommandLine::ParseLangOptions(llvm::opt::InputArgList
 // &args) {
 //   return Status();
 // }
 
 // Status
-// CompilerContextBuilder::ParseTypeCheckerOptions(llvm::opt::InputArgList
+// CompilerCommandLine::ParseTypeCheckerOptions(llvm::opt::InputArgList
 // &args) {
 //   return Status();
 // }
 // Status
-// CompilerContextBuilder::ParseSearchPathOptions(llvm::opt::InputArgList &args)
+// CompilerCommandLine::ParseSearchPathOptions(llvm::opt::InputArgList &args)
 // {
 //   return Status();
 // }
@@ -161,14 +160,14 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
 //     break;
 //   }
 // }
-// Status CompilerContextBuilder::ParseCodeGenOptions(llvm::opt::InputArgList
+// Status CompilerCommandLine::ParseCodeGenOptions(llvm::opt::InputArgList
 // &args) {
 
 //   ComputeCodeCodeGenOutputKind(GetCompilerOptions(), GetCodeGenOptions());
 
 //   return Status();
 // }
-// Status CompilerContextBuilder::ParseTargetOptions(llvm::opt::InputArgList
+// Status CompilerCommandLine::ParseTargetOptions(llvm::opt::InputArgList
 // &args)
 // {
 
@@ -190,7 +189,7 @@ CompilerContextBuilder::Build(llvm::ArrayRef<const char *> args,
 // // TODO: Look at SetupWorkingDirectory
 // llvm::StringRef
 
-// CompilerContextBuilder::ParseWorkDirectory(const llvm::opt::InputArgList
+// CompilerCommandLine::ParseWorkDirectory(const llvm::opt::InputArgList
 // &args)
 // {
 //   if (auto *arg = args.getLastArg(opts::WorkDir)) {

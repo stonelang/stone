@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_LANGOPTIONS_H
-#define STONE_COMPILE_LANGOPTIONS_H
+#ifndef STONE_COMPILE_COMPILEROPTIONS_H
+#define STONE_COMPILE_COMPILEROPTIONS_H
 
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
