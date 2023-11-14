@@ -37,6 +37,13 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   Compiler compiler;
   compiler.AddDiagnosticConsumer(consumer);
+
+  // If the args are empty, it is pointless to move forward. 
+  if (args.empty()) {
+    compiler.GetDiags().PrintD(diag::err_no_compile_args);
+    return Finish(Status::Error());
+  }
+
   compiler.SetMainExecutable(arg0, mainAddr);
 
   CompilerCommandLine commandLine(compiler);
@@ -75,14 +82,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // ERROR(error_no_compile_args, none, "no arguments provided to
-
-  // STONE_DEFER { compiler.Finish(); };
-
-  // if (args.empty()) {
-  //   compiler.GetDiags().PrintD(diag::error_no_compile_args);
-  //   return Finish(Status::Error());
-  // }
-
   // ConfigurationFileBuffers configurationFileBuffers;
   // // Configure the compiler
   // if (compiler.GetConfig().ParseCommandLine(args, arg0).IsError()) {
@@ -107,6 +106,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // if (listener) {
   //   listener->CompletedConfiguration(compiler);
   // }
+
+  // Now that we are ready to do real work, call defer Finish
+  STONE_DEFER { compiler.Finish(); };
 
   // // Build all the compiler tasks
   // compiler.BuildTasks();

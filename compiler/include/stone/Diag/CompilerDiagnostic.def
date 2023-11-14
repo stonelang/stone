@@ -2,6 +2,8 @@
 #include "DefineDiagnostic.h"
 
 
+ERROR(err_no_compile_args, none, "no arguments provided to the compiler", ())
+
 ERROR(err_no_compile_mode, none, "no compile mode", ())
 
 ERROR(err_cannot_have_input_files_with_file_list,none,
