@@ -9,6 +9,7 @@ set(stone_compile_sources
 	CompilerOptionsConverter.cpp
 	CompilerOutputsConverter.cpp
 	CompilerQueue.cpp
+	CompilerTask.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	Serialization.cpp

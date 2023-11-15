@@ -23,13 +23,15 @@ using namespace stone;
 using namespace llvm::opt;
 
 CompilerOptionsConverter::CompilerOptionsConverter(
-    DiagnosticEngine &de, const llvm::opt::ArgList &args, LangOptions &langOpts,
+    const llvm::opt::ArgList &args, DiagnosticEngine &de, LangOptions &langOpts,
     CompilerOptions &compilerOpts, ModuleOptions &moduleOpts)
-    : de(de), args(args), langOpts(langOpts), compilerOpts(compilerOpts),
+    : args(args), de(de), langOpts(langOpts), compilerOpts(compilerOpts),
       moduleOpts(moduleOpts) {}
 
 Status CompilerOptionsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
+
+  Status status;
 
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
@@ -38,11 +40,19 @@ Status CompilerOptionsConverter::Convert(
   llvm::Optional<CompilerInputsAndOutputs> inputsAndOutputs =
       CompilerInputsConverter(de, args, compilerOpts).Convert(buffers);
 
-  // None here means error, not just "no inputs". Propagage unconditionally.
   if (!inputsAndOutputs) {
-    return Status::Error();
+    status.SetIsError();
+    status.SetHasCompletion();
+    return status;
   }
 
+  if (!inputsAndOutputs->HasInputs()) {
+    status.SetIsError();
+    status.SetHasCompletion();
+    return status;
+  }
+
+  // Make sure that it is empty,
   bool haveNewInputsAndOutputs = false;
   if (compilerOpts.GetInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
@@ -56,6 +66,10 @@ Status CompilerOptionsConverter::Convert(
     }
   }
 
+  if (!compilerOpts.GetInputsAndOutputs().HasInputs()) {
+    status.SetHasCompletion();
+  }
+
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneModuleInterface;
@@ -66,11 +80,12 @@ Status CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
-  if (ComputeModuleName().IsError()) {
-    return Status::Error();
+  status = ComputeModuleName();
+  if (status.IsError()) {
+    status.SetHasCompletion();
   }
 
-  return Status();
+  return status;
 }
 
 Status CompilerOptionsConverter::ComputeModuleName() {

@@ -264,7 +264,7 @@ public:
 //   bool HasError() { return diags.HasError(); }
 // };
 
-class Compiler final : public CompilerConfiguration {
+class Compiler final {
   friend CompilerTask;
 
   CompilerListener *listener;
@@ -274,7 +274,8 @@ class Compiler final : public CompilerConfiguration {
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
-  std::unique_ptr<CompilerConfiguration> config;
+  
+  const CompilerConfiguration& config;
 
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -296,7 +297,8 @@ class Compiler final : public CompilerConfiguration {
   raw_ostream *verboseOutputStream = &llvm::errs();
 
 public:
-  Compiler();
+  Compiler() = delete;
+  Compiler(const CompilerConfiguration& config);
   ~Compiler();
 
 public:
@@ -312,8 +314,11 @@ public:
 
 public:
   void BuildTasks();
-  void AddTask(ActionKind kind);
+  void QueueTask(ActionKind kind);
   void RunTasks();
+
+private:
+  void QueueTask(CompilerTask *task) { GetQueue().AddTask(task); }
 
   // public:
   //   // TODO: May want to pass by pointer

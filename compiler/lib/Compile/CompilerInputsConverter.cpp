@@ -53,9 +53,9 @@ llvm::Optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
     return llvm::None;
   }
 
-  CompilerInputsAndOutputs invocationInputsAndOutputs;
+  CompilerInputsAndOutputs inputsAndOutputs;
   std::set<llvm::StringRef> unusedPrimaryFiles;
-  std::tie(invocationInputsAndOutputs, unusedPrimaryFiles) =
+  std::tie(inputsAndOutputs, unusedPrimaryFiles) =
       CreateInputFilesConsumingPrimaries(*primaryFiles);
 
   if (DiagnoseUnusedPrimaryFiles(unusedPrimaryFiles)) {
@@ -63,10 +63,10 @@ llvm::Optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
   }
 
   // Must be set before iterating over inputs needing outputs.
-  invocationInputsAndOutputs.SetBypassBatchModeChecks(
+  inputsAndOutputs.SetBypassBatchModeChecks(
       args.hasArg(opts::BypassBatchModeChecks));
 
-  return std::move(invocationInputsAndOutputs);
+  return std::move(inputsAndOutputs);
 }
 
 bool CompilerInputsConverter::EnforceFilelistExclusion() {

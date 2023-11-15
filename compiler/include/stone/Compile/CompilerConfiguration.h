@@ -54,10 +54,8 @@ struct ModuleBuffers {
 using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
-class CompilerConfiguration {
-  friend CompilerCommandLine;
+class CompilerConfiguration final {
 
-protected:
   CompilerOptions compilerOpts;
 
   /// Options for generating code
@@ -102,6 +100,9 @@ public:
 
   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
+
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
 
   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
@@ -160,28 +161,30 @@ public:
          typename detail::PassArgument<ArgTypes>::type... args) {
     return GetDiags().PrintD(SrcLoc(), id, std::forward<ArgTypes>(args)...);
   }
+public:
+  Status Configure(llvm::ArrayRef<const char *> args);
 };
 
-class CompilerCommandLine final {
-  CompilerConfiguration &config;
+// class CompilerCommandLine final {
+//   CompilerConfiguration &config;
 
-public:
-  CompilerCommandLine(CompilerConfiguration &config);
+// public:
+//   CompilerCommandLine(CompilerConfiguration &config);
 
-public:
-  Status Parse(llvm::ArrayRef<const char *> args);
+// public:
+//   Status Parse(llvm::ArrayRef<const char *> args);
 
-public:
-  Status ParseCompilerAction(llvm::opt::InputArgList &args);
-  Status ParseCompilerOptions(llvm::opt::InputArgList &args,
-                              ModuleBuffers *buffers);
-  Status ParseLangOptions(llvm::opt::InputArgList &args);
-  Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
-  Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
-  Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
-  Status ParseTargetOptions(llvm::opt::InputArgList &args);
-  llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
-};
+// public:
+//   Status ParseCompilerAction(llvm::opt::InputArgList &args);
+//   Status ParseCompilerOptions(llvm::opt::InputArgList &args,
+//                               MemoryBuffers *buffers);
+//   Status ParseLangOptions(llvm::opt::InputArgList &args);
+//   Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
+//   Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
+//   Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
+//   Status ParseTargetOptions(llvm::opt::InputArgList &args);
+//   llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
+// };
 
 } // namespace stone
 

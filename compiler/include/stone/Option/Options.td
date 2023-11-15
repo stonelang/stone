@@ -68,7 +68,12 @@ Flags<[HelpHidden]>;
 
 def Parse: Flag<["-"], "parse">,
 HelpText<"Parse input file(s)">, ModeOpt,
-Flags<[CompilerOption]>;
+Flags<[CompilerOption, DriverOption]>;
+
+def ResolveImports: Flag<["-"], "resolve-imports">,
+HelpText<"Parse input file(s)">, ModeOpt,
+Flags<[CompilerOption, DriverOption]>;
+
 
 
 def DumpSyntax : Flag<["-"], "dump-syntax">,
@@ -83,6 +88,8 @@ Flags<[CompilerOption, DriverOption]>;
 def PrintSyntax : Flag<["-"], "print-syntax">,
 HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
+
+
 
 def EmitLibrary : Flag<["-"], "emit-library">,
 HelpText<"Emit a linked library">, ModeOpt,

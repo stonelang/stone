@@ -18,7 +18,7 @@
 
 using namespace stone;
 
-CompilerConfiguration::CompilerConfiguration() {
+CompilerInvocation::CompilerConfiguration() {
   llvm::sys::fs::current_path(GetCompilerOptions().workDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
@@ -64,16 +64,16 @@ Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
   // if (config.GetDiags().HasError()) {
   //   return nullptr;
   // }
-  // if (ParseCompilerAction(*compilerInputArgList).IsError()) {
-  //   return Status::Error();
-  // }
+  if (ParseCompilerAction(*compilerInputArgList).IsError()) {
+    return Status::Error();
+  }
 
-  // if (ParseCompilerOptions(*compilerInputArgList,
-  //                          nullptr /* pass null for now*/)
-  //         .IsError()) {
+  if (ParseCompilerOptions(*compilerInputArgList,
+                           nullptr /* pass null for now*/)
+          .IsError()) {
 
-  //   return Status::Error();
-  // }
+    return Status::Error();
+  }
 
   // if (ParseTypeCheckerOptions(*compilerInputArgList).IsError()) {
   //   return Status::Error();
@@ -97,31 +97,31 @@ Status CompilerCommandLine::Parse(llvm::ArrayRef<const char *> args) {
   return Status();
 }
 
-// Status CompilerCommandLine::ParseCompilerAction(llvm::opt::InputArgList
-// &args) {
-//   auto actionArg = args.getLastArg(opts::ModeGroup);
-//   if (actionArg) {
-//     auto actionKind =
-//     opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
-//     GetAction().SetKind(actionKind);
-//     if (GetAction().IsAlien()) {
-//       return Status::Error();
-//     }
-//     GetAction().SetName(opts::GetArgName(actionArg));
-//   }
-//   return Status();
-// }
+Status CompilerCommandLine::ParseCompilerAction(llvm::opt::InputArgList &args) {
+  auto actionArg = args.getLastArg(opts::ModeGroup);
+  if (actionArg) {
+    auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
+    if (actionKind == ActionKind::Alien) {
+      return Status::Error();
+    }
+    config.GetCompilerOptions().GetAction().SetKind(actionKind);
+    config.GetCompilerOptions().GetAction().SetName(
+        opts::GetArgName(actionArg));
+  } else {
+    // We just default to emitting an object file since nothing was presented.
+    config.GetCompilerOptions().GetAction().SetKind(ActionKind::None);
+  }
+  return Status();
+}
 
-// Status CompilerCommandLine::ParseCompilerOptions(llvm::opt::InputArgList
-// &args,
-//                                                  MemoryBuffers *buffers) {
+Status CompilerCommandLine::ParseCompilerOptions(llvm::opt::InputArgList &args,
+                                                 MemoryBuffers *buffers) {
+  CompilerOptionsConverter converter(
+      args, config.GetDiags(), config.GetLangOptions(),
+      config.GetCompilerOptions(), config.GetModuleOptions());
+  return converter.Convert(buffers);
+}
 
-//   CompilerOptionsConverter converter(GetLangContext().GetDiags(), args,
-//                                      GetLangContext().GetLangOptions(),
-//                                      GetCompilerOptions(),
-//                                      GetModuleOptions());
-//   return converter.Convert(buffers);
-// }
 // Status CompilerCommandLine::ParseLangOptions(llvm::opt::InputArgList
 // &args) {
 //   return Status();

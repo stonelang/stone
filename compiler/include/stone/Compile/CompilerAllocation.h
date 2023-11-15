@@ -1,6 +1,8 @@
 #ifndef STONE_COMPILE_COMPILEALLOCATION_H
 #define STONE_COMPILE_COMPILEALLOCATION_H
 
+#include "stone/Basic/Mem.h"
+
 #include <cassert>
 #include <cstddef>
 

@@ -1,0 +1,34 @@
+#ifndef STONE_COMPILE_COMPILE_H
+#define STONE_COMPILE_COMPILE_H
+
+namespace stone {
+
+class Compiler;
+class CompilerTask;
+class CompilerConfiguration;
+
+class CompilerObservation {
+public:
+  CompilerObservation() = default;
+  virtual ~CompilerObservation() = default;
+
+public:
+  virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
+  virtual void CompletedConfiguration(Compiler &compiler) {}
+  virtual void CompletedBuildingTasks(Compiler &compiler) {}
+
+  virtual void ExecutingCompilerTasks(Compiler &compiler, CompilerTask *task) {}
+  virtual void FinishedCompilerTasks(Compiler &compiler, CompilerTask *task) {}
+
+  virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}
+  virtual void CompletedSemanticAnalysis(Compiler &compiler) {}
+  virtual void CompletedCodeGeneration(Compiler &compiler) {}
+  virtual void CompletedRunningTasks(Compiler &compiler) {}
+};
+
+int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
+            CompilerObservation *obs = nullptr);
+
+} // namespace stone
+
+#endif

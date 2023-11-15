@@ -41,7 +41,7 @@ private:
   Status CheckForUnusedOutputPaths() const;
 
 public:
-  CompilerOptionsConverter(DiagnosticEngine &de, const llvm::opt::ArgList &args,
+  CompilerOptionsConverter(const llvm::opt::ArgList &args, DiagnosticEngine &de,
                            LangOptions &langOpts, CompilerOptions &compilerOpts,
                            ModuleOptions &moduleOpts);
 

@@ -540,3 +540,12 @@ using namespace stone::opts;
 //                         ExcludedFlagsBitmask, /*ShowAllAliases*/ false);
 //   }
 // }
+
+
+Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args, const char *arg0) {
+
+	return Status();
+}
+
+
+

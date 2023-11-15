@@ -14,7 +14,7 @@ using namespace stone::syn;
 //   GetCompilerContext().GetLangContext().GetStats().Register(stats.get());
 // }
 
-Compiler::Compiler() = default;
+Compiler::Compiler(const CompilerConfiguration& config) : config(config) {}
 Compiler::~Compiler() = default;
 
 Status Compiler::Configure() {
@@ -154,7 +154,7 @@ void Compiler::AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
 void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
                                 mem::AllocationArena arena,
                                 unsigned alignment) {
-  return nullptr;
+  return compiler.Allocate(bytes, alignment /*, arena*/);
 }
 
 void Compiler::Finish() {

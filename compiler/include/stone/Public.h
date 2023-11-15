@@ -127,7 +127,7 @@ public:
   virtual void OnEmitLibraryCompleted() {}
 };
 
-class CompilerListener final {
+class CompilerCallbacks final {
   LexerListener *lexerListener = nullptr;
   SyntaxListener *syntaxListener = nullptr;
   TypeCheckerListener *typeCheckerListener = nullptr;
@@ -160,6 +160,10 @@ public:
   virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
   virtual void CompletedConfiguration(Compiler &compiler) {}
   virtual void CompletedBuildingTasks(Compiler &compiler) {}
+
+  virtual void ExecutingCompilerTasks(Compiler &compiler, CompilerTask *task) {}
+  virtual void FinishedCompilerTasks(Compiler &compiler, CompilerTask *task) {}
+
   virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}
   virtual void CompletedSemanticAnalysis(Compiler &compiler) {}
   virtual void CompletedCodeGeneration(Compiler &compiler) {}
