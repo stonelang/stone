@@ -271,6 +271,7 @@ class Compiler final {
   std::unique_ptr<CompilerStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
+  std::unique_ptr<ClangContext> clangContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
   std::unique_ptr<StatisticEngine> stats;
@@ -301,17 +302,13 @@ public:
   Compiler(const CompilerInvocation &invocation);
   ~Compiler();
   Status Initialize();
+  void Finalize();
 
 public:
   Compiler(const Compiler &) = delete;
   void operator=(const Compiler &) = delete;
   Compiler(Compiler &&) = delete;
   void operator=(Compiler &&) = delete;
-
-public:
-  void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
-
-  void Finish();
 
 public:
   void BuildTasks();
@@ -321,15 +318,12 @@ public:
 private:
   void QueueTask(CompilerTask *task) { GetQueue().AddTask(task); }
 
-  // public:
-  //   // TODO: May want to pass by pointer
-  //   void SetupDiagnostics(DiagnosticConsumer &listener);
-  //   void SetListener(CompilerListener *listener);
-  //   CompilerListener *GetListener() { return listener; }
-
-  //  SetupTasks()
-  //   void SetupSyntaxContext();
-  //   void SetupOutputBackend();
+public:
+  void SetupSyntaxContext();
+  void SetupOutputBackend();
+  void SetupCodeGenContext();
+  void SetupModules();
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
 
 public:
   CompilerQueue &GetQueue() { return *compilerQueue; }
@@ -337,11 +331,25 @@ public:
   CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
+  ClangContext &GetClangContext() { return *clangContext; }
+
   const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
+
   StatisticEngine &GetStats() { return stats; }
 
+  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
+  const CompilerAction &GetAction() const {
+    return GetCompilerOptions().GetAction();
+  }
+
+  void SetListener(CompilerListener *inputListener) {
+    listener = inputListener;
+  }
+  CompilerListener *GetListener() { return listener; }
+
 public:
-  Status CreateSourceBuffers();
+  // Source buffers
+  Status SetupSourceBuffers();
   unsigned CreateSourceBuffer(const CompilerInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
@@ -422,11 +430,6 @@ public:
   //     msf.dyn_cast<syn::SyntaxFile *>();
   //   }
 
-  CompilerAction &GetAction() { return GetCompilerOptions().GetAction(); }
-  const CompilerAction &GetAction() const {
-    return GetCompilerOptions().GetAction();
-  }
-
   // public:
   //   // TODO: Consider moving to the Compiler
   //   ModuleOutputMode GetModuleOutputMode() {
@@ -462,7 +465,12 @@ public:
   //   //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
   //   // }
 
-  // public:
+public:
+  // Modules
+  void SetupModules();
+
+public:
+  // Specific file paths
   const PrimaryFileSpecificPaths &
   GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
 
@@ -479,6 +487,9 @@ public:
   void PrintTimers();
   void PrintDiagnostics();
   void PrintStatistics();
+
+public:
+  void FreeSyntaxContext();
 
 public:
   /// Return the total amount of physical memory allocated for representing

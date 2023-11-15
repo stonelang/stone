@@ -15,14 +15,15 @@
 using namespace stone;
 using namespace stone::syn;
 
-SyntaxContext::SyntaxContext(stone::LangContext &lc,
+SyntaxContext::SyntaxContext(const LangOption &langOpts,
                              const SearchPathOptions &spOpts,
-                             ClangContext &clangContext)
-    : lc(lc), searchPathOpts(spOpts), identifiers(allocator),
-      builtinContext(*this), stats(new SyntaxContextStats(*this)),
-      clangContext(clangContext) {
+                             ClangContext &clangContext, DiagnosticEngine &de,
+                             StatisticEngine &se)
+    : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
+      de(de), se(se), identifiers(allocator), builtinContext(*this),
+      stats(new SyntaxContextStats(*this)), {
 
-  lc.GetStats().Register(stats.get());
+  se.Register(stats.get());
 }
 
 SyntaxContext::~SyntaxContext() {
@@ -64,7 +65,6 @@ SyntaxContext::GetRealModuleName(Identifier key,
   if (found == moduleAliasMap.end()) {
     return key; // No module aliasing was used, so just return the given key
   }
-
   // Found an entry
   auto value = found->second;
 
@@ -88,7 +88,7 @@ SyntaxContext::GetRealModuleName(Identifier key,
   return value.first;
 }
 
-size_t SyntaxContext::GetSizeOfMemUsed() const {
+size_t SyntaxContext::GetTotalMemUsed() const {
   return GetAllocator().getTotalMemory();
 }
 

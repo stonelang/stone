@@ -39,7 +39,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return (status.IsError() ? status.GetFlag()
                              : invocation.GetDiags().Finish());
   };
-
   // Check for empty args
   if (args.empty()) {
     invocation.PrintD(diag::err_no_compile_args);
@@ -51,7 +50,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
-
   if (listener) {
     listener->CompletedCommandLineParsing(invocation);
   }
@@ -65,13 +63,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
-
-  status = compiler.Configure();
-  if (status.IsError()) {
-    return FinishCompile(Status::Error());
-  }
   if (listener) {
-    listener->CompletedConfiguration(compiler);
+    listener->CompletedInitialization(compiler);
   }
 
   compiler.BuildTasks();
@@ -83,7 +76,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   // Now that we are ready to do real work, call defer Finish
-  STONE_DEFER { compiler.Finish(); };
+  STONE_DEFER { compiler.Finalize(); };
 
   // Run compiler tasks
   compiler.RunTasks();
@@ -143,11 +136,13 @@ void Compiler::QueueTask(ActionKind kind) {
   // }
   case ActionKind::EmitIRBefore: {
     QueueTask(ActionKind::TypeCheck);
+    QueueTask(GenIRTask::Create(*this));
     QueueTask(EmitIRBeforeTask::Create(*this));
     break;
   }
   case ActionKind::EmitIRAfter: {
     QueueTask(ActionKind::TypeCheck);
+    QueueTask(GenIRTask::Create(*this));
     QueueTask(EmitIRAfterTask::Create(*this));
     break;
   }
@@ -158,7 +153,8 @@ void Compiler::QueueTask(ActionKind kind) {
   // }
   case ActionKind::None:
   case ActionKind::EmitObject: {
-    QueueTask(ActionKind::EmitIRAfter);
+    QueueTask(GenIRTask::Create(*this));
+    // QueueTask(ActionKind::EmitIRAfter);
     QueueTask(EmitObjectTask::Create(*this));
     break;
   }

@@ -1,5 +1,5 @@
-#ifndef STONE_CLANG_CLANGMODULEIMPORTER_H
-#define STONE_CLANG_CLANGMODULEIMPORTER_H
+#ifndef STONE_SYNTAX_CLANGMODULEIMPORTER_H
+#define STONE_SYNTAX_CLANGMODULEIMPORTER_H
 
 #include "stone/Syntax/ClangModuleLoader.h"
 
@@ -7,9 +7,18 @@
 
 namespace stone {
 
+class ClangModuleImporterOptions final {};
 class ClangModuleImporter : public ClangModuleLoader {
+
+  ClangModuleImporterOptions importerOptions;
+
 public:
   ClangModuleImporter();
+
+public:
+  ClangModuleImporterOptions &GetClangModuleImporterOptions() {
+    return importerOptions;
+  }
 };
 
 } // namespace stone

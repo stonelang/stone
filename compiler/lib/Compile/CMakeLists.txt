@@ -1,7 +1,9 @@
 set(stone_compile_sources
 	Compile.cpp
 	Compiler.cpp
-	CompilerCommandLine.cpp
+	Compiling.cpp
+	CompilerSources.cpp
+	CompilerInvocation.cpp
 	Deserialization.cpp
 	CompilerConfiguration.cpp
 	CompilerInputsAndOutputs.cpp
@@ -10,6 +12,7 @@ set(stone_compile_sources
 	CompilerOutputsConverter.cpp
 	CompilerQueue.cpp
 	CompilerTask.cpp
+	CompilerModules.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	Serialization.cpp

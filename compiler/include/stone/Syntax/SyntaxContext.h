@@ -1,16 +1,6 @@
 #ifndef STONE_SYNTAX_TREECONTEXT_H
 #define STONE_SYNTAX_TREECONTEXT_H
 
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <iterator>
-#include <memory>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
@@ -54,6 +44,19 @@
 #include "llvm/Support/AlignOf.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
+
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+
 
 namespace stone {
 class DiagnosticEngine;
@@ -100,16 +103,20 @@ enum class ModuleAliasLookupOption {
 class SyntaxContext final {
   friend SyntaxContextStats;
 
-  Safe<SyntaxContextStats> stats;
+  std::unique_ptr<SyntaxContextStats> stats;
 
   /// The language options used to create the AST associated with
   ///  this SyntaxContext object.
-  LangContext &lc;
+  const LangContext &langOpts;
 
   ClangContext &clangContext;
 
   /// The search path options
   const SearchPathOptions &searchPathOpts;
+
+  DiagnosticEngine &de;
+
+  StatisticEngine &se;
 
   BuiltinContext builtinContext;
   /// The allocator used to create SyntaxContext objects.
@@ -156,8 +163,11 @@ public:
   SyntaxContext(const SyntaxContext &) = delete;
   SyntaxContext &operator=(const SyntaxContext &) = delete;
 
-  SyntaxContext(LangContext &lc, const SearchPathOptions &searchPathOpts,
-                ClangContext &clangContext);
+  SyntaxContext(const LangOptions &langOpts,
+                const SearchPathOptions &searchPathOpts,
+                ClangContext &clangContext, DiagnosticEngine &de,
+                StatisticEngine &se);
+
   ~SyntaxContext();
 
   /// Add a cleanup function to be called when the SyntaxContext is deallocated.
@@ -172,16 +182,16 @@ public:
   ///
   const BuiltinContext &GetBuiltinContext() const;
 
-  LangContext &GetLangContext() { return lc; }
-  const LangContext &GetLangContext() const { return lc; }
+  DiagnosticEngine &GetDiags() { return de; }
+
   ///
   LangABI *GetLangABI() const;
   //
-  SrcMgr &GetSrcMgr() { return lc.GetSrcMgr(); }
+  SrcMgr &GetSrcMgr() { return de.GetSrcMgr(); }
 
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
-  SyntaxContextStats &GetStats() { return *stats.get(); }
+  SyntaxContextStats &GetStats() { return se; }
 
 public:
   //==Module stuff==//
@@ -222,7 +232,7 @@ private:
 public:
   /// Return the total amount of physical memory allocated for representing
   /// AST nodes and type information.
-  size_t GetSizeOfMemUsed() const;
+  size_t GetTotalMemUsed() const;
 
   void *Allocate(size_t size, unsigned align = 8) const {
     return GetAllocator().Allocate(size, align);

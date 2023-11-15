@@ -39,8 +39,8 @@ enum class CompilerTaskKind {
   PrintSyntax,
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
-  // </ Complete any work before emitting such as generating the IR
-  PreEmit,
+  // </ Parse, type-check, and emit LLVM IR pre optimization
+  GenIR,
   //</ Parse, type-check, and emit LLVM IR pre optimization
   EmitIRBefore,
   //</ Parse, type-check, and emit LLVM IR post optimization
@@ -178,12 +178,10 @@ public:
   static TypeCheckTask *Create(const Compiler &compiler);
 };
 
-class PreEmitTask : public CompilerTask {
+class GenIRTask : public CompilerTask {
 
 public:
-  PreEmitTask() : CompilerTask(CompilerTaskKind::PreEmit) {
-    hasDependency = true;
-  }
+  GenIRTask() : CompilerTask(CompilerTaskKind::GenIR) { hasDependency = true; }
 
 public:
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;

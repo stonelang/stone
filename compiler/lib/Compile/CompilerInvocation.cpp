@@ -188,4 +188,10 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
 void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {}
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &Triple) {}
-void CompilerInvocation::SetMainExecutable(const char *arg0, void *mainAddr) {}
+
+void CompilerInvocation::SetMainExecutable(const char *arg0, void *mainAddr) {
+  // compilerOpts.MainExecutablePath =
+  //     llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  // compilerOpts.MainExecutableName =
+  //     file::GetStem(GetCompilerOptions().MainExecutablePath);
+}

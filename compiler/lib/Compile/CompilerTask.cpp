@@ -38,11 +38,11 @@ TypeCheckTask *TypeCheckTask::Create(const Compiler &compiler) {
 }
 void TypeCheckTask::Print(ColorStream &stream) {}
 
-// PreEmit
-PreEmitTask *PreEmitTask::Create(const Compiler &compiler) {
-  return new (compiler) PreEmitTask();
+// Need to gen-ir before emitting or outputing native code
+GenIRTask *GenIRTask::Create(const Compiler &compiler) {
+  return new (compiler) GenIRTask();
 }
-void PreEmitTask::Print(ColorStream &stream) {}
+void GenIRTask::Print(ColorStream &stream) {}
 
 // EmitIRBefore
 EmitIRBeforeTask *EmitIRBeforeTask::Create(const Compiler &compiler) {

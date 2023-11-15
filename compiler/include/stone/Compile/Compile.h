@@ -14,7 +14,7 @@ public:
 
 public:
   virtual void CompletedCommandLineParsing(CompilerInvocation &invocation) {}
-  virtual void CompletedConfiguration(Compiler &compiler) {}
+  virtual void CompletedInitialization(Compiler &compiler) {}
   virtual void CompletedBuildingTasks(Compiler &compiler) {}
 
   virtual void ExecutingCompilerTasks(Compiler &compiler, CompilerTask *task) {}
