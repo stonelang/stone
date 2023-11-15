@@ -2,8 +2,8 @@
 #define STONE_COMPILE_MODULEDEPENDENCIES_H
 
 #include "stone/Compile/CompilerOptions.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 namespace stone {
 

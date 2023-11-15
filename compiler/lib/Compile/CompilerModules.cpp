@@ -9,13 +9,13 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 
     // // TODO: Check to make sure that we have the correct Identifier
     // Identifier moduleIdentifier =
-    //     GetSyntaxContext().GetIdentifier(invocation.GetModuleOptions().moduleName);
+    //     GetASTContext().GetIdentifier(invocation.GetModuleOptions().moduleName);
 
     // mainModule =
     //     ModuleDecl::Create(moduleIdentifier, syntaxContext, true);
 
     // // Register the main module with the AST context.
-    // GetSyntaxContext().AddLoadedModule(mainModule);
+    // GetASTContext().AddLoadedModule(mainModule);
 
     // // Create and add the module's files.
     // llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
@@ -138,7 +138,7 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 //   return Status();
 // }
 
-// bool stone::EmitImportedModules(syn::SyntaxContext &context,
+// bool stone::EmitImportedModules(syn::ASTContext &context,
 //                                 ModuleDecl *mainModule,
 //                                 const CompilerOptions &opts) {
 //   return false;

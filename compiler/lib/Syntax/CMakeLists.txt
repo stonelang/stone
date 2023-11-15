@@ -22,11 +22,11 @@ set(stone_syn_sources
 	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp
-	SyntaxContext.cpp
-	SyntaxDiagnostic.cpp
+	ASTContext.cpp
+	ASTDiagnostic.cpp
 	Scope.cpp
-	SyntaxVisitor.cpp
-	SyntaxWalker.cpp
+	ASTVisitor.cpp
+	ASTWalker.cpp
 	Generics.cpp
 	Type.cpp
 	TypeQualifier.cpp

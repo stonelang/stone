@@ -17,7 +17,7 @@ class Type;
 template <typename ImplTy, typename DeclRetTy = void, typename ExprRetTy = void,
           typename StmtRetTy = void, typename TypeRetTy = void,
           typename... Args>
-class SyntaxVisitor {
+class ASTVisitor {
 public:
   DeclRetTy Visit(Decl *D, Args... AA) {
     switch (D->GetKind()) {
@@ -44,13 +44,13 @@ public:
 };
 
 template <typename ImplTy, typename DeclRetTy = void, typename... Args>
-using DeclVisitor = SyntaxVisitor<ImplTy, DeclRetTy, void, void, void, Args...>;
+using DeclVisitor = ASTVisitor<ImplTy, DeclRetTy, void, void, void, Args...>;
 
 template <typename ImplTy, typename ExprRetTy = void, typename... Args>
-using ExprVisitor = SyntaxVisitor<ImplTy, void, ExprRetTy, void, void, Args...>;
+using ExprVisitor = ASTVisitor<ImplTy, void, ExprRetTy, void, void, Args...>;
 
 template <typename ImplTy, typename StmtRetTy = void, typename... Args>
-using StmtVisitor = SyntaxVisitor<ImplTy, void, void, StmtRetTy, void, Args...>;
+using StmtVisitor = ASTVisitor<ImplTy, void, void, StmtRetTy, void, Args...>;
 
 } // namespace syn
 } // namespace stone

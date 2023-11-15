@@ -8,15 +8,15 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
+#include "stone/Syntax/ASTNode.h"
+#include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxNode.h"
-#include "stone/Syntax/SyntaxOptions.h"
 #include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/Support/Timer.h"
@@ -54,7 +54,7 @@ class Parser final {
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  SyntaxContext &sc;
+  ASTContext &sc;
   SyntaxFile &sf;
   DeclContext *curDC;
 
@@ -95,11 +95,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SyntaxFile &sf, SyntaxContext &sc, std::unique_ptr<Lexer> lexer,
+  Parser(SyntaxFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener,
+  Parser(SyntaxFile &sf, ASTContext &sc, SyntaxListener *listener,
          LexerListener *lexerListener);
 
   ~Parser();
@@ -108,7 +108,7 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
-  SyntaxContext &GetSyntaxContext() { return sc; }
+  ASTContext &GetASTContext() { return sc; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
@@ -397,7 +397,7 @@ public:
   InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
 
 private:
-  static Scope *CreateScope(ScopeKind kind, SyntaxContext &sc,
+  static Scope *CreateScope(ScopeKind kind, ASTContext &sc,
                             DiagnosticEngine &diags, Scope *parent = nullptr);
   // Helpers
   const Token &PeekNextToken() const { return lexer->Peek(); }

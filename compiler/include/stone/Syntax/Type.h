@@ -2,9 +2,9 @@
 #define STONE_SYNTAX_TYPE_H
 
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/Ownership.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeQualifier.h"

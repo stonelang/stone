@@ -4,15 +4,15 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
 namespace syn {
 
-class SyntaxContext;
+class ASTContext;
 
 enum class VersionComparison { None = 0, GreaterThanEqual };
 
@@ -34,7 +34,7 @@ enum class AvailabilitySpecKind {
 
 /// The root class for specifications of API availability in availability
 /// queries.
-class AvailabilitySpec : public SyntaxAllocation<AvailabilitySpec> {
+class AvailabilitySpec : public ASTAllocation<AvailabilitySpec> {
   AvailabilitySpecKind Kind;
 
 public:
@@ -113,7 +113,7 @@ public:
   }
 
   void *operator new(
-      size_t Bytes, SyntaxContext &C,
+      size_t Bytes, ASTContext &C,
       unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
         Bytes, C, mem::AllocationArena::Permanent, Alignment);
@@ -163,7 +163,7 @@ public:
                AvailabilitySpecKind::PackageDescriptionVersionConstraint;
   }
 
-  void *operator new(size_t Bytes, SyntaxContext &C,
+  void *operator new(size_t Bytes, ASTContext &C,
                      unsigned Alignment = alignof(
                          PlatformAgnosticVersionConstraintAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
@@ -199,7 +199,7 @@ public:
   }
 
   void *
-  operator new(size_t Bytes, syn::SyntaxContext &C,
+  operator new(size_t Bytes, syn::ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
         Bytes, C, mem::AllocationArena::Permanent, Alignment);

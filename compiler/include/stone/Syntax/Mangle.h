@@ -16,7 +16,7 @@ class raw_ostream;
 namespace stone {
 namespace syn {
 
-class SyntaxContext;
+class ASTContext;
 class ConstructorDecl;
 class DestructorDecl;
 class FunctionDecl;
@@ -27,12 +27,11 @@ class VarDecl;
 enum class MangleContextKind : UInt8 { None = 0, Itanium, Microsoft };
 
 class MangleContext {
-  SyntaxContext &sc;
+  ASTContext &sc;
   const MangleContextKind kind;
 
 public:
-  MangleContext(MangleContextKind kind, SyntaxContext &sc)
-      : kind(kind), sc(sc) {}
+  MangleContext(MangleContextKind kind, ASTContext &sc) : kind(kind), sc(sc) {}
 
 public:
   /// Generates a unique string for an externally visible type for use with TBAA
@@ -42,21 +41,21 @@ public:
   // virtual void MangleTypeName(Type T, llvm::raw_ostream & os) = 0;
 
 public:
-  SyntaxContext &GetSyntaxContext() { return sc; }
+  ASTContext &GetASTContext() { return sc; }
   MangleContextKind GetKind() { return kind; }
 };
 
 class ItaniumMangleContext : public MangleContext {
 
 public:
-  ItaniumMangleContext(SyntaxContext &sc)
+  ItaniumMangleContext(ASTContext &sc)
       : MangleContext(MangleContextKind::Itanium, sc) {}
 };
 
 class MicrosoftMangleContext : public MangleContext {
 
 public:
-  MicrosoftMangleContext(SyntaxContext &sc)
+  MicrosoftMangleContext(ASTContext &sc)
       : MangleContext(MangleContextKind::Microsoft, sc) {}
 };
 

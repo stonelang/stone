@@ -6,8 +6,7 @@
 using namespace stone;
 using namespace stone::syn;
 
-ModuleSystem::ModuleSystem(Compiler &compiler,
-                           syn::SyntaxContext &syntaxContext)
+ModuleSystem::ModuleSystem(Compiler &compiler, syn::ASTContext &syntaxContext)
     : compiler(compiler), syntaxContext(syntaxContext) {}
 
 ModuleSystem::~ModuleSystem() {}
@@ -145,7 +144,7 @@ Status ModuleSystem::IsValidModuleName(const llvm::StringRef moduleName) {
   return Status();
 }
 
-bool stone::EmitImportedModules(syn::SyntaxContext &context,
+bool stone::EmitImportedModules(syn::ASTContext &context,
                                 ModuleDecl *mainModule,
                                 const CompilerOptions &opts) {
   return false;

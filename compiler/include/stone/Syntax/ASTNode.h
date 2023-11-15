@@ -16,20 +16,20 @@ class Stmt;
 class Decl;
 class Type;
 class DeclContext;
-class SyntaxWalker;
+class ASTWalker;
 
 enum class ExprKind : uint8_t;
 enum class DeclKind : uint8_t;
 enum class StmtKind : uint8_t; // TODO: May not want uint8_t
 
-enum class SyntaxNodeStatus : UInt8 {
+enum class ASTNodeStatus : UInt8 {
   None,
   Created,
   Parsed,
   TypeChecked,
 };
 
-struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
+struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   // Inherit the constructors from PointerUnion.
   using PointerUnion::PointerUnion;
 
@@ -41,28 +41,28 @@ struct SyntaxNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   /// Return the location of the end of the statement.
   SrcLoc GetEndLoc() const;
 
-  SyntaxNodeStatus Status;
+  ASTNodeStatus Status;
 
-  void Walk(SyntaxWalker &walker);
-  void Walk(SyntaxWalker &&walker) { Walk(walker); }
+  void Walk(ASTWalker &walker);
+  void Walk(ASTWalker &&walker) { Walk(walker); }
 };
 
 } // namespace syn
 } // namespace stone
 
 // namespace llvm {
-// using stone::syn::SyntaxNode;
-// template <> struct DenseMapInfo<SyntaxNode> {
-//   static inline SyntaxNode getEmptyKey() {
+// using stone::syn::ASTNode;
+// template <> struct DenseMapInfo<ASTNode> {
+//   static inline ASTNode getEmptyKey() {
 //     return DenseMapInfo<stone::syn::Expr *>::getEmptyKey();
 //   }
-//   static inline SyntaxNode getTombstoneKey() {
+//   static inline ASTNode getTombstoneKey() {
 //     return DenseMapInfo<stone::syn::Expr *>::getTombstoneKey();
 //   }
-//   static unsigned getHashValue(const SyntaxNode Val) {
+//   static unsigned getHashValue(const ASTNode Val) {
 //     return DenseMapInfo<void *>::getHashValue(Val.getOpaqueValue());
 //   }
-//   static bool isEqual(const SyntaxNode LHS, const SyntaxNode RHS) {
+//   static bool isEqual(const ASTNode LHS, const ASTNode RHS) {
 //     return LHS.getOpaqueValue() == RHS.getOpaqueValue();
 //   }
 // };

@@ -44,7 +44,7 @@ class CompilerConfiguration;
 class ClangContext;
 
 namespace syn {
-class SyntaxContext;
+class ASTContext;
 class ModuleDecl;
 class Decl;
 class Stmt;
@@ -237,7 +237,7 @@ bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, Compiler &instance,
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::SyntaxContext &context,
+void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::ASTContext &context,
                      SyntaxListener *syntaxListener,
                      LexerListener *lexerListener);
 
@@ -285,8 +285,7 @@ void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                  const PrimaryFileSpecificPaths specificPaths,
                  CodeGenListener *listener = nullptr);
 
-bool EmitImportedModules(syn::SyntaxContext &context,
-                         syn::ModuleDecl *mainModule,
+bool EmitImportedModules(syn::ASTContext &context, syn::ModuleDecl *mainModule,
                          const CompilerOptions &opts);
 
 } // namespace stone
@@ -308,12 +307,12 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 LangContext &langContext, llvm::TargetMachine *target);
 
 /// Returns true is successfull
-bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
                llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
-                           const syn::SyntaxContext &Context,
+                           const syn::ASTContext &Context,
                            const CodeGenOptions &opts);
 
 /// Run the LLVM passes. In multi-threaded compilation this will be done for
@@ -327,7 +326,7 @@ bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
 /// \param TargetMachine target of code gen, required.
 /// \param OutputFilename Filename for output.
 
-bool GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
                llvm::GlobalVariable *hashGlobal,
                CodeGenListener *listener = nullptr);

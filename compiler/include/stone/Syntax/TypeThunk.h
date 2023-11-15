@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_TYPETHUNK_H
 #define STONE_SYNTAX_TYPETHUNK_H
 
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -23,8 +23,7 @@ enum class TypeThunkKind {
   Paren,
   Pipe,
 };
-class alignas(1 << TypeAlignInBits) TypeThunk
-    : syn::SyntaxAllocation<TypeThunk> {
+class alignas(1 << TypeAlignInBits) TypeThunk : syn::ASTAllocation<TypeThunk> {
   SrcLoc loc;
   TypeThunkKind kind;
 
@@ -109,7 +108,7 @@ public:
 
 public:
   static TypeThunkList *Create(llvm::ArrayRef<TypeThunk> thunks,
-                               SyntaxContext &sc);
+                               ASTContext &sc);
 };
 
 class TypeThunkCollector final {

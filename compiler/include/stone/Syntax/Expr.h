@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "stone/Syntax/ASTWalker.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/SyntaxWalker.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -24,7 +24,7 @@
 
 namespace stone {
 namespace syn {
-class SyntaxWalker;
+class ASTWalker;
 
 class Expr : public ValueStmt {
 public:
@@ -40,8 +40,8 @@ public:
   // StmtKind kind, QualType qualTy, ExprValueKind VK, ExprObjectKind OK
 
   /// This recursively walks the AST rooted at this expression.
-  Expr *Walk(SyntaxWalker &walker);
-  Expr *Walk(SyntaxWalker &&walker) { return Walk(walker); }
+  Expr *Walk(ASTWalker &walker);
+  Expr *Walk(ASTWalker &&walker) { return Walk(walker); }
 };
 
 /// FullExpr - Represents a "full-expression" node.

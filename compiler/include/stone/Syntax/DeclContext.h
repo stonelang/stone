@@ -6,10 +6,10 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/Types.h"
 
@@ -25,7 +25,7 @@ class raw_ostream;
 namespace stone {
 namespace syn {
 
-class SyntaxContext;
+class ASTContext;
 class CanQualType;
 class Decl;
 class DeclContext;
@@ -80,7 +80,7 @@ struct FragileFunction final {
 };
 
 class alignas(1 << DeclContextAlignInBits) DeclContext
-    : public SyntaxAllocation<DeclContext> {
+    : public ASTAllocation<DeclContext> {
 
   DeclContext *parent = nullptr;
   DeclContextKind declContextKind = DeclContextKind::None;
@@ -189,9 +189,9 @@ public:
     return const_cast<DeclContext *>(this)->ToDecl();
   }
 
-  // Return the SyntaxContext for a specified DeclContext by
-  /// walking up to the enclosing module and returning its SyntaxContext.
-  SyntaxContext &GetSyntaxContext() const;
+  // Return the ASTContext for a specified DeclContext by
+  /// walking up to the enclosing module and returning its ASTContext.
+  ASTContext &GetASTContext() const;
 
   /// Returns the semantic parent of this context.  A context has a
   /// parent if and only if it is not a module context.

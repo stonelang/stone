@@ -5,11 +5,11 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Syntax/ASTContext.h"
+#include "stone/Syntax/ASTWalker.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Scope.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxWalker.h"
 
 #include "llvm/ADT/SmallVector.h"
 
@@ -22,7 +22,7 @@ static inline unsigned AlignOfModuleFile();
 
 enum class ModuleFileKind : uint8_t { Syntax, Builtin };
 
-class ModuleFile : public DeclContext, public SyntaxAllocation<ModuleFile> {
+class ModuleFile : public DeclContext, public ASTAllocation<ModuleFile> {
 private:
   ModuleFileKind kind;
 
@@ -42,8 +42,8 @@ public:
     return dc->GetDeclContextKind() == DeclContextKind::ModuleFile;
   }
 
-  using SyntaxAllocation<ModuleFile>::operator new;
-  using SyntaxAllocation<ModuleFile>::operator delete;
+  using ASTAllocation<ModuleFile>::operator new;
+  using ASTAllocation<ModuleFile>::operator delete;
 };
 
 enum class SyntaxFileKind : uint8_t {
@@ -67,7 +67,7 @@ enum class SyntaxFileStage {
 
 class SyntaxFile final : public ModuleFile {
 private:
-  friend SyntaxContext;
+  friend ASTContext;
   // llvm::NullablePtr<Scope> scope = nullptr;
 
   /// A unique identifier representing this file; used to mark private decls
@@ -174,12 +174,12 @@ public:
   ///
   /// \param Printer The AST printer used for printing the contents.
   /// \param PO Options controlling the printing process.
-  // void Print(SyntaxPrinter &printer, const SyntaxPrintOptions &PO);
+  // void Print(ASTPrinter &printer, const SyntaxPrintOptions &PO);
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
   static syn::SyntaxFile *Make(SyntaxFileKind kind, unsigned srcID,
-                               ModuleDecl &owner, SyntaxContext &tc,
+                               ModuleDecl &owner, ASTContext &tc,
                                bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
@@ -196,7 +196,7 @@ public:
 
 class ModuleDecl final : public DeclContext,
                          public TypeDecl,
-                         public SyntaxAllocation<ModuleDecl> {
+                         public ASTAllocation<ModuleDecl> {
 
   // TODO: This is not yet implemented
   ModuleDecl *parent = nullptr;
@@ -207,10 +207,10 @@ class ModuleDecl final : public DeclContext,
   llvm::SmallVector<ModuleFile *, 8> primaries;
 
 public:
-  ModuleDecl(Identifier name, SyntaxContext &tc, ModuleDecl *parent = nullptr);
+  ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
 public:
-  using syn::Decl::GetSyntaxContext;
+  using syn::Decl::GetASTContext;
   llvm::SmallVector<ModuleFile *, 2> files;
 
   // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
@@ -235,7 +235,7 @@ public:
   /// \returns true if this module is the "builtin" module.
   bool IsBuiltin() const;
 
-  bool Walk(SyntaxWalker &waker);
+  bool Walk(ASTWalker &waker);
 
   /// Retrieve the ABI name of the module, which is used for metadata and
   /// mangling.

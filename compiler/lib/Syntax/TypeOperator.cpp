@@ -1,5 +1,5 @@
 #include "stone/Syntax/TypeOperator.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/ASTContext.h"
 
 using namespace stone::syn;
 
@@ -28,7 +28,7 @@ TypeOperatorList::TypeOperatorList(llvm::ArrayRef<TypeOperator> ops) {
 }
 
 TypeOperatorList *TypeOperatorList::Create(llvm::ArrayRef<TypeOperator> ops,
-                                           SyntaxContext &sc) {
+                                           ASTContext &sc) {
 
   unsigned sizeToAlloc =
       TypeOperatorList::totalSizeToAlloc<TypeOperator>(ops.size());

@@ -7,17 +7,17 @@
 
 namespace stone {
 
-class SyntaxOptions final {
+class ASTOptions final {
 public:
   unsigned LexingLineIndentation = 4;
 
 public:
-  SyntaxOptions() {}
+  ASTOptions() {}
 };
 
-class PrintSyntaxOptions final {
+class PrintASTOptions final {
 public:
-  PrintSyntaxOptions() {}
+  PrintASTOptions() {}
 };
 } // namespace stone
 #endif

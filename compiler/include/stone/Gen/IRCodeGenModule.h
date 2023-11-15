@@ -6,8 +6,8 @@
 #include "stone/Gen/IRCodeGenMetadata.h"
 #include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Gen/IRCodeGenTypeResolver.h"
+#include "stone/Syntax/ASTVisitor.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -98,7 +98,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class IRCodeGenModule final : public SyntaxVisitor<IRCodeGenModule> {
+class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
 
   IRCodeGen &irCodeGen;
   IRCodeGenTypeCache typeCache;

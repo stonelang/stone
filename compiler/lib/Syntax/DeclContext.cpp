@@ -2,9 +2,9 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Access.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -31,8 +31,8 @@ DeclContextKind DeclContext::GetDeclContextKind() const {
   return declContextKind;
 }
 
-SyntaxContext &DeclContext::GetSyntaxContext() const {
-  return GetParentModule()->GetSyntaxContext();
+ASTContext &DeclContext::GetASTContext() const {
+  return GetParentModule()->GetASTContext();
 }
 
 syn::ModuleDecl *DeclContext::GetParentModule() const {

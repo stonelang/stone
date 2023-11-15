@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_TYPEOPERATOR_H
 #define STONE_SYNTAX_TYPEOPERATOR_H
 
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -20,7 +20,7 @@ enum class TypeOperatorKind : UInt8 {
   Default,
 };
 class alignas(1 << TypeAlignInBits) TypeOperator
-    : syn::SyntaxAllocation<TypeOperator> {
+    : syn::ASTAllocation<TypeOperator> {
   SrcLoc loc;
   TypeOperatorKind kind;
 
@@ -65,7 +65,7 @@ public:
 
 public:
   static TypeOperatorList *Create(llvm::ArrayRef<TypeOperator> ops,
-                                  SyntaxContext &sc);
+                                  ASTContext &sc);
 };
 
 class TypeOperatorCollector final {

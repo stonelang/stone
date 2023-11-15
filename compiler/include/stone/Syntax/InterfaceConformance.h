@@ -18,7 +18,7 @@
 namespace stone {
 class DiagnosticEngine;
 namespace syn {
-class SyntaxContext;
+class ASTContext;
 class GenericParamList;
 class NormalInterfaceConformance;
 class RootInterfaceConformance;
@@ -80,7 +80,7 @@ enum class InterfaceConformanceState {
 /// InterfaceConformance is an abstract base class, implemented by subclasses
 /// for the various kinds of conformance (normal, specialized, inherited).
 // class alignas(1 << DeclAlignInBits) InterfaceConformance
-//     : public syn::SyntaxAllocation<InterfaceConformance> {
+//     : public syn::ASTAllocation<InterfaceConformance> {
 //   /// The kind of protocol conformance.
 //   InterfaceConformanceKind Kind;
 
@@ -449,10 +449,10 @@ enum class InterfaceConformanceState {
 //   /// deserialized conformances.
 //   ///
 //   /// This is not use for parsed conformances -- those are lazily populated
-//   /// by the SyntaxContext's LazyResolver, which is really a Sema instance.
+//   /// by the ASTContext's LazyResolver, which is really a Sema instance.
 //   LazyConformanceLoader *Loader = nullptr;
 //   uint64_t LoaderContextData;
-//   friend class SyntaxContext;
+//   friend class ASTContext;
 
 //   void resolveLazyInfo() const;
 
@@ -658,7 +658,7 @@ enum class InterfaceConformanceState {
 // /// it's only used to anchor structures relating to emitting witness tables
 // /// for self-conformances.
 // class SelfInterfaceConformance : public RootInterfaceConformance {
-//   friend class SyntaxContext;
+//   friend class ASTContext;
 
 //   SelfInterfaceConformance(Type conformingType)
 //     : RootInterfaceConformance(InterfaceConformanceKind::Self,
@@ -780,7 +780,7 @@ enum class InterfaceConformanceState {
 //   /// where T: Bar, Foo<Baz<U>> will include Baz<U>: Bar.)
 //   mutable Optional<ArrayRef<Requirement>> ConditionalRequirements;
 
-//   friend class SyntaxContext;
+//   friend class ASTContext;
 
 //   SpecializedInterfaceConformance(Type conformingType,
 //                                  RootInterfaceConformance
@@ -911,7 +911,7 @@ enum class InterfaceConformanceState {
 //   /// The conformance inherited from the superclass.
 //   InterfaceConformance *InheritedConformance;
 
-//   friend class SyntaxContext;
+//   friend class ASTContext;
 
 //   InheritedInterfaceConformance(Type conformingType,
 //                                InterfaceConformance *inheritedConformance)
@@ -1022,7 +1022,7 @@ enum class InterfaceConformanceState {
 // class BuiltinInterfaceConformance final : public RootInterfaceConformance,
 //       private llvm::TrailingObjects<BuiltinInterfaceConformance, Requirement>
 //       {
-//   friend SyntaxContext;
+//   friend ASTContext;
 //   friend TrailingObjects;
 
 //   InterfaceDecl *protocol;

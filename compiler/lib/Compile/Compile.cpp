@@ -11,8 +11,8 @@
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Option/Action.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTDiagnosticArgument.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxDiagnosticArgument.h"
 
 #include "clang/Basic/TargetInfo.h"
 
@@ -28,8 +28,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  SyntaxDiagnosticFormatter formatter;
-  SyntaxDiagnosticEmitter emitter(formatter);
+  ASTDiagnosticFormatter formatter;
+  ASTDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
 
   CompilerInvocation invocation;
@@ -211,7 +211,7 @@ Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
       /// You just want to padd CodeCompletionCallbacks and get rid of the
       /// listeners
-      stone::ParseSyntaxFile(*syntaxFile, compiler.GetSyntaxContext(),
+      stone::ParseSyntaxFile(*syntaxFile, compiler.GetASTContext(),
                              syntaxListener, lexerListener);
       syntaxFile`->stage = SyntaxFileStage::Parsed;
     }

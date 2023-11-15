@@ -2,8 +2,8 @@
 #include "stone/Gen/CodeGenScope.h"
 #include "stone/Gen/NativeCodeGen.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -78,16 +78,16 @@ using namespace stone::syn;
 
 static void GenNativeWithParallelization() {}
 
-static void EmitObject(CodeGenContext &cgc, syn::SyntaxContext &sc,
+static void EmitObject(CodeGenContext &cgc, syn::ASTContext &sc,
                        llvm::StringRef outputFilename) {}
 
-static void EmitBC(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+static void EmitBC(const CodeGenContext &cgc, syn::ASTContext &sc,
                    llvm::StringRef outputFilename) {}
 
-static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
+static void EmitAssembly(const CodeGenContext &cgc, syn::ASTContext &sc,
                          llvm::StringRef outputFilename) {}
 
-// void stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+// void stone::GenNative(CodeGenContext &cgc, syn::ASTContext &sc,
 //                       llvm::StringRef outputFilename,
 //                       CodeGenListener *listener) {
 
@@ -103,7 +103,7 @@ static void EmitAssembly(const CodeGenContext &cgc, syn::SyntaxContext &sc,
 static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
 
 /// Returns true is successfull
-bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
+bool stone::GenNative(CodeGenContext &cgc, syn::ASTContext &context,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
@@ -115,11 +115,11 @@ bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &context,
 
 bool stone::WriteEmptyOutputFiles(
     std::vector<std::string> &parallelOutputFilenames,
-    const syn::SyntaxContext &Context, const CodeGenOptions &opts) {
+    const syn::ASTContext &Context, const CodeGenOptions &opts) {
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, syn::SyntaxContext &sc,
+bool stone::GenNative(CodeGenContext &cgc, syn::ASTContext &sc,
                       llvm::StringRef outputFilename,
                       llvm::sys::Mutex *diagMutex,
                       llvm::GlobalVariable *hashGlobal,

@@ -29,30 +29,33 @@ Status Compiler::Initialize() {
   assert(invocation.GetAction().CanCompile());
   clangContext.reset(new ClangContext());
 
-  SetupSyntaxContext();
+  SetupASTContext();
   SetupSources();
   SetupModules();
   SetupCodeGenConext();
 
   return Status();
 }
-/// Setup SyntaxContext based on the action
+/// Setup ASTContext based on the action
 
-void Compiler::SetupSyntaxContext() {
-  syntaxContext.reset(new SyntaxContext(
+void Compiler::SetupASTContext() {
+  syntaxContext.reset(new ASTContext(
       invocation.GetLangContext(), invocation.GetSearchPathOptions(),
       GetClangContext(), invocation.GetDiags(), GetStats()));
 }
 
-void Compiler::SetupCodeContext() {
+void Compiler::SetupCodeGenContext() {
 
   if (invocation.GetAction().CanCodeGen()) {
   }
 
-  // syntaxContext.reset(new SyntaxContext(
+  // syntaxContext.reset(new ASTContext(
   //     invocation.GetLangContext(), invocation.GetSearchPathOptions(),
   //     GetClangContext(), invocation.GetDiags(), GetStats()));
 }
+
+void Compiler::SetupOutputBackend() {}
+
 // std::unique_ptr<llvm::raw_fd_ostream>
 // Compiler::GetFileOutputStream(llvm::StringRef outputFilename, LangContext
 // &lc) {

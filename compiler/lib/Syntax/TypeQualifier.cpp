@@ -1,5 +1,5 @@
 #include "stone/Syntax/TypeQualifier.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/ASTContext.h"
 
 using namespace stone::syn;
 
@@ -41,7 +41,7 @@ using namespace stone::syn;
 
 // TypeQualifierList *
 // TypeQualifierList::Create(llvm::ArrayRef<TypeQualifier> qualifiers,
-//                           SyntaxContext &sc) {
+//                           ASTContext &sc) {
 
 //   unsigned sizeToAlloc =
 //       TypeQualifierList::totalSizeToAlloc<TypeQualifier>(qualifiers.size());

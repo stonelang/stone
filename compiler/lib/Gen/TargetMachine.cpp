@@ -2,8 +2,8 @@
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ClangContext.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/MC/SubtargetFeature.h"
 #include "llvm/MC/TargetRegistry.h"

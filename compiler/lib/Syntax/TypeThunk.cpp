@@ -1,5 +1,5 @@
 #include "stone/Syntax/TypeThunk.h"
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/ASTContext.h"
 
 using namespace stone::syn;
 
@@ -47,7 +47,7 @@ TypeThunkList::TypeThunkList(llvm::ArrayRef<TypeThunk> chunks) {
 }
 
 TypeThunkList *TypeThunkList::Create(llvm::ArrayRef<TypeThunk> chunks,
-                                     SyntaxContext &sc) {
+                                     ASTContext &sc) {
 
   unsigned sizeToAlloc =
       TypeThunkList::totalSizeToAlloc<TypeThunk>(chunks.size());

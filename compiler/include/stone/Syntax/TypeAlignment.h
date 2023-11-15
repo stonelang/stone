@@ -14,7 +14,7 @@ class Type;
 class TypeDecl;
 class TypeBase;
 class InterfaceDecl;
-class SyntaxContext;
+class ASTContext;
 class DeclContext;
 class ModuleFile;
 class Attribute;
@@ -26,7 +26,7 @@ constexpr size_t DeclAlignInBits = 3;
 constexpr size_t ExprAlignInBits = 3;
 constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
-constexpr size_t SyntaxContextAlignInBits = 2;
+constexpr size_t ASTContextAlignInBits = 2;
 constexpr size_t DeclContextAlignInBits = 3;
 
 } // namespace stone
@@ -61,14 +61,14 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ValueDecl, stone::DeclAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Expr, stone::ExprAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::SyntaxContext,
-                            stone::SyntaxContextAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ASTContext,
+                            stone::ASTContextAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::DeclContext,
                             stone::DeclContextAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::ModuleFile,
-                            stone::SyntaxContextAlignInBits)
+                            stone::ASTContextAlignInBits)
 
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::TypeBase, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::syn::Type, stone::TypeAlignInBits)

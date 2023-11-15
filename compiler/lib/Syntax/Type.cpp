@@ -34,14 +34,14 @@ bool TypeBase::IsNominalType() {
   }
 }
 
-VoidType *VoidType::Create(const SyntaxContext &sc, AllocationArena arena) {
+VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
   return new (sc, arena) VoidType(sc);
 }
 
-// NullType* NullType::Create(const SyntaxContext& sc, AllocationArena arena) {
+// NullType* NullType::Create(const ASTContext& sc, AllocationArena arena) {
 //   return new(sc, arena) NullType(sc);
 // }
-// BoolType* BoolType::Create(const SyntaxContext& sc, AllocationArena arena) {
+// BoolType* BoolType::Create(const ASTContext& sc, AllocationArena arena) {
 //   return new(sc, arena) BoolType(sc);
 // }
 
@@ -72,16 +72,16 @@ bool Type::IsReferenceType() const {}
 //   return nullptr;
 // }
 
-// QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext &sc,
+// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
 //                                                   QualType qt) const {
-//   // You can do this because the type was saved in the SyntaxContext
+//   // You can do this because the type was saved in the ASTContext
 //   // So, look up the type from the context and apple the qualifiers to it.
 //   return QualType();
 // }
 
 // // THINK about this
 // /// Apply the collected qualifiers to the given type.
-// QualType TypeQualifierCollector::ApplyQualsToType(const SyntaxContext
+// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext
 // &Context,
 //                                        const Type *ty) const {}
 
@@ -94,22 +94,22 @@ SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
 void TypeLoc::SetType(Type ty) {}
 
-FunType::FunType(Type result, const SyntaxContext *sc)
+FunType::FunType(Type result, const ASTContext *sc)
     : FunctionType(TypeKind::Fun, result, sc) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);
 
 // IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
-//                                  const SyntaxContext &sc) {
+//                                  const ASTContext &sc) {
 //   return new (sc) IntegerType(bitWidthKind, sc);
 // }
 
 IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                 const SyntaxContext &sc) {
+                                 const ASTContext &sc) {
   return new (sc) IntegerType(bitWidthKind, sc);
 }
 
 FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
-                             const SyntaxContext &sc) {
+                             const ASTContext &sc) {
   return new (sc) FloatType(bitWidthKind, sc);
 }

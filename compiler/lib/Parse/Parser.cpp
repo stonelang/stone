@@ -2,24 +2,24 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/ASTDiagnostic.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Scope.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 using namespace stone;
 using namespace stone::syn;
 using namespace stone::mem;
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc,
-               SyntaxListener *syntaxListener, LexerListener *lexerListener)
+Parser::Parser(SyntaxFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
+               LexerListener *lexerListener)
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(
                  sf.GetSrcID(), sc.GetSrcMgr(), &sc.GetLangContext().GetDiags(),
                  &sc.GetLangContext().GetStats(), lexerListener)),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
+Parser::Parser(SyntaxFile &sf, ASTContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
@@ -167,7 +167,7 @@ void Parser::EnterScope(ScopeKind kind) {
 }
 
 Scope *Parser::CreateScope(ScopeKind kind, Scope *parent) {
-  return Parser::CreateScope(kind, GetSyntaxContext(), GetDiags(), parent);
+  return Parser::CreateScope(kind, GetASTContext(), GetDiags(), parent);
 }
 /// ExitScope - pop a scope off the scope stack.
 void Parser::ExitScope() {
@@ -178,7 +178,7 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
+Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
                            DiagnosticEngine &diags, Scope *parent) {
   return new (sc) Scope(kind, diags, parent);
 }

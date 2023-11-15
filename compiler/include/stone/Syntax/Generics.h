@@ -30,7 +30,7 @@
 namespace stone {
 namespace syn {
 
-class SyntaxWalker;
+class ASTWalker;
 class GenericTypeParamDecl;
 
 /// The kind of template argument we're storing.
@@ -126,7 +126,7 @@ public:
   unsigned GetParamCount() const;
 
 public:
-  bool Walk(SyntaxWalker &walker);
+  bool Walk(ASTWalker &walker);
 };
 
 /// A trailing where clause.
@@ -146,7 +146,7 @@ class alignas(GenericRequirement) TrailingWhereClause final
 public:
   /// Create a new trailing where clause with the given set of requirements.
   static TrailingWhereClause *
-  Create(SyntaxContext &ctx, SrcLoc whereLoc, SrcLoc endLoc,
+  Create(ASTContext &ctx, SrcLoc whereLoc, SrcLoc endLoc,
          llvm::ArrayRef<GenericRequirement> requirements);
 
   /// Retrieve the location of the 'where' keyword.

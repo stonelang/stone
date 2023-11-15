@@ -6,7 +6,7 @@
 namespace stone {
 namespace syn {
 // TODO: SyntaxKind
-enum class SyntaxDescription : uint8_t {
+enum class ASTDescription : uint8_t {
   Module,
   Decl,
   Stmt,

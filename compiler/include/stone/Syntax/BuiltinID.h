@@ -14,7 +14,7 @@ namespace syn {
 /// Get the builtin type for the given name.
 ///
 /// Returns a null type if the name is not a known builtin type name.
-// Type GetBuiltinType(SyntaxContext &sc, llvm::StringRef name);
+// Type GetBuiltinType(ASTContext &sc, llvm::StringRef name);
 
 /// BuiltinValueKind - The set of (possibly overloaded) builtin functions.
 enum class BuiltinID {

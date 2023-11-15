@@ -3,8 +3,8 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Decl.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 
@@ -99,7 +99,7 @@ enum class ScopeKind : UInt8 {
 
 };
 
-class Scope final : public syn::SyntaxAllocation<Scope> {
+class Scope final : public syn::ASTAllocation<Scope> {
   ScopeKind kind;
   DiagnosticEngine &diags;
   Scope *parent = nullptr;

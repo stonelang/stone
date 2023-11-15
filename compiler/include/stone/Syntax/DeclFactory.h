@@ -11,7 +11,7 @@ namespace stone {
 namespace syn {
 class Decl;
 class DeclContext;
-class SyntaxContext;
+class ASTContext;
 class FunDecl;
 class MemberFunDecl;
 class StructDecl;
@@ -31,26 +31,25 @@ void *AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 
 struct DeclFactory final {
 
-  static VarDecl *MakeVarDecl(SyntaxContext &sc);
+  static VarDecl *MakeVarDecl(ASTContext &sc);
 
-  static FunDecl *MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
+  static FunDecl *MakeFunDecl(DeclCollector &collector, ASTContext &sc,
                               DeclContext *parent);
-  static FunDecl *MakeFunDeclImplicit(DeclCollector &collector,
-                                      SyntaxContext &sc, DeclContext *parent);
+  static FunDecl *MakeFunDeclImplicit(DeclCollector &collector, ASTContext &sc,
+                                      DeclContext *parent);
 
-  static StructDecl *MakeStructDecl(DeclName name, SrcLoc loc,
-                                    SyntaxContext &sc,
+  static StructDecl *MakeStructDecl(DeclName name, SrcLoc loc, ASTContext &sc,
                                     DeclContext *parent = nullptr);
 
   static InterfaceDecl *MakeInterfaceDecl(DeclName name, SrcLoc loc,
-                                          SyntaxContext &sc,
+                                          ASTContext &sc,
                                           DeclContext *parent = nullptr);
 
-  static EnumDecl *MakeEnumDecl(DeclName name, SrcLoc loc, SyntaxContext &sc,
+  static EnumDecl *MakeEnumDecl(DeclName name, SrcLoc loc, ASTContext &sc,
                                 DeclContext *parent = nullptr);
 
   // TODO -- This is better
-  static ModuleDecl *MakeModuleDecl(Identifier name, SyntaxContext &sc,
+  static ModuleDecl *MakeModuleDecl(Identifier name, ASTContext &sc,
                                     bool isMainModule = false);
 
   // template <std::size_t Len>

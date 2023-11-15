@@ -33,7 +33,7 @@ template <typename... ArgTypes> struct Fix {
 namespace diag {
 enum class ArgumentKind {
   /// No argument
-  None,
+  None = 0,
 
   /// bool
   Bool,
@@ -54,8 +54,8 @@ enum class ArgumentKind {
 
   TokenKind,
 
-  /// custom argument
-  Syntax,
+  /// custom AST argument
+  AST,
 
 };
 
@@ -148,22 +148,15 @@ public:
   tok GetVal() const { return val; }
 };
 
-enum class SyntaxArgumentKind {
-  None,
-  Decl,
-  DeclContext,
-  Type,
-  Identifier,
-  Token
-};
-struct SyntaxArgument : public Argument {
-  SyntaxArgumentKind kind = SyntaxArgumentKind::None;
+enum class ASTArgumentKind { None, Decl, DeclContext, Type, Identifier, Token };
+struct ASTArgument : public Argument {
+  ASTArgumentKind kind = ASTArgumentKind::None;
 
 public:
-  SyntaxArgument() = delete;
-  explicit SyntaxArgument(SyntaxArgumentKind kind)
-      : Argument(ArgumentKind::Syntax), kind(kind) {}
-  SyntaxArgumentKind GetSyntaxArgumentKind() const { return kind; }
+  ASTArgument() = delete;
+  explicit ASTArgument(ASTArgumentKind kind)
+      : Argument(ArgumentKind::AST), kind(kind) {}
+  ASTArgumentKind GetASTArgumentKind() const { return kind; }
 };
 
 } // namespace diag

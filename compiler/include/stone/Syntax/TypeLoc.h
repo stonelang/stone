@@ -11,7 +11,7 @@ namespace stone {
 namespace syn {
 
 class TypeRep;
-class SyntaxContext;
+class ASTContext;
 
 /// Example: int a = 0;  The start loc is i and the range is i ...t
 class alignas(1 << TypeAlignInBits) TypeLoc {

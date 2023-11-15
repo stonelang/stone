@@ -8,7 +8,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticOptions.h"
-#include "stone/Syntax/SyntaxOptions.h"
+#include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -70,7 +70,7 @@ class CompilerInvocation final {
 
   ModuleOptions moduleOpts;
 
-  SyntaxOptions syntaxOpts;
+  ASTOptions syntaxOpts;
 
   DiagnosticOptions diagOpts;
 
@@ -103,8 +103,8 @@ public:
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
-  SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
-  const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+  ASTOptions &GetASTOptions() { return syntaxOpts; }
+  const ASTOptions &GetASTOptions() const { return syntaxOpts; }
 
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {

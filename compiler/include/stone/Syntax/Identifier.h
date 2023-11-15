@@ -30,7 +30,7 @@ namespace syn {
 class DeclName;
 class DeclNameTable;
 class Identifier;
-class SyntaxContext;
+class ASTContext;
 
 enum class IdentifierStatus { Enabled, Disabled, Reserved };
 
@@ -46,7 +46,7 @@ enum { IdentifierAlignment = 8 };
 /// set, and all tok::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class alignas(IdentifierAlignment) Identifier {
-  friend class SyntaxContext;
+  friend class ASTContext;
   friend class DeclNameBase;
   friend class IdentifierTable;
 
@@ -230,7 +230,7 @@ public:
 /// piece of the code, as each occurrence of every identifier goes through
 /// here when lexed.
 class IdentifierTable final {
-  friend SyntaxContext;
+  friend ASTContext;
   friend IdentifierTableStats;
 
   using Entries =

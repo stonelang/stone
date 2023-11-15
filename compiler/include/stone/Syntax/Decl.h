@@ -5,6 +5,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Access.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
@@ -15,7 +16,6 @@
 #include "stone/Syntax/Import.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"
@@ -47,18 +47,18 @@ class Stmt;
 class ModuleDecl;
 class BraceStmt;
 class DeclContext;
-class SyntaxContext;
+class ASTContext;
 class ValueDecl;
 class VarDecl;
-struct SyntaxNode;
+struct ASTNode;
 class Type;
 class Expr;
 class ConstructorDecl;
 class DestructorDecl;
 class AliasDecl;
 class ArchetypeKind;
-class SyntaxPrinter;
-class SyntaxWalker;
+class ASTPrinter;
+class ASTWalker;
 class GenericParamList;
 class TrailingWhereClause;
 
@@ -71,7 +71,7 @@ public:
   void Print(ColorStream &stream) override;
 };
 
-using UnifiedContext = llvm::PointerUnion<DeclContext *, SyntaxContext *>;
+using UnifiedContext = llvm::PointerUnion<DeclContext *, ASTContext *>;
 
 enum : unsigned {
   NumDeclKindBits = stone::CountBitsUsed(static_cast<unsigned>(DeclKind::Count))
@@ -82,7 +82,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public syn::SyntaxAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public syn::ASTAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -309,12 +309,12 @@ public:
 
   syn::Module *GetModuleContext() const;
 
-  SyntaxContext &GetSyntaxContext() const {
+  ASTContext &GetASTContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
     if (dc) {
-      return dc->GetSyntaxContext();
+      return dc->GetASTContext();
     }
-    return *context.get<SyntaxContext *>();
+    return *context.get<ASTContext *>();
   }
 
 public:
@@ -330,7 +330,7 @@ protected:
   template <typename DeclTy> friend class Redeclarable;
 
 public:
-  bool Walk(SyntaxWalker &walker);
+  bool Walk(ASTWalker &walker);
 };
 
 class NameableDecl : public Decl {
@@ -427,7 +427,7 @@ public:
 
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
 
-  friend class SyntaxContext;
+  friend class ASTContext;
   /// This indicates the Type object that represents
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
@@ -626,12 +626,12 @@ public:
 public:
   using DeclContext::operator new;
   using DeclContext::operator delete;
-  using Decl::GetSyntaxContext;
+  using Decl::GetASTContext;
 };
 
 /// Standalone function: fun F0() -> void {}
 class FunDecl : public FunctionDecl {
-  // TODO: You should aonly pass SyntaxContext and DeclContext
+  // TODO: You should aonly pass ASTContext and DeclContext
   SrcLoc funLoc;
   bool hasLBrace;
 
@@ -761,7 +761,7 @@ class IfConfigDecl : public Decl {
   SrcLoc endLoc;
 
   /// An array of clauses controlling each of the #if/#elseif/#else
-  /// conditions. The array is SyntaxContext allocated.
+  /// conditions. The array is ASTContext allocated.
   llvm::ArrayRef<IfConfigClause> clauses;
 
   SrcLoc GetLocFromSource() const {

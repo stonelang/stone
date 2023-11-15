@@ -13,7 +13,7 @@ class PrintingPolicy;
 
 namespace syn {
 
-class SyntaxContext;
+class ASTContext;
 class DeclName;
 class DeclNameTable;
 
@@ -238,7 +238,7 @@ struct alignas(Identifier) CompoundDeclName final
 
 class DeclName {
   friend class NamedDecl;
-  friend class SyntaxContext;
+  friend class ASTContext;
 
   // DeclNameKind declNameKind;
 
@@ -461,7 +461,7 @@ public:
 /// retrieved using its member functions (e.g., GetConstructorName).
 // class DeclNameTable final {
 //   /// Used to allocate elements in the FoldingSets below.
-//   const SyntaxContext &tc;
+//   const ASTContext &tc;
 
 //   /// Manage the uniqued SpecialDeclName representing stone constructors.
 //   /// GetConstructorName and GetSpecialName can be used to obtain
@@ -501,7 +501,7 @@ public:
 // CXXDeductionGuideNames;
 
 // public:
-//   DeclNameTable(const SyntaxContext &tc);
+//   DeclNameTable(const ASTContext &tc);
 //   DeclNameTable(const DeclNameTable &) = delete;
 //   DeclNameTable &operator=(const DeclNameTable &) = delete;
 //   DeclNameTable(DeclNameTable &&) = delete;

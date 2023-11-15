@@ -9,7 +9,7 @@ using namespace stone::syn;
 //    friend DeclVisitor<UseResolver>;
 
 //   SyntaxFile &SF;
-//   SyntaxContext &ctx;
+//   ASTContext &ctx;
 // };
 
 void stone::ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile) {}

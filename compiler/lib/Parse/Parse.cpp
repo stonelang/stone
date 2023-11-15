@@ -1,13 +1,13 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 using namespace stone;
 using namespace stone::syn;
 
 void stone::ParseSyntaxFile(syn::SyntaxFile &syntaxFile,
-                            syn::SyntaxContext &syntaxContext,
+                            syn::ASTContext &syntaxContext,
                             SyntaxListener *syntaxListener,
                             LexerListener *lexerListener) {
 

@@ -20,7 +20,7 @@
 namespace stone {
 namespace syn {
 class Decl;
-class SyntaxContext;
+class ASTContext;
 
 // Some notes on redeclarables:
 //
@@ -82,7 +82,7 @@ protected:
     /// generationally updated as decls are added by an external source.
     using KnownLatest = LazyGenerationalUpdatePtr<const Decl *, Decl *>;
 
-    /// We store a pointer to the SyntaxContext in the UninitializedLatest
+    /// We store a pointer to the ASTContext in the UninitializedLatest
     /// pointer, but to avoid circular type dependencies when we steal the low
     /// bits of this pointer, we use a raw void* here.
     using UninitializedLatest = const void *;
@@ -100,7 +100,7 @@ protected:
     enum PreviousTag { PreviousLink };
     enum LatestTag { LatestLink };
 
-    DeclLink(LatestTag, const SyntaxContext &Ctx)
+    DeclLink(LatestTag, const ASTContext &Ctx)
         : Link(NotKnownLatest(reinterpret_cast<UninitializedLatest>(&Ctx))) {}
     DeclLink(PreviousTag, DeclTy *D) : Link(NotKnownLatest(Previous(D))) {}
 
@@ -118,7 +118,7 @@ protected:
           return static_cast<DeclTy *>(NKL.get<Previous>());
 
         // Allocate the generational 'most recent' cache now, if needed.
-        Link = KnownLatest(*reinterpret_cast<const SyntaxContext *>(
+        Link = KnownLatest(*reinterpret_cast<const ASTContext *>(
                                NKL.get<UninitializedLatest>()),
                            const_cast<DeclTy *>(D));
       }
@@ -135,7 +135,7 @@ protected:
       assert(isFirst() && "decl became canonical unexpectedly");
       if (Link.is<NotKnownLatest>()) {
         NotKnownLatest NKL = Link.get<NotKnownLatest>();
-        Link = KnownLatest(*reinterpret_cast<const SyntaxContext *>(
+        Link = KnownLatest(*reinterpret_cast<const ASTContext *>(
                                NKL.get<UninitializedLatest>()),
                            D);
       } else {
@@ -159,7 +159,7 @@ protected:
     return DeclLink(DeclLink::PreviousLink, D);
   }
 
-  static DeclLink LatestDeclLink(const SyntaxContext &Ctx) {
+  static DeclLink LatestDeclLink(const ASTContext &Ctx) {
     return DeclLink(DeclLink::LatestLink, Ctx);
   }
 
@@ -183,7 +183,7 @@ protected:
   }
 
 public:
-  Redeclarable(const SyntaxContext &Ctx)
+  Redeclarable(const ASTContext &Ctx)
       : RedeclLink(LatestDeclLink(Ctx)), First(static_cast<DeclTy *>(this)) {}
 
   /// Return the previous declaration of this declaration or NULL if this

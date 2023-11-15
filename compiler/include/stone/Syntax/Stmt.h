@@ -11,11 +11,11 @@
 
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTAllocation.h"
+#include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/StmtBits.h"
 #include "stone/Syntax/StmtKind.h"
-#include "stone/Syntax/SyntaxAllocation.h"
-#include "stone/Syntax/SyntaxNode.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -37,9 +37,9 @@ class FunDecl;
 class VarDecl;
 class Expr;
 class StringLiteral;
-class SyntaxContext;
+class ASTContext;
 
-class Stmt : public SyntaxAllocation<Stmt> {
+class Stmt : public ASTAllocation<Stmt> {
   StmtKind kind;
 
 public:
@@ -63,14 +63,14 @@ public:
 /// BraceStmt - A brace enclosed sequence of expressions, stmts, or decls, like
 /// { var x = 10; print(10) }.
 class BraceStmt final : public Stmt,
-                        public llvm::TrailingObjects<BraceStmt, SyntaxNode> {
+                        public llvm::TrailingObjects<BraceStmt, ASTNode> {
   friend TrailingObjects;
 
   SrcLoc lbLoc;
   SrcLoc rbLoc;
 
 public:
-  BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<SyntaxNode> elements, SrcLoc rbLoc);
+  BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<ASTNode> elements, SrcLoc rbLoc);
 
 public:
   SrcLoc GetLBraceLoc() const { return lbLoc; }
@@ -81,20 +81,20 @@ public:
   // bool empty() const { return getNumElements() == 0; }
   // unsigned getNumElements() const { return Bits.BraceStmt.NumElements; }
 
-  // // SyntaxNode getFirstElement() const { return getElements().front(); }
-  // SyntaxNode getLastElement() const { return getElements().back(); }
+  // // ASTNode getFirstElement() const { return getElements().front(); }
+  // ASTNode getLastElement() const { return getElements().back(); }
 
-  // void setFirstElement(SyntaxNode node) { getElements().front() = node; }
-  // void setLastElement(SyntaxNode node) { getElements().back() = node; }
+  // void setFirstElement(ASTNode node) { getElements().front() = node; }
+  // void setLastElement(ASTNode node) { getElements().back() = node; }
 
   /// The elements contained within the BraceStmt.
-  // llvm::MutableArrayRef<SyntaxNode> getElements() {
-  //   return {getTrailingObjects<SyntaxNode>(), Bits.BraceStmt.NumElements};
+  // llvm::MutableArrayRef<ASTNode> getElements() {
+  //   return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
   // }
 
   /// The elements contained within the BraceStmt (const version).
-  // llvm::ArrayRef<SyntaxNode> getElements() const {
-  //   return {getTrailingObjects<SyntaxNode>(), Bits.BraceStmt.NumElements};
+  // llvm::ArrayRef<ASTNode> getElements() const {
+  //   return {getTrailingObjects<ASTNode>(), Bits.BraceStmt.NumElements};
   // }
 
 public:

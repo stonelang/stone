@@ -5,10 +5,10 @@
 
 // #include "stone/Foreign/ClangImporter.h"
 // #include "stone/Syntax/NameLookup.h"
-// #include "stone/Syntax/SyntaxContext.h"
+// #include "stone/Syntax/ASTContext.h"
 // #include "stone/Syntax/Scope.h"
 
-// #include "stone/Syntax/SyntaxVisitor.h"
+// #include "stone/Syntax/ASTVisitor.h"
 // #include "stone/Syntax/DebuggerClient.h"
 // #include "stone/Syntax/ExistentialLayout.h"
 // #include "stone/Syntax/LazyResolver.h"

@@ -13,7 +13,7 @@ void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
   if (sf.stage == SyntaxFileStage::TypeChecked) {
     return;
   }
-  TypeChecker checker(sf.GetSyntaxContext(), typeCheckerOpts, listener);
+  TypeChecker checker(sf.GetASTContext(), typeCheckerOpts, listener);
   for (auto d : sf.Decls) {
     checker.CheckDecl(d);
   }

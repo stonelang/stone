@@ -1,4 +1,4 @@
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Syntax/Module.h"
 
@@ -15,38 +15,38 @@
 using namespace stone;
 using namespace stone::syn;
 
-SyntaxContext::SyntaxContext(const LangOption &langOpts,
-                             const SearchPathOptions &spOpts,
-                             ClangContext &clangContext, DiagnosticEngine &de,
-                             StatisticEngine &se)
+ASTContext::ASTContext(const LangOption &langOpts,
+                       const SearchPathOptions &spOpts,
+                       ClangContext &clangContext, DiagnosticEngine &de,
+                       StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
       de(de), se(se), identifiers(allocator), builtinContext(*this),
-      stats(new SyntaxContextStats(*this)), {
+      stats(new ASTContextStats(*this)), {
 
   se.Register(stats.get());
 }
 
-SyntaxContext::~SyntaxContext() {
+ASTContext::~ASTContext() {
   for (auto &cleanup : cleanups) {
     cleanup();
   }
 }
 
-const BuiltinContext &SyntaxContext::GetBuiltinContext() const {
+const BuiltinContext &ASTContext::GetBuiltinContext() const {
   return builtinContext;
 }
 
-void *syn::AllocateInSyntaxContext(size_t bytes, const SyntaxContext &ctx,
-                                   mem::AllocationArena arena,
-                                   unsigned alignment) {
+void *syn::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
+                                mem::AllocationArena arena,
+                                unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 
-Identifier SyntaxContext::GetIdentifier(llvm::StringRef name) {
+Identifier ASTContext::GetIdentifier(llvm::StringRef name) {
   return identifiers.GetIdentifier(name);
 }
 
-void SyntaxContext::AddLoadedModule(ModuleDecl *mod) {
+void ASTContext::AddLoadedModule(ModuleDecl *mod) {
   assert(mod);
   // Add a loaded module using an actual module name (physical name
   // on disk), in case -module-alias is used (otherwise same).
@@ -57,9 +57,8 @@ void SyntaxContext::AddLoadedModule(ModuleDecl *mod) {
   loadedModules[mod->GetRealName()] = mod;
 }
 
-Identifier
-SyntaxContext::GetRealModuleName(Identifier key,
-                                 ModuleAliasLookupOption option) const {
+Identifier ASTContext::GetRealModuleName(Identifier key,
+                                         ModuleAliasLookupOption option) const {
 
   auto found = moduleAliasMap.find(key);
   if (found == moduleAliasMap.end()) {
@@ -88,12 +87,12 @@ SyntaxContext::GetRealModuleName(Identifier key,
   return value.first;
 }
 
-size_t SyntaxContext::GetTotalMemUsed() const {
+size_t ASTContext::GetTotalMemUsed() const {
   return GetAllocator().getTotalMemory();
 }
 
-// llvm::BumpPtrAllocator &SyntaxContext::GetBumpAllocator() const {
+// llvm::BumpPtrAllocator &ASTContext::GetBumpAllocator() const {
 //   return internal.allocator;
 // }
 
-void SyntaxContextStats::Print(ColorStream &stream) {}
+void ASTContextStats::Print(ColorStream &stream) {}

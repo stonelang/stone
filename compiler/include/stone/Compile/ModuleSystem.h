@@ -5,8 +5,8 @@
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/ModuleDependencies.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 namespace stone {
 
@@ -26,7 +26,7 @@ class CompilerConfiguration;
 class ModuleSystem final {
   // TODO: We need built-in information
   Compiler &compiler;
-  syn::SyntaxContext &syntaxContext;
+  syn::ASTContext &syntaxContext;
   /// This is the main module that will be created
   mutable syn::ModuleDecl *mainModule = nullptr;
 
@@ -36,7 +36,7 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(Compiler &compiler, syn::SyntaxContext &syntaxContext);
+  ModuleSystem(Compiler &compiler, syn::ASTContext &syntaxContext);
   ~ModuleSystem();
 
 public:

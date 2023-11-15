@@ -8,7 +8,7 @@ class SrcLoc;
 
 namespace syn {
 class Expr;
-struct SyntaxNode;
+struct ASTNode;
 } // namespace syn
 
 /// This represents one part of a #if block.  If the condition field is
@@ -23,13 +23,13 @@ struct IfConfigClause {
   syn::Expr *cond;
 
   /// Elements inside the clause
-  llvm::ArrayRef<syn::SyntaxNode> elements;
+  llvm::ArrayRef<syn::ASTNode> elements;
 
   /// True if this is the active clause of the #if block.
   const bool isActive;
 
   IfConfigClause(SrcLoc loc, syn::Expr *cond,
-                 llvm::ArrayRef<syn::SyntaxNode> elements, bool isActive)
+                 llvm::ArrayRef<syn::ASTNode> elements, bool isActive)
       : loc(loc), cond(cond), elements(elements), isActive(isActive) {}
 };
 

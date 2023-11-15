@@ -2,12 +2,12 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/SyntaxContext.h"
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -47,13 +47,13 @@ void *syn::AllocateDeclMem(AllocatorTy &allocatorTy, size_t baseSize,
 }
 
 // // Only allow allocation of Decls using the allocator in ASTContext.
-// void *syn::Decl::operator new(std::size_t bytes, const SyntaxContext &tc,
+// void *syn::Decl::operator new(std::size_t bytes, const ASTContext &tc,
 //                               unsigned alignment) {
 //   return tc.Allocate(bytes, alignment);
 // }
 
 // // Only allow allocation of Modules using the allocator in ASTContext.
-// void *syn::Module::operator new(std::size_t bytes, const SyntaxContext &tc,
+// void *syn::Module::operator new(std::size_t bytes, const ASTContext &tc,
 //                                 unsigned alignment) {
 //   return tc.Allocate(bytes, alignment);
 // }
@@ -135,7 +135,7 @@ bool ValueDecl::IsInstanceMember() const {
 //   case DeclKind::Constructor:
 //   case DeclKind::Destructor:
 //   case DeclKind::Fun:
-//     //llvm::cast<ValueDecl>(this)->SetInterfaceType(ErrorType::Get(GetSyntaxContext()));
+//     //llvm::cast<ValueDecl>(this)->SetInterfaceType(ErrorType::Get(GetASTContext()));
 //     return;
 
 //   case DeclKind::BuiltinTuple:
@@ -189,7 +189,7 @@ bool FunDecl::HasReturn() const { return false; }
 
 void DeclStats::Print(ColorStream &stream) {}
 
-FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
+FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, ASTContext &sc,
                                   DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
@@ -205,21 +205,21 @@ FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, SyntaxContext &sc,
 }
 
 StructDecl *DeclFactory::MakeStructDecl(DeclName name, SrcLoc loc,
-                                        SyntaxContext &sc, DeclContext *dc) {
+                                        ASTContext &sc, DeclContext *dc) {
   size_t size = sizeof(syn::StructDecl);
   auto declPtr = syn::AllocateDeclMem<StructDecl>(sc, size);
-  // return ::new (declPtr) StructDecl(loc, GetSyntaxContext(), dc);
+  // return ::new (declPtr) StructDecl(loc, GetASTContext(), dc);
   return nullptr;
 }
 
-ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, SyntaxContext &sc,
+ModuleDecl *DeclFactory::MakeModuleDecl(Identifier name, ASTContext &sc,
                                         bool isMainModule) {
   size_t size = sizeof(syn::ModuleDecl);
   auto declPtr = syn::AllocateDeclMem<syn::ModuleDecl>(sc, size);
   return ::new (declPtr) syn::ModuleDecl(name, sc);
 }
 
-VarDecl *DeclFactory::MakeVarDecl(SyntaxContext &sc) {
+VarDecl *DeclFactory::MakeVarDecl(ASTContext &sc) {
   // auto declPtr = syn::AllocateDeclMem<syn::VarDecl>(sc,
   // sizeof(syn::VarDecl)); return ::new (declPtr) syn::VarDecl(sc);
   return nullptr;

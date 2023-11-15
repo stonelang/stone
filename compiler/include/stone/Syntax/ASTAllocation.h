@@ -8,23 +8,23 @@
 
 namespace stone {
 namespace syn {
-class SyntaxContext;
+class ASTContext;
 }
 
 namespace syn {
-void *AllocateInSyntaxContext(size_t bytes, const syn::SyntaxContext &ctx,
-                              mem::AllocationArena arena, unsigned alignment);
+void *AllocateInASTContext(size_t bytes, const syn::ASTContext &ctx,
+                           mem::AllocationArena arena, unsigned alignment);
 }
 
 namespace syn {
 /// Types inheriting from this class are intended to be allocated in an
-/// \c SyntaxContext allocator; you cannot allocate them by using a normal \c
+/// \c ASTContext allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
 /// \c new.
 ///
 /// The template parameter is a type with the desired alignment. It is usually,
 /// but not always, the type that is inheriting \c ASTAllocated.
-template <typename AlignTy> class SyntaxAllocation {
+template <typename AlignTy> class ASTAllocation {
 public:
   // Make vanilla new/delete illegal.
   void *operator new(size_t bytes) throw() = delete;
@@ -33,10 +33,10 @@ public:
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
   void *
-  operator new(size_t bytes, const syn::SyntaxContext &ctx,
+  operator new(size_t bytes, const syn::ASTContext &ctx,
                mem::AllocationArena arena = mem::AllocationArena::Permanent,
                unsigned alignment = alignof(AlignTy)) {
-    return syn::AllocateInSyntaxContext(bytes, ctx, arena, alignment);
+    return syn::AllocateInASTContext(bytes, ctx, arena, alignment);
   }
 
   void *operator new(size_t bytes, void *mem) throw() {

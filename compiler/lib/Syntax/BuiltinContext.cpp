@@ -1,13 +1,13 @@
 #include "stone/Syntax/BuiltinContext.h"
 #include "stone/Basic/Mem.h"
-#include "stone/Syntax/SyntaxAllocation.h"
+#include "stone/Syntax/ASTAllocation.h"
 
 using namespace stone;
 using namespace stone::syn;
 
 using namespace stone::mem;
 
-BuiltinContext::BuiltinContext(SyntaxContext &sc)
+BuiltinContext::BuiltinContext(ASTContext &sc)
     : sc(sc),
 
       BuiltinVoidType(VoidType::Create(sc)),

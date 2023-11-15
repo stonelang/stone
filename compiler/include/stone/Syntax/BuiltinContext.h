@@ -5,10 +5,10 @@
 
 namespace stone {
 namespace syn {
-class SyntaxContext;
+class ASTContext;
 
 class BuiltinContext final {
-  SyntaxContext &sc;
+  ASTContext &sc;
 
 public:
   BuiltinContext(const BuiltinContext &) = delete;
@@ -40,7 +40,7 @@ public:
   const CanType BuiltinBoolType;
 
 public:
-  BuiltinContext(SyntaxContext &sc);
+  BuiltinContext(ASTContext &sc);
   ~BuiltinContext();
 
 private:

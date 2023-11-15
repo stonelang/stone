@@ -3,11 +3,11 @@
 #include <cassert>
 #include <memory>
 
-#include "stone/Syntax/SyntaxContext.h"
+#include "stone/Syntax/ASTContext.h"
 
 using namespace stone;
 
-syn::DeclGroup *syn::DeclGroup::Create(SyntaxContext &tc, Decl **decls,
+syn::DeclGroup *syn::DeclGroup::Create(ASTContext &tc, Decl **decls,
                                        unsigned numDecls) {
   // assert(numDecls > 1 && "Invalid DeclGroup");
   // unsigned totalSize = totalSizeToAlloc<Decl *>(numDecls);

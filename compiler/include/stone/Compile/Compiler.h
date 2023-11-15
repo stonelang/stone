@@ -8,8 +8,8 @@
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
@@ -80,7 +80,7 @@ public:
 
 //   ModuleOptions moduleOpts;
 
-//   SyntaxOptions syntaxOpts;
+//   ASTOptions syntaxOpts;
 
 //   DiagnosticOptions diagOpts;
 
@@ -151,8 +151,8 @@ public:
 //   stone::TargetOptions &GetTargetOptions() { return targetOpts; }
 //   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
 
-//   SyntaxOptions &GetSyntaxOptions() { return syntaxOpts; }
-//   const SyntaxOptions &GetSyntaxOptions() const { return syntaxOpts; }
+//   ASTOptions &GetASTOptions() { return syntaxOpts; }
+//   const ASTOptions &GetASTOptions() const { return syntaxOpts; }
 
 //   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
 //   const TypeCheckerOptions &GetTypeCheckerOptions() const {
@@ -270,7 +270,7 @@ class Compiler final {
 
   std::unique_ptr<CompilerStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
-  std::unique_ptr<syn::SyntaxContext> syntaxContext;
+  std::unique_ptr<syn::ASTContext> syntaxContext;
   std::unique_ptr<ClangContext> clangContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
@@ -319,7 +319,7 @@ private:
   void QueueTask(CompilerTask *task) { GetQueue().AddTask(task); }
 
 public:
-  void SetupSyntaxContext();
+  void SetupASTContext();
   void SetupOutputBackend();
   void SetupCodeGenContext();
   void SetupModules();
@@ -329,7 +329,7 @@ public:
   CompilerQueue &GetQueue() { return *compilerQueue; }
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
   CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
-  syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
+  syn::ASTContext &GetASTContext() { return *syntaxContext; }
   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
   ClangContext &GetClangContext() { return *clangContext; }
 
@@ -489,7 +489,7 @@ public:
   void PrintStatistics();
 
 public:
-  void FreeSyntaxContext();
+  void FreeASTContext();
 
 public:
   /// Return the total amount of physical memory allocated for representing

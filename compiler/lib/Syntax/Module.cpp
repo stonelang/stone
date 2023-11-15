@@ -1,6 +1,6 @@
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/DeclFactory.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -20,7 +20,7 @@ using namespace stone::syn;
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-ModuleDecl::ModuleDecl(Identifier name, SyntaxContext &sc, ModuleDecl *parent)
+ModuleDecl::ModuleDecl(Identifier name, ASTContext &sc, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
       TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {
 
@@ -61,10 +61,10 @@ void ModuleDecl::AddFile(ModuleFile &file) {
 
 Identifier ModuleDecl::GetRealName() const {
   // This will return the real name for an alias (if used) or getName()
-  return GetSyntaxContext().GetRealModuleName(GetBasicName());
+  return GetASTContext().GetRealModuleName(GetBasicName());
 }
 
-bool ModuleDecl::Walk(SyntaxWalker &waker) {}
+bool ModuleDecl::Walk(ASTWalker &waker) {}
 
 bool DeclContext::IsModuleContext() const {
   if (auto D = ToDecl()) {
@@ -106,13 +106,13 @@ llvm::StringRef SyntaxFile::GetFilename() const {
   if (srcID == -1) {
     return llvm::StringRef();
   }
-  SrcMgr &sm = GetSyntaxContext().GetSrcMgr();
+  SrcMgr &sm = GetASTContext().GetSrcMgr();
   return sm.getIdentifierForBuffer(srcID);
 }
 
 syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, unsigned srcID,
-                                       syn::ModuleDecl &owner,
-                                       SyntaxContext &sc, bool isPrimary) {
+                                       syn::ModuleDecl &owner, ASTContext &sc,
+                                       bool isPrimary) {
   return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
 }
 

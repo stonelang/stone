@@ -6,22 +6,22 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/BuiltinContext.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Import.h"
 #include "stone/Syntax/LangABI.h"
 #include "stone/Syntax/SearchPath.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Types.h"
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Syntax/ASTDiagnosticArgument.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/SyntaxDiagnosticArgument.h"
 #include "stone/Syntax/SyntaxResult.h"
 #include "stone/Syntax/Types.h"
 
@@ -45,7 +45,6 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
 
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -55,8 +54,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-
 
 namespace stone {
 class DiagnosticEngine;
@@ -74,7 +71,7 @@ class MangleContext;
 class Module;
 class Stmt;
 class BuiltinContext;
-class SyntaxContext;
+class ASTContext;
 class Decl;
 class DeclContext;
 class FunDecl;
@@ -85,11 +82,11 @@ class SwitchStmt;
 class Expr;
 class SyntaxFile;
 
-class SyntaxContextStats final : public Stats {
-  const SyntaxContext &sc;
+class ASTContextStats final : public Stats {
+  const ASTContext &sc;
 
 public:
-  SyntaxContextStats(const SyntaxContext &sc)
+  ASTContextStats(const ASTContext &sc)
       : Stats("syntax context stats:"), sc(sc) {}
   void Print(ColorStream &stream) override;
 };
@@ -100,13 +97,13 @@ enum class ModuleAliasLookupOption {
   RealNameFromAlias,
   AliasFromRealName
 };
-class SyntaxContext final {
-  friend SyntaxContextStats;
+class ASTContext final {
+  friend ASTContextStats;
 
-  std::unique_ptr<SyntaxContextStats> stats;
+  std::unique_ptr<ASTContextStats> stats;
 
   /// The language options used to create the AST associated with
-  ///  this SyntaxContext object.
+  ///  this ASTContext object.
   const LangContext &langOpts;
 
   ClangContext &clangContext;
@@ -119,9 +116,9 @@ class SyntaxContext final {
   StatisticEngine &se;
 
   BuiltinContext builtinContext;
-  /// The allocator used to create SyntaxContext objects.
-  /// SyntaxContext objects are never destructed; rather, all memory associated
-  /// with the SyntaxContext objects will be released when the SyntaxContext
+  /// The allocator used to create ASTContext objects.
+  /// ASTContext objects are never destructed; rather, all memory associated
+  /// with the ASTContext objects will be released when the ASTContext
   /// itself is destroyed.
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -147,7 +144,7 @@ class SyntaxContext final {
   /// Set if a `-module-alias` was passed. Used to store mapping between module
   /// aliases and their corresponding real names, and vice versa for a reverse
   /// lookup, which is needed to check if the module names appearing in source
-  /// files are aliases or real names. \see SyntaxContext::GetRealModuleName.
+  /// files are aliases or real names. \see ASTContext::GetRealModuleName.
   ///
   /// The boolean in the value indicates whether or not the entry is keyed by an
   /// alias vs real name, i.e. true if the entry is [key: alias_name, value:
@@ -156,21 +153,21 @@ class SyntaxContext final {
       moduleAliasMap;
 
 public:
-  /// The set of cleanups to be called when the SyntaxContext is destroyed.
+  /// The set of cleanups to be called when the ASTContext is destroyed.
   std::vector<std::function<void(void)>> cleanups;
 
 public:
-  SyntaxContext(const SyntaxContext &) = delete;
-  SyntaxContext &operator=(const SyntaxContext &) = delete;
+  ASTContext(const ASTContext &) = delete;
+  ASTContext &operator=(const ASTContext &) = delete;
 
-  SyntaxContext(const LangOptions &langOpts,
-                const SearchPathOptions &searchPathOpts,
-                ClangContext &clangContext, DiagnosticEngine &de,
-                StatisticEngine &se);
+  ASTContext(const LangOptions &langOpts,
+             const SearchPathOptions &searchPathOpts,
+             ClangContext &clangContext, DiagnosticEngine &de,
+             StatisticEngine &se);
 
-  ~SyntaxContext();
+  ~ASTContext();
 
-  /// Add a cleanup function to be called when the SyntaxContext is deallocated.
+  /// Add a cleanup function to be called when the ASTContext is deallocated.
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
@@ -191,7 +188,7 @@ public:
 
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
-  SyntaxContextStats &GetStats() { return se; }
+  ASTContextStats &GetStats() { return se; }
 
 public:
   //==Module stuff==//
@@ -213,7 +210,7 @@ public:
   /// if it hasn't been set yet.
   // Module *GetSTDLibModule(bool loadIfAbsent = false);
   // Module *GetSTDLibModule() const {
-  //   return const_cast<SyntaxContext *>(this)->GetStdlibModule(false);
+  //   return const_cast<ASTContext *>(this)->GetStdlibModule(false);
   // }
 
   /// Insert an externally-sourced module into the set of known loaded modules
@@ -245,18 +242,18 @@ public:
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return lc.GetDiags().PrintD(
-        loc, SyntaxDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
+        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return lc.GetDiags().PrintD(loc, SyntaxDiagnostic(diagID, args));
+    return lc.GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return lc.GetDiags().PrintD(loc, SyntaxDiagnostic(id, std::move(args)...));
+    return lc.GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
   }
 };
 } // namespace syn

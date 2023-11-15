@@ -16,12 +16,12 @@ class TargetMachine;
 namespace stone {
 namespace syn {
 class Module;
-class SyntaxContext;
+class ASTContext;
 } // namespace syn
 
 class NativeCodeGen final {
   CodeGenContext &cgc;
-  syn::SyntaxContext &sc;
+  syn::ASTContext &sc;
 
   // llvm::Optional<raw_fd_ostream> rawStream;
 public:
@@ -29,11 +29,11 @@ public:
   void operator=(const NativeCodeGen &) = delete;
 
 public:
-  NativeCodeGen(CodeGenContext &cgc, syn::SyntaxContext &sc);
+  NativeCodeGen(CodeGenContext &cgc, syn::ASTContext &sc);
   ~NativeCodeGen();
 
   CodeGenContext &GetCodeGenContext() { return cgc; }
-  syn::SyntaxContext &GetSyntaxContext() { return sc; }
+  syn::ASTContext &GetASTContext() { return sc; }
 };
 } // namespace stone
 

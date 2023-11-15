@@ -9,7 +9,7 @@ namespace syn {
 class Stmt;
 class IfStmt;
 class SwitchStmt;
-class SyntaxNode;
+class ASTNode;
 
 } // namespace syn
 
@@ -17,8 +17,8 @@ namespace syn {
 
 struct StmtFactory final {
   static BraceStmt *MakeBraceStmt(SrcLoc lbloc,
-                                  llvm::ArrayRef<SyntaxNode> elements,
-                                  SrcLoc rbloc, SyntaxContext &sc,
+                                  llvm::ArrayRef<ASTNode> elements,
+                                  SrcLoc rbloc, ASTContext &sc,
                                   llvm::Optional<bool> implicit = llvm::None);
 };
 

@@ -95,7 +95,7 @@
 //   for (auto moduleFile :
 //        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
 //     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-//       stone::ParseSyntaxFile(*syntaxFile, compiler.GetSyntaxContext(),
+//       stone::ParseSyntaxFile(*syntaxFile, compiler.GetASTContext(),
 //                              syntaxListener, lexerListener);
 //       syntaxFile->stage = SyntaxFileStage::Parsed;
 //     }
@@ -222,7 +222,7 @@
 // if (compiler.GetListener()) {
 //   codeGenListener = compiler.GetListener()->GetCodeGenListener();
 // }
-// auto result = stone::GenNative(codeGenContext, compiler.GetSyntaxContext(),
+// auto result = stone::GenNative(codeGenContext, compiler.GetASTContext(),
 //                                llvm::StringRef(), codeGenListener);
 
 // return Status();
@@ -271,7 +271,7 @@
 
 // Status Compiler::CompileWithGenNative(CodeGenContext &cgc) {
 
-//   auto result = stone::GenNative(cgc, GetSyntaxContext(),
+//   auto result = stone::GenNative(cgc, GetASTContext(),
 //   llvm::StringRef(),
 //                                  GetInvocation().GetListener());
 //   return Status::Success();
@@ -368,7 +368,7 @@
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
 //     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-//       stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+//       stone::ParseSyntaxFile(*syntaxFile, GetASTContext(),
 //       syntaxListener,
 //                              lexerListener);
 //       if (notifiy) {

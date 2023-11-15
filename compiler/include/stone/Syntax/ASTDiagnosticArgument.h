@@ -16,75 +16,75 @@ namespace stone {
 
 namespace diag {
 
-// struct TokenArgument final : public SyntaxArgument {
+// struct TokenArgument final : public ASTArgument {
 //   const syn::Token *val;
 //   Decl() = delete;
 //   explicit TokenArgument(const syn::Token *val)
-//       : SyntaxArgument(SyntaxArgumentKind::Token), val(val) {}
+//       : ASTArgument(ASTArgumentKind::Token), val(val) {}
 // };
 
-struct Decl final : public SyntaxArgument {
+struct Decl final : public ASTArgument {
   const syn::Decl *val;
   Decl() = delete;
   explicit Decl(const syn::Decl *val)
-      : SyntaxArgument(SyntaxArgumentKind::Decl), val(val) {}
+      : ASTArgument(ASTArgumentKind::Decl), val(val) {}
 
 public:
-  static bool classof(const SyntaxArgument *a) {
-    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Decl;
+  static bool classof(const ASTArgument *a) {
+    return a->GetASTArgumentKind() == ASTArgumentKind::Decl;
   }
 };
 
-struct DeclContext final : public SyntaxArgument {
+struct DeclContext final : public ASTArgument {
   const syn::DeclContext *val;
   DeclContext() = delete;
   explicit DeclContext(const syn::DeclContext *val)
-      : SyntaxArgument(SyntaxArgumentKind::DeclContext), val(val) {}
+      : ASTArgument(ASTArgumentKind::DeclContext), val(val) {}
 
 public:
-  static bool classof(const SyntaxArgument *a) {
-    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::DeclContext;
+  static bool classof(const ASTArgument *a) {
+    return a->GetASTArgumentKind() == ASTArgumentKind::DeclContext;
   }
 };
 
-struct Identifier final : public SyntaxArgument {
+struct Identifier final : public ASTArgument {
   const syn::Identifier *val;
   Identifier() = delete;
   explicit Identifier(const syn::Identifier *val)
-      : SyntaxArgument(SyntaxArgumentKind::Identifier), val(val) {}
+      : ASTArgument(ASTArgumentKind::Identifier), val(val) {}
 
 public:
-  static bool classof(const SyntaxArgument *a) {
-    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Identifier;
+  static bool classof(const ASTArgument *a) {
+    return a->GetASTArgumentKind() == ASTArgumentKind::Identifier;
   }
 };
 
-struct Type final : public SyntaxArgument {
+struct Type final : public ASTArgument {
   const syn::Type *val;
   Type() = delete;
   explicit Type(const syn::Type *val)
-      : SyntaxArgument(SyntaxArgumentKind::Type), val(val) {}
+      : ASTArgument(ASTArgumentKind::Type), val(val) {}
 
 public:
-  static bool classof(const SyntaxArgument *a) {
-    return a->GetSyntaxArgumentKind() == SyntaxArgumentKind::Type;
+  static bool classof(const ASTArgument *a) {
+    return a->GetASTArgumentKind() == ASTArgumentKind::Type;
   }
 };
 
 } // namespace diag
 
-class SyntaxDiagnostic : public Diagnostic {
+class ASTDiagnostic : public Diagnostic {
 public:
-  explicit SyntaxDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+  explicit ASTDiagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
       : Diagnostic(diagID, args) {}
-  ~SyntaxDiagnostic();
+  ~ASTDiagnostic();
 
 public:
 };
 
-class SyntaxDiagnosticFormatter : public TextDiagnosticFormatter {
+class ASTDiagnosticFormatter : public TextDiagnosticFormatter {
 public:
-  SyntaxDiagnosticFormatter();
+  ASTDiagnosticFormatter();
 
 public:
   void
@@ -102,9 +102,9 @@ public:
                       DiagnosticFormatOptions fmtOpts) override;
 };
 
-class SyntaxDiagnosticEmitter : public TextDiagnosticEmitter {
+class ASTDiagnosticEmitter : public TextDiagnosticEmitter {
 public:
-  SyntaxDiagnosticEmitter(SyntaxDiagnosticFormatter &formatter);
+  ASTDiagnosticEmitter(ASTDiagnosticFormatter &formatter);
 
 public:
   void EmitDeclLoc();

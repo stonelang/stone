@@ -4,10 +4,10 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Ownership.h"
-#include "stone/Syntax/SyntaxAllocation.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
@@ -56,22 +56,22 @@ class CanType;
 class SweetType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
-    : public SyntaxAllocation<std::aligned_storage<8, 8>::type> {
+    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
 
-  friend class SyntaxContext;
+  friend class ASTContext;
 
   TypeBase(const TypeBase &) = delete;
   void operator=(const TypeBase &) = delete;
 
   TypeKind kind;
 
-  /// This union contains to the SyntaxContext for canonical types, and is
-  /// otherwise lazily populated by SyntaxContext when the canonical form of a
+  /// This union contains to the ASTContext for canonical types, and is
+  /// otherwise lazily populated by ASTContext when the canonical form of a
   /// non-canonical type is requested. The disposition of the union is stored
   /// outside of the union for performance. See Bits.Type.IsCanonical.
   union {
     CanType canType;
-    const SyntaxContext *sc;
+    const ASTContext *sc;
   };
 
 protected:
@@ -91,7 +91,7 @@ protected:
   } Bits;
 
 public:
-  TypeBase(TypeKind kind, const SyntaxContext *canTypeContext)
+  TypeBase(TypeKind kind, const ASTContext *canTypeContext)
       : kind(kind), sc(nullptr) {
 
     Bits.TypeBase.Kind = static_cast<unsigned>(kind);
@@ -108,7 +108,7 @@ public:
   bool IsNominalType();
 
   /// getASTContext - Return the ASTContext that this type belongs to.
-  SyntaxContext &GetSyntaxContext();
+  ASTContext &GetASTContext();
 
 public:
   TypeKind GetKind() const { return kind; }
@@ -142,7 +142,7 @@ public:
 //  class AnyType : public TypeBase {
 //  public:
 
-//   AnyType(TypeKind kind, SyntaxContext *canTypeCtx)
+//   AnyType(TypeKind kind, ASTContext *canTypeCtx)
 //       : TypeBase(kind, canTypeCtx) {}
 // };
 
@@ -150,7 +150,7 @@ class FunctionType : public TypeBase {
   Type result;
 
 public:
-  FunctionType(TypeKind kind, Type result, const SyntaxContext *canTypeCtx)
+  FunctionType(TypeKind kind, Type result, const ASTContext *canTypeCtx)
       : TypeBase(kind, canTypeCtx) {}
 };
 
@@ -160,12 +160,12 @@ class FunType : public FunctionType,
   friend TrailingObjects;
 
 public:
-  FunType(Type result, const SyntaxContext *sc);
+  FunType(Type result, const ASTContext *sc);
 };
 
 class NominalType : public TypeBase {
 protected:
-  friend SyntaxContext;
+  friend ASTContext;
 
 public:
   // Implement isa/cast/dyncast/etc.
@@ -187,7 +187,7 @@ class EnumType final : public NominalType {};
 
 class DeducedType : public TypeBase {
 protected:
-  friend class SyntaxContext; // SyntaxContext creates these
+  friend class ASTContext; // ASTContext creates these
 };
 
 class AutoType final : public DeducedType, public llvm::FoldingSetNode {
@@ -199,29 +199,29 @@ public:
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const SyntaxContext &sc) : TypeBase(kind, &sc) {}
+  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {}
 };
 
 class IdentifierType : public TypeBase {};
 
 class ScalarType : public BuiltinType {
 public:
-  ScalarType(TypeKind kind, const SyntaxContext &sc) : BuiltinType(kind, sc) {}
+  ScalarType(TypeKind kind, const ASTContext &sc) : BuiltinType(kind, sc) {}
 };
 
 class CharType : public ScalarType {
 public:
-  CharType(const SyntaxContext &sc) : ScalarType(TypeKind::Char, sc) {}
+  CharType(const ASTContext &sc) : ScalarType(TypeKind::Char, sc) {}
 };
 
 class BoolType : public ScalarType {
 public:
-  BoolType(const SyntaxContext &sc) : ScalarType(TypeKind::Bool, sc) {}
+  BoolType(const ASTContext &sc) : ScalarType(TypeKind::Bool, sc) {}
 };
 
 // class StringType : public BuiltinType {
 // public:
-//   StringType(const SyntaxContext &sc) : ScalarType(TypeKind::String, sc) {}
+//   StringType(const ASTContext &sc) : ScalarType(TypeKind::String, sc) {}
 // };
 
 struct NumberBitWidth final {
@@ -261,7 +261,7 @@ class NumberType : public ScalarType {
 
 public:
   NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-             const SyntaxContext &sc)
+             const ASTContext &sc)
       : ScalarType(kind, sc), bitWidthKind(bitWidthKind) {}
 
 public:
@@ -274,52 +274,52 @@ public:
 };
 
 class IntegerType : public NumberType {
-  friend class SyntaxContext;
+  friend class ASTContext;
 
 public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
       : NumberType(TypeKind::Integer, bitWidthKind, sc) {}
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             const SyntaxContext &sc);
+                             const ASTContext &sc);
 };
 
 class UIntegerType : public NumberType {
-  friend class SyntaxContext;
+  friend class ASTContext;
 
 public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
 
       : NumberType(TypeKind::UInteger, bitWidthKind, sc) {}
 };
 
 class ComplexType : public NumberType {
-  friend class SyntaxContext;
+  friend class ASTContext;
 
 public:
-  ComplexType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
       : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
 };
 
 class ImaginaryType : public NumberType {
-  friend class SyntaxContext;
+  friend class ASTContext;
 
 public:
-  ImaginaryType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
       : NumberType(TypeKind::Imaginary, bitWidthKind, sc) {}
 };
 
 class FloatType : public NumberType {
-  friend class SyntaxContext;
+  friend class ASTContext;
 
 public:
-  FloatType(NumberBitWidthKind bitWidthKind, const SyntaxContext &sc)
+  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
       : NumberType(TypeKind::Float, bitWidthKind, sc) {}
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const SyntaxContext &sc);
+                           const ASTContext &sc);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -330,24 +330,24 @@ public:
 
 class VoidType : public BuiltinType {
 public:
-  VoidType(const SyntaxContext &sc) : BuiltinType(TypeKind::Void, sc) {}
+  VoidType(const ASTContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 
 public:
   static VoidType *
-  Create(const SyntaxContext &sc,
+  Create(const ASTContext &sc,
          mem::AllocationArena arena = mem::AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {
 public:
-  NullType(const SyntaxContext &sc) : BuiltinType(TypeKind::Null, sc) {}
+  NullType(const ASTContext &sc) : BuiltinType(TypeKind::Null, sc) {}
 };
 
 class ChunkType : public TypeBase, public llvm::FoldingSetNode {};
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
 public:
-  AbstractPointerType(TypeKind kind, const SyntaxContext &sc)
+  AbstractPointerType(TypeKind kind, const ASTContext &sc)
       : TypeBase(kind, &sc) {}
 };
 
@@ -379,7 +379,7 @@ public:
   }
 
 private:
-  ModuleType(ModuleDecl *mod, const SyntaxContext &sc)
+  ModuleType(ModuleDecl *mod, const ASTContext &sc)
       : TypeBase(TypeKind::Module, &sc), mod(mod) {}
 };
 
@@ -388,7 +388,7 @@ class SweetType : public TypeBase {
   // we can avoid masking the pointer on the fast path.
   union {
     Type *underlyingType;
-    const SyntaxContext *Context;
+    const ASTContext *Context;
   };
 };
 /// An alias to a type

@@ -11,7 +11,7 @@
 namespace stone {
 namespace syn {
 
-class SyntaxContext;
+class ASTContext;
 class Decl;
 
 /// A lattice of version ranges of the form [x.y.z, +Inf).
@@ -196,8 +196,8 @@ public:
   }
 
   /// Returns true if the required OS version range's lower endpoint is at or
-  /// below the deployment target of the given SyntaxContext.
-  bool requiresDeploymentTargetOrEarlier(SyntaxContext &Ctx) const;
+  /// below the deployment target of the given ASTContext.
+  bool requiresDeploymentTargetOrEarlier(ASTContext &Ctx) const;
 };
 
 /// Represents everything that a particular chunk of code may assume about its
@@ -219,13 +219,13 @@ public:
                                llvm::Optional<bool> SPI = llvm::None)
       : OSVersion(OSVersion), SPI(SPI) {}
 
-  /// Creates a context that imposes the constraints of the SyntaxContext's
+  /// Creates a context that imposes the constraints of the ASTContext's
   /// deployment target.
-  static AvailabilityContext forDeploymentTarget(SyntaxContext &Ctx);
+  static AvailabilityContext forDeploymentTarget(ASTContext &Ctx);
 
-  /// Creates a context that imposes the constraints of the SyntaxContext's
+  /// Creates a context that imposes the constraints of the ASTContext's
   /// inlining target (i.e. minimum inlining version).
-  static AvailabilityContext forInliningTarget(SyntaxContext &Ctx);
+  static AvailabilityContext forInliningTarget(ASTContext &Ctx);
 
   /// Creates a context that imposes no constraints.
   ///
@@ -316,23 +316,23 @@ public:
   static void
   applyInferredAvailableAttrs(Decl *ToDecl,
                               ArrayRef<const Decl *> InferredFromDecls,
-                              SyntaxContext &Context);
+                              ASTContext &Context);
 
   static AvailabilityContext inferForType(Type t);
 
   /// Returns the context where a declaration is available
   ///  We assume a declaration without an annotation is always available.
-  static AvailabilityContext availableRange(const Decl *D, SyntaxContext &C);
+  static AvailabilityContext availableRange(const Decl *D, ASTContext &C);
 
   /// Returns the context for which the declaration
   /// is annotated as available, or None if the declaration
   /// has no availability annotation.
-  static Optional<AvailabilityContext>
-  annotatedAvailableRange(const Decl *D, SyntaxContext &C);
+  static Optional<AvailabilityContext> annotatedAvailableRange(const Decl *D,
+                                                               ASTContext &C);
 
   static AvailabilityContext
   annotatedAvailableRangeForAttr(const SpecializeAttribute *attr,
-                                 SyntaxContext &ctx);
+                                 ASTContext &ctx);
 };
 } // namespace syn
 } // end namespace stone

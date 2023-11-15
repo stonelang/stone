@@ -3,8 +3,8 @@
 #include "stone/Gen/IRCodeGen.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"

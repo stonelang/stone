@@ -1,11 +1,11 @@
 #include "stone/Basic/Defer.h"
-#include "stone/Diag/SyntaxDiagnostic.h"
+#include "stone/Diag/ASTDiagnostic.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
+#include "stone/Syntax/ASTContext.h"
+#include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Syntax/SyntaxContext.h"
-#include "stone/Syntax/SyntaxNode.h"
 
 using namespace stone;
 using namespace stone::syn;

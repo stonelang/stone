@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_SYNTAXWALKER_H
 #define STONE_SYNTAX_SYNTAXWALKER_H
 
-#include "stone/Syntax/SyntaxDescription.h"
+#include "stone/Syntax/ASTDescription.h"
 
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -15,7 +15,7 @@ class Stmt;
 class Expr;
 class Module;
 class QualType;
-class SyntaxWalker;
+class ASTWalker;
 
 enum class SemanticRefKind : uint8_t {
   ModuleRef = 0,
@@ -29,54 +29,51 @@ enum class SemanticRefKind : uint8_t {
 };
 
 /// An abstract class used to traverse an AST.
-class SyntaxWalker {
+class ASTWalker {
 public:
-  class ParentSyntaxNode {
-    SyntaxDescription parentKind;
+  class ParentASTNode {
+    ASTDescription parentKind;
     void *Ptr = nullptr;
 
   public:
-    ParentSyntaxNode(Module *M)
-        : parentKind(SyntaxDescription::Module), Ptr(M) {}
-    ParentSyntaxNode(Decl *D) : parentKind(SyntaxDescription::Decl), Ptr(D) {}
-    ParentSyntaxNode(Stmt *S) : parentKind(SyntaxDescription::Stmt), Ptr(S) {}
-    ParentSyntaxNode(Expr *E) : parentKind(SyntaxDescription::Expr), Ptr(E) {}
-    ParentSyntaxNode(QualType *Q)
-        : parentKind(SyntaxDescription::QualType), Ptr(Q) {}
+    ParentASTNode(Module *M) : parentKind(ASTDescription::Module), Ptr(M) {}
+    ParentASTNode(Decl *D) : parentKind(ASTDescription::Decl), Ptr(D) {}
+    ParentASTNode(Stmt *S) : parentKind(ASTDescription::Stmt), Ptr(S) {}
+    ParentASTNode(Expr *E) : parentKind(ASTDescription::Expr), Ptr(E) {}
+    ParentASTNode(QualType *Q) : parentKind(ASTDescription::QualType), Ptr(Q) {}
 
     bool IsNull() const { return Ptr == nullptr; }
 
-    SyntaxDescription GetParentKind() const {
+    ASTDescription GetParentKind() const {
       assert(!IsNull());
       return parentKind;
     }
 
     Module *CastToModule() const {
-      return (parentKind == SyntaxDescription::Module)
-                 ? static_cast<Module *>(Ptr)
-                 : nullptr;
+      return (parentKind == ASTDescription::Module) ? static_cast<Module *>(Ptr)
+                                                    : nullptr;
     }
     Decl *CastToDecl() const {
-      return (parentKind == SyntaxDescription::Decl) ? static_cast<Decl *>(Ptr)
-                                                     : nullptr;
+      return (parentKind == ASTDescription::Decl) ? static_cast<Decl *>(Ptr)
+                                                  : nullptr;
     }
     Stmt *CastToStmt() const {
-      return (parentKind == SyntaxDescription::Stmt) ? static_cast<Stmt *>(Ptr)
-                                                     : nullptr;
+      return (parentKind == ASTDescription::Stmt) ? static_cast<Stmt *>(Ptr)
+                                                  : nullptr;
     }
     Expr *CastToExpr() const {
-      return parentKind == SyntaxDescription::Expr ? static_cast<Expr *>(Ptr)
-                                                   : nullptr;
+      return parentKind == ASTDescription::Expr ? static_cast<Expr *>(Ptr)
+                                                : nullptr;
     }
     QualType *CastToQualType() const {
-      return (parentKind == SyntaxDescription::QualType)
+      return (parentKind == ASTDescription::QualType)
                  ? static_cast<QualType *>(Ptr)
                  : nullptr;
     }
   };
 
   /// The parent of the node we are visiting.
-  ParentSyntaxNode parent;
+  ParentASTNode parent;
 
   /// This method is called when first visiting an expression
   /// before walking into its children.
@@ -175,7 +172,7 @@ public:
   // ///
   // /// Note that visiting the body of the lazy getter will find a
   // /// LazyInitializerExpr with the initializer as its sub-expression.
-  // /// However, SyntaxWalker does not walk into LazyInitializerExprs on its
+  // /// However, ASTWalker does not walk into LazyInitializerExprs on its
   // own. virtual bool shouldWalkIntoLazyInitializers() { return true; }
 
   /// This method configures whether the walker should visit the body of a
@@ -207,7 +204,7 @@ public:
   /// behavior where accessors appear as peers of their storage, rather
   /// than children nested inside of it.
   ///
-  /// Please don't write new SyntaxWalker implementations that override this
+  /// Please don't write new ASTWalker implementations that override this
   /// method to return true; instead, refactor existing code as needed
   /// until eventually we can remove this altogether.
   // virtual bool shouldWalkAccessorsTheOldWay() { return false; }
@@ -249,9 +246,9 @@ public:
   // }
 
 protected:
-  SyntaxWalker() = default;
-  SyntaxWalker(const SyntaxWalker &) = default;
-  virtual ~SyntaxWalker() = default;
+  ASTWalker() = default;
+  ASTWalker(const ASTWalker &) = default;
+  virtual ~ASTWalker() = default;
 };
 
 } // namespace syn
