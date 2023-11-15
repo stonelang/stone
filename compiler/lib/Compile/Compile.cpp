@@ -31,6 +31,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
 
+  // Using configuration 
   Compiler compiler;
   compiler.AddDiagnosticConsumer(consumer);
 
