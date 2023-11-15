@@ -96,22 +96,23 @@ void Compiler::QueueTask(ActionKind kind) {
 
   switch (kind) {
   case ActionKind::PrintHelp: {
+    QueueTask(GetTask(CompilerTaskKind::PrintHelp));
   case ActionKind::PrintHelpHidden:
-    QueueTask(PrintHelpTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::PrintHelpHidden));
     break;
   }
   case ActionKind::PrintVersion: {
-    QueueTask(PrintVersionTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::PrintVersion));
     break;
   }
   case ActionKind::Parse: {
-    QueueTask(PreParseTask::Create(*this));
-    QueueTask(ParseTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::PreParse));
+    QueueTask(GetTask(CompilerTaskKind::Parse));
     break;
   }
   case ActionKind::ResolveImports: {
-    QueueTask(ActionKind::Parse);
-    QueueTask(ResolveImportsTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::Parse));
+    QueueTask(GetTask(CompilerTaskKind::ResolveImportsTask));
     break;
   }
   // case ActionKind::DumpSyntax: {
@@ -120,8 +121,8 @@ void Compiler::QueueTask(ActionKind kind) {
   //   break;
   // }
   case ActionKind::TypeCheck: {
-    QueueTask(ActionKind::ResolveImports);
-    QueueTask(TypeCheckTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::ResolveImports));
+    QueueTask(GetTask(CompilerTaskKind::TypeCheckTask));
     break;
   }
   // case ActionKind::PrintSyntax: {
@@ -135,15 +136,15 @@ void Compiler::QueueTask(ActionKind kind) {
   //   break;
   // }
   case ActionKind::EmitIRBefore: {
-    QueueTask(ActionKind::TypeCheck);
-    QueueTask(GenIRTask::Create(*this));
-    QueueTask(EmitIRBeforeTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::TypeCheck));
+    QueueTask(GetTask(CompilerTaskKind::GenIR));
+    QueueTask(GetTask(CompilerTaskKind::EmitIRBefore));
     break;
   }
   case ActionKind::EmitIRAfter: {
-    QueueTask(ActionKind::TypeCheck);
-    QueueTask(GenIRTask::Create(*this));
-    QueueTask(EmitIRAfterTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::TypeCheck));
+    QueueTask(GetTask(CompilerTaskKind::GenIR));
+    QueueTask(GetTask(CompilerTaskKind::EmitIRAfterTask));
     break;
   }
   // case ActionKind::EmitBC: {
@@ -151,11 +152,9 @@ void Compiler::QueueTask(ActionKind kind) {
   //   QueueTask(EmitBCTask::Create(*this));
   //   break;
   // }
-  case ActionKind::None:
   case ActionKind::EmitObject: {
-    QueueTask(GenIRTask::Create(*this));
-    // QueueTask(ActionKind::EmitIRAfter);
-    QueueTask(EmitObjectTask::Create(*this));
+    QueueTask(GetTask(CompilerTaskKind::GenIR));
+    QueueTask(GetTask(CompilerTaskKind::EmitObject));
     break;
   }
   // case ActionKind::DumpTypeInfo: {

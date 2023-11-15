@@ -159,8 +159,7 @@ void Compiler::AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
   diags.AddConsumer(consumer);
 }
 
-// size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory();
-// }
+size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }
 
 // void Compiler::PrintTimers() {}
 // void Compiler::PrintDiagnostics() {}
@@ -172,16 +171,14 @@ void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
   return compiler.Allocate(bytes, alignment /*, arena*/);
 }
 
-void Compiler::Finish() {
+void Compiler::Finalize() {
 
-  PrintDiagnostics();
-  PrintStatistics();
+  // PrintDiagnostics();
+  // PrintStatistics();
 }
 
 void Compiler::PrintDiagnostics() { GetDiags().Finish(); }
 void Compiler::PrintStatistics() {}
-
-CompilerAction::CompilerAction() {}
 
 void CompilerPrettyStackTrace::print(llvm::raw_ostream &os) const {
 

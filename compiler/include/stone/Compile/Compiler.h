@@ -312,7 +312,6 @@ public:
 
 public:
   void BuildTasks();
-  void QueueTask(ActionKind kind);
   void RunTasks();
 
 private:
@@ -346,6 +345,7 @@ public:
     listener = inputListener;
   }
   CompilerListener *GetListener() { return listener; }
+  CompilerTask *GetTask(ActionKind kind);
 
 public:
   // Source buffers

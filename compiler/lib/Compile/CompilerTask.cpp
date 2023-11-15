@@ -4,6 +4,43 @@
 
 using namespace stone;
 
+CompilerTask *Compiler::GetTask(CompilerTaskKind kind) {
+  switch (kind) {
+  case CompilerTaskKind::PrintHelp:
+  case CompilerTaskKind::PrintHelpHidden:
+    return PrintHelpTask::Create(*this);
+  case CompilerTaskKind::PrintVersion:
+    return PrintVersionTask::Create(*this);
+  case CompilerTaskKind::PreParse:
+    return PreParseTask::Create(*this);
+  case CompilerTaskKind::Parse:
+    return ParseTask::Create(*this);
+  case CompilerTaskKind::ResolveImports:
+    return ResolveImportsTask::Create(*this);
+  case CompilerTaskKind::DumpSyntax:
+    return DumpSyntaxTask::Create(*this);
+  case CompilerTaskKind::TypeCheck:
+    return TypeCheckTask::Create(*this);
+  case CompilerTaskKind::PrintSyntax:
+    return PrintSyntaxTask::Create(*this);
+  case CompilerTaskKind::MergeModules:
+    return MergeModulesTask::Create(*this);
+  case CompilerTaskKind::GenIR:
+    return GenIRTask::Create(*this);
+  case CompilerTaskKind::EmitIRBefore:
+    return EmitIRBeforeTask::Create(*this);
+  case CompilerTaskKind::EmitIRAfter:
+    return EmitIRAfterTask::Create(*this);
+  case CompilerTaskKind::EmitBC:
+    return EmitBCTask::Create(*this);
+  case CompilerTaskKind::EmitObject:
+    return EmitObjectTask::Create(*this));
+  case CompilerTaskKind::DumpTypeInfo:
+    return DumpTypeInfoTask::Create(*this);
+  default:
+    llvm_unreachable("Unknown action -- cannot compile!");
+  }
+}
 PrintHelpTask *PrintHelpTask::Create(const Compiler &compiler) {
   return new (compiler) PrintHelpTask();
 }

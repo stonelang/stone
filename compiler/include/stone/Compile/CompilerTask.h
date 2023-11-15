@@ -90,6 +90,7 @@ public:
   bool IsCompilable() const;
 
 public:
+  virtual void Setup() = 0;
   virtual Status Execute(Compiler &compiler, CompilerTask *dep = nullptr) = 0;
   virtual void Print(ColorStream &stream) = 0;
 };
@@ -100,6 +101,7 @@ public:
   PrintHelpTask() : CompilerTask(CompilerTaskKind::PrintHelp) {}
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler,
                          CompilerTask *dep = nullptr) override;
 
@@ -115,6 +117,7 @@ public:
   PrintVersionTask() : CompilerTask(CompilerTaskKind::PrintVersion) {}
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   void Print(ColorStream &stream) override {}
 
@@ -128,6 +131,7 @@ public:
   PreParseTask() : CompilerTask(CompilerTaskKind::PreParse) {}
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -141,6 +145,7 @@ public:
   ParseTask() : CompilerTask(CompilerTaskKind::Parse) { hasDependency = true; }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -156,6 +161,7 @@ public:
   }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -171,6 +177,7 @@ public:
   }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -184,6 +191,7 @@ public:
   GenIRTask() : CompilerTask(CompilerTaskKind::GenIR) { hasDependency = true; }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -199,6 +207,7 @@ public:
   }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -214,6 +223,7 @@ public:
   }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -229,6 +239,7 @@ public:
   }
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -242,6 +253,7 @@ public:
   FinalTask() : CompilerTask(CompilerTaskKind::Final) {}
 
 public:
+  virtual void Setup() override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 

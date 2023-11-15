@@ -1,4 +1,4 @@
-#include "stone/Compile/CompilerCommandLine.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 
@@ -17,6 +17,8 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
+
+CompilerAction::CompilerAction() {}
 
 CompilerInvocation::CompilerInvocation() {
   llvm::sys::fs::current_path(GetCompilerOptions().workDirectory);
