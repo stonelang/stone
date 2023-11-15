@@ -541,11 +541,8 @@ using namespace stone::opts;
 //   }
 // }
 
+Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args,
+                                        const char *arg0) {
 
-Status CompilerConfiguration::Configure(llvm::ArrayRef<const char *> args, const char *arg0) {
-
-	return Status();
+  return Status();
 }
-
-
-

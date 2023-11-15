@@ -5,60 +5,6 @@
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
-namespace action {
-// The modes that the system supports
-enum class ActionKind : unsigned {
-  ///< No mode
-  None = 0,
-  ///< Parse only
-  Parse,
-  ///< Parse and resolve use(s) only
-  ResolveImports,
-  ///< Parse and dump syntax tree
-  DumpSyntax,
-  ///< Parse and type-check only
-  TypeCheck,
-  ///< TODO
-  DumpTypeInfo,
-  ///< Parse, type-check, and  pretty print syntax tree
-  PrintSyntax,
-  //</ Parse, type-check, and pretty print llvm-ir
-  PrintIR,
-  //</ Parse, type-check, and emit LLVM IR pre optimization
-  EmitIRBefore,
-  //</ Parse, type-check, and emit LLVM IR post optimization
-  EmitIRAfter,
-  //< Parse, type-check, and emit LLVM BC
-  EmitBC,
-  ///< Parse, type-check, and emit native object code
-  EmitObject,
-  ///< Parse, type-check, and emit a library.
-  ///< Default => platform specific. But, with -static => 'any.a'
-  EmitLibrary,
-  ///< Create a module fule
-  InitModule,
-  //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
-  EmitModule,
-  //< Parse, type-check, and emit assembly
-  EmitAssembly,
-  //< Print language version
-  PrintVersion,
-  ///< Print help
-  PrintHelp,
-  ///< Print help
-  PrintHelpHidden,
-  ///< Merge all modules
-  MergeModules,
-  //< Alien
-  Alien,
-};
-static bool IsOutputable(ActionKind kind);
-static bool IsCompilable(ActionKind kind);
-static bool IsEmittable(ActionKind kind);
-static bool IsSupport(ActionKind kind);
-static file::Type GetActionKindOutputFileType(ActionKind kind);
-
-} // namespace action
 
 // The modes that the system supports
 enum class ActionKind : unsigned {
@@ -175,24 +121,6 @@ public:
     default:
       return false;
     }
-  }
-  bool IsImmediate() {
-    switch (GetKind()) {
-    case ActionKind::PrintHelp:
-    case ActionKind::PrintVersion:
-      return true;
-    default:
-      return false;
-    }
-  }
-  bool IsValid() {
-    if (CanCompile()) {
-      return true;
-    }
-    if (IsImmediate()) {
-      return true;
-    }
-    return false;
   }
 
   bool IsSupport() {

@@ -3,7 +3,7 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Compile/CompilerCommandLine.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerTask.h"
 #include "stone/Compile/ModuleSystem.h"
 #include "stone/Gen/CodeGenContext.h"
@@ -35,7 +35,6 @@ namespace stone {
 class Compiler;
 class CompilerTask;
 class CodeGenContext;
-class CompilerCommandLine;
 class CompilerListener;
 
 // using EachSyntaxFileCallback = std::function<Status(syn::SyntaxFile &)>;
@@ -274,8 +273,9 @@ class Compiler final {
   std::unique_ptr<syn::SyntaxContext> syntaxContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
-  
-  const CompilerConfiguration& config;
+  std::unique_ptr<StatisticEngine> stats;
+
+  const CompilerInvocation &invocation;
 
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -298,8 +298,9 @@ class Compiler final {
 
 public:
   Compiler() = delete;
-  Compiler(const CompilerConfiguration& config);
+  Compiler(const CompilerInvocation &invocation);
   ~Compiler();
+  Status Initialize();
 
 public:
   Compiler(const Compiler &) = delete;
@@ -309,7 +310,7 @@ public:
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer);
-  Status Configure();
+
   void Finish();
 
 public:
@@ -326,6 +327,7 @@ private:
   //   void SetListener(CompilerListener *listener);
   //   CompilerListener *GetListener() { return listener; }
 
+  //  SetupTasks()
   //   void SetupSyntaxContext();
   //   void SetupOutputBackend();
 
@@ -336,6 +338,7 @@ public:
   syn::SyntaxContext &GetSyntaxContext() { return *syntaxContext; }
   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
   const ModuleSystem &GetModuleSystem() const { return *moduleSystem; }
+  StatisticEngine &GetStats() { return stats; }
 
 public:
   Status CreateSourceBuffers();

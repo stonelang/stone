@@ -29,9 +29,6 @@ class TargetMachine;
 
 namespace stone {
 
-class CompilerConfiguration;
-class CompilerCommandLine;
-
 using ConfigurationFileBuffers =
     llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
 
@@ -54,7 +51,7 @@ struct ModuleBuffers {
 using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
-class CompilerConfiguration final {
+class CompilerInvocation final {
 
   CompilerOptions compilerOpts;
 
@@ -81,14 +78,16 @@ class CompilerConfiguration final {
   DiagnosticEngine diags{srcMgr};
 
 public:
-  CompilerConfiguration();
+  CompilerInvocation();
 
 public:
   void SetTargetTriple(llvm::StringRef triple);
   void SetTargetTriple(const llvm::Triple &Triple);
   void SetMainExecutable(const char *arg0, void *mainAddr);
-
-  // void SetSDKPath(const std::string &sdkPath);
+  void SetSDKPath(const std::string &sdkPath);
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
   // llvm::StringRef GetSDKPath() const { return searchPathOpts.GetSDKPath(); }
 
 public:
@@ -161,30 +160,10 @@ public:
          typename detail::PassArgument<ArgTypes>::type... args) {
     return GetDiags().PrintD(SrcLoc(), id, std::forward<ArgTypes>(args)...);
   }
+
 public:
-  Status Configure(llvm::ArrayRef<const char *> args);
+  Status ParseArgs(llvm::ArrayRef<const char *> args);
 };
-
-// class CompilerCommandLine final {
-//   CompilerConfiguration &config;
-
-// public:
-//   CompilerCommandLine(CompilerConfiguration &config);
-
-// public:
-//   Status Parse(llvm::ArrayRef<const char *> args);
-
-// public:
-//   Status ParseCompilerAction(llvm::opt::InputArgList &args);
-//   Status ParseCompilerOptions(llvm::opt::InputArgList &args,
-//                               MemoryBuffers *buffers);
-//   Status ParseLangOptions(llvm::opt::InputArgList &args);
-//   Status ParseTypeCheckerOptions(llvm::opt::InputArgList &args);
-//   Status ParseSearchPathOptions(llvm::opt::InputArgList &args);
-//   Status ParseCodeGenOptions(llvm::opt::InputArgList &args);
-//   Status ParseTargetOptions(llvm::opt::InputArgList &args);
-//   llvm::StringRef ParseWorkDirectory(const llvm::opt::InputArgList &args);
-// };
 
 } // namespace stone
 

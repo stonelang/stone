@@ -5,15 +5,15 @@ namespace stone {
 
 class Compiler;
 class CompilerTask;
-class CompilerConfiguration;
+class CompilerInvocation;
 
-class CompilerObservation {
+class CompilerListener {
 public:
-  CompilerObservation() = default;
-  virtual ~CompilerObservation() = default;
+  CompilerListener() = default;
+  virtual ~CompilerListener() = default;
 
 public:
-  virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
+  virtual void CompletedCommandLineParsing(CompilerInvocation &invocation) {}
   virtual void CompletedConfiguration(Compiler &compiler) {}
   virtual void CompletedBuildingTasks(Compiler &compiler) {}
 
@@ -27,7 +27,7 @@ public:
 };
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            CompilerObservation *obs = nullptr);
+            CompilerListener *listener = nullptr);
 
 } // namespace stone
 

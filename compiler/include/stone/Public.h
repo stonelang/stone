@@ -225,13 +225,6 @@ public:
 
 // Parsing and type-checking
 namespace stone {
-class CompilerPipeline;
-int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            CompilerListener *listener = nullptr);
-
-} // namespace stone
-
-namespace stone {
 using ModuleSyntaxFileUnion =
     llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
 

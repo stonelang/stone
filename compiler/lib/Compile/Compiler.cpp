@@ -14,13 +14,17 @@ using namespace stone::syn;
 //   GetCompilerContext().GetLangContext().GetStats().Register(stats.get());
 // }
 
-Compiler::Compiler(const CompilerConfiguration& config) : config(config) {}
+Compiler::Compiler(const CompilerIvocation &invocation)
+    : invocation(invocation) {}
 Compiler::~Compiler() = default;
 
-Status Compiler::Configure() {
+Status Compiler::Initialize() {
   compilerStats.reset(new CompilerStats(*this));
   compilerQueue.reset(new CompilerQueue(*this));
 
+  if (invocation.GetAction().IsSupport()) {
+    return Status::Success();
+  }
   return Status();
 }
 

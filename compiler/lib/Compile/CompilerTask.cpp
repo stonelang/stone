@@ -4,32 +4,6 @@
 
 using namespace stone;
 
-// bool CompilerTask::IsCompilable() const {
-//   switch (kind) {
-//   case PreParse:
-//   case Parse:
-//   case ResolveImports:
-//   case DumpSyntax:
-//   case TypeCheck:
-//   case DumpTypeInfo:
-//   case PrintSyntax:
-//   case PrintIR:
-//   case PreEmit:
-//   case EmitIRBefore:
-//   case EmitIRAfter:
-//   case EmitLibrary:
-//   case InitModule:
-//   case EmitModule:
-//   case EmitBC:
-//   case EmitAssembly:
-//   case EmitObject:
-//   case MergeModules:
-//     return true;
-//   default:
-//     return false;
-//   }
-// }
-
 PrintHelpTask *PrintHelpTask::Create(const Compiler &compiler) {
   return new (compiler) PrintHelpTask();
 }
@@ -92,5 +66,4 @@ void EmitObjectTask::Print(ColorStream &stream) {}
 FinalTask *FinalTask::Create(const Compiler &compiler) {
   return new (compiler) FinalTask();
 }
-
 void FinalTask::Print(ColorStream &stream) { stream << "Final  Task" << '\n'; }

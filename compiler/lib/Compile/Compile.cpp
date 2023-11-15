@@ -1,3 +1,4 @@
+#include "stone/Compile/Compile.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
@@ -31,35 +32,40 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
 
-  // Using configuration 
-  Compiler compiler;
-  compiler.AddDiagnosticConsumer(consumer);
+  CompilerInvocation invocation;
+  invocation.AddDiagnosticConsumer(consumer);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
-    auto err = compiler.GetDiags().Finish();
-    if (status.IsError()) {
-      return status.GetFlag();
-    }
-    return err;
+    return (status.IsError() ? status.GetFlag()
+                             : invocation.GetDiags().Finish());
   };
 
-  // If the args are empty, it is pointless to move forward.
+  // Check for empty args
   if (args.empty()) {
-    compiler.PrintD(diag::err_no_compile_args);
+    invocation.PrintD(diag::err_no_compile_args);
     return FinishCompile(Status::Error());
   }
-  compiler.SetMainExecutable(arg0, mainAddr);
 
-  CompilerCommandLine commandLine(compiler);
-  auto status = commandLine.Parse(args);
-
+  // Now, parse the args
+  auto status = invocation.ParseArgs(llvm::ArrayRef<const char *> args);
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
 
   if (listener) {
-    listener->CompletedCommandLineParsing(compiler);
+    listener->CompletedCommandLineParsing(invocation);
   }
+
+  // Set the main execution
+  invocation.SetMainExecutable(arg0, mainAddr);
+
+  // Now, use the compiler
+  Compiler compiler(invocation);
+  status = compiler.Initialize();
+  if (status.IsError()) {
+    return FinishCompile(Status::Error());
+  }
+
   status = compiler.Configure();
   if (status.IsError()) {
     return FinishCompile(Status::Error());
@@ -87,24 +93,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (listener) {
     listener->CompletedRunningTasks(compiler);
   }
-
-  // if (compiler.GetAction().IsAlien()) {
-  //   compiler.Report(diag::err_alien_mode);
-  //   return Finish(Status::Error());
-  // }
-
-  // if (!compiler.GetAction().CanCompile()) {
-  //   /// compiler.GetDiags().PrintD()
-  //   return Finish();
-  // }
-  // if (listener) {
-  //   listener->OnCompileConfigured(compiler);
-  // }
-
-  /// This should be called internally
-  // if (compiler.CreateSourceBuffers().IsError()) {
-  //   return Finish(Status::Error());
-  // }
 
   return FinishCompile();
 }
@@ -268,4 +256,3 @@ Status FinalTask::Execute(Compiler &compiler, CompilerTask *dep) {
 
   return Status();
 }
-
