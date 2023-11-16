@@ -40,6 +40,7 @@ class PrimaryFileSpecificPaths;
 class CompilerOptions;
 class InFlightDiagnostic;
 class Compiler;
+class CompilerTask;
 class CompilerInvocation;
 class ClangContext;
 
@@ -251,7 +252,7 @@ std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(const CodeGenOptions &opts);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
-                LangContext &langContext, llvm::TargetMachine *target);
+                llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
 bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,

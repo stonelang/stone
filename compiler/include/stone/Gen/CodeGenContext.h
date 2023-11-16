@@ -34,7 +34,7 @@ class CodeGenContext final {
   const ModuleOptions &moduleOpts;
   const stone::TargetOptions &targetOpts;
 
-  ASTContext& astContext;
+  ASTContext &astContext;
   ClangContext &clangContext;
 
   std::unique_ptr<llvm::LLVMContext> llvmContext;
@@ -45,10 +45,9 @@ class CodeGenContext final {
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
-                 const stone::TargetOptions &targetOpts,
-                 ASTContext& astContext, ClangContext &clangContext,
+                 const stone::TargetOptions &targetOpts, ASTContext &astContext,
+                 ClangContext &clangContext,
                  llvm::GlobalVariable *outModuleHash = nullptr);
-
 
   ~CodeGenContext();
 

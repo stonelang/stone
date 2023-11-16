@@ -67,9 +67,9 @@ using namespace stone;
 //   //     *mod, optimizeIRScope.GetModulePassManager());
 // }
 
-void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &codeGenOpts,
-                       LangContext &langContext,
-                       llvm::TargetMachine *targetMachine) {
+// TODO: Pass CodeGenContext
+void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
+                       llvm::TargetMachine *target, DiagnosticEngine &diags) {
 
   // if (codeGenOpts.useLegacyPassManager) {
   //   OptimizeIRUsingLegacyPassManger(mod, codeGenOpts, targetMachine);

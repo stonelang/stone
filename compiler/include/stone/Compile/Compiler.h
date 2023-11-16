@@ -224,45 +224,6 @@ public:
   Compiler &GetCompiler() { return compiler; }
 };
 
-// class CompilerBase {
-// protected:
-//   SrcMgr srcMgr;
-//   DiagnosticEngine diags{srcMgr};
-
-//   std::unique_ptr<CompilerConfiguration> config;
-
-//   /// Contains buffer IDs for input source code files.
-//   std::vector<unsigned> sourceBufferIDs;
-
-//   // The primary Sources
-//   llvm::SetVector<unsigned> primarySourceBufferIDs;
-
-//   llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
-//   /// Code completion offset in bytes from the beginning of the main
-//   /// source file.  Valid only if \c isCodeCompletion() == true.
-//   unsigned codeCompletionOffset = ~0U;
-
-// public:
-//   SrcMgr &GetSrcMgr() { return srcMgr; }
-//   DiagnosticEngine &GetDiags() { return diags; }
-//   const CompilerConfiguration &GetCompilerConfiguration() const { return
-//   *config; }
-
-// public:
-//   unsigned CreateSourceBuffer(const CompilerInputFile &input);
-//   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
-
-//   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
-//   bool IsPrimarySourceID(unsigned primarySourceID) const {
-//     return primarySourceBufferIDs.count(primarySourceID) != 0;
-//   }
-//   void RecordPrimarySourceID(unsigned primarySourceID);
-//   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
-
-// public:
-//   bool HasError() { return diags.HasError(); }
-// };
-
 class Compiler final {
   friend CompilerTask;
 
@@ -291,13 +252,16 @@ class Compiler final {
   /// considered primaries.
   llvm::SetVector<unsigned> primarySourceBufferIDs;
 
+  llvm::MemoryBuffer *codeCompletionBuffer = nullptr;
+  /// Code completion offset in bytes from the beginning of the main
+  /// source file.  Valid only if \c isCodeCompletion() == true.
+  unsigned codeCompletionOffset = ~0U;
+
   /// The stream for verbose output if owned, otherwise nullptr.
   std::unique_ptr<raw_ostream> ownedVerboseOutputStream;
 
   /// The stream for verbose output.
   raw_ostream *verboseOutputStream = &llvm::errs();
-
-  CompilerTaskKindKind mainTaskKind = CompilerTaskKindKind::None;
 
 public:
   Compiler() = delete;
@@ -348,9 +312,9 @@ public:
     listener = inputListener;
   }
   CompilerListener *GetListener() { return listener; }
-
   CompilerTask *GetTask(CompilerTaskKind kind);
-  CompilerTaskKindKind GetTaskKind() { return mainTaskKind; }
+
+  bool HasError() { return invocation.GetDiags().HasError(); }
 
 public:
   // Source buffers
@@ -383,6 +347,8 @@ public:
   Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
                                          const bool shouldRecover,
                                          bool &failed);
+
+  raw_ostream *GetVerboseOutputStream() { return verboseOutputStream; }
 
 public:
   //   StatisticEngine &GetStats() {
