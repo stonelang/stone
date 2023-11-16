@@ -8,7 +8,6 @@
 #include "stone/Syntax/Stmt.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 SyntaxStatus Parser::CollectDecl(ParsingDeclCollector &collector) {
 
@@ -52,9 +51,9 @@ SyntaxStatus Parser::CollectUsingDecl(ParsingDeclCollector &collector) {
     collector.GetUsingDeclarationCollector().AddUsing(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::CollectTypeOperator(TypeCollector &collector) {
@@ -68,9 +67,9 @@ SyntaxStatus Parser::CollectTypeOperator(TypeCollector &collector) {
     collector.GetTypeOperatorCollector().AddDelete(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
@@ -85,9 +84,9 @@ SyntaxStatus Parser::CollectAccessLevel(ParsingDeclCollector &collector) {
     collector.GetAccessLevelCollector().AddPrivate(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 // TODO: Dulicate check
@@ -119,9 +118,9 @@ SyntaxStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   case tok::kw_pure:
     collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 bool Parser::IsTypeThunk(const Token &tk) {
@@ -143,9 +142,9 @@ SyntaxStatus Parser::CollectTypeThunk(TypeCollector &collector) {
     collector.GetTypeThunkCollector().AddReference(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
@@ -154,7 +153,7 @@ SyntaxStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 
   if (!GetTok().IsTypeThunk() && GetTok().IsIdentifierOrUnderscore()) {
     collector.GetTypeThunkCollector().AddValue();
-    return syn::MakeSyntaxSuccess();
+    return MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   SyntaxStatus status;
@@ -169,7 +168,7 @@ SyntaxStatus Parser::CollectTypeThunks(TypeCollector &collector) {
 SyntaxStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
 
   if (!GetTok().IsBasicType()) {
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
   switch (GetTok().GetKind()) {
   // TODO: Think about void here
@@ -237,9 +236,9 @@ SyntaxStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -253,9 +252,9 @@ SyntaxStatus Parser::CollectNominalTypeDecl(TypeCollector &collector) {
     collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -266,9 +265,9 @@ SyntaxStatus Parser::CollectStorageSpecifier(ParsingDeclCollector &collector) {
     collector.GetStorageSpecifierCollector().AddRegister(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 SyntaxStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
   switch (GetTok().GetKind()) {
@@ -279,11 +278,11 @@ SyntaxStatus Parser::CollectFunctionDecl(ParsingDeclCollector &collector) {
     collector.GetFunctionSpecifierCollector().AddInline(ConsumeToken());
     break;
   default:
-    return syn::MakeSyntaxCodeCompletionStatus();
+    return MakeSyntaxCodeCompletionStatus();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::VerifyDeclCollected(ParsingDeclCollector &collector) {
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }

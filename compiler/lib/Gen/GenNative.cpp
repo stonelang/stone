@@ -74,20 +74,19 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::syn;
 
 static void GenNativeWithParallelization() {}
 
-static void EmitObject(CodeGenContext &cgc, syn::ASTContext &sc,
+static void EmitObject(CodeGenContext &cgc, ASTContext &sc,
                        llvm::StringRef outputFilename) {}
 
-static void EmitBC(const CodeGenContext &cgc, syn::ASTContext &sc,
+static void EmitBC(const CodeGenContext &cgc, ASTContext &sc,
                    llvm::StringRef outputFilename) {}
 
-static void EmitAssembly(const CodeGenContext &cgc, syn::ASTContext &sc,
+static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
                          llvm::StringRef outputFilename) {}
 
-// void stone::GenNative(CodeGenContext &cgc, syn::ASTContext &sc,
+// void stone::GenNative(CodeGenContext &cgc, ASTContext &sc,
 //                       llvm::StringRef outputFilename,
 //                       CodeGenListener *listener) {
 
@@ -103,7 +102,7 @@ static void EmitAssembly(const CodeGenContext &cgc, syn::ASTContext &sc,
 static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
 
 /// Returns true is successfull
-bool stone::GenNative(CodeGenContext &cgc, syn::ASTContext &context,
+bool stone::GenNative(CodeGenContext &cgc, ASTContext &context,
                       llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
@@ -115,11 +114,11 @@ bool stone::GenNative(CodeGenContext &cgc, syn::ASTContext &context,
 
 bool stone::WriteEmptyOutputFiles(
     std::vector<std::string> &parallelOutputFilenames,
-    const syn::ASTContext &Context, const CodeGenOptions &opts) {
+    const ASTContext &Context, const CodeGenOptions &opts) {
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, syn::ASTContext &sc,
+bool stone::GenNative(CodeGenContext &cgc, ASTContext &sc,
                       llvm::StringRef outputFilename,
                       llvm::sys::Mutex *diagMutex,
                       llvm::GlobalVariable *hashGlobal,

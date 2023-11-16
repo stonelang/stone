@@ -14,7 +14,6 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
-namespace syn {
 
 class ModuleDecl;
 
@@ -138,8 +137,8 @@ public:
   std::vector<Decl *> Decls;
 
 public:
-  ASTFile(ASTFileKind kind, syn::ModuleDecl &owner,
-          llvm::Optional<unsigned> srcID, bool isPrimary = false);
+  ASTFile(ASTFileKind kind, ModuleDecl &owner, llvm::Optional<unsigned> srcID,
+          bool isPrimary = false);
 
   ~ASTFile();
 
@@ -164,7 +163,7 @@ public:
   llvm::StringRef GetFilename() const;
 
   /// Retrieve the scope that describes this source file.
-  syn::Scope &GetScope();
+  Scope &GetScope();
 
   // void Print(llvm::raw_ostream &os, const PrintingPolicy &policy) const
 
@@ -178,8 +177,8 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static syn::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
-                            ASTContext &tc, bool isPrimary = false);
+  static ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+                       ASTContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::Syntax;
@@ -209,7 +208,7 @@ public:
   ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
 public:
-  using syn::Decl::GetASTContext;
+  using Decl::GetASTContext;
   llvm::SmallVector<ModuleFile *, 2> files;
 
   // TODO: llvm::SmallVector<ModuleFile *, 2> subModules;
@@ -268,8 +267,6 @@ public:
 };
 
 static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
-
-} // namespace syn
 } // namespace stone
 
 #endif

@@ -4,7 +4,6 @@
 #include "llvm/ADT/PointerUnion.h"
 
 namespace stone {
-namespace syn {
 // TODO: SyntaxKind
 enum class ASTDescription : uint8_t {
   Module,
@@ -13,7 +12,7 @@ enum class ASTDescription : uint8_t {
   Expr,
   QualType,
 };
-} // namespace syn
+
 } // namespace stone
 
 #endif

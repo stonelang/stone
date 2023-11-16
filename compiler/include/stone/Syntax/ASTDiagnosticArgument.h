@@ -17,16 +17,16 @@ namespace stone {
 namespace diag {
 
 // struct TokenArgument final : public ASTArgument {
-//   const syn::Token *val;
+//   const Token *val;
 //   Decl() = delete;
-//   explicit TokenArgument(const syn::Token *val)
+//   explicit TokenArgument(const Token *val)
 //       : ASTArgument(ASTArgumentKind::Token), val(val) {}
 // };
 
 struct Decl final : public ASTArgument {
-  const syn::Decl *val;
+  const Decl *val;
   Decl() = delete;
-  explicit Decl(const syn::Decl *val)
+  explicit Decl(const Decl *val)
       : ASTArgument(ASTArgumentKind::Decl), val(val) {}
 
 public:
@@ -36,9 +36,9 @@ public:
 };
 
 struct DeclContext final : public ASTArgument {
-  const syn::DeclContext *val;
+  const DeclContext *val;
   DeclContext() = delete;
-  explicit DeclContext(const syn::DeclContext *val)
+  explicit DeclContext(const DeclContext *val)
       : ASTArgument(ASTArgumentKind::DeclContext), val(val) {}
 
 public:
@@ -48,9 +48,9 @@ public:
 };
 
 struct Identifier final : public ASTArgument {
-  const syn::Identifier *val;
+  const Identifier *val;
   Identifier() = delete;
-  explicit Identifier(const syn::Identifier *val)
+  explicit Identifier(const Identifier *val)
       : ASTArgument(ASTArgumentKind::Identifier), val(val) {}
 
 public:
@@ -60,9 +60,9 @@ public:
 };
 
 struct Type final : public ASTArgument {
-  const syn::Type *val;
+  const Type *val;
   Type() = delete;
-  explicit Type(const syn::Type *val)
+  explicit Type(const Type *val)
       : ASTArgument(ASTArgumentKind::Type), val(val) {}
 
 public:

@@ -6,7 +6,6 @@
 #include "stone/Syntax/Types.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 // fun Do() -> '() -> int'
 Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {

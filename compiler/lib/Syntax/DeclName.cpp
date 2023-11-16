@@ -1,7 +1,6 @@
 #include "stone/Syntax/DeclName.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 constexpr const Identifier::Aligner DeclNameBase::BasicIdentifierAligner{};
 constexpr const Identifier::Aligner

@@ -5,8 +5,6 @@
 #include "stone/Syntax/TypeQualifier.h"
 
 using namespace stone;
-using namespace stone::mem;
-using namespace stone::syn;
 
 // == TypeBase ==//
 bool TypeBase::IsBasic() {

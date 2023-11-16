@@ -1,7 +1,6 @@
 #include "stone/Syntax/Specifier.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 static bool IsBasicTypeImpl(TypeSpecifierKind kind) {
   switch (kind) {

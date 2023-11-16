@@ -48,7 +48,6 @@
 #include <string>
 
 namespace stone {
-namespace syn {
 
 class Type;
 class TypeWalker;
@@ -78,13 +77,15 @@ protected:
   union {
     uint64_t OpaqueBits;
     STONE_INLINE_BITFIELD_BASE(TypeBase,
-                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1, Kind
+                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1 + 1, Kind
                                : stone::BitMax(NumTypeKindBits, 8),
 
                                  /// Whether this type is canonical or not.
                                  IsCanonical : 1,
                                  // Whether this type can have qualifiers
-                                 AllowQuals : 1);
+                                 AllowQuals : 1,
+
+                                 IsBuiltin : 1);
 
     STONE_INLINE_BITFIELD(SweetType, TypeBase, 1, HasCachedType : 1);
 
@@ -199,7 +200,9 @@ public:
 
 class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {}
+  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {
+    //Bits.TypeBase.IsBuiltin = true;
+  }
 };
 
 class IdentifierType : public TypeBase {};
@@ -335,7 +338,7 @@ public:
 public:
   static VoidType *
   Create(const ASTContext &sc,
-         mem::AllocationArena arena = mem::AllocationArena::Permanent);
+         AllocationArena arena = AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {
@@ -422,6 +425,5 @@ public:
 // public:
 // };
 
-} // namespace syn
 } // namespace stone
 #endif

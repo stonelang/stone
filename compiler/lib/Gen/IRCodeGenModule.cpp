@@ -5,7 +5,6 @@
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
                                  llvm::StringRef moduleName,
@@ -24,8 +23,8 @@ llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
 // }
 
 llvm::Constant *
-IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
-                                syn::FunctionDecl *fd, llvm::Type *fnTy,
+IRCodeGenModule::CreateFunction(llvm::StringRef mangledName, FunctionDecl *fd,
+                                llvm::Type *fnTy,
                                 const EmitFunctionOptions emitFunctionOpts,
                                 llvm::AttributeList extraAttrs) {
 
@@ -51,7 +50,7 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName,
 }
 llvm::Constant *
 IRCodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
-                                     syn::FunctionDecl *fd, llvm::Type *fnTy,
+                                     FunctionDecl *fd, llvm::Type *fnTy,
                                      const EmitFunctionOptions emitFunctionOpts,
                                      llvm::AttributeList extraAttrs) {
 
@@ -60,7 +59,7 @@ IRCodeGenModule::GetOrCreateFunction(llvm::StringRef mangledName,
 }
 
 llvm::Constant *IRCodeGenModule::GetFunctionAddress(
-    syn::FunctionDecl *fd, llvm::Type *fnTy,
+    FunctionDecl *fd, llvm::Type *fnTy,
     const EmitFunctionOptions emitFunctionOpts) {
 
   // TODO:
@@ -76,12 +75,11 @@ llvm::Constant *IRCodeGenModule::GetFunctionAddress(
   return GetOrCreateFunction("mangledName", fd, fnTy, emitFunctionOpts);
 }
 
-void IRCodeGenModule::SetFunctionLinkage(syn::FunctionDecl *fd,
-                                         llvm::Function *fn) {
+void IRCodeGenModule::SetFunctionLinkage(FunctionDecl *fd, llvm::Function *fn) {
   fn->setLinkage(GetFunctionLinkage(fd));
 }
 llvm::GlobalValue::LinkageTypes
-IRCodeGenModule::GetFunctionLinkage(syn::FunctionDecl *fd) {
+IRCodeGenModule::GetFunctionLinkage(FunctionDecl *fd) {
 
   // TODO: FOR NOW
   return llvm::GlobalValue::InternalLinkage;

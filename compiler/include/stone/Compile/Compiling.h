@@ -15,7 +15,7 @@ Status Compile(Compiler &compiler);
 void VerifyCompilerInputFileTypes(Compiler &compiler);
 Status Parse(Compiler &compiler);
 Status ParseAndImportResolution(Compiler &compiler);
-Status DumpSyntax(Compiler &compiler, syn::ASTFile &astFile);
+Status DumpSyntax(Compiler &compiler, ASTFile &astFile);
 
 // Type checking
 Status TypeCheck(Compiler &compiler);

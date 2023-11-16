@@ -75,11 +75,10 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::syn;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  const PrimaryFileSpecificPaths paths, syn::ModuleDecl *md,
-                  syn::ASTFile *sf, CodeGenListener *listener) {
+                  const PrimaryFileSpecificPaths paths, ModuleDecl *md,
+                  ASTFile *sf, CodeGenListener *listener) {
 
   IRCodeGen cg(cgc, listener);
   IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
@@ -101,15 +100,14 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                         syn::ASTFile *sf, const PrimaryFileSpecificPaths paths,
+                         ASTFile *sf, const PrimaryFileSpecificPaths paths,
                          CodeGenListener *listener) {
   assert(sf);
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }
 
 void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                        syn::ModuleDecl *md,
-                        const PrimaryFileSpecificPaths paths,
+                        ModuleDecl *md, const PrimaryFileSpecificPaths paths,
                         CodeGenListener *listener) {
 
   GenIR(cgc, moduleName, paths, md, nullptr, listener);

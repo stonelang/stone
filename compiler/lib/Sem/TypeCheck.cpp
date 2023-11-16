@@ -3,10 +3,8 @@
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
-using namespace stone::syn;
-using namespace stone::sem;
 
-void stone::TypeCheckASTFile(syn::ASTFile &sf,
+void stone::TypeCheckASTFile(ASTFile &sf,
                              stone::TypeCheckerOptions &typeCheckerOpts,
                              TypeCheckerListener *listener) {
 
@@ -23,7 +21,7 @@ void stone::TypeCheckASTFile(syn::ASTFile &sf,
   sf.stage = ASTFileStage::TypeChecked;
 }
 
-void stone::TypeCheckWholeModule(syn::ModuleDecl &md,
+void stone::TypeCheckWholeModule(ModuleDecl &md,
                                  stone::TypeCheckerOptions &typeCheckerOpts,
                                  TypeCheckerListener *listener) {
 

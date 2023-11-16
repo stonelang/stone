@@ -10,7 +10,6 @@
 #include "stone/Syntax/StmtFactory.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 void Parser::ParseTopLevelDecls(
     llvm::SmallVector<SyntaxResult<Decl>> &results) {
@@ -188,18 +187,18 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
     // Do some logging
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   if (collector.GetTypeCollector().GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   SyntaxStatus status;
@@ -216,14 +215,14 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
-      return syn::MakeSyntaxError();
+      return MakeSyntaxError();
     }
     // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
-      return syn::MakeSyntaxError();
+      return MakeSyntaxError();
     }
     // TODO: That identifier should already exist
     // status = ParseIdentifier(parentName, parentNameLoc);
@@ -232,7 +231,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
       collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   DeclName fullName;
@@ -270,7 +269,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return syn::MakeSyntaxResult<Decl>(funDecl);
+  return MakeSyntaxResult<Decl>(funDecl);
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,
@@ -362,7 +361,7 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   if (GetTok().IsRParen()) {
@@ -370,9 +369,9 @@ SyntaxStatus Parser::ParseFunctionArguments(ParsingDeclCollector &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
-  return syn::MakeSyntaxSuccess();
+  return MakeSyntaxSuccess();
 }
 
 SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
@@ -393,7 +392,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
 
   // Simple for now
   auto functionBody =
-      StmtFactory::MakeBraceStmt(lParenLoc, {}, rParenLoc, GetASTContext());
+      MakeBraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;
@@ -414,7 +413,7 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDeclCollector &collector) {
          "Attempting to parse a struct without a struct declaration.");
 
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny()) {
-    return syn::MakeSyntaxError();
+    return MakeSyntaxError();
   }
 
   auto structLoc =

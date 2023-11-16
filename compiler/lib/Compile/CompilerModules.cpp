@@ -2,7 +2,7 @@
 
 Status Compiler::SetupModules() {}
 
-syn::ModuleDecl *Compiler::GetMainModule() const {
+ModuleDecl *Compiler::GetMainModule() const {
   if (!mainModule) {
 
     // assert(invocation.GetModuleOptions().HasModuleName());
@@ -18,7 +18,7 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
     // GetASTContext().AddLoadedModule(mainModule);
 
     // // Create and add the module's files.
-    // llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
+    // llvm::SmallVector<ModuleFile *, 16> moduleFiles;
 
     // if (CreateASTFilesForMainModule(mainModule, moduleFiles).IsError()) {
     //   // If we failed to load a partial module, mark the main module as
@@ -40,12 +40,12 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 
 // // TODO:
 // Status Compiler::CreateASTFilesForMainModule(
-//     syn::ModuleDecl *mod,
-//     llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
+//     ModuleDecl *mod,
+//     llvm::SmallVectorImpl<ModuleFile *> &resultFiles) const {
 //   // Try to pull out the main source file, if any. This ensures that it
 //   // is at the start of the list of files.
 //   llvm::Optional<unsigned> mainBufferID = llvm::None;
-//   if (syn::ASTFile *mainASTFile = ComputeMainASTFileForModule(mod))
+//   if (ASTFile *mainASTFile = ComputeMainASTFileForModule(mod))
 //   {
 //     mainBufferID = mainASTFile->GetSrcID();
 //     resultFiles.push_back(mainASTFile);
@@ -70,13 +70,13 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 //     }
 
 //     auto *libraryFile = CreateASTFileForMainModule(
-//         mod, syn::ASTFileKind::Library, bufferID);
+//         mod, ASTFileKind::Library, bufferID);
 //     resultFiles.push_back(libraryFile);
 //   }
 //   return Status();
 // }
 
-// syn::ASTFile *
+// ASTFile *
 // Compiler::ComputeMainASTFileForModule(ModuleDecl *mod) const {
 
 //   if (compiler.GetCompilerOptions().parsingInputMode ==
@@ -87,8 +87,8 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 //   return nullptr;
 // }
 
-// syn::ASTFile *Compiler::CreateASTFileForMainModule(
-//     ModuleDecl *mod, syn::ASTFileKind astFileKind, unsigned bufferID,
+// ASTFile *Compiler::CreateASTFileForMainModule(
+//     ModuleDecl *mod, ASTFileKind astFileKind, unsigned bufferID,
 //     bool isMainBuffer) const {
 
 //   auto isPrimary = bufferID && compiler.IsPrimarySourceID(bufferID);
@@ -106,7 +106,7 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 //   return astFile;
 // }
 
-// syn::ASTFile::ParsingOptions
+// ASTFile::ParsingOptions
 // Compiler::GetASTFileParsingOptions(bool forPrimary) const {
 
 //   auto parsingOpts = ASTFile::GetDefaultParsingOptions(
@@ -138,7 +138,7 @@ syn::ModuleDecl *Compiler::GetMainModule() const {
 //   return Status();
 // }
 
-// bool stone::EmitImportedModules(syn::ASTContext &context,
+// bool stone::EmitImportedModules(ASTContext &context,
 //                                 ModuleDecl *mainModule,
 //                                 const CompilerOptions &opts) {
 //   return false;

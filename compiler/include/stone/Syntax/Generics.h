@@ -28,7 +28,6 @@
 #include <utility>
 
 namespace stone {
-namespace syn {
 
 class ASTWalker;
 class GenericTypeParamDecl;
@@ -171,7 +170,6 @@ public:
   // void Print(ColorOutputStream &OS, bool printWhereKeyword) const;
 };
 
-} // namespace syn
 } // namespace stone
 
 #endif

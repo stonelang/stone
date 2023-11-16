@@ -19,21 +19,20 @@ class TargetMachine;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+
 class MemberPointerType;
-}
 class IRCodeGenModule;
 
 class IRCodeGenABI final {
   IRCodeGenModule &cgm;
 
-  std::unique_ptr<syn::MangleContext> mangleContext;
+  std::unique_ptr<MangleContext> mangleContext;
 
 public:
   IRCodeGenABI(IRCodeGenModule &cgm);
 
 public:
-  llvm::Type *ResolveMemberPointerType(const syn::MemberPointerType mpt);
+  llvm::Type *ResolveMemberPointerType(const MemberPointerType mpt);
 };
 
 } // namespace stone

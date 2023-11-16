@@ -1,14 +1,14 @@
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
-#include "stone/Public.h"
+
 #include "llvm/Option/Option.h"
 
 using namespace stone;
 using namespace stone::opts;
+
 using namespace llvm::opt;
 
 Action::Action() {}
-
 
 ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
   switch (actionOptionID) {

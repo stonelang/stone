@@ -4,9 +4,8 @@
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
-using namespace stone::syn;
 
-void stone::ParseASTFile(syn::ASTFile &astFile, syn::ASTContext &syntaxContext,
+void stone::ParseASTFile(ASTFile &astFile, ASTContext &syntaxContext,
                          SyntaxListener *syntaxListener,
                          LexerListener *lexerListener) {
 

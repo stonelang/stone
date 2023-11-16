@@ -13,15 +13,14 @@
 #include <memory>
 
 using namespace stone;
-using namespace stone::syn;
 
-ASTContext::ASTContext(const LangOption &langOpts,
+ASTContext::ASTContext(const LangOptions &langOpts,
                        const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
                        StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
       de(de), se(se), identifiers(allocator), builtinContext(*this),
-      stats(new ASTContextStats(*this)), {
+      stats(new ASTContextStats(*this)) {
 
   se.Register(stats.get());
 }
@@ -36,9 +35,8 @@ const BuiltinContext &ASTContext::GetBuiltinContext() const {
   return builtinContext;
 }
 
-void *syn::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
-                                mem::AllocationArena arena,
-                                unsigned alignment) {
+void *AllocateInASTContext(size_t bytes, const ASTContext &ctx,
+                           AllocationArena arena, unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 

@@ -14,7 +14,6 @@
 #include "llvm/Support/MemoryBuffer.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 //===----------------------------------------------------------------------===//
 // UTF8 Validation/Encoding/Decoding helper functions
@@ -78,8 +77,7 @@ static bool isStartOfUTF8Character(unsigned char C) {
 /// validateUTF8CharacterAndAdvance - Given a pointer to the starting byte of a
 /// UTF8 character, validate it and advance the lexer past it.  This returns the
 /// encoded character or ~0U if the encoding is invalid.
-uint32_t syn::validateUTF8CharacterAndAdvance(const char *&Ptr,
-                                              const char *End) {
+uint32_t validateUTF8CharacterAndAdvance(const char *&Ptr, const char *End) {
   if (Ptr >= End)
     return ~0U;
 
@@ -2199,13 +2197,13 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
       .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), " ");
 
   char ExpectedCodepoint;
-  if ((ExpectedCodepoint = syn::ConvertConfusableCharacterToASCII(Codepoint))) {
+  if ((ExpectedCodepoint = ConvertConfusableCharacterToASCII(Codepoint))) {
 
     llvm::SmallString<4> ConfusedChar;
     EncodeToUTF8(Codepoint, ConfusedChar);
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
-    auto charNames = syn::GetConfusableAndBaseCodepointNames(Codepoint);
+    auto charNames = GetConfusableAndBaseCodepointNames(Codepoint);
     PrintD(CurPtr - 1, diag::lex_confusable_character,
            diag::LLVMStr(ConfusedChar), diag::LLVMStr(charNames.first),
            diag::LLVMStr(ExpectedChar), diag::LLVMStr(charNames.second))
@@ -3249,9 +3247,8 @@ Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
   return Pieces;
 }
 
-llvm::ArrayRef<Token> stone::syn::slice_token_array(ArrayRef<Token> AllTokens,
-                                                    SrcLoc StartLoc,
-                                                    SrcLoc EndLoc) {
+llvm::ArrayRef<Token> stone::slice_token_array(ArrayRef<Token> AllTokens,
+                                               SrcLoc StartLoc, SrcLoc EndLoc) {
   assert(StartLoc.isValid() && EndLoc.isValid());
   auto StartIt = token_lower_bound(AllTokens, StartLoc);
   auto EndIt = token_lower_bound(AllTokens, EndLoc);

@@ -9,7 +9,6 @@
 #include "llvm/ADT/SmallPtrSet.h"
 
 namespace stone {
-namespace syn {
 class Decl;
 
 // TODO: Think about
@@ -99,7 +98,7 @@ enum class ScopeKind : UInt8 {
 
 };
 
-class Scope final : public syn::ASTAllocation<Scope> {
+class Scope final : public ASTAllocation<Scope> {
   ScopeKind kind;
   DiagnosticEngine &diags;
   Scope *parent = nullptr;
@@ -124,6 +123,6 @@ private:
 public:
   static const char *GetName(ScopeKind kind);
 };
-} // namespace syn
+
 } // namespace stone
 #endif

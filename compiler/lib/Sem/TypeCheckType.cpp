@@ -2,8 +2,7 @@
 #include "stone/Syntax/ASTWalker.h"
 #include "stone/Syntax/TypeVisitor.h"
 
-using namespace stone::sem;
-using namespace stone::syn;
+using namespace stone;
 
 class TypeChecking final : public TypeVisitor<TypeChecking>, public ASTWalker {
 public:
@@ -18,7 +17,6 @@ void TypeChecker::CheckTypes(Decl *d) {
   // if (astFile && astFile->GetKind() == ASTFileKind::Interface) {
   //   return;
   // }
-
   auto &ctx = d->GetASTContext();
 }
 

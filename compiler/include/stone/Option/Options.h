@@ -1,11 +1,11 @@
-#ifndef STONE_SESSION_OPTIONS_H
-#define STONE_SESSION_OPTIONS_H
-
-#include <memory>
+#ifndef STONE_OPTION_OPTIONS_H
+#define STONE_OPTION_OPTIONS_H
 
 #include "stone/Basic/Color.h"
-#include "stone/Basic/Status.h"
-#include "stone/Option/Action.h"
+#include "stone/Option/ActionKind.h"
+#include "llvm/Option/ArgList.h"
+
+#include <memory>
 
 namespace llvm {
 namespace opt {
@@ -43,26 +43,16 @@ enum OptID : unsigned {
 #undef OPTION
 };
 
-class Options final {
-  std::unique_ptr<llvm::opt::OptTable> options;
-
-public:
-  Options();
-
-public:
-  llvm::opt::OptTable &GetOptions() { return *options; }
-};
-
-std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
 llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,
                                         const llvm::opt::InputArgList &args);
-
-const unsigned GetArgID(llvm::opt::Arg *arg);
+unsigned GetArgID(llvm::opt::Arg *arg);
 llvm::StringRef GetArgName(llvm::opt::Arg *arg);
 void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 
 } // namespace opts
+std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
+
 } // namespace stone
 
 #endif

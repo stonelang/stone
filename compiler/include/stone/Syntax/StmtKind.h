@@ -2,7 +2,6 @@
 #define STONE_SYNTAX_STMTKIND_H
 
 namespace stone {
-namespace syn {
 
 enum class StmtKind : uint8_t {
 
@@ -19,6 +18,6 @@ enum class StmtKind : uint8_t {
 #include "stone/Syntax/ExprKind.def"
 
 };
-} // namespace syn
+
 } // namespace stone
 #endif

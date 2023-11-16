@@ -1,10 +1,7 @@
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/StmtFactory.h"
 
 using namespace stone;
-using namespace stone::syn;
-
 // SyntaxResult<Stmt *> Syntax::CreateIfStmt() { return StmtEmpty(); }
 
 //== Statements ==/
@@ -20,7 +17,7 @@ BraceStmt::BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<ASTNode> elements,
                           getTrailingObjects<ASTNode>());
 }
 
-BraceStmt *StmtFactory::MakeBraceStmt(SrcLoc lbloc,
+BraceStmt *BraceStmt::Create(SrcLoc lbloc,
                                       llvm::ArrayRef<ASTNode> elements,
                                       SrcLoc rbloc, ASTContext &sc,
                                       llvm::Optional<bool> implicit) {

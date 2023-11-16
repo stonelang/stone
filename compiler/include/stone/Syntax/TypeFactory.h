@@ -6,7 +6,7 @@
 #include <string>
 
 namespace stone {
-namespace syn {
+
 class FunType;
 class VoidType;
 class BoolType;
@@ -15,7 +15,6 @@ class BoolType;
 // FunType *MakeFunType(ASTContext &sc);
 // BoolType *MakeBoolType(ASTContext &sc);
 
-} // namespace syn
 } // namespace stone
 
 #endif

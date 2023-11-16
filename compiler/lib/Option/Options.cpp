@@ -1,6 +1,8 @@
 #include "stone/Option/Options.h"
+#include "stone/Basic/LLVM.h"
 
 #include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Option/OptTable.h"
 #include "llvm/Option/Option.h"
 
@@ -32,9 +34,7 @@ public:
 };
 } // namespace stone
 
-Options::Options() : options(opts::CreateOptTable()) {}
-
-std::unique_ptr<OptTable> opts::CreateOptTable() {
+std::unique_ptr<OptTable> stone::CreateOptTable() {
   return std::unique_ptr<OptTable>(new stone::StoneOptTable());
 }
 
@@ -85,7 +85,7 @@ opts::GetEqualValueByOptionID(const opts::OptID optID,
   return llvm::StringRef();
 }
 
-const unsigned opts::GetArgID(llvm::opt::Arg *arg) {
+unsigned opts::GetArgID(llvm::opt::Arg *arg) {
   assert(arg);
   return arg->getOption().getID();
 }

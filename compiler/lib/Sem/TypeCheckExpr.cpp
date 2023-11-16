@@ -2,8 +2,7 @@
 #include "stone/Syntax/ASTVisitor.h"
 #include "stone/Syntax/Expr.h"
 
-using namespace stone::sem;
-using namespace stone::syn;
+using namespace stone;
 
 class ExprChecking final : public ExprVisitor<ExprChecking> {
   TypeChecker &checker;

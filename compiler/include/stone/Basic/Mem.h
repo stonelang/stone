@@ -12,7 +12,7 @@
 #endif
 
 namespace stone {
-namespace mem {
+
 /// The arena in which a particular allocation object will go.
 enum class AllocationArena {
   /// The permanent arena, which is tied to the lifetime of
@@ -102,8 +102,6 @@ inline void *Copy(void *dest, const void *src, std::size_t count) {
 //     return mem;
 //   }
 // };
-
-} // namespace mem
 } // namespace stone
 
 #endif

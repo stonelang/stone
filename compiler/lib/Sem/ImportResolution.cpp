@@ -2,7 +2,6 @@
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 // TODO:
 //  class UseResolver final : public DeclVisitor<UseResolver> {
@@ -12,4 +11,4 @@ using namespace stone::syn;
 //   ASTContext &ctx;
 // };
 
-void stone::ResolveASTFileImports(syn::ASTFile &astFile) {}
+void stone::ResolveASTFileImports(ASTFile &astFile) {}

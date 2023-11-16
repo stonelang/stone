@@ -2,7 +2,6 @@
 #define STONE_SYNTAX_DECLBITS_H
 
 namespace stone {
-namespace syn {
 
 /// Stores the bits used by DeclContext.
 /// If modified NumDeclContextBit, the ctor of DeclContext and the accessor
@@ -173,7 +172,6 @@ class EnumDeclBitfields final {
   friend class EnumDecl;
 };
 
-} // namespace syn
 } // namespace stone
 
 #endif

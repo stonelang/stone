@@ -53,8 +53,6 @@ using MemoryBuffers =
 
 class CompilerInvocation final {
 
-  opts::Options options;
-
   CompilerOptions compilerOpts;
 
   /// Options for generating code

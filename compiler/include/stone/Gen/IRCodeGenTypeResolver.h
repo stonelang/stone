@@ -9,12 +9,11 @@ class PointerType;
 } // namespace llvm
 
 namespace stone {
-namespace syn {
+
 class Type;
 class Decl;
 class FunctionDecl;
 class MemberPointerType;
-} // namespace syn
 
 class IRCodeGenModule;
 
@@ -25,10 +24,10 @@ public:
   IRCodeGenTypeResolver(IRCodeGenModule &cgm);
 
 public:
-  llvm::Type *GetType(const syn::Type ty);
+  llvm::Type *GetType(const Type ty);
 
-  // llvm::Type *GetType(const syn::MemberPointerType *mpt);
-  llvm::FunctionType *GetFunctionType(const syn::FunctionDecl *fd);
+  // llvm::Type *GetType(const MemberPointerType *mpt);
+  llvm::FunctionType *GetFunctionType(const FunctionDecl *fd);
 };
 
 } // namespace stone

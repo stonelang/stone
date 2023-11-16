@@ -9,7 +9,7 @@
 namespace stone {
 class Compiler;
 void *AllocateInCompiler(size_t bytes, const Compiler &compiler,
-                         mem::AllocationArena arena, unsigned alignment);
+                         AllocationArena arena, unsigned alignment);
 /// Types inheriting from this class are intended to be allocated in an
 /// \c Compiler allocator; you cannot allocate them by using a normal \c
 /// new, and instead you must either provide an \c ASTContext or use a placement
@@ -27,7 +27,7 @@ public:
   // or by doing a placement new.
   void *
   operator new(size_t bytes, const Compiler &compiler,
-               mem::AllocationArena arena = mem::AllocationArena::Permanent,
+               AllocationArena arena = AllocationArena::Permanent,
                unsigned alignment = alignof(AlignTy)) {
     return stone::AllocateInCompiler(bytes, compiler, arena, alignment);
   }

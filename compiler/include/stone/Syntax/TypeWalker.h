@@ -8,8 +8,6 @@
 #include <string>
 
 namespace stone {
-namespace syn {
-
 enum class TypeWalkerAction { None = 0, Continue, SkipChildren, Stop };
 
 /// An abstract class used to traverse a Type.
@@ -47,5 +45,4 @@ protected:
 //   }
 // };
 
-} // namespace syn
 } // namespace stone

@@ -5,7 +5,6 @@
 #include "stone/Syntax/Global.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
 
@@ -25,11 +24,11 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
   }
 }
 
-// void IRCodeGenModule::EmitGlobalDecl(syn::GlobalDecl *gd) {}
+// void IRCodeGenModule::EmitGlobalDecl(GlobalDecl *gd) {}
 
 namespace {
 class PrettyASTFileEmission : public llvm::PrettyStackTraceEntry {
-  const syn::ASTFile &sf;
+  const ASTFile &sf;
 
 public:
   explicit PrettyASTFileEmission(const ASTFile &sf) : sf(sf) {}
@@ -39,10 +38,10 @@ public:
 };
 } // end anonymous namespace
 
-void IRCodeGenModule::EmitASTFile(syn::ASTFile &sf) {
+void IRCodeGenModule::EmitASTFile(ASTFile &sf) {
 
   PrettyASTFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<syn::ASTFile *> setCurASTFile(curASTFile, &sf);
+  llvm::SaveAndRestore<ASTFile *> setCurASTFile(curASTFile, &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {

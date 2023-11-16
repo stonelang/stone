@@ -9,7 +9,6 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace syn {
 
 class ASTContext;
 class Decl;
@@ -334,7 +333,7 @@ public:
   annotatedAvailableRangeForAttr(const SpecializeAttribute *attr,
                                  ASTContext &ctx);
 };
-} // namespace syn
+
 } // end namespace stone
 
 #endif

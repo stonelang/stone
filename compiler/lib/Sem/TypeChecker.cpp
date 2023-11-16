@@ -4,8 +4,6 @@
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 using namespace stone;
-using namespace stone::sem;
-using namespace stone::syn;
 
 TypeChecker::TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)

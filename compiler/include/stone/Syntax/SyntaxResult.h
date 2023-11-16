@@ -5,7 +5,7 @@
 #include <type_traits>
 
 namespace stone {
-namespace syn {
+
 class SyntaxStatus;
 /// A wrapper for a parser AST node result (Decl, Stmt, Expr,
 /// etc.)
@@ -226,7 +226,7 @@ template <typename T> SyntaxResult<T>::SyntaxResult(SyntaxStatus Status) {
     SetHasCodeCompletion();
   }
 }
-} // namespace syn
+
 } // namespace stone
 
 #endif

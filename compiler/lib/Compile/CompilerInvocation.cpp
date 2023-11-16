@@ -131,9 +131,10 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
+  auto compilerOptTable = stone::CreateOptTable();
   auto compilerInputArgList = std::make_unique<llvm::opt::InputArgList>(
-      GetOptions().ParseArgs(args, missingArgIndex, missingArgCount,
-                             includedFlagsBitmask, excludedFlagsBitmask));
+      compilerOptTable->ParseArgs(args, missingArgIndex, missingArgCount,
+                                  includedFlagsBitmask, excludedFlagsBitmask));
 
   assert(compilerInputArgList && "No input argument list.");
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TREECONTEXT_H
-#define STONE_SYNTAX_TREECONTEXT_H
+#ifndef STONE_SYNTAX_ASTCONTEXT_H
+#define STONE_SYNTAX_ASTCONTEXT_H
 
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Mem.h"
@@ -57,9 +57,6 @@
 
 namespace stone {
 class DiagnosticEngine;
-
-namespace syn {
-
 class BlockExpr;
 class LangABI;
 class Decl;
@@ -102,10 +99,6 @@ class ASTContext final {
 
   std::unique_ptr<ASTContextStats> stats;
 
-  /// The language options used to create the AST associated with
-  ///  this ASTContext object.
-  const LangContext &langOpts;
-
   ClangContext &clangContext;
 
   /// The search path options
@@ -114,6 +107,8 @@ class ASTContext final {
   DiagnosticEngine &de;
 
   StatisticEngine &se;
+
+  const LangOptions& langOpts;
 
   BuiltinContext builtinContext;
   /// The allocator used to create ASTContext objects.
@@ -128,10 +123,10 @@ class ASTContext final {
   mutable DeclNameTable declNames;
 
   /// All builtin types will be stored here.
-  mutable llvm::SmallVector<Type *, 0> types;
+  mutable llvm::SmallVector<Type *, 0> builtinTypes;
 
   /// The standard library module.
-  mutable syn::ModuleDecl *stdlibModule = nullptr;
+  mutable ModuleDecl *stdlibModule = nullptr;
 
   /// The name of the standard library module "libstone".
   // Identifier stdlibModuleName;
@@ -139,7 +134,7 @@ class ASTContext final {
   /// The set of top-level modules we have loaded.
   /// This map is used for iteration, therefore it's a MapVector and not a
   /// DenseMap.
-  llvm::MapVector<Identifier, syn::ModuleDecl *> loadedModules;
+  llvm::MapVector<Identifier, ModuleDecl *> loadedModules;
 
   /// Set if a `-module-alias` was passed. Used to store mapping between module
   /// aliases and their corresponding real names, and vice versa for a reverse
@@ -178,9 +173,7 @@ public:
   DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
   const BuiltinContext &GetBuiltinContext() const;
-
   DiagnosticEngine &GetDiags() { return de; }
-
   ///
   LangABI *GetLangABI() const;
   //
@@ -188,7 +181,8 @@ public:
 
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
-  ASTContextStats &GetStats() { return se; }
+  StatisticEngine &GetStats() { return se; }
+  ASTContextStats &GetASTContextStats() { return *stats; }
 
 public:
   //==Module stuff==//
@@ -241,22 +235,21 @@ public:
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return lc.GetDiags().PrintD(
+    return GetDiags().PrintD(
         loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                                    llvm::ArrayRef<diag::Argument> args) {
-    return lc.GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
+    return GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 
   template <typename... ArgTypes>
   stone::InFlightDiagnostic
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return lc.GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
+    return GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
   }
 };
-} // namespace syn
 } // namespace stone
 
 #endif

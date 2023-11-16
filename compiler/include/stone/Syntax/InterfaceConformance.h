@@ -17,7 +17,7 @@
 
 namespace stone {
 class DiagnosticEngine;
-namespace syn {
+
 class ASTContext;
 class GenericParamList;
 class NormalInterfaceConformance;
@@ -80,7 +80,7 @@ enum class InterfaceConformanceState {
 /// InterfaceConformance is an abstract base class, implemented by subclasses
 /// for the various kinds of conformance (normal, specialized, inherited).
 // class alignas(1 << DeclAlignInBits) InterfaceConformance
-//     : public syn::ASTAllocation<InterfaceConformance> {
+//     : public ASTAllocation<InterfaceConformance> {
 //   /// The kind of protocol conformance.
 //   InterfaceConformanceKind Kind;
 
@@ -1139,8 +1139,6 @@ enum class InterfaceConformanceState {
 // SourceLoc extractNearestSourceLoc(const InterfaceConformance *conf);
 // void simple_display(llvm::raw_ostream &out, const InterfaceConformance
 // *conf);
-
-} // namespace syn
 
 } // end namespace stone
 

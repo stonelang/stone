@@ -21,7 +21,6 @@
 // #include "stone/Syntax/Specifiers.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 enum class KeywordStatus {
   Enabled,

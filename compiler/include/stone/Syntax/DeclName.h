@@ -11,8 +11,6 @@
 namespace stone {
 class PrintingPolicy;
 
-namespace syn {
-
 class ASTContext;
 class DeclName;
 class DeclNameTable;
@@ -572,46 +570,43 @@ public:
 //   return DeclName::Compare(LHS, RHS) >= 0;
 // }
 
-} // namespace syn
-
 } // namespace stone
 
 namespace llvm {
 
-raw_ostream &operator<<(raw_ostream &OS, stone::syn::DeclNameBase D);
-raw_ostream &operator<<(raw_ostream &OS, stone::syn::DeclName I);
+raw_ostream &operator<<(raw_ostream &OS, stone::DeclNameBase D);
+raw_ostream &operator<<(raw_ostream &OS, stone::DeclName I);
 // raw_ostream &operator<<(raw_ostream &OS, swift::DeclNameRef I);
 
 // DeclBaseNames hash just like pointers.
-template <> struct DenseMapInfo<stone::syn::DeclNameBase> {
-  static stone::syn::DeclNameBase getEmptyKey() {
-    return stone::syn::Identifier::getEmptyKey();
+template <> struct DenseMapInfo<stone::DeclNameBase> {
+  static stone::DeclNameBase getEmptyKey() {
+    return stone::Identifier::getEmptyKey();
   }
-  static stone::syn::DeclNameBase getTombstoneKey() {
-    return stone::syn::Identifier::getTombstoneKey();
+  static stone::DeclNameBase getTombstoneKey() {
+    return stone::Identifier::getTombstoneKey();
   }
-  static unsigned getHashValue(stone::syn::DeclNameBase Val) {
+  static unsigned getHashValue(stone::DeclNameBase Val) {
     return DenseMapInfo<const void *>::getHashValue(Val.GetAsOpaquePointer());
   }
-  static bool isEqual(stone::syn::DeclNameBase LHS,
-                      stone::syn::DeclNameBase RHS) {
+  static bool isEqual(stone::DeclNameBase LHS, stone::DeclNameBase RHS) {
     return LHS == RHS;
   }
 };
 
 // A DeclBaseName is "pointer like".
 template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<stone::syn::DeclNameBase> {
+template <> struct PointerLikeTypeTraits<stone::DeclNameBase> {
 public:
-  static inline void *getAsVoidPointer(stone::syn::DeclNameBase D) {
+  static inline void *getAsVoidPointer(stone::DeclNameBase D) {
     return const_cast<void *>(D.GetAsOpaquePointer());
   }
-  static inline stone::syn::DeclNameBase getFromVoidPointer(void *P) {
-    return stone::syn::DeclNameBase::GetFromOpaquePointer(P);
+  static inline stone::DeclNameBase getFromVoidPointer(void *P) {
+    return stone::DeclNameBase::GetFromOpaquePointer(P);
   }
   enum {
     NumLowBitsAvailable =
-        PointerLikeTypeTraits<stone::syn::Identifier>::NumLowBitsAvailable
+        PointerLikeTypeTraits<stone::Identifier>::NumLowBitsAvailable
   };
 };
 } // end namespace llvm

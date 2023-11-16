@@ -8,20 +8,15 @@
 
 #include <memory>
 
-using namespace stone::syn;
-
 namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-namespace syn {
 class ASTFile;
 class Expr;
 class Decl;
 class Stmt;
-} // namespace syn
 
-namespace sem {
 class TypeChecker;
 
 class TypeCheckerStats final : public Stats {
@@ -89,6 +84,6 @@ public:
   /// \returns true if \c t1 is a subtype of \c t2.
   bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 };
-} // namespace sem
+
 } // namespace stone
 #endif

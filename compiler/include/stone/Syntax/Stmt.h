@@ -31,7 +31,6 @@
 namespace stone {
 class SrcMgr;
 
-namespace syn {
 class Decl;
 class FunDecl;
 class VarDecl;
@@ -101,6 +100,12 @@ public:
   static bool classof(const Stmt *stmt) {
     return stmt->GetKind() == StmtKind::Brace;
   }
+
+public:
+  static BraceStmt* Create(SrcLoc lbloc,
+                                      llvm::ArrayRef<ASTNode> elements,
+                                      SrcLoc rbloc, ASTContext &astContext,
+                                      llvm::Optional<bool> implicit);
 };
 
 class SwitchCaseStmt : public Stmt {
@@ -188,6 +193,5 @@ public:
   }
 };
 
-} // namespace syn
 } // namespace stone
 #endif

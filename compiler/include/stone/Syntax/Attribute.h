@@ -15,7 +15,6 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace syn {
 
 class alignas(1 << AttributeAlignInBits) Attribute
     : public ASTAllocation<Attribute> {
@@ -53,8 +52,6 @@ class SpecializeAttribute : public DeclAttribute {};
 class AttributeCollector {
 public:
 };
-
-} // namespace syn
 
 } // namespace stone
 

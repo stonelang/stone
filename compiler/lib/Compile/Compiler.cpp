@@ -8,7 +8,6 @@
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 
 using namespace stone;
-using namespace stone::syn;
 
 // Compiler::Compiler() : queue(*this), stats(new CompilerStats(*this)) {
 //   GetCompilerContext().GetLangContext().GetStats().Register(stats.get());
@@ -89,7 +88,7 @@ Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
-Compiler::GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const {
+Compiler::GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const {
   return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -98,7 +97,7 @@ Compiler::GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const {
 // void Compiler::ResolveImports() {
 //   // Resolve imports for all the source files.
 //   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = dyn_cast<syn::ASTFile>(moduleFile))
+//     if (auto *astFile = dyn_cast<ASTFile>(moduleFile))
 //       stone::ResolveASTFileImports(*astFile);
 //   }
 // }
@@ -109,7 +108,7 @@ Compiler::GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const {
 // if (GetCompilerContext().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     auto *astFile = dyn_cast<syn::ASTFile>(moduleFile);
+//     auto *astFile = dyn_cast<ASTFile>(moduleFile);
 //     if (!astFile) {
 //       continue;
 //     }
@@ -158,7 +157,7 @@ size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }
 // void Compiler::PrintStatistics() {}
 
 void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
-                                mem::AllocationArena arena,
+                                AllocationArena arena,
                                 unsigned alignment) {
   return compiler.Allocate(bytes, alignment /*, arena*/);
 }

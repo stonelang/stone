@@ -23,7 +23,6 @@
 
 namespace stone {
 class SyntaxListener;
-namespace syn {
 
 class BraceStmt;
 class Syntax;
@@ -81,8 +80,6 @@ class Parser final {
   SrcLoc prevTokLoc;
 
   // PairDelimiterCount pairDelimiterCount;
-
-  ParsingToken parsingTok;
 
   ScopeCache scopeCache;
 
@@ -423,6 +420,5 @@ public:
   Identifier GetIdentifier(llvm::StringRef text);
 };
 
-} // namespace syn
 } // namespace stone
 #endif

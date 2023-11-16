@@ -4,7 +4,7 @@
 #include "stone/Syntax/Types.h"
 
 namespace stone {
-namespace syn {
+
 class ASTContext;
 
 class BuiltinContext final {
@@ -49,6 +49,6 @@ private:
 public:
   Type GetType(llvm::StringRef name);
 };
-} // namespace syn
+
 } // namespace stone
 #endif

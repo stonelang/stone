@@ -1,7 +1,7 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/ASTVisitor.h"
 
-using namespace stone::sem;
+using namespace stone;
 
 class StmtChecking final : public StmtVisitor<StmtChecking> {
   TypeChecker &checker;

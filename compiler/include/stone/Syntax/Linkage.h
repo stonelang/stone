@@ -4,8 +4,6 @@
 #include "stone/Basic/STDAlias.h"
 
 namespace stone {
-namespace syn {
-
 /// Describes the different kinds of linkage
 /// (C++ [basic.link], C99 6.2.2) that an entity may have.
 enum class LinkageKind : UInt8 {
@@ -57,8 +55,6 @@ enum class GlobalValueLinkageKind : UInt8 {
   StrongExternal,
   StrongODR
 };
-
-} // namespace syn
 
 } // namespace stone
 

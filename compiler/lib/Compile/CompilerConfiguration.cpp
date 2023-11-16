@@ -34,7 +34,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 using namespace stone;
-using namespace stone::syn;
+
 using namespace stone::opts;
 
 // CompilerConfiguration::CompilerConfiguration()

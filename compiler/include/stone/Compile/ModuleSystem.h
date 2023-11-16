@@ -26,9 +26,9 @@ class CompilerConfiguration;
 class ModuleSystem final {
   // TODO: We need built-in information
   Compiler &compiler;
-  syn::ASTContext &syntaxContext;
+  ASTContext &syntaxContext;
   /// This is the main module that will be created
-  mutable syn::ModuleDecl *mainModule = nullptr;
+  mutable ModuleDecl *mainModule = nullptr;
 
   /// Contains \c MemoryBuffers for partial serialized module files and
   /// corresponding partial serialized module documentation files. This is
@@ -36,27 +36,26 @@ class ModuleSystem final {
   // mutable std::vector<ModuleBuffers> partialModules;
 
 public:
-  ModuleSystem(Compiler &compiler, syn::ASTContext &syntaxContext);
+  ModuleSystem(Compiler &compiler, ASTContext &syntaxContext);
   ~ModuleSystem();
 
 public:
-  syn::ModuleDecl *GetMainModule() const;
-  void SetMainModule(syn::ModuleDecl *mod);
+  ModuleDecl *GetMainModule() const;
+  void SetMainModule(ModuleDecl *mod);
 
-  Status CreateASTFilesForMainModule(
-      syn::ModuleDecl *mod,
-      llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
+  Status
+  CreateASTFilesForMainModule(ModuleDecl *mod,
+                              llvm::SmallVectorImpl<ModuleFile *> &files) const;
 
-  syn::ASTFile *CreateASTFileForMainModule(syn::ModuleDecl *mod,
-                                           syn::ASTFileKind fileKind,
-                                           unsigned bufferID,
-                                           bool isMainBuffer = false) const;
+  ASTFile *CreateASTFileForMainModule(ModuleDecl *mod, ASTFileKind fileKind,
+                                      unsigned bufferID,
+                                      bool isMainBuffer = false) const;
 
-  syn::ASTFile *ComputeMainASTFileForModule(syn::ModuleDecl *mod) const;
+  ASTFile *ComputeMainASTFileForModule(ModuleDecl *mod) const;
 
   Compiler &GetCompiler() { return compiler; }
 
-  syn::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
+  ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

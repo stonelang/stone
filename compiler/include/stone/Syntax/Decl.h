@@ -40,7 +40,6 @@
 
 namespace stone {
 class DiagnosticEngine;
-namespace syn {
 
 class Decl;
 class Stmt;
@@ -82,7 +81,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public syn::ASTAllocation<Decl> {
+class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
   friend DeclStats;
 
   DeclKind kind;
@@ -307,7 +306,7 @@ public:
     return GetDeclContextForModule();
   }
 
-  syn::Module *GetModuleContext() const;
+  Module *GetModuleContext() const;
 
   ASTContext &GetASTContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
@@ -547,7 +546,7 @@ class TypeParamDecl : public TypeDecl {};
 // This is really your function prototye
 class FunctionDecl : public GenericContext,
                      public ValueDecl
-/*, public syn::Redeclarable<FunctionDecl>*/ {
+/*, public Redeclarable<FunctionDecl>*/ {
 
   // TypeLoc returnType;
 
@@ -740,7 +739,7 @@ class ImportDecl final : public NameableDecl {
   ImportKind importKind;
 
 public:
-  // syn::Module *mod = nullptr;
+  // Module *mod = nullptr;
 };
 
 class TrustDecl final
@@ -808,7 +807,5 @@ class OperatorDecl : public Decl {};
 class TopLevelDecl final : public DeclContext, public Decl {
 public:
 };
-
-} // namespace syn
 } // namespace stone
 #endif

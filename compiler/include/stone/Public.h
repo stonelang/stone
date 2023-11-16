@@ -43,17 +43,14 @@ class Compiler;
 class CompilerTask;
 class CompilerInvocation;
 class ClangContext;
-
-namespace syn {
 class ASTContext;
 class ModuleDecl;
 class Decl;
 class Stmt;
 class Expr;
-class Module;
 class Token;
 class ASTFile;
-} // namespace syn
+
 } // namespace stone
 
 namespace stone {
@@ -64,7 +61,7 @@ public:
   virtual ~LexerListener() = default;
 
 public:
-  virtual void OnToken(const syn::Token *token) {}
+  virtual void OnToken(const Token *token) {}
 };
 
 class SyntaxListener {
@@ -77,14 +74,14 @@ public:
   virtual void OnError() {}
 
 public:
-  virtual void OnDecl(const syn::Decl *decl, bool isTopLevel = false);
-  virtual void OnStmt(const syn::Stmt *stmt);
-  virtual void OnExpr(const syn::Expr *expr);
+  virtual void OnDecl(const Decl *decl, bool isTopLevel = false);
+  virtual void OnStmt(const Stmt *stmt);
+  virtual void OnExpr(const Expr *expr);
 
 public:
   virtual void OnParseError() {}
   virtual void OnParseStarted() {}
-  virtual void OnParseASTFile(syn::ASTFile *sf) {}
+  virtual void OnParseASTFile(ASTFile *sf) {}
   virtual void OnParseCompleted() {}
 };
 
@@ -94,14 +91,14 @@ public:
   virtual ~TypeCheckerListener() = default;
 
 public:
-  virtual void OnDeclTypeChecked(syn::Decl *decl, bool isTopLvel = false);
-  virtual void OnStmtTypeChecked(syn::Stmt *stmt) {}
-  virtual void OnExprTypeChecked(syn::Expr *expr) {}
+  virtual void OnDeclTypeChecked(Decl *decl, bool isTopLvel = false);
+  virtual void OnStmtTypeChecked(Stmt *stmt) {}
+  virtual void OnExprTypeChecked(Expr *expr) {}
 
 public:
   virtual void OnTypeCheckError();
-  virtual void OnASTFileTypeChecked(syn::ASTFile *astFile) {}
-  virtual void OnModuleTypeChecked(syn::Module *mod) {}
+  virtual void OnASTFileTypeChecked(ASTFile *astFile) {}
+  virtual void OnModuleTypeChecked(ModuleDecl *mod) {}
 
 public:
 };
@@ -171,33 +168,32 @@ public:
   virtual void CompletedRunningTasks(Compiler &compiler) {}
 };
 } // namespace stone
-namespace stone {
 
 // Parsing and type-checking
 namespace stone {
-using ModuleOrASTFile = llvm::PointerUnion<syn::ModuleDecl *, syn::ASTFile *>;
+using ModuleOrASTFile = llvm::PointerUnion<ModuleDecl *, ASTFile *>;
 
 /// Parse, type-check, resolve imports, and generate IR for the ASTFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true if successfull
-bool CompileASTFile(syn::ASTFile &astFile, Compiler &instance,
+bool CompileASTFile(ASTFile &astFile, Compiler &instance,
                     CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ParseASTFile(syn::ASTFile &astFile, syn::ASTContext &context,
+void ParseASTFile(ASTFile &astFile, ASTContext &context,
                   SyntaxListener *syntaxListener, LexerListener *lexerListener);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ResolveASTFileImports(syn::ASTFile &astFile);
+void ResolveASTFileImports(ASTFile &astFile);
 
 /// Once import resolution is complete, this walks the syntax to resolve types
 /// and diagnose problems therein.
 /// Returns true is successfull
 void TypeCheckASTFile(
-    syn::ASTFile &astFile, TypeCheckerOptions &opts,
+    ASTFile &astFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckASTFileCallback* callback = nullptr*/);
 
@@ -209,31 +205,30 @@ void TypeCheckASTFile(
 /// emitted.
 /// Returns true is successfull
 void TypeCheckWholeModule(
-    syn::ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
+    ModuleDecl &moduleDecl, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
 /// Returns true is successfull
-void SerializeASTFile(syn::ASTFile &astFile);
+void SerializeASTFile(ASTFile &astFile);
 
 /// Returns true is successfull
-void SerializeModuleDecl(syn::ModuleDecl &moduleDecl);
+void SerializeModuleDecl(ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  syn::ASTFile *sf,
+void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, ASTFile *sf,
                   const PrimaryFileSpecificPaths specificPaths,
                   CodeGenListener *listener = nullptr);
 
 /// Gen IR for the entire Module
 /// Returns true is successfull
 void GenWholeModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                      syn::ModuleDecl *mod,
+                      ModuleDecl *mod,
                       const PrimaryFileSpecificPaths specificPaths,
                       CodeGenListener *listener = nullptr);
 
-bool EmitImportedModules(syn::ASTContext &context, syn::ModuleDecl *mainModule,
+bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
                          const CompilerOptions &opts);
 
 } // namespace stone
@@ -255,12 +250,12 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
-bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
+bool GenNative(CodeGenContext &cgc, ASTContext &context,
                llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
-                           const syn::ASTContext &Context,
+                           const ASTContext &Context,
                            const CodeGenOptions &opts);
 
 /// Run the LLVM passes. In multi-threaded compilation this will be done for
@@ -274,7 +269,7 @@ bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
 /// \param TargetMachine target of code gen, required.
 /// \param OutputFilename Filename for output.
 
-bool GenNative(CodeGenContext &cgc, syn::ASTContext &context,
+bool GenNative(CodeGenContext &cgc, ASTContext &context,
                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
                llvm::GlobalVariable *hashGlobal,
                CodeGenListener *listener = nullptr);

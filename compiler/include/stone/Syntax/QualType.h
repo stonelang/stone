@@ -4,7 +4,6 @@
 #include "stone/Syntax/Type.h"
 
 namespace stone {
-namespace syn {
 
 class TypeQualifierList;
 
@@ -40,7 +39,6 @@ public:
   QualType WithConst();
 };
 
-} // namespace syn
 } // namespace stone
 
 #endif

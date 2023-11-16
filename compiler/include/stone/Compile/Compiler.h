@@ -37,10 +37,10 @@ class CompilerTask;
 class CodeGenContext;
 class CompilerListener;
 
-// using EachASTFileCallback = std::function<Status(syn::ASTFile &)>;
+// using EachASTFileCallback = std::function<Status(ASTFile &)>;
 
 // using EachASTFileToTypeCheckCallback = std::function<Status(
-//     syn::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+//     ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 /// The compiler stats
 class CompilerStats final : public Stats {
@@ -123,7 +123,7 @@ public:
 // public:
 //   /// Gets the set of SourceFiles which are the primary inputs for this
 //   /// Compiler.
-//   // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
+//   // llvm::ArrayRef<ASTFile *> GetPrimaryFiles() const {
 //   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
 //   // }
 
@@ -231,7 +231,7 @@ class Compiler final {
 
   std::unique_ptr<CompilerStats> compilerStats;
   std::unique_ptr<ModuleSystem> moduleSystem;
-  std::unique_ptr<syn::ASTContext> syntaxContext;
+  std::unique_ptr<ASTContext> syntaxContext;
   std::unique_ptr<ClangContext> clangContext;
   std::unique_ptr<CompilerQueue> compilerQueue;
   std::unique_ptr<CodeGenContext> codeGenContext;
@@ -295,7 +295,7 @@ public:
   CompilerQueue &GetQueue() { return *compilerQueue; }
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
   CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
-  syn::ASTContext &GetASTContext() { return *syntaxContext; }
+  ASTContext &GetASTContext() { return *syntaxContext; }
   ModuleSystem &GetModuleSystem() { return *moduleSystem; }
   ClangContext &GetClangContext() { return *clangContext; }
 
@@ -330,7 +330,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// Compiler.
-  // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<ASTFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
 
@@ -394,11 +394,11 @@ public:
   //   notify);
 
   // public:
-  //   syn::ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
-  //     return msf.get<syn::ModuleDecl *>();
+  //   ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
+  //     return msf.get<ModuleDecl *>();
   //   }
-  //   syn::ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
-  //     msf.dyn_cast<syn::ASTFile *>();
+  //   ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
+  //     msf.dyn_cast<ASTFile *>();
   //   }
 
   // public:
@@ -428,7 +428,7 @@ public:
   // public:
   //   /// Gets the set of ASTFiles which are the primary inputs for this
   //   /// Compiler.
-  //   llvm::ArrayRef<syn::ASTFile *> GetPrimaryASTFiles() const {
+  //   llvm::ArrayRef<ASTFile *> GetPrimaryASTFiles() const {
   //     return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
   //   }
 
@@ -452,7 +452,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const;
+  GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const;
 
   // public:
   void PrintTimers();

@@ -10,7 +10,6 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
-namespace syn {
 
 class ASTContext;
 
@@ -116,7 +115,7 @@ public:
       size_t Bytes, ASTContext &C,
       unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
-        Bytes, C, mem::AllocationArena::Permanent, Alignment);
+        Bytes, C, AllocationArena::Permanent, Alignment);
   }
 };
 
@@ -167,7 +166,7 @@ public:
                      unsigned Alignment = alignof(
                          PlatformAgnosticVersionConstraintAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
-        Bytes, C, mem::AllocationArena::Permanent, Alignment);
+        Bytes, C, AllocationArena::Permanent, Alignment);
   }
 };
 
@@ -199,13 +198,11 @@ public:
   }
 
   void *
-  operator new(size_t Bytes, syn::ASTContext &C,
+  operator new(size_t Bytes, ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
     return AvailabilitySpec::operator new(
-        Bytes, C, mem::AllocationArena::Permanent, Alignment);
+        Bytes, C, AllocationArena::Permanent, Alignment);
   }
 };
-
-} // namespace syn
 } // namespace stone
 #endif

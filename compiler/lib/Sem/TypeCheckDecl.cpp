@@ -3,7 +3,7 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Syntax/ASTVisitor.h"
 
-using stone::sem::TypeChecker;
+using stone::TypeChecker;
 
 class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;

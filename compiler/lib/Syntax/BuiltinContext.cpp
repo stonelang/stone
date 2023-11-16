@@ -3,9 +3,6 @@
 #include "stone/Syntax/ASTAllocation.h"
 
 using namespace stone;
-using namespace stone::syn;
-
-using namespace stone::mem;
 
 BuiltinContext::BuiltinContext(ASTContext &sc)
     : sc(sc),

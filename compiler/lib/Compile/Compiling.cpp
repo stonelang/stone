@@ -94,7 +94,7 @@
 //   }
 //   for (auto moduleFile :
 //        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
+//     if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
 //       stone::ParseASTFile(*astFile, compiler.GetASTContext(),
 //                              syntaxListener, lexerListener);
 //       astFile->stage = ASTFileStage::Parsed;
@@ -117,7 +117,7 @@
 //   return Status();
 // }
 
-// Status compiling::DumpSyntax(Compiler &compiler, syn::ASTFile
+// Status compiling::DumpSyntax(Compiler &compiler, ASTFile
 // &astFile)
 // {
 //   return Status();
@@ -342,7 +342,7 @@
 // }
 //}
 
-// static Status DumpSyntax(Compiler &compiler, syn::ASTFile &sf) {
+// static Status DumpSyntax(Compiler &compiler, ASTFile &sf) {
 //   return Status::Success();
 // }
 
@@ -352,7 +352,7 @@
 
 // Status Compiler::CompileWithParsing() {
 //   return CompileWithParsing(
-//       [&](syn::ASTFile &) { return Status::Success(); });
+//       [&](ASTFile &) { return Status::Success(); });
 // }
 
 // Status Compiler::CompileWithParsing(ParsingCompletedCallback notifiy)
@@ -367,7 +367,7 @@
 //   }
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
+//     if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
 //       stone::ParseASTFile(*astFile, GetASTContext(),
 //       syntaxListener,
 //                              lexerListener);
@@ -435,7 +435,7 @@
 //   break;
 // case ActionKind::DumpSyntax:
 //   status = CompileWithParsing(
-//       [&](syn::ASTFile &sf) { return DumpSyntax(*this, sf); });
+//       [&](ASTFile &sf) { return DumpSyntax(*this, sf); });
 //   break;
 // case ActionKind::TypeCheck:
 //   status = CompileWithTypeChecking();

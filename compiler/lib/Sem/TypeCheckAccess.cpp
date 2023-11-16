@@ -3,8 +3,6 @@
 #include "stone/Syntax/ASTVisitor.h"
 
 using namespace stone;
-using namespace stone::syn;
-using namespace stone::sem;
 
 /// \see checkTypeAccess
 using CheckTypeAccessLevelCallback = void(AccessScope, const Type *);
@@ -82,7 +80,7 @@ public:
 
 void TypeChecker::CheckAccessLevel(Decl *d) {
 
-  // if (llvm::isa<syn::ValueDecl>(d)) {
+  // if (llvm::isa<ValueDecl>(d)) {
   //   sem::CheckAccessLevel(d)
   // }
   AccessLevelChecking(*this).Visit(d);

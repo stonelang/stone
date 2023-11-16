@@ -44,7 +44,6 @@
 #include <string>
 
 namespace stone {
-namespace syn {
 
 class ASTPrinter;
 class CanQualType;
@@ -268,6 +267,5 @@ public:
   bool operator<(CanType T) const { return GetPtr() < T.GetPtr(); }
 };
 
-} // namespace syn
 } // namespace stone
 #endif

@@ -8,7 +8,7 @@
 #include "stone/Syntax/Scope.h"
 
 using namespace stone;
-using namespace stone::syn;
+
 using namespace stone::mem;
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
@@ -22,7 +22,7 @@ Parser::Parser(ASTFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
-      parsingTok(*this), stats(new ParserStats(*this)) {
+      stats(new ParserStats(*this)) {
 
   GetLangContext().GetStats().Register(stats.get());
 }
