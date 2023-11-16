@@ -34,27 +34,29 @@ class CodeGenContext final {
   const ModuleOptions &moduleOpts;
   const stone::TargetOptions &targetOpts;
 
-  const LangContext &langContext;
+  ASTContext& astContext;
   ClangContext &clangContext;
 
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
-  llvm::GlobalVariable **outModuleHash;
+  llvm::GlobalVariable *outModuleHash;
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
-                 const LangContext &langContext, ClangContext &clangContext,
+                 ASTContext& astContext, ClangContext &clangContext,
                  llvm::GlobalVariable *outModuleHash = nullptr);
+
+
   ~CodeGenContext();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
   const stone::TargetOptions &GetTargetOptions() const { return targetOpts; }
-  const LangContext &GetLangContext() const { return langContext; }
+  ASTContext &GetASTContext() const { return astContext; }
   ClangContext &GetClangContext() { return clangContext; }
 
   const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
