@@ -5,12 +5,12 @@
 
 using namespace stone;
 
-TypeChecker::TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
+TypeChecker::TypeChecker(ASTContext &astContext, TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)
-    : sc(sc), typeCheckerOpts(typeCheckerOpts), pipeline(pipeline) {
+    : astContext(astContext), typeCheckerOpts(typeCheckerOpts), listener(listener) {
 
   stats.reset(new TypeCheckerStats(*this));
-  sc.GetLangContext().GetStats().Register(stats.get());
+  astContext.GetStats().Register(stats.get());
 }
 
 TypeChecker::~TypeChecker() {}

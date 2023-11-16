@@ -35,10 +35,10 @@ public:
 class TypeChecker final {
   friend TypeCheckerStats;
 
-  ASTContext &sc;
+  ASTContext &astContext;
   TypeCheckerOptions &typeCheckerOpts;
   std::unique_ptr<TypeCheckerStats> stats;
-  TypeCheckerListener *pipeline;
+  TypeCheckerListener *listener;
 
 public:
   TypeChecker(const TypeChecker &) = delete;
@@ -47,8 +47,8 @@ public:
 
 public:
   /// TODO: Pass in Syntax so that you can create the Nodes
-  TypeChecker(ASTContext &sc, TypeCheckerOptions &typeCheckerOpts,
-              TypeCheckerListener *pipeline = nullptr);
+  TypeChecker(ASTContext &astContext, TypeCheckerOptions &typeCheckerOpts,
+              TypeCheckerListener *listener = nullptr);
 
 public:
   void CheckASTNode(ASTNode &syntaxNode, DeclContext *dc,

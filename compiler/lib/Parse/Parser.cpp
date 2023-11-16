@@ -9,19 +9,17 @@
 
 using namespace stone;
 
-using namespace stone::mem;
-
-Parser::Parser(ASTFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
+Parser::Parser(ASTFile &sf, ASTContext &astContext, SyntaxListener *syntaxListener,
                LexerListener *lexerListener)
-    : Parser(sf, sc,
+    : Parser(sf, astContext,
              Safe<Lexer>(new Lexer(
-                 sf.GetSrcID(), sc.GetSrcMgr(), &sc.GetLangContext().GetDiags(),
-                 &sc.GetLangContext().GetStats(), lexerListener)),
+                 sf.GetSrcID(), astContext.GetSrcMgr(), &astContext.GetDiags(),
+                 &astContext.GetStats(), lexerListener)),
              listener) {}
 
 Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
-    : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
+    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf), listener(listener),
       stats(new ParserStats(*this)) {
 
   GetLangContext().GetStats().Register(stats.get());
@@ -87,7 +85,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
 // This is there because you may want to strip certain things from the
 // identifier name -- something to think about.
 Identifier Parser::GetIdentifier(llvm::StringRef text) {
-  return sc.GetIdentifier(text);
+  return astContext.GetIdentifier(text);
 }
 
 SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
@@ -184,7 +182,7 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLangContext().GetDiags().PrintD(loc, diagID);
+  return astContext.GetDiags().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

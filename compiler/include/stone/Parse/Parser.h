@@ -43,7 +43,6 @@ public:
 
 class Parser final {
   friend ParserStats;
-  friend ParsingToken;
 
   // friend PairDelimiterBalancer;
 
@@ -53,7 +52,7 @@ class Parser final {
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
 
-  ASTContext &sc;
+  ASTContext &astContext;
   ASTFile &sf;
   DeclContext *curDC;
 
@@ -92,7 +91,7 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(ASTFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
+  Parser(ASTFile &sf, ASTContext& astContext, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
 
 public:
@@ -105,12 +104,10 @@ public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
-  ASTContext &GetASTContext() { return sc; }
+  ASTContext &GetASTContext() { return astContext; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
   DeclContext *GetCurDeclContext() { return curDC; }
-
-  LangContext &GetLangContext() { return sc.GetLangContext(); }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
@@ -244,8 +241,8 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLangContext().GetDiags().HasError(); }
-  DiagnosticEngine &GetDiags() { return GetLangContext().GetDiags(); }
+  bool HasError() { return astContext.GetDiags().HasError(); }
+  DiagnosticEngine &GetDiags() { return astContext.GetDiags(); }
 
 public:
   //===--------------------------------------------------------------------===//

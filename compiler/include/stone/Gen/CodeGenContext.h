@@ -22,7 +22,7 @@ class TargetMachine;
 
 namespace stone {
 
-class LangContext;
+class ASTContext;
 class ClangContext;
 class CodeGenOptions;
 class ModuleOptions;

@@ -3,6 +3,7 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Gen/CodeGenScope.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ClangContext.h"
 
 using namespace stone;
@@ -10,11 +11,11 @@ using namespace stone;
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,
-                               const LangContext &langContext,
+                               ASTContext& astContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable *outModuleHash)
-    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts),
-      langContext(langContext), clangContext(clangContext),
+    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts), astContext(astContext),
+      clangContext(clangContext),
       outModuleHash(outModuleHash),
       llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {
 
