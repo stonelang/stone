@@ -13,10 +13,7 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/Instrumentation/AddressSanitizerOptions.h"
 
-#include <map>
-#include <memory>
 #include <string>
-#include <vector>
 
 namespace llvm {
 class TargetOptions;

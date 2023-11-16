@@ -206,6 +206,7 @@ public:
 //   void PrintHelp();
 // };
 
+// CompilerActionQueue 
 class CompilerQueue final {
 
   Compiler &compiler;
@@ -461,6 +462,9 @@ public:
 
 public:
   void FreeASTContext();
+
+public:
+  //void LoadStdLib();
 
 public:
   /// Return the total amount of physical memory allocated for representing
