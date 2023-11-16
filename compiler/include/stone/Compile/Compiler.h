@@ -37,10 +37,10 @@ class CompilerTask;
 class CodeGenContext;
 class CompilerListener;
 
-// using EachSyntaxFileCallback = std::function<Status(syn::SyntaxFile &)>;
+// using EachASTFileCallback = std::function<Status(syn::ASTFile &)>;
 
-// using EachSyntaxFileToTypeCheckCallback = std::function<Status(
-//     syn::SyntaxFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+// using EachASTFileToTypeCheckCallback = std::function<Status(
+//     syn::ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 /// The compiler stats
 class CompilerStats final : public Stats {
@@ -123,7 +123,7 @@ public:
 // public:
 //   /// Gets the set of SourceFiles which are the primary inputs for this
 //   /// Compiler.
-//   // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+//   // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
 //   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
 //   // }
 
@@ -297,6 +297,8 @@ class Compiler final {
   /// The stream for verbose output.
   raw_ostream *verboseOutputStream = &llvm::errs();
 
+  CompilerTaskKindKind mainTaskKind = CompilerTaskKindKind::None;
+
 public:
   Compiler() = delete;
   Compiler(const CompilerInvocation &invocation);
@@ -312,6 +314,7 @@ public:
 
 public:
   void BuildTasks();
+  void QueueTask(ActionKind source);
   void RunTasks();
 
 private:
@@ -345,7 +348,9 @@ public:
     listener = inputListener;
   }
   CompilerListener *GetListener() { return listener; }
-  CompilerTask *GetTask(ActionKind kind);
+
+  CompilerTask *GetTask(CompilerTaskKind kind);
+  CompilerTaskKindKind GetTaskKind() { return mainTaskKind; }
 
 public:
   // Source buffers
@@ -361,7 +366,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// Compiler.
-  // llvm::ArrayRef<syn::SyntaxFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<syn::ASTFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
 
@@ -418,16 +423,16 @@ public:
   //   void ResolveImports();
 
   // public:
-  //   Status ForEachSyntaxFile(EachSyntaxFileCallback fn);
-  //   Status ForEachSyntaxFileToTypeCheck(EachSyntaxFileToTypeCheckCallback
+  //   Status ForEachASTFile(EachASTFileCallback fn);
+  //   Status ForEachASTFileToTypeCheck(EachASTFileToTypeCheckCallback
   //   notify);
 
   // public:
-  //   syn::ModuleDecl *CastToModuleDecl(stone::ModuleSyntaxFileUnion msf) {
+  //   syn::ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
   //     return msf.get<syn::ModuleDecl *>();
   //   }
-  //   syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
-  //     msf.dyn_cast<syn::SyntaxFile *>();
+  //   syn::ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
+  //     msf.dyn_cast<syn::ASTFile *>();
   //   }
 
   // public:
@@ -445,7 +450,7 @@ public:
   //                 ? false
   //                 : true);
   //   }
-  //   bool IsSyntaxFileCodeGen() { return !GetPrimarySyntaxFiles().empty(); }
+  //   bool IsASTFileCodeGen() { return !GetPrimaryASTFiles().empty(); }
 
   // public:
   //   //== Utils ==//
@@ -455,14 +460,14 @@ public:
   //   void ComputeCodeCodeGenOutputKind();
 
   // public:
-  //   /// Gets the set of SyntaxFiles which are the primary inputs for this
+  //   /// Gets the set of ASTFiles which are the primary inputs for this
   //   /// Compiler.
-  //   llvm::ArrayRef<syn::SyntaxFile *> GetPrimarySyntaxFiles() const {
-  //     return GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles();
+  //   llvm::ArrayRef<syn::ASTFile *> GetPrimaryASTFiles() const {
+  //     return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
   //   }
 
-  //   // bool HasPrimarySyntaxFiles() const {
-  //   //   return GetModuleSystem().GetMainModule()->HasPrimarySyntaxFiles();
+  //   // bool HasPrimaryASTFiles() const {
+  //   //   return GetModuleSystem().GetMainModule()->HasPrimaryASTFiles();
   //   // }
 
 public:
@@ -481,7 +486,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForSyntaxFile(const syn::SyntaxFile &sf) const;
+  GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const;
 
   // public:
   void PrintTimers();

@@ -51,7 +51,7 @@ class Stmt;
 class Expr;
 class Module;
 class Token;
-class SyntaxFile;
+class ASTFile;
 } // namespace syn
 } // namespace stone
 
@@ -83,7 +83,7 @@ public:
 public:
   virtual void OnParseError() {}
   virtual void OnParseStarted() {}
-  virtual void OnParseSyntaxFile(syn::SyntaxFile *sf) {}
+  virtual void OnParseASTFile(syn::ASTFile *sf) {}
   virtual void OnParseCompleted() {}
 };
 
@@ -99,7 +99,7 @@ public:
 
 public:
   virtual void OnTypeCheckError();
-  virtual void OnSyntaxFileTypeChecked(syn::SyntaxFile *syntaxFile) {}
+  virtual void OnASTFileTypeChecked(syn::ASTFile *astFile) {}
   virtual void OnModuleTypeChecked(syn::Module *mod) {}
 
 public:
@@ -171,87 +171,34 @@ public:
 };
 } // namespace stone
 namespace stone {
-class LangContext final {
-
-  SrcMgr srcMgr;
-  DiagnosticEngine diags{srcMgr};
-  StatisticEngine stats;
-  LangOptions &langOpts;
-
-public:
-  LangContext(LangOptions &langOpts) : langOpts(langOpts) {}
-  ~LangContext() {}
-
-public:
-  StatisticEngine &GetStats() { return stats; }
-  DiagnosticEngine &GetDiags() { return diags; }
-
-  LangOptions &GetLangOptions() { return langOpts; }
-  const LangOptions &GetLangOptions() const { return langOpts; }
-
-  bool HasError() { return GetDiags().HasError(); }
-  SrcMgr &GetSrcMgr() { return srcMgr; }
-
-public:
-  InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {
-    return PrintD(SrcLoc(), diagnostic);
-  }
-  InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic &diagnostic) {
-    return GetDiags().PrintD(loc, diagnostic);
-  }
-
-  InFlightDiagnostic PrintD(DiagID diagID,
-                            llvm::ArrayRef<diag::Argument> args) {
-    return PrintD(SrcLoc(), diagID, args);
-  }
-  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                            llvm::ArrayRef<diag::Argument> args) {
-    return GetDiags().PrintD(loc, diagID, args);
-  }
-
-  InFlightDiagnostic PrintD(DiagID diagID) { return PrintD(SrcLoc(), diagID); }
-
-  InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetDiags().PrintD(loc, diagID);
-  }
-  template <typename... ArgTypes>
-  InFlightDiagnostic
-  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
-         typename detail::PassArgument<ArgTypes>::type... args) {
-    return GetDiags().PrintD(loc, id, std::forward<ArgTypes>(args)...);
-  }
-};
-} // namespace stone
 
 // Parsing and type-checking
 namespace stone {
-using ModuleSyntaxFileUnion =
-    llvm::PointerUnion<syn::ModuleDecl *, syn::SyntaxFile *>;
+using ModuleOrASTFile = llvm::PointerUnion<syn::ModuleDecl *, syn::ASTFile *>;
 
-/// Parse, type-check, resolve imports, and generate IR for the SyntaxFile.
+/// Parse, type-check, resolve imports, and generate IR for the ASTFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true if successfull
-bool CompileSyntaxFile(syn::SyntaxFile &syntaxFile, Compiler &instance,
-                       CodeGenContext *cgc = nullptr);
+bool CompileASTFile(syn::ASTFile &astFile, Compiler &instance,
+                    CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ParseSyntaxFile(syn::SyntaxFile &syntaxFile, syn::ASTContext &context,
-                     SyntaxListener *syntaxListener,
-                     LexerListener *lexerListener);
+void ParseASTFile(syn::ASTFile &astFile, syn::ASTContext &context,
+                  SyntaxListener *syntaxListener, LexerListener *lexerListener);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile);
+void ResolveASTFileImports(syn::ASTFile &astFile);
 
 /// Once import resolution is complete, this walks the syntax to resolve types
 /// and diagnose problems therein.
 /// Returns true is successfull
-void TypeCheckSyntaxFile(
-    syn::SyntaxFile &syntaxFile, TypeCheckerOptions &opts,
+void TypeCheckASTFile(
+    syn::ASTFile &astFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
-        nullptr /*, TypeCheckSyntaxFileCallback* callback = nullptr*/);
+        nullptr /*, TypeCheckASTFileCallback* callback = nullptr*/);
 
 /// Now that we have type-checked an entire module, perform any type
 /// checking that requires the full module.
@@ -266,24 +213,24 @@ void TypeCheckWholeModule(
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
 /// Returns true is successfull
-void SerializeSyntaxFile(syn::SyntaxFile &syntaxFile);
+void SerializeASTFile(syn::ASTFile &astFile);
 
 /// Returns true is successfull
 void SerializeModuleDecl(syn::ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSyntaxFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                     syn::SyntaxFile *sf,
-                     const PrimaryFileSpecificPaths specificPaths,
-                     CodeGenListener *listener = nullptr);
+void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                  syn::ASTFile *sf,
+                  const PrimaryFileSpecificPaths specificPaths,
+                  CodeGenListener *listener = nullptr);
 
-/// Gen IR for the Module
+/// Gen IR for the entire Module
 /// Returns true is successfull
-void GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                 syn::ModuleDecl *mod,
-                 const PrimaryFileSpecificPaths specificPaths,
-                 CodeGenListener *listener = nullptr);
+void GenWholeModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                      syn::ModuleDecl *mod,
+                      const PrimaryFileSpecificPaths specificPaths,
+                      CodeGenListener *listener = nullptr);
 
 bool EmitImportedModules(syn::ASTContext &context, syn::ModuleDecl *mainModule,
                          const CompilerOptions &opts);

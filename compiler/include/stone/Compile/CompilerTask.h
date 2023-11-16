@@ -12,64 +12,64 @@ namespace stone {
 class Compiler;
 class CompilerQueue;
 constexpr size_t CompilerTaskAlignInBits = 3;
-enum class CompilerTaskKind {
-  ///< Print help
-  PrintHelp = 0,
-  ///< Print hidden help
-  PrintHelpHidden,
-  //< Print language version
-  PrintVersion,
-  //< Print the timers
-  PrintTimers,
-  // < Print the statistics
-  PrintStatistics,
-  ///< Check to make sure we are compiling .stone, .stonemoduleinterface files
-  PreParse,
-  ///< Parse only
-  Parse,
-  ///< Parse and resolve use(s) only
-  ResolveImports,
-  ///< Parse and dump syntax tree
-  DumpSyntax,
-  ///< Parse and type-check only
-  TypeCheck,
-  ///< TODO
-  DumpTypeInfo,
-  ///< Parse, type-check, and  pretty print syntax tree
-  PrintSyntax,
-  //</ Parse, type-check, and pretty print llvm-ir
-  PrintIR,
-  // </ Parse, type-check, and emit LLVM IR pre optimization
-  GenIR,
-  //</ Parse, type-check, and emit LLVM IR pre optimization
-  EmitIRBefore,
-  //</ Parse, type-check, and emit LLVM IR post optimization
-  EmitIRAfter,
-  ///< Parse, type-check, and emit a library.
-  ///< Default => platform specific. But, with -static => 'any.a'
-  EmitLibrary,
-  ///< Create a module fule
-  InitModule,
-  //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
-  EmitModule,
-  //< Parse, type-check, and emit LLVM BC
-  EmitBC,
-  //< Parse, type-check, and emit assembly
-  EmitAssembly,
-  ///< Parse, type-check, and emit native object code
-  EmitObject,
-  ///< Merge all modules
-  MergeModules,
+// enum class CompilerTaskKind {
+//   ///< Print help
+//   PrintHelp = 0,
+//   ///< Print hidden help
+//   PrintHelpHidden,
+//   //< Print language version
+//   PrintVersion,
+//   //< Print the timers
+//   PrintTimers,
+//   // < Print the statistics
+//   PrintStatistics,
+//   ///< Check to make sure we are compiling .stone, .stonemoduleinterface
+//   files PreParse,
+//   ///< Parse only
+//   Parse,
+//   ///< Parse and resolve use(s) only
+//   ResolveImports,
+//   ///< Parse and dump syntax tree
+//   DumpSyntax,
+//   ///< Parse and type-check only
+//   TypeCheck,
+//   ///< TODO
+//   DumpTypeInfo,
+//   ///< Parse, type-check, and  pretty print syntax tree
+//   PrintSyntax,
+//   //</ Parse, type-check, and pretty print llvm-ir
+//   PrintIR,
+//   // </ Parse, type-check, and emit LLVM IR pre optimization
+//   GenIR,
+//   //</ Parse, type-check, and emit LLVM IR pre optimization
+//   EmitIRBefore,
+//   //</ Parse, type-check, and emit LLVM IR post optimization
+//   EmitIRAfter,
+//   ///< Parse, type-check, and emit a library.
+//   ///< Default => platform specific. But, with -static => 'any.a'
+//   EmitLibrary,
+//   ///< Create a module fule
+//   InitModule,
+//   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
+//   EmitModule,
+//   //< Parse, type-check, and emit LLVM BC
+//   EmitBC,
+//   //< Parse, type-check, and emit assembly
+//   EmitAssembly,
+//   ///< Parse, type-check, and emit native object code
+//   EmitObject,
+//   ///< Merge all modules
+//   MergeModules,
 
-  ///< Compiling has ended, perform final task
-  Final
-};
+//   ///< Compiling has ended, perform final task
+//   Final
+// };
+
 class alignas(1 << CompilerTaskAlignInBits) CompilerTask
     : public CompilerAllocation<std::aligned_storage<8, 8>::type> {
 
   friend CompilerQueue;
-
-  CompilerTaskKind kind;
+  ActionKind source;
 
 protected:
   bool hasDependency = false;
@@ -80,17 +80,17 @@ protected:
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
 public:
-  CompilerTask(CompilerTaskKind kind) : kind(kind) {}
+  CompilerTask(ActionKind source) : source(source) {}
 
 public:
   bool HasDependency() { return hasDependency; }
   bool IsCompleted() { return isCompleted; }
   bool SkippingTask() { return skippingTask; }
-  CompilerTaskKind GetKind() { return kind; }
+  ActionKind GetSource() { return source; }
   bool IsCompilable() const;
 
 public:
-  virtual void Setup() = 0;
+  virtual void Setup(Compiler &compiler) = 0;
   virtual Status Execute(Compiler &compiler, CompilerTask *dep = nullptr) = 0;
   virtual void Print(ColorStream &stream) = 0;
 };
@@ -98,10 +98,10 @@ public:
 class PrintHelpTask final : public CompilerTask {
 
 public:
-  PrintHelpTask() : CompilerTask(CompilerTaskKind::PrintHelp) {}
+  PrintHelpTask() : CompilerTask(ActionKind::PrintHelp) {}
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler,
                          CompilerTask *dep = nullptr) override;
 
@@ -114,10 +114,10 @@ public:
 class PrintVersionTask final : public CompilerTask {
 
 public:
-  PrintVersionTask() : CompilerTask(CompilerTaskKind::PrintVersion) {}
+  PrintVersionTask() : CompilerTask(ActionKind::PrintVersion) {}
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   void Print(ColorStream &stream) override {}
 
@@ -125,27 +125,24 @@ public:
   static PrintVersionTask *Create(const Compiler &compiler);
 };
 
-class PreParseTask : public CompilerTask {
+class AbstractParseTask : public CompilerTask {
 
 public:
-  PreParseTask() : CompilerTask(CompilerTaskKind::PreParse) {}
+  AbstractParseTask(ActionKind source) : CompilerTask(source) {}
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
-  virtual void Print(ColorStream &stream) override;
-
-public:
-  static PreParseTask *Create(const Compiler &compiler);
+  virtual void Print(ColorStream &stream) override {}
 };
 
-class ParseTask : public CompilerTask {
+class ParseTask final : public AbstractParseTask {
 
 public:
-  ParseTask() : CompilerTask(CompilerTaskKind::Parse) { hasDependency = true; }
+  ParseTask() : AbstractParseTask(ActionKind::Parse) { hasDependency = true; }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -156,12 +153,12 @@ public:
 class ResolveImportsTask : public CompilerTask {
 
 public:
-  ResolveImportsTask() : CompilerTask(CompilerTaskKind::ResolveImports) {
+  ResolveImportsTask() : CompilerTask(ActionKind::ResolveImports) {
     hasDependency = true;
   }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -172,12 +169,12 @@ public:
 class TypeCheckTask : public CompilerTask {
 
 public:
-  TypeCheckTask() : CompilerTask(CompilerTaskKind::TypeCheck) {
+  TypeCheckTask() : CompilerTask(ActionKind::TypeCheck) {
     hasDependency = true;
   }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -185,29 +182,28 @@ public:
   static TypeCheckTask *Create(const Compiler &compiler);
 };
 
-class GenIRTask : public CompilerTask {
+class AbstractEmitTask : public CompilerTask {
 
 public:
-  GenIRTask() : CompilerTask(CompilerTaskKind::GenIR) { hasDependency = true; }
-
-public:
-  virtual void Setup() override {}
-  virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
-  virtual void Print(ColorStream &stream) override;
-
-public:
-  static PreEmitTask *Create(const Compiler &compiler);
-};
-
-class EmitIRBeforeTask : public CompilerTask {
-
-public:
-  EmitIRBeforeTask() : CompilerTask(CompilerTaskKind::EmitIRBefore) {
+  AbstractEmitTask(ActionKind source) : CompilerTask(source) {
     hasDependency = true;
   }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
+  virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
+  virtual void Print(ColorStream &stream) override;
+};
+
+class EmitIRBeforeTask : public AbstractEmitTask {
+
+public:
+  EmitIRBeforeTask() : AbstractEmitTask(ActionKind::EmitIRBefore) {
+    hasDependency = true;
+  }
+
+public:
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -215,15 +211,15 @@ public:
   static EmitIRBeforeTask *Create(const Compiler &compiler);
 };
 
-class EmitIRAfterTask : public CompilerTask {
+class EmitIRAfterTask : public AbstractEmitTask {
 
 public:
-  EmitIRAfterTask() : CompilerTask(CompilerTaskKind::EmitIRAfter) {
+  EmitIRAfterTask() : AbstractEmitTask(ActionKind::EmitIRAfter) {
     hasDependency = true;
   }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
@@ -231,34 +227,36 @@ public:
   static EmitIRAfterTask *Create(const Compiler &compiler);
 };
 
-class EmitObjectTask : public CompilerTask {
+class EmitBitCodeTask : public AbstractEmitTask {
 
 public:
-  EmitObjectTask() : CompilerTask(CompilerTaskKind::EmitObject) {
+  EmitBitCodeTask() : AbstractEmitTask(ActionKind::EmitBC) {
     hasDependency = true;
   }
 
 public:
-  virtual void Setup() override {}
+  virtual void Setup(Compiler &compiler) override {}
+  virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
+  virtual void Print(ColorStream &stream) override;
+
+public:
+  static EmitBitCodeTask *Create(const Compiler &compiler);
+};
+
+class EmitObjectTask : public AbstractEmitTask {
+
+public:
+  EmitObjectTask() : AbstractEmitTask(ActionKind::EmitObject) {
+    hasDependency = true;
+  }
+
+public:
+  virtual void Setup(Compiler &compiler) override {}
   virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
   virtual void Print(ColorStream &stream) override;
 
 public:
   static EmitObjectTask *Create(const Compiler &compiler);
-};
-
-class FinalTask final : public CompilerTask {
-
-public:
-  FinalTask() : CompilerTask(CompilerTaskKind::Final) {}
-
-public:
-  virtual void Setup() override {}
-  virtual Status Execute(Compiler &compiler, CompilerTask *dep) override;
-  virtual void Print(ColorStream &stream) override;
-
-public:
-  static FinalTask *Create(const Compiler &compiler);
 };
 
 } // namespace stone

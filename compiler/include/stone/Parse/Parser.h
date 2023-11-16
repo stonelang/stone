@@ -55,7 +55,7 @@ class Parser final {
   std::unique_ptr<ParserStats> stats;
 
   ASTContext &sc;
-  SyntaxFile &sf;
+  ASTFile &sf;
   DeclContext *curDC;
 
   /// This is the current curTok being considered by the parser.
@@ -95,11 +95,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SyntaxFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
+  Parser(ASTFile &sf, ASTContext &sc, std::unique_ptr<Lexer> lexer,
          SyntaxListener *listener = nullptr);
 
 public:
-  Parser(SyntaxFile &sf, ASTContext &sc, SyntaxListener *listener,
+  Parser(ASTFile &sf, ASTContext &sc, SyntaxListener *listener,
          LexerListener *lexerListener);
 
   ~Parser();

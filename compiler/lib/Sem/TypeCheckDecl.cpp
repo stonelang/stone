@@ -8,10 +8,10 @@ using stone::sem::TypeChecker;
 class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;
   ASTContext &sc;
-  SyntaxFile *sf;
+  ASTFile *sf;
 
 public:
-  DeclChecking(TypeChecker &checker, ASTContext &sc, SyntaxFile *sf)
+  DeclChecking(TypeChecker &checker, ASTContext &sc, ASTFile *sf)
       : checker(checker), sc(sc), sf(sf) {}
 
 public:
@@ -30,6 +30,6 @@ public:
 
 void TypeChecker::CheckDecl(Decl *d) {
 
-  auto *sf = d->GetDeclContext()->GetParentSyntaxFile();
+  auto *sf = d->GetDeclContext()->GetParentASTFile();
   DeclChecking(*this, d->GetASTContext(), sf).Visit(d);
 }

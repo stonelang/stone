@@ -13,7 +13,7 @@
 
 namespace stone {
 
-class CompilerCommandLine;
+class CompilerInvocation;
 class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
@@ -37,8 +37,6 @@ class CompilerOptions final {
   friend CompilerInputsConverter;
 
   CompilerAction action;
-
-  action::ActionKind actionKind;
 
 public:
   /// A list of arbitrary modules to import and make implicitly visible.
@@ -93,9 +91,6 @@ public:
   }
   CompilerAction &GetAction() { return action; }
   const CompilerAction &GetAction() const { return action; }
-
-  action::ActionKind GetActionKind() { return actionKind; }
 };
 
-} // namespace stone
 #endif

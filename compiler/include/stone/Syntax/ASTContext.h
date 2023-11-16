@@ -80,7 +80,7 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class SyntaxFile;
+class ASTFile;
 
 class ASTContextStats final : public Stats {
   const ASTContext &sc;

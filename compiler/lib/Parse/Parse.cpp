@@ -6,12 +6,11 @@
 using namespace stone;
 using namespace stone::syn;
 
-void stone::ParseSyntaxFile(syn::SyntaxFile &syntaxFile,
-                            syn::ASTContext &syntaxContext,
-                            SyntaxListener *syntaxListener,
-                            LexerListener *lexerListener) {
+void stone::ParseASTFile(syn::ASTFile &astFile, syn::ASTContext &syntaxContext,
+                         SyntaxListener *syntaxListener,
+                         LexerListener *lexerListener) {
 
-  Parser parser(syntaxFile, syntaxContext, syntaxListener, lexerListener);
+  Parser parser(astFile, syntaxContext, syntaxListener, lexerListener);
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 
@@ -22,6 +21,6 @@ void stone::ParseSyntaxFile(syn::SyntaxFile &syntaxFile,
     if (result.IsNull()) {
       return;
     }
-    syntaxFile.AddTopLevelDecl(result.Get());
+    astFile.AddTopLevelDecl(result.Get());
   }
 }

@@ -61,7 +61,7 @@ class TargetMachine;
 
 namespace stone {
 namespace syn {
-class SyntaxFile;
+class ASTFile;
 class Decl;
 class GlobalDecl;
 class FunDecl;
@@ -70,7 +70,7 @@ class StructDecl;
 class EnumDecl;
 class VarDecl;
 class AutoDecl;
-class SyntaxFile;
+class ASTFile;
 class NominalTypeDecl;
 } // namespace syn
 
@@ -109,7 +109,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
 
-  SyntaxFile *curSyntaxFile = nullptr;
+  ASTFile *curASTFile = nullptr;
 
   // llvm::SetVector<CanType> builtinTypes;
   //  /// Opaque but fixed-size types for which we also emit builtin type
@@ -159,7 +159,7 @@ public:
   // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
 
 public:
-  void EmitSyntaxFile(SyntaxFile &sf);
+  void EmitASTFile(ASTFile &sf);
 
   void EmitGlobalDecl(Decl *d);
 

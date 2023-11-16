@@ -43,6 +43,16 @@ enum OptID : unsigned {
 #undef OPTION
 };
 
+class Options final {
+  std::unique_ptr<llvm::opt::OptTable> options;
+
+public:
+  Options();
+
+public:
+  llvm::opt::OptTable &GetOptions() { return *options; }
+};
+
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
 llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,

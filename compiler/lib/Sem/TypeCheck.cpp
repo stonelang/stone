@@ -6,11 +6,11 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::sem;
 
-void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
-                                stone::TypeCheckerOptions &typeCheckerOpts,
-                                TypeCheckerListener *listener) {
+void stone::TypeCheckASTFile(syn::ASTFile &sf,
+                             stone::TypeCheckerOptions &typeCheckerOpts,
+                             TypeCheckerListener *listener) {
 
-  if (sf.stage == SyntaxFileStage::TypeChecked) {
+  if (sf.stage == ASTFileStage::TypeChecked) {
     return;
   }
   TypeChecker checker(sf.GetASTContext(), typeCheckerOpts, listener);
@@ -19,8 +19,8 @@ void stone::TypeCheckSyntaxFile(syn::SyntaxFile &sf,
   }
   // checker.Check();
 
-  // assert(sf.stage == SyntaxFileStage::AtImports);
-  sf.stage = SyntaxFileStage::TypeChecked;
+  // assert(sf.stage == ASTFileStage::AtImports);
+  sf.stage = ASTFileStage::TypeChecked;
 }
 
 void stone::TypeCheckWholeModule(syn::ModuleDecl &md,
@@ -29,8 +29,8 @@ void stone::TypeCheckWholeModule(syn::ModuleDecl &md,
 
   // Go through all the files and type-check -- OK for now
   for (auto *moduleFile : md.GetFiles()) {
-    if (auto *nextSyntaxFile = dyn_cast<SyntaxFile>(moduleFile)) {
-      stone::TypeCheckSyntaxFile(*nextSyntaxFile, typeCheckerOpts, listener);
+    if (auto *nextASTFile = dyn_cast<ASTFile>(moduleFile)) {
+      stone::TypeCheckASTFile(*nextASTFile, typeCheckerOpts, listener);
     }
   }
 }

@@ -46,7 +46,7 @@ public:
   using ASTAllocation<ModuleFile>::operator delete;
 };
 
-enum class SyntaxFileKind : uint8_t {
+enum class ASTFileKind : uint8_t {
   None,
   // .stone file without 'Main'
   Library,
@@ -54,7 +54,7 @@ enum class SyntaxFileKind : uint8_t {
   Main
 };
 
-enum class SyntaxFileStage {
+enum class ASTFileStage {
   /// Parsing is underway.
   Parsing = 0,
   /// Parsing has completed.
@@ -65,7 +65,7 @@ enum class SyntaxFileStage {
   TypeChecked
 };
 
-class SyntaxFile final : public ModuleFile {
+class ASTFile final : public ModuleFile {
 private:
   friend ASTContext;
   // llvm::NullablePtr<Scope> scope = nullptr;
@@ -132,16 +132,16 @@ public:
   static ParsingOptions GetDefaultParsingOptions(const LangOptions &langOpts);
 
 public:
-  SyntaxFileKind kind = SyntaxFileKind::None;
-  SyntaxFileStage stage = SyntaxFileStage::Parsing;
+  ASTFileKind kind = ASTFileKind::None;
+  ASTFileStage stage = ASTFileStage::Parsing;
 
   std::vector<Decl *> Decls;
 
 public:
-  SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
-             llvm::Optional<unsigned> srcID, bool isPrimary = false);
+  ASTFile(ASTFileKind kind, syn::ModuleDecl &owner,
+          llvm::Optional<unsigned> srcID, bool isPrimary = false);
 
-  ~SyntaxFile();
+  ~ASTFile();
 
 public:
   bool IsPrimary() const { return isPrimary; }
@@ -178,9 +178,8 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static syn::SyntaxFile *Make(SyntaxFileKind kind, unsigned srcID,
-                               ModuleDecl &owner, ASTContext &tc,
-                               bool isPrimary = false);
+  static syn::ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+                            ASTContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::Syntax;
@@ -221,12 +220,12 @@ public:
     return {files.begin(), files.size()};
   }
   void AddFile(ModuleFile &file);
-  SyntaxFile &GetMainSyntaxFile() const;
+  ASTFile &GetMainASTFile() const;
   ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<SyntaxFile *> &GetPrimarySyntaxFiles() const;
+  llvm::ArrayRef<ASTFile *> &GetPrimaryASTFiles() const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.

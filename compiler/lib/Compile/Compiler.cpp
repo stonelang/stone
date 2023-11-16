@@ -15,25 +15,18 @@ using namespace stone::syn;
 // }
 
 Compiler::Compiler(const CompilerIvocation &invocation)
-    : invocation(invocation) {}
+    : invocation(invocation), compilerQueue(new CompilerQueue(*this)),
+      compilerStats(new CompilerStats(*this)) {}
+
 Compiler::~Compiler() = default;
 
 Status Compiler::Initialize() {
 
-  compilerStats.reset(new CompilerStats(*this));
-  compilerQueue.reset(new CompilerQueue(*this));
-
-  if (invocation.GetAction().IsSupport()) {
-    return Status::Success()
-  }
   assert(invocation.GetAction().CanCompile());
-  clangContext.reset(new ClangContext());
-
   SetupASTContext();
   SetupSources();
   SetupModules();
   SetupCodeGenConext();
-
   return Status();
 }
 /// Setup ASTContext based on the action
@@ -96,8 +89,7 @@ Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
-Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
-    const syn::SyntaxFile &sf) const {
+Compiler::GetPrimaryFileSpecificPathsForASTFile(const syn::ASTFile &sf) const {
   return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -106,31 +98,31 @@ Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
 // void Compiler::ResolveImports() {
 //   // Resolve imports for all the source files.
 //   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile))
-//       stone::ResolveSyntaxFileImports(*syntaxFile);
+//     if (auto *astFile = dyn_cast<syn::ASTFile>(moduleFile))
+//       stone::ResolveASTFileImports(*astFile);
 //   }
 // }
 
-// Status Compiler::ForEachSyntaxFileToTypeCheck(
-//     EachSyntaxFileToTypeCheckCallback notify) {
+// Status Compiler::ForEachASTFileToTypeCheck(
+//     EachASTFileToTypeCheckCallback notify) {
 
 // if (GetCompilerContext().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     auto *syntaxFile = dyn_cast<syn::SyntaxFile>(moduleFile);
-//     if (!syntaxFile) {
+//     auto *astFile = dyn_cast<syn::ASTFile>(moduleFile);
+//     if (!astFile) {
 //       continue;
 //     }
-//     if (notify(*syntaxFile, GetCompilerContext().GetTypeCheckerOptions(),
+//     if (notify(*astFile, GetCompilerContext().GetTypeCheckerOptions(),
 //                GetListener())
 //             .IsError()) {
 //       return Status::Error();
 //     }
 //   }
 // } else {
-//   for (auto *syntaxFile :
-//        GetModuleSystem().GetMainModule()->GetPrimarySyntaxFiles()) {
-//     if (notify(*syntaxFile, GetCompilerContext().GetTypeCheckerOptions(),
+//   for (auto *astFile :
+//        GetModuleSystem().GetMainModule()->GetPrimaryASTFiles()) {
+//     if (notify(*astFile, GetCompilerContext().GetTypeCheckerOptions(),
 //                GetListener())
 //             .IsError()) {
 //       return Status::Error();
@@ -141,14 +133,14 @@ Compiler::GetPrimaryFileSpecificPathsForSyntaxFile(
 //   return Status();
 // }
 
-// Status Compiler::ForEachSyntaxFile(EachSyntaxFileCallback notify) {
+// Status Compiler::ForEachASTFile(EachASTFileCallback notify) {
 
 // for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//   auto *syntaxFile = dyn_cast<SyntaxFile>(moduleFile);
-//   if (!syntaxFile) {
+//   auto *astFile = dyn_cast<ASTFile>(moduleFile);
+//   if (!astFile) {
 //     continue;
 //   }
-//   if (notify(*syntaxFile).IsError()) {
+//   if (notify(*astFile).IsError()) {
 //     return Status::Error();
 //   }
 // }

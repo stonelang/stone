@@ -12,7 +12,7 @@ class TypeCheckerListener;
 
 namespace syn {
 class Decl;
-class SyntaxFile;
+class ASTFile;
 class Module;
 // class ApplyExpr;
 // class AvailableAttr;

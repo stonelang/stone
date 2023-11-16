@@ -14,8 +14,8 @@ void TypeChecker::CheckTypes(Decl *d) {
   // if (!decl || decl->IsInvalid()){
   //     return;
   // }
-  // auto syntaxFile = d->GetDeclContext()->GetParentSourceFile();
-  // if (syntaxFile && syntaxFile->GetKind() == SyntaxFileKind::Interface) {
+  // auto astFile = d->GetDeclContext()->GetParentSourceFile();
+  // if (astFile && astFile->GetKind() == ASTFileKind::Interface) {
   //   return;
   // }
 

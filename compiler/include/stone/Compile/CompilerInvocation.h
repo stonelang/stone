@@ -53,6 +53,8 @@ using MemoryBuffers =
 
 class CompilerInvocation final {
 
+  opts::Options options;
+
   CompilerOptions compilerOpts;
 
   /// Options for generating code
@@ -125,6 +127,8 @@ public:
 
   ModuleOptions &GetModuleOptions() { return moduleOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
+
+  opt::Options &GetOptions() { return options; }
 
 public:
   InFlightDiagnostic PrintD(const Diagnostic &diagnostic) {

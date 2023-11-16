@@ -12,6 +12,7 @@ void CompilerQueue::RunTasks() {
   ColorStream stream;
   CompilerTask *depTask = nullptr;
   for (auto curTask : runQueue) {
+    curTask->Setup();
     curTask->Execute(GetCompiler(), depTask);
     curTask->Print(stream);
     depTask = curTask;

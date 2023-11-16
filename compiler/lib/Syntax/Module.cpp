@@ -46,11 +46,11 @@ void ModuleDecl::AddFile(ModuleFile &file) {
   // assert(!(isa<LoadedFile>(newFile) &&
   //         cast<LoadedFile>(newFile).hadLoadError()));
   // Require Main and REPL files to be the first file added.
-  assert(files.empty() || !isa<SyntaxFile>(file) ||
-         llvm::cast<SyntaxFile>(file).kind == SyntaxFileKind::Library
-         /*||cast<SyntaxFile>(unit).Kind == SyntaxFileKind::SIL*/);
+  assert(files.empty() || !isa<ASTFile>(file) ||
+         llvm::cast<ASTFile>(file).kind == ASTFileKind::Library
+         /*||cast<ASTFile>(unit).Kind == ASTFileKind::SIL*/);
 
-  if (llvm::isa<SyntaxFile>(file) && llvm::cast<SyntaxFile>(file).IsPrimary()) {
+  if (llvm::isa<ASTFile>(file) && llvm::cast<ASTFile>(file).IsPrimary()) {
     if (IsMainModule()) {
       primaries.push_back(&file);
     }
@@ -79,18 +79,18 @@ bool DeclContext::IsModuleFileContext() const {
   return IsModuleContext();
 }
 
-llvm::ArrayRef<SyntaxFile *> &ModuleDecl::GetPrimarySyntaxFiles() const {
+llvm::ArrayRef<ASTFile *> &ModuleDecl::GetPrimaryASTFiles() const {
   assert(IsMainModule() && "Only the main module can have primaries");
   primaries;
 }
 
-SyntaxFile::SyntaxFile(SyntaxFileKind kind, syn::ModuleDecl &owner,
-                       llvm::Optional<unsigned> srcID, bool isPrimary)
+ASTFile::ASTFile(ASTFileKind kind, syn::ModuleDecl &owner,
+                 llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
-SyntaxFile::ParsingOptions
-SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
+ASTFile::ParsingOptions
+ASTFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
 
   ParsingOptions parsingOptions;
   // if (langOpts.DisablePoundIfEvaluation)
@@ -102,7 +102,7 @@ SyntaxFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
   return parsingOptions;
 }
 
-llvm::StringRef SyntaxFile::GetFilename() const {
+llvm::StringRef ASTFile::GetFilename() const {
   if (srcID == -1) {
     return llvm::StringRef();
   }
@@ -110,10 +110,10 @@ llvm::StringRef SyntaxFile::GetFilename() const {
   return sm.getIdentifierForBuffer(srcID);
 }
 
-syn::SyntaxFile *syn::SyntaxFile::Make(SyntaxFileKind kind, unsigned srcID,
-                                       syn::ModuleDecl &owner, ASTContext &sc,
-                                       bool isPrimary) {
-  return new (sc) SyntaxFile(kind, owner, srcID, isPrimary);
+syn::ASTFile *syn::ASTFile::Make(ASTFileKind kind, unsigned srcID,
+                                 syn::ModuleDecl &owner, ASTContext &sc,
+                                 bool isPrimary) {
+  return new (sc) ASTFile(kind, owner, srcID, isPrimary);
 }
 
-SyntaxFile::~SyntaxFile() {}
+ASTFile::~ASTFile() {}

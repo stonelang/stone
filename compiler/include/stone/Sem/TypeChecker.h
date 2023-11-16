@@ -15,7 +15,7 @@ class TypeCheckerOptions;
 class TypeCheckerListener;
 
 namespace syn {
-class SyntaxFile;
+class ASTFile;
 class Expr;
 class Decl;
 class Stmt;

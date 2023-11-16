@@ -43,12 +43,12 @@ syn::ModuleDecl *DeclContext::GetParentModule() const {
   return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(dc));
 }
 
-syn::SyntaxFile *DeclContext::GetParentSyntaxFile() const {
+syn::ASTFile *DeclContext::GetParentASTFile() const {
   const DeclContext *dc = this;
   while (!dc->IsModuleFileContext()) {
     dc = dc->GetParent();
   }
-  return const_cast<SyntaxFile *>(llvm::dyn_cast<SyntaxFile>(dc));
+  return const_cast<ASTFile *>(llvm::dyn_cast<ASTFile>(dc));
 }
 
 DeclContext *Decl::GetDeclContextForModule() const {

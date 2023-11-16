@@ -4,43 +4,40 @@
 
 using namespace stone;
 
-CompilerTask *Compiler::GetTask(CompilerTaskKind kind) {
+CompilerTask *Compiler::GetTask(ActionKind source) {
   switch (kind) {
-  case CompilerTaskKind::PrintHelp:
-  case CompilerTaskKind::PrintHelpHidden:
+  case ActionKind::PrintHelp:
+  case ActionKind::PrintHelpHidden:
     return PrintHelpTask::Create(*this);
-  case CompilerTaskKind::PrintVersion:
+  case ActionKind::PrintVersion:
     return PrintVersionTask::Create(*this);
-  case CompilerTaskKind::PreParse:
-    return PreParseTask::Create(*this);
-  case CompilerTaskKind::Parse:
+  case ActionKind::Parse:
     return ParseTask::Create(*this);
-  case CompilerTaskKind::ResolveImports:
+  case ActionKind::ResolveImports:
     return ResolveImportsTask::Create(*this);
-  case CompilerTaskKind::DumpSyntax:
+  case ActionKind::DumpSyntax:
     return DumpSyntaxTask::Create(*this);
-  case CompilerTaskKind::TypeCheck:
+  case ActionKind::TypeCheck:
     return TypeCheckTask::Create(*this);
-  case CompilerTaskKind::PrintSyntax:
+  case ActionKind::PrintSyntax:
     return PrintSyntaxTask::Create(*this);
-  case CompilerTaskKind::MergeModules:
+  case ActionKind::MergeModules:
     return MergeModulesTask::Create(*this);
-  case CompilerTaskKind::GenIR:
-    return GenIRTask::Create(*this);
-  case CompilerTaskKind::EmitIRBefore:
+  case ActionKind::EmitIRBefore:
     return EmitIRBeforeTask::Create(*this);
-  case CompilerTaskKind::EmitIRAfter:
+  case ActionKind::EmitIRAfter:
     return EmitIRAfterTask::Create(*this);
-  case CompilerTaskKind::EmitBC:
-    return EmitBCTask::Create(*this);
-  case CompilerTaskKind::EmitObject:
+  case ActionKind::EmitBC:
+    return EmitBitCodeTask::Create(*this);
+  case ActionKind::EmitObject:
     return EmitObjectTask::Create(*this));
-  case CompilerTaskKind::DumpTypeInfo:
+  case ActionKind::DumpTypeInfo:
     return DumpTypeInfoTask::Create(*this);
   default:
     llvm_unreachable("Unknown action -- cannot compile!");
   }
 }
+
 PrintHelpTask *PrintHelpTask::Create(const Compiler &compiler) {
   return new (compiler) PrintHelpTask();
 }
@@ -49,16 +46,14 @@ PrintVersionTask *PrintVersionTask::Create(const Compiler &compiler) {
   return new (compiler) PrintVersionTask();
 }
 
-// PreParse
-PreParseTask *PreParseTask::Create(const Compiler &compiler) {
-  return new (compiler) PreParseTask();
-}
-void PreParseTask::Print(ColorStream &stream) {}
-
 // Parse
 ParseTask *ParseTask::Create(const Compiler &compiler) {
   return new (compiler) ParseTask();
 }
+void ParseTask::Setup(Compiler &compiler) {
+  // Maybe here you can perform pre-parse work
+}
+
 void ParseTask::Print(ColorStream &stream) { stream << "Parser Task" << '\n'; }
 
 // ResolveImports
@@ -75,15 +70,13 @@ TypeCheckTask *TypeCheckTask::Create(const Compiler &compiler) {
 }
 void TypeCheckTask::Print(ColorStream &stream) {}
 
-// Need to gen-ir before emitting or outputing native code
-GenIRTask *GenIRTask::Create(const Compiler &compiler) {
-  return new (compiler) GenIRTask();
-}
-void GenIRTask::Print(ColorStream &stream) {}
-
 // EmitIRBefore
 EmitIRBeforeTask *EmitIRBeforeTask::Create(const Compiler &compiler) {
   return new (compiler) EmitIRBeforeTask();
+}
+void EmitIRBeforeTask::Setup(Compiler &compiler) {
+
+  // Call AbstractEmit.Setup(Compiler& compiler)
 }
 void EmitIRBeforeTask::Print(ColorStream &stream) {}
 
@@ -98,9 +91,3 @@ EmitObjectTask *EmitObjectTask::Create(const Compiler &compiler) {
   return new (compiler) EmitObjectTask();
 }
 void EmitObjectTask::Print(ColorStream &stream) {}
-
-// Final Task
-FinalTask *FinalTask::Create(const Compiler &compiler) {
-  return new (compiler) FinalTask();
-}
-void FinalTask::Print(ColorStream &stream) { stream << "Final  Task" << '\n'; }

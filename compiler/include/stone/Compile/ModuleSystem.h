@@ -43,21 +43,20 @@ public:
   syn::ModuleDecl *GetMainModule() const;
   void SetMainModule(syn::ModuleDecl *mod);
 
-  Status CreateSyntaxFilesForMainModule(
+  Status CreateASTFilesForMainModule(
       syn::ModuleDecl *mod,
       llvm::SmallVectorImpl<syn::ModuleFile *> &files) const;
 
-  syn::SyntaxFile *
-  CreateSyntaxFileForMainModule(syn::ModuleDecl *mod,
-                                syn::SyntaxFileKind fileKind, unsigned bufferID,
-                                bool isMainBuffer = false) const;
+  syn::ASTFile *CreateASTFileForMainModule(syn::ModuleDecl *mod,
+                                           syn::ASTFileKind fileKind,
+                                           unsigned bufferID,
+                                           bool isMainBuffer = false) const;
 
-  syn::SyntaxFile *ComputeMainSyntaxFileForModule(syn::ModuleDecl *mod) const;
+  syn::ASTFile *ComputeMainASTFileForModule(syn::ModuleDecl *mod) const;
 
   Compiler &GetCompiler() { return compiler; }
 
-  syn::SyntaxFile::ParsingOptions
-  GetSyntaxFileParsingOptions(bool forPrimary) const;
+  syn::ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

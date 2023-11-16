@@ -29,7 +29,7 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     // Create and add the module's files.
     llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
 
-    if (CreateSyntaxFilesForMainModule(mainModule, moduleFiles).IsError()) {
+    if (CreateASTFilesForMainModule(mainModule, moduleFiles).IsError()) {
       // If we failed to load a partial module, mark the main module as having
       // "failed to load", as it will contain no files. Note that we don'ttry
       // to add any of the successfully loaded partial modules. This ensures
@@ -46,15 +46,15 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 }
 
 // TODO:
-Status ModuleSystem::CreateSyntaxFilesForMainModule(
+Status ModuleSystem::CreateASTFilesForMainModule(
     syn::ModuleDecl *mod,
     llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
   llvm::Optional<unsigned> mainBufferID = llvm::None;
-  if (syn::SyntaxFile *mainSyntaxFile = ComputeMainSyntaxFileForModule(mod)) {
-    mainBufferID = mainSyntaxFile->GetSrcID();
-    resultFiles.push_back(mainSyntaxFile);
+  if (syn::ASTFile *mainASTFile = ComputeMainASTFileForModule(mod)) {
+    mainBufferID = mainASTFile->GetSrcID();
+    resultFiles.push_back(mainASTFile);
   }
 
   // If we have partial modules to load, do so now, bailing if any failed to
@@ -75,15 +75,14 @@ Status ModuleSystem::CreateSyntaxFilesForMainModule(
       continue;
     }
 
-    auto *libraryFile = CreateSyntaxFileForMainModule(
-        mod, syn::SyntaxFileKind::Library, bufferID);
+    auto *libraryFile =
+        CreateASTFileForMainModule(mod, syn::ASTFileKind::Library, bufferID);
     resultFiles.push_back(libraryFile);
   }
   return Status();
 }
 
-syn::SyntaxFile *
-ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
+syn::ASTFile *ModuleSystem::ComputeMainASTFileForModule(ModuleDecl *mod) const {
 
   if (compiler.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
@@ -93,15 +92,14 @@ ModuleSystem::ComputeMainSyntaxFileForModule(ModuleDecl *mod) const {
   return nullptr;
 }
 
-syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
-    ModuleDecl *mod, syn::SyntaxFileKind syntaxFileKind, unsigned bufferID,
+syn::ASTFile *ModuleSystem::CreateASTFileForMainModule(
+    ModuleDecl *mod, syn::ASTFileKind astFileKind, unsigned bufferID,
     bool isMainBuffer) const {
 
   auto isPrimary = bufferID && compiler.IsPrimarySourceID(bufferID);
-  auto parsingOpts = GetSyntaxFileParsingOptions(isPrimary);
+  auto parsingOpts = GetASTFileParsingOptions(isPrimary);
 
-  auto syntaxFile =
-      SyntaxFile::Make(syntaxFileKind, bufferID, *mod, syntaxContext);
+  auto astFile = ASTFile::Make(astFileKind, bufferID, *mod, syntaxContext);
 
   // if (isMainBuffer)
   //   inputFile->SyntaxParsingCache =
@@ -109,13 +107,13 @@ syn::SyntaxFile *ModuleSystem::CreateSyntaxFileForMainModule(
 
   // return inputFile;
 
-  return syntaxFile;
+  return astFile;
 }
 
-syn::SyntaxFile::ParsingOptions
-ModuleSystem::GetSyntaxFileParsingOptions(bool forPrimary) const {
+syn::ASTFile::ParsingOptions
+ModuleSystem::GetASTFileParsingOptions(bool forPrimary) const {
 
-  auto parsingOpts = SyntaxFile::GetDefaultParsingOptions(
+  auto parsingOpts = ASTFile::GetDefaultParsingOptions(
       syntaxContext.GetLangContext().GetLangOptions());
   return parsingOpts;
 }

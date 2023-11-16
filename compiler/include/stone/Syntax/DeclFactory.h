@@ -19,7 +19,7 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class SyntaxFile;
+class ASTFile;
 struct DeclNameContext;
 
 } // namespace syn

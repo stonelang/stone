@@ -66,7 +66,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (listener) {
     listener->CompletedInitialization(compiler);
   }
-
+  // Otherwise, build out the other tasks
   compiler.BuildTasks();
   if (compiler.HasError()) {
     return FinishCompile(Status::Error());
@@ -74,7 +74,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (listener) {
     listener->CompletedBuildingTasks(compiler);
   }
-
   // Now that we are ready to do real work, call defer Finish
   STONE_DEFER { compiler.Finalize(); };
 
@@ -92,27 +91,26 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 void Compiler::BuildTasks() { QueueTask(GetAction().GetKind()); }
 
-void Compiler::QueueTask(ActionKind kind) {
-
-  switch (kind) {
+void Compiler::QueueTask(ActionKind source) {
+  switch (source) {
   case ActionKind::PrintHelp: {
-    QueueTask(GetTask(CompilerTaskKind::PrintHelp));
+    QueueTask(GetTask(ActionKind::PrintHelp));
+    break;
   case ActionKind::PrintHelpHidden:
-    QueueTask(GetTask(CompilerTaskKind::PrintHelpHidden));
+    QueueTask(GetTask(ActionKind::PrintHelpHidden));
     break;
   }
   case ActionKind::PrintVersion: {
-    QueueTask(GetTask(CompilerTaskKind::PrintVersion));
+    QueueTask(GetTask(ActionKind::PrintVersion));
     break;
   }
   case ActionKind::Parse: {
-    QueueTask(GetTask(CompilerTaskKind::PreParse));
-    QueueTask(GetTask(CompilerTaskKind::Parse));
+    QueueTask(GetTask(ActionKind::Parse));
     break;
   }
   case ActionKind::ResolveImports: {
-    QueueTask(GetTask(CompilerTaskKind::Parse));
-    QueueTask(GetTask(CompilerTaskKind::ResolveImportsTask));
+    QueueTask(ActionKind::Parse);
+    QueueTask(GetTask(ActionKind::ResolveImportsTask));
     break;
   }
   // case ActionKind::DumpSyntax: {
@@ -121,30 +119,29 @@ void Compiler::QueueTask(ActionKind kind) {
   //   break;
   // }
   case ActionKind::TypeCheck: {
-    QueueTask(GetTask(CompilerTaskKind::ResolveImports));
-    QueueTask(GetTask(CompilerTaskKind::TypeCheckTask));
+    QueueTask(ActionKind::ResolveImports);
+    QueueTask(GetTask(ActionKind::TypeCheckTask));
     break;
   }
-  // case ActionKind::PrintSyntax: {
-  //   QueueTask(ActionKind::TypeCheck);
-  //   QueueTask(PrintSyntaxTask::Create(*this));
-  //   break;
-  // }
-  // case ActionKind::MergeModules: {
-  //   QueueTask(ActionKind::TypeCheck);
-  //   QueueTask(MergeModulesTask::Create(*this));
-  //   break;
-  // }
+    // case ActionKind::PrintSyntax: {
+    //   QueueTask(ActionKind::TypeCheck);
+    //   QueueTask(PrintSyntaxTask::Create(*this));
+    //   break;
+    // }
+    // case ActionKind::MergeModules: {
+    //   QueueTask(ActionKind::TypeCheck);
+    //   QueueTask(MergeModulesTask::Create(*this));
+    //   break;
+    // }
+
   case ActionKind::EmitIRBefore: {
-    QueueTask(GetTask(CompilerTaskKind::TypeCheck));
-    QueueTask(GetTask(CompilerTaskKind::GenIR));
-    QueueTask(GetTask(CompilerTaskKind::EmitIRBefore));
+    QueueTask(ActionKind::TypeCheck));
+    QueueTask(GetTask(ActionKind::EmitIRBefore));
     break;
   }
   case ActionKind::EmitIRAfter: {
-    QueueTask(GetTask(CompilerTaskKind::TypeCheck));
-    QueueTask(GetTask(CompilerTaskKind::GenIR));
-    QueueTask(GetTask(CompilerTaskKind::EmitIRAfterTask));
+    QueueTask(ActionKind::TypeCheck))
+    QueueTask(GetTask(ActionKind::EmitIRAfterTask));
     break;
   }
   // case ActionKind::EmitBC: {
@@ -153,8 +150,8 @@ void Compiler::QueueTask(ActionKind kind) {
   //   break;
   // }
   case ActionKind::EmitObject: {
-    QueueTask(GetTask(CompilerTaskKind::GenIR));
-    QueueTask(GetTask(CompilerTaskKind::EmitObject));
+    QueueTask(ActionKind::TypeCheck))
+    QueueTask(GetTask(ActionKind::EmitObject));
     break;
   }
   // case ActionKind::DumpTypeInfo: {
@@ -170,15 +167,23 @@ void Compiler::QueueTask(ActionKind kind) {
 
 void Compiler::RunTasks() {
 
-  // We always queue the final task
-  QueueTask(FinalTask::Create(*this));
-
   // Now, run tasks
   GetQueue().RunTasks();
 }
 
 Status PrintHelpTask::Execute(Compiler &compiler, CompilerTask *dep) {
-  return Status();
+
+  assert(invocation.GetAction().IsPrintHelp() ||
+         invocation.GetAction().IsPrintHelpHidden());
+
+  unsigned IncludedFlagsBitmask = opts::CompilerOptions;
+  unsigned ExcludedFlagsBitmask =
+      invocation.GetAction().IsPrintHelpHidden() ? 0 : llvm::opt::HelpHidden;
+  invocation.GetOptions().PrintHelp(
+      llvm::outs(), invocation.MainExecutableName.c_str(), "stone-compile",
+      IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      /*ShowAllAliases*/ false);
+  return Status()
 }
 
 Status PrintVersionTask::Execute(Compiler &compiler, CompilerTask *dep) {
@@ -186,7 +191,7 @@ Status PrintVersionTask::Execute(Compiler &compiler, CompilerTask *dep) {
   return Status();
 }
 
-Status PreParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
+Status AbstractParseTask::Setup(Compiler &compiler) {
   assert([&]() -> bool {
     if (compiler.GetAction().IsParse()) {
       // Parsing gets triggered lazily, but let's make sure we have theright
@@ -204,31 +209,26 @@ Status PreParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
   return Status();
 }
 
-Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
-  for (auto moduleFile :
-       compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      /// You just want to padd CodeCompletionCallbacks and get rid of the
-      /// listeners
-      stone::ParseSyntaxFile(*syntaxFile, compiler.GetASTContext(),
-                             syntaxListener, lexerListener);
-      syntaxFile`->stage = SyntaxFileStage::Parsed;
-    }
-  }
-  return Status();
-}
+Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {}
 
 Status ResolveImportsTask::Execute(Compiler &compiler, CompilerTask *dep) {
+
+  assert(dep);
+  assert(dep->IsCompleted());
+
   return Status();
 }
 
 Status TypeCheckTask::Execute(Compiler &compiler, CompilerTask *dep) {
+  assert(dep);
+  assert(dep->IsCompleted());
 
   return Status();
 }
 
-Status PreEmitTask::Execute(Compiler &compiler, CompilerTask *dep) {
+Status AbstractEmitTask::Setup(Compiler &compiler) {
 
+  /// Perform GenIR
   return Status();
 }
 
@@ -243,11 +243,6 @@ Status EmitIRBeforeTask::Execute(Compiler &compiler, CompilerTask *dep) {
 }
 
 Status EmitObjectTask::Execute(Compiler &compiler, CompilerTask *dep) {
-
-  return Status();
-}
-
-Status FinalTask::Execute(Compiler &compiler, CompilerTask *dep) {
 
   return Status();
 }

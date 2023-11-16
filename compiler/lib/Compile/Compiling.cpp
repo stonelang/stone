@@ -94,10 +94,10 @@
 //   }
 //   for (auto moduleFile :
 //        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-//       stone::ParseSyntaxFile(*syntaxFile, compiler.GetASTContext(),
+//     if (auto *astFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
+//       stone::ParseASTFile(*astFile, compiler.GetASTContext(),
 //                              syntaxListener, lexerListener);
-//       syntaxFile->stage = SyntaxFileStage::Parsed;
+//       astFile->stage = ASTFileStage::Parsed;
 //     }
 //   }
 //   if (compiler.GetListener()) {
@@ -117,8 +117,8 @@
 //   return Status();
 // }
 
-// Status compiling::DumpSyntax(Compiler &compiler, syn::SyntaxFile
-// &syntaxFile)
+// Status compiling::DumpSyntax(Compiler &compiler, syn::ASTFile
+// &astFile)
 // {
 //   return Status();
 // }
@@ -130,12 +130,12 @@
 //     listener = compiler.GetListener()->GetTypeCheckerListener();
 //   }
 
-//   compiler.ForEachSyntaxFileToTypeCheck(
-//       [&](SyntaxFile &syntaxFile, TypeCheckerOptions &typeCheckerOpts,
+//   compiler.ForEachASTFileToTypeCheck(
+//       [&](ASTFile &astFile, TypeCheckerOptions &typeCheckerOpts,
 //           stone::TypeCheckerListener *listener) {
-//         stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+//         stone::TypeCheckASTFile(astFile, typeCheckerOpts, listener);
 //         // TODO: Check for errors
-//         syntaxFile.stage = SyntaxFileStage::TypeChecked;
+//         astFile.stage = ASTFileStage::TypeChecked;
 //       });
 
 //   compiling::FinishTypeCheck(compiler);
@@ -251,12 +251,12 @@
 //     stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename,
 //     mainModule,
 //                        primaryFileSpecificPaths);
-//   } else if (IsSyntaxFileCodeGen()) {
-//     for (auto *primarySyntaxFile : GetPrimarySyntaxFiles()) {
+//   } else if (IsASTFileCodeGen()) {
+//     for (auto *primaryASTFile : GetPrimaryASTFiles()) {
 //       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-//           GetPrimaryFileSpecificPathsForSyntaxFile(*primarySyntaxFile);
-//       stone::GenSyntaxFileIR(cgc, primaryFileSpecificPaths.outputFilename,
-//                              primarySyntaxFile, primaryFileSpecificPaths);
+//           GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
+//       stone::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+//                              primaryASTFile, primaryFileSpecificPaths);
 //     }
 //   }
 
@@ -342,7 +342,7 @@
 // }
 //}
 
-// static Status DumpSyntax(Compiler &compiler, syn::SyntaxFile &sf) {
+// static Status DumpSyntax(Compiler &compiler, syn::ASTFile &sf) {
 //   return Status::Success();
 // }
 
@@ -352,7 +352,7 @@
 
 // Status Compiler::CompileWithParsing() {
 //   return CompileWithParsing(
-//       [&](syn::SyntaxFile &) { return Status::Success(); });
+//       [&](syn::ASTFile &) { return Status::Success(); });
 // }
 
 // Status Compiler::CompileWithParsing(ParsingCompletedCallback notifiy)
@@ -367,12 +367,12 @@
 //   }
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-//       stone::ParseSyntaxFile(*syntaxFile, GetASTContext(),
+//     if (auto *astFile = llvm::dyn_cast<syn::ASTFile>(moduleFile)) {
+//       stone::ParseASTFile(*astFile, GetASTContext(),
 //       syntaxListener,
 //                              lexerListener);
 //       if (notifiy) {
-//         notifiy(*syntaxFile);
+//         notifiy(*astFile);
 //       }
 //     }
 //   }
@@ -404,10 +404,10 @@
 //   //   compiler.GetListener()->GetTypeCheckerListener();
 //   // }
 
-//   ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
+//   ForEachASTFile([&](ASTFile &astFile,
 //                         TypeCheckerOptions &typeCheckerOpts,
 //                         stone::TypeCheckerListener *listener) {
-//     stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+//     stone::TypeCheckASTFile(astFile, typeCheckerOpts, listener);
 //   });
 
 //   // TODO: FinishTypeCheck();
@@ -435,7 +435,7 @@
 //   break;
 // case ActionKind::DumpSyntax:
 //   status = CompileWithParsing(
-//       [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
+//       [&](syn::ASTFile &sf) { return DumpSyntax(*this, sf); });
 //   break;
 // case ActionKind::TypeCheck:
 //   status = CompileWithTypeChecking();

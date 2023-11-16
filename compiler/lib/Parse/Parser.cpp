@@ -11,7 +11,7 @@ using namespace stone;
 using namespace stone::syn;
 using namespace stone::mem;
 
-Parser::Parser(SyntaxFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
+Parser::Parser(ASTFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
                LexerListener *lexerListener)
     : Parser(sf, sc,
              Safe<Lexer>(new Lexer(
@@ -19,7 +19,7 @@ Parser::Parser(SyntaxFile &sf, ASTContext &sc, SyntaxListener *syntaxListener,
                  &sc.GetLangContext().GetStats(), lexerListener)),
              listener) {}
 
-Parser::Parser(SyntaxFile &sf, ASTContext &sc, Safe<Lexer> lx,
+Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {

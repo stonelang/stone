@@ -32,6 +32,8 @@ public:
 };
 } // namespace stone
 
+Options::Options() : options(opts::CreateOptTable()) {}
+
 std::unique_ptr<OptTable> opts::CreateOptTable() {
   return std::unique_ptr<OptTable>(new stone::StoneOptTable());
 }

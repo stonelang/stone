@@ -42,6 +42,7 @@ static Status ParseCompilerAction(llvm::opt::InputArgList &args,
   }
   return Status();
 }
+
 static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
                                    LangOptions &langOpts,
                                    CompilerOptions &compilerOpts,
@@ -130,11 +131,9 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
-  auto compilerOptionTable = opts::CreateOptTable();
-  auto compilerInputArgList =
-      std::make_unique<llvm::opt::InputArgList>(compilerOptionTable->ParseArgs(
-          args, missingArgIndex, missingArgCount, includedFlagsBitmask,
-          excludedFlagsBitmask));
+  auto compilerInputArgList = std::make_unique<llvm::opt::InputArgList>(
+      GetOptions().ParseArgs(args, missingArgIndex, missingArgCount,
+                             includedFlagsBitmask, excludedFlagsBitmask));
 
   assert(compilerInputArgList && "No input argument list.");
 
@@ -192,8 +191,8 @@ void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {}
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &Triple) {}
 
 void CompilerInvocation::SetMainExecutable(const char *arg0, void *mainAddr) {
-  // compilerOpts.MainExecutablePath =
-  //     llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  // compilerOpts.MainExecutableName =
-  //     file::GetStem(GetCompilerOptions().MainExecutablePath);
+  compilerOpts.MainExecutablePath =
+      llvm::StringRef(llvm::sys::fs::getMainExecutable(arg0, mainAddr));
+  compilerOpts.MainExecutableName =
+      file::GetStem(compilerOpts.MainExecutablePath);
 }

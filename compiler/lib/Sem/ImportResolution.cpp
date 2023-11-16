@@ -8,8 +8,8 @@ using namespace stone::syn;
 //  class UseResolver final : public DeclVisitor<UseResolver> {
 //    friend DeclVisitor<UseResolver>;
 
-//   SyntaxFile &SF;
+//   ASTFile &SF;
 //   ASTContext &ctx;
 // };
 
-void stone::ResolveSyntaxFileImports(syn::SyntaxFile &syntaxFile) {}
+void stone::ResolveASTFileImports(syn::ASTFile &astFile) {}
