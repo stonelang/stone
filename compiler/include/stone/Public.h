@@ -40,7 +40,7 @@ class PrimaryFileSpecificPaths;
 class CompilerOptions;
 class InFlightDiagnostic;
 class Compiler;
-class CompilerConfiguration;
+class CompilerInvocation;
 class ClangContext;
 
 namespace syn {
@@ -157,7 +157,7 @@ public:
   CodeGenListener *GetCodeGenListener() { return codeGenListener; }
 
 public:
-  virtual void CompletedCommandLineParsing(CompilerConfiguration &config) {}
+  virtual void CompletedCommandLineParsing(CompilerInvocation &invocation) {}
   virtual void CompletedConfiguration(Compiler &compiler) {}
   virtual void CompletedBuildingTasks(Compiler &compiler) {}
 
