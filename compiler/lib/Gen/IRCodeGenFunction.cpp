@@ -1,12 +1,11 @@
 #include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenModule.h"
 
 using namespace stone;
 
 IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn)
-    : cgm(cgm), fn(fn), builder(cgm.GetIRCodeGen().GetCodeGenContext(),
-                                GetIRCodeGenModule().GetIRCodeGenTypeCache()) {}
+    : cgm(cgm), fn(fn), builder(cgm.GetCodeGenContext(),cgm.GetIRCodeGenTypeCache()) {}
 
 IRCodeGenFunction::~IRCodeGenFunction() {}
 
@@ -14,7 +13,7 @@ IRCodeGenFunction::~IRCodeGenFunction() {}
 /// automatically inserted into the function.
 llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
   return llvm::BasicBlock::Create(
-      *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext(), name);
+      *cgm.GetCodeGenContext().GetLLVMContext(), name);
 }
 
 void IRCodeGenFunction::EmitFunction(FunctionDecl *fd) {

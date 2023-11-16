@@ -5,9 +5,11 @@
 
 using namespace stone;
 
-TypeChecker::TypeChecker(ASTContext &astContext, TypeCheckerOptions &typeCheckerOpts,
+TypeChecker::TypeChecker(ASTContext &astContext,
+                         TypeCheckerOptions &typeCheckerOpts,
                          TypeCheckerListener *pipeline)
-    : astContext(astContext), typeCheckerOpts(typeCheckerOpts), listener(listener) {
+    : astContext(astContext), typeCheckerOpts(typeCheckerOpts),
+      listener(listener) {
 
   stats.reset(new TypeCheckerStats(*this));
   astContext.GetStats().Register(stats.get());

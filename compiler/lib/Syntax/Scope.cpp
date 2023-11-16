@@ -2,7 +2,6 @@
 
 using namespace stone;
 
-
 static const auto &GetScopeNameTable() {
   static const std::pair<ScopeKind, const char *> Table[] = {
       {ScopeKind::Decl, "Decl"},

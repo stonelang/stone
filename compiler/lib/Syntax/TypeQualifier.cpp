@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-
 // ConstTypeQualifier ConstTypeQualifier::Create(SrcLoc loc) {
 //   ConstTypeQualifier qualifier(loc);
 //   return qualifier;

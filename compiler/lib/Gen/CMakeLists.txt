@@ -20,7 +20,6 @@ set(stone_gen_sources
 	GenNative.cpp
 	GenType.cpp
 	GenABI.cpp
-	IRCodeGen.cpp
 	IRCodeGenConstant.cpp
 	IRCodeGenDebug.cpp
 	IRCodeGenBuilder.cpp

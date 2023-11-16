@@ -157,8 +157,7 @@ size_t Compiler::GetTotalMemUsed() const { return bumpAlloc.getTotalMemory(); }
 // void Compiler::PrintStatistics() {}
 
 void *stone::AllocateInCompiler(size_t bytes, const Compiler &compiler,
-                                AllocationArena arena,
-                                unsigned alignment) {
+                                AllocationArena arena, unsigned alignment) {
   return compiler.Allocate(bytes, alignment /*, arena*/);
 }
 

@@ -102,10 +102,9 @@ public:
   }
 
 public:
-  static BraceStmt* Create(SrcLoc lbloc,
-                                      llvm::ArrayRef<ASTNode> elements,
-                                      SrcLoc rbloc, ASTContext &astContext,
-                                      llvm::Optional<bool> implicit);
+  static BraceStmt *Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
+                           SrcLoc rbloc, ASTContext &astContext,
+                           llvm::Optional<bool> implicit);
 };
 
 class SwitchCaseStmt : public Stmt {

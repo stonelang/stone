@@ -25,10 +25,9 @@ public:
 
   // Only allow allocation using the allocator in ASTContext
   // or by doing a placement new.
-  void *
-  operator new(size_t bytes, const Compiler &compiler,
-               AllocationArena arena = AllocationArena::Permanent,
-               unsigned alignment = alignof(AlignTy)) {
+  void *operator new(size_t bytes, const Compiler &compiler,
+                     AllocationArena arena = AllocationArena::Permanent,
+                     unsigned alignment = alignof(AlignTy)) {
     return stone::AllocateInCompiler(bytes, compiler, arena, alignment);
   }
 

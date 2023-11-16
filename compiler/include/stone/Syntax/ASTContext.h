@@ -108,7 +108,7 @@ class ASTContext final {
 
   StatisticEngine &se;
 
-  const LangOptions& langOpts;
+  const LangOptions &langOpts;
 
   BuiltinContext builtinContext;
   /// The allocator used to create ASTContext objects.

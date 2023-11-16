@@ -7,7 +7,7 @@
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/DeclFactory.h"
-#include "stone/Syntax/StmtFactory.h"
+#include "stone/Syntax/Stmt.h"
 
 using namespace stone;
 
@@ -392,7 +392,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
 
   // Simple for now
   auto functionBody =
-      MakeBraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
+      BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

@@ -2,7 +2,6 @@
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/SyntaxResult.h"
 
-
 using namespace stone;
 
 SyntaxResult<Stmt> Parser::ParseStmt() {

@@ -17,7 +17,7 @@ using namespace stone;
 static Status InitLLVMTargetOptions(CodeGenContext &cgc,
                                     llvm::TargetOptions &llvmTargetOpts) {
 
-  switch (cgc.GetLangContext().GetLangOptions().threadModelKind) {
+  switch (cgc.GetASTContext().GetLangOptions().threadModelKind) {
   case LangOptions::ThreadModelKind::POSIX:
     llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
     break;

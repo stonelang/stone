@@ -77,7 +77,8 @@ protected:
   union {
     uint64_t OpaqueBits;
     STONE_INLINE_BITFIELD_BASE(TypeBase,
-                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1 + 1, Kind
+                               stone::BitMax(NumTypeKindBits, 8) + 1 + 1 + 1,
+                               Kind
                                : stone::BitMax(NumTypeKindBits, 8),
 
                                  /// Whether this type is canonical or not.
@@ -201,7 +202,7 @@ public:
 class BuiltinType : public TypeBase {
 protected:
   BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {
-    //Bits.TypeBase.IsBuiltin = true;
+    // Bits.TypeBase.IsBuiltin = true;
   }
 };
 
@@ -336,9 +337,8 @@ public:
   VoidType(const ASTContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 
 public:
-  static VoidType *
-  Create(const ASTContext &sc,
-         AllocationArena arena = AllocationArena::Permanent);
+  static VoidType *Create(const ASTContext &sc,
+                          AllocationArena arena = AllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {

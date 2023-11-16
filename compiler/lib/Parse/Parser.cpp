@@ -9,20 +9,20 @@
 
 using namespace stone;
 
-Parser::Parser(ASTFile &sf, ASTContext &astContext, SyntaxListener *syntaxListener,
-               LexerListener *lexerListener)
+Parser::Parser(ASTFile &sf, ASTContext &astContext,
+               SyntaxListener *syntaxListener, LexerListener *lexerListener)
     : Parser(sf, astContext,
-             Safe<Lexer>(new Lexer(
-                 sf.GetSrcID(), astContext.GetSrcMgr(), &astContext.GetDiags(),
-                 &astContext.GetStats(), lexerListener)),
+             Safe<Lexer>(new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
+                                   &astContext.GetDiags(),
+                                   &astContext.GetStats(), lexerListener)),
              listener) {}
 
-Parser::Parser(ASTFile &sf, ASTContext &sc, Safe<Lexer> lx,
+Parser::Parser(ASTFile &sf, ASTContext &astContext, Safe<Lexer> lx,
                SyntaxListener *listener)
-    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf), listener(listener),
-      stats(new ParserStats(*this)) {
+    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf),
+      listener(listener), stats(new ParserStats(*this)) {
 
-  GetLangContext().GetStats().Register(stats.get());
+  astContext.GetStats().Register(stats.get());
 }
 
 Parser::~Parser() {}

@@ -114,8 +114,8 @@ public:
   void *operator new(
       size_t Bytes, ASTContext &C,
       unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, AllocationArena::Permanent, Alignment);
+    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
+                                          Alignment);
   }
 };
 
@@ -165,8 +165,8 @@ public:
   void *operator new(size_t Bytes, ASTContext &C,
                      unsigned Alignment = alignof(
                          PlatformAgnosticVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, AllocationArena::Permanent, Alignment);
+    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
+                                          Alignment);
   }
 };
 
@@ -200,8 +200,8 @@ public:
   void *
   operator new(size_t Bytes, ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, AllocationArena::Permanent, Alignment);
+    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
+                                          Alignment);
   }
 };
 } // namespace stone

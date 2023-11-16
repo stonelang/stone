@@ -1,17 +1,17 @@
 #include "stone/Gen/IRCodeGenModule.h"
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenABI.h"
 
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
 
-IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen,
+IRCodeGenModule::IRCodeGenModule(CodeGenContext &codeGenContext,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
-    : typeCache(*irCodeGen.GetCodeGenContext().GetLLVMContext()),
-      irCodeGen(irCodeGen), moduleName(moduleName),
+    : codeGenContext(codeGenContext),
+      typeCache(*codeGenContext.GetLLVMContext()), moduleName(moduleName),
       outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}

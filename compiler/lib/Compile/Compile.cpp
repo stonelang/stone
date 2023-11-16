@@ -175,7 +175,7 @@ Status PrintHelpTask::Execute(Compiler &compiler, CompilerTask *dep) {
   assert(invocation.GetAction().IsPrintHelp() ||
          invocation.GetAction().IsPrintHelpHidden());
 
-  unsigned IncludedFlagsBitmask = opts::CompilerOptions;
+  unsigned IncludedFlagsBitmask = opts::CompilerOption;
   unsigned ExcludedFlagsBitmask =
       invocation.GetAction().IsPrintHelpHidden() ? 0 : llvm::opt::HelpHidden;
   invocation.GetOptions().PrintHelp(

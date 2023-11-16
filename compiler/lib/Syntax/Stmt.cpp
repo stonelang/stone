@@ -17,10 +17,9 @@ BraceStmt::BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<ASTNode> elements,
                           getTrailingObjects<ASTNode>());
 }
 
-BraceStmt *BraceStmt::Create(SrcLoc lbloc,
-                                      llvm::ArrayRef<ASTNode> elements,
-                                      SrcLoc rbloc, ASTContext &sc,
-                                      llvm::Optional<bool> implicit) {
+BraceStmt *BraceStmt::Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
+                             SrcLoc rbloc, ASTContext &sc,
+                             llvm::Optional<bool> implicit) {
 
   void *stmtPtr =
       sc.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),

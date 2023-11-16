@@ -1,5 +1,5 @@
 #include "stone/Gen/IRCodeGenTypeResolver.h"
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenABI.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Type.h"
@@ -31,7 +31,7 @@ IRCodeGenTypeResolver::GetFunctionType(const FunctionDecl *fd) {
   // TODO: Just for now
   return llvm::FunctionType::get(
       llvm::Type::getVoidTy(
-          *cgm.GetIRCodeGen().GetCodeGenContext().GetLLVMContext()),
+          *cgm.GetCodeGenContext().GetLLVMContext()),
       {}, false);
 }
 

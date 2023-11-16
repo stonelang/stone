@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
@@ -80,8 +80,7 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, ModuleDecl *md,
                   ASTFile *sf, CodeGenListener *listener) {
 
-  IRCodeGen cg(cgc, listener);
-  IRCodeGenModule cgm(cg, moduleName, paths.outputFilename);
+  IRCodeGenModule cgm(cgc, moduleName, paths.outputFilename);
 
   if (sf) {
     cgm.EmitASTFile(*sf);
@@ -106,9 +105,10 @@ void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }
 
-void stone::GenModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                        ModuleDecl *md, const PrimaryFileSpecificPaths paths,
-                        CodeGenListener *listener) {
+void stone::GenWholeModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                             ModuleDecl *md,
+                             const PrimaryFileSpecificPaths paths,
+                             CodeGenListener *listener) {
 
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }

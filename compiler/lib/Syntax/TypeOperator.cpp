@@ -1,9 +1,7 @@
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/ASTContext.h"
 
-
 using namespace stone;
-
 
 NewTypeOperator NewTypeOperator::Create(SrcLoc loc) {
   NewTypeOperator op(loc);

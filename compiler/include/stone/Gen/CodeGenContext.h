@@ -27,6 +27,7 @@ class ClangContext;
 class CodeGenOptions;
 class ModuleOptions;
 class TargetOptions;
+class CodeGenListener;
 
 class CodeGenContext final {
 
@@ -42,6 +43,7 @@ class CodeGenContext final {
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
   llvm::GlobalVariable *outModuleHash;
+  CodeGenListener *listener;
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
@@ -71,6 +73,9 @@ public:
     return llvmTargetMachine.get();
   }
   llvm::GlobalVariable *GetOutModuleHash() { return outModuleHash; }
+
+  void SetCodeGenListener(CodeGenListener *listener) { listener = listener; }
+  CodeGenListener *GetCodeGenListener() { return listener; }
 
   llvm::CodeGenFileType GetCodeGenFileType() {
     return (GetCodeGenOptions().codeGenOutputKind ==

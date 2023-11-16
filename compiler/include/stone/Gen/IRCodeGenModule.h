@@ -70,8 +70,7 @@ class VarDecl;
 class AutoDecl;
 class ASTFile;
 class NominalTypeDecl;
-
-class IRCodeGen;
+class CodeGenContext;
 class CodeGenListener;
 
 // class IRCodeGenLoop {};
@@ -97,7 +96,7 @@ using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
 class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
 
-  IRCodeGen &irCodeGen;
+  CodeGenContext &codeGenContext;
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
   IRCodeGenMetadata metadata;
@@ -126,7 +125,7 @@ private:
   void operator=(const IRCodeGenModule &) = delete;
 
 public:
-  IRCodeGenModule(IRCodeGen &irCodeGen, llvm::StringRef moduleName,
+  IRCodeGenModule(CodeGenContext &codeGenContext, llvm::StringRef moduleName,
                   llvm::StringRef outputFilename);
   ~IRCodeGenModule();
 
@@ -149,7 +148,7 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  IRCodeGen &GetIRCodeGen() { return irCodeGen; }
+  CodeGenContext &GetCodeGenContext() { return codeGenContext; }
   IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }

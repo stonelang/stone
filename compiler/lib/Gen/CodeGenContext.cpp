@@ -2,6 +2,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Gen/CodeGenScope.h"
+#include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ClangContext.h"
@@ -11,11 +12,11 @@ using namespace stone;
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
                                const stone::TargetOptions &targetOpts,
-                               ASTContext& astContext,
+                               ASTContext &astContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable *outModuleHash)
-    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts), astContext(astContext),
-      clangContext(clangContext),
+    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts),
+      astContext(astContext), clangContext(clangContext),
       outModuleHash(outModuleHash),
       llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {
 
@@ -66,3 +67,17 @@ CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
 }
 
 CodeGenScope::~CodeGenScope() {}
+
+// TODO: Ok for now -- may move to IRCodeGenMoulde
+IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
+
+  VoidTy = llvm::Type::getVoidTy(llvmContext);
+  Int8Ty = llvm::Type::getInt8Ty(llvmContext);
+  Int16Ty = llvm::Type::getInt16Ty(llvmContext);
+  Int32Ty = llvm::Type::getInt32Ty(llvmContext);
+  Int32PtrTy = Int32Ty->getPointerTo();
+  Int64Ty = llvm::Type::getInt64Ty(llvmContext);
+  Int8PtrTy = llvm::Type::getInt8PtrTy(llvmContext);
+
+  // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
+}

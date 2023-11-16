@@ -77,7 +77,8 @@ static bool isStartOfUTF8Character(unsigned char C) {
 /// validateUTF8CharacterAndAdvance - Given a pointer to the starting byte of a
 /// UTF8 character, validate it and advance the lexer past it.  This returns the
 /// encoded character or ~0U if the encoding is invalid.
-uint32_t validateUTF8CharacterAndAdvance(const char *&Ptr, const char *End) {
+uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
+                                                const char *End) {
   if (Ptr >= End)
     return ~0U;
 
@@ -375,7 +376,7 @@ static bool advanceToEndOfLine(const char *&CurPtr, const char *BufferEnd,
       if (de && (signed char)(CurPtr[-1]) < 0) {
         --CurPtr;
         const char *CharStart = CurPtr;
-        if (validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U)
+        if (stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U)
           de->PrintD(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
       }
       break; // Otherwise, eat other characters.
@@ -457,7 +458,7 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
         --CurPtr;
         const char *CharStart = CurPtr;
 
-        if (validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U) {
+        if (stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U) {
           de->PrintD(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
         }
       }
@@ -563,7 +564,7 @@ static bool isValidIdentifierStartCodePoint(uint32_t c) {
 static bool advanceIf(char const *&ptr, char const *end,
                       bool (*predicate)(uint32_t)) {
   char const *next = ptr;
-  uint32_t c = validateUTF8CharacterAndAdvance(next, end);
+  uint32_t c = stone::validateUTF8CharacterAndAdvance(next, end);
 
   if (c == ~0U) {
     return false;
@@ -1361,7 +1362,8 @@ unsigned Lexer::lexCharacter(const char *&CurPtr, char StopQuote,
       return CurPtr[-1];
     }
     --CurPtr;
-    unsigned CharValue = validateUTF8CharacterAndAdvance(CurPtr, BufferEnd);
+    unsigned CharValue =
+        stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd);
     if (CharValue != ~0U)
       return CharValue;
     if (EmitDiagnostics)
@@ -2017,7 +2019,8 @@ void Lexer::lexRegexLiteral(const char *TokStart) {
     }
 
     const auto *CharStart = CurPtr;
-    uint32_t CharValue = validateUTF8CharacterAndAdvance(CurPtr, BufferEnd);
+    uint32_t CharValue =
+        stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd);
     if (CharValue == ~0U) {
       PrintD(CharStart, diag::lex_invalid_utf8);
       HadError = true;
@@ -2143,7 +2146,7 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
   }
 
   // This character isn't allowed in Swift source.
-  uint32_t Codepoint = validateUTF8CharacterAndAdvance(Tmp, BufferEnd);
+  uint32_t Codepoint = stone::validateUTF8CharacterAndAdvance(Tmp, BufferEnd);
   if (Codepoint == ~0U) {
     PrintD(CurPtr - 1, diag::lex_invalid_utf8)
         .WithFix()
