@@ -11,11 +11,11 @@ using namespace stone;
 
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
-                               const stone::TargetOptions &targetOpts,
+                               const TargetContext &targetContext,
                                ASTContext &astContext,
                                ClangContext &clangContext,
                                llvm::GlobalVariable *outModuleHash)
-    : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts),
+    : genOpts(genOpts), moduleOpts(moduleOpts), targetContext(targetContext),
       astContext(astContext), clangContext(clangContext),
       outModuleHash(outModuleHash),
       llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {

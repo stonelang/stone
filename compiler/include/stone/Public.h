@@ -29,7 +29,7 @@ class SyntaxListener;
 class CodeGenOptions;
 class CodeGenContext;
 class CodeGenScope;
-class TargetOptions;
+class TargetContext;
 class LangOptions;
 class DiagnosticEngine;
 class TypeCheckerListener;

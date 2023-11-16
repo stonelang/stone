@@ -4,6 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/TargetContext.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
@@ -66,7 +67,7 @@ class CompilerInvocation final {
 
   LangOptions langOpts;
 
-  stone::TargetOptions targetOpts;
+  TargetContext targetContext;
 
   ModuleOptions moduleOpts;
 
