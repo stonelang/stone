@@ -127,7 +127,7 @@ public:
   virtual void OnEmitLibraryCompleted() {}
 };
 
-class CompilerCallbacks final {
+class CompilerListener final {
   LexerListener *lexerListener = nullptr;
   SyntaxListener *syntaxListener = nullptr;
   TypeCheckerListener *typeCheckerListener = nullptr;
