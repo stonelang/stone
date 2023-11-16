@@ -10,11 +10,11 @@ void CompilerQueue::AddTask(CompilerTask *task) { runQueue.push_back(task); }
 
 void CompilerQueue::RunTasks() {
   ColorStream stream;
-  CompilerTask *depTask = nullptr;
+  CompilerTask *prevTask = nullptr;
   for (auto curTask : runQueue) {
     curTask->Setup();
-    curTask->Execute(GetCompiler(), depTask);
+    curTask->Execute(GetCompiler(), prevTask);
     curTask->Print(stream);
-    depTask = curTask;
+    prevTask = curTask;
   }
 }

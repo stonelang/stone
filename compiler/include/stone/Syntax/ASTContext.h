@@ -108,7 +108,7 @@ class ASTContext final {
 
   StatisticEngine &se;
 
-  const LangOptions &langOpts;
+  LangOptions &langOpts;
 
   BuiltinContext builtinContext;
   /// The allocator used to create ASTContext objects.
@@ -155,7 +155,7 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(const LangOptions &langOpts,
+  ASTContext(LangOptions &langOpts,
              const SearchPathOptions &searchPathOpts,
              ClangContext &clangContext, DiagnosticEngine &de,
              StatisticEngine &se);
@@ -178,6 +178,9 @@ public:
   LangABI *GetLangABI() const;
   //
   SrcMgr &GetSrcMgr() { return de.GetSrcMgr(); }
+
+
+  LangOptions &GetLangOptions() { return langOpts; }
 
   /// Retrieve the allocator for the given arena.
   llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }

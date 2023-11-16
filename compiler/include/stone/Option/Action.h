@@ -21,8 +21,12 @@ public:
 public:
   ActionKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
-  bool Is(ActionKind k) const { return kind == k; }
   file::Type GetOutputFileType() const;
+
+
+public:
+
+  bool Is(ActionKind k) const { return kind == k; }
 
   bool CanOutput() const {
     switch (GetKind()) {

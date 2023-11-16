@@ -1,6 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/CodeGenScope.h"
-#include "stone/Gen/IRCodeGen.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"

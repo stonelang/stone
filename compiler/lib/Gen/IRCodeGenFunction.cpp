@@ -5,15 +5,16 @@
 using namespace stone;
 
 IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn)
-    : cgm(cgm), fn(fn), builder(cgm.GetCodeGenContext(),cgm.GetIRCodeGenTypeCache()) {}
+    : cgm(cgm), fn(fn),
+      builder(cgm.GetCodeGenContext(), cgm.GetIRCodeGenTypeCache()) {}
 
 IRCodeGenFunction::~IRCodeGenFunction() {}
 
 /// Create a new basic block with the given name.  The block is not
 /// automatically inserted into the function.
 llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(
-      *cgm.GetCodeGenContext().GetLLVMContext(), name);
+  return llvm::BasicBlock::Create(*cgm.GetCodeGenContext().GetLLVMContext(),
+                                  name);
 }
 
 void IRCodeGenFunction::EmitFunction(FunctionDecl *fd) {

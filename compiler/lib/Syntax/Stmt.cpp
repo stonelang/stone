@@ -18,11 +18,11 @@ BraceStmt::BraceStmt(SrcLoc lbLoc, llvm::ArrayRef<ASTNode> elements,
 }
 
 BraceStmt *BraceStmt::Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
-                             SrcLoc rbloc, ASTContext &sc,
+                             SrcLoc rbloc, ASTContext &astContext,
                              llvm::Optional<bool> implicit) {
 
   void *stmtPtr =
-      sc.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),
+      astContext.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),
                   alignof(BraceStmt));
   return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }

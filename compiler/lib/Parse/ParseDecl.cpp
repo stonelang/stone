@@ -254,7 +254,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Apply what what collected
   // collector.Apply();
   // Create the function
-  auto funDecl = DeclFactory::MakeFunDecl(collector, sc, GetCurDeclContext());
+  auto funDecl =
+      DeclFactory::MakeFunDecl(collector, astContext, GetCurDeclContext());
   assert(funDecl);
 
   // TODO: Find a better place for this -- maybe pass as parameter
@@ -393,6 +394,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
   // Simple for now
   auto functionBody =
       BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
+      
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

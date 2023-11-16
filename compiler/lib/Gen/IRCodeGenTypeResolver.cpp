@@ -30,9 +30,8 @@ IRCodeGenTypeResolver::GetFunctionType(const FunctionDecl *fd) {
 
   // TODO: Just for now
   return llvm::FunctionType::get(
-      llvm::Type::getVoidTy(
-          *cgm.GetCodeGenContext().GetLLVMContext()),
-      {}, false);
+      llvm::Type::getVoidTy(*cgm.GetCodeGenContext().GetLLVMContext()), {},
+      false);
 }
 
 // llvm::Type *IRCodeGenTypeResolver::GetType(const MemberPointerType mpty)

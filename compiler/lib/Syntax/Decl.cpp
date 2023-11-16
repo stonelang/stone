@@ -199,6 +199,7 @@ FunDecl *DeclFactory::MakeFunDecl(DeclCollector &collector, ASTContext &sc,
       collector.GetDeclName(), collector.GetDeclNameLoc(),
       collector.GetTypeCollector().GetType(), parent);
 
+  // call apply on the collector
   funDecl->SetAccessLevel(collector.GetAccessLevelCollector().GetAccessLevel());
   return funDecl;
 }

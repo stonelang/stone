@@ -43,8 +43,7 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName, FunctionDecl *fd,
 
   llvm::Function *llvmFunction = llvm::Function::Create(
       llvmFunctionType, llvm::Function::ExternalLinkage,
-      entry ? llvm::StringRef() : mangledName,
-      *GetIRCodeGen().GetCodeGenContext().GetLLVMModule());
+      entry ? llvm::StringRef() : mangledName, GetCodeGenContext().GetLLVMModule());
 
   return llvmFunction;
 }

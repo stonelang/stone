@@ -50,6 +50,7 @@ class Stmt;
 class Expr;
 class Token;
 class ASTFile;
+class CompilerInputFile;
 
 } // namespace stone
 
@@ -172,6 +173,9 @@ public:
 // Parsing and type-checking
 namespace stone {
 using ModuleOrASTFile = llvm::PointerUnion<ModuleDecl *, ASTFile *>;
+
+/// Compile a single input file
+bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
 
 /// Parse, type-check, resolve imports, and generate IR for the ASTFile.
 //  This will allows for parallelization specially when you are just in parsing

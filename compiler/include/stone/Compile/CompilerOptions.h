@@ -9,6 +9,7 @@
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Option/Options.h"
+#include "stone/Option/Action.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {
@@ -18,7 +19,7 @@ class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
 class CompilerAction final : public Action {
-  friend CompilerCommandLine;
+  friend CompilerInvocation;
 
 public:
   CompilerAction(const CompilerAction &) = delete;
@@ -32,7 +33,7 @@ public:
 
 class CompilerOptions final {
 
-  friend CompilerCommandLine;
+  friend CompilerInvocation;
   friend CompilerOptionsConverter;
   friend CompilerInputsConverter;
 

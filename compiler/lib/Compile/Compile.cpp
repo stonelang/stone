@@ -208,7 +208,18 @@ Status AbstractParseTask::Setup(Compiler &compiler) {
   return Status();
 }
 
-Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {}
+Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
+
+  for (auto moduleFile :
+       compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
+    if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
+      stone::ParseASTFile(*astFile, compiler.GetASTContext(), syntaxListener,
+                          lexerListener);
+      astFile->stage = ASTFileStage::Parsed;
+    }
+  }
+  return Status();
+}
 
 Status ResolveImportsTask::Execute(Compiler &compiler, CompilerTask *dep) {
 
