@@ -24,7 +24,6 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
   llvmModule =
       std::make_unique<llvm::Module>(moduleOpts.moduleName, *llvmContext);
 }
-
 CodeGenContext::~CodeGenContext() {}
 
 // Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
