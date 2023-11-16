@@ -47,7 +47,7 @@ public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
                  const stone::TargetOptions &targetOpts,
                  const LangContext &langContext, ClangContext &clangContext,
-                 llvm::GlobalVariable **outModuleHash = nullptr);
+                 llvm::GlobalVariable *outModuleHash = nullptr);
   ~CodeGenContext();
 
 public:
@@ -69,7 +69,7 @@ public:
   llvm::TargetMachine *GetLLVMTargetMachine() {
     return llvmTargetMachine.get();
   }
-  llvm::GlobalVariable **GetOutModuleHash() { return outModuleHash; }
+  llvm::GlobalVariable *GetOutModuleHash() { return outModuleHash; }
 
   llvm::CodeGenFileType GetCodeGenFileType() {
     return (GetCodeGenOptions().codeGenOutputKind ==

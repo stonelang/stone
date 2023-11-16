@@ -12,7 +12,7 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const stone::TargetOptions &targetOpts,
                                const LangContext &langContext,
                                ClangContext &clangContext,
-                               llvm::GlobalVariable **outModuleHash)
+                               llvm::GlobalVariable *outModuleHash)
     : genOpts(genOpts), moduleOpts(moduleOpts), targetOpts(targetOpts),
       langContext(langContext), clangContext(clangContext),
       outModuleHash(outModuleHash),
