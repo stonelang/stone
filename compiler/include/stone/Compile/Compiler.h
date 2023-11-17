@@ -1,24 +1,38 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
+#include "stone/Compile/CompilerOptions.h"
+
 #include <deque>
-#include <queue>
 
 namespace stone {
 
 class CompilerInvocation final {
+
+  CompilerOptions compilerOpts;
+
 public:
+  CompilerInvocation();
+
+public:
+  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
+  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 };
+
 class Compiler final {
 public:
   Compiler(CompilerInvocation &invocation) : invocation(invocation) {}
 };
 
 class CompilerExectution final {
-  CompilerInstance &compiler;
+  Compiler &compiler;
 
 public:
-  CompilerExectution(CompilerInstance &compiler) : compiler(compiler) {}
+  CompilerExectution(Compiler &compiler) : compiler(compiler) {}
+
+public:
+  Status ExecuteParseOnly();
+  Status ExecuteParseAndResolveImports();
 };
 
 } // namespace stone

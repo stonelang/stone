@@ -25,4 +25,6 @@ public:
   std::vector<std::pair<String, bool /*testable*/>> ImplicitModuleNames;
 };
 
+} // namespace stone
+
 #endif

@@ -3,26 +3,15 @@
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileMgr.h"
-#include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/StatisticEngine.h"
-#include "stone/Basic/Status.h"
 #include "stone/Diag/DiagnosticEngine.h"
 
-#include "llvm/ADT/ArrayRef.h"
+
+#include "llvm/IR/Module.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/Support/Mutex.h"
-
-namespace llvm {
-class Module;
-class MemoryBuffer;
-class TargetOptions;
-class TargetMachine;
-class raw_pwrite_stream;
-class GlobalVariable;
-} // namespace llvm
+#include "llvm/Target/TargetMachine.h"
 
 namespace stone {
 class SyntaxListener;
