@@ -12,7 +12,7 @@ class TypeCheckerOptions;
 class TypeCheckerListener;
 
 class Decl;
-class ASTFile;
+class SourceFile;
 class Module;
 // class ApplyExpr;
 // class AvailableAttr;

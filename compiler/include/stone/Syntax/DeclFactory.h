@@ -19,7 +19,7 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class ASTFile;
+class SourceFile;
 struct DeclNameContext;
 
 template <typename DeclTy, typename AllocatorTy>

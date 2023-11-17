@@ -77,7 +77,7 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class ASTFile;
+class SourceFile;
 
 class ASTContextStats final : public Stats {
   const ASTContext &sc;

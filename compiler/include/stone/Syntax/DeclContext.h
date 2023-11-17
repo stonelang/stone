@@ -32,7 +32,7 @@ class EnumDecl;
 class ExtensionDecl;
 class Expr;
 class InterfaceDecl;
-class ASTFile;
+class SourceFile;
 class Type;
 class Module;
 class ModuleFile;
@@ -201,7 +201,7 @@ public:
   bool IsModuleFileContext() const;
 
   ModuleDecl *GetParentModule() const;
-  ASTFile *GetParentASTFile() const;
+  SourceFile *GetParentSourceFile() const;
 
   bool IsTypeContext() const;
 

@@ -42,12 +42,12 @@ ModuleDecl *DeclContext::GetParentModule() const {
   return const_cast<ModuleDecl *>(llvm::cast<ModuleDecl>(dc));
 }
 
-ASTFile *DeclContext::GetParentASTFile() const {
+SourceFile *DeclContext::GetParentSourceFile() const {
   const DeclContext *dc = this;
   while (!dc->IsModuleFileContext()) {
     dc = dc->GetParent();
   }
-  return const_cast<ASTFile *>(llvm::dyn_cast<ASTFile>(dc));
+  return const_cast<SourceFile *>(llvm::dyn_cast<SourceFile>(dc));
 }
 
 DeclContext *Decl::GetDeclContextForModule() const {

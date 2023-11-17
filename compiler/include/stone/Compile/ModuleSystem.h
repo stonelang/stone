@@ -44,18 +44,18 @@ public:
   void SetMainModule(ModuleDecl *mod);
 
   Status
-  CreateASTFilesForMainModule(ModuleDecl *mod,
+  CreateSourceFilesForMainModule(ModuleDecl *mod,
                               llvm::SmallVectorImpl<ModuleFile *> &files) const;
 
-  ASTFile *CreateASTFileForMainModule(ModuleDecl *mod, ASTFileKind fileKind,
+  SourceFile *CreateSourceFileForMainModule(ModuleDecl *mod, SourceFileKind fileKind,
                                       unsigned bufferID,
                                       bool isMainBuffer = false) const;
 
-  ASTFile *ComputeMainASTFileForModule(ModuleDecl *mod) const;
+  SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
 
   Compiler &GetCompiler() { return compiler; }
 
-  ASTFile::ParsingOptions GetASTFileParsingOptions(bool forPrimary) const;
+  SourceFile::ParsingOptions GetSourceFileParsingOptions(bool forPrimary) const;
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

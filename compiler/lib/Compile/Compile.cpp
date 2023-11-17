@@ -212,10 +212,10 @@ Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
 
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
-      stone::ParseASTFile(*astFile, compiler.GetASTContext(), syntaxListener,
+    if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+      stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(), syntaxListener,
                           lexerListener);
-      astFile->stage = ASTFileStage::Parsed;
+      sourceFile->stage = SourceFileStage::Parsed;
     }
   }
   return Status();

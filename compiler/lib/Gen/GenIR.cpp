@@ -78,17 +78,17 @@ using namespace stone;
 
 static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths paths, ModuleDecl *md,
-                  ASTFile *sf, CodeGenListener *listener) {
+                  SourceFile *sf, CodeGenListener *listener) {
 
   IRCodeGenModule cgm(cgc, moduleName, paths.outputFilename);
 
   if (sf) {
-    cgm.EmitASTFile(*sf);
+    cgm.EmitSourceFile(*sf);
   } else if (md) {
     for (auto *moduleFile : md->GetFiles()) {
-      if (auto *nextASTFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
-        if (nextASTFile->stage >= ASTFileStage::TypeChecked)
-          cgm.EmitASTFile(*nextASTFile);
+      if (auto *nextSourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+        if (nextSourceFile->stage >= SourceFileStage::TypeChecked)
+          cgm.EmitSourceFile(*nextSourceFile);
       } else {
         // File->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
         //   IGM.addLinkLibrary(LinkLib);
@@ -98,8 +98,8 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
   }
 }
 
-void stone::GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                         ASTFile *sf, const PrimaryFileSpecificPaths paths,
+void stone::GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                         SourceFile *sf, const PrimaryFileSpecificPaths paths,
                          CodeGenListener *listener) {
   assert(sf);
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);

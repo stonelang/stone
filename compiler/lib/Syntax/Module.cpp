@@ -45,11 +45,11 @@ void ModuleDecl::AddFile(ModuleFile &file) {
   // assert(!(isa<LoadedFile>(newFile) &&
   //         cast<LoadedFile>(newFile).hadLoadError()));
   // Require Main and REPL files to be the first file added.
-  assert(files.empty() || !isa<ASTFile>(file) ||
-         llvm::cast<ASTFile>(file).kind == ASTFileKind::Library
-         /*||cast<ASTFile>(unit).Kind == ASTFileKind::SIL*/);
+  assert(files.empty() || !isa<SourceFile>(file) ||
+         llvm::cast<SourceFile>(file).kind == SourceFileKind::Library
+         /*||cast<SourceFile>(unit).Kind == SourceFileKind::SIL*/);
 
-  if (llvm::isa<ASTFile>(file) && llvm::cast<ASTFile>(file).IsPrimary()) {
+  if (llvm::isa<SourceFile>(file) && llvm::cast<SourceFile>(file).IsPrimary()) {
     if (IsMainModule()) {
       primaries.push_back(&file);
     }
@@ -78,18 +78,18 @@ bool DeclContext::IsModuleFileContext() const {
   return IsModuleContext();
 }
 
-llvm::ArrayRef<ASTFile *> &ModuleDecl::GetPrimaryASTFiles() const {
+llvm::ArrayRef<SourceFile *> &ModuleDecl::GetPrimarySourceFiles() const {
   assert(IsMainModule() && "Only the main module can have primaries");
   primaries;
 }
 
-ASTFile::ASTFile(ASTFileKind kind, ModuleDecl &owner,
+SourceFile::SourceFile(SourceFileKind kind, ModuleDecl &owner,
                  llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
-ASTFile::ParsingOptions
-ASTFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
+SourceFile::ParsingOptions
+SourceFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
 
   ParsingOptions parsingOptions;
   // if (langOpts.DisablePoundIfEvaluation)
@@ -101,7 +101,7 @@ ASTFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
   return parsingOptions;
 }
 
-llvm::StringRef ASTFile::GetFilename() const {
+llvm::StringRef SourceFile::GetFilename() const {
   if (srcID == -1) {
     return llvm::StringRef();
   }
@@ -109,9 +109,9 @@ llvm::StringRef ASTFile::GetFilename() const {
   return sm.getIdentifierForBuffer(srcID);
 }
 
-ASTFile *ASTFile::Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+SourceFile *SourceFile::Make(SourceFileKind kind, unsigned srcID, ModuleDecl &owner,
                        ASTContext &sc, bool isPrimary) {
-  return new (sc) ASTFile(kind, owner, srcID, isPrimary);
+  return new (sc) SourceFile(kind, owner, srcID, isPrimary);
 }
 
-ASTFile::~ASTFile() {}
+SourceFile::~SourceFile() {}

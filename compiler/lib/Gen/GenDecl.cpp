@@ -27,21 +27,21 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
 // void IRCodeGenModule::EmitGlobalDecl(GlobalDecl *gd) {}
 
 namespace {
-class PrettyASTFileEmission : public llvm::PrettyStackTraceEntry {
-  const ASTFile &sf;
+class PrettySourceFileEmission : public llvm::PrettyStackTraceEntry {
+  const SourceFile &sf;
 
 public:
-  explicit PrettyASTFileEmission(const ASTFile &sf) : sf(sf) {}
+  explicit PrettySourceFileEmission(const SourceFile &sf) : sf(sf) {}
   void print(raw_ostream &os) const override {
     // os << "While emitting IR for syntax file " << SF.GetFilename() << '\n';
   }
 };
 } // end anonymous namespace
 
-void IRCodeGenModule::EmitASTFile(ASTFile &sf) {
+void IRCodeGenModule::EmitSourceFile(SourceFile &sf) {
 
-  PrettyASTFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<ASTFile *> setCurASTFile(curASTFile, &sf);
+  PrettySourceFileEmission stackEntry(sf);
+  llvm::SaveAndRestore<SourceFile *> setCurSourceFile(curSourceFile, &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {

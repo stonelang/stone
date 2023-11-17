@@ -5,11 +5,11 @@
 
 using namespace stone;
 
-void stone::ParseASTFile(ASTFile &astFile, ASTContext &syntaxContext,
+void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
                          SyntaxListener *syntaxListener,
                          LexerListener *lexerListener) {
 
-  Parser parser(astFile, syntaxContext, syntaxListener, lexerListener);
+  Parser parser(sourceFile, syntaxContext, syntaxListener, lexerListener);
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 
@@ -20,6 +20,6 @@ void stone::ParseASTFile(ASTFile &astFile, ASTContext &syntaxContext,
     if (result.IsNull()) {
       return;
     }
-    astFile.AddTopLevelDecl(result.Get());
+    sourceFile.AddTopLevelDecl(result.Get());
   }
 }

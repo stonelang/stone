@@ -13,8 +13,8 @@ void TypeChecker::CheckTypes(Decl *d) {
   // if (!decl || decl->IsInvalid()){
   //     return;
   // }
-  // auto astFile = d->GetDeclContext()->GetParentSourceFile();
-  // if (astFile && astFile->GetKind() == ASTFileKind::Interface) {
+  // auto sourceFile = d->GetDeclContext()->GetParentSourceFile();
+  // if (sourceFile && sourceFile->GetKind() == SourceFileKind::Interface) {
   //   return;
   // }
   auto &ctx = d->GetASTContext();

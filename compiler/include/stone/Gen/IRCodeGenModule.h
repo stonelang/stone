@@ -59,7 +59,7 @@ class TargetMachine;
 
 namespace stone {
 
-class ASTFile;
+class SourceFile;
 class Decl;
 class GlobalDecl;
 class FunDecl;
@@ -68,7 +68,7 @@ class StructDecl;
 class EnumDecl;
 class VarDecl;
 class AutoDecl;
-class ASTFile;
+class SourceFile;
 class NominalTypeDecl;
 class CodeGenContext;
 class CodeGenListener;
@@ -105,7 +105,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
 
-  ASTFile *curASTFile = nullptr;
+  SourceFile *curSourceFile = nullptr;
 
   // llvm::SetVector<CanType> builtinTypes;
   //  /// Opaque but fixed-size types for which we also emit builtin type
@@ -155,7 +155,7 @@ public:
   // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
 
 public:
-  void EmitASTFile(ASTFile &sf);
+  void EmitSourceFile(SourceFile &sf);
 
   void EmitGlobalDecl(Decl *d);
 

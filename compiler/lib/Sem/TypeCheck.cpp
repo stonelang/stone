@@ -4,11 +4,11 @@
 
 using namespace stone;
 
-void stone::TypeCheckASTFile(ASTFile &sf,
+void stone::TypeCheckSourceFile(SourceFile &sf,
                              stone::TypeCheckerOptions &typeCheckerOpts,
                              TypeCheckerListener *listener) {
 
-  if (sf.stage == ASTFileStage::TypeChecked) {
+  if (sf.stage == SourceFileStage::TypeChecked) {
     return;
   }
   TypeChecker checker(sf.GetASTContext(), typeCheckerOpts, listener);
@@ -17,8 +17,8 @@ void stone::TypeCheckASTFile(ASTFile &sf,
   }
   // checker.Check();
 
-  // assert(sf.stage == ASTFileStage::AtImports);
-  sf.stage = ASTFileStage::TypeChecked;
+  // assert(sf.stage == SourceFileStage::AtImports);
+  sf.stage = SourceFileStage::TypeChecked;
 }
 
 void stone::TypeCheckWholeModule(ModuleDecl &md,
@@ -27,8 +27,8 @@ void stone::TypeCheckWholeModule(ModuleDecl &md,
 
   // Go through all the files and type-check -- OK for now
   for (auto *moduleFile : md.GetFiles()) {
-    if (auto *nextASTFile = dyn_cast<ASTFile>(moduleFile)) {
-      stone::TypeCheckASTFile(*nextASTFile, typeCheckerOpts, listener);
+    if (auto *nextSourceFile = dyn_cast<SourceFile>(moduleFile)) {
+      stone::TypeCheckSourceFile(*nextSourceFile, typeCheckerOpts, listener);
     }
   }
 }

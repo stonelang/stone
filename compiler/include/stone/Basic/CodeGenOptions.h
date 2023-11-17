@@ -2,8 +2,6 @@
 #define STONE_BASIC_CODEGENOPTIONS_H
 
 
-#include "stone/Basic/LLVM.h"
-
 // #include "clang/Basic/PointerAuthOptions.h"
 // #include "clang/Basic/PointerAuthOptions.h"
 #include "llvm/ADT/SmallVector.h"

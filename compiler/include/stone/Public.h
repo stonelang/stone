@@ -49,7 +49,7 @@ class Decl;
 class Stmt;
 class Expr;
 class Token;
-class ASTFile;
+class SourceFile;
 class CompilerInputFile;
 
 } // namespace stone
@@ -82,7 +82,7 @@ public:
 public:
   virtual void OnParseError() {}
   virtual void OnParseStarted() {}
-  virtual void OnParseASTFile(ASTFile *sf) {}
+  virtual void OnParseSourceFile(SourceFile *sf) {}
   virtual void OnParseCompleted() {}
 };
 
@@ -98,7 +98,7 @@ public:
 
 public:
   virtual void OnTypeCheckError();
-  virtual void OnASTFileTypeChecked(ASTFile *astFile) {}
+  virtual void OnSourceFileTypeChecked(SourceFile *sourceFile) {}
   virtual void OnModuleTypeChecked(ModuleDecl *mod) {}
 
 public:
@@ -172,34 +172,34 @@ public:
 
 // Parsing and type-checking
 namespace stone {
-using ModuleOrASTFile = llvm::PointerUnion<ModuleDecl *, ASTFile *>;
+using ModuleOrSourceFile = llvm::PointerUnion<ModuleDecl *, SourceFile *>;
 
 /// Compile a single input file
 bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
 
-/// Parse, type-check, resolve imports, and generate IR for the ASTFile.
+/// Parse, type-check, resolve imports, and generate IR for the SourceFile.
 //  This will allows for parallelization specially when you are just in parsing
 //  mode.
 /// Returns true if successfull
-bool CompileASTFile(ASTFile &astFile, Compiler &instance,
+bool CompileSourceFile(SourceFile &sourceFile, Compiler &instance,
                     CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ParseASTFile(ASTFile &astFile, ASTContext &context,
+void ParseSourceFile(SourceFile &sourceFile, ASTContext &context,
                   SyntaxListener *syntaxListener, LexerListener *lexerListener);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
-void ResolveASTFileImports(ASTFile &astFile);
+void ResolveSourceFileImports(SourceFile &sourceFile);
 
 /// Once import resolution is complete, this walks the syntax to resolve types
 /// and diagnose problems therein.
 /// Returns true is successfull
-void TypeCheckASTFile(
-    ASTFile &astFile, TypeCheckerOptions &opts,
+void TypeCheckSourceFile(
+    SourceFile &sourceFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
-        nullptr /*, TypeCheckASTFileCallback* callback = nullptr*/);
+        nullptr /*, TypeCheckSourceFileCallback* callback = nullptr*/);
 
 /// Now that we have type-checked an entire module, perform any type
 /// checking that requires the full module.
@@ -214,14 +214,14 @@ void TypeCheckWholeModule(
         nullptr /*, TypeCheckWholeModuleCallback* callback = nullptr*/);
 
 /// Returns true is successfull
-void SerializeASTFile(ASTFile &astFile);
+void SerializeSourceFile(SourceFile &sourceFile);
 
 /// Returns true is successfull
 void SerializeModuleDecl(ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenASTFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, ASTFile *sf,
+void GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, SourceFile *sf,
                   const PrimaryFileSpecificPaths specificPaths,
                   CodeGenListener *listener = nullptr);
 

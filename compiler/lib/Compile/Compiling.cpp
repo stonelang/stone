@@ -94,10 +94,10 @@
 //   }
 //   for (auto moduleFile :
 //        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
-//       stone::ParseASTFile(*astFile, compiler.GetASTContext(),
+//     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+//       stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(),
 //                              syntaxListener, lexerListener);
-//       astFile->stage = ASTFileStage::Parsed;
+//       sourceFile->stage = SourceFileStage::Parsed;
 //     }
 //   }
 //   if (compiler.GetListener()) {
@@ -117,8 +117,8 @@
 //   return Status();
 // }
 
-// Status compiling::DumpSyntax(Compiler &compiler, ASTFile
-// &astFile)
+// Status compiling::DumpSyntax(Compiler &compiler, SourceFile
+// &sourceFile)
 // {
 //   return Status();
 // }
@@ -130,12 +130,12 @@
 //     listener = compiler.GetListener()->GetTypeCheckerListener();
 //   }
 
-//   compiler.ForEachASTFileToTypeCheck(
-//       [&](ASTFile &astFile, TypeCheckerOptions &typeCheckerOpts,
+//   compiler.ForEachSourceFileToTypeCheck(
+//       [&](SourceFile &sourceFile, TypeCheckerOptions &typeCheckerOpts,
 //           stone::TypeCheckerListener *listener) {
-//         stone::TypeCheckASTFile(astFile, typeCheckerOpts, listener);
+//         stone::TypeCheckSourceFile(sourceFile, typeCheckerOpts, listener);
 //         // TODO: Check for errors
-//         astFile.stage = ASTFileStage::TypeChecked;
+//         sourceFile.stage = SourceFileStage::TypeChecked;
 //       });
 
 //   compiling::FinishTypeCheck(compiler);
@@ -251,12 +251,12 @@
 //     stone::GenModuleIR(cgc, primaryFileSpecificPaths.outputFilename,
 //     mainModule,
 //                        primaryFileSpecificPaths);
-//   } else if (IsASTFileCodeGen()) {
-//     for (auto *primaryASTFile : GetPrimaryASTFiles()) {
+//   } else if (IsSourceFileCodeGen()) {
+//     for (auto *primarySourceFile : GetPrimarySourceFiles()) {
 //       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-//           GetPrimaryFileSpecificPathsForASTFile(*primaryASTFile);
-//       stone::GenASTFileIR(cgc, primaryFileSpecificPaths.outputFilename,
-//                              primaryASTFile, primaryFileSpecificPaths);
+//           GetPrimaryFileSpecificPathsForSourceFile(*primarySourceFile);
+//       stone::GenSourceFileIR(cgc, primaryFileSpecificPaths.outputFilename,
+//                              primarySourceFile, primaryFileSpecificPaths);
 //     }
 //   }
 
@@ -342,7 +342,7 @@
 // }
 //}
 
-// static Status DumpSyntax(Compiler &compiler, ASTFile &sf) {
+// static Status DumpSyntax(Compiler &compiler, SourceFile &sf) {
 //   return Status::Success();
 // }
 
@@ -352,7 +352,7 @@
 
 // Status Compiler::CompileWithParsing() {
 //   return CompileWithParsing(
-//       [&](ASTFile &) { return Status::Success(); });
+//       [&](SourceFile &) { return Status::Success(); });
 // }
 
 // Status Compiler::CompileWithParsing(ParsingCompletedCallback notifiy)
@@ -367,12 +367,12 @@
 //   }
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = llvm::dyn_cast<ASTFile>(moduleFile)) {
-//       stone::ParseASTFile(*astFile, GetASTContext(),
+//     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+//       stone::ParseSourceFile(*sourceFile, GetASTContext(),
 //       syntaxListener,
 //                              lexerListener);
 //       if (notifiy) {
-//         notifiy(*astFile);
+//         notifiy(*sourceFile);
 //       }
 //     }
 //   }
@@ -404,10 +404,10 @@
 //   //   compiler.GetListener()->GetTypeCheckerListener();
 //   // }
 
-//   ForEachASTFile([&](ASTFile &astFile,
+//   ForEachSourceFile([&](SourceFile &sourceFile,
 //                         TypeCheckerOptions &typeCheckerOpts,
 //                         stone::TypeCheckerListener *listener) {
-//     stone::TypeCheckASTFile(astFile, typeCheckerOpts, listener);
+//     stone::TypeCheckSourceFile(sourceFile, typeCheckerOpts, listener);
 //   });
 
 //   // TODO: FinishTypeCheck();
@@ -435,7 +435,7 @@
 //   break;
 // case ActionKind::DumpSyntax:
 //   status = CompileWithParsing(
-//       [&](ASTFile &sf) { return DumpSyntax(*this, sf); });
+//       [&](SourceFile &sf) { return DumpSyntax(*this, sf); });
 //   break;
 // case ActionKind::TypeCheck:
 //   status = CompileWithTypeChecking();

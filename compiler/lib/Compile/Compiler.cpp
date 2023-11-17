@@ -88,7 +88,7 @@ Compiler::GetPrimaryFileSpecificPathsForPrimary(StringRef filename) const {
       .GetPrimaryFileSpecificPathsForPrimary(filename);
 }
 const PrimaryFileSpecificPaths &
-Compiler::GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const {
+Compiler::GetPrimaryFileSpecificPathsForSourceFile(const SourceFile &sf) const {
   return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
@@ -97,31 +97,31 @@ Compiler::GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const {
 // void Compiler::ResolveImports() {
 //   // Resolve imports for all the source files.
 //   for (auto *moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     if (auto *astFile = dyn_cast<ASTFile>(moduleFile))
-//       stone::ResolveASTFileImports(*astFile);
+//     if (auto *sourceFile = dyn_cast<SourceFile>(moduleFile))
+//       stone::ResolveSourceFileImports(*sourceFile);
 //   }
 // }
 
-// Status Compiler::ForEachASTFileToTypeCheck(
-//     EachASTFileToTypeCheckCallback notify) {
+// Status Compiler::ForEachSourceFileToTypeCheck(
+//     EachSourceFileToTypeCheckCallback notify) {
 
 // if (GetCompilerContext().GetTypeCheckMode() == TypeCheckMode::WholeModule) {
 
 //   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//     auto *astFile = dyn_cast<ASTFile>(moduleFile);
-//     if (!astFile) {
+//     auto *sourceFile = dyn_cast<SourceFile>(moduleFile);
+//     if (!sourceFile) {
 //       continue;
 //     }
-//     if (notify(*astFile, GetCompilerContext().GetTypeCheckerOptions(),
+//     if (notify(*sourceFile, GetCompilerContext().GetTypeCheckerOptions(),
 //                GetListener())
 //             .IsError()) {
 //       return Status::Error();
 //     }
 //   }
 // } else {
-//   for (auto *astFile :
-//        GetModuleSystem().GetMainModule()->GetPrimaryASTFiles()) {
-//     if (notify(*astFile, GetCompilerContext().GetTypeCheckerOptions(),
+//   for (auto *sourceFile :
+//        GetModuleSystem().GetMainModule()->GetPrimarySourceFiles()) {
+//     if (notify(*sourceFile, GetCompilerContext().GetTypeCheckerOptions(),
 //                GetListener())
 //             .IsError()) {
 //       return Status::Error();
@@ -132,14 +132,14 @@ Compiler::GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const {
 //   return Status();
 // }
 
-// Status Compiler::ForEachASTFile(EachASTFileCallback notify) {
+// Status Compiler::ForEachSourceFile(EachSourceFileCallback notify) {
 
 // for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-//   auto *astFile = dyn_cast<ASTFile>(moduleFile);
-//   if (!astFile) {
+//   auto *sourceFile = dyn_cast<SourceFile>(moduleFile);
+//   if (!sourceFile) {
 //     continue;
 //   }
-//   if (notify(*astFile).IsError()) {
+//   if (notify(*sourceFile).IsError()) {
 //     return Status::Error();
 //   }
 // }

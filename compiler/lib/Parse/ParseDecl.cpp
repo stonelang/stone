@@ -41,7 +41,7 @@ void Parser::ParseTopLevelDecls(
 // fun F0() -> void {}
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
-// This call parses one at a time and adds it to the ASTFile
+// This call parses one at a time and adds it to the SourceFile
 SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");

@@ -12,7 +12,7 @@ namespace stone {
 class TypeCheckerOptions;
 class TypeCheckerListener;
 
-class ASTFile;
+class SourceFile;
 class Expr;
 class Decl;
 class Stmt;

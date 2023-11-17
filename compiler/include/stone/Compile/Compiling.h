@@ -4,7 +4,7 @@
 namespace stone {
 class Compiler;
 namespace syn {
-class ASTFile;
+class SourceFile;
 }
 
 namespace compiling {
@@ -15,7 +15,7 @@ Status Compile(Compiler &compiler);
 void VerifyCompilerInputFileTypes(Compiler &compiler);
 Status Parse(Compiler &compiler);
 Status ParseAndImportResolution(Compiler &compiler);
-Status DumpSyntax(Compiler &compiler, ASTFile &astFile);
+Status DumpSyntax(Compiler &compiler, SourceFile &sourceFile);
 
 // Type checking
 Status TypeCheck(Compiler &compiler);

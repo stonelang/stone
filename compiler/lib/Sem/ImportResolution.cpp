@@ -7,8 +7,8 @@ using namespace stone;
 //  class UseResolver final : public DeclVisitor<UseResolver> {
 //    friend DeclVisitor<UseResolver>;
 
-//   ASTFile &SF;
+//   SourceFile &SF;
 //   ASTContext &ctx;
 // };
 
-void stone::ResolveASTFileImports(ASTFile &astFile) {}
+void stone::ResolveSourceFileImports(SourceFile &sourceFile) {}

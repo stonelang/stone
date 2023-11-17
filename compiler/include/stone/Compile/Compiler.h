@@ -37,10 +37,10 @@ class CompilerTask;
 class CodeGenContext;
 class CompilerListener;
 
-// using EachASTFileCallback = std::function<Status(ASTFile &)>;
+// using EachSourceFileCallback = std::function<Status(SourceFile &)>;
 
-// using EachASTFileToTypeCheckCallback = std::function<Status(
-//     ASTFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+// using EachSourceFileToTypeCheckCallback = std::function<Status(
+//     SourceFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
 
 /// The compiler stats
 class CompilerStats final : public Stats {
@@ -123,7 +123,7 @@ public:
 // public:
 //   /// Gets the set of SourceFiles which are the primary inputs for this
 //   /// Compiler.
-//   // llvm::ArrayRef<ASTFile *> GetPrimaryFiles() const {
+//   // llvm::ArrayRef<SourceFile *> GetPrimaryFiles() const {
 //   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
 //   // }
 
@@ -262,7 +262,7 @@ class Compiler final {
   std::unique_ptr<raw_ostream> ownedVerboseOutputStream;
 
   /// The stream for verbose output.
-  raw_ostream *verboseOutputStream = &llvm::errs();
+  //llvm::raw_ostream *verboseOutputStream = &llvm::errs();
 
 public:
   Compiler() = delete;
@@ -331,7 +331,7 @@ public:
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// Compiler.
-  // llvm::ArrayRef<ASTFile *> GetPrimaryFiles() const {
+  // llvm::ArrayRef<SourceFile *> GetPrimaryFiles() const {
   //   return GetModuleSystem().GetMainModule()->GetPrimaryFiles();
   // }
 
@@ -349,7 +349,7 @@ public:
                                          const bool shouldRecover,
                                          bool &failed);
 
-  raw_ostream *GetVerboseOutputStream() { return verboseOutputStream; }
+  //raw_ostream *GetVerboseOutputStream() { return verboseOutputStream; }
 
 public:
   //   StatisticEngine &GetStats() {
@@ -390,16 +390,16 @@ public:
   //   void ResolveImports();
 
   // public:
-  //   Status ForEachASTFile(EachASTFileCallback fn);
-  //   Status ForEachASTFileToTypeCheck(EachASTFileToTypeCheckCallback
+  //   Status ForEachSourceFile(EachSourceFileCallback fn);
+  //   Status ForEachSourceFileToTypeCheck(EachSourceFileToTypeCheckCallback
   //   notify);
 
   // public:
-  //   ModuleDecl *CastToModuleDecl(stone::ModuleOrASTFile msf) {
+  //   ModuleDecl *CastToModuleDecl(stone::ModuleOrSourceFile msf) {
   //     return msf.get<ModuleDecl *>();
   //   }
-  //   ASTFile *CastToASTFile(stone::ModuleOrASTFile msf) {
-  //     msf.dyn_cast<ASTFile *>();
+  //   SourceFile *CastToSourceFile(stone::ModuleOrSourceFile msf) {
+  //     msf.dyn_cast<SourceFile *>();
   //   }
 
   // public:
@@ -417,7 +417,7 @@ public:
   //                 ? false
   //                 : true);
   //   }
-  //   bool IsASTFileCodeGen() { return !GetPrimaryASTFiles().empty(); }
+  //   bool IsSourceFileCodeGen() { return !GetPrimarySourceFiles().empty(); }
 
   // public:
   //   //== Utils ==//
@@ -427,14 +427,14 @@ public:
   //   void ComputeCodeCodeGenOutputKind();
 
   // public:
-  //   /// Gets the set of ASTFiles which are the primary inputs for this
+  //   /// Gets the set of SourceFiles which are the primary inputs for this
   //   /// Compiler.
-  //   llvm::ArrayRef<ASTFile *> GetPrimaryASTFiles() const {
-  //     return GetModuleSystem().GetMainModule()->GetPrimaryASTFiles();
+  //   llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const {
+  //     return GetModuleSystem().GetMainModule()->GetPrimarySourceFiles();
   //   }
 
-  //   // bool HasPrimaryASTFiles() const {
-  //   //   return GetModuleSystem().GetMainModule()->HasPrimaryASTFiles();
+  //   // bool HasPrimarySourceFiles() const {
+  //   //   return GetModuleSystem().GetMainModule()->HasPrimarySourceFiles();
   //   // }
 
 public:
@@ -453,7 +453,7 @@ public:
   GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
 
   const PrimaryFileSpecificPaths &
-  GetPrimaryFileSpecificPathsForASTFile(const ASTFile &sf) const;
+  GetPrimaryFileSpecificPathsForSourceFile(const SourceFile &sf) const;
 
   // public:
   void PrintTimers();

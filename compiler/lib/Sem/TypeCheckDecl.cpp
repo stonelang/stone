@@ -8,10 +8,10 @@ using namespace stone;
 class DeclChecking final : public DeclVisitor<DeclChecking> {
   TypeChecker &checker;
   ASTContext &sc;
-  ASTFile *sf;
+  SourceFile *sf;
 
 public:
-  DeclChecking(TypeChecker &checker, ASTContext &sc, ASTFile *sf)
+  DeclChecking(TypeChecker &checker, ASTContext &sc, SourceFile *sf)
       : checker(checker), sc(sc), sf(sf) {}
 
 public:
@@ -30,6 +30,6 @@ public:
 
 void TypeChecker::CheckDecl(Decl *d) {
 
-  auto *sf = d->GetDeclContext()->GetParentASTFile();
+  auto *sf = d->GetDeclContext()->GetParentSourceFile();
   DeclChecking(*this, d->GetASTContext(), sf).Visit(d);
 }

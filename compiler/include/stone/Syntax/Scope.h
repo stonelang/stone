@@ -17,7 +17,7 @@ enum class ScopeKind : UInt8 {
 
   TopLevel,
   /// A syntax file , which is the root of a scope.
-  ASTFile,
+  SourceFile,
 
   Decl,
 

@@ -9,7 +9,7 @@
 
 using namespace stone;
 
-Parser::Parser(ASTFile &sf, ASTContext &astContext,
+Parser::Parser(SourceFile &sf, ASTContext &astContext,
                SyntaxListener *syntaxListener, LexerListener *lexerListener)
     : Parser(sf, astContext,
              Safe<Lexer>(new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
@@ -17,7 +17,7 @@ Parser::Parser(ASTFile &sf, ASTContext &astContext,
                                    &astContext.GetStats(), lexerListener)),
              listener) {}
 
-Parser::Parser(ASTFile &sf, ASTContext &astContext, Safe<Lexer> lx,
+Parser::Parser(SourceFile &sf, ASTContext &astContext, Safe<Lexer> lx,
                SyntaxListener *listener)
     : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf),
       listener(listener), stats(new ParserStats(*this)) {

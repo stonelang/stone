@@ -6,7 +6,6 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Basic/TargetOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Option/Options.h"
 #include "stone/Option/Action.h"

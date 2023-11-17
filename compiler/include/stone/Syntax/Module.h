@@ -45,7 +45,7 @@ public:
   using ASTAllocation<ModuleFile>::operator delete;
 };
 
-enum class ASTFileKind : uint8_t {
+enum class SourceFileKind : uint8_t {
   None,
   // .stone file without 'Main'
   Library,
@@ -53,7 +53,7 @@ enum class ASTFileKind : uint8_t {
   Main
 };
 
-enum class ASTFileStage {
+enum class SourceFileStage {
   /// Parsing is underway.
   Parsing = 0,
   /// Parsing has completed.
@@ -64,7 +64,7 @@ enum class ASTFileStage {
   TypeChecked
 };
 
-class ASTFile final : public ModuleFile {
+class SourceFile final : public ModuleFile {
 private:
   friend ASTContext;
   // llvm::NullablePtr<Scope> scope = nullptr;
@@ -131,16 +131,16 @@ public:
   static ParsingOptions GetDefaultParsingOptions(const LangOptions &langOpts);
 
 public:
-  ASTFileKind kind = ASTFileKind::None;
-  ASTFileStage stage = ASTFileStage::Parsing;
+  SourceFileKind kind = SourceFileKind::None;
+  SourceFileStage stage = SourceFileStage::Parsing;
 
   std::vector<Decl *> Decls;
 
 public:
-  ASTFile(ASTFileKind kind, ModuleDecl &owner, llvm::Optional<unsigned> srcID,
+  SourceFile(SourceFileKind kind, ModuleDecl &owner, llvm::Optional<unsigned> srcID,
           bool isPrimary = false);
 
-  ~ASTFile();
+  ~SourceFile();
 
 public:
   bool IsPrimary() const { return isPrimary; }
@@ -177,7 +177,7 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static ASTFile *Make(ASTFileKind kind, unsigned srcID, ModuleDecl &owner,
+  static SourceFile *Make(SourceFileKind kind, unsigned srcID, ModuleDecl &owner,
                        ASTContext &tc, bool isPrimary = false);
 
   static bool classof(const ModuleFile *file) {
@@ -219,12 +219,12 @@ public:
     return {files.begin(), files.size()};
   }
   void AddFile(ModuleFile &file);
-  ASTFile &GetMainASTFile() const;
+  SourceFile &GetMainSourceFile() const;
   ModuleFile &GetMainFile(ModuleFileKind kind) const;
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<ASTFile *> &GetPrimaryASTFiles() const;
+  llvm::ArrayRef<SourceFile *> &GetPrimarySourceFiles() const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.
