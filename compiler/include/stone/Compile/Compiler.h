@@ -8,6 +8,7 @@
 #include <deque>
 
 namespace stone {
+class ModuleDecl;
 
 class CompilerModule final {
   ModuleDecl *modPtr = nullptr;

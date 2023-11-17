@@ -2,6 +2,7 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Option/ActionKind.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
+#include "stone/Syntax/Module.h"
 
 using namespace stone;
 
@@ -109,4 +110,4 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
 }
 
 void CompilerModule::AddSourceFiles() {}
-void Compiler::AddSourceFile() {}
+void CompilerModule::AddSourceFile() {}
