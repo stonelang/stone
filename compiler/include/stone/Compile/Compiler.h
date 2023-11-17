@@ -279,7 +279,7 @@ public:
 
 public:
   void BuildTasks();
-  void QueueTask(ActionKind source);
+  void SetupTask(ActionKind source);
   void RunTasks();
 
 private:

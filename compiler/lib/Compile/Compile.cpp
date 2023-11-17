@@ -88,9 +88,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-void Compiler::BuildTasks() { QueueTask(GetAction().GetKind()); }
+void Compiler::BuildTasks() { SetupTask(GetAction().GetKind()); }
 
-void Compiler::QueueTask(ActionKind source) {
+void Compiler::SetupTask(ActionKind source) {
   switch (source) {
   case ActionKind::PrintHelp: {
     QueueTask(GetTask(ActionKind::PrintHelp));
@@ -108,7 +108,7 @@ void Compiler::QueueTask(ActionKind source) {
     break;
   }
   case ActionKind::ResolveImports: {
-    QueueTask(ActionKind::Parse);
+    SetupTask(ActionKind::Parse);
     QueueTask(GetTask(ActionKind::ResolveImportsTask));
     break;
   }
@@ -118,7 +118,7 @@ void Compiler::QueueTask(ActionKind source) {
   //   break;
   // }
   case ActionKind::TypeCheck: {
-    QueueTask(ActionKind::ResolveImports);
+    SetupTask(ActionKind::ResolveImports);
     QueueTask(GetTask(ActionKind::TypeCheckTask));
     break;
   }
@@ -134,12 +134,12 @@ void Compiler::QueueTask(ActionKind source) {
     // }
 
   case ActionKind::EmitIRBefore: {
-    QueueTask(ActionKind::TypeCheck));
+    SetupTask(ActionKind::TypeCheck));
     QueueTask(GetTask(ActionKind::EmitIRBefore));
     break;
   }
   case ActionKind::EmitIRAfter: {
-    QueueTask(ActionKind::TypeCheck))
+    SetupTask(ActionKind::TypeCheck))
     QueueTask(GetTask(ActionKind::EmitIRAfterTask));
     break;
   }
@@ -149,7 +149,7 @@ void Compiler::QueueTask(ActionKind source) {
   //   break;
   // }
   case ActionKind::EmitObject: {
-    QueueTask(ActionKind::TypeCheck))
+    SetupTask(ActionKind::TypeCheck))
     QueueTask(GetTask(ActionKind::EmitObject));
     break;
   }
