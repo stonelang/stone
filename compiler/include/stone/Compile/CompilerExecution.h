@@ -71,7 +71,9 @@ public:
 public:
   CompilerExecution(Compiler &compiler) : compiler(compiler) {}
   void Setup();
-  Status ExecutionAction(ActionKind action);
+
+  Status ExecuteAction();
+  Status ExecuteAction(ActionKind action);
 
 public:
   Status ExecutePrintHelp();

@@ -35,20 +35,24 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  compiler.GetInvocation().ParseCommandLine(args);
+  auto status = compiler.GetInvocation().ParseCommandLine(args);
+  if (status.IsError()) {
+    return FinishCompile(Status::Error());
+  }
+  if(!compiler.GetInvocation().HasAction()) {
+  	//compiler.GetDiags().PrintD(diag::err_no_compile_action);
+  }
   compiler.Setup();
-
-  // compiler.GetExecution().ExecuteAction();
+  compiler.GetExecution().ExecuteAction();
 
   return FinishCompile();
 }
 
-// Status CompilerExecution::ExecutionAction() {
-//   // compiler.ForEachAction([](ActionKind action)) { ExecutionAction(action);
-//   }
-// }
+Status CompilerExecution::ExecuteAction() {
+	compiler.ForEachAction([](ActionKind action)) { ExecuteAction(action);}
+ }
 
-Status CompilerExecution::ExecutionAction(ActionKind action) {
+Status CompilerExecution::ExecuteAction(ActionKind action) {
   currentAction = action;
   switch (currentAction) {
   case ActionKind::PrintHelp:

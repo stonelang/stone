@@ -68,6 +68,8 @@ public:
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
+  bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
+
 public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);
 };
