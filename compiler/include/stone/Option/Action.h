@@ -23,9 +23,7 @@ public:
   llvm::StringRef GetName() const { return name; }
   file::Type GetOutputFileType() const;
 
-
 public:
-
   bool Is(ActionKind k) const { return kind == k; }
 
   bool CanOutput() const {

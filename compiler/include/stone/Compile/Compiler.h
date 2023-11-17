@@ -206,7 +206,7 @@ public:
 //   void PrintHelp();
 // };
 
-// CompilerActionQueue 
+// CompilerActionQueue
 class CompilerQueue final {
 
   Compiler &compiler;
@@ -262,7 +262,7 @@ class Compiler final {
   std::unique_ptr<raw_ostream> ownedVerboseOutputStream;
 
   /// The stream for verbose output.
-  //llvm::raw_ostream *verboseOutputStream = &llvm::errs();
+  // llvm::raw_ostream *verboseOutputStream = &llvm::errs();
 
 public:
   Compiler() = delete;
@@ -349,7 +349,7 @@ public:
                                          const bool shouldRecover,
                                          bool &failed);
 
-  //raw_ostream *GetVerboseOutputStream() { return verboseOutputStream; }
+  // raw_ostream *GetVerboseOutputStream() { return verboseOutputStream; }
 
 public:
   //   StatisticEngine &GetStats() {
@@ -464,7 +464,7 @@ public:
   void FreeASTContext();
 
 public:
-  //void LoadStdLib();
+  // void LoadStdLib();
 
 public:
   /// Return the total amount of physical memory allocated for representing

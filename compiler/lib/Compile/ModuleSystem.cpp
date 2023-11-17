@@ -80,7 +80,8 @@ Status ModuleSystem::CreateSourceFilesForMainModule(
   return Status();
 }
 
-SourceFile *ModuleSystem::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
+SourceFile *
+ModuleSystem::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
 
   if (compiler.GetCompilerOptions().parsingInputMode ==
       CompilerOptions::ParsingInputMode::StoneLibrary) {
@@ -90,15 +91,15 @@ SourceFile *ModuleSystem::ComputeMainSourceFileForModule(ModuleDecl *mod) const 
   return nullptr;
 }
 
-SourceFile *ModuleSystem::CreateSourceFileForMainModule(ModuleDecl *mod,
-                                                  SourceFileKind sourceFileKind,
-                                                  unsigned bufferID,
-                                                  bool isMainBuffer) const {
+SourceFile *ModuleSystem::CreateSourceFileForMainModule(
+    ModuleDecl *mod, SourceFileKind sourceFileKind, unsigned bufferID,
+    bool isMainBuffer) const {
 
   auto isPrimary = bufferID && compiler.IsPrimarySourceID(bufferID);
   auto parsingOpts = GetSourceFileParsingOptions(isPrimary);
 
-  auto sourceFile = SourceFile::Make(sourceFileKind, bufferID, *mod, syntaxContext);
+  auto sourceFile =
+      SourceFile::Make(sourceFileKind, bufferID, *mod, syntaxContext);
 
   // if (isMainBuffer)
   //   inputFile->SyntaxParsingCache =

@@ -7,8 +7,8 @@
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Option/Options.h"
 #include "stone/Option/Action.h"
+#include "stone/Option/Options.h"
 #include "stone/Syntax/SearchPath.h"
 
 namespace stone {

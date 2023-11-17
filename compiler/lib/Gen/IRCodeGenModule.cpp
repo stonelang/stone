@@ -41,9 +41,10 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName, FunctionDecl *fd,
     isIncompleteFunction = true;
   }
 
-  llvm::Function *llvmFunction = llvm::Function::Create(
-      llvmFunctionType, llvm::Function::ExternalLinkage,
-      entry ? llvm::StringRef() : mangledName, GetCodeGenContext().GetLLVMModule());
+  llvm::Function *llvmFunction =
+      llvm::Function::Create(llvmFunctionType, llvm::Function::ExternalLinkage,
+                             entry ? llvm::StringRef() : mangledName,
+                             GetCodeGenContext().GetLLVMModule());
 
   return llvmFunction;
 }

@@ -213,8 +213,8 @@ Status ParseTask::Execute(Compiler &compiler, CompilerTask *dep) {
   for (auto moduleFile :
        compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-      stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(), syntaxListener,
-                          lexerListener);
+      stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(),
+                             syntaxListener, lexerListener);
       sourceFile->stage = SourceFileStage::Parsed;
     }
   }
@@ -256,3 +256,39 @@ Status EmitObjectTask::Execute(Compiler &compiler, CompilerTask *dep) {
 
   return Status();
 }
+
+// void stone::PerformPrintHelp(Compiler &compiler) {}
+
+// void stone::PerformPrintVersion(Compiler &compiler) {}
+
+// Status stone::PerformParse(Compiler &compiler) {}
+
+// Status stone::PerformResolveImports(Compiler &compiler) {}
+
+// Status stone::PerformDumpSyntax(Compiler &compiler) {}
+
+// Status stone::PerformTypeCheck(Compiler &compiler) {}
+
+// void stone::PerformDumpTypeInfo(Compiler &compiler) {}
+
+// void stone::PerformPrintSyntax(Compiler &compiler) {}
+
+// void stone::PerformPrintIR(Compiler &compiler) {}
+
+// Status stone::PerformEmitIRBefore(Compiler &compiler) {}
+
+// Status stone::PerformEmitIRAfter(Compiler &compiler) {}
+
+// Status stone::PerformEmitBC(Compiler &compiler) {}
+
+// Status stone::PerformEmitObject(Compiler &compiler) {}
+
+// Status stone::PerformEmitLibrary(Compiler &compiler) {}
+
+// Status stone::PerformInitModule(Compiler &compiler) {}
+
+// Status stone::PerformEmitModule(Compiler &compiler) {}
+
+// Status stone::PerformEmitAssembly(Compiler &compiler) {}
+
+// Status stone::PerformMergeModules(Compiler &compiler) {}

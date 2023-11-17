@@ -99,8 +99,9 @@ static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
 }
 
 void stone::GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                         SourceFile *sf, const PrimaryFileSpecificPaths paths,
-                         CodeGenListener *listener) {
+                            SourceFile *sf,
+                            const PrimaryFileSpecificPaths paths,
+                            CodeGenListener *listener) {
   assert(sf);
   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
 }

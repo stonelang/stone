@@ -43,13 +43,13 @@ public:
   ModuleDecl *GetMainModule() const;
   void SetMainModule(ModuleDecl *mod);
 
-  Status
-  CreateSourceFilesForMainModule(ModuleDecl *mod,
-                              llvm::SmallVectorImpl<ModuleFile *> &files) const;
+  Status CreateSourceFilesForMainModule(
+      ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &files) const;
 
-  SourceFile *CreateSourceFileForMainModule(ModuleDecl *mod, SourceFileKind fileKind,
-                                      unsigned bufferID,
-                                      bool isMainBuffer = false) const;
+  SourceFile *CreateSourceFileForMainModule(ModuleDecl *mod,
+                                            SourceFileKind fileKind,
+                                            unsigned bufferID,
+                                            bool isMainBuffer = false) const;
 
   SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
 

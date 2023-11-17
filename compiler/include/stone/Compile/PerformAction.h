@@ -40,5 +40,36 @@ void PrintIR(Compiler &compiler, CodeGenContext &codeGenContext);
 
 } // namespace compiling
 
+// void PerformPrintHelp(Compiler &compiler);
+// void PerformPrintVersion(Compiler &compiler);
+
+// Status PerformParse(Compiler &compiler);
+// Status PerformResolveImports(Compiler &compiler);
+// Status PerformDumpSyntax(Compiler &compiler);
+
+// Status PerformTypeCheck(Compiler &compiler);
+
+// void PerformDumpTypeInfo(Compiler &compiler);
+
+// void PerformPrintSyntax(Compiler &compiler);
+
+// void PerformPrintIR(Compiler &compiler);
+
+// Status PerformEmitIRBefore(Compiler &compiler);
+
+// Status PerformEmitIRAfter(Compiler &compiler);
+// Status PerformEmitBC(Compiler &compiler);
+
+// Status PerformEmitObject(Compiler &compiler);
+// Status PerformEmitLibrary(Compiler &compiler);
+
+// Status PerformInitModule(Compiler &compiler);
+
+// Status PerformEmitModule(Compiler &compiler);
+
+// Status PerformEmitAssembly(Compiler &compiler);
+
+// Status PerformMergeModules(Compiler &compiler);
+
 } // namespace stone
 #endif

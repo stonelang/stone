@@ -14,8 +14,7 @@
 
 using namespace stone;
 
-ASTContext::ASTContext(LangOptions &langOpts,
-                       const SearchPathOptions &spOpts,
+ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
                        StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),

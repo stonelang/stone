@@ -1,7 +1,6 @@
 #ifndef STONE_BASIC_CODEGENOPTIONS_H
 #define STONE_BASIC_CODEGENOPTIONS_H
 
-
 // #include "clang/Basic/PointerAuthOptions.h"
 // #include "clang/Basic/PointerAuthOptions.h"
 #include "llvm/ADT/SmallVector.h"

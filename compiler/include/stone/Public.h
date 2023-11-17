@@ -182,12 +182,13 @@ bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
 //  mode.
 /// Returns true if successfull
 bool CompileSourceFile(SourceFile &sourceFile, Compiler &instance,
-                    CodeGenContext *cgc = nullptr);
+                       CodeGenContext *cgc = nullptr);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
 void ParseSourceFile(SourceFile &sourceFile, ASTContext &context,
-                  SyntaxListener *syntaxListener, LexerListener *lexerListener);
+                     SyntaxListener *syntaxListener,
+                     LexerListener *lexerListener);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
@@ -221,9 +222,10 @@ void SerializeModuleDecl(ModuleDecl &moduleDecl);
 
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName, SourceFile *sf,
-                  const PrimaryFileSpecificPaths specificPaths,
-                  CodeGenListener *listener = nullptr);
+void GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                     SourceFile *sf,
+                     const PrimaryFileSpecificPaths specificPaths,
+                     CodeGenListener *listener = nullptr);
 
 /// Gen IR for the entire Module
 /// Returns true is successfull

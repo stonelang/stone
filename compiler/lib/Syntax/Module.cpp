@@ -84,7 +84,7 @@ llvm::ArrayRef<SourceFile *> &ModuleDecl::GetPrimarySourceFiles() const {
 }
 
 SourceFile::SourceFile(SourceFileKind kind, ModuleDecl &owner,
-                 llvm::Optional<unsigned> srcID, bool isPrimary)
+                       llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 
@@ -109,8 +109,9 @@ llvm::StringRef SourceFile::GetFilename() const {
   return sm.getIdentifierForBuffer(srcID);
 }
 
-SourceFile *SourceFile::Make(SourceFileKind kind, unsigned srcID, ModuleDecl &owner,
-                       ASTContext &sc, bool isPrimary) {
+SourceFile *SourceFile::Make(SourceFileKind kind, unsigned srcID,
+                             ModuleDecl &owner, ASTContext &sc,
+                             bool isPrimary) {
   return new (sc) SourceFile(kind, owner, srcID, isPrimary);
 }
 

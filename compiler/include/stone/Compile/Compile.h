@@ -4,8 +4,6 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
 
-
-
 namespace stone {
 
 class CompilerListener;
@@ -20,8 +18,9 @@ class CompilerListener;
 //   virtual void CompletedInitialization(Compiler &compiler) {}
 //   virtual void CompletedBuildingTasks(Compiler &compiler) {}
 
-//   virtual void ExecutingCompilerTasks(Compiler &compiler, CompilerTask *task) {}
-//   virtual void FinishedCompilerTasks(Compiler &compiler, CompilerTask *task) {}
+//   virtual void ExecutingCompilerTasks(Compiler &compiler, CompilerTask *task)
+//   {} virtual void FinishedCompilerTasks(Compiler &compiler, CompilerTask
+//   *task) {}
 
 //   virtual void CompletedSyntaxAnalysis(Compiler &compiler) {}
 //   virtual void CompletedSemanticAnalysis(Compiler &compiler) {}

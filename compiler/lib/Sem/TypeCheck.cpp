@@ -5,8 +5,8 @@
 using namespace stone;
 
 void stone::TypeCheckSourceFile(SourceFile &sf,
-                             stone::TypeCheckerOptions &typeCheckerOpts,
-                             TypeCheckerListener *listener) {
+                                stone::TypeCheckerOptions &typeCheckerOpts,
+                                TypeCheckerListener *listener) {
 
   if (sf.stage == SourceFileStage::TypeChecked) {
     return;

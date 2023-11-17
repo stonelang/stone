@@ -6,8 +6,8 @@
 using namespace stone;
 
 void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
-                         SyntaxListener *syntaxListener,
-                         LexerListener *lexerListener) {
+                            SyntaxListener *syntaxListener,
+                            LexerListener *lexerListener) {
 
   Parser parser(sourceFile, syntaxContext, syntaxListener, lexerListener);
   llvm::SmallVector<SyntaxResult<Decl>> results;

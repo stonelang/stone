@@ -394,7 +394,7 @@ SyntaxStatus Parser::ParseFunctionBody(ParsingDeclCollector &collector,
   // Simple for now
   auto functionBody =
       BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
-      
+
   funDecl.SetBody(functionBody, FunctionDecl::BodyStatus::Parsed);
 
   return status;

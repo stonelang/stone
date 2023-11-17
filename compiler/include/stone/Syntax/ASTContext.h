@@ -155,8 +155,7 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(LangOptions &langOpts,
-             const SearchPathOptions &searchPathOpts,
+  ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
              ClangContext &clangContext, DiagnosticEngine &de,
              StatisticEngine &se);
 
@@ -178,7 +177,6 @@ public:
   LangABI *GetLangABI() const;
   //
   SrcMgr &GetSrcMgr() { return de.GetSrcMgr(); }
-
 
   LangOptions &GetLangOptions() { return langOpts; }
 

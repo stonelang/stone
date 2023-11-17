@@ -10,11 +10,11 @@
 
 namespace stone {
 namespace fm {
-
 template <class RefTy> class MapEntryOptionalStorage;
-
 } // end namespace fm
+} // namespace stone
 
+namespace stone {
 /// Cached information about one directory (either on disk or in
 /// the virtual file system).
 class DirEntry {
@@ -95,6 +95,9 @@ private:
   const MapEntry *ME;
 };
 
+} // namespace stone
+
+namespace stone {
 namespace fm {
 
 /// Customized storage for refs derived from map entires in FileMgr, using

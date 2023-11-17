@@ -23,6 +23,6 @@ BraceStmt *BraceStmt::Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
 
   void *stmtPtr =
       astContext.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),
-                  alignof(BraceStmt));
+                          alignof(BraceStmt));
   return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }
