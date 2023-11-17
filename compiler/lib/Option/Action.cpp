@@ -8,8 +8,6 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-Action::Action() {}
-
 ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
   switch (actionOptionID) {
   case opts::Parse:

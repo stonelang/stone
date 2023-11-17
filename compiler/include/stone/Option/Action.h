@@ -7,16 +7,14 @@
 
 namespace stone {
 
-class Action {
+class Action final {
   ActionKind kind;
-
-protected:
   llvm::StringRef name;
-  void SetName(llvm::StringRef v) { name = v; }
-  void SetKind(ActionKind inputKind) { kind = inputKind; }
 
 public:
-  Action();
+  Action(ActionKind inputKind = ActionKind::None,
+         llvm::StringRef inputName = llvm::StringRef())
+      : kind(inputKind), name(inputName) {}
 
 public:
   ActionKind GetKind() const { return kind; }

@@ -56,7 +56,6 @@ public:
   }
 };
 
-
 class CompilerExecution final {
   Compiler &compiler;
 

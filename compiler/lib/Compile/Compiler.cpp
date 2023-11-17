@@ -7,7 +7,7 @@ using namespace stone;
 Compiler::Compiler() : invocation(*this), execution(*this) {}
 
 void Compiler::Setup() {
-  SetupAction(invocation.GetCompilerOptions().MainAction);
+  SetupAction(invocation.GetCompilerOptions().MainAction.GetKind());
 
   // We do not setup the rest of the compiler if it is not compilable
   // For example, PrintHelp

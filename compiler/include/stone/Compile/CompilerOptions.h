@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILEROPTIONS_H
 #define STONE_COMPILE_COMPILEROPTIONS_H
 
-#include "stone/Option/ActionKind.h"
+#include "stone/Option/Action.h"
 
 #include "llvm/ADT/SmallString.h"
 
@@ -18,11 +18,8 @@ class CompilerOptions final {
   friend CompilerInputsConverter;
 
 public:
-  /// The action request
-  ActionKind MainAction;
-
-  /// The name of the action
-  llvm::StringRef MainActionName;
+  /// The main action requested.
+  Action MainAction;
 
   /// A list of arbitrary modules to import and make implicitly visible.
   std::vector<std::pair<String, bool /*testable*/>> implicitModuleNames;

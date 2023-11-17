@@ -10,9 +10,9 @@ class CompilerInvocation final {
   Compiler &compiler;
   CompilerOptions compilerOpts;
 
-
 public:
-  CompilerInvocation(Compiler& compiler) : compiler(compiler){}
+  CompilerInvocation(Compiler &compiler) : compiler(compiler) {}
+
 public:
   CompilerInvocation();
 
