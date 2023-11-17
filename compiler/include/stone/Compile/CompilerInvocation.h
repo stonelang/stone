@@ -43,13 +43,36 @@ public:
 
 public:
   CompilerInvocation();
-
 public:
-  Status ParseCommandLine(llvm::ArrayRef<const char *> args);
 
-public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
+
+  CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
+  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
+
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
+
+  ASTOptions &GetASTOptions() { return astOpts; }
+  const ASTOptions &GetASTOptions() const { return astOpts; }
+
+  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
+  const TypeCheckerOptions &GetTypeCheckerOptions() const {
+    return typeCheckerOpts;
+  }
+  SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
+  const SearchPathOptions &GetSearchPathOptions() const {
+    return searchPathOpts;
+  }
+
+  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+
+  public:
+  Status ParseCommandLine(llvm::ArrayRef<const char *> args);
+
+
 };
 
 } // namespace stone
