@@ -17,7 +17,6 @@
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/raw_ostream.h"
 
-
 using namespace stone;
 
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
@@ -44,7 +43,8 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg :
        compilerInputArgList->filtered(opts::UNKNOWN)) {
-    compiler.GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                      diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
+    compiler.GetDiags().PrintD(
+        SrcLoc(), diag::err_unknown_arg,
+        diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
 }

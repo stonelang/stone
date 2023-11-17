@@ -1,12 +1,11 @@
 #ifndef STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 #define STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 
-#include "stone/Compile/CompilerOptions.h"
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticConsumer.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Option/Options.h"
-
 
 #include "llvm/Option/ArgList.h"
 

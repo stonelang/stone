@@ -62,6 +62,10 @@ Status CompilerExecution::ExecutionAction(ActionKind action) {
   }
 }
 
+Status CompilerExecution::ExecutePrintHelp() { return Status(); }
+Status CompilerExecution::ExecutePrintVersion() { return Status(); }
+Status CompilerExecution::ExecutePrintFeature() { return Status(); }
+
 Status CompilerExecution::ExecuteParseOnly() {
   assert(currentAction == ActionKind::Parse);
   CompilerExecutionRAII compilerExectutionRAII(*this);
@@ -71,6 +75,11 @@ Status CompilerExecution::ExecuteParseOnly() {
 Status CompilerExecution::ExecuteResolveImports() {
   assert(currentAction == ActionKind::ResolveImports);
 
+  CompilerExecutionRAII exectutionRAII(*this);
+  return Status();
+}
+
+Status CompilerExecution::ExecuteDumpSyntax() {
   CompilerExecutionRAII exectutionRAII(*this);
   return Status();
 }
@@ -85,11 +94,6 @@ Status CompilerExecution::ExecuteTypeCheck() {
   return Status();
 }
 
-Status CompilerExecution::ExecuteDumpSyntax() {
-  CompilerExecutionRAII exectutionRAII(*this);
-  return Status();
-}
-
 Status CompilerExecution::ExecuteEmitObject() {
   assert(currentAction == ActionKind::EmitObject);
   assert(GetStages().HasCompletedSemanticAnalysis());
@@ -100,6 +104,22 @@ Status CompilerExecution::ExecuteEmitObject() {
 
   return Status();
 }
+
+Status CompilerExecution::ExecuteDumpTypeInfo() { return Status(); }
+Status CompilerExecution::ExecutePrintSyntax() { return Status(); }
+Status CompilerExecution::ExecutePrintIR() { return Status(); }
+Status CompilerExecution::ExecuteEmitIRBefore() { return Status(); }
+
+Status CompilerExecution::ExecuteGenerateIR() { return Status(); }
+Status CompilerExecution::ExecuteInitModule() { return Status(); }
+Status CompilerExecution::ExecuteEmitModule() { return Status(); }
+Status CompilerExecution::ExecuteMergeModules() { return Status(); }
+
+Status CompilerExecution::ExecuteEmitIRAfter() { return Status(); }
+Status CompilerExecution::ExecuteEmitBC() { return Status(); }
+
+Status CompilerExecution::ExecuteEmitLibrary() { return Status(); }
+Status CompilerExecution::ExecuteEmitAssembly() { return Status(); }
 
 CompilerExecutionRAII::CompilerExecutionRAII(CompilerExecution &execution)
     : execution(execution) {}

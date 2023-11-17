@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_COMPILEROPTIONS_H
 #define STONE_COMPILE_COMPILEROPTIONS_H
 
+#include "stone/Basic/ModuleOptions.h"
 #include "stone/Option/Action.h"
 
 #include "llvm/ADT/SmallString.h"
@@ -19,10 +20,9 @@ class CompilerOptions final {
 
 public:
   /// The main action requested.
-  Action MainAction;
+  Action mainAction;
 
-  /// A list of arbitrary modules to import and make implicitly visible.
-  std::vector<std::pair<String, bool /*testable*/>> implicitModuleNames;
+  ModuleOptions moduleOpts;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
@@ -42,10 +42,10 @@ public:
   bool downgradeInterfaceVerificationError = false;
 
   /// The path the executing program
-  llvm::StringRef MainExecutablePath;
+  llvm::StringRef mainExecutablePath;
 
   /// The name of the executing program
-  llvm::StringRef MainExecutableName;
+  llvm::StringRef mainExecutableName;
 
   llvm::SmallString<128> workingDirectory;
 

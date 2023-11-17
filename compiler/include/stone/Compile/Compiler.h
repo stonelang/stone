@@ -1,16 +1,15 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 #include <deque>
 
 namespace stone {
 
 class Compiler final {
-
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
@@ -40,7 +39,6 @@ public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
-
 };
 
 } // namespace stone

@@ -7,7 +7,7 @@ using namespace stone;
 Compiler::Compiler() : invocation(*this), execution(*this) {}
 
 void Compiler::Setup() {
-  SetupAction(invocation.GetCompilerOptions().MainAction.GetKind());
+  SetupAction(invocation.GetCompilerOptions().mainAction.GetKind());
 
   // We do not setup the rest of the compiler if it is not compilable
   // For example, PrintHelp
@@ -90,12 +90,16 @@ void Compiler::SetupAction(ActionKind action) {
   }
   }
 }
-
 // void Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
 //   for (auto action : actions) {
 //     notify(action);
 //   }
 // }
-// void Compiler::QueueAction(ActionKind actionKind) {
-//   actions.push_back(actionKind);
-// }
+void Compiler::QueueAction(ActionKind action) { actions.push_back(action); }
+
+
+void CompilerExecution::Setup() {
+ 
+}
+
+
