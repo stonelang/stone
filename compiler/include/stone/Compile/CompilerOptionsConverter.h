@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 #define STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 
-#include "stone/Basic/ModuleOptions.h"
+#include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticConsumer.h"
 #include "stone/Diag/DiagnosticEngine.h"
@@ -16,7 +16,6 @@ class CompilerOptionsConverter {
   const llvm::opt::ArgList &args;
   LangOptions &langOpts;
   CompilerOptions &compilerOpts;
-  ModuleOptions &moduleOpts;
 
 private:
   llvm::Optional<std::vector<std::string>>
@@ -43,8 +42,8 @@ private:
 
 public:
   CompilerOptionsConverter(const llvm::opt::ArgList &args, DiagnosticEngine &de,
-                           LangOptions &langOpts, CompilerOptions &compilerOpts,
-                           ModuleOptions &moduleOpts);
+                           LangOptions &langOpts,
+                           CompilerOptions &compilerOpts);
 
 public:
   Status

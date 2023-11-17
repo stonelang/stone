@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILEROPTIONS_H
 
 #include "stone/Basic/ModuleOptions.h"
+#include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Option/Action.h"
 
 #include "llvm/ADT/SmallString.h"
@@ -23,6 +24,8 @@ public:
   Action mainAction;
 
   ModuleOptions moduleOpts;
+
+  CompilerInputsAndOutputs inputsAndOutputs;
 
   /// Indicates that the input(s) should be parsed as the Stone stdlib.
   bool shouldParseAsStdLib = false;
@@ -58,6 +61,11 @@ public:
     StoneModuleInterface,
   };
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
+
+  CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
+  const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
+    return inputsAndOutputs;
+  }
 };
 
 } // namespace stone

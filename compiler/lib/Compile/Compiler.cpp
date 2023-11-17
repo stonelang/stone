@@ -1,6 +1,7 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Option/ActionKind.h"
+#include "stone/Parse/Lexer.h" // TODO: do better
 
 using namespace stone;
 
@@ -8,13 +9,11 @@ Compiler::Compiler() : invocation(*this), execution(*this) {}
 
 void Compiler::Setup() {
   SetupAction(invocation.GetCompilerOptions().mainAction.GetKind());
-
   // We do not setup the rest of the compiler if it is not compilable
   // For example, PrintHelp
   // if (!invocation.IsCompilable()) {
   //   return;
   // }
-
   execution.Setup();
 }
 
@@ -99,5 +98,14 @@ Status Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
   return Status();
 }
 void Compiler::QueueAction(ActionKind action) { actions.push_back(action); }
+
+Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
+  if (!Lexer::isIdentifier(moduleName)) {
+    return Status::Error();
+  }
+  return Status();
+}
+
+CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
 
 void CompilerExecution::Setup() {}

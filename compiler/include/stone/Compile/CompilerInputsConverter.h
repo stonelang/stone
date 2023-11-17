@@ -1,6 +1,7 @@
 #ifndef STONE_COMPILE_COMPILERINPUTSCONVERTER_H
 #define STONE_COMPILE_COMPILERINPUTSCONVERTER_H
 
+#include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Public.h"
 

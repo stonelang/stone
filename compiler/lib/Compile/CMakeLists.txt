@@ -2,6 +2,10 @@ set(stone_compile_sources
   Compile.cpp
   Compiler.cpp
   CompilerInvocation.cpp
+  CompilerInputsAndOutputs.cpp
+  CompilerInputsConverter.cpp
+  CompilerOptionsConverter.cpp
+  CompilerOutputsConverter.cpp
   
   LINK_LIBS
   StoneGen

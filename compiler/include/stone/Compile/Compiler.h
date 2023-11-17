@@ -42,6 +42,9 @@ public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
+
+public:
+  static Status IsValidModuleName(const llvm::StringRef moduleName);
 };
 
 } // namespace stone

@@ -50,10 +50,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 Status CompilerExecution::ExecuteAction() {
   compiler.ForEachAction([&](ActionKind action) {
-    if(ExecuteAction(action).IsError()){
-    	return Status::Error();
+    if (ExecuteAction(action).IsError()) {
+      return Status::Error();
     }
-    
   });
   return Status();
 }

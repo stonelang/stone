@@ -19,6 +19,16 @@
 
 using namespace stone;
 
+CompilerInvocation::CompilerInvocation(Compiler &compiler)
+    : compiler(compiler) {
+  llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
+  SetTargetTriple(llvm::sys::getDefaultTargetTriple());
+}
+
+void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {
+  langOpts.SetTarget(llvm::Triple(triple));
+}
+
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;

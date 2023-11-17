@@ -69,7 +69,7 @@ public:
   CompilerExecutionStages &GetStages() { return stages; }
 
 public:
-  CompilerExecution(Compiler &compiler) : compiler(compiler) {}
+  CompilerExecution(Compiler &compiler);
   void Setup();
 
   Status ExecuteAction();

@@ -38,7 +38,7 @@ class CompilerInvocation final {
   DiagnosticOptions diagOpts;
 
 public:
-  CompilerInvocation(Compiler &compiler) : compiler(compiler) {}
+  CompilerInvocation(Compiler &compiler);
 
 public:
   CompilerInvocation();
@@ -69,6 +69,8 @@ public:
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
+
+  void SetTargetTriple(llvm::StringRef triple);
 
 public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);
