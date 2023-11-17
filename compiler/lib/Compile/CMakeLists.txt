@@ -1,5 +1,6 @@
 set(stone_compile_sources
   Compile.cpp
+  Compiler.cpp
   
   LINK_LIBS
   StoneGen
