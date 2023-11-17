@@ -1,35 +1,19 @@
 set(stone_compile_sources
-	Compile.cpp
-	Compiler.cpp
-	Compiling.cpp
-	CompilerSources.cpp
-	CompilerInvocation.cpp
-	Deserialization.cpp
-	CompilerConfiguration.cpp
-	CompilerInputsAndOutputs.cpp
-	CompilerInputsConverter.cpp
-	CompilerOptionsConverter.cpp
-	CompilerOutputsConverter.cpp
-	CompilerQueue.cpp
-	CompilerTask.cpp
-	CompilerModules.cpp
-	ModuleSystem.cpp
-	ModuleDependencies.cpp
-	Serialization.cpp
+  Compile.cpp
+  
+  LINK_LIBS
+  StoneGen
+  StoneParse
+  StoneSem
+  StoneOption
 
-	LINK_LIBS
-	StoneGen
-	StoneParse
-	StoneSem
-	StoneOption
-	clangFrontend
+  clangFrontend
 
-
-	DEPENDS
-	StoneOptions
+  DEPENDS
+  StoneOptions
 )
 add_stone_library(StoneCompile
-	${stone_compile_sources}
+  ${stone_compile_sources}
 )
 
 
