@@ -1,6 +1,7 @@
 #ifndef STONE_PARSE_LEXER_H
 #define STONE_PARSE_LEXER_H
 
+#include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
 #include "stone/Diag/DiagnosticEngine.h"
@@ -74,7 +75,7 @@ class Lexer final : public Tokenable {
   LexerListener *listener;
   LexingState state;
 
-  std::unique_ptr<LexerStats> stats;
+  std::unique_ptr<LexerStats> lexerStats;
 
   /// Pointer to the first character of the buffer, even in a lexer that
   /// scans a subrange of the buffer.
@@ -140,9 +141,9 @@ class Lexer final : public Tokenable {
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
   Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-        stone::DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
+        DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention, LexerListener *listener = nullptr);
+        TriviaRetentionMode TriviaRetention);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -168,22 +169,21 @@ public:
   ///   this flag; it's just that we don't care that much about fidelity
   ///   when parsing SIL files.
   Lexer(
-      unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
+      unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
       StatisticEngine *se, LexerMode LexMode,
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
-      TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia,
-      LexerListener *listener = nullptr);
+      TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
 
-  Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatisticEngine *se, LexerListener *listener = nullptr);
+  Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
+        StatisticEngine *se);
 
   /// Create a lexer that scans a subrange of the source buffer.
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
         StatisticEngine *se, LexerMode LexMode, HashbangMode HashbangAllowed,
         CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention, unsigned Offset,
-        unsigned EndOffset, LexerListener *listener = nullptr);
+        unsigned EndOffset);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.

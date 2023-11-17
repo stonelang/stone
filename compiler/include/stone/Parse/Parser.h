@@ -91,12 +91,11 @@ private:
   // mutable Identifier *importIdentifier;
   // mutable Identifier *moduleIdentifier;
 
-  Parser(SourceFile &sf, ASTContext &astContext, std::unique_ptr<Lexer> lexer,
-         SyntaxListener *listener = nullptr);
+  Parser(SourceFile &sourceFile, ASTContext &astContext,
+         std::unique_ptr<Lexer> lexer);
 
 public:
-  Parser(SourceFile &sf, ASTContext &sc, SyntaxListener *listener,
-         LexerListener *lexerListener);
+  Parser(SourceFile &sourceFile, ASTContext &astContext);
 
   ~Parser();
 

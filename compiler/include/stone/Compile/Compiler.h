@@ -1,38 +1,34 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Compile/CompilerOptions.h"
+#include "stone/Compile/CompilerExecution.h"
+#include "stone/Compile/CompilerInvocation.h"
 
 #include <deque>
 
 namespace stone {
 
-class CompilerInvocation final {
-
-  CompilerOptions compilerOpts;
-
-public:
-  CompilerInvocation();
-
-public:
-  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
-  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
-};
-
 class Compiler final {
 public:
-  Compiler(CompilerInvocation &invocation) : invocation(invocation) {}
-};
+  // This is a simple queue to determine the order of the actions
+  std::deque<ActionKind> actions;
 
-class CompilerExectution final {
-  Compiler &compiler;
-
-public:
-  CompilerExectution(Compiler &compiler) : compiler(compiler) {}
+  CompilerInvocation invocation;
+  CompilerExecution execution;
 
 public:
-  Status ExecuteParseOnly();
-  Status ExecuteParseAndResolveImports();
+  Compiler();
+
+  CompilerInvocation &GetInvocation() { return invocation; }
+  CompilerExecution &GetExecution() { return execution; }
+
+public:
+  void Setup();
+
+public:
+  void SetupAction(ActionKind kind);
+  void QueueAction(ActionKind kind);
+  // Status ForEachAction(std::function<Status(ActionKind kind)>);
 };
 
 } // namespace stone

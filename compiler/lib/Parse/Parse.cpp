@@ -9,7 +9,7 @@ void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
                             SyntaxListener *syntaxListener,
                             LexerListener *lexerListener) {
 
-  Parser parser(sourceFile, syntaxContext, syntaxListener, lexerListener);
+  Parser parser(sourceFile, syntaxContext);
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 

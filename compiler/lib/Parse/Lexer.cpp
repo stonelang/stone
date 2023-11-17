@@ -139,18 +139,16 @@ uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
 //===----------------------------------------------------------------------===//
 
 Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-             stone::DiagnosticEngine *de, StatisticEngine *se,
-             LexerMode LexMode, HashbangMode HashbangAllowed,
-             CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention, LexerListener *listener)
+             DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
+             HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+             TriviaRetentionMode TriviaRetention)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
       IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
-      RetainComments(RetainComments), TriviaRetention(TriviaRetention),
-      listener(listener) {
+      RetainComments(RetainComments), TriviaRetention(TriviaRetention) {
 
   if (se) {
-    stats = std::make_unique<LexerStats>(*this);
-    se->Register(stats.get());
+    lexerStats = std::make_unique<LexerStats>(*this);
+    se->Register(lexerStats.get());
   }
 }
 
@@ -190,31 +188,30 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
          "or we should be lexing from the middle of the buffer");
 }
 
-Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
+Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
              StatisticEngine *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention, LexerListener *listener)
+             TriviaRetentionMode TriviaRetention)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
-            RetainComments, TriviaRetention, listener) {
+            RetainComments, TriviaRetention) {
 
   unsigned EndOffset = sm.getRangeForBuffer(BufferID).getByteLength();
 
   initialize(/*Offset=*/0, EndOffset);
 }
 
-Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-             StatisticEngine *se, LexerListener *listener)
+Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
+             StatisticEngine *se)
     : Lexer(BufferID, sm, de, se, LexerMode::Stone, HashbangMode::Disallowed,
-            CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia,
-            listener) {}
+            CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia) {}
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
              StatisticEngine *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
              TriviaRetentionMode TriviaRetention, unsigned Offset,
-             unsigned EndOffset, LexerListener *listener)
+             unsigned EndOffset)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
-            RetainComments, TriviaRetention, listener) {
+            RetainComments, TriviaRetention) {
 
   initialize(Offset, EndOffset);
 }
@@ -224,7 +221,7 @@ Lexer::Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState)
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed
                                      : HashbangMode::Disallowed,
-            Parent.RetainComments, Parent.TriviaRetention, Parent.listener) {
+            Parent.RetainComments, Parent.TriviaRetention) {
 
   assert(BufferID == sm.findBufferContainingLoc(BeginState.loc) &&
          "state for the wrong buffer");
@@ -2682,7 +2679,7 @@ void Lexer::Lex() {
 }
 
 Token Lexer::getTokenAtLocation(const SrcMgr &sm, SrcLoc Loc,
-                                CommentRetentionMode CRM) {
+                                CommentRetentionMode commentRetentionMode) {
   // Don't try to do anything with an invalid location.
   if (!Loc.isValid()) {
     return Token();
@@ -2700,7 +2697,9 @@ Token Lexer::getTokenAtLocation(const SrcMgr &sm, SrcLoc Loc,
   // (making this option irrelevant), or the caller lexed comments and
   // we need to lex just the comment token.
   Lexer L(BufferID, sm, nullptr, nullptr, LexerMode::Stone,
-          HashbangMode::Allowed, CRM);
+          HashbangMode::Allowed, commentRetentionMode,
+          TriviaRetentionMode::WithoutTrivia);
+
   L.restoreState(LexingState(Loc));
   return L.Peek();
 }

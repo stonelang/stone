@@ -6,10 +6,9 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
 
-
-#include "llvm/IR/Module.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
+#include "llvm/IR/Module.h"
 #include "llvm/Support/Mutex.h"
 #include "llvm/Target/TargetMachine.h"
 

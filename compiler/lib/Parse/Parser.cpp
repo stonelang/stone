@@ -9,18 +9,16 @@
 
 using namespace stone;
 
-Parser::Parser(SourceFile &sf, ASTContext &astContext,
-               SyntaxListener *syntaxListener, LexerListener *lexerListener)
+Parser::Parser(SourceFile &sf, ASTContext &astContext)
     : Parser(sf, astContext,
-             Safe<Lexer>(new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
-                                   &astContext.GetDiags(),
-                                   &astContext.GetStats(), lexerListener)),
-             listener) {}
+             std::unique_ptr<Lexer>(
+                 new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
+                           &astContext.GetDiags(), &astContext.GetStats()))) {}
 
-Parser::Parser(SourceFile &sf, ASTContext &astContext, Safe<Lexer> lx,
-               SyntaxListener *listener)
+Parser::Parser(SourceFile &sf, ASTContext &astContext,
+               std::unique_ptr<Lexer> lx)
     : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf),
-      listener(listener), stats(new ParserStats(*this)) {
+      stats(new ParserStats(*this)) {
 
   astContext.GetStats().Register(stats.get());
 }
