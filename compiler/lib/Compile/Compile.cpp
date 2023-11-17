@@ -39,8 +39,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
-  if(!compiler.GetInvocation().HasAction()) {
-  	//compiler.GetDiags().PrintD(diag::err_no_compile_action);
+  if (!compiler.GetInvocation().HasAction()) {
+    // compiler.GetDiags().PrintD(diag::err_no_compile_action);
   }
   compiler.Setup();
   compiler.GetExecution().ExecuteAction();
@@ -49,8 +49,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 }
 
 Status CompilerExecution::ExecuteAction() {
-	compiler.ForEachAction([](ActionKind action)) { ExecuteAction(action);}
- }
+  compiler.ForEachAction([&](ActionKind action) {
+    if(ExecuteAction(action).IsError()){
+    	return Status::Error();
+    }
+    
+  });
+  return Status();
+}
 
 Status CompilerExecution::ExecuteAction(ActionKind action) {
   currentAction = action;

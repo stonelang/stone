@@ -36,7 +36,7 @@ public:
 public:
   void SetupAction(ActionKind kind);
   void QueueAction(ActionKind kind);
-  // Status ForEachAction(std::function<Status(ActionKind kind)>);
+  Status ForEachAction(std::function<Status(ActionKind kind)>);
 
 public:
   DiagnosticEngine &GetDiags() { return diags; }

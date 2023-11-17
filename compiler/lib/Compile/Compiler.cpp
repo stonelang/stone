@@ -90,11 +90,14 @@ void Compiler::SetupAction(ActionKind action) {
   }
   }
 }
-// void Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
-//   for (auto action : actions) {
-//     notify(action);
-//   }
-// }
+Status Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
+  for (auto action : actions) {
+    if (notify(action).IsError()) {
+      return Status::Error();
+    }
+  }
+  return Status();
+}
 void Compiler::QueueAction(ActionKind action) { actions.push_back(action); }
 
 void CompilerExecution::Setup() {}
