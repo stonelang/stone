@@ -69,14 +69,15 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
         diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
 
-  auto status =
-      ParseCompilerOptions(*compilerInputArgList, langOpts, compilerOpts,
-                           compiler.GetDiags(), nullptr); //TODO: Pass MemoryBuffers in ParseCommandLine 
+  if (compiler.GetDiags().HasError()) {
+    return Status::Error();
+  }
+  auto status = ParseCompilerOptions(
+      *compilerInputArgList, langOpts, compilerOpts, compiler.GetDiags(),
+      nullptr); // TODO: Pass MemoryBuffers in ParseCommandLine
 
-  if(status.IsError()){
-  	status.SetHasCompletion();
-
+  if (status.IsError()) {
+    status.SetHasCompletion();
   }
   return status;
-
 }

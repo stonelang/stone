@@ -48,49 +48,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-Status CompilerExecution::ExecuteAction() {
-  compiler.ForEachAction([&](ActionKind action) {
-    if (ExecuteAction(action).IsError()) {
-      return Status::Error();
-    }
-  });
-  return Status();
-}
-
-Status CompilerExecution::ExecuteAction(ActionKind action) {
-  currentAction = action;
-  switch (currentAction) {
-  case ActionKind::PrintHelp:
-  case ActionKind::PrintHelpHidden:
-    return ExecutePrintHelp();
-  case ActionKind::PrintVersion:
-    return ExecutePrintVersion();
-  case ActionKind::Parse:
-    return ExecuteParseOnly();
-  case ActionKind::ResolveImports:
-    return ExecuteResolveImports();
-  case ActionKind::DumpSyntax:
-    return ExecuteDumpSyntax();
-  case ActionKind::TypeCheck:
-    return ExecuteTypeCheck();
-  case ActionKind::PrintSyntax:
-    return ExecutePrintSyntax();
-  case ActionKind::MergeModules:
-    return ExecuteMergeModules();
-  case ActionKind::EmitIRBefore:
-    return ExecuteEmitIRBefore();
-  case ActionKind::EmitIRAfter:
-    return ExecuteEmitIRAfter();
-  case ActionKind::EmitBC:
-    return ExecuteEmitBC();
-  case ActionKind::EmitObject:
-    return ExecuteEmitObject();
-  case ActionKind::DumpTypeInfo:
-    return ExecuteDumpTypeInfo();
-  default:
-    llvm_unreachable("Unknown action -- cannot compile!");
-  }
-}
 
 Status CompilerExecution::ExecutePrintHelp() { return Status(); }
 Status CompilerExecution::ExecutePrintVersion() { return Status(); }
@@ -98,14 +55,23 @@ Status CompilerExecution::ExecutePrintFeature() { return Status(); }
 
 Status CompilerExecution::ExecuteParseOnly() {
   assert(currentAction == ActionKind::Parse);
+  // assert(GetStages().HasStartedParseOnly());
+  // GetStages().AddStartedParseOnly();
+
   CompilerExecutionRAII compilerExectutionRAII(*this);
+
+  //GetStages().AddCompletedParseOnly();
 
   return Status();
 }
 Status CompilerExecution::ExecuteResolveImports() {
   assert(currentAction == ActionKind::ResolveImports);
+  // assert(GetStages().HasStartedSyntaxAnalysis());
+  // GetStages().AddStartedSyntaxAnalysis();
 
   CompilerExecutionRAII exectutionRAII(*this);
+
+  //GetStages().AddCompletedSyntaxAnalysis();
   return Status();
 }
 
@@ -116,17 +82,21 @@ Status CompilerExecution::ExecuteDumpSyntax() {
 
 Status CompilerExecution::ExecuteTypeCheck() {
   assert(currentAction == ActionKind::TypeCheck);
-  assert(GetStages().HasCompletedSyntaxAnalysis());
+  // assert(GetStages().HasCompletedSyntaxAnalysis());
+  // assert(GetStages().HasStartedSemanticAnalysis());
 
-  GetStages().AddCompletedSemanticAnalysis();
+  //GetStages().AddStartedSemanticAnalysis();
+
   CompilerExecutionRAII exectutionRAII(*this);
+
+  //GetStages().AddCompletedSemanticAnalysis();
 
   return Status();
 }
 
 Status CompilerExecution::ExecuteEmitObject() {
   assert(currentAction == ActionKind::EmitObject);
-  assert(GetStages().HasCompletedSemanticAnalysis());
+  //assert(GetStages().HasCompletedSemanticAnalysis());
 
   CompilerExecutionRAII exectutionRAII(*this);
 

@@ -12,10 +12,15 @@ struct CompilerExecutionFlags final {
   CompilerExecutionFlags() = delete;
   enum Kind : unsigned {
     None = 0,
-    StartedSyntaxAnalysis = 1 << 1,
-    CompletedSyntaxAnalysis = 1 << 2,
-    StartedSemanticAnalysis = 1 << 3,
-    CompletedSemanticAnalysis = 1 << 4,
+
+    StartedParseOnly = 1 << 1,
+    CompletedParseOnly = 1 << 2,
+
+    StartedSyntaxAnalysis = 1 << 3,
+    CompletedSyntaxAnalysis = 1 << 4,
+
+    StartedSemanticAnalysis = 1 << 5,
+    CompletedSemanticAnalysis = 1 << 6,
   };
 };
 
@@ -26,13 +31,26 @@ public:
   CompilerExecutionStages() : stages(0) {}
 
 public:
+  bool HasStartedParseOnly() const {
+    return stages & CompilerExecutionFlags::StartedParseOnly;
+  }
+  void AddStartedParseOnly() {
+    stages |= CompilerExecutionFlags::StartedParseOnly;
+  }
+  bool HasCompletedParseOnly() const {
+    return stages & CompilerExecutionFlags::CompletedParseOnly;
+  }
+  void AddCompletedParseOnly() {
+    stages |= CompilerExecutionFlags::CompletedParseOnly;
+  }
+
+public:
   bool HasStartedSyntaxAnalysis() const {
     return stages & CompilerExecutionFlags::StartedSyntaxAnalysis;
   }
   void AddStartedSyntaxAnalysis() {
     stages |= CompilerExecutionFlags::StartedSyntaxAnalysis;
   }
-
   bool HasCompletedSyntaxAnalysis() const {
     return stages & CompilerExecutionFlags::CompletedSyntaxAnalysis;
   }

@@ -74,6 +74,7 @@ void Compiler::SetupAction(ActionKind action) {
     QueueAction(ActionKind::EmitBC);
     break;
   }
+  case ActionKind::None:
   case ActionKind::EmitObject: {
     SetupAction(ActionKind::TypeCheck);
     QueueAction(ActionKind::EmitObject);
@@ -89,6 +90,7 @@ void Compiler::SetupAction(ActionKind action) {
   }
   }
 }
+
 Status Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
   for (auto action : actions) {
     if (notify(action).IsError()) {
@@ -105,7 +107,3 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Status();
 }
-
-CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
-
-void CompilerExecution::Setup() {}
