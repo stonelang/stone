@@ -3,6 +3,12 @@
 
 #include "stone/Compile/CompilerOptions.h"
 
+
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/SetVector.h"
+#include "llvm/Option/ArgList.h"
+
+
 namespace stone {
 
 class Compiler;
@@ -17,7 +23,7 @@ public:
   CompilerInvocation();
 
 public:
-  Status ParseCommandLine();
+  Status ParseCommandLine(llvm::ArrayRef<const char *> args);
 
 public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }

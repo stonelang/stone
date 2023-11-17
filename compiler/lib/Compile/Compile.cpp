@@ -10,7 +10,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   Compiler compiler;
 
-  compiler.GetInvocation().ParseCommandLine();
+  compiler.GetInvocation().ParseCommandLine(args);
 
   // if(!compiler.GetInvocation().HasAction()){
   // }

@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILEROUTPUTSCONVERTER_H
 
 #include "stone/Basic/LLVM.h"
+
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticConsumer.h"
