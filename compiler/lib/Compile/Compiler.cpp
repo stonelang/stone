@@ -97,9 +97,4 @@ void Compiler::SetupAction(ActionKind action) {
 // }
 void Compiler::QueueAction(ActionKind action) { actions.push_back(action); }
 
-
-void CompilerExecution::Setup() {
- 
-}
-
-
+void CompilerExecution::Setup() {}

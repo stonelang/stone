@@ -29,6 +29,9 @@ public:
 
 public:
   void Setup();
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
 
 public:
   void SetupAction(ActionKind kind);

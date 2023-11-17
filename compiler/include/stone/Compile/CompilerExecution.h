@@ -51,7 +51,7 @@ public:
   bool HasCompletedSemanticAnalysis() const {
     return stages & CompilerExecutionFlags::CompletedSemanticAnalysis;
   }
-  void AddHasCompletedSemanticAnalysis() {
+  void AddCompletedSemanticAnalysis() {
     stages |= CompilerExecutionFlags::CompletedSemanticAnalysis;
   }
 };

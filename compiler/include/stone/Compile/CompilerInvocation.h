@@ -1,15 +1,14 @@
 #ifndef STONE_COMPILE_COMPILERINVOCATION_H
 #define STONE_COMPILE_COMPILERINVOCATION_H
 
-#include "stone/Basic/Status.h"
-#include "stone/Compile/CompilerOptions.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/Status.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
-#include "stone/Syntax/TypeCheckerOptions.h"
-
 #include "stone/Syntax/SearchPath.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -43,8 +42,8 @@ public:
 
 public:
   CompilerInvocation();
-public:
 
+public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
@@ -69,10 +68,8 @@ public:
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
-  public:
+public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);
-
-
 };
 
 } // namespace stone
