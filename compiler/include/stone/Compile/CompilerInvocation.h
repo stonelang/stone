@@ -3,7 +3,7 @@
 
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
-// #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
@@ -24,7 +24,7 @@ class CompilerInvocation final {
   CompilerOptions compilerOpts;
 
   /// Options for generating code
-  // CodeGenOptions codeGenOpts;
+  CodeGenOptions codeGenOpts;
 
   /// The options for searching libs
   SearchPathOptions searchPathOpts;
