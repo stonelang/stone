@@ -104,3 +104,18 @@ file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
     assert(false && "No file-type found for this particular mode-kind");
   }
 }
+
+Action Action::Compute(const llvm::opt::ArgList &args) {
+
+  auto actionArg = args.getLastArg(opts::ModeGroup);
+  if (actionArg) {
+    auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
+    if (actionKind == ActionKind::Alien) {
+      return Action(ActionKind::Alien);
+    }
+    return Action(actionKind, opts::GetArgName(actionArg));
+  }
+  // We just default to emitting an object file since nothing was presented.
+  return Action(ActionKind::None);
+}
+

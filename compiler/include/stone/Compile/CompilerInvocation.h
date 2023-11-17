@@ -14,9 +14,35 @@
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"
 
+#include <memory>
+
 namespace stone {
 
 class Compiler;
+
+
+using ConfigurationFileBuffers =
+    llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
+
+struct ModuleBuffers {
+
+  std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
+  std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
+  std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
+
+  // Constructor
+  ModuleBuffers(
+      std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
+      std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer = nullptr,
+      std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer = nullptr)
+      : moduleBuffer(std::move(moduleBuffer)),
+        moduleDocBuffer(std::move(moduleDocBuffer)),
+        moduleSourceInfoBuffer(std::move(moduleSourceInfoBuffer)) {}
+};
+
+using MemoryBuffers =
+    llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
+
 class CompilerInvocation final {
   Compiler &compiler;
 

@@ -1,4 +1,5 @@
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
@@ -27,6 +28,17 @@ CompilerInvocation::CompilerInvocation(Compiler &compiler)
 
 void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {
   langOpts.SetTarget(llvm::Triple(triple));
+}
+
+
+static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
+                                   LangOptions &langOpts,
+                                   CompilerOptions &compilerOpts,
+                                   DiagnosticEngine &diags,
+                                   MemoryBuffers *buffers) {
+
+  CompilerOptionsConverter converter(args, diags, langOpts, compilerOpts);
+  return converter.Convert(buffers);
 }
 
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {

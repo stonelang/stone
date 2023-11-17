@@ -112,6 +112,7 @@ public:
 
 public:
   static file::Type GetOutputFileTypeByActionKind(ActionKind kind);
+  static Action Compute(const llvm::opt::ArgList &args);
 };
 } // namespace stone
 #endif

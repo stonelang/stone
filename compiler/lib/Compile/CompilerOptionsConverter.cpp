@@ -61,7 +61,7 @@ Status CompilerOptionsConverter::Convert(
 
     haveNewInputsAndOutputs = true;
     compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
-    compilerOpts.mainAction = ComputeAction(args);
+    compilerOpts.mainAction = Action::Compute(args);
 
 
     if (compilerOpts.allowModuleWithCompilerErrors) {
@@ -165,16 +165,3 @@ Status CompilerOptionsConverter::ComputeFallbackModuleName() {
   return Status();
 }
 
-Action CompilerOptionsConverter::ComputeAction(const llvm::opt::ArgList &args) {
-
-  auto actionArg = args.getLastArg(opts::ModeGroup);
-  if (actionArg) {
-    auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
-    if (actionKind == ActionKind::Alien) {
-      return Action(ActionKind::Alien);
-    }
-    return Action(actionKind, opts::GetArgName(actionArg));
-  }
-  // We just default to emitting an object file since nothing was presented.
-  return Action(ActionKind::None);
-}

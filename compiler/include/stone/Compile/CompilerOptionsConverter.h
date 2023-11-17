@@ -49,9 +49,6 @@ public:
 public:
   Status
   Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
-
-public:
-  static Action ComputeAction(const llvm::opt::ArgList &args);
 };
 } // namespace stone
 #endif
