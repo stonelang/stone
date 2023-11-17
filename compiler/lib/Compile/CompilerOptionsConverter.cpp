@@ -63,7 +63,6 @@ Status CompilerOptionsConverter::Convert(
     compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
     compilerOpts.mainAction = Action::Compute(args);
 
-
     if (compilerOpts.allowModuleWithCompilerErrors) {
       compilerOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
     }
@@ -164,4 +163,3 @@ Status CompilerOptionsConverter::ComputeFallbackModuleName() {
 
   return Status();
 }
-

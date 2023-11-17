@@ -1,6 +1,6 @@
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
 
@@ -29,7 +29,6 @@ CompilerInvocation::CompilerInvocation(Compiler &compiler)
 void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {
   langOpts.SetTarget(llvm::Triple(triple));
 }
-
 
 static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
                                    LangOptions &langOpts,
@@ -69,4 +68,15 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
         SrcLoc(), diag::err_unknown_arg,
         diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
   }
+
+  auto status =
+      ParseCompilerOptions(*compilerInputArgList, langOpts, compilerOpts,
+                           compiler.GetDiags(), nullptr); //TODO: Pass MemoryBuffers in ParseCommandLine 
+
+  if(status.IsError()){
+  	status.SetHasCompletion();
+
+  }
+  return status;
+
 }

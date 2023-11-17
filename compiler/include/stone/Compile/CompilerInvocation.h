@@ -20,7 +20,6 @@ namespace stone {
 
 class Compiler;
 
-
 using ConfigurationFileBuffers =
     llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
 

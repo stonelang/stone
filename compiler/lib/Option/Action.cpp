@@ -118,4 +118,3 @@ Action Action::Compute(const llvm::opt::ArgList &args) {
   // We just default to emitting an object file since nothing was presented.
   return Action(ActionKind::None);
 }
-
