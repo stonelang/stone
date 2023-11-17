@@ -91,7 +91,6 @@ void Compiler::SetupAction(ActionKind action) {
   }
   }
 }
-
 Status Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
   for (auto action : actions) {
     if (notify(action).IsError()) {
@@ -108,6 +107,5 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Status();
 }
-
 void CompilerModule::AddSourceFiles() {}
 void CompilerModule::AddSourceFile() {}
