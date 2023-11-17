@@ -9,9 +9,9 @@ namespace stone {
 class CompilerInvocation final {
 public:
 };
-class CompilerInstance final {
+class Compiler final {
 public:
-  CompilerInstance(CompilerInvocation &invocation) : invocation(invocation) {}
+  Compiler(CompilerInvocation &invocation) : invocation(invocation) {}
 };
 
 class CompilerExectution final {
