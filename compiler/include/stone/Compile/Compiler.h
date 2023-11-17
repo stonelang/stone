@@ -9,6 +9,27 @@
 
 namespace stone {
 
+class CompilerModule final {
+  ModuleDecl *modPtr = nullptr;
+
+public:
+  CompilerModule(ModuleDecl *modPtr = nullptr) : modPtr(modPtr) {}
+
+public:
+  bool IsNull() const { return modPtr == nullptr; }
+  ModuleDecl *GetPtr() const { return modPtr; }
+
+  ModuleDecl *operator->() const {
+    assert(modPtr && "Cannot dereference a null ModuleDecl!");
+    return modPtr;
+  }
+  explicit operator bool() const { return modPtr != nullptr; }
+
+public:
+  void AddSourceFiles();
+  void AddSourceFile();
+};
+
 class Compiler final {
 
   SrcMgr srcMgr;
@@ -20,6 +41,7 @@ public:
 
   CompilerInvocation invocation;
   CompilerExecution execution;
+  CompilerModule mainModule;
 
 public:
   Compiler();
@@ -42,6 +64,8 @@ public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
+
+  CompilerModule &GetMainModule();
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

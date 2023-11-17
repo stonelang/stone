@@ -48,7 +48,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-
 Status CompilerExecution::ExecutePrintHelp() { return Status(); }
 Status CompilerExecution::ExecutePrintVersion() { return Status(); }
 Status CompilerExecution::ExecutePrintFeature() { return Status(); }
@@ -57,10 +56,17 @@ Status CompilerExecution::ExecuteParseOnly() {
   assert(currentAction == ActionKind::Parse);
   // assert(GetStages().HasStartedParseOnly());
   // GetStages().AddStartedParseOnly();
-
   CompilerExecutionRAII compilerExectutionRAII(*this);
 
-  //GetStages().AddCompletedParseOnly();
+  // for (auto moduleFile :
+  //      compiler.GetModuleSystem().GetMainModule()->GetFiles()) {
+  //   if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+  //     stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(),
+  //                            syntaxListener, lexerListener);
+  //     sourceFile->stage = SourceFileStage::Parsed;
+  //   }
+  // }
+  // GetStages().AddCompletedParseOnly();
 
   return Status();
 }
@@ -71,7 +77,7 @@ Status CompilerExecution::ExecuteResolveImports() {
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-  //GetStages().AddCompletedSyntaxAnalysis();
+  // GetStages().AddCompletedSyntaxAnalysis();
   return Status();
 }
 
@@ -85,18 +91,18 @@ Status CompilerExecution::ExecuteTypeCheck() {
   // assert(GetStages().HasCompletedSyntaxAnalysis());
   // assert(GetStages().HasStartedSemanticAnalysis());
 
-  //GetStages().AddStartedSemanticAnalysis();
+  // GetStages().AddStartedSemanticAnalysis();
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-  //GetStages().AddCompletedSemanticAnalysis();
+  // GetStages().AddCompletedSemanticAnalysis();
 
   return Status();
 }
 
 Status CompilerExecution::ExecuteEmitObject() {
   assert(currentAction == ActionKind::EmitObject);
-  //assert(GetStages().HasCompletedSemanticAnalysis());
+  // assert(GetStages().HasCompletedSemanticAnalysis());
 
   CompilerExecutionRAII exectutionRAII(*this);
 

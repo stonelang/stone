@@ -107,3 +107,6 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Status();
 }
+
+void CompilerModule::AddSourceFiles() {}
+void Compiler::AddSourceFile() {}

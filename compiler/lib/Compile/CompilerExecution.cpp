@@ -1,6 +1,5 @@
 #include "stone/Compile/Compiler.h"
 
-
 using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
@@ -51,7 +50,3 @@ Status CompilerExecution::ExecuteAction() {
   });
   return Status();
 }
-
-
-
-
