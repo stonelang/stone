@@ -15,11 +15,10 @@ class CompilerOptions final {
   friend CompilerInputsConverter;
 
 public:
-
   /// The action request
   ActionKind MainActionKind;
 
-  /// The name of the action 
+  /// The name of the action
   llvm::StringRef MainActionName;
 
   /// A list of arbitrary modules to import and make implicitly visible.
