@@ -114,9 +114,16 @@ Status CompilerExecution::ExecutePrintSyntax() { return Status(); }
 Status CompilerExecution::ExecutePrintIR() { return Status(); }
 Status CompilerExecution::ExecuteEmitIRBefore() { return Status(); }
 
+
+Status CompilerExecution::WithCompletedTypeChecking(std::function<Status()> notify) {
+  return Status();
+}
+
+// TODO: Do not need this to be a call back 
 Status CompilerExecution::WithGenerateIR(std::function<Status()> notify) {
   return Status();
 }
+
 Status CompilerExecution::ExecuteInitModule() { return Status(); }
 Status CompilerExecution::ExecuteEmitModule() { return Status(); }
 Status CompilerExecution::ExecuteMergeModules() { return Status(); }

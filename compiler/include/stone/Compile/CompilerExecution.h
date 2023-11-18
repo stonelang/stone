@@ -108,6 +108,8 @@ public:
   Status ExecuteTypeCheck();
   Status ExecuteDumpTypeInfo();
   Status ExecutePrintSyntax();
+  Status WithCompletedTypeChecking(std::function<Status()> notify);
+
   Status ExecutePrintIR();
   Status ExecuteEmitIRBefore();
 

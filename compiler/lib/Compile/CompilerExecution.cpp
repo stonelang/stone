@@ -26,18 +26,22 @@ Status CompilerExecution::ExecuteAction(ActionKind action) {
     return ExecutePrintSyntax();
   case ActionKind::MergeModules:
     return ExecuteMergeModules();
-  case ActionKind::EmitIRBefore:
-    return ExecuteEmitIRBefore();
-  case ActionKind::EmitIRAfter:
-    return ExecuteEmitIRAfter();
-  case ActionKind::EmitBC:
-    return ExecuteEmitBC();
+  case ActionKind::EmitIRBefore: {
+    return WithCompletedTypeChecking([&]() { return ExecuteEmitIRBefore(); });
+  }
+  case ActionKind::EmitIRAfter: {
+    return WithCompletedTypeChecking([&]() { return ExecuteEmitIRAfter(); });
+  }
+  case ActionKind::EmitBC: {
+    return WithCompletedTypeChecking([&]() { return ExecuteEmitBC(); });
+  }
   case ActionKind::None:
   case ActionKind::EmitObject: {
-    return WithGenerateIR([&]() { return ExecuteEmitObject(); });
+    return WithCompletedTypeChecking([&]() { return ExecuteEmitObject(); });
   }
-  case ActionKind::DumpTypeInfo:
-    return ExecuteDumpTypeInfo();
+  case ActionKind::DumpTypeInfo: {
+    return WithCompletedTypeChecking([&]() { return ExecuteDumpTypeInfo(); });
+  }
   default:
     llvm_unreachable("Unknown action -- cannot compile!");
   }
