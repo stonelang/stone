@@ -3,6 +3,7 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
+#include "stone/Gen/CodeGenContext.h"
 #include "stone/Option/ActionKind.h"
 
 namespace stone {
@@ -81,7 +82,7 @@ class CompilerExecution final {
 
   CompilerExecutionStages stages;
 
-  // std::unique_ptr<CodeGenContext> codeGenContext;
+  std::unique_ptr<CodeGenContext> codeGenContext;
 
 public:
   CompilerExecutionStages &GetStages() { return stages; }
@@ -111,7 +112,7 @@ public:
   Status ExecuteEmitIRBefore();
 
 public:
-  Status ExecuteGenerateIR();
+  Status WithGenerateIR(std::function<Status()> notify);
   Status ExecuteInitModule();
   Status ExecuteEmitModule();
   Status ExecuteMergeModules();

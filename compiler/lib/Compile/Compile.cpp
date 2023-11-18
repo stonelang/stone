@@ -106,8 +106,6 @@ Status CompilerExecution::ExecuteEmitObject() {
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-  ExecuteGenerateIR();
-
   return Status();
 }
 
@@ -116,7 +114,9 @@ Status CompilerExecution::ExecutePrintSyntax() { return Status(); }
 Status CompilerExecution::ExecutePrintIR() { return Status(); }
 Status CompilerExecution::ExecuteEmitIRBefore() { return Status(); }
 
-Status CompilerExecution::ExecuteGenerateIR() { return Status(); }
+Status CompilerExecution::WithGenerateIR(std::function<Status()> notify) {
+  return Status();
+}
 Status CompilerExecution::ExecuteInitModule() { return Status(); }
 Status CompilerExecution::ExecuteEmitModule() { return Status(); }
 Status CompilerExecution::ExecuteMergeModules() { return Status(); }

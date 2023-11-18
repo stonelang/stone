@@ -33,8 +33,9 @@ Status CompilerExecution::ExecuteAction(ActionKind action) {
   case ActionKind::EmitBC:
     return ExecuteEmitBC();
   case ActionKind::None:
-  case ActionKind::EmitObject:
-    return ExecuteEmitObject();
+  case ActionKind::EmitObject: {
+    return WithGenerateIR([&]() { return ExecuteEmitObject(); });
+  }
   case ActionKind::DumpTypeInfo:
     return ExecuteDumpTypeInfo();
   default:
