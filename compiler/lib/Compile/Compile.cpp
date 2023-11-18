@@ -54,8 +54,9 @@ Status CompilerExecution::ExecutePrintFeature() { return Status(); }
 
 Status CompilerExecution::ExecuteParseOnly() {
   assert(currentAction == ActionKind::Parse);
-  // assert(GetStages().HasStartedParseOnly());
-  // GetStages().AddStartedParseOnly();
+  assert(!GetStages().DidStartParseOnly());
+  GetStages().StartParseOnly();
+
   CompilerExecutionRAII compilerExectutionRAII(*this);
 
   // for (auto moduleFile :
@@ -66,18 +67,20 @@ Status CompilerExecution::ExecuteParseOnly() {
   //     sourceFile->stage = SourceFileStage::Parsed;
   //   }
   // }
-  // GetStages().AddCompletedParseOnly();
+
+  GetStages().FinishParseOnly();
 
   return Status();
 }
 Status CompilerExecution::ExecuteResolveImports() {
   assert(currentAction == ActionKind::ResolveImports);
-  // assert(GetStages().HasStartedSyntaxAnalysis());
-  // GetStages().AddStartedSyntaxAnalysis();
+  assert(!GetStages().DidStartSyntaxAnalysis());
+  GetStages().StartSyntaxAnalysis();
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-  // GetStages().AddCompletedSyntaxAnalysis();
+  GetStages().FinishSyntaxAnalysis();
+
   return Status();
 }
 
@@ -88,51 +91,64 @@ Status CompilerExecution::ExecuteDumpSyntax() {
 
 Status CompilerExecution::ExecuteTypeCheck() {
   assert(currentAction == ActionKind::TypeCheck);
-  // assert(GetStages().HasCompletedSyntaxAnalysis());
-  // assert(GetStages().HasStartedSemanticAnalysis());
+  assert(GetStages().DidFinishSyntaxAnalysis());
+  assert(!GetStages().DidStartTypeChecking());
 
-  // GetStages().AddStartedSemanticAnalysis();
+  GetStages().StartTypeChecking();
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-  // GetStages().AddCompletedSemanticAnalysis();
+
+  GetStages().FinishTypeChecking();
 
   return Status();
 }
 
-Status CompilerExecution::ExecuteEmitObject() {
-  assert(currentAction == ActionKind::EmitObject);
-  // assert(GetStages().HasCompletedSemanticAnalysis());
-
-  CompilerExecutionRAII exectutionRAII(*this);
-
-  return Status();
-}
 
 Status CompilerExecution::ExecuteDumpTypeInfo() { return Status(); }
 Status CompilerExecution::ExecutePrintSyntax() { return Status(); }
-Status CompilerExecution::ExecutePrintIR() { return Status(); }
-Status CompilerExecution::ExecuteEmitIRBefore() { return Status(); }
+Status CompilerExecution::ExecutePrintIR(CodeGenContext &cgc) { return Status(); }
 
-
-Status CompilerExecution::WithCompletedTypeChecking(std::function<Status()> notify) {
+Status CompilerExecution::ExecuteEmitIRBefore(CodeGenContext& codeGenContext) {
+  //assert(!GetStages().StartGeneratingIR());
   return Status();
 }
 
-// TODO: Do not need this to be a call back 
-Status CompilerExecution::WithGenerateIR(std::function<Status()> notify) {
+// TODO: Do not need this to be a call back
+Status CompilerExecution::GenerateIR(CodeGenContext &cgc) {
   return Status();
 }
 
 Status CompilerExecution::ExecuteInitModule() { return Status(); }
-Status CompilerExecution::ExecuteEmitModule() { return Status(); }
+Status CompilerExecution::ExecuteEmitModule(CodeGenContext &cgc) { return Status(); }
 Status CompilerExecution::ExecuteMergeModules() { return Status(); }
 
-Status CompilerExecution::ExecuteEmitIRAfter() { return Status(); }
-Status CompilerExecution::ExecuteEmitBC() { return Status(); }
+Status CompilerExecution::ExecuteEmitIRAfter(CodeGenContext &cgc) {
+  //assert(GetStages().DidFinishGeneratingIR());
 
-Status CompilerExecution::ExecuteEmitLibrary() { return Status(); }
-Status CompilerExecution::ExecuteEmitAssembly() { return Status(); }
+  // stone::OptimizeIR();
+
+  return Status();
+}
+Status CompilerExecution::ExecuteEmitBC(CodeGenContext &cgc) {
+  return Status();
+}
+
+Status CompilerExecution::ExecuteEmitLibrary(CodeGenContext &cgc) {
+  return Status();
+}
+Status CompilerExecution::ExecuteEmitAssembly(CodeGenContext &cgc) {
+  return Status();
+}
+Status CompilerExecution::ExecuteEmitObject(CodeGenContext& codeGenContext) {
+  assert(currentAction == ActionKind::EmitObject);
+
+  assert(GetStages().DidFinishGeneratingIR());
+
+  CompilerExecutionRAII exectutionRAII(*this);
+
+  return Status();
+}
 
 CompilerExecutionRAII::CompilerExecutionRAII(CompilerExecution &execution)
     : execution(execution) {}

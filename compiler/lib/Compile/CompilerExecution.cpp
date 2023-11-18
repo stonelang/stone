@@ -26,25 +26,44 @@ Status CompilerExecution::ExecuteAction(ActionKind action) {
     return ExecutePrintSyntax();
   case ActionKind::MergeModules:
     return ExecuteMergeModules();
-  case ActionKind::EmitIRBefore: {
-    return WithCompletedTypeChecking([&]() { return ExecuteEmitIRBefore(); });
-  }
-  case ActionKind::EmitIRAfter: {
-    return WithCompletedTypeChecking([&]() { return ExecuteEmitIRAfter(); });
-  }
-  case ActionKind::EmitBC: {
-    return WithCompletedTypeChecking([&]() { return ExecuteEmitBC(); });
-  }
-  case ActionKind::None:
-  case ActionKind::EmitObject: {
-    return WithCompletedTypeChecking([&]() { return ExecuteEmitObject(); });
-  }
-  case ActionKind::DumpTypeInfo: {
-    return WithCompletedTypeChecking([&]() { return ExecuteDumpTypeInfo(); });
-  }
   default:
-    llvm_unreachable("Unknown action -- cannot compile!");
+    return WithCompletedTypeChecking();
   }
+}
+
+Status CompilerExecution::WithCompletedTypeChecking() {
+
+
+  assert(GetStages().DidFinishTypeChecking());
+
+  // CodeGenContext codeGenContext(
+  //     compiler.GetInvocation().GetCodeGenOptions(),
+  //     compiler.GetModuleOptions(),
+  //     compiler.GetInvocation().GetTargetOptions(), compiler.GetLangContext(),
+  //     compiler.GetClangContext());
+
+  // auto status = GenerateIR(codeGenContext);
+  // if(status.IsError()){
+  //   status.SetHasCompletion();
+  //   return status;
+  // }
+  // switch (currentAction) {
+  // case ActionKind::EmitIRBefore:
+  //   return ExecuteEmitIRBefore(codeGenContext);
+  // case ActionKind::EmitIRAfter:
+  //   return ExecuteEmitIRAfter(codeGenContext);
+  // case ActionKind::EmitBC:
+  //   return ExecuteEmitBC(codeGenContext);
+  // case ActionKind::None:
+  // case ActionKind::EmitObject:
+  //   return ExecuteEmitObject(codeGenContext);
+  // case ActionKind::DumpTypeInfo:
+  //   return ExecuteDumpTypeInfo(codeGenContext);
+  // default:
+  //   llvm_unreachable("Unknown action -- cannot compile!");
+  // }
+
+  return Status();
 }
 
 Status CompilerExecution::ExecuteAction() {

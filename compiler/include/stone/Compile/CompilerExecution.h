@@ -14,14 +14,20 @@ struct CompilerExecutionFlags final {
   enum Kind : unsigned {
     None = 0,
 
-    StartedParseOnly = 1 << 1,
-    CompletedParseOnly = 1 << 2,
+    StartParseOnly = 1 << 1,
+    FininsParseOnly = 1 << 2,
 
-    StartedSyntaxAnalysis = 1 << 3,
-    CompletedSyntaxAnalysis = 1 << 4,
+    StartSyntaxAnalysis = 1 << 3,
+    FinishSyntaxAnalysis = 1 << 4,
 
-    StartedSemanticAnalysis = 1 << 5,
-    CompletedSemanticAnalysis = 1 << 6,
+    StartTypeChecking = 1 << 5,
+    FinishTypeChecking = 1 << 6,
+
+    StartGeneratingIR = 1 << 7,
+    FinishGeneratingIR = 1 << 8,
+
+    StartGeneratingNative = 1 << 9,
+    FinishGeneratingNative = 1 << 10,
   };
 };
 
@@ -32,46 +38,57 @@ public:
   CompilerExecutionStages() : stages(0) {}
 
 public:
-  bool HasStartedParseOnly() const {
-    return stages & CompilerExecutionFlags::StartedParseOnly;
+  bool DidStartParseOnly() const {
+    return stages & CompilerExecutionFlags::StartParseOnly;
   }
-  void AddStartedParseOnly() {
-    stages |= CompilerExecutionFlags::StartedParseOnly;
+  void StartParseOnly() { stages |= CompilerExecutionFlags::StartParseOnly; }
+  bool DidFinishParseOnly() const {
+    return stages & CompilerExecutionFlags::FininsParseOnly;
   }
-  bool HasCompletedParseOnly() const {
-    return stages & CompilerExecutionFlags::CompletedParseOnly;
+  void FinishParseOnly() { stages |= CompilerExecutionFlags::FininsParseOnly; }
+
+public:
+  bool DidStartSyntaxAnalysis() const {
+    return stages & CompilerExecutionFlags::StartSyntaxAnalysis;
   }
-  void AddCompletedParseOnly() {
-    stages |= CompilerExecutionFlags::CompletedParseOnly;
+  void StartSyntaxAnalysis() {
+    stages |= CompilerExecutionFlags::StartSyntaxAnalysis;
+  }
+  bool DidFinishSyntaxAnalysis() const {
+    return stages & CompilerExecutionFlags::FinishSyntaxAnalysis;
+  }
+  void FinishSyntaxAnalysis() {
+    stages |= CompilerExecutionFlags::FinishSyntaxAnalysis;
   }
 
 public:
-  bool HasStartedSyntaxAnalysis() const {
-    return stages & CompilerExecutionFlags::StartedSyntaxAnalysis;
+  bool DidStartTypeChecking() const {
+    return stages & CompilerExecutionFlags::StartTypeChecking;
   }
-  void AddStartedSyntaxAnalysis() {
-    stages |= CompilerExecutionFlags::StartedSyntaxAnalysis;
+  void StartTypeChecking() {
+    stages |= CompilerExecutionFlags::StartTypeChecking;
   }
-  bool HasCompletedSyntaxAnalysis() const {
-    return stages & CompilerExecutionFlags::CompletedSyntaxAnalysis;
+
+  bool DidFinishTypeChecking() const {
+    return stages & CompilerExecutionFlags::FinishTypeChecking;
   }
-  void AddCompletedSyntaxAnalysis() {
-    stages |= CompilerExecutionFlags::CompletedSyntaxAnalysis;
+  void FinishTypeChecking() {
+    stages |= CompilerExecutionFlags::FinishTypeChecking;
   }
 
 public:
-  bool HasStartedSemanticAnalysis() const {
-    return stages & CompilerExecutionFlags::StartedSemanticAnalysis;
+  bool DidStartGeneratingIR() const {
+    return stages & CompilerExecutionFlags::StartGeneratingIR;
   }
-  void AddStartedSemanticAnalysis() {
-    stages |= CompilerExecutionFlags::StartedSemanticAnalysis;
+  void StartGeneratingIR() {
+    stages |= CompilerExecutionFlags::StartGeneratingIR;
   }
 
-  bool HasCompletedSemanticAnalysis() const {
-    return stages & CompilerExecutionFlags::CompletedSemanticAnalysis;
+  bool DidFinishGeneratingIR() const {
+    return stages & CompilerExecutionFlags::FinishGeneratingIR;
   }
-  void AddCompletedSemanticAnalysis() {
-    stages |= CompilerExecutionFlags::CompletedSemanticAnalysis;
+  void FinishGeneratingIR() {
+    stages |= CompilerExecutionFlags::FinishGeneratingIR;
   }
 };
 
@@ -100,6 +117,7 @@ public:
   Status ExecutePrintFeature();
 
 public:
+  Status VerifyInputFiles();
   Status ExecuteParseOnly();
   Status ExecuteResolveImports();
   Status ExecuteDumpSyntax();
@@ -108,23 +126,23 @@ public:
   Status ExecuteTypeCheck();
   Status ExecuteDumpTypeInfo();
   Status ExecutePrintSyntax();
-  Status WithCompletedTypeChecking(std::function<Status()> notify);
-
-  Status ExecutePrintIR();
-  Status ExecuteEmitIRBefore();
+  Status WithCompletedTypeChecking();
 
 public:
-  Status WithGenerateIR(std::function<Status()> notify);
+  Status GenerateIR(CodeGenContext &cgc);
   Status ExecuteInitModule();
-  Status ExecuteEmitModule();
+  
   Status ExecuteMergeModules();
+  Status ExecuteEmitModule(CodeGenContext &cgc);
 
 public:
-  Status ExecuteEmitIRAfter();
-  Status ExecuteEmitBC();
-  Status ExecuteEmitObject();
-  Status ExecuteEmitLibrary();
-  Status ExecuteEmitAssembly();
+  Status ExecuteEmitIRAfter(CodeGenContext &cgc);
+  Status ExecutePrintIR(CodeGenContext &cgc);
+  Status ExecuteEmitIRBefore(CodeGenContext &cgc);
+  Status ExecuteEmitBC(CodeGenContext &cgc);
+  Status ExecuteEmitObject(CodeGenContext &cgc);
+  Status ExecuteEmitLibrary(CodeGenContext &cgc);
+  Status ExecuteEmitAssembly(CodeGenContext &cgc);
 };
 
 class CompilerExecutionRAII final {

@@ -4,6 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Status.h"
+#include "stone/Basic/TargetContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
@@ -62,6 +63,8 @@ class CompilerInvocation final {
 
   DiagnosticOptions diagOpts;
 
+  TargetContext targetContext;
+
 public:
   CompilerInvocation(Compiler &compiler);
 
@@ -77,6 +80,9 @@ public:
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
+
+  TargetContext &GetTargetContext() { return targetContext; }
+  const TargetContext &GetTargetContext() const { return targetContext; }
 
   ASTOptions &GetASTOptions() { return astOpts; }
   const ASTOptions &GetASTOptions() const { return astOpts; }
