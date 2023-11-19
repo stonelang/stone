@@ -29,7 +29,7 @@ ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
   case opts::EmitBC:
     return ActionKind::EmitBC;
   case opts::EmitObject:
-    ActionKind::EmitObject;
+    return ActionKind::EmitObject;
   case opts::EmitAssembly:
     return ActionKind::EmitAssembly;
   case opts::EmitLibrary:
@@ -43,6 +43,20 @@ ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
   default:
     return ActionKind::Alien;
   }
+}
+
+Action opts::GetAction(const llvm::opt::ArgList &args) {
+
+  auto actionArg = args.getLastArg(opts::ModeGroup);
+  if (!actionArg) {
+    // We just default to emitting an object file since nothing was presented.
+    return Action(ActionKind::None);
+  }
+  auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
+  if (actionKind == ActionKind::Alien) {
+    return Action(ActionKind::Alien);
+  }
+  return Action(actionKind, opts::GetArgName(actionArg));
 }
 
 file::Type Action::GetOutputFileType() const {
@@ -103,18 +117,4 @@ file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
   default:
     assert(false && "No file-type found for this particular mode-kind");
   }
-}
-
-Action Action::Compute(const llvm::opt::ArgList &args) {
-
-  auto actionArg = args.getLastArg(opts::ModeGroup);
-  if (actionArg) {
-    auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
-    if (actionKind == ActionKind::Alien) {
-      return Action(ActionKind::Alien);
-    }
-    return Action(actionKind, opts::GetArgName(actionArg));
-  }
-  // We just default to emitting an object file since nothing was presented.
-  return Action(ActionKind::None);
 }

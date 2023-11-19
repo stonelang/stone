@@ -41,6 +41,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   if (!compiler.GetInvocation().HasAction()) {
     // compiler.GetDiags().PrintD(diag::err_no_compile_action);
+    FinishCompile(Status::Error());
   }
   compiler.Setup();
   compiler.GetExecution().ExecuteAction();
@@ -70,6 +71,8 @@ Status CompilerExecution::ExecuteParseOnly() {
 
   GetStages().FinishParseOnly();
 
+   printf("ExecuteParseOnly\n");
+
   return Status();
 }
 Status CompilerExecution::ExecuteResolveImports() {
@@ -80,6 +83,7 @@ Status CompilerExecution::ExecuteResolveImports() {
   CompilerExecutionRAII exectutionRAII(*this);
 
   GetStages().FinishSyntaxAnalysis();
+
 
   return Status();
 }
@@ -98,33 +102,33 @@ Status CompilerExecution::ExecuteTypeCheck() {
 
   CompilerExecutionRAII exectutionRAII(*this);
 
-
   GetStages().FinishTypeChecking();
 
   return Status();
 }
 
-
 Status CompilerExecution::ExecuteDumpTypeInfo() { return Status(); }
 Status CompilerExecution::ExecutePrintSyntax() { return Status(); }
-Status CompilerExecution::ExecutePrintIR(CodeGenContext &cgc) { return Status(); }
+Status CompilerExecution::ExecutePrintIR(CodeGenContext &cgc) {
+  return Status();
+}
 
-Status CompilerExecution::ExecuteEmitIRBefore(CodeGenContext& codeGenContext) {
-  //assert(!GetStages().StartGeneratingIR());
+Status CompilerExecution::ExecuteEmitIRBefore(CodeGenContext &codeGenContext) {
+  // assert(!GetStages().StartGeneratingIR());
   return Status();
 }
 
 // TODO: Do not need this to be a call back
-Status CompilerExecution::GenerateIR(CodeGenContext &cgc) {
-  return Status();
-}
+Status CompilerExecution::GenerateIR(CodeGenContext &cgc) { return Status(); }
 
 Status CompilerExecution::ExecuteInitModule() { return Status(); }
-Status CompilerExecution::ExecuteEmitModule(CodeGenContext &cgc) { return Status(); }
+Status CompilerExecution::ExecuteEmitModule(CodeGenContext &cgc) {
+  return Status();
+}
 Status CompilerExecution::ExecuteMergeModules() { return Status(); }
 
 Status CompilerExecution::ExecuteEmitIRAfter(CodeGenContext &cgc) {
-  //assert(GetStages().DidFinishGeneratingIR());
+  // assert(GetStages().DidFinishGeneratingIR());
 
   // stone::OptimizeIR();
 
@@ -140,7 +144,7 @@ Status CompilerExecution::ExecuteEmitLibrary(CodeGenContext &cgc) {
 Status CompilerExecution::ExecuteEmitAssembly(CodeGenContext &cgc) {
   return Status();
 }
-Status CompilerExecution::ExecuteEmitObject(CodeGenContext& codeGenContext) {
+Status CompilerExecution::ExecuteEmitObject(CodeGenContext &codeGenContext) {
   assert(currentAction == ActionKind::EmitObject);
 
   assert(GetStages().DidFinishGeneratingIR());

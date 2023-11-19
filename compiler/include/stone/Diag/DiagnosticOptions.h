@@ -53,6 +53,9 @@ public:
   unsigned errorLimit = 0;
 
   bool ownsListener = false;
+
+  /// Write directly to the console
+  bool enableDebugging = false;
 };
 
 } // namespace stone

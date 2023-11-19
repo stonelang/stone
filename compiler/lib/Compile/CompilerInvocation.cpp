@@ -42,8 +42,8 @@ static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
 
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
-  unsigned includedFlagsBitmask = 0;
-  unsigned excludedFlagsBitmask;
+  unsigned includedFlagsBitmask = 0; 
+  unsigned excludedFlagsBitmask = opts::NoCompilerOption;
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
@@ -67,6 +67,10 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     compiler.GetDiags().PrintD(
         SrcLoc(), diag::err_unknown_arg,
         diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
+
+    // TODO: Good for now. But, you want to print out all and check for diag
+    // errors
+    return Status::Error();
   }
 
   if (compiler.GetDiags().HasError()) {

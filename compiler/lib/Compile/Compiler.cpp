@@ -9,6 +9,8 @@ using namespace stone;
 Compiler::Compiler() : invocation(*this), execution(*this) {}
 
 void Compiler::Setup() {
+
+  assert(invocation.HasAction());
   SetupAction(invocation.GetCompilerOptions().mainAction.GetKind());
   // We do not setup the rest of the compiler if it is not compilable
   // For example, PrintHelp
@@ -73,6 +75,11 @@ void Compiler::SetupAction(ActionKind action) {
   case ActionKind::EmitBC: {
     SetupAction(ActionKind::TypeCheck);
     QueueAction(ActionKind::EmitBC);
+    break;
+  }
+  case ActionKind::EmitAssembly: {
+    SetupAction(ActionKind::TypeCheck);
+    QueueAction(ActionKind::EmitAssembly);
     break;
   }
   case ActionKind::None:

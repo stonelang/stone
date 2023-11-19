@@ -90,6 +90,8 @@ public:
   void FinishGeneratingIR() {
     stages |= CompilerExecutionFlags::FinishGeneratingIR;
   }
+public:
+  void Clear() { stages = 0; }
 };
 
 class CompilerExecution final {
@@ -131,7 +133,7 @@ public:
 public:
   Status GenerateIR(CodeGenContext &cgc);
   Status ExecuteInitModule();
-  
+
   Status ExecuteMergeModules();
   Status ExecuteEmitModule(CodeGenContext &cgc);
 

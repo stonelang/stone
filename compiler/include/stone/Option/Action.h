@@ -12,7 +12,7 @@ class Action final {
   llvm::StringRef name;
 
 public:
-  Action(ActionKind inputKind = ActionKind::None,
+  Action(ActionKind inputKind = ActionKind::Alien,
          llvm::StringRef inputName = llvm::StringRef())
       : kind(inputKind), name(inputName) {}
 
@@ -112,7 +112,11 @@ public:
 
 public:
   static file::Type GetOutputFileTypeByActionKind(ActionKind kind);
-  static Action Compute(const llvm::opt::ArgList &args);
 };
+
+namespace opts {
+  Action GetAction(const llvm::opt::ArgList &args);
+}
+
 } // namespace stone
 #endif

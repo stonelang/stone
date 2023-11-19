@@ -33,7 +33,6 @@ Status CompilerExecution::ExecuteAction(ActionKind action) {
 
 Status CompilerExecution::WithCompletedTypeChecking() {
 
-
   assert(GetStages().DidFinishTypeChecking());
 
   // CodeGenContext codeGenContext(
@@ -67,6 +66,7 @@ Status CompilerExecution::WithCompletedTypeChecking() {
 }
 
 Status CompilerExecution::ExecuteAction() {
+  GetStages().Clear();
   compiler.ForEachAction([&](ActionKind action) {
     if (ExecuteAction(action).IsError()) {
       return Status::Error();
