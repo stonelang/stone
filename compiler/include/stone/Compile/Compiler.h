@@ -34,10 +34,6 @@ public:
 
 class Compiler final {
 
-  friend class CodeGenExecution;
-  friend class SyntaxAnalysisExecution;
-  friend class SemanticAnalysisExecution;
-  
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
@@ -48,9 +44,6 @@ public:
 
 public:
   Compiler();
-
-  CompilerInvocation &GetInvocation() { return invocation; }
-  CompilerExecution &GetExecution() { return *execution; }
 
 public:
   void Setup();
@@ -63,8 +56,10 @@ public:
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
 
-private:
-  std::unique_ptr<CompilerExecution> GetExecution(ActionKind kind);
+  CompilerInvocation &GetInvocation() { return invocation; }
+  CompilerExecution &GetExecution() { return *execution; }
+
+  std::unique_ptr<CompilerExecution> ComputeExecution(ActionKind kind);
 
 public:
   // void SetupMainStage();

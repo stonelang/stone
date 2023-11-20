@@ -8,7 +8,7 @@ SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler)
 
 Status SemanticAnalysisExecution::Setup() {
 
-  auto execution = compiler.GetExecution(ActionKind::Parse);
+  auto execution = compiler.ComputeExecution(ActionKind::Parse);
   execution->Setup();
   execution->Execute();
 }

@@ -17,7 +17,7 @@ class CompilerExecution {
 
 protected:
   Compiler &compiler;
-  
+
 public:
   CompilerExecution(Compiler &compiler);
 

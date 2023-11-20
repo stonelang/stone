@@ -10,11 +10,12 @@ Compiler::Compiler() : invocation(*this) {}
 
 void Compiler::Setup() {
   assert(invocation.HasAction());
-  execution = GetExecution(invocation.GetAction().GetKind());
+  execution = ComputeExecution(invocation.GetAction().GetKind());
   execution->Setup();
 }
 
-std::unique_ptr<CompilerExecution> Compiler::GetExecution(ActionKind action) {
+std::unique_ptr<CompilerExecution>
+Compiler::ComputeExecution(ActionKind action) {
   switch (action) {
   case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:

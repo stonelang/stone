@@ -8,9 +8,9 @@ CodeGenExecution::CodeGenExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status CodeGenExecution::Setup() {
-  // auto execution = compiler.GetExecution(ActionKind::TypeCheck);
-  // execution->Setup();
-  // execution->Execute();
+  auto execution = compiler.ComputeExecution(ActionKind::TypeCheck);
+  execution->Setup();
+  execution->Execute();
 }
 
 Status CodeGenExecution::Execute() {}
