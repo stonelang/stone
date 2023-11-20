@@ -11,21 +11,30 @@ Status SyntaxAnalysisExecution::Setup() {}
 
 Status SyntaxAnalysisExecution::Execute() {
 
-  // switch (compiler.GetInvocation().GetAction().GetKind()) {
-  // case ActionKind::Parse:
-  //   return ExecuteParseOnly();
-  // case ActionKind::ResolveImports:
-  //   return ExecuteParseAndResolveImports();
-  // default:
-  //   llvm_unreachable("Invalid action for syntax analysis");
-  // }
+  switch (compiler.GetInvocation().GetAction().GetKind()) {
+  case ActionKind::Parse:
+    return ExecuteParse(
+        [&](SourceFile &sourceFile) { return Status::Success(); });
+  case ActionKind::ResolveImports:
+    return ExecuteParseAndResolveImports();
+  default:
+    llvm_unreachable("Invalid action for syntax analysis");
+  }
 }
 
-Status SyntaxAnalysisExecution::ExecuteParseOnly() { return Status(); }
+Status SyntaxAnalysisExecution::ExecuteParse(
+    std::function<Status(SourceFile &sourceFile)> notify) {
+  return Status();
+}
 
 Status SyntaxAnalysisExecution::ExecuteParseAndResolveImports() {
-  // if (ExecuteParseOnly().IsError()) {
-  //   return Status::Error();
-  // }
+  return ExecuteParse([&](SourceFile &sourceFile) {
+    return ExecuteParseAndResolveImports(sourceFile);
+  });
 }
+
+Status
+SyntaxAnalysisExecution::ExecuteParseAndResolveImports(SourceFile &sourceFile) {
+}
+
 Status SyntaxAnalysisExecution::ExecutDumpSyntax() { return Status(); }

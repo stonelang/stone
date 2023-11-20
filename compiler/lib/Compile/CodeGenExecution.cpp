@@ -13,4 +13,10 @@ Status CodeGenExecution::Setup() {
   execution->Execute();
 }
 
-Status CodeGenExecution::Execute() {}
+Status CodeGenExecution::Execute() {
+
+  switch (compiler.GetInvocation().GetAction().GetKind()) {
+  default:
+    llvm_unreachable("Invalid action for syntax analysis");
+  }
+}

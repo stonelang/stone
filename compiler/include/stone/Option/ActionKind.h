@@ -2,6 +2,8 @@
 #define STONE_OPTION_ACTIONKIND_H
 
 namespace stone {
+
+// TODO: May want DumpParse, and DumpySyntax
 // The modes that the system supports
 enum class ActionKind : unsigned {
   ///< No mode
@@ -43,6 +45,8 @@ enum class ActionKind : unsigned {
   PrintHelp,
   ///< Print help
   PrintHelpHidden,
+  ///< Print compiler features
+  PrintFeature,
   ///< Merge all modules
   MergeModules,
   //< Alien

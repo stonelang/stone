@@ -9,7 +9,16 @@
 namespace stone {
 
 class Compiler;
+class SourceFile;
 class CodeGenContext;
+
+// enum class CompilerExecutionKind {
+//   BeforeCodeAnalysis = 0,
+//   CodeAnalysis,
+//   AfterCodeAnalysis,
+//   CodeGen,
+// };
+
 class CompilerExecution {
 
   llvm::sys::TimePoint<> startTime;
@@ -41,7 +50,18 @@ public:
   Status ExecutePrintFeature();
 };
 
+class BeforeCodeAnalysisExecution final : public CompilerExecution {
+
+public:
+  BeforeAnalysisExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
+};
+
 class SyntaxAnalysisExecution final : public CompilerExecution {
+
 public:
   SyntaxAnalysisExecution(Compiler &compiler);
 
@@ -50,9 +70,12 @@ public:
   Status Execute() override;
 
 public:
-  Status ExecuteParseOnly();
+  Status ExecuteParse(std::function<Status(SourceFile &)> notify);
   Status ExecuteParseAndResolveImports();
   Status ExecutDumpSyntax();
+
+private:
+  Status ExecuteParseAndResolveImports(SourceFile &sourceFile);
 };
 
 class SemanticAnalysisExecution final : public CompilerExecution {
@@ -68,6 +91,15 @@ public:
   Status ExecuteTypeCheck();
   Status ExecuteDumpTypeInfo();
   Status ExecutePrintSyntax();
+};
+
+class AfterCodeAnalysisExecution final : public CompilerExecution {
+public:
+  AfterCodeAnalysisExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
 };
 
 class CodeGenExecution final : public CompilerExecution {

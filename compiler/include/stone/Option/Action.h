@@ -90,6 +90,7 @@ public:
     return GetKind() == ActionKind::PrintHelpHidden;
   }
   bool IsPrintVersion() const { return GetKind() == ActionKind::PrintVersion; }
+  bool IsPrintFeature() const { return GetKind() == ActionKind::PrintFeature; }
   bool IsParse() const { return GetKind() == ActionKind::Parse; }
   bool IsResolveImports() const {
     return GetKind() == ActionKind::ResolveImports;

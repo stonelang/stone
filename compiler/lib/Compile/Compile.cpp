@@ -29,13 +29,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
     return (status.IsError() ? status.GetFlag() : compiler.GetDiags().Finish());
   };
-
   // Check for empty args
   if (args.empty()) {
     compiler.GetDiags().PrintD(diag::err_no_compile_args);
     return FinishCompile(Status::Error());
   }
-
   auto status = compiler.GetInvocation().ParseCommandLine(args);
   if (status.IsError()) {
     return FinishCompile(Status::Error());
@@ -49,5 +47,68 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  return FinishCompile();
+  // CompileStatus status;
+  // stone::CompileForSupport(compiler, status);
+  // if (!status.ShouldContinue()) {
+  //   return FinishCompile(status.GetStatus());
+  // }
+
+  // stone::CompileBeforeCodeAnalysis(compiler, status);
+  // if (!status.ShouldContinue()) {
+  //   return FinishCompile(status.GetStatus());
+  // }
+
+  // stone::CompileForCodeAnalysis(compiler, status);
+  // if (!status.ShouldContinue()) {
+  //   return FinishCompile(status.GetStatus());
+  // }
+
+  // stone::CompileAfterCodeAnalysis(compiler, status);
+  // if (!status.ShouldContinue()) {
+  //   return FinishCompile(status.GetStatus());
+  // }
+
+  // stone::CompileForCodeGen(compiler, status);
+
+  // return FinishCompile(status.GetStatus());
 }
+
+// void stone::CompileForSupport(Compiler &compiler, CompileStatus &status) {}
+
+// void stone::CompileBeforeCodeAnalysis(Compiler &compiler,
+//                                       CompileStatus &status) {}
+
+// void stone::CompileForCodeAnalysis(Compiler &compiler, CompileStatus &status)
+// {
+//   stone::CompileForSyntaxAnalysis(compiler, status);
+//   if (!status.ShouldContinue()) {
+//     return;
+//   }
+
+//   stone::CompileForSemanticAnalysis(compiler, status);
+// }
+
+// void stone::CompileForSyntaxAnalysis(Compiler &compiler,
+//                                      CompileStatus &status) {}
+
+// void stone::CompileForSemanticAnalysis(Compiler &compiler,
+//                                        CompileStatus &status) {}
+
+// void stone::CompileAfterSemanticAnalysis(Compiler &compiler,
+//                                          CompileStatus &status) {}
+
+// void stone::CompileForCodeGen(Compiler &compiler, CompileStatus &status) {
+
+//   stone::CompileForGenIR(compiler, status, codeGenContext);
+//   if (!status.ShouldContinue()) {
+//     return;
+//   }
+
+//   stone::CompileForGenMachine(compiler, status, codeGenContext)
+// }
+
+// void stone::CompileForGenIR(Compiler &compiler, CompileStatus &status,
+//                             CodeGenContext &codeGenContext) {}
+
+// void stone::CompileForGenMachine(Compiler &compiler, CompileStatus &status,
+//                                  CodeGenContext &codeGenContext) {}
