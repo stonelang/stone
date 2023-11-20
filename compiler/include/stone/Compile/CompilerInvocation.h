@@ -100,6 +100,7 @@ public:
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
+  const Action &GetAction() const { return compilerOpts.mainAction; }
   void SetTargetTriple(llvm::StringRef triple);
 
 public:

@@ -9,6 +9,7 @@
 
 namespace stone {
 class ModuleDecl;
+class CompilerExecution;
 
 class CompilerModule final {
   ModuleDecl *modPtr = nullptr;
@@ -33,22 +34,21 @@ public:
 
 class Compiler final {
 
+  friend CompilerExecution;
+
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
 public:
-  // This is a simple queue to determine the order of the actions
-  std::deque<ActionKind> actions;
-
   CompilerInvocation invocation;
-  CompilerExecution execution;
+  std::unique_ptr<CompilerExecution> execution;
   CompilerModule mainModule;
 
 public:
   Compiler();
 
   CompilerInvocation &GetInvocation() { return invocation; }
-  CompilerExecution &GetExecution() { return execution; }
+  CompilerExecution &GetExecution() { return *execution; }
 
 public:
   void Setup();
@@ -57,16 +57,19 @@ public:
   }
 
 public:
-  void SetupAction(ActionKind kind);
-  void QueueAction(ActionKind kind);
-  Status ForEachAction(std::function<Status(ActionKind kind)>);
-
-public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
 
-  CompilerModule &GetMainModule();
+private:
+  std::unique_ptr<CompilerExecution> GetExecution(ActionKind kind);
+
+public:
+  // void SetupMainStage();
+  //  CompilerModule &GetMainModule();
+
+public:
+  // CompilerStage &GetMainStage { return *mainCompilerStage; }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

@@ -6,107 +6,40 @@
 
 using namespace stone;
 
-Compiler::Compiler() : invocation(*this), execution(*this) {}
+Compiler::Compiler() : invocation(*this) {}
 
 void Compiler::Setup() {
-
   assert(invocation.HasAction());
-  SetupAction(invocation.GetCompilerOptions().mainAction.GetKind());
-  // We do not setup the rest of the compiler if it is not compilable
-  // For example, PrintHelp
-  // if (!invocation.IsCompilable()) {
-  //   return;
-  // }
-  execution.Setup();
+  execution = GetExecution(invocation.GetAction().GetKind());
+  execution->Setup();
 }
 
-void Compiler::SetupAction(ActionKind action) {
+std::unique_ptr<CompilerExecution> Compiler::GetExecution(ActionKind action) {
   switch (action) {
-  case ActionKind::PrintHelp: {
-    QueueAction(ActionKind::PrintHelp);
-    break;
+  case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:
-    QueueAction(ActionKind::PrintHelpHidden);
-    break;
-  }
-  case ActionKind::PrintVersion: {
-    QueueAction(ActionKind::PrintVersion);
-    break;
-  }
-  case ActionKind::Parse: {
-    QueueAction(ActionKind::Parse);
-    break;
-  }
-  case ActionKind::ResolveImports: {
-    SetupAction(ActionKind::Parse);
-    QueueAction(ActionKind::ResolveImports);
-    break;
-  }
-  case ActionKind::DumpSyntax: {
-    SetupAction(ActionKind::ResolveImports);
-    QueueAction(ActionKind::DumpSyntax);
-    break;
-  }
-  case ActionKind::TypeCheck: {
-    SetupAction(ActionKind::ResolveImports);
-    QueueAction(ActionKind::TypeCheck);
-    break;
-  }
-  case ActionKind::PrintSyntax: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::PrintSyntax);
-    break;
-  }
-  case ActionKind::MergeModules: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::MergeModules);
-    break;
-  }
-  case ActionKind::EmitIRBefore: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::EmitIRBefore);
-    break;
-  }
-  case ActionKind::EmitIRAfter: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::EmitIRAfter);
-    break;
-  }
-  case ActionKind::EmitBC: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::EmitBC);
-    break;
-  }
-  case ActionKind::EmitAssembly: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::EmitAssembly);
-    break;
-  }
-  case ActionKind::None:
-  case ActionKind::EmitObject: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::EmitObject);
-    break;
-  }
-  case ActionKind::DumpTypeInfo: {
-    SetupAction(ActionKind::TypeCheck);
-    QueueAction(ActionKind::DumpTypeInfo);
-    break;
-  }
+  case ActionKind::PrintVersion:
+    return std::make_unique<SupportExecution>(*this);
+  case ActionKind::Parse:
+  case ActionKind::ResolveImports:
+  case ActionKind::DumpSyntax:
+    return std::make_unique<SyntaxAnalysisExecution>(*this);
+  case ActionKind::TypeCheck:
+  case ActionKind::PrintSyntax:
+  case ActionKind::DumpTypeInfo:
+    return std::make_unique<SemanticAnalysisExecution>(*this);
+  case ActionKind::EmitIRBefore:
+  case ActionKind::EmitIRAfter:
+  case ActionKind::EmitBC:
+  case ActionKind::EmitAssembly:
+  case ActionKind::EmitObject:
+    return std::make_unique<CodeGenExecution>(*this);
+
   default: {
     llvm_unreachable("Unknown action -- cannot compile!");
   }
   }
 }
-Status Compiler::ForEachAction(std::function<Status(ActionKind kind)> notify) {
-  for (auto action : actions) {
-    if (notify(action).IsError()) {
-      return Status::Error();
-    }
-  }
-  return Status();
-}
-void Compiler::QueueAction(ActionKind action) { actions.push_back(action); }
 
 Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   if (!Lexer::isIdentifier(moduleName)) {
@@ -114,5 +47,5 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Status();
 }
-void CompilerModule::AddSourceFiles() {}
-void CompilerModule::AddSourceFile() {}
+// void CompilerModule::AddSourceFiles() {}
+// void CompilerModule::AddSourceFile() {}

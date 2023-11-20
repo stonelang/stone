@@ -19,7 +19,7 @@ namespace stone {
 class Tool;
 class Phase;
 
-enum class PhaseKind : uint8_t {
+enum class CompilationExecutionKind : uint8_t {
   Compile = 0,
   Backend,
   MergeModule,
@@ -35,7 +35,7 @@ enum class PhaseKind : uint8_t {
 using PhaseInput = llvm::PointerUnion<stone::file::File *, Phase *>;
 using PhaseInputList = llvm::ArrayRef<PhaseInput>;
 
-class Phase {
+class CompilationExecution {
   friend class Driver;
 
   PhaseKind kind;

@@ -22,8 +22,6 @@ public:
   file::Type GetOutputFileType() const;
 
 public:
-  bool Is(ActionKind k) const { return kind == k; }
-
   bool CanOutput() const {
     switch (GetKind()) {
     case ActionKind::DumpSyntax:
@@ -110,12 +108,25 @@ public:
   bool IsEmitAssembly() const { return GetKind() == ActionKind::EmitAssembly; }
   bool IsAlien() const { return GetKind() == ActionKind::Alien; }
 
+  bool Is(ActionKind k) const { return kind == k; }
+  bool IsAny(ActionKind K1) const { return Is(K1); }
+  template <typename... T>
+  bool IsAny(ActionKind K1, ActionKind K2, T... K) const {
+    if (Is(K1)) {
+      return true;
+    }
+    return IsAny(K2, K...);
+  }
+  template <typename... T> bool IsNot(ActionKind K1, T... K) const {
+    return !IsAny(K1, K...);
+  }
+
 public:
   static file::Type GetOutputFileTypeByActionKind(ActionKind kind);
 };
 
 namespace opts {
-  Action GetAction(const llvm::opt::ArgList &args);
+Action GetAction(const llvm::opt::ArgList &args);
 }
 
 } // namespace stone

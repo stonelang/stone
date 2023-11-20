@@ -1,159 +1,87 @@
 #ifndef STONE_COMPILE_COMPILEREXECUTION_H
 #define STONE_COMPILE_COMPILEREXECUTION_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
-#include "stone/Gen/CodeGenContext.h"
-#include "stone/Option/ActionKind.h"
+
+#include "llvm/Support/Chrono.h"
 
 namespace stone {
 
 class Compiler;
-struct CompilerExecutionFlags final {
-  CompilerExecutionFlags() = delete;
-  enum Kind : unsigned {
-    None = 0,
+class CodeGenContext;
+class CompilerExecution {
 
-    StartParseOnly = 1 << 1,
-    FininsParseOnly = 1 << 2,
-
-    StartSyntaxAnalysis = 1 << 3,
-    FinishSyntaxAnalysis = 1 << 4,
-
-    StartTypeChecking = 1 << 5,
-    FinishTypeChecking = 1 << 6,
-
-    StartGeneratingIR = 1 << 7,
-    FinishGeneratingIR = 1 << 8,
-
-    StartGeneratingNative = 1 << 9,
-    FinishGeneratingNative = 1 << 10,
-  };
-};
-
-class CompilerExecutionStages final {
-  UInt32 stages = 0;
-
-public:
-  CompilerExecutionStages() : stages(0) {}
-
-public:
-  bool DidStartParseOnly() const {
-    return stages & CompilerExecutionFlags::StartParseOnly;
-  }
-  void StartParseOnly() { stages |= CompilerExecutionFlags::StartParseOnly; }
-  bool DidFinishParseOnly() const {
-    return stages & CompilerExecutionFlags::FininsParseOnly;
-  }
-  void FinishParseOnly() { stages |= CompilerExecutionFlags::FininsParseOnly; }
-
-public:
-  bool DidStartSyntaxAnalysis() const {
-    return stages & CompilerExecutionFlags::StartSyntaxAnalysis;
-  }
-  void StartSyntaxAnalysis() {
-    stages |= CompilerExecutionFlags::StartSyntaxAnalysis;
-  }
-  bool DidFinishSyntaxAnalysis() const {
-    return stages & CompilerExecutionFlags::FinishSyntaxAnalysis;
-  }
-  void FinishSyntaxAnalysis() {
-    stages |= CompilerExecutionFlags::FinishSyntaxAnalysis;
-  }
-
-public:
-  bool DidStartTypeChecking() const {
-    return stages & CompilerExecutionFlags::StartTypeChecking;
-  }
-  void StartTypeChecking() {
-    stages |= CompilerExecutionFlags::StartTypeChecking;
-  }
-
-  bool DidFinishTypeChecking() const {
-    return stages & CompilerExecutionFlags::FinishTypeChecking;
-  }
-  void FinishTypeChecking() {
-    stages |= CompilerExecutionFlags::FinishTypeChecking;
-  }
-
-public:
-  bool DidStartGeneratingIR() const {
-    return stages & CompilerExecutionFlags::StartGeneratingIR;
-  }
-  void StartGeneratingIR() {
-    stages |= CompilerExecutionFlags::StartGeneratingIR;
-  }
-
-  bool DidFinishGeneratingIR() const {
-    return stages & CompilerExecutionFlags::FinishGeneratingIR;
-  }
-  void FinishGeneratingIR() {
-    stages |= CompilerExecutionFlags::FinishGeneratingIR;
-  }
-public:
-  void Clear() { stages = 0; }
-};
-
-class CompilerExecution final {
   Compiler &compiler;
-
-  ActionKind currentAction;
-
-  CompilerExecutionStages stages;
-
-  std::unique_ptr<CodeGenContext> codeGenContext;
-
-public:
-  CompilerExecutionStages &GetStages() { return stages; }
+  llvm::sys::TimePoint<> startTime;
+  llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
 public:
   CompilerExecution(Compiler &compiler);
-  void Setup();
 
-  Status ExecuteAction();
-  Status ExecuteAction(ActionKind action);
+public:
+  virtual Status Setup() = 0;
+  virtual Status Execute() = 0;
+};
+
+class SupportExecution final : public CompilerExecution {
+
+public:
+  SupportExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
 
 public:
   Status ExecutePrintHelp();
   Status ExecutePrintVersion();
   Status ExecutePrintFeature();
+};
+
+class SyntaxAnalysisExecution final : public CompilerExecution {
+public:
+  SyntaxAnalysisExecution(Compiler &compiler);
 
 public:
-  Status VerifyInputFiles();
+  Status Setup() override;
+  Status Execute() override;
+
+public:
   Status ExecuteParseOnly();
-  Status ExecuteResolveImports();
-  Status ExecuteDumpSyntax();
+  Status ExecuteParseAndResolveImports();
+  Status ExecutDumpSyntax();
+};
+
+class SemanticAnalysisExecution final : public CompilerExecution {
+
+public:
+  SemanticAnalysisExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
 
 public:
   Status ExecuteTypeCheck();
   Status ExecuteDumpTypeInfo();
   Status ExecutePrintSyntax();
-  Status WithCompletedTypeChecking();
-
-public:
-  Status GenerateIR(CodeGenContext &cgc);
-  Status ExecuteInitModule();
-
-  Status ExecuteMergeModules();
-  Status ExecuteEmitModule(CodeGenContext &cgc);
-
-public:
-  Status ExecuteEmitIRAfter(CodeGenContext &cgc);
-  Status ExecutePrintIR(CodeGenContext &cgc);
-  Status ExecuteEmitIRBefore(CodeGenContext &cgc);
-  Status ExecuteEmitBC(CodeGenContext &cgc);
-  Status ExecuteEmitObject(CodeGenContext &cgc);
-  Status ExecuteEmitLibrary(CodeGenContext &cgc);
-  Status ExecuteEmitAssembly(CodeGenContext &cgc);
 };
 
-class CompilerExecutionRAII final {
-  CompilerExecution &execution;
+class CodeGenExecution final : public CompilerExecution {
 
 public:
-  CompilerExecutionRAII(CompilerExecution &execution);
-  ~CompilerExecutionRAII();
+  CodeGenExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
+
+public:
+  Status ExecuteGenIR(CodeGenContext &codeGenContext);
+  Status ExecuteGenNative(CodeGenContext &codeGenContext);
 };
 
 } // namespace stone
+
 #endif

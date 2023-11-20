@@ -42,7 +42,7 @@ static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
 
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
-  unsigned includedFlagsBitmask = 0; 
+  unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask = opts::NoCompilerOption;
   unsigned missingArgIndex;
   unsigned missingArgCount;

@@ -104,6 +104,7 @@ public:
                             const file::Files &inputs,
                             OutputOptions &outputOptions);
 
+  // std::unique_ptr<CompilationExecution>
   CompilationModelKind
   ComputeCompilationModelKind(const llvm::opt::DerivedArgList &dal);
 
