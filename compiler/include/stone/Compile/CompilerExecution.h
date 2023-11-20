@@ -12,10 +12,12 @@ class Compiler;
 class CodeGenContext;
 class CompilerExecution {
 
-  Compiler &compiler;
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
+protected:
+  Compiler &compiler;
+  
 public:
   CompilerExecution(Compiler &compiler);
 

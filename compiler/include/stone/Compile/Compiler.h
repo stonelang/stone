@@ -34,8 +34,10 @@ public:
 
 class Compiler final {
 
-  friend CompilerExecution;
-
+  friend class CodeGenExecution;
+  friend class SyntaxAnalysisExecution;
+  friend class SemanticAnalysisExecution;
+  
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
