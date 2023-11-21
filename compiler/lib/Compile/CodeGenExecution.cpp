@@ -8,7 +8,7 @@ CodeGenExecution::CodeGenExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status CodeGenExecution::Setup() {
-  auto execution = compiler.ComputeExecution(ActionKind::TypeCheck);
+  auto execution = compiler.GetExecutionForAction(ActionKind::TypeCheck);
   execution->Setup();
   execution->Execute();
 }
@@ -17,6 +17,6 @@ Status CodeGenExecution::Execute() {
 
   switch (compiler.GetInvocation().GetAction().GetKind()) {
   default:
-    llvm_unreachable("Invalid action for syntax analysis");
+    llvm_unreachable("Invalid action for CodeGeneration");
   }
 }

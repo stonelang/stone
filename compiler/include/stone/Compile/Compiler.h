@@ -39,7 +39,7 @@ class Compiler final {
 
 public:
   CompilerInvocation invocation;
-  std::unique_ptr<CompilerExecution> execution;
+  std::unique_ptr<CompilerExecution> mainExecution;
   CompilerModule mainModule;
 
 public:
@@ -57,9 +57,9 @@ public:
   SrcMgr &GetSrcMgr() { return srcMgr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
-  CompilerExecution &GetExecution() { return *execution; }
+  CompilerExecution &GetMainExecution() { return *mainExecution; }
 
-  std::unique_ptr<CompilerExecution> ComputeExecution(ActionKind kind);
+  std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
 
 public:
   // void SetupMainStage();

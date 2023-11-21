@@ -11,6 +11,7 @@ set(stone_compile_sources
   SupportExecution.cpp
   CodeGenExecution.cpp
   SemanticAnalysisExecution.cpp
+  FallbackExecution.cpp
   
   LINK_LIBS
   StoneGen

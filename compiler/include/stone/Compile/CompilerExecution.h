@@ -12,12 +12,12 @@ class Compiler;
 class SourceFile;
 class CodeGenContext;
 
-// enum class CompilerExecutionKind {
-//   BeforeCodeAnalysis = 0,
-//   CodeAnalysis,
-//   AfterCodeAnalysis,
-//   CodeGen,
-// };
+enum class CompilerExecutionKind {
+  Support,
+  SyntaxAnalysis,
+  SemanticAnalysis,
+  CodeGeneration,
+};
 
 class CompilerExecution {
 
@@ -48,16 +48,6 @@ public:
   Status ExecutePrintHelp();
   Status ExecutePrintVersion();
   Status ExecutePrintFeature();
-};
-
-class BeforeCodeAnalysisExecution final : public CompilerExecution {
-
-public:
-  BeforeAnalysisExecution(Compiler &compiler);
-
-public:
-  Status Setup() override;
-  Status Execute() override;
 };
 
 class SyntaxAnalysisExecution final : public CompilerExecution {
@@ -93,15 +83,6 @@ public:
   Status ExecutePrintSyntax();
 };
 
-class AfterCodeAnalysisExecution final : public CompilerExecution {
-public:
-  AfterCodeAnalysisExecution(Compiler &compiler);
-
-public:
-  Status Setup() override;
-  Status Execute() override;
-};
-
 class CodeGenExecution final : public CompilerExecution {
 
 public:
@@ -114,6 +95,16 @@ public:
 public:
   Status ExecuteGenIR(CodeGenContext &codeGenContext);
   Status ExecuteGenNative(CodeGenContext &codeGenContext);
+};
+
+class FallbackExecution final : public CompilerExecution {
+
+public:
+  FallbackExecution(Compiler &compiler);
+
+public:
+  Status Setup() override;
+  Status Execute() override;
 };
 
 } // namespace stone

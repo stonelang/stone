@@ -10,12 +10,12 @@ Compiler::Compiler() : invocation(*this) {}
 
 void Compiler::Setup() {
   assert(invocation.HasAction());
-  execution = ComputeExecution(invocation.GetAction().GetKind());
-  execution->Setup();
+  mainExecution = GetExecutionForAction(invocation.GetAction().GetKind());
+  mainExecution->Setup();
 }
 
 std::unique_ptr<CompilerExecution>
-Compiler::ComputeExecution(ActionKind action) {
+Compiler::GetExecutionForAction(ActionKind action) {
   switch (action) {
   case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:
@@ -35,9 +35,8 @@ Compiler::ComputeExecution(ActionKind action) {
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
     return std::make_unique<CodeGenExecution>(*this);
-
   default: {
-    llvm_unreachable("Unknown action -- cannot compile!");
+    return std::make_unique<FallbackExecution>(*this);
   }
   }
 }
