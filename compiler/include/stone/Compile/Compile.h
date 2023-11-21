@@ -23,11 +23,8 @@ public:
   enum Kind {
     ForSupport = 1 << 0,
     ForLLVMIR = 1 << 1,
-    ForSyntaxAnalysis = 1 << 3,
-    ForSemanticAnalysis = 1 << 4,
-    ForCodeGen = 1 << 5,
-    ForGenIR = 1 << 6,
-    ForGenNative = 1 << 7,
+    ForCodeAnalysis = 1 << 2,
+    ForCodeGeneration = 1 << 3,
   };
 
 public:
@@ -37,17 +34,14 @@ public:
 
 public:
   CompileSession(Compiler &compiler) : compiler(compiler) {}
-  ~CompileSession() {
-    // compiler.GetInvocation().GetDiags().Finish();
-  }
+  ~CompileSession() {}
 
-public:
-  void Setup();
+// public:
+//   CompileSession::Kind GetKindForAction(ActionKind kind);
 
 public:
   bool IsForSupport();
   bool IsForLLVMIR();
-  bool IsForCodeAnalysis();
 
 public:
   Status &GetStatus() { return status; }
@@ -66,7 +60,8 @@ void CompileForAction(Compiler &compiler, CompileSession &session);
 void CompileForSupport(Compiler &compiler, CompileSession &session);
 
 /// Handles parsings, import resolution, and type-checking
-// void CompileForCodeAnalysis(Compiler &compiler, CompileSession &session);
+void CompileForCodeAnalysis(Compiler &compiler, CompileSession &session,
+                            std::function<void(Compiler &, CompileSession &)>);
 
 /// Handles only syntax
 void CompileForSyntaxAnalysis(Compiler &compiler, CompileSession &session);

@@ -12,13 +12,6 @@ class Compiler;
 class SourceFile;
 class CodeGenContext;
 
-enum class CompilerExecutionKind {
-  Support,
-  SyntaxAnalysis,
-  SemanticAnalysis,
-  CodeGeneration,
-};
-
 class CompilerExecution {
 
   llvm::sys::TimePoint<> startTime;
@@ -29,10 +22,14 @@ protected:
 
 public:
   CompilerExecution(Compiler &compiler);
+  ~CompilerExecution();
 
 public:
   virtual Status Setup() = 0;
   virtual Status Execute() = 0;
+
+public:
+  void Finish();
 };
 
 class SupportExecution final : public CompilerExecution {

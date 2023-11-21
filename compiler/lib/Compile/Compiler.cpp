@@ -8,11 +8,7 @@ using namespace stone;
 
 Compiler::Compiler() : invocation(*this) {}
 
-void Compiler::Setup() {
-  assert(invocation.HasAction());
-  mainExecution = GetExecutionForAction(invocation.GetAction().GetKind());
-  mainExecution->Setup();
-}
+void Compiler::Setup() { assert(invocation.HasAction()); }
 
 std::unique_ptr<CompilerExecution>
 Compiler::GetExecutionForAction(ActionKind action) {
@@ -41,6 +37,11 @@ Compiler::GetExecutionForAction(ActionKind action) {
   }
 }
 
+Status Compiler::ExecuteAction(ActionKind kind) {
+  auto execution = GetExecutionForAction(kind);
+  execution->Setup();
+  execution->Execute();
+}
 Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   if (!Lexer::isIdentifier(moduleName)) {
     return Status::Error();

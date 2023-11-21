@@ -8,9 +8,11 @@ CodeGenExecution::CodeGenExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status CodeGenExecution::Setup() {
-  auto execution = compiler.GetExecutionForAction(ActionKind::TypeCheck);
-  execution->Setup();
-  execution->Execute();
+
+  if (compiler.ExecuteAction(ActionKind::TypeCheck).IsError()) {
+    return Status::Error();
+  }
+  return Status();
 }
 
 Status CodeGenExecution::Execute() {
@@ -19,4 +21,13 @@ Status CodeGenExecution::Execute() {
   default:
     llvm_unreachable("Invalid action for CodeGeneration");
   }
+}
+
+Status CodeGenExecution::ExecuteGenIR(CodeGenContext &codeGenContext) {
+  return Status();
+}
+
+Status CodeGenExecution::ExecuteGenNative(CodeGenContext &codeGenContext) {
+
+  return Status();
 }
