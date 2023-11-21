@@ -3,11 +3,13 @@
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
+#include "stone/Syntax/Module.h"
 #include "stone/Syntax/SearchPath.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
@@ -102,6 +104,19 @@ public:
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
   const Action &GetAction() const { return compilerOpts.mainAction; }
   void SetTargetTriple(llvm::StringRef triple);
+
+public:
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForAtMostOnePrimary() const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForPrimary(StringRef fileName) const;
+
+  const PrimaryFileSpecificPaths &
+  GetPrimaryFileSpecificPathsForSyntaxFile(const SourceFile &sf) const;
 
 public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);

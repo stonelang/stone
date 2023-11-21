@@ -40,13 +40,32 @@ Compiler::GetExecutionForAction(ActionKind action) {
 Status Compiler::ExecuteAction(ActionKind kind) {
   auto execution = GetExecutionForAction(kind);
   execution->Setup();
-  execution->Execute();
+  return execution->Execute();
 }
+
+ModuleDecl *Compiler::GetMainModule() const {}
+
+void Compiler::SetMainModule(ModuleDecl *mainModule) {}
+
+Status Compiler::CreateSourceFilesForMainModule(
+    ModuleDecl *mod, llvm::SmallVectorImpl<SourceFile *> &files) const {
+
+  return Status();
+}
+
+SourceFile *Compiler::CreateSourceFileForMainModule(
+    ModuleDecl *mainModule, SourceFileKind fileKind, unsigned bufferID, bool isMainBuffer) const {
+
+  return nullptr;
+}
+
+SourceFile *Compiler::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
+  return nullptr;
+}
+
 Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   if (!Lexer::isIdentifier(moduleName)) {
     return Status::Error();
   }
   return Status();
 }
-// void CompilerModule::AddSourceFiles() {}
-// void CompilerModule::AddSourceFile() {}

@@ -7,7 +7,7 @@ SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status SemanticAnalysisExecution::Setup() {
-  if (compiler.ExecuteAction(ActionKind::Parse).IsError()) {
+  if (compiler.ExecuteAction(ActionKind::ResolveImports).IsError()) {
     return Status::Error();
   }
   return Status();

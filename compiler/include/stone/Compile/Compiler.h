@@ -8,38 +8,19 @@
 #include <deque>
 
 namespace stone {
+class Compiler;
 class ModuleDecl;
 class CompilerExecution;
-
-class CompilerModule final {
-  ModuleDecl *modPtr = nullptr;
-
-public:
-  CompilerModule(ModuleDecl *modPtr = nullptr) : modPtr(modPtr) {}
-
-public:
-  bool IsNull() const { return modPtr == nullptr; }
-  ModuleDecl *GetPtr() const { return modPtr; }
-
-  ModuleDecl *operator->() const {
-    assert(modPtr && "Cannot dereference a null ModuleDecl!");
-    return modPtr;
-  }
-  explicit operator bool() const { return modPtr != nullptr; }
-
-public:
-  void AddSourceFiles();
-  void AddSourceFile();
-};
 
 class Compiler final {
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
+  ModuleDecl *mainModule = nullptr;
+
 public:
   CompilerInvocation invocation;
-  CompilerModule mainModule;
 
 public:
   Compiler();
@@ -48,6 +29,10 @@ public:
   void Setup();
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
     diags.AddConsumer(consumer);
+  }
+
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
   }
 
 public:
@@ -60,11 +45,17 @@ public:
   Status ExecuteAction(ActionKind kind);
 
 public:
-  // void SetupMainStage();
-  //  CompilerModule &GetMainModule();
+  // Module
+  ModuleDecl *GetMainModule() const;
+  void SetMainModule(ModuleDecl *mainModule);
+  Status CreateSourceFilesForMainModule(
+      ModuleDecl *mod, llvm::SmallVectorImpl<SourceFile *> &files) const;
 
-public:
-  // CompilerStage &GetMainStage { return *mainCompilerStage; }
+  SourceFile *CreateSourceFileForMainModule(ModuleDecl *mainModule,
+                                            SourceFileKind fileKind,
+                                            unsigned bufferID,
+                                            bool isMainBuffer = false) const;
+  SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

@@ -36,8 +36,8 @@ public:
   CompileSession(Compiler &compiler) : compiler(compiler) {}
   ~CompileSession() {}
 
-// public:
-//   CompileSession::Kind GetKindForAction(ActionKind kind);
+  // public:
+  //   CompileSession::Kind GetKindForAction(ActionKind kind);
 
 public:
   bool IsForSupport();
