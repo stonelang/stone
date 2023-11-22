@@ -3,22 +3,13 @@
 
 using namespace stone;
 
-SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler)
-    : CompilerExecution(compiler) {}
+SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler,
+                                                     ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
 
 Status SemanticAnalysisExecution::Execute() {
 
-  // Everything here requires type checking -- call it now:
-  if (ExecuteTypeCheck().IsError()) {
-    return Status::Error();
-  }
-
-  // if(compiler.GetAction().IsTypeCheck()){
-  //   return Status::Success();
-  // }
-
-  // switch (compiler.GetInvocation().GetAction().GetKind()) {
-  // }
+  switch (GetExecutionAction()) {}
 }
 
 Status SemanticAnalysisExecution::ExecuteTypeCheck() {
@@ -29,6 +20,6 @@ Status SemanticAnalysisExecution::ExecuteTypeCheck() {
   // });
 }
 
-Status SemanticAnalysisExecution::ExecuteDumpTypeInfo() {}
+Status SemanticAnalysisExecution::ExecuteDumpTypeInfo() { return Status(); }
 
-Status SemanticAnalysisExecution::ExecutePrintSyntax() {}
+Status SemanticAnalysisExecution::ExecutePrintSyntax() { return Status(); }

@@ -59,9 +59,48 @@ void Compiler::SetMainModule(ModuleDecl *inputMainModule) {
 }
 
 Status Compiler::CreateSourceFilesForMainModule(
-    ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &files) const {
+    ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &resultFiles) const {
 
+  // Try to pull out the main source file, if any. This ensures that it
+  // is at the start of the list of files.
+  llvm::Optional<unsigned> mainBufferID = llvm::None;
+  if (SourceFile *mainSourceFile = ComputeMainSourceFileForModule(mod)) {
+    mainBufferID = mainSourceFile->GetSrcID();
+    resultFiles.push_back(mainSourceFile);
+  }
+
+  // If we have partial modules to load, do so now, bailing if any failed to
+  // load.
+  // TODO:
+  // if (!partialModules.empty()) {
+  //   if (LoadPartialModulesAndImplicitImports(mod, files))
+  //     return true;
+  // }
+
+  // Finally add the library files.
+  // FIXME: This is the only demand point for InputSourceCodeBufferIDs. We
+  // should compute this list of source files lazily.
+
+  for (auto bufferID : inputSourceBufferIDList) {
+    // Skip the main buffer, we've already handled it.
+    if (bufferID == mainBufferID) {
+      continue;
+    }
+
+    auto *libraryFile =
+        CreateSourceFileForMainModule(mod, SourceFileKind::Library, bufferID);
+    resultFiles.push_back(libraryFile);
+  }
   return Status();
+}
+
+SourceFile *Compiler::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
+  // TODO:
+  if (invocation.GetCompilerOptions().parsingInputMode ==
+      CompilerOptions::ParsingInputMode::StoneLibrary) {
+    return nullptr;
+  }
+  return nullptr;
 }
 
 // Sources
@@ -134,7 +173,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   unsigned bufferID = astContext->GetSrcMgr().addNewSourceBuffer(
       std::move(buffers->moduleBuffer));
 
-  sourceBufferIDs.push_back(bufferID);
+  inputSourceBufferIDList.push_back(bufferID);
   return bufferID;
 }
 
@@ -150,7 +189,7 @@ unsigned Compiler::CreateSourceBuffer(const CompilerInputFile &input) {
 }
 
 void Compiler::RecordPrimarySourceID(unsigned primarySourceID) {
-  primarySourceIDs.insert(primarySourceID);
+  primarySourceBufferIDList.insert(primarySourceID);
 }
 
 // TODO:
@@ -205,8 +244,8 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   // auto swiftdoc = openModuleDoc(input);
   // auto sourceinfo = openModuleSourceInfo(input);
   // return ModuleBuffers(std::move(*inputFileOrErr),
-  //                      swiftdoc.hasValue() ? std::move(swiftdoc.getValue()) :
-  //                      nullptr, sourceinfo.hasValue() ?
+  //                      swiftdoc.hasValue() ? std::move(swiftdoc.getValue())
+  //                      : nullptr, sourceinfo.hasValue() ?
   //                      std::move(sourceinfo.getValue()) : nullptr);
 
   // return llvm::None;
@@ -235,10 +274,6 @@ SourceFile *Compiler::CreateSourceFileForMainModule(ModuleDecl *mainModule,
   return sourceFile;
 }
 
-SourceFile *Compiler::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
-  return nullptr;
-}
-
 SourceFile::ParsingOptions
 Compiler::GetSourceFileParsingOptions(bool forPrimary) const {
 
@@ -257,5 +292,18 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
 bool Compiler::ShouldSetupClang() {
   return invocation.GetAction().IsAny(
       ActionKind::EmitIRBefore, ActionKind::EmitIRAfter, ActionKind::EmitBC,
-      ActionKind::EmitAssembly, ActionKind::EmitObject);
+      ActionKind::EmitAssembly, ActionKind::EmitObject,
+      ActionKind::EmitLibrary);
+}
+
+void Compiler::TryFreeASTContext() {
+
+  // Just free for now
+  FreeASTContext();
+}
+void Compiler::FreeASTContext() {
+
+  astContext.reset();
+  mainModule = nullptr;
+  primarySourceBufferIDList.clear();
 }

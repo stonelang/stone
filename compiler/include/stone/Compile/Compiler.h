@@ -24,9 +24,9 @@ class Compiler final {
   CompilerInvocation invocation;
 
   /// Contains buffer IDs for input source code files.
-  std::vector<unsigned> sourceBufferIDs;
+  std::vector<unsigned> inputSourceBufferIDList;
   // The primary Sources
-  llvm::SetVector<unsigned> primarySourceIDs;
+  llvm::SetVector<unsigned> primarySourceBufferIDList;
 
   std::unique_ptr<ClangContext> clangContext;
 
@@ -74,7 +74,7 @@ public:
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
-    return primarySourceIDs.count(primarySourceID) != 0;
+    return primarySourceBufferIDList.count(primarySourceID) != 0;
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
 
@@ -98,7 +98,12 @@ public:
                                             SourceFileKind fileKind,
                                             unsigned bufferID,
                                             bool isMainBuffer = false) const;
+
   SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
+
+public:
+  void TryFreeASTContext();
+  void FreeASTContext();
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

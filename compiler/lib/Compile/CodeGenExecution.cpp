@@ -4,15 +4,12 @@
 
 using namespace stone;
 
-CodeGenExecution::CodeGenExecution(Compiler &compiler)
-    : CompilerExecution(compiler) {}
+CodeGenExecution::CodeGenExecution(Compiler &compiler, ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
 
 Status CodeGenExecution::Execute() {
 
-  // Everything here requires GenIR -- call it now
-  // ExecuteGenIR();
-
-  switch (compiler.GetInvocation().GetAction().GetKind()) {
+  switch (GetExecutionAction()) {
   default:
     llvm_unreachable("Invalid action for CodeGeneration");
   }
@@ -44,6 +41,9 @@ Status CodeGenExecution::ExecuteGenIR(CodeGenContext &codeGenContext) {
 }
 
 Status CodeGenExecution::ExecuteGenNative(CodeGenContext &codeGenContext) {
+
+  // Before we GenNative, it is possible we may not longer need the AST
+  compiler.TryFreeASTContext();
 
   return Status();
 }

@@ -1,8 +1,13 @@
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Syntax/Module.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
+
+
+
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -84,4 +89,30 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     status.SetHasCompletion();
   }
   return status;
+}
+
+const PrimaryFileSpecificPaths &
+CompilerInvocation::GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode()
+    const {
+  return GetPrimaryFileSpecificPathsForAtMostOnePrimary();
+}
+const PrimaryFileSpecificPaths &
+CompilerInvocation::GetPrimaryFileSpecificPathsForAtMostOnePrimary() const {
+  return GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForAtMostOnePrimary();
+}
+const PrimaryFileSpecificPaths &
+CompilerInvocation::GetPrimaryFileSpecificPathsForPrimary(
+    StringRef filename) const {
+  return GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForPrimary(filename);
+}
+const PrimaryFileSpecificPaths &
+CompilerInvocation::GetPrimaryFileSpecificPathsForSyntaxFile(
+    const SourceFile &sf) const {
+  return GetCompilerOptions()
+      .GetInputsAndOutputs()
+      .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }

@@ -4,20 +4,29 @@
 
 using namespace stone;
 
-SyntaxAnalysisExecution::SyntaxAnalysisExecution(Compiler &compiler)
-    : CompilerExecution(compiler) {}
+SyntaxAnalysisExecution::SyntaxAnalysisExecution(Compiler &compiler,
+                                                 ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
 
 Status SyntaxAnalysisExecution::Execute() {
 
-  switch (compiler.GetInvocation().GetAction().GetKind()) {
-  case ActionKind::Parse:
-    return ExecuteParse(
-        [&](SourceFile &sourceFile) { return Status::Success(); });
-  case ActionKind::ResolveImports:
-    return ExecuteParseAndResolveImports();
-  default:
-    llvm_unreachable("Invalid action for syntax analysis");
-  }
+  switch (GetExecutionAction()) {}
+
+  // }
+  // switch (compiler.GetInvocation().GetAction().GetKind()) {
+  // case ActionKind::Parse:
+  //   return ExecuteParse(
+  //       [&](SourceFile &sourceFile) { return Status::Success(); });
+  // case ActionKind::ResolveImports:
+  //   return ExecuteParse([&](SourceFile &sourceFile) {
+  //     return ExecuteParseAndResolveImports(sourceFile)
+  //   });
+  // case ActionKind::DumpSyntax:{
+  //   return DumpSyntax();
+  // }
+  // default:
+  //   llvm_unreachable("Invalid action for syntax analysis");
+  // }
 }
 
 Status SyntaxAnalysisExecution::ExecuteParse(
@@ -25,14 +34,9 @@ Status SyntaxAnalysisExecution::ExecuteParse(
   return Status();
 }
 
-Status SyntaxAnalysisExecution::ExecuteParseAndResolveImports() {
-  return ExecuteParse([&](SourceFile &sourceFile) {
-    return ExecuteParseAndResolveImports(sourceFile);
-  });
-}
-
 Status
 SyntaxAnalysisExecution::ExecuteParseAndResolveImports(SourceFile &sourceFile) {
+  return Status();
 }
 
 Status SyntaxAnalysisExecution::ExecutDumpSyntax() { return Status(); }

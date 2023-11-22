@@ -15,32 +15,38 @@ class CodeGenContext;
 
 class CompilerExecution {
 
+protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
-protected:
   Compiler &compiler;
+  ActionKind currentAction;
 
 public:
-  CompilerExecution(Compiler &compiler);
+  CompilerExecution(Compiler &compiler,
+                    ActionKind currentAction = ActionKind::None);
   ~CompilerExecution();
 
 public:
   virtual Status Setup();
   virtual Status Execute() = 0;
+  Status Finish();
 
-public:
-  void Finish();
-
-public:
+protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
+  bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
+  ActionKind GetMainAction();
+  ActionKind GetCurrentAction() { return currentAction; }
+  ActionKind GetExecutionAction() {
+    return IsMainAction() ? GetMainAction() : GetCurrentAction();
+  }
 };
 
 class SupportExecution final : public CompilerExecution {
 
 public:
-  SupportExecution(Compiler &compiler);
+  SupportExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
@@ -52,20 +58,16 @@ public:
 };
 
 class SyntaxAnalysisExecution final : public CompilerExecution {
-
 public:
-  SyntaxAnalysisExecution(Compiler &compiler);
+  SyntaxAnalysisExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
 
 public:
   Status ExecuteParse(std::function<Status(SourceFile &)> notify);
-  Status ExecuteParseAndResolveImports();
-  Status ExecutDumpSyntax();
-
-private:
   Status ExecuteParseAndResolveImports(SourceFile &sourceFile);
+  Status ExecutDumpSyntax();
 
 public:
   ActionKind GetDependency() override { return ActionKind::None; }
@@ -73,8 +75,11 @@ public:
 
 class SemanticAnalysisExecution final : public CompilerExecution {
 
+  // using EachSourceFileTypeCheckedCallback = std::function<void(
+  //     SourceFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+
 public:
-  SemanticAnalysisExecution(Compiler &compiler);
+  SemanticAnalysisExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
@@ -91,7 +96,7 @@ public:
 class CodeGenExecution final : public CompilerExecution {
 
 public:
-  CodeGenExecution(Compiler &compiler);
+  CodeGenExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
@@ -107,10 +112,13 @@ public:
 class FallbackExecution final : public CompilerExecution {
 
 public:
-  FallbackExecution(Compiler &compiler);
+  FallbackExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
+
+public:
+  Status ExecuteCompileLLVMIR();
 };
 
 } // namespace stone

@@ -4,12 +4,12 @@
 
 using namespace stone;
 
-SupportExecution::SupportExecution(Compiler &compiler)
-    : CompilerExecution(compiler) {}
+SupportExecution::SupportExecution(Compiler &compiler, ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
 
 Status SupportExecution::Execute() {
 
-  switch (compiler.GetInvocation().GetAction().GetKind()) {
+  switch (GetExecutionAction()) {
   case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:
     return ExecutePrintHelp();
