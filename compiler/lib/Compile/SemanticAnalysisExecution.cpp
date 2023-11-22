@@ -6,19 +6,28 @@ using namespace stone;
 SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status SemanticAnalysisExecution::Setup() {
-  if (compiler.ExecuteAction(ActionKind::ResolveImports).IsError()) {
-    return Status::Error();
-  }
-  return Status();
-}
-
 Status SemanticAnalysisExecution::Execute() {
 
-  // switch (compiler.GetInvocation().GetAction().GetKind()) {}
+  // Everything here requires type checking -- call it now:
+  if (ExecuteTypeCheck().IsError()) {
+    return Status::Error();
+  }
+
+  // if(compiler.GetAction().IsTypeCheck()){
+  //   return Status::Success();
+  // }
+
+  // switch (compiler.GetInvocation().GetAction().GetKind()) {
+  // }
 }
 
-Status SemanticAnalysisExecution::ExecuteTypeCheck() {}
+Status SemanticAnalysisExecution::ExecuteTypeCheck() {
+  // compiler.ForEachSyntaxFile([&](SourceFile &sourceFile,
+  //                       TypeCheckerOptions &typeCheckerOpts,
+  //                       stone::TypeCheckerListener *listener) {
+  //   stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+  // });
+}
 
 Status SemanticAnalysisExecution::ExecuteDumpTypeInfo() {}
 

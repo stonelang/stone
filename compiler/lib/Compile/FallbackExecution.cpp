@@ -7,8 +7,6 @@ using namespace stone;
 FallbackExecution::FallbackExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status FallbackExecution::Setup() { return Status(); }
-
 Status FallbackExecution::Execute() {
 
   /// Perform anything that are no action related

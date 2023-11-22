@@ -35,7 +35,7 @@ const BuiltinContext &ASTContext::GetBuiltinContext() const {
 }
 
 void *stone::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
-                           AllocationArena arena, unsigned alignment) {
+                                  AllocationArena arena, unsigned alignment) {
   return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 

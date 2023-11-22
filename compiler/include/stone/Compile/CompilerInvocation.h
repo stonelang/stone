@@ -65,6 +65,8 @@ class CompilerInvocation final {
 
   DiagnosticOptions diagOpts;
 
+  FileSystemOptions fileSystemOpts;
+
   TargetContext targetContext;
 
 public:
@@ -100,6 +102,11 @@ public:
 
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+
+  FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
+  const FileSystemOptions &GetFileSystemOptions() const {
+    return fileSystemOpts;
+  }
 
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
   const Action &GetAction() const { return compilerOpts.mainAction; }

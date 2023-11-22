@@ -108,10 +108,16 @@ llvm::StringRef SourceFile::GetFilename() const {
   return sm.getIdentifierForBuffer(srcID);
 }
 
-SourceFile *SourceFile::Make(SourceFileKind kind, unsigned srcID,
-                             ModuleDecl &owner, ASTContext &sc,
-                             bool isPrimary) {
-  return new (sc) SourceFile(kind, owner, srcID, isPrimary);
+SourceFile *SourceFile::Create(SourceFileKind kind, unsigned srcID,
+                               ModuleDecl &owner, ASTContext &astContext) {
+  return new (astContext) SourceFile(kind, owner, srcID, false);
+}
+
+SourceFile *SourceFile::CreatePrimarySourceFile(SourceFileKind kind,
+                                                unsigned srcID,
+                                                ModuleDecl &owner,
+                                                ASTContext &astContext) {
+  return new (astContext) SourceFile(kind, owner, srcID, true);
 }
 
 SourceFile::~SourceFile() {}

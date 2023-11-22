@@ -1,27 +1,24 @@
+#include <stdio.h>
 
-
-
-class CompilerActionConsumer {
-
-};
-class CompilerAction {
-
-	CompilerActionConsumer* CreateConsumer();
-};
-
-class ASTFileAction : public CompilerAction {
+class Base {
 
 public:
-	void HandleSourceFile(SourceFile* sourceFile);
-
-};
-
-class ParseOnlyAction : public ASTAction {
-};
-
-class TypeCheckAction : public ParseOnlyAction {
+	virtual void Execute() { printf("base");}
 
 };
 
 
+class Child : public Base {
 
+public:
+	void Execute() override { 
+		Base::Execute(); 
+	printf("child");}
+};
+
+int main() {
+	Child child;
+	child.Execute();
+
+	return 0;
+}

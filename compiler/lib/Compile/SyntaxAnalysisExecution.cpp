@@ -7,8 +7,6 @@ using namespace stone;
 SyntaxAnalysisExecution::SyntaxAnalysisExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status SyntaxAnalysisExecution::Setup() {}
-
 Status SyntaxAnalysisExecution::Execute() {
 
   switch (compiler.GetInvocation().GetAction().GetKind()) {

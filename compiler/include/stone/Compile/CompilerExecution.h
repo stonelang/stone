@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
+#include "stone/Option/ActionKind.h"
 
 #include "llvm/Support/Chrono.h"
 
@@ -25,11 +26,15 @@ public:
   ~CompilerExecution();
 
 public:
-  virtual Status Setup() = 0;
+  virtual Status Setup();
   virtual Status Execute() = 0;
 
 public:
   void Finish();
+
+public:
+  // Just one for now
+  virtual ActionKind GetDependency() { return ActionKind::None; }
 };
 
 class SupportExecution final : public CompilerExecution {
@@ -38,7 +43,6 @@ public:
   SupportExecution(Compiler &compiler);
 
 public:
-  Status Setup() override;
   Status Execute() override;
 
 public:
@@ -53,7 +57,6 @@ public:
   SyntaxAnalysisExecution(Compiler &compiler);
 
 public:
-  Status Setup() override;
   Status Execute() override;
 
 public:
@@ -63,6 +66,9 @@ public:
 
 private:
   Status ExecuteParseAndResolveImports(SourceFile &sourceFile);
+
+public:
+  ActionKind GetDependency() override { return ActionKind::None; }
 };
 
 class SemanticAnalysisExecution final : public CompilerExecution {
@@ -71,13 +77,15 @@ public:
   SemanticAnalysisExecution(Compiler &compiler);
 
 public:
-  Status Setup() override;
   Status Execute() override;
 
 public:
   Status ExecuteTypeCheck();
   Status ExecuteDumpTypeInfo();
   Status ExecutePrintSyntax();
+
+public:
+  ActionKind GetDependency() override { return ActionKind::ResolveImports; }
 };
 
 class CodeGenExecution final : public CompilerExecution {
@@ -86,12 +94,14 @@ public:
   CodeGenExecution(Compiler &compiler);
 
 public:
-  Status Setup() override;
   Status Execute() override;
 
 public:
   Status ExecuteGenIR(CodeGenContext &codeGenContext);
   Status ExecuteGenNative(CodeGenContext &codeGenContext);
+
+public:
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
 class FallbackExecution final : public CompilerExecution {
@@ -100,7 +110,6 @@ public:
   FallbackExecution(Compiler &compiler);
 
 public:
-  Status Setup() override;
   Status Execute() override;
 };
 

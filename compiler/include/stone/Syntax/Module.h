@@ -177,9 +177,15 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static SourceFile *Make(SourceFileKind kind, unsigned srcID,
-                          ModuleDecl &owner, ASTContext &tc,
-                          bool isPrimary = false);
+  llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
+
+public:
+  static SourceFile *Create(SourceFileKind kind, unsigned srcID,
+                            ModuleDecl &owner, ASTContext &astContext);
+
+  static SourceFile *CreatePrimarySourceFile(SourceFileKind kind,
+                                             unsigned srcID, ModuleDecl &owner,
+                                             ASTContext &astContext);
 
   static bool classof(const ModuleFile *file) {
     return file->GetKind() == ModuleFileKind::Syntax;

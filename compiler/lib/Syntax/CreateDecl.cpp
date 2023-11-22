@@ -36,8 +36,8 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &astContext,
   funDecl->SetAccessLevel(collector.GetAccessLevelCollector().GetAccessLevel());
   return funDecl;
 }
-FunDecl *FunDecl::CreateImplicit(DeclCollector &collector,
-                                        ASTContext &sc, DeclContext *parent) {
+FunDecl *FunDecl::CreateImplicit(DeclCollector &collector, ASTContext &sc,
+                                 DeclContext *parent) {
 
   return nullptr;
 }

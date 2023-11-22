@@ -5,6 +5,12 @@
 
 using namespace stone;
 
+// TODO:
+//  llvm::ArrayRef<Decl *> SourceFile::GetTopLevelDecls() const {
+//    auto &astContext = GetASTContext();
+//    auto *mutableThis = const_cast<SourceFile *>(this);
+//  }
+
 void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
                             SyntaxListener *syntaxListener,
                             LexerListener *lexerListener) {

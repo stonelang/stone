@@ -2,6 +2,7 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/Compile/CompilerExecution.h"
+#include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
 
@@ -16,9 +17,18 @@ class Compiler final {
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
+  FileMgr fileMgr;
+
   std::unique_ptr<ASTContext> astContext;
   mutable ModuleDecl *mainModule = nullptr;
   CompilerInvocation invocation;
+
+  /// Contains buffer IDs for input source code files.
+  std::vector<unsigned> sourceBufferIDs;
+  // The primary Sources
+  llvm::SetVector<unsigned> primarySourceIDs;
+
+  std::unique_ptr<ClangContext> clangContext;
 
 public:
   Compiler(const Compiler &) = delete;
@@ -39,7 +49,9 @@ public:
 public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
+
   SrcMgr &GetSrcMgr() { return srcMgr; }
+  FileMgr &GetFileMgr() { return fileMgr; }
 
   ASTContext &GetASTContext() { return *astContext; }
   const ASTContext &GetASTContext() const { return *astContext; }
@@ -48,6 +60,32 @@ public:
   CompilerInvocation &GetInvocation() { return invocation; }
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
   Status ExecuteAction(ActionKind kind);
+
+  // Returning true for now but this will be based on the action
+  bool ShouldSetupClang();
+  ClangContext &GetClangContext() { return *clangContext; }
+
+public:
+  // Sources
+  Status CreateSourceBuffers();
+
+  // TODO: You may not need this anymore
+  unsigned CreateSourceBuffer(const CompilerInputFile &input);
+
+  /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+  bool IsPrimarySourceID(unsigned primarySourceID) const {
+    return primarySourceIDs.count(primarySourceID) != 0;
+  }
+  void RecordPrimarySourceID(unsigned primarySourceID);
+
+  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+  llvm::Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
+                                               const bool shouldRecover,
+                                               bool &failed);
+  llvm::Optional<ModuleBuffers>
+  GetInputBuffersIfPresent(const CompilerInputFile &input);
+
+  SourceFile::ParsingOptions GetSourceFileParsingOptions(bool forPrimary) const;
 
 public:
   // Module

@@ -8,6 +8,14 @@ namespace stone {
 enum class ActionKind : unsigned {
   ///< No mode
   None = 0,
+  //< Print language version
+  PrintVersion,
+  ///< Print help
+  PrintHelp,
+  ///< Print help
+  PrintHelpHidden,
+  ///< Print compiler features
+  PrintFeature,
   ///< Parse only
   Parse,
   ///< Parse and resolve use(s) only
@@ -39,14 +47,6 @@ enum class ActionKind : unsigned {
   EmitModule,
   //< Parse, type-check, and emit assembly
   EmitAssembly,
-  //< Print language version
-  PrintVersion,
-  ///< Print help
-  PrintHelp,
-  ///< Print help
-  PrintHelpHidden,
-  ///< Print compiler features
-  PrintFeature,
   ///< Merge all modules
   MergeModules,
   //< Alien

@@ -43,6 +43,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     FinishCompile(Status::Error());
   }
   compiler.Setup();
+  if (compiler.ShouldSetupClang()) {
+    if (compiler.GetClangContext().Setup(args, arg0).IsError()) {
+      return FinishCompile(Status::Error());
+    }
+  }
   if (compiler.ExecuteAction(compiler.GetInvocation().GetAction().GetKind())
           .IsError()) {
     return FinishCompile(Status::Error());

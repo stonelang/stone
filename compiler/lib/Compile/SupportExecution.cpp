@@ -7,8 +7,6 @@ using namespace stone;
 SupportExecution::SupportExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status SupportExecution::Setup() {}
-
 Status SupportExecution::Execute() {
 
   switch (compiler.GetInvocation().GetAction().GetKind()) {
@@ -20,7 +18,7 @@ Status SupportExecution::Execute() {
   case ActionKind::PrintFeature:
     return ExecutePrintFeature();
   default:
-    llvm_unreachable("Invalid action for syntax analysis");
+    llvm_unreachable("Invalid action for support");
   }
 }
 Status SupportExecution::ExecutePrintHelp() { return Status(); }

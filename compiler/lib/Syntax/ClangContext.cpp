@@ -1,5 +1,78 @@
 #include "stone/Syntax/ClangContext.h"
 
+#include "clang/Basic/Stack.h"
+#include "clang/Basic/TargetOptions.h"
+#include "clang/CodeGen/ObjectFilePCHContainerOperations.h"
+#include "clang/Config/config.h"
+#include "clang/Driver/DriverDiagnostic.h"
+#include "clang/Driver/Options.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Frontend/FrontendDiagnostic.h"
+#include "clang/Frontend/TextDiagnosticBuffer.h"
+#include "clang/Frontend/TextDiagnosticPrinter.h"
+#include "clang/Frontend/Utils.h"
+
+#include "llvm/ADT/IntrusiveRefCntPtr.h"
+#include "llvm/Support/BuryPointer.h"
+#include "llvm/Support/CrashRecoveryContext.h"
+#include "llvm/Support/Errc.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
+#include "llvm/Support/LockFileManager.h"
+#include "llvm/Support/MemoryBuffer.h"
+#include "llvm/Support/Path.h"
+#include "llvm/Support/Program.h"
+#include "llvm/Support/Signals.h"
+#include "llvm/Support/TimeProfiler.h"
+#include "llvm/Support/Timer.h"
+#include "llvm/Support/raw_ostream.h"
+
 using namespace stone;
 
 ClangContext::ClangContext() : clangInstance(new clang::CompilerInstance()) {}
+
+Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
+                           const char *arg0) {
+  // Setup the clang diagnostics
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
+      new clang::DiagnosticIDs());
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
+      new clang::DiagnosticOptions();
+  clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
+  clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
+
+  bool Success = clang::CompilerInvocation::CreateFromArgs(
+      GetInstance().getInvocation(), argv, Diags, arg0);
+  if (!Success) {
+    return Status::Error();
+  }
+
+  // Create the actual diagnostics engine.
+  GetInstance().createDiagnostics();
+  if (!GetInstance().hasDiagnostics()) {
+    return Status::Error();
+  }
+
+  DiagsBuffer->FlushDiagnostics(GetInstance().getDiagnostics());
+  if (!Success) {
+    GetInstance().getDiagnosticClient().finish();
+    return Status::Error();
+  }
+  // If there were errors in processing arguments, don't do anything else.
+  if (GetInstance().getDiagnostics().hasErrorOccurred()) {
+    return Status::Error();
+  }
+
+  // Set up the file and source managers, if needed.
+  if (!GetInstance().hasFileManager()) {
+    assert(GetInstance().createFileManager());
+  }
+  if (!GetInstance().hasSourceManager()) {
+    GetInstance().createSourceManager(GetInstance().getFileManager());
+  }
+
+  assert(GetInstance().createTarget());
+
+  return Status();
+}

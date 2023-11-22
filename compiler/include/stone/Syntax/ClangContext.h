@@ -2,6 +2,7 @@
 #define STONE_FOREIGN_CLANG_H
 
 #include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Status.h"
 #include "stone/Syntax/ClangModuleImporter.h"
 
 #include "clang/Basic/TargetInfo.h"
@@ -20,6 +21,9 @@ class ClangContext final : public ClangModuleImporter {
 
 public:
   ClangContext();
+
+public:
+  Status Setup(llvm::ArrayRef<const char *> argv, const char *arg0);
 
 public:
   clang::CompilerInstance &GetInstance() { return *clangInstance; }
