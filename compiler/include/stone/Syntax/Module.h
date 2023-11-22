@@ -265,9 +265,13 @@ public:
   static bool classof(const Decl *D) {
     return D->GetKind() == DeclKind::Module;
   }
+
+public:
+  static ModuleDecl *Create(Identifier name, ASTContext &astContext);
+  static ModuleDecl *CreateMainModule(Identifier name, ASTContext &astContext);
+  static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 };
 
-static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 } // namespace stone
 
 #endif

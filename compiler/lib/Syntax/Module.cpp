@@ -1,6 +1,5 @@
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/DeclFactory.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"

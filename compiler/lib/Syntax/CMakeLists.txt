@@ -18,6 +18,9 @@ set(stone_syn_sources
 	Module.cpp
 	MemberTable.cpp
 	NameLookup.cpp
+	CreateDecl.cpp
+	CreateExpr.cpp
+	CreateStmt.cpp
 	SearchPath.cpp
 	Specifier.cpp
 	Stmt.cpp

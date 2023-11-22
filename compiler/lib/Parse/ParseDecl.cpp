@@ -6,7 +6,6 @@
 // #include "stone/Syntax/Using.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
-#include "stone/Syntax/DeclFactory.h"
 #include "stone/Syntax/Stmt.h"
 
 using namespace stone;
@@ -155,7 +154,7 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
   assert(collector.GetTypeCollector().GetTypeThunkCollector().HasAny() &&
          "Type is missing a type-pattern");
 
-  auto varDecl = DeclFactory::MakeVarDecl(GetASTContext());
+  auto varDecl = VarDecl::Create(GetASTContext());
 
   return result;
 }
@@ -254,8 +253,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   // Apply what what collected
   // collector.Apply();
   // Create the function
-  auto funDecl =
-      DeclFactory::MakeFunDecl(collector, astContext, GetCurDeclContext());
+  auto funDecl = FunDecl::Create(collector, astContext, GetCurDeclContext());
   assert(funDecl);
 
   // TODO: Find a better place for this -- maybe pass as parameter

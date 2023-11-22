@@ -16,21 +16,22 @@ class Compiler final {
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
-
-  ModuleDecl *mainModule = nullptr;
-
-public:
+  std::unique_ptr<ASTContext> astContext;
+  mutable ModuleDecl *mainModule = nullptr;
   CompilerInvocation invocation;
 
 public:
+  Compiler(const Compiler &) = delete;
+  void operator=(const Compiler &) = delete;
+  Compiler(Compiler &&) = delete;
+  void operator=(Compiler &&) = delete;
   Compiler();
+  void Setup();
 
 public:
-  void Setup();
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
     diags.AddConsumer(consumer);
   }
-
   void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
     diags.RemoveConsumer(consumer);
   }
@@ -39,6 +40,10 @@ public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
+
+  ASTContext &GetASTContext() { return *astContext; }
+  const ASTContext &GetASTContext() const { return *astContext; }
+  bool HasASTContext() const { return astContext != nullptr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
@@ -49,7 +54,7 @@ public:
   ModuleDecl *GetMainModule() const;
   void SetMainModule(ModuleDecl *mainModule);
   Status CreateSourceFilesForMainModule(
-      ModuleDecl *mod, llvm::SmallVectorImpl<SourceFile *> &files) const;
+      ModuleDecl *mod, llvm::SmallVectorImpl<ModuleFile *> &files) const;
 
   SourceFile *CreateSourceFileForMainModule(ModuleDecl *mainModule,
                                             SourceFileKind fileKind,

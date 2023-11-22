@@ -39,8 +39,6 @@
 #include <utility>
 
 namespace stone {
-class DiagnosticEngine;
-
 class Decl;
 class Stmt;
 class ModuleDecl;
@@ -60,6 +58,8 @@ class ASTPrinter;
 class ASTWalker;
 class GenericParamList;
 class TrailingWhereClause;
+class DeclCollector;
+class DiagnosticEngine;
 
 class DeclStats final : public Stats {
   const Decl &declaration;
@@ -330,6 +330,11 @@ protected:
 
 public:
   bool Walk(ASTWalker &walker);
+
+public:
+  template <typename DeclTy, typename AllocatorTy>
+  static void *AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
+                              bool extraSace = false);
 };
 
 class NameableDecl : public Decl {
@@ -681,6 +686,12 @@ public:
       return classof(d);
     return false;
   }
+
+public:
+  static FunDecl *Create(DeclCollector &collector, ASTContext &astContext,
+                         DeclContext *parent);
+  static FunDecl *CreateImplicit(DeclCollector &collector, ASTContext &sc,
+                                 DeclContext *parent);
 };
 
 class ConstructorDecl : public FunctionDecl {
@@ -704,6 +715,10 @@ public:
 
 public:
   void AddMember(Decl *d);
+
+public:
+  static StructDecl *Create(DeclName name, SrcLoc loc, ASTContext &astContext,
+                            DeclContext *parent = nullptr);
 };
 
 class InterfaceDecl final : public NominalTypeDecl {
@@ -711,11 +726,19 @@ public:
   static bool classof(const Decl *d) {
     return d->GetKind() == DeclKind::Interface;
   }
+
+public:
+  static InterfaceDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                               DeclContext *parent = nullptr);
 };
 
 class EnumDecl final : public NominalTypeDecl {
 public:
   static bool classof(const Decl *d) { return d->GetKind() == DeclKind::Enum; }
+
+public:
+  static EnumDecl *Create(DeclName name, SrcLoc loc, ASTContext &sc,
+                          DeclContext *parent = nullptr);
 };
 
 // Declarators and the like
@@ -728,6 +751,8 @@ public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
   // QualType GetQualType() const;
+public:
+  static VarDecl *Create(ASTContext &sc);
 };
 
 class ParamDecl : public VarDecl {
