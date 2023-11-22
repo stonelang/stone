@@ -13,9 +13,7 @@ class Compiler;
 class ModuleDecl;
 class CompilerExecution;
 
-
-// class CompilerInputFilesConverter {
-
+// class CompilerInputFileManager {
 //   /// Contains buffer IDs for input source code files.
 //   std::vector<unsigned> inputSourceBufferIDList;
 //   // The primary Sources
@@ -24,11 +22,6 @@ class CompilerExecution;
 // public:
 //   Status Convert();
 
-
-// public:
-//   // TODO: You may not need this anymore
-//   unsigned CreateBufferIDForInputFile(const CompilerInputFile &input);
-
 //   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
 //   bool IsPrimarySourceID(unsigned primarySourceID) const {
 //     return primarySourceBufferIDList.count(primarySourceID) != 0;
@@ -36,7 +29,8 @@ class CompilerExecution;
 //   void RecordPrimarySourceID(unsigned primarySourceID);
 
 //   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
-//   llvm::Optional<unsigned> GetRecordedCompilerInputFileBufferID(const CompilerInputFile &input,
+//   llvm::Optional<unsigned> GetRecordedCompilerInputFileBufferID(const
+//   CompilerInputFile &input,
 //                                                const bool shouldRecover,
 //                                                bool &failed);
 
@@ -100,7 +94,8 @@ public:
   Status SetupCompilerInputFiles();
 
   // TODO: You may not need this anymore
-  //unsigned CreateBufferIDForCompilerInputFile(const CompilerInputFile &input);
+  // unsigned CreateBufferIDForCompilerInputFile(const CompilerInputFile
+  // &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {

@@ -25,7 +25,7 @@ protected:
 public:
   CompilerExecution(Compiler &compiler,
                     ActionKind currentAction = ActionKind::None);
-  ~CompilerExecution();
+  virtual ~CompilerExecution();
 
 public:
   virtual Status Setup();

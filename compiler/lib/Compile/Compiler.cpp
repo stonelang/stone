@@ -17,8 +17,10 @@ Compiler::Compiler()
       clangContext(new ClangContext()) {}
 
 void Compiler::Setup() {
-  assert(invocation.HasAction());
-  if(SetupCompilerInputFiles().IsError()) {
+
+  assert(invocation.HasAction() && "Compiler does not have a valid action!");
+
+  if (SetupCompilerInputFiles().IsError()) {
     return;
   }
 }
@@ -175,14 +177,15 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   // assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
 
   // Transfer ownership of the MemoryBuffer to the SourceMgr.
-  unsigned bufferID = astContext->GetSrcMgr().addNewSourceBuffer(
-      std::move(buffers->moduleBuffer));
+  unsigned bufferID =
+      GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
 
   inputSourceBufferIDList.push_back(bufferID);
   return bufferID;
 }
 
-// unsigned Compiler::CreateBufferIDForCompilerInputFile(const CompilerInputFile &input) {
+// unsigned Compiler::CreateBufferIDForCompilerInputFile(const CompilerInputFile
+// &input) {
 //   auto fb = GetFileMgr().getBufferForFile(input.GetFileName());
 //   if (!fb) {
 //     GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
@@ -308,7 +311,9 @@ void Compiler::TryFreeASTContext() {
 }
 void Compiler::FreeASTContext() {
 
-  astContext.reset();
+  if (astContext) {
+    astContext.reset();
+  }
   mainModule = nullptr;
   primarySourceBufferIDList.clear();
 }

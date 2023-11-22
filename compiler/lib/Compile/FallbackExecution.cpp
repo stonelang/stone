@@ -21,7 +21,7 @@ Status FallbackExecution::Execute() {
     return ExecuteCompileLLVMIR();
   }
   /// Perform anything that are no action related
-  return Status::Error();
+  return Status();
 }
 
 Status FallbackExecution::ExecuteCompileLLVMIR() {

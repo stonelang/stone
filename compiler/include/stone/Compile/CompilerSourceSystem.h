@@ -4,11 +4,11 @@
 namespace stone {
 class Compiler;
 
-class CompilerSourceFileEngine final {
+class CompilerSourceSystem final {
   Compiler &compiler;
 
 public:
-  CompilerSourceFileEngine(Compiler &compiler);
+  CompilerSourceSystem(Compiler &compiler);
 };
 
 } // namespace stone

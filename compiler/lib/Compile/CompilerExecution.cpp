@@ -6,11 +6,13 @@ using namespace stone;
 CompilerExecution::CompilerExecution(Compiler &compiler,
                                      ActionKind currentAction)
     : compiler(compiler), currentAction(currentAction) {
-  assert(currentAction == ActionKind::Alien);
+
+  assert(currentAction != ActionKind::Alien);
 }
 
 Status CompilerExecution::Setup() {
-  assert(GetDependency() == ActionKind::Alien);
+  assert(GetDependency() != ActionKind::Alien);
+
   if (GetDependency() == ActionKind::None) {
     return Status::Success();
   }
