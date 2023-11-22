@@ -1,13 +1,10 @@
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Syntax/Module.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
-#include "stone/Basic/PrimaryFileSpecificPaths.h"
-
-
-
+#include "stone/Syntax/Module.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"

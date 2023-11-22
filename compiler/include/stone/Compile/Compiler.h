@@ -13,6 +13,37 @@ class Compiler;
 class ModuleDecl;
 class CompilerExecution;
 
+
+// class CompilerInputFilesConverter {
+
+//   /// Contains buffer IDs for input source code files.
+//   std::vector<unsigned> inputSourceBufferIDList;
+//   // The primary Sources
+//   llvm::SetVector<unsigned> primarySourceBufferIDList;
+
+// public:
+//   Status Convert();
+
+
+// public:
+//   // TODO: You may not need this anymore
+//   unsigned CreateBufferIDForInputFile(const CompilerInputFile &input);
+
+//   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
+//   bool IsPrimarySourceID(unsigned primarySourceID) const {
+//     return primarySourceBufferIDList.count(primarySourceID) != 0;
+//   }
+//   void RecordPrimarySourceID(unsigned primarySourceID);
+
+//   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
+//   llvm::Optional<unsigned> GetRecordedCompilerInputFileBufferID(const CompilerInputFile &input,
+//                                                const bool shouldRecover,
+//                                                bool &failed);
+
+//   llvm::Optional<ModuleBuffers>
+//     TryGetCompilerInputFileBuffers(const CompilerInputFile &input);
+// };
+
 class Compiler final {
 
   SrcMgr srcMgr;
@@ -66,11 +97,10 @@ public:
   ClangContext &GetClangContext() { return *clangContext; }
 
 public:
-  // Sources
-  Status CreateSourceBuffers();
+  Status SetupCompilerInputFiles();
 
   // TODO: You may not need this anymore
-  unsigned CreateSourceBuffer(const CompilerInputFile &input);
+  //unsigned CreateBufferIDForCompilerInputFile(const CompilerInputFile &input);
 
   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
   bool IsPrimarySourceID(unsigned primarySourceID) const {
@@ -100,6 +130,14 @@ public:
                                             bool isMainBuffer = false) const;
 
   SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
+
+public:
+  ModuleDecl *CastToModuleDecl(ModuleOrSourceFile msf) {
+    return msf.get<ModuleDecl *>();
+  }
+  SourceFile *CastToSourceFile(ModuleOrSourceFile msf) {
+    msf.dyn_cast<SourceFile *>();
+  }
 
 public:
   void TryFreeASTContext();

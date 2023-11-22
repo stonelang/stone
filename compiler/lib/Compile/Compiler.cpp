@@ -16,7 +16,12 @@ Compiler::Compiler()
     : invocation(*this), fileMgr(invocation.GetFileSystemOptions()),
       clangContext(new ClangContext()) {}
 
-void Compiler::Setup() { assert(invocation.HasAction()); }
+void Compiler::Setup() {
+  assert(invocation.HasAction());
+  if(SetupCompilerInputFiles().IsError()) {
+    return;
+  }
+}
 
 ModuleDecl *Compiler::GetMainModule() const {
 
@@ -104,7 +109,7 @@ SourceFile *Compiler::ComputeMainSourceFileForModule(ModuleDecl *mod) const {
 }
 
 // Sources
-Status Compiler::CreateSourceBuffers() {
+Status Compiler::SetupCompilerInputFiles() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
@@ -177,16 +182,16 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   return bufferID;
 }
 
-unsigned Compiler::CreateSourceBuffer(const CompilerInputFile &input) {
-  auto fb = GetFileMgr().getBufferForFile(input.GetFileName());
-  if (!fb) {
-    GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                      diag::LLVMStr(input.GetFileName()));
-  }
-  auto srcID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
-  assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
-  return srcID;
-}
+// unsigned Compiler::CreateBufferIDForCompilerInputFile(const CompilerInputFile &input) {
+//   auto fb = GetFileMgr().getBufferForFile(input.GetFileName());
+//   if (!fb) {
+//     GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+//                       diag::LLVMStr(input.GetFileName()));
+//   }
+//   auto srcID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+//   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
+//   return srcID;
+// }
 
 void Compiler::RecordPrimarySourceID(unsigned primarySourceID) {
   primarySourceBufferIDList.insert(primarySourceID);
