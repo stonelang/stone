@@ -9,7 +9,17 @@ Status CompilerInstance::CompileForTypeCheck(
     std::function<Status(syn::SyntaxFile &)> notifiy) {
 
   if (CompileForResolveImports().IsError()) {
+    return Status::Error();
   }
+  // ForEachSyntaxFile([&](SyntaxFile &syntaxFile,
+  //                       TypeCheckerOptions &typeCheckerOpts,
+  //                       stone::TypeCheckerListener *listener) {
+
+  //   stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
+
+  // });
+
+
   return Status();
 }
 
