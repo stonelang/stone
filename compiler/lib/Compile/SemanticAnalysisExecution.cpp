@@ -25,6 +25,11 @@ Status SemanticAnalysisExecution::ExecuteTypeCheck(
   compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(
         sourceFile, compiler.GetInvocation().GetTypeCheckerOptions(), nullptr);
+    if (notify) {
+      if (notify(sourceFile).IsError()) {
+        return Status::Error();
+      }
+    }
     return Status();
   });
 }
