@@ -13,7 +13,6 @@
 
 // TODO:  Similar implementation to that of DiagnosticEngine
 namespace stone {
-class Context;
 
 class StatsPrinter {};
 class StatsListener {};
@@ -43,6 +42,19 @@ public:
 public:
   virtual void Print(ColorStream &stream) = 0;
 };
+
+// class StatisticFormatter {
+// public:
+// };
+
+// class Statistic {};
+
+// class StatisticTracer {
+// public:
+//   StatisticTracer(StatisticEngine *engine, llvm::StringRef eventName,
+//                   StatisticFormatter *formatter);
+//   ~StatisticTracer();
+// };
 
 // TODO: You can do something very similar to that of the DiagnosticEngine
 class StatisticEngine final {

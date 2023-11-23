@@ -5,6 +5,7 @@ add_subdirectory(Diag)
 add_subdirectory(Gen)
 add_subdirectory(Parse)
 add_subdirectory(Sem)
+add_subdirectory(Stats)
 add_subdirectory(Option)
 add_subdirectory(Syntax)
 

@@ -24,6 +24,8 @@ Status SyntaxAnalysisExecution::Execute() {
 
 Status SyntaxAnalysisExecution::ExecuteParse(
     std::function<Status(SourceFile &sourceFile)> notify) {
+   //CompilerStatisticTracer tracer(compiler.GetStats(), "Executing parse");
+
   compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
                            nullptr);
@@ -38,6 +40,8 @@ Status SyntaxAnalysisExecution::ExecuteParse(
 }
 
 Status SyntaxAnalysisExecution::ExecuteDumpAST() {
+  //CompilerStatisticTracer tracer(compiler.GetStats(), "Executing ast dumping");
+
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
     return Status();
@@ -45,6 +49,8 @@ Status SyntaxAnalysisExecution::ExecuteDumpAST() {
 }
 
 Status SyntaxAnalysisExecution::ExecuteResolveImports() {
+
+   //CompilerStatisticTracer tracer(compiler.GetStats(), "Executing import resolution");
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::ResolveSourceFileImports(sourceFile);
     return Status();
