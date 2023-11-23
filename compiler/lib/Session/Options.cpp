@@ -42,7 +42,3 @@ llvm::StringRef opts::GetArgName(llvm::opt::Arg *arg) {
   assert(arg);
   return arg->getOption().getName();
 }
-
-
-
-

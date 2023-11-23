@@ -145,7 +145,7 @@ public:
   const Mode &GetMainMode() const { return compilerOpts.mainMode; }
 
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
-  const CompilerOptions &GetCompilerOptions() const {return compilerOpts;}
+  const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }

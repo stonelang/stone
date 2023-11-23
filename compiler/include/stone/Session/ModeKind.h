@@ -7,6 +7,12 @@ namespace stone {
 enum class ModeKind : unsigned {
   ///< No mode
   None = 0,
+  //< Print language version
+  PrintVersion,
+  ///< Print help
+  PrintHelp,
+  ///< Print help
+  PrintFeature,
   ///< Parse only
   Parse,
   ///< Parse and resolve use(s) only
@@ -30,16 +36,10 @@ enum class ModeKind : unsigned {
   ///< Parse, type-check, and emit a library.
   ///< Default => platform specific. But, with -static => 'any.a'
   EmitLibrary,
-  ///< Create a module fule
-  InitModule,
   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
   EmitModule,
   //< Parse, type-check, and emit assembly
   EmitAssembly,
-  //< Print language version
-  PrintVersion,
-  ///< Print help
-  PrintHelp,
   ///< Merge all modules
   MergeModules,
   //< Alien

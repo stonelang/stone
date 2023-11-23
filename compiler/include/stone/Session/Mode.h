@@ -20,7 +20,6 @@ public:
   ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
   void SetName(llvm::StringRef v) { name = v; }
-
   file::Type GetOutputFileType() const;
 
   bool CanOutput() const {
@@ -72,11 +71,12 @@ public:
       return false;
     }
   }
-  bool IsImmediate() {
+  bool IsSupport() {
     switch (GetKind()) {
     case ModeKind::PrintHelp:
     case ModeKind::PrintVersion:
-      return true;
+    case ModeKind::PrintFeature:
+      return true; 
     default:
       return false;
     }
@@ -101,21 +101,12 @@ public:
     }
   }
 
-  bool IsValid() {
-    if (CanCompile()) {
-      return true;
-    }
-    if (IsImmediate()) {
-      return true;
-    }
-    return false;
-  }
-
 public:
   // Convenience
   bool IsNone() const { return GetKind() == ModeKind::None; }
   bool IsPrintHelp() { return GetKind() == ModeKind::PrintHelp; }
   bool IsPrintVersion() { return GetKind() == ModeKind::PrintVersion; }
+  bool IsPrintFeature() { return GetKind() == ModeKind::PrintFeature; }
   bool IsParse() { return GetKind() == ModeKind::Parse; }
   bool IsDumpSyntax() { return GetKind() == ModeKind::DumpSyntax; }
   bool IsTypeCheck() { return GetKind() == ModeKind::TypeCheck; }

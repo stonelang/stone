@@ -58,7 +58,6 @@ Mode opts::GetMode(const llvm::opt::ArgList &args) {
   return Mode(modeKind, opts::GetArgName(modeArg));
 }
 
-
 std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {

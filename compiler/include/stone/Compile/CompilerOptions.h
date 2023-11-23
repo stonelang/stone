@@ -14,14 +14,14 @@
 
 namespace stone {
 
-class CompilerOptions final  {
+class CompilerOptions final {
 
   friend class CompilerInvocation;
   friend class CompilerOptionsConverter;
   friend class CompilerInputsConverter;
 
 public:
-  Mode mainMode; 
+  Mode mainMode;
 
   /// A list of arbitrary modules to import and make implicitly visible.
   Vector<Pair<String, bool /*testable*/>> implicitModuleNames;
@@ -58,9 +58,7 @@ public:
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
-  CompilerOptions() {
-    GetInputsAndOutputs().ClearInputs();
-  }
+  CompilerOptions() { GetInputsAndOutputs().ClearInputs(); }
 
 public:
   CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }

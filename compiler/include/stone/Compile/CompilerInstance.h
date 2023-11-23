@@ -81,12 +81,8 @@ public:
 
   CompilerInvocation &GetInvocation() { return invocation; }
 
-  bool CanCompile() {
-    return invocation.GetMainMode().CanCompile();
-  }
-  bool CanCodeGen() {
-    return invocation.GetMainMode().CanCodeGen();
-  }
+  bool CanCompile() { return invocation.GetMainMode().CanCompile(); }
+  bool CanCodeGen() { return invocation.GetMainMode().CanCodeGen(); }
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 

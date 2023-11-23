@@ -298,25 +298,29 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
+  return Compile(invocation.GetMainMode().GetKind());
+}
+
+Status CompilerInstance::Compile(ModeKind kind) {
+
   Status status;
-  switch (invocation.GetMainMode().GetKind()) {
+  switch (kind) {
   case ModeKind::Parse:
-    status = CompileWithParsing();
-    break;
+  case ModeKind::ResolveImports:
   case ModeKind::DumpSyntax:
-    status = CompileWithParsing(
-        [&](syn::SyntaxFile &sf) { return DumpSyntax(*this, sf); });
-    break;
   case ModeKind::TypeCheck:
-    status = CompileWithTypeChecking();
-    break;
   case ModeKind::PrintSyntax:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return PrintSyntax(*this); });
-    break;
+  case ModeKind::PrintIR:
+  case ModeKind::EmitIRPre:
+  case ModeKind::EmitIR:
+  case ModeKind::EmitBC:
+  case ModeKind::EmitObject:
+  case ModeKind::EmitLibrary:
+  case ModeKind::EmitModule:
+  case ModeKind::EmitAssembly:
+  case ModeKind::MergeModules:
+
   default:
-    status = CompileWithTypeChecking(
-        [&](CompilerInstance &compiler) { return CompileWithCodeGen(); });
     break;
   }
   return status;

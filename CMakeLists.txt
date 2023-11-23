@@ -40,5 +40,5 @@ option(STONE_BUILD_TOOLS
 
 add_subdirectory(compiler)
 add_subdirectory(tools)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 

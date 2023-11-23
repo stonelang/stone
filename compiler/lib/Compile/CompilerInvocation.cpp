@@ -414,12 +414,11 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
     return Error(true);
   }
   auto compilerOptsErr = ComputeCompilerOptions(
-      ial, GetLangContext().GetDiags(), langOpts,
-      compilerOpts, GetModuleOptions(), nullptr /* pass null for now*/);
+      ial, GetLangContext().GetDiags(), langOpts, compilerOpts,
+      GetModuleOptions(), nullptr /* pass null for now*/);
   if (compilerOptsErr.HasError()) {
   }
-  ComputeLangOptions(ial, GetLangContext().GetDiags(), compilerOpts,
-                     langOpts);
+  ComputeLangOptions(ial, GetLangContext().GetDiags(), compilerOpts, langOpts);
 
   ComputeTypeCheckerOptions(ial, GetLangContext().GetDiags(), compilerOpts,
                             typeCheckerOpts);
@@ -427,12 +426,10 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
                            searchPathOpts);
 
   ComputeCodeGenOptions(ial, GetLangContext().GetDiags(), compilerOpts,
-                        codeGenOpts, langOpts,
-                        *clangContext);
+                        codeGenOpts, langOpts, *clangContext);
 
   ComputeTargetOptions(ial, GetLangContext().GetDiags(), compilerOpts,
-                       codeGenOpts, langOpts,
-                       *clangContext);
+                       codeGenOpts, langOpts, *clangContext);
   return Error();
 }
 
