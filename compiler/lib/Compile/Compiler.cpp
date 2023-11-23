@@ -302,7 +302,7 @@ Status Compiler::SetupASTContext() {
 
   astContext = std::make_unique<ASTContext>(
       invocation.GetLangOptions(), invocation.GetSearchPathOptions(),
-      invocation.GetClangContext(),GetDiags(), GetStats());
+      invocation.GetClangContext(), GetDiags(), GetStats());
 }
 void Compiler::TryFreeASTContext() {
 
@@ -316,6 +316,38 @@ void Compiler::FreeASTContext() {
   }
   mainModule = nullptr;
   primarySourceBufferIDList.clear();
+}
+
+Status Compiler::ForEachSourceFileInMainModule(
+    std::function<Status(SourceFile &sourceFile)> notify) {
+  for (auto moduleFile : GetMainModule()->GetFiles()) {
+    if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+      if (notify(*sourceFile).IsError()) {
+        return Status::Error();
+      }
+    } else {
+      return Status::Error();
+    }
+  }
+  return Status();
+}
+
+Status Compiler::ForEachSourceFileToTypeCheck(
+    std::function<Status(SourceFile &sourceFile)> notify) {
+  if (IsWholeModuleCompilation()) {
+    ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+      if (notify(sourceFile).IsError()) {
+        return Status::Error();
+      }
+    });
+  } else {
+    for (auto *sourceFile : GetPrimarySourceFiles()) {
+      if (notify(*sourceFile).IsError()) {
+        return Status::Error();
+      }
+    }
+  }
+  return Status();
 }
 
 Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {

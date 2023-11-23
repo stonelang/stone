@@ -13,6 +13,7 @@ Status SemanticAnalysisExecution::Execute() {
 }
 
 Status SemanticAnalysisExecution::ExecuteTypeCheck() {
+
   // compiler.ForEachSyntaxFile([&](SourceFile &sourceFile,
   //                       TypeCheckerOptions &typeCheckerOpts,
   //                       stone::TypeCheckerListener *listener) {

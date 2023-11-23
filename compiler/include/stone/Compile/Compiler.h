@@ -105,6 +105,19 @@ public:
     msf.dyn_cast<SourceFile *>();
   }
 
+  Status ForEachSourceFileToTypeCheck(
+      std::function<Status(SourceFile &sourceFile)> notify);
+  Status ForEachSourceFileInMainModule(
+      std::function<Status(SourceFile &sourceFile)> notify);
+
+  bool IsWholeModuleCompilation() { return primarySourceBufferIDList.empty(); }
+
+  /// Gets the set of SourceFiles which are the primary inputs for this
+  /// CompilerInstance.
+  llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const {
+    return GetMainModule()->GetPrimarySourceFiles();
+  }
+
 public:
   void TryFreeASTContext();
   void FreeASTContext();

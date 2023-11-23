@@ -66,11 +66,8 @@ public:
 
 public:
   Status ExecuteParse(std::function<Status(SourceFile &)> notify);
-  Status ExecuteParseAndResolveImports(SourceFile &sourceFile);
-  Status ExecutDumpSyntax();
-
-public:
-  ActionKind GetDependency() override { return ActionKind::None; }
+  Status ExecuteResolveImports(SourceFile &sourceFile);
+  Status ExecutDumpSyntax(SourceFile &sourceFile);
 };
 
 class SemanticAnalysisExecution final : public CompilerExecution {

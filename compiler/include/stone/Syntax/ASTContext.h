@@ -181,7 +181,11 @@ public:
   LangOptions &GetLangOptions() { return langOpts; }
 
   /// Retrieve the allocator for the given arena.
-  llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
+  /// Using permanent always for now
+  llvm::BumpPtrAllocator &
+  GetAllocator(AllocationArena arena = AllocationArena::Permanent) const {
+    return allocator;
+  }
   StatisticEngine &GetStats() { return se; }
   ASTContextStats &GetASTContextStats() { return *stats; }
 
@@ -220,20 +224,6 @@ public:
                     ModuleAliasLookupOption option =
                         ModuleAliasLookupOption::AlwaysRealName) const;
 
-private:
-public:
-  /// Return the total amount of physical memory allocated for representing
-  /// AST nodes and type information.
-  size_t GetTotalMemUsed() const;
-
-  void *Allocate(size_t size, unsigned align = 8) const {
-    return GetAllocator().Allocate(size, align);
-  }
-  template <typename T> T *Allocate(size_t num = 1) const {
-    return static_cast<T *>(Allocate(num * sizeof(T), alignof(T)));
-  }
-  void Deallocate(void *Ptr) const {}
-
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return GetDiags().PrintD(
@@ -249,6 +239,122 @@ public:
   PrintD(SrcLoc loc, Diag<ArgTypes...> id,
          typename stone::detail::PassArgument<ArgTypes>::type... args) {
     return GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
+  }
+
+public:
+  /// Return the total amount of physical memory allocated for representing
+  /// AST nodes and type information.
+  size_t GetTotalMemUsed() const;
+  void Deallocate(void *Ptr) const {}
+
+  /// Allocate - Allocate memory from the ASTContext bump pointer.
+  void *Allocate(unsigned long bytes, unsigned alignment = 8,
+                 AllocationArena arena = AllocationArena::Permanent) const {
+    if (bytes == 0) {
+      return nullptr;
+    }
+    if (langOpts.useMalloc) {
+      return stone::AlignedAlloc(bytes, alignment);
+    }
+    // TODO:
+    //  if (arena == AllocationArena::Permanent && Stats)
+    //    Stats->GetFrontendCounters().NumASTBytesAllocated += bytes;
+
+    return GetAllocator(arena).Allocate(bytes, alignment);
+  }
+
+public:
+  template <typename T>
+  T *Allocate(AllocationArena arena = AllocationArena::Permanent) const {
+    T *res = (T *)Allocate(sizeof(T), alignof(T), arena);
+    new (res) T();
+    return res;
+  }
+
+  template <typename T>
+  MutableArrayRef<T> AllocateUninitialized(
+      unsigned NumElts,
+      AllocationArena Arena = AllocationArena::Permanent) const {
+    T *Data = (T *)Allocate(sizeof(T) * NumElts, alignof(T), Arena);
+    return {Data, NumElts};
+  }
+
+  template <typename T>
+  MutableArrayRef<T>
+  Allocate(unsigned numElts,
+           AllocationArena arena = AllocationArena::Permanent) const {
+    T *res = (T *)Allocate(sizeof(T) * numElts, alignof(T), arena);
+    for (unsigned i = 0; i != numElts; ++i)
+      new (res + i) T();
+    return {res, numElts};
+  }
+
+  /// Allocate a copy of the specified object.
+  template <typename T>
+  typename std::remove_reference<T>::type *
+  AllocateObjectCopy(T &&t,
+                     AllocationArena arena = AllocationArena::Permanent) const {
+    // This function cannot be named AllocateCopy because it would always win
+    // overload resolution over the AllocateCopy(ArrayRef<T>).
+    using TNoRef = typename std::remove_reference<T>::type;
+    TNoRef *res = (TNoRef *)Allocate(sizeof(TNoRef), alignof(TNoRef), arena);
+    new (res) TNoRef(std::forward<T>(t));
+    return res;
+  }
+
+  template <typename T, typename It>
+  T *AllocateCopy(It start, It end,
+                  AllocationArena arena = AllocationArena::Permanent) const {
+    T *res = (T *)Allocate(sizeof(T) * (end - start), alignof(T), arena);
+    for (unsigned i = 0; start != end; ++start, ++i)
+      new (res + i) T(*start);
+    return res;
+  }
+
+  template <typename T, size_t N>
+  MutableArrayRef<T>
+  AllocateCopy(T (&array)[N],
+               AllocationArena arena = AllocationArena::Permanent) const {
+    return MutableArrayRef<T>(AllocateCopy<T>(array, array + N, arena), N);
+  }
+
+  template <typename T>
+  MutableArrayRef<T>
+  AllocateCopy(ArrayRef<T> array,
+               AllocationArena arena = AllocationArena::Permanent) const {
+    return MutableArrayRef<T>(
+        AllocateCopy<T>(array.begin(), array.end(), arena), array.size());
+  }
+
+  template <typename T>
+  ArrayRef<T>
+  AllocateCopy(const SmallVectorImpl<T> &vec,
+               AllocationArena arena = AllocationArena::Permanent) const {
+    return AllocateCopy(ArrayRef<T>(vec), arena);
+  }
+
+  template <typename T>
+  MutableArrayRef<T>
+  AllocateCopy(SmallVectorImpl<T> &vec,
+               AllocationArena arena = AllocationArena::Permanent) const {
+    return AllocateCopy(MutableArrayRef<T>(vec), arena);
+  }
+
+  StringRef
+  AllocateCopy(StringRef Str,
+               AllocationArena arena = AllocationArena::Permanent) const {
+    ArrayRef<char> Result =
+        AllocateCopy(llvm::makeArrayRef(Str.data(), Str.size()), arena);
+    return StringRef(Result.data(), Result.size());
+  }
+
+  template <typename T, typename Vector, typename Set>
+  MutableArrayRef<T>
+  AllocateCopy(llvm::SetVector<T, Vector, Set> setVector,
+               AllocationArena arena = AllocationArena::Permanent) const {
+    return MutableArrayRef<T>(
+        AllocateCopy<T>(setVector.begin(), setVector.end(), arena),
+        setVector.size());
   }
 };
 } // namespace stone

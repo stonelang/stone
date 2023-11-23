@@ -47,14 +47,8 @@ void ModuleDecl::AddFile(ModuleFile &file) {
   assert(files.empty() || !isa<SourceFile>(file) ||
          llvm::cast<SourceFile>(file).kind == SourceFileKind::Library
          /*||cast<SourceFile>(unit).Kind == SourceFileKind::SIL*/);
-
-  if (llvm::isa<SourceFile>(file) && llvm::cast<SourceFile>(file).IsPrimary()) {
-    if (IsMainModule()) {
-      primaries.push_back(&file);
-    }
-  }
   files.push_back(&file);
-  // ClearLookupCache();
+  // TODO: ClearLookupCache();
 }
 
 Identifier ModuleDecl::GetRealName() const {
@@ -77,11 +71,28 @@ bool DeclContext::IsModuleFileContext() const {
   return IsModuleContext();
 }
 
-llvm::ArrayRef<SourceFile *> &ModuleDecl::GetPrimarySourceFiles() const {
-  assert(IsMainModule() && "Only the main module can have primaries");
-  primaries;
+// TODO: improve one
+llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() const {
+  assert(IsMainModule() && "Only the main module can have primary files!");
+
+  llvm::SmallVector<SourceFile *, 8> primaries;
+  // ForEachSourceFileInModule([&](SourceFile &sourceFile) {
+  //   if (sourceFile.IsPrimary()) {
+  //     primaries.push_back(sourceFile);
+  //   }
+  // });
+  //
+  return GetASTContext().AllocateCopy(primaries);
 }
 
+Status ModuleDecl::ForEachSourceFileInModule(
+    std::function<Status(SourceFile &sourceFile)> notify) const {
+  for (auto *moduleFile : GetFiles()) {
+    if (auto *sourceFile = dyn_cast<SourceFile>(moduleFile)) {
+      // notify(sourceFile);
+    }
+  }
+}
 SourceFile::SourceFile(SourceFileKind kind, ModuleDecl &owner,
                        llvm::Optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),

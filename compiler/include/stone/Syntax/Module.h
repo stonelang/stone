@@ -5,6 +5,7 @@
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Status.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTWalker.h"
 #include "stone/Syntax/Decl.h"
@@ -209,8 +210,6 @@ class ModuleDecl final : public DeclContext,
   /// The ABI name of the module, if it differs from the module name.
   mutable Identifier moduleABIName;
 
-  llvm::SmallVector<ModuleFile *, 8> primaries;
-
 public:
   ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
@@ -231,7 +230,7 @@ public:
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<SourceFile *> &GetPrimarySourceFiles() const;
+  llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const;
 
 public:
   /// \returns true if this module is the "stone" standard library module.
@@ -260,6 +259,10 @@ public:
 
   // TODO: Defaulting to true for now
   bool IsMainModule() const { return Bits.ModuleDecl.IsMainModule; }
+
+public:
+  Status ForEachSourceFileInModule(
+      std::function<Status(SourceFile &sourceFile)> notify) const;
 
 public:
   static bool classof(const DeclContext *DC) {

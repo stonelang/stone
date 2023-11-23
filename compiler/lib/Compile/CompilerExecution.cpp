@@ -11,7 +11,6 @@ CompilerExecution::CompilerExecution(Compiler &compiler,
 }
 
 Status CompilerExecution::Setup() {
-  assert(GetDependency() != ActionKind::Alien);
 
   if (GetDependency() == ActionKind::None) {
     return Status::Success();
