@@ -261,7 +261,8 @@ public:
   bool IsMainModule() const { return Bits.ModuleDecl.IsMainModule; }
 
 public:
-  Status ForEachSourceFile(std::function<Status(SourceFile &sourceFile)> notify);
+  Status
+  ForEachSourceFile(std::function<Status(SourceFile &sourceFile)> notify);
 
 public:
   static bool classof(const DeclContext *DC) {

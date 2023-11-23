@@ -162,7 +162,6 @@ public:
 namespace stone {
 using ModuleOrSourceFile = llvm::PointerUnion<ModuleDecl *, SourceFile *>;
 
-
 /// Compile a single input file
 bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
 

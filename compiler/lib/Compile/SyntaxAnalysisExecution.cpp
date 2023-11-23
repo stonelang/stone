@@ -30,21 +30,14 @@ Status SyntaxAnalysisExecution::Execute() {
 
 Status SyntaxAnalysisExecution::ExecuteParse(
     std::function<Status(SourceFile &sourceFile)> notify) {
-
-  // for (auto moduleFile : compiler.GetMainModule()->GetFiles()) {
-  //   if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-  //     stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(), nullptr,
-  //                            nullptr);
-  //     if (notify) {
-  //       notify(*sourceFile);
-  //     }
-  //   }
-  // }
-  // ForEachSourceFileInMainModule([](SourceFile &SF) {
-  //     stone::ParseSourceFile(*sourceFile, compiler.GetASTContext(), nullptr,
-  //                            nullptr);
-  //     return false;
-  //   });
+  compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
+                           nullptr);
+      if(notify(sourceFile).IsError()){
+        return Status::Error();
+      }
+      return Status();
+  });
 
   return Status();
 }

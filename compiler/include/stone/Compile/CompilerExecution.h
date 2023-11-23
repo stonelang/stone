@@ -32,6 +32,7 @@ public:
   virtual Status Execute() = 0;
   Status Finish();
 
+
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }

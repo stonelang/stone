@@ -77,7 +77,7 @@ llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() {
   llvm::SmallVector<SourceFile *, 8> primaries;
   for (auto *moduleFile : GetFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-      if (sourceFile->IsPrimary()){
+      if (sourceFile->IsPrimary()) {
         primaries.push_back(sourceFile);
       }
     }
@@ -94,7 +94,8 @@ llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() {
 //   // }
 // }
 
-// Status ModuleDecl::ForEachSourceFile(std::function<Status(SourceFile &sourceFile)> notify) {
+// Status ModuleDecl::ForEachSourceFile(std::function<Status(SourceFile
+// &sourceFile)> notify) {
 //   for (auto *moduleFile : GetFiles()) {
 //     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
 //       if(notify(*sourceFile).IsError()){
