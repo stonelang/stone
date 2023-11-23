@@ -173,6 +173,7 @@ Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 
 Status CompilerInstance::CompileWithCodeGen() {
 
+
   assert(CanCodeGen() && "Mode does not support code gen");
 
   // We are performing some low level code generation

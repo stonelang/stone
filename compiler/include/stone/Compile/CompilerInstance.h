@@ -91,12 +91,7 @@ public:
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
 
 public:
-  /// Perform code analysis and code generation
   Status Compile();
-  
-  // Status CompileFrontend();
-  // Status CompileBackend();
-
 private:
   Status CompileWithParsing();
   Status CompileWithParsing(ParsingCompletedCallback notifiy);
@@ -175,6 +170,35 @@ public:
 
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);
+
+
+public:
+
+Status Compile();
+
+Status Compile(ActionKind kind);
+
+  /// Handles LLVM
+Status CompileForLLVMIR();
+
+/// Handles only syntax
+Status CompileForParse();
+
+/// Handles only syntax
+Status CompileForDumpAST();
+
+/// Handles only syntax
+Status CompileForResolveImports();
+
+/// Handles semantics
+Status CompileForTypeCheck();
+
+/// Handles semantics
+Status CompileForPrintAST();
+
+/// Handles code generating
+Status CompileForEmitCode();
+
 };
 
 } // namespace stone
