@@ -136,21 +136,6 @@ public:
   GetPrimaryFileSpecificPathsForSyntaxFile(const SourceFile &sf) const;
 
 public:
-  void AssertCanEmitCode(ActionKind kind) {
-    switch (kind) {
-    case ActionKind::EmitIRBefore:
-    case ActionKind::EmitIRAfter:
-    case ActionKind::EmitBC:
-    case ActionKind::EmitModule:
-    case ActionKind::EmitAssembly:
-    case ActionKind::EmitObject:
-      break;
-    default:
-      assert("The action cannot emit code!");
-    }
-  }
-
-public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);
 };
 

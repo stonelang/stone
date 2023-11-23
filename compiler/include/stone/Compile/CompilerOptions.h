@@ -23,6 +23,8 @@ public:
   /// The main action requested.
   Action mainAction;
 
+  bool trackAction = false;
+
   ModuleOptions moduleOpts;
 
   CompilerInputsAndOutputs inputsAndOutputs;

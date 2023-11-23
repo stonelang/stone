@@ -9,8 +9,6 @@ CodeGenExecution::CodeGenExecution(Compiler &compiler, ActionKind currentAction)
 
 Status CodeGenExecution::Execute() {
 
-  compiler.GetInvocation().AssertCanEmitCode(GetExecutionAction());
-
   llvm::GlobalVariable *hashGlobal;
   auto llvmContext = std::make_unique<llvm::LLVMContext>();
 

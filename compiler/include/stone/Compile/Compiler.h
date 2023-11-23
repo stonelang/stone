@@ -109,6 +109,8 @@ public:
       std::function<Status(SourceFile &sourceFile)> notify);
   Status ForEachSourceFileInMainModule(
       std::function<Status(SourceFile &sourceFile)> notify);
+  Status ForEachPrimarySourceFile(
+      std::function<Status(SourceFile &sourceFile)> notify);
 
   bool IsCompileForWholeModule() { return primarySourceBufferIDList.empty(); }
   bool IsCompileForSourceFile() { return !GetPrimarySourceFiles().empty(); }

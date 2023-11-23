@@ -332,6 +332,20 @@ Status Compiler::ForEachSourceFileInMainModule(
   return Status();
 }
 
+Status Compiler::ForEachPrimarySourceFile(
+    std::function<Status(SourceFile &sourceFile)> notify) {
+  for (auto moduleFile : GetPrimarySourceFiles()) {
+    if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+      if (notify(*sourceFile).IsError()) {
+        return Status::Error();
+      }
+    } else {
+      return Status::Error();
+    }
+  }
+  return Status();
+}
+
 Status Compiler::ForEachSourceFileToTypeCheck(
     std::function<Status(SourceFile &sourceFile)> notify) {
   if (IsCompileForWholeModule()) {
@@ -341,11 +355,11 @@ Status Compiler::ForEachSourceFileToTypeCheck(
       }
     });
   } else {
-    for (auto *sourceFile : GetPrimarySourceFiles()) {
-      if (notify(*sourceFile).IsError()) {
+    ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
+      if (notify(sourceFile).IsError()) {
         return Status::Error();
       }
-    }
+    });
   }
   return Status();
 }

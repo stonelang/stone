@@ -15,11 +15,11 @@ Status SemanticAnalysisExecution::Execute() {
 Status SemanticAnalysisExecution::ExecuteTypeCheck(
     std::function<Status(SourceFile &)> notify) {
 
-  // compiler.ForEachSyntaxFile([&](SourceFile &sourceFile,
-  //                       TypeCheckerOptions &typeCheckerOpts,
-  //                       stone::TypeCheckerListener *listener) {
-  //   stone::TypeCheckSyntaxFile(syntaxFile, typeCheckerOpts, listener);
-  // });
+  compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    stone::TypeCheckSourceFile(
+        sourceFile, compiler.GetInvocation().GetTypeCheckerOptions(), nullptr);
+    return Status();
+  });
 }
 
 Status SemanticAnalysisExecution::ExecutePrintAST() { return Status(); }
