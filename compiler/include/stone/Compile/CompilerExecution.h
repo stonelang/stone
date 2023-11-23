@@ -66,7 +66,7 @@ public:
 
 public:
   Status ExecuteParse(std::function<Status(SourceFile &)> notify);
-  Status ExecutDumpAST(SourceFile &sourceFile);
+  Status ExecuteDumpAST();
   Status ExecuteResolveImports();
 };
 

@@ -16,8 +16,7 @@ Status SyntaxAnalysisExecution::Execute() {
     return ExecuteParse(
         [&](SourceFile &sourceFile) { return Status::Success(); });
   case ActionKind::DumpAST:
-    return ExecuteParse(
-        [&](SourceFile &sourceFile) { return ExecutDumpAST(sourceFile); });
+    return ExecuteDumpAST();
   case ActionKind::ResolveImports:
     return ExecuteResolveImports();
   default:
@@ -38,13 +37,16 @@ Status SyntaxAnalysisExecution::ExecuteParse(
   return Status();
 }
 
-Status SyntaxAnalysisExecution::ExecutDumpAST(SourceFile &sourceFile) {
-  stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
-  return Status();
+Status SyntaxAnalysisExecution::ExecuteDumpAST() {
+
+  return ExecuteParse([&](SourceFile &sourceFile) {
+    stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
+    return Status();
+  });
 }
 
 Status SyntaxAnalysisExecution::ExecuteResolveImports() {
-  //TODO: Additional pre work 
+  // TODO: Additional pre work
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::ResolveSourceFileImports(sourceFile);
     return Status();

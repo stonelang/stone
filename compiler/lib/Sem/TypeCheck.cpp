@@ -34,8 +34,4 @@ void stone::TypeCheckWholeModule(ModuleDecl &md,
 }
 
 /// Pretty print the type checked source file.
-void stone::PrintSourceFile(SourceFile &sourceFile, ASTContext& astContext) {
-
-
-}
-
+void stone::PrintSourceFile(SourceFile &sourceFile, ASTContext &astContext) {}

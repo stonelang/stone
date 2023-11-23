@@ -30,7 +30,5 @@ void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
   }
 }
 
-/// Dump the source file that we parsed 
-void stone::DumpSourceFile(SourceFile &sourceFile, ASTContext& astContext) {
-
-}
+/// Dump the source file that we parsed
+void stone::DumpSourceFile(SourceFile &sourceFile, ASTContext &astContext) {}
