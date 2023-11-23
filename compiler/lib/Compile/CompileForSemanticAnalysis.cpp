@@ -8,7 +8,7 @@ Status CompilerInstance::CompileForSemanticAnalysis() {}
 Status CompilerInstance::CompileForTypeCheck(
     std::function<Status(syn::SyntaxFile &)> notifiy) {
 
-  if (CompileForResoveImports().IsError()) {
+  if (CompileForResolveImports().IsError()) {
   }
   return Status();
 }
