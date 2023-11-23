@@ -72,9 +72,8 @@ bool DeclContext::IsModuleFileContext() const {
 }
 
 // TODO: improve one
-llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() const {
+llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() {
   assert(IsMainModule() && "Only the main module can have primary files!");
-
   llvm::SmallVector<SourceFile *, 8> primaries;
   for (auto *moduleFile : GetFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {

@@ -230,7 +230,7 @@ public:
 
   /// For the main module, retrieves the list of primary source files being
   /// compiled, that is, the files we're generating code for.
-  llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const;
+  llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles();
 
 public:
   /// \returns true if this module is the "stone" standard library module.
