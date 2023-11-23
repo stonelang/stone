@@ -29,3 +29,8 @@ void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
     sourceFile.AddTopLevelDecl(result.Get());
   }
 }
+
+/// Dump the source file that we parsed 
+void stone::DumpSourceFile(SourceFile &sourceFile, ASTContext& astContext) {
+
+}

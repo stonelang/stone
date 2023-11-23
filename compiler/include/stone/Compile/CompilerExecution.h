@@ -67,7 +67,7 @@ public:
 public:
   Status ExecuteParse(std::function<Status(SourceFile &)> notify);
   Status ExecutDumpAST(SourceFile &sourceFile);
-  Status ExecuteResolveImports(SourceFile &sourceFile);
+  Status ExecuteResolveImports();
 };
 
 class SemanticAnalysisExecution final : public CompilerExecution {

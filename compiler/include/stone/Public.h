@@ -178,6 +178,9 @@ void ParseSourceFile(SourceFile &sourceFile, ASTContext &context,
                      SyntaxListener *syntaxListener,
                      LexerListener *lexerListener);
 
+/// Dump the source file that we parsed 
+void DumpSourceFile(SourceFile &sourceFile, ASTContext& astContext);
+
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
 void ResolveSourceFileImports(SourceFile &sourceFile);
@@ -189,6 +192,10 @@ void TypeCheckSourceFile(
     SourceFile &sourceFile, TypeCheckerOptions &opts,
     TypeCheckerListener *listener =
         nullptr /*, TypeCheckSourceFileCallback* callback = nullptr*/);
+
+
+/// Pretty print the type checked source file.
+void PrintSourceFile(SourceFile &sourceFile, ASTContext& astContext);
 
 /// Now that we have type-checked an entire module, perform any type
 /// checking that requires the full module.

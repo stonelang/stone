@@ -19,9 +19,7 @@ Status SyntaxAnalysisExecution::Execute() {
     return ExecuteParse(
         [&](SourceFile &sourceFile) { return ExecutDumpAST(sourceFile); });
   case ActionKind::ResolveImports:
-    return ExecuteParse([&](SourceFile &sourceFile) {
-      return ExecuteResolveImports(sourceFile);
-    });
+    return ExecuteResolveImports();
   default:
     llvm_unreachable("Invalid action for syntax analysis");
   }
@@ -37,19 +35,18 @@ Status SyntaxAnalysisExecution::ExecuteParse(
     }
     return Status();
   });
-
   return Status();
 }
 
 Status SyntaxAnalysisExecution::ExecutDumpAST(SourceFile &sourceFile) {
-
+  stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }
 
-Status SyntaxAnalysisExecution::ExecuteResolveImports(SourceFile &sourceFile) {
-
-  // TODO: Simple for now -- may just call directly
-  stone::ResolveSourceFileImports(sourceFile);
-
-  return Status();
+Status SyntaxAnalysisExecution::ExecuteResolveImports() {
+  //TODO: Additional pre work 
+  return ExecuteParse([&](SourceFile &sourceFile) {
+    stone::ResolveSourceFileImports(sourceFile);
+    return Status();
+  });
 }
