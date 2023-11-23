@@ -24,7 +24,16 @@ Status CompilerInstance::CompileForParse(
 }
 
 /// Handles only syntax
-Status CompilerInstance::CompileForDumpAST() { return Status(); }
+Status CompilerInstance::CompileForDumpAST() {
+
+  // CompilerForParse();
+  return Status();
+}
 
 /// Handles only syntax
-Status CompilerInstance::CompileForResolveImports() { return Status(); }
+Status CompilerInstance::CompileForResolveImports() {
+
+  // CompilerForParse();
+
+  return Status();
+}

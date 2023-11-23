@@ -307,11 +307,15 @@ Status CompilerInstance::Compile(ModeKind kind) {
   case ModeKind::Parse:
     return CompileForParse();
   case ModeKind::ResolveImports:
+    return CompileForResolveImports();
   case ModeKind::DumpSyntax:
+    return CompileForDumpAST();
   case ModeKind::TypeCheck:
+    return CompileForTypeCheck();
   case ModeKind::PrintSyntax:
-
+    return CompileForPrintAST();
   case ModeKind::PrintIR:
+    // return CompileForPrintIR();
   case ModeKind::EmitIRPre:
   case ModeKind::EmitIR:
   case ModeKind::EmitBC:
@@ -321,7 +325,6 @@ Status CompilerInstance::Compile(ModeKind kind) {
   case ModeKind::EmitAssembly:
   case ModeKind::MergeModules:
     return CompileForEmitCode();
-
   default:
     llvm_unreachable("Invalid mode!");
   }
