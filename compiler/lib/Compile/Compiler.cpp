@@ -18,7 +18,6 @@ Compiler::Compiler()
 Status Compiler::Setup() {
 
   assert(invocation.HasAction() && "Compiler does not have a valid action!");
-
   if (SetupCompilerInputFiles().IsError()) {
     Status::Error();
   }

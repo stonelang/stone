@@ -9,7 +9,14 @@ SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler,
 
 Status SemanticAnalysisExecution::Execute() {
 
-  switch (GetExecutionAction()) {}
+  switch (GetExecutionAction()) {
+  case ActionKind::TypeCheck:
+    return ExecuteTypeCheck();
+  case ActionKind::PrintAST:
+    return ExecutePrintAST();
+  default:
+    llvm_unreachable("Invalid action for semantic analysis");
+  }
 }
 
 Status SemanticAnalysisExecution::ExecuteTypeCheck(
@@ -22,4 +29,11 @@ Status SemanticAnalysisExecution::ExecuteTypeCheck(
   });
 }
 
-Status SemanticAnalysisExecution::ExecutePrintAST() { return Status(); }
+Status SemanticAnalysisExecution::ExecutePrintAST() {
+
+  return ExecuteTypeCheck([&](SourceFile &sourceFile) {
+    stone::PrintSourceFile(sourceFile, compiler.GetASTContext());
+    return Status();
+  });
+  return Status();
+}
