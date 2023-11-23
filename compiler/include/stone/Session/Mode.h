@@ -10,18 +10,17 @@ namespace stone {
 class Mode final {
   friend class Session;
   ModeKind kind;
-
-private:
   llvm::StringRef name;
-  void SetName(llvm::StringRef v) { name = v; }
 
 public:
-  Mode(ModeKind kind, llvm::StringRef name = llvm::StringRef())
+  Mode(ModeKind kind = ModeKind::None, llvm::StringRef name = llvm::StringRef())
       : kind(kind), name(name) {}
 
 public:
   ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
+  void SetName(llvm::StringRef v) { name = v; }
+
   file::Type GetOutputFileType() const;
 
   bool CanOutput() const {

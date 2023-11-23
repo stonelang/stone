@@ -61,7 +61,9 @@ class CompilerInvocation final : public Session {
   llvm::StringRef programName;
   llvm::StringRef programPath;
 
-  std::unique_ptr<CompilerOptions> compilerOpts;
+  CompilerOptions compilerOpts;
+
+  LangOptions langOpts;
 
   /// Options for generating code
   CodeGenOptions codeGenOpts;
@@ -139,10 +141,11 @@ public:
 
   ClangContext &GetClangContext() { return *clangContext; }
 
-  CompilerOptions &GetCompilerOptions() { return *compilerOpts.get(); }
-  const CompilerOptions &GetCompilerOptions() const {
-    return *compilerOpts.get();
-  }
+  Mode &GetMainMode() { return compilerOpts.mainMode; }
+  const Mode &GetMainMode() const { return compilerOpts.mainMode; }
+
+  CompilerOptions &GetCompilerOptions() { return compilerOpts; }
+  const CompilerOptions &GetCompilerOptions() const {return compilerOpts;}
 
   CodeGenOptions &GetCodeGenOptions() { return codeGenOpts; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
@@ -158,10 +161,8 @@ public:
     return typeCheckerOpts;
   }
 
-  LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
-  const LangOptions &GetLangOptions() const {
-    return GetCompilerOptions().langOpts;
-  }
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {

@@ -90,20 +90,20 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (invocation.ComputeOptions(*ial).HasError()) {
     return Finish(Error(true));
   }
-  if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
+  if (invocation.GetMainMode().IsAlien()) {
     invocation.GetLangContext().GetDiags().PrintD(SrcLoc(),
                                                   diag::err_alien_mode);
     Finish(Error(true));
   }
-  if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
+  if (invocation.GetMainMode().IsPrintHelp()) {
     // TODO: invocation.PrintHelp(invocation.GetOpts());
     return Finish();
   }
-  if (invocation.GetCompilerOptions().GetMode().IsPrintVersion()) {
+  if (invocation.GetMainMode().IsPrintVersion()) {
     invocation.PrintVersion();
     return Finish(Error(true));
   }
-  if (!invocation.GetCompilerOptions().GetMode().CanCompile()) {
+  if (!invocation.GetMainMode().CanCompile()) {
     /// invocation.PrintD()
     return Finish();
   }
@@ -257,7 +257,7 @@ Status CompilerInstance::CompileWithParsing(ParsingCompletedCallback notifiy) {
     }
   }
 
-  if (!GetMode().JustParse()) {
+  if (!invocation.GetMainMode().JustParse()) {
     ResolveImports();
   }
   if (invocation.GetListener()) {
@@ -299,7 +299,7 @@ Status CompilerInstance::Compile() {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
   Status status;
-  switch (GetMode().GetKind()) {
+  switch (invocation.GetMainMode().GetKind()) {
   case ModeKind::Parse:
     status = CompileWithParsing();
     break;

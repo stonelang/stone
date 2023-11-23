@@ -32,3 +32,17 @@ public:
 std::unique_ptr<OptTable> stone::opts::CreateOptTable() {
   return std::unique_ptr<OptTable>(new stone::StoneOptTable());
 }
+
+unsigned opts::GetArgID(llvm::opt::Arg *arg) {
+  assert(arg);
+  return arg->getOption().getID();
+}
+
+llvm::StringRef opts::GetArgName(llvm::opt::Arg *arg) {
+  assert(arg);
+  return arg->getOption().getName();
+}
+
+
+
+

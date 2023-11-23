@@ -41,6 +41,10 @@ enum OptID : unsigned {
 #undef OPTION
 };
 
+
+unsigned GetArgID(llvm::opt::Arg *arg);
+llvm::StringRef GetArgName(llvm::opt::Arg *arg);
+Mode GetMode(const llvm::opt::ArgList &args);
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 } // namespace opts
 

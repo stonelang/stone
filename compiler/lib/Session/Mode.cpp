@@ -43,6 +43,22 @@ static ModeKind GetModeKind(const unsigned modeID) {
     return ModeKind::Alien;
   }
 }
+
+Mode opts::GetMode(const llvm::opt::ArgList &args) {
+
+  auto modeArg = args.getLastArg(opts::ModeGroup);
+  if (!modeArg) {
+    // We just default to emitting an object file since nothing was presented.
+    return Mode(ModeKind::None);
+  }
+  auto modeKind = GetModeKind(opts::GetArgID(modeArg));
+  if (modeKind == ModeKind::Alien) {
+    return Mode(ModeKind::Alien);
+  }
+  return Mode(modeKind, opts::GetArgName(modeArg));
+}
+
+
 std::unique_ptr<Mode> Mode::Create(const llvm::opt::InputArgList &ial) {
   auto modeArg = ial.getLastArg(opts::ModeGroup);
   if (modeArg) {

@@ -197,7 +197,7 @@ void CompilerInvocation::SetTargetTriple(StringRef Triple) {
   SetTargetTriple(llvm::Triple(Triple));
 }
 void CompilerInvocation::SetTargetTriple(const llvm::Triple &triple) {
-  GetCompilerOptions().langOpts.SetTarget(triple);
+  GetLangOptions().SetTarget(triple);
   // TODO? UpdateRuntimeLibraryPaths(SearchPathOpts, LangOpts.Target);
 }
 
@@ -294,7 +294,7 @@ static void ComputeCodeCodeGenOutputKind(const CompilerOptions &compilerOpts,
                                          CodeGenOptions &codeGenOpts) {
 
   // TODO: You are missing a few -- OK for now
-  switch (compilerOpts.GetMode().GetKind()) {
+  switch (compilerOpts.mainMode.GetKind()) {
   case ModeKind::EmitModule:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
   case ModeKind::EmitIRPre:
@@ -407,29 +407,31 @@ static Error ComputeSearchPathOptions(llvm::opt::InputArgList &ial,
 }
 
 Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
-  compilerOpts = std::make_unique<CompilerOptions>(Mode::Create(ial));
-  if (compilerOpts->GetMode().IsAlien()) {
+
+  compilerOpts.mainMode = opts::GetMode(ial);
+
+  if (compilerOpts.mainMode.IsAlien()) {
     return Error(true);
   }
   auto compilerOptsErr = ComputeCompilerOptions(
-      ial, GetLangContext().GetDiags(), GetLangContext().GetLangOptions(),
-      *compilerOpts, GetModuleOptions(), nullptr /* pass null for now*/);
+      ial, GetLangContext().GetDiags(), langOpts,
+      compilerOpts, GetModuleOptions(), nullptr /* pass null for now*/);
   if (compilerOptsErr.HasError()) {
   }
-  ComputeLangOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
-                     GetLangContext().GetLangOptions());
+  ComputeLangOptions(ial, GetLangContext().GetDiags(), compilerOpts,
+                     langOpts);
 
-  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiags(), compilerOpts,
                             typeCheckerOpts);
-  ComputeSearchPathOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+  ComputeSearchPathOptions(ial, GetLangContext().GetDiags(), compilerOpts,
                            searchPathOpts);
 
-  ComputeCodeGenOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
-                        codeGenOpts, GetLangContext().GetLangOptions(),
+  ComputeCodeGenOptions(ial, GetLangContext().GetDiags(), compilerOpts,
+                        codeGenOpts, langOpts,
                         *clangContext);
 
-  ComputeTargetOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
-                       codeGenOpts, GetLangContext().GetLangOptions(),
+  ComputeTargetOptions(ial, GetLangContext().GetDiags(), compilerOpts,
+                       codeGenOpts, langOpts,
                        *clangContext);
   return Error();
 }

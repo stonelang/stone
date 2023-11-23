@@ -82,10 +82,10 @@ public:
   CompilerInvocation &GetInvocation() { return invocation; }
 
   bool CanCompile() {
-    return GetInvocation().GetCompilerOptions().GetMode().CanCompile();
+    return invocation.GetMainMode().CanCompile();
   }
   bool CanCodeGen() {
-    return GetInvocation().GetCompilerOptions().GetMode().CanCodeGen();
+    return invocation.GetMainMode().CanCodeGen();
   }
   // llvm::StringRef CreateOutputFile(unsigned srcID);
   // llvm::StringRef ComputeSourceOutputFile(unsigned srcID);
@@ -116,11 +116,6 @@ public:
   }
   syn::SyntaxFile *CastToSyntaxFile(stone::ModuleSyntaxFileUnion msf) {
     msf.dyn_cast<syn::SyntaxFile *>();
-  }
-
-  Mode &GetMode() { return invocation.GetCompilerOptions().GetMode(); }
-  const Mode &GetMode() const {
-    return invocation.GetCompilerOptions().GetMode();
   }
 
 public:
