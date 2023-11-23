@@ -8,6 +8,8 @@ namespace stone {
 enum class ActionKind : unsigned {
   ///< No mode
   None = 0,
+
+  /// MARK -- Lang support
   //< Print language version
   PrintVersion,
   ///< Print help
@@ -16,24 +18,29 @@ enum class ActionKind : unsigned {
   PrintHelpHidden,
   ///< Print compiler features
   PrintFeature,
+
+  /// MARK -- Syntax analysis
   ///< Parse only
   Parse,
-  ///< Parse and resolve use(s) only
-  ResolveImports,
   ///< Parse and dump syntax tree
-  DumpSyntax,
+  DumpAST,
+  ///< Parse and resolve imports only
+  ResolveImports,
   ///< Parse and type-check only
+
+  /// MARK -- Semantic analysis
   TypeCheck,
-  ///< TODO
-  DumpTypeInfo,
   ///< Parse, type-check, and  pretty print syntax tree
-  PrintSyntax,
-  //</ Parse, type-check, and pretty print llvm-ir
-  PrintIR,
+  PrintAST,
+
+  /// MARK -- Code generation
   //</ Parse, type-check, and emit LLVM IR pre optimization
   EmitIRBefore,
   //</ Parse, type-check, and emit LLVM IR post optimization
   EmitIRAfter,
+
+  //</ Parse, type-check, and pretty print llvm-ir
+  PrintIR,
   //< Parse, type-check, and emit LLVM BC
   EmitBC,
   ///< Parse, type-check, and emit native object code
@@ -41,8 +48,6 @@ enum class ActionKind : unsigned {
   ///< Parse, type-check, and emit a library.
   ///< Default => platform specific. But, with -static => 'any.a'
   EmitLibrary,
-  ///< Create a module fule
-  InitModule,
   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
   EmitModule,
   //< Parse, type-check, and emit assembly

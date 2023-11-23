@@ -32,7 +32,6 @@ public:
   virtual Status Execute() = 0;
   Status Finish();
 
-
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
@@ -67,8 +66,8 @@ public:
 
 public:
   Status ExecuteParse(std::function<Status(SourceFile &)> notify);
+  Status ExecutDumpAST(SourceFile &sourceFile);
   Status ExecuteResolveImports(SourceFile &sourceFile);
-  Status ExecutDumpSyntax(SourceFile &sourceFile);
 };
 
 class SemanticAnalysisExecution final : public CompilerExecution {
@@ -84,8 +83,7 @@ public:
 
 public:
   Status ExecuteTypeCheck();
-  Status ExecuteDumpTypeInfo();
-  Status ExecutePrintSyntax();
+  Status ExecutePrintAST();
 
 public:
   ActionKind GetDependency() override { return ActionKind::ResolveImports; }

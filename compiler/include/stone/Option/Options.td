@@ -76,8 +76,8 @@ Flags<[CompilerOption, DriverOption]>;
 
 
 
-def DumpSyntax : Flag<["-"], "dump-syntax">,
-HelpText<"Parse and dump syntax tree">, ModeOpt,
+def DumpAST : Flag<["-"], "dump-ast">,
+HelpText<"Parse and dump ast tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 def TypeCheck : Flag<["-"], "type-check">,
@@ -85,11 +85,9 @@ HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 
-def PrintSyntax : Flag<["-"], "print-syntax">,
-HelpText<"Parse, type-check input file(s) and pretty print syntax tree">, ModeOpt,
+def PrintAST : Flag<["-"], "print-ast">,
+HelpText<"Parse, type-check input file(s) and pretty print ast">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
-
-
 
 def EmitLibrary : Flag<["-"], "emit-library">,
 HelpText<"Emit a linked library">, ModeOpt,

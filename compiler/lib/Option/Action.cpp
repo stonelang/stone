@@ -14,12 +14,12 @@ ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
     return ActionKind::Parse;
   case opts::ResolveImports:
     return ActionKind::ResolveImports;
-  case opts::DumpSyntax:
-    return ActionKind::DumpSyntax;
+  case opts::DumpAST:
+    return ActionKind::DumpAST;
   case opts::TypeCheck:
     return ActionKind::TypeCheck;
-  case opts::PrintSyntax:
-    return ActionKind::PrintSyntax;
+  case opts::PrintAST:
+    return ActionKind::PrintAST;
   case opts::PrintIR:
     return ActionKind::PrintIR;
   case opts::EmitIRAfter:
@@ -70,13 +70,13 @@ file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
   case ActionKind::ResolveImports:
   case ActionKind::TypeCheck:
   // case ActionKind::TypecheckModuleFromInterface:
-  case ActionKind::DumpSyntax:
+  case ActionKind::DumpAST:
   // case ActionKind::DumpInterfaceHash:
-  case ActionKind::PrintSyntax:
+  case ActionKind::PrintAST:
   case ActionKind::PrintIR:
   // case ActionKind::DumpScopeMaps:
   // case ActionKind::DumpTypeRefinementContexts:
-  // case ActionKind::DumpTypeInfo:
+  // case ActionKind::DumpIRTypeInfo:
   // case ActionKind::DumpPCM:
   case ActionKind::PrintVersion:
     // case ActionKind::Immediate:

@@ -27,16 +27,16 @@ Compiler::GetExecutionForAction(ActionKind action) {
   case ActionKind::PrintVersion:
     return std::make_unique<SupportExecution>(*this, action);
   case ActionKind::Parse:
+  case ActionKind::DumpAST:
   case ActionKind::ResolveImports:
-  case ActionKind::DumpSyntax:
     return std::make_unique<SyntaxAnalysisExecution>(*this, action);
   case ActionKind::TypeCheck:
-  case ActionKind::PrintSyntax:
-  case ActionKind::DumpTypeInfo:
+  case ActionKind::PrintAST:
     return std::make_unique<SemanticAnalysisExecution>(*this, action);
   case ActionKind::EmitIRBefore:
   case ActionKind::EmitIRAfter:
   case ActionKind::EmitBC:
+  case ActionKind::EmitModule:
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
     return std::make_unique<CodeGenExecution>(*this, action);

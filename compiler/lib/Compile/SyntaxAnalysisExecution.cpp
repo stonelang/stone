@@ -11,21 +11,20 @@ SyntaxAnalysisExecution::SyntaxAnalysisExecution(Compiler &compiler,
 
 Status SyntaxAnalysisExecution::Execute() {
 
-  // switch (GetExecutionAction()) {
-  // case ActionKind::Parse:
-  //   return ExecuteParse(
-  //       [&](SourceFile &sourceFile) { return Status::Success(); });
-  // case ActionKind::ResolveImports:
-  //   return ExecuteParse([&](SourceFile &sourceFile) {
-  //     return ExecuteResolveImports(sourceFile)
-  //   });
-  // case ActionKind::DumpSyntax:
-  //   return ExecuteParse([&](SourceFile &sourceFile) {
-  //     return ExecutDumpSyntax(sourceFile)
-  //   });
-  // default:
-  //   llvm_unreachable("Invalid action for syntax analysis");
-  // }
+  switch (GetExecutionAction()) {
+  case ActionKind::Parse:
+    return ExecuteParse(
+        [&](SourceFile &sourceFile) { return Status::Success(); });
+  case ActionKind::DumpAST:
+    return ExecuteParse(
+        [&](SourceFile &sourceFile) { return ExecutDumpAST(sourceFile); });
+  case ActionKind::ResolveImports:
+    return ExecuteParse([&](SourceFile &sourceFile) {
+      return ExecuteResolveImports(sourceFile);
+    });
+  default:
+    llvm_unreachable("Invalid action for syntax analysis");
+  }
 }
 
 Status SyntaxAnalysisExecution::ExecuteParse(
@@ -33,19 +32,24 @@ Status SyntaxAnalysisExecution::ExecuteParse(
   compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
                            nullptr);
-      if(notify(sourceFile).IsError()){
-        return Status::Error();
-      }
-      return Status();
+    if (notify(sourceFile).IsError()) {
+      return Status::Error();
+    }
+    return Status();
   });
 
   return Status();
 }
 
-Status SyntaxAnalysisExecution::ExecuteResolveImports(SourceFile &sourceFile) {
+Status SyntaxAnalysisExecution::ExecutDumpAST(SourceFile &sourceFile) {
+
   return Status();
 }
 
-Status SyntaxAnalysisExecution::ExecutDumpSyntax(SourceFile &sourceFile) {
+Status SyntaxAnalysisExecution::ExecuteResolveImports(SourceFile &sourceFile) {
+
+  // TODO: Simple for now -- may just call directly
+  stone::ResolveSourceFileImports(sourceFile);
+
   return Status();
 }

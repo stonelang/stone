@@ -24,8 +24,8 @@ public:
 public:
   bool CanOutput() const {
     switch (GetKind()) {
-    case ActionKind::DumpSyntax:
-    case ActionKind::PrintSyntax:
+    case ActionKind::DumpAST:
+    case ActionKind::PrintAST:
     case ActionKind::EmitIRBefore:
     case ActionKind::EmitIRAfter:
     case ActionKind::EmitBC:
@@ -43,9 +43,9 @@ public:
     case ActionKind::None:
     case ActionKind::Parse:
     case ActionKind::ResolveImports:
-    case ActionKind::DumpSyntax:
+    case ActionKind::DumpAST:
     case ActionKind::TypeCheck:
-    case ActionKind::PrintSyntax:
+    case ActionKind::PrintAST:
     case ActionKind::EmitIRBefore:
     case ActionKind::EmitIRAfter:
     case ActionKind::EmitBC:
@@ -95,10 +95,9 @@ public:
   bool IsResolveImports() const {
     return GetKind() == ActionKind::ResolveImports;
   }
-  bool IsDumpSyntax() const { return GetKind() == ActionKind::DumpSyntax; }
+  bool IsDumpAST() const { return GetKind() == ActionKind::DumpAST; }
   bool IsTypeCheck() const { return GetKind() == ActionKind::TypeCheck; }
-  bool IsDumpTypeInfo() const { return GetKind() == ActionKind::DumpTypeInfo; }
-  bool IsPrintSyntax() const { return GetKind() == ActionKind::PrintSyntax; }
+  bool IsPrintAST() const { return GetKind() == ActionKind::PrintAST; }
   bool IsEmitIRAfter() const { return GetKind() == ActionKind::EmitIRAfter; }
   bool IsEmitIRBefore() const { return GetKind() == ActionKind::EmitIRBefore; }
   bool IsEmitIR() const { return (IsEmitIRAfter() || IsEmitIRBefore()); }

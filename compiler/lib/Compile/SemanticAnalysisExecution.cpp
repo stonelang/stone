@@ -21,6 +21,4 @@ Status SemanticAnalysisExecution::ExecuteTypeCheck() {
   // });
 }
 
-Status SemanticAnalysisExecution::ExecuteDumpTypeInfo() { return Status(); }
-
-Status SemanticAnalysisExecution::ExecutePrintSyntax() { return Status(); }
+Status SemanticAnalysisExecution::ExecutePrintAST() { return Status(); }
