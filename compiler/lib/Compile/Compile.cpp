@@ -303,13 +303,14 @@ Status CompilerInstance::Compile() {
 
 Status CompilerInstance::Compile(ModeKind kind) {
 
-  Status status;
   switch (kind) {
   case ModeKind::Parse:
+    return CompileForParse();
   case ModeKind::ResolveImports:
   case ModeKind::DumpSyntax:
   case ModeKind::TypeCheck:
   case ModeKind::PrintSyntax:
+
   case ModeKind::PrintIR:
   case ModeKind::EmitIRPre:
   case ModeKind::EmitIR:
@@ -319,9 +320,10 @@ Status CompilerInstance::Compile(ModeKind kind) {
   case ModeKind::EmitModule:
   case ModeKind::EmitAssembly:
   case ModeKind::MergeModules:
+    return CompileForEmitCode();
 
   default:
-    break;
+    llvm_unreachable("Invalid mode!");
   }
-  return status;
+
 }
