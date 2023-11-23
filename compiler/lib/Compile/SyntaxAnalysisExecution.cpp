@@ -28,9 +28,10 @@ Status SyntaxAnalysisExecution::ExecuteParse(
   compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
                            nullptr);
-
-    if (notify && notify(sourceFile).IsError()) {
-      return Status::Error();
+    if (notify) {
+      if (notify(sourceFile).IsError()) {
+        return Status::Error();
+      }
     }
     return Status();
   });
@@ -38,7 +39,6 @@ Status SyntaxAnalysisExecution::ExecuteParse(
 }
 
 Status SyntaxAnalysisExecution::ExecuteDumpAST() {
-
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
     return Status();
@@ -46,7 +46,6 @@ Status SyntaxAnalysisExecution::ExecuteDumpAST() {
 }
 
 Status SyntaxAnalysisExecution::ExecuteResolveImports() {
-  // TODO: Additional pre work
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::ResolveSourceFileImports(sourceFile);
     return Status();

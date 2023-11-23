@@ -110,7 +110,8 @@ public:
   Status ForEachSourceFileInMainModule(
       std::function<Status(SourceFile &sourceFile)> notify);
 
-  bool IsWholeModuleCompilation() { return primarySourceBufferIDList.empty(); }
+  bool IsCompileForWholeModule() { return primarySourceBufferIDList.empty(); }
+  bool IsCompileForSourceFile() { return !GetPrimarySourceFiles().empty(); }
 
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.

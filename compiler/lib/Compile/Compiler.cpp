@@ -334,7 +334,7 @@ Status Compiler::ForEachSourceFileInMainModule(
 
 Status Compiler::ForEachSourceFileToTypeCheck(
     std::function<Status(SourceFile &sourceFile)> notify) {
-  if (IsWholeModuleCompilation()) {
+  if (IsCompileForWholeModule()) {
     ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
       if (notify(sourceFile).IsError()) {
         return Status::Error();

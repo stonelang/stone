@@ -82,7 +82,7 @@ public:
   Status Execute() override;
 
 public:
-  Status ExecuteTypeCheck();
+  Status ExecuteTypeCheck(std::function<Status(SourceFile &)> notify = nullptr);
   Status ExecutePrintAST();
 
 public:

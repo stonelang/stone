@@ -9,12 +9,11 @@ SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler,
 
 Status SemanticAnalysisExecution::Execute() {
 
-  switch (GetExecutionAction()) {
-    
-  }
+  switch (GetExecutionAction()) {}
 }
 
-Status SemanticAnalysisExecution::ExecuteTypeCheck() {
+Status SemanticAnalysisExecution::ExecuteTypeCheck(
+    std::function<Status(SourceFile &)> notify) {
 
   // compiler.ForEachSyntaxFile([&](SourceFile &sourceFile,
   //                       TypeCheckerOptions &typeCheckerOpts,

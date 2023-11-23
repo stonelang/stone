@@ -46,7 +46,7 @@ class Parser final {
 
   // friend PairDelimiterBalancer;
 
-  SyntaxListener *listener = nullptr; 
+  SyntaxListener *listener = nullptr;
   LexerListener *lexerListener = nullptr;
 
   std::unique_ptr<Lexer> lexer;
@@ -100,7 +100,6 @@ public:
   ~Parser();
 
 public:
-
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
