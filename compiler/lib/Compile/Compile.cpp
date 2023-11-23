@@ -75,7 +75,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
-  invocation.GetDiags().AddListener(diagListener);
+  invocation.GetLangContext().GetDiags().AddListener(diagListener);
 
   ConfigurationFileBuffers configurationFileBuffers;
 

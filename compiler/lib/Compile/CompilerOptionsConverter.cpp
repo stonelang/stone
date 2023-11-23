@@ -57,7 +57,7 @@ stone::Error CompilerOptionsConverter::Convert(
   }
 
   if (!compilerOpts.GetInputsAndOutputs().HasInputs()) {
-    status.SetHasCompletion();
+    return stone::Error(true);
   }
 
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {

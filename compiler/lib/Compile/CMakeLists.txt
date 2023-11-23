@@ -7,6 +7,10 @@ set(stone_compile_sources
 	CompilerInputsConverter.cpp
 	CompilerOptionsConverter.cpp
 	CompilerOutputsConverter.cpp
+	CompileForEmitCode.cpp
+	CompileForSyntaxAnalysis.cpp
+	CompileForSemanticAnalysis.cpp
+	CompileForLLVMIR.cpp
 	ModuleSystem.cpp
 	ModuleDependencies.cpp
 	Serialization.cpp
