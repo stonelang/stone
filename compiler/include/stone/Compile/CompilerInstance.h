@@ -92,6 +92,7 @@ public:
 
 public:
   Status Compile();
+
 private:
   Status CompileWithParsing();
   Status CompileWithParsing(ParsingCompletedCallback notifiy);
@@ -171,32 +172,31 @@ public:
 public:
   void PrintHelp(const llvm::opt::OptTable &opts);
 
-
 public:
-
-Status Compile(ModeKind kind);
+  Status Compile(ModeKind kind);
 
   /// Handles LLVM
-Status CompileForLLVMIR();
+  Status CompileForLLVMIR();
 
-/// Handles only syntax
-Status CompileForParse();
+  /// Handles only syntax
+  Status
+  CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
 
-/// Handles only syntax
-Status CompileForDumpAST();
+  /// Handles only syntax
+  Status CompileForDumpAST();
 
-/// Handles only syntax
-Status CompileForResolveImports();
+  /// Handles only syntax
+  Status CompileForResolveImports();
 
-/// Handles semantics
-Status CompileForTypeCheck();
+  /// Handles semantics
+  Status CompileForTypeCheck(
+      std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
 
-/// Handles semantics
-Status CompileForPrintAST();
+  /// Handles semantics
+  Status CompileForPrintAST();
 
-/// Handles code generating
-Status CompileForEmitCode();
-
+  /// Handles code generating
+  Status CompileForEmitCode();
 };
 
 } // namespace stone

@@ -252,7 +252,6 @@ public:
   }
 };
 
-
 class DiagnosticMessage final {
   diag::Level level;
   llvm::StringRef category;
@@ -262,7 +261,7 @@ class DiagnosticMessage final {
 
 public:
   DiagnosticMessage(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
-                  llvm::StringRef formatMessage, llvm::StringRef category)
+                    llvm::StringRef formatMessage, llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}
 

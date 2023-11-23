@@ -22,7 +22,6 @@ public:
 public:
   ModeKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
-  bool Is(ModeKind k) const { return kind == k; }
   file::Type GetOutputFileType() const;
 
   bool CanOutput() const {
@@ -129,6 +128,19 @@ public:
   bool IsEmitObject() { return GetKind() == ModeKind::EmitObject; }
   bool IsEmitAssembly() { return GetKind() == ModeKind::EmitAssembly; }
   bool IsAlien() { return GetKind() == ModeKind::Alien; }
+
+public:
+  bool Is(ModeKind k) const { return kind == k; }
+  bool IsAny(ModeKind K1) const { return Is(K1); }
+  template <typename... T> bool IsAny(ModeKind K1, ModeKind K2, T... K) const {
+    if (Is(K1)) {
+      return true;
+    }
+    return IsAny(K2, K...);
+  }
+  template <typename... T> bool IsNot(ModeKind K1, T... K) const {
+    return !IsAny(K1, K...);
+  }
 
 public:
   static file::Type GetOutputFileTypeByModeKind(ModeKind kind);

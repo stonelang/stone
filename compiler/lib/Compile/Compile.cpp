@@ -61,7 +61,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   if (args.empty()) {
     invocation.GetLangContext().GetDiags().PrintD(SrcLoc(),
-                                                     diag::err_no_input_files);
+                                                  diag::err_no_input_files);
     return Finish(Error(true));
   }
   // We setup clang now -- this just loads the instance.
@@ -92,7 +92,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
     invocation.GetLangContext().GetDiags().PrintD(SrcLoc(),
-                                                     diag::err_alien_mode);
+                                                  diag::err_alien_mode);
     Finish(Error(true));
   }
   if (invocation.GetCompilerOptions().GetMode().IsPrintHelp()) {
@@ -114,17 +114,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return Finish();
   }
 
-  CompilerInstance compilerInstance(invocation);
-
- 
-  auto status = compilerInstance.Compile();
+  CompilerInstance compiler(invocation);
+  auto status = compiler.Compile();
 
   if (status.IsError() || invocation.HasError()) {
     return Finish(Error(true));
   }
   return Finish();
 }
-
 
 static Status DumpIR(CompilerInstance &compiler, CodeGenContext &cgc) {
   Status::Success();
@@ -172,7 +169,6 @@ Status CompilerInstance::CompileWithGenNative(CodeGenContext &cgc) {
 }
 
 Status CompilerInstance::CompileWithCodeGen() {
-
 
   assert(CanCodeGen() && "Mode does not support code gen");
 

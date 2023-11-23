@@ -159,7 +159,9 @@ public:
   }
 
   LangOptions &GetLangOptions() { return GetCompilerOptions().langOpts; }
-  const LangOptions &GetLangOptions() const { return GetCompilerOptions().langOpts; }
+  const LangOptions &GetLangOptions() const {
+    return GetCompilerOptions().langOpts;
+  }
 
   SearchPathOptions &GetSearchPathOptions() { return searchPathOpts; }
   const SearchPathOptions &GetSearchPathOptions() const {
@@ -176,7 +178,6 @@ public:
 
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
-
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);

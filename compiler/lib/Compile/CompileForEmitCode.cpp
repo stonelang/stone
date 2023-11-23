@@ -3,7 +3,10 @@
 using namespace stone;
 
 Status CompilerInstance::CompileForEmitCode() {
-	Compile(ModeKind::TypeCheck);
 
-	return Status();
+  if (Compile(ModeKind::TypeCheck).IsError()) {
+    return Status::Error();
+  }
+
+  return Status();
 }

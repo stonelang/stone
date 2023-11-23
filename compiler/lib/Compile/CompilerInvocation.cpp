@@ -152,7 +152,7 @@ CompilerInvocation::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (!inputFileOrError) {
     ctx.GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                             diag::LLVMStr(input.GetFileName()));
+                          diag::LLVMStr(input.GetFileName()));
     return llvm::None;
   }
 
@@ -206,7 +206,7 @@ CompilerInvocation::CreateSourceBuffer(const CompilerInputFile &input) {
   auto fb = ctx.GetFileMgr().getBufferForFile(input.GetFileName());
   if (!fb) {
     ctx.GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                             diag::LLVMStr(input.GetFileName()));
+                          diag::LLVMStr(input.GetFileName()));
   }
   auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
@@ -412,26 +412,25 @@ Error CompilerInvocation::ComputeOptions(llvm::opt::InputArgList &ial) {
     return Error(true);
   }
   auto compilerOptsErr = ComputeCompilerOptions(
-      ial, GetLangContext().GetDiags(),
-      GetLangContext().GetLangOptions(), *compilerOpts, GetModuleOptions(),
-      nullptr /* pass null for now*/);
+      ial, GetLangContext().GetDiags(), GetLangContext().GetLangOptions(),
+      *compilerOpts, GetModuleOptions(), nullptr /* pass null for now*/);
   if (compilerOptsErr.HasError()) {
   }
-  ComputeLangOptions(ial, GetLangContext().GetDiags(),
-                     *compilerOpts, GetLangContext().GetLangOptions());
+  ComputeLangOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+                     GetLangContext().GetLangOptions());
 
-  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiags(),
-                            *compilerOpts, typeCheckerOpts);
-  ComputeSearchPathOptions(ial, GetLangContext().GetDiags(),
-                           *compilerOpts, searchPathOpts);
+  ComputeTypeCheckerOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+                            typeCheckerOpts);
+  ComputeSearchPathOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+                           searchPathOpts);
 
-  ComputeCodeGenOptions(ial, GetLangContext().GetDiags(),
-                        *compilerOpts, codeGenOpts,
-                        GetLangContext().GetLangOptions(), *clangContext);
+  ComputeCodeGenOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+                        codeGenOpts, GetLangContext().GetLangOptions(),
+                        *clangContext);
 
-  ComputeTargetOptions(ial, GetLangContext().GetDiags(),
-                       *compilerOpts, codeGenOpts,
-                       GetLangContext().GetLangOptions(), *clangContext);
+  ComputeTargetOptions(ial, GetLangContext().GetDiags(), *compilerOpts,
+                       codeGenOpts, GetLangContext().GetLangOptions(),
+                       *clangContext);
   return Error();
 }
 

@@ -41,8 +41,8 @@ Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetLangContext().GetDiags().PrintD(
-        SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
+    GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
+                                       diag::LLVMStr(arg->getAsString(*ial)));
     return nullptr;
   }
   return ial;

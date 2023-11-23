@@ -13,10 +13,9 @@ using namespace stone::mem;
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
     : Parser(sf, sc,
-             Safe<Lexer>(
-                 new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                           &sc.GetLangContext().GetDiags(),
-                           &sc.GetLangContext().GetStats())),
+             Safe<Lexer>(new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
+                                   &sc.GetLangContext().GetDiags(),
+                                   &sc.GetLangContext().GetStats())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,

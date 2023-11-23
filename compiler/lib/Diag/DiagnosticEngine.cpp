@@ -254,7 +254,7 @@ DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
       /*TODO*/ llvm::StringRef());
 }
 
-bool DiagnosticEngine::Finish() { 
+bool DiagnosticEngine::Finish() {
   bool hadError = false;
   for (auto &listener : listeners) {
     hadError |= listener->Finish();

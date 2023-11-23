@@ -61,7 +61,6 @@ class LangContext final {
 
   DiagnosticEngine de;
   DiagnosticOptions diagOpts;
- 
 
 public:
   LangContext() : fm(fsOpts), de(diagOpts, sm), cos(llvm::outs()) {}
@@ -86,7 +85,7 @@ public:
   const DiagnosticOptions &GetDiagOptions() const { return diagOpts; }
 
   bool HasError() { return de.HasError(); }
-  
+
   FileMgr &GetFileMgr() { return fm; }
   SrcMgr &GetSrcMgr() { return sm; }
 };

@@ -47,7 +47,7 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
 Error ModuleSystem::CreateSyntaxFilesForMainModule(
     syn::ModuleDecl *mod,
     llvm::SmallVectorImpl<syn::ModuleFile *> &resultFiles) const {
-  
+
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
   llvm::Optional<unsigned> mainBufferID = llvm::None;

@@ -1,8 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/TargetOptions.h"
-#include "stone/Syntax/ClangContext.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
+#include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/SyntaxContext.h"
 
 #include "llvm/MC/SubtargetFeature.h"

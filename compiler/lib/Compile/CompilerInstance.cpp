@@ -30,8 +30,8 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
     lc.GetDiags().PrintD(SrcLoc(), diag::err_opening_output,
-                            diag::LLVMStr(outputFilename),
-                            diag::LLVMStr(errCode.message()));
+                         diag::LLVMStr(outputFilename),
+                         diag::LLVMStr(errCode.message()));
     return nullptr;
   }
   return os;

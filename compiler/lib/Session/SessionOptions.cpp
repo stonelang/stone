@@ -12,7 +12,8 @@ SessionOptions::SessionOptions(std::unique_ptr<Mode> m) : mode(std::move(m)) {
 }
 
 // TODO:
-//  SessionOptions::SessionOptions() : target(llvm::sys::getDefaultTargetTriple()) {
+//  SessionOptions::SessionOptions() :
+//  target(llvm::sys::getDefaultTargetTriple()) {
 //  }
 
 // void SessionOptions::SetTargetTriple(llvm::StringRef triple) {

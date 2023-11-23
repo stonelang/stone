@@ -339,7 +339,7 @@ public:
   llvm::ArrayRef<DiagnosticListener *> GetListeners() const {
     return listeners;
   }
- 
+
 public:
   /// Generate DiagnosticMessage for a Diagnostic to be passed to listeners.
   llvm::Optional<DiagnosticMessage>
@@ -395,14 +395,13 @@ public:
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             Tokenable *tokenable = nullptr) {
-    return PrintD(
-        loc,Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
   InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
-    return PrintD(
-        SrcLoc(),Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-        tokenable);
+    return PrintD(SrcLoc(),
+                  Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  tokenable);
   }
 
   template <typename... ArgTypes>

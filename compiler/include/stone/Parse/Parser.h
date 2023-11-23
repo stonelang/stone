@@ -245,9 +245,7 @@ public:
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
   bool HasError() { return GetLangContext().GetDiags().HasError(); }
-  DiagnosticEngine &GetDiags() {
-    return GetLangContext().GetDiags();
-  }
+  DiagnosticEngine &GetDiags() { return GetLangContext().GetDiags(); }
 
 public:
   //===--------------------------------------------------------------------===//
