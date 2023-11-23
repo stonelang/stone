@@ -1,10 +1,8 @@
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
-#include "stone/Syntax/Module.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -23,7 +21,7 @@
 using namespace stone;
 
 CompilerInvocation::CompilerInvocation(Compiler &compiler)
-    : compiler(compiler) {
+    : compiler(compiler), clangContext(new ClangContext()) {
   llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
@@ -112,4 +110,20 @@ CompilerInvocation::GetPrimaryFileSpecificPathsForSyntaxFile(
   return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
+}
+
+bool CompilerInvocation::ShouldSetupClang() {
+  return GetMainAction().IsAny(ActionKind::EmitIRBefore,
+                               ActionKind::EmitIRAfter, ActionKind::EmitBC,
+                               ActionKind::EmitAssembly, ActionKind::EmitObject,
+                               ActionKind::EmitLibrary);
+}
+
+Status CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
+                                      const char *arg0) {
+
+  if (clangContext->Setup(argv, arg0).IsError()) {
+    return Status::Error();
+  }
+  return Status();
 }

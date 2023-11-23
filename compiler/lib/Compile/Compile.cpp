@@ -42,13 +42,19 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     // compiler.GetDiags().PrintD(diag::err_no_compile_action);
     FinishCompile(Status::Error());
   }
-  compiler.Setup();
-  if (compiler.ShouldSetupClang()) {
-    if (compiler.GetClangContext().Setup(args, arg0).IsError()) {
+
+  if (compiler.GetInvocation().ShouldSetupClang()) {
+    if (compiler.GetInvocation().SetupClang(args, arg0).IsError()) {
       return FinishCompile(Status::Error());
     }
   }
-  if (compiler.ExecuteAction(compiler.GetInvocation().GetAction().GetKind())
+
+  // Now, setup the compiler
+  if (compiler.Setup().IsError()) {
+    return FinishCompile(Status::Error());
+  }
+
+  if (compiler.ExecuteAction(compiler.GetInvocation().GetMainAction().GetKind())
           .IsError()) {
     return FinishCompile(Status::Error());
   }

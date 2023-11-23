@@ -13,16 +13,21 @@
 using namespace stone;
 
 Compiler::Compiler()
-    : invocation(*this), fileMgr(invocation.GetFileSystemOptions()),
-      clangContext(new ClangContext()) {}
+    : invocation(*this), fileMgr(invocation.GetFileSystemOptions()) {}
 
-void Compiler::Setup() {
+Status Compiler::Setup() {
 
   assert(invocation.HasAction() && "Compiler does not have a valid action!");
 
   if (SetupCompilerInputFiles().IsError()) {
-    return;
+    Status::Error();
   }
+  if (ShouldSetupASTContext()) {
+    if (SetupASTContext().IsError()) {
+      return Status::Error();
+    }
+  }
+  return Status();
 }
 
 ModuleDecl *Compiler::GetMainModule() const {
@@ -290,20 +295,15 @@ Compiler::GetSourceFileParsingOptions(bool forPrimary) const {
   return parsingOpts;
 }
 
-Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
-  if (!Lexer::isIdentifier(moduleName)) {
-    return Status::Error();
-  }
-  return Status();
-}
+// TODO: return true for now
+bool Compiler::ShouldSetupASTContext() { return true; }
 
-bool Compiler::ShouldSetupClang() {
-  return invocation.GetAction().IsAny(
-      ActionKind::EmitIRBefore, ActionKind::EmitIRAfter, ActionKind::EmitBC,
-      ActionKind::EmitAssembly, ActionKind::EmitObject,
-      ActionKind::EmitLibrary);
-}
+Status Compiler::SetupASTContext() {
 
+  astContext = std::make_unique<ASTContext>(
+      invocation.GetLangOptions(), invocation.GetSearchPathOptions(),
+      invocation.GetClangContext(),GetDiags(), GetStats());
+}
 void Compiler::TryFreeASTContext() {
 
   // Just free for now
@@ -316,4 +316,11 @@ void Compiler::FreeASTContext() {
   }
   mainModule = nullptr;
   primarySourceBufferIDList.clear();
+}
+
+Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
+  if (!Lexer::isIdentifier(moduleName)) {
+    return Status::Error();
+  }
+  return Status();
 }

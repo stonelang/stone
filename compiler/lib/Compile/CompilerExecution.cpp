@@ -61,5 +61,5 @@ Status Compiler::ExecuteAction(ActionKind kind) {
 Status CompilerExecution::Finish() { return Status(); }
 
 ActionKind CompilerExecution::GetMainAction() {
-  return compiler.GetInvocation().GetAction().GetKind();
+  return compiler.GetInvocation().GetMainAction().GetKind();
 }

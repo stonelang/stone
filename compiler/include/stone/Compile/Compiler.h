@@ -13,36 +13,12 @@ class Compiler;
 class ModuleDecl;
 class CompilerExecution;
 
-// class CompilerInputFileManager {
-//   /// Contains buffer IDs for input source code files.
-//   std::vector<unsigned> inputSourceBufferIDList;
-//   // The primary Sources
-//   llvm::SetVector<unsigned> primarySourceBufferIDList;
-
-// public:
-//   Status Convert();
-
-//   /// Return whether there is an entry in PrimaryInputs for buffer \p BufID.
-//   bool IsPrimarySourceID(unsigned primarySourceID) const {
-//     return primarySourceBufferIDList.count(primarySourceID) != 0;
-//   }
-//   void RecordPrimarySourceID(unsigned primarySourceID);
-
-//   llvm::Optional<unsigned> CreateCodeCompletionBuffer();
-//   llvm::Optional<unsigned> GetRecordedCompilerInputFileBufferID(const
-//   CompilerInputFile &input,
-//                                                const bool shouldRecover,
-//                                                bool &failed);
-
-//   llvm::Optional<ModuleBuffers>
-//     TryGetCompilerInputFileBuffers(const CompilerInputFile &input);
-// };
-
 class Compiler final {
 
+  FileMgr fileMgr;
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
-  FileMgr fileMgr;
+  StatisticEngine stats;
 
   std::unique_ptr<ASTContext> astContext;
   mutable ModuleDecl *mainModule = nullptr;
@@ -53,15 +29,13 @@ class Compiler final {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
-  std::unique_ptr<ClangContext> clangContext;
-
 public:
   Compiler(const Compiler &) = delete;
   void operator=(const Compiler &) = delete;
   Compiler(Compiler &&) = delete;
   void operator=(Compiler &&) = delete;
   Compiler();
-  void Setup();
+  Status Setup();
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
@@ -74,6 +48,7 @@ public:
 public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
+  StatisticEngine &GetStats() { return stats; }
 
   SrcMgr &GetSrcMgr() { return srcMgr; }
   FileMgr &GetFileMgr() { return fileMgr; }
@@ -85,10 +60,6 @@ public:
   CompilerInvocation &GetInvocation() { return invocation; }
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
   Status ExecuteAction(ActionKind kind);
-
-  // Returning true for now but this will be based on the action
-  bool ShouldSetupClang();
-  ClangContext &GetClangContext() { return *clangContext; }
 
 public:
   Status SetupCompilerInputFiles();
@@ -137,6 +108,8 @@ public:
 public:
   void TryFreeASTContext();
   void FreeASTContext();
+  bool ShouldSetupASTContext();
+  Status SetupASTContext();
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

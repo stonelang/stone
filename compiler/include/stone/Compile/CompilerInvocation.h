@@ -3,15 +3,17 @@
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Basic/Status.h"
-#include "stone/Basic/TargetContext.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
+#include "stone/Syntax/TypeCheckerOptions.h"
+
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
+#include "stone/Basic/Status.h"
+#include "stone/Basic/TargetContext.h"
+#include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SearchPath.h"
-#include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -69,6 +71,8 @@ class CompilerInvocation final {
 
   TargetContext targetContext;
 
+  std::unique_ptr<ClangContext> clangContext;
+
 public:
   CompilerInvocation(Compiler &compiler);
 
@@ -109,8 +113,14 @@ public:
   }
 
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
-  const Action &GetAction() const { return compilerOpts.mainAction; }
+  const Action &GetMainAction() const { return compilerOpts.mainAction; }
   void SetTargetTriple(llvm::StringRef triple);
+
+public:
+  // Returning true for now but this will be based on the action
+  bool ShouldSetupClang();
+  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+  ClangContext &GetClangContext() { return *clangContext; }
 
 public:
   const PrimaryFileSpecificPaths &
