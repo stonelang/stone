@@ -76,7 +76,7 @@ public:
     case ModeKind::PrintHelp:
     case ModeKind::PrintVersion:
     case ModeKind::PrintFeature:
-      return true; 
+      return true;
     default:
       return false;
     }

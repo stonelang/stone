@@ -3,16 +3,19 @@
 using namespace stone;
 
 /// Handles only syntax
+Status CompilerInstance::CompileForSyntaxAnalysis() {}
+
+/// Handles only syntax
 Status CompilerInstance::CompileForParse(
     std::function<Status(syn::SyntaxFile &)> notify) {
 
-	for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
       stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
                              invocation.GetListener());
       if (notify) {
-        if(notify(*syntaxFile).IsError()){
-        	return Status::Error();
+        if (notify(*syntaxFile).IsError()) {
+          return Status::Error();
         }
       }
     }

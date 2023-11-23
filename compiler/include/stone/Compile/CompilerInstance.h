@@ -179,12 +179,18 @@ public:
   /// Handles only syntax
   Status CompileForResolveImports();
 
+  /// Handles only syntax
+  Status CompileForSyntaxAnalysis();
+
   /// Handles semantics
   Status CompileForTypeCheck(
       std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
 
   /// Handles semantics
   Status CompileForPrintAST();
+
+  /// Handles only syntax
+  Status CompileForSemanticAnalysis();
 
   /// Handles code generating
   Status CompileForEmitCode();

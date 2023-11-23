@@ -325,5 +325,4 @@ Status CompilerInstance::Compile(ModeKind kind) {
   default:
     llvm_unreachable("Invalid mode!");
   }
-
 }
