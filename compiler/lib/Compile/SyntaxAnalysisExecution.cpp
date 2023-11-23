@@ -10,7 +10,6 @@ SyntaxAnalysisExecution::SyntaxAnalysisExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status SyntaxAnalysisExecution::Execute() {
-
   switch (GetExecutionAction()) {
   case ActionKind::Parse:
     return ExecuteParse();
