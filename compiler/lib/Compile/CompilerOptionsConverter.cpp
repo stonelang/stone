@@ -56,6 +56,10 @@ stone::Error CompilerOptionsConverter::Convert(
     }
   }
 
+  if (!compilerOpts.GetInputsAndOutputs().HasInputs()) {
+    status.SetHasCompletion();
+  }
+
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneModuleInterface;
