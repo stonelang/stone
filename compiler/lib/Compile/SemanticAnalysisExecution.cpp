@@ -9,7 +9,9 @@ SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler,
 
 Status SemanticAnalysisExecution::Execute() {
 
-  switch (GetExecutionAction()) {}
+  switch (GetExecutionAction()) {
+    
+  }
 }
 
 Status SemanticAnalysisExecution::ExecuteTypeCheck() {

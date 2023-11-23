@@ -17,6 +17,9 @@ Status CodeGenExecution::Execute() {
 
 Status CodeGenExecution::ExecuteGenIR(CodeGenContext &codeGenContext) {
 
+  
+    // GenSourceFileIR();
+
   // const auto &invocation = GetInvocation();
   // const CompilerOptions &compilerOpts = invocation.GetCompilerOptions();
 

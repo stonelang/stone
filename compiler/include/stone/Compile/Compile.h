@@ -83,7 +83,7 @@ void CompileForTypeChecking(Compiler &compiler, CompileSession &session);
 //                                   CompilingSession &session);
 
 /// Handles code generating
-void CompileForCodeGen(Compiler &compiler, CompileSession &session);
+void CompileForEmitCode(Compiler &compiler, CompileSession &session);
 
 /// Handles IR generation
 // void CompileForGenIR(Compiler &compiler, CompilingSession &session,

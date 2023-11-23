@@ -65,7 +65,7 @@ public:
   Status Execute() override;
 
 public:
-  Status ExecuteParse(std::function<Status(SourceFile &)> notify);
+  Status ExecuteParse(std::function<Status(SourceFile &)> notify = nullptr);
   Status ExecuteDumpAST();
   Status ExecuteResolveImports();
 };

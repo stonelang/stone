@@ -13,8 +13,7 @@ Status SyntaxAnalysisExecution::Execute() {
 
   switch (GetExecutionAction()) {
   case ActionKind::Parse:
-    return ExecuteParse(
-        [&](SourceFile &sourceFile) { return Status::Success(); });
+    return ExecuteParse();
   case ActionKind::DumpAST:
     return ExecuteDumpAST();
   case ActionKind::ResolveImports:
@@ -29,7 +28,8 @@ Status SyntaxAnalysisExecution::ExecuteParse(
   compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
                            nullptr);
-    if (notify(sourceFile).IsError()) {
+
+    if (notify && notify(sourceFile).IsError()) {
       return Status::Error();
     }
     return Status();
