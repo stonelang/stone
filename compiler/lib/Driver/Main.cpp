@@ -3,7 +3,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Diag/DiagUnit.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DebugCompilationListener.h"
@@ -27,7 +26,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { driver.Finish(); };
 
   if (args.empty()) {
-    driver.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    driver.GetLangContext().GetDiags().PrintD(SrcLoc(),
                                                  diag::err_no_input_files);
     return Error(true);
   }
@@ -44,12 +43,12 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (driver.HasError()) {
     return Error(true);
   }
-  if (driver.ComputeOptions(*ial).Has()) {
+  if (driver.ComputeOptions(*ial).HasError()) {
     return Error(true);
   }
 
   if (driver.GetDriverOptions().GetMode().IsAlien()) {
-    driver.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    driver.GetLangContext().GetDiags().PrintD(SrcLoc(),
                                                  diag::err_alien_mode);
     return Error(true);
   }
@@ -77,7 +76,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return Error(true);
   }
   if (compilation) {
-    if (compilation->RunJobs().Has()) {
+    if (compilation->RunJobs().HasError()) {
       return Error(true);
     }
   }

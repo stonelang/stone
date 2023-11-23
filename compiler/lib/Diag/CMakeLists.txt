@@ -15,7 +15,6 @@ set(stone_diag_sources
   DiagnosticFormatter.cpp
   DiagnosticEngine.cpp
   DiagnosticListener.cpp
-  DiagUnit.cpp
   TextDiagnosticEmitter.cpp
   TextDiagnosticFormatter.cpp
   TextDiagnosticListener.cpp

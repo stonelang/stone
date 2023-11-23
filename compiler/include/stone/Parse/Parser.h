@@ -244,9 +244,9 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiags().HasError(); }
   DiagnosticEngine &GetDiags() {
-    return GetLangContext().GetDiagUnit().GetDiagEngine();
+    return GetLangContext().GetDiags();
   }
 
 public:

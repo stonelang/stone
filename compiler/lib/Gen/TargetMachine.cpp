@@ -87,7 +87,7 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 
 //     llvm::TargetOptions llvmTargetOpts;
 //     auto error = InitLLVMTargetOptions(cgc, llvmTargetOpts);
-//     if (error.Has()) {
+//     if (error.HasError()) {
 //       return nullptr;
 //     }
 

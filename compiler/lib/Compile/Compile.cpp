@@ -60,12 +60,12 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   STONE_DEFER { invocation.Finish(); };
 
   if (args.empty()) {
-    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    invocation.GetLangContext().GetDiags().PrintD(SrcLoc(),
                                                      diag::err_no_input_files);
     return Finish(Error(true));
   }
   // We setup clang now -- this just loads the instance.
-  if (invocation.SetupClang(args, arg0).Has()) {
+  if (invocation.SetupClang(args, arg0).HasError()) {
 
     return Finish(Error(true));
   }
@@ -75,7 +75,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   SyntaxDiagnosticEmitter diagEmitter(diagFormatter);
   TextDiagnosticListener diagListener(diagEmitter);
 
-  invocation.GetDiagUnit().GetDiagEngine().AddListener(diagListener);
+  invocation.GetDiags().AddListener(diagListener);
 
   ConfigurationFileBuffers configurationFileBuffers;
 
@@ -87,11 +87,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (invocation.HasError()) {
     return Finish(Error(true));
   }
-  if (invocation.ComputeOptions(*ial).Has()) {
+  if (invocation.ComputeOptions(*ial).HasError()) {
     return Finish(Error(true));
   }
   if (invocation.GetCompilerOptions().GetMode().IsAlien()) {
-    invocation.GetLangContext().GetDiagUnit().PrintD(SrcLoc(),
+    invocation.GetLangContext().GetDiags().PrintD(SrcLoc(),
                                                      diag::err_alien_mode);
     Finish(Error(true));
   }
@@ -110,7 +110,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (invocation.GetListener()) {
     invocation.GetListener()->OnCompileConfigured(invocation);
   }
-  if (invocation.CreateSourceBuffers().Has()) {
+  if (invocation.CreateSourceBuffers().HasError()) {
     return Finish();
   }
 

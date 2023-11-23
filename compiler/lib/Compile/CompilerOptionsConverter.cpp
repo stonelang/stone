@@ -70,7 +70,7 @@ stone::Error CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
-  if (ComputeModuleName().Has()) {
+  if (ComputeModuleName().HasError()) {
     return stone::Error(true);
   }
 
@@ -93,11 +93,11 @@ stone::Error CompilerOptionsConverter::ComputeModuleName() {
     // Note: this code path will only be taken when running the invocation
     // directly; the driver should always pass -module-name when invoking the
     // invocation.
-    if (ComputeFallbackModuleName().Has())
+    if (ComputeFallbackModuleName().HasError())
       return stone::Error(true);
   }
 
-  if (!ModuleSystem::IsValidModuleName(moduleOpts.moduleName).Has()) {
+  if (!ModuleSystem::IsValidModuleName(moduleOpts.moduleName).HasError()) {
     return stone::Error();
   }
 

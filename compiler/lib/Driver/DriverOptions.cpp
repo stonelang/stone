@@ -105,7 +105,7 @@ Error Driver::ComputeOptions(llvm::opt::InputArgList &ial) {
   if (driverOpts->GetMode().IsAlien()) {
     return Error(true);
   }
-  if (ComputeDriverOptions(ial, *driverOpts.get()).Has()) {
+  if (ComputeDriverOptions(ial, *driverOpts.get()).HasError()) {
     return Error(true);
   }
   return Error();

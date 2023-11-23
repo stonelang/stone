@@ -177,7 +177,6 @@ public:
   CompilerListener *GetListener() { return listener; }
   void SetListener(CompilerListener *l) { listener = l; }
 
-  DiagUnit &GetDiagUnit() { GetLangContext().GetDiagUnit(); }
 
   Optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
@@ -187,7 +186,7 @@ public:
 
   llvm::BumpPtrAllocator &GetMemAllocator() { return bumpAlloc; }
 
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
   std::vector<unsigned> &GetSourceBufferIDs() { return sourceBufferIDs; }
   // std::vector<unsigned> &GetPrimarySourceIDs() { return primarySourceIDs; }

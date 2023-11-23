@@ -9,7 +9,8 @@
 #include "stone/Basic/Result.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Diag/DiagUnit.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
@@ -53,7 +54,6 @@ namespace stone {
 class LangContext final {
   FileMgr fm;
   SrcMgr sm;
-  DiagUnit du;
   LangOptions langOpts;
   StatisticEngine se;
   ColorStream cos;
@@ -64,22 +64,20 @@ class LangContext final {
  
 
 public:
-  LangContext() : fm(fsOpts), du(sm), de(diagOpts, sm), cos(llvm::outs()) {}
+  LangContext() : fm(fsOpts), de(diagOpts, sm), cos(llvm::outs()) {}
   ~LangContext() {}
 
 public:
   ColorStream &Out() { return cos; }
 
-  StatisticEngine &GetStatEngine() { return se; }
-  const StatisticEngine &GeStatEngine() const { return se; }
+  StatisticEngine &GetStats() { return se; }
+  const StatisticEngine &GetStats() const { return se; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
   FileSystemOptions &GetFileSystemOptions() { return fsOpts; }
   const FileSystemOptions &GetFileSystemOptions() const { return fsOpts; }
-
-  DiagUnit &GetDiagUnit() { return du; }
 
   DiagnosticEngine &GetDiags() { return de; }
   const DiagnosticEngine &GetDiags() const { return de; }

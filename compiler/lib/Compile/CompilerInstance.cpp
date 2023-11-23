@@ -16,7 +16,7 @@ CompilerInstance::CompilerInstance(CompilerInvocation &invocation)
       stats(new CompilerInstanceStats(*this)),
       ms(new ModuleSystem(invocation, GetSyntaxContext())) {
 
-  invocation.GetLangContext().GetStatEngine().Register(stats.get());
+  invocation.GetLangContext().GetStats().Register(stats.get());
 
   // CreateCodeGenContext();
 }
@@ -29,7 +29,7 @@ CompilerInstance::GetFileOutputStream(llvm::StringRef outputFilename,
   auto os = std::make_unique<llvm::raw_fd_ostream>(outputFilename, errCode,
                                                    llvm::sys::fs::OF_None);
   if (errCode) {
-    lc.GetDiagUnit().PrintD(SrcLoc(), diag::err_opening_output,
+    lc.GetDiags().PrintD(SrcLoc(), diag::err_opening_output,
                             diag::LLVMStr(outputFilename),
                             diag::LLVMStr(errCode.message()));
     return nullptr;

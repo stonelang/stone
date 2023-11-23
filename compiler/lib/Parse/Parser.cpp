@@ -15,8 +15,8 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, SyntaxListener *listener)
     : Parser(sf, sc,
              Safe<Lexer>(
                  new Lexer(sf.GetSrcID(), sc.GetSrcMgr(),
-                           &sc.GetLangContext().GetDiagUnit().GetDiagEngine(),
-                           &sc.GetLangContext().GetStatEngine())),
+                           &sc.GetLangContext().GetDiags(),
+                           &sc.GetLangContext().GetStats())),
              listener) {}
 
 Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
@@ -24,7 +24,7 @@ Parser::Parser(SyntaxFile &sf, SyntaxContext &sc, Safe<Lexer> lx,
     : sf(sf), sc(sc), lexer(lx.release()), curDC(&sf), listener(listener),
       parsingTok(*this), stats(new ParserStats(*this)) {
 
-  GetLangContext().GetStatEngine().Register(stats.get());
+  GetLangContext().GetStats().Register(stats.get());
 }
 
 Parser::~Parser() {}
@@ -182,7 +182,7 @@ Scope *Parser::CreateScope(ScopeKind kind, SyntaxContext &sc,
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return GetLangContext().GetDiagUnit().PrintD(loc, diagID);
+  return GetLangContext().GetDiags().PrintD(loc, diagID);
 }
 
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {

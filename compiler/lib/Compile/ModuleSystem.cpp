@@ -29,7 +29,7 @@ syn::ModuleDecl *ModuleSystem::GetMainModule() const {
     // Create and add the module's files.
     llvm::SmallVector<syn::ModuleFile *, 16> moduleFiles;
 
-    if (!CreateSyntaxFilesForMainModule(mainModule, moduleFiles).Has()) {
+    if (!CreateSyntaxFilesForMainModule(mainModule, moduleFiles).HasError()) {
       for (auto *moduleFile : moduleFiles)
         mainModule->AddFile(*moduleFile);
     } else {

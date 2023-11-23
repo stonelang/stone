@@ -12,7 +12,7 @@ Job::Job(const Phase &phase, LangContext &ctx,
       inputs(std::move(inputs)), outputFileType(outputFileType) {
 
   stats = std::make_unique<JobStats>(*this);
-  ctx.GetStatEngine().Register(stats.get());
+  ctx.GetStats().Register(stats.get());
 }
 
 Job::~Job() {}

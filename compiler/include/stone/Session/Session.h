@@ -89,7 +89,7 @@ public:
   llvm::Timer &GetTimer() { return *timer.get(); }
   llvm::StringRef GetProgramName() const { return programName; }
   llvm::StringRef GetProgramPath() const { return programPath; }
-  bool HasError() { return GetLangContext().GetDiagUnit().HasError(); }
+  bool HasError() { return GetLangContext().GetDiags().HasError(); }
 
 public:
   llvm::StringRef ComputeWorkDir(const llvm::opt::InputArgList &ial);

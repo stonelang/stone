@@ -33,7 +33,7 @@ Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   assert(ial && "No input argument list.");
   // Check for missing argument error.
   if (missingArgCount) {
-    GetLangContext().GetDiagUnit().PrintD(
+    GetLangContext().GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
         diag::LLVMStr(ial->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
@@ -41,7 +41,7 @@ Session::ParseArgs(llvm::ArrayRef<const char *> args) {
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-    GetLangContext().GetDiagUnit().PrintD(
+    GetLangContext().GetDiags().PrintD(
         SrcLoc(), diag::err_unknown_arg, diag::LLVMStr(arg->getAsString(*ial)));
     return nullptr;
   }

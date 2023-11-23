@@ -174,9 +174,7 @@ public:
 
 public:
 
-Status Compile();
-
-Status Compile(ActionKind kind);
+Status Compile(ModeKind kind);
 
   /// Handles LLVM
 Status CompileForLLVMIR();
