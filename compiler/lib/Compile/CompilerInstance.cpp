@@ -105,6 +105,20 @@ void CompilerInstance::ForEachSyntaxFile(EachSyntaxFileCallback client) {
   }
 }
 
+// bool CompilerInstance::ForEachSyntaxFile(
+//     std::function<Status(SyntaxFile &)> notify) {
+//   for (auto moduleFile : GetMainModule()->GetFiles()) {
+//     auto *syntaxFile = llvm::dyn_cast<SyntaxFile>(moduleFile);
+//     if (!syntaxFile) {
+//       continue;
+//     }
+//     if (notify(*syntaxFile).IsError()) {
+//       return Status::Error();
+//     }
+//   }
+//   return Status();
+// }
+
 // CodeGenContext &CompilerInstance::GetCodeGenContext() { return *cgc; }
 
 void CompilerInstanceStats::Print(ColorStream &stream) {

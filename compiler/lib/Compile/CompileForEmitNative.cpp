@@ -8,7 +8,7 @@ Status CompilerInstance::CompileForGenerateIR(
 
   return Status();
 }
-Status CompilerInstance::CompileForEmitNative(CodeGenContext& codeGenContext) {
+Status CompilerInstance::CompileForEmitNative(CodeGenContext &codeGenContext) {
 
   // if (CompileForTypeCheck().IsError()) {
   //   return Status::Error();

@@ -303,6 +303,7 @@ Status CompilerInstance::Compile() {
 
 Status CompilerInstance::Compile(ModeKind kind) {
 
+  // CompilerStatScope
   return CompileForParseAnyMaybeResolveImports([&](SyntaxFile &syntaxFile) {
     switch (kind) {
     case ModeKind::Parse:
