@@ -165,12 +165,17 @@ public:
 
 public:
   Status Compile(ModeKind kind);
-
   /// Handles LLVM
   Status CompileForLLVMIR();
 
+  bool IsCompileForLLVMIR() {
+    GetInvocation().GetCompilerOptions().inputsAndOutputs.ShouldTreatAsLLVM();
+  }
+
   // Syntax
   Status CompileForParse(ModeKind modeKind);
+
+private:
   Status CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy);
   Status CompileForDumpSyntax(syn::SyntaxFile &syntaxFile);
   Status CompileForResolveImports(syn::SyntaxFile &syntaxFile);

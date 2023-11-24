@@ -298,10 +298,7 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-
-  if (GetInvocation()
-          .GetCompilerOptions()
-          .inputsAndOutputs.ShouldTreatAsLLVM()) {
+  if (IsCompileForLLVMIR()) {
     return CompileForLLVMIR();
   }
   return CompileForParse(invocation.GetMainMode().GetKind());
@@ -323,9 +320,8 @@ Status CompilerInstance::CompileForParse(ModeKind kind) {
       }).IsErrorOrHasCompletion()) {
     status.SetHasCompletionAndIsError();
     return status;
-  } else {
-    return CompileForTypeCheck(kind);
-  }
+  } 
+  return CompileForTypeCheck(kind);
 }
 
 Status CompilerInstance::CompileForParse(
@@ -348,14 +344,13 @@ Status CompilerInstance::CompileForTypeCheck(ModeKind kind) {
         case ModeKind::PrintSyntax:
           return CompileForPrintSyntax(syntaxFile);
         default:
-          Status();
+          return Status();
         }
       }).IsErrorOrHasCompletion()) {
     status.SetHasCompletionAndIsError();
     return status;
-  } else {
-    return CompileForGenerateIR(kind);
   }
+  return CompileForGenerateIR(kind);
 }
 
 Status CompilerInstance::CompileForTypeCheck(
@@ -376,10 +371,12 @@ Status CompilerInstance::CompileForGenerateIR(ModeKind kind) {
 
   if (CompileForGenerateIR([&](CodeGenContext &codeGenContext) {
         switch (kind) {
+        case ModeKind::EmitModule:
+          return Status();
         case ModeKind::EmitIRPre:
-          return Status();
+          return Status(); // Print it out
         case ModeKind::EmitIR:
-          return Status();
+          return Status(); // Print it out
         case ModeKind::MergeModules:
           return Status();
         default: {
@@ -389,9 +386,8 @@ Status CompilerInstance::CompileForGenerateIR(ModeKind kind) {
       }).IsErrorOrHasCompletion()) {
     status.SetHasCompletionAndIsError();
     return status;
-  } else {
-    return CompileForEmitNative(kind, codeGenContext);
   }
+  return CompileForEmitNative(kind, codeGenContext);
 }
 
 Status CompilerInstance::CompileForGenerateIR(
@@ -410,5 +406,8 @@ Status CompilerInstance::CompileForEmitNative(ModeKind kind,
   //   llvm_unreachable("Invalid mode!");
   // }
   // }
+
+  // TryFreeASTContext();
+
   return Status();
 }
