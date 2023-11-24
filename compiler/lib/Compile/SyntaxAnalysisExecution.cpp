@@ -40,8 +40,7 @@ Status SyntaxAnalysisExecution::ExecuteParse(
 }
 
 Status SyntaxAnalysisExecution::ExecuteDumpAST() {
-  CompilerStatisticTracer tracer(compiler.GetStatistics(),
-                                 "Executing ast dumping");
+  //CompilerStatisticTracer tracer(compiler.GetStatistics(), "Executing ast dumping");
 
   return ExecuteParse([&](SourceFile &sourceFile) {
     stone::DumpSourceFile(sourceFile, compiler.GetASTContext());

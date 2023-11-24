@@ -20,13 +20,10 @@ using AccessLevelCheckingOptions =
     stone::OptionSet<AccessLevelCheckingFlags::ID>;
 
 class AccessLevelCheckingBase {
-
 protected:
   TypeChecker &checker;
-
 public:
   AccessLevelCheckingBase(TypeChecker &checker) : checker(checker) {}
-
 public:
   AccessLevelCheckingOptions flags;
 
@@ -79,7 +76,6 @@ public:
 };
 
 void TypeChecker::CheckAccessLevel(Decl *d) {
-
   // if (llvm::isa<ValueDecl>(d)) {
   //   sem::CheckAccessLevel(d)
   // }

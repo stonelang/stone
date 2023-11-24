@@ -16,13 +16,14 @@ public:
 
 public:
   void Visit(Decl *d) {
-
     DeclVisitor<DeclChecking>::Visit(d);
     checker.CheckTypes(d);
   }
-
 public:
-  void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
+  void VisitFunDecl(FunDecl *funDecl) { 
+
+    checker.CheckAccessLevel(funDecl);
+  }
 
   void VisitImportDecl(ImportDecl *importDecl) {}
   void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}

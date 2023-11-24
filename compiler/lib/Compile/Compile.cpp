@@ -48,7 +48,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
       return FinishCompile(Status::Error());
     }
   }
-
   // Now, setup the compiler
   if (compiler.Setup().IsError()) {
     return FinishCompile(Status::Error());

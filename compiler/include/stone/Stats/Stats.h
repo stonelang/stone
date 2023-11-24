@@ -101,7 +101,6 @@ public:
 public:
   void SaveCompilerStatistic(const StatisticTracer &tracer,
                              bool isEntry = false);
-
 public:
   DriverCounters &GetDriverCounters();
   CompilerCounters &GetCompilerCounters();
