@@ -41,6 +41,16 @@ using EachSyntaxFileCallback = llvm::function_ref<void(
 //     CompilerInvocation&invocation, CodeGenContext &cgc, IRCodeGenResult
 //     &result)>;
 
+class CompilerStatus {
+public:
+  enum State : unsigned {
+    Panic = 0,
+    Continue,
+  };
+  State state;
+  Status status;
+};
+
 class CompilerInstance final {
   Safe<CompilerInstanceStats> stats;
 
@@ -176,7 +186,8 @@ public:
   Status CompileForParse(ModeKind modeKind);
 
 private:
-  Status CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy);
+  Status CompileForParse(
+      std::function<Status(syn::SyntaxFile &, Status status)> notifiy);
   Status CompileForDumpSyntax(syn::SyntaxFile &syntaxFile);
   Status CompileForResolveImports(syn::SyntaxFile &syntaxFile);
 

@@ -305,28 +305,44 @@ Status CompilerInstance::Compile() {
 }
 
 Status CompilerInstance::CompileForParse(ModeKind kind) {
-  Status status;
-  if (CompileForParse([&](SyntaxFile &syntaxFile) {
-        switch (kind) {
-        case ModeKind::Parse:
-          return Status();
-        case ModeKind::ResolveImports:
-          return CompileForResolveImports(syntaxFile);
-        case ModeKind::DumpSyntax:
-          return CompileForDumpSyntax(syntaxFile);
-        default:
-          return Status();
-        }
-      }).IsErrorOrHasCompletion()) {
-    status.SetHasCompletionAndIsError();
-    return status;
-  } 
-  return CompileForTypeCheck(kind);
+
+  return CompileForParse([&](SyntaxFile &syntaxFile, Status status) {
+    if (status.IsError()) {
+      return status;
+    }
+    // switch (kind) {
+    // case ModeKind::Parse: {
+    //   return Status();
+    // }
+    // case ModeKind::ResolveImports: {
+    //   return CompileForResolveImports(syntaxFile);
+    // }
+    // case ModeKind::DumpSyntax: {
+    //   return CompileForDumpSyntax(syntaxFile);
+    // }
+    // default: {
+    //   if (status.HasCompletion()) {
+    //     return CompileForTypeCheck(kind);
+    //   }
+    //   return Status();
+    // }
+    // }
+  });
 }
 
 Status CompilerInstance::CompileForParse(
-    std::function<Status(syn::SyntaxFile &)> notifiy) {
+    std::function<Status(syn::SyntaxFile &syntaxFile, Status status)> notifiy) {
 
+  // for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+  //   if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+  //     stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+  //                            invocation.GetListener());
+  //     // If there are no errors
+  //     if (notifiy(*syntaxFile, Status()).IsError()) {
+  //       return Status::Error();
+  //     }
+  //   }
+  // }
   return Status();
 }
 

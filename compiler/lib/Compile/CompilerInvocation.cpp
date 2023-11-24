@@ -225,10 +225,12 @@ void CompilerInvocation::RecordPrimarySourceID(unsigned primarySourceID) {
 Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
                                      const char *arg0) {
   // Setup the clang diagnostics
-  clang::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
       new clang::DiagnosticIDs());
-  IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
+
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
       new clang::DiagnosticOptions();
+
   clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
   clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
 
