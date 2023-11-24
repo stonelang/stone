@@ -14,6 +14,7 @@ set(stone_compile_sources
   FallbackExecution.cpp
   
   LINK_LIBS
+  StoneStats
   StoneGen
   StoneParse
   StoneSem

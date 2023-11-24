@@ -13,7 +13,8 @@
 using namespace stone;
 
 Compiler::Compiler()
-    : invocation(*this), fileMgr(invocation.GetFileSystemOptions()) {}
+    : invocation(*this), fileMgr(invocation.GetFileSystemOptions()),
+      statistics(new SystemStatisticEngine()) {}
 
 Status Compiler::Setup() {
 

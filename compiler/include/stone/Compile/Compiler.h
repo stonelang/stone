@@ -5,6 +5,7 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Stats/Stats.h"
 
 #include <deque>
 
@@ -28,6 +29,8 @@ class Compiler final {
   std::vector<unsigned> inputSourceBufferIDList;
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
+
+  std::unique_ptr<SystemStatisticEngine> statistics;
 
 public:
   Compiler(const Compiler &) = delete;
@@ -126,6 +129,8 @@ public:
   void FreeASTContext();
   bool ShouldSetupASTContext();
   Status SetupASTContext();
+
+  SystemStatisticEngine &GetStatistics() { return *statistics; }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

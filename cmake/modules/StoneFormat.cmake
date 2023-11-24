@@ -7,6 +7,7 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/Gen/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Parse/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Sem/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Stats/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Option/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Syntax/*.h
 	
@@ -19,6 +20,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Gen/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Parse/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Sem/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Stats/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Option/*.cpp		
 	${STONE_SOURCE_DIR}/compiler/lib/Syntax/*.cpp
 )
