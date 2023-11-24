@@ -2,55 +2,55 @@
 
 using namespace stone;
 
-/// Handles only syntax
-Status CompilerInstance::CompileForSyntaxAnalysis() {}
+// /// Handles only syntax
+// Status CompilerInstance::CompileForSyntaxAnalysis() {}
 
-/// Handles only syntax
-Status CompilerInstance::CompileForParse(
-    std::function<Status(syn::SyntaxFile &)> notify) {
+// /// Handles only syntax
+// Status CompilerInstance::CompileForParse(
+//     std::function<Status(syn::SyntaxFile &)> notify) {
 
-  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
-                             invocation.GetListener());
-      if (notify) {
-        if (notify(*syntaxFile).IsError()) {
-          return Status::Error();
-        }
-      }
-    }
-  }
-  return Status();
-}
+//   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+//     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+//       stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+//                              invocation.GetListener());
+//       if (notify) {
+//         if (notify(*syntaxFile).IsError()) {
+//           return Status::Error();
+//         }
+//       }
+//     }
+//   }
+//   return Status();
+// }
 
-Status CompilerInstance::CompileForParseAnyMaybeResolveImports(
-    std::function<Status(syn::SyntaxFile &)> notify) {
+// Status CompilerInstance::CompileForParseAnyMaybeResolveImports(
+//     std::function<Status(syn::SyntaxFile &)> notify) {
 
-  for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
-    if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
-      stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
-                             invocation.GetListener());
-      if (notify) {
-        if (notify(*syntaxFile).IsError()) {
-          return Status::Error();
-        }
-      }
-    }
-  }
-  return Status();
-}
+//   for (auto moduleFile : GetModuleSystem().GetMainModule()->GetFiles()) {
+//     if (auto *syntaxFile = llvm::dyn_cast<syn::SyntaxFile>(moduleFile)) {
+//       stone::ParseSyntaxFile(*syntaxFile, GetSyntaxContext(),
+//                              invocation.GetListener());
+//       if (notify) {
+//         if (notify(*syntaxFile).IsError()) {
+//           return Status::Error();
+//         }
+//       }
+//     }
+//   }
+//   return Status();
+// }
 
-/// Handles only syntax
-Status CompilerInstance::CompileForDumpAST() {
+// /// Handles only syntax
+// Status CompilerInstance::CompileForDumpAST() {
 
-  // CompilerForParse();
-  return Status();
-}
+//   // CompilerForParse();
+//   return Status();
+// }
 
-/// Handles only syntax
-Status CompilerInstance::CompileForResolveImports() {
+// /// Handles only syntax
+// Status CompilerInstance::CompileForResolveImports() {
 
-  // CompilerForParse();
+//   // CompilerForParse();
 
-  return Status();
-}
+//   return Status();
+// }

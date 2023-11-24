@@ -298,50 +298,117 @@ Status CompilerInstance::Compile() {
   if (GetInvocation().GetListener()) {
     GetInvocation().GetListener()->OnCompileStarted(*this);
   }
-  return Compile(invocation.GetMainMode().GetKind());
+
+  if (GetInvocation()
+          .GetCompilerOptions()
+          .inputsAndOutputs.ShouldTreatAsLLVM()) {
+    return CompileForLLVMIR();
+  }
+  return CompileForParse(invocation.GetMainMode().GetKind());
 }
 
-Status CompilerInstance::Compile(ModeKind kind) {
+Status CompilerInstance::CompileForParse(ModeKind kind) {
+  Status status;
+  if (CompileForParse([&](SyntaxFile &syntaxFile) {
+        switch (kind) {
+        case ModeKind::Parse:
+          return Status();
+        case ModeKind::ResolveImports:
+          return CompileForResolveImports(syntaxFile);
+        case ModeKind::DumpSyntax:
+          return CompileForDumpSyntax(syntaxFile);
+        default:
+          return Status();
+        }
+      }).IsErrorOrHasCompletion()) {
+    status.SetHasCompletionAndIsError();
+    return status;
+  } else {
+    return CompileForTypeCheck(kind);
+  }
+}
 
-  // CompilerStatScope
-  return CompileForParseAnyMaybeResolveImports([&](SyntaxFile &syntaxFile) {
-    switch (kind) {
-    case ModeKind::Parse:
-    case ModeKind::ResolveImports:
-      return Status();
-    case ModeKind::DumpSyntax:
-      return Status();
-    default: {
-      return CompileForTypeCheck([&](SyntaxFile &syntaxFile) {
+Status CompilerInstance::CompileForParse(
+    std::function<Status(syn::SyntaxFile &)> notifiy) {
+
+  return Status();
+}
+
+Status CompilerInstance::CompileForDumpSyntax(syn::SyntaxFile &syntaxFile) {}
+
+Status CompilerInstance::CompileForResolveImports(syn::SyntaxFile &syntaxFile) {
+}
+
+Status CompilerInstance::CompileForTypeCheck(ModeKind kind) {
+  Status status;
+  if (CompileForTypeCheck([&](SyntaxFile &syntaxFile) {
         switch (kind) {
         case ModeKind::TypeCheck:
           return Status();
         case ModeKind::PrintSyntax:
+          return CompileForPrintSyntax(syntaxFile);
+        default:
+          Status();
+        }
+      }).IsErrorOrHasCompletion()) {
+    status.SetHasCompletionAndIsError();
+    return status;
+  } else {
+    return CompileForGenerateIR(kind);
+  }
+}
+
+Status CompilerInstance::CompileForTypeCheck(
+    std::function<Status(syn::SyntaxFile &)> notifiy) {
+
+  return Status();
+}
+
+Status CompilerInstance::CompileForPrintSyntax(syn::SyntaxFile &syntaxFile) {}
+
+Status CompilerInstance::CompileForGenerateIR(ModeKind kind) {
+
+  Status status;
+  CodeGenContext codeGenContext(
+      GetInvocation().GetCodeGenOptions(), GetInvocation().GetModuleOptions(),
+      GetInvocation().GetTargetOptions(), GetInvocation().GetLangContext(),
+      GetInvocation().GetClangContext());
+
+  if (CompileForGenerateIR([&](CodeGenContext &codeGenContext) {
+        switch (kind) {
+        case ModeKind::EmitIRPre:
+          return Status();
+        case ModeKind::EmitIR:
+          return Status();
+        case ModeKind::MergeModules:
           return Status();
         default: {
-          return CompileForGenerateIR([&](CodeGenContext &codeGenContext) {
-            switch (kind) {
-            case ModeKind::EmitIRPre:
-              return Status();
-            case ModeKind::EmitIR:
-              return Status();
-            case ModeKind::MergeModules:
-              return Status();
-            case ModeKind::EmitBC:
-            case ModeKind::EmitObject:
-            case ModeKind::EmitLibrary:
-            case ModeKind::EmitModule:
-            case ModeKind::EmitAssembly:
-              return CompileForEmitNative(codeGenContext);
-            default: {
-              llvm_unreachable("Invalid mode!");
-            }
-            }
-          });
+          return Status();
         }
         }
-      });
-    }
-    }
-  });
+      }).IsErrorOrHasCompletion()) {
+    status.SetHasCompletionAndIsError();
+    return status;
+  } else {
+    return CompileForEmitNative(kind, codeGenContext);
+  }
+}
+
+Status CompilerInstance::CompileForGenerateIR(
+    std::function<Status(CodeGenContext &)> notifiy) {}
+
+Status CompilerInstance::CompileForEmitNative(ModeKind kind,
+                                              CodeGenContext &codeGenContext) {
+  // switch (kind) {
+  // case ModeKind::EmitBC:
+  // case ModeKind::EmitObject:
+  // case ModeKind::EmitLibrary:
+  // case ModeKind::EmitModule:
+  // case ModeKind::EmitAssembly:
+  //   return CompileForEmitNative(codeGenContext);
+  // default: {
+  //   llvm_unreachable("Invalid mode!");
+  // }
+  // }
+  return Status();
 }

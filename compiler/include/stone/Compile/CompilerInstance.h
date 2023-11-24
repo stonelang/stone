@@ -169,38 +169,23 @@ public:
   /// Handles LLVM
   Status CompileForLLVMIR();
 
-  /// Handles only syntax
-  Status
-  CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
+  // Syntax
+  Status CompileForParse(ModeKind modeKind);
+  Status CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy);
+  Status CompileForDumpSyntax(syn::SyntaxFile &syntaxFile);
+  Status CompileForResolveImports(syn::SyntaxFile &syntaxFile);
 
-  Status CompileForParseAnyMaybeResolveImports(
-      std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
+  // Semantics
+  Status CompileForTypeCheck(ModeKind modeKind);
+  Status CompileForTypeCheck(std::function<Status(syn::SyntaxFile &)> notifiy);
+  Status CompileForPrintSyntax(syn::SyntaxFile &syntaxFile);
 
-  /// Handles only syntax
-  Status CompileForDumpAST();
-
-  /// Handles only syntax
-  Status CompileForResolveImports();
-
-  /// Handles only syntax
-  Status CompileForSyntaxAnalysis();
-
-  /// Handles semantics
-  Status CompileForTypeCheck(
-      std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
-
-  /// Handles semantics
-  Status CompileForPrintAST();
-
-  /// Handles only syntax
-  Status CompileForSemanticAnalysis();
-
-  /// Handles semantics
-  Status CompileForGenerateIR(
-      std::function<Status(CodeGenContext &)> notifiy = nullptr);
+  //
+  Status CompileForGenerateIR(ModeKind kind);
+  Status CompileForGenerateIR(std::function<Status(CodeGenContext &)> notifiy);
 
   /// Handles code generating
-  Status CompileForEmitNative(CodeGenContext &codeGenContext);
+  Status CompileForEmitNative(ModeKind kind, CodeGenContext &codeGenContext);
 };
 
 } // namespace stone
