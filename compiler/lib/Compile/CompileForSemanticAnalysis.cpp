@@ -19,7 +19,6 @@ Status CompilerInstance::CompileForTypeCheck(
 
   // });
 
-
   return Status();
 }
 

@@ -303,29 +303,44 @@ Status CompilerInstance::Compile() {
 
 Status CompilerInstance::Compile(ModeKind kind) {
 
-  switch (kind) {
-  case ModeKind::Parse:
-    return CompileForParse();
-  case ModeKind::ResolveImports:
-    return CompileForResolveImports();
-  case ModeKind::DumpSyntax:
-    return CompileForDumpAST();
-  case ModeKind::TypeCheck:
-    return CompileForTypeCheck();
-  case ModeKind::PrintSyntax:
-    return CompileForPrintAST();
-  case ModeKind::PrintIR:
-    // return CompileForPrintIR();
-  case ModeKind::EmitIRPre:
-  case ModeKind::EmitIR:
-  case ModeKind::EmitBC:
-  case ModeKind::EmitObject:
-  case ModeKind::EmitLibrary:
-  case ModeKind::EmitModule:
-  case ModeKind::EmitAssembly:
-  case ModeKind::MergeModules:
-    return CompileForEmitCode();
-  default:
-    llvm_unreachable("Invalid mode!");
-  }
+  return CompileForParseAnyMaybeResolveImports([&](SyntaxFile &syntaxFile) {
+    switch (kind) {
+    case ModeKind::Parse:
+    case ModeKind::ResolveImports:
+      return Status();
+    case ModeKind::DumpSyntax:
+      return Status();
+    default: {
+      return CompileForTypeCheck([&](SyntaxFile &syntaxFile) {
+        switch (kind) {
+        case ModeKind::TypeCheck:
+          return Status();
+        case ModeKind::PrintSyntax:
+          return Status();
+        default: {
+          return CompileForGenerateIR([&](CodeGenContext &codeGenContext) {
+            switch (kind) {
+            case ModeKind::EmitIRPre:
+              return Status();
+            case ModeKind::EmitIR:
+              return Status();
+            case ModeKind::MergeModules:
+              return Status();
+            case ModeKind::EmitBC:
+            case ModeKind::EmitObject:
+            case ModeKind::EmitLibrary:
+            case ModeKind::EmitModule:
+            case ModeKind::EmitAssembly:
+              return CompileForEmitNative(codeGenContext);
+            default: {
+              llvm_unreachable("Invalid mode!");
+            }
+            }
+          });
+        }
+        }
+      });
+    }
+    }
+  });
 }

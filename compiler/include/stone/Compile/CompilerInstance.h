@@ -173,6 +173,9 @@ public:
   Status
   CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
 
+  Status CompileForParseAnyMaybeResolveImports(
+      std::function<Status(syn::SyntaxFile &)> notifiy = nullptr);
+
   /// Handles only syntax
   Status CompileForDumpAST();
 
@@ -192,8 +195,12 @@ public:
   /// Handles only syntax
   Status CompileForSemanticAnalysis();
 
+  /// Handles semantics
+  Status CompileForGenerateIR(
+      std::function<Status(CodeGenContext &)> notifiy = nullptr);
+
   /// Handles code generating
-  Status CompileForEmitCode();
+  Status CompileForEmitNative(CodeGenContext &codeGenContext);
 };
 
 } // namespace stone
