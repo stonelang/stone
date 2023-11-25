@@ -47,7 +47,6 @@ static Status ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
   return Status();
 }
 
-
 static Optional<llvm::CodeModel::Model>
 GetCodeModel(const CodeGenOptions &codeGenOpts) {
 
@@ -175,20 +174,19 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
           .IsError()) {
     return Status::Error();
   }
-  if (compiler.GetInvocation().ShouldSetupClang()) {
+  if (compiler.GetInvocation().CanGenCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (compiler.GetInvocation()
             .SetupClang("-cc1", GetCompilerOptions().mainExecutablePath.data())
             .IsError()) {
       return Status::Error();
     }
+    if (ParseTargetOptions(*compilerInputArgList, compilerOpts, codeGenOpts,
+                           langOpts, GetClangContext(), compiler.GetDiags())
+            .IsError()) {
+      return Status::Error();
+    }
   }
-  if (ParseTargetOptions(*compilerInputArgList, compilerOpts, codeGenOpts,
-                         langOpts, GetClangContext(), compiler.GetDiags())
-          .IsError()) {
-    return Status::Error();
-  }
-
   return Status();
 }
 
@@ -218,7 +216,7 @@ CompilerInvocation::GetPrimaryFileSpecificPathsForSyntaxFile(
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
 }
 
-bool CompilerInvocation::ShouldSetupClang() {
+bool CompilerInvocation::CanGenCode() {
   return GetMainAction().IsAny(ActionKind::EmitIRBefore,
                                ActionKind::EmitIRAfter, ActionKind::EmitBC,
                                ActionKind::EmitAssembly, ActionKind::EmitObject,

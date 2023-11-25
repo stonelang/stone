@@ -28,8 +28,7 @@ set(stone_gen_sources
 	IRCodeGenMetadata.cpp
 	IRCodeGenTypeResolver.cpp
 	OptimizeIR.cpp
-	TargetMachine.cpp
-	
+
 	LINK_LIBS
 	StoneSyntax
 )

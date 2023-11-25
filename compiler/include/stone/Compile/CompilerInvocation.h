@@ -117,8 +117,7 @@ public:
   void SetTargetTriple(llvm::StringRef triple);
 
 public:
-  // Returning true for now but this will be based on the action
-  bool ShouldSetupClang();
+  bool CanGenCode();
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
   ClangContext &GetClangContext() { return *clangContext; }
 
