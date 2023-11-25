@@ -16,10 +16,12 @@ class SourceFile;
 class CodeGenContext;
 
 class CompilerExecution {
+  Compiler &compiler;
+
 protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
-  Compiler &compiler;
+
   ActionKind currentAction;
 
 public:
@@ -43,6 +45,7 @@ protected:
   ActionKind GetExecutionAction() {
     return IsMainAction() ? GetMainAction() : GetCurrentAction();
   }
+  Compiler &GetCompiler() { return compiler; }
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -124,8 +127,12 @@ public:
 };
 
 class IRGeneration {
-protected:
+
+  // NOTE: This is private b.c. it will conflict with the identifier in
+  // CompilerExecution
   Compiler &compiler;
+
+protected:
   llvm::GlobalVariable *hashGlobal;
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<CodeGenContext> codeGenContext;

@@ -12,8 +12,8 @@ ParseOnlyExecution::ParseOnlyExecution(Compiler &compiler,
 Status ParseOnlyExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::Parse);
-  compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    stone::ParseSourceFile(sourceFile, compiler.GetASTContext(), nullptr,
+  GetCompiler().ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    stone::ParseSourceFile(sourceFile, GetCompiler().GetASTContext(), nullptr,
                            nullptr);
     return Status();
   });

@@ -10,9 +10,10 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler,
 Status TypeCheckExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::TypeCheck);
-  compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(
-        sourceFile, compiler.GetInvocation().GetTypeCheckerOptions(), nullptr);
+        sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions(),
+        nullptr);
     return Status();
   });
   return Status();
@@ -24,8 +25,8 @@ PrintASTExecution::PrintASTExecution(Compiler &compiler,
 
 Status PrintASTExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::PrintAST);
-  compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    stone::PrintSourceFile(sourceFile, compiler.GetASTContext());
+  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    stone::PrintSourceFile(sourceFile, GetCompiler().GetASTContext());
     return Status();
   });
   return Status();

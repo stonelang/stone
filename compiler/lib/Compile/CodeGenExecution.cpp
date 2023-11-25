@@ -30,7 +30,8 @@ Status IRGeneration::GenerateIR() {
 }
 
 Status IRGeneration::GenForSourceFile() {
-  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget == IRCodeGenTarget::SoureFile);
+  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget ==
+         IRCodeGenTarget::SoureFile);
   for (auto *primarySyntaxFile : compiler.GetPrimarySourceFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
@@ -42,7 +43,8 @@ Status IRGeneration::GenForSourceFile() {
   return Status();
 }
 Status IRGeneration::GenForWholeModule() {
-  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget == IRCodeGenTarget::WholeModule);
+  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget ==
+         IRCodeGenTarget::WholeModule);
   auto *mainModule = compiler.GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
       compiler.GetInvocation()
@@ -86,7 +88,7 @@ Status CodeGenExecution::Execute() {
   if (GenerateIR().IsError()) {
     return Status::Error();
   }
-  // compiler.TryFreeASTContext();
+  GetCompiler().TryFreeASTContext();
 
   return Status();
 }
