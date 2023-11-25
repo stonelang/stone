@@ -34,6 +34,17 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     compiler.GetDiags().PrintD(diag::err_no_compile_args);
     return FinishCompile(Status::Error());
   }
+
+  //  ../../stone-compile
+  auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  compiler.GetInvocation().GetCompilerOptions().mainExecutablePath =
+      mainExecutablePath;
+
+  // stone-compile
+  auto mainExecutableName = file::GetStem(mainExecutablePath);
+  compiler.GetInvocation().GetCompilerOptions().mainExecutableName =
+      mainExecutableName;
+
   auto status = compiler.GetInvocation().ParseCommandLine(args);
   if (status.IsError()) {
     return FinishCompile(Status::Error());
@@ -43,12 +54,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     FinishCompile(Status::Error());
   }
 
-  if (compiler.GetInvocation().ShouldSetupClang()) {
-    // We are just hard coding -cc1 for now
-    if (compiler.GetInvocation().SetupClang("-cc1", arg0).IsError()) {
-      return FinishCompile(Status::Error());
-    }
-  }
   // Now, setup the compiler
   if (compiler.Setup().IsError()) {
     return FinishCompile(Status::Error());

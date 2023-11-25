@@ -40,6 +40,100 @@ static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
   return converter.Convert(buffers);
 }
 
+static Status ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
+                                      CompilerOptions &compilerOpts,
+                                      TypeCheckerOptions &typeCheckerOpts,
+                                      DiagnosticEngine &de) {
+  return Status();
+}
+
+
+static Optional<llvm::CodeModel::Model>
+GetCodeModel(const CodeGenOptions &codeGenOpts) {
+
+  unsigned codeModel = llvm::StringSwitch<unsigned>(codeGenOpts.codeModel)
+                           .Case("tiny", llvm::CodeModel::Tiny)
+                           .Case("small", llvm::CodeModel::Small)
+                           .Case("kernel", llvm::CodeModel::Kernel)
+                           .Case("medium", llvm::CodeModel::Medium)
+                           .Case("large", llvm::CodeModel::Large)
+                           .Case("default", ~1u)
+                           .Default(~0u);
+  assert(codeModel != ~0u && "invalid code model!");
+  if (codeModel == ~1u) {
+    return llvm::None;
+  }
+  return static_cast<llvm::CodeModel::Model>(codeModel);
+}
+
+// TODO: cleanup
+static llvm::CodeGenOpt::Level
+GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
+  switch (codeGenOpts.optimizationLevel) {
+  default:
+    llvm_unreachable("Invalid optimization level!");
+  case OptimizationLevel::None:
+    return llvm::CodeGenOpt::None;
+  case OptimizationLevel::Less:
+    return llvm::CodeGenOpt::Less;
+  case OptimizationLevel::Default:
+    return llvm::CodeGenOpt::Default;
+  case OptimizationLevel::Aggressive:
+    return llvm::CodeGenOpt::Aggressive;
+  }
+}
+IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
+                                          const LangOptions &langOpts,
+                                          ClangContext &clangContext) {
+  llvm::TargetOptions llvmTargetOpts;
+  // Explicitly request debugger tuning for LLDB which is the default
+  // on Darwin platforms but not on others.
+  llvmTargetOpts.DebuggerTuning = llvm::DebuggerKind::LLDB;
+  llvmTargetOpts.FunctionSections = codeGenOpts.functionSections;
+
+  switch (langOpts.threadModelKind) {
+  case LangOptions::ThreadModelKind::POSIX:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::POSIX;
+    break;
+  case LangOptions::ThreadModelKind::Single:
+    llvmTargetOpts.ThreadModel = llvm::ThreadModel::Single;
+    break;
+  }
+  // Set float ABI type.
+  // assert((CodeGenOpts.FloatABI == "soft" || CodeGenOpts.FloatABI == "softfp"
+  // ||
+  //         CodeGenOpts.FloatABI == "hard" || CodeGenOpts.FloatABI.empty()) &&
+  //        "Invalid Floating Point ABI!");
+  // Options.FloatABIType =
+  //     llvm::StringSwitch<llvm::FloatABI::ABIType>(CodeGenOpts.FloatABI)
+  //         .Case("soft", llvm::FloatABI::Soft)
+  //         .Case("softfp", llvm::FloatABI::Soft)
+  //         .Case("hard", llvm::FloatABI::Hard)
+  //         .Default(llvm::FloatABI::Default);
+
+  clang::TargetOptions &clangTargetOpts =
+      clangContext.GetInstance().getTarget().getTargetOpts();
+  return std::make_tuple(llvmTargetOpts, clangTargetOpts.CPU,
+                         clangTargetOpts.Features, clangTargetOpts.Triple);
+}
+static Status
+ParseTargetOptions(llvm::opt::InputArgList &ial, CompilerOptions &compilerOpts,
+                   CodeGenOptions &codeGenOpts, LangOptions &langOpts,
+                   ClangContext &clangContext, DiagnosticEngine &de) {
+
+  // tie the values to CodeGenOptions
+  std::tie(codeGenOpts.llvmTargetOpts, codeGenOpts.targetCPU,
+           codeGenOpts.targetFeatures, codeGenOpts.effectiveClangTriple) =
+      stone::GetIRTargetOptions(codeGenOpts, langOpts, clangContext);
+
+  //   if (clangContext.GetInstance().getLangOpts().PointerAuthCalls) {
+  //     SetPointerAuthOptions(const_cast<CodeGenOptions
+  //     &>(codeGenOpts).pointerAuth,
+  //                            cc.GetInstance().getCodeGenOpts().PointerAuth);
+  //   }
+  return Status();
+}
+
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
@@ -72,18 +166,30 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     // errors
     return Status::Error();
   }
-
   if (compiler.GetDiags().HasError()) {
     return Status::Error();
   }
-  auto status = ParseCompilerOptions(
-      *compilerInputArgList, langOpts, compilerOpts, compiler.GetDiags(),
-      nullptr); // TODO: Pass MemoryBuffers in ParseCommandLine
-
-  if (status.IsError()) {
-    status.SetHasCompletion();
+  // TODO: Pass MemoryBuffers in ParseCommandLine
+  if (ParseCompilerOptions(*compilerInputArgList, langOpts, compilerOpts,
+                           compiler.GetDiags(), nullptr)
+          .IsError()) {
+    return Status::Error();
   }
-  return status;
+  if (compiler.GetInvocation().ShouldSetupClang()) {
+    // TODO: hard coding -cc1 for now -- build out proper string.
+    if (compiler.GetInvocation()
+            .SetupClang("-cc1", GetCompilerOptions().mainExecutablePath.data())
+            .IsError()) {
+      return Status::Error();
+    }
+  }
+  if (ParseTargetOptions(*compilerInputArgList, compilerOpts, codeGenOpts,
+                         langOpts, GetClangContext(), compiler.GetDiags())
+          .IsError()) {
+    return Status::Error();
+  }
+
+  return Status();
 }
 
 const PrimaryFileSpecificPaths &

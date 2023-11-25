@@ -110,8 +110,10 @@ public:
 
   Status ForEachSourceFileToTypeCheck(
       std::function<Status(SourceFile &sourceFile)> notify);
+
   Status ForEachSourceFileInMainModule(
       std::function<Status(SourceFile &sourceFile)> notify);
+
   Status ForEachPrimarySourceFile(
       std::function<Status(SourceFile &sourceFile)> notify);
 
@@ -120,11 +122,9 @@ public:
 
   void SetUpIRCodeGenTarget() {
     if (IsCompileForWholeModule()) {
-      invocation.GetCodeGenOptions().irCodeGenTarget =
-          IRCodeGenTarget::WholeModule;
+      invocation.GetCodeGenOptions().isWholeModuleCompile = true;
     } else if (IsCompileForSourceFile()) {
-      invocation.GetCodeGenOptions().irCodeGenTarget =
-          IRCodeGenTarget::SoureFile;
+      invocation.GetCodeGenOptions().isWholeModuleCompile = false;
     } else {
       llvm_unreachable("Invalid IR code generation target!");
     }

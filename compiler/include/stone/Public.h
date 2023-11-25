@@ -214,6 +214,10 @@ void SerializeSourceFile(SourceFile &sourceFile);
 /// Returns true is successfull
 void SerializeModuleDecl(ModuleDecl &moduleDecl);
 
+// TargetOptions for IR generation
+IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
+                                   const LangOptions &langOpts,
+                                   ClangContext &clangContext);
 /// GenIR for the ModuleFile
 /// Returns true is successfull
 void GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
@@ -236,13 +240,11 @@ bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
 // Code generation
 namespace stone {
 
-IRTargetOptions GetIRTargetOptions(CodeGenContext &codeGenContext);
-
 /// Disable thumb-mode until debugger support is there.
 bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(CodeGenContext &codeGenContext);
+CreateTargetMachine(const CodeGenOptions &codeGenOpts);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);

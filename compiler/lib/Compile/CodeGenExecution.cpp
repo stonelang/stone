@@ -19,20 +19,26 @@ IRGeneration::IRGeneration(Compiler &compiler)
     : IRGeneration(compiler, std::make_unique<llvm::LLVMContext>()) {}
 
 Status IRGeneration::GenerateIR() {
-  switch (GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget) {
-  case IRCodeGenTarget::SoureFile:
-    return GenForSourceFile();
-  case IRCodeGenTarget::WholeModule:
+
+  if (GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile) {
     return GenForWholeModule();
-  default:
-    llvm_unreachable("Invalid IR generation kind -- only supports SourceFile "
-                     "or WholeModule");
+  } else {
+    return GenForSourceFile();
   }
+  //  switch (GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget) {
+  //  case IRCodeGenTarget::SoureFile:
+  //    return GenForSourceFile();
+  //  case IRCodeGenTarget::WholeModule:
+  //    return GenForWholeModule();
+  //  default:
+  //    llvm_unreachable("Invalid IR generation kind -- only supports SourceFile
+  //    "
+  //                     "or WholeModule");
+  //  }
 }
 
 Status IRGeneration::GenForSourceFile() {
-  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget ==
-         IRCodeGenTarget::SoureFile);
+  assert(!GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
   for (auto *primarySyntaxFile : compiler.GetPrimarySourceFiles()) {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
@@ -44,8 +50,7 @@ Status IRGeneration::GenForSourceFile() {
   return Status();
 }
 Status IRGeneration::GenForWholeModule() {
-  assert(GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget ==
-         IRCodeGenTarget::WholeModule);
+  assert(GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
   auto *mainModule = compiler.GetMainModule();
   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
       compiler.GetInvocation()

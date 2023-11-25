@@ -123,52 +123,51 @@ bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";
 }
 
-IRTargetOptions stone::GetIRTargetOptions(CodeGenContext &codeGenContext) {
-  llvm::TargetOptions TargetOpts;
-  clang::TargetOptions &ClangOpts = codeGenContext.GetClangContext()
-                                        .GetInstance()
-                                        .getTarget()
-                                        .getTargetOpts();
-  return std::make_tuple(TargetOpts, ClangOpts.CPU, ClangOpts.Features,
-                         ClangOpts.Triple);
-}
-
 std::unique_ptr<llvm::TargetMachine>
-stone::CreateTargetMachine(CodeGenContext &codeGenContext) {
+stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
 
-  llvm::TargetOptions TargetOpts;
-  std::string CPU;
-  std::string EffectiveClangTriple;
-  std::vector<std::string> targetFeaturesArray;
-  std::tie(TargetOpts, CPU, targetFeaturesArray, EffectiveClangTriple) =
-      GetIRTargetOptions(codeGenContext);
-  const llvm::Triple &EffectiveTriple = llvm::Triple(EffectiveClangTriple);
   std::string targetFeatures;
-
-  if (!targetFeaturesArray.empty()) {
+  if (!codeGenOpts.targetFeatures.empty()) {
     llvm::SubtargetFeatures features;
-    for (const std::string &feature : targetFeaturesArray)
-      if (!ShouldRemoveTargetFeature(feature)) {
+    for (const std::string &feature : codeGenOpts.targetFeatures)
+      if (!stone::ShouldRemoveTargetFeature(feature)) {
         features.AddFeature(feature);
       }
     targetFeatures = features.getString();
   }
+
+  const llvm::Triple &effectiveTriple =
+      llvm::Triple(codeGenOpts.effectiveClangTriple);
   std::string Error;
-  const llvm::Target *Target =
-      llvm::TargetRegistry::lookupTarget(EffectiveTriple.str(), Error);
-  if (!Target) {
+  const llvm::Target *target =
+      llvm::TargetRegistry::lookupTarget(effectiveTriple.str(), Error);
+  if (!target) {
     assert(false && "failed to create target!");
   }
-  // Using defaults for now.
-  llvm::Optional<llvm::CodeModel::Model> cmodel = llvm::None;
-  llvm::CodeGenOpt::Level OptLevel = llvm::CodeGenOpt::None;
 
-  // Create a target machine.
-  llvm::TargetMachine *TargetMachine = Target->createTargetMachine(
-      EffectiveTriple.str(), CPU, targetFeatures, TargetOpts, llvm::Reloc::PIC_,
-      cmodel, OptLevel);
-  if (!TargetMachine) {
+  llvm::CodeGenOpt::Level optLevel = codeGenOpts.ShouldOptimize()
+                                         ? llvm::CodeGenOpt::Default // -Os
+                                         : llvm::CodeGenOpt::None;
+
+  // // On Cygwin 64 bit, dlls are loaded above the max address for 32 bits.
+  // // This means that the default CodeModel causes generated code to segfault
+  // // when run.
+  llvm::Optional<llvm::CodeModel::Model> codeModel = llvm::None;
+  if (effectiveTriple.isArch64Bit() &&
+      effectiveTriple.isWindowsCygwinEnvironment()) {
+    codeModel = llvm::CodeModel::Large;
+  }
+  // TODO:
+  //  else {
+  //    codeModel = GetCodeModel(codeGenOpts);
+  //  }
+  llvm::TargetMachine *targetMachine = target->createTargetMachine(
+      effectiveTriple.str(), codeGenOpts.targetCPU, targetFeatures,
+      codeGenOpts.llvmTargetOpts, codeGenOpts.relocationModel, codeModel,
+      optLevel);
+
+  if (!targetMachine) {
     assert(false && "failed to create target machine!");
   }
-  return std::unique_ptr<llvm::TargetMachine>(TargetMachine);
+  return std::unique_ptr<llvm::TargetMachine>(targetMachine);
 }

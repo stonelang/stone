@@ -19,7 +19,7 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
     : genOpts(genOpts), moduleOpts(moduleOpts), targetOptions(targetOptions),
       astContext(astContext), clangContext(clangContext),
       llvmContext(llvmContext), outModuleHash(outModuleHash),
-      llvmTargetMachine(stone::CreateTargetMachine(*this)),
+      llvmTargetMachine(stone::CreateTargetMachine(genOpts)),
       llvmModule(new llvm::Module(moduleOpts.moduleName, llvmContext)) {}
 CodeGenContext::~CodeGenContext() {}
 

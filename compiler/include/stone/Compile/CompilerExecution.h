@@ -35,13 +35,16 @@ public:
   virtual Status Execute() = 0;
   Status Finish();
 
+private:
+  void SetDependencyStatus(Status status) { depStatus = status; }
+
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
   bool HasDependency() { return GetDependency() != ActionKind::None; }
-  void SetDependencyStatus(Status status) { depStatus = status; }
   Status GetDependencyStatus() { return depStatus; }
 
+protected:
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
   ActionKind GetMainAction();
   ActionKind GetCurrentAction() { return currentAction; }

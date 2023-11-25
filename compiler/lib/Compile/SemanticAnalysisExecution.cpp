@@ -27,10 +27,12 @@ PrintASTExecution::PrintASTExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status PrintASTExecution::Execute() {
+
   assert(GetExecutionAction() == ActionKind::PrintAST);
-  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    stone::PrintSourceFile(sourceFile, GetCompiler().GetASTContext());
-    return Status();
-  });
+
+  //  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+  //    stone::PrintSourceFile(sourceFile, GetCompiler().GetASTContext());
+  //    return Status();
+  //  });
   return Status();
 }

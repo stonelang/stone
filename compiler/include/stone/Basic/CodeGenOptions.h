@@ -63,11 +63,6 @@ enum class CodeGenOutputKind : uint8_t {
 
 enum class LibraryKind { Library = 0, Framework };
 
-enum class IRCodeGenTarget {
-  SoureFile = 0,
-  WholeModule,
-};
-
 class LinkLibrary final {
 private:
   std::string name;
@@ -142,7 +137,7 @@ public:
   /// The features the target supports.
   std::vector<std::string> targetFeatures;
 
-  IRCodeGenTarget irCodeGenTarget;
+  bool isWholeModuleCompile = false;
 
 public:
   bool ShouldOptimize() const {
