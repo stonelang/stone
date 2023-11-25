@@ -121,9 +121,5 @@ bool CompilerInvocation::ShouldSetupClang() {
 
 Status CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
                                       const char *arg0) {
-
-  if (clangContext->Setup(argv, arg0).IsError()) {
-    return Status::Error();
-  }
-  return Status();
+  return clangContext->Setup(argv, arg0);
 }

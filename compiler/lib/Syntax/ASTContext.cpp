@@ -79,15 +79,12 @@ Identifier ASTContext::GetRealModuleName(Identifier key,
       (option == ModuleAliasLookupOption::AliasFromRealName && value.second)) {
     return Identifier();
   }
-
   // Otherwise return the value found (whether the key is an alias or real name)
   return value.first;
 }
-
 size_t ASTContext::GetTotalMemUsed() const {
   return GetAllocator().getTotalMemory();
 }
-
 // llvm::BumpPtrAllocator &ASTContext::GetBumpAllocator() const {
 //   return internal.allocator;
 // }

@@ -6,12 +6,9 @@ using namespace stone;
 CompilerExecution::CompilerExecution(Compiler &compiler,
                                      ActionKind currentAction)
     : compiler(compiler), currentAction(currentAction) {
-
   assert(currentAction != ActionKind::Alien);
 }
-
 Status CompilerExecution::Setup() {
-
   if (GetDependency() == ActionKind::None) {
     return Status::Success();
   }
@@ -45,7 +42,6 @@ Compiler::GetExecutionForAction(ActionKind action) {
   }
   }
 }
-
 Status Compiler::ExecuteAction(ActionKind kind) {
   auto execution = GetExecutionForAction(kind);
   if (execution->Setup().IsError()) {

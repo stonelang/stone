@@ -34,13 +34,18 @@ ClangContext::ClangContext() : clangInstance(new clang::CompilerInstance()) {}
 
 Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
                            const char *arg0) {
-  // Setup the clang diagnostics
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagID(
+  
+  // Load the diagnostic IDs
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagIDs(
       new clang::DiagnosticIDs());
+
+  // Create options
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
       new clang::DiagnosticOptions();
-  clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
-  clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
+
+  clang::TextDiagnosticBuffer DiagBuffer;
+
+  clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, &DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
       GetInstance().getInvocation(), argv, Diags, arg0);
@@ -54,7 +59,7 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
     return Status::Error();
   }
 
-  DiagsBuffer->FlushDiagnostics(GetInstance().getDiagnostics());
+  DiagBuffer.FlushDiagnostics(GetInstance().getDiagnostics());
   if (!Success) {
     GetInstance().getDiagnosticClient().finish();
     return Status::Error();
@@ -63,7 +68,6 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
   if (GetInstance().getDiagnostics().hasErrorOccurred()) {
     return Status::Error();
   }
-
   // Set up the file and source managers, if needed.
   if (!GetInstance().hasFileManager()) {
     assert(GetInstance().createFileManager());
