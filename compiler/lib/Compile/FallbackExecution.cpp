@@ -15,10 +15,7 @@ Status FallbackExecution::Execute() {
   // We did not find a compiler action
   assert(GetMainAction() == ActionKind::None);
 
-  if (GetCompiler()
-          .GetInvocation()
-          .GetCompilerOptions()
-          .inputsAndOutputs.ShouldTreatAsLLVM()) {
+  if (GetCompiler().IsCompileForLLVMIR()) {
     return ExecuteCompileLLVMIR();
   }
   /// Perform anything that are no action related

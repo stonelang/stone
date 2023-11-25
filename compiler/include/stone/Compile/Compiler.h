@@ -129,7 +129,11 @@ public:
       llvm_unreachable("Invalid IR code generation target!");
     }
   }
-
+  bool IsCompileForLLVMIR() {
+    return GetInvocation()
+        .GetCompilerOptions()
+        .inputsAndOutputs.ShouldTreatAsLLVM();
+  }
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
   llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const {

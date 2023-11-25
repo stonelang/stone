@@ -12,7 +12,8 @@ IRGeneration::IRGeneration(Compiler &compiler,
           compiler.GetInvocation().GetCodeGenOptions(),
           compiler.GetInvocation().GetCompilerOptions().moduleOpts,
           compiler.GetInvocation().GetTargetOptions(), compiler.GetASTContext(),
-          compiler.GetInvocation().GetClangContext(), *llvmContext, nullptr)) {}
+          compiler.GetInvocation().GetClangContext(), GetLLVMContext(),
+          nullptr)) {}
 
 IRGeneration::IRGeneration(Compiler &compiler)
     : IRGeneration(compiler, std::make_unique<llvm::LLVMContext>()) {}

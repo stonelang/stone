@@ -127,9 +127,6 @@ public:
 };
 
 class IRGeneration {
-
-  // NOTE: This is private b.c. it will conflict with the identifier in
-  // CompilerExecution
   Compiler &compiler;
 
 protected:
