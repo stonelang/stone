@@ -46,10 +46,12 @@ Compiler::GetExecutionForAction(ActionKind action) {
   case ActionKind::EmitIRAfter:
     return std::make_unique<EmitIRAfterExecution>(*this, action);
   case ActionKind::EmitModule:
+    return std::make_unique<EmitModuleExecution>(*this, action);
   case ActionKind::EmitBC:
+    return std::make_unique<EmitBitCodeExecution>(*this, action);
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
-    return std::make_unique<CodeGenExecution>(*this, action);
+    return std::make_unique<EmitNativeExecution>(*this, action);
   default: {
     return std::make_unique<FallbackExecution>(*this, action);
   }

@@ -6,6 +6,9 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Stats/Stats.h"
+//
+// #include "llvm/Support/HashingOutputBackend.h"
+// #include "llvm/Support/VirtualOutputBackend.h"
 
 #include <deque>
 
@@ -31,6 +34,9 @@ class Compiler final {
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
   std::unique_ptr<SystemStatisticEngine> statistics;
+
+  /// Virtual OutputBackend.
+  // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
 
 public:
   Compiler(const Compiler &) = delete;

@@ -86,15 +86,31 @@ Status EmitIRAfterExecution::Execute() {
   return Status();
 }
 
-CodeGenExecution::CodeGenExecution(Compiler &compiler, ActionKind currentAction)
+EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
+                                           ActionKind currentAction)
     : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
 
-Status CodeGenExecution::Execute() {
+Status EmitBitCodeExecution::Execute() { return Status(); }
+
+EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
+                                         ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+
+Status EmitModuleExecution::Execute() { return Status(); }
+
+EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
+                                         ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+
+Status EmitNativeExecution::Execute() {
 
   if (GenerateIR().IsError()) {
     return Status::Error();
   }
   GetCompiler().TryFreeASTContext();
+
+  stone::GenNative(GetCodeGenContext(),
+                   GetCodeGenContext().GetModuleOptions().moduleName);
 
   return Status();
 }

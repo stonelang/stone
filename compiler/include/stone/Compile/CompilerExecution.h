@@ -159,6 +159,14 @@ protected:
   CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
 };
 
+class IROptimization {
+public:
+  IROptimization(Compiler &compiler);
+
+protected:
+  Status OptimizeIR();
+};
+
 // Generate IR, then print it.
 class EmitIRBeforeExecution final : public CompilerExecution,
                                     public IRGeneration {
@@ -181,22 +189,35 @@ public:
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-class CodeGenExecution : public CompilerExecution, public IRGeneration {
+class EmitBitCodeExecution final : public CompilerExecution,
+                                   public IRGeneration {
 public:
-  CodeGenExecution(Compiler &compiler, ActionKind currentAction);
+  EmitBitCodeExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-// class EmitModuleExecution final : public CodeGenExecution {
-// public:
-//   EmitModuleExecution(Compiler &compiler, ActionKind currentAction);
-//
-// public:
-//   Status Execute() override;
-// };
+class EmitModuleExecution final : public CompilerExecution, IRGeneration {
+public:
+  EmitModuleExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+
+public:
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+};
+
+class EmitNativeExecution : public CompilerExecution, public IRGeneration {
+public:
+  EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+};
 
 class FallbackExecution final : public CompilerExecution {
 

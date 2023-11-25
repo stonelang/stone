@@ -250,8 +250,7 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
-bool GenNative(CodeGenContext &cgc, ASTContext &context,
-               llvm::StringRef outputFilename,
+bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
@@ -269,9 +268,8 @@ bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
 /// \param TargetMachine target of code gen, required.
 /// \param OutputFilename Filename for output.
 
-bool GenNative(CodeGenContext &cgc, ASTContext &context,
-               llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
-               llvm::GlobalVariable *hashGlobal,
+bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
+               llvm::sys::Mutex *diagMutex, llvm::GlobalVariable *hashGlobal,
                CodeGenListener *listener = nullptr);
 
 /// Returns true is successfull

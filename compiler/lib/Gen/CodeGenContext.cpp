@@ -62,7 +62,7 @@ CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
   mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
 }
 
-CodeGenScope::~CodeGenScope() {}
+CodeGenScope::~CodeGenScope() { GetLegacyPassManager().run(*mod); }
 
 // TODO: Ok for now -- may move to IRCodeGenMoulde
 IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {

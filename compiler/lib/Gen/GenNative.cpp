@@ -102,12 +102,13 @@ static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
 static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
 
 /// Returns true is successfull
-bool stone::GenNative(CodeGenContext &cgc, ASTContext &context,
-                      llvm::StringRef outputFilename,
+bool stone::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                       CodeGenListener *listener) {
 
   CodeGenScope nativeScope(cgc.GetCodeGenOptions());
   // EmbedBitcode(mod, nativeScope);
+
+  llvm::Optional<llvm::raw_fd_ostream> outputStream;
 
   return true;
 }
@@ -118,8 +119,7 @@ bool stone::WriteEmptyOutputFiles(
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, ASTContext &sc,
-                      llvm::StringRef outputFilename,
+bool stone::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                       llvm::sys::Mutex *diagMutex,
                       llvm::GlobalVariable *hashGlobal,
                       CodeGenListener *listener) {

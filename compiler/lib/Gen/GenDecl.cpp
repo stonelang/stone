@@ -23,7 +23,6 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
     return;
   }
 }
-
 // void IRCodeGenModule::EmitGlobalDecl(GlobalDecl *gd) {}
 
 namespace {

@@ -4,7 +4,7 @@
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
 
-using  namespace  stone;
+using namespace stone;
 
 void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
                                   llvm::GlobalValue *globalValue) {

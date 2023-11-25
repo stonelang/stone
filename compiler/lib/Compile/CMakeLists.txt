@@ -9,7 +9,7 @@ set(stone_compile_sources
   CompilerOutputsConverter.cpp
   SyntaxAnalysisExecution.cpp
   SupportExecution.cpp
-  CodeGenExecution.cpp
+  EmitCodeExecution.cpp
   SemanticAnalysisExecution.cpp
   FallbackExecution.cpp
   
