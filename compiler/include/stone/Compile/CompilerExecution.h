@@ -22,6 +22,7 @@ protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
+  Status depStatus;
   ActionKind currentAction;
 
 public:
@@ -38,6 +39,8 @@ protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
   bool HasDependency() { return GetDependency() != ActionKind::None; }
+  void SetDependencyStatus(Status status) { depStatus = status; }
+  Status GetDependencyStatus() { return depStatus; }
 
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
   ActionKind GetMainAction();

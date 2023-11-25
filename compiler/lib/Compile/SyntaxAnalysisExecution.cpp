@@ -27,6 +27,8 @@ ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler,
 
 Status ImportResolutionExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::ResolveImports);
+  assert(GetDependencyStatus().IsSuccess());
+
   // stone::ResolveSourceFileImports(sourceFile);
   return Status();
 }
@@ -36,6 +38,7 @@ DumpASTExecution::DumpASTExecution(Compiler &compiler, ActionKind currentAction)
 
 Status DumpASTExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::DumpAST);
+  assert(GetDependencyStatus().IsSuccess());
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }
