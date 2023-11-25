@@ -174,9 +174,9 @@ void Parser::ExitScope() {
     PopCurScope();
   }
 }
-Scope *Parser::CreateScope(ScopeKind kind, ASTContext &sc,
+Scope *Parser::CreateScope(ScopeKind kind, ASTContext &ac,
                            DiagnosticEngine &diags, Scope *parent) {
-  return new (sc) Scope(kind, diags, parent);
+  return new (ac) Scope(kind, diags, parent);
 }
 
 InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {

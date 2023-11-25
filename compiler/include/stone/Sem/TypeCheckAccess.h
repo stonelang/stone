@@ -47,7 +47,6 @@ enum class DisallowedOriginKind : uint8_t {
 
 };
 
-
 /// A uniquely-typed boolean to reduce the chances of accidentally inverting
 /// a check.
 ///
@@ -69,7 +68,7 @@ void CheckAccessLevel(Type ty);
 /// Returns the kind of origin, implementation-only import or SPI declaration,
 /// that restricts exporting \p decl from the given file and context.
 DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
- const ExportContext &where);
+                                             const ExportContext &where);
 
 DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
                                              const ExportContext &where,

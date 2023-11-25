@@ -34,7 +34,7 @@ ClangContext::ClangContext() : clangInstance(new clang::CompilerInstance()) {}
 
 Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
                            const char *arg0) {
-  
+
   // Load the diagnostic IDs
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> DiagIDs(
       new clang::DiagnosticIDs());
@@ -43,7 +43,7 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
       new clang::DiagnosticOptions();
 
-  clang::TextDiagnosticBuffer* DiagBuffer = new clang::TextDiagnosticBuffer;
+  clang::TextDiagnosticBuffer *DiagBuffer = new clang::TextDiagnosticBuffer;
   clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(

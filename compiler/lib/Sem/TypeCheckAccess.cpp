@@ -22,8 +22,10 @@ using AccessLevelCheckingOptions =
 class AccessLevelCheckingBase {
 protected:
   TypeChecker &checker;
+
 public:
   AccessLevelCheckingBase(TypeChecker &checker) : checker(checker) {}
+
 public:
   AccessLevelCheckingOptions flags;
 

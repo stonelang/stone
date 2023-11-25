@@ -19,11 +19,9 @@ public:
     DeclVisitor<DeclChecking>::Visit(d);
     checker.CheckTypes(d);
   }
-public:
-  void VisitFunDecl(FunDecl *funDecl) { 
 
-    checker.CheckAccessLevel(funDecl);
-  }
+public:
+  void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
 
   void VisitImportDecl(ImportDecl *importDecl) {}
   void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}

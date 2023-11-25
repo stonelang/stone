@@ -44,7 +44,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (compiler.GetInvocation().ShouldSetupClang()) {
-
     // We are just hard coding -cc1 for now
     if (compiler.GetInvocation().SetupClang("-cc1", arg0).IsError()) {
       return FinishCompile(Status::Error());

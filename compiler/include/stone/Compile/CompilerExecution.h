@@ -14,11 +14,9 @@ class SourceFile;
 class CodeGenContext;
 
 class CompilerExecution {
-
 protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
-
   Compiler &compiler;
   ActionKind currentAction;
 
@@ -43,50 +41,82 @@ protected:
   }
 };
 
-class SupportExecution final : public CompilerExecution {
-
+class PrintHelpExecution final : public CompilerExecution {
 public:
-  SupportExecution(Compiler &compiler, ActionKind currentAction);
+  PrintHelpExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
-
-public:
-  Status ExecutePrintHelp();
-  Status ExecutePrintVersion();
-  Status ExecutePrintFeature();
 };
 
-class SyntaxAnalysisExecution final : public CompilerExecution {
+class PrintVersionExecution final : public CompilerExecution {
+
 public:
-  SyntaxAnalysisExecution(Compiler &compiler, ActionKind currentAction);
+  PrintVersionExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
-
-public:
-  Status ExecuteParse(std::function<Status(SourceFile &)> notify = nullptr);
-  Status ExecuteDumpAST();
-  Status ExecuteResolveImports();
 };
 
-class SemanticAnalysisExecution final : public CompilerExecution {
-
-  // using EachSourceFileTypeCheckedCallback = std::function<void(
-  //     SourceFile &, TypeCheckerOptions &, TypeCheckerListener *)>;
+class PrintFeatureExecution final : public CompilerExecution {
+public:
+  PrintFeatureExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
-  SemanticAnalysisExecution(Compiler &compiler, ActionKind currentAction);
+  Status Execute() override;
+};
+
+class ParseOnlyExecution final : public CompilerExecution {
+public:
+  ParseOnlyExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
 
 public:
-  Status ExecuteTypeCheck(std::function<Status(SourceFile &)> notify = nullptr);
-  Status ExecutePrintAST();
+};
+class ImportResolutionExecution final : public CompilerExecution {
+public:
+  ImportResolutionExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+
+public:
+  ActionKind GetDependency() override { return ActionKind::Parse; }
+};
+
+class DumpASTExecution final : public CompilerExecution {
+public:
+  DumpASTExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+
+public:
+  ActionKind GetDependency() override { return ActionKind::Parse; }
+};
+
+class TypeCheckExecution final : public CompilerExecution {
+public:
+  TypeCheckExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
 
 public:
   ActionKind GetDependency() override { return ActionKind::ResolveImports; }
+};
+
+class PrintASTExecution final : public CompilerExecution {
+public:
+  PrintASTExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+
+public:
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
 class CodeGenExecution final : public CompilerExecution {

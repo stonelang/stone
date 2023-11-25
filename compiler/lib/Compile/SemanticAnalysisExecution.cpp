@@ -3,40 +3,28 @@
 
 using namespace stone;
 
-SemanticAnalysisExecution::SemanticAnalysisExecution(Compiler &compiler,
-                                                     ActionKind currentAction)
+TypeCheckExecution::TypeCheckExecution(Compiler &compiler,
+                                       ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
-Status SemanticAnalysisExecution::Execute() {
+Status TypeCheckExecution::Execute() {
 
-  switch (GetExecutionAction()) {
-  case ActionKind::TypeCheck:
-    return ExecuteTypeCheck();
-  case ActionKind::PrintAST:
-    return ExecutePrintAST();
-  default:
-    llvm_unreachable("Invalid action for semantic analysis");
-  }
-}
-
-Status SemanticAnalysisExecution::ExecuteTypeCheck(
-    std::function<Status(SourceFile &)> notify) {
-
+  assert(GetExecutionAction() == ActionKind::TypeCheck);
   compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(
         sourceFile, compiler.GetInvocation().GetTypeCheckerOptions(), nullptr);
-    if (notify) {
-      if (notify(sourceFile).IsError()) {
-        return Status::Error();
-      }
-    }
     return Status();
   });
+  return Status();
 }
 
-Status SemanticAnalysisExecution::ExecutePrintAST() {
+PrintASTExecution::PrintASTExecution(Compiler &compiler,
+                                     ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
 
-  return ExecuteTypeCheck([&](SourceFile &sourceFile) {
+Status PrintASTExecution::Execute() {
+  assert(GetExecutionAction() == ActionKind::PrintAST);
+  compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::PrintSourceFile(sourceFile, compiler.GetASTContext());
     return Status();
   });

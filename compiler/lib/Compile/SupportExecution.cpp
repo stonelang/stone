@@ -4,23 +4,30 @@
 
 using namespace stone;
 
-SupportExecution::SupportExecution(Compiler &compiler, ActionKind currentAction)
+PrintHelpExecution::PrintHelpExecution(Compiler &compiler,
+                                       ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
-Status SupportExecution::Execute() {
-
-  switch (GetExecutionAction()) {
-  case ActionKind::PrintHelp:
-  case ActionKind::PrintHelpHidden:
-    return ExecutePrintHelp();
-  case ActionKind::PrintVersion:
-    return ExecutePrintVersion();
-  case ActionKind::PrintFeature:
-    return ExecutePrintFeature();
-  default:
-    llvm_unreachable("Invalid action for support");
-  }
+Status PrintHelpExecution::Execute() {
+  assert(GetExecutionAction() == ActionKind::PrintHelp ||
+         GetExecutionAction() == ActionKind::PrintHelpHidden);
+  return Status();
 }
-Status SupportExecution::ExecutePrintHelp() { return Status(); }
-Status SupportExecution::ExecutePrintVersion() { return Status(); }
-Status SupportExecution::ExecutePrintFeature() { return Status(); }
+
+PrintVersionExecution::PrintVersionExecution(Compiler &compiler,
+                                             ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
+
+Status PrintVersionExecution::Execute() {
+  assert(GetExecutionAction() == ActionKind::PrintVersion);
+  return Status();
+}
+
+PrintFeatureExecution::PrintFeatureExecution(Compiler &compiler,
+                                             ActionKind currentAction)
+    : CompilerExecution(compiler, currentAction) {}
+
+Status PrintFeatureExecution::Execute() {
+  assert(GetExecutionAction() == ActionKind::PrintFeature);
+  return Status();
+}

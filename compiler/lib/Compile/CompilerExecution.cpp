@@ -21,19 +21,25 @@ Compiler::GetExecutionForAction(ActionKind action) {
   switch (action) {
   case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:
+    return std::make_unique<PrintHelpExecution>(*this, action);
   case ActionKind::PrintVersion:
-    return std::make_unique<SupportExecution>(*this, action);
+    return std::make_unique<PrintVersionExecution>(*this, action);
+  case ActionKind::PrintFeature:
+    return std::make_unique<PrintFeatureExecution>(*this, action);
   case ActionKind::Parse:
+    return std::make_unique<ParseOnlyExecution>(*this, action);
   case ActionKind::DumpAST:
+    return std::make_unique<DumpASTExecution>(*this, action);
   case ActionKind::ResolveImports:
-    return std::make_unique<SyntaxAnalysisExecution>(*this, action);
+    return std::make_unique<ImportResolutionExecution>(*this, action);
   case ActionKind::TypeCheck:
+    return std::make_unique<TypeCheckExecution>(*this, action);
   case ActionKind::PrintAST:
-    return std::make_unique<SemanticAnalysisExecution>(*this, action);
+    return std::make_unique<PrintASTExecution>(*this, action);
+  case ActionKind::EmitModule:
   case ActionKind::EmitIRBefore:
   case ActionKind::EmitIRAfter:
   case ActionKind::EmitBC:
-  case ActionKind::EmitModule:
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
     return std::make_unique<CodeGenExecution>(*this, action);

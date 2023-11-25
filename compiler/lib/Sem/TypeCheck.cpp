@@ -29,11 +29,9 @@ void stone::TypeCheckWholeModule(ModuleDecl &md,
   for (auto *moduleFile : md.GetFiles()) {
     if (auto *nextSourceFile = dyn_cast<SourceFile>(moduleFile)) {
       stone::TypeCheckSourceFile(*nextSourceFile, typeCheckerOpts, listener);
-      
     }
   }
 }
 
 /// Pretty print the type checked source file.
-void stone::PrintSourceFile(SourceFile &sourceFile, ASTContext &astContext) {
-}
+void stone::PrintSourceFile(SourceFile &sourceFile, ASTContext &astContext) {}
