@@ -236,15 +236,13 @@ bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
 // Code generation
 namespace stone {
 
-IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
-                                   const LangOptions &langOpts,
-                                   ClangContext &cc);
+IRTargetOptions GetIRTargetOptions(CodeGenContext &codeGenContext);
 
 /// Disable thumb-mode until debugger support is there.
 bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 
 std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &opts);
+CreateTargetMachine(CodeGenContext &codeGenContext);
 
 void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);

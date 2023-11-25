@@ -41,13 +41,13 @@
 #include "llvm/Support/Timer.h"
 #include "llvm/Support/ToolOutputFile.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/Target/TargetMachine.h"
-#include "llvm/Target/TargetOptions.h"
-// #include "llvm/Transforms/Coroutines.h"
-//  TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
-//  TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
-//  #include "llvm/Transforms/Coroutines/CoroElide.h"
-//  #include "llvm/Transforms/Coroutines/CoroSplit.h"
+// #include "llvm/Target/TargetMachine.h"
+// #include "llvm/Target/TargetOptions.h"
+//  #include "llvm/Transforms/Coroutines.h"
+//   TODO: #include "llvm/Transforms/Coroutines/CoroCleanup.h"
+//   TODO: #include "llvm/Transforms/Coroutines/CoroEarly.h"
+//   #include "llvm/Transforms/Coroutines/CoroElide.h"
+//   #include "llvm/Transforms/Coroutines/CoroSplit.h"
 #include "llvm/Transforms/IPO.h"
 #include "llvm/Transforms/IPO/AlwaysInliner.h"
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
@@ -71,6 +71,11 @@
 #include "llvm/Transforms/Utils/NameAnonGlobals.h"
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
 // TODO: #include "llvm/Transforms/Core/UniqueInternalLinkageNames.h"
+
+#include "llvm/MC/SubtargetFeature.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
 
 #include <memory>
 
@@ -110,11 +115,60 @@ void stone::GenWholeModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
                              ModuleDecl *md,
                              const PrimaryFileSpecificPaths paths,
                              CodeGenListener *listener) {
-
   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 }
 
 /// Disable thumb-mode until debugger support is there.
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";
+}
+
+IRTargetOptions stone::GetIRTargetOptions(CodeGenContext &codeGenContext) {
+  llvm::TargetOptions TargetOpts;
+  clang::TargetOptions &ClangOpts = codeGenContext.GetClangContext()
+                                        .GetInstance()
+                                        .getTarget()
+                                        .getTargetOpts();
+  return std::make_tuple(TargetOpts, ClangOpts.CPU, ClangOpts.Features,
+                         ClangOpts.Triple);
+}
+
+std::unique_ptr<llvm::TargetMachine>
+stone::CreateTargetMachine(CodeGenContext &codeGenContext) {
+
+  llvm::TargetOptions TargetOpts;
+  std::string CPU;
+  std::string EffectiveClangTriple;
+  std::vector<std::string> targetFeaturesArray;
+  std::tie(TargetOpts, CPU, targetFeaturesArray, EffectiveClangTriple) =
+      GetIRTargetOptions(codeGenContext);
+  const llvm::Triple &EffectiveTriple = llvm::Triple(EffectiveClangTriple);
+  std::string targetFeatures;
+
+  if (!targetFeaturesArray.empty()) {
+    llvm::SubtargetFeatures features;
+    for (const std::string &feature : targetFeaturesArray)
+      if (!ShouldRemoveTargetFeature(feature)) {
+        features.AddFeature(feature);
+      }
+    targetFeatures = features.getString();
+  }
+  std::string Error;
+  const llvm::Target *Target =
+      llvm::TargetRegistry::lookupTarget(EffectiveTriple.str(), Error);
+  if (!Target) {
+    assert(false && "failed to create target!");
+  }
+  // Using defaults for now.
+  llvm::Optional<llvm::CodeModel::Model> cmodel = llvm::None;
+  llvm::CodeGenOpt::Level OptLevel = llvm::CodeGenOpt::None;
+
+  // Create a target machine.
+  llvm::TargetMachine *TargetMachine = Target->createTargetMachine(
+      EffectiveTriple.str(), CPU, targetFeatures, TargetOpts, llvm::Reloc::PIC_,
+      cmodel, OptLevel);
+  if (!TargetMachine) {
+    assert(false && "failed to create target machine!");
+  }
+  return std::unique_ptr<llvm::TargetMachine>(TargetMachine);
 }
