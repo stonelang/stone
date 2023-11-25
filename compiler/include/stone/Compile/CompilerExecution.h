@@ -1,6 +1,8 @@
 #ifndef STONE_COMPILE_COMPILEREXECUTION_H
 #define STONE_COMPILE_COMPILEREXECUTION_H
 
+#include "stone/Gen/CodeGenContext.h"
+
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
 #include "stone/Option/ActionKind.h"
@@ -33,6 +35,8 @@ public:
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
+  bool HasDependency() { return GetDependency() == ActionKind::None; }
+
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
   ActionKind GetMainAction();
   ActionKind GetCurrentAction() { return currentAction; }
@@ -119,8 +123,15 @@ public:
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-class CodeGenExecution final : public CompilerExecution {
+class CodeGenExecution : public CompilerExecution {
+protected:
+  llvm::GlobalVariable *hashGlobal;
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<CodeGenContext> codeGenContext;
 
+protected:
+  // Status ExecuteGenerateIR(std::function<Status(CodeGenContext&
+  // codeGenContext)> notify);
 public:
   CodeGenExecution(Compiler &compiler, ActionKind currentAction);
 
@@ -128,12 +139,50 @@ public:
   Status Execute() override;
 
 public:
-  Status ExecuteGenIR(CodeGenContext &codeGenContext);
-  Status ExecuteGenNative(CodeGenContext &codeGenContext);
+  Status ExecuteGenerateIR(CodeGenContext &codeGenContext);
+  Status ExecuteGenerateNative(CodeGenContext &codeGenContext);
 
 public:
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+
+protected:
+  llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
+  CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
 };
+
+// Generate IR, then print it.
+class EmitIRBeforeExecution final : public CodeGenExecution {
+public:
+  EmitIRBeforeExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+};
+
+// Generate IR, optimize ir, then print it.
+class EmitIRAfterExecution final : public CodeGenExecution {
+public:
+  EmitIRAfterExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+};
+
+class EmitNativeExecution final : public CodeGenExecution {
+public:
+  EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
+
+public:
+  Status Execute() override;
+};
+
+// class EmitModuleExecution final : public CodeGenExecution {
+// public:
+//   EmitModuleExecution(Compiler &compiler, ActionKind currentAction);
+//
+// public:
+//   Status Execute() override;
+// };
 
 class FallbackExecution final : public CompilerExecution {
 

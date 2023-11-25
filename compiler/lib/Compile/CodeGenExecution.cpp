@@ -5,12 +5,10 @@
 using namespace stone;
 
 CodeGenExecution::CodeGenExecution(Compiler &compiler, ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+    : CompilerExecution(compiler, currentAction),
+      llvmContext(new llvm::LLVMContext()) {}
 
 Status CodeGenExecution::Execute() {
-
-  llvm::GlobalVariable *hashGlobal;
-  auto llvmContext = std::make_unique<llvm::LLVMContext>();
 
   // CodeGenContext codeGenContext(
   //     compiler.GetInvocation().GetCodeGenOptions(),
@@ -25,7 +23,7 @@ Status CodeGenExecution::Execute() {
   }
 }
 
-Status CodeGenExecution::ExecuteGenIR(CodeGenContext &codeGenContext) {
+Status CodeGenExecution::ExecuteGenerateIR(CodeGenContext &codeGenContext) {
 
   if (compiler.IsCompileForWholeModule()) {
     auto *mainModule = compiler.GetMainModule();
@@ -52,10 +50,39 @@ Status CodeGenExecution::ExecuteGenIR(CodeGenContext &codeGenContext) {
   return Status();
 }
 
-Status CodeGenExecution::ExecuteGenNative(CodeGenContext &codeGenContext) {
-
+Status CodeGenExecution::ExecuteGenerateNative(CodeGenContext &codeGenContext) {
   // Before we GenNative, it is possible we may not longer need the AST
   compiler.TryFreeASTContext();
+
+  return Status();
+}
+
+EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler,
+                                             ActionKind currentAction)
+    : CodeGenExecution(compiler, currentAction) {}
+
+Status EmitIRBeforeExecution::Execute() {
+
+  // ExecuteGenerateIR();
+  return Status();
+}
+
+EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler,
+                                           ActionKind currentAction)
+    : CodeGenExecution(compiler, currentAction) {}
+
+Status EmitIRAfterExecution::Execute() {
+  // ExecuteGenerateIR();
+
+  return Status();
+}
+
+EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
+                                         ActionKind currentAction)
+    : CodeGenExecution(compiler, currentAction) {}
+
+Status EmitNativeExecution::Execute() {
+  // ExecuteGenerateIR();
 
   return Status();
 }

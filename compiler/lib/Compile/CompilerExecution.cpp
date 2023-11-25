@@ -9,10 +9,10 @@ CompilerExecution::CompilerExecution(Compiler &compiler,
   assert(currentAction != ActionKind::Alien);
 }
 Status CompilerExecution::Setup() {
-  if (GetDependency() == ActionKind::None) {
-    return Status::Success();
+  if (HasDependency()) {
+    return compiler.ExecuteAction(GetDependency());
   }
-  return compiler.ExecuteAction(GetDependency());
+  return Status::Success();
 }
 CompilerExecution::~CompilerExecution() {}
 
@@ -36,13 +36,16 @@ Compiler::GetExecutionForAction(ActionKind action) {
     return std::make_unique<TypeCheckExecution>(*this, action);
   case ActionKind::PrintAST:
     return std::make_unique<PrintASTExecution>(*this, action);
-  case ActionKind::EmitModule:
   case ActionKind::EmitIRBefore:
+    // NOTE: This may be done in GenerateCode 
+    return std::make_unique<EmitIRBeforeExecution>(*this, action);
   case ActionKind::EmitIRAfter:
+    return std::make_unique<EmitIRAfterExecution>(*this, action);
+  case ActionKind::EmitModule:
   case ActionKind::EmitBC:
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
-    return std::make_unique<CodeGenExecution>(*this, action);
+    return std::make_unique<EmitNativeExecution>(*this, action);
   default: {
     return std::make_unique<FallbackExecution>(*this, action);
   }
