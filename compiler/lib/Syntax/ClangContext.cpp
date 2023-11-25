@@ -44,7 +44,7 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
       new clang::DiagnosticOptions();
 
   clang::TextDiagnosticBuffer* DiagBuffer = new clang::TextDiagnosticBuffer;
-  clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, &DiagBuffer);
+  clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
       GetInstance().getInvocation(), argv, Diags, arg0);

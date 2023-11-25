@@ -172,7 +172,7 @@ class ReturnStmt : public Stmt {
   SrcLoc returnLoc;
 
 public:
-  ReturnStmt(SrcLoc ReturnLoc, Expr *result)
+  ReturnStmt(SrcLoc returnLoc, Expr *result)
       : Stmt(StmtKind::Return), returnLoc(returnLoc), result(result) {}
 
   SrcLoc GetReturnLoc() const { return returnLoc; }
