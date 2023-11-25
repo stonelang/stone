@@ -231,8 +231,8 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
       new clang::DiagnosticOptions();
 
-  clang::TextDiagnosticBuffer *DiagsBuffer = new clang::TextDiagnosticBuffer;
-  clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagsBuffer);
+  clang::TextDiagnosticBuffer *DiagBuffer = new clang::TextDiagnosticBuffer;
+  clang::DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
       GetClangContext().GetInstance().getInvocation(), argv, Diags, arg0);
@@ -246,7 +246,7 @@ Error CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
     return Error(true);
   }
 
-  DiagsBuffer->FlushDiagnostics(
+  DiagBuffer->FlushDiagnostics(
       GetClangContext().GetInstance().getDiagnostics());
   if (!Success) {
     GetClangContext().GetInstance().getDiagnosticClient().finish();

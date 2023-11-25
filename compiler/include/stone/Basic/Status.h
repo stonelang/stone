@@ -63,6 +63,11 @@ public:
     status.SetIsError();
     return status;
   }
+  static Status CompletionAndError() {
+    Status status;
+    status.SetHasCompletionAndIsError();
+    return status;
+  }
 };
 
 } // namespace stone

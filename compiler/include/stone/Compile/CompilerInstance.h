@@ -186,8 +186,7 @@ public:
   Status CompileForParse(ModeKind modeKind);
 
 private:
-  Status CompileForParse(
-      std::function<Status(syn::SyntaxFile &, Status status)> notifiy);
+  Status CompileForParse(std::function<Status(syn::SyntaxFile &)> notifiy);
   Status CompileForDumpSyntax(syn::SyntaxFile &syntaxFile);
   Status CompileForResolveImports(syn::SyntaxFile &syntaxFile);
 
