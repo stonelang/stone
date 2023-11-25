@@ -49,30 +49,6 @@ void IRCodeGenModule::EmitSourceFile(SourceFile &sf) {
   }
 }
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
-                                  llvm::GlobalValue *globalValue) {
-
-  assert(funDecl && "Null FundDecl");
-
-  auto funDeclType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
-
-  EmitFunctionOptions emitFunctionOpts;
-  emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;
-  emitFunctionOpts |= EmitFunctionFlags::DontDefer;
-
-  if (!globalValue) {
-    globalValue = llvm::cast<llvm::GlobalValue>(
-        GetFunctionAddress(funDecl, funDeclType, emitFunctionOpts));
-  }
-
-  auto *llvmFunction = cast<llvm::Function>(globalValue);
-
-  SetFunctionLinkage(funDecl, llvmFunction);
-  IRCodeGenFunction(*this, llvmFunction).EmitFunction(funDecl);
-}
-
-void IRCodeGenModule::EmitStructDecl(StructDecl *structDecl) {}
-
 void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
 
 void IRCodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}

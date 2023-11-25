@@ -9,28 +9,30 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_gen_sources
-	NativeCodeGen.cpp
-	CodeGenContext.cpp
-	GenCall.cpp
-	GenDecl.cpp
-	GenStmt.cpp
-	GenExpr.cpp
-	GenIR.cpp
-	GenBuiltin.cpp
-	GenNative.cpp
-	GenType.cpp
-	GenABI.cpp
-	IRCodeGenConstant.cpp
-	IRCodeGenDebug.cpp
-	IRCodeGenBuilder.cpp
-	IRCodeGenFunction.cpp
-	IRCodegenModule.cpp
-	IRCodeGenMetadata.cpp
-	IRCodeGenTypeResolver.cpp
-	OptimizeIR.cpp
+		NativeCodeGen.cpp
+		CodeGenContext.cpp
+		GenCall.cpp
+		GenDecl.cpp
+		GenExpr.cpp
+		GenFun.cpp
+		GenIR.cpp
+		GenStmt.cpp
+		GenStruct.cpp
+		GenBuiltin.cpp
+		GenNative.cpp
+		GenType.cpp
+		GenABI.cpp
+		IRCodeGenConstant.cpp
+		IRCodeGenDebug.cpp
+		IRCodeGenBuilder.cpp
+		IRCodeGenFunction.cpp
+		IRCodegenModule.cpp
+		IRCodeGenMetadata.cpp
+		IRCodeGenTypeResolver.cpp
+		OptimizeIR.cpp
 
-	LINK_LIBS
-	StoneSyntax
+		LINK_LIBS
+		StoneSyntax
 )
 add_stone_library(StoneGen
 	${stone_gen_sources}
