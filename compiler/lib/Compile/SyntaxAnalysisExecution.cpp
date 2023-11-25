@@ -15,6 +15,7 @@ Status ParseOnlyExecution::Execute() {
   GetCompiler().ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, GetCompiler().GetASTContext(), nullptr,
                            nullptr);
+    sourceFile.stage = SourceFileStage::Parsed;
     return Status();
   });
   return Status();

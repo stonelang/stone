@@ -1,5 +1,5 @@
-#ifndef STONE_COMPILE_COMPILEREXECUTION_H
-#define STONE_COMPILE_COMPILEREXECUTION_H
+#ifndef STONE_COMPILE_COMPILER_EXECUTION_H
+#define STONE_COMPILE_COMPILER_EXECUTION_H
 
 #include "stone/Gen/CodeGenContext.h"
 
@@ -37,7 +37,7 @@ public:
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
-  bool HasDependency() { return GetDependency() == ActionKind::None; }
+  bool HasDependency() { return GetDependency() != ActionKind::None; }
 
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
   ActionKind GetMainAction();

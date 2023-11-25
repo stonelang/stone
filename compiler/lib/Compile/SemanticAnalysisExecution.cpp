@@ -14,6 +14,7 @@ Status TypeCheckExecution::Execute() {
     stone::TypeCheckSourceFile(
         sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions(),
         nullptr);
+    sourceFile.stage = SourceFileStage::TypeChecked;
     return Status();
   });
   return Status();
