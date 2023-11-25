@@ -11,7 +11,7 @@ IRCodeGenModule::IRCodeGenModule(CodeGenContext &codeGenContext,
                                  llvm::StringRef outputFilename)
 
     : codeGenContext(codeGenContext),
-      typeCache(*codeGenContext.GetLLVMContext()), moduleName(moduleName),
+      typeCache(codeGenContext.GetLLVMContext()), moduleName(moduleName),
       outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}

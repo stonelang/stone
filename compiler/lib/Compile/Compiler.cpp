@@ -27,6 +27,8 @@ Status Compiler::Setup() {
       return Status::Error();
     }
   }
+  SetUpIRCodeGenTarget();
+
   return Status();
 }
 

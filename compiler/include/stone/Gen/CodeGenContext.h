@@ -4,7 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Basic/TargetContext.h"
+#include "stone/Basic/TargetOptions.h"
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
@@ -33,12 +33,12 @@ class CodeGenContext final {
 
   const CodeGenOptions &genOpts;
   const ModuleOptions &moduleOpts;
-  const TargetContext &targetContext;
+  const TargetOptions &targetOptions;
 
   ASTContext &astContext;
   ClangContext &clangContext;
 
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  llvm::LLVMContext &llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
@@ -47,8 +47,8 @@ class CodeGenContext final {
 
 public:
   CodeGenContext(const CodeGenOptions &genOpts, const ModuleOptions &moduleOpts,
-                 const TargetContext &targetContext, ASTContext &astContext,
-                 ClangContext &clangContext,
+                 const TargetOptions &targetOptions, ASTContext &astContext,
+                 ClangContext &clangContext, llvm::LLVMContext &llvmContext,
                  llvm::GlobalVariable *outModuleHash = nullptr);
 
   ~CodeGenContext();
@@ -56,15 +56,15 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return genOpts; }
   const ModuleOptions &GetModuleOptions() const { return moduleOpts; }
-  const TargetContext &GetTargetContext() const { return targetContext; }
+  const TargetOptions &GetTargetOptions() const { return targetOptions; }
   ASTContext &GetASTContext() const { return astContext; }
   ClangContext &GetClangContext() { return clangContext; }
 
   const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
   llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 
-  const llvm::LLVMContext *GetLLVMContext() const { return llvmContext.get(); }
-  llvm::LLVMContext *GetLLVMContext() { return llvmContext.get(); }
+  const llvm::LLVMContext &GetLLVMContext() const { return llvmContext; }
+  llvm::LLVMContext &GetLLVMContext() { return llvmContext; }
 
   const llvm::TargetMachine *GetLLVMTargetMachine() const {
     return llvmTargetMachine.get();

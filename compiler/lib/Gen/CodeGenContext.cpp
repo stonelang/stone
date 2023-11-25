@@ -11,19 +11,16 @@ using namespace stone;
 
 CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
                                const ModuleOptions &moduleOpts,
-                               const TargetContext &targetContext,
+                               const TargetOptions &targetOptions,
                                ASTContext &astContext,
                                ClangContext &clangContext,
+                               llvm::LLVMContext &llvmContext,
                                llvm::GlobalVariable *outModuleHash)
-    : genOpts(genOpts), moduleOpts(moduleOpts), targetContext(targetContext),
+    : genOpts(genOpts), moduleOpts(moduleOpts), targetOptions(targetOptions),
       astContext(astContext), clangContext(clangContext),
-      outModuleHash(outModuleHash),
-      llvmTargetMachine(stone::CreateTargetMachine(genOpts)) {
-
-  llvmContext = std::make_unique<llvm::LLVMContext>();
-  llvmModule =
-      std::make_unique<llvm::Module>(moduleOpts.moduleName, *llvmContext);
-}
+      llvmContext(llvmContext), outModuleHash(outModuleHash),
+      llvmTargetMachine(stone::CreateTargetMachine(genOpts)),
+      llvmModule(new llvm::Module(moduleOpts.moduleName, llvmContext)) {}
 CodeGenContext::~CodeGenContext() {}
 
 // Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {

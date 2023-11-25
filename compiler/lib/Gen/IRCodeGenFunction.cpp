@@ -13,7 +13,7 @@ IRCodeGenFunction::~IRCodeGenFunction() {}
 /// Create a new basic block with the given name.  The block is not
 /// automatically inserted into the function.
 llvm::BasicBlock *IRCodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(*cgm.GetCodeGenContext().GetLLVMContext(),
+  return llvm::BasicBlock::Create(cgm.GetCodeGenContext().GetLLVMContext(),
                                   name);
 }
 

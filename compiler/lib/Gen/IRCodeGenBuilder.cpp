@@ -10,14 +10,14 @@ void IRCodeGenBuilderInserter::InsertHelper(
 
 IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc,
                                    const IRCodeGenTypeCache &typeCache)
-    : IRCodeGenBuilderBase(*cgc.GetLLVMContext()), cgc(cgc),
+    : IRCodeGenBuilderBase(cgc.GetLLVMContext()), cgc(cgc),
       typeCache(typeCache) {}
 
 IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc,
                                    const IRCodeGenTypeCache &typeCache,
                                    const llvm::ConstantFolder &constFoler,
                                    const IRCodeGenBuilderInserter &inserter)
-    : IRCodeGenBuilderBase(*cgc.GetLLVMContext(), constFoler, inserter),
+    : IRCodeGenBuilderBase(cgc.GetLLVMContext(), constFoler, inserter),
       cgc(cgc), typeCache(typeCache) {}
 
 IRCodeGenBuilder::IRCodeGenBuilder(CodeGenContext &cgc,

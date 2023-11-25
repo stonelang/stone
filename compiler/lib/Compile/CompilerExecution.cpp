@@ -37,7 +37,7 @@ Compiler::GetExecutionForAction(ActionKind action) {
   case ActionKind::PrintAST:
     return std::make_unique<PrintASTExecution>(*this, action);
   case ActionKind::EmitIRBefore:
-    // NOTE: This may be done in GenerateCode 
+    // NOTE: This may be done in GenerateCode
     return std::make_unique<EmitIRBeforeExecution>(*this, action);
   case ActionKind::EmitIRAfter:
     return std::make_unique<EmitIRAfterExecution>(*this, action);
@@ -45,7 +45,7 @@ Compiler::GetExecutionForAction(ActionKind action) {
   case ActionKind::EmitBC:
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
-    return std::make_unique<EmitNativeExecution>(*this, action);
+    return std::make_unique<CodeGenExecution>(*this, action);
   default: {
     return std::make_unique<FallbackExecution>(*this, action);
   }

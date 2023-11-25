@@ -118,6 +118,18 @@ public:
   bool IsCompileForWholeModule() { return primarySourceBufferIDList.empty(); }
   bool IsCompileForSourceFile() { return !GetPrimarySourceFiles().empty(); }
 
+  void SetUpIRCodeGenTarget() {
+    if (IsCompileForWholeModule()) {
+      invocation.GetCodeGenOptions().irCodeGenTarget =
+          IRCodeGenTarget::WholeModule;
+    } else if (IsCompileForSourceFile()) {
+      invocation.GetCodeGenOptions().irCodeGenTarget =
+          IRCodeGenTarget::SoureFile;
+    } else {
+      llvm_unreachable("Invalid IR code generation target!");
+    }
+  }
+
   /// Gets the set of SourceFiles which are the primary inputs for this
   /// CompilerInstance.
   llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const {

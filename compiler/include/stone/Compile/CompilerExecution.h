@@ -123,27 +123,26 @@ public:
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-class CodeGenExecution : public CompilerExecution {
+class IRGeneration {
 protected:
+  Compiler &compiler;
   llvm::GlobalVariable *hashGlobal;
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<CodeGenContext> codeGenContext;
 
+private:
+  IRGeneration(Compiler &compiler,
+               std::unique_ptr<llvm::LLVMContext> llvmContext);
+
+public:
+  IRGeneration(Compiler &compiler);
+
+private:
+  Status GenForSourceFile();
+  Status GenForWholeModule();
+
 protected:
-  // Status ExecuteGenerateIR(std::function<Status(CodeGenContext&
-  // codeGenContext)> notify);
-public:
-  CodeGenExecution(Compiler &compiler, ActionKind currentAction);
-
-public:
-  Status Execute() override;
-
-public:
-  Status ExecuteGenerateIR(CodeGenContext &codeGenContext);
-  Status ExecuteGenerateNative(CodeGenContext &codeGenContext);
-
-public:
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  Status GenerateIR();
 
 protected:
   llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
@@ -151,29 +150,34 @@ protected:
 };
 
 // Generate IR, then print it.
-class EmitIRBeforeExecution final : public CodeGenExecution {
+class EmitIRBeforeExecution final : public CompilerExecution,
+                                    public IRGeneration {
 public:
   EmitIRBeforeExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
 // Generate IR, optimize ir, then print it.
-class EmitIRAfterExecution final : public CodeGenExecution {
+class EmitIRAfterExecution final : public CompilerExecution,
+                                   public IRGeneration {
 public:
   EmitIRAfterExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-class EmitNativeExecution final : public CodeGenExecution {
+class CodeGenExecution : public CompilerExecution, public IRGeneration {
 public:
-  EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
+  CodeGenExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
+  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
 // class EmitModuleExecution final : public CodeGenExecution {

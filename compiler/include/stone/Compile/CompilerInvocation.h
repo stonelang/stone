@@ -10,7 +10,7 @@
 
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Status.h"
-#include "stone/Basic/TargetContext.h"
+#include "stone/Basic/TargetOptions.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SearchPath.h"
@@ -69,7 +69,7 @@ class CompilerInvocation final {
 
   FileSystemOptions fileSystemOpts;
 
-  TargetContext targetContext;
+  TargetOptions targetOptions;
 
   std::unique_ptr<ClangContext> clangContext;
 
@@ -89,8 +89,8 @@ public:
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
-  TargetContext &GetTargetContext() { return targetContext; }
-  const TargetContext &GetTargetContext() const { return targetContext; }
+  stone::TargetOptions &GetTargetOptions() { return targetOptions; }
+  const stone::TargetOptions &GetTargetContext() const { return targetOptions; }
 
   ASTOptions &GetASTOptions() { return astOpts; }
   const ASTOptions &GetASTOptions() const { return astOpts; }

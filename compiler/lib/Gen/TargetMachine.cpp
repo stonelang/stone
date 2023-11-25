@@ -1,5 +1,5 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/TargetContext.h"
+#include "stone/Basic/TargetOptions.h"
 #include "stone/Gen/CodeGenContext.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
@@ -76,8 +76,8 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 //         GetCodeModel(cgc.GetCodeGenOptions());
 
 //     std::string features =
-//         llvm::join(cgc.GetTargetOptions().features.begin(),
-//                    cgc.GetTargetOptions().features.end(), ",");
+//         llvm::join(cgc.TargetOptions().features.begin(),
+//                    cgc.TargetOptions().features.end(), ",");
 
 //     llvm::Reloc::Model relocationModel =
 //         cgc.GetCodeGenOptions().relocationModel;
@@ -92,7 +92,7 @@ GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
 //     }
 
 //     auto targetMachine = llvmTarget->createTargetMachine(
-//         triple, cgc.GetTargetOptions().cpu, features, llvmTargetOpts,
+//         triple, cgc.TargetOptions().cpu, features, llvmTargetOpts,
 //         relocationModel, codeModel, codeGenOptLevel);
 
 //     return std::unique_ptr<llvm::TargetMachine>(targetMachine);
