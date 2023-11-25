@@ -43,8 +43,7 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts =
       new clang::DiagnosticOptions();
 
-  clang::TextDiagnosticBuffer DiagBuffer;
-
+  clang::TextDiagnosticBuffer* DiagBuffer = new clang::TextDiagnosticBuffer;
   clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, &DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
@@ -59,7 +58,7 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
     return Status::Error();
   }
 
-  DiagBuffer.FlushDiagnostics(GetInstance().getDiagnostics());
+  DiagBuffer->FlushDiagnostics(GetInstance().getDiagnostics());
   if (!Success) {
     GetInstance().getDiagnosticClient().finish();
     return Status::Error();
