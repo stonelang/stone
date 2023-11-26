@@ -222,7 +222,9 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                    ClangContext &clangContext);
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-IRCodeGenResult GenIR(IRCodeGenInvocation invocation);
+// IRCoeGenRequest 
+// TODO, you may just want to return a pointer 
+std::unqiue_ptr<IRCodeGenResult> GenIR(IRCodeGenInvocation invocation);
 
 // IRCodeGenOutput GenIRInParallel(ParallelCodeGenContext);
 

@@ -44,17 +44,15 @@ using namespace stone;
 
 GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
                                          ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+    : CompilerExecution(compiler, currentAction) {}
 
 Status GenerateIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
   assert(GetDependencyStatus().IsSuccess());
 
-  // Set compiler.SetIRGenResult(.....)
-  // stone::GenIR(IRCodeGenInvocaiton::ForFile((....)));
-  // compiler.SetIRCodeGenResult ()
-
+  // auto irCodeGenResult = stone::GenIR(IRCodeGenInvocaiton::ForFile((....)));
+  // compiler.SetIRCodeGenResult(std::move(irCodeGenResult)
   if (GetMainAction() == ActionKind::EmitIRBefore) {
     // Then we print
   }

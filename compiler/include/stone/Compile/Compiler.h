@@ -38,7 +38,7 @@ class Compiler final {
 
   std::unique_ptr<SystemStatisticEngine> statistics;
 
-  IRCodeGenResult irCodeGenResult;
+  std::unique_ptr<IRCodeGenResult> irCodeGenResult;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
@@ -60,8 +60,8 @@ public:
   }
 
 private:
-  void SetIRCodeGenResult(IRCodeGenResult codeGenResult) {
-    irCodeGenResult = codeGenResult
+  void SetIRCodeGenResult(std::unique_ptr<IRCodeGenResult> codeGenResult) {
+    irCodeGenResult = std::move(codeGenResult);
   }
 
 public:
@@ -76,9 +76,9 @@ public:
   const ASTContext &GetASTContext() const { return *astContext; }
   bool HasASTContext() const { return astContext != nullptr; }
 
-  IRCodeGenResult &GetIRCodeGenResult() { return irCodeGenResult; }
+  IRCodeGenResult &GetIRCodeGenResult() { return *irCodeGenResult; }
   CompilerInvocation &GetInvocation() { return invocation; }
-  
+
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
 
   Status ExecuteAction(ActionKind kind);
