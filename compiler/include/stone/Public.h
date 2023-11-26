@@ -162,6 +162,8 @@ public:
 namespace stone {
 using ModuleOrSourceFile = llvm::PointerUnion<ModuleDecl *, SourceFile *>;
 
+using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
+
 /// Compile a single input file
 bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
 
@@ -220,19 +222,9 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                    ClangContext &clangContext);
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenerateIR(CodeGenContext &codeGenContext, llvm::StringRef moduleName,
-                SourceFile *sf, const PrimaryFileSpecificPaths specificPaths,
-                CodeGenListener *listener = nullptr);
+IRCodeGenResult GenIR(IRCodeGenInvocation invocation);
 
-/// Gen IR for the entire Module
-/// Returns true is successfull
-void GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                ModuleDecl *mod, const PrimaryFileSpecificPaths specificPaths,
-                CodeGenListener *listener = nullptr);
-
-// void GenerateIRInParallel(CodeGenContext &cgc, ModuleDecl *mod,
-//                           llvm::StringRef moduleName,
-//                           llvm::ArrayRef<llvm::StringRef> outputFilenames);
+// IRCodeGenOutput GenIRInParallel(ParallelCodeGenContext);
 
 bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
                          const CompilerOptions &opts);
@@ -252,6 +244,7 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
+// You want IRCodeGenOutput
 bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 

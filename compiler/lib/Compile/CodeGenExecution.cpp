@@ -4,104 +4,113 @@
 
 using namespace stone;
 
-// TODO: You are passing nullptr for the Hash
-IRGeneration::IRGeneration(Compiler &compiler)
-    : compiler(compiler),
-      codeGenContext(new CodeGenContext(
-          compiler.GetInvocation().GetCodeGenOptions(),
-          compiler.GetInvocation().GetCompilerOptions().moduleOpts.moduleName,
-          compiler.GetASTContext())) {}
+// IRGenCodeOuput IRGeneration::ExecuteGenIR(Compiler &compiler) {
+//   if (compiler.GetInvocation().GetCodeGenOptions().isWholeModuleCompile) {
+//     return stone::GenIR(CodeGenContext::ForModule())
+//   }
+//   return stone::GenIR(CodeGenContext::ForFile());
+// }
 
-Status IRGeneration::GenerateIR() {
+// Status IRGeneration::GenForSourceFile() {
+//   assert(!GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
 
-  if (GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile) {
-    return GenForWholeModule();
-  } else {
-    return GenForSourceFile();
-  }
-  //  switch (GetCodeGenContext().GetCodeGenOptions().irCodeGenTarget) {
-  //  case IRCodeGenTarget::SoureFile:
-  //    return GenForSourceFile();
-  //  case IRCodeGenTarget::WholeModule:
-  //    return GenForWholeModule();
-  //  default:
-  //    llvm_unreachable("Invalid IR generation kind -- only supports SourceFile
-  //    "
-  //                     "or WholeModule");
-  //  }
-}
+//   stone::GenIR(CodeGenContext::ForFile())
 
-Status IRGeneration::GenForSourceFile() {
-  assert(!GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
-  for (auto *primarySyntaxFile : compiler.GetPrimarySourceFiles()) {
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-        compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
-            *primarySyntaxFile);
-    stone::GenerateIR(GetCodeGenContext(),
-                      primaryFileSpecificPaths.outputFilename,
-                      primarySyntaxFile, primaryFileSpecificPaths);
-  }
-  return Status();
-}
-Status IRGeneration::GenForWholeModule() {
-  assert(GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
-  auto *mainModule = compiler.GetMainModule();
-  const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-      compiler.GetInvocation()
-          .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-  // We take the all the files and generate a module
-  stone::GenerateIR(GetCodeGenContext(),
-                    primaryFileSpecificPaths.outputFilename, mainModule,
-                    primaryFileSpecificPaths);
-  return Status();
-}
+//   // for (auto *primarySyntaxFile : compiler.GetPrimarySourceFiles()) {
+//   //   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+//   //       compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
+//   //           *primarySyntaxFile);
 
-EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler,
-                                             ActionKind currentAction)
+//   //   stone::GenerateIR(GetCodeGenContext(),
+//   //                     primaryFileSpecificPaths.outputFilename,
+//   //                     primarySyntaxFile, primaryFileSpecificPaths);
+//   // }
+//   return Status();
+// }
+// Status IRGeneration::GenForWholeModule() {
+//   assert(GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
+//    stone::GenIR(CodeGenContext::ForModule())
+
+//   // auto *mainModule = compiler.GetMainModule();
+//   // const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+//   //     compiler.GetInvocation()
+//   //         .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+//   // // We take the all the files and generate a module
+//   // stone::GenerateIR(GetCodeGenContext(),
+//   //                   primaryFileSpecificPaths.outputFilename, mainModule,
+//   //                   primaryFileSpecificPaths);
+//   return Status();
+// }
+
+GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
+                                         ActionKind currentAction)
     : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
 
-Status EmitIRBeforeExecution::Execute() {
-  if (GenerateIR().IsError()) {
-    return Status::Error();
+Status GenerateIRExecution::Execute() {
+
+  assert(GetExecutionAction() == ActionKind::EmitIRBefore);
+  assert(GetDependencyStatus().IsSuccess());
+
+  // Set compiler.SetIRGenResult(.....)
+  // stone::GenIR(IRCodeGenInvocaiton::ForFile((....)));
+  // compiler.SetIRCodeGenResult ()
+
+  if (GetMainAction() == ActionKind::EmitIRBefore) {
+    // Then we print
   }
+
   return Status();
 }
 
 EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler,
                                            ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+    : CompilerExecution(compiler, currentAction) {}
 
 Status EmitIRAfterExecution::Execute() {
-  if (GenerateIR().IsError()) {
-    return Status::Error();
-  }
+
+  // compiler.GetIRCodeGenResult();
+
   return Status();
 }
 
 EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
                                            ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+    : CompilerExecution(compiler, currentAction) {}
 
-Status EmitBitCodeExecution::Execute() { return Status(); }
+Status EmitBitCodeExecution::Execute() {
+
+  compiler.GetIRCodeGenResult();
+
+  return Status();
+}
 
 EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
                                          ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+    : CompilerExecution(compiler, currentAction) {}
 
-Status EmitModuleExecution::Execute() { return Status(); }
+Status EmitModuleExecution::Execute() {
+
+  // compiler.GetIRCodeGenResult();
+
+  return Status();
+}
 
 EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
                                          ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
+    : CompilerExecution(compiler, currentAction) {}
 
 Status EmitNativeExecution::Execute() {
-  if (GenerateIR().IsError()) {
-    return Status::Error();
-  }
+
+  // if (GenerateIR().IsError()) {
+  //   return Status::Error();
+  // }
+
   GetCompiler().TryFreeASTContext();
 
-  stone::GenNative(GetCodeGenContext(),
-                   GetCodeGenContext().GetLLVMModule().getName());
+  // compiler.GetIRCodeGenResult();
+
+  // stone::GenNative(IRCodeGenOuput,
+  //                  GetCodeGenContext().GetLLVMModule().getName());
 
   return Status();
 }

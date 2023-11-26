@@ -132,41 +132,10 @@ public:
   ActionKind GetDependency() override { return ActionKind::TypeCheck; }
 };
 
-class IRGeneration {
-  Compiler &compiler;
-
-protected:
-  // This is the main result returned from generation
-  // You want to create these internally
-  std::unique_ptr<CodeGenContext> codeGenContext;
-
+// Generate IR, before optimization
+class GenerateIRExecution final : public CompilerExecution {
 public:
-  IRGeneration(Compiler &compiler);
-
-private:
-  Status GenForSourceFile();
-  Status GenForWholeModule();
-
-protected:
-  Status GenerateIR();
-
-protected:
-  CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
-};
-
-class IROptimization {
-public:
-  IROptimization(Compiler &compiler);
-
-protected:
-  Status OptimizeIR();
-};
-
-// Generate IR, then print it.
-class EmitIRBeforeExecution final : public CompilerExecution,
-                                    public IRGeneration {
-public:
-  EmitIRBeforeExecution(Compiler &compiler, ActionKind currentAction);
+  GenerateIRExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
@@ -174,27 +143,25 @@ public:
 };
 
 // Generate IR, optimize ir, then print it.
-class EmitIRAfterExecution final : public CompilerExecution,
-                                   public IRGeneration {
+class EmitIRAfterExecution final : public CompilerExecution {
 public:
   EmitIRAfterExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
 };
 
-class EmitBitCodeExecution final : public CompilerExecution,
-                                   public IRGeneration {
+class EmitBitCodeExecution final : public CompilerExecution {
 public:
   EmitBitCodeExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
 };
 
-class EmitModuleExecution final : public CompilerExecution, IRGeneration {
+class EmitModuleExecution final : public CompilerExecution {
 public:
   EmitModuleExecution(Compiler &compiler, ActionKind currentAction);
 
@@ -202,16 +169,16 @@ public:
   Status Execute() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
 };
 
-class EmitNativeExecution : public CompilerExecution, public IRGeneration {
+class EmitNativeExecution : public CompilerExecution {
 public:
   EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
 };
 
 class FallbackExecution final : public CompilerExecution {

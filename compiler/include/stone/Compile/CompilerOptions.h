@@ -13,6 +13,59 @@ class CompilerInvocation;
 class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
+// TODO:
+enum class CompilerAction : unsigned {
+  ///< No mode
+  None = 0,
+  /// MARK -- Lang support
+  //< Print language version
+  PrintVersion,
+  ///< Print help
+  PrintHelp,
+  ///< Print help
+  PrintHelpHidden,
+  ///< Print compiler features
+  PrintFeature,
+
+  /// MARK -- Syntax analysis
+  ///< Parse only
+  Parse,
+  ///< Parse and dump syntax tree
+  DumpAST,
+  ///< Parse and resolve imports only
+  ResolveImports,
+  ///< Parse and type-check only
+
+  /// MARK -- Semantic analysis
+  TypeCheck,
+  ///< Parse, type-check, and  pretty print syntax tree
+  PrintAST,
+
+  // < This is a support action that the user will never see
+  GenerateIR,
+  /// MARK -- Code generation
+  //</ Parse, type-check, and emit LLVM IR pre optimization
+  EmitIRBefore,
+  //</ Parse, type-check, and emit LLVM IR post optimization
+  EmitIRAfter,
+
+  //</ Parse, type-check, and pretty print llvm-ir
+  PrintIR,
+  //< Parse, type-check, and emit LLVM BC
+  EmitBC,
+  ///< Parse, type-check, and emit native object code
+  EmitObject,
+  ///< Parse, type-check, and emit a library.
+  ///< Default => platform specific. But, with -static => 'any.a'
+  EmitLibrary,
+  //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
+  EmitModule,
+  //< Parse, type-check, and emit assembly
+  EmitAssembly,
+  ///< Merge all modules
+  MergeModules,
+
+};
 class CompilerOptions final {
 
   friend CompilerInvocation;
@@ -53,6 +106,9 @@ public:
   llvm::StringRef mainExecutableName;
 
   llvm::SmallString<128> workingDirectory;
+
+  // Some actions require just GenIR w/o actually emitting out.
+  bool shouldEmitIR = false;
 
   enum class LibOutputMode { Dynamic, Static };
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;

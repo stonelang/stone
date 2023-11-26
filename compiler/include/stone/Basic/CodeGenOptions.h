@@ -41,9 +41,8 @@ enum class OptimizationLevel : uint8_t {
 };
 
 enum class CodeGenOutputKind : uint8_t {
-  None = 0,
   /// Generate an LLVM module and return it.
-  LLVMModule,
+  LLVMModule = 0,
 
   /// Generate an LLVM module and write it out as LLVM assembly.
   LLVMIRPreOptimization,

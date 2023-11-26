@@ -42,7 +42,7 @@ Compiler::GetExecutionForAction(ActionKind action) {
     return std::make_unique<PrintASTExecution>(*this, action);
   case ActionKind::EmitIRBefore:
     // NOTE: This may be done in GenerateCode
-    return std::make_unique<EmitIRBeforeExecution>(*this, action);
+    return std::make_unique<GenerateIRExecution>(*this, action);
   case ActionKind::EmitIRAfter:
     return std::make_unique<EmitIRAfterExecution>(*this, action);
   case ActionKind::EmitModule:

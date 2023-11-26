@@ -56,6 +56,9 @@ enum class ActionKind : unsigned {
   MergeModules,
   //< Alien
   Alien,
+
+  // < This is a not user action
+  GenerateIR
 };
 } // namespace stone
 #endif

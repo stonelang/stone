@@ -16,8 +16,11 @@ namespace stone {
 class Compiler;
 class ModuleDecl;
 class CompilerExecution;
+class GenerateIRExecution;
 
 class Compiler final {
+  friend CompilerExecution;
+  friend GenerateIRExecution;
 
   FileMgr fileMgr;
   SrcMgr srcMgr;
@@ -34,6 +37,8 @@ class Compiler final {
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
   std::unique_ptr<SystemStatisticEngine> statistics;
+
+  IRCodeGenResult irCodeGenResult;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
@@ -54,6 +59,11 @@ public:
     diags.RemoveConsumer(consumer);
   }
 
+private:
+  void SetIRCodeGenResult(IRCodeGenResult codeGenResult) {
+    irCodeGenResult = codeGenResult
+  }
+
 public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
@@ -66,8 +76,11 @@ public:
   const ASTContext &GetASTContext() const { return *astContext; }
   bool HasASTContext() const { return astContext != nullptr; }
 
+  IRCodeGenResult &GetIRCodeGenResult() { return irCodeGenResult; }
   CompilerInvocation &GetInvocation() { return invocation; }
+  
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
+
   Status ExecuteAction(ActionKind kind);
 
 public:

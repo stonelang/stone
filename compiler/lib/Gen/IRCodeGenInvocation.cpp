@@ -1,4 +1,4 @@
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/Gen/IRCodeGenInvocation.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Gen/CodeGenScope.h"
@@ -9,38 +9,74 @@
 
 using namespace stone;
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
-                               const llvm::StringRef moduleName,
-                               ASTContext &astContext,
-                               std::unique_ptr<llvm::LLVMContext> llvmContext,
-                               llvm::GlobalVariable *outModuleHash)
-    : codeGenOpts(codeGenOpts), astContext(astContext),
-      llvmContext(llvmContext.release()),
-      llvmModule(new llvm::Module(moduleName, GetLLVMContext())),
-      llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)),
+IRCodeGenInvocation::IRCodeGenInvocation(
+    const CodeGenOptions &codeGenOpts, ModuleDecl &moduleDecl,
+    const llvm::StringRef moduleName, ASTContext &astContext,
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::GlobalVariable *outModuleHash)
+    : codeGenOpts(codeGenOpts), moduleOrFile(moduleDecl),
+      moduleName(moduleName), astContext(astContext),
+      primaryFileSpecificPaths(primaryFileSpecificPaths),
       outModuleHash(outModuleHash) {}
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
-                               const llvm::StringRef moduleName,
-                               ASTContext &astContext,
-                               llvm::GlobalVariable *outModuleHash)
-    : CodeGenContext(codeGenOpts, moduleName, astContext,
-                     std::make_unique<llvm::LLVMContext>(), outModuleHash) {}
+IRCodeGenInvocation::IRCodeGenInvocation(
+    const CodeGenOptions &codeGenOpts, ModuleFile &moduleFile,
+    const llvm::StringRef moduleName, ASTContext &astContext,
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::GlobalVariable *outModuleHash) codeGenOpts(codeGenOpts),
+    moduleOrFile(moduleFile), moduleName(moduleName), astContext(astContext),
+    primaryFileSpecificPaths(primaryFileSpecificPaths),
+    outModuleHash(outModuleHash) {}
 
-CodeGenContext::~CodeGenContext() {}
+static IRCodeGenInvocation IRCodeGenInvocation::ForModule(
+    const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+    const llvm::StringRef moduleName, ASTContext &astContext,
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::GlobalVariable *outModuleHash) {
+  return IRCodeGenInvocation{codeGenOpts,
+                             moduleDecl,
+                             moduleName,
+                             astContext,
+                             primaryFileSpecificPaths,
+                             outModuleHash
+
+  };
+}
+
+static IRCodeGenInvocation IRCodeGenInvocation::ForFile(
+    const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+    const llvm::StringRef moduleName, ASTContext &astContext,
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::GlobalVariable *outModuleHash) {
+  return IRCodeGenInvocation{codeGenOpts,
+                             moduleFile,
+                             moduleName,
+                             astContext,
+                             primaryFileSpecificPaths,
+                             outModuleHash
+
+  };
+}
+
+// llvm::ArrayRef<ModuleFile *> IRCodeGenInvocation::GetFiles() const {}
+
+// ModuleDecl *IRCodeGenInvocation::GetParentModule() {}
+
+IRCodeGenInvocation::~IRCodeGenInvocation() {}
 
 // Maybe? Make ASTAllocation
-// CodeGenContext *CodeGenContext::Create(const CodeGenOptions &codeGenOpts,
+// IRCodeGenInvocation *IRCodeGenInvocation::Create(const CodeGenOptions
+// &codeGenOpts,
 //                                        const llvm::StringRef moduleName,
 //                                        ASTContext &astContext,
 //                                        llvm::GlobalVariable *outModuleHash) {
 
-//   return new (astContext) CodeGenContext(codeGenOpts, moduleName, astContext,
-//   outModuleHash);
+//   return new (astContext) IRCodeGenInvocation(codeGenOpts, moduleName,
+//   astContext, outModuleHash);
 
 // }
 
-// Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
+// Safe<llvm::TargetMachine> IRCodeGenInvocation::CreateTargetMachine() {
 
 //   // clang::TargetInfo &targetInfo =
 //   // GetClangContext().GetInstance().getTarget();

@@ -95,6 +95,71 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
+class IRCodeGenResult final {
+private:
+  std::unique_ptr<llvm::LLVMContext> Context;
+  std::unique_ptr<llvm::Module> Module;
+  std::unique_ptr<llvm::TargetMachine> Target;
+
+  IRCodeGenResult() : Context(nullptr), Module(nullptr), Target(nullptr) {}
+
+  IRCodeGenResult(IRCodeGenResult const &) = delete;
+  IRCodeGenResult &operator=(IRCodeGenResult const &) = delete;
+
+public:
+  /// Construct a \c IRCodeGenResult  that owns a given module and context.
+  ///
+  /// The given pointers must not be null. If a null \c IRCodeGenResult  is
+  /// needed, use \c IRCodeGenResult ::null() instead.
+  explicit IRCodeGenResult(std::unique_ptr<llvm::LLVMContext> &&Context,
+                           std::unique_ptr<llvm::Module> &&Module,
+                           std::unique_ptr<llvm::TargetMachine> &&Target)
+      : Context(std::move(Context)), Module(std::move(Module)),
+        Target(std::move(Target)) {
+
+    assert(getModule() && "Use IRCodeGenResult ::null() instead");
+    assert(GetContext() && "Use IRCodeGenResult ::null() instead");
+    assert(GetTargetMachine() && "Use IRCodeGenResult ::null() instead");
+  }
+
+  IRCodeGenResult(IRCodeGenResult &&) = default;
+  IRCodeGenResult &operator=(IRCodeGenResult &&) = default;
+
+public:
+  /// Construct a \c IRCodeGenResult  that does not own any resources.
+  static IRCodeGenResult null() { return IRCodeGenResult{}; }
+
+public:
+  explicit operator bool() const {
+    return Module != nullptr && Context != nullptr;
+  }
+
+public:
+  const llvm::Module *GetModule() const { return Module.get(); }
+  llvm::Module *GetModule() { return Module.get(); }
+
+  const llvm::LLVMContext *GetContext() const { return Context.Get(); }
+  llvm::LLVMContext *getContext() { return Context.get(); }
+
+  const llvm::TargetMachine *GetTargetMachine() const { return Target.get(); }
+  llvm::TargetMachine *GetTargetMachine() { return Target.get(); }
+
+public:
+  /// Release ownership of the context and module to the caller, consuming
+  /// this value in the process.
+  ///
+  /// The REPL is the only caller that needs this. New uses of this function
+  /// should be avoided at all costs.
+  std::pair<llvm::LLVMContext *, llvm::Module *> release() && {
+    return {Context.release(), Module.release()};
+  }
+
+public:
+  /// Transfers ownership of the underlying module and context to an
+  /// ORC-compatible context.
+  llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
+};
+
 class IRCodeGen {
 
   CodeGenContext &codeGenContext;
@@ -151,6 +216,11 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   //  // /// Imported structs referenced by types in this module when emitting
   //  // /// reflection metadata.
   //  llvm::SetVector<const StructDecl *> importedStructs;
+
+  // Each module will have these
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
@@ -263,6 +333,9 @@ public:
   static Int64 Clamp(Int64 val, Int64 low, Int64 high) {
     return std::min(high, std::max(low, val));
   }
+
+public:
+  clang::CodeGenerator *CreateClangCodeGenerator();
 };
 } // namespace stone
 

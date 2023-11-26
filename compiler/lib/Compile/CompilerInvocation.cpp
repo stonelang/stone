@@ -133,6 +133,51 @@ ParseTargetOptions(llvm::opt::InputArgList &ial, CompilerOptions &compilerOpts,
   return Status();
 }
 
+static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
+                                  DiagnosticEngine &de,
+                                  CompilerOptions &compilerOpts,
+                                  CodeGenOptions &codeGenOpts) {
+
+  switch (compilerOpts.GetMode().GetKind()) {
+  case ModeKind::EmitModule:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
+  case ModeKind::EmitIRPre:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
+  case ModeKind::EmitIR:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
+  case ModeKind::EmitBC:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
+    break;
+  case ModeKind::EmitAssembly:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
+    break;
+  default:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::ObjectFile;
+    break;
+  }
+
+  codeGenOpts.codeGenOutputKind = [](ActionKind kind) {
+    switch (kind) {
+    case ActionKind::EmitIRBefore:
+      return ActionKind::LLVMIRPreOptimization;
+    case FrontendOptions::ActionType::EmitIR:
+      return IRGenOutputKind::LLVMAssemblyAfterOptimization;
+    case FrontendOptions::ActionType::EmitBC:
+      return IRGenOutputKind::LLVMBitcode;
+    case FrontendOptions::ActionType::EmitAssembly:
+      return IRGenOutputKind::NativeAssembly;
+    case FrontendOptions::ActionType::Immediate:
+      return IRGenOutputKind::Module;
+    case FrontendOptions::ActionType::EmitObject:
+    default:
+
+      return CodeGenOutputKind::ObjectFile;
+    }
+  }(GetMainAction().GetKind());
+
+  return Error();
+}
+
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
