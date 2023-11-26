@@ -5,21 +5,14 @@
 using namespace stone;
 
 // TODO: You are passing nullptr for the Hash
-IRGeneration::IRGeneration(Compiler &compiler,
-                           std::unique_ptr<llvm::LLVMContext> llvmContext)
-    : compiler(compiler), llvmContext(llvmContext.release()),
+IRGeneration::IRGeneration(Compiler &compiler)
+    : compiler(compiler),
       codeGenContext(new CodeGenContext(
           compiler.GetInvocation().GetCodeGenOptions(),
-          compiler.GetInvocation().GetCompilerOptions().moduleOpts,
-          compiler.GetInvocation().GetTargetOptions(), compiler.GetASTContext(),
-          compiler.GetInvocation().GetClangContext(), GetLLVMContext(),
-          nullptr)) {}
-
-IRGeneration::IRGeneration(Compiler &compiler)
-    : IRGeneration(compiler, std::make_unique<llvm::LLVMContext>()) {}
+          compiler.GetInvocation().GetCompilerOptions().moduleOpts.moduleName,
+          compiler.GetASTContext())) {}
 
 Status IRGeneration::GenerateIR() {
-
   if (GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile) {
     return GenForWholeModule();
   } else {
@@ -67,7 +60,6 @@ EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
 
 Status EmitIRBeforeExecution::Execute() {
-
   if (GenerateIR().IsError()) {
     return Status::Error();
   }
@@ -79,7 +71,6 @@ EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
 
 Status EmitIRAfterExecution::Execute() {
-
   if (GenerateIR().IsError()) {
     return Status::Error();
   }
@@ -103,14 +94,13 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction), IRGeneration(compiler) {}
 
 Status EmitNativeExecution::Execute() {
-
   if (GenerateIR().IsError()) {
     return Status::Error();
   }
   GetCompiler().TryFreeASTContext();
 
   stone::GenNative(GetCodeGenContext(),
-                   GetCodeGenContext().GetModuleOptions().moduleName);
+                   GetCodeGenContext().GetLLVMModule().getName());
 
   return Status();
 }

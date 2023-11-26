@@ -9,18 +9,24 @@
 
 using namespace stone;
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &genOpts,
-                               const ModuleOptions &moduleOpts,
-                               const TargetOptions &targetOptions,
+CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
+                               const llvm::StringRef moduleName,
                                ASTContext &astContext,
-                               ClangContext &clangContext,
-                               llvm::LLVMContext &llvmContext,
+                               std::unique_ptr<llvm::LLVMContext> llvmContext,
                                llvm::GlobalVariable *outModuleHash)
-    : genOpts(genOpts), moduleOpts(moduleOpts), targetOptions(targetOptions),
-      astContext(astContext), clangContext(clangContext),
-      llvmContext(llvmContext), outModuleHash(outModuleHash),
-      llvmTargetMachine(stone::CreateTargetMachine(genOpts)),
-      llvmModule(new llvm::Module(moduleOpts.moduleName, llvmContext)) {}
+    : codeGenOpts(codeGenOpts), astContext(astContext),
+      llvmContext(llvmContext.release()),
+      llvmModule(new llvm::Module(moduleName, GetLLVMContext())),
+      llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)),
+      outModuleHash(outModuleHash) {}
+
+CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
+                               const llvm::StringRef moduleName,
+                               ASTContext &astContext,
+                               llvm::GlobalVariable *outModuleHash)
+    : CodeGenContext(codeGenOpts, moduleName, astContext,
+                     std::make_unique<llvm::LLVMContext>(), outModuleHash) {}
+
 CodeGenContext::~CodeGenContext() {}
 
 // Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {

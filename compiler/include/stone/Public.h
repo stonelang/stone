@@ -253,27 +253,16 @@ void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
 bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                CodeGenListener *listener = nullptr);
 
-bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
-                           const ASTContext &Context,
-                           const CodeGenOptions &opts);
-
-/// Run the LLVM passes. In multi-threaded compilation this will be done for
-/// multiple LLVM modules in parallel.
-/// \param Diags The Diagnostic Engine.
-/// \param DiagMutex in contexts that require parallel codegen, a mutex that the
-///                  diagnostic engine uses to synchronize emission.
-/// \param HashGlobal used with incremental LLVMCodeGen to know if a module
-///                   was already compiled, may be null if not desired.
-/// \param Module LLVM module to code gen, required.
-/// \param TargetMachine target of code gen, required.
-/// \param OutputFilename Filename for output.
-
 bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
                llvm::sys::Mutex *diagMutex, llvm::GlobalVariable *hashGlobal,
                CodeGenListener *listener = nullptr);
 
+bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
+                           const ASTContext &Context,
+                           const CodeGenOptions &opts);
+
 /// Returns true is successfull
-void WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
+bool WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
                  llvm::sys::Mutex *diagMutex = nullptr,
                  CodeGenScope *parentScope = nullptr);
 

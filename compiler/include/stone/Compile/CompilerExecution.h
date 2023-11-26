@@ -136,13 +136,7 @@ class IRGeneration {
   Compiler &compiler;
 
 protected:
-  llvm::GlobalVariable *hashGlobal;
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<CodeGenContext> codeGenContext;
-
-private:
-  IRGeneration(Compiler &compiler,
-               std::unique_ptr<llvm::LLVMContext> llvmContext);
 
 public:
   IRGeneration(Compiler &compiler);
@@ -155,7 +149,6 @@ protected:
   Status GenerateIR();
 
 protected:
-  llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
   CodeGenContext &GetCodeGenContext() { return *codeGenContext; }
 };
 
