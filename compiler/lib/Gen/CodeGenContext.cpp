@@ -29,6 +29,17 @@ CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
 
 CodeGenContext::~CodeGenContext() {}
 
+// Maybe? Make ASTAllocation
+// CodeGenContext *CodeGenContext::Create(const CodeGenOptions &codeGenOpts,
+//                                        const llvm::StringRef moduleName,
+//                                        ASTContext &astContext,
+//                                        llvm::GlobalVariable *outModuleHash) {
+
+//   return new (astContext) CodeGenContext(codeGenOpts, moduleName, astContext,
+//   outModuleHash);
+
+// }
+
 // Safe<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
 
 //   // clang::TargetInfo &targetInfo =
@@ -56,7 +67,6 @@ CodeGenScope::CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
                            llvm::TargetMachine *targetMachine)
     : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
       lfpm(mod) {
-
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);
@@ -72,7 +82,6 @@ CodeGenScope::~CodeGenScope() { GetLegacyPassManager().run(*mod); }
 
 // TODO: Ok for now -- may move to IRCodeGenMoulde
 IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
-
   VoidTy = llvm::Type::getVoidTy(llvmContext);
   Int8Ty = llvm::Type::getInt8Ty(llvmContext);
   Int16Ty = llvm::Type::getInt16Ty(llvmContext);

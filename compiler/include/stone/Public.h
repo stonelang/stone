@@ -220,17 +220,19 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
                                    ClangContext &clangContext);
 /// GenIR for the ModuleFile
 /// Returns true is successfull
-void GenSourceFileIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                     SourceFile *sf,
-                     const PrimaryFileSpecificPaths specificPaths,
-                     CodeGenListener *listener = nullptr);
+void GenerateIR(CodeGenContext &codeGenContext, llvm::StringRef moduleName,
+                SourceFile *sf, const PrimaryFileSpecificPaths specificPaths,
+                CodeGenListener *listener = nullptr);
 
 /// Gen IR for the entire Module
 /// Returns true is successfull
-void GenWholeModuleIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                      ModuleDecl *mod,
-                      const PrimaryFileSpecificPaths specificPaths,
-                      CodeGenListener *listener = nullptr);
+void GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+                ModuleDecl *mod, const PrimaryFileSpecificPaths specificPaths,
+                CodeGenListener *listener = nullptr);
+
+// void GenerateIRInParallel(CodeGenContext &cgc, ModuleDecl *mod,
+//                           llvm::StringRef moduleName,
+//                           llvm::ArrayRef<llvm::StringRef> outputFilenames);
 
 bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
                          const CompilerOptions &opts);

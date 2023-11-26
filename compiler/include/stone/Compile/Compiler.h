@@ -126,7 +126,7 @@ public:
   bool IsCompileForWholeModule() { return primarySourceBufferIDList.empty(); }
   bool IsCompileForSourceFile() { return !GetPrimarySourceFiles().empty(); }
 
-  void SetUpIRCodeGenTarget() {
+  void SetUpIsWholeModuleCompile() {
     if (IsCompileForWholeModule()) {
       invocation.GetCodeGenOptions().isWholeModuleCompile = true;
     } else if (IsCompileForSourceFile()) {

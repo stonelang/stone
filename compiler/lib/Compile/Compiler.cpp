@@ -27,7 +27,7 @@ Status Compiler::Setup() {
       return Status::Error();
     }
   }
-  SetUpIRCodeGenTarget();
+  SetUpIsWholeModuleCompile();
 
   return Status();
 }

@@ -60,6 +60,7 @@ class TargetMachine;
 namespace stone {
 
 class SourceFile;
+class IRGenModule;
 class Decl;
 class GlobalDecl;
 class FunDecl;
@@ -93,6 +94,37 @@ struct EmitFunctionFlags final {
 };
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
+
+class IRCodeGen {
+
+  CodeGenContext &codeGenContext;
+
+  llvm::DenseMap<SourceFile *, IRCodeGenModule *> codeGenModules;
+
+  // The IGM of the first source file.
+  IRCodeGenModule *primaryCodeGenModule = nullptr;
+
+  // The current IGM for which IR is generated.
+  IRCodeGenModule *currentCodeGenModule = nullptr;
+
+private:
+  IRCodeGen(const IRCodeGen &) = delete;
+  void operator=(const IRCodeGen &) = delete;
+
+public:
+  explicit IRCodeGen(CodeGenContext &codeGenContext)
+      : codeGenContext(codeGenContext) {}
+
+public:
+  /// Add an IRCodeGenModule for a source file.
+  /// Should only be called from IRCodeGenModule's constructor.
+  void AddCodeGenModule(SourceFile *sourceFile, IRCodeGenModule *codeGenModule);
+
+  /// Get an IRGenModule for a declaration context.
+  /// Returns the IRCodeGenModule of the containing source file, or if this
+  /// cannot be determined, returns the primary IRGenModule.
+  IRCodeGenModule *GetCodeGenModule(DeclContext *ctxt);
+};
 
 class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
 

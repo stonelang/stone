@@ -13,6 +13,7 @@ IRGeneration::IRGeneration(Compiler &compiler)
           compiler.GetASTContext())) {}
 
 Status IRGeneration::GenerateIR() {
+
   if (GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile) {
     return GenForWholeModule();
   } else {
@@ -36,9 +37,9 @@ Status IRGeneration::GenForSourceFile() {
     const PrimaryFileSpecificPaths primaryFileSpecificPaths =
         compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
             *primarySyntaxFile);
-    stone::GenSourceFileIR(GetCodeGenContext(),
-                           primaryFileSpecificPaths.outputFilename,
-                           primarySyntaxFile, primaryFileSpecificPaths);
+    stone::GenerateIR(GetCodeGenContext(),
+                      primaryFileSpecificPaths.outputFilename,
+                      primarySyntaxFile, primaryFileSpecificPaths);
   }
   return Status();
 }
@@ -49,9 +50,9 @@ Status IRGeneration::GenForWholeModule() {
       compiler.GetInvocation()
           .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
   // We take the all the files and generate a module
-  stone::GenWholeModuleIR(GetCodeGenContext(),
-                          primaryFileSpecificPaths.outputFilename, mainModule,
-                          primaryFileSpecificPaths);
+  stone::GenerateIR(GetCodeGenContext(),
+                    primaryFileSpecificPaths.outputFilename, mainModule,
+                    primaryFileSpecificPaths);
   return Status();
 }
 

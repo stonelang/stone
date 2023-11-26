@@ -1,5 +1,5 @@
-#ifndef STONE_GEN_CODEGENCONTEXT_H
-#define STONE_GEN_CODEGENCONTEXT_H
+#ifndef STONE_GEN_CODEGEN_CONTEXT_H
+#define STONE_GEN_CODEGEN_CONTEXT_H
 
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/STDAlias.h"
@@ -42,6 +42,7 @@ class CodeGenContext final {
   CodeGenListener *listener;
 
 public:
+  // TODO: You may not want to pass moduleName
   CodeGenContext(const CodeGenOptions &codeGenOpts,
                  const llvm::StringRef moduleName, ASTContext &astContext,
                  std::unique_ptr<llvm::LLVMContext> llvmContext,
@@ -79,6 +80,12 @@ public:
                 ? llvm::CGFT_AssemblyFile
                 : llvm::CGFT_ObjectFile);
   }
+
+public:
+  static CodeGenContext *Create(const CodeGenOptions &codeGenOpts,
+                                const llvm::StringRef moduleName,
+                                ASTContext &astContext,
+                                llvm::GlobalVariable *outModuleHash = nullptr);
 };
 
 } // namespace stone

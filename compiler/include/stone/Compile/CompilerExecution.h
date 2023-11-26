@@ -136,6 +136,8 @@ class IRGeneration {
   Compiler &compiler;
 
 protected:
+  // This is the main result returned from generation
+  // You want to create these internally
   std::unique_ptr<CodeGenContext> codeGenContext;
 
 public:
