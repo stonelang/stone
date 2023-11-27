@@ -129,5 +129,7 @@ class IdentityExpr : public Expr {
 // DotThis
 class DotThisExpr : public IdentityExpr {};
 
+class CodeCompletionExpr : public Expr {};
+
 } // namespace stone
 #endif

@@ -143,9 +143,9 @@ public:
 };
 
 // Generate IR, optimize ir, then print it.
-class EmitIRAfterExecution final : public CompilerExecution {
+class OptimizeIRExecution final : public CompilerExecution {
 public:
-  EmitIRAfterExecution(Compiler &compiler, ActionKind currentAction);
+  OptimizeIRExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;
@@ -158,7 +158,7 @@ public:
 
 public:
   Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
 };
 
 class EmitModuleExecution final : public CompilerExecution {
@@ -169,7 +169,7 @@ public:
   Status Execute() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
 };
 
 class EmitNativeExecution : public CompilerExecution {
@@ -178,7 +178,7 @@ public:
 
 public:
   Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
+  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
 };
 
 class FallbackExecution final : public CompilerExecution {

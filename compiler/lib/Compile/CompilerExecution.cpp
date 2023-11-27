@@ -43,7 +43,7 @@ Compiler::GetExecutionForAction(ActionKind action) {
   case ActionKind::EmitIRBefore:
     return std::make_unique<GenerateIRExecution>(*this, action);
   case ActionKind::EmitIRAfter:
-    return std::make_unique<EmitIRAfterExecution>(*this, action);
+    return std::make_unique<OptimizeIRExecution>(*this, action);
   case ActionKind::EmitModule:
     return std::make_unique<EmitModuleExecution>(*this, action);
   case ActionKind::EmitBC:

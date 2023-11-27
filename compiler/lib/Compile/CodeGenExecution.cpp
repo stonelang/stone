@@ -59,13 +59,18 @@ Status GenerateIRExecution::Execute() {
   return Status();
 }
 
-EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler,
-                                           ActionKind currentAction)
+OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler,
+                                         ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
-Status EmitIRAfterExecution::Execute() {
+Status OptimizeIRExecution::Execute() {
 
-  // compiler.GetIRCodeGenResult();
+  assert(GetExecutionAction() == ActionKind::EmitIRAfter);
+  assert(GetDependencyStatus().IsSuccess());
+
+  if (GetMainAction() == ActionKind::EmitIRAfter) {
+    // Then we emit
+  }
 
   return Status();
 }

@@ -57,6 +57,7 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
   ASTContext &GetASTContext() { return astContext; }
+  MemoryContext &GetMemoryContext() { return memContext; }
 
   llvm::GlobalVariable *GetOutModuleHash() { return outModuleHash; }
   void SetOutModuleHash(llvm::GlobalVariable *hash) { outModuleHash = hash; }
@@ -84,12 +85,14 @@ public:
   static IRCodeGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
             const llvm::StringRef moduleName, ASTContext &astContext,
+            MemoryContext &memContext,
             const PrimaryFileSpecificPaths primaryFileSpecificPaths,
             llvm::GlobalVariable *outModuleHash = nullptr);
 
   static IRCodeGenRequest
   ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
           const llvm::StringRef moduleName, ASTContext &astContext,
+          MemoryContext &memContext,
           const PrimaryFileSpecificPaths primaryFileSpecificPaths,
           llvm::GlobalVariable *outModuleHash = nullptr);
 };
