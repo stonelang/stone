@@ -28,6 +28,7 @@ class Compiler final {
   StatisticEngine stats;
 
   std::unique_ptr<ASTContext> astContext;
+  std::unique_ptr<MemoryContext> memContext;
   mutable ModuleDecl *mainModule = nullptr;
   CompilerInvocation invocation;
 
@@ -38,7 +39,7 @@ class Compiler final {
 
   std::unique_ptr<SystemStatisticEngine> statistics;
 
-  std::unique_ptr<IRCodeGenResult> irCodeGenResult;
+  IRCodeGenResult *irCodeGenResult;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
@@ -60,8 +61,8 @@ public:
   }
 
 private:
-  void SetIRCodeGenResult(std::unique_ptr<IRCodeGenResult> codeGenResult) {
-    irCodeGenResult = std::move(codeGenResult);
+  void SetIRCodeGenResult(IRCodeGenResult *codeGenResult) {
+    irCodeGenResult = codeGenResult;
   }
 
 public:
@@ -76,7 +77,11 @@ public:
   const ASTContext &GetASTContext() const { return *astContext; }
   bool HasASTContext() const { return astContext != nullptr; }
 
-  IRCodeGenResult &GetIRCodeGenResult() { return *irCodeGenResult; }
+  MemoryContext &GetMemoryContext() { return *memContext; }
+  const MemoryContext &GetMemoryContext() const { return *memContext; }
+  bool HasMemoryContext() const { return memContext != nullptr; }
+
+  IRCodeGenResult *GetIRCodeGenResult() { return irCodeGenResult; }
   CompilerInvocation &GetInvocation() { return invocation; }
 
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
@@ -165,6 +170,7 @@ public:
   bool ShouldSetupASTContext();
   Status SetupASTContext();
 
+  void FreeMemoryContext();
   SystemStatisticEngine &GetStatistics() { return *statistics; }
 
 public:

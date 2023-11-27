@@ -16,6 +16,8 @@ IRCodeGenModule::IRCodeGenModule(CodeGenContext &codeGenContext,
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
+static IRCodeGenResult *IRCodeGenResult::Create() { return nullptr; }
+
 llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
 
 // llvm::GlobalValue *IRCodeGenModule::GetGlobalValue(llvm::StringRef name) {

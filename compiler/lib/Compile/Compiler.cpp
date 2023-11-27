@@ -26,6 +26,8 @@ Status Compiler::Setup() {
     if (SetupASTContext().IsError()) {
       return Status::Error();
     }
+    // For the time being, we ti MemoryContext to AST
+    memContext = std::make_unique<MemoryContext>(invocation.GetLangOptions());
   }
   SetUpIsWholeModuleCompile();
 
@@ -318,6 +320,12 @@ void Compiler::FreeASTContext() {
   }
   mainModule = nullptr;
   primarySourceBufferIDList.clear();
+}
+
+void Compiler::FreeMemoryContext() {
+  if (memContext) {
+    memContext.reset();
+  }
 }
 
 Status Compiler::ForEachSourceFileInMainModule(

@@ -29,7 +29,7 @@ class MouleFile;
 class CodeGenOptions;
 class CodeGenListener;
 
-class IRCodeGenInvocation final {
+class IRCodeGenRequest final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
@@ -40,17 +40,19 @@ class IRCodeGenInvocation final {
   CodeGenListener *listener;
 
 public:
-  IRCodeGenInvocation(const CodeGenOptions &codeGenOpts, ModuleDecl &moduleDecl,
-                      const llvm::StringRef moduleName, ASTContext &astContext,
-                      const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-                      llvm::GlobalVariable *outModuleHash = nullptr);
+  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl &moduleDecl,
+                   const llvm::StringRef moduleName, ASTContext &astContext,
+                   MemoryContext &memContext,
+                   const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                   llvm::GlobalVariable *outModuleHash = nullptr);
 
-  IRCodeGenInvocation(const CodeGenOptions &codeGenOpts, ModuleFile &moduleFile,
-                      const llvm::StringRef moduleName, ASTContext &astContext,
-                      const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-                      llvm::GlobalVariable *outModuleHash = nullptr);
+  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile &moduleFile,
+                   const llvm::StringRef moduleName, ASTContext &astContext,
+                   MemoryContext &memContext,
+                   const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                   llvm::GlobalVariable *outModuleHash = nullptr);
 
-  ~IRCodeGenInvocation();
+  ~IRCodeGenRequest();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
@@ -79,13 +81,13 @@ public:
   }
 
 public:
-  static IRCodeGenInvocation
+  static IRCodeGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
             const llvm::StringRef moduleName, ASTContext &astContext,
             const PrimaryFileSpecificPaths primaryFileSpecificPaths,
             llvm::GlobalVariable *outModuleHash = nullptr);
 
-  static IRCodeGenInvocation
+  static IRCodeGenRequest
   ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
           const llvm::StringRef moduleName, ASTContext &astContext,
           const PrimaryFileSpecificPaths primaryFileSpecificPaths,

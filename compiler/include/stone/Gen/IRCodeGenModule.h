@@ -1,11 +1,13 @@
 #ifndef STONE_GEN_IRCODEGENMODULE_H
 #define STONE_GEN_IRCODEGENMODULE_H
 
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Gen/IRCodeGenMetadata.h"
 #include "stone/Gen/IRCodeGenTypeCache.h"
 #include "stone/Gen/IRCodeGenTypeResolver.h"
+#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/ASTVisitor.h"
 #include "stone/Syntax/Module.h"
 
@@ -95,7 +97,8 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-class IRCodeGenResult final {
+// I was tinking of using MemoryAllocatoin, but just use ASTAllocation for now.
+class IRCodeGenResult final : public MemoryAllocation<IRCodeGenResult> {
 private:
   std::unique_ptr<llvm::LLVMContext> Context;
   std::unique_ptr<llvm::Module> Module;
@@ -158,6 +161,9 @@ public:
   /// Transfers ownership of the underlying module and context to an
   /// ORC-compatible context.
   llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
+
+public:
+  static IRCodeGenResult *Create();
 };
 
 class IRCodeGen {

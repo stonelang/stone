@@ -51,12 +51,11 @@ Status GenerateIRExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
   assert(GetDependencyStatus().IsSuccess());
 
-  // auto irCodeGenResult = stone::GenIR(IRCodeGenInvocaiton::ForFile((....)));
-  // compiler.SetIRCodeGenResult(std::move(irCodeGenResult)
+  // auto codeGenResult = stone::GenIR(IRCodeGenRequest::ForFile((....)));
+  // compiler.SetIRCodeGenResult(codeGenResult);
   if (GetMainAction() == ActionKind::EmitIRBefore) {
     // Then we print
   }
-
   return Status();
 }
 

@@ -78,30 +78,71 @@ inline void *Copy(void *dest, const void *src, std::size_t count) {
 //     return *second;
 //   }
 
-// enum class MemArena { Permanent = 0, Temporary };
-// template <typename AlignTy, typename ContextTy> class MemAllocation {
-// public:
-//   // Make vanilla new/delete illegal.
-//   void *operator new(size_t bytes) throw() = delete;
-//   void operator delete(void *data) throw() = delete;
+enum class MemoryArena { Permanent = 0, Temporary };
+class MemoryContext final {
 
-//   // Only allow allocation using the allocator in ASTContext
-//   // or by doing a placement new.
-//   void *operator new(size_t bytes, const ContextTy &ctx,
-//                      llvm::function_ref <
-//                          void *(size_t bytes, const ContextTy &ctx,
-//                                 MemArena arena,
-//                                 unsigned alignment)PerformAllocation,
-//                      MemArena arena = MemArena::Permanent,
-//                      unsigned alignment = alignof(AlignTy)) {
-//     return PerformAllocation(bytes, ctx, arena, alignment);
-//   }
+  const LangOptions &langOpts;
+  mutable llvm::BumpPtrAllocator allocator;
 
-//   void *operator new(size_t bytes, void *mem) throw() {
-//     assert(mem && "placement new into failed allocation");
-//     return mem;
-//   }
-// };
+public:
+  MemoryContext(const MemoryContext &) = delete;
+  MemoryContext &operator=(const MemoryContext &) = delete;
+
+public:
+  MemoryContext(const LangOptions &langOpts);
+
+public:
+  /// Allocate - Allocate memory from the ASTContext bump pointer.
+  void *Allocate(unsigned long bytes, unsigned alignment = 8,
+                 MemoryArena arena = MemoryArena::Permanent) const {
+    if (bytes == 0) {
+      return nullptr;
+    }
+    if (langOpts.useMalloc) {
+      return stone::AlignedAlloc(bytes, alignment);
+    }
+    // TODO:
+    //  if (arena == MemoryArena::Permanent && Stats)
+    //  Stats->GetMemoryCounters().NumMemoryBytesAllocated += bytes;
+    return GetAllocator(arena).Allocate(bytes, alignment);
+  }
+
+public:
+  llvm::BumpPtrAllocator &
+  GetAllocator(AllocationArena arena = AllocationArena::Permanent) const {
+    return allocator;
+  }
+};
+
+void *AllocateInMemoryContext(size_t bytes, const MemoryContext &ctx,
+                              MemoryArena arena, unsigned alignment);
+
+/// Types inheriting from this class are intended to be allocated in an
+/// \c ASTContext allocator; you cannot allocate them by using a normal \c
+/// new, and instead you must either provide an \c ASTContext or use a placement
+/// \c new.
+///
+/// The template parameter is a type with the desired alignment. It is usually,
+/// but not always, the type that is inheriting \c ASTAllocated.
+template <typename AlignTy> class MemoryAllocation {
+public:
+  // Make vanilla new/delete illegal.
+  void *operator new(size_t bytes) throw() = delete;
+  void operator delete(void *data) throw() = delete;
+
+  // Only allow allocation using the allocator in MemoryContext
+  // or by doing a placement new.
+  void *operator new(size_t bytes, const MemoryContext &ctx,
+                     MemoryArena arena = MemoryArena::Permanent,
+                     unsigned alignment = alignof(AlignTy)) {
+    return stone::AllocateInMemoryContext(bytes, ctx, arena, alignment);
+  }
+  void *operator new(size_t bytes, void *mem) throw() {
+    assert(mem && "placement new into failed allocation");
+    return mem;
+  }
+};
+
 } // namespace stone
 
 #endif
