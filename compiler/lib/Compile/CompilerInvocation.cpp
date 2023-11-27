@@ -138,24 +138,6 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts) {
 
-  switch (compilerOpts.GetMode().GetKind()) {
-  case ModeKind::EmitModule:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
-  case ModeKind::EmitIRPre:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
-  case ModeKind::EmitIR:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
-  case ModeKind::EmitBC:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
-    break;
-  case ModeKind::EmitAssembly:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
-    break;
-  default:
-    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::ObjectFile;
-    break;
-  }
-
   codeGenOpts.codeGenOutputKind = [](ActionKind kind) {
     switch (kind) {
     case ActionKind::EmitIRBefore:
@@ -170,12 +152,11 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
       return IRGenOutputKind::Module;
     case FrontendOptions::ActionType::EmitObject:
     default:
-
       return CodeGenOutputKind::ObjectFile;
     }
   }(GetMainAction().GetKind());
 
-  return Error();
+  return Status();
 }
 
 Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
