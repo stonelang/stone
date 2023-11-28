@@ -2,7 +2,7 @@
 #define STONE_GEN_IRCODEGDEBUG_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/PassManager.h"
@@ -24,13 +24,11 @@ class ClangContext;
 class IRCodeGenModule;
 
 class IRCodeGenDebug final {
-  CodeGenContext &cgc;
-
   SrcLoc curLoc;
+  IRCodeGenModule &cgm;
 
 public:
-  IRCodeGenDebug(CodeGenContext &cgc, IRCodeGenModule &cgm,
-                 ClangContext &clangContext,
+  IRCodeGenDebug(IRCodeGenModule &cgm,
                  llvm::StringRef mainOutputFilenameForDebug,
                  llvm::StringRef privateDiscriminator);
 

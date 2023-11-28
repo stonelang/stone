@@ -79,3 +79,8 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
 
   return Status();
 }
+
+// clang::CodeGenerator* CreateCodeGen() {
+//   return nullptr;
+
+// }

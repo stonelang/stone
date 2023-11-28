@@ -6,10 +6,8 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-
-class Status;
+class Parser;
 class Compiler;
-class CodeGenContext;
 class CompilerListener;
 
 class CodeCompletionCallbacks {

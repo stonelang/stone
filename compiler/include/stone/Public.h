@@ -38,8 +38,10 @@ class Stmt;
 class Expr;
 class Token;
 class SourceFile;
+class ModuleFile;
 class CompilerInputFile;
-
+class IRCodeGenRequest;
+class IRCodeGenResult;
 } // namespace stone
 
 namespace stone {
@@ -160,7 +162,6 @@ public:
 
 // Parsing and type-checking
 namespace stone {
-using ModuleOrSourceFile = llvm::PointerUnion<ModuleDecl *, SourceFile *>;
 
 using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
 
@@ -242,16 +243,21 @@ bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(const CodeGenOptions &codeGenOpts);
 
-void OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
+void OptimizeIR(const CodeGenOptions &opts, llvm::Module *mod,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
 // You want IRCodeGenOutput
-bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
+bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+               llvm::StringRef outputFilename, ASTContext &astContext,
                CodeGenListener *listener = nullptr);
 
-bool GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
-               llvm::sys::Mutex *diagMutex, llvm::GlobalVariable *hashGlobal,
+void EmbedBitcode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
+
+bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+               llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
+               llvm::GlobalVariable *hashGlobal,
+               llvm::TargetMachine *targetMachine,
                CodeGenListener *listener = nullptr);
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,

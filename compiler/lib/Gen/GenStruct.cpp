@@ -1,4 +1,3 @@
-#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"

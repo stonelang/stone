@@ -1,24 +1,36 @@
 #include "stone/Gen/IRCodeGenModule.h"
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Gen/IRCodeGenABI.h"
-
+#include "stone/Public.h"
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;
 
-IRCodeGenModule::IRCodeGenModule(CodeGenContext &codeGenContext,
+IRCodeGen::IRCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
+    : codeGenOpts(codeGenOpts), astContext(astContext),
+      llvmContext(new llvm::LLVMContext()),
+      llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)) {}
+
+IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
-    : codeGenContext(codeGenContext),
-      typeCache(codeGenContext.GetLLVMContext()), moduleName(moduleName),
-      outputFilename(outputFilename), typeResolver(*this), metadata(*this) {}
+    : irCodeGen(irCodeGen),
+      llvmModule(new llvm::Module(moduleName, irCodeGen.GetLLVMContext())),
+      typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
+      typeResolver(*this), metadata(*this) {
+
+  irCodeGen.AddIRCodeGenModule(sourceFile, this);
+}
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
-static IRCodeGenResult *IRCodeGenResult::Create() { return nullptr; }
+IRCodeGenResult *IRCodeGenResult::Create() { return nullptr; }
 
-llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) { return ""; }
+llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) {
+  assert(false && "Not implemented!");
+  return llvm::StringRef();
+}
 
 // llvm::GlobalValue *IRCodeGenModule::GetGlobalValue(llvm::StringRef name) {
 //   return GetCodeGenContext().GetLLVMModule()->getNamedValue(Name);
@@ -43,10 +55,9 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName, FunctionDecl *fd,
     isIncompleteFunction = true;
   }
 
-  llvm::Function *llvmFunction =
-      llvm::Function::Create(llvmFunctionType, llvm::Function::ExternalLinkage,
-                             entry ? llvm::StringRef() : mangledName,
-                             GetCodeGenContext().GetLLVMModule());
+  llvm::Function *llvmFunction = llvm::Function::Create(
+      llvmFunctionType, llvm::Function::ExternalLinkage,
+      entry ? llvm::StringRef() : mangledName, GetLLVMModule());
 
   return llvmFunction;
 }
@@ -89,4 +100,18 @@ IRCodeGenModule::GetFunctionLinkage(FunctionDecl *fd) {
 
 llvm::StringRef IRCodeGenModule::GetMangledNameOfGlobalDecl(Decl *d) {
   const auto *nd = llvm::cast<NameableDecl>(d);
+}
+
+// TODO: Ok for now -- may move to IRCodeGenMoulde
+IRCodeGenTypeCache::IRCodeGenTypeCache(llvm::LLVMContext &llvmContext) {
+
+  VoidTy = llvm::Type::getVoidTy(llvmContext);
+  Int8Ty = llvm::Type::getInt8Ty(llvmContext);
+  Int16Ty = llvm::Type::getInt16Ty(llvmContext);
+  Int32Ty = llvm::Type::getInt32Ty(llvmContext);
+  Int32PtrTy = Int32Ty->getPointerTo();
+  Int64Ty = llvm::Type::getInt64Ty(llvmContext);
+  Int8PtrTy = llvm::Type::getInt8PtrTy(llvmContext);
+
+  // Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
 }

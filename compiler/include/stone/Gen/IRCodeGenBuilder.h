@@ -2,9 +2,9 @@
 #define STONE_GEN_IRCODEGENBUILDER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/CodeGenContext.h"
 #include "stone/Syntax/Module.h"
 
+#include "IRCodeGenModule.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Type.h"
@@ -43,20 +43,20 @@ using IRCodeGenBuilderBase =
     llvm::IRBuilder<llvm::ConstantFolder, IRCodeGenBuilderInserter>;
 
 class IRCodeGenBuilder final : public IRCodeGenBuilderBase {
-  CodeGenContext &cgc;
+  IRCodeGen &irCodeGen;
   const IRCodeGenTypeCache &typeCache;
 
 public:
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache);
+  IRCodeGenBuilder(IRCodeGen &irCodeGen, const IRCodeGenTypeCache &typeCache);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  IRCodeGenBuilder(IRCodeGen &irCodeGen, const IRCodeGenTypeCache &typeCache,
                    const llvm::ConstantFolder &constFoler,
                    const IRCodeGenBuilderInserter &inserter);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  IRCodeGenBuilder(IRCodeGen &irCodeGen, const IRCodeGenTypeCache &typeCache,
                    llvm::Instruction *instruction);
 
-  IRCodeGenBuilder(CodeGenContext &cgc, const IRCodeGenTypeCache &typeCache,
+  IRCodeGenBuilder(IRCodeGen &irCodeGen, const IRCodeGenTypeCache &typeCache,
                    llvm::BasicBlock *basicBlock);
 
   ~IRCodeGenBuilder();

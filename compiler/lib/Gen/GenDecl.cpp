@@ -1,4 +1,3 @@
-#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenFunction.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Syntax/Decl.h"
@@ -40,7 +39,8 @@ public:
 void IRCodeGenModule::EmitSourceFile(SourceFile &sf) {
 
   PrettySourceFileEmission stackEntry(sf);
-  llvm::SaveAndRestore<SourceFile *> setCurSourceFile(curSourceFile, &sf);
+  //  TODO: llvm::SaveAndRestore<SourceFile *> setCurSourceFile(curSourceFile,
+  //  &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
   for (auto d : sf.Decls) {

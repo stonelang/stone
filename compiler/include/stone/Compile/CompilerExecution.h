@@ -1,8 +1,6 @@
 #ifndef STONE_COMPILE_COMPILER_EXECUTION_H
 #define STONE_COMPILE_COMPILER_EXECUTION_H
 
-#include "stone/Gen/CodeGenContext.h"
-
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
 #include "stone/Option/ActionKind.h"
@@ -13,7 +11,6 @@ namespace stone {
 
 class Compiler;
 class SourceFile;
-class CodeGenContext;
 
 class CompilerExecution {
   Compiler &compiler;

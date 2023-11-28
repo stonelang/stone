@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Gen/CodeGenContext.h"
 #include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRCodeGenRequest.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
@@ -81,40 +81,44 @@
 
 using namespace stone;
 
-static void GenIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                  const PrimaryFileSpecificPaths paths, ModuleDecl *md,
-                  SourceFile *sf, CodeGenListener *listener) {
+// static void GenIR(CodeGenOptions& codeGenOptions, ASTContext& astContext,
+//                   ModuleDecl *md,
+//                   llvm::StringRef moduleName,
+//                   const PrimaryFileSpecificPaths paths,
+//                   SourceFile *sourceFile, CodeGenListener *listener) {
+//
+//   IRCodeGen irCodeGen;
+//   IRCodeGenModule cgm(irCodeGen, sourceFile, moduleName,
+//   paths.outputFilename);
+//
+//   if (sourceFile) {
+//     cgm.EmitSourceFile(*sourceFile);
+//   } else if (md) {
+//     for (auto *moduleFile : md->GetFiles()) {
+//       if (auto *nextSourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
+//         if (nextSourceFile->stage >= SourceFileStage::TypeChecked)
+//           cgm.EmitSourceFile(*nextSourceFile);
+//       } else {
+//         // File->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
+//         //   IGM.addLinkLibrary(LinkLib);
+//         // });
+//       }
+//     }
+//   }
+// }
 
-  IRCodeGenModule cgm(cgc, moduleName, paths.outputFilename);
-
-  if (sf) {
-    cgm.EmitSourceFile(*sf);
-  } else if (md) {
-    for (auto *moduleFile : md->GetFiles()) {
-      if (auto *nextSourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-        if (nextSourceFile->stage >= SourceFileStage::TypeChecked)
-          cgm.EmitSourceFile(*nextSourceFile);
-      } else {
-        // File->CollectLinkLibraries([&IGM](LinkLibrary LinkLib) {
-        //   IGM.addLinkLibrary(LinkLib);
-        // });
-      }
-    }
-  }
-}
-
-void stone::GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                       SourceFile *sf, const PrimaryFileSpecificPaths paths,
-                       CodeGenListener *listener) {
-  assert(sf);
-  GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
-}
-
-void stone::GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
-                       ModuleDecl *md, const PrimaryFileSpecificPaths paths,
-                       CodeGenListener *listener) {
-  GenIR(cgc, moduleName, paths, md, nullptr, listener);
-}
+// void stone::GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+//                        SourceFile *sf, const PrimaryFileSpecificPaths paths,
+//                        CodeGenListener *listener) {
+//   assert(sf);
+//   GenIR(cgc, moduleName, paths, sf->GetParentModule(), sf, listener);
+// }
+//
+// void stone::GenerateIR(CodeGenContext &cgc, llvm::StringRef moduleName,
+//                        ModuleDecl *md, const PrimaryFileSpecificPaths paths,
+//                        CodeGenListener *listener) {
+//   GenIR(cgc, moduleName, paths, md, nullptr, listener);
+// }
 
 /// Disable thumb-mode until debugger support is there.
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {

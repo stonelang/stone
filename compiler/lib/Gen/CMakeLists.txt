@@ -9,16 +9,16 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_gen_sources
-		NativeCodeGen.cpp
+
 		GenCall.cpp
 		GenDecl.cpp
 		GenExpr.cpp
 		GenFun.cpp
 		GenIR.cpp
+		GenNative.cpp
 		GenStmt.cpp
 		GenStruct.cpp
 		GenBuiltin.cpp
-		GenNative.cpp
 		GenType.cpp
 		GenABI.cpp
 		IRCodeGenConstant.cpp

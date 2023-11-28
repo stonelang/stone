@@ -1,6 +1,10 @@
 #ifndef STONE_BASIC_MEM_H
 #define STONE_BASIC_MEM_H
 
+#include "stone/Basic/LangOptions.h"
+
+#include "llvm/Support/Allocator.h"
+
 #include <cassert>
 #include <cstring>
 #include <memory>
@@ -109,7 +113,7 @@ public:
 
 public:
   llvm::BumpPtrAllocator &
-  GetAllocator(AllocationArena arena = AllocationArena::Permanent) const {
+  GetAllocator(MemoryArena arena = MemoryArena::Permanent) const {
     return allocator;
   }
 };

@@ -1,8 +1,9 @@
-#ifndef STONE_BASIC_CODEGENOPTIONS_H
-#define STONE_BASIC_CODEGENOPTIONS_H
+#ifndef STONE_BASIC_CODEGEN_OPTIONS_H
+#define STONE_BASIC_CODEGEN_OPTIONS_H
 
 // #include "clang/Basic/PointerAuthOptions.h"
 // #include "clang/Basic/PointerAuthOptions.h"
+
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CodeGen.h"
@@ -41,8 +42,9 @@ enum class OptimizationLevel : uint8_t {
 };
 
 enum class CodeGenOutputKind : uint8_t {
+  None = 0,
   /// Generate an LLVM module and return it.
-  LLVMModule = 0,
+  LLVMModule,
 
   /// Generate an LLVM module and write it out as LLVM assembly.
   LLVMIRPreOptimization,
@@ -151,7 +153,7 @@ public:
   }
 
   // TODO: OK for now
-  llvm::CodeGenFileType GetLLVMCodeGenFileType() const {
+  llvm::CodeGenFileType GetNativeCodeGenFileType() const {
     if (codeGenOutputKind == CodeGenOutputKind::NativeAssembly) {
       return llvm::CGFT_AssemblyFile;
     }

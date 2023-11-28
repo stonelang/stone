@@ -120,7 +120,7 @@ public:
       : Context(std::move(Context)), Module(std::move(Module)),
         Target(std::move(Target)) {
 
-    assert(getModule() && "Use IRCodeGenResult ::null() instead");
+    assert(GetModule() && "Use IRCodeGenResult ::null() instead");
     assert(GetContext() && "Use IRCodeGenResult ::null() instead");
     assert(GetTargetMachine() && "Use IRCodeGenResult ::null() instead");
   }
@@ -141,7 +141,7 @@ public:
   const llvm::Module *GetModule() const { return Module.get(); }
   llvm::Module *GetModule() { return Module.get(); }
 
-  const llvm::LLVMContext *GetContext() const { return Context.Get(); }
+  const llvm::LLVMContext *GetContext() const { return Context.get(); }
   llvm::LLVMContext *getContext() { return Context.get(); }
 
   const llvm::TargetMachine *GetTargetMachine() const { return Target.get(); }
@@ -160,17 +160,21 @@ public:
 public:
   /// Transfers ownership of the underlying module and context to an
   /// ORC-compatible context.
-  llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
+  // llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
 
 public:
   static IRCodeGenResult *Create();
 };
 
-class IRCodeGen {
+class IRCodeGen final {
 
-  CodeGenContext &codeGenContext;
+  const CodeGenOptions &codeGenOpts;
+  ASTContext &astContext;
 
-  llvm::DenseMap<SourceFile *, IRCodeGenModule *> codeGenModules;
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
+
+  llvm::DenseMap<SourceFile *, IRCodeGenModule *> irCodeGenModules;
 
   // The IGM of the first source file.
   IRCodeGenModule *primaryCodeGenModule = nullptr;
@@ -183,32 +187,35 @@ private:
   void operator=(const IRCodeGen &) = delete;
 
 public:
-  explicit IRCodeGen(CodeGenContext &codeGenContext)
-      : codeGenContext(codeGenContext) {}
+  explicit IRCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
 
 public:
   /// Add an IRCodeGenModule for a source file.
   /// Should only be called from IRCodeGenModule's constructor.
-  void AddCodeGenModule(SourceFile *sourceFile, IRCodeGenModule *codeGenModule);
+  void AddIRCodeGenModule(SourceFile *sourceFile,
+                          IRCodeGenModule *codeGenModule);
 
   /// Get an IRGenModule for a declaration context.
   /// Returns the IRCodeGenModule of the containing source file, or if this
   /// cannot be determined, returns the primary IRGenModule.
-  IRCodeGenModule *GetCodeGenModule(DeclContext *ctxt);
+  IRCodeGenModule *GetIRCodeGenModule(DeclContext *ctxt);
+
+public:
+  ASTContext &GetASTContext() { return astContext; }
+  llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
+  llvm::TargetMachine &GetTargetMachine() { return *llvmTargetMachine; }
 };
 
 class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
 
-  CodeGenContext &codeGenContext;
+  IRCodeGen &irCodeGen;
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
   IRCodeGenMetadata metadata;
+
   // IRCodeGenDebug debug;
 
-  llvm::StringRef moduleName;
   llvm::StringRef outputFilename;
-
-  SourceFile *curSourceFile = nullptr;
 
   // llvm::SetVector<CanType> builtinTypes;
   //  /// Opaque but fixed-size types for which we also emit builtin type
@@ -223,18 +230,15 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   //  // /// reflection metadata.
   //  llvm::SetVector<const StructDecl *> importedStructs;
 
-  // Each module will have these
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
-  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
   void operator=(const IRCodeGenModule &) = delete;
 
 public:
-  IRCodeGenModule(CodeGenContext &codeGenContext, llvm::StringRef moduleName,
-                  llvm::StringRef outputFilename);
+  IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
+                  llvm::StringRef moduleName, llvm::StringRef outputFilename);
   ~IRCodeGenModule();
 
 public:
@@ -245,7 +249,6 @@ public:
 
 public:
   // Globals
-
   // llvm::DenseMap<LinkEntity, llvm::Constant*> globalVars;
   // llvm::DenseMap<LinkEntity, llvm::Constant*> globalGOTEquivalents;
   // llvm::DenseMap<LinkEntity, llvm::Function*> globalFunctions;
@@ -256,7 +259,7 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  CodeGenContext &GetCodeGenContext() { return codeGenContext; }
+  IRCodeGen &GetIRCodeGen() { return irCodeGen; }
   IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
   IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
@@ -310,6 +313,8 @@ public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,
   //                                       unsigned BuiltinID);
 
+  llvm::Module &GetLLVMModule() { return *llvmModule; }
+
 private:
   void Emit();
 
@@ -343,6 +348,9 @@ public:
 public:
   clang::CodeGenerator *CreateClangCodeGenerator();
 };
+
+class IRCodeGenModuleOptimizer {};
+
 } // namespace stone
 
 #endif

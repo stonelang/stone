@@ -1,7 +1,7 @@
-#ifndef STONE_GEN_BACKENDCODEGEN_H
-#define STONE_GEN_BACKENDCODEGEN_H
+#ifndef STONE_GEN_NATIVE_CODEGEN_H
+#define STONE_GEN_NATIVE_CODEGEN_H
 
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Public.h"
 
 namespace llvm {
@@ -15,24 +15,39 @@ class TargetMachine;
 
 namespace stone {
 
-class Module;
 class ASTContext;
 
 class NativeCodeGen final {
-  CodeGenContext &cgc;
-  ASTContext &sc;
 
+  const CodeGenOptions &codeGenOpts;
+  ASTContext &astContext;
   // llvm::Optional<raw_fd_ostream> rawStream;
+  /// outputbackend
 public:
   NativeCodeGen(const NativeCodeGen &) = delete;
   void operator=(const NativeCodeGen &) = delete;
 
 public:
-  NativeCodeGen(CodeGenContext &cgc, ASTContext &sc);
+  NativeCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
   ~NativeCodeGen();
 
-  CodeGenContext &GetCodeGenContext() { return cgc; }
-  ASTContext &GetASTContext() { return sc; }
+  ASTContext &GetASTContext() { return astContext; }
+  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
+
+public:
+  llvm::CodeGenFileType GetCodeGenFileType() {
+    switch (codeGenOpts.codeGenOutputKind) {
+    case CodeGenOutputKind::ObjectFile:
+      return llvm::CodeGenFileType::CGFT_ObjectFile;
+    case CodeGenOutputKind::NativeAssembly:
+      return llvm::CodeGenFileType::CGFT_AssemblyFile;
+    default:
+      llvm_unreachable("Unknow code generation file type!");
+    }
+  }
+
+public:
+  void WriteFile();
 };
 } // namespace stone
 

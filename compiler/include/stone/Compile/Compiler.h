@@ -5,6 +5,7 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Public.h"
 #include "stone/Stats/Stats.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
@@ -39,6 +40,11 @@ class Compiler final {
 
   std::unique_ptr<SystemStatisticEngine> statistics;
 
+  /// It may just be better to pass this down
+  // std::unique_ptr<IRCodeGen> irCodeGen;
+
+  // std::unique_ptr<NativeCodeGen> nativeCodeGen;
+
   IRCodeGenResult *irCodeGenResult;
 
   /// Virtual OutputBackend.
@@ -61,9 +67,11 @@ public:
   }
 
 private:
-  void SetIRCodeGenResult(IRCodeGenResult *codeGenResult) {
-    irCodeGenResult = codeGenResult;
-  }
+  //  void SetIRCodeGenResult(IRCodeGenResult *codeGenResult) {
+  //    irCodeGenResult = codeGenResult;
+  //  }
+  // TODO:
+  //  IRCodeGenResult *GetIRCodeGenResult() { return irCodeGenResult; }
 
 public:
   DiagnosticEngine &GetDiags() { return diags; }
@@ -81,7 +89,6 @@ public:
   const MemoryContext &GetMemoryContext() const { return *memContext; }
   bool HasMemoryContext() const { return memContext != nullptr; }
 
-  IRCodeGenResult *GetIRCodeGenResult() { return irCodeGenResult; }
   CompilerInvocation &GetInvocation() { return invocation; }
 
   std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
@@ -125,12 +132,13 @@ public:
   SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
 
 public:
-  ModuleDecl *CastToModuleDecl(ModuleOrSourceFile msf) {
-    return msf.get<ModuleDecl *>();
-  }
-  SourceFile *CastToSourceFile(ModuleOrSourceFile msf) {
-    msf.dyn_cast<SourceFile *>();
-  }
+  // TODO:
+  //  ModuleDecl *CastToModuleDecl(stone::ModuleDeclOrSourceFile msf) {
+  //    return msf.get<ModuleDecl *>();
+  //  }
+  //  SourceFile *CastToSourceFile(stone::ModuleDeclOrSourceFile msf) {
+  //    msf.dyn_cast<SourceFile *>();
+  //  }
 
   Status ForEachSourceFileToTypeCheck(
       std::function<Status(SourceFile &sourceFile)> notify);

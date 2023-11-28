@@ -1,9 +1,9 @@
-#ifndef STONE_GEN_CODEGENSCOPE_H
-#define STONE_GEN_CODEGENSCOPE_H
+#ifndef STONE_GEN_CODEGEN_OPTIMIZER_H
+#define STONE_GEN_CODEGEN_OPTIMIZER_H
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-
+#include "stone/Diag/DiagnosticEngine.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
@@ -16,10 +16,16 @@ class TargetMachine;
 namespace stone {
 class CodeGenOptions;
 
-class CodeGenScope final {
+// There are two layers to optimization
+// (1) optimization during module constructiong
+// (2) optimization when actually generating backend code
+// So, this is a convenient class to wrapp of the essential objects required.
+class IRCodeGenOptimizer final {
   const CodeGenOptions &codeGenOpts;
   llvm::Module *mod = nullptr;
   llvm::TargetMachine *targetMachine = nullptr;
+
+  DiagnosticEngine &diags;
 
   llvm::PassBuilder pb;
   llvm::LoopAnalysisManager lam;
@@ -32,15 +38,16 @@ class CodeGenScope final {
   llvm::FunctionPassManager fpm;
 
 public:
-  CodeGenScope(const CodeGenScope &) = delete;
-  void operator=(const CodeGenScope &) = delete;
-  CodeGenScope(CodeGenScope &&) = delete;
-  void operator=(CodeGenScope &&) = delete;
+  IRCodeGenOptimizer(const IRCodeGenOptimizer &) = delete;
+  void operator=(const IRCodeGenOptimizer &) = delete;
+  IRCodeGenOptimizer(IRCodeGenOptimizer &&) = delete;
+  void operator=(IRCodeGenOptimizer &&) = delete;
 
 public:
-  CodeGenScope(const CodeGenOptions &codeGenOpts, llvm::Module *mod = nullptr,
-               llvm::TargetMachine *targetMachine = nullptr);
-  ~CodeGenScope();
+  IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
+                     llvm::TargetMachine *targetMachine,
+                     DiagnosticEngine &diags);
+  ~IRCodeGenOptimizer();
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -58,6 +65,10 @@ public:
 public:
   llvm::TargetMachine *GetTargetMachine() { return targetMachine; }
   llvm::Module *GetLLVMModule() { return mod; }
+
+public:
+  void Optimize();
+  void OptimizeWithLegacyPassManager();
 };
 
 } // namespace stone

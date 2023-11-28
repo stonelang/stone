@@ -8,6 +8,9 @@ namespace stone {
 namespace strings {
 
 /// Substitute for <stdout>
+constexpr static const char *CC1 = "-cc1";
+
+/// Substitute for <stdout>
 constexpr static const char *Dash = "-";
 
 // The function name of the main program

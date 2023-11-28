@@ -16,8 +16,8 @@ namespace stone {
 
 class ClangContext final : public ClangModuleImporter {
 
-  Safe<clang::CompilerInstance> clangInstance;
-  Safe<clang::CodeGenerator> clangCodeGen;
+  std::unique_ptr<clang::CompilerInstance> clangInstance;
+  std::unique_ptr<clang::CodeGenerator> clangCodeGen;
 
 public:
   ClangContext();
@@ -28,6 +28,8 @@ public:
 public:
   clang::CompilerInstance &GetInstance() { return *clangInstance; }
   clang::CodeGenerator &GetCodeGen() { return *clangCodeGen; }
+
+  clang::CodeGenerator *CreateCodeGen();
 };
 
 } // namespace stone

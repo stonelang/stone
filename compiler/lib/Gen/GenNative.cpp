@@ -1,5 +1,5 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Gen/CodeGenScope.h"
+#include "stone/Gen/IRCodeGenOptimizer.h"
 #include "stone/Gen/NativeCodeGen.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
@@ -75,16 +75,16 @@
 
 using namespace stone;
 
-static void GenNativeWithParallelization() {}
+// static void GenNativeWithParallelization() {}
 
-static void EmitObject(CodeGenContext &cgc, ASTContext &sc,
-                       llvm::StringRef outputFilename) {}
+// static void EmitObject(CodeGenContext &cgc, ASTContext &sc,
+//                        llvm::StringRef outputFilename) {}
 
-static void EmitBC(const CodeGenContext &cgc, ASTContext &sc,
-                   llvm::StringRef outputFilename) {}
+// static void EmitBC(const CodeGenContext &cgc, ASTContext &sc,
+//                    llvm::StringRef outputFilename) {}
 
-static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
-                         llvm::StringRef outputFilename) {}
+// static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
+//                          llvm::StringRef outputFilename) {}
 
 // void stone::GenNative(CodeGenContext &cgc, ASTContext &sc,
 //                       llvm::StringRef outputFilename,
@@ -99,19 +99,32 @@ static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
 //   }
 // }
 
-static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
+// static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
 
-/// Returns true is successfull
-bool stone::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
-                      CodeGenListener *listener) {
+/// CodeGenCompletionCallbacks
+bool stone::GenNative(const CodeGenOptions &codeGenOpts,
+                      llvm::Module *llvmModule, llvm::StringRef outputFilename,
+                      ASTContext &astContext, CodeGenListener *listener) {
 
-  CodeGenScope nativeScope(cgc.GetCodeGenOptions());
-  // EmbedBitcode(mod, nativeScope);
+  // stone::EmbedBitcode(codeGenOpts, llvmModule);
 
-  llvm::Optional<llvm::raw_fd_ostream> outputStream;
+  // CodeGenScope nativeScope(cgc.GetCodeGenOptions());
+  //  EmbedBitcode(mod, nativeScope);
+
+  // llvm::Optional<llvm::raw_fd_ostream> outputStream;
+
+  // NativeCodeGen nativeCodeGen;
+
+  // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);
+
+  // IRCodeGenOptimizer optimizer(codeGenOpts, llvmModule, llvmTarget, diags);
+  // optimizer.optimize();
 
   return true;
 }
+
+void stone::EmbedBitcode(const CodeGenOptions &codeGenOpts,
+                         llvm::Module *llvmModule) {}
 
 bool stone::WriteEmptyOutputFiles(
     std::vector<std::string> &parallelOutputFilenames,
@@ -119,39 +132,40 @@ bool stone::WriteEmptyOutputFiles(
   return true;
 }
 
-bool stone::GenNative(CodeGenContext &cgc, llvm::StringRef outputFilename,
-                      llvm::sys::Mutex *diagMutex,
-                      llvm::GlobalVariable *hashGlobal,
-                      CodeGenListener *listener) {
+// bool stone::GenNative(CodeGenOptions &codegenOpts, llvm::StringRef
+// outputFilename,
+//                       llvm::sys::Mutex *diagMutex,
+//                       llvm::GlobalVariable *hashGlobal,
+//                       CodeGenListener *listener) {
 
-  llvm::Optional<llvm::raw_fd_ostream> rawOS;
-  if (!outputFilename.empty()) {
-    // Try to open the output file.  Clobbering an existing file is fine.
-    // Open in binary mode if we're doing binary output.
-    llvm::sys::fs::OpenFlags osFlags = llvm::sys::fs::OF_None;
-    std::error_code ec;
-    rawOS.emplace(outputFilename, ec, osFlags);
-    // if (rawOS->has_error() || ec) {
-    //   PrintSync(diags, diagMutex,
-    //                SrcLoc(), diag::error_opening_output,
-    //                outputFilename, ec.message());
-    //   rawOS->clear_error();
-    //   return true;
-    // }
-    if (cgc.GetCodeGenOptions().codeGenOutputKind ==
-        CodeGenOutputKind::LLVMIRPreOptimization) {
+// llvm::Optional<llvm::raw_fd_ostream> rawOS;
+// if (!outputFilename.empty()) {
+//   // Try to open the output file.  Clobbering an existing file is fine.
+//   // Open in binary mode if we're doing binary output.
+//   llvm::sys::fs::OpenFlags osFlags = llvm::sys::fs::OF_None;
+//   std::error_code ec;
+//   rawOS.emplace(outputFilename, ec, osFlags);
+//   // if (rawOS->has_error() || ec) {
+//   //   PrintSync(diags, diagMutex,
+//   //                SrcLoc(), diag::error_opening_output,
+//   //                outputFilename, ec.message());
+//   //   rawOS->clear_error();
+//   //   return true;
+//   // }
+//   if (cgc.GetCodeGenOptions().codeGenOutputKind ==
+//       CodeGenOutputKind::LLVMIRPreOptimization) {
 
-      // Send file to the output stream
-      // cgc.GetLLVMModule()->print(rawOS.value(), nullptr);
-      return false;
-    }
-  } else {
-    assert(cgc.GetCodeGenOptions().codeGenOutputKind ==
-               CodeGenOutputKind::LLVMModule &&
-           "No output specified");
-  }
-  return true;
-}
+//     // Send file to the output stream
+//     // cgc.GetLLVMModule()->print(rawOS.value(), nullptr);
+//     return false;
+//   }
+// } else {
+//   assert(cgc.GetCodeGenOptions().codeGenOutputKind ==
+//              CodeGenOutputKind::LLVMModule &&
+//          "No output specified");
+// }
+//  return true;
+//}
 
 /// Returns true is successfull
 bool stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
@@ -184,3 +198,9 @@ bool stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
 
   return true;
 }
+
+NativeCodeGen::NativeCodeGen(const CodeGenOptions &codeGenOptions,
+                             ASTContext &astContext)
+    : codeGenOpts(codeGenOptions), astContext(astContext) {}
+
+NativeCodeGen::~NativeCodeGen() {}

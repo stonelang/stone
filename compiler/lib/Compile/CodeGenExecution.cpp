@@ -1,6 +1,6 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
-#include "stone/Gen/CodeGenContext.h"
+#include "stone/Gen/IRCodeGenRequest.h"
 
 using namespace stone;
 
@@ -53,8 +53,9 @@ Status GenerateIRExecution::Execute() {
 
   // auto codeGenResult = stone::GenIR(IRCodeGenRequest::ForFile((....)));
   // compiler.SetIRCodeGenResult(codeGenResult);
-  if (GetMainAction() == ActionKind::EmitIRBefore) {
-    // Then we print
+
+  if (IsMainAction()) {
+    // Then we emit
   }
   return Status();
 }
@@ -68,7 +69,9 @@ Status OptimizeIRExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::EmitIRAfter);
   assert(GetDependencyStatus().IsSuccess());
 
-  if (GetMainAction() == ActionKind::EmitIRAfter) {
+  // stone::OptimizeIR(compiler.GetIRCodeGen()....)
+
+  if (IsMainAction()) {
     // Then we emit
   }
 
@@ -81,7 +84,7 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
 
 Status EmitBitCodeExecution::Execute() {
 
-  compiler.GetIRCodeGenResult();
+  // compiler.GetIRCodeGenResult();
 
   return Status();
 }

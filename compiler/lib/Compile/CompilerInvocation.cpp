@@ -1,4 +1,5 @@
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Basic/Strings.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Diag/CompilerDiagnostic.h"
@@ -134,28 +135,28 @@ ParseTargetOptions(llvm::opt::InputArgList &ial, CompilerOptions &compilerOpts,
 }
 
 static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
+                                  CompilerInvocation &invocation,
                                   DiagnosticEngine &de,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts) {
 
-  codeGenOpts.codeGenOutputKind = [](ActionKind kind) {
-    switch (kind) {
-    case ActionKind::EmitIRBefore:
-      return ActionKind::LLVMIRPreOptimization;
-    case FrontendOptions::ActionType::EmitIR:
-      return IRGenOutputKind::LLVMAssemblyAfterOptimization;
-    case FrontendOptions::ActionType::EmitBC:
-      return IRGenOutputKind::LLVMBitcode;
-    case FrontendOptions::ActionType::EmitAssembly:
-      return IRGenOutputKind::NativeAssembly;
-    case FrontendOptions::ActionType::Immediate:
-      return IRGenOutputKind::Module;
-    case FrontendOptions::ActionType::EmitObject:
-    default:
-      return CodeGenOutputKind::ObjectFile;
-    }
-  }(GetMainAction().GetKind());
-
+  switch (invocation.GetMainAction().GetKind()) {
+  case ActionKind::EmitModule:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
+  case ActionKind::EmitIRBefore:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
+  case ActionKind::EmitIRAfter:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
+  case ActionKind::EmitBC:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
+    break;
+  case ActionKind::EmitAssembly:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
+    break;
+  default:
+    codeGenOpts.codeGenOutputKind = CodeGenOutputKind::ObjectFile;
+    break;
+  }
   return Status();
 }
 
@@ -203,7 +204,8 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   if (compiler.GetInvocation().CanGenCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (compiler.GetInvocation()
-            .SetupClang("-cc1", GetCompilerOptions().mainExecutablePath.data())
+            .SetupClang(strings::CC1,
+                        GetCompilerOptions().mainExecutablePath.data())
             .IsError()) {
       return Status::Error();
     }
@@ -212,6 +214,11 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
             .IsError()) {
       return Status::Error();
     }
+  }
+  if (ParseCodeGenOptions(*compilerInputArgList, *this, compiler.GetDiags(),
+                          GetCompilerOptions(), GetCodeGenOptions())
+          .IsError()) {
+    return Status::Error();
   }
   return Status();
 }

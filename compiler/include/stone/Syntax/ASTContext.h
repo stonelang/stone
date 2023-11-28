@@ -45,6 +45,8 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
 
+// UPDATE #include "llvm/Support/VirtualOutputBackend.h"
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -146,6 +148,9 @@ class ASTContext final {
   /// (real_name, true)].
   mutable llvm::DenseMap<Identifier, std::pair<Identifier, bool>>
       moduleAliasMap;
+
+  /// OutputBackend for writing outputs.
+  // std::unique_ptr<llvm::vfs::OutputBackend> outputBackend;
 
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.

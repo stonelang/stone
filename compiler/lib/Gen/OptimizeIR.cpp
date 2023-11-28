@@ -1,7 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Gen/CodeGenContext.h"
-#include "stone/Gen/CodeGenScope.h"
 #include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRCodeGenOptimizer.h"
 #include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
@@ -46,34 +45,40 @@
 
 using namespace stone;
 
-// static void
-// OptimizeIRUsingLegacyPassManger(llvm::Module *mod, CodeGenOptions
-// &codeGenOpts,
-//                                 llvm::TargetMachine *targetMachine) {
+IRCodeGenOptimizer::IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts,
+                                       llvm::Module *mod,
+                                       llvm::TargetMachine *targetMachine,
+                                       DiagnosticEngine &diags)
+    : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
+      diags(diags), lfpm(mod) {
+  // Register all the ctx analyses with the managers.
+  pb.registerModuleAnalyses(mam);
+  pb.registerCGSCCAnalyses(cgam);
+  pb.registerFunctionAnalyses(fam);
+  pb.registerLoopAnalyses(lam);
+  pb.crossRegisterProxies(lam, fam, cgam, mam);
 
-//   CodeGenScope optimizeIRScope(codeGenOpts);
-//   // Goal
-//   // optimizeIRScope.GetLegacyPassManager().run(*mod);
-// }
+  // TODO: get ol from gen options
+  mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
+}
 
-// static void
-// OptimizeIRUsingModulePassManger(llvm::Module *mod, CodeGenOptions
-// &codeGenOpts,
-//                                 llvm::TargetMachine *targetMachine) {
+void IRCodeGenOptimizer::Optimize() {
+  // GetPassManager().run(*mod);
+}
 
-//   CodeGenScope optimizeIRScope(codeGenOpts);
-//   // Goal
-//   // optimizeIRScope.GetModulePassManager().run(
-//   //     *mod, optimizeIRScope.GetModulePassManager());
-// }
+void IRCodeGenOptimizer::OptimizeWithLegacyPassManager() {
+  GetLegacyPassManager().run(*mod);
+}
 
 // TODO: Pass CodeGenContext
-void stone::OptimizeIR(llvm::Module *mod, const CodeGenOptions &opts,
-                       llvm::TargetMachine *target, DiagnosticEngine &diags) {
+void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
+                       llvm::Module *llvmModule, llvm::TargetMachine *target,
+                       DiagnosticEngine &diags) {
 
-  // if (codeGenOpts.useLegacyPassManager) {
-  //   OptimizeIRUsingLegacyPassManger(mod, codeGenOpts, targetMachine);
-  // } else {
-  //   OptimizeIRUsingModulePassManger(mod, codeGenOpts, targetMachine);
-  // }
+  IRCodeGenOptimizer optimizer(codeGenOpts, llvmModule, target, diags);
+  if (codeGenOpts.useLegacyPassManager) {
+    optimizer.Optimize();
+  } else {
+    optimizer.OptimizeWithLegacyPassManager();
+  }
 }

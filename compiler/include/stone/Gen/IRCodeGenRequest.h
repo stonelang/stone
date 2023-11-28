@@ -2,14 +2,13 @@
 #define STONE_GEN_CODEGEN_INVOCATION_H
 
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/Mem.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Public.h"
-
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/IR/PassManager.h"
-#include "llvm/Passes/PassBuilder.h"
+#include "stone/Syntax/Module.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
@@ -33,20 +32,22 @@ class IRCodeGenRequest final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
+  MemoryContext &memContext;
   const PrimaryFileSpecificPaths primaryFileSpecificPaths;
   ModuleDeclOrModuleFile moduleOrFile;
+  llvm::StringRef moduleName;
   llvm::GlobalVariable *outModuleHash;
 
   CodeGenListener *listener;
 
 public:
-  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl &moduleDecl,
+  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
                    const llvm::StringRef moduleName, ASTContext &astContext,
                    MemoryContext &memContext,
                    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
                    llvm::GlobalVariable *outModuleHash = nullptr);
 
-  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile &moduleFile,
+  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
                    const llvm::StringRef moduleName, ASTContext &astContext,
                    MemoryContext &memContext,
                    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
@@ -74,6 +75,7 @@ public:
   }
   CodeGenListener *GetCodeGenListener() { return listener; }
 
+  // TODO: This code is also in NativeCodegen
   llvm::CodeGenFileType GetCodeGenFileType() {
     return (GetCodeGenOptions().codeGenOutputKind ==
                     CodeGenOutputKind::NativeAssembly
