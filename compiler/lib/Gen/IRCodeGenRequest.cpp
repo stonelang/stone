@@ -13,6 +13,7 @@ IRCodeGenRequest::IRCodeGenRequest(
     const llvm::StringRef moduleName, ASTContext &astContext,
     MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOrFile(moduleDecl),
       moduleName(moduleName), astContext(astContext), memContext(memContext),
@@ -24,6 +25,7 @@ IRCodeGenRequest::IRCodeGenRequest(
     const llvm::StringRef moduleName, ASTContext &astContext,
     MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOrFile(moduleFile),
       moduleName(moduleName), astContext(astContext), memContext(memContext),
@@ -35,9 +37,15 @@ IRCodeGenRequest IRCodeGenRequest::ForModule(
     const llvm::StringRef moduleName, ASTContext &astContext,
     MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash) {
-  return IRCodeGenRequest{codeGenOpts,  moduleDecl, moduleName,
-                          astContext,   memContext, primaryFileSpecificPaths,
+  return IRCodeGenRequest{codeGenOpts,
+                          moduleDecl,
+                          moduleName,
+                          astContext,
+                          memContext,
+                          primaryFileSpecificPaths,
+                          parallelOutputFilenames,
                           outModuleHash};
 }
 
@@ -47,9 +55,9 @@ IRCodeGenRequest IRCodeGenRequest::ForFile(
     MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
     llvm::GlobalVariable *outModuleHash) {
-  return IRCodeGenRequest{codeGenOpts,  moduleFile, moduleName,
-                          astContext,   memContext, primaryFileSpecificPaths,
-                          outModuleHash
+  return IRCodeGenRequest{codeGenOpts, moduleFile,   moduleName,
+                          astContext,  memContext,   primaryFileSpecificPaths,
+                          {},          outModuleHash
 
   };
 }

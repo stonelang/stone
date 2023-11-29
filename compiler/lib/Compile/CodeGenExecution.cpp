@@ -4,43 +4,64 @@
 
 using namespace stone;
 
-// IRGenCodeOuput IRGeneration::ExecuteGenIR(Compiler &compiler) {
-//   if (compiler.GetInvocation().GetCodeGenOptions().isWholeModuleCompile) {
-//     return stone::GenIR(CodeGenContext::ForModule())
-//   }
-//   return stone::GenIR(CodeGenContext::ForFile());
-// }
+Status GenerateIRExecution::GenForFile() {
 
-// Status IRGeneration::GenForSourceFile() {
-//   assert(!GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
+  assert(!IsForModule());
+  if (!GetCompiler().GetPrimarySourceFiles().empty()) {
+    for (auto *primarySourceFile : GetCompiler().GetPrimarySourceFiles()) {
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          GetCompiler()
+              .GetInvocation()
+              .GetPrimaryFileSpecificPathsForSyntaxFile(*primarySourceFile);
 
-//   stone::GenIR(CodeGenContext::ForFile())
+      llvm::StringRef outputFilename = primaryFileSpecificPaths.outputFilename;
 
-//   // for (auto *primarySyntaxFile : compiler.GetPrimarySourceFiles()) {
-//   //   const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-//   //       compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
-//   //           *primarySyntaxFile);
+      auto result = stone::GenIR(IRCodeGenRequest::ForFile(
+          GetCompiler().GetInvocation().GetCodeGenOptions(), primarySourceFile,
+          outputFilename, GetCompiler().GetASTContext(),
+          GetCompiler().GetMemoryContext(), primaryFileSpecificPaths));
 
-//   //   stone::GenerateIR(GetCodeGenContext(),
-//   //                     primaryFileSpecificPaths.outputFilename,
-//   //                     primarySyntaxFile, primaryFileSpecificPaths);
-//   // }
-//   return Status();
-// }
-// Status IRGeneration::GenForWholeModule() {
-//   assert(GetCodeGenContext().GetCodeGenOptions().isWholeModuleCompile);
-//    stone::GenIR(CodeGenContext::ForModule())
+      GetCompiler().AddIRCodeGenResult(result);
+    }
+  }
+}
 
-//   // auto *mainModule = compiler.GetMainModule();
-//   // const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-//   //     compiler.GetInvocation()
-//   //         .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-//   // // We take the all the files and generate a module
-//   // stone::GenerateIR(GetCodeGenContext(),
-//   //                   primaryFileSpecificPaths.outputFilename, mainModule,
-//   //                   primaryFileSpecificPaths);
-//   return Status();
-// }
+bool GenerateIRExecution::IsForModule() {
+  return GetCompiler().GetInvocation().GetCodeGenOptions().isWholeModuleCompile;
+}
+
+Status GenerateIRExecution::GenForModule() {
+
+  assert(IsForModule());
+  if (!GetCompiler()
+           .GetInvocation()
+           .GetCompilerOptions()
+           .inputsAndOutputs.HasPrimaryInputs()) {
+
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+        GetCompiler()
+            .GetInvocation()
+            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    llvm::StringRef outputFilename = primaryFileSpecificPaths.outputFilename;
+    std::vector<std::string> ParallelOutputFilenames =
+        GetCompiler()
+            .GetInvocation()
+            .GetCompilerOptions()
+            .inputsAndOutputs.CopyOutputFilenames();
+
+    auto result = stone::GenIR(IRCodeGenRequest::ForModule(
+        GetCompiler().GetInvocation().GetCodeGenOptions(),
+        GetCompiler().GetMainModule(), outputFilename,
+        GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
+        primaryFileSpecificPaths, ParallelOutputFilenames));
+
+    GetCompiler().AddIRCodeGenResult(result);
+  }
+
+  // Just return for now
+  return Status();
+}
 
 GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
                                          ActionKind currentAction)
@@ -51,8 +72,11 @@ Status GenerateIRExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
   assert(GetDependencyStatus().IsSuccess());
 
-  // auto codeGenResult = stone::GenIR(IRCodeGenRequest::ForFile((....)));
-  // compiler.SetIRCodeGenResult(codeGenResult);
+  if (IsForModule()) {
+    GenForModule();
+  } else {
+    GenForFile();
+  }
 
   if (IsMainAction()) {
     // Then we emit

@@ -25,7 +25,14 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
-IRCodeGenResult *IRCodeGenResult::Create() { return nullptr; }
+IRCodeGenResult *IRCodeGenResult::Create(
+    MemoryContext &memContext, std::unique_ptr<llvm::LLVMContext> &&llvmContext,
+    std::unique_ptr<llvm::Module> &&llvmModule,
+    std::unique_ptr<llvm::TargetMachine> &&llvmTargetMachine) {
+  return new (memContext)
+      IRCodeGenResult(std::move(llvmContext), std::move(llvmModule),
+                      std::move(llvmTargetMachine));
+}
 
 llvm::StringRef IRCodeGenModule::GetMangledName(Decl &d) {
   assert(false && "Not implemented!");

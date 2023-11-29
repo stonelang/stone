@@ -225,7 +225,7 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
 /// Returns true is successfull
 // IRCoeGenRequest
 // TODO, you may just want to return a pointer
-IRCodeGenResult *GenIR(IRCodeGenRequest codeGenRequest);
+IRCodeGenResult *GenIR(const IRCodeGenRequest codeGenRequest);
 
 // IRCodeGenOutput GenIRInParallel(ParallelCodeGenContext);
 

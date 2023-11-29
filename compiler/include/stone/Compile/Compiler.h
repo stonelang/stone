@@ -20,6 +20,7 @@ class CompilerExecution;
 class GenerateIRExecution;
 
 class Compiler final {
+
   friend CompilerExecution;
   friend GenerateIRExecution;
 
@@ -30,7 +31,7 @@ class Compiler final {
 
   std::unique_ptr<ASTContext> astContext;
   std::unique_ptr<MemoryContext> memContext;
-  mutable ModuleDecl *mainModule = nullptr;
+
   CompilerInvocation invocation;
 
   /// Contains buffer IDs for input source code files.
@@ -40,12 +41,9 @@ class Compiler final {
 
   std::unique_ptr<SystemStatisticEngine> statistics;
 
-  /// It may just be better to pass this down
-  // std::unique_ptr<IRCodeGen> irCodeGen;
+  mutable ModuleDecl *mainModule = nullptr;
 
-  // std::unique_ptr<NativeCodeGen> nativeCodeGen;
-
-  IRCodeGenResult *irCodeGenResult;
+  llvm::SmallVector<IRCodeGenResult *, 8> irCodeGenResults;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
@@ -66,11 +64,18 @@ public:
     diags.RemoveConsumer(consumer);
   }
 
-private:
-  //  void SetIRCodeGenResult(IRCodeGenResult *codeGenResult) {
-  //    irCodeGenResult = codeGenResult;
-  //  }
-  // TODO:
+  void AddIRCodeGenResult(IRCodeGenResult *result) {
+    irCodeGenResults.push_back(result);
+  }
+  void
+  ForEachIRCodeGenResult(std::function<void(IRCodeGenResult *result)> notify) {
+    for (auto result : irCodeGenResults) {
+      notify(result);
+    }
+  }
+
+public:
+  //  bool HasIRCodeGenResult() { return irCodeGenResult != nullptr; }
   //  IRCodeGenResult *GetIRCodeGenResult() { return irCodeGenResult; }
 
 public:

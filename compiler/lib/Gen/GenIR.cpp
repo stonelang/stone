@@ -120,6 +120,10 @@ using namespace stone;
 //   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 // }
 
+IRCodeGenResult *stone::GenIR(const IRCodeGenRequest codeGenRequest) {
+
+  return nullptr;
+}
 /// Disable thumb-mode until debugger support is there.
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";

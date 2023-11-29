@@ -37,6 +37,7 @@ class IRCodeGenRequest final {
   ModuleDeclOrModuleFile moduleOrFile;
   llvm::StringRef moduleName;
   llvm::GlobalVariable *outModuleHash;
+  llvm::ArrayRef<std::string> parallelOutputFilenames;
 
   CodeGenListener *listener;
 
@@ -45,12 +46,14 @@ public:
                    const llvm::StringRef moduleName, ASTContext &astContext,
                    MemoryContext &memContext,
                    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                   llvm::ArrayRef<std::string> parallelOutputFilenames,
                    llvm::GlobalVariable *outModuleHash = nullptr);
 
   IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
                    const llvm::StringRef moduleName, ASTContext &astContext,
                    MemoryContext &memContext,
                    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                   llvm::ArrayRef<std::string> parallelOutputFilenames,
                    llvm::GlobalVariable *outModuleHash = nullptr);
 
   ~IRCodeGenRequest();
@@ -89,6 +92,7 @@ public:
             const llvm::StringRef moduleName, ASTContext &astContext,
             MemoryContext &memContext,
             const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+            llvm::ArrayRef<std::string> parallelOutputFilenames,
             llvm::GlobalVariable *outModuleHash = nullptr);
 
   static IRCodeGenRequest

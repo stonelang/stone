@@ -48,6 +48,8 @@ protected:
   ActionKind GetExecutionAction() {
     return IsMainAction() ? GetMainAction() : GetCurrentAction();
   }
+
+public:
   Compiler &GetCompiler() { return compiler; }
 };
 
@@ -131,8 +133,15 @@ public:
 
 // Generate IR, before optimization
 class GenerateIRExecution final : public CompilerExecution {
+  // llvm::GlobalVariable *hashGlobal;
+
 public:
   GenerateIRExecution(Compiler &compiler, ActionKind currentAction);
+
+private:
+  Status GenForFile();
+  Status GenForModule();
+  bool IsForModule();
 
 public:
   Status Execute() override;

@@ -97,7 +97,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-// I was tinking of using MemoryAllocatoin, but just use ASTAllocation for now.
+// TODO: Use ASTAllocation in the future?
 class IRCodeGenResult final : public MemoryAllocation<IRCodeGenResult> {
 private:
   std::unique_ptr<llvm::LLVMContext> Context;
@@ -158,12 +158,16 @@ public:
   }
 
 public:
+  IRCodeGenResult *
+  Create(MemoryContext &memContext,
+         std::unique_ptr<llvm::LLVMContext> &&llvmContext,
+         std::unique_ptr<llvm::Module> &&llvmModule,
+         std::unique_ptr<llvm::TargetMachine> &&llvmTargetMachine);
+
+public:
   /// Transfers ownership of the underlying module and context to an
   /// ORC-compatible context.
   // llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
-
-public:
-  static IRCodeGenResult *Create();
 };
 
 class IRCodeGen final {
