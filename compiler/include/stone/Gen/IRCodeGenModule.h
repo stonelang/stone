@@ -208,6 +208,13 @@ public:
   ASTContext &GetASTContext() { return astContext; }
   llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
   llvm::TargetMachine &GetTargetMachine() { return *llvmTargetMachine; }
+
+  const CodeGenOptions& GetCodeGenOptions() const { return codeGenOpts;}
+
+public:
+  // IRCodeGenResule* GenCode();
+public:
+  clang::CodeGenerator *CreateClangCodeGenerator();
 };
 
 class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
@@ -216,9 +223,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   IRCodeGenTypeCache typeCache;
   IRCodeGenTypeResolver typeResolver;
   IRCodeGenMetadata metadata;
-
   // IRCodeGenDebug debug;
-
   llvm::StringRef outputFilename;
 
   // llvm::SetVector<CanType> builtinTypes;
@@ -235,6 +240,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   //  llvm::SetVector<const StructDecl *> importedStructs;
 
   std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<clang::CodeGenerator> clangCodeGen;
 
 private:
   IRCodeGenModule(const IRCodeGenModule &) = delete;
@@ -244,6 +250,9 @@ public:
   IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
                   llvm::StringRef moduleName, llvm::StringRef outputFilename);
   ~IRCodeGenModule();
+
+public:
+  void Initialize();
 
 public:
   enum IsForFunctionDefintion : bool {
@@ -259,7 +268,6 @@ public:
   // llvm::DenseSet<const clang::Decl *> globalClangDecls;
   // llvm::StringMap<std::pair<llvm::GlobalVariable*, llvm::Constant*>>
   //   globalStrings;
-
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
@@ -269,11 +277,13 @@ public:
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
   // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
 
+  /// Return the effective triple used by clang.
+  llvm::Triple GetEffectiveClangTriple();
+  const llvm::StringRef GetClangDataLayoutString();
+
 public:
   void EmitSourceFile(SourceFile &sf);
-
   void EmitGlobalDecl(Decl *d);
-
   /// Emit functions, variables and tables which are needed anyway, e.g. because
   /// they are externally visible.
   // void EmitGlobalTopLevel(const std::vector<std::string> &linkerDirectives);
@@ -348,9 +358,6 @@ public:
   static Int64 Clamp(Int64 val, Int64 low, Int64 high) {
     return std::min(high, std::max(low, val));
   }
-
-public:
-  clang::CodeGenerator *CreateClangCodeGenerator();
 };
 
 class IRCodeGenModuleOptimizer {};

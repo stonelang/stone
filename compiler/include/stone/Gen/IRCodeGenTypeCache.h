@@ -10,7 +10,7 @@ class LLVMContext;
 
 namespace stone {
 
-class IRCodeGenTypeCache {
+class IRCodeGenTypeCache final {
 public:
   llvm::Type *VoidTy;
 

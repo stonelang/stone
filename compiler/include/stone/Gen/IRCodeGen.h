@@ -16,26 +16,27 @@ class TargetMachine;
 namespace stone {
 
 class ASTContext;
-
-class NativeCodeGen final {
-
+class IRCodeGen final {
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
   // llvm::Optional<raw_fd_ostream> rawStream;
   /// outputbackend
 public:
-  NativeCodeGen(const NativeCodeGen &) = delete;
-  void operator=(const NativeCodeGen &) = delete;
+  IRCodeGen(const IRCodeGen &) = delete;
+  void operator=(const IRCodeGen &) = delete;
 
 public:
-  NativeCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
-  ~NativeCodeGen();
+  IRCodeGen() = delete;
+  IRCodeGen(const CodeGenOptions &codeGenOpts,
+            ASTContext &astContext) = default;
+
+  ~IRCodeGen();
 
   ASTContext &GetASTContext() { return astContext; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
 public:
-  llvm::CodeGenFileType GetCodeGenFileType() const;
+  llvm::TargetMachine &GetTargetMachine();
 };
 } // namespace stone
 

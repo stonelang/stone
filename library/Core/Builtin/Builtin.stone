@@ -1,5 +1,5 @@
 
-//Core.Builtin 
+space Builtin;
 
 public pure fun SizeOf() -> int {
 		return 0; 

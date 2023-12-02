@@ -227,6 +227,18 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
 // TODO, you may just want to return a pointer
 IRCodeGenResult *GenIR(const IRCodeGenRequest codeGenRequest);
 
+// GeneratedIR* GenIR(ModuleDecl *md, const CodeGenOptions &Opts,
+//                         llvm::StringRef moduleName,
+//                         const PrimarySpecificPaths &psps,
+//                         ArrayRef<std::string> parallelOutputFilenames,
+//                         llvm::GlobalVariable **outModuleHash);
+
+// GeneratedIR* GenIR(ModuleFile *mf, const CodeGenOptions &Opts,
+//                            llvm::StringRef moduleName,
+//                            const PrimarySpecificPaths &psps,
+//                            llvm::StringRef privateDiscriminator,
+//                            llvm::GlobalVariable **outModuleHash);
+
 // IRCodeGenOutput GenIRInParallel(ParallelCodeGenContext);
 
 bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,

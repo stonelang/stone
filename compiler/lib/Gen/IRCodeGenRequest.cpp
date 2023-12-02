@@ -68,6 +68,32 @@ IRCodeGenRequest IRCodeGenRequest::ForFile(
 
 IRCodeGenRequest::~IRCodeGenRequest() {}
 
+llvm::TinyPtrVector<ModuleFile *> IRCodeGenRequest::GetFiles() const {
+  // If we've been asked to emit a specific set of symbols, we don't emit any
+  // whole files.
+  // if (SymbolsToEmit)
+  //   return {};
+
+  // For a whole module, we emit IR for all files.
+  if (auto *mod = moduleOrFile.dyn_cast<ModuleDecl *>()) {
+    return llvm::TinyPtrVector<ModuleFile *>(mod->GetFiles());
+  }
+  // For a primary file, we emit IR for both it and potentially its
+  // SynthesizedFileUnit.
+  auto *primary = GetPrimaryFile();
+  llvm::TinyPtrVector<ModuleFile *> files;
+  files.push_back(primary);
+
+  return files;
+}
+
+ModuleDecl *IRCodeGenRequest::GetParentModule() const {
+  if (auto *file = moduleOrFile.dyn_cast<ModuleFile *>()) {
+    return file->GetParentModule();
+  }
+  return moduleOrFile.get<ModuleDecl *>();
+}
+
 // Maybe? Make ASTAllocation
 // IRCodeGenRequest *IRCodeGenRequest::Create(const CodeGenOptions
 // &codeGenOpts,

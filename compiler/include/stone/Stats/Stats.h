@@ -57,6 +57,12 @@ public:
 
 class SystemStatisticEngine;
 
+enum class StatisticTracerKind {
+  Driver,
+  Compiler,
+};
+
+/*public MemoryAllocation<StatisticTracer>*/
 class StatisticTracer {
 
 protected:
@@ -106,6 +112,12 @@ public:
 public:
   DriverCounters &GetDriverCounters();
   CompilerCounters &GetCompilerCounters();
+
+public:
+  // void EnterStatisticTracer(StatisticTracerKind kind);
+  // void ExitStatisticTracer(StatisticTracerKind kind);
+
+  // StatisticTracer* CreateStatisticTracer(StatisticTracerKind kind);
 };
 
 } // namespace stone

@@ -9,6 +9,7 @@
 #include "clang/CodeGen/ModuleBuilder.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Lex/Preprocessor.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -28,8 +29,6 @@ public:
 public:
   clang::CompilerInstance &GetInstance() { return *clangInstance; }
   clang::CodeGenerator &GetCodeGen() { return *clangCodeGen; }
-
-  clang::CodeGenerator *CreateCodeGen();
 };
 
 } // namespace stone

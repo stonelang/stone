@@ -185,6 +185,8 @@ public:
 
   LangOptions &GetLangOptions() { return langOpts; }
 
+  ModuleDecl *mainModule = nullptr;
+
   /// Retrieve the allocator for the given arena.
   /// Using permanent always for now
   llvm::BumpPtrAllocator &
@@ -228,6 +230,9 @@ public:
   GetRealModuleName(Identifier key,
                     ModuleAliasLookupOption option =
                         ModuleAliasLookupOption::AlwaysRealName) const;
+
+  ModuleDecl *GetMainModule() { return mainModule; }
+  void SetMainModule(ModuleDecl *inputModule) { mainModule = inputModule; }
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {

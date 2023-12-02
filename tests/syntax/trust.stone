@@ -1,10 +1,7 @@
 
-space Trust {
-
-//forward struct S1; 
 
 public struct S0 {
-	trust S1; 
+	trust forward S1; 
 	private int data; 
 }
 
@@ -15,6 +12,3 @@ public fun S1::DoSomething() -> void {
 	if(data == 0){
 	}
 }
-
-}
-

@@ -11,6 +11,35 @@ IRCodeGen::IRCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)) {}
 
+
+
+static clang::CodeGenerator* CreateClangCodeGen(IRCodeGen &irCodeGen, llvm::StringRef moduleName) {
+
+  auto &clangInstance =
+      irCodeGen.GetASTContext().GetClangContext().GetInstance();
+  auto &clangASTContext = clangInstance.getASTContext();
+  auto &clangCodeGenOpts = clangInstance.getCodeGenOpts();
+
+  clangCodeGenOpts.OptimizationLevel = irCodeGen.GetCodeGenOptions().ShouldOptimize() ? 3 : 0;
+
+  clangCodeGenOpts.CoverageMapping = false;
+
+  auto &vfs = clangInstance.getVirtualFileSystem();
+  auto &headerSearchOpts = clangInstance.getPreprocessor()
+                               .getHeaderSearchInfo()
+                               .getHeaderSearchOpts();
+
+  auto &preprocessorOpts =
+      clangInstance.getPreprocessor().getPreprocessorOpts();
+  auto *clangCodeGen = clang::CreateLLVMCodeGen(
+      clangInstance.getDiagnostics(), moduleName, &vfs, headerSearchOpts,
+      preprocessorOpts, clangCodeGenOpts, irCodeGen.GetLLVMContext());
+
+  clangCodeGen->Initialize(clangASTContext);
+  return clangCodeGen;
+}
+
+
 IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
@@ -18,10 +47,24 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
     : irCodeGen(irCodeGen),
       llvmModule(new llvm::Module(moduleName, irCodeGen.GetLLVMContext())),
       typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
-      typeResolver(*this), metadata(*this) {
+      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)), typeResolver(*this), metadata(*this) {
 
+  // Setup module target
   irCodeGen.AddIRCodeGenModule(sourceFile, this);
 }
+
+void IRCodeGenModule::Initialize() {}
+
+
+
+/// Return the effective triple used by clang.
+// llvm::Triple IRCodeGenModule::GetEffectiveClangTriple() {}
+// const llvm::StringRef IRCodeGenModule::GetClangDataLayoutString() {}
+
+/// Add an IRCodeGenModule for a source file.
+/// Should only be called from IRCodeGenModule's constructor.
+void IRCodeGen::AddIRCodeGenModule(SourceFile *sourceFile,
+                                   IRCodeGenModule *codeGenModule) {}
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
@@ -29,6 +72,8 @@ IRCodeGenResult *IRCodeGenResult::Create(
     MemoryContext &memContext, std::unique_ptr<llvm::LLVMContext> &&llvmContext,
     std::unique_ptr<llvm::Module> &&llvmModule,
     std::unique_ptr<llvm::TargetMachine> &&llvmTargetMachine) {
+
+  // TODO: && may already take care of move
   return new (memContext)
       IRCodeGenResult(std::move(llvmContext), std::move(llvmModule),
                       std::move(llvmTargetMachine));

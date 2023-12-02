@@ -27,9 +27,13 @@ ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler,
 
 Status ImportResolutionExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::ResolveImports);
-  assert(GetDependencyStatus().IsSuccess());
+
+  // compiler.GetStatisticEngine().EnterStatisticTracer(StatisTicCounterKind::ImportResolution);
 
   // stone::ResolveSourceFileImports(sourceFile);
+
+  // compiler.GetStatisticEngine().ExitStatisticTracer(StatisTicCounterKind::ImportResolution);
+
   return Status();
 }
 
@@ -38,7 +42,6 @@ DumpASTExecution::DumpASTExecution(Compiler &compiler, ActionKind currentAction)
 
 Status DumpASTExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::DumpAST);
-  assert(GetDependencyStatus().IsSuccess());
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }

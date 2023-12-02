@@ -11,10 +11,8 @@ CompilerExecution::CompilerExecution(Compiler &compiler,
 Status CompilerExecution::Setup() {
   if (HasDependency()) {
     if (compiler.ExecuteAction(GetDependency()).IsError()) {
-      SetDependencyStatus(Status::Error());
       return Status::Error();
     }
-    SetDependencyStatus(Status());
   }
   return Status::Success();
 }

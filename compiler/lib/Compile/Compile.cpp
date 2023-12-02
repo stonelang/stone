@@ -13,6 +13,10 @@
 
 using namespace stone;
 
+// std::unique_ptr<CompilerExecution>
+// CompilerInvocation::ComputeCompilerExectution(ActionKind action) {
+// }
+
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                    void *mainAddr, CompilerListener *listener) {
 
@@ -58,6 +62,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (compiler.Setup().IsError()) {
     return FinishCompile(Status::Error());
   }
+
+  // auto execution =
+  // invocation.ComputeCompilerExectution(invocation.GetMainAction().GetKind());
+  // execution->Setup();
+  // execution->Execute();
 
   if (compiler.ExecuteAction(compiler.GetInvocation().GetMainAction().GetKind())
           .IsError()) {

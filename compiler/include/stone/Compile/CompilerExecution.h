@@ -5,6 +5,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Option/ActionKind.h"
 
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Chrono.h"
 
 namespace stone {
@@ -12,6 +13,7 @@ namespace stone {
 class Compiler;
 class SourceFile;
 
+/* :public Compiler*/
 class CompilerExecution {
   Compiler &compiler;
 
@@ -19,7 +21,6 @@ protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
-  Status depStatus;
   ActionKind currentAction;
 
 public:
@@ -32,14 +33,12 @@ public:
   virtual Status Execute() = 0;
   Status Finish();
 
-private:
-  void SetDependencyStatus(Status status) { depStatus = status; }
-
 protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
   bool HasDependency() { return GetDependency() != ActionKind::None; }
-  Status GetDependencyStatus() { return depStatus; }
+  // virtual llvm::ArrayRef<ActionKind> GetDependencies() { return
+  // {ActionKind::None}; }
 
 protected:
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
@@ -135,6 +134,8 @@ public:
 class GenerateIRExecution final : public CompilerExecution {
   // llvm::GlobalVariable *hashGlobal;
 
+  /// IRCodeGen
+
 public:
   GenerateIRExecution(Compiler &compiler, ActionKind currentAction);
 
@@ -150,6 +151,8 @@ public:
 
 // Generate IR, optimize ir, then print it.
 class OptimizeIRExecution final : public CompilerExecution {
+
+  // IRCodeOptimizer;
 public:
   OptimizeIRExecution(Compiler &compiler, ActionKind currentAction);
 
@@ -179,6 +182,8 @@ public:
 };
 
 class EmitNativeExecution : public CompilerExecution {
+
+  /// NativeCodeGen
 public:
   EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
 

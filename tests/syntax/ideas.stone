@@ -54,7 +54,7 @@ LinearAcceleartor::~this() {
 }
 fun Main() -> i32 {
 
-		Particle* p = new Particle();
+		Particle p = new Particle();
 		auto a = new LinearAcceleartor(); 
 		a.Fire(a);
 
@@ -72,7 +72,7 @@ public forward struct Projectile;
 public forward fun Launch(const Projectile* projectile) -> bool; 
 
 fun Main() -> int {
-	Projectile* p = new Projectile();
+	Projectile p = new Projectile();
 	Launch(p);
 	delete p; 
 }

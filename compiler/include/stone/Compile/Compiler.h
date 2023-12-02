@@ -21,9 +21,6 @@ class GenerateIRExecution;
 
 class Compiler final {
 
-  friend CompilerExecution;
-  friend GenerateIRExecution;
-
   FileMgr fileMgr;
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
@@ -183,11 +180,20 @@ public:
   bool ShouldSetupASTContext();
   Status SetupASTContext();
 
+  bool TryLoadSTDLib();
+
   void FreeMemoryContext();
   SystemStatisticEngine &GetStatistics() { return *statistics; }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);
+
+public:
+  /// It seems that this should all be available
+  /// GetParser().Parse();
+  /// GetTypeChecker().TypeCheck();
+  /// GetIRCodeGenerator().GenCode();
+  /// GetNativeCodeGenerator().GenCode();
 };
 
 } // namespace stone

@@ -120,10 +120,30 @@ using namespace stone;
 //   GenIR(cgc, moduleName, paths, md, nullptr, listener);
 // }
 
+// IRCodeGenResult* GenModuleIR(ModuleDecl *md, const CodeGenOptions
+// &codeGenOpts,
+//                         llvm::StringRef moduleName,
+//                         const PrimarySpecificPaths &psps,
+//                         ArrayRef<std::string> parallelOutputFilenames,
+//                         llvm::GlobalVariable **outModuleHash) {
+// }
+
+// IRCodeGenResult* GenSoureFileIR(ModuleFile *mf, const CodeGenOptions
+// &codeGenOpts,
+//                            llvm::StringRef moduleName,
+//                            const PrimarySpecificPaths &psps,
+//                            llvm::StringRef privateDiscriminator,
+//                            llvm::GlobalVariable **outModuleHash)
+// }
+
 IRCodeGenResult *stone::GenIR(const IRCodeGenRequest codeGenRequest) {
+
+  // IRCodeGen codeGen(codeGenRequest);
+  // codeGen.GenCode();
 
   return nullptr;
 }
+
 /// Disable thumb-mode until debugger support is there.
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {
   return feature == "+thumb-mode";

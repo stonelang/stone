@@ -106,6 +106,11 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
                       llvm::Module *llvmModule, llvm::StringRef outputFilename,
                       ASTContext &astContext, CodeGenListener *listener) {
 
+  //  NativeCodeGen nativeCodeGen;
+  //  nativeCodeGen.GenCode();
+  //  nativeCodeGen.OptimizeCode();
+  //  nativeCodeGen.WriteCode();
+
   // stone::EmbedBitcode(codeGenOpts, llvmModule);
 
   // CodeGenScope nativeScope(cgc.GetCodeGenOptions());
@@ -202,5 +207,20 @@ bool stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
 NativeCodeGen::NativeCodeGen(const CodeGenOptions &codeGenOptions,
                              ASTContext &astContext)
     : codeGenOpts(codeGenOptions), astContext(astContext) {}
+
+llvm::CodeGenFileType NativeCodeGen::GetCodeGenFileType() const {
+  switch (codeGenOpts.codeGenOutputKind) {
+  case CodeGenOutputKind::ObjectFile:
+    return llvm::CodeGenFileType::CGFT_ObjectFile;
+  case CodeGenOutputKind::NativeAssembly:
+    return llvm::CodeGenFileType::CGFT_AssemblyFile;
+  default:
+    llvm_unreachable("Unknow code generation file type!");
+  }
+}
+
+// void NativeCodeGen::GenCode() {}
+//
+// void NativeCodeGen::WriteCode() {}
 
 NativeCodeGen::~NativeCodeGen() {}

@@ -5,7 +5,7 @@
 using namespace stone;
 
 Status GenerateIRExecution::GenForFile() {
-
+  /// IRCodeGenerator
   assert(!IsForModule());
   if (!GetCompiler().GetPrimarySourceFiles().empty()) {
     for (auto *primarySourceFile : GetCompiler().GetPrimarySourceFiles()) {
@@ -70,7 +70,9 @@ GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
 Status GenerateIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
-  assert(GetDependencyStatus().IsSuccess());
+
+  // std::unique_ptr<IRCodeGen> irCode = std::make_uqnique<IRCodeGen>();
+  // irCodeGen->Gen();
 
   if (IsForModule()) {
     GenForModule();
@@ -91,9 +93,12 @@ OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler,
 Status OptimizeIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRAfter);
-  assert(GetDependencyStatus().IsSuccess());
 
-  // stone::OptimizeIR(compiler.GetIRCodeGen()....)
+  // stone::OptimizeCode(compiler.GetIRCodeGen()....)
+
+  // std::unique_ptr<IRCodeOptimizer>
+  /// irCodeOptimizer = std::make_uqnique<IRCodeOptimizer>(GetCodeGenOptions(),
+  /// GetASTContext(), ....);
 
   if (IsMainAction()) {
     // Then we emit
@@ -107,7 +112,7 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status EmitBitCodeExecution::Execute() {
-
+  // GernatedCode
   // compiler.GetIRCodeGenResult();
 
   return Status();
@@ -130,6 +135,8 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
 
 Status EmitNativeExecution::Execute() {
 
+  // compiler.GetStatisticEngine().EnterStatisticTracer(StatisTicCounterKind::NativeAssembly);
+
   // if (GenerateIR().IsError()) {
   //   return Status::Error();
   // }
@@ -138,8 +145,17 @@ Status EmitNativeExecution::Execute() {
 
   // compiler.GetIRCodeGenResult();
 
+  // std::unique_ptr<NativeCodeGen>
+  /// nativeCode = std::make_uqnique<NativeCodeGen>(GetCodeGenOptions(),
+  /// GetASTContext(), ....);
+  // nativeCode->Gen();
+  // nativeCode->Optimize();
+  // nativeCode->Write();
+
   // stone::GenNative(IRCodeGenOuput,
   //                  GetCodeGenContext().GetLLVMModule().getName());
+
+  // compiler.GetStatisticEngine().ExitStatisticTracer(StatisTicCounterKind::NativeAssembly);
 
   return Status();
 }

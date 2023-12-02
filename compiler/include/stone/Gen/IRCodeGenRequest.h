@@ -60,7 +60,7 @@ public:
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
-  ASTContext &GetASTContext() { return astContext; }
+  ASTContext &GetASTContext() const { return astContext; }
   MemoryContext &GetMemoryContext() { return memContext; }
 
   llvm::GlobalVariable *GetOutModuleHash() { return outModuleHash; }
@@ -70,8 +70,14 @@ public:
     return primaryFileSpecificPaths;
   }
 
-  llvm::ArrayRef<ModuleFile *> GetFiles() const;
-  ModuleDecl *GetParentModule();
+  llvm::StringRef GetModuleName() { return moduleName; }
+  llvm::TinyPtrVector<ModuleFile *> GetFiles() const;
+  ModuleDecl *GetParentModule() const;
+
+  // TODO: May not want to be const.
+  ModuleFile *GetPrimaryFile() const {
+    return moduleOrFile.get<ModuleFile *>();
+  }
 
   void SetCodeGenListener(CodeGenListener *inputListener) {
     listener = inputListener;

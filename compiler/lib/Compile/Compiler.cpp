@@ -48,6 +48,7 @@ ModuleDecl *Compiler::GetMainModule() const {
     assert(mainModule);
     // Register the main module with the AST context.
     astContext->AddLoadedModule(mainModule);
+    astContext->SetMainModule(mainModule);
 
     // Create and add the module's files.
     llvm::SmallVector<ModuleFile *, 16> moduleFiles;
