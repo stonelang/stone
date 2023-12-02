@@ -11,16 +11,31 @@ IRCodeGen::IRCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)) {}
 
+llvm::Triple IRCodeGen::GetEffectiveClangTriple() {
+  return llvm::Triple(astContext.GetClangContext()
+                          .GetInstance()
+                          .getTarget()
+                          .getTargetOpts()
+                          .Triple);
+}
 
+const llvm::StringRef IRCodeGen::GetClangDataLayoutString() {
+  return astContext.GetClangContext()
+      .GetInstance()
+      .getTarget()
+      .getDataLayoutString();
+}
 
-static clang::CodeGenerator* CreateClangCodeGen(IRCodeGen &irCodeGen, llvm::StringRef moduleName) {
+static clang::CodeGenerator *CreateClangCodeGen(IRCodeGen &irCodeGen,
+                                                llvm::StringRef moduleName) {
 
   auto &clangInstance =
       irCodeGen.GetASTContext().GetClangContext().GetInstance();
   auto &clangASTContext = clangInstance.getASTContext();
   auto &clangCodeGenOpts = clangInstance.getCodeGenOpts();
 
-  clangCodeGenOpts.OptimizationLevel = irCodeGen.GetCodeGenOptions().ShouldOptimize() ? 3 : 0;
+  clangCodeGenOpts.OptimizationLevel =
+      irCodeGen.GetCodeGenOptions().ShouldOptimize() ? 3 : 0;
 
   clangCodeGenOpts.CoverageMapping = false;
 
@@ -39,23 +54,28 @@ static clang::CodeGenerator* CreateClangCodeGen(IRCodeGen &irCodeGen, llvm::Stri
   return clangCodeGen;
 }
 
-
 IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
     : irCodeGen(irCodeGen),
       llvmModule(new llvm::Module(moduleName, irCodeGen.GetLLVMContext())),
+      dataLayout(irCodeGen.GetClangDataLayoutString()),
+      triple(irCodeGen.GetEffectiveClangTriple()),
       typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
-      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)), typeResolver(*this), metadata(*this) {
+      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)),
+      typeResolver(*this), metadata(*this) {
 
   // Setup module target
   irCodeGen.AddIRCodeGenModule(sourceFile, this);
 }
 
-void IRCodeGenModule::Initialize() {}
+void IRCodeGenModule::SetupLLVMModule() {
 
-
+  GetLLVMModule().setTargetTriple(GetTriple().str());
+  // Set the module's string representation.
+  GetLLVMModule().setDataLayout(GetDataLayout().getStringRepresentation());
+}
 
 /// Return the effective triple used by clang.
 // llvm::Triple IRCodeGenModule::GetEffectiveClangTriple() {}

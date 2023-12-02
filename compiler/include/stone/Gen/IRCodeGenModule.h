@@ -208,13 +208,14 @@ public:
   ASTContext &GetASTContext() { return astContext; }
   llvm::LLVMContext &GetLLVMContext() { return *llvmContext; }
   llvm::TargetMachine &GetTargetMachine() { return *llvmTargetMachine; }
-
-  const CodeGenOptions& GetCodeGenOptions() const { return codeGenOpts;}
+  const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
 public:
   // IRCodeGenResule* GenCode();
 public:
-  clang::CodeGenerator *CreateClangCodeGenerator();
+  /// Return the effective triple used by clang.
+  llvm::Triple GetEffectiveClangTriple();
+  const llvm::StringRef GetClangDataLayoutString();
 };
 
 class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
@@ -225,6 +226,9 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   IRCodeGenMetadata metadata;
   // IRCodeGenDebug debug;
   llvm::StringRef outputFilename;
+
+  const llvm::DataLayout dataLayout;
+  const llvm::Triple triple;
 
   // llvm::SetVector<CanType> builtinTypes;
   //  /// Opaque but fixed-size types for which we also emit builtin type
@@ -252,7 +256,7 @@ public:
   ~IRCodeGenModule();
 
 public:
-  void Initialize();
+  void SetupLLVMModule();
 
 public:
   enum IsForFunctionDefintion : bool {
@@ -277,9 +281,8 @@ public:
   IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
   // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
 
-  /// Return the effective triple used by clang.
-  llvm::Triple GetEffectiveClangTriple();
-  const llvm::StringRef GetClangDataLayoutString();
+  const llvm::DataLayout &GetDataLayout() { return dataLayout; }
+  const llvm::Triple &GetTriple() { return triple; }
 
 public:
   void EmitSourceFile(SourceFile &sf);
