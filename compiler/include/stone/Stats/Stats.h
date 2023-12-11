@@ -85,7 +85,7 @@ public:
   }
 };
 
-class StatReporter {
+class StatsReporter {
 
 protected:
   // We only write fine-grained trace entries when the user passed
@@ -135,27 +135,28 @@ protected:
   void PublishAlwaysOnStatsToLLVM();
   void PrintAlwaysOnStatsAndTimers(raw_ostream &OS);
 
-  StatReporter(llvm::StringRef ProgramName, llvm::StringRef AuxName,
-               llvm::StringRef Directory, SrcMgr *SM, clang::SourceManager *CSM,
-               bool TraceEvents, bool ProfileEvents, bool ProfileEntities);
+  StatsReporter(llvm::StringRef ProgramName, llvm::StringRef AuxName,
+                llvm::StringRef Directory, SrcMgr *SM,
+                clang::SourceManager *CSM, bool TraceEvents, bool ProfileEvents,
+                bool ProfileEntities);
 
 public:
-  StatReporter(llvm::StringRef ProgramName, llvm::StringRef ModuleName,
-               llvm::StringRef InputName, llvm::StringRef TripleName,
-               llvm::StringRef OutputType, llvm::StringRef OptType,
-               llvm::StringRef Directory, SrcMgr *SM = nullptr,
-               clang::SourceManager *CSM = nullptr, bool TraceEvents = false,
-               bool ProfileEvents = false, bool ProfileEntities = false);
-  ~StatReporter();
+  StatsReporter(llvm::StringRef ProgramName, llvm::StringRef ModuleName,
+                llvm::StringRef InputName, llvm::StringRef TripleName,
+                llvm::StringRef OutputType, llvm::StringRef OptType,
+                llvm::StringRef Directory, SrcMgr *SM = nullptr,
+                clang::SourceManager *CSM = nullptr, bool TraceEvents = false,
+                bool ProfileEvents = false, bool ProfileEntities = false);
+  ~StatsReporter();
 
-  void flushTracesAndProfiles();
-  void noteCurrentProcessExitStatus(int);
+  void FlushTracesAndProfiles();
+  void NoteCurrentProcessExitStatus(int);
   void SaveStat(StatTracer const &T, bool IsEntry);
-  void recordJobMaxRSS(long rss);
-  int64_t getChildrenMaxResidentSetSize();
+  void RecordJobMaxRSS(long rss);
+  int64_t GetChildrenMaxResidentSetSize();
 };
 
-class DriverStatReporter final : public StatReporter {
+class DriverStatsReporter final : public StatsReporter {
 
 public:
   struct DriverCounters {
@@ -166,18 +167,18 @@ public:
 
   llvm::Optional<DriverCounters> driverCounters;
 
-  DriverStatReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
-                     SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
-                     bool ProfileEvents, bool ProfileEntities);
+  DriverStatsReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
+                      SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
+                      bool ProfileEvents, bool ProfileEntities);
 
 public:
-  DriverStatReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
-                     llvm::StringRef TripleName, llvm::StringRef OutputType,
-                     llvm::StringRef OptType, llvm::StringRef Directory,
-                     SrcMgr *SM = nullptr, clang::SourceManager *CSM = nullptr,
-                     bool TraceEvents = false, bool ProfileEvents = false,
-                     bool ProfileEntities = false);
-  ~DriverStatReporter();
+  DriverStatsReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
+                      llvm::StringRef TripleName, llvm::StringRef OutputType,
+                      llvm::StringRef OptType, llvm::StringRef Directory,
+                      SrcMgr *SM = nullptr, clang::SourceManager *CSM = nullptr,
+                      bool TraceEvents = false, bool ProfileEvents = false,
+                      bool ProfileEntities = false);
+  ~DriverStatsReporter();
 
   DriverCounters &GetDriverCounters();
 };
@@ -190,7 +191,7 @@ struct CompilerStatFormatter final : public TraceFormatter {
                 raw_ostream &OS) const override {}
 };
 
-class CompilerStatReporter final : public StatReporter {
+class CompilerStatsReporter final : public StatsReporter {
 
 public:
   struct CompilerCounters {
@@ -199,23 +200,23 @@ public:
 #undef COMPILER_STAT
   };
 
-  CompilerStatReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
-                       SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
-                       bool ProfileEvents, bool ProfileEntities);
+  CompilerStatsReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
+                        SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
+                        bool ProfileEvents, bool ProfileEntities);
 
   /// Counters that are always on.
   llvm::Optional<CompilerCounters> compilerCounters;
   llvm::Optional<CompilerCounters> lastTracedCompilerCounters;
 
 public:
-  CompilerStatReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
-                       llvm::StringRef TripleName, llvm::StringRef OutputType,
-                       llvm::StringRef OptType, llvm::StringRef Directory,
-                       SrcMgr *SM = nullptr,
-                       clang::SourceManager *CSM = nullptr,
-                       bool TraceEvents = false, bool ProfileEvents = false,
-                       bool ProfileEntities = false);
-  ~CompilerStatReporter();
+  CompilerStatsReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
+                        llvm::StringRef TripleName, llvm::StringRef OutputType,
+                        llvm::StringRef OptType, llvm::StringRef Directory,
+                        SrcMgr *SM = nullptr,
+                        clang::SourceManager *CSM = nullptr,
+                        bool TraceEvents = false, bool ProfileEvents = false,
+                        bool ProfileEntities = false);
+  ~CompilerStatsReporter();
 
   CompilerCounters &GetCompilerCounters();
 };
@@ -224,12 +225,12 @@ public:
 class CompilerStatTracer final : public StatTracer {
 
 private:
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const void *Entity,
                      const TraceFormatter *Formatter);
 
 public:
-  CompilerStatReporter *statReporter;
+  CompilerStatsReporter *statsReporter;
 
   CompilerStatTracer();
   CompilerStatTracer(CompilerStatTracer &&other);
@@ -241,27 +242,27 @@ public:
   /// These are the convenience constructors you want to be calling throughout
   /// the compiler: they select an appropriate trace formatter for the provided
   /// entity type, and produce a tracer that's either active or inert depending
-  /// on whether the provided \p statReporter is null (nullptr means "tracing is
-  /// disabled").
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  /// on whether the provided \p statsReporter is null (nullptr means "tracing
+  /// is disabled").
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const Decl *D);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const clang::Decl *D);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const Expr *E);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const SourceFile *F);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const Stmt *S);
 
-  CompilerStatTracer(CompilerStatReporter *statReporter,
+  CompilerStatTracer(CompilerStatsReporter *statsReporter,
                      llvm::StringRef statName, const Type *ty);
 };
 
