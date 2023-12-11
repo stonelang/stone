@@ -19,10 +19,10 @@
 namespace stone {
 
 // TODO: CompilerStatScope
-class StatisticFormatter {
+class StatFormatter {
 public:
-  StatisticFormatter() {}
-  virtual ~StatisticFormatter() {}
+  StatFormatter() {}
+  virtual ~StatFormatter() {}
 
   virtual void TraceName(const void *entity, raw_ostream &OS) const = 0;
   virtual void TraceLoc(const void *entity, SrcMgr *srcMgr,
@@ -30,11 +30,7 @@ public:
                         raw_ostream &stream) const = 0;
 };
 
-class Statistic {
-public:
-};
-
-class CompilerStatistic : public Statistic {
+class Stat {
 public:
   UInt64 timeUSec;
   UInt64 liveUSec;
@@ -44,10 +40,20 @@ public:
   UInt64 counterDelta;
   UInt64 counterValue;
   const void *entity;
-  const StatisticFormatter *formatter;
+  const StatFormatter *formatter;
 };
 
-class CompilerStatisticFormatter final : public StatisticFormatter {
+class CompilerStat final : public Stat {
+public:
+  CompilerStat() {}
+};
+
+class DriverStat final : public Stat {
+public:
+  DriverStat() {}
+};
+
+class CompilerStatFormatter final : public StatFormatter {
 public:
   void TraceName(const void *entity, raw_ostream &OS) const override;
   void TraceLoc(const void *entity, SrcMgr *srcMgr,
@@ -55,69 +61,91 @@ public:
                 raw_ostream &stream) const override;
 };
 
-class SystemStatisticEngine;
+class StatSystem;
 
-enum class StatisticTracerKind {
+enum class StatTracerKind {
   Driver,
   Compiler,
 };
 
-/*public MemoryAllocation<StatisticTracer>*/
-class StatisticTracer {
+/*public MemoryAllocation<StatTracer>*/
+class StatTracer {
 
 protected:
-  SystemStatisticEngine &engine;
+  StatSystem &statSystem;
   llvm::StringRef statName;
-  StatisticFormatter *formatter = nullptr;
+  StatFormatter *formatter = nullptr;
 
 public:
-  StatisticTracer(SystemStatisticEngine &engine, llvm::StringRef statName,
-                  StatisticFormatter *formatter)
-      : engine(engine), statName(statName), formatter(formatter) {}
-  ~StatisticTracer();
+  StatTracer(StatSystem &statSystem, llvm::StringRef statName,
+             StatFormatter *formatter)
+      : statSystem(statSystem), statName(statName), formatter(formatter) {}
+  ~StatTracer();
 };
 
-class CompilerStatisticTracer final : public StatisticTracer {
+class CompilerStatTracer final : public StatTracer {
 
 public:
-  CompilerStatisticTracer(SystemStatisticEngine &engine,
-                          llvm::StringRef statName,
-                          StatisticFormatter *formatter = nullptr)
-      : StatisticTracer(engine, statName, formatter) {}
-  ~CompilerStatisticTracer();
+  CompilerStatTracer(StatSystem &engine, llvm::StringRef statName,
+                     StatFormatter *formatter = nullptr)
+      : StatTracer(engine, statName, formatter) {}
+  ~CompilerStatTracer();
 };
 
-class SystemStatisticEngine final {
+class StatSystem {
 
 public:
   struct DriverCounters final {
-#define DRIVER_STATISTIC(ID) int64_t ID;
+#define DRIVER_STAT(ID) int64_t ID;
 #include "Stats.def"
-#undef DRIVER_STATISTIC
+#undef DRIVER_STAT
   };
 
   struct CompilerCounters final {
-#define COMPILER_STATISTIC(NAME, ID) int64_t ID;
+#define COMPILER_STAT(NAME, ID) int64_t ID;
 #include "Stats.def"
-#undef COMPILER_STATISTIC
+#undef COMPILER_STAT
   };
 
 public:
-  SystemStatisticEngine();
+  StatSystem();
 
 public:
-  void SaveCompilerStatistic(const StatisticTracer &tracer,
-                             bool isEntry = false);
+  void SaveCompilerStat(const StatTracer &tracer, bool isEntry = false);
+
+public:
+  virtual void SaveStat(const StatTracer &tracer, bool isEntry = false) {}
 
 public:
   DriverCounters &GetDriverCounters();
   CompilerCounters &GetCompilerCounters();
 
 public:
-  // void EnterStatisticTracer(StatisticTracerKind kind);
-  // void ExitStatisticTracer(StatisticTracerKind kind);
+  // void EnterStatTracer(StatTracerKind kind);
+  // void ExitStatTracer(StatTracerKind kind);
 
-  // StatisticTracer* CreateStatisticTracer(StatisticTracerKind kind);
+  // StatTracer* CreateStatTracer(StatTracerKind kind);
+};
+
+class CompilerStatSystem final : public StatSystem {
+  struct CompilerCounters final {
+#define COMPILER_STAT(NAME, ID) int64_t ID;
+#include "Stats.def"
+#undef COMPILER_STAT
+  };
+public:
+  CompilerCounters &GetCounters();
+};
+
+class DriverStatSystem final : public StatSystem {
+public:
+  struct DriverCounters final {
+#define DRIVER_STAT(ID) int64_t ID;
+#include "Stats.def"
+#undef DRIVER_STAT
+  };
+
+  DriverCounters &GetCounters();
 };
 
 } // namespace stone

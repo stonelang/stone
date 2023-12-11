@@ -8,7 +8,9 @@ CompilerExecution::CompilerExecution(Compiler &compiler,
     : compiler(compiler), currentAction(currentAction) {
   assert(currentAction != ActionKind::Alien);
 }
-Status CompilerExecution::Setup() {
+Status CompilerExecution::Setup() { return ExecuteDependency(); }
+
+Status CompilerExecution::ExecuteDependency() {
   if (HasDependency()) {
     if (compiler.ExecuteAction(GetDependency()).IsError()) {
       return Status::Error();
@@ -16,6 +18,13 @@ Status CompilerExecution::Setup() {
   }
   return Status::Success();
 }
+
+Status CompilerExecution::Finish() { return Status(); }
+
+ActionKind CompilerExecution::GetMainAction() {
+  return compiler.GetInvocation().GetMainAction().GetKind();
+}
+
 CompilerExecution::~CompilerExecution() {}
 
 std::unique_ptr<CompilerExecution>
@@ -63,10 +72,4 @@ Status Compiler::ExecuteAction(ActionKind kind) {
     return Status::Error();
   }
   return execution->Finish();
-}
-
-Status CompilerExecution::Finish() { return Status(); }
-
-ActionKind CompilerExecution::GetMainAction() {
-  return compiler.GetInvocation().GetMainAction().GetKind();
 }

@@ -2,20 +2,22 @@
 
 using namespace stone;
 
-SystemStatisticEngine::SystemStatisticEngine() {}
+StatSystem::StatSystem() {}
 
-StatisticTracer::~StatisticTracer() {}
+StatTracer::~StatTracer() {}
 
-void CompilerStatisticFormatter::TraceName(const void *entity,
+void StatSystem::SaveCompilerStat(const StatTracer &tracer,
+                                                  bool isEntry) {}
+
+
+void CompilerStatFormatter::TraceName(const void *entity,
                                            raw_ostream &OS) const {}
 
-void CompilerStatisticFormatter::TraceLoc(const void *entity, SrcMgr *srcMgr,
+void CompilerStatFormatter::TraceLoc(const void *entity, SrcMgr *srcMgr,
                                           clang::SourceManager *clangSrcMgr,
                                           raw_ostream &stream) const {}
 
-CompilerStatisticTracer::~CompilerStatisticTracer() {
-  engine.SaveCompilerStatistic(*this);
+CompilerStatTracer::~CompilerStatTracer() {
+  //statSystem.SaveStat(*this);
 }
 
-void SystemStatisticEngine::SaveCompilerStatistic(const StatisticTracer &tracer,
-                                                  bool isEntry) {}

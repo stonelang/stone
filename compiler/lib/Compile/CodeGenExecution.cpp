@@ -94,10 +94,10 @@ Status OptimizeIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRAfter);
 
-  // stone::OptimizeCode(compiler.GetIRCodeGen()....)
+  // stone::OptimizeIR(compiler.GetIRCodeGen()....)
 
   // std::unique_ptr<IRCodeOptimizer>
-  /// irCodeOptimizer = std::make_uqnique<IRCodeOptimizer>(GetCodeGenOptions(),
+  /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),
   /// GetASTContext(), ....);
 
   if (IsMainAction()) {
@@ -135,7 +135,7 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
 
 Status EmitNativeExecution::Execute() {
 
-  // compiler.GetStatisticEngine().EnterStatisticTracer(StatisTicCounterKind::NativeAssembly);
+  // compiler.GetStatSystem().EnterStatTracer(StatCounterKind::NativeAssembly);
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();

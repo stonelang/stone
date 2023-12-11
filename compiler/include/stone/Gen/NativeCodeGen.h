@@ -36,6 +36,10 @@ public:
 
 public:
   llvm::CodeGenFileType GetCodeGenFileType() const;
+
+public:
+  void CreateOutputFile();
+  void OptimizeIR();
 };
 } // namespace stone
 

@@ -33,6 +33,8 @@ set(stone_gen_sources
 
 		LINK_LIBS
 		StoneSyntax
+		clangCodeGen;
+		
 )
 add_stone_library(StoneGen
 	${stone_gen_sources}

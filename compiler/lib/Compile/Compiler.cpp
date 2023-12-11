@@ -14,7 +14,7 @@ using namespace stone;
 
 Compiler::Compiler()
     : invocation(*this), fileMgr(invocation.GetFileSystemOptions()),
-      statistics(new SystemStatisticEngine()) {}
+      statSystem(new CompilerStatSystem()) {}
 
 Status Compiler::Setup() {
 

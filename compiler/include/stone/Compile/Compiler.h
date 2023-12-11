@@ -36,10 +36,9 @@ class Compiler final {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
-  std::unique_ptr<SystemStatisticEngine> statistics;
+  std::unique_ptr<CompilerStatSystem> statSystem;
 
   mutable ModuleDecl *mainModule = nullptr;
-
   llvm::SmallVector<IRCodeGenResult *, 8> irCodeGenResults;
 
   /// Virtual OutputBackend.
@@ -183,17 +182,10 @@ public:
   bool TryLoadSTDLib();
 
   void FreeMemoryContext();
-  SystemStatisticEngine &GetStatistics() { return *statistics; }
+  CompilerStatSystem &GetStatSystem() { return *statSystem; }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);
-
-public:
-  /// It seems that this should all be available
-  /// GetParser().Parse();
-  /// GetTypeChecker().TypeCheck();
-  /// GetIRCodeGenerator().GenCode();
-  /// GetNativeCodeGenerator().GenCode();
 };
 
 } // namespace stone

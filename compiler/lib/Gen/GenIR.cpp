@@ -138,8 +138,14 @@ using namespace stone;
 
 IRCodeGenResult *stone::GenIR(const IRCodeGenRequest codeGenRequest) {
 
-  // IRCodeGen codeGen(codeGenRequest);
-  // codeGen.GenCode();
+  IRCodeGen irCodeGen(codeGenRequest.GetCodeGenOptions(),
+                      codeGenRequest.GetASTContext());
+
+  // IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
+  //                 llvm::StringRef moduleName, llvm::StringRef
+  //                 outputFilename);
+
+  // IRCodeGenModule irCodeGenModule(irCodeGen, codeGenRequest.GetSour)
 
   return nullptr;
 }

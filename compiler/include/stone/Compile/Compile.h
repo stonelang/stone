@@ -36,8 +36,11 @@ public:
   /// Completed semantic analysis
   virtual void CompletedSemanticAnalysis(Compiler &compiler);
 
-  /// Completed code generation
-  virtual void CompletedCodeGeneration(Compiler &compiler);
+  // Completed IR generation
+  virtual void CompletedIRGeneration(Compiler &compiler);
+
+  /// Completed native code generation
+  virtual void CompletedNativeGeneration(Compiler &compiler);
 
 public:
   /// Callbacks into the parsing pipeline

@@ -65,6 +65,16 @@ enum class SourceFileStage {
   TypeChecked
 };
 
+// enum class IncludeDeclKind : uint8_t {
+//   SourceFile = 0,
+//   // .stone file without 'Main'
+//   Directory,
+// };
+// class IncludeDecl : public NameableDecl {
+
+// };
+
+//class SourceFileDecl
 class SourceFile final : public ModuleFile {
 private:
   friend ASTContext;

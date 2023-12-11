@@ -37,6 +37,8 @@ protected:
   // Just one for now
   virtual ActionKind GetDependency() { return ActionKind::None; }
   bool HasDependency() { return GetDependency() != ActionKind::None; }
+  virtual Status ExecuteDependency();
+
   // virtual llvm::ArrayRef<ActionKind> GetDependencies() { return
   // {ActionKind::None}; }
 
