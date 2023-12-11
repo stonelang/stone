@@ -135,7 +135,7 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
 
 Status EmitNativeExecution::Execute() {
 
-  // compiler.GetStatSystem().EnterStatTracer(StatCounterKind::NativeAssembly);
+  // compiler.GetStatSystem().EnterStat(StatCounterKind::NativeAssembly);
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();
@@ -155,7 +155,7 @@ Status EmitNativeExecution::Execute() {
   // stone::GenNative(IRCodeGenOuput,
   //                  GetCodeGenContext().GetLLVMModule().getName());
 
-  // compiler.GetStatisticEngine().ExitStatisticTracer(StatisTicCounterKind::NativeAssembly);
+  // compiler.GetStatSystem().ExitStat(StatisTicCounterKind::NativeAssembly);
 
   return Status();
 }

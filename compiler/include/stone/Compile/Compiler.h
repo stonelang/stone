@@ -36,7 +36,7 @@ class Compiler final {
   // The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
-  std::unique_ptr<CompilerStatSystem> statSystem;
+  // std::unique_ptr<CompilerStatReporter> statReporter;
 
   mutable ModuleDecl *mainModule = nullptr;
   llvm::SmallVector<IRCodeGenResult *, 8> irCodeGenResults;
@@ -182,7 +182,8 @@ public:
   bool TryLoadSTDLib();
 
   void FreeMemoryContext();
-  CompilerStatSystem &GetStatSystem() { return *statSystem; }
+
+  // CompilerStatReporter &GetStatReporter() { return *statReporter; }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

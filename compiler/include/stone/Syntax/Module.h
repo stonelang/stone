@@ -74,7 +74,7 @@ enum class SourceFileStage {
 
 // };
 
-//class SourceFileDecl
+// class SourceFileDecl
 class SourceFile final : public ModuleFile {
 private:
   friend ASTContext;
