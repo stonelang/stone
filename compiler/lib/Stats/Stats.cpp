@@ -124,6 +124,8 @@ StatsReporter::StatsReporter(llvm::StringRef ProgramName,
   //   EntityProfilers = std::make_unique<StatsProfilers>();
 }
 
+StatsReporter::~StatsReporter() {}
+
 CompilerStatsReporter::CompilerStatsReporter(
     llvm::StringRef ModuleName, llvm::StringRef InputName,
     llvm::StringRef TripleName, llvm::StringRef OutputType,
@@ -133,5 +135,10 @@ CompilerStatsReporter::CompilerStatsReporter(
     : StatsReporter("stone-compile", ModuleName, InputName, TripleName,
                     OutputType, OptType, Directory, SM, CSM, TraceEvents,
                     ProfileEvents, ProfileEntities) {}
+
+CompilerStatsReporter::~CompilerStatsReporter() {}
+
+CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                                         llvm::StringRef eventName) {}
 
 CompilerStatsTracer::~CompilerStatsTracer() {}

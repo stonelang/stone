@@ -332,18 +332,26 @@ void Compiler::FreeMemoryContext() {
 
 void Compiler::SetupStatsReporter() {
 
-  // statsReporter = std::make_unique<CompilerStatsReporter>(
-  //     FEOpts.ModuleName,
-  //     FEOpts.InputsAndOutputs.getStatsFileMangledInputName(),
-  //     LangOpts.Target.normalize(),
-  //     llvm::sys::path::extension(OutFile),
-  //     silOptModeArgStr(SILOpts.OptMode),
-  //     StatsOutputDir,
-  //     &getSourceMgr(),
-  //     GetClangSourceManager(GetASTContext()),
-  //     invocation.GetCompilerOptions().TraceStats,
-  //     invocation.GetCompilerOptions().ProfileEvents,
-  //     invocation.GetCompilerOptions().ProfileEntities);
+  const std::string &statsOutputDir =
+      invocation.GetCompilerOptions().statsOutputDir;
+  if (statsOutputDir.empty())
+    return;
+
+  const std::string &outputFile =
+      invocation.GetCompilerOptions()
+          .inputsAndOutputs.LastInputProducingOutput()
+          .OutputFilename();
+
+  statsReporter = std::make_unique<CompilerStatsReporter>(
+      invocation.GetCompilerOptions().moduleOpts.moduleName,
+      invocation.GetCompilerOptions()
+          .inputsAndOutputs.GetStatsFileMangledInputName(),
+      invocation.GetLangOptions().Target.normalize(),
+      llvm::sys::path::extension(outputFile), "O", statsOutputDir, &GetSrcMgr(),
+      &invocation.GetClangContext().GetInstance().getSourceManager(),
+      invocation.GetCompilerOptions().traceStats,
+      invocation.GetCompilerOptions().profileEvents,
+      invocation.GetCompilerOptions().profileEntities);
 }
 
 Status Compiler::ForEachSourceFileInMainModule(

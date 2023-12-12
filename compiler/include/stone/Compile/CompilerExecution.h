@@ -15,6 +15,8 @@ class SourceFile;
 
 /* :public Compiler*/
 class CompilerExecution {
+
+protected:
   Compiler &compiler;
 
 protected:

@@ -99,6 +99,19 @@ public:
   /// TODO: remove this after we fix all project-side warnings in the interface.
   bool downgradeInterfaceVerificationError = false;
 
+  /// The path to which we should output statistics files.
+  std::string statsOutputDir;
+
+  /// Trace changes to stats to files in StatsOutputDir.
+  bool traceStats = false;
+
+  /// Profile changes to stats to files in StatsOutputDir.
+  bool profileEvents = false;
+
+  /// Profile changes to stats to files in StatsOutputDir, grouped by source
+  /// entity.
+  bool profileEntities = false;
+
   /// The path the executing program
   llvm::StringRef mainExecutablePath;
 

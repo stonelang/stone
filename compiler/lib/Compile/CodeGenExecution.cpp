@@ -112,6 +112,9 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status EmitBitCodeExecution::Execute() {
+
+  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
+                             "emit-bit-code");
   // GernatedCode
   // compiler.GetIRCodeGenResult();
 
@@ -123,6 +126,8 @@ EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status EmitModuleExecution::Execute() {
+  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
+                             "emit-module-code");
 
   // compiler.GetIRCodeGenResult();
 
@@ -134,6 +139,9 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status EmitNativeExecution::Execute() {
+
+  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
+                             "emit-native-code");
 
   // compiler.GetStatSystem().EnterStat(StatCounterKind::NativeAssembly);
 
