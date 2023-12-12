@@ -234,6 +234,9 @@ public:
   ModuleDecl *GetMainModule() { return mainModule; }
   void SetMainModule(ModuleDecl *inputModule) { mainModule = inputModule; }
 
+  /// Set a new stats reporter.
+  // void SetStatsReporter(StatsReporter *stats);
+
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return GetDiags().PrintD(

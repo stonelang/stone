@@ -38,12 +38,12 @@ COMPILER_STAT(Compile, NumInstructionsExecuted)
 COMPILER_STAT(Compile, MaxMallocUsage)
 
 /// Number of source buffers visible in the source manager.
-COMPILER_STAT(AST, NumSourceBuffers)
+COMPILER_STAT(Syntax, NumSourceBuffers)
 
 /// Total number of lines of source code (just by counting newlines) in all the
 /// source buffers visible in the source manager. Crude proxy for "project
 /// size".
-COMPILER_STAT(AST, NumSourceLines)
+COMPILER_STAT(Syntax, NumSourceLines)
 
 /// Number of full function bodies parsed.
 COMPILER_STAT(Parse, NumSourceFilesParsed)

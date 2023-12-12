@@ -178,6 +178,7 @@ public:
   void FreeASTContext();
   bool ShouldSetupASTContext();
   Status SetupASTContext();
+  void SetupStatsReporter();
 
   bool TryLoadSTDLib();
 

@@ -9,6 +9,7 @@
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Stats/Stats.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;
@@ -74,3 +75,13 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   return FinishCompile();
 }
+
+void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountDeclStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountExprStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountTypeStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountSourceFileStats(Compiler &compiler) {}

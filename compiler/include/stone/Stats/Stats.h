@@ -25,12 +25,13 @@ namespace stone {
 
 class Decl;
 class Expr;
-class CompilerStatTracer;
+class CompilerStatsTracer;
 class SourceFile;
 class SrcMgr;
 class Stmt;
 class Type;
-class StatTracer;
+class StatsTracer;
+class Compiler;
 
 /// Get the number of instructions executed since this process was launched.
 /// Returns 0 if the number of instructions executed could not be determined.
@@ -46,20 +47,21 @@ uint64_t GetInstructionsExecuted();
 // else nondeterministic we find).
 bool EnvironmentVariableRequestedMaximumDeterminism();
 
-// To trace an entity, you have to provide a TraceFormatter for it. This is a
-// separate type since we do not have retroactive conformances in C++, and it
+// To trace an entity, you have to provide a StatsTraceFormatter for it. This is
+// a separate type since we do not have retroactive conformances in C++, and it
 // is a type that takes void* arguments since we do not have existentials
 // separate from objects in C++. Pity us.
-struct TraceFormatter {
+struct StatsTraceFormatter {
   virtual void TraceName(const void *Entity, raw_ostream &OS) const = 0;
 
   virtual void TraceLoc(const void *Entity, SrcMgr *SourceMgr,
                         clang::SourceManager *ClangSourceMgr,
                         raw_ostream &OS) const = 0;
-  virtual ~TraceFormatter();
+  virtual ~StatsTraceFormatter();
 };
 
-struct Stat {
+class StatsEvent {
+public:
   uint64_t TimeUSec;
   uint64_t LiveUSec;
   bool IsEntry;
@@ -68,19 +70,20 @@ struct Stat {
   int64_t CounterDelta;
   int64_t CounterValue;
   const void *Entity;
-  const TraceFormatter *Formatter;
+  const StatsTraceFormatter *Formatter;
 };
 
-class StatTracer {
+class StatsTracer {
 public:
   llvm::TimeRecord SavedTime;
   llvm::StringRef statName;
   const void *Entity;
-  const TraceFormatter *Formatter;
+  const StatsTraceFormatter *Formatter;
 
 public:
   // In the general case we do not know how to format an entity for tracing.
-  template <typename T> static const TraceFormatter *GetTraceFormatter() {
+  template <typename T>
+  static const StatsTraceFormatter *GetStatsTraceFormatter() {
     return nullptr;
   }
 };
@@ -89,7 +92,7 @@ class StatsReporter {
 
 protected:
   // We only write fine-grained trace entries when the user passed
-  // -trace-stats-events, but we recycle the same CompilerStatTracers to give
+  // -trace-stats-events, but we recycle the same CompilerStatsTracers to give
   // us some free recursion-save phase timings whenever -trace-stats-dir is
   // active at all. Reduces redundant machinery.
   class RecursionSafeTimers;
@@ -100,14 +103,14 @@ protected:
   // aggregate statistic JSON files and the fine-grained CSV traces. Naturally
   // these are written in yet a different file format: the input format for
   // flamegraphs.
-  struct StatProfiler;
+  struct StatsProfiler;
 
 protected:
   bool currentProcessExitStatusSet;
   int currentProcessExitStatus;
 
   long maxChildRSS = 0;
-  llvm::SmallString<128> StatFilename;
+  llvm::SmallString<128> StatsFilename;
   llvm::SmallString<128> TraceFilename;
   llvm::SmallString<128> ProfileDirname;
   llvm::TimeRecord StartedTime;
@@ -119,14 +122,14 @@ protected:
   SrcMgr *SourceMgr;
   clang::SourceManager *ClangSourceMgr;
 
-  llvm::Optional<std::vector<Stat>> stats;
+  llvm::Optional<std::vector<StatsEvent>> statsEvents;
 
   // These are unique_ptr so we can use incomplete types here.
   std::unique_ptr<RecursionSafeTimers> RecursiveTimers;
 
   /// Profilers
-  std::unique_ptr<StatProfiler> EventProfilers;
-  std::unique_ptr<StatProfiler> EntityProfilers;
+  std::unique_ptr<StatsProfiler> EventProfilers;
+  std::unique_ptr<StatsProfiler> EntityProfilers;
 
   /// Whether we are currently flushing statistics and should not therefore
   /// record any additional stats until we've finished.
@@ -151,7 +154,7 @@ public:
 
   void FlushTracesAndProfiles();
   void NoteCurrentProcessExitStatus(int);
-  void SaveStat(StatTracer const &T, bool IsEntry);
+  void SaveStats(StatsTracer const &T, bool IsEntry);
   void RecordJobMaxRSS(long rss);
   int64_t GetChildrenMaxResidentSetSize();
 };
@@ -167,10 +170,6 @@ public:
 
   llvm::Optional<DriverCounters> driverCounters;
 
-  DriverStatsReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
-                      SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
-                      bool ProfileEvents, bool ProfileEntities);
-
 public:
   DriverStatsReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
                       llvm::StringRef TripleName, llvm::StringRef OutputType,
@@ -180,10 +179,10 @@ public:
                       bool ProfileEntities = false);
   ~DriverStatsReporter();
 
-  DriverCounters &GetDriverCounters();
+  DriverCounters &GetCounters();
 };
 
-struct CompilerStatFormatter final : public TraceFormatter {
+struct CompilerStatsFormatter final : public StatsTraceFormatter {
   void TraceName(const void *Entity, raw_ostream &OS) const override {}
 
   void TraceLoc(const void *Entity, SrcMgr *SourceMgr,
@@ -200,10 +199,6 @@ public:
 #undef COMPILER_STAT
   };
 
-  CompilerStatsReporter(llvm::StringRef AuxName, llvm::StringRef Directory,
-                        SrcMgr *SM, clang::SourceManager *CSM, bool TraceEvents,
-                        bool ProfileEvents, bool ProfileEntities);
-
   /// Counters that are always on.
   llvm::Optional<CompilerCounters> compilerCounters;
   llvm::Optional<CompilerCounters> lastTracedCompilerCounters;
@@ -218,52 +213,58 @@ public:
                         bool ProfileEntities = false);
   ~CompilerStatsReporter();
 
-  CompilerCounters &GetCompilerCounters();
+public:
+  CompilerCounters &GetCounters();
+  void CountASTStats(Compiler &compiler);
+  void CountDeclStats(Compiler &compiler);
+  void CountExprStats(Compiler &compiler);
+  void CountTypeStats(Compiler &compiler);
+  void CountSourceFileStats(Compiler &compiler);
 };
 
 // This is a non-nested type just to make it less work to write at call sites.
-class CompilerStatTracer final : public StatTracer {
+class CompilerStatsTracer final : public StatsTracer {
 
 private:
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const void *Entity,
-                     const TraceFormatter *Formatter);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const void *Entity,
+                      const StatsTraceFormatter *Formatter);
 
 public:
   CompilerStatsReporter *statsReporter;
 
-  CompilerStatTracer();
-  CompilerStatTracer(CompilerStatTracer &&other);
-  CompilerStatTracer &operator=(CompilerStatTracer &&);
-  ~CompilerStatTracer();
-  CompilerStatTracer(const CompilerStatTracer &) = delete;
-  CompilerStatTracer &operator=(const CompilerStatTracer &) = delete;
+  CompilerStatsTracer();
+  CompilerStatsTracer(CompilerStatsTracer &&other);
+  CompilerStatsTracer &operator=(CompilerStatsTracer &&);
+  ~CompilerStatsTracer();
+  CompilerStatsTracer(const CompilerStatsTracer &) = delete;
+  CompilerStatsTracer &operator=(const CompilerStatsTracer &) = delete;
 
   /// These are the convenience constructors you want to be calling throughout
   /// the compiler: they select an appropriate trace formatter for the provided
   /// entity type, and produce a tracer that's either active or inert depending
   /// on whether the provided \p statsReporter is null (nullptr means "tracing
   /// is disabled").
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const Decl *D);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const Decl *D);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const clang::Decl *D);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const clang::Decl *D);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const Expr *E);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const Expr *E);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const SourceFile *F);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const SourceFile *F);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const Stmt *S);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const Stmt *S);
 
-  CompilerStatTracer(CompilerStatsReporter *statsReporter,
-                     llvm::StringRef statName, const Type *ty);
+  CompilerStatsTracer(CompilerStatsReporter *statsReporter,
+                      llvm::StringRef statName, const Type *ty);
 };
 
 } // namespace stone

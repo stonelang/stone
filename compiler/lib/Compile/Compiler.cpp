@@ -30,6 +30,8 @@ Status Compiler::Setup() {
   }
   SetUpIsWholeModuleCompile();
 
+  SetupStatsReporter();
+
   return Status();
 }
 
@@ -326,6 +328,22 @@ void Compiler::FreeMemoryContext() {
   if (memContext) {
     memContext.reset();
   }
+}
+
+void Compiler::SetupStatsReporter() {
+
+  // statsReporter = std::make_unique<CompilerStatsReporter>(
+  //     FEOpts.ModuleName,
+  //     FEOpts.InputsAndOutputs.getStatsFileMangledInputName(),
+  //     LangOpts.Target.normalize(),
+  //     llvm::sys::path::extension(OutFile),
+  //     silOptModeArgStr(SILOpts.OptMode),
+  //     StatsOutputDir,
+  //     &getSourceMgr(),
+  //     GetClangSourceManager(GetASTContext()),
+  //     invocation.GetCompilerOptions().TraceStats,
+  //     invocation.GetCompilerOptions().ProfileEvents,
+  //     invocation.GetCompilerOptions().ProfileEntities);
 }
 
 Status Compiler::ForEachSourceFileInMainModule(

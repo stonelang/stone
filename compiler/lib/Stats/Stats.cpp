@@ -46,7 +46,7 @@ public:
   }
 };
 
-class StatsReporter::StatProfiler {};
+class StatsReporter::StatsProfiler {};
 
 static std::string CleanName(StringRef n) {
   std::string tmp;
@@ -98,7 +98,7 @@ StatsReporter::StatsReporter(llvm::StringRef ProgramName,
                              bool TraceEvents, bool ProfileEvents,
                              bool ProfileEntities)
     : currentProcessExitStatusSet(false),
-      currentProcessExitStatus(EXIT_FAILURE), StatFilename(Directory),
+      currentProcessExitStatus(EXIT_FAILURE), StatsFilename(Directory),
       TraceFilename(Directory), ProfileDirname(Directory),
       StartedTime(llvm::TimeRecord::getCurrentTime()),
       MainThreadID(std::this_thread::get_id()),
@@ -123,3 +123,15 @@ StatsReporter::StatsReporter(llvm::StringRef ProgramName,
   // if (ProfileEntities)
   //   EntityProfilers = std::make_unique<StatsProfilers>();
 }
+
+CompilerStatsReporter::CompilerStatsReporter(
+    llvm::StringRef ModuleName, llvm::StringRef InputName,
+    llvm::StringRef TripleName, llvm::StringRef OutputType,
+    llvm::StringRef OptType, llvm::StringRef Directory, SrcMgr *SM,
+    clang::SourceManager *CSM, bool TraceEvents, bool ProfileEvents,
+    bool ProfileEntities)
+    : StatsReporter("stone-compile", ModuleName, InputName, TripleName,
+                    OutputType, OptType, Directory, SM, CSM, TraceEvents,
+                    ProfileEvents, ProfileEntities) {}
+
+CompilerStatsTracer::~CompilerStatsTracer() {}
