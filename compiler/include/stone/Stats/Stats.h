@@ -31,6 +31,7 @@ class SrcMgr;
 class Stmt;
 class Type;
 class StatsTracer;
+class StatsReporter;
 class Compiler;
 
 /// Get the number of instructions executed since this process was launched.
@@ -75,11 +76,15 @@ public:
 
 class StatsTracer {
 public:
-  llvm::TimeRecord SavedTime;
-  llvm::StringRef statName;
-  const void *Entity;
-  const StatsTraceFormatter *Formatter;
+  llvm::TimeRecord savedTime;
+  llvm::StringRef eventName;
+  const void *entity;
+  const StatsTraceFormatter *formatter;
+  StatsReporter *reporter;
 
+public:
+  StatsTracer(StatsReporter *reporter, StringRef eventName, const void *entity,
+              const StatsTraceFormatter *formatter);
 public:
   // In the general case we do not know how to format an entity for tracing.
   template <typename T>

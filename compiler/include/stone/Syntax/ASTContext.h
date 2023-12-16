@@ -80,6 +80,7 @@ class IfStmt;
 class SwitchStmt;
 class Expr;
 class SourceFile;
+class CompilerStatsReporter;
 
 class ASTContextStats final : public Stats {
   const ASTContext &sc;
@@ -151,6 +152,8 @@ class ASTContext final {
 
   /// OutputBackend for writing outputs.
   // std::unique_ptr<llvm::vfs::OutputBackend> outputBackend;
+
+  CompilerStatsReporter *statsReporter;
 
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.
@@ -235,7 +238,7 @@ public:
   void SetMainModule(ModuleDecl *inputModule) { mainModule = inputModule; }
 
   /// Set a new stats reporter.
-  // void SetStatsReporter(StatsReporter *stats);
+  void SetStatsReporter(CompilerStatsReporter *stats) { statsReporter = stats; }
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {

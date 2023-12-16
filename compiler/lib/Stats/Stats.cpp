@@ -138,6 +138,26 @@ CompilerStatsReporter::CompilerStatsReporter(
 
 CompilerStatsReporter::~CompilerStatsReporter() {}
 
+StatsTracer::StatsTracer(StatsReporter *reporter, llvm::StringRef eventName,
+                         const void *entity,
+                         const StatsTraceFormatter *formatter)
+    : reporter(reporter), savedTime(), eventName(eventName), entity(entity),
+      formatter(formatter) {
+  if (reporter) {
+    savedTime = llvm::TimeRecord::getCurrentTime();
+  }
+}
+
+CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *reporter,
+                                         llvm::StringRef eventName,
+                                         const void *entity,
+                                         const StatsTraceFormatter *formatter)
+    : StatsTracer(reporter, eventName, entity, formatter) {
+  if (reporter) {
+    //reporter->SaveStatsEvents(*this, true);
+  }
+}
+
 CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *statsReporter,
                                          llvm::StringRef eventName) {}
 

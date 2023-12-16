@@ -118,6 +118,10 @@ public:
 
   SourceFile::ParsingOptions GetSourceFileParsingOptions(bool forPrimary) const;
 
+  std::error_code CreateDir(std::string name) {
+    return llvm::sys::fs::create_directories(name);
+  }
+
 public:
   // Module
   ModuleDecl *GetMainModule() const;

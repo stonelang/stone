@@ -12,6 +12,10 @@ ParseOnlyExecution::ParseOnlyExecution(Compiler &compiler,
 Status ParseOnlyExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::Parse);
+
+  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
+                             "parse-source-file");
+
   GetCompiler().ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
     stone::ParseSourceFile(sourceFile, GetCompiler().GetASTContext(), nullptr,
                            nullptr);
@@ -28,11 +32,10 @@ ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler,
 Status ImportResolutionExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::ResolveImports);
 
-  // compiler.GetStatisticEngine().EnterStatisticTracer(StatisTicCounterKind::ImportResolution);
+  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
+                             "import-resolution");
 
   // stone::ResolveSourceFileImports(sourceFile);
-
-  // compiler.GetStatisticEngine().ExitStatisticTracer(StatisTicCounterKind::ImportResolution);
 
   return Status();
 }
