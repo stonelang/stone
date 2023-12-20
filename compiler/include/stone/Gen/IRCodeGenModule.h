@@ -99,53 +99,47 @@ using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
 // TODO: Use ASTAllocation in the future?
 class IRCodeGenResult final : public MemoryAllocation<IRCodeGenResult> {
-private:
-  std::unique_ptr<llvm::LLVMContext> Context;
-  std::unique_ptr<llvm::Module> Module;
-  std::unique_ptr<llvm::TargetMachine> Target;
 
-  IRCodeGenResult() : Context(nullptr), Module(nullptr), Target(nullptr) {}
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
+  IRCodeGenResult()
+      : llvmContext(nullptr), llvmModule(nullptr), llvmTargetMachine(nullptr) {}
+
+public:
   IRCodeGenResult(IRCodeGenResult const &) = delete;
   IRCodeGenResult &operator=(IRCodeGenResult const &) = delete;
+  IRCodeGenResult(IRCodeGenResult &&) = default;
+  IRCodeGenResult &operator=(IRCodeGenResult &&) = default;
 
 public:
   /// Construct a \c IRCodeGenResult  that owns a given module and context.
   ///
   /// The given pointers must not be null. If a null \c IRCodeGenResult  is
   /// needed, use \c IRCodeGenResult ::null() instead.
-  explicit IRCodeGenResult(std::unique_ptr<llvm::LLVMContext> &&Context,
-                           std::unique_ptr<llvm::Module> &&Module,
+  explicit IRCodeGenResult(std::unique_ptr<llvm::LLVMContext> &&llvmContext,
+                           std::unique_ptr<llvm::Module> &&llvmModule,
                            std::unique_ptr<llvm::TargetMachine> &&Target)
-      : Context(std::move(Context)), Module(std::move(Module)),
-        Target(std::move(Target)) {
-
-    assert(GetModule() && "Use IRCodeGenResult ::null() instead");
-    assert(GetContext() && "Use IRCodeGenResult ::null() instead");
-    assert(GetTargetMachine() && "Use IRCodeGenResult ::null() instead");
-  }
-
-  IRCodeGenResult(IRCodeGenResult &&) = default;
-  IRCodeGenResult &operator=(IRCodeGenResult &&) = default;
-
-public:
-  /// Construct a \c IRCodeGenResult  that does not own any resources.
-  static IRCodeGenResult null() { return IRCodeGenResult{}; }
+      : llvmContext(std::move(llvmContext)), llvmModule(std::move(llvmModule)),
+        llvmTargetMachine(std::move(llvmTargetMachine)) {}
 
 public:
   explicit operator bool() const {
-    return Module != nullptr && Context != nullptr;
+    return llvmModule != nullptr && llvmContext != nullptr;
   }
 
 public:
-  const llvm::Module *GetModule() const { return Module.get(); }
-  llvm::Module *GetModule() { return Module.get(); }
+  const llvm::Module *GetLLVMModule() const { return llvmModule.get(); }
+  llvm::Module *GetLLVMModule() { return llvmModule.get(); }
 
-  const llvm::LLVMContext *GetContext() const { return Context.get(); }
-  llvm::LLVMContext *getContext() { return Context.get(); }
+  const llvm::LLVMContext *GetLLVMContext() const { return llvmContext.get(); }
+  llvm::LLVMContext *GetLLVMContext() { return llvmContext.get(); }
 
-  const llvm::TargetMachine *GetTargetMachine() const { return Target.get(); }
-  llvm::TargetMachine *GetTargetMachine() { return Target.get(); }
+  const llvm::TargetMachine *GetTargetMachine() const {
+    return llvmTargetMachine.get();
+  }
+  llvm::TargetMachine *GetTargetMachine() { return llvmTargetMachine.get(); }
 
 public:
   /// Release ownership of the context and module to the caller, consuming
@@ -154,7 +148,7 @@ public:
   /// The REPL is the only caller that needs this. New uses of this function
   /// should be avoided at all costs.
   std::pair<llvm::LLVMContext *, llvm::Module *> release() && {
-    return {Context.release(), Module.release()};
+    return {llvmContext.release(), llvmModule.release()};
   }
 
 public:
