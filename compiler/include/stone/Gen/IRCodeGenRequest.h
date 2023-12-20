@@ -83,6 +83,11 @@ public:
   //   return moduleOrFile.dyn_cast<SourceFile *>() == nullptr;
   // }
 
+  SourceFile *GetPrimarySourceFile() {
+    return llvm::dyn_cast_or_null<SourceFile>(
+        moduleOrFile.dyn_cast<ModuleFile *>());
+  }
+
   void SetCodeGenListener(CodeGenListener *inputListener) {
     listener = inputListener;
   }

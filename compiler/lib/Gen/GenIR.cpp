@@ -136,18 +136,20 @@ using namespace stone;
 //                            llvm::GlobalVariable **outModuleHash)
 // }
 
-IRCodeGenResult *stone::GenIR(const IRCodeGenRequest request) {
+IRCodeGenResult *stone::GenIR(IRCodeGenRequest request) {
 
   IRCodeGen codeGen(request.GetCodeGenOptions(), request.GetASTContext());
 
-  // IRCodeGenModule codeGenModule(codeGen, SourceFile *sourceFile,
-  //                  llvm::StringRef moduleName, llvm::StringRef
-  //                  outputFilename);
+  const auto &psps = request.GetPrimaryFileSpecificPaths();
 
-  // IRCodeGenModule irCodeGenModule(irCodeGen, codeGenRequest.GetSour)
+  IRCodeGenModule codeGenModule(codeGen, request.GetPrimarySourceFile(),
+                                request.GetModuleName(), psps.outputFilename);
 
-  // return IRCodeGenResult::Create(request.GetMemoryContext(), codeGen.Get
-  return nullptr;
+  return IRCodeGenResult::Create(
+      request.GetMemoryContext(), std::move(codeGen.llvmContext),
+      std::unique_ptr<llvm::Module>{
+          codeGenModule.GetClangCodeGen().ReleaseModule()},
+      std::move(codeGen.llvmTargetMachine));
 }
 
 /// Disable thumb-mode until debugger support is there.

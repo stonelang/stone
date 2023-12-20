@@ -152,7 +152,7 @@ public:
   }
 
 public:
-  IRCodeGenResult *
+  static IRCodeGenResult *
   Create(MemoryContext &memContext,
          std::unique_ptr<llvm::LLVMContext> &&llvmContext,
          std::unique_ptr<llvm::Module> &&llvmModule,
@@ -169,9 +169,6 @@ class IRCodeGen final {
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
 
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
-  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
-
   llvm::DenseMap<SourceFile *, IRCodeGenModule *> irCodeGenModules;
 
   // The IGM of the first source file.
@@ -179,6 +176,10 @@ class IRCodeGen final {
 
   // The current IGM for which IR is generated.
   IRCodeGenModule *currentCodeGenModule = nullptr;
+
+public:
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 private:
   IRCodeGen(const IRCodeGen &) = delete;
@@ -325,6 +326,7 @@ public:
   //                                       unsigned BuiltinID);
 
   llvm::Module &GetLLVMModule() { return llvmModule; }
+  clang::CodeGenerator &GetClangCodeGen() { return *clangCodeGen; }
 
 private:
   void Emit();
