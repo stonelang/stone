@@ -129,7 +129,28 @@ class IdentityExpr : public Expr {
 // DotThis
 class DotThisExpr : public IdentityExpr {};
 
-class CodeCompletionExpr : public Expr {};
+class CodeCompletionExpr : public Expr {
+  Expr *base;
+  SrcLoc loc;
+
+public:
+  CodeCompletionExpr(Expr *base, SrcLoc loc)
+      : Expr(StmtKind::CodeCompletion), base(base), loc(loc) {}
+
+  CodeCompletionExpr(SrcLoc loc) : CodeCompletionExpr(nullptr, loc) {}
+
+public:
+  Expr *GetBase() const { return base; }
+  void SetBase(Expr *expr) { base = expr; }
+
+  SrcLoc GetLoc() const { return loc; }
+  // SrcLoc GetStartLoc() const { return base ? base->GetStartLoc() : loc; }
+  // SrcLoc GetEndLoc() const { return loc; }
+
+  static bool classof(const Expr *expr) {
+    return expr->GetKind() == StmtKind::CodeCompletion;
+  }
+};
 
 } // namespace stone
 #endif

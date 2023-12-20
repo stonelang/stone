@@ -2,21 +2,13 @@
 #define STONE_COMPILE_COMPILE_H
 
 #include "stone/Basic/Status.h"
+#include "stone/IDE.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-class Parser;
 class Compiler;
 class CompilerListener;
-
-class CodeCompletionCallbacks {
-protected:
-  Parser &parser;
-
-public:
-  CodeCompletionCallbacks(Parser &parser) : parser(parser) {}
-};
 
 class CompilerObservation {
 public:
@@ -44,43 +36,11 @@ public:
 
 public:
   /// Callbacks into the parsing pipeline
-  virtual CodeCompletionCallbacks GetCodeCompletionCallbacks();
+  virtual CodeCompletionCallbacks *GetCodeCompletionCallbacks();
 };
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             CompilerListener *listener = nullptr);
-
-// class CompileSession final {
-//   Status status;
-//   Compiler &compiler;
-
-// public:
-//   enum Kind {
-//     ForSupport = 1 << 0,
-//     ForLLVMIR = 1 << 1,
-//     ForCodeAnalysis = 1 << 2,
-//     ForCodeGeneration = 1 << 3,
-//   };
-
-// public:
-//   bool ShouldContinue() {
-//     return (!status.IsError() && !status.HasCompletion());
-//   }
-
-// public:
-//   CompileSession(Compiler &compiler) : compiler(compiler) {}
-//   ~CompileSession() {}
-
-//   // public:
-//   //   CompileSession::Kind GetKindForAction(ActionKind kind);
-
-// public:
-//   bool IsForSupport();
-//   bool IsForLLVMIR();
-
-// public:
-//   Status &GetStatus() { return status; }
-// };
 
 /// Handles LLVM
 Status CompileForLLVMIR(Compiler &compiler);

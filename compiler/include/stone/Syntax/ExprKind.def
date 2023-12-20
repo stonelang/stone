@@ -56,6 +56,7 @@ ABSTRACT_EXPR(Expr, ValueStmt)
    ABSTRACT_EXPR(AbstractClosure, Expr)
    CTX_EXPR(Closure, AbstractClosureExpr)
 
+EXPR(CodeCompletion, Expr)
 EXPR(Type, Expr)
 LAST_EXPR(Type)
 
