@@ -4,65 +4,6 @@
 
 using namespace stone;
 
-Status GenerateIRExecution::GenForFile() {
-  /// IRCodeGenerator
-  assert(!IsForModule());
-  if (!GetCompiler().GetPrimarySourceFiles().empty()) {
-    for (auto *primarySourceFile : GetCompiler().GetPrimarySourceFiles()) {
-      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetCompiler()
-              .GetInvocation()
-              .GetPrimaryFileSpecificPathsForSyntaxFile(*primarySourceFile);
-
-      llvm::StringRef outputFilename = primaryFileSpecificPaths.outputFilename;
-
-      auto result = stone::GenIR(IRCodeGenRequest::ForFile(
-          GetCompiler().GetInvocation().GetCodeGenOptions(), primarySourceFile,
-          outputFilename, GetCompiler().GetASTContext(),
-          GetCompiler().GetMemoryContext(), primaryFileSpecificPaths));
-
-      GetCompiler().AddIRCodeGenResult(result);
-    }
-  }
-}
-
-bool GenerateIRExecution::IsForModule() {
-  return GetCompiler().GetInvocation().GetCodeGenOptions().isWholeModuleCompile;
-}
-
-Status GenerateIRExecution::GenForModule() {
-
-  assert(IsForModule());
-  if (!GetCompiler()
-           .GetInvocation()
-           .GetCompilerOptions()
-           .inputsAndOutputs.HasPrimaryInputs()) {
-
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-        GetCompiler()
-            .GetInvocation()
-            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-
-    llvm::StringRef outputFilename = primaryFileSpecificPaths.outputFilename;
-    std::vector<std::string> ParallelOutputFilenames =
-        GetCompiler()
-            .GetInvocation()
-            .GetCompilerOptions()
-            .inputsAndOutputs.CopyOutputFilenames();
-
-    auto result = stone::GenIR(IRCodeGenRequest::ForModule(
-        GetCompiler().GetInvocation().GetCodeGenOptions(),
-        GetCompiler().GetMainModule(), outputFilename,
-        GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
-        primaryFileSpecificPaths, ParallelOutputFilenames));
-
-    GetCompiler().AddIRCodeGenResult(result);
-  }
-
-  // Just return for now
-  return Status();
-}
-
 GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
                                          ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
@@ -71,13 +12,49 @@ Status GenerateIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
 
-  // std::unique_ptr<IRCodeGen> irCode = std::make_uqnique<IRCodeGen>();
-  // irCodeGen->Gen();
+  if (GetCompiler().GetInvocation().GetCodeGenOptions().isWholeModuleCompile) {
+    if (!GetCompiler()
+             .GetInvocation()
+             .GetCompilerOptions()
+             .inputsAndOutputs.HasPrimaryInputs()) {
 
-  if (IsForModule()) {
-    GenForModule();
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          GetCompiler()
+              .GetInvocation()
+              .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+      std::vector<std::string> parallelOutputFilenames =
+          GetCompiler()
+              .GetInvocation()
+              .GetCompilerOptions()
+              .inputsAndOutputs.CopyOutputFilenames();
+
+      auto result = stone::GenIR(IRCodeGenRequest::ForModule(
+          GetCompiler().GetInvocation().GetCodeGenOptions(),
+          GetCompiler().GetMainModule(),
+          primaryFileSpecificPaths.outputFilename,
+          GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
+          primaryFileSpecificPaths, parallelOutputFilenames));
+
+      GetCompiler().AddIRCodeGenResult(result);
+    }
   } else {
-    GenForFile();
+    GetCompiler().ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
+      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+          GetCompiler()
+              .GetInvocation()
+              .GetPrimaryFileSpecificPathsForSyntaxFile(sourceFile);
+
+      auto result = stone::GenIR(IRCodeGenRequest::ForFile(
+          GetCompiler().GetInvocation().GetCodeGenOptions(), &sourceFile,
+          primaryFileSpecificPaths.outputFilename,
+          GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
+          primaryFileSpecificPaths));
+
+      GetCompiler().AddIRCodeGenResult(result);
+
+      return Status();
+    });
   }
 
   if (IsMainAction()) {

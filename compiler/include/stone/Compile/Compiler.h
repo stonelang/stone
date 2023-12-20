@@ -91,10 +91,10 @@ public:
   bool HasMemoryContext() const { return memContext != nullptr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
-
-  std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind kind);
-
   Status ExecuteAction(ActionKind kind);
+
+private:
+  std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind action);
 
 public:
   Status SetupCompilerInputFiles();

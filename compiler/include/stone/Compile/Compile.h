@@ -82,44 +82,32 @@ int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
 //   Status &GetStatus() { return status; }
 // };
 
-// /// Handles LLVM
-// void Compile(Compiler &compiler);
+/// Handles LLVM
+Status CompileForLLVMIR(Compiler &compiler);
 
-// /// Handles LLVM
-// void CompileForLLVMIR(Compiler &compiler, CompileSession &session);
+/// Handles valid actions
+Status CompileForAction(Compiler &compiler);
 
-// /// Handles valid actions
-// void CompileForAction(Compiler &compiler, CompileSession &session);
+/// Handles help, version, features
+Status CompileForSupport(Compiler &compiler);
 
-// /// Handles help, version, features
-// void CompileForSupport(Compiler &compiler, CompileSession &session);
+/// Handles only syntax
+Status CompileForSyntaxAnalysis(Compiler &compiler);
 
-// /// Handles parsings, import resolution, and type-checking
-// void CompileForCodeAnalysis(Compiler &compiler, CompileSession &session,
-//                             std::function<void(Compiler &, CompileSession
-//                             &)>);
+/// Handles only syntax
+Status CompileForParse(Compiler &compiler);
 
-// /// Handles only syntax
-// void CompileForSyntaxAnalysis(Compiler &compiler, CompileSession &session);
+/// Handles only syntax
+Status CompileForParseAndImportResolution(Compiler &compiler);
 
-// /// Handles only syntax
-// void CompileForParse(Compiler &compiler, CompileSession &session);
+/// Handles semantics
+Status CompileForTypeChecking(Compiler &compiler);
 
-// /// Handles only syntax
-// void CompileForParseAndImportResolution(Compiler &compiler,
-//                                         CompileSession &session);
-// /// Handles semantics
-// void CompileForSemanticAnalysis(Compiler &compiler, CompileSession &session);
+/// Handles tasks after
+Status CompileAfterSemanticAnalysis(Compiler &compiler);
 
-// /// Handles semantics
-// void CompileForTypeChecking(Compiler &compiler, CompileSession &session);
-
-// // /// Handles tasks after
-// // void CompileAfterSemanticAnalysis(Compiler &compiler,
-// //                                   CompilingSession &session);
-
-// /// Handles code generating
-// void CompileForEmitCode(Compiler &compiler, CompileSession &session);
+/// Handles code generating
+Status CompileForEmitCode(Compiler &compiler);
 
 /// Handles IR generation
 // void CompileForGenIR(Compiler &compiler, CompilingSession &session,

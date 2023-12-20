@@ -1,10 +1,13 @@
 #include "stone/Public.h"
 
 #include "stone/Basic/Status.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 
 using namespace stone;
+
+Status stone::CompileForLLVMIR(Compiler &compiler) { return Status(); }
 
 FallbackExecution::FallbackExecution(Compiler &compiler,
                                      ActionKind currentAction)
@@ -16,13 +19,8 @@ Status FallbackExecution::Execute() {
   assert(GetMainAction() == ActionKind::None);
 
   if (GetCompiler().IsCompileForLLVMIR()) {
-    return ExecuteCompileLLVMIR();
+    return stone::CompileForLLVMIR(GetCompiler());
   }
   /// Perform anything that are no action related
-  return Status();
-}
-
-Status FallbackExecution::ExecuteCompileLLVMIR() {
-  // todo: stone::GenNative(.....)
   return Status();
 }

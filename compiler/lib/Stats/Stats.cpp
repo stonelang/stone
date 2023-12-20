@@ -105,7 +105,7 @@ StatsReporter::StatsReporter(llvm::StringRef ProgramName,
       Timer(std::make_unique<llvm::NamedRegionTimer>(
           AuxName, "Building Target", ProgramName, "Running Program")),
       SourceMgr(SM), ClangSourceMgr(CSM),
-      RecursiveTimers(std::make_unique<RecursionSafeTimers>()),
+      RecursiveTimers(std::make_unique<StatsReporter::RecursionSafeTimers>()),
       IsFlushingTracesAndProfiles(false) {
 
   // path::append(StatsFilename, makeStatsFileName(ProgramName, AuxName));
@@ -154,11 +154,12 @@ CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *reporter,
                                          const StatsTraceFormatter *formatter)
     : StatsTracer(reporter, eventName, entity, formatter) {
   if (reporter) {
-    //reporter->SaveStatsEvents(*this, true);
+    // reporter->SaveStatsEvents(*this, true);
   }
 }
 
 CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *statsReporter,
-                                         llvm::StringRef eventName) {}
+                                         llvm::StringRef eventName)
+    : StatsTracer(reporter, eventName, nullptr, nullptr) {}
 
 CompilerStatsTracer::~CompilerStatsTracer() {}

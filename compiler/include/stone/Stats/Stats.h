@@ -85,6 +85,7 @@ public:
 public:
   StatsTracer(StatsReporter *reporter, StringRef eventName, const void *entity,
               const StatsTraceFormatter *formatter);
+
 public:
   // In the general case we do not know how to format an entity for tracing.
   template <typename T>

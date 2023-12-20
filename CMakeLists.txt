@@ -26,9 +26,9 @@ include_directories(BEFORE
   ${CLANG_MAIN_INCLUDE_DIR}
 )
 
-
 set_stone_version()
 message(STATUS "Stone version: ${STONE_VERSION}")
+
 
 # Install the path for the lib files 
 install_stone()
