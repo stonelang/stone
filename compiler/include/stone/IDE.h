@@ -19,9 +19,12 @@ protected:
 
 public:
   CodeCompletionCallbacks(Parser &parser) : parser(parser) {}
+  virtual ~CodeCompletionCallbacks() {}
 
 public:
-  virtual void CompletedParseSourceFile(SourceFile *srcFile) = 0;
+  virtual void CompletedParseSourceFile(const SourceFile *srcFile) = 0;
+  virtual void CompletedTopLevelDecl(const Decl *decl) = 0;
+  virtual void CompletedToken(const Token *token) = 0;
 };
 
 } // namespace stone

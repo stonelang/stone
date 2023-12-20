@@ -136,17 +136,17 @@ using namespace stone;
 //                            llvm::GlobalVariable **outModuleHash)
 // }
 
-IRCodeGenResult *stone::GenIR(const IRCodeGenRequest codeGenRequest) {
+IRCodeGenResult *stone::GenIR(const IRCodeGenRequest request) {
 
-  IRCodeGen irCodeGen(codeGenRequest.GetCodeGenOptions(),
-                      codeGenRequest.GetASTContext());
+  IRCodeGen codeGen(request.GetCodeGenOptions(), request.GetASTContext());
 
-  // IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
-  //                 llvm::StringRef moduleName, llvm::StringRef
-  //                 outputFilename);
+  // IRCodeGenModule codeGenModule(codeGen, SourceFile *sourceFile,
+  //                  llvm::StringRef moduleName, llvm::StringRef
+  //                  outputFilename);
 
   // IRCodeGenModule irCodeGenModule(irCodeGen, codeGenRequest.GetSour)
 
+  // return IRCodeGenResult::Create(request.GetMemoryContext(), codeGen.Get
   return nullptr;
 }
 

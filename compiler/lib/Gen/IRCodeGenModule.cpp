@@ -58,13 +58,12 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
                                  llvm::StringRef moduleName,
                                  llvm::StringRef outputFilename)
 
-    : irCodeGen(irCodeGen),
-      llvmModule(new llvm::Module(moduleName, irCodeGen.GetLLVMContext())),
-      dataLayout(irCodeGen.GetClangDataLayoutString()),
+    : irCodeGen(irCodeGen), dataLayout(irCodeGen.GetClangDataLayoutString()),
       triple(irCodeGen.GetEffectiveClangTriple()),
       typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
       clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)),
-      typeResolver(*this), metadata(*this) {
+      llvmModule(*clangCodeGen->GetModule()), typeResolver(*this),
+      metadata(*this) {
 
   // Setup module target
   irCodeGen.AddIRCodeGenModule(sourceFile, this);

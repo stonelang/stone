@@ -79,6 +79,10 @@ public:
     return moduleOrFile.get<ModuleFile *>();
   }
 
+  // bool IsForWholeModule() {
+  //   return moduleOrFile.dyn_cast<SourceFile *>() == nullptr;
+  // }
+
   void SetCodeGenListener(CodeGenListener *inputListener) {
     listener = inputListener;
   }
