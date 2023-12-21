@@ -144,6 +144,7 @@ IRCodeGenResult *stone::GenIR(IRCodeGenRequest request) {
 
   IRCodeGenModule cgm(codeGen, request.GetPrimarySourceFile(),
                                 request.GetModuleName(), psps.outputFilename);
+  cgm.Setup();
 
   return IRCodeGenResult::Create(
       request.GetMemoryContext(), std::move(codeGen.llvmContext),

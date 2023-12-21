@@ -238,7 +238,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   //  // /// reflection metadata.
   //  llvm::SetVector<const StructDecl *> importedStructs;
 
-  llvm::Module &llvmModule;
+  //std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<clang::CodeGenerator> clangCodeGen;
 
 private:
@@ -251,6 +251,7 @@ public:
   ~IRCodeGenModule();
 
 public:
+  void Setup();
   void SetupLLVMModule();
 
 public:
@@ -325,7 +326,7 @@ public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,
   //                                       unsigned BuiltinID);
 
-  llvm::Module &GetLLVMModule() { return llvmModule; }
+  //llvm::Module &GetLLVMModule() { return *llvmModule; }
   clang::CodeGenerator &GetClangCodeGen() { return *clangCodeGen; }
 
 private:

@@ -61,19 +61,16 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
     : irCodeGen(irCodeGen), dataLayout(irCodeGen.GetClangDataLayoutString()),
       triple(irCodeGen.GetEffectiveClangTriple()),
       typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
-      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)),
-      llvmModule(*clangCodeGen->GetModule()), typeResolver(*this),
+      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)), typeResolver(*this),
       metadata(*this) {
 
   // Setup module target
   irCodeGen.AddIRCodeGenModule(sourceFile, this);
 }
 
-void IRCodeGenModule::SetupLLVMModule() {
-
-  GetLLVMModule().setTargetTriple(GetTriple().str());
-  // Set the module's string representation.
-  GetLLVMModule().setDataLayout(GetDataLayout().getStringRepresentation());
+void IRCodeGenModule::Setup() {
+    GetClangCodeGen().GetModule()->setTargetTriple(GetTriple().str());
+    GetClangCodeGen().GetModule()->setDataLayout(GetDataLayout().getStringRepresentation());
 }
 
 /// Return the effective triple used by clang.
@@ -128,7 +125,7 @@ IRCodeGenModule::CreateFunction(llvm::StringRef mangledName, FunctionDecl *fd,
 
   llvm::Function *llvmFunction = llvm::Function::Create(
       llvmFunctionType, llvm::Function::ExternalLinkage,
-      entry ? llvm::StringRef() : mangledName, GetLLVMModule());
+      entry ? llvm::StringRef() : mangledName, GetClangCodeGen().GetModule());
 
   return llvmFunction;
 }
