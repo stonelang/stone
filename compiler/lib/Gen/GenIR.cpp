@@ -143,13 +143,12 @@ IRCodeGenResult *stone::GenIR(IRCodeGenRequest request) {
   const auto &psps = request.GetPrimaryFileSpecificPaths();
 
   IRCodeGenModule cgm(codeGen, request.GetPrimarySourceFile(),
-                                request.GetModuleName(), psps.outputFilename);
+                      request.GetModuleName(), psps.outputFilename);
   cgm.Setup();
 
   return IRCodeGenResult::Create(
       request.GetMemoryContext(), std::move(codeGen.llvmContext),
-      std::unique_ptr<llvm::Module>{
-          cgm.GetClangCodeGen().ReleaseModule()},
+      std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()},
       std::move(codeGen.llvmTargetMachine));
 }
 

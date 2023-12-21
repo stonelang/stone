@@ -171,6 +171,8 @@ class IRCodeGen final {
 
   llvm::DenseMap<SourceFile *, IRCodeGenModule *> irCodeGenModules;
 
+  llvm::SmallVector<IRCodeGenModule *, 8> queue;
+
   // The IGM of the first source file.
   IRCodeGenModule *primaryCodeGenModule = nullptr;
 
@@ -238,7 +240,7 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   //  // /// reflection metadata.
   //  llvm::SetVector<const StructDecl *> importedStructs;
 
-  //std::unique_ptr<llvm::Module> llvmModule;
+  // std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<clang::CodeGenerator> clangCodeGen;
 
 private:
@@ -326,7 +328,7 @@ public:
   // llvm::Constant *GetBuiltinLibFunction(const FunctionDecl *FD,
   //                                       unsigned BuiltinID);
 
-  //llvm::Module &GetLLVMModule() { return *llvmModule; }
+  // llvm::Module &GetLLVMModule() { return *llvmModule; }
   clang::CodeGenerator &GetClangCodeGen() { return *clangCodeGen; }
 
 private:

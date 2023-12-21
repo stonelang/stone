@@ -61,26 +61,35 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
     : irCodeGen(irCodeGen), dataLayout(irCodeGen.GetClangDataLayoutString()),
       triple(irCodeGen.GetEffectiveClangTriple()),
       typeCache(irCodeGen.GetLLVMContext()), outputFilename(outputFilename),
-      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)), typeResolver(*this),
-      metadata(*this) {
+      clangCodeGen(CreateClangCodeGen(irCodeGen, moduleName)),
+      typeResolver(*this), metadata(*this) {
 
   // Setup module target
   irCodeGen.AddIRCodeGenModule(sourceFile, this);
 }
 
-void IRCodeGenModule::Setup() {
-    GetClangCodeGen().GetModule()->setTargetTriple(GetTriple().str());
-    GetClangCodeGen().GetModule()->setDataLayout(GetDataLayout().getStringRepresentation());
-}
-
-/// Return the effective triple used by clang.
-// llvm::Triple IRCodeGenModule::GetEffectiveClangTriple() {}
-// const llvm::StringRef IRCodeGenModule::GetClangDataLayoutString() {}
 
 /// Add an IRCodeGenModule for a source file.
 /// Should only be called from IRCodeGenModule's constructor.
 void IRCodeGen::AddIRCodeGenModule(SourceFile *sourceFile,
-                                   IRCodeGenModule *codeGenModule) {}
+                                   IRCodeGenModule *codeGenModule) {
+
+  assert(irCodeGenModules.count(sourceFile) == 0);
+  irCodeGenModules[sourceFile] = codeGenModule;
+  if (!primaryCodeGenModule) {
+    primaryCodeGenModule = codeGenModule;
+  }
+  queue.push_back(codeGenModule);
+}
+
+
+
+void IRCodeGenModule::Setup() {
+  GetClangCodeGen().GetModule()->setTargetTriple(GetTriple().str());
+  GetClangCodeGen().GetModule()->setDataLayout(
+      GetDataLayout().getStringRepresentation());
+}
+
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
