@@ -68,7 +68,6 @@ IRCodeGenModule::IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
   irCodeGen.AddIRCodeGenModule(sourceFile, this);
 }
 
-
 /// Add an IRCodeGenModule for a source file.
 /// Should only be called from IRCodeGenModule's constructor.
 void IRCodeGen::AddIRCodeGenModule(SourceFile *sourceFile,
@@ -82,14 +81,11 @@ void IRCodeGen::AddIRCodeGenModule(SourceFile *sourceFile,
   queue.push_back(codeGenModule);
 }
 
-
-
 void IRCodeGenModule::Setup() {
   GetClangCodeGen().GetModule()->setTargetTriple(GetTriple().str());
   GetClangCodeGen().GetModule()->setDataLayout(
       GetDataLayout().getStringRepresentation());
 }
-
 
 IRCodeGenModule::~IRCodeGenModule() {}
 
