@@ -47,35 +47,39 @@ Status ClangContext::Setup(llvm::ArrayRef<const char *> argv,
   clang::DiagnosticsEngine Diags(DiagIDs, &*DiagOpts, DiagBuffer);
 
   bool Success = clang::CompilerInvocation::CreateFromArgs(
-      GetInstance().getInvocation(), argv, Diags, arg0);
+      clangInstance->getInvocation(), argv, Diags, arg0);
   if (!Success) {
     return Status::Error();
   }
 
   // Create the actual diagnostics engine.
-  GetInstance().createDiagnostics();
-  if (!GetInstance().hasDiagnostics()) {
+  clangInstance->createDiagnostics();
+  if (!clangInstance->hasDiagnostics()) {
     return Status::Error();
   }
 
   DiagBuffer->FlushDiagnostics(GetInstance().getDiagnostics());
   if (!Success) {
-    GetInstance().getDiagnosticClient().finish();
+    clangInstance->getDiagnosticClient().finish();
     return Status::Error();
   }
   // If there were errors in processing arguments, don't do anything else.
-  if (GetInstance().getDiagnostics().hasErrorOccurred()) {
+  if (clangInstance->getDiagnostics().hasErrorOccurred()) {
     return Status::Error();
   }
   // Set up the file and source managers, if needed.
-  if (!GetInstance().hasFileManager()) {
+  if (!clangInstance->hasFileManager()) {
     assert(GetInstance().createFileManager());
   }
-  if (!GetInstance().hasSourceManager()) {
-    GetInstance().createSourceManager(GetInstance().getFileManager());
+  if (!clangInstance->hasSourceManager()) {
+    clangInstance->createSourceManager(clangInstance->getFileManager());
   }
 
-  assert(GetInstance().createTarget());
+  assert(clangInstance->createTarget());
+
+  clangInstance->createPreprocessor(clang::TU_Complete);
+  clangInstance->createASTContext();
+  clangInstance->createASTReader();
 
   return Status();
 }
