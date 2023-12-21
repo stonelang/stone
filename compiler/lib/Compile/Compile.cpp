@@ -64,24 +64,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  // auto execution =
-  // invocation.ComputeCompilerExectution(invocation.GetMainAction().GetKind());
-  // execution->Setup();
-  // execution->Execute();
-
   if (compiler.ExecuteAction(compiler.GetInvocation().GetMainAction().GetKind())
           .IsError()) {
     return FinishCompile(Status::Error());
   }
   return FinishCompile();
 }
-
-void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountDeclStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountExprStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountTypeStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountSourceFileStats(Compiler &compiler) {}

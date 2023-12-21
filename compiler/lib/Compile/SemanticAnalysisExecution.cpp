@@ -10,15 +10,17 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler,
 Status TypeCheckExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::TypeCheck);
+
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
 
-  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+  compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(
         sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions(),
         nullptr);
     sourceFile.stage = SourceFileStage::TypeChecked;
     return Status();
   });
+
   return Status();
 }
 

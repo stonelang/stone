@@ -406,3 +406,13 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
   }
   return Status();
 }
+
+void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountDeclStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountExprStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountTypeStats(Compiler &compiler) {}
+
+void CompilerStatsReporter::CountSourceFileStats(Compiler &compiler) {}

@@ -166,6 +166,10 @@ public:
       llvm_unreachable("Invalid IR code generation target!");
     }
   }
+  bool IsWholeModuleCompile() {
+    return invocation.GetCodeGenOptions().isWholeModuleCompile;
+  }
+
   bool IsCompileForLLVMIR() {
     return GetInvocation()
         .GetCompilerOptions()

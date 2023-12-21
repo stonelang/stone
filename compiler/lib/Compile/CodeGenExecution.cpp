@@ -12,46 +12,40 @@ Status GenerateIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRBefore);
 
-  if (GetCompiler().GetInvocation().GetCodeGenOptions().isWholeModuleCompile) {
-    if (!GetCompiler()
-             .GetInvocation()
+  if (compiler.IsWholeModuleCompile()) {
+    if (!compiler.GetInvocation()
              .GetCompilerOptions()
              .inputsAndOutputs.HasPrimaryInputs()) {
 
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetCompiler()
-              .GetInvocation()
+          compiler.GetInvocation()
               .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
       std::vector<std::string> parallelOutputFilenames =
-          GetCompiler()
-              .GetInvocation()
+          compiler.GetInvocation()
               .GetCompilerOptions()
               .inputsAndOutputs.CopyOutputFilenames();
 
       auto result = stone::GenIR(IRCodeGenRequest::ForModule(
-          GetCompiler().GetInvocation().GetCodeGenOptions(),
-          GetCompiler().GetMainModule(),
-          primaryFileSpecificPaths.outputFilename,
-          GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
+          compiler.GetInvocation().GetCodeGenOptions(),
+          compiler.GetMainModule(), primaryFileSpecificPaths.outputFilename,
+          compiler.GetASTContext(), compiler.GetMemoryContext(),
           primaryFileSpecificPaths, parallelOutputFilenames));
 
-      GetCompiler().AddIRCodeGenResult(result);
+      compiler.AddIRCodeGenResult(result);
     }
   } else {
-    GetCompiler().ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
+    compiler.ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
       const PrimaryFileSpecificPaths primaryFileSpecificPaths =
-          GetCompiler()
-              .GetInvocation()
-              .GetPrimaryFileSpecificPathsForSyntaxFile(sourceFile);
+          compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
+              sourceFile);
 
       auto result = stone::GenIR(IRCodeGenRequest::ForFile(
-          GetCompiler().GetInvocation().GetCodeGenOptions(), &sourceFile,
-          primaryFileSpecificPaths.outputFilename,
-          GetCompiler().GetASTContext(), GetCompiler().GetMemoryContext(),
-          primaryFileSpecificPaths));
+          compiler.GetInvocation().GetCodeGenOptions(), &sourceFile,
+          primaryFileSpecificPaths.outputFilename, compiler.GetASTContext(),
+          compiler.GetMemoryContext(), primaryFileSpecificPaths));
 
-      GetCompiler().AddIRCodeGenResult(result);
+      compiler.AddIRCodeGenResult(result);
 
       return Status();
     });
@@ -90,8 +84,7 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
 
 Status EmitBitCodeExecution::Execute() {
 
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
-                             "emit-bit-code");
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-bit-code");
   // GernatedCode
   // compiler.GetIRCodeGenResult();
 
@@ -103,8 +96,7 @@ EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
     : CompilerExecution(compiler, currentAction) {}
 
 Status EmitModuleExecution::Execute() {
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
-                             "emit-module-code");
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-module-code");
 
   // compiler.GetIRCodeGenResult();
 
@@ -117,14 +109,13 @@ EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
 
 Status EmitNativeExecution::Execute() {
 
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
-                             "emit-native-code");
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-native-code");
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();
   // }
 
-  GetCompiler().TryFreeASTContext();
+  compiler.TryFreeASTContext();
 
   // compiler.GetIRCodeGenResult();
 
