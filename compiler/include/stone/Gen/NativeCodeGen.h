@@ -35,11 +35,11 @@ public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
 public:
-  llvm::CodeGenFileType GetCodeGenFileType() const;
-
-public:
   void CreateOutputFile();
   void OptimizeIR();
+  void EmitNativeCode();
+  void EmbedObject();
+  void EmbedBitCode();
 };
 } // namespace stone
 

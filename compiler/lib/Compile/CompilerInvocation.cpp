@@ -67,21 +67,23 @@ GetCodeModel(const CodeGenOptions &codeGenOpts) {
 }
 
 // TODO: cleanup
-static llvm::CodeGenOpt::Level
-GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
-  switch (codeGenOpts.optimizationLevel) {
-  default:
-    llvm_unreachable("Invalid optimization level!");
-  case OptimizationLevel::None:
-    return llvm::CodeGenOpt::None;
-  case OptimizationLevel::Less:
-    return llvm::CodeGenOpt::Less;
-  case OptimizationLevel::Default:
-    return llvm::CodeGenOpt::Default;
-  case OptimizationLevel::Aggressive:
-    return llvm::CodeGenOpt::Aggressive;
-  }
-}
+// static llvm::CodeGenOpt::Level
+// GetOptimizationLevel(const CodeGenOptions &codeGenOpts) {
+//   switch (codeGenOpts.optimizationLevel) {
+//   default:
+//     llvm_unreachable("Invalid optimization level!");
+//   case OptimizationLevel::None:
+//     return llvm::CodeGenOpt::None;
+//   case OptimizationLevel::Less:
+//     return llvm::CodeGenOpt::Less;
+//   case OptimizationLevel::Default:
+//     return llvm::CodeGenOpt::Default;
+//   case OptimizationLevel::Aggressive:
+//     return llvm::CodeGenOpt::Aggressive;
+//   }
+// }
+
+
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,
                                           ClangContext &clangContext) {

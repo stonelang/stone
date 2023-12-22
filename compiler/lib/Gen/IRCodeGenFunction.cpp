@@ -3,8 +3,9 @@
 
 using namespace stone;
 
-IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn)
-    : cgm(cgm), fn(fn),
+IRCodeGenFunction::IRCodeGenFunction(IRCodeGenModule &cgm,
+                                     llvm::Function *llvmFunction)
+    : cgm(cgm), llvmFunction(llvmFunction),
       builder(cgm.GetIRCodeGen(), cgm.GetIRCodeGenTypeCache()) {}
 
 IRCodeGenFunction::~IRCodeGenFunction() {}
@@ -23,8 +24,23 @@ void IRCodeGenFunction::EmitFunction(FunctionDecl *fd) {
 }
 
 void IRCodeGenFunction::EmitPrologue() {
-  // assert(!fn &&
-  //        "Do not use a IRCodeGenFunction object for more than one function");
+
+  assert(!llvmFunction &&
+         "Do not use a IRCodeGenFunction object for more than one function");
+
+  llvm::BasicBlock *entryBB = CreateBasicBlock("entry");
+
+  assert(llvmFunction->getBasicBlockList().empty() &&
+         "prologue already emitted?");
+
+  llvmFunction->getBasicBlockList().push_back(entryBB);
+
+  builder.SetInsertPoint(entryBB);
+
+  // Set up the alloca insertion point.
+  // AllocaIP = Builder.IRBuilderBase::CreateAlloca(IGM.Int1Ty,
+  ///*array size*/ nullptr,
+  //"alloca point");
 }
 
 void IRCodeGenFunction::EmitEpilogue() {}

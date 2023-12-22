@@ -89,7 +89,7 @@ class IRCodeGenFunction final : public ASTVisitor<IRCodeGenFunction> {
   IRCodeGenModule &cgm;
   IRCodeGenBuilder builder;
 
-  llvm::Function *fn = nullptr;
+  llvm::Function *llvmFunction = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
@@ -97,7 +97,7 @@ public:
   void operator=(const IRCodeGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *fn);
+  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *llvmFunction);
   ~IRCodeGenFunction();
 
   /// Emits the function definition for a given SILDeclRef.

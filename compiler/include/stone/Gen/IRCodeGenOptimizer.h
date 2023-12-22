@@ -55,7 +55,7 @@ public:
   llvm::FunctionAnalysisManager &GetFunctionAnalysisManager() { return fam; }
   llvm::CGSCCAnalysisManager &GetCGSCCAnalysisManager() { return cgam; }
   llvm::ModuleAnalysisManager &GetModuleAnalysisManager() { return mam; }
-  llvm::ModulePassManager &ModulePassManager() { return mpm; }
+  llvm::ModulePassManager &GetPassManager() { return mpm; }
   llvm::legacy::PassManager &GetLegacyPassManager() { return lpm; }
   llvm::legacy::FunctionPassManager &GetLegacyFunctionPassManager() {
     return lfpm;

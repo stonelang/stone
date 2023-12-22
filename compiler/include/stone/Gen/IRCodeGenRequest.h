@@ -93,14 +93,6 @@ public:
   }
   CodeGenListener *GetCodeGenListener() { return listener; }
 
-  // TODO: This code is also in NativeCodegen
-  llvm::CodeGenFileType GetCodeGenFileType() {
-    return (GetCodeGenOptions().codeGenOutputKind ==
-                    CodeGenOutputKind::NativeAssembly
-                ? llvm::CGFT_AssemblyFile
-                : llvm::CGFT_ObjectFile);
-  }
-
 public:
   static IRCodeGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,

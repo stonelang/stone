@@ -41,8 +41,9 @@ protected:
   bool HasDependency() { return GetDependency() != ActionKind::None; }
   virtual Status ExecuteDependency();
 
-  // virtual llvm::ArrayRef<ActionKind> GetDependencies() { return
-  // {ActionKind::None}; }
+  // virtual llvm::ArrayRef<ActionKind> GetDependencies() {
+  //   return {ActionKind::None};
+  // }
 
 protected:
   bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }

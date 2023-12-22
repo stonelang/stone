@@ -6,6 +6,7 @@
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/Passes/OptimizationLevel.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Target/TargetOptions.h"
@@ -34,7 +35,7 @@ enum class LTOKind {
 
 // The optimization mode specified on the command line or with function
 // attributes.
-enum class OptimizationLevel : uint8_t {
+enum class OptimizationMode : uint8_t {
   None = 0,
   Less = 1,
   Default = 2,
@@ -101,7 +102,8 @@ public:
 
   CodeGenOutputKind codeGenOutputKind = CodeGenOutputKind::None;
 
-  OptimizationLevel optimizationLevel = OptimizationLevel::None;
+  //TODO: vs llvm::CodeGenOpt::Level
+  OptimizationMode optimizationMode = OptimizationMode::None;
 
   /// The libraries and frameworks specified on the command line.
   llvm::SmallVector<LinkLibrary, 4> linkLibraries;
@@ -142,22 +144,38 @@ public:
 
 public:
   bool ShouldOptimize() const {
-    return optimizationLevel > OptimizationLevel::Default;
+    return optimizationMode > OptimizationMode::Default;
   }
 
   bool OptimizeForSpeed() const {
-    return optimizationLevel == OptimizationLevel::Default;
+    return optimizationMode == OptimizationMode::Default;
   }
   bool OptimizeForSize() const {
-    return optimizationLevel == OptimizationLevel::Aggressive;
+    return optimizationMode == OptimizationMode::Aggressive;
   }
 
-  // TODO: OK for now
-  llvm::CodeGenFileType GetNativeCodeGenFileType() const {
-    if (codeGenOutputKind == CodeGenOutputKind::NativeAssembly) {
-      return llvm::CGFT_AssemblyFile;
+  llvm::CodeGenFileType GetCodeGenFileType() const {
+    switch (codeGenOutputKind) {
+    case CodeGenOutputKind::ObjectFile:
+      return llvm::CodeGenFileType::CGFT_ObjectFile;
+    case CodeGenOutputKind::NativeAssembly:
+      return llvm::CodeGenFileType::CGFT_AssemblyFile;
+    default:
+      llvm_unreachable("Unknow code generation file type!");
     }
-    return llvm::CGFT_ObjectFile;
+  }
+  // TODO: llvm::CodeGenOpt::Level?
+  llvm::OptimizationLevel GetOptimizationLevel() const {
+    switch (optimizationMode) {
+    case OptimizationMode::Less:
+      return llvm::OptimizationLevel::O1;
+    case OptimizationMode::Default:
+      return llvm::OptimizationLevel::O2;
+    case OptimizationMode::Aggressive:
+      return llvm::OptimizationLevel::O3;
+    default:
+      return llvm::OptimizationLevel::O0;
+    }
   }
 };
 

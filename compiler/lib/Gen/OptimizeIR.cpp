@@ -59,15 +59,15 @@ IRCodeGenOptimizer::IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts,
   pb.crossRegisterProxies(lam, fam, cgam, mam);
 
   // TODO: get ol from gen options
-  mpm = pb.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O2);
+  mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
 
 void IRCodeGenOptimizer::Optimize() {
-  // GetPassManager().run(*mod);
+  GetPassManager().run(*GetLLVMModule(), GetModuleAnalysisManager());
 }
 
 void IRCodeGenOptimizer::OptimizeWithLegacyPassManager() {
-  GetLegacyPassManager().run(*mod);
+  GetLegacyPassManager().run(*GetLLVMModule());
 }
 
 // TODO: Pass CodeGenContext
@@ -77,8 +77,8 @@ void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
 
   IRCodeGenOptimizer optimizer(codeGenOpts, llvmModule, target, diags);
   if (codeGenOpts.useLegacyPassManager) {
-    optimizer.Optimize();
-  } else {
     optimizer.OptimizeWithLegacyPassManager();
+  } else {
+    optimizer.Optimize();
   }
 }
