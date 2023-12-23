@@ -16,7 +16,7 @@ FallbackExecution::FallbackExecution(Compiler &compiler,
 Status FallbackExecution::Execute() {
 
   // We did not find a compiler action
-  assert(GetMainAction() == ActionKind::None);
+  assert(compiler.GetMainAction() == ActionKind::None);
 
   if (GetCompiler().IsCompileForLLVMIR()) {
     return stone::CompileForLLVMIR(GetCompiler());

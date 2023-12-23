@@ -19,11 +19,14 @@ Status CompilerExecution::ExecuteDependency() {
   return Status::Success();
 }
 
-Status CompilerExecution::Finish() { return Status(); }
-
-ActionKind CompilerExecution::GetMainAction() {
-  return compiler.GetInvocation().GetMainAction().GetKind();
+bool CompilerExecution::IsMainAction() {
+  return GetCurrentAction() == compiler.GetMainAction();
 }
+ActionKind CompilerExecution::GetExecutionAction() {
+  return IsMainAction() ? compiler.GetMainAction() : GetCurrentAction();
+}
+
+Status CompilerExecution::Finish() { return Status(); }
 
 CompilerExecution::~CompilerExecution() {}
 

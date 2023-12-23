@@ -46,12 +46,9 @@ protected:
   // }
 
 protected:
-  bool IsMainAction() { return GetCurrentAction() == GetMainAction(); }
-  ActionKind GetMainAction();
+  bool IsMainAction();
   ActionKind GetCurrentAction() { return currentAction; }
-  ActionKind GetExecutionAction() {
-    return IsMainAction() ? GetMainAction() : GetCurrentAction();
-  }
+  ActionKind GetExecutionAction();
 
 public:
   Compiler &GetCompiler() { return compiler; }

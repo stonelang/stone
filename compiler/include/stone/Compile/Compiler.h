@@ -182,6 +182,8 @@ public:
     return GetMainModule()->GetPrimarySourceFiles();
   }
 
+  ActionKind GetMainAction() { return invocation.GetMainAction().GetKind(); }
+
 public:
   void TryFreeASTContext();
   void FreeASTContext();
