@@ -83,7 +83,6 @@ GetCodeModel(const CodeGenOptions &codeGenOpts) {
 //   }
 // }
 
-
 IRTargetOptions stone::GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
                                           const LangOptions &langOpts,
                                           ClangContext &clangContext) {

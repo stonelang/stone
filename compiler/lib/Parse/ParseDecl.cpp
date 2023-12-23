@@ -41,28 +41,24 @@ void Parser::ParseTopLevelDecls(
 // fun F1() -> void {}
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SourceFile
-SyntaxResult<Decl> Parser::ParseTopLevelDecl() {
+SyntaxResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclCollector *collector) {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");
   ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
                              "parsing top-level declaration");
 
-  return ParseDecl(ParsingDeclFlags::AllowTopLevel);
-}
-
-// NOTE: This is ripe for recursion.
-SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclOptions flags,
-                                     ParsingDeclCollector *collector) {
+  // assert(IsTopLevelDecl(Tok.getKind()));
   if (collector) {
-    return ParseDeclInternal(*collector);
+    return ParseDecl(*collector);
   } else {
     ParsingDeclCollector newCollector(*this);
-    newCollector.flags = flags;
-    return ParseDeclInternal(newCollector);
+    newCollector.flags = ParsingDeclFlags::AllowTopLevel;
+    return ParseDecl(newCollector);
   }
 }
+
 /// Parse declaration specs
-SyntaxResult<Decl> Parser::ParseDeclInternal(ParsingDeclCollector &collector) {
+SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclCollector &collector) {
 
   SyntaxStatus status;
   SyntaxResult<Decl> result;

@@ -102,7 +102,7 @@ public:
 
   CodeGenOutputKind codeGenOutputKind = CodeGenOutputKind::None;
 
-  //TODO: vs llvm::CodeGenOpt::Level
+  // TODO: vs llvm::CodeGenOpt::Level
   OptimizationMode optimizationMode = OptimizationMode::None;
 
   /// The libraries and frameworks specified on the command line.

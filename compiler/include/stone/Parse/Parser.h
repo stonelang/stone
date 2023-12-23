@@ -121,23 +121,12 @@ public:
 
 public:
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
-
-private:
-  SyntaxResult<Decl> ParseTopLevelDecl();
+  SyntaxResult<Decl>
+  ParseTopLevelDecl(ParsingDeclCollector *collector = nullptr);
+  SyntaxResult<Decl> ParseDecl(ParsingDeclCollector &collector);
 
 public:
-  // TODO: We only need on ParseDecl
-  SyntaxResult<Decl> ParseDecl(ParsingDeclOptions flags,
-                               ParsingDeclCollector *collector = nullptr);
-
   void ParseDeclName();
-
-  // SyntaxStatus CollectDecl(ParsingDeclCollector &collector);
-
-private:
-  SyntaxResult<Decl> ParseDeclInternal(ParsingDeclCollector &collector);
-
-public:
   // TODO: Param should be constant
   SyntaxResult<Decl> ParseVarDecl(ParsingDeclCollector &collector);
   SyntaxResult<Decl> ParseAutoDecl(ParsingDeclCollector &collector);
