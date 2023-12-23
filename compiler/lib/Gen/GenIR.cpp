@@ -158,11 +158,10 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
     }
   }
 
-  return IRGenResult::Create(request.GetMemoryContext(),
-                             std::move(irGen.llvmContext),
-                             std::unique_ptr<llvm::Module>{
-                                 gm.GetClangCodeGen().ReleaseModule()},
-                             std::move(irGen.llvmTargetMachine));
+  return IRGenResult::Create(
+      request.GetMemoryContext(), std::move(irGen.llvmContext),
+      std::unique_ptr<llvm::Module>{gm.GetClangCodeGen().ReleaseModule()},
+      std::move(irGen.llvmTargetMachine));
 }
 
 // std::unique_ptr<llvm::Module>

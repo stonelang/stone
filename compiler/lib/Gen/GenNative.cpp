@@ -1,7 +1,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenOptimizer.h"
-#include "stone/Gen/NativeGen.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -106,10 +105,10 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
                       llvm::Module *llvmModule, llvm::StringRef outputFilename,
                       ASTContext &astContext) {
 
-  //  NativeGen nativeGen;
-  //  nativeCodeGen.GenCode();
-  //  nativeCodeGen.OptimizeCode();
-  //  nativeCodeGen.WriteCode();
+  // NativeCode nativeCode;
+  //   nativeCodeGen.GenCode();
+  //   nativeCodeGen.OptimizeCode();
+  //   nativeCodeGen.WriteCode();
 
   // stone::EmbedBitcode(codeGenOpts, llvmModule);
 
@@ -128,7 +127,7 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
   return true;
 }
 
-void stone::EmbedBitcode(const CodeGenOptions &codeGenOpts,
+void stone::EmbedBitCode(const CodeGenOptions &codeGenOpts,
                          llvm::Module *llvmModule) {}
 
 bool stone::WriteEmptyOutputFiles(
@@ -204,12 +203,12 @@ bool stone::WriteNative(CodeGenOptions &codeGenOpts,
   return true;
 }
 
-NativeGen::NativeGen(const CodeGenOptions &codeGenOptions,
-                     ASTContext &astContext)
-    : codeGenOpts(codeGenOptions), astContext(astContext) {}
+// Backend::Backend(const CodeGenOptions &codeGenOptions,
+//                      ASTContext &astContext)
+//     : codeGenOpts(codeGenOptions), astContext(astContext) {}
 
-// void NativeGen::GenCode() {}
-//
-// void NativeGen::WriteCode() {}
+// // void NativeGen::GenCode() {}
+// //
+// // void NativeGen::WriteCode() {}
 
-NativeGen::~NativeGen() {}
+// Backend::~Backend() {}

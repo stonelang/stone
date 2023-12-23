@@ -29,12 +29,12 @@ set(stone_gen_sources
 		IRGenRequest.cpp
 		IRGenMetadata.cpp
 		IRGenTypeResolver.cpp
+		IRGenVirtualTable.cpp
 		OptimizeIR.cpp
 
 		LINK_LIBS
 		StoneSyntax
 		clangCodeGen;
-		
 )
 add_stone_library(StoneGen
 	${stone_gen_sources}

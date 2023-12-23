@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_STRINGS_H
-#define STONE_BASIC_STRINGS_H
+#ifndef STONE_STRINGS_H
+#define STONE_STRINGS_H
 
 #include <string>
 

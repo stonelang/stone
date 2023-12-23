@@ -110,15 +110,13 @@ bool ShouldRemoveTargetFeature(llvm::StringRef feature);
 std::unique_ptr<llvm::TargetMachine>
 CreateTargetMachine(const CodeGenOptions &codeGenOpts);
 
-void OptimizeIR(const CodeGenOptions &opts, llvm::Module *mod,
+void OptimizeIR(const CodeGenOptions &opts, llvm::Module *llvmModule,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
 // You want IRGenOutput
 bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                llvm::StringRef outputFilename, ASTContext &astContext);
-
-void EmbedBitcode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
 
 bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
@@ -128,6 +126,8 @@ bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
                            const ASTContext &Context,
                            const CodeGenOptions &opts);
+
+void EmbedBitCode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
 
 /// Returns true is successfull
 bool WriteNative(CodeGenOptions &codeGenOpts, llvm::raw_pwrite_stream &out,

@@ -3,8 +3,11 @@
 
 namespace stone {
 
-class IRGenVT {
+class IRGenVirtualTable final {
   // IRGenModule& codeGenModule;
+
+public:
+  IRGenVirtualTable();
 };
 } // namespace stone
 
