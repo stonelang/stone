@@ -3,7 +3,6 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/ASTDiagnostic.h"
 #include "stone/Parse/Confusable.h"
-#include "stone/Public.h"
 #include "stone/Syntax/Identifier.h"
 
 #include "llvm/ADT/SmallString.h"

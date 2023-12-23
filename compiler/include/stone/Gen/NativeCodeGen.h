@@ -2,7 +2,6 @@
 #define STONE_GEN_NATIVE_CODEGEN_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Public.h"
 
 namespace llvm {
 class raw_pwrite_stream;

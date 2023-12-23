@@ -1,5 +1,5 @@
+#include "stone/Core.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -11,11 +11,12 @@ using namespace stone;
 //    auto *mutableThis = const_cast<SourceFile *>(this);
 //  }
 
-void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &syntaxContext,
-                            SyntaxListener *syntaxListener,
-                            LexerListener *lexerListener) {
+void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &astContext,
+                            CodeCompletionCallbacks *callbacks) {
 
-  Parser parser(sourceFile, syntaxContext);
+  Parser parser(sourceFile, astContext);
+  parser.SetCodeCompletionCallbacks(callbacks);
+
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
 

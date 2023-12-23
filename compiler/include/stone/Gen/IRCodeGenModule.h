@@ -1,6 +1,7 @@
 #ifndef STONE_GEN_IRCODEGENMODULE_H
 #define STONE_GEN_IRCODEGENMODULE_H
 
+#include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
@@ -48,21 +49,18 @@ class StructType;
 class StringRef;
 class Type;
 class AttributeList;
-} // namespace llvm
-
-namespace llvm {
 class raw_pwrite_stream;
 class GlobalVariable;
 class MemoryBuffer;
 class Module;
 class TargetOptions;
 class TargetMachine;
+
 } // namespace llvm
 
 namespace stone {
 
 class SourceFile;
-class IRGenModule;
 class Decl;
 class GlobalDecl;
 class FunDecl;

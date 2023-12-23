@@ -3,7 +3,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/ASTDiagnostic.h"
-#include "stone/Public.h"
+#include "stone/IDE.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Scope.h"
 
@@ -38,8 +38,8 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
   if (notification == ParsingNotification::TokenConsumed) {
-    if (lexerListener) {
-      lexerListener->OnToken(&curTok);
+    if (HasCodeCompletionCallbacks()) {
+      GetCodeCompletionCallbacks()->CompletedToken(&curTok);
     }
   }
   Lex(curTok, leadingTrivia, trailingTrivia);

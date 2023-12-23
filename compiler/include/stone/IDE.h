@@ -5,13 +5,9 @@
 
 namespace stone {
 class Parser;
-class ModuleDecl;
-class Decl;
-class Stmt;
-class Expr;
-class Token;
 class SourceFile;
-class ModuleFile;
+class Token;
+class Decl;
 
 class CodeCompletionCallbacks {
 protected:

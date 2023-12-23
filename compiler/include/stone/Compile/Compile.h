@@ -8,7 +8,6 @@
 
 namespace stone {
 class Compiler;
-class CompilerListener;
 
 class CompilerObservation {
 public:
@@ -40,34 +39,34 @@ public:
 };
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-            CompilerListener *listener = nullptr);
+            CompilerObservation *observation = nullptr);
 
 /// Handles LLVM
 Status CompileForLLVMIR(Compiler &compiler);
 
-/// Handles valid actions
-Status CompileForAction(Compiler &compiler);
+// /// Handles valid actions
+// Status CompileForAction(Compiler &compiler);
 
-/// Handles help, version, features
-Status CompileForSupport(Compiler &compiler);
+// /// Handles help, version, features
+// Status CompileForSupport(Compiler &compiler);
 
-/// Handles only syntax
-Status CompileForSyntaxAnalysis(Compiler &compiler);
+// /// Handles only syntax
+// Status CompileForSyntaxAnalysis(Compiler &compiler);
 
-/// Handles only syntax
-Status CompileForParse(Compiler &compiler);
+// /// Handles only syntax
+// Status CompileForParse(Compiler &compiler);
 
-/// Handles only syntax
-Status CompileForParseAndImportResolution(Compiler &compiler);
+// /// Handles only syntax
+// Status CompileForParseAndImportResolution(Compiler &compiler);
 
-/// Handles semantics
-Status CompileForTypeChecking(Compiler &compiler);
+// /// Handles semantics
+// Status CompileForTypeChecking(Compiler &compiler);
 
-/// Handles tasks after
-Status CompileAfterSemanticAnalysis(Compiler &compiler);
+// /// Handles tasks after
+// Status CompileAfterSemanticAnalysis(Compiler &compiler);
 
-/// Handles code generating
-Status CompileForEmitCode(Compiler &compiler);
+// /// Handles code generating
+// Status CompileForEmitCode(Compiler &compiler);
 
 /// Handles IR generation
 // void CompileForGenIR(Compiler &compiler, CompilingSession &session,

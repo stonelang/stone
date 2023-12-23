@@ -1,7 +1,8 @@
 #include "stone/Basic/Status.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
-#include "stone/Public.h"
+#include "stone/Core.h"
 
 using namespace stone;
 
@@ -16,12 +17,26 @@ Status ParseOnlyExecution::Execute() {
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "parse-source-file");
 
+  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
+  if (compiler.HasObservation()) {
+    codeCompletionCallbacks =
+        compiler.GetObservation()->GetCodeCompletionCallbacks();
+  }
+
   compiler.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    stone::ParseSourceFile(sourceFile, GetCompiler().GetASTContext(), nullptr,
-                           nullptr);
+    stone::ParseSourceFile(sourceFile, GetCompiler().GetASTContext(),
+                           codeCompletionCallbacks);
     sourceFile.stage = SourceFileStage::Parsed;
+    if (codeCompletionCallbacks) {
+      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+    }
     return Status();
   });
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedSyntaxAnalysis(compiler);
+  }
+
   return Status();
 }
 

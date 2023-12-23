@@ -1,5 +1,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Diag/ASTDiagnostic.h"
+#include "stone/IDE.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
 #include "stone/Syntax/Stmt.h"
@@ -22,18 +23,15 @@ void Parser::ParseTopLevelDecls(
     return (!result.IsError() && !HasError() && result.IsNonNull());
   };
   while (IsParsing()) {
-    // Parse a single top-level decl
     auto result = ParseTopLevelDecl();
     if (!Success(result)) {
-      if (listener) {
-        listener->OnError();
-      }
       return;
+    } else {
+      if (HasCodeCompletionCallbacks()) {
+        GetCodeCompletionCallbacks()->CompletedTopLevelDecl(result.Get());
+      }
+      results.push_back(result);
     }
-    if (listener) {
-      listener->OnDecl(result.Get(), true);
-    }
-    results.push_back(result);
   }
 }
 // Ex: sample.stone
@@ -138,8 +136,8 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDeclCollector &collector) {
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
-  // May just require the TypeCollecter to add Immutable on creation but remove
-  // it if mutable is added
+  // May just require the TypeCollecter to add Immutable on creation but
+  // remove it if mutable is added
 
   if (!collector.GetTypeCollector().GetTypeQualifierCollector().HasMutable()) {
     collector.GetTypeCollector().GetTypeQualifierCollector().AddImmutable(
@@ -205,8 +203,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   Identifier parentName;
   SrcLoc parentNameLoc;
 
-  // TODO: You have to perform a name look-up where because you will be dealing
-  // with "identifier::""
+  // TODO: You have to perform a name look-up where because you will be
+  // dealing with "identifier::""
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log

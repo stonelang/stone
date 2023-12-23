@@ -5,7 +5,6 @@
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/ASTOptions.h"
@@ -21,9 +20,7 @@
 
 #include <memory>
 
-
 namespace stone {
-class SyntaxListener;
 
 class BraceStmt;
 class Parser;
@@ -45,9 +42,6 @@ class Parser final {
   friend ParserStats;
 
   // friend PairDelimiterBalancer;
-
-  SyntaxListener *listener = nullptr;
-  LexerListener *lexerListener = nullptr;
 
   std::unique_ptr<Lexer> lexer;
   std::unique_ptr<ParserStats> stats;
@@ -93,20 +87,21 @@ public:
   ~Parser();
 
 public:
+  bool HasCodeCompletionCallbacks() {
+    return codeCompletionCallbacks != nullptr;
+  }
   void SetCodeCompletionCallbacks(CodeCompletionCallbacks *callbacks) {
     codeCompletionCallbacks = callbacks;
   }
   CodeCompletionCallbacks *GetCodeCompletionCallbacks() {
     return codeCompletionCallbacks;
   }
+
 public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
   ASTContext &GetASTContext() { return astContext; }
-
-  void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
-
   DeclContext *GetCurDeclContext() { return curDC; }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash

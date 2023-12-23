@@ -1,7 +1,7 @@
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Core.h"
 #include "stone/Gen/IRCodeGenABI.h"
-#include "stone/Public.h"
 #include "stone/Syntax/Decl.h"
 
 using namespace stone;

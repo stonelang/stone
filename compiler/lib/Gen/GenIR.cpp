@@ -1,8 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
+#include "stone/Core.h"
 #include "stone/Gen/IRCodeGenModule.h"
 #include "stone/Gen/IRCodeGenRequest.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 

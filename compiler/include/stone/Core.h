@@ -1,0 +1,124 @@
+#ifndef STONE_CORE_H
+#define STONE_CORE_H
+
+#include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/FileMgr.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/IDE.h"
+
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/StringSet.h"
+#include "llvm/IR/Module.h"
+#include "llvm/Support/Mutex.h"
+#include "llvm/Target/TargetMachine.h"
+
+namespace stone {
+class CodeGenOptions;
+class LangOptions;
+class DiagnosticEngine;
+class CompilerOptions;
+class InFlightDiagnostic;
+class Compiler;
+class ASTContext;
+class ModuleDecl;
+class SourceFile;
+class ModuleFile;
+class CompilerInputFile;
+class IRCodeGenRequest;
+class IRCodeGenResult;
+class TypeCheckerOptions;
+class ClangContext;
+
+using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
+
+/// Compile a single input file
+bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
+
+/// Parse, type-check, resolve imports, and generate IR for the SourceFile.
+//  This will allows for parallelization specially when you are just in parsing
+//  mode.
+/// Returns true if successfull
+bool CompileSourceFile(SourceFile &sourceFile, Compiler &instance);
+
+/// This walks the syntax to resolve imports.
+/// Returns true is successfull
+void ParseSourceFile(SourceFile &sourceFile, ASTContext &context,
+                     CodeCompletionCallbacks *callbacks);
+
+/// Dump the source file that we parsed
+void DumpSourceFile(SourceFile &sourceFile, ASTContext &astContext);
+
+/// This walks the syntax to resolve imports.
+/// Returns true is successfull
+void ResolveSourceFileImports(SourceFile &sourceFile);
+
+/// Once import resolution is complete, this walks the syntax to resolve types
+/// and diagnose problems therein.
+/// Returns true is successfull
+void TypeCheckSourceFile(SourceFile &sourceFile, TypeCheckerOptions &opts);
+
+/// Pretty print the type checked source file.
+void PrintSourceFile(SourceFile &sourceFile, ASTContext &astContext);
+
+/// Now that we have type-checked an entire module, perform any type
+/// checking that requires the full module.
+///
+/// Note that clients still perform this checking file-by-file to
+/// provide a somewhat defined order in which diagnostics should be
+/// emitted.
+/// Returns true is successfull
+void TypeCheckWholeModule(ModuleDecl &moduleDecl, TypeCheckerOptions &opts);
+
+/// Returns true is successfull
+void SerializeSourceFile(SourceFile &sourceFile);
+
+/// Returns true is successfull
+void SerializeModuleDecl(ModuleDecl &moduleDecl);
+
+// TargetOptions for IR generation
+IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
+                                   const LangOptions &langOpts,
+                                   ClangContext &clangContext);
+/// GenIR for the ModuleFile
+/// Returns true is successfull
+// IRCoeGenRequest
+// TODO, you may just want to return a pointer
+IRCodeGenResult *GenIR(IRCodeGenRequest codeGenRequest);
+
+// IRCodeGenResult GenIRInParallel(ParallelCodeGenContext);
+
+bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
+                         const CompilerOptions &opts);
+
+/// Disable thumb-mode until debugger support is there.
+bool ShouldRemoveTargetFeature(llvm::StringRef feature);
+
+std::unique_ptr<llvm::TargetMachine>
+CreateTargetMachine(const CodeGenOptions &codeGenOpts);
+
+void OptimizeIR(const CodeGenOptions &opts, llvm::Module *mod,
+                llvm::TargetMachine *target, DiagnosticEngine &diags);
+
+/// Returns true is successfull
+// You want IRCodeGenOutput
+bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+               llvm::StringRef outputFilename, ASTContext &astContext);
+
+void EmbedBitcode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
+
+bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+               llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
+               llvm::GlobalVariable *hashGlobal,
+               llvm::TargetMachine *targetMachine);
+
+bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
+                           const ASTContext &Context,
+                           const CodeGenOptions &opts);
+
+/// Returns true is successfull
+bool WriteNative(CodeGenOptions &codeGenOpts, llvm::raw_pwrite_stream &out,
+                 llvm::sys::Mutex *diagMutex = nullptr);
+
+} // namespace stone
+#endif

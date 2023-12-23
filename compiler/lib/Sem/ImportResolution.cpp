@@ -1,4 +1,4 @@
-#include "stone/Public.h"
+#include "stone/Core.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;

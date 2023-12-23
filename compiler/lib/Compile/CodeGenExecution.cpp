@@ -1,3 +1,4 @@
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Gen/IRCodeGenRequest.h"
@@ -49,6 +50,10 @@ Status GenerateIRExecution::Execute() {
 
       return Status();
     });
+  }
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedIRGeneration(compiler);
   }
 
   if (IsMainAction()) {

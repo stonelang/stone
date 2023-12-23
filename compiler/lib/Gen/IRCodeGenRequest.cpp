@@ -2,7 +2,6 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Gen/IRCodeGenTypeCache.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ClangContext.h"
 

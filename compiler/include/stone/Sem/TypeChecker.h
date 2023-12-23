@@ -2,7 +2,6 @@
 #define STONE_SEM_TYPECHECKER_H
 
 #include "stone/Basic/StatisticEngine.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -38,7 +37,6 @@ class TypeChecker final {
   ASTContext &astContext;
   TypeCheckerOptions &typeCheckerOpts;
   std::unique_ptr<TypeCheckerStats> stats;
-  TypeCheckerListener *listener;
 
 public:
   TypeChecker(const TypeChecker &) = delete;
@@ -47,8 +45,7 @@ public:
 
 public:
   /// TODO: Pass in Syntax so that you can create the Nodes
-  TypeChecker(ASTContext &astContext, TypeCheckerOptions &typeCheckerOpts,
-              TypeCheckerListener *listener = nullptr);
+  TypeChecker(ASTContext &astContext, TypeCheckerOptions &typeCheckerOpts);
 
 public:
   void CheckASTNode(ASTNode &syntaxNode, DeclContext *dc,

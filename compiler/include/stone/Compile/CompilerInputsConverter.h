@@ -3,7 +3,6 @@
 
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Public.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/Option/ArgList.h"

@@ -3,19 +3,18 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
-#include "stone/Option/ActionKind.h"
-#include "stone/Public.h"
-
+#include "stone/Core.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Option/ActionKind.h"
 #include "stone/Stats/Stats.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;
 
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
-                   void *mainAddr, CompilerListener *listener) {
+                   void *mainAddr, CompilerObservation *observation) {
 
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
@@ -25,6 +24,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   TextDiagnosticConsumer consumer(emitter);
 
   Compiler compiler;
+  compiler.SetObservation(observation);
   compiler.AddDiagnosticConsumer(consumer);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
@@ -50,6 +50,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedCommandLineParsing(compiler);
+  }
   if (!compiler.GetInvocation().HasAction()) {
     // compiler.GetDiags().PrintD(diag::err_no_compile_action);
     FinishCompile(Status::Error());
@@ -58,6 +62,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   // Now, setup the compiler
   if (compiler.Setup().IsError()) {
     return FinishCompile(Status::Error());
+  }
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedConfiguration(compiler);
   }
 
   if (compiler.ExecuteAction(compiler.GetInvocation().GetMainAction().GetKind())

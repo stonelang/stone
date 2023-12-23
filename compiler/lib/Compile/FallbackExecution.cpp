@@ -1,5 +1,3 @@
-#include "stone/Public.h"
-
 #include "stone/Basic/Status.h"
 #include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"

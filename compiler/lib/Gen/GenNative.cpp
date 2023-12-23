@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Core.h"
 #include "stone/Gen/IRCodeGenOptimizer.h"
 #include "stone/Gen/NativeCodeGen.h"
-#include "stone/Public.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -104,7 +104,7 @@ using namespace stone;
 /// CodeGenCompletionCallbacks
 bool stone::GenNative(const CodeGenOptions &codeGenOpts,
                       llvm::Module *llvmModule, llvm::StringRef outputFilename,
-                      ASTContext &astContext, CodeGenListener *listener) {
+                      ASTContext &astContext) {
 
   //  NativeCodeGen nativeCodeGen;
   //  nativeCodeGen.GenCode();
@@ -173,9 +173,9 @@ bool stone::WriteEmptyOutputFiles(
 //}
 
 /// Returns true is successfull
-bool stone::WriteNative(CodeGenContext &cgc, llvm::raw_pwrite_stream &out,
-                        llvm::sys::Mutex *diagMutex,
-                        CodeGenScope *parentScope) {
+bool stone::WriteNative(CodeGenOptions &codeGenOpts,
+                        llvm::raw_pwrite_stream &out,
+                        llvm::sys::Mutex *diagMutex) {
 
   // switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
   //   case CodeGenOutputKind::ObjectFile:

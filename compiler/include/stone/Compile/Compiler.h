@@ -1,11 +1,11 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
+#include "stone/Basic/FileMgr.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Public.h"
 #include "stone/Stats/Stats.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
@@ -16,8 +16,8 @@
 namespace stone {
 class Compiler;
 class ModuleDecl;
-class CompilerExecution;
-class GenerateIRExecution;
+class IRCodeGenResult;
+class CompilerObservation;
 
 class Compiler final {
 
@@ -50,6 +50,8 @@ class Compiler final {
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend = nullptr;
 
+  CompilerObservation *observation = nullptr;
+
 public:
   Compiler(const Compiler &) = delete;
   void operator=(const Compiler &) = delete;
@@ -59,6 +61,10 @@ public:
   Status Setup();
 
 public:
+  bool HasObservation() { return observation != nullptr; }
+  void SetObservation(CompilerObservation *obs) { observation = obs; }
+  CompilerObservation *GetObservation() { return observation; }
+
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
     diags.AddConsumer(consumer);
   }

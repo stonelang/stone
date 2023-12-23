@@ -8,6 +8,7 @@
 #include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
+#include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"

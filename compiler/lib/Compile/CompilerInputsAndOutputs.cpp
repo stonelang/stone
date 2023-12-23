@@ -5,7 +5,6 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
-#include "stone/Public.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

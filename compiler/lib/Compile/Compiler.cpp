@@ -6,7 +6,6 @@
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/ActionKind.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
-#include "stone/Public.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 

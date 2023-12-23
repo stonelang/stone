@@ -1,5 +1,7 @@
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
+#include "stone/Core.h"
 
 using namespace stone;
 
@@ -15,11 +17,14 @@ Status TypeCheckExecution::Execute() {
 
   compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(
-        sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions(),
-        nullptr);
+        sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions());
     sourceFile.stage = SourceFileStage::TypeChecked;
     return Status();
   });
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedSemanticAnalysis(compiler);
+  }
 
   return Status();
 }

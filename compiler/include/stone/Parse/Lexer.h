@@ -7,12 +7,10 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Parse/Trivia.h"
-#include "stone/Public.h"
 
 namespace stone {
 class SrcID;
 class SrcMgr;
-class SyntaxListener;
 class Token;
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
 /// advance the lexer past it.  This returns the encoded character or ~0U if
@@ -72,7 +70,6 @@ class Lexer final : public Tokenable {
   const SrcMgr &sm;
   stone::DiagnosticEngine *de;
   StatisticEngine *se;
-  LexerListener *listener;
   LexingState state;
 
   std::unique_ptr<LexerStats> lexerStats;
