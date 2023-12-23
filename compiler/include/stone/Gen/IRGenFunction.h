@@ -86,7 +86,7 @@ public:
 };
 class IRGenFunction final : public ASTVisitor<IRGenFunction> {
 
-  IRGenModule &cgm;
+  IRGenModule &gm;
   IRGenBuilder builder;
 
   llvm::Function *llvmFunction = nullptr;
@@ -114,7 +114,7 @@ public:
   // Alignment align,
   //                      const llvm::Twine &name = "");
 
-  IRGenModule &GetIRGenModule() { return cgm; }
+  IRGenModule &GetIRGenModule() { return gm; }
   IRGenBuilder &GetIRGenBuilder() { return builder; }
 
 public:

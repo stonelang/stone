@@ -3,21 +3,23 @@
 
 using namespace stone;
 
-IRGenFunction::IRGenFunction(IRGenModule &cgm, llvm::Function *llvmFunction)
-    : cgm(cgm), llvmFunction(llvmFunction),
-      builder(cgm.GetIRGen(), cgm.GetIRGenTypeCache()) {}
+IRGenFunction::IRGenFunction(IRGenModule &gm, llvm::Function *llvmFunction)
+    : gm(gm), llvmFunction(llvmFunction),
+      builder(gm.GetIRGen(), gm.GetIRGenTypeCache()) {}
 
 IRGenFunction::~IRGenFunction() {}
 
 /// Create a new basic block with the given name.  The block is not
 /// automatically inserted into the function.
 llvm::BasicBlock *IRGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(cgm.GetIRGen().GetLLVMContext(), name);
+  return llvm::BasicBlock::Create(gm.GetIRGen().GetLLVMContext(), name);
 }
 
 void IRGenFunction::EmitFunction(FunctionDecl *fd) {
 
   EmitPrologue();
+
+
 
   EmitEpilogue();
 }
