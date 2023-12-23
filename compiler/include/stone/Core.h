@@ -29,17 +29,10 @@ class IRGenRequest;
 class IRGenResult;
 class TypeCheckerOptions;
 class ClangContext;
+class PrimaryFileSpecificPaths;
+
 
 using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
-
-/// Compile a single input file
-bool CompileInputFile(const CompilerInputFile &inputFile, Compiler &instance);
-
-/// Parse, type-check, resolve imports, and generate IR for the SourceFile.
-//  This will allows for parallelization specially when you are just in parsing
-//  mode.
-/// Returns true if successfull
-bool CompileSourceFile(SourceFile &sourceFile, Compiler &instance);
 
 /// This walks the syntax to resolve imports.
 /// Returns true is successfull
@@ -86,18 +79,18 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
 // TODO, you may just want to return a pointer
 IRGenResult *GenIR(IRGenRequest request);
 
-// std::unique_ptr<llvm::Module>
-// GenIR(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
-//       const llvm::StringRef moduleName, ASTContext &astContext,
-//       const PrimaryFileSpecificPaths psps,
-//       llvm::ArrayRef<std::string> parallelOutputFilenames,
-//       llvm::GlobalVariable *outModuleHash = nullptr);
+std::unique_ptr<llvm::Module>
+GenIR(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+      const llvm::StringRef moduleName, ASTContext &astContext,
+      const PrimaryFileSpecificPaths psps,
+      llvm::ArrayRef<std::string> parallelOutputFilenames,
+      llvm::GlobalVariable *outModuleHash = nullptr);
 
-// std::unique_ptr<llvm::Module>
-// GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
-//       const llvm::StringRef moduleName, ASTContext &astContext,
-//       const PrimaryFileSpecificPaths psps,
-//       llvm::GlobalVariable *outModuleHash = nullptr);
+std::unique_ptr<llvm::Module>
+GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+      const llvm::StringRef moduleName, ASTContext &astContext,
+      const PrimaryFileSpecificPaths psps,
+      llvm::GlobalVariable *outModuleHash = nullptr);
 
 // IRGenResult GenIRInParallel(ParallelCodeGenContext);
 

@@ -164,26 +164,26 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
       std::move(irGen.llvmTargetMachine));
 }
 
-// std::unique_ptr<llvm::Module>
-// stone::GenIR(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
-//              const llvm::StringRef moduleName, ASTContext &astContext,
-//              const PrimaryFileSpecificPaths psps,
-//              llvm::ArrayRef<std::string> parallelOutputFilenames,
-//              llvm::GlobalVariable *outModuleHash) {
+std::unique_ptr<llvm::Module>
+stone::GenIR(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+             const llvm::StringRef moduleName, ASTContext &astContext,
+             const PrimaryFileSpecificPaths psps,
+             llvm::ArrayRef<std::string> parallelOutputFilenames,
+             llvm::GlobalVariable *outModuleHash) {
 
-//   return
-//   std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
-// }
+  //return std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
+  return nullptr;
+}
 
-// std::unique_ptr<llvm::Module>
-// stone::GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
-//              const llvm::StringRef moduleName, ASTContext &astContext,
-//              const PrimaryFileSpecificPaths psps,
-//              llvm::GlobalVariable *outModuleHash) {
+std::unique_ptr<llvm::Module>
+stone::GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+             const llvm::StringRef moduleName, ASTContext &astContext,
+             const PrimaryFileSpecificPaths psps,
+             llvm::GlobalVariable *outModuleHash) {
 
-//   return
-//   std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
-// }
+  //return std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
+  return nullptr;
+}
 
 /// Disable thumb-mode until debugger support is there.
 bool stone::ShouldRemoveTargetFeature(llvm::StringRef feature) {

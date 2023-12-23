@@ -2,9 +2,9 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
-#include "stone/Strings.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
+#include "stone/Strings.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
