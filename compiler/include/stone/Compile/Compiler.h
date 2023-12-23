@@ -94,7 +94,8 @@ public:
   Status ExecuteAction(ActionKind kind);
 
 private:
-  std::unique_ptr<CompilerExecution> GetExecutionForAction(ActionKind action);
+  std::unique_ptr<CompilerExecution>
+  ComputeCompilerExectution(ActionKind action);
 
 public:
   Status SetupCompilerInputFiles();

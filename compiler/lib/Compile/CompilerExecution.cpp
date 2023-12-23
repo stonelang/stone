@@ -28,43 +28,43 @@ ActionKind CompilerExecution::GetMainAction() {
 CompilerExecution::~CompilerExecution() {}
 
 std::unique_ptr<CompilerExecution>
-Compiler::GetExecutionForAction(ActionKind action) {
-  switch (action) {
+Compiler::ComputeCompilerExectution(ActionKind kind) {
+  switch (kind) {
   case ActionKind::PrintHelp:
   case ActionKind::PrintHelpHidden:
-    return std::make_unique<PrintHelpExecution>(*this, action);
+    return std::make_unique<PrintHelpExecution>(*this, kind);
   case ActionKind::PrintVersion:
-    return std::make_unique<PrintVersionExecution>(*this, action);
+    return std::make_unique<PrintVersionExecution>(*this, kind);
   case ActionKind::PrintFeature:
-    return std::make_unique<PrintFeatureExecution>(*this, action);
+    return std::make_unique<PrintFeatureExecution>(*this, kind);
   case ActionKind::Parse:
-    return std::make_unique<ParseOnlyExecution>(*this, action);
+    return std::make_unique<ParseOnlyExecution>(*this, kind);
   case ActionKind::DumpAST:
-    return std::make_unique<DumpASTExecution>(*this, action);
+    return std::make_unique<DumpASTExecution>(*this, kind);
   case ActionKind::ResolveImports:
-    return std::make_unique<ImportResolutionExecution>(*this, action);
+    return std::make_unique<ImportResolutionExecution>(*this, kind);
   case ActionKind::TypeCheck:
-    return std::make_unique<TypeCheckExecution>(*this, action);
+    return std::make_unique<TypeCheckExecution>(*this, kind);
   case ActionKind::PrintAST:
-    return std::make_unique<PrintASTExecution>(*this, action);
+    return std::make_unique<PrintASTExecution>(*this, kind);
   case ActionKind::EmitIRBefore:
-    return std::make_unique<GenerateIRExecution>(*this, action);
+    return std::make_unique<GenerateIRExecution>(*this, kind);
   case ActionKind::EmitIRAfter:
-    return std::make_unique<OptimizeIRExecution>(*this, action);
+    return std::make_unique<OptimizeIRExecution>(*this, kind);
   case ActionKind::EmitModule:
-    return std::make_unique<EmitModuleExecution>(*this, action);
+    return std::make_unique<EmitModuleExecution>(*this, kind);
   case ActionKind::EmitBC:
-    return std::make_unique<EmitBitCodeExecution>(*this, action);
+    return std::make_unique<EmitBitCodeExecution>(*this, kind);
   case ActionKind::EmitAssembly:
   case ActionKind::EmitObject:
-    return std::make_unique<EmitNativeExecution>(*this, action);
+    return std::make_unique<EmitNativeExecution>(*this, kind);
   default: {
-    return std::make_unique<FallbackExecution>(*this, action);
+    return std::make_unique<FallbackExecution>(*this, kind);
   }
   }
 }
 Status Compiler::ExecuteAction(ActionKind kind) {
-  auto execution = GetExecutionForAction(kind);
+  auto execution = ComputeCompilerExectution(kind);
   if (execution->Setup().IsError()) {
     return Status::Error();
   }
