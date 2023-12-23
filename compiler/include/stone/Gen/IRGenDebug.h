@@ -2,7 +2,7 @@
 #define STONE_GEN_IRCODEGDEBUG_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenModule.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/IR/PassManager.h"
@@ -21,18 +21,17 @@ class TargetMachine;
 namespace stone {
 class SrcLoc;
 class ClangContext;
-class IRCodeGenModule;
+class IRGenModule;
 
-class IRCodeGenDebug final {
+class IRGenDebug final {
   SrcLoc curLoc;
-  IRCodeGenModule &cgm;
+  IRGenModule &cgm;
 
 public:
-  IRCodeGenDebug(IRCodeGenModule &cgm,
-                 llvm::StringRef mainOutputFilenameForDebug,
-                 llvm::StringRef privateDiscriminator);
+  IRGenDebug(IRGenModule &cgm, llvm::StringRef mainOutputFilenameForDebug,
+             llvm::StringRef privateDiscriminator);
 
-  ~IRCodeGenDebug();
+  ~IRGenDebug();
 
 public:
   /// Helper functions for getOrCreateType.

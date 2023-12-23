@@ -10,7 +10,7 @@ class LLVMContext;
 
 namespace stone {
 
-class IRCodeGenManagler {
+class IRGenManagler {
 public:
 };
 

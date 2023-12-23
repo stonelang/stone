@@ -16,7 +16,7 @@
 namespace stone {
 class Compiler;
 class ModuleDecl;
-class IRCodeGenResult;
+class IRGenResult;
 class CompilerObservation;
 
 class Compiler final {
@@ -45,7 +45,7 @@ class Compiler final {
   mutable ModuleDecl *mainModule = nullptr;
 
   /// LLVM generated modules
-  llvm::SmallVector<IRCodeGenResult *, 8> irCodeGenResults;
+  llvm::SmallVector<IRGenResult *, 8> irGenResults;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend = nullptr;
@@ -72,12 +72,9 @@ public:
     diags.RemoveConsumer(consumer);
   }
 
-  void AddIRCodeGenResult(IRCodeGenResult *result) {
-    irCodeGenResults.push_back(result);
-  }
-  void
-  ForEachIRCodeGenResult(std::function<void(IRCodeGenResult *result)> notify) {
-    for (auto result : irCodeGenResults) {
+  void AddIRGenResult(IRGenResult *result) { irGenResults.push_back(result); }
+  void ForEachIRGenResult(std::function<void(IRGenResult *result)> notify) {
+    for (auto result : irGenResults) {
       notify(result);
     }
   }

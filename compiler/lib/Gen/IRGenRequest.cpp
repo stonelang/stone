@@ -1,13 +1,13 @@
-#include "stone/Gen/IRCodeGenRequest.h"
+#include "stone/Gen/IRGenRequest.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
-#include "stone/Gen/IRCodeGenTypeCache.h"
+#include "stone/Gen/IRGenTypeCache.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ClangContext.h"
 
 using namespace stone;
 
-IRCodeGenRequest::IRCodeGenRequest(
+IRGenRequest::IRGenRequest(
     const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
     const llvm::StringRef moduleName, ASTContext &astContext,
     MemoryContext &memContext,
@@ -19,7 +19,7 @@ IRCodeGenRequest::IRCodeGenRequest(
       primaryFileSpecificPaths(primaryFileSpecificPaths),
       outModuleHash(outModuleHash) {}
 
-IRCodeGenRequest::IRCodeGenRequest(
+IRGenRequest::IRGenRequest(
     const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
     const llvm::StringRef moduleName, ASTContext &astContext,
     MemoryContext &memContext,
@@ -31,43 +31,44 @@ IRCodeGenRequest::IRCodeGenRequest(
       primaryFileSpecificPaths(primaryFileSpecificPaths),
       outModuleHash(outModuleHash) {}
 
-IRCodeGenRequest IRCodeGenRequest::ForModule(
-    const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
-    const llvm::StringRef moduleName, ASTContext &astContext,
-    MemoryContext &memContext,
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-    llvm::ArrayRef<std::string> parallelOutputFilenames,
-    llvm::GlobalVariable *outModuleHash) {
-  return IRCodeGenRequest{codeGenOpts,
-                          moduleDecl,
-                          moduleName,
-                          astContext,
-                          memContext,
-                          primaryFileSpecificPaths,
-                          parallelOutputFilenames,
-                          outModuleHash};
+IRGenRequest
+IRGenRequest::ForModule(const CodeGenOptions &codeGenOpts,
+                        ModuleDecl *moduleDecl,
+                        const llvm::StringRef moduleName,
+                        ASTContext &astContext, MemoryContext &memContext,
+                        const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                        llvm::ArrayRef<std::string> parallelOutputFilenames,
+                        llvm::GlobalVariable *outModuleHash) {
+  return IRGenRequest{codeGenOpts,
+                      moduleDecl,
+                      moduleName,
+                      astContext,
+                      memContext,
+                      primaryFileSpecificPaths,
+                      parallelOutputFilenames,
+                      outModuleHash};
 }
 
-IRCodeGenRequest IRCodeGenRequest::ForFile(
-    const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
-    const llvm::StringRef moduleName, ASTContext &astContext,
-    MemoryContext &memContext,
-    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-    llvm::GlobalVariable *outModuleHash) {
-  return IRCodeGenRequest{codeGenOpts, moduleFile,   moduleName,
-                          astContext,  memContext,   primaryFileSpecificPaths,
-                          {},          outModuleHash
+IRGenRequest
+IRGenRequest::ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+                      const llvm::StringRef moduleName, ASTContext &astContext,
+                      MemoryContext &memContext,
+                      const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+                      llvm::GlobalVariable *outModuleHash) {
+  return IRGenRequest{codeGenOpts, moduleFile,   moduleName,
+                      astContext,  memContext,   primaryFileSpecificPaths,
+                      {},          outModuleHash
 
   };
 }
 
-// llvm::ArrayRef<ModuleFile *> IRCodeGenRequest::GetFiles() const {}
+// llvm::ArrayRef<ModuleFile *> IRGenRequest::GetFiles() const {}
 
-// ModuleDecl *IRCodeGenRequest::GetParentModule() {}
+// ModuleDecl *IRGenRequest::GetParentModule() {}
 
-IRCodeGenRequest::~IRCodeGenRequest() {}
+IRGenRequest::~IRGenRequest() {}
 
-llvm::TinyPtrVector<ModuleFile *> IRCodeGenRequest::GetFiles() const {
+llvm::TinyPtrVector<ModuleFile *> IRGenRequest::GetFiles() const {
   // If we've been asked to emit a specific set of symbols, we don't emit any
   // whole files.
   // if (SymbolsToEmit)
@@ -86,7 +87,7 @@ llvm::TinyPtrVector<ModuleFile *> IRCodeGenRequest::GetFiles() const {
   return files;
 }
 
-ModuleDecl *IRCodeGenRequest::GetParentModule() const {
+ModuleDecl *IRGenRequest::GetParentModule() const {
   if (auto *file = moduleOrFile.dyn_cast<ModuleFile *>()) {
     return file->GetParentModule();
   }
@@ -94,18 +95,18 @@ ModuleDecl *IRCodeGenRequest::GetParentModule() const {
 }
 
 // Maybe? Make ASTAllocation
-// IRCodeGenRequest *IRCodeGenRequest::Create(const CodeGenOptions
+// IRGenRequest *IRGenRequest::Create(const CodeGenOptions
 // &codeGenOpts,
 //                                        const llvm::StringRef moduleName,
 //                                        ASTContext &astContext,
 //                                        llvm::GlobalVariable *outModuleHash) {
 
-//   return new (astContext) IRCodeGenRequest(codeGenOpts, moduleName,
+//   return new (astContext) IRGenRequest(codeGenOpts, moduleName,
 //   astContext, outModuleHash);
 
 // }
 
-// Safe<llvm::TargetMachine> IRCodeGenRequest::CreateTargetMachine() {
+// Safe<llvm::TargetMachine> IRGenRequest::CreateTargetMachine() {
 
 //   // clang::TargetInfo &targetInfo =
 //   // GetClangContext().GetInstance().getTarget();

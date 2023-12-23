@@ -20,7 +20,7 @@ class CodeGenOptions;
 // (1) optimization during module constructiong
 // (2) optimization when actually generating backend code
 // So, this is a convenient class to wrapp of the essential objects required.
-class IRCodeGenOptimizer final {
+class IRGenOptimizer final {
   const CodeGenOptions &codeGenOpts;
   llvm::Module *mod = nullptr;
   llvm::TargetMachine *targetMachine = nullptr;
@@ -38,16 +38,15 @@ class IRCodeGenOptimizer final {
   llvm::FunctionPassManager fpm;
 
 public:
-  IRCodeGenOptimizer(const IRCodeGenOptimizer &) = delete;
-  void operator=(const IRCodeGenOptimizer &) = delete;
-  IRCodeGenOptimizer(IRCodeGenOptimizer &&) = delete;
-  void operator=(IRCodeGenOptimizer &&) = delete;
+  IRGenOptimizer(const IRGenOptimizer &) = delete;
+  void operator=(const IRGenOptimizer &) = delete;
+  IRGenOptimizer(IRGenOptimizer &&) = delete;
+  void operator=(IRGenOptimizer &&) = delete;
 
 public:
-  IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
-                     llvm::TargetMachine *targetMachine,
-                     DiagnosticEngine &diags);
-  ~IRCodeGenOptimizer();
+  IRGenOptimizer(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
+                 llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
+  ~IRGenOptimizer();
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }

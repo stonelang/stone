@@ -1,11 +1,11 @@
-#include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenFunction.h"
+#include "stone/Gen/IRGenModule.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
 
 using namespace stone;
 
-void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
+void IRGenModule::EmitGlobalDecl(Decl *d) {
 
   assert(d->IsTopLevel() && "Not a top-level declaration");
 
@@ -22,7 +22,7 @@ void IRCodeGenModule::EmitGlobalDecl(Decl *d) {
     return;
   }
 }
-// void IRCodeGenModule::EmitGlobalDecl(GlobalDecl *gd) {}
+// void IRGenModule::EmitGlobalDecl(GlobalDecl *gd) {}
 
 namespace {
 class PrettySourceFileEmission : public llvm::PrettyStackTraceEntry {
@@ -36,7 +36,7 @@ public:
 };
 } // end anonymous namespace
 
-void IRCodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
+void IRGenModule::EmitSourceFile(SourceFile &sourceFile) {
 
   PrettySourceFileEmission stackEntry(sourceFile);
   //  TODO: llvm::SaveAndRestore<SourceFile *> setCurSourceFile(curSourceFile,
@@ -48,10 +48,10 @@ void IRCodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
   }
 }
 
-void IRCodeGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
+void IRGenModule::EmitInterfaceDecl(InterfaceDecl *interfaceDecl) {}
 
-void IRCodeGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}
+void IRGenModule::EmitEnumDecl(EnumDecl *enumDecl) {}
 
-void IRCodeGenModule::EmitConstructorDecl(ConstructorDecl *d) {}
+void IRGenModule::EmitConstructorDecl(ConstructorDecl *d) {}
 
-void IRCodeGenModule::EmitDestructorDecl(DestructorDecl *d) {}
+void IRGenModule::EmitDestructorDecl(DestructorDecl *d) {}

@@ -16,19 +16,19 @@ namespace stone {
 
 class ASTContext;
 
-class NativeCodeGen final {
+class NativeGen final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
   // llvm::Optional<raw_fd_ostream> rawStream;
   /// outputbackend
 public:
-  NativeCodeGen(const NativeCodeGen &) = delete;
-  void operator=(const NativeCodeGen &) = delete;
+  NativeGen(const NativeGen &) = delete;
+  void operator=(const NativeGen &) = delete;
 
 public:
-  NativeCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
-  ~NativeCodeGen();
+  NativeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
+  ~NativeGen();
 
   ASTContext &GetASTContext() { return astContext; }
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }

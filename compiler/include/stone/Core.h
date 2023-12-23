@@ -25,8 +25,8 @@ class ModuleDecl;
 class SourceFile;
 class ModuleFile;
 class CompilerInputFile;
-class IRCodeGenRequest;
-class IRCodeGenResult;
+class IRGenRequest;
+class IRGenResult;
 class TypeCheckerOptions;
 class ClangContext;
 
@@ -84,9 +84,22 @@ IRTargetOptions GetIRTargetOptions(const CodeGenOptions &opts,
 /// Returns true is successfull
 // IRCoeGenRequest
 // TODO, you may just want to return a pointer
-IRCodeGenResult *GenIR(IRCodeGenRequest codeGenRequest);
+IRGenResult *GenIR(IRGenRequest request);
 
-// IRCodeGenResult GenIRInParallel(ParallelCodeGenContext);
+// std::unique_ptr<llvm::Module>
+// GenIR(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+//       const llvm::StringRef moduleName, ASTContext &astContext,
+//       const PrimaryFileSpecificPaths psps,
+//       llvm::ArrayRef<std::string> parallelOutputFilenames,
+//       llvm::GlobalVariable *outModuleHash = nullptr);
+
+// std::unique_ptr<llvm::Module>
+// GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+//       const llvm::StringRef moduleName, ASTContext &astContext,
+//       const PrimaryFileSpecificPaths psps,
+//       llvm::GlobalVariable *outModuleHash = nullptr);
+
+// IRGenResult GenIRInParallel(ParallelCodeGenContext);
 
 bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
                          const CompilerOptions &opts);
@@ -101,7 +114,7 @@ void OptimizeIR(const CodeGenOptions &opts, llvm::Module *mod,
                 llvm::TargetMachine *target, DiagnosticEngine &diags);
 
 /// Returns true is successfull
-// You want IRCodeGenOutput
+// You want IRGenOutput
 bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                llvm::StringRef outputFilename, ASTContext &astContext);
 

@@ -3,8 +3,8 @@
 
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
-#include "stone/Gen/IRCodeGenBuilder.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenBuilder.h"
+#include "stone/Gen/IRGenModule.h"
 #include "stone/Syntax/ASTVisitor.h"
 
 #include "llvm/ADT/DenseMap.h"
@@ -78,27 +78,27 @@ enum class ABIArgKind {
   LastKind = InAlloca
 };
 
-class IRCodeGenModule;
-class IRCodeGenBuilder;
+class IRGenModule;
+class IRGenBuilder;
 
-class IRCodeGenFunctionInvocation final {
+class IRGenFunctionInvocation final {
 public:
 };
-class IRCodeGenFunction final : public ASTVisitor<IRCodeGenFunction> {
+class IRGenFunction final : public ASTVisitor<IRGenFunction> {
 
-  IRCodeGenModule &cgm;
-  IRCodeGenBuilder builder;
+  IRGenModule &cgm;
+  IRGenBuilder builder;
 
   llvm::Function *llvmFunction = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
-  IRCodeGenFunction(const IRCodeGenFunction &) = delete;
-  void operator=(const IRCodeGenFunction &) = delete;
+  IRGenFunction(const IRGenFunction &) = delete;
+  void operator=(const IRGenFunction &) = delete;
 
 public:
-  IRCodeGenFunction(IRCodeGenModule &cgm, llvm::Function *llvmFunction);
-  ~IRCodeGenFunction();
+  IRGenFunction(IRGenModule &cgm, llvm::Function *llvmFunction);
+  ~IRGenFunction();
 
   /// Emits the function definition for a given SILDeclRef.
   // void EmitFunctionDefinition(FunDecl *fd);
@@ -114,8 +114,8 @@ public:
   // Alignment align,
   //                      const llvm::Twine &name = "");
 
-  IRCodeGenModule &GetIRCodeGenModule() { return cgm; }
-  IRCodeGenBuilder &GetIRCodeGenBuilder() { return builder; }
+  IRGenModule &GetIRGenModule() { return cgm; }
+  IRGenBuilder &GetIRGenBuilder() { return builder; }
 
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
@@ -130,8 +130,8 @@ public:
   void EmitEpilogue();
 
 public:
-  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src, IRCodeGenSize size,
-  //                  IRCodeGenAlignment align);
+  // void EmitMemCopy(llvm::Value *dest, llvm::Value *src, IRGenSize size,
+  //                  IRGenAlignment align);
 
   // void EmitMemCopy(llvm::Value *dest, llvm::Value *src,
   //                 llvm::Value *size, Alignment align);

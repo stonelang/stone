@@ -5,9 +5,9 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Gen/IRCodeGenMetadata.h"
-#include "stone/Gen/IRCodeGenTypeCache.h"
-#include "stone/Gen/IRCodeGenTypeResolver.h"
+#include "stone/Gen/IRGenMetadata.h"
+#include "stone/Gen/IRGenTypeCache.h"
+#include "stone/Gen/IRGenTypeResolver.h"
 #include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/ASTVisitor.h"
 #include "stone/Syntax/Module.h"
@@ -72,11 +72,11 @@ class AutoDecl;
 class SourceFile;
 class NominalTypeDecl;
 class CodeGenContext;
-class CodeGenListener;
+class IRGenResult;
 
-// class IRCodeGenLoop {};
-// class IRCodeGenCall {};
-class IRCodeGenBlocks final {
+// class IRGenLoop {};
+// class IRGenCall {};
+class IRGenBlocks final {
 public:
 };
 
@@ -96,29 +96,29 @@ struct EmitFunctionFlags final {
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
 // TODO: Use ASTAllocation in the future?
-class IRCodeGenResult final : public MemoryAllocation<IRCodeGenResult> {
+class IRGenResult final : public MemoryAllocation<IRGenResult> {
 
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
-  IRCodeGenResult()
+  IRGenResult()
       : llvmContext(nullptr), llvmModule(nullptr), llvmTargetMachine(nullptr) {}
 
 public:
-  IRCodeGenResult(IRCodeGenResult const &) = delete;
-  IRCodeGenResult &operator=(IRCodeGenResult const &) = delete;
-  IRCodeGenResult(IRCodeGenResult &&) = default;
-  IRCodeGenResult &operator=(IRCodeGenResult &&) = default;
+  IRGenResult(IRGenResult const &) = delete;
+  IRGenResult &operator=(IRGenResult const &) = delete;
+  IRGenResult(IRGenResult &&) = default;
+  IRGenResult &operator=(IRGenResult &&) = default;
 
 public:
-  /// Construct a \c IRCodeGenResult  that owns a given module and context.
+  /// Construct a \c IRGenResult  that owns a given module and context.
   ///
-  /// The given pointers must not be null. If a null \c IRCodeGenResult  is
-  /// needed, use \c IRCodeGenResult ::null() instead.
-  explicit IRCodeGenResult(std::unique_ptr<llvm::LLVMContext> &&llvmContext,
-                           std::unique_ptr<llvm::Module> &&llvmModule,
-                           std::unique_ptr<llvm::TargetMachine> &&Target)
+  /// The given pointers must not be null. If a null \c IRGenResult  is
+  /// needed, use \c IRGenResult ::null() instead.
+  explicit IRGenResult(std::unique_ptr<llvm::LLVMContext> &&llvmContext,
+                       std::unique_ptr<llvm::Module> &&llvmModule,
+                       std::unique_ptr<llvm::TargetMachine> &&Target)
       : llvmContext(std::move(llvmContext)), llvmModule(std::move(llvmModule)),
         llvmTargetMachine(std::move(llvmTargetMachine)) {}
 
@@ -150,7 +150,7 @@ public:
   }
 
 public:
-  static IRCodeGenResult *
+  static IRGenResult *
   Create(MemoryContext &memContext,
          std::unique_ptr<llvm::LLVMContext> &&llvmContext,
          std::unique_ptr<llvm::Module> &&llvmModule,
@@ -162,42 +162,41 @@ public:
   // llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
 };
 
-class IRCodeGen final {
+class IRGen final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
 
-  llvm::DenseMap<SourceFile *, IRCodeGenModule *> irCodeGenModules;
+  llvm::DenseMap<SourceFile *, IRGenModule *> irGenModules;
 
-  llvm::SmallVector<IRCodeGenModule *, 8> queue;
+  llvm::SmallVector<IRGenModule *, 8> queue;
 
   // The IGM of the first source file.
-  IRCodeGenModule *primaryCodeGenModule = nullptr;
+  IRGenModule *primaryCodeGenModule = nullptr;
 
   // The current IGM for which IR is generated.
-  IRCodeGenModule *currentCodeGenModule = nullptr;
+  IRGenModule *currentCodeGenModule = nullptr;
 
 public:
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 private:
-  IRCodeGen(const IRCodeGen &) = delete;
-  void operator=(const IRCodeGen &) = delete;
+  IRGen(const IRGen &) = delete;
+  void operator=(const IRGen &) = delete;
 
 public:
-  explicit IRCodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
+  explicit IRGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
 
 public:
-  /// Add an IRCodeGenModule for a source file.
-  /// Should only be called from IRCodeGenModule's constructor.
-  void AddIRCodeGenModule(SourceFile *sourceFile,
-                          IRCodeGenModule *codeGenModule);
+  /// Add an IRGenModule for a source file.
+  /// Should only be called from IRGenModule's constructor.
+  void AddIRGenModule(SourceFile *sourceFile, IRGenModule *irGenModule);
 
   /// Get an IRGenModule for a declaration context.
-  /// Returns the IRCodeGenModule of the containing source file, or if this
+  /// Returns the IRGenModule of the containing source file, or if this
   /// cannot be determined, returns the primary IRGenModule.
-  IRCodeGenModule *GetIRCodeGenModule(DeclContext *ctxt);
+  IRGenModule *GetIRGenModule(DeclContext *ctxt);
 
 public:
   ASTContext &GetASTContext() { return astContext; }
@@ -206,20 +205,20 @@ public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
 
 public:
-  // IRCodeGenResule* GenCode();
+  // IRGenResule* GenCode();
 public:
   /// Return the effective triple used by clang.
   llvm::Triple GetEffectiveClangTriple();
   const llvm::StringRef GetClangDataLayoutString();
 };
 
-class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
+class IRGenModule final : public ASTVisitor<IRGenModule> {
 
-  IRCodeGen &irCodeGen;
-  IRCodeGenTypeCache typeCache;
-  IRCodeGenTypeResolver typeResolver;
-  IRCodeGenMetadata metadata;
-  // IRCodeGenDebug debug;
+  IRGen &irGen;
+  IRGenTypeCache typeCache;
+  IRGenTypeResolver typeResolver;
+  IRGenMetadata metadata;
+  // IRGenDebug debug;
   llvm::StringRef outputFilename;
 
   const llvm::DataLayout dataLayout;
@@ -242,13 +241,13 @@ class IRCodeGenModule final : public ASTVisitor<IRCodeGenModule> {
   std::unique_ptr<clang::CodeGenerator> clangCodeGen;
 
 private:
-  IRCodeGenModule(const IRCodeGenModule &) = delete;
-  void operator=(const IRCodeGenModule &) = delete;
+  IRGenModule(const IRGenModule &) = delete;
+  void operator=(const IRGenModule &) = delete;
 
 public:
-  IRCodeGenModule(IRCodeGen &irCodeGen, SourceFile *sourceFile,
-                  llvm::StringRef moduleName, llvm::StringRef outputFilename);
-  ~IRCodeGenModule();
+  IRGenModule(IRGen &irGen, SourceFile *sourceFile, llvm::StringRef moduleName,
+              llvm::StringRef outputFilename);
+  ~IRGenModule();
 
 public:
   void Setup();
@@ -271,11 +270,11 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  IRCodeGen &GetIRCodeGen() { return irCodeGen; }
-  IRCodeGenTypeCache &GetIRCodeGenTypeCache() { return typeCache; }
-  IRCodeGenTypeResolver &GetIRCodeGenTypeResolver() { return typeResolver; }
-  IRCodeGenMetadata &GetIRCodeGenMetadata() { return metadata; }
-  // IRCodeGenDebug &GetIRCodeGenDebug() { return debug; }
+  IRGen &GetIRGen() { return irGen; }
+  IRGenTypeCache &GetIRGenTypeCache() { return typeCache; }
+  IRGenTypeResolver &GetIRGenTypeResolver() { return typeResolver; }
+  IRGenMetadata &GetIRGenMetadata() { return metadata; }
+  // IRGenDebug &GetIRGenDebug() { return debug; }
 
   const llvm::DataLayout &GetDataLayout() { return dataLayout; }
   const llvm::Triple &GetTriple() { return triple; }

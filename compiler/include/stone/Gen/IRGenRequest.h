@@ -28,7 +28,7 @@ class MouleFile;
 class CodeGenOptions;
 class CodeGenListener;
 
-class IRCodeGenRequest final {
+class IRGenRequest final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
@@ -39,24 +39,22 @@ class IRCodeGenRequest final {
   llvm::GlobalVariable *outModuleHash;
   llvm::ArrayRef<std::string> parallelOutputFilenames;
 
-  CodeGenListener *listener;
-
 public:
-  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
-                   const llvm::StringRef moduleName, ASTContext &astContext,
-                   MemoryContext &memContext,
-                   const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-                   llvm::ArrayRef<std::string> parallelOutputFilenames,
-                   llvm::GlobalVariable *outModuleHash = nullptr);
+  IRGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+               const llvm::StringRef moduleName, ASTContext &astContext,
+               MemoryContext &memContext,
+               const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+               llvm::ArrayRef<std::string> parallelOutputFilenames,
+               llvm::GlobalVariable *outModuleHash = nullptr);
 
-  IRCodeGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
-                   const llvm::StringRef moduleName, ASTContext &astContext,
-                   MemoryContext &memContext,
-                   const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-                   llvm::ArrayRef<std::string> parallelOutputFilenames,
-                   llvm::GlobalVariable *outModuleHash = nullptr);
+  IRGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
+               const llvm::StringRef moduleName, ASTContext &astContext,
+               MemoryContext &memContext,
+               const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+               llvm::ArrayRef<std::string> parallelOutputFilenames,
+               llvm::GlobalVariable *outModuleHash = nullptr);
 
-  ~IRCodeGenRequest();
+  ~IRGenRequest();
 
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
@@ -78,7 +76,6 @@ public:
   ModuleFile *GetPrimaryFile() const {
     return moduleOrFile.get<ModuleFile *>();
   }
-
   // bool IsForWholeModule() {
   //   return moduleOrFile.dyn_cast<SourceFile *>() == nullptr;
   // }
@@ -88,13 +85,8 @@ public:
         moduleOrFile.dyn_cast<ModuleFile *>());
   }
 
-  void SetCodeGenListener(CodeGenListener *inputListener) {
-    listener = inputListener;
-  }
-  CodeGenListener *GetCodeGenListener() { return listener; }
-
 public:
-  static IRCodeGenRequest
+  static IRGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
             const llvm::StringRef moduleName, ASTContext &astContext,
             MemoryContext &memContext,
@@ -102,7 +94,7 @@ public:
             llvm::ArrayRef<std::string> parallelOutputFilenames,
             llvm::GlobalVariable *outModuleHash = nullptr);
 
-  static IRCodeGenRequest
+  static IRGenRequest
   ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
           const llvm::StringRef moduleName, ASTContext &astContext,
           MemoryContext &memContext,

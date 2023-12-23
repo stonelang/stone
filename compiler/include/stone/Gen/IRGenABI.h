@@ -21,15 +21,15 @@ class TargetMachine;
 namespace stone {
 
 class MemberPointerType;
-class IRCodeGenModule;
+class IRGenModule;
 
-class IRCodeGenABI final {
-  IRCodeGenModule &cgm;
+class IRGenABI final {
+  IRGenModule &cgm;
 
   std::unique_ptr<MangleContext> mangleContext;
 
 public:
-  IRCodeGenABI(IRCodeGenModule &cgm);
+  IRGenABI(IRGenModule &cgm);
 
 public:
   llvm::Type *ResolveMemberPointerType(const MemberPointerType mpt);

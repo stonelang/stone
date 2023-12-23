@@ -1,17 +1,17 @@
 
-#include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenFunction.h"
+#include "stone/Gen/IRGenModule.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Global.h"
 
 using namespace stone;
 
-void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
-                                  llvm::GlobalValue *globalValue) {
+void IRGenModule::EmitFunDecl(FunDecl *funDecl,
+                              llvm::GlobalValue *globalValue) {
 
   assert(funDecl && "Null FundDecl");
 
-  auto funDeclType = GetIRCodeGenTypeResolver().GetFunctionType(funDecl);
+  auto funDeclType = GetIRGenTypeResolver().GetFunctionType(funDecl);
 
   EmitFunctionOptions emitFunctionOpts;
   emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;
@@ -25,5 +25,5 @@ void IRCodeGenModule::EmitFunDecl(FunDecl *funDecl,
   auto *llvmFunction = cast<llvm::Function>(globalValue);
 
   SetFunctionLinkage(funDecl, llvmFunction);
-  IRCodeGenFunction(*this, llvmFunction).EmitFunction(funDecl);
+  IRGenFunction(*this, llvmFunction).EmitFunction(funDecl);
 }

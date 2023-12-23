@@ -21,14 +21,14 @@ set(stone_gen_sources
 		GenBuiltin.cpp
 		GenType.cpp
 		GenABI.cpp
-		IRCodeGenConstant.cpp
-		IRCodeGenDebug.cpp
-		IRCodeGenBuilder.cpp
-		IRCodeGenFunction.cpp
-		IRCodegenModule.cpp
-		IRCodeGenRequest.cpp
-		IRCodeGenMetadata.cpp
-		IRCodeGenTypeResolver.cpp
+		IRGenConstant.cpp
+		IRGenDebug.cpp
+		IRGenBuilder.cpp
+		IRGenFunction.cpp
+		IRGenModule.cpp
+		IRGenRequest.cpp
+		IRGenMetadata.cpp
+		IRGenTypeResolver.cpp
 		OptimizeIR.cpp
 
 		LINK_LIBS

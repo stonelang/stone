@@ -1,4 +1,4 @@
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenModule.h"
 
 class TypeCodeGen final {
 public:
@@ -8,5 +8,5 @@ public:
 public:
 };
 
-// void IRCodeGenModule::GenType() {
+// void IRGenModule::GenType() {
 // }

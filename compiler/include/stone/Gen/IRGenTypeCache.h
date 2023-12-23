@@ -10,7 +10,7 @@ class LLVMContext;
 
 namespace stone {
 
-class IRCodeGenTypeCache final {
+class IRGenTypeCache final {
 public:
   llvm::Type *VoidTy;
 
@@ -32,7 +32,7 @@ public:
   llvm::PointerType *RelativeAddressPtrTy;
 
 public:
-  explicit IRCodeGenTypeCache(llvm::LLVMContext &llvmContext);
+  explicit IRGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 
 } // namespace stone

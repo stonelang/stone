@@ -1,2 +1,2 @@
-#include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenFunction.h"
+#include "stone/Gen/IRGenModule.h"

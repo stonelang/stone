@@ -1,17 +1,17 @@
 
-#include "stone/Gen/IRCodeGenFunction.h"
-#include "stone/Gen/IRCodeGenModule.h"
+#include "stone/Gen/IRGenFunction.h"
+#include "stone/Gen/IRGenModule.h"
 
 using namespace stone;
 
-void IRCodeGenFunction::EmitIfStmt(const IfStmt &stmt) {}
+void IRGenFunction::EmitIfStmt(const IfStmt &stmt) {}
 
-Status IRCodeGenFunction::EmitBasicBlock(llvm::BasicBlock *bb) {
+Status IRGenFunction::EmitBasicBlock(llvm::BasicBlock *bb) {
   Status status;
   return status;
 }
 
-void IRCodeGenFunction::EmitBranch(llvm::BasicBlock *target) {
+void IRGenFunction::EmitBranch(llvm::BasicBlock *target) {
   // Emit a branch from the current block to the target one if this
   // was a real block.  If this was just a fall-through block after a
   // terminator, don't emit it.

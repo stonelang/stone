@@ -9,19 +9,17 @@ class PointerType;
 } // namespace llvm
 
 namespace stone {
-
 class Type;
 class Decl;
 class FunctionDecl;
 class MemberPointerType;
+class IRGenModule;
 
-class IRCodeGenModule;
-
-class IRCodeGenTypeResolver final {
-  IRCodeGenModule &cgm;
+class IRGenTypeResolver final {
+  IRGenModule &cgm;
 
 public:
-  IRCodeGenTypeResolver(IRCodeGenModule &cgm);
+  IRGenTypeResolver(IRGenModule &cgm);
 
 public:
   llvm::Type *GetType(const Type ty);

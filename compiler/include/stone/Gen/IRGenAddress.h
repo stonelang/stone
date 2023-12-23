@@ -27,14 +27,14 @@ class TargetMachine;
 
 namespace stone {
 
-class IRCodeGenAddress {
+class IRGenAddress {
   llvm::Value *addr;
   llvm::Type *elementType;
   CodeGenAlignment alignment;
 
 public:
-  IRCodeGenAddress(llvm::Value *addr, llvm::Type *elementType,
-                   CodeGenAlignment alignment)
+  IRGenAddress(llvm::Value *addr, llvm::Type *elementType,
+               CodeGenAlignment alignment)
       : addr(addr), elementType(elementType), alignment(alignment) {}
 
 public:
@@ -43,11 +43,11 @@ public:
   CodeGenAlignment GetAlignment() const { return alignment; }
 };
 
-class ConstantAddress : public IRCodeGenAddress {
+class ConstantAddress : public IRGenAddress {
 public:
   ConstantAddress(llvm::Value *addr, llvm::Type *elementType,
                   CodeGenAlignment alignment)
-      : IRCodeGenAddress(addr, elementType, alignment) {}
+      : IRGenAddress(addr, elementType, alignment) {}
 };
 
 } // namespace stone

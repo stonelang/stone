@@ -3,8 +3,8 @@
 
 namespace stone {
 
-class IRCodeGenVT {
-  // IRCodeGenModule& codeGenModule;
+class IRGenVT {
+  // IRGenModule& codeGenModule;
 };
 } // namespace stone
 

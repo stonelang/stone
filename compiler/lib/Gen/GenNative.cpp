@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
-#include "stone/Gen/IRCodeGenOptimizer.h"
-#include "stone/Gen/NativeCodeGen.h"
+#include "stone/Gen/IRGenOptimizer.h"
+#include "stone/Gen/NativeGen.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -106,7 +106,7 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
                       llvm::Module *llvmModule, llvm::StringRef outputFilename,
                       ASTContext &astContext) {
 
-  //  NativeCodeGen nativeCodeGen;
+  //  NativeGen nativeGen;
   //  nativeCodeGen.GenCode();
   //  nativeCodeGen.OptimizeCode();
   //  nativeCodeGen.WriteCode();
@@ -118,11 +118,11 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
 
   // llvm::Optional<llvm::raw_fd_ostream> outputStream;
 
-  // NativeCodeGen nativeCodeGen;
+  // NativeGen nativeCodeGen;
 
   // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);
 
-  // IRCodeGenOptimizer optimizer(codeGenOpts, llvmModule, llvmTarget, diags);
+  // IRGenOptimizer optimizer(codeGenOpts, llvmModule, llvmTarget, diags);
   // optimizer.optimize();
 
   return true;
@@ -204,12 +204,12 @@ bool stone::WriteNative(CodeGenOptions &codeGenOpts,
   return true;
 }
 
-NativeCodeGen::NativeCodeGen(const CodeGenOptions &codeGenOptions,
-                             ASTContext &astContext)
+NativeGen::NativeGen(const CodeGenOptions &codeGenOptions,
+                     ASTContext &astContext)
     : codeGenOpts(codeGenOptions), astContext(astContext) {}
 
-// void NativeCodeGen::GenCode() {}
+// void NativeGen::GenCode() {}
 //
-// void NativeCodeGen::WriteCode() {}
+// void NativeGen::WriteCode() {}
 
-NativeCodeGen::~NativeCodeGen() {}
+NativeGen::~NativeGen() {}

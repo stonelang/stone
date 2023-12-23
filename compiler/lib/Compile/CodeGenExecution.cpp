@@ -1,7 +1,7 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
-#include "stone/Gen/IRCodeGenRequest.h"
+#include "stone/Gen/IRGenRequest.h"
 
 using namespace stone;
 
@@ -18,7 +18,7 @@ Status GenerateIRExecution::Execute() {
              .GetCompilerOptions()
              .inputsAndOutputs.HasPrimaryInputs()) {
 
-      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+      const PrimaryFileSpecificPaths psps =
           compiler.GetInvocation()
               .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
@@ -27,26 +27,26 @@ Status GenerateIRExecution::Execute() {
               .GetCompilerOptions()
               .inputsAndOutputs.CopyOutputFilenames();
 
-      auto result = stone::GenIR(IRCodeGenRequest::ForModule(
+      auto result = stone::GenIR(IRGenRequest::ForModule(
           compiler.GetInvocation().GetCodeGenOptions(),
-          compiler.GetMainModule(), primaryFileSpecificPaths.outputFilename,
-          compiler.GetASTContext(), compiler.GetMemoryContext(),
-          primaryFileSpecificPaths, parallelOutputFilenames));
+          compiler.GetMainModule(), psps.outputFilename,
+          compiler.GetASTContext(), compiler.GetMemoryContext(), psps,
+          parallelOutputFilenames));
 
-      compiler.AddIRCodeGenResult(result);
+      compiler.AddIRGenResult(result);
     }
   } else {
     compiler.ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
-      const PrimaryFileSpecificPaths primaryFileSpecificPaths =
+      const PrimaryFileSpecificPaths psps =
           compiler.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
               sourceFile);
 
-      auto result = stone::GenIR(IRCodeGenRequest::ForFile(
+      auto result = stone::GenIR(IRGenRequest::ForFile(
           compiler.GetInvocation().GetCodeGenOptions(), &sourceFile,
-          primaryFileSpecificPaths.outputFilename, compiler.GetASTContext(),
-          compiler.GetMemoryContext(), primaryFileSpecificPaths));
+          psps.outputFilename, compiler.GetASTContext(),
+          compiler.GetMemoryContext(), psps));
 
-      compiler.AddIRCodeGenResult(result);
+      compiler.AddIRGenResult(result);
 
       return Status();
     });
@@ -71,7 +71,7 @@ Status OptimizeIRExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::EmitIRAfter);
 
-  // stone::OptimizeIR(compiler.GetIRCodeGen()....)
+  // stone::OptimizeIR(compiler.GetIRGen()....)
 
   // std::unique_ptr<IRCodeOptimizer>
   /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),
@@ -92,7 +92,7 @@ Status EmitBitCodeExecution::Execute() {
 
   CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-bit-code");
   // GeneratedModule
-  // compiler.GetIRCodeGenResult();
+  // compiler.GetIRGenResult();
 
   return Status();
 }
@@ -104,7 +104,7 @@ EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
 Status EmitModuleExecution::Execute() {
   CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-module-code");
 
-  // compiler.GetIRCodeGenResult();
+  // compiler.GetIRGenResult();
 
   return Status();
 }
@@ -123,7 +123,7 @@ Status EmitNativeExecution::Execute() {
 
   compiler.TryFreeASTContext();
 
-  // compiler.GetIRCodeGenResult();
+  // compiler.GetIRGenResult();
 
   // std::unique_ptr<NativeCodeGen>
   /// nativeCode = std::make_uqnique<NativeCodeGen>(GetCodeGenOptions(),
@@ -132,8 +132,12 @@ Status EmitNativeExecution::Execute() {
   // nativeCode->Optimize();
   // nativeCode->Write();
 
-  // stone::GenNative(IRCodeGenOuput,
+  // stone::GenNative(IRGenOuput,
   //                  GetCodeGenContext().GetLLVMModule().getName());
+
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedNativeGeneration(compiler);
+  }
 
   return Status();
 }

@@ -1,7 +1,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
-#include "stone/Gen/IRCodeGenModule.h"
-#include "stone/Gen/IRCodeGenOptimizer.h"
+#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenOptimizer.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -45,10 +45,10 @@
 
 using namespace stone;
 
-IRCodeGenOptimizer::IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts,
-                                       llvm::Module *mod,
-                                       llvm::TargetMachine *targetMachine,
-                                       DiagnosticEngine &diags)
+IRGenOptimizer::IRGenOptimizer(const CodeGenOptions &codeGenOpts,
+                               llvm::Module *mod,
+                               llvm::TargetMachine *targetMachine,
+                               DiagnosticEngine &diags)
     : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
       diags(diags), lfpm(mod) {
   // Register all the ctx analyses with the managers.
@@ -62,11 +62,11 @@ IRCodeGenOptimizer::IRCodeGenOptimizer(const CodeGenOptions &codeGenOpts,
   mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
 
-void IRCodeGenOptimizer::Optimize() {
+void IRGenOptimizer::Optimize() {
   GetPassManager().run(*GetLLVMModule(), GetModuleAnalysisManager());
 }
 
-void IRCodeGenOptimizer::OptimizeWithLegacyPassManager() {
+void IRGenOptimizer::OptimizeWithLegacyPassManager() {
   GetLegacyPassManager().run(*GetLLVMModule());
 }
 
@@ -75,7 +75,7 @@ void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
                        llvm::Module *llvmModule, llvm::TargetMachine *target,
                        DiagnosticEngine &diags) {
 
-  IRCodeGenOptimizer optimizer(codeGenOpts, llvmModule, target, diags);
+  IRGenOptimizer optimizer(codeGenOpts, llvmModule, target, diags);
   if (codeGenOpts.useLegacyPassManager) {
     optimizer.OptimizeWithLegacyPassManager();
   } else {
