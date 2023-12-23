@@ -204,55 +204,6 @@ public:
   CompilerStatsReporter &GetStatsReporter() { return *statsReporter; }
 
 public:
-  /// Create the default output file (from the invocation's options) and add it
-  /// to the list of tracked output files.
-  ///
-  /// The files created by this are usually removed on signal, and, depending
-  /// on FrontendOptions, may also use a temporary file (that is, the data is
-  /// written to a temporary file which will atomically replace the target
-  /// output on success).
-  ///
-  /// \return - Null on error.
-  std::unique_ptr<raw_pwrite_stream> CreateDefaultOutputFile(
-      bool binary = true, StringRef baseInput = "",
-      llvm::StringRef extension = "", bool removeFileOnSignal = true,
-      bool createMissingDirectories = false, bool forceUseTemporary = false);
-
-  /// Create a new output file, optionally deriving the output path name, and
-  /// add it to the list of tracked output files.
-  ///
-  /// \return - Null on error.
-  std::unique_ptr<raw_pwrite_stream>
-  CreateOutputFile(StringRef outputPath, bool binary, bool removeFileOnSignal,
-                   bool useTemporary, bool createMissingDirectories = false);
-
-private:
-  /// Create a new output file and add it to the list of tracked output files.
-  ///
-  /// If \p OutputPath is empty, then createOutputFile will derive an output
-  /// path location as \p BaseInput, with any suffix removed, and \p Extension
-  /// appended. If \p OutputPath is not stdout and \p UseTemporary
-  /// is true, createOutputFile will create a new temporary file that must be
-  /// renamed to \p OutputPath in the end.
-  ///
-  /// \param OutputPath - If given, the path to the output file.
-  /// \param Binary - The mode to open the file in.
-  /// \param RemoveFileOnSignal - Whether the file should be registered with
-  /// llvm::sys::RemoveFileOnSignal. Note that this is not safe for
-  /// multithreaded use, as the underlying signal mechanism is not reentrant
-  /// \param UseTemporary - Create a new temporary file that must be renamed to
-  /// OutputPath in the end.
-  /// \param CreateMissingDirectories - When \p UseTemporary is true, create
-  /// missing directories in the output path.
-  Expected<std::unique_ptr<raw_pwrite_stream>>
-  PerformCreateOutputFile(StringRef outputPath, bool binary,
-                          bool removeFileOnSignal, bool useTemporary,
-                          bool createMissingDirectories);
-
-public:
-  std::unique_ptr<raw_pwrite_stream> CreateNullOutputFile();
-
-public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);
 };
 

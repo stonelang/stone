@@ -141,13 +141,13 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
   IRGen irGen(request.GetCodeGenOptions(), request.GetASTContext());
 
   const auto &psps = request.GetPrimaryFileSpecificPaths();
-  IRGenModule irGenModule(irGen, request.GetPrimarySourceFile(),
-                          request.GetModuleName(), psps.outputFilename);
-  irGenModule.Setup();
+  IRGenModule gm(irGen, request.GetPrimarySourceFile(), request.GetModuleName(),
+                 psps.outputFilename);
+  gm.Setup();
 
   for (auto *moduleFile : request.GetFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-      irGenModule.EmitSourceFile(*sourceFile);
+      gm.EmitSourceFile(*sourceFile);
       // if (auto *synthSFU = sourceFile->GetSynthesizedFile()) {
       //   codeGenModule.EmitSynthesizedFileUnit(*synthSFU);
       // }
@@ -161,7 +161,7 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
   return IRGenResult::Create(request.GetMemoryContext(),
                              std::move(irGen.llvmContext),
                              std::unique_ptr<llvm::Module>{
-                                 irGenModule.GetClangCodeGen().ReleaseModule()},
+                                 gm.GetClangCodeGen().ReleaseModule()},
                              std::move(irGen.llvmTargetMachine));
 }
 

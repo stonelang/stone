@@ -28,7 +28,7 @@ void Parser::ParseTopLevelDecls(
       return;
     } else {
       if (HasCodeCompletionCallbacks()) {
-        GetCodeCompletionCallbacks()->CompletedTopLevelDecl(result.Get());
+        GetCodeCompletionCallbacks()->CompletedParseTopLevelDecl(result.Get());
       }
       results.push_back(result);
     }

@@ -206,7 +206,7 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   if (compiler.GetInvocation().CanGenCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (compiler.GetInvocation()
-            .SetupClang(strings::CC1,
+            .SetupClang(strings::ClangCC1,
                         GetCompilerOptions().mainExecutablePath.data())
             .IsError()) {
       return Status::Error();

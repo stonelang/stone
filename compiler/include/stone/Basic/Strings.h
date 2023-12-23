@@ -8,7 +8,7 @@ namespace stone {
 namespace strings {
 
 /// Substitute for <stdout>
-constexpr static const char *CC1 = "-cc1";
+constexpr static const char *ClangCC1 = "-cc1";
 
 /// Substitute for <stdout>
 constexpr static const char *Dash = "-";
@@ -20,7 +20,7 @@ constexpr static const char *MainFunctionName = "Main";
 constexpr static const char *MainFileName = "main";
 
 ///
-constexpr static const char *StdLibName = "Stone";
+constexpr static const char *STDLibName = "Stone";
 
 ///
 constexpr static const char *BuiltinName = "Builtin";

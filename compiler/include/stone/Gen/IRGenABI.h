@@ -24,12 +24,12 @@ class MemberPointerType;
 class IRGenModule;
 
 class IRGenABI final {
-  IRGenModule &cgm;
+  IRGenModule &gm;
 
   std::unique_ptr<MangleContext> mangleContext;
 
 public:
-  IRGenABI(IRGenModule &cgm);
+  IRGenABI(IRGenModule &gm);
 
 public:
   llvm::Type *ResolveMemberPointerType(const MemberPointerType mpt);

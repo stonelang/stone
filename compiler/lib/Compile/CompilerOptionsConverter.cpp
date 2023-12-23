@@ -115,7 +115,7 @@ Status CompilerOptionsConverter::ComputeModuleName() {
     return Status();
   }
 
-  if (compilerOpts.moduleOpts.moduleName != strings::StdLibName) {
+  if (compilerOpts.moduleOpts.moduleName != strings::STDLibName) {
     return Status();
   }
 
@@ -125,7 +125,7 @@ Status CompilerOptionsConverter::ComputeModuleName() {
 
   // TODO:
   //  if (Lexer::isIdentifier(compilerOpts.moduleName) &&
-  //      (compilerOpts.moduleName != strings::StdLibName ||
+  //      (compilerOpts.moduleName != strings::STDLibName ||
   //      compilerOpts.parseStdLib)) {
   //    return false;
   //  }

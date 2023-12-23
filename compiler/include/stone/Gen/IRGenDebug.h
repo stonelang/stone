@@ -25,10 +25,10 @@ class IRGenModule;
 
 class IRGenDebug final {
   SrcLoc curLoc;
-  IRGenModule &cgm;
+  IRGenModule &gm;
 
 public:
-  IRGenDebug(IRGenModule &cgm, llvm::StringRef mainOutputFilenameForDebug,
+  IRGenDebug(IRGenModule &gm, llvm::StringRef mainOutputFilenameForDebug,
              llvm::StringRef privateDiscriminator);
 
   ~IRGenDebug();

@@ -19,7 +19,6 @@ void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &astContext,
 
   llvm::SmallVector<SyntaxResult<Decl>> results;
   parser.ParseTopLevelDecls(results);
-
   if (parser.HasError()) {
     return;
   }

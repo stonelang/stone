@@ -4,4 +4,4 @@ using namespace stone;
 
 // stone::GenABI();
 
-IRGenABI::IRGenABI(IRGenModule &cgm) : cgm(cgm) {}
+IRGenABI::IRGenABI(IRGenModule &gm) : gm(gm) {}

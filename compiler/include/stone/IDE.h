@@ -19,7 +19,7 @@ public:
 
 public:
   virtual void CompletedParseSourceFile(const SourceFile *srcFile) = 0;
-  virtual void CompletedTopLevelDecl(const Decl *decl) = 0;
+  virtual void CompletedParseTopLevelDecl(const Decl *decl) = 0;
   virtual void CompletedToken(const Token *token) = 0;
 };
 
