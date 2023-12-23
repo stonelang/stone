@@ -53,6 +53,7 @@ Status GenerateIRExecution::Execute() {
 
   if (IsMainAction()) {
     // Then we emit
+    // stone::EmitIR(
   }
   return Status();
 }
@@ -85,7 +86,7 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
 Status EmitBitCodeExecution::Execute() {
 
   CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-bit-code");
-  // GernatedCode
+  // GeneratedModule
   // compiler.GetIRCodeGenResult();
 
   return Status();

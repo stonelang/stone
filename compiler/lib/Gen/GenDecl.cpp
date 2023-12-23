@@ -36,15 +36,15 @@ public:
 };
 } // end anonymous namespace
 
-void IRCodeGenModule::EmitSourceFile(SourceFile &sf) {
+void IRCodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
 
-  PrettySourceFileEmission stackEntry(sf);
+  PrettySourceFileEmission stackEntry(sourceFile);
   //  TODO: llvm::SaveAndRestore<SourceFile *> setCurSourceFile(curSourceFile,
   //  &sf);
   // Walk through the syntax file and call emit
   // Emit types and other global decls.
-  for (auto d : sf.Decls) {
-    EmitGlobalDecl(d);
+  for (auto topLevelDecl : sourceFile.topLevelDecls) {
+    EmitGlobalDecl(topLevelDecl);
   }
 }
 

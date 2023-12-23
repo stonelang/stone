@@ -145,7 +145,7 @@ public:
   SourceFileKind kind = SourceFileKind::None;
   SourceFileStage stage = SourceFileStage::Parsing;
 
-  std::vector<Decl *> Decls;
+  std::vector<Decl *> topLevelDecls;
 
 public:
   SourceFile(SourceFileKind kind, ModuleDecl &owner,
@@ -163,7 +163,7 @@ public:
   void AddTopLevelDecl(Decl *d) {
     // Force decl parsing if we haven't already.
     //(void)GetTopLevelDecls();
-    Decls.push_back(d);
+    topLevelDecls.push_back(d);
   }
 
   /// Retrieves an immutable view of the list of top-level decls in this file.

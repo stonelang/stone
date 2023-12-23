@@ -5,9 +5,7 @@ using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler,
                                      ActionKind currentAction)
-    : compiler(compiler), currentAction(currentAction) {
-  assert(currentAction != ActionKind::Alien);
-}
+    : compiler(compiler), currentAction(currentAction) {}
 Status CompilerExecution::Setup() { return ExecuteDependency(); }
 
 Status CompilerExecution::ExecuteDependency() {
@@ -26,9 +24,8 @@ ActionKind CompilerExecution::GetExecutionAction() {
   return IsMainAction() ? compiler.GetMainAction() : GetCurrentAction();
 }
 
-Status CompilerExecution::Finish() { return Status(); }
-
 CompilerExecution::~CompilerExecution() {}
+Status CompilerExecution::Finish() { return Status(); }
 
 std::unique_ptr<CompilerExecution>
 Compiler::ComputeCompilerExectution(ActionKind kind) {

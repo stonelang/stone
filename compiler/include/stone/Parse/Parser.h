@@ -1,8 +1,6 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
-#include <memory>
-
 #include "stone/Basic/StableHasher.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Parse/Lexer.h"
@@ -21,16 +19,18 @@
 
 #include "llvm/Support/Timer.h"
 
+#include <memory>
+
+
 namespace stone {
 class SyntaxListener;
 
 class BraceStmt;
-class Syntax;
 class Parser;
 class Scope;
 class PairDelimiterBalancer;
 class ParsingDeclCollector;
-class ParsingDeclarator;
+class CodeCompletionCallbacks;
 
 class ParserStats final : public Stats {
   const Parser &parser;
@@ -59,14 +59,6 @@ class Parser final {
   /// This is the current curTok being considered by the parser.
   Token curTok;
 
-  /// leading trivias for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  // Trivia leadingTrivia;
-
-  /// trailing trivias for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  // Trivia trailingTrivia;
-
   /// Leading trivia for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef leadingTrivia;
@@ -86,6 +78,8 @@ class Parser final {
   // UInt16 BraceCount = 0;
   // UInt16 BrackeCount = 0;
 
+  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
+
 private:
   // Identifiers
   // mutable Identifier *importIdentifier;
@@ -96,9 +90,15 @@ private:
 
 public:
   Parser(SourceFile &sourceFile, ASTContext &astContext);
-
   ~Parser();
 
+public:
+  void SetCodeCompletionCallbacks(CodeCompletionCallbacks *callbacks) {
+    codeCompletionCallbacks = callbacks;
+  }
+  CodeCompletionCallbacks *GetCodeCompletionCallbacks() {
+    return codeCompletionCallbacks;
+  }
 public:
   ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
@@ -106,6 +106,7 @@ public:
   ASTContext &GetASTContext() { return astContext; }
 
   void SetSyntaxListener(SyntaxListener *sl) { listener = sl; }
+
   DeclContext *GetCurDeclContext() { return curDC; }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash

@@ -362,8 +362,6 @@ public:
   }
 };
 
-class IRCodeGenModuleOptimizer {};
-
 } // namespace stone
 
 #endif

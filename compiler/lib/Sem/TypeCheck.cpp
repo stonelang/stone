@@ -4,21 +4,21 @@
 
 using namespace stone;
 
-void stone::TypeCheckSourceFile(SourceFile &sf,
+void stone::TypeCheckSourceFile(SourceFile &sourceFile,
                                 stone::TypeCheckerOptions &typeCheckerOpts,
                                 TypeCheckerListener *listener) {
 
-  if (sf.stage == SourceFileStage::TypeChecked) {
+  if (sourceFile.stage == SourceFileStage::TypeChecked) {
     return;
   }
-  TypeChecker checker(sf.GetASTContext(), typeCheckerOpts, listener);
-  for (auto d : sf.Decls) {
-    checker.CheckDecl(d);
+  TypeChecker checker(sourceFile.GetASTContext(), typeCheckerOpts, listener);
+  for (auto topLevelDecl : sourceFile.topLevelDecls) {
+    checker.CheckDecl(topLevelDecl);
   }
   // checker.Check();
 
   // assert(sf.stage == SourceFileStage::AtImports);
-  sf.stage = SourceFileStage::TypeChecked;
+  sourceFile.stage = SourceFileStage::TypeChecked;
 }
 
 void stone::TypeCheckWholeModule(ModuleDecl &md,

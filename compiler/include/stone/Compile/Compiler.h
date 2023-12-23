@@ -27,22 +27,28 @@ class Compiler final {
   StatisticEngine stats;
 
   std::unique_ptr<ASTContext> astContext;
+
   std::unique_ptr<MemoryContext> memContext;
 
   CompilerInvocation invocation;
 
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> inputSourceBufferIDList;
-  // The primary Sources
+
+  /// The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
 
+  /// Stats collections
   std::unique_ptr<CompilerStatsReporter> statsReporter;
 
+  /// The main compiler modules
   mutable ModuleDecl *mainModule = nullptr;
+
+  /// LLVM generated modules
   llvm::SmallVector<IRCodeGenResult *, 8> irCodeGenResults;
 
   /// Virtual OutputBackend.
-  // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> OutputBackend = nullptr;
+  // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend = nullptr;
 
 public:
   Compiler(const Compiler &) = delete;
@@ -71,10 +77,6 @@ public:
   }
 
 public:
-  //  bool HasIRCodeGenResult() { return irCodeGenResult != nullptr; }
-  //  IRCodeGenResult *GetIRCodeGenResult() { return irCodeGenResult; }
-
-public:
   DiagnosticEngine &GetDiags() { return diags; }
   bool HasError() { return diags.HasError(); }
   StatisticEngine &GetStats() { return stats; }
@@ -91,6 +93,7 @@ public:
   bool HasMemoryContext() const { return memContext != nullptr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
+
   Status ExecuteAction(ActionKind kind);
 
 private:
