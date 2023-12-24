@@ -1,4 +1,4 @@
-#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/TypeSpecifier.h"
 
 using namespace stone;
 

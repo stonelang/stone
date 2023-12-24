@@ -12,7 +12,6 @@
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
-#include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxResult.h"
 

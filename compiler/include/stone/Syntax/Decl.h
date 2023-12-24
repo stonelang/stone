@@ -15,7 +15,7 @@
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/Import.h"
 #include "stone/Syntax/InlineBitfield.h"
-#include "stone/Syntax/Specifier.h"
+#include "stone/Syntax/TypeSpecifier.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/Types.h"

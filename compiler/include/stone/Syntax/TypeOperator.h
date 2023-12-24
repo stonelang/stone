@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_TYPEOPERATOR_H
 #define STONE_SYNTAX_TYPEOPERATOR_H
 
-#include "stone/Syntax/ASTAllocation.h"
-#include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/TypeAlignment.h"
+#include "stone/Basic/SrcLoc.h"
+#include "stone/Basic/STDAlias.h"
+
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

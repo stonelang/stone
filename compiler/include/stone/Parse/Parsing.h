@@ -6,7 +6,6 @@
 #include "stone/Parse/Lexing.h"
 #include "stone/Syntax/DeclCollector.h"
 #include "stone/Syntax/Scope.h"
-#include "stone/Syntax/Specifier.h"
 #include "stone/Syntax/SyntaxResult.h"
 
 #include "llvm/ADT/ArrayRef.h"

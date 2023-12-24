@@ -22,7 +22,6 @@ set(stone_syn_sources
 	CreateExpr.cpp
 	CreateStmt.cpp
 	SearchPath.cpp
-	Specifier.cpp
 	Stmt.cpp
 	Substituion.cpp
 	ASTContext.cpp
@@ -33,6 +32,7 @@ set(stone_syn_sources
 	Generics.cpp
 	Type.cpp
 	TypeCollector.cpp
+	TypeSpecifier.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 

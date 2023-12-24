@@ -1,9 +1,7 @@
 #ifndef STONE_SYNTAX_TYPETHUNK_H
 #define STONE_SYNTAX_TYPETHUNK_H
 
-#include "stone/Syntax/ASTAllocation.h"
-#include "stone/Syntax/Specifier.h"
-#include "stone/Syntax/TypeAlignment.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

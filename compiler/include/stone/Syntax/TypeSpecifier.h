@@ -13,10 +13,11 @@ namespace stone {
 enum class TypeSpecifierKind : uint8_t {
   None = 0,
   Auto,
-  Void,
+  Void, 
   Any,
   Bool,
   Char,
+  String,
   Float,
   Float32,
   Float64,
@@ -41,13 +42,6 @@ enum class TypeSpecifierKind : uint8_t {
 
 };
 
-enum class FunctionInlineSpecifierKind : UInt8 {
-  None = 0,
-  Inline,
-  ForcedInline,
-};
-
-enum class FunctionCallingConvention : UInt8 { Stone, C };
 
 /// The categorization of expression values, currently following the
 enum class ExprValueKind : UInt8 {
