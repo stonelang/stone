@@ -210,7 +210,7 @@ private:
   void operator!=(Type T) const = delete;
 };
 
-class QualTypeBase {
+class QualTypeBase : public Type {
 
   unsigned qualifiers = 0;
   enum Flags : unsigned {
@@ -222,7 +222,9 @@ class QualTypeBase {
   };
 
 public:
-  QualTypeBase() : qualifiers(0) {}
+  QualTypeBase(TypeBase *ty) : Type(ty), qualifiers(0) {}
+  QualTypeBase(Type ty) : Type(ty), qualifiers(0) {}
+
 public:
   bool HasConst() const { return qualifiers & Flags::Const; }
   bool IsConst() const { return qualifiers == Flags::Const; }
@@ -255,13 +257,13 @@ public:
   void Reset() { qualifiers = 0; }
 };
 
-class QualType final : public Type, public QualTypeBase {
+class QualType final : public QualTypeBase {
 public:
   QualType() = default;
 
 public:
-  QualType(TypeBase *ty) : Type(ty) {}
-  QualType(Type ty) : Type(ty) {}
+  QualType(TypeBase *ty) : QualTypeBase(ty) {}
+  QualType(Type ty) : QualTypeBase(ty) {}
 };
 
 class CanType final : public Type {
