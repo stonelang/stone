@@ -17,11 +17,6 @@ bool TypeBase::IsBasic() {
   }
 }
 
-TypeKind Type::GetKind() const {
-  assert(GetPtr());
-  return GetPtr()->GetKind();
-}
-
 bool TypeBase::IsNominalType() {
   switch (GetKind()) {
   case TypeKind::Interface:
@@ -45,16 +40,6 @@ VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
 
 // == Type == //
 bool Type::Walk(TypeWalker &walker) const {}
-
-bool Type::IsBuiltinType() const {}
-
-bool Type::IsFunType() const {}
-
-bool Type::IsStructType() const {}
-
-bool Type::IsPointerType() const {}
-
-bool Type::IsReferenceType() const {}
 
 // == TypeQualifierCollector == //
 

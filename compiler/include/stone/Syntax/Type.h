@@ -82,21 +82,17 @@ enum class ScalarTypeKind {
 };
 
 class Type {
-
   TypeBase *typePtr = nullptr;
   TypeQualifierCollector qualCollector;
 
-  // TypeThunkCollector chunkCollector;
-
 public:
-  Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = nullptr,
+       TypeQualifierCollector qualCollector = TypeQualifierCollector())
+      : typePtr(typePtr), qualCollector(qualCollector) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
   TypeBase *GetPtr() const { return typePtr; }
-
-  TypeKind GetKind() const;
-
   TypeBase *operator->() const {
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
@@ -108,12 +104,6 @@ public:
     qualCollector = collector;
   }
   TypeQualifierCollector &GetTypeQualifierCollector() { return qualCollector; }
-
-public:
-  // void SetTypeThunkCollector(TypeThunkCollector collector) {
-  //   chunkCollector = collector;
-  // }
-  // TypeThunkCollector &GetTypeThunkCollector() { return chunkCollector; }
 
 public:
   /// Walk this Type.
@@ -214,14 +204,6 @@ public:
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
 
-public:
-  bool IsBuiltinType() const;
-  bool IsFunType() const;
-  bool IsStructType() const;
-  bool IsPointerType() const;
-  bool IsReferenceType() const;
-
-public:
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
