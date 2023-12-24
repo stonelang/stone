@@ -95,4 +95,3 @@ FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
                              const ASTContext &sc) {
   return new (sc) FloatType(bitWidthKind, sc);
 }
-

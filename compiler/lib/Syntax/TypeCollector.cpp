@@ -1,7 +1,6 @@
-#include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeOperator.h"
+#include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeThunk.h"
-
 
 using namespace stone;
 
@@ -63,4 +62,3 @@ void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
 void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::Apply() {}
-

@@ -49,12 +49,12 @@ public:
 };
 
 class TypeOperatorCollector final {
-
+public:
   /// This holds each type-patter that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
   /// ops.back() will be the least closely bound to the type.
-  llvm::SmallVector<TypeOperator, 8> ops;
+  llvm::SmallVector<TypeOperator, 8> typeOperators;
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
@@ -62,18 +62,14 @@ public:
   TypeOperatorCollector();
 
 private:
-  void AddTypeOperator(const TypeOperator thunk) {
-    ops.push_back(thunk);
-    // TODO:
-    //  if (!EndLoc.isInvalid())
-    //    SetRangeEnd(EndLoc);
+  void AddTypeOperator(const TypeOperator typeOperator) {
+    typeOperators.push_back(typeOperator);
   }
 
 public:
   void AddNew(SrcLoc loc);
   void AddDelete(SrcLoc loc);
-  bool HasAny() { return ops.size() > 0; }
-  llvm::ArrayRef<TypeOperator> GetTypeOperators() { return ops; }
+  bool HasAny() { return typeOperators.size() > 0; }
 
   // void Apply();
   // void Verify();
