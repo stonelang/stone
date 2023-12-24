@@ -179,10 +179,10 @@ ABSTRACT_TYPE(AbstractPointer, Type)
   TYPE(MemberPointer, AbstractPointerType)
   TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
 
-ABSTRACT_TYPE(Reference, Type)
-  TYPE(RValueReference, ReferenceType)
-  TYPE(LValueReference, ReferenceType)
-  TYPE_RANGE(Reference, RValueReference, LValueReference)
+ABSTRACT_TYPE(AbstractReference, Type)
+  TYPE(RValueReference, AbstractReferenceType)
+  TYPE(LValueReference, AbstractReferenceType)
+  TYPE_RANGE(AbstractReference, RValueReference, LValueReference)
 
 
 ABSTRACT_TYPE(Sweet, Type)

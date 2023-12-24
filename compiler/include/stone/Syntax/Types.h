@@ -343,37 +343,46 @@ public:
 
 class NullType : public BuiltinType {
 public:
-  NullType(const ASTContext &sc) : BuiltinType(TypeKind::Null, sc) {}
+  NullType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Null, astContext) {}
 };
 
 class ChunkType : public TypeBase, public llvm::FoldingSetNode {};
 
 class AbstractPointerType : public TypeBase, public llvm::FoldingSetNode {
+
+  Type pointeeType;
+
 public:
-  AbstractPointerType(TypeKind kind, const ASTContext &sc)
-      : TypeBase(kind, &sc) {}
+  AbstractPointerType(TypeKind kind, const ASTContext &astContext)
+      : TypeBase(kind, &astContext) {}
 };
 
 class PointerType : public AbstractPointerType {
 
-  //  Type pointeeType;
-
-  // PointerType(QualType pointee, QualType CanonicalPtr)
-  //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
+  // PointerType(Type pointeeType, Type canType)
+  //     : AbstractPointerType(Pointer, CanonicalPtr, Pointee->getDependence()),
   //       PointeeType(Pointee) {}
 
 public:
 };
 
 class MemberPointerType : public AbstractPointerType {
+
 public:
 };
 
-class ReferenceType : public TypeBase, public llvm::FoldingSetNode {};
+class AbstractReferenceType : public TypeBase, public llvm::FoldingSetNode {
+public:
+};
 
-class LValueReferenceType final : public ReferenceType {};
+class LValueReferenceType final : public AbstractReferenceType {
+public:
+};
 
-class RValueReferenceType final : public ReferenceType {};
+class RValueReferenceType final : public AbstractReferenceType {
+public:
+};
 
 class ModuleType : public TypeBase {
   ModuleDecl *const mod;
@@ -404,6 +413,12 @@ class SweetType : public TypeBase {
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
 class AliasType : public SweetType {
+public:
+};
+
+/// An alias to a type
+/// using Int = int; My using use using Int = int;
+class UsingType : public SweetType {
 public:
 };
 

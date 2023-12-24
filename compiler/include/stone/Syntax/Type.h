@@ -155,6 +155,11 @@ public:
   // }
   // TypeQualifiers &GetTypeAliasQualifiers() { return typeAliasQualifiers; }
 
+  /// Retrieve the set of qualifiers local to this particular QualType
+  /// instance, not including any qualifiers acquired through typedefs or
+  /// other sugar.
+  // TypeQualifiers GetUnderlyingTypeQualifiers() const;
+
 public:
   /// Look through the given Type and its children to find a Type
   /// for which the given predicate returns true.
