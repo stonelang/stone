@@ -355,6 +355,13 @@ public:
 };
 
 class PointerType : public AbstractPointerType {
+
+  //  Type pointeeType;
+
+  // PointerType(QualType pointee, QualType CanonicalPtr)
+  //     : Type(Pointer, CanonicalPtr, Pointee->getDependence()),
+  //       PointeeType(Pointee) {}
+
 public:
 };
 

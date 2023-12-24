@@ -107,10 +107,10 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
 
   CollectTypeThunks(collector);
-  
+
   Type ty;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
-    
+
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
     ty = GetASTContext().GetBuiltinContext().BuiltinVoidType;

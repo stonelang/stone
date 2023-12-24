@@ -35,22 +35,10 @@ void TypeThunkCollector::AddArray(SrcLoc inputLoc) {
   AddTypeThunk(ArrayTypeThunk::Create(inputLoc));
 }
 
+TypeThunkCollector::TypeThunkCollector() {}
+
 void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::Apply() {}
-
-TypeThunkList::TypeThunkList(llvm::ArrayRef<TypeThunk> chunks) {
-  std::uninitialized_copy(chunks.begin(), chunks.end(),
-                          getTrailingObjects<TypeThunk>());
-}
-
-TypeThunkList *TypeThunkList::Create(llvm::ArrayRef<TypeThunk> chunks,
-                                     ASTContext &sc) {
-
-  unsigned sizeToAlloc =
-      TypeThunkList::totalSizeToAlloc<TypeThunk>(chunks.size());
-  void *memPtr = sc.Allocate(sizeToAlloc, alignof(TypeThunkList));
-  return new (memPtr) TypeThunkList(llvm::MutableArrayRef<TypeThunk>());
-}

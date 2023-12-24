@@ -21,7 +21,7 @@ class TypeQualifierCollector {
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
-  enum ID : unsigned {
+  enum Flags : unsigned {
     None = 1 << 0,
     Const = 1 << 1,
     Immutable = 1 << 2,

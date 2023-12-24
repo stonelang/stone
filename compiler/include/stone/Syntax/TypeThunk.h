@@ -22,12 +22,13 @@ enum class TypeThunkKind {
   Paren,
   Pipe,
 };
-class alignas(1 << TypeAlignInBits) TypeThunk : ASTAllocation<TypeThunk> {
+class TypeThunk {
   SrcLoc loc;
   TypeThunkKind kind;
 
 public:
   TypeThunk(TypeThunkKind kind, SrcLoc inputLoc) : kind(kind), loc(inputLoc) {}
+  virtual ~TypeThunk() {}
 
 public:
   TypeThunkKind GetKind() const { return kind; }
@@ -92,36 +93,19 @@ public:
 //   static FunctionTypeThunk Create();
 // };
 
-class TypeThunkList final
-    : private llvm::TrailingObjects<TypeThunkList, TypeThunk> {
+class TypeThunkCollector {
 
-  friend TrailingObjects;
-
-public:
-  /// No copying
-  TypeThunkList(const TypeThunkList &) = delete;
-  TypeThunkList &operator=(const TypeThunkList &) = delete;
-
-public:
-  TypeThunkList(llvm::ArrayRef<TypeThunk> thunks);
-
-public:
-  static TypeThunkList *Create(llvm::ArrayRef<TypeThunk> thunks,
-                               ASTContext &sc);
-};
-
-class TypeThunkCollector final {
-
-  /// This holds each type-patter that the type-specifer includes as it is
+  /// This holds each type-pattern that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
   /// thunks.back() will be the least closely bound to the type.
+public:
   llvm::SmallVector<TypeThunk, 8> thunks;
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
 public:
-  TypeThunkCollector() {}
+  TypeThunkCollector();
 
 private:
   /// Add a thunk to this Declarator. Also extend the range to
@@ -165,7 +149,6 @@ public:
   }
 
   bool HasAny() { return thunks.size() > 0; }
-  llvm::ArrayRef<TypeThunk> GetTypeThunks() { return thunks; }
   void Apply();
   void Verify();
 };

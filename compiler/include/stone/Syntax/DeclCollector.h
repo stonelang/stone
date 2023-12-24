@@ -260,6 +260,8 @@ public:
 
 class TypeCollector final {
   Type type;
+
+public:
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   TypeThunkCollector typeChunkCollector;

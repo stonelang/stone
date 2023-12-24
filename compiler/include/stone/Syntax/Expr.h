@@ -152,5 +152,47 @@ public:
   }
 };
 
+class LiteralExpr : public Expr {
+public:
+};
+
+class NullLiteralExpr : public LiteralExpr {
+public:
+};
+
+class BuiltinLiteralExpr : public LiteralExpr {
+public:
+};
+/// Abstract base class for numeric literals, potentially with a sign.
+class NumberLiteralExpr : public BuiltinLiteralExpr {
+public:
+};
+
+class IntegerLiteralExpr : public NumberLiteralExpr {
+public:
+};
+
+class FloatLiteralExpr : public NumberLiteralExpr {
+public:
+};
+
+class ImaginaryLiteral : public NumberLiteralExpr {
+public:
+};
+class ComplexLiteral : public NumberLiteralExpr {
+public:
+};
+
+class BooleanLiteralExpr : public BuiltinLiteralExpr {
+public:
+};
+
+class StringLiteralExpr : public BuiltinLiteralExpr {
+public:
+};
+
+/// A regular expression literal e.g '(a|c)*'.
+class RegexLiteralExpr : public LiteralExpr {};
+
 } // namespace stone
 #endif

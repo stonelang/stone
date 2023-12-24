@@ -85,14 +85,11 @@ class Type {
 
   TypeBase *typePtr = nullptr;
   TypeQualifierCollector qualCollector;
-  //TypeThunkCollector chunkCollector;
+
+  // TypeThunkCollector chunkCollector;
 
 public:
   Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
-
-  // Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-  //      TypeThunkList *thunks = nullptr)
-  //     : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -224,6 +221,7 @@ public:
   bool IsPointerType() const;
   bool IsReferenceType() const;
 
+public:
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
