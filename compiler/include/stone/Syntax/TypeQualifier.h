@@ -74,13 +74,10 @@ public:
 
 public:
   /// Apply the collected qualifiers to the given type.
-  QualType Apply(TypeBase *typePtr);
+  Type Apply(TypeBase *typePtr);
 
   /// Apply the collected qualifiers to the given type.
-  QualType Apply(Type ty);
-
-  /// Apply the collected qualifiers to the given type.
-  void Apply(QualType &qualType);
+  void Apply(Type &ty);
 };
 
 } // namespace stone

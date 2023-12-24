@@ -81,7 +81,51 @@ enum class ScalarTypeKind {
   FixedPoint
 };
 
-class Type {
+class TypeQualifiers {
+  unsigned qualifiers = 0;
+  enum Flags : unsigned {
+    None = 1 << 0,
+    Const = 1 << 1,
+    Immutable = 1 << 2,
+    Mutable = 1 << 3,
+    Pure = 1 << 4,
+  };
+
+public:
+  TypeQualifiers() : qualifiers(0) {}
+
+public:
+  bool HasConst() const { return qualifiers & Flags::Const; }
+  bool IsConst() const { return qualifiers == Flags::Const; }
+  void RemoveConst() { qualifiers &= ~Flags::Const; }
+  void AddConst() { qualifiers |= Flags::Const; }
+
+public:
+  bool HasImmutable() const { return qualifiers & Flags::Immutable; }
+  bool IsImmutable() const { return qualifiers == Flags::Immutable; }
+  void RemoveImmutable() { qualifiers &= ~Flags::Immutable; }
+  void AddImmutable() { qualifiers |= Flags::Immutable; }
+
+public:
+  bool HasMutable() const { return qualifiers & Flags::Mutable; }
+  bool IsMutable() const { return qualifiers == Flags::Mutable; }
+  void RemoveMutable() { qualifiers &= ~Flags::Mutable; }
+  void AddMutable() { qualifiers |= Flags::Mutable; }
+
+public:
+  bool HasPure() const { return qualifiers & Flags::Pure; }
+  bool IsPure() const { return qualifiers == Flags::Pure; }
+  void RemovePure() { qualifiers &= ~Flags::Pure; }
+  void AddPure() { qualifiers |= Flags::Pure; }
+
+public:
+  bool HasAny() {
+    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
+  }
+  void ClearQualifiers() { qualifiers = 0; }
+};
+
+class Type : public TypeQualifiers {
   TypeBase *typePtr = nullptr;
 
 public:
@@ -201,82 +245,17 @@ private:
   void operator!=(Type T) const = delete;
 };
 
-class QualTypeBase : public Type {
-
-  unsigned qualifiers = 0;
-  enum Flags : unsigned {
-    None = 1 << 0,
-    Const = 1 << 1,
-    Immutable = 1 << 2,
-    Mutable = 1 << 3,
-    Pure = 1 << 4,
-  };
-
-public:
-  QualTypeBase(TypeBase *ty) : Type(ty), qualifiers(0) {}
-  QualTypeBase(Type ty) : Type(ty), qualifiers(0) {}
-
-public:
-  bool HasConst() const { return qualifiers & Flags::Const; }
-  bool IsConst() const { return qualifiers == Flags::Const; }
-  void RemoveConst() { qualifiers &= ~Flags::Const; }
-  void AddConst() { qualifiers |= Flags::Const; }
-
-public:
-  bool HasImmutable() const { return qualifiers & Flags::Immutable; }
-  bool IsImmutable() const { return qualifiers == Flags::Immutable; }
-  void RemoveImmutable() { qualifiers &= ~Flags::Immutable; }
-  void AddImmutable() { qualifiers |= Flags::Immutable; }
-
-public:
-  bool HasMutable() const { return qualifiers & Flags::Mutable; }
-  bool IsMutable() const { return qualifiers == Flags::Mutable; }
-  void RemoveMutable() { qualifiers &= ~Flags::Mutable; }
-  void AddMutable() { qualifiers |= Flags::Mutable; }
-
-public:
-  bool HasPure() const { return qualifiers & Flags::Pure; }
-  bool IsPure() const { return qualifiers == Flags::Pure; }
-  void RemovePure() { qualifiers &= ~Flags::Pure; }
-  void AddPure() { qualifiers |= Flags::Pure; }
-
-public:
-  bool HasAny() {
-    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
-  }
-  void ClearQualifiers() { qualifiers = 0; }
-
-private:
-  // Direct comparison is disabled for types, because they may not be canonical.
-  void operator==(QualTypeBase T) const = delete;
-  void operator!=(QualTypeBase T) const = delete;
-};
-
-class QualType : public QualTypeBase {
-public:
-  QualType() = default;
-
-public:
-  QualType(TypeBase *ty) : QualTypeBase(ty) {}
-  QualType(Type ty) : QualTypeBase(ty) {}
-
-private:
-  // Direct comparison is disabled for types, because they may not be canonical.
-  void operator==(QualType T) const = delete;
-  void operator!=(QualType T) const = delete;
-};
-
-class CanType : public QualType {
+class CanType : public Type {
 public:
   /// Constructs a NULL canonical type.
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : QualType(ty) {
+  explicit CanType(TypeBase *ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanType(Type ty) : QualType(ty) {
+  explicit CanType(Type ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

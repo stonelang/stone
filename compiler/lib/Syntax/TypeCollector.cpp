@@ -65,21 +65,16 @@ void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 void TypeThunkCollector::Apply() {}
 
 /// Apply the collected qualifiers to the given type.
-QualType TypeQualifierCollector::Apply(TypeBase *typePtr) {
-  return QualType(typePtr);
-}
+Type TypeQualifierCollector::Apply(TypeBase *typePtr) { return Type(typePtr); }
 
 /// Apply the collected qualifiers to the given type.
-QualType TypeQualifierCollector::Apply(Type ty) { return QualType(ty); }
-
-/// Apply the collected qualifiers to the given type.
-void TypeQualifierCollector::Apply(QualType &qualType) {
+void TypeQualifierCollector::Apply(Type &ty) {
 
   if (HasConst()) {
-    qualType.AddConst();
+    ty.AddConst();
   }
 
   if (HasPure()) {
-    qualType.AddPure();
+    ty.AddPure();
   }
 }

@@ -4,7 +4,7 @@ using namespace stone;
 
 DeclCollector::DeclCollector() {}
 
-void DeclCollector::Apply() {
+void DeclCollector::Apply(Decl *d) {
 
   GetTypeCollector().Apply();
 
