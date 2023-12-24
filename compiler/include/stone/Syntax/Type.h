@@ -83,15 +83,19 @@ enum class ScalarTypeKind {
 
 class Type {
   TypeBase *typePtr = nullptr;
-  TypeQualifierList *qualifiers;
-  TypeThunkList *thunks = nullptr;
+
+  TypeQualifierCollector qualCollector;
+
+  // TypeQualifierList *qualifiers;
+  // TypeThunkList *thunks = nullptr;
   // TypeOperatorList* ops = nullptr;
 
 public:
-  Type(TypeBase *typePtr = nullptr) : Type(typePtr, nullptr, nullptr) {}
-  Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
-       TypeThunkList *thunks = nullptr)
-      : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
+  Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
+
+  // Type(TypeBase *typePtr, TypeQualifierList *qualifiers = nullptr,
+  //      TypeThunkList *thunks = nullptr)
+  //     : typePtr(typePtr), qualifiers(qualifiers), thunks(thunks) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -105,13 +109,13 @@ public:
   }
   explicit operator bool() const { return typePtr != nullptr; }
 
-  void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
-    qualifiers = inputQualifiers;
-  }
-  TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
+  // void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
+  //   qualifiers = inputQualifiers;
+  // }
+  // TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
 
-  void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
-  TypeThunkList *GetTypeThunks() { return thunks; }
+  // void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
+  // TypeThunkList *GetTypeThunks() { return thunks; }
 
 public:
   /// Walk this Type.
@@ -231,13 +235,7 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : CanType(ty, nullptr, nullptr) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
-  }
-  explicit CanType(TypeBase *ty, TypeQualifierList *quals,
-                   TypeThunkList *thunks)
-      : Type(ty, quals, thunks) {
+  explicit CanType(TypeBase *ty) : Type(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

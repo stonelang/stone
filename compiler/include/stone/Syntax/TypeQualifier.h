@@ -12,24 +12,7 @@
 
 namespace stone {
 
-// NOTES:
-// Array types are considered to have the same cv-qualification as their element
-// types.
-
-struct TypeQualifierFlags final {
-
-  TypeQualifierFlags() = delete;
-
-  enum ID : unsigned {
-    None = 1 << 0,
-    Const = 1 << 1,
-    Immutable = 1 << 2,
-    Mutable = 1 << 3,
-    Pure = 1 << 4,
-  };
-};
-
-class TypeQualifierList {
+class TypeQualifierCollector {
 
   unsigned qualifiers = 0;
 
@@ -38,52 +21,60 @@ class TypeQualifierList {
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
+  enum ID : unsigned {
+    None = 1 << 0,
+    Const = 1 << 1,
+    Immutable = 1 << 2,
+    Mutable = 1 << 3,
+    Pure = 1 << 4,
+  };
+
 public:
-  TypeQualifierList()
+  TypeQualifierCollector()
       : qualifiers(0), constLoc(SrcLoc()), pureLoc(SrcLoc()),
         immutableLoc(SrcLoc()), mutableLoc(SrcLoc()) {}
 
 public:
-  bool HasConst() const { return qualifiers & TypeQualifierFlags::Const; }
-  bool IsConst() const { return qualifiers == TypeQualifierFlags::Const; }
-  void RemoveConst() { qualifiers &= ~TypeQualifierFlags::Const; }
+  bool HasConst() const { return qualifiers & TypeQualifierCollector::Const; }
+  bool IsConst() const { return qualifiers == TypeQualifierCollector::Const; }
+  void RemoveConst() { qualifiers &= ~TypeQualifierCollector::Const; }
   void AddConst(SrcLoc loc = SrcLoc()) {
     constLoc = loc;
-    qualifiers |= TypeQualifierFlags::Const;
+    qualifiers |= TypeQualifierCollector::Const;
   }
   SrcLoc GetConstLoc() { return constLoc; }
 
 public:
   bool HasImmutable() const {
-    return qualifiers & TypeQualifierFlags::Immutable;
+    return qualifiers & TypeQualifierCollector::Immutable;
   }
   bool IsImmutable() const {
-    return qualifiers == TypeQualifierFlags::Immutable;
+    return qualifiers == TypeQualifierCollector::Immutable;
   }
-  void RemoveImmutable() { qualifiers &= ~TypeQualifierFlags::Immutable; }
+  void RemoveImmutable() { qualifiers &= ~TypeQualifierCollector::Immutable; }
   void AddImmutable(SrcLoc loc = SrcLoc()) {
     immutableLoc = loc;
-    qualifiers |= TypeQualifierFlags::Immutable;
+    qualifiers |= TypeQualifierCollector::Immutable;
   }
   SrcLoc GetImmutableLoc() { return immutableLoc; }
 
 public:
-  bool HasMutable() const { return qualifiers & TypeQualifierFlags::Mutable; }
-  bool IsMutable() const { return qualifiers == TypeQualifierFlags::Mutable; }
-  void RemoveMutable() { qualifiers &= ~TypeQualifierFlags::Mutable; }
+  bool HasMutable() const { return qualifiers & TypeQualifierCollector::Mutable; }
+  bool IsMutable() const { return qualifiers == TypeQualifierCollector::Mutable; }
+  void RemoveMutable() { qualifiers &= ~TypeQualifierCollector::Mutable; }
   void AddMutable(SrcLoc loc = SrcLoc()) {
     mutableLoc = loc;
-    qualifiers |= TypeQualifierFlags::Mutable;
+    qualifiers |= TypeQualifierCollector::Mutable;
   }
   SrcLoc GetMutableLoc() { return mutableLoc; }
 
 public:
-  bool HasPure() const { return qualifiers & TypeQualifierFlags::Pure; }
-  bool IsPure() const { return qualifiers == TypeQualifierFlags::Pure; }
-  void RemovePure() { qualifiers &= ~TypeQualifierFlags::Pure; }
+  bool HasPure() const { return qualifiers & TypeQualifierCollector::Pure; }
+  bool IsPure() const { return qualifiers == TypeQualifierCollector::Pure; }
+  void RemovePure() { qualifiers &= ~TypeQualifierCollector::Pure; }
   void AddPure(SrcLoc loc = SrcLoc()) {
     pureLoc = loc;
-    qualifiers |= TypeQualifierFlags::Pure;
+    qualifiers |= TypeQualifierCollector::Pure;
   }
   SrcLoc GetPureLoc() { return pureLoc; }
 
@@ -101,13 +92,6 @@ public:
   }
 };
 
-class TypeQualifierCollector final : public TypeQualifierList {
-public:
-  TypeQualifierCollector();
-
-public:
-  TypeQualifierList *GetTypeQualifiers() { HasAny() ? this : nullptr; }
-};
 } // namespace stone
 
 #endif

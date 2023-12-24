@@ -148,11 +148,13 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   assert(!ty.IsNull());
 
   if (collector.GetTypeQualifierCollector().HasAny()) {
-    ty.SetTypeQualifiers(
-        collector.GetTypeQualifierCollector().GetTypeQualifiers());
+      //TODO:
+    // ty.SetTypeQualifiers(
+    //     collector.GetTypeQualifierCollector().GetTypeQualifiers());
   }
   if (chunks) {
-    ty.SetTypeThunks(chunks);
+    
+    //ty.SetTypeThunks(chunks);
   }
   return ty;
 }
