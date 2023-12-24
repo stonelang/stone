@@ -1,6 +1,5 @@
 #include "stone/Syntax/Type.h"
 #include "stone/Basic/Mem.h"
-#include "stone/Syntax/TypeFactory.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/TypeQualifier.h"
 
@@ -96,3 +95,4 @@ FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
                              const ASTContext &sc) {
   return new (sc) FloatType(bitWidthKind, sc);
 }
+

@@ -32,9 +32,7 @@ set(stone_syn_sources
 	ASTWalker.cpp
 	Generics.cpp
 	Type.cpp
-	TypeQualifier.cpp
-	TypeThunk.cpp
-	TypeOperator.cpp
+	TypeCollector.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
 

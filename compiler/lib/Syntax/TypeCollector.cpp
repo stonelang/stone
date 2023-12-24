@@ -1,7 +1,28 @@
+#include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeThunk.h"
-#include "stone/Syntax/ASTContext.h"
+
 
 using namespace stone;
+
+NewTypeOperator NewTypeOperator::Create(SrcLoc loc) {
+  NewTypeOperator op(loc);
+  return op;
+}
+
+DeleteTypeOperator DeleteTypeOperator::Create(SrcLoc loc) {
+  DeleteTypeOperator op(loc);
+  return op;
+}
+
+TypeOperatorCollector::TypeOperatorCollector() {}
+
+void TypeOperatorCollector::AddNew(SrcLoc inputLoc) {
+  AddTypeOperator(NewTypeOperator::Create(inputLoc));
+}
+void TypeOperatorCollector::AddDelete(SrcLoc inputLoc) {
+  AddTypeOperator(DeleteTypeOperator::Create(inputLoc));
+}
 
 PointerTypeThunk PointerTypeThunk::Create(SrcLoc loc) {
   PointerTypeThunk chunk(loc);
@@ -42,3 +63,4 @@ void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
 void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::Apply() {}
+
