@@ -20,6 +20,7 @@ enum class FunctionCallingConvention : UInt8 { Stone, C };
 
 class FunctionSpecifierCollector final {
 
+  unsigned flags;
   SrcLoc inlineLoc;
   SrcLoc forcedInlineLoc;
   SrcLoc virtualLoc;
@@ -38,8 +39,10 @@ class FunctionSpecifierCollector final {
     IsStatic = 1 << 7,
   };
 
-private:
-  unsigned flags;
+public:
+  FunctionSpecifierCollector()
+      : flags(0), inlineLoc(SrcLoc()), forcedInlineLoc(SrcLoc()),
+        virtualLoc(SrcLoc()), funLoc(SrcLoc()), doubleColonLoc(SrcLoc()) {}
 
 public:
   void AddFun(SrcLoc loc) {
@@ -82,6 +85,16 @@ public:
 
 public:
   void Apply();
+
+  void ClearAll() {
+    flags = 0;
+    inlineLoc = SrcLoc();
+    forcedInlineLoc = SrcLoc();
+    virtualLoc = SrcLoc();
+    funLoc = SrcLoc();
+    arrowLoc = SrcLoc();
+    doubleColonLoc = SrcLoc();
+  }
 };
 
 } // namespace stone
