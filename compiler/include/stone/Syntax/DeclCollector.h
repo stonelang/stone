@@ -298,7 +298,7 @@ public:
   SrcLoc GetDeclNameLoc() { return nameLoc; }
 
 public:
-  void Apply();
+  void Apply(Decl* d);
 };
 
 } // namespace stone

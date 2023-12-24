@@ -52,7 +52,7 @@ Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 }
 
 // Similar to ParseDeclSpecifiers
-Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   Type result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
@@ -84,14 +84,14 @@ Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   //   break;
   // }
 
-  return result;
+  return QualType(result);
 }
 
-Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   // Collect the type -- only basic types for now (TODO: user type  and function
@@ -108,49 +108,52 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
 
   CollectTypeThunks(collector);
 
-  Type ty;
+  Type result;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
 
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
-    ty = GetASTContext().GetBuiltinContext().BuiltinVoidType;
+    result = GetASTContext().GetBuiltinContext().BuiltinVoidType;
     break;
   }
 
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
-    ty = GetASTContext().GetBuiltinContext().BuiltinIntType;
+    result = GetASTContext().GetBuiltinContext().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
     assert(collector.GetTypeSpecifierCollector().IsInt16());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt16Type;
+    result = GetASTContext().GetBuiltinContext().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
     assert(collector.GetTypeSpecifierCollector().IsInt32());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt32Type;
+    result = GetASTContext().GetBuiltinContext().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
     assert(collector.GetTypeSpecifierCollector().IsInt64());
-    ty = GetASTContext().GetBuiltinContext().BuiltinInt64Type;
+    result = GetASTContext().GetBuiltinContext().BuiltinInt64Type;
     break;
   }
   }
   // TODO: OK FOR NOW
   assert(!ty.IsNull());
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
-    collector.GetTypeQualifierCollector().Apply(ty);
-  }
+  //TODO: Apply qualifiers 
+
+  // if (collector.GetTypeQualifierCollector().HasAny()) {
+  //   collector.GetTypeQualifierCollector().Apply(ty);
+  // }
   // if (collector.GetTypeThunkCollector().HasAny()) {
   //   ty.SetTypeThunkCollector(collector.GetTypeThunkCollector());
   // }
-  return ty;
+  return QualType(result);
 }
 
-Type Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
+QualType Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
   Type result;
-  return result;
+  return return QualType(result);
+
 }

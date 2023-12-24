@@ -78,4 +78,8 @@ void TypeQualifierCollector::Apply(QualType &qualType) {
   if (HasConst()) {
     qualType.AddConst();
   }
+
+  if (HasPure()) {
+    qualType.AddPure();
+  }
 }
