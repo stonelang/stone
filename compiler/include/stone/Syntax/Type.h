@@ -83,12 +83,9 @@ enum class ScalarTypeKind {
 
 class Type {
   TypeBase *typePtr = nullptr;
-  TypeQualifierCollector qualCollector;
 
 public:
-  Type(TypeBase *typePtr = nullptr,
-       TypeQualifierCollector qualCollector = TypeQualifierCollector())
-      : typePtr(typePtr), qualCollector(qualCollector) {}
+  Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -98,12 +95,6 @@ public:
     return typePtr;
   }
   explicit operator bool() const { return typePtr != nullptr; }
-
-public:
-  void SetTypeQualifierCollector(TypeQualifierCollector collector) {
-    qualCollector = collector;
-  }
-  TypeQualifierCollector &GetTypeQualifierCollector() { return qualCollector; }
 
 public:
   /// Walk this Type.
@@ -211,8 +202,6 @@ private:
 };
 
 class QualTypeBase : public Type {
-
-  // friend TypeQualifierCollector;
 
   unsigned qualifiers = 0;
   enum Flags : unsigned {

@@ -1,3 +1,4 @@
+#include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeThunk.h"
@@ -62,3 +63,19 @@ void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
 void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::Apply() {}
+
+/// Apply the collected qualifiers to the given type.
+QualType TypeQualifierCollector::Apply(TypeBase *typePtr) {
+  return QualType(typePtr);
+}
+
+/// Apply the collected qualifiers to the given type.
+QualType TypeQualifierCollector::Apply(Type ty) { return QualType(ty); }
+
+/// Apply the collected qualifiers to the given type.
+void TypeQualifierCollector::Apply(QualType &qualType) {
+
+  if (HasConst()) {
+    qualType.AddConst();
+  }
+}

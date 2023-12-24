@@ -10,6 +10,8 @@
 #include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
+class Type;
+class QualType;
 
 class TypeQualifierCollector final {
 
@@ -69,6 +71,16 @@ public:
     immutableLoc = SrcLoc();
     mutableLoc = SrcLoc();
   }
+
+public:
+  /// Apply the collected qualifiers to the given type.
+  QualType Apply(TypeBase *typePtr);
+
+  /// Apply the collected qualifiers to the given type.
+  QualType Apply(Type ty);
+
+  /// Apply the collected qualifiers to the given type.
+  void Apply(QualType &qualType);
 };
 
 } // namespace stone
