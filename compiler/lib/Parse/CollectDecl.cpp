@@ -105,21 +105,18 @@ SyntaxStatus Parser::CollectTypeQualifier(TypeCollector &collector) {
   case tok::kw_const:
     collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
     break;
-  case tok::kw_restrict:
-    collector.GetTypeQualifierCollector().AddRestrict(ConsumeToken());
-    break;
-  case tok::kw_volatile:
-    collector.GetTypeQualifierCollector().AddVolatile(ConsumeToken());
-    break;
   case tok::kw_mutable:
     collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
+    break;
+  case tok::kw_immutable:
+    collector.GetTypeQualifierCollector().AddImmutable(ConsumeToken());
     break;
   case tok::kw_pure:
     collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
   default:
-    return MakeSyntaxCodeCompletionStatus();
+    return stone::MakeSyntaxCodeCompletionStatus();
   }
-  return MakeSyntaxSuccess();
+  return stone::MakeSyntaxSuccess();
 }
 
 bool Parser::IsTypeThunk(const Token &tk) {
