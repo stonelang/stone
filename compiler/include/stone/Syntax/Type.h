@@ -253,30 +253,39 @@ public:
   bool HasAny() {
     return (HasConst() || HasImmutable() || HasMutable() || HasPure());
   }
+  void ClearQualifiers() { qualifiers = 0; }
 
-  void Reset() { qualifiers = 0; }
+private:
+  // Direct comparison is disabled for types, because they may not be canonical.
+  void operator==(QualTypeBase T) const = delete;
+  void operator!=(QualTypeBase T) const = delete;
 };
 
-class QualType final : public QualTypeBase {
+class QualType : public QualTypeBase {
 public:
   QualType() = default;
 
 public:
   QualType(TypeBase *ty) : QualTypeBase(ty) {}
   QualType(Type ty) : QualTypeBase(ty) {}
+
+private:
+  // Direct comparison is disabled for types, because they may not be canonical.
+  void operator==(QualType T) const = delete;
+  void operator!=(QualType T) const = delete;
 };
 
-class CanType final : public Type {
+class CanType : public QualType {
 public:
   /// Constructs a NULL canonical type.
   CanType() = default;
 
 public:
-  explicit CanType(TypeBase *ty) : Type(ty) {
+  explicit CanType(TypeBase *ty) : QualType(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }
-  explicit CanType(Type ty) : Type(ty) {
+  explicit CanType(Type ty) : QualType(ty) {
     assert(IsCanTypeOrNull() &&
            "Forming a CanType out of a non-canonical type!");
   }

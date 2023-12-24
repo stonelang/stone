@@ -70,7 +70,7 @@ class alignas(1 << TypeAlignInBits) TypeBase
   /// outside of the union for performance. See Bits.Type.IsCanonical.
   union {
     CanType canType;
-    const ASTContext *sc;
+    const ASTContext *astContext;
   };
 
 protected:
@@ -94,14 +94,14 @@ protected:
 
 public:
   TypeBase(TypeKind kind, const ASTContext *canTypeContext)
-      : kind(kind), sc(nullptr) {
+      : kind(kind), astContext(nullptr) {
 
     Bits.TypeBase.Kind = static_cast<unsigned>(kind);
 
     /// TODO: I do not like this ....
     if (canTypeContext) {
       // Bits.Type.IsCanonical = true;
-      sc = canTypeContext;
+      astContext = canTypeContext;
     }
   }
 
