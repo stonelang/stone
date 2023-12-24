@@ -212,6 +212,8 @@ private:
 
 class QualTypeBase : public Type {
 
+  // friend TypeQualifierCollector;
+
   unsigned qualifiers = 0;
   enum Flags : unsigned {
     None = 1 << 0,

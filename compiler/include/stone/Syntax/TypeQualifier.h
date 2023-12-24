@@ -11,83 +11,59 @@
 
 namespace stone {
 
-class TypeQualifierCollector {
-
-  unsigned qualifiers = 0;
+class TypeQualifierCollector final {
 
   SrcLoc constLoc;
   SrcLoc pureLoc;
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
-  enum Flags : unsigned {
-    None = 1 << 0,
-    Const = 1 << 1,
-    Immutable = 1 << 2,
-    Mutable = 1 << 3,
-    Pure = 1 << 4,
-  };
-
 public:
   TypeQualifierCollector()
-      : qualifiers(0), constLoc(SrcLoc()), pureLoc(SrcLoc()),
-        immutableLoc(SrcLoc()), mutableLoc(SrcLoc()) {}
+      : constLoc(SrcLoc()), pureLoc(SrcLoc()), immutableLoc(SrcLoc()),
+        mutableLoc(SrcLoc()) {}
 
 public:
-  bool HasConst() const { return qualifiers & TypeQualifierCollector::Const; }
-  bool IsConst() const { return qualifiers == TypeQualifierCollector::Const; }
-  void RemoveConst() { qualifiers &= ~TypeQualifierCollector::Const; }
-  void AddConst(SrcLoc loc = SrcLoc()) {
-    constLoc = loc;
-    qualifiers |= TypeQualifierCollector::Const;
+  bool HasConst() const { return constLoc.isValid(); }
+  bool IsConst() const {
+    return (HasConst() && !HasImmutable() && !HasMutable() && !HasPure());
   }
-  SrcLoc GetConstLoc() { return constLoc; }
+  void RemoveConst() { constLoc = SrcLoc(); }
+  void AddConst(SrcLoc loc) { constLoc = loc; }
+  SrcLoc GetConst() { return constLoc; }
 
 public:
-  bool HasImmutable() const {
-    return qualifiers & TypeQualifierCollector::Immutable;
-  }
+  bool HasImmutable() const { return immutableLoc.isValid(); }
   bool IsImmutable() const {
-    return qualifiers == TypeQualifierCollector::Immutable;
+    return (HasImmutable() && !HasConst() && !HasMutable() && !HasPure());
   }
-  void RemoveImmutable() { qualifiers &= ~TypeQualifierCollector::Immutable; }
-  void AddImmutable(SrcLoc loc = SrcLoc()) {
-    immutableLoc = loc;
-    qualifiers |= TypeQualifierCollector::Immutable;
-  }
-  SrcLoc GetImmutableLoc() { return immutableLoc; }
+  void RemoveImmutable() { immutableLoc = SrcLoc(); }
+  void AddImmutable(SrcLoc loc) { immutableLoc = loc; }
+  SrcLoc GetImmutable() { return immutableLoc; }
 
 public:
-  bool HasMutable() const {
-    return qualifiers & TypeQualifierCollector::Mutable;
-  }
+  bool HasMutable() const { return mutableLoc.isValid(); }
   bool IsMutable() const {
-    return qualifiers == TypeQualifierCollector::Mutable;
+    return (HasMutable() && !HasConst() && !HasImmutable() && !HasPure());
   }
-  void RemoveMutable() { qualifiers &= ~TypeQualifierCollector::Mutable; }
-  void AddMutable(SrcLoc loc = SrcLoc()) {
-    mutableLoc = loc;
-    qualifiers |= TypeQualifierCollector::Mutable;
-  }
-  SrcLoc GetMutableLoc() { return mutableLoc; }
+  void RemoveMutable() { mutableLoc = SrcLoc(); }
+  void AddMutable(SrcLoc loc) { mutableLoc = loc; }
+  SrcLoc GetMutable() { return mutableLoc; }
 
 public:
-  bool HasPure() const { return qualifiers & TypeQualifierCollector::Pure; }
-  bool IsPure() const { return qualifiers == TypeQualifierCollector::Pure; }
-  void RemovePure() { qualifiers &= ~TypeQualifierCollector::Pure; }
-  void AddPure(SrcLoc loc = SrcLoc()) {
-    pureLoc = loc;
-    qualifiers |= TypeQualifierCollector::Pure;
+  bool HasPure() const { pureLoc.isValid(); }
+  bool IsPure() const {
+    return (HasPure() && !HasConst() && !HasImmutable() && !HasMutable());
   }
-  SrcLoc GetPureLoc() { return pureLoc; }
+  void RemovePure() { pureLoc = SrcLoc(); }
+  void AddPure(SrcLoc loc) { pureLoc = loc; }
+  SrcLoc GetPure() { return pureLoc; }
 
 public:
   bool HasAny() {
     return (HasConst() || HasImmutable() || HasMutable() || HasPure());
   }
-
-  void Reset() {
-    qualifiers = 0;
+  void ClearQualifiers() {
     constLoc = SrcLoc();
     pureLoc = SrcLoc();
     immutableLoc = SrcLoc();
