@@ -107,16 +107,10 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   }
 
   CollectTypeThunks(collector);
-  TypeThunkList *chunks = nullptr;
-  if (collector.GetTypeThunkCollector().HasAny()) {
-    chunks = TypeThunkList::Create(
-        collector.GetTypeThunkCollector().GetTypeThunks(), GetASTContext());
-  }
-
+  
   Type ty;
-  // TypeBase *ty = nullptr;
   switch (collector.GetTypeSpecifierCollector().GetKind()) {
-
+    
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
     ty = GetASTContext().GetBuiltinContext().BuiltinVoidType;
@@ -148,14 +142,11 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   assert(!ty.IsNull());
 
   if (collector.GetTypeQualifierCollector().HasAny()) {
-      //TODO:
-    // ty.SetTypeQualifiers(
-    //     collector.GetTypeQualifierCollector().GetTypeQualifiers());
+    ty.SetTypeQualifierCollector(collector.GetTypeQualifierCollector());
   }
-  if (chunks) {
-    
-    //ty.SetTypeThunks(chunks);
-  }
+  // if (collector.GetTypeThunkCollector().HasAny()) {
+  //   ty.SetTypeThunkCollector(collector.GetTypeThunkCollector());
+  // }
   return ty;
 }
 

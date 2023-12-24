@@ -59,8 +59,12 @@ public:
   SrcLoc GetImmutableLoc() { return immutableLoc; }
 
 public:
-  bool HasMutable() const { return qualifiers & TypeQualifierCollector::Mutable; }
-  bool IsMutable() const { return qualifiers == TypeQualifierCollector::Mutable; }
+  bool HasMutable() const {
+    return qualifiers & TypeQualifierCollector::Mutable;
+  }
+  bool IsMutable() const {
+    return qualifiers == TypeQualifierCollector::Mutable;
+  }
   void RemoveMutable() { qualifiers &= ~TypeQualifierCollector::Mutable; }
   void AddMutable(SrcLoc loc = SrcLoc()) {
     mutableLoc = loc;

@@ -82,13 +82,10 @@ enum class ScalarTypeKind {
 };
 
 class Type {
+
   TypeBase *typePtr = nullptr;
-
   TypeQualifierCollector qualCollector;
-
-  // TypeQualifierList *qualifiers;
-  // TypeThunkList *thunks = nullptr;
-  // TypeOperatorList* ops = nullptr;
+  //TypeThunkCollector chunkCollector;
 
 public:
   Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
@@ -109,13 +106,17 @@ public:
   }
   explicit operator bool() const { return typePtr != nullptr; }
 
-  // void SetTypeQualifiers(TypeQualifierList *inputQualifiers) {
-  //   qualifiers = inputQualifiers;
-  // }
-  // TypeQualifierList *GetTypeQualifiers() { return qualifiers; }
+public:
+  void SetTypeQualifierCollector(TypeQualifierCollector collector) {
+    qualCollector = collector;
+  }
+  TypeQualifierCollector &GetTypeQualifierCollector() { return qualCollector; }
 
-  // void SetTypeThunks(TypeThunkList *inputs) { thunks = inputs; }
-  // TypeThunkList *GetTypeThunks() { return thunks; }
+public:
+  // void SetTypeThunkCollector(TypeThunkCollector collector) {
+  //   chunkCollector = collector;
+  // }
+  // TypeThunkCollector &GetTypeThunkCollector() { return chunkCollector; }
 
 public:
   /// Walk this Type.

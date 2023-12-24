@@ -50,4 +50,4 @@ using namespace stone;
 //   TypeQualifierList(llvm::MutableArrayRef<TypeQualifier>());
 // }
 
-//TypeQualifierCollector::TypeQualifierCollector() {}
+// TypeQualifierCollector::TypeQualifierCollector() {}
