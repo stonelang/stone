@@ -4,13 +4,13 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
+#include "stone/Syntax/FunctionSpecifier.h"
 #include "stone/Syntax/Generics.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
+#include "stone/Syntax/TypeSpecifier.h"
 #include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/Types.h"
-#include "stone/Syntax/TypeSpecifier.h"
-#include "stone/Syntax/FunctionSpecifier.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -75,7 +75,6 @@ public:
   //   return builder.GetRepresentation();
   // }
 };
-
 
 class StorageSpecifierCollector final {
 

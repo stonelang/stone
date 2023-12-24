@@ -50,7 +50,7 @@ SyntaxResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclCollector *collector) {
     return ParseDecl(*collector);
   } else {
     ParsingDeclCollector newCollector(*this);
-    newCollector.flags = ParsingDeclFlags::AllowTopLevel;
+    newCollector.parsingDeclOpts = ParsingDeclFlags::AllowTopLevel;
     return ParseDecl(newCollector);
   }
 }
@@ -251,7 +251,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
   assert(funDecl);
 
   // TODO: Find a better place for this -- maybe pass as parameter
-  if (collector.flags.contains(ParsingDeclFlags::AllowTopLevel)) {
+  if (collector.parsingDeclOpts.contains(ParsingDeclFlags::AllowTopLevel)) {
     funDecl->SetIsTopLevel();
   }
 
@@ -262,7 +262,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
     status |= ParseFunctionBody(collector, *funDecl);
   }
   // Very simple for the time being
-  return MakeSyntaxResult<Decl>(funDecl);
+  return stone::MakeSyntaxResult<Decl>(funDecl);
 }
 
 SyntaxStatus Parser::ParseFunctionSignature(ParsingDeclCollector &collector,

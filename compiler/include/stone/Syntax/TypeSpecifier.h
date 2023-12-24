@@ -13,7 +13,7 @@ namespace stone {
 enum class TypeSpecifierKind : uint8_t {
   None = 0,
   Auto,
-  Void, 
+  Void,
   Any,
   Bool,
   Char,
@@ -41,7 +41,6 @@ enum class TypeSpecifierKind : uint8_t {
   Imaginary64,
 
 };
-
 
 /// The categorization of expression values, currently following the
 enum class ExprValueKind : UInt8 {
@@ -209,6 +208,11 @@ public:
   void AddInt64(SrcLoc inputLoc);
   bool IsInt64() const {
     return (loc.isValid() && (kind == TypeSpecifierKind::Int64));
+  }
+
+  void AddString(SrcLoc inputLoc);
+  bool IsString() const {
+    return (loc.isValid() && (kind == TypeSpecifierKind::String));
   }
 
 public:

@@ -20,8 +20,8 @@
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
-#include "stone/Syntax/TypeSpecifier.h"
 #include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/TypeSpecifier.h"
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/APSInt.h"

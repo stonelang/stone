@@ -17,16 +17,16 @@ void stone::ParseSourceFile(SourceFile &sourceFile, ASTContext &astContext,
   Parser parser(sourceFile, astContext);
   parser.SetCodeCompletionCallbacks(callbacks);
 
-  llvm::SmallVector<SyntaxResult<Decl>> results;
-  parser.ParseTopLevelDecls(results);
+  llvm::SmallVector<SyntaxResult<Decl>> topLevelDecls;
+  parser.ParseTopLevelDecls(topLevelDecls);
   if (parser.HasError()) {
     return;
   }
-  for (auto result : results) {
-    if (result.IsNull()) {
+  for (auto topLevelDecl : topLevelDecls) {
+    if (topLevelDecl.IsNull()) {
       return;
     }
-    sourceFile.AddTopLevelDecl(result.Get());
+    sourceFile.AddTopLevelDecl(topLevelDecl.Get());
   }
 }
 

@@ -135,13 +135,12 @@ struct ParsingDeclFlags final {
 };
 /// Options that control the parsing of declarations.
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
-using ParsingDeclCallback = llvm::function_ref<void(Decl *)>;
 
 class ParsingDeclCollector final : public DeclCollector {
   Parser &parser;
 
 public:
-  ParsingDeclOptions flags;
+  ParsingDeclOptions parsingDeclOpts;
 
 public:
   ParsingDeclCollector(Parser &parser) : parser(parser) {}

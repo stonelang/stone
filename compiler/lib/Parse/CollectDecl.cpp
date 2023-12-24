@@ -228,8 +228,10 @@ SyntaxStatus Parser::CollectBasicTypeDecl(TypeCollector &collector) {
   case tok::kw_imaginary32:
     collector.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
   case tok::kw_imaginary64:
-    break;
     collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
+    break;
+  case tok::kw_string:
+    collector.GetTypeSpecifierCollector().AddString(ConsumeToken());
     break;
   default:
     return MakeSyntaxCodeCompletionStatus();

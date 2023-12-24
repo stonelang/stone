@@ -169,4 +169,9 @@ void TypeSpecifierCollector::AddImaginary64(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Imaginary64, loc);
 }
 
+void TypeSpecifierCollector::AddString(SrcLoc loc) {
+
+  AddTypeSpecifierKind(TypeSpecifierKind::String, loc);
+}
+
 void TypeSpecifierCollector::Apply() {}

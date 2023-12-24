@@ -1,9 +1,8 @@
 #ifndef STONE_SYNTAX_TYPEOPERATOR_H
 #define STONE_SYNTAX_TYPEOPERATOR_H
 
-#include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/STDAlias.h"
-
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

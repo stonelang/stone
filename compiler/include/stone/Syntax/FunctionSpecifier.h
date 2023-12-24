@@ -18,7 +18,6 @@ enum class FunctionInlineSpecifierKind : UInt8 {
 
 enum class FunctionCallingConvention : UInt8 { Stone, C };
 
-
 class FunctionSpecifierCollector final {
 
   SrcLoc inlineLoc;
