@@ -119,7 +119,7 @@ public:
   void AddPure() { qualifiers |= Flags::Pure; }
 
 public:
-  bool HasAny() {
+  bool HasQualifiers() {
     return (HasConst() || HasImmutable() || HasMutable() || HasPure());
   }
   void ClearQualifiers() { qualifiers = 0; }
@@ -127,6 +127,8 @@ public:
 
 class Type : public TypeQualifiers {
   TypeBase *typePtr = nullptr;
+
+  // TypeQualifiers typeAliasQualifiers;
 
 public:
   Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
@@ -146,6 +148,12 @@ public:
   /// Returns true if the walk was aborted.
   bool Walk(TypeWalker &walker) const;
   bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+
+public:
+  // void SetTypeAliasQualifiers(TypeQualifiers qualifiers) {
+  //   typeAliasQualifiers = qualifiers;
+  // }
+  // TypeQualifiers &GetTypeAliasQualifiers() { return typeAliasQualifiers; }
 
 public:
   /// Look through the given Type and its children to find a Type

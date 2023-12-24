@@ -32,10 +32,9 @@ SyntaxStatus ParsingDeclCollector::Verify() {
   return status;
 }
 
-ParsingDeclCollector::~ParsingDeclCollector() { 
-  
-  //Apply(); 
+ParsingDeclCollector::~ParsingDeclCollector() {
 
+  // Apply();
 }
 
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)

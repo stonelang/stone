@@ -11,7 +11,51 @@
 
 namespace stone {
 class Type;
-class QualType;
+class TypeBase;
+
+// class TypeQualifiers {
+//   unsigned qualifiers = 0;
+//   enum Flags : unsigned {
+//     None = 1 << 0,
+//     Const = 1 << 1,
+//     Immutable = 1 << 2,
+//     Mutable = 1 << 3,
+//     Pure = 1 << 4,
+//   };
+
+// public:
+//   TypeQualifiers() : qualifiers(0) {}
+
+// public:
+//   bool HasConst() const { return qualifiers & Flags::Const; }
+//   bool IsConst() const { return qualifiers == Flags::Const; }
+//   void RemoveConst() { qualifiers &= ~Flags::Const; }
+//   void AddConst() { qualifiers |= Flags::Const; }
+
+// public:
+//   bool HasImmutable() const { return qualifiers & Flags::Immutable; }
+//   bool IsImmutable() const { return qualifiers == Flags::Immutable; }
+//   void RemoveImmutable() { qualifiers &= ~Flags::Immutable; }
+//   void AddImmutable() { qualifiers |= Flags::Immutable; }
+
+// public:
+//   bool HasMutable() const { return qualifiers & Flags::Mutable; }
+//   bool IsMutable() const { return qualifiers == Flags::Mutable; }
+//   void RemoveMutable() { qualifiers &= ~Flags::Mutable; }
+//   void AddMutable() { qualifiers |= Flags::Mutable; }
+
+// public:
+//   bool HasPure() const { return qualifiers & Flags::Pure; }
+//   bool IsPure() const { return qualifiers == Flags::Pure; }
+//   void RemovePure() { qualifiers &= ~Flags::Pure; }
+//   void AddPure() { qualifiers |= Flags::Pure; }
+
+// public:
+//   bool HasAny() {
+//     return (HasConst() || HasImmutable() || HasMutable() || HasPure());
+//   }
+//   void ClearQualifiers() { qualifiers = 0; }
+// };
 
 class TypeQualifierCollector final {
 
