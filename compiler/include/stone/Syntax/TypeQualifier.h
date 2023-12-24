@@ -17,42 +17,35 @@ namespace stone {
 // types.
 
 struct TypeQualifierFlags final {
+
   TypeQualifierFlags() = delete;
+
   enum ID : unsigned {
-    None = 0,
+    None = 1 << 0,
     Const = 1 << 1,
-    Restrict = 1 << 2,
-    Volatile = 1 << 3,
-    Unaligned = 1 << 4,
-    Immutable = 1 << 5,
-    Mutable = 1 << 6,
-    Pure = 1 << 7,
-    Delete = 1 << 8,
-    Default = 1 << 9,
+    Immutable = 1 << 2,
+    Mutable = 1 << 3,
+    Pure = 1 << 4,
   };
 };
 
 class TypeQualifierList {
 
-  UInt32 qualifiers = 0;
+  unsigned qualifiers = 0;
+
   SrcLoc constLoc;
-  SrcLoc restrictLoc;
-  SrcLoc volatileLoc;
   SrcLoc pureLoc;
   SrcLoc immutableLoc;
   SrcLoc mutableLoc;
 
-  // TODO: Remove delete -- it is an operator
-  SrcLoc deleteLoc;
-  SrcLoc defaultLoc;
-
 public:
   TypeQualifierList()
-      : qualifiers(0), constLoc(SrcLoc()), restrictLoc(SrcLoc()) {}
+      : qualifiers(0), constLoc(SrcLoc()), pureLoc(SrcLoc()),
+        immutableLoc(SrcLoc()), mutableLoc(SrcLoc()) {}
 
 public:
   bool HasConst() const { return qualifiers & TypeQualifierFlags::Const; }
-  bool HasConstOnly() const { return qualifiers == TypeQualifierFlags::Const; }
+  bool IsConst() const { return qualifiers == TypeQualifierFlags::Const; }
   void RemoveConst() { qualifiers &= ~TypeQualifierFlags::Const; }
   void AddConst(SrcLoc loc = SrcLoc()) {
     constLoc = loc;
@@ -64,7 +57,7 @@ public:
   bool HasImmutable() const {
     return qualifiers & TypeQualifierFlags::Immutable;
   }
-  bool HasImmutableOnly() const {
+  bool IsImmutable() const {
     return qualifiers == TypeQualifierFlags::Immutable;
   }
   void RemoveImmutable() { qualifiers &= ~TypeQualifierFlags::Immutable; }
@@ -76,9 +69,7 @@ public:
 
 public:
   bool HasMutable() const { return qualifiers & TypeQualifierFlags::Mutable; }
-  bool HasMutableOnly() const {
-    return qualifiers == TypeQualifierFlags::Mutable;
-  }
+  bool IsMutable() const { return qualifiers == TypeQualifierFlags::Mutable; }
   void RemoveMutable() { qualifiers &= ~TypeQualifierFlags::Mutable; }
   void AddMutable(SrcLoc loc = SrcLoc()) {
     mutableLoc = loc;
@@ -87,32 +78,8 @@ public:
   SrcLoc GetMutableLoc() { return mutableLoc; }
 
 public:
-  bool HasRestrict() const { return qualifiers & TypeQualifierFlags::Restrict; }
-  bool HasRestrictOnly() const {
-    return qualifiers == TypeQualifierFlags::Restrict;
-  }
-  void RemoveRestrict() { qualifiers &= ~TypeQualifierFlags::Restrict; }
-  void AddRestrict(SrcLoc loc = SrcLoc()) {
-    restrictLoc = loc;
-    qualifiers |= TypeQualifierFlags::Restrict;
-  }
-  SrcLoc GetRestrictLoc() { return restrictLoc; }
-
-public:
-  bool HasVolatile() const { return qualifiers & TypeQualifierFlags::Volatile; }
-  bool HasVolatileOnly() const {
-    return qualifiers == TypeQualifierFlags::Volatile;
-  }
-  void RemoveVolatile() { qualifiers &= ~TypeQualifierFlags::Volatile; }
-  void AddVolatile(SrcLoc loc = SrcLoc()) {
-    volatileLoc = loc;
-    qualifiers |= TypeQualifierFlags::Volatile;
-  }
-  SrcLoc GetVolatileLoc() { return volatileLoc; }
-
-public:
   bool HasPure() const { return qualifiers & TypeQualifierFlags::Pure; }
-  bool HasPureOnly() const { return qualifiers == TypeQualifierFlags::Pure; }
+  bool IsPure() const { return qualifiers == TypeQualifierFlags::Pure; }
   void RemovePure() { qualifiers &= ~TypeQualifierFlags::Pure; }
   void AddPure(SrcLoc loc = SrcLoc()) {
     pureLoc = loc;
@@ -121,39 +88,17 @@ public:
   SrcLoc GetPureLoc() { return pureLoc; }
 
 public:
-  bool HasDelete() const { return qualifiers & TypeQualifierFlags::Delete; }
-  bool HasDeleteOnly() const {
-    return qualifiers == TypeQualifierFlags::Delete;
-  }
-  void RemoveDelete() { qualifiers &= ~TypeQualifierFlags::Delete; }
-  void AddDelete(SrcLoc loc = SrcLoc()) {
-    deleteLoc = loc;
-    qualifiers |= TypeQualifierFlags::Delete;
-  }
-  SrcLoc GetDeleteLoc() { return pureLoc; }
-
-public:
-  bool HasDefault() const { return qualifiers & TypeQualifierFlags::Default; }
-  bool HasDefaultOnly() const {
-    return qualifiers == TypeQualifierFlags::Default;
-  }
-  void RemoveDefault() { qualifiers &= ~TypeQualifierFlags::Pure; }
-  void AddDefault(SrcLoc loc = SrcLoc()) {
-    defaultLoc = loc;
-    qualifiers |= TypeQualifierFlags::Default;
-  }
-  SrcLoc GetDefaultLoc() { return pureLoc; }
-
-public:
   bool HasAny() {
-    return (HasConst() || HasRestrict() || HasVolatile() || HasImmutable() ||
-            HasMutable() || HasPure() || HasDelete() || HasDefault());
+    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
   }
-  bool HasAll() {
-    return (HasConst() && HasRestrict() && HasVolatile() && HasImmutable() &&
-            HasMutable() && HasPure());
+
+  void Reset() {
+    qualifiers = 0;
+    constLoc = SrcLoc();
+    pureLoc = SrcLoc();
+    immutableLoc = SrcLoc();
+    mutableLoc = SrcLoc();
   }
-  void ClearAll() { qualifiers = 0; }
 };
 
 class TypeQualifierCollector final : public TypeQualifierList {

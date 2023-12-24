@@ -81,7 +81,6 @@
 
 using namespace stone;
 
-
 IRGenResult *stone::GenIR(IRGenRequest request) {
 
   IRGen irGen(request.GetCodeGenOptions(), request.GetASTContext());
@@ -117,7 +116,8 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
 //              llvm::ArrayRef<std::string> parallelOutputFilenames,
 //              llvm::GlobalVariable *outModuleHash) {
 
-//   //return std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
+//   //return
+//   std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
 //   return nullptr;
 // }
 
@@ -127,7 +127,8 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
 //              const PrimaryFileSpecificPaths psps,
 //              llvm::GlobalVariable *outModuleHash) {
 
-//   //return std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
+//   //return
+//   std::unique_ptr<llvm::Module>{cgm.GetClangCodeGen().ReleaseModule()};
 //   return nullptr;
 // }
 

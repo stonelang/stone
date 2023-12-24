@@ -19,8 +19,6 @@ void IRGenFunction::EmitFunction(FunctionDecl *fd) {
 
   EmitPrologue();
 
-
-
   EmitEpilogue();
 }
 

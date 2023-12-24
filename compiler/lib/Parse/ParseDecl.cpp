@@ -178,7 +178,7 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDeclCollector &collector) {
 
   // At this stage, only the pure modifier is allowed
   if (collector.GetTypeCollector().GetTypeQualifierCollector().HasAny() &&
-      !collector.GetTypeCollector().GetTypeQualifierCollector().HasPureOnly()) {
+      !collector.GetTypeCollector().GetTypeQualifierCollector().IsPure()) {
     // Do some logging
     return MakeSyntaxError();
   }

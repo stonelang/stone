@@ -31,7 +31,6 @@ class TypeCheckerOptions;
 class ClangContext;
 class PrimaryFileSpecificPaths;
 
-
 using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
 
 /// This walks the syntax to resolve imports.
