@@ -75,17 +75,6 @@ enum class ExprObjectKind {
   MatrixComponent
 };
 
-/// Storage classes.
-/// These are legal on both functions and variables
-enum class StorageSpecifierKind : UInt8 {
-  None = 0,
-  // TODO: You may not need extern
-  Extern,
-  Static,
-  // Legal only on variables.
-  Register
-};
-
 /// The storage duration for an object (per C++ [ctx.stc]).
 enum class StorageDuration : UInt8 {
   FullExpression, ///< Full-expression storage duration (for temporaries).

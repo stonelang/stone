@@ -76,6 +76,17 @@ public:
   // }
 };
 
+/// Storage classes.
+/// These are legal on both functions and variables
+enum class StorageSpecifierKind : UInt8 {
+  None = 0,
+  // TODO: You may not need extern
+  Extern,
+  Static,
+  // Legal only on variables.
+  Register
+};
+
 class StorageSpecifierCollector final {
 
   SrcLoc loc;
@@ -143,7 +154,7 @@ public:
   void Apply();
 };
 
-class AccessLevelCollector final {
+class AccessSpecifierCollector final {
   SrcLoc loc;
   AccessLevel level;
 
@@ -155,7 +166,7 @@ private:
   }
 
 public:
-  AccessLevelCollector() : level(AccessLevel::None) {}
+  AccessSpecifierCollector() : level(AccessLevel::None) {}
 
 public:
   void AddPublic(SrcLoc inputLoc) {
@@ -183,11 +194,11 @@ public:
 };
 
 // Light weight value type for now
-class UsingDeclarationCollector final {
+class UsingSpecifierCollector final {
   SrcLoc loc;
 
 public:
-  UsingDeclarationCollector() : loc(SrcLoc()) {}
+  UsingSpecifierCollector() : loc(SrcLoc()) {}
 
 public:
   void AddUsing(SrcLoc inputLoc) { loc = inputLoc; }
@@ -195,17 +206,65 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class TypeCollector final {
-  Type type;
+class DeclSpecificerCollector {
 
-public:
+  AttributeCollector attributeCollector;
+
+  StorageSpecifierCollector storageSpecifierCollector;
+  FunctionSpecifierCollector functionSpecifierCollector;
+  AccessSpecifierCollector accessSpecifierCollector;
+
   TypeSpecifierCollector typeSpecifierCollector;
   TypeQualifierCollector typeQualifierCollector;
   TypeThunkCollector typeChunkCollector;
   TypeOperatorCollector typeOperatorCollector;
 
+  UsingSpecifierCollector usingSpecifierCollector;
+
+  // DeclNameLoc
+  DeclName name;
+  SrcLoc nameLoc;
+
+private:
+  DeclSpecificerCollector(const DeclSpecificerCollector &) = delete;
+  void operator=(const DeclSpecificerCollector &) = delete;
+
 public:
-  TypeCollector() {}
+  DeclSpecificerCollector();
+
+public:
+  UsingSpecifierCollector &GetUsingSpecifierCollector() {
+    return usingSpecifierCollector;
+  }
+  const UsingSpecifierCollector &GetUsingSpecifierCollector() const {
+    return usingSpecifierCollector;
+  }
+  StorageSpecifierCollector &GetStorageSpecifierCollector() {
+    return storageSpecifierCollector;
+  }
+  const StorageSpecifierCollector &GetStorageSpecifierCollector() const {
+    return storageSpecifierCollector;
+  }
+
+  FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
+    return functionSpecifierCollector;
+  }
+  const FunctionSpecifierCollector &GetFunctionSpecifierCollector() const {
+    return functionSpecifierCollector;
+  }
+
+  AccessSpecifierCollector &GetAccessSpecifierCollector() {
+    return accessSpecifierCollector;
+  }
+
+  const AccessSpecifierCollector &GetAccessSpecifierCollector() const {
+    return accessSpecifierCollector;
+  }
+
+  AttributeCollector &GetAttributeCollector() { return attributeCollector; }
+  const AttributeCollector &GetAttributeCollector() const {
+    return attributeCollector;
+  }
 
   TypeQualifierCollector &GetTypeQualifierCollector() {
     return typeQualifierCollector;
@@ -229,66 +288,6 @@ public:
   }
   const TypeOperatorCollector &GetTypeOperatorCollector() const {
     return typeOperatorCollector;
-  }
-
-  void Apply();
-
-public:
-  void SetType(Type inputType) { type = inputType; }
-  Type GetType() { return type; }
-};
-
-class DeclCollector {
-
-  AttributeCollector attributeCollector;
-  TypeCollector typeCollector;
-  StorageSpecifierCollector storageSpecifierCollector;
-  FunctionSpecifierCollector functionSpecifierCollector;
-  UsingDeclarationCollector usingDeclarationCollector;
-  AccessLevelCollector accessLevelCollector;
-
-  // DeclNameLoc
-  DeclName name;
-  SrcLoc nameLoc;
-
-private:
-  DeclCollector(const DeclCollector &) = delete;
-  void operator=(const DeclCollector &) = delete;
-
-public:
-  DeclCollector();
-
-public:
-  UsingDeclarationCollector &GetUsingDeclarationCollector() {
-    return usingDeclarationCollector;
-  }
-  const UsingDeclarationCollector &GetUsingDeclarationCollector() const {
-    return usingDeclarationCollector;
-  }
-  StorageSpecifierCollector &GetStorageSpecifierCollector() {
-    return storageSpecifierCollector;
-  }
-  const StorageSpecifierCollector &GetStorageSpecifierCollector() const {
-    return storageSpecifierCollector;
-  }
-
-  FunctionSpecifierCollector &GetFunctionSpecifierCollector() {
-    return functionSpecifierCollector;
-  }
-  const FunctionSpecifierCollector &GetFunctionSpecifierCollector() const {
-    return functionSpecifierCollector;
-  }
-
-  TypeCollector &GetTypeCollector() { return typeCollector; }
-  const TypeCollector &GetTypeCollector() const { return typeCollector; }
-
-  AccessLevelCollector &GetAccessLevelCollector() {
-    return accessLevelCollector;
-  }
-
-  AttributeCollector &GetAttributeCollector() { return attributeCollector; }
-  const AttributeCollector &GetAttributeCollector() const {
-    return attributeCollector;
   }
 
   void SetDeclName(DeclName inputName) { name = inputName; }

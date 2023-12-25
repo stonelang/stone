@@ -49,7 +49,7 @@ public:
 
 class TypeOperatorCollector final {
 public:
-  /// This holds each type-patter that the type-specifer includes as it is
+  /// This holds each type-pattern that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
   /// ops.back() will be the least closely bound to the type.
