@@ -24,7 +24,7 @@ void Parser::ParseTopLevelDecls(
   };
   while (IsParsing()) {
 
-    if (!IsTopLevelDecl()) {
+    if (!IsStartOfTopLevelDecl()) {
       break;
     }
     auto result = ParseTopLevelDecl();
@@ -116,12 +116,18 @@ EndParse : {
 //   return status;
 // }
 
-bool Parser::IsTopLevelDecl() {
+bool Parser::IsStartOfTopLevelDecl() {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
   case tok::kw_fun:
   case tok::kw_struct:
   case tok::kw_enum:
+  case tok::kw_public:
+  case tok::kw_private:
+  case tok::kw_internal:
+  case tok::kw_import:
+  case tok::kw_static:
+  case tok::kw_const:
     return true;
   default:
     return false;
@@ -465,6 +471,7 @@ Parser::ParseInterfaceDecl(ParsingDeclSpecifierCollector &collector) {
 
   ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
+  
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&
          "Attempting to parse a struct without a struct declaration.");
 

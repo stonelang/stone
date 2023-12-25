@@ -1,10 +1,10 @@
-#include "stone/Syntax/BuiltinContext.h"
 #include "stone/Basic/Mem.h"
+#include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/ASTAllocation.h"
 
 using namespace stone;
 
-BuiltinContext::BuiltinContext(ASTContext &astContext)
+Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext),
 
       BuiltinVoidType(VoidType::Create(astContext)),
@@ -51,6 +51,6 @@ BuiltinContext::BuiltinContext(ASTContext &astContext)
       BuiltinUIntType(new(astContext, AllocationArena::Permanent)
                           UIntegerType(NumberBitWidth::Platform, astContext)) {}
 
-void BuiltinContext::Initialize() {}
+void Builtin::Initialize() {}
 
-BuiltinContext::~BuiltinContext() {}
+Builtin::~Builtin() {}

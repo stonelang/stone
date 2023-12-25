@@ -18,7 +18,7 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
                        StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
-      de(de), se(se), identifiers(allocator), builtinContext(*this),
+      de(de), se(se), identifiers(allocator), builtin(*this),
       stats(new ASTContextStats(*this)) {
 
   se.Register(stats.get());
@@ -30,8 +30,8 @@ ASTContext::~ASTContext() {
   }
 }
 
-const BuiltinContext &ASTContext::GetBuiltinContext() const {
-  return builtinContext;
+const Builtin &ASTContext::GetBuiltin() const {
+  return builtin;
 }
 
 void *stone::AllocateInASTContext(size_t bytes, const ASTContext &ctx,

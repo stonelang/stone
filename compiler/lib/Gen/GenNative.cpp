@@ -74,67 +74,23 @@
 
 using namespace stone;
 
-// static void GenNativeWithParallelization() {}
+bool stone::GenNativeWithParallelization() {
+    return true; 
 
-// static void EmitObject(CodeGenContext &cgc, ASTContext &sc,
-//                        llvm::StringRef outputFilename) {}
-
-// static void EmitBC(const CodeGenContext &cgc, ASTContext &sc,
-//                    llvm::StringRef outputFilename) {}
-
-// static void EmitAssembly(const CodeGenContext &cgc, ASTContext &sc,
-//                          llvm::StringRef outputFilename) {}
-
-// void stone::GenNative(CodeGenContext &cgc, ASTContext &sc,
-//                       llvm::StringRef outputFilename,
-//                       CodeGenListener *listener) {
-
-//   switch (cgc.GetCodeGenOptions().codeGenOutputKind) {
-//   case CodeGenOutputKind::ObjectFile:
-//     EmitObject(cgc, sc, outputFilename);
-//     break;
-//   default:
-//     break;
-//   }
-// }
-
-// static void EmbedBitcode(llvm::Module *mod, CodeGenScope &parentScope) {}
+}
 
 /// CodeGenCompletionCallbacks
 bool stone::GenNative(const CodeGenOptions &codeGenOpts,
                       llvm::Module *llvmModule, llvm::StringRef outputFilename,
                       ASTContext &astContext) {
 
-  // NativeCode nativeCode;
-  //   nativeCodeGen.GenCode();
-  //   nativeCodeGen.OptimizeCode();
-  //   nativeCodeGen.WriteCode();
-
-  // stone::EmbedBitcode(codeGenOpts, llvmModule);
-
-  // CodeGenScope nativeScope(cgc.GetCodeGenOptions());
-  //  EmbedBitcode(mod, nativeScope);
-
-  // llvm::Optional<llvm::raw_fd_ostream> outputStream;
-
-  // NativeGen nativeCodeGen;
-
+  // stone::EmbedBitCode(codeGenOpts, llvmModule);
   // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);
 
-  // IRGenOptimizer optimizer(codeGenOpts, llvmModule, llvmTarget, diags);
-  // optimizer.optimize();
-
   return true;
 }
 
-void stone::EmbedBitCode(const CodeGenOptions &codeGenOpts,
-                         llvm::Module *llvmModule) {}
 
-bool stone::WriteEmptyOutputFiles(
-    std::vector<std::string> &parallelOutputFilenames,
-    const ASTContext &Context, const CodeGenOptions &opts) {
-  return true;
-}
 
 // bool stone::GenNative(CodeGenOptions &codegenOpts, llvm::StringRef
 // outputFilename,
@@ -171,6 +127,16 @@ bool stone::WriteEmptyOutputFiles(
 //  return true;
 //}
 
+
+void stone::EmbedBitCode(const CodeGenOptions &codeGenOpts,
+                         llvm::Module *llvmModule) {}
+
+bool stone::WriteEmptyOutputFiles(
+    std::vector<std::string> &parallelOutputFilenames,
+    const ASTContext &Context, const CodeGenOptions &opts) {
+  return true;
+}
+
 /// Returns true is successfull
 bool stone::WriteNative(CodeGenOptions &codeGenOpts,
                         llvm::raw_pwrite_stream &out,
@@ -202,13 +168,3 @@ bool stone::WriteNative(CodeGenOptions &codeGenOpts,
 
   return true;
 }
-
-// Backend::Backend(const CodeGenOptions &codeGenOptions,
-//                      ASTContext &astContext)
-//     : codeGenOpts(codeGenOptions), astContext(astContext) {}
-
-// // void NativeGen::GenCode() {}
-// //
-// // void NativeGen::WriteCode() {}
-
-// Backend::~Backend() {}

@@ -187,5 +187,59 @@ public:
 
 // class ParsingDeclRep final : public DeclRep {};
 
+// enum class TopLevelCodeKind {
+//   Fun,
+//   Struct,
+//   Enum,
+//   Interface,
+//   Import,
+//   Using,
+//   Private,
+//   Public,
+//   Protected
+// };
+
+// class TopLevelCode {
+
+// public:
+//   TopLevelCode() {
+
+//     CollectUsingSpecifier();
+//     CollectAccessSpecifier();
+//   }
+//   virtual ~TopLevelCode();
+
+// public:
+//   void CollectUsingSpecifier();
+//   void CollectAccessSpecifier();
+
+// public:
+//   virtual void Collect() = 0;
+// };
+
+// class FunTopLevelCode : public TopLevelCode {
+// public:
+//   FunTopLevelDeclSpecifier();
+
+// public:
+//   void Collect() override;
+// };
+
+// class StructTopLevelDeclSpecifier : public TopLevelDeclSpecifier {
+// public:
+//   StructTopLevelDeclSpecifier();
+
+// public:
+//   void Collect() override;
+// };
+
+// class InterfaceTopLevelDeclSpecifier : public TopLevelDeclSpecifier {
+// public:
+//   StructTopLevelDeclSpecifier();
+
+// public:
+//   void Collect() override;
+// };
+
 } // namespace stone
 #endif

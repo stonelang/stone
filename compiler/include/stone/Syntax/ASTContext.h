@@ -6,7 +6,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/StatisticEngine.h"
 #include "stone/Syntax/ASTAllocation.h"
-#include "stone/Syntax/BuiltinContext.h"
+#include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Import.h"
@@ -68,7 +68,7 @@ class Expr;
 class MangleContext;
 class Module;
 class Stmt;
-class BuiltinContext;
+class Builtin;
 class ASTContext;
 class Decl;
 class DeclContext;
@@ -112,7 +112,7 @@ class ASTContext final {
 
   LangOptions &langOpts;
 
-  BuiltinContext builtinContext;
+  Builtin builtin;
   /// The allocator used to create ASTContext objects.
   /// ASTContext objects are never destructed; rather, all memory associated
   /// with the ASTContext objects will be released when the ASTContext
@@ -178,7 +178,7 @@ public:
 
   DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
-  const BuiltinContext &GetBuiltinContext() const;
+  const Builtin &GetBuiltin() const;
   DiagnosticEngine &GetDiags() { return de; }
   ///
   LangABI *GetLangABI() const;

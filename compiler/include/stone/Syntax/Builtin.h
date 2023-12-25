@@ -7,12 +7,12 @@ namespace stone {
 
 class ASTContext;
 
-class BuiltinContext final {
+class Builtin final {
   ASTContext &astContext;
 
 public:
-  BuiltinContext(const BuiltinContext &) = delete;
-  void operator=(const BuiltinContext &) = delete;
+  Builtin(const Builtin &) = delete;
+  void operator=(const Builtin &) = delete;
 
 public:
   const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
@@ -40,8 +40,8 @@ public:
   const CanType BuiltinBoolType;
 
 public:
-  BuiltinContext(ASTContext &astContext);
-  ~BuiltinContext();
+  Builtin(ASTContext &astContext);
+  ~Builtin();
 
 private:
   void Initialize();

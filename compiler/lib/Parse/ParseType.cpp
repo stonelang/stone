@@ -117,28 +117,28 @@ Type Parser::ParseBasicType(ParsingDeclSpecifierCollector &collector,
 
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
-    result = GetASTContext().GetBuiltinContext().BuiltinVoidType;
+    result = GetASTContext().GetBuiltin().BuiltinVoidType;
     break;
   }
 
   case TypeSpecifierKind::Int: {
     assert(collector.GetTypeSpecifierCollector().IsInt());
-    result = GetASTContext().GetBuiltinContext().BuiltinIntType;
+    result = GetASTContext().GetBuiltin().BuiltinIntType;
     break;
   }
   case TypeSpecifierKind::Int16: {
     assert(collector.GetTypeSpecifierCollector().IsInt16());
-    result = GetASTContext().GetBuiltinContext().BuiltinInt16Type;
+    result = GetASTContext().GetBuiltin().BuiltinInt16Type;
     break;
   }
   case TypeSpecifierKind::Int32: {
     assert(collector.GetTypeSpecifierCollector().IsInt32());
-    result = GetASTContext().GetBuiltinContext().BuiltinInt32Type;
+    result = GetASTContext().GetBuiltin().BuiltinInt32Type;
     break;
   }
   case TypeSpecifierKind::Int64: {
     assert(collector.GetTypeSpecifierCollector().IsInt64());
-    result = GetASTContext().GetBuiltinContext().BuiltinInt64Type;
+    result = GetASTContext().GetBuiltin().BuiltinInt64Type;
     break;
   }
   }

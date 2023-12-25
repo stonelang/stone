@@ -115,6 +115,8 @@ bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                llvm::GlobalVariable *hashGlobal,
                llvm::TargetMachine *targetMachine);
 
+bool GenNativeWithParallelization();
+
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
                            const ASTContext &Context,
                            const CodeGenOptions &opts);

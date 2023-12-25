@@ -115,7 +115,7 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  bool IsTopLevelDecl();
+  bool IsStartOfTopLevelDecl();
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
   SyntaxResult<Decl>
   ParseTopLevelDecl(ParsingDeclSpecifierCollector *collector = nullptr);
