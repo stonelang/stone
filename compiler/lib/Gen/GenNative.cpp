@@ -74,10 +74,7 @@
 
 using namespace stone;
 
-bool stone::GenNativeWithParallelization() {
-    return true; 
-
-}
+bool stone::GenNativeWithParallelization() { return true; }
 
 /// CodeGenCompletionCallbacks
 bool stone::GenNative(const CodeGenOptions &codeGenOpts,
@@ -89,8 +86,6 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
 
   return true;
 }
-
-
 
 // bool stone::GenNative(CodeGenOptions &codegenOpts, llvm::StringRef
 // outputFilename,
@@ -126,7 +121,6 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
 // }
 //  return true;
 //}
-
 
 void stone::EmbedBitCode(const CodeGenOptions &codeGenOpts,
                          llvm::Module *llvmModule) {}

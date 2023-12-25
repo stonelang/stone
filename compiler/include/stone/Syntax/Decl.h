@@ -831,10 +831,9 @@ public:
 
 class OperatorDecl : public Decl {};
 
-/// Top level expressions, and statements 
+/// Top level expressions, and statements
 class TopLevelCodeDecl final : public DeclContext, public Decl {
 public:
-
 };
 } // namespace stone
 #endif

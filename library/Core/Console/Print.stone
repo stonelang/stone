@@ -1,5 +1,5 @@
+module Core.Console.Print; 
 
-// Core.Console  
 
 public fun Print(string value) -> void {
 	

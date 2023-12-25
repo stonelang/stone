@@ -162,7 +162,7 @@ public fun Quark::Initialize() -> void {
 
 
 // // Decl.stone 
-// module Stone::Syntax::Decl;
+// module Stone.Syntax.Decl;
 
 // space Node {
 // 	public struct Decl {

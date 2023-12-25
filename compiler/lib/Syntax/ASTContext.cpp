@@ -30,9 +30,7 @@ ASTContext::~ASTContext() {
   }
 }
 
-const Builtin &ASTContext::GetBuiltin() const {
-  return builtin;
-}
+const Builtin &ASTContext::GetBuiltin() const { return builtin; }
 
 void *stone::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
                                   AllocationArena arena, unsigned alignment) {

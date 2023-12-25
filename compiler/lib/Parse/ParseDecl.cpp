@@ -471,7 +471,7 @@ Parser::ParseInterfaceDecl(ParsingDeclSpecifierCollector &collector) {
 
   ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
-  
+
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&
          "Attempting to parse a struct without a struct declaration.");
 

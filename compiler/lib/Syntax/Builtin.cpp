@@ -1,5 +1,5 @@
-#include "stone/Basic/Mem.h"
 #include "stone/Syntax/Builtin.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Syntax/ASTAllocation.h"
 
 using namespace stone;

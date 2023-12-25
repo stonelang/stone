@@ -12,34 +12,9 @@ namespace stone {
 
 enum class TypeSpecifierKind : uint8_t {
   None = 0,
-  Auto,
-  Void,
-  Any,
-  Bool,
-  Char,
-  String,
-  Float,
-  Float32,
-  Float64,
-  Enum,
-  Interface,
-  Struct,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Int64,
-  UInt,
-  UInt8,
-  Byte, // Alias for Uint8
-  UInt16,
-  UInt32,
-  UInt64,
-  Complex32,
-  Complex64,
-  Imaginary32,
-  Imaginary64,
-
+#define TYPE_SPECIFIER(N) N,
+#include "stone/Syntax/TypeSpecifierKind.def"
+  MAX
 };
 
 /// The categorization of expression values, currently following the
