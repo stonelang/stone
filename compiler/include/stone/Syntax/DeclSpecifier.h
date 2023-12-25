@@ -59,93 +59,6 @@ public:
   };
 };
 
-class ScopeSpecifier {
-  SrcRange range;
-  // NestedNameSpecifierLocBuilder builder;
-
-public:
-  SrcRange GetRange() const { return range; }
-  void SetRange(SrcRange R) { range = R; }
-  void SetBeginLoc(SrcLoc loc) { range.Start = loc; }
-  void SetEndLoc(SrcLoc loc) { range.End = loc; }
-  SrcLoc GetBeginLoc() const { return range.Start; }
-  SrcLoc GetEndLoc() const { return range.End; }
-
-  // /// Retrieve the representation of the nested-name-specifier.
-  // NestedNameSpecifier *GetScopeRepresentation() const {
-  //   return builder.GetRepresentation();
-  // }
-};
-
-class StorageSpecifierCollector final {
-
-  SrcLoc loc;
-  StorageSpecifierKind storageKind;
-  StorageDurationKind durationKind;
-
-private:
-  void AddStorageSpecifier(StorageSpecifierKind inputKind, SrcLoc inputLoc) {
-    storageKind = inputKind;
-    loc = inputLoc;
-  }
-  void AddStorageDurationKind(StorageDurationKind inputKind) {
-    durationKind = inputKind;
-  }
-
-public:
-  StorageSpecifierCollector()
-      : storageKind(StorageSpecifierKind::None),
-        durationKind(StorageDurationKind::None) {}
-
-public:
-  StorageSpecifierKind GetStorageKind() { return storageKind; }
-  StorageDurationKind GetDurationKind() { return durationKind; }
-
-  void AddExtern(SrcLoc loc) {
-    AddStorageSpecifier(StorageSpecifierKind::Extern, loc);
-  }
-  bool HasExtern() {
-    return (storageKind == StorageSpecifierKind::Extern && loc.isValid());
-  }
-
-  void AddStatic(SrcLoc loc) {
-    AddStorageSpecifier(StorageSpecifierKind::Static, loc);
-  }
-  bool HasStatic() {
-    return (storageKind == StorageSpecifierKind::Static && loc.isValid());
-  }
-
-  void AddRegister(SrcLoc loc) {
-    AddStorageSpecifier(StorageSpecifierKind::Register, loc);
-  }
-  bool HasRegister() {
-    return (storageKind == StorageSpecifierKind::Register && loc.isValid());
-  }
-  bool HasAny() {
-    /// TODO: Consider auto
-    return (HasExtern() || HasStatic() || HasRegister());
-  }
-
-  SrcLoc GetLoc() { return loc; }
-
-  void AddFullExpressionStorageDuration() {
-    AddStorageDurationKind(StorageDurationKind::FullExpression);
-  }
-  void AddAutomaticStorageDuration() {
-    AddStorageDurationKind(StorageDurationKind::Automatic);
-  }
-  void AddThreadStorageDuration() {
-    AddStorageDurationKind(StorageDurationKind::Thread);
-  }
-  void AddStaticStorageDuration() {
-    AddStorageDurationKind(StorageDurationKind::Static);
-  }
-  void AddDynamicStorageDuration() {
-    AddStorageDurationKind(StorageDurationKind::Dynamic);
-  }
-  void Apply();
-};
-
 class AccessSpecifierCollector final {
   SrcLoc loc;
   AccessLevel level;
@@ -186,15 +99,15 @@ public:
 };
 
 // Light weight value type for now
-class UsingSpecifierCollector final {
+class ImportSpecifierCollector final {
   SrcLoc loc;
 
 public:
-  UsingSpecifierCollector() : loc(SrcLoc()) {}
+  ImportSpecifierCollector() : loc(SrcLoc()) {}
 
 public:
-  void AddUsing(SrcLoc inputLoc) { loc = inputLoc; }
-  bool HasUsing() { return loc.isValid(); }
+  void AddImport(SrcLoc inputLoc) { loc = inputLoc; }
+  bool HasImport() { return loc.isValid(); }
   SrcLoc GetLoc() { return loc; }
 };
 
@@ -211,7 +124,7 @@ class DeclSpecifierCollector {
   TypeThunkCollector typeChunkCollector;
   TypeOperatorCollector typeOperatorCollector;
 
-  UsingSpecifierCollector usingSpecifierCollector;
+  ImportSpecifierCollector importSpecifierCollector;
 
   // DeclNameLoc
   DeclName name;
@@ -225,11 +138,11 @@ public:
   DeclSpecifierCollector();
 
 public:
-  UsingSpecifierCollector &GetUsingSpecifierCollector() {
-    return usingSpecifierCollector;
+  ImportSpecifierCollector &GetImportSpecifierCollector() {
+    return importSpecifierCollector;
   }
-  const UsingSpecifierCollector &GetUsingSpecifierCollector() const {
-    return usingSpecifierCollector;
+  const ImportSpecifierCollector &GetImportSpecifierCollector() const {
+    return importSpecifierCollector;
   }
   StorageSpecifierCollector &GetStorageSpecifierCollector() {
     return storageSpecifierCollector;

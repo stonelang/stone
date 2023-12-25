@@ -21,7 +21,7 @@ enum class ScopeKind : UInt8 {
 
   Decl,
 
-  UsingDecl,
+  ImportDecl,
 
   // Declaration of a type
   TypeDecl,

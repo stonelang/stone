@@ -12,7 +12,7 @@ SyntaxStatus
 Parser::CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector) {
 
   SyntaxStatus status;
-  status = CollectUsingSpecifier(collector);
+  status = CollectImportSpecifier(collector);
   if (status.IsSuccess()) {
     return status;
   }
@@ -46,15 +46,15 @@ Parser::CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector) {
 }
 
 SyntaxStatus
-Parser::CollectUsingSpecifier(ParsingDeclSpecifierCollector &collector) {
+Parser::CollectImportSpecifier(ParsingDeclSpecifierCollector &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
-    collector.GetUsingSpecifierCollector().AddUsing(ConsumeToken());
+    collector.GetImportSpecifierCollector().AddImport(ConsumeToken());
     break;
   default:
-    return MakeSyntaxCodeCompletionStatus();
+    return stone::MakeSyntaxCodeCompletionStatus();
   }
-  return MakeSyntaxSuccess();
+  return stone::MakeSyntaxSuccess();
 }
 
 SyntaxStatus
@@ -176,7 +176,9 @@ Parser::CollectBasicTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
     return MakeSyntaxCodeCompletionStatus();
   }
   switch (GetTok().GetKind()) {
-  // TODO: Think about void here
+  case tok::kw_any:
+    collector.GetTypeSpecifierCollector().AddAny(ConsumeToken());
+    break;
   case tok::kw_void:
     collector.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
     break;
@@ -236,6 +238,7 @@ Parser::CollectBasicTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
     break;
   case tok::kw_imaginary32:
     collector.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
+    break;
   case tok::kw_imaginary64:
     collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;

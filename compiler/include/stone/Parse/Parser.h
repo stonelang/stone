@@ -85,6 +85,11 @@ public:
   Parser(SourceFile &sourceFile, ASTContext &astContext);
   ~Parser();
 
+  // private:
+  //   ImportSpecifier importSpecifier;
+  //   StructSpecifier structSpecifier;
+  //   PublicSpecifer  publicSpecifier;
+
 public:
   bool HasCodeCompletionCallbacks() {
     return codeCompletionCallbacks != nullptr;
@@ -115,7 +120,7 @@ public:
   void RecordTokenHash(StringRef curTok);
 
 public:
-  bool IsStartOfTopLevelDecl();
+  bool IsTopLevelDeclSpecifier();
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
   SyntaxResult<Decl>
   ParseTopLevelDecl(ParsingDeclSpecifierCollector *collector = nullptr);
@@ -134,7 +139,7 @@ public:
   SyntaxStatus CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector);
 
   /// using
-  SyntaxStatus CollectUsingSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectImportSpecifier(ParsingDeclSpecifierCollector &collector);
 
   /// private, internal, public
   SyntaxStatus CollectAccessSpecifier(ParsingDeclSpecifierCollector &collector);
@@ -218,7 +223,7 @@ private:
 public:
   //== using ==//
   SyntaxResult<Decl>
-  ParseUsingDecl(ParsingDeclSpecifierCollector &collectorifier);
+  ParseImportDecl(ParsingDeclSpecifierCollector &collectorifier);
 
 public:
   //== struct ==//
@@ -434,6 +439,22 @@ private:
 public:
   Identifier GetIdentifier(llvm::StringRef text);
 };
+
+// class TopLevelSpecifier {
+
+// };
+
+// class ImportSpecifier : public TopLevelSpecifier {
+// public:
+//   void Collect();
+// };
+// class PublicSpecifier : public TopLevelSpecifier {
+// public:
+//   void Collect() {
+//     auto specifier = GetTopLevelSecifier();
+//     specifier.Collect();
+//   }
+// };
 
 } // namespace stone
 #endif

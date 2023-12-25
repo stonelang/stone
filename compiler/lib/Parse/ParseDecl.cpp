@@ -24,7 +24,7 @@ void Parser::ParseTopLevelDecls(
   };
   while (IsParsing()) {
 
-    if (!IsStartOfTopLevelDecl()) {
+    if (!IsTopLevelDeclSpecifier()) {
       break;
     }
     auto result = ParseTopLevelDecl();
@@ -73,8 +73,8 @@ SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifierCollector &collector) {
       goto EndParse;
     }
 
-    if (collector.GetUsingSpecifierCollector().HasUsing()) {
-      result = ParseUsingDecl(collector);
+    if (collector.GetImportSpecifierCollector().HasImport()) {
+      result = ParseImportDecl(collector);
       goto EndParse;
     } else if (collector.GetFunctionSpecifierCollector().HasFun()) {
       result = ParseFunDecl(collector);
@@ -116,7 +116,7 @@ EndParse : {
 //   return status;
 // }
 
-bool Parser::IsStartOfTopLevelDecl() {
+bool Parser::IsTopLevelDeclSpecifier() {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
   case tok::kw_fun:
@@ -469,14 +469,12 @@ Parser::ParseInterfaceDecl(ParsingDeclSpecifierCollector &collector) {
 
   SyntaxResult<Decl> result;
 
-  ParsingScope interfaceDeclScope(*this, ScopeKind::InterfaceDecl,
+  ParsingScope scope(*this, ScopeKind::InterfaceDecl,
                                   "parsing interface-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  ParsingScope enumDeclScope(*this, ScopeKind::UsingDecl,
-                             "parsing enum-declaration");
 
   if (collector.GetTypeQualifierCollector().HasAny()) {
     return result;
@@ -485,11 +483,11 @@ Parser::ParseInterfaceDecl(ParsingDeclSpecifierCollector &collector) {
 }
 
 SyntaxResult<Decl>
-Parser::ParseUsingDecl(ParsingDeclSpecifierCollector &collector) {
+Parser::ParseImportDecl(ParsingDeclSpecifierCollector &collector) {
   SyntaxResult<Decl> result;
 
-  assert(collector.GetUsingSpecifierCollector().HasUsing() &&
-         "Attempting to parse a function without a functin definition.");
+  assert(collector.GetImportSpecifierCollector().HasImport() &&
+         "Attempting to parse import without import declaration.");
 
   return result;
 }

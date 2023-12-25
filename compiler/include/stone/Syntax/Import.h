@@ -25,7 +25,9 @@ enum class ImportKind : UInt8 {
   Fun,
 };
 
-class ImportSearchPathBase {};
+class ImportSearchPathBase {
+public:
+};
 
 class ImportSearchPath final : public ImportSearchPathBase {
 public:
