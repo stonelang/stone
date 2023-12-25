@@ -1,12 +1,12 @@
-#include "stone/Syntax/DeclCollector.h"
+#include "stone/Syntax/DeclSpecifier.h"
 
 using namespace stone;
 
-DeclCollector::DeclCollector() {}
+DeclSpecifierCollector::DeclSpecifierCollector() {}
 
-void DeclCollector::Apply(Decl *d) {
+void DeclSpecifierCollector::Apply(Decl *d) {
 
-  GetTypeCollector().Apply();
+  // GetTypeCollector().Apply();
 
   // // if (GetTypeQualifierCollector().HasAny()) {
   // //   GetTypeQualifierCollector().Apply();
@@ -23,10 +23,8 @@ void DeclCollector::Apply(Decl *d) {
   // }
 }
 
-void TypeCollector::Apply() {}
-
 void StorageSpecifierCollector::Apply() {}
 
 void FunctionSpecifierCollector::Apply() {}
 
-void AccessLevelCollector::Apply() {}
+void AccessSpecifierCollector::Apply() {}

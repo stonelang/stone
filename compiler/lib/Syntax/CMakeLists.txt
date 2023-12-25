@@ -9,7 +9,7 @@ set(stone_syn_sources
 	BuiltinContext.cpp
 	Comment.cpp
 	Decl.cpp
-	DeclCollector.cpp
+	DeclSpecifier.cpp
 	DeclContext.cpp
 	DeclGroup.cpp
 	DeclName.cpp

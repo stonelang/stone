@@ -1,6 +1,6 @@
 set(stone_parse_sources
 	Confusable.cpp
-	CollectDecl.cpp
+	CollectSpecifier.cpp
 	Lexer.cpp
 	Parse.cpp
 	ParseDecl.cpp

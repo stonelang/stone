@@ -4,7 +4,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Parse/Lexing.h"
-#include "stone/Syntax/DeclCollector.h"
+#include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxResult.h"
 
@@ -136,16 +136,16 @@ struct ParsingDeclFlags final {
 /// Options that control the parsing of declarations.
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 
-class ParsingDeclCollector final : public DeclCollector {
+class ParsingDeclSpecifierCollector final : public DeclSpecifierCollector {
   Parser &parser;
 
 public:
   ParsingDeclOptions parsingDeclOpts;
 
 public:
-  ParsingDeclCollector(Parser &parser) : parser(parser) {}
+  ParsingDeclSpecifierCollector(Parser &parser) : parser(parser) {}
 
-  ~ParsingDeclCollector();
+  ~ParsingDeclSpecifierCollector();
 
 public:
   Parser &GetParser() { return parser; }

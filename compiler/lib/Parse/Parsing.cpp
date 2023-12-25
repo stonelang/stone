@@ -27,12 +27,12 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
-SyntaxStatus ParsingDeclCollector::Verify() {
+SyntaxStatus ParsingDeclSpecifierCollector::Verify() {
   SyntaxStatus status;
   return status;
 }
 
-ParsingDeclCollector::~ParsingDeclCollector() {
+ParsingDeclSpecifierCollector::~ParsingDeclSpecifierCollector() {
 
   // Apply();
 }

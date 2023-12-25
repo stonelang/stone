@@ -10,15 +10,15 @@
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/DeclName.h"
+#include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/Import.h"
 #include "stone/Syntax/InlineBitfield.h"
+#include "stone/Syntax/StorageSpecifier.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeLoc.h"
-#include "stone/Syntax/TypeSpecifier.h"
-#include "stone/Syntax/Types.h"
 
 // #include "stone/Syntax/Redeclarable.h"
 
@@ -58,7 +58,7 @@ class ASTPrinter;
 class ASTWalker;
 class GenericParamList;
 class TrailingWhereClause;
-class DeclCollector;
+class DeclSpecifierCollector;
 class DiagnosticEngine;
 
 class DeclStats final : public Stats {
@@ -604,7 +604,7 @@ public:
   void SetBody(BraceStmt *body, BodyStatus bodyStatus);
 
   void SetStorageSpecifierKind(StorageSpecifierKind ssk) {
-    this->storageSpecifierKind = ssk;
+    storageSpecifierKind = ssk;
   }
   StorageSpecifierKind GetStorageSpecifierKind() {
     return storageSpecifierKind;
@@ -688,10 +688,12 @@ public:
   }
 
 public:
-  static FunDecl *Create(DeclCollector &collector, ASTContext &astContext,
-                         DeclContext *parent);
-  static FunDecl *CreateImplicit(DeclCollector &collector, ASTContext &sc,
-                                 DeclContext *parent);
+  static FunDecl *Create(DeclSpecifierCollector &collector,
+                         ASTContext &astContext, DeclContext *parent);
+
+  /// Implitictly create function
+  static FunDecl *CreateImplicit(DeclSpecifierCollector &collector,
+                                 ASTContext &sc, DeclContext *parent);
 };
 
 class ConstructorDecl : public FunctionDecl {

@@ -8,7 +8,8 @@
 using namespace stone;
 
 // fun Do() -> '() -> int'
-Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseFunctionType(ParsingDeclSpecifierCollector &collector,
+                               Diag<> diagID) {
 
   Type result;
   ParsingScope parsingType(*this, ScopeKind::FunctionType, "parsing type");
@@ -52,7 +53,8 @@ Type Parser::ParseFunctionType(TypeCollector &collector, Diag<> diagID) {
 }
 
 // Similar to ParseDeclSpecifiers
-Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseType(ParsingDeclSpecifierCollector &collector,
+                       Diag<> diagID) {
   Type result;
   ParsingScope parsingType(*this, ScopeKind::Type, "parsing type");
 
@@ -87,17 +89,19 @@ Type Parser::ParseType(TypeCollector &collector, Diag<> diagID) {
   return result;
 }
 
-Type Parser::ParseDeclResultType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseDeclResultType(ParsingDeclSpecifierCollector &collector,
+                                 Diag<> diagID) {
   return ParseType(collector, diagID);
 }
 
-Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseBasicType(ParsingDeclSpecifierCollector &collector,
+                            Diag<> diagID) {
 
   assert(GetTok().IsBasicType());
   // Collect the type -- only basic types for now (TODO: user type  and function
   // types)
 
-  auto status = CollectBasicTypeDecl(collector);
+  auto status = CollectBasicTypeSpecifier(collector);
   if (status.HasCodeCompletion()) {
     // TODO: nothing to do
   }
@@ -109,7 +113,7 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   CollectTypeThunks(collector);
 
   Type result;
-  switch (collector.GetTypeSpecifierCollector().GetKind()) {
+  switch (collector.GetTypeSpecifierCollector().GetSpecifierKind()) {
 
   case TypeSpecifierKind::Void: {
     assert(collector.GetTypeSpecifierCollector().IsVoid());
@@ -152,7 +156,8 @@ Type Parser::ParseBasicType(TypeCollector &collector, Diag<> diagID) {
   return result;
 }
 
-Type Parser::ParseIdentifierType(TypeCollector &collector, Diag<> diagID) {
+Type Parser::ParseIdentifierType(ParsingDeclSpecifierCollector &collector,
+                                 Diag<> diagID) {
   Type result;
   return result;
 }

@@ -1,11 +1,12 @@
-#ifndef STONE_SYNTAX_DECLCOLLECTOR_H
-#define STONE_SYNTAX_DECLCOLLECTOR_H
+#ifndef STONE_SYNTAX_DECL_SPECIFIER_H
+#define STONE_SYNTAX_DECL_SPECIFIER_H
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/FunctionSpecifier.h"
 #include "stone/Syntax/Generics.h"
+#include "stone/Syntax/StorageSpecifier.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeSpecifier.h"
@@ -76,58 +77,49 @@ public:
   // }
 };
 
-/// Storage classes.
-/// These are legal on both functions and variables
-enum class StorageSpecifierKind : UInt8 {
-  None = 0,
-  // TODO: You may not need extern
-  Extern,
-  Static,
-  // Legal only on variables.
-  Register
-};
-
 class StorageSpecifierCollector final {
 
   SrcLoc loc;
-  StorageSpecifierKind kind;
-  StorageDuration duration;
+  StorageSpecifierKind storageKind;
+  StorageDurationKind durationKind;
 
 private:
   void AddStorageSpecifier(StorageSpecifierKind inputKind, SrcLoc inputLoc) {
-    kind = inputKind;
+    storageKind = inputKind;
     loc = inputLoc;
   }
-  void AddStorageDuration(StorageDuration inputDuration) {
-    duration = inputDuration;
+  void AddStorageDurationKind(StorageDurationKind inputKind) {
+    durationKind = inputKind;
   }
 
 public:
-  StorageSpecifierCollector() : kind(StorageSpecifierKind::None) {}
+  StorageSpecifierCollector()
+      : storageKind(StorageSpecifierKind::None),
+        durationKind(StorageDurationKind::None) {}
 
 public:
-  StorageSpecifierKind GetKind() { return kind; }
-  StorageDuration GetDuration() { return duration; }
+  StorageSpecifierKind GetStorageKind() { return storageKind; }
+  StorageDurationKind GetDurationKind() { return durationKind; }
 
   void AddExtern(SrcLoc loc) {
     AddStorageSpecifier(StorageSpecifierKind::Extern, loc);
   }
   bool HasExtern() {
-    return (kind == StorageSpecifierKind::Extern && loc.isValid());
+    return (storageKind == StorageSpecifierKind::Extern && loc.isValid());
   }
 
   void AddStatic(SrcLoc loc) {
     AddStorageSpecifier(StorageSpecifierKind::Static, loc);
   }
   bool HasStatic() {
-    return (kind == StorageSpecifierKind::Static && loc.isValid());
+    return (storageKind == StorageSpecifierKind::Static && loc.isValid());
   }
 
   void AddRegister(SrcLoc loc) {
     AddStorageSpecifier(StorageSpecifierKind::Register, loc);
   }
   bool HasRegister() {
-    return (kind == StorageSpecifierKind::Register && loc.isValid());
+    return (storageKind == StorageSpecifierKind::Register && loc.isValid());
   }
   bool HasAny() {
     /// TODO: Consider auto
@@ -137,19 +129,19 @@ public:
   SrcLoc GetLoc() { return loc; }
 
   void AddFullExpressionStorageDuration() {
-    AddStorageDuration(StorageDuration::FullExpression);
+    AddStorageDurationKind(StorageDurationKind::FullExpression);
   }
   void AddAutomaticStorageDuration() {
-    AddStorageDuration(StorageDuration::Automatic);
+    AddStorageDurationKind(StorageDurationKind::Automatic);
   }
   void AddThreadStorageDuration() {
-    AddStorageDuration(StorageDuration::Thread);
+    AddStorageDurationKind(StorageDurationKind::Thread);
   }
   void AddStaticStorageDuration() {
-    AddStorageDuration(StorageDuration::Static);
+    AddStorageDurationKind(StorageDurationKind::Static);
   }
   void AddDynamicStorageDuration() {
-    AddStorageDuration(StorageDuration::Dynamic);
+    AddStorageDurationKind(StorageDurationKind::Dynamic);
   }
   void Apply();
 };
@@ -206,7 +198,7 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
-class DeclSpecificerCollector {
+class DeclSpecifierCollector {
 
   AttributeCollector attributeCollector;
 
@@ -226,11 +218,11 @@ class DeclSpecificerCollector {
   SrcLoc nameLoc;
 
 private:
-  DeclSpecificerCollector(const DeclSpecificerCollector &) = delete;
-  void operator=(const DeclSpecificerCollector &) = delete;
+  DeclSpecifierCollector(const DeclSpecifierCollector &) = delete;
+  void operator=(const DeclSpecifierCollector &) = delete;
 
 public:
-  DeclSpecificerCollector();
+  DeclSpecifierCollector();
 
 public:
   UsingSpecifierCollector &GetUsingSpecifierCollector() {

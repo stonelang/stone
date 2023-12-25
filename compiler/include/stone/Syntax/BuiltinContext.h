@@ -8,7 +8,7 @@ namespace stone {
 class ASTContext;
 
 class BuiltinContext final {
-  ASTContext &sc;
+  ASTContext &astContext;
 
 public:
   BuiltinContext(const BuiltinContext &) = delete;
@@ -40,7 +40,7 @@ public:
   const CanType BuiltinBoolType;
 
 public:
-  BuiltinContext(ASTContext &sc);
+  BuiltinContext(ASTContext &astContext);
   ~BuiltinContext();
 
 private:

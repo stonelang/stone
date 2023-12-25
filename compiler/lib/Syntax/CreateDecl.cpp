@@ -1,6 +1,6 @@
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Decl.h"
-#include "stone/Syntax/DeclCollector.h"
+#include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
@@ -21,8 +21,8 @@ void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
   return mem;
 }
 
-FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &astContext,
-                         DeclContext *parent) {
+FunDecl *FunDecl::Create(DeclSpecifierCollector &collector,
+                         ASTContext &astContext, DeclContext *parent) {
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
 
@@ -30,14 +30,15 @@ FunDecl *FunDecl::Create(DeclCollector &collector, ASTContext &astContext,
   auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
       collector.GetDeclName(), collector.GetDeclNameLoc(),
-      collector.GetTypeCollector().GetType(), parent);
+      collector.GetTypeSpecifierCollector().GetType(), parent);
 
   // call apply on the collector
-  funDecl->SetAccessLevel(collector.GetAccessLevelCollector().GetAccessLevel());
+  funDecl->SetAccessLevel(
+      collector.GetAccessSpecifierCollector().GetAccessLevel());
   return funDecl;
 }
-FunDecl *FunDecl::CreateImplicit(DeclCollector &collector, ASTContext &sc,
-                                 DeclContext *parent) {
+FunDecl *FunDecl::CreateImplicit(DeclSpecifierCollector &collector,
+                                 ASTContext &sc, DeclContext *parent) {
 
   return nullptr;
 }

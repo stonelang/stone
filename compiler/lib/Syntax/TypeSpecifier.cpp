@@ -48,8 +48,12 @@ static bool IsMiscTypeImpl(TypeSpecifierKind kind) {
     return false;
   }
 }
-bool TypeSpecifierCollector::IsBasicType() { return IsBasicTypeImpl(kind); }
-bool TypeSpecifierCollector::IsNominalType() { return IsNominalTypeImpl(kind); }
+bool TypeSpecifierCollector::IsBasicType() {
+  return IsBasicTypeImpl(specifierKind);
+}
+bool TypeSpecifierCollector::IsNominalType() {
+  return IsNominalTypeImpl(specifierKind);
+}
 
 void TypeSpecifierCollector::AddTypeSpecifierKind(TypeSpecifierKind inputKind,
                                                   SrcLoc inputLoc) {
@@ -58,15 +62,19 @@ void TypeSpecifierCollector::AddTypeSpecifierKind(TypeSpecifierKind inputKind,
           IsMiscTypeImpl(inputKind)) &&
          "Unknown type specifier");
 
-  if (GetKind() == TypeSpecifierKind::None) {
-    kind = inputKind;
+  if (GetSpecifierKind() == TypeSpecifierKind::None) {
+    specifierKind = inputKind;
     loc = inputLoc;
   } else {
+    // TODO: You want to log
     assert(false && "Can only have one 'type specifier'");
   }
 }
 
-void TypeSpecifierCollector::AddTypeNullabilityKind(TypeNullabilityKind kind) {}
+void TypeSpecifierCollector::AddTypeNullabilityKind(
+    TypeNullabilityKind inputKind) {
+  nullabilityKind = inputKind;
+}
 
 void TypeSpecifierCollector::AddAuto(SrcLoc loc) {
   AddTypeSpecifierKind(TypeSpecifierKind::Auto, loc);

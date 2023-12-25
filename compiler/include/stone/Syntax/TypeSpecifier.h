@@ -4,7 +4,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/SmallVector.h"
 
@@ -75,15 +75,6 @@ enum class ExprObjectKind {
   MatrixComponent
 };
 
-/// The storage duration for an object (per C++ [ctx.stc]).
-enum class StorageDuration : UInt8 {
-  FullExpression, ///< Full-expression storage duration (for temporaries).
-  Automatic,      ///< Automatic storage duration (most local variables).
-  Thread,         ///< Thread storage duration.
-  Static,         ///< Static storage duration.
-  Dynamic         ///< Dynamic storage duration.
-};
-
 /// Describes the nullability of a particular type.
 enum class TypeNullabilityKind : UInt8 {
   /// Values of this type can never be null.
@@ -120,122 +111,32 @@ enum class TemplateSpecializationKind : UInt8 {
 class TypeSpecifierCollector final {
 
   SrcLoc loc;
-  TypeSpecifierKind kind;
-
-  // TODO: remove -- do not need this part.
+  Type ty;
+  TypeSpecifierKind specifierKind;
   TypeNullabilityKind nullabilityKind;
 
 public:
-  TypeSpecifierCollector() : kind(TypeSpecifierKind::None) {}
+  TypeSpecifierCollector()
+      : specifierKind(TypeSpecifierKind::None),
+        nullabilityKind(TypeNullabilityKind::NotNullable) {}
 
 public:
-  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc inputLoc);
-
-  bool HasAny() const { return kind != TypeSpecifierKind::None; }
-  bool NotHasAny() const { return kind == TypeSpecifierKind::None; }
+  void SetType(Type inputType) { ty = inputType; }
+  Type GetType() { return ty; }
 
 private:
   void AddTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc inputLoc);
   void AddTypeNullabilityKind(TypeNullabilityKind kind);
 
 public:
-  // == Basic Types ==//
-  void AddAuto(SrcLoc inputLoc);
-  bool IsAuto() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Auto));
-  }
-  void AddAny(SrcLoc inputLoc);
-  bool IsAny() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Any));
-  }
+  bool SetTypeSpecifierKind(TypeSpecifierKind kind, SrcLoc inputLoc);
+  TypeSpecifierKind GetSpecifierKind() { return specifierKind; }
 
-  void AddVoid(SrcLoc inputLoc);
-  bool IsVoid() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Void));
-  }
-  void AddBool(SrcLoc inputLoc);
-  bool IsBool() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Bool));
-  }
-
-  void AddChar(SrcLoc inputLoc);
-  bool IsChar() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Char));
-  }
+  bool HasAny() const { return specifierKind != TypeSpecifierKind::None; }
+  bool NotHasAny() const { return specifierKind == TypeSpecifierKind::None; }
 
 public:
-  void AddFloat(SrcLoc inputLoc);
-  bool IsFloat() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Float));
-  }
-  void AddFloat32(SrcLoc inputLoc);
-  bool IsFloat32() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Float32));
-  }
-  void AddFloat64(SrcLoc inputLoc);
-  bool IsFloat64() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Float64));
-  }
-
-public:
-  void AddInt(SrcLoc inputLoc);
-  bool IsInt() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Int));
-  }
-  void AddInt8(SrcLoc inputLoc);
-  bool IsInt8() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Int8));
-  }
-  void AddInt16(SrcLoc inputLoc);
-  bool IsInt16() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Int16));
-  }
-  void AddInt32(SrcLoc inputLoc);
-  bool IsInt32() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Int32));
-  }
-  void AddInt64(SrcLoc inputLoc);
-  bool IsInt64() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::Int64));
-  }
-
-  void AddString(SrcLoc inputLoc);
-  bool IsString() const {
-    return (loc.isValid() && (kind == TypeSpecifierKind::String));
-  }
-
-public:
-  void AddUInt(SrcLoc inputLoc);
-  void AddUInt8(SrcLoc inputLoc);
-  void AddByte(SrcLoc inputLoc);
-  void AddUInt16(SrcLoc inputLoc);
-  void AddUInt32(SrcLoc inputLoc);
-  void AddUInt64(SrcLoc inputLoc);
-
-public:
-  void AddComplex32(SrcLoc inputLoc);
-  void AddComplex64(SrcLoc inputLoc);
-  void AddImaginary32(SrcLoc inputLoc);
-  void AddImaginary64(SrcLoc inputLoc);
-
-  // == Nominal Types ==//
-  void AddEnum(SrcLoc inputLoc);
-  void AddInterface(SrcLoc inputLoc);
-  void AddStruct(SrcLoc inputLoc);
-
-public:
-  TypeSpecifierKind GetKind() { return kind; }
   TypeNullabilityKind GetNullabilityKind() { return nullabilityKind; }
-
-public:
-  bool IsBasicType();
-  bool IsNominalType();
-  bool IsEnum() { return kind == TypeSpecifierKind::Enum; }
-  bool IsStruct() { return kind == TypeSpecifierKind::Struct; }
-  bool IsInterface() { return kind == TypeSpecifierKind::Interface; }
-  bool IsAuto() { return kind == TypeSpecifierKind::Auto; }
-
-public:
   void AddNotNullable() {
     AddTypeNullabilityKind(TypeNullabilityKind::NotNullable);
   }
@@ -243,6 +144,140 @@ public:
 
   void AddUnspecifiedNullable() {
     AddTypeNullabilityKind(TypeNullabilityKind::Unspecified);
+  }
+
+public:
+  // == Basic Types ==//
+  bool IsBasicType();
+
+  void AddAuto(SrcLoc inputLoc);
+  bool IsAuto() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Auto));
+  }
+
+  void AddAny(SrcLoc inputLoc);
+  bool IsAny() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Any));
+  }
+
+  void AddVoid(SrcLoc inputLoc);
+  bool IsVoid() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Void));
+  }
+  void AddBool(SrcLoc inputLoc);
+  bool IsBool() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Bool));
+  }
+
+  void AddChar(SrcLoc inputLoc);
+  bool IsChar() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Char));
+  }
+
+public:
+  void AddFloat(SrcLoc inputLoc);
+  bool IsFloat() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Float));
+  }
+  void AddFloat32(SrcLoc inputLoc);
+  bool IsFloat32() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Float32));
+  }
+  void AddFloat64(SrcLoc inputLoc);
+  bool IsFloat64() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Float64));
+  }
+
+public:
+  void AddInt(SrcLoc inputLoc);
+  bool IsInt() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Int));
+  }
+  void AddInt8(SrcLoc inputLoc);
+  bool IsInt8() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Int8));
+  }
+  void AddInt16(SrcLoc inputLoc);
+  bool IsInt16() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Int16));
+  }
+  void AddInt32(SrcLoc inputLoc);
+  bool IsInt32() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Int32));
+  }
+  void AddInt64(SrcLoc inputLoc);
+  bool IsInt64() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Int64));
+  }
+
+  void AddString(SrcLoc inputLoc);
+  bool IsString() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::String));
+  }
+
+public:
+  void AddUInt(SrcLoc inputLoc);
+  bool IsUInt() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::UInt));
+  }
+  void AddUInt8(SrcLoc inputLoc);
+  bool IsUInt8() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::UInt8));
+  }
+  void AddByte(SrcLoc inputLoc);
+  bool IsByte() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Byte));
+  }
+
+  void AddUInt16(SrcLoc inputLoc);
+  bool IsUInt16() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::UInt16));
+  }
+  void AddUInt32(SrcLoc inputLoc);
+  bool IsUInt32() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::UInt32));
+  }
+  void AddUInt64(SrcLoc inputLoc);
+  bool IsUInt64() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::UInt64));
+  }
+
+public:
+  void AddComplex32(SrcLoc inputLoc);
+  bool IsComplex32() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Complex32));
+  }
+  void AddComplex64(SrcLoc inputLoc);
+  bool IsComplex64() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Complex64));
+  }
+  void AddImaginary32(SrcLoc inputLoc);
+  bool IsImaginary32() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Imaginary32));
+  }
+
+  void AddImaginary64(SrcLoc inputLoc);
+  bool IsImaginary64() const {
+    return (loc.isValid() && (specifierKind == TypeSpecifierKind::Imaginary64));
+  }
+
+public:
+  // == Nominal Types ==//
+  bool IsNominalType();
+
+  void AddEnum(SrcLoc inputLoc);
+  bool IsEnum() {
+    return (loc.isValid() && specifierKind == TypeSpecifierKind::Enum);
+  }
+
+  void AddInterface(SrcLoc inputLoc);
+  bool IsInterface() {
+    return (loc.isValid() && specifierKind == TypeSpecifierKind::Interface);
+  }
+
+  void AddStruct(SrcLoc inputLoc);
+  bool IsStruct() {
+    return (loc.isValid() && specifierKind == TypeSpecifierKind::Struct);
   }
 
   SrcLoc GetLoc() { return loc; }
