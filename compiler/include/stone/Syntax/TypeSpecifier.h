@@ -108,7 +108,7 @@ public:
   TypeSpecifierKind GetSpecifierKind() { return specifierKind; }
 
   bool HasAny() const { return specifierKind != TypeSpecifierKind::None; }
-  bool NotHasAny() const { return specifierKind == TypeSpecifierKind::None; }
+  bool HasNone() const { return specifierKind == TypeSpecifierKind::None; }
 
 public:
   TypeNullabilityKind GetNullabilityKind() { return nullabilityKind; }

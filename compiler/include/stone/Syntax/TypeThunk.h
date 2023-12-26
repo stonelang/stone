@@ -91,13 +91,27 @@ public:
 //   static FunctionTypeThunk Create();
 // };
 
+class TypeThunkList final
+    : public llvm::TrailingObjects<TypeThunkList, TypeThunk> {
+
+  friend TrailingObjects;
+
+public:
+  /// No copying
+  TypeThunkList(const TypeThunkList &) = delete;
+  TypeThunkList &operator=(const TypeThunkList &) = delete;
+
+public:
+  TypeThunkList(llvm::ArrayRef<TypeThunk> thunks);
+};
+
 class TypeThunkCollector {
   /// This holds each type-pattern that the type-specifer includes as it is
   /// parsed.  This is pushed from the type out, which means that element
   /// #0 will be the most closely bound to the type, and
   /// thunks.back() will be the least closely bound to the type.
 public:
-  llvm::SmallVector<TypeThunk, 8> typeThunks;
+  llvm::SmallVector<TypeThunk, 8> thunks;
 
   /// If this Declarator declares a template, its template parameter lists.
   // llvm::ArrayRef<TemplateParameterList *> templateParameterLists;
@@ -107,7 +121,7 @@ public:
 private:
   /// Add a thunk to this Declarator. Also extend the range to
   /// EndLoc, which should be the last token of the thunk.
-  void AddTypeThunk(const TypeThunk thunk) { typeThunks.push_back(thunk); }
+  void AddTypeThunk(const TypeThunk thunk) { thunks.push_back(thunk); }
 
 public:
   // Value has no source loc
@@ -122,9 +136,9 @@ public:
 public:
   /// int** -- the '*' toucing int
   const TypeThunk *GetInnermostNonParenThunk() const {
-    for (unsigned i = typeThunks.size(), i_end = 0; i != i_end; --i) {
-      if (typeThunks[i - 1].GetKind() != TypeThunkKind::Paren) {
-        return &typeThunks[i - 1];
+    for (unsigned i = thunks.size(), i_end = 0; i != i_end; --i) {
+      if (thunks[i - 1].GetKind() != TypeThunkKind::Paren) {
+        return &thunks[i - 1];
       }
     }
     return nullptr;
@@ -132,15 +146,17 @@ public:
 
   /// int** -- the '*' farthest from int
   const TypeThunk *GetOutermostNonParenThunk() const {
-    for (unsigned i = 0, i_end = typeThunks.size(); i < i_end; ++i) {
-      if (typeThunks[i].GetKind() != TypeThunkKind::Paren) {
-        return &typeThunks[i];
+    for (unsigned i = 0, i_end = thunks.size(); i < i_end; ++i) {
+      if (thunks[i].GetKind() != TypeThunkKind::Paren) {
+        return &thunks[i];
       }
     }
     return nullptr;
   }
+  TypeThunkList *CreateTypeThunkList(ASTContext &astContext);
 
-  bool HasAny() { return typeThunks.size() > 0; }
+public:
+  bool HasAny() { return thunks.size() > 0; }
   void Apply();
   void Verify();
 };

@@ -1,3 +1,4 @@
+#include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
@@ -62,6 +63,19 @@ void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
 
 void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
 
+TypeThunkList::TypeThunkList(llvm::ArrayRef<TypeThunk> thunks) {
+  std::uninitialized_copy(thunks.begin(), thunks.end(),
+                          getTrailingObjects<TypeThunk>());
+}
+
+TypeThunkList *TypeThunkCollector::CreateTypeThunkList(ASTContext &astContext) {
+
+  unsigned allocSize =
+      TypeThunkList::totalSizeToAlloc<TypeThunk>(thunks.size());
+  void *memPtr = astContext.Allocate(allocSize, alignof(TypeThunkList));
+  return new (memPtr) TypeThunkList(llvm::MutableArrayRef<TypeThunk>());
+}
+
 void TypeThunkCollector::Apply() {}
 
 /// Apply the collected qualifiers to the given type.
@@ -70,11 +84,21 @@ Type TypeQualifierCollector::Apply(TypeBase *typePtr) { return Type(typePtr); }
 /// Apply the collected qualifiers to the given type.
 void TypeQualifierCollector::Apply(Type &ty) {
 
+  // ty.SetFastQualifiers(GetFastQualifiers());
   if (HasConst()) {
     ty.AddConst();
   }
-
   if (HasPure()) {
     ty.AddPure();
   }
+  if (HasImmutable()) {
+    ty.AddImmutable();
+  }
+  if (HasMutable()) {
+    ty.AddMutable();
+  }
 }
+
+// unsigned TypeQualifierCollector::GetFastQualifiers() {
+
+// }

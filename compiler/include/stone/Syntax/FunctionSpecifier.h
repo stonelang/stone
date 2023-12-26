@@ -75,6 +75,7 @@ public:
 
   void AddArrowLoc(SrcLoc loc) { arrowLoc = loc; }
   SrcLoc GetArrowLoc() { return arrowLoc; }
+  bool HasArrow() { return GetArrowLoc().isValid(); }
 
   void AddIsMember(SrcLoc inputLoc) {
     flags |= IsMember;

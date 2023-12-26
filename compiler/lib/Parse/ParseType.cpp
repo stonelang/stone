@@ -13,14 +13,13 @@ Type Parser::ParseFunctionType(ParsingDecl &collector, Diag<> diagID) {
   Type result;
   ParsingScope functionTypeScope(*this, ScopeKind::FunctionType,
                                  "parsing function-type");
-  // TODO: We are asserting these for now but we may just want to log some ass
-  // erros
 
-  // assert(collector.GetFunctionSpecifierCollector().HasFun());
-  // assert(collector.GetFunctionSpecifierCollector().GetArrowLoc().isValid());
+  // assert(collector.GetFunctionSpecifierCollector().HasFun() && "Function is
+  // missing 'fun' ");
+  // assert(collector.GetFunctionSpecifierCollector().HasArrow());
 
-  // assert(collector.GetTypeSpecifierCollector().NotHasAny() &&
-  //        "Function type-specifier comes after ->");
+  // assert(collector.GetTypeSpecifierCollector().HasNone() && "Function
+  // type-specifier comes after ->");
 
   // if (collector.GetTypeQualifierCollector().HasAny()) {
   //   assert(collector.GetTypeQualifierCollector().HasPureOnly() &&

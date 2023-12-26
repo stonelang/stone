@@ -117,6 +117,9 @@ public:
   }
 
 public:
+  unsigned GetFastTypeQualifierFlags();
+
+public:
   /// Apply the collected qualifiers to the given type.
   Type Apply(TypeBase *typePtr);
 

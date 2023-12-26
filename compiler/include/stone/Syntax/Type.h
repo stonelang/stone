@@ -81,9 +81,13 @@ enum class ScalarTypeKind {
   FixedPoint
 };
 
-class TypeQualifiers {
+class Type {
+  TypeBase *typePtr = nullptr;
   unsigned qualifiers = 0;
-  enum Flags : unsigned {
+  TypeThunkList *thunks = nullptr;
+
+public:
+  enum QualifierFlags : unsigned {
     None = 1 << 0,
     Const = 1 << 1,
     Immutable = 1 << 2,
@@ -92,46 +96,8 @@ class TypeQualifiers {
   };
 
 public:
-  TypeQualifiers() : qualifiers(0) {}
-
-public:
-  bool HasConst() const { return qualifiers & Flags::Const; }
-  bool IsConst() const { return qualifiers == Flags::Const; }
-  void RemoveConst() { qualifiers &= ~Flags::Const; }
-  void AddConst() { qualifiers |= Flags::Const; }
-
-public:
-  bool HasImmutable() const { return qualifiers & Flags::Immutable; }
-  bool IsImmutable() const { return qualifiers == Flags::Immutable; }
-  void RemoveImmutable() { qualifiers &= ~Flags::Immutable; }
-  void AddImmutable() { qualifiers |= Flags::Immutable; }
-
-public:
-  bool HasMutable() const { return qualifiers & Flags::Mutable; }
-  bool IsMutable() const { return qualifiers == Flags::Mutable; }
-  void RemoveMutable() { qualifiers &= ~Flags::Mutable; }
-  void AddMutable() { qualifiers |= Flags::Mutable; }
-
-public:
-  bool HasPure() const { return qualifiers & Flags::Pure; }
-  bool IsPure() const { return qualifiers == Flags::Pure; }
-  void RemovePure() { qualifiers &= ~Flags::Pure; }
-  void AddPure() { qualifiers |= Flags::Pure; }
-
-public:
-  bool HasQualifiers() {
-    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
-  }
-  void ClearQualifiers() { qualifiers = 0; }
-};
-
-class Type : public TypeQualifiers {
-  TypeBase *typePtr = nullptr;
-
-  // TypeQualifiers typeAliasQualifiers;
-
-public:
-  Type(TypeBase *typePtr = nullptr) : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = nullptr, unsigned qualifiers = 0)
+      : typePtr(typePtr), qualifiers(qualifiers) {}
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
@@ -251,6 +217,43 @@ public:
   // Type Substitute(TypeSubstitutionFn substitutions,
   //                 LookupConformanceFn conformances,
   //                 SubstOptions options = None) const;
+
+public:
+  bool HasConst() const { return qualifiers & QualifierFlags::Const; }
+  bool IsConst() const { return qualifiers == QualifierFlags::Const; }
+  void RemoveConst() { qualifiers &= ~QualifierFlags::Const; }
+  void AddConst() { qualifiers |= QualifierFlags::Const; }
+
+public:
+  bool HasImmutable() const { return qualifiers & QualifierFlags::Immutable; }
+  bool IsImmutable() const { return qualifiers == QualifierFlags::Immutable; }
+  void RemoveImmutable() { qualifiers &= ~QualifierFlags::Immutable; }
+  void AddImmutable() { qualifiers |= QualifierFlags::Immutable; }
+
+public:
+  bool HasMutable() const { return qualifiers & QualifierFlags::Mutable; }
+  bool IsMutable() const { return qualifiers == QualifierFlags::Mutable; }
+  void RemoveMutable() { qualifiers &= ~QualifierFlags::Mutable; }
+  void AddMutable() { qualifiers |= QualifierFlags::Mutable; }
+
+public:
+  bool HasPure() const { return qualifiers & QualifierFlags::Pure; }
+  bool IsPure() const { return qualifiers == QualifierFlags::Pure; }
+  void RemovePure() { qualifiers &= ~QualifierFlags::Pure; }
+  void AddPure() { qualifiers |= QualifierFlags::Pure; }
+
+public:
+  bool HasQualifiers() {
+    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
+  }
+  void ClearQualifiers() { qualifiers = 0; }
+  void SetFastQualifiers(unsigned fastQualifiers) {
+    qualifiers = fastQualifiers;
+  }
+
+public:
+  void SetTypeThunkList(TypeThunkList *inputThunks) { thunks = inputThunks; }
+  TypeThunkList *GetTypeThunkList() { return thunks; }
 
 private:
   // Direct comparison is disabled for types, because they may not be canonical.

@@ -106,6 +106,8 @@ public:
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
   ASTContext &GetASTContext() { return astContext; }
+
+  /// The SourceFile is the current decl-context
   DeclContext *GetCurDeclContext() { return curDC; }
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash

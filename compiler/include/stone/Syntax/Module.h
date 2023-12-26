@@ -167,7 +167,7 @@ public:
   }
 
   /// Retrieves an immutable view of the list of top-level decls in this file.
-  llvm::ArrayRef<Decl *> GetDecls() const;
+  llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 
   /// If this buffer corresponds to a file on disk, returns the path.
   /// Otherwise, return an empty string.
@@ -186,9 +186,6 @@ public:
   /// \param PO Options controlling the printing process.
   // void Print(ASTPrinter &printer, const SyntaxPrintOptions &PO);
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
-
-public:
-  llvm::ArrayRef<Decl *> GetTopLevelDecls() const;
 
 public:
   static SourceFile *Create(SourceFileKind kind, unsigned srcID,
