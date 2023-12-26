@@ -233,6 +233,13 @@ public:
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
 
+  bool IsTopLevel() {
+    return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private, tok::kw_fun,
+                 tok::kw_struct, tok::kw_interface, tok::kw_enum, tok::kw_const,
+                 tok::kw_mutable, tok::kw_immutable, tok::kw_auto,
+                 tok::kw_import, tok::kw_space, tok::kw_static);
+  }
+
   bool IsTypeThunk() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.

@@ -115,6 +115,10 @@ static inline SyntaxResult<T> MakeSyntaxErrorResult(T *Result = nullptr) {
   return PR;
 }
 
+template <typename T> static inline SyntaxResult<T> MakeNullSyntaxResult() {
+  return SyntaxResult<T>(nullptr);
+}
+
 /// Create a result (null or non-null) with error and code completion bits set.
 template <typename T>
 static inline SyntaxResult<T>

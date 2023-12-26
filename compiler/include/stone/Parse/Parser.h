@@ -123,7 +123,7 @@ public:
   bool IsTopLevelDeclSpecifier();
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
   SyntaxResult<Decl>
-  ParseTopLevelDecl(ParsingDeclSpecifierCollector *collector = nullptr);
+  ParseTopLevelDecl(ParsingDeclSpecifierCollector &collector);
   SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifierCollector &collector);
 
 public:

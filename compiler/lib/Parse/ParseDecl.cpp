@@ -22,20 +22,17 @@ void Parser::ParseTopLevelDecls(
   auto Success = [&](SyntaxResult<Decl> &result) -> bool {
     return (!result.IsError() && !HasError() && result.IsNonNull());
   };
-  while (IsParsing()) {
-
-    if (!IsTopLevelDeclSpecifier()) {
-      break;
-    }
-    auto result = ParseTopLevelDecl();
+  while (IsParsing() && IsTopLevelDeclSpecifier()) {
+    ParsingDeclSpecifierCollector collector(*this);
+    collector.parsingDeclOpts = ParsingDeclFlags::AllowTopLevel;
+    auto result = ParseTopLevelDecl(collector);
     if (!Success(result)) {
       return;
-    } else {
-      if (HasCodeCompletionCallbacks()) {
-        GetCodeCompletionCallbacks()->CompletedParseTopLevelDecl(result.Get());
-      }
-      results.push_back(result);
     }
+    if (HasCodeCompletionCallbacks()) {
+      GetCodeCompletionCallbacks()->CompletedParseTopLevelDecl(result.Get());
+    }
+    results.push_back(result);
   }
 }
 // Ex: sample.stone
@@ -44,78 +41,43 @@ void Parser::ParseTopLevelDecls(
 // There are two top decls - F0 and F1
 // This call parses one at a time and adds it to the SourceFile
 SyntaxResult<Decl>
-Parser::ParseTopLevelDecl(ParsingDeclSpecifierCollector *collector) {
+Parser::ParseTopLevelDecl(ParsingDeclSpecifierCollector &collector) {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");
   ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
                              "parsing top-level declaration");
-  if (collector) {
-    return ParseDecl(*collector);
-  } else {
-    ParsingDeclSpecifierCollector newCollector(*this);
-    newCollector.parsingDeclOpts = ParsingDeclFlags::AllowTopLevel;
-    return ParseDecl(newCollector);
+  SyntaxResult<Decl> result;
+  while (result.IsNull() && IsParsing() && IsTopLevelDeclSpecifier()) {
+    if (CollectDeclSpecifier(collector).HasCodeCompletion()) {
+      // This is an empty file -- stop parsing.
+      return result;
+    }
+    result = ParseDecl(collector);
   }
+  return result;
 }
 
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifierCollector &collector) {
 
-  SyntaxStatus status;
-  SyntaxResult<Decl> result;
+  assert(GetCurScope() == nullptr && "A scope is already active?");
   ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
 
-  while (result.IsNull() && IsParsing()) {
-    /// Collect using(s), qualifier(s), and specifier.
-
-    status = CollectDeclSpecifier(collector);
-    if (status.HasCodeCompletion()) {
-      goto EndParse;
-    }
-
-    if (collector.GetImportSpecifierCollector().HasImport()) {
-      result = ParseImportDecl(collector);
-      goto EndParse;
-    } else if (collector.GetFunctionSpecifierCollector().HasFun()) {
-      result = ParseFunDecl(collector);
-      goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsStruct()) {
-      result = ParseStructDecl(collector);
-      goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsEnum()) {
-      result = ParseEnumDecl(collector);
-      goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
-      result = ParseInterfaceDecl(collector);
-      goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsBasicType()) {
-      result = ParseVarDecl(collector);
-      goto EndParse;
-    } else if (collector.GetTypeSpecifierCollector().IsAuto()) {
-      result = ParseAutoDecl(collector);
-      goto EndParse;
-    }
-  } // End of while
-
-EndParse : {
-  if (result.IsNull()) {
-    // collector.PrintD();
-    EndParsing();
+  if (collector.GetImportSpecifierCollector().HasImport()) {
+    return ParseImportDecl(collector);
+  } else if (collector.GetFunctionSpecifierCollector().HasFun()) {
+    return ParseFunDecl(collector);
+  } else if (collector.GetTypeSpecifierCollector().IsStruct()) {
+    return ParseStructDecl(collector);
+  } else if (collector.GetTypeSpecifierCollector().IsEnum()) {
+    return ParseEnumDecl(collector);
+  } else if (collector.GetTypeSpecifierCollector().IsInterface()) {
+    return ParseInterfaceDecl(collector);
+  } else if (collector.GetTypeSpecifierCollector().IsAuto()) {
+    return ParseAutoDecl(collector);
   }
-  return result;
+  return SyntaxResult<Decl>();
 }
-}
-// SyntaxStatus ParsingDeclSpecifierCollector::CollectUntil(tok kind) {
-//   SyntaxStatus status;
-//   while (GetParser().GetTok().IsNot(kind)) {
-//     status |= Collect();
-//     if (status.HasCodeCompletion()) {
-//       break;
-//     }
-//   }
-//   return status;
-// }
-
 bool Parser::IsTopLevelDeclSpecifier() {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
@@ -470,11 +432,10 @@ Parser::ParseInterfaceDecl(ParsingDeclSpecifierCollector &collector) {
   SyntaxResult<Decl> result;
 
   ParsingScope scope(*this, ScopeKind::InterfaceDecl,
-                                  "parsing interface-declaration");
+                     "parsing interface-declaration");
 
   assert(collector.GetTypeSpecifierCollector().IsInterface() &&
          "Attempting to parse a struct without a struct declaration.");
-
 
   if (collector.GetTypeQualifierCollector().HasAny()) {
     return result;
