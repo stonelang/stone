@@ -43,8 +43,7 @@
 #include "llvm/Support/AlignOf.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
-
-// UPDATE #include "llvm/Support/VirtualOutputBackend.h"
+//#include "llvm/Support/VirtualOutputBackend.h"
 
 #include <cassert>
 #include <cstddef>
@@ -154,6 +153,9 @@ class ASTContext final {
 
   CompilerStatsReporter *statsReporter;
 
+  /// OutputBackend for writing outputs.
+  //llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend;
+
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.
   std::vector<std::function<void(void)>> cleanups;
@@ -162,9 +164,9 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
-             ClangContext &clangContext, DiagnosticEngine &de,
-             StatisticEngine &se);
+  ASTContext(
+      LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
+      ClangContext &clangContext, DiagnosticEngine &de, StatisticEngine &se);
 
   ~ASTContext();
 
@@ -178,7 +180,7 @@ public:
 
   DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
-  const Builtin &GetBuiltin() const;
+  Builtin &GetBuiltin();
   DiagnosticEngine &GetDiags() { return de; }
   ///
   LangABI *GetLangABI() const;
@@ -238,6 +240,18 @@ public:
 
   /// Set a new stats reporter.
   void SetStatsReporter(CompilerStatsReporter *stats) { statsReporter = stats; }
+
+  /// Get the output backend. The output backend needs to be initialized via
+  /// constructor or `setOutputBackend`.
+  // llvm::vfs::OutputBackend &GetOutputBackend() const {
+  //   assert(OutputBackend && "OutputBackend is not setup");
+  //   return *OutputBackend;
+  // }
+  // /// Set output backend for virtualized outputs.
+  // void SetOutputBackend(
+  //     llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outBackend) {
+  //   outputBackend = std::move(outBackend);
+  // }
 
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {

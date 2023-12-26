@@ -4,7 +4,7 @@
 
 using namespace stone;
 
-Builtin::Builtin(ASTContext &astContext)
+BuiltinTypeCache::BuiltinTypeCache(ASTContext &astContext)
     : astContext(astContext),
 
       BuiltinAnyType(new(astContext, AllocationArena::Permanent)
@@ -53,6 +53,23 @@ Builtin::Builtin(ASTContext &astContext)
       BuiltinUIntType(new(astContext, AllocationArena::Permanent)
                           UIntegerType(NumberBitWidth::Platform, astContext)) {}
 
-void Builtin::Initialize() {}
+
+
+BuiltinIdentifierCache::BuiltinIdentifierCache(ASTContext &astContext)
+    : astContext(astContext){}
+
+
+BuiltinFunctionCache::BuiltinFunctionCache(ASTContext &astContext)
+    : astContext(astContext){}
+
+BuiltinDeclCache::BuiltinDeclCache(ASTContext &astContext)
+    : astContext(astContext){}
+
+
+
+Builtin::Builtin(ASTContext &astContext)
+    : astContext(astContext), typeCache(astContext),
+      identifierCache(astContext), functionCache(astContext),
+      declCache(astContext) {}
 
 Builtin::~Builtin() {}

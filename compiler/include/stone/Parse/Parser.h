@@ -183,6 +183,7 @@ public:
   Type ParseReferenceType(ParsingDecl &collector, Diag<> diagID);
   Type ParseDeclResultType(ParsingDecl &collector, Diag<> diagID);
   Type ParseBasicType(ParsingDecl &collector, Diag<> diagID);
+  Type GetBasicType(TypeSpecifierKind kind);
   Type ParseIdentifierType(ParsingDecl &collector, Diag<> diagID);
 
 public:

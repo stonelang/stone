@@ -7,12 +7,48 @@ namespace stone {
 
 class ASTContext;
 
-class Builtin final {
+class BuiltinIdentifierCache final {
   ASTContext &astContext;
 
 public:
-  Builtin(const Builtin &) = delete;
-  void operator=(const Builtin &) = delete;
+  BuiltinIdentifierCache(const BuiltinIdentifierCache &) = delete;
+  void operator=(const BuiltinIdentifierCache &) = delete;
+
+public:
+  BuiltinIdentifierCache(ASTContext &astContext);
+};
+
+class BuiltinFunctionCache final {
+  ASTContext &astContext;
+
+public:
+  BuiltinFunctionCache(const BuiltinFunctionCache &) = delete;
+  void operator=(const BuiltinFunctionCache &) = delete;
+
+public:
+  BuiltinFunctionCache(ASTContext &astContext);
+};
+
+class BuiltinDeclCache final {
+  ASTContext &astContext;
+
+public:
+  BuiltinDeclCache(const BuiltinDeclCache &) = delete;
+  void operator=(const BuiltinDeclCache &) = delete;
+
+public:
+  BuiltinDeclCache(ASTContext &astContext);
+};
+
+class BuiltinTypeCache final {
+  ASTContext &astContext;
+
+public:
+  BuiltinTypeCache(const BuiltinTypeCache &) = delete;
+  void operator=(const BuiltinTypeCache &) = delete;
+
+public:
+  BuiltinTypeCache(ASTContext &astContext);
 
 public:
   const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
@@ -41,14 +77,29 @@ public:
   const CanType BuiltinBoolType;
 
 public:
+  Type GetType(llvm::StringRef name);
+};
+
+class Builtin final {
+  ASTContext &astContext;
+  BuiltinTypeCache typeCache;
+  BuiltinIdentifierCache identifierCache;
+  BuiltinFunctionCache functionCache;
+  BuiltinDeclCache declCache;
+
+public:
+  Builtin(const Builtin &) = delete;
+  void operator=(const Builtin &) = delete;
+
+public:
   Builtin(ASTContext &astContext);
   ~Builtin();
 
-private:
-  void Initialize();
-
 public:
-  Type GetType(llvm::StringRef name);
+  BuiltinTypeCache &GetTypeCache() { return typeCache; }
+  BuiltinIdentifierCache &GetIdentifierCache() { return identifierCache; }
+  BuiltinFunctionCache &GetFunctionCache() { return functionCache; }
+  BuiltinDeclCache &GetDeclCache() { return declCache; }
 };
 
 } // namespace stone

@@ -140,7 +140,6 @@ class SourType : public TypeBase {
 public:
 };
 
-
 class FunctionType : public TypeBase {
   Type result;
 
