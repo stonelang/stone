@@ -54,7 +54,6 @@ BuiltinTypeCache::BuiltinTypeCache(ASTContext &astContext)
       BuiltinUIntType(new(astContext, AllocationArena::Permanent)
                           UIntegerType(NumberBitWidth::Platform, astContext)) {}
 
-
 BuiltinIdentifierCache::BuiltinIdentifierCache(ASTContext &astContext)
     : astContext(astContext) {
   // Initialize all of the known identifiers.

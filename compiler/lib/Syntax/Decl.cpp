@@ -144,21 +144,15 @@ void FunctionDecl::SetBody(BraceStmt *body, BodyStatus bodyStatus) {
   SetBodyStatus(bodyStatus);
 }
 
-// template <std::size_t len>
-// static bool IsMainImpl(const NameableDecl *nameable, Identifier builtinIdentifierMain) {
-//   assert(nameable);
-//   auto identifier = nameable->GetBasicName();
-//   return identifier.IsEqual(builtinIdentifierMain.GetString());
-// }
-
 // Keeping this very simple for now
 bool FunDecl::IsMain() const {
-  // return (
-  //     !IsInstanceMember() &&
-  //     IsMainImpl(
-  //         this, GetASTContext().GetBuiltin().GetIdentifierCache().BuiltinIdentifierMain));
-
-  return true; 
+  if (IsInstanceMember()) {
+    return false;
+  }
+  return GetBasicName() == GetASTContext()
+                               .GetBuiltin()
+                               .GetIdentifierCache()
+                               .BuiltinMainIdentifier;
 }
 
 /// True if the function is a defer body.
