@@ -44,7 +44,7 @@ SyntaxResult<Decl>
 Parser::ParseTopLevelDecl(ParsingDeclSpecifierCollector &collector) {
 
   assert(GetCurScope() == nullptr && "A scope is already active?");
-  ParsingScope topLevelScope(*this, ScopeKind::TopLevel,
+  ParsingScope parseTopLevelDeclScope(*this, ScopeKind::TopLevel,
                              "parsing top-level declaration");
   SyntaxResult<Decl> result;
   while (result.IsNull() && IsParsing() && IsTopLevelDeclSpecifier()) {
@@ -60,8 +60,7 @@ Parser::ParseTopLevelDecl(ParsingDeclSpecifierCollector &collector) {
 /// Parse declaration specs
 SyntaxResult<Decl> Parser::ParseDecl(ParsingDeclSpecifierCollector &collector) {
 
-  assert(GetCurScope() == nullptr && "A scope is already active?");
-  ParsingScope declScope(*this, ScopeKind::Decl, "parsing declaration");
+  ParsingScope parseDeclScope(*this, ScopeKind::Decl, "parsing declaration");
 
   if (collector.GetImportSpecifierCollector().HasImport()) {
     return ParseImportDecl(collector);

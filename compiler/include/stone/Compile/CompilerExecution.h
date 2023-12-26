@@ -79,9 +79,9 @@ public:
   Status Execute() override;
 };
 
-class ParseOnlyExecution final : public CompilerExecution {
+class ParseExecution final : public CompilerExecution {
 public:
-  ParseOnlyExecution(Compiler &compiler, ActionKind currentAction);
+  ParseExecution(Compiler &compiler, ActionKind currentAction);
 
 public:
   Status Execute() override;

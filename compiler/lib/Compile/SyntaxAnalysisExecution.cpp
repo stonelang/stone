@@ -6,11 +6,11 @@
 
 using namespace stone;
 
-ParseOnlyExecution::ParseOnlyExecution(Compiler &compiler,
+ParseExecution::ParseExecution(Compiler &compiler,
                                        ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
-Status ParseOnlyExecution::Execute() {
+Status ParseExecution::Execute() {
 
   assert(GetExecutionAction() == ActionKind::Parse);
 

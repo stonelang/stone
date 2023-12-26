@@ -38,7 +38,7 @@ Compiler::ComputeCompilerExectution(ActionKind kind) {
   case ActionKind::PrintFeature:
     return std::make_unique<PrintFeatureExecution>(*this, kind);
   case ActionKind::Parse:
-    return std::make_unique<ParseOnlyExecution>(*this, kind);
+    return std::make_unique<ParseExecution>(*this, kind);
   case ActionKind::DumpAST:
     return std::make_unique<DumpASTExecution>(*this, kind);
   case ActionKind::ResolveImports:
