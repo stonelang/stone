@@ -136,6 +136,13 @@ private:
   CanType ComputeCanType();
 };
 
+inline bool CanType::IsCanTypeOrNull() const {
+  return GetPtr() == nullptr ||
+         GetPtr() == llvm::DenseMapInfo<TypeBase *>::getEmptyKey() ||
+         GetPtr() == llvm::DenseMapInfo<TypeBase *>::getTombstoneKey() ||
+         GetPtr()->IsCanType();
+}
+
 class SourType : public TypeBase {
 public:
 };

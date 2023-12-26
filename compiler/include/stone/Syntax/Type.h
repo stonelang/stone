@@ -277,7 +277,7 @@ public:
   }
 
 private:
-  bool IsCanTypeOrNull() const { return true; }
+  bool IsCanTypeOrNull() const;
 
 public:
   void Visit(llvm::function_ref<void(CanType)> fn) const {

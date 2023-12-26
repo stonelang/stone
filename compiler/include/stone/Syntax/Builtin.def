@@ -1,5 +1,3 @@
-
-
 #ifndef BUILTIN_OPERATION
 #define BUILTIN_OPERATION(ID, Name, Attrs) BUILTIN(ID, Name, Attrs)
 #endif
