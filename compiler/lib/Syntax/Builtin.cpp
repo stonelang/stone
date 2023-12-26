@@ -7,6 +7,8 @@ using namespace stone;
 Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext),
 
+      BuiltinAnyType(new(astContext, AllocationArena::Permanent)
+                         AnyType(astContext)),
       BuiltinVoidType(VoidType::Create(astContext)),
       BuiltinNullType(new(astContext, AllocationArena::Permanent)
                           NullType(astContext)),

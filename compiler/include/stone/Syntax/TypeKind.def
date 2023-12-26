@@ -166,6 +166,7 @@ ABSTRACT_TYPE(Builtin, Type)
     BUILTIN_TYPE(Char, ScalarType)
     TYPE_RANGE(Scalar, Integer, Char) 
 
+  BUILTIN_TYPE(Any, BuiltinType)
   BUILTIN_TYPE(Null, BuiltinType)
   BUILTIN_TYPE(Void, BuiltinType)
   //BUILTIN_TYPE(String, BuiltinType)
@@ -186,12 +187,11 @@ ABSTRACT_TYPE(AbstractReference, Type)
 
 
 ABSTRACT_TYPE(Sweet, Type)
+  SWEET_TYPE(Alias, SweetType)
   ABSTRACT_TYPE(SyntaxSweet, SweetType)
     SWEET_TYPE(Dictionary, SyntaxSweetType)
     TYPE_RANGE(SyntaxSweetType, Dictionary, Dictionary)
-  SWEET_TYPE(Alias, SweetType)
-  TYPE_RANGE(Sweet, Dictionary, Alias)
-
+  TYPE_RANGE(Sweet, Alias, Dictionary)
 
 ABSTRACT_TYPE(Deduced, Type)
   TYPE(Auto, DeducedType)

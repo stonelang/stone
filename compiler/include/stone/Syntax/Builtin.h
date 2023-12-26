@@ -35,6 +35,7 @@ public:
   const CanType BuiltinUInt128Type;
   const CanType BuiltinUIntType;
 
+  const CanType BuiltinAnyType;
   const CanType BuiltinVoidType;
   const CanType BuiltinNullType;
   const CanType BuiltinBoolType;

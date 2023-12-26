@@ -140,13 +140,6 @@ class SourType : public TypeBase {
 public:
 };
 
-// TODO: Think about
-//  class AnyType : public TypeBase {
-//  public:
-
-//   AnyType(TypeKind kind, ASTContext *canTypeCtx)
-//       : TypeBase(kind, canTypeCtx) {}
-// };
 
 class FunctionType : public TypeBase {
   Type result;
@@ -330,6 +323,12 @@ public:
   static bool classof(const TypeBase *T) {
     return T->GetKind() == TypeKind::Float;
   }
+};
+
+class AnyType : public BuiltinType {
+public:
+  AnyType(const ASTContext &astContext)
+      : BuiltinType(TypeKind::Any, astContext) {}
 };
 
 class VoidType : public BuiltinType {
