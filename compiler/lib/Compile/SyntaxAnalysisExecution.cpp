@@ -6,8 +6,7 @@
 
 using namespace stone;
 
-ParseExecution::ParseExecution(Compiler &compiler,
-                                       ActionKind currentAction)
+ParseExecution::ParseExecution(Compiler &compiler, ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
 Status ParseExecution::Execute() {

@@ -113,7 +113,7 @@ public:
 
 class DeclSpecifierCollector {
 
-  AttributeCollector attributeCollector;
+  AttributeSpecifierCollector attributeCollector;
 
   StorageSpecifierCollector storageSpecifierCollector;
   FunctionSpecifierCollector functionSpecifierCollector;
@@ -166,8 +166,10 @@ public:
     return accessSpecifierCollector;
   }
 
-  AttributeCollector &GetAttributeCollector() { return attributeCollector; }
-  const AttributeCollector &GetAttributeCollector() const {
+  AttributeSpecifierCollector &GetAttributeSpecifierCollector() {
+    return attributeCollector;
+  }
+  const AttributeSpecifierCollector &GetAttributeSpecifierCollector() const {
     return attributeCollector;
   }
 

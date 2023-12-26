@@ -25,7 +25,7 @@ class BraceStmt;
 class Parser;
 class Scope;
 class PairDelimiterBalancer;
-class ParsingDeclSpecifierCollector;
+class ParsingDecl;
 class CodeCompletionCallbacks;
 
 class ParserStats final : public Stats {
@@ -122,83 +122,73 @@ public:
 public:
   bool IsTopLevelDeclSpecifier();
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
-  SyntaxResult<Decl>
-  ParseTopLevelDecl(ParsingDeclSpecifierCollector &collector);
-  SyntaxResult<Decl> ParseDecl(ParsingDeclSpecifierCollector &collector);
+  SyntaxResult<Decl> ParseTopLevelDecl(ParsingDecl &collector);
+  SyntaxResult<Decl> ParseDecl(ParsingDecl &collector);
 
 public:
   void ParseDeclName();
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDeclSpecifierCollector &collector);
-  SyntaxResult<Decl> ParseAutoDecl(ParsingDeclSpecifierCollector &collector);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDecl &collector);
+  SyntaxResult<Decl> ParseAutoDecl(ParsingDecl &collector);
 
 public:
   // === Collectors === ///
 
   /// Decl
-  SyntaxStatus CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectDeclSpecifier(ParsingDecl &collector);
 
   /// using
-  SyntaxStatus CollectImportSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectImportSpecifier(ParsingDecl &collector);
 
   /// private, internal, public
-  SyntaxStatus CollectAccessSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectAccessSpecifier(ParsingDecl &collector);
 
   bool IsTypeThunk(const Token &tk);
 
   /// T*, T&
-  SyntaxStatus CollectTypeThunk(ParsingDeclSpecifierCollector &collector);
-  SyntaxStatus CollectTypeThunks(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectTypeThunk(ParsingDecl &collector);
+  SyntaxStatus CollectTypeThunks(ParsingDecl &collector);
 
   /// Basic types: int, uint, etc.
-  SyntaxStatus
-  CollectBasicTypeSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectBasicTypeSpecifier(ParsingDecl &collector);
 
   /// struct, class, and enum
-  SyntaxStatus
-  CollectNominalTypeSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectNominalTypeSpecifier(ParsingDecl &collector);
 
   /// const, mutable, immutable, and pure.
-  SyntaxStatus CollectTypeQualifiers(ParsingDeclSpecifierCollector &collector);
-  SyntaxStatus CollectTypeQualifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectTypeQualifiers(ParsingDecl &collector);
+  SyntaxStatus CollectTypeQualifier(ParsingDecl &collector);
 
   /// new, and delete
-  SyntaxStatus CollectTypeOperator(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectTypeOperator(ParsingDecl &collector);
 
   /// extern, static
-  SyntaxStatus
-  CollectStorageSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectStorageSpecifier(ParsingDecl &collector);
 
   /// fun
-  SyntaxStatus
-  CollectFunctionSpecifier(ParsingDeclSpecifierCollector &collector);
+  SyntaxStatus CollectFunctionSpecifier(ParsingDecl &collector);
 
 public:
   // === Type Parsing ===//
 
   bool IsBasicType(tok kind) const;
 
-  // TODO: Passing ParsingDeclSpecifierCollector -- may just want to pass the
+  // TODO: Passing ParsingDecl -- may just want to pass the
   // Type collectors in the furture. This is ok for now.
-  Type ParseType(ParsingDeclSpecifierCollector &collector, Diag<> diagID);
-  Type ParseFunctionType(ParsingDeclSpecifierCollector &collector,
-                         Diag<> diagID);
-  Type ParsePointerType(ParsingDeclSpecifierCollector &collector,
-                        Diag<> diagID);
-  Type ParseReferenceType(ParsingDeclSpecifierCollector &collector,
-                          Diag<> diagID);
-  Type ParseDeclResultType(ParsingDeclSpecifierCollector &collector,
-                           Diag<> diagID);
-  Type ParseBasicType(ParsingDeclSpecifierCollector &collector, Diag<> diagID);
-  Type ParseIdentifierType(ParsingDeclSpecifierCollector &collector,
-                           Diag<> diagID);
+  Type ParseType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseFunctionType(ParsingDecl &collector, Diag<> diagID);
+  Type ParsePointerType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseReferenceType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseDeclResultType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseBasicType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseIdentifierType(ParsingDecl &collector, Diag<> diagID);
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDeclSpecifierCollector &collector);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDecl &collector);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDeclSpecifierCollector &collector,
+  SyntaxStatus ParseFunctionSignature(ParsingDecl &collector,
                                       Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
@@ -211,34 +201,28 @@ private:
   //                                       bool &rethrows,
   //                                       Typer *&retType);
 
-  SyntaxStatus
-  ParseFunctionArguments(ParsingDeclSpecifierCollector &collectorifier);
-  SyntaxStatus ParseFunctionBody(ParsingDeclSpecifierCollector &collectorifier,
+  SyntaxStatus ParseFunctionArguments(ParsingDecl &collectorifier);
+  SyntaxStatus ParseFunctionBody(ParsingDecl &collectorifier,
                                  FunctionDecl &functionDecl);
 
-  BraceStmt *
-  ParseFunctionBodyImpl(ParsingDeclSpecifierCollector &collectorifier,
-                        FunctionDecl &funDecl);
+  BraceStmt *ParseFunctionBodyImpl(ParsingDecl &collectorifier,
+                                   FunctionDecl &funDecl);
 
 public:
   //== using ==//
-  SyntaxResult<Decl>
-  ParseImportDecl(ParsingDeclSpecifierCollector &collectorifier);
+  SyntaxResult<Decl> ParseImportDecl(ParsingDecl &collectorifier);
 
 public:
   //== struct ==//
-  SyntaxResult<Decl>
-  ParseStructDecl(ParsingDeclSpecifierCollector &collectorifier);
+  SyntaxResult<Decl> ParseStructDecl(ParsingDecl &collectorifier);
 
 public:
   //== enum== //
-  SyntaxResult<Decl>
-  ParseEnumDecl(ParsingDeclSpecifierCollector &collectorifier);
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDecl &collectorifier);
 
 public:
   //== interface ==//
-  SyntaxResult<Decl>
-  ParseInterfaceDecl(ParsingDeclSpecifierCollector &collectorifier);
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDecl &collectorifier);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }

@@ -136,16 +136,16 @@ struct ParsingDeclFlags final {
 /// Options that control the parsing of declarations.
 using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 
-class ParsingDeclSpecifierCollector final : public DeclSpecifierCollector {
+class ParsingDecl final : public DeclSpecifierCollector {
   Parser &parser;
 
 public:
   ParsingDeclOptions parsingDeclOpts;
 
 public:
-  ParsingDeclSpecifierCollector(Parser &parser) : parser(parser) {}
+  ParsingDecl(Parser &parser) : parser(parser) {}
 
-  ~ParsingDeclSpecifierCollector();
+  ~ParsingDecl();
 
 public:
   Parser &GetParser() { return parser; }
@@ -164,6 +164,7 @@ enum class ParsingContextKind : UInt8 {
 enum class ParsingContextStatus : UInt8 { None = 0, Parsing, Error, Done };
 
 constexpr size_t ParsingAlignInBits = 3;
+
 class alignas(1 << ParsingAlignInBits) ParsingContext final {
   ParsingContextKind kind;
   ParsingContext *holder = nullptr;

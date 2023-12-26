@@ -233,7 +233,7 @@ public:
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
 
-  bool IsTopLevel() {
+  bool IsTopLevel() const {
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private, tok::kw_fun,
                  tok::kw_struct, tok::kw_interface, tok::kw_enum, tok::kw_const,
                  tok::kw_mutable, tok::kw_immutable, tok::kw_auto,

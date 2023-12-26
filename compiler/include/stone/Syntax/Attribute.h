@@ -49,8 +49,9 @@ class DeclAttribute : public Attribute {};
 
 class SpecializeAttribute : public DeclAttribute {};
 
-class AttributeCollector {
+class AttributeSpecifierCollector {
 public:
+  AttributeSpecifierCollector() {}
 };
 
 } // namespace stone

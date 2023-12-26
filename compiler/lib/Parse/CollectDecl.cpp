@@ -8,8 +8,7 @@
 
 using namespace stone;
 
-SyntaxStatus
-Parser::CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &collector) {
 
   SyntaxStatus status;
   status = CollectImportSpecifier(collector);
@@ -45,8 +44,7 @@ Parser::CollectDeclSpecifier(ParsingDeclSpecifierCollector &collector) {
   return status;
 }
 
-SyntaxStatus
-Parser::CollectImportSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_using:
     collector.GetImportSpecifierCollector().AddImport(ConsumeToken());
@@ -57,8 +55,7 @@ Parser::CollectImportSpecifier(ParsingDeclSpecifierCollector &collector) {
   return stone::MakeSyntaxSuccess();
 }
 
-SyntaxStatus
-Parser::CollectTypeOperator(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &collector) {
   // if(collector.GetTypeOperatorCollector().HasAny()){
   // }
   switch (GetTok().GetKind()) {
@@ -74,8 +71,7 @@ Parser::CollectTypeOperator(ParsingDeclSpecifierCollector &collector) {
   return MakeSyntaxSuccess();
 }
 
-SyntaxStatus
-Parser::CollectAccessSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_public:
     collector.GetAccessSpecifierCollector().AddPublic(ConsumeToken());
@@ -93,8 +89,7 @@ Parser::CollectAccessSpecifier(ParsingDeclSpecifierCollector &collector) {
 }
 
 // TODO: Dulicate check
-SyntaxStatus
-Parser::CollectTypeQualifiers(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &collector) {
   SyntaxStatus status;
   while (GetTok().IsQualifier()) {
     status = CollectTypeQualifier(collector);
@@ -105,8 +100,7 @@ Parser::CollectTypeQualifiers(ParsingDeclSpecifierCollector &collector) {
   return status;
 }
 // TODO: Dulicate check
-SyntaxStatus
-Parser::CollectTypeQualifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectTypeQualifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_const:
     collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
@@ -135,8 +129,7 @@ bool Parser::IsTypeThunk(const Token &tk) {
   }
 }
 
-SyntaxStatus
-Parser::CollectTypeThunk(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectTypeThunk(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::star:
     collector.GetTypeThunkCollector().AddPointer(ConsumeToken());
@@ -149,8 +142,7 @@ Parser::CollectTypeThunk(ParsingDeclSpecifierCollector &collector) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus
-Parser::CollectTypeThunks(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectTypeThunks(ParsingDecl &collector) {
 
   assert(collector.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
@@ -169,8 +161,7 @@ Parser::CollectTypeThunks(ParsingDeclSpecifierCollector &collector) {
   }
   return status;
 }
-SyntaxStatus
-Parser::CollectBasicTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &collector) {
 
   if (!GetTok().IsBasicType()) {
     return MakeSyntaxCodeCompletionStatus();
@@ -250,8 +241,7 @@ Parser::CollectBasicTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus
-Parser::CollectNominalTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
     collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
@@ -267,8 +257,7 @@ Parser::CollectNominalTypeSpecifier(ParsingDeclSpecifierCollector &collector) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus
-Parser::CollectStorageSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectStorageSpecifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_static:
     collector.GetStorageSpecifierCollector().AddStatic(ConsumeToken());
@@ -281,8 +270,7 @@ Parser::CollectStorageSpecifier(ParsingDeclSpecifierCollector &collector) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus
-Parser::CollectFunctionSpecifier(ParsingDeclSpecifierCollector &collector) {
+SyntaxStatus Parser::CollectFunctionSpecifier(ParsingDecl &collector) {
   switch (GetTok().GetKind()) {
   case tok::kw_fun:
     collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
