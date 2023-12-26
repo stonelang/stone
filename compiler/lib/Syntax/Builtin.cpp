@@ -1,6 +1,7 @@
 #include "stone/Syntax/Builtin.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Syntax/ASTAllocation.h"
+#include "stone/Syntax/ASTContext.h"
 
 using namespace stone;
 
@@ -53,19 +54,19 @@ BuiltinTypeCache::BuiltinTypeCache(ASTContext &astContext)
       BuiltinUIntType(new(astContext, AllocationArena::Permanent)
                           UIntegerType(NumberBitWidth::Platform, astContext)) {}
 
-
-
 BuiltinIdentifierCache::BuiltinIdentifierCache(ASTContext &astContext)
-    : astContext(astContext){}
-
+    : astContext(astContext) {
+  // Initialize all of the known identifiers.
+#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
+  Builtin##Name = astContext.GetIdentifier(IdStr);
+#include "stone/Syntax/BuiltinIdentifiers.def"
+}
 
 BuiltinFunctionCache::BuiltinFunctionCache(ASTContext &astContext)
-    : astContext(astContext){}
+    : astContext(astContext) {}
 
 BuiltinDeclCache::BuiltinDeclCache(ASTContext &astContext)
-    : astContext(astContext){}
-
-
+    : astContext(astContext) {}
 
 Builtin::Builtin(ASTContext &astContext)
     : astContext(astContext), typeCache(astContext),

@@ -14,11 +14,12 @@
 
 using namespace stone;
 
-ASTContext::ASTContext(
-    LangOptions &langOpts, const SearchPathOptions &spOpts,
-    ClangContext &clangContext, DiagnosticEngine &de, StatisticEngine &se)
+ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
+                       ClangContext &clangContext, DiagnosticEngine &de,
+                       StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
-      de(de), se(se), identifiers(allocator), builtin(*this), stats(new ASTContextStats(*this)) {
+      de(de), se(se), identifiers(allocator), builtin(*this),
+      stats(new ASTContextStats(*this)) {
 
   se.Register(stats.get());
 }

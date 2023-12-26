@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_BUILTINCONTEXT_H
 
 #include "stone/Syntax/Types.h"
+#include "stone/Syntax/Identifier.h"
 
 namespace stone {
 
@@ -13,6 +14,11 @@ class BuiltinIdentifierCache final {
 public:
   BuiltinIdentifierCache(const BuiltinIdentifierCache &) = delete;
   void operator=(const BuiltinIdentifierCache &) = delete;
+
+public:
+  // Define the set of builtin identifiers.
+#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr) Identifier Builtin##Name;
+#include "stone/Syntax/BuiltinIdentifiers.def"
 
 public:
   BuiltinIdentifierCache(ASTContext &astContext);

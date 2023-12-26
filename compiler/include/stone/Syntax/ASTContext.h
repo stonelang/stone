@@ -43,7 +43,7 @@
 #include "llvm/Support/AlignOf.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
-//#include "llvm/Support/VirtualOutputBackend.h"
+// #include "llvm/Support/VirtualOutputBackend.h"
 
 #include <cassert>
 #include <cstddef>
@@ -154,7 +154,7 @@ class ASTContext final {
   CompilerStatsReporter *statsReporter;
 
   /// OutputBackend for writing outputs.
-  //llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend;
+  // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend;
 
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.
@@ -164,9 +164,9 @@ public:
   ASTContext(const ASTContext &) = delete;
   ASTContext &operator=(const ASTContext &) = delete;
 
-  ASTContext(
-      LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
-      ClangContext &clangContext, DiagnosticEngine &de, StatisticEngine &se);
+  ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
+             ClangContext &clangContext, DiagnosticEngine &de,
+             StatisticEngine &se);
 
   ~ASTContext();
 
