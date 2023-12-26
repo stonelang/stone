@@ -54,11 +54,12 @@ BuiltinTypeCache::BuiltinTypeCache(ASTContext &astContext)
       BuiltinUIntType(new(astContext, AllocationArena::Permanent)
                           UIntegerType(NumberBitWidth::Platform, astContext)) {}
 
+
 BuiltinIdentifierCache::BuiltinIdentifierCache(ASTContext &astContext)
     : astContext(astContext) {
   // Initialize all of the known identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
-  Builtin##Name = astContext.GetIdentifier(IdStr);
+  Builtin##Name##Identifier = astContext.GetIdentifier(IdStr);
 #include "stone/Syntax/BuiltinIdentifiers.def"
 }
 

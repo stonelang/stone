@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_BUILTINCONTEXT_H
 #define STONE_SYNTAX_BUILTINCONTEXT_H
 
-#include "stone/Syntax/Types.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Syntax/Types.h"
 
 namespace stone {
 
@@ -17,7 +17,7 @@ public:
 
 public:
   // Define the set of builtin identifiers.
-#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr) Identifier Builtin##Name;
+#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr) Identifier Builtin##Name##Identifier;
 #include "stone/Syntax/BuiltinIdentifiers.def"
 
 public:
