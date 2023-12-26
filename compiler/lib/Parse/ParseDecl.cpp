@@ -189,8 +189,8 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDecl &collector) {
     return status;
   }
 
-  collector.SetDeclName(fullName);
-  collector.SetDeclNameLoc(nameLoc);
+  collector.GetDeclNameCollector().SetName(fullName);
+  collector.GetDeclNameCollector().SetLoc(nameLoc);
 
   // TODO: Ok for now.
   if (collector.GetTypeSpecifierCollector().GetType().IsNull()) {

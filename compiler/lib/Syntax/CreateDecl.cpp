@@ -29,7 +29,8 @@ FunDecl *FunDecl::Create(DeclSpecifierCollector &collector,
   auto memPtr = Decl::AllocateMemory<FunDecl>(astContext, size);
   auto funDecl = ::new (memPtr) FunDecl(
       DeclKind::Fun, collector.GetFunctionSpecifierCollector().GetFunLoc(),
-      collector.GetDeclName(), collector.GetDeclNameLoc(),
+      collector.GetDeclNameCollector().GetName(),
+      collector.GetDeclNameCollector().GetLoc(),
       collector.GetTypeSpecifierCollector().GetType(), parent);
 
   // call apply on the collector

@@ -102,6 +102,10 @@ public:
 class ImportSpecifierCollector final {
   SrcLoc loc;
 
+private:
+  ImportSpecifierCollector(const ImportSpecifierCollector &) = delete;
+  void operator=(const ImportSpecifierCollector &) = delete;
+
 public:
   ImportSpecifierCollector() : loc(SrcLoc()) {}
 
@@ -111,24 +115,56 @@ public:
   SrcLoc GetLoc() { return loc; }
 };
 
+class DeclNameCollector final {
+
+  DeclName name;
+  SrcLoc loc;
+
+private:
+  DeclNameCollector(const DeclNameCollector &) = delete;
+  void operator=(const DeclNameCollector &) = delete;
+
+public:
+  DeclNameCollector() {}
+
+public:
+  void SetName(DeclName inputName) { name = inputName; }
+  DeclName GetName() { return name; }
+
+  void SetLoc(SrcLoc inputLoc) { loc = inputLoc; }
+  SrcLoc GetLoc() { return loc; }
+};
 class DeclSpecifierCollector {
 
-  AttributeSpecifierCollector attributeCollector;
-
-  StorageSpecifierCollector storageSpecifierCollector;
-  FunctionSpecifierCollector functionSpecifierCollector;
-  AccessSpecifierCollector accessSpecifierCollector;
-
-  TypeSpecifierCollector typeSpecifierCollector;
-  TypeQualifierCollector typeQualifierCollector;
-  TypeThunkCollector typeChunkCollector;
-  TypeOperatorCollector typeOperatorCollector;
-
+  /// Import specifier collection
   ImportSpecifierCollector importSpecifierCollector;
 
-  // DeclNameLoc
-  DeclName name;
-  SrcLoc nameLoc;
+  /// Attribute info collection
+  AttributeSpecifierCollector attributeCollector;
+
+  /// Storage specifier collection
+  StorageSpecifierCollector storageSpecifierCollector;
+
+  /// Function specifier collection
+  FunctionSpecifierCollector functionSpecifierCollector;
+
+  /// Access specifer collection
+  AccessSpecifierCollector accessSpecifierCollector;
+
+  /// Type specifier collection
+  TypeSpecifierCollector typeSpecifierCollector;
+
+  /// Type qualifier collection
+  TypeQualifierCollector typeQualifierCollector;
+
+  /// Type thunk collection
+  TypeThunkCollector typeChunkCollector;
+
+  /// Type operator collection
+  TypeOperatorCollector typeOperatorCollector;
+
+  /// Decl name collection
+  DeclNameCollector declNameCollector;
 
 private:
   DeclSpecifierCollector(const DeclSpecifierCollector &) = delete;
@@ -197,11 +233,10 @@ public:
     return typeOperatorCollector;
   }
 
-  void SetDeclName(DeclName inputName) { name = inputName; }
-  DeclName GetDeclName() { return name; }
-
-  void SetDeclNameLoc(SrcLoc inputLoc) { nameLoc = inputLoc; }
-  SrcLoc GetDeclNameLoc() { return nameLoc; }
+  DeclNameCollector &GetDeclNameCollector() { return declNameCollector; }
+  const DeclNameCollector &GetDeclNameCollector() const {
+    return declNameCollector;
+  }
 
 public:
   void Apply(Decl *d);
