@@ -50,6 +50,12 @@ FunctionTypeChunk FunctionTypeChunk::Create() {
   return chunk;
 }
 
+ParenTypeChunk ParenTypeChunk::Create(SrcLoc loc) {
+  ParenTypeChunk chunk(loc);
+  return chunk;
+}
+
+
 void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
 
 void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {

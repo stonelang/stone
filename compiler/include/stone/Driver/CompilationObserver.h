@@ -6,21 +6,21 @@
 
 namespace stone {
 
-class Job;
+class Task;
 class Compilation;
-class CompilationListener {
+class CompilationObserver {
 public:
   // The start of the compilation
-  virtual void OnCompilationStarted(Compilation *c) {}
+  virtual void CompilationStarted(Compilation *compilation) {}
 
   // Notificatin that the job has started
-  virtual void OnJobStarted(Job *job) {}
+  virtual void TaskStarted(Task *job) {}
 
   // Notification that the job has finished.
-  virtual void OnJobFinished(Job *job) {}
+  virtual void TaskFinished(Task *job) {}
 
   // Notification that the compilation has completed.
-  virtual void OnCompilationCompleted(Compilation *c) {}
+  virtual void CompilationCompleted(Compilation *compilation) {}
 };
 
 } // namespace stone

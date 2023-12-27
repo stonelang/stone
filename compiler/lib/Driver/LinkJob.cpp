@@ -5,7 +5,8 @@
 using namespace stone;
 
 // Some jobs only consume inputs -- For example, LinkJob
-// LinkJob::LinkJob(JobAction &action, Context &ctx, Tool &tool, bool requiresLTO,
+// LinkJob::LinkJob(JobAction &action, Context &ctx, Tool &tool, bool
+// requiresLTO,
 //                  LinkMode linkMode)
 //     : Job(action, ctx, tool), requiresLTO(requiresLTO), linkMode(linkMode)
 //     {}

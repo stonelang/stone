@@ -4,8 +4,8 @@
 
 using namespace stone;
 
-JobAction::JobAction(JobActionKind kind, const Tool &tool, JobActionInputList inputs,
-             file::Type outputFileType)
+JobAction::JobAction(JobActionKind kind, const Tool &tool,
+                     JobActionInputList inputs, file::Type outputFileType)
     : kind(kind), tool(tool), inputs(inputs), outputFileType(outputFileType) {}
 
 JobAction::~JobAction() {}
@@ -14,21 +14,24 @@ CompileJobAction::CompileJobAction(const Tool &tool, file::Type outputFileType)
     : JobAction(JobActionKind::Compile, tool, {}, outputFileType) {}
 
 CompileJobAction::CompileJobAction(const Tool &tool, JobActionInput input,
-                           file::Type outputFileType)
+                                   file::Type outputFileType)
     : JobAction(JobActionKind::Compile, tool, input, outputFileType),
       primaryInput(input) {}
 
-DynamicLinkJobAction::DynamicLinkJobAction(const Tool &tool, JobActionInputList inputs,
-                                   bool withLTO)
+DynamicLinkJobAction::DynamicLinkJobAction(const Tool &tool,
+                                           JobActionInputList inputs,
+                                           bool withLTO)
     : JobAction(JobActionKind::DynamicLink, tool, inputs, file::Type::Image),
       withLTO(withLTO) {}
 
-StaticLinkJobAction::StaticLinkJobAction(const Tool &tool, JobActionInputList inputs)
+StaticLinkJobAction::StaticLinkJobAction(const Tool &tool,
+                                         JobActionInputList inputs)
     : JobAction(JobActionKind::StaticLink, tool, inputs, file::Type::Image) {}
 
 ExecutableLinkJobAction::ExecutableLinkJobAction(const Tool &tool,
-                                         JobActionInputList inputs)
-    : JobAction(JobActionKind::ExecutableLink, tool, inputs, file::Type::Image) {}
+                                                 JobActionInputList inputs)
+    : JobAction(JobActionKind::ExecutableLink, tool, inputs,
+                file::Type::Image) {}
 
 const char *JobAction::GetNameByKind(JobActionKind kind) const {
   switch (kind) {
@@ -50,7 +53,7 @@ const char *JobAction::GetNameByKind(JobActionKind kind) const {
 }
 
 static void PrintJobAction(ColorStream &stream, llvm::StringRef terminator,
-                       const JobActionInput) {
+                           const JobActionInput) {
   //   /// TODO: JobActionFormatter
   //   OS() << std::to_string(GetQueueID()) << ":";
   //   OS().UseGreen();
@@ -125,7 +128,8 @@ void JobAction::Print(ColorStream &stream, llvm::StringRef terminator) const {
 //       case file::Type::Stone: {
 //         hc.GetJobActionCache().currentRequest =
 //         driver.MakeJobAction<CompileJobRequest>(
-//             hc.GetJobActionCache().currentRequest, driver.GetOutputFileType());
+//             hc.GetJobActionCache().currentRequest,
+//             driver.GetOutputFileType());
 //         hc.GetJobActionCache().CacheForModule(hc.GetJobActionCache().currentRequest);
 //         if (outputOptions.CanLink()) {
 //           hc.GetJobActionCache().CacheForLink(hc.GetJobActionCache().currentRequest);
@@ -169,7 +173,8 @@ void JobAction::Print(ColorStream &stream, llvm::StringRef terminator) const {
 //     Request *linkRequest = nullptr;
 //     switch (GetLinkMode()) {
 //     case LinkMode::EmitExecutable: {
-//       linkRequest = MakeJobAction<LinkJobRequest>(hc.GetJobActionCache().forLink,
+//       linkRequest =
+//       MakeJobAction<LinkJobRequest>(hc.GetJobActionCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }
@@ -180,7 +185,8 @@ void JobAction::Print(ColorStream &stream, llvm::StringRef terminator) const {
 //       break;
 //     }
 //     case LinkMode::EmitStaticLibrary: {
-//       linkRequest = MakeJobAction<LinkJobRequest>(hc.GetJobActionCache().forLink,
+//       linkRequest =
+//       MakeJobAction<LinkJobRequest>(hc.GetJobActionCache().forLink,
 //                                                 GetLinkMode(), false);
 //       break;
 //     }

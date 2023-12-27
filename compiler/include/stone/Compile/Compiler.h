@@ -57,6 +57,8 @@ public:
   void operator=(const Compiler &) = delete;
   Compiler(Compiler &&) = delete;
   void operator=(Compiler &&) = delete;
+
+public:
   Compiler();
   Status Setup();
 

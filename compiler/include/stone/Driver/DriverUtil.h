@@ -22,8 +22,8 @@ void ExpandResponseFilesWithRetry(llvm::StringSaver &Saver,
 /// \param ArgList The driver arguments (i.e. normal arguments for \c stonec).
 /// \param Diags The DiagnosticEngine used to report any errors parsing the
 /// arguments.
-/// \param JobAction Called with the list of invocation arguments if there were no
-/// errors in processing \p ArgList. This is a callback rather than a return
+/// \param JobAction Called with the list of invocation arguments if there were
+/// no errors in processing \p ArgList. This is a callback rather than a return
 /// value to avoid copying the arguments more than necessary.
 /// \param ForceNoOutputs If true, override the output mode to "-typecheck" and
 /// produce no outputs. For example, this disables "-emit-module" and "-c" and

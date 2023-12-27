@@ -24,16 +24,37 @@ namespace stone {
 // // The process ID
 // using CompilationJobID = int64_t;
 
-// enum class CompilationJobKind : uint8_t {
-//   None = 0,
-//   Compile,
-//   Link,
-//   StaticLink,
-//   DynamicLink,
-//   ExecLink,
-//   First = Compile,
-//   Last = ExecLink,
-// };
+enum class CompilationJobKind : uint8_t {
+  Compile = 0,
+  Backend,
+  MergeModule,
+  ModuleWrap,
+  DynamicLink,
+  StaticLink,
+  ExecutableLink,
+  Assemble,
+  First = Compile,
+  Last = Assemble
+};
+
+using CompilationJobInput =
+    llvm::PointerUnion<stone::file::File *, CompilationJob *>;
+using CompilationJobInputList = llvm::ArrayRef<CompilationJobInput>;
+
+class CompilationJob {
+	llvm::TinyPtrVector<CompilationJobInput> inputs;
+};
+
+class CompileJob final : public CompilationJob {
+  CompilationJobInput primaryInput;
+
+public:
+};
+
+class BackendJob final : public CompilationJob {
+
+public:
+};
 
 // enum class CompilationJobStage : uint8_t { None = 0, Running, Finished, Error
 // };

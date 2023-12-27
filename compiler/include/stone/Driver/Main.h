@@ -4,9 +4,9 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-class CompilationListener;
+class CompilationObserver;
 
 int Main(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
-         CompilationListener *listener);
+         CompilationObserver *observer);
 } // namespace stone
 #endif

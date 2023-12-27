@@ -26,7 +26,8 @@ public:
                    const OutputOptions &outputOpts) {}
 
   virtual void BuildJobActions(ToolChain &tc, const file::Files &inputs,
-                           JobActionCache &ic, const OutputOptions &outputOpts) {}
+                               JobActionCache &ic,
+                               const OutputOptions &outputOpts) {}
 
   virtual void BuildJobs(ToolChain &tc, JobActionCache &pc, JobCache &jc,
                          const OutputOptions &outputOpts) {}
@@ -38,9 +39,9 @@ public:
 
 protected:
   JobAction *BuildLinkJobAction(ToolChain &tc, JobActionCache &ic,
-                        const OutputOptions &outputOpts);
+                                const OutputOptions &outputOpts);
   JobAction *BuildLinkJobAction(ToolChain &tc, const file::Files &inputs,
-                        const OutputOptions &outputOpts);
+                                const OutputOptions &outputOpts);
 
 protected:
   file::File *InputToFile(JobActionInput input) const {
@@ -52,16 +53,19 @@ protected:
 
 public:
   JobAction *ConstructCompileJobAction(ToolChain &tc, JobActionInput input,
-                               const OutputOptions &outputOpts);
+                                       const OutputOptions &outputOpts);
 
-  JobAction *ConstructStaticLinkJobAction(ToolChain &tc, JobActionInputList inputs,
-                                  const OutputOptions &outputOpts);
+  JobAction *ConstructStaticLinkJobAction(ToolChain &tc,
+                                          JobActionInputList inputs,
+                                          const OutputOptions &outputOpts);
 
-  JobAction *ConstructExecLinkJobAction(ToolChain &tc, JobActionInputList inputs,
-                                const OutputOptions &outputOpts);
+  JobAction *ConstructExecLinkJobAction(ToolChain &tc,
+                                        JobActionInputList inputs,
+                                        const OutputOptions &outputOpts);
 
-  JobAction *ConstructDynamicLinkJobAction(ToolChain &tc, JobActionInputList inputs,
-                                   const OutputOptions &outputOpts);
+  JobAction *ConstructDynamicLinkJobAction(ToolChain &tc,
+                                           JobActionInputList inputs,
+                                           const OutputOptions &outputOpts);
   JobAction *ConstructBackendJobAction();
   JobAction *ConstructMergeModuleJobAction();
   JobAction *ConstructModuleWrapJobAction();
@@ -77,8 +81,9 @@ public:
   BuildCompilation(ToolChain &tc, const file::Files &inputs,
                    const OutputOptions &outputOpts) override;
 
-  void BuildJobActions(ToolChain &tc, const file::Files &inputs, JobActionCache &ac,
-                   const OutputOptions &outputOpts) override;
+  void BuildJobActions(ToolChain &tc, const file::Files &inputs,
+                       JobActionCache &ac,
+                       const OutputOptions &outputOpts) override;
 
   void BuildJobs(ToolChain &tc, JobActionCache &ac, JobCache &jc,
                  const OutputOptions &outputOpts) override;
@@ -88,7 +93,8 @@ public:
 
 private:
   void BuildCompileJobActions(ToolChain &tc, const file::Files &inputs,
-                          JobActionCache &ic, const OutputOptions &outputOpts);
+                              JobActionCache &ic,
+                              const OutputOptions &outputOpts);
 
   void BuildCompileJobs(ToolChain &tc, JobActionCache &pc, JobCache &jc,
                         const OutputOptions &outputOpts);
@@ -103,7 +109,8 @@ private:
 //   BuildCompilation(ToolChain &tc, const file::Files &inputs,
 //                    const OutputOptions &outputOpts) override;
 
-//   void BuildJobActions(ToolChain &tc, const file::Files &inputs, JobActionCache &ac,
+//   void BuildJobActions(ToolChain &tc, const file::Files &inputs,
+//   JobActionCache &ac,
 //                    const OutputOptions &outputOpts) override;
 
 //   void BuildJobs(ToolChain &tc, JobActionCache &ac, JobCache &jc,
@@ -120,7 +127,8 @@ private:
 //   BuildCompilation(ToolChain &tc, const file::Files &inputs,
 //                    const OutputOptions &outputOpts) override;
 
-//   void BuildJobActions(ToolChain &tc, const file::Files &inputs, JobActionCache &ic,
+//   void BuildJobActions(ToolChain &tc, const file::Files &inputs,
+//   JobActionCache &ic,
 //                    const OutputOptions &outputOpts) override;
 
 //   void BuildJobs(ToolChain &tc, JobActionCache &ac, JobCache &jc,
@@ -140,7 +148,8 @@ private:
 //   BuildCompilation(ToolChain &tc, const file::Files &inputs,
 //                    const OutputOptions &outputOpts) override;
 
-//   void BuildJobActions(ToolChain &tc, const file::Files &inputs, JobActionCache &ac,
+//   void BuildJobActions(ToolChain &tc, const file::Files &inputs,
+//   JobActionCache &ac,
 //                    const OutputOptions &outputOpts) override;
 
 //   void BuildJobs(ToolChain &tc, JobActionCache &ic, JobCache &jc,

@@ -126,14 +126,26 @@ private:
 public:
   // Value has no source loc
   void AddValue();
-  void AddPointer(SrcLoc loc);
-  void AddMemberPointer(SrcLoc loc);
-  void AddReference(SrcLoc loc);
-  void AddArray(SrcLoc loc);
-  void AddParen(SrcLoc loc);
-  void AddPipe(SrcLoc loc);
 
-  void AddFunction(SrcLoc loc);
+  void AddPointer(SrcLoc loc);
+  bool HasPointer(SrcLoc loc);
+
+  void AddMemberPointer(SrcLoc loc);
+  bool HasMemberPointer();
+
+  void AddReference(SrcLoc loc);
+  bool HasReference();
+
+  void AddArray(SrcLoc loc);
+  bool HasArray();
+
+  void AddParen(SrcLoc loc);
+  bool HasParen();
+
+  void AddPipe(SrcLoc loc);
+  bool HasPipe();
+
+  void AddFunction();
   bool HasFunction();
 
 public:
