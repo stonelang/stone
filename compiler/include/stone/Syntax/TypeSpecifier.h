@@ -258,6 +258,12 @@ public:
   SrcLoc GetLoc() { return loc; }
 
 public:
+  void Clear() {
+    loc = SrcLoc();
+    specifierKind = TypeSpecifierKind::None;
+  }
+
+public:
   void Apply();
 };
 

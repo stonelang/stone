@@ -16,6 +16,7 @@ enum class TypeChunkKind {
   Pointer,
   Reference,
   Array,
+  Funciton,
   MemberPointer,
   Paren,
   Pipe,
@@ -82,14 +83,13 @@ public:
   static ParenTypeChunk Create(SrcLoc loc);
 };
 
-// class FunctionTypeChunk final : public TypeChunk {
-// public:
-//   FunctionTypeChunk() :
-//   TypeChunk(TypeChunkKind::Function) {}
+class FunctionTypeChunk final : public TypeChunk {
+public:
+  FunctionTypeChunk() : TypeChunk(TypeChunkKind::Funciton, SrcLoc()) {}
 
-// public:
-//   static FunctionTypeChunk Create();
-// };
+public:
+  static FunctionTypeChunk Create();
+};
 
 class TypeChunkList final
     : public llvm::TrailingObjects<TypeChunkList, TypeChunk> {
@@ -132,6 +132,9 @@ public:
   void AddArray(SrcLoc loc);
   void AddParen(SrcLoc loc);
   void AddPipe(SrcLoc loc);
+
+  void AddFunction(SrcLoc loc);
+  bool HasFunction();
 
 public:
   /// int** -- the '*' toucing int

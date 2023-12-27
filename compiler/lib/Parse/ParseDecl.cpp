@@ -90,11 +90,11 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDecl &collector) {
          "Attempting to parse type-patterns without a type specified");
 
   // TODO: Significant improvement required here. This is a starter.
-  // May just require the TypeCollecter to add Immutable on creation but
+  // May just require the TypeQualifierCollector to add 'final' on creation but
   // remove it if mutable is added
 
-  if (!collector.GetTypeQualifierCollector().HasMutable()) {
-    collector.GetTypeQualifierCollector().AddImmutable(SrcLoc());
+  if (!collector.GetTypeQualifierCollector().HasAny()) {
+    collector.GetTypeQualifierCollector().AddFinal(SrcLoc());
   }
 
   CollectTypeChunks(collector);
@@ -129,6 +129,9 @@ SyntaxResult<Decl> Parser::ParseFunDecl(ParsingDecl &collector) {
          "Attempting to parse a function without a functin definition.");
 
   assert(collector.GetFunctionSpecifierCollector().GetFunLoc().isValid());
+
+  // TODO: Here or in ParseFunctionType
+  collector.GetTypeChunkCollector().AddFunction();
 
   // At this stage, only the pure modifier is allowed
   if (collector.GetTypeQualifierCollector().HasAny() &&

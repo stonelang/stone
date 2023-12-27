@@ -90,7 +90,7 @@ public:
   enum QualifierFlags : unsigned {
     None = 1 << 0,
     Const = 1 << 1,
-    Immutable = 1 << 2,
+    Final = 1 << 2,
     Mutable = 1 << 3,
     Pure = 1 << 4,
   };
@@ -225,10 +225,10 @@ public:
   void AddConst() { qualifiers |= QualifierFlags::Const; }
 
 public:
-  bool HasImmutable() const { return qualifiers & QualifierFlags::Immutable; }
-  bool IsImmutable() const { return qualifiers == QualifierFlags::Immutable; }
-  void RemoveImmutable() { qualifiers &= ~QualifierFlags::Immutable; }
-  void AddImmutable() { qualifiers |= QualifierFlags::Immutable; }
+  bool HasFinal() const { return qualifiers & QualifierFlags::Final; }
+  bool IsFinal() const { return qualifiers == QualifierFlags::Final; }
+  void RemoveFinal() { qualifiers &= ~QualifierFlags::Final; }
+  void AddFinal() { qualifiers |= QualifierFlags::Final; }
 
 public:
   bool HasMutable() const { return qualifiers & QualifierFlags::Mutable; }
@@ -244,7 +244,7 @@ public:
 
 public:
   bool HasQualifiers() {
-    return (HasConst() || HasImmutable() || HasMutable() || HasPure());
+    return (HasConst() || HasFinal() || HasMutable() || HasPure());
   }
   void ClearQualifiers() { qualifiers = 0; }
   void SetFastQualifiers(unsigned fastQualifiers) {

@@ -15,7 +15,7 @@
 	DriverUtil.cpp
 	Job.cpp
 	TaskQueue.cpp
-	Phase.cpp
+	JobAction.cpp
 	LinkJob.cpp
 	LinuxTaskQueue.cpp
 	LinuxToolChain.cpp

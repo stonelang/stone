@@ -9,7 +9,7 @@
 #include "stone/Driver/CompilationListener.h"
 #include "stone/Driver/CompilationModel.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Phase.h"
+#include "stone/Driver/JobAction.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Option/Session.h"
 
@@ -21,11 +21,11 @@ class TaskQueue;
 class Compilation;
 
 class HotCache final {
-  PhaseCache actionCache;
+  JobActionCache actionCache;
   JobCache jobCache;
 
 public:
-  PhaseCache &GetPhaseCache() { return actionCache; }
+  JobActionCache &GetJobActionCache() { return actionCache; }
   JobCache &GetJobCache() { return jobCache; }
 };
 
@@ -48,7 +48,7 @@ class Driver final : public Session {
   // llvm::SmallVector<std::function<void(Compilation &compilation,
   //  HotCache &hc,const Request *input)>,32> listeners;
 
-  llvm::SmallVector<std::unique_ptr<const Phase>, 32> actionions;
+  llvm::SmallVector<std::unique_ptr<const JobAction>, 32> actionions;
 
 public:
   Driver(const Driver &) = delete;
@@ -62,7 +62,7 @@ public:
   void Finish();
 
 public:
-  template <typename T, typename... Args> T *MakePhase(Args &&...args) {
+  template <typename T, typename... Args> T *MakeJobAction(Args &&...args) {
     auto result = new T(std::forward<Args>(args)...);
     actionions.emplace_back(result);
     return result;
@@ -147,7 +147,7 @@ public:
   // &imageBaseName);
 
   llvm::StringRef ComputeOutputFilename(
-      // const JobPhase *JA,
+      // const JobJobAction *JA,
       // const TypeToPathMap *OutputMap,
       // StringRef workingDirectory,
       // bool AtTopLevel,

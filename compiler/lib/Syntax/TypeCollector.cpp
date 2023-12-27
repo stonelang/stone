@@ -45,6 +45,11 @@ ArrayTypeChunk ArrayTypeChunk::Create(SrcLoc loc) {
   return chunk;
 }
 
+FunctionTypeChunk FunctionTypeChunk::Create() {
+  FunctionTypeChunk chunk;
+  return chunk;
+}
+
 void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
 
 void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {
@@ -57,9 +62,15 @@ void TypeChunkCollector::AddArray(SrcLoc inputLoc) {
   AddTypeChunk(ArrayTypeChunk::Create(inputLoc));
 }
 
+void TypeChunkCollector::AddFunction() {
+  AddTypeChunk(FunctionTypeChunk::Create());
+}
+
 TypeChunkCollector::TypeChunkCollector() {}
 
-void TypeChunkCollector::AddParen(SrcLoc inputLoc) {}
+void TypeChunkCollector::AddParen(SrcLoc inputLoc) {
+  AddTypeChunk(ParenTypeChunk::Create(inputLoc));
+}
 
 void TypeChunkCollector::AddPipe(SrcLoc inputLoc) {}
 
@@ -91,8 +102,8 @@ void TypeQualifierCollector::Apply(Type &ty) {
   if (HasPure()) {
     ty.AddPure();
   }
-  if (HasImmutable()) {
-    ty.AddImmutable();
+  if (HasFinal()) {
+    ty.AddFinal();
   }
   if (HasMutable()) {
     ty.AddMutable();

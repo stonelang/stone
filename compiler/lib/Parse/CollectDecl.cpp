@@ -127,11 +127,11 @@ SyntaxStatus Parser::CollectTypeQualifier(ParsingDecl &collector) {
     collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
     break;
   }
-  case tok::kw_immutable: {
-    if (collector.GetTypeQualifierCollector().HasImmutable()) {
+  case tok::kw_final: {
+    if (collector.GetTypeQualifierCollector().HasFinal()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetTypeQualifierCollector().AddImmutable(ConsumeToken());
+    collector.GetTypeQualifierCollector().AddFinal(ConsumeToken());
     break;
   }
   case tok::kw_pure: {

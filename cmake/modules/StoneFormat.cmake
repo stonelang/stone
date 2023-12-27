@@ -38,7 +38,7 @@ set(stone_tests_files
 	${STONE_SOURCE_DIR}/tests/units/Lex/*.cpp 
 	${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
 )
-find_program(CLANG_FORMAT ${PATH_TO_LLVM_BUILD}/bin/clang-format)
+find_program(CLANG_FORMAT clang-format)
 	if(CLANG_FORMAT)
 	add_custom_target(
 		stone-format
