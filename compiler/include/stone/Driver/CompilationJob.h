@@ -42,7 +42,7 @@ using CompilationJobInput =
 using CompilationJobInputList = llvm::ArrayRef<CompilationJobInput>;
 
 class CompilationJob {
-	llvm::TinyPtrVector<CompilationJobInput> inputs;
+  llvm::TinyPtrVector<CompilationJobInput> inputs;
 };
 
 class CompileJob final : public CompilationJob {

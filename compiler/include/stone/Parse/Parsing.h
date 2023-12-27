@@ -70,7 +70,8 @@ public:
   // parser Self where the new Scope is created with the flags
   // ScopeFlags, but only when we aren't about to enter a compound statement --
   // may just pass Scope
-  ParsingScope(Parser &self, ScopeKind scopeKind, llvm::StringRef description);
+  ParsingScope(Parser &self, ScopeKind scopeKind,
+               llvm::StringRef description = llvm::StringRef());
   ~ParsingScope();
 
 private:

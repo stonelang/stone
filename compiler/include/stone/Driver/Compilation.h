@@ -93,7 +93,8 @@ enum class CompilationKind : uint8_t {
 //   CompilationObserver *GetObserver() { return observer; }
 // };
 
-using CompilationJobList = llvm::SmallVector<std::unique_ptr<const CompilationJob>, 32>;
+using CompilationJobList =
+    llvm::SmallVector<std::unique_ptr<const CompilationJob>, 32>;
 
 class Compilation {
 
@@ -101,7 +102,7 @@ protected:
   Driver &driver;
   CompilationKind kind;
 
-  CompilationJobList jobs; 
+  CompilationJobList jobs;
 
 public:
   Compilation(CompilationKind kind, Driver &driver);

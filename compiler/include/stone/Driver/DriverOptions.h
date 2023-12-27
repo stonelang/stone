@@ -7,25 +7,19 @@
 
 namespace stone {
 class Driver;
-class DriverAction final : public Action {
-  friend Driver;
 
-public:
-  DriverAction(const DriverAction &) = delete;
-  void operator=(const DriverAction &) = delete;
-  DriverAction(DriverAction &&) = delete;
-  void operator=(DriverAction &&) = delete;
 
-public:
-  DriverAction();
-};
 // TODO: a lot of what is in DriverOutputProfile can go here
 class DriverOptions final {
-  friend Driver;
+  friend DriverInstance;
+  friend DriverInvocation;
+  
+public:
+  /// The main action requested.
+  Action mainAction;
+
 
 public:
-  /// The input action entered. e.g., --parse ...
-  DriverAction action;
 
   /// Print the jobs in the TaskQueue
   bool printJobs = false;
@@ -61,6 +55,45 @@ public:
 
   /// The output file type which should be used for the sc
   file::Type outputFileType = file::Type::None;
+
+
+public:
+
+
+  LinkMode linkMode = LinkMode::None;
+
+
+  LTOKind ltoVariant = LTOKind::None;
+
+  /// The output file type which should be used for the sc
+  file::Type outputFileType = file::Type::None;
+
+  std::string libLTOPath;
+
+  CompilationModelKind compilationModelKind = CompilationModelKind::Quadratic;
+
+  /// The number of threads for multi-threaded compilation.
+  unsigned numThreads = 0;
+
+  /// Whether or not the driver should generate a module.
+  bool generateModule = false;
+
+  /// Whether or not the driver should treat a generated module as a top-level
+  /// output.
+  bool treatModuleAsTopLevelOutput = false;
+
+  /// Whether the compiler picked the current module name, rather than the user.
+  bool moduleNameIsFallback = false;
+
+public:
+  bool HasLibLTOPath() const { return libLTOPath.size() > 0; }
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+  bool WithLTO() const { return ltoVariant != LTOKind::None; }
+  bool CanLink() const { return linkMode != LinkMode::None; }
+
 
 public:
   DriverOptions();

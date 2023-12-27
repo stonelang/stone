@@ -363,7 +363,12 @@ SyntaxResult<Decl> Parser::ParseStructDecl(ParsingDecl &collector) {
   assert(collector.GetTypeSpecifierCollector().IsStruct() &&
          "Attempting to parse a struct without a struct declaration.");
 
-  if (collector.GetTypeQualifierCollector().HasAny()) {
+  /// AddVaue
+
+  // At this stage, only the pure modifier is allowed
+  if (collector.GetTypeQualifierCollector().HasAny() &&
+      !collector.GetTypeQualifierCollector().IsPure()) {
+    // Do some logging
     return MakeSyntaxError();
   }
 

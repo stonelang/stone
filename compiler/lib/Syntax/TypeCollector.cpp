@@ -55,7 +55,6 @@ ParenTypeChunk ParenTypeChunk::Create(SrcLoc loc) {
   return chunk;
 }
 
-
 void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
 
 void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {
