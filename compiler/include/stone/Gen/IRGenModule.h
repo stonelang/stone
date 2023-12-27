@@ -87,7 +87,7 @@ struct EmitFunctionFlags final {
     None = 1 << 0,
     ForVirtualTable = 1 << 1,
     DontDefer = 1 << 2,
-    IsThunk = 1 << 3,
+    IsChunk = 1 << 3,
     AllowEnumElement = 1 << 4,
     IsForDefinition = 1 << 5,
   };

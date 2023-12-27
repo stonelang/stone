@@ -6,7 +6,7 @@ static const auto &GetScopeNameTable() {
   static const std::pair<ScopeKind, const char *> Table[] = {
       {ScopeKind::Decl, "Decl"},
       {ScopeKind::FunDecl, "Function Declaration"},
-      {ScopeKind::SourceFile, "Syntax File"},
+      {ScopeKind::SourceFile, "Source File"},
       {ScopeKind::FunctionSignature, "Function Signature "},
   };
   return Table;

@@ -7,10 +7,10 @@
 #include "stone/Syntax/FunctionSpecifier.h"
 #include "stone/Syntax/Generics.h"
 #include "stone/Syntax/StorageSpecifier.h"
+#include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
 #include "stone/Syntax/TypeSpecifier.h"
-#include "stone/Syntax/TypeThunk.h"
 #include "stone/Syntax/Types.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -158,7 +158,7 @@ class DeclSpecifierCollector {
   TypeQualifierCollector typeQualifierCollector;
 
   /// Type thunk collection
-  TypeThunkCollector typeChunkCollector;
+  TypeChunkCollector typeChunkCollector;
 
   /// Type operator collection
   TypeOperatorCollector typeOperatorCollector;
@@ -222,8 +222,8 @@ public:
     return typeSpecifierCollector;
   }
 
-  TypeThunkCollector &GetTypeThunkCollector() { return typeChunkCollector; }
-  const TypeThunkCollector &GetTypeThunkCollector() const {
+  TypeChunkCollector &GetTypeChunkCollector() { return typeChunkCollector; }
+  const TypeChunkCollector &GetTypeChunkCollector() const {
     return typeChunkCollector;
   }
   TypeOperatorCollector &GetTypeOperatorCollector() {

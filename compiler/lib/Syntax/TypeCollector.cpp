@@ -1,8 +1,8 @@
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Type.h"
+#include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeOperator.h"
 #include "stone/Syntax/TypeQualifier.h"
-#include "stone/Syntax/TypeThunk.h"
 
 using namespace stone;
 
@@ -25,58 +25,58 @@ void TypeOperatorCollector::AddDelete(SrcLoc inputLoc) {
   AddTypeOperator(DeleteTypeOperator::Create(inputLoc));
 }
 
-PointerTypeThunk PointerTypeThunk::Create(SrcLoc loc) {
-  PointerTypeThunk chunk(loc);
+PointerTypeChunk PointerTypeChunk::Create(SrcLoc loc) {
+  PointerTypeChunk chunk(loc);
   return chunk;
 }
 
-ReferenceTypeThunk ReferenceTypeThunk::Create(SrcLoc loc) {
-  ReferenceTypeThunk chunk(loc);
+ReferenceTypeChunk ReferenceTypeChunk::Create(SrcLoc loc) {
+  ReferenceTypeChunk chunk(loc);
   return chunk;
 }
 
-ValueTypeThunk ValueTypeThunk::Create() {
-  ValueTypeThunk chunk;
+ValueTypeChunk ValueTypeChunk::Create() {
+  ValueTypeChunk chunk;
   return chunk;
 }
 
-ArrayTypeThunk ArrayTypeThunk::Create(SrcLoc loc) {
-  ArrayTypeThunk chunk(loc);
+ArrayTypeChunk ArrayTypeChunk::Create(SrcLoc loc) {
+  ArrayTypeChunk chunk(loc);
   return chunk;
 }
 
-void TypeThunkCollector::AddValue() { AddTypeThunk(ValueTypeThunk::Create()); }
+void TypeChunkCollector::AddValue() { AddTypeChunk(ValueTypeChunk::Create()); }
 
-void TypeThunkCollector::AddPointer(SrcLoc inputLoc) {
-  AddTypeThunk(PointerTypeThunk::Create(inputLoc));
+void TypeChunkCollector::AddPointer(SrcLoc inputLoc) {
+  AddTypeChunk(PointerTypeChunk::Create(inputLoc));
 }
-void TypeThunkCollector::AddReference(SrcLoc inputLoc) {
-  AddTypeThunk(ReferenceTypeThunk::Create(inputLoc));
+void TypeChunkCollector::AddReference(SrcLoc inputLoc) {
+  AddTypeChunk(ReferenceTypeChunk::Create(inputLoc));
 }
-void TypeThunkCollector::AddArray(SrcLoc inputLoc) {
-  AddTypeThunk(ArrayTypeThunk::Create(inputLoc));
+void TypeChunkCollector::AddArray(SrcLoc inputLoc) {
+  AddTypeChunk(ArrayTypeChunk::Create(inputLoc));
 }
 
-TypeThunkCollector::TypeThunkCollector() {}
+TypeChunkCollector::TypeChunkCollector() {}
 
-void TypeThunkCollector::AddParen(SrcLoc inputLoc) {}
+void TypeChunkCollector::AddParen(SrcLoc inputLoc) {}
 
-void TypeThunkCollector::AddPipe(SrcLoc inputLoc) {}
+void TypeChunkCollector::AddPipe(SrcLoc inputLoc) {}
 
-TypeThunkList::TypeThunkList(llvm::ArrayRef<TypeThunk> thunks) {
+TypeChunkList::TypeChunkList(llvm::ArrayRef<TypeChunk> thunks) {
   std::uninitialized_copy(thunks.begin(), thunks.end(),
-                          getTrailingObjects<TypeThunk>());
+                          getTrailingObjects<TypeChunk>());
 }
 
-TypeThunkList *TypeThunkCollector::CreateTypeThunkList(ASTContext &astContext) {
+TypeChunkList *TypeChunkCollector::CreateTypeChunkList(ASTContext &astContext) {
 
   unsigned allocSize =
-      TypeThunkList::totalSizeToAlloc<TypeThunk>(thunks.size());
-  void *memPtr = astContext.Allocate(allocSize, alignof(TypeThunkList));
-  return new (memPtr) TypeThunkList(llvm::MutableArrayRef<TypeThunk>());
+      TypeChunkList::totalSizeToAlloc<TypeChunk>(thunks.size());
+  void *memPtr = astContext.Allocate(allocSize, alignof(TypeChunkList));
+  return new (memPtr) TypeChunkList(llvm::MutableArrayRef<TypeChunk>());
 }
 
-void TypeThunkCollector::Apply() {}
+void TypeChunkCollector::Apply() {}
 
 /// Apply the collected qualifiers to the given type.
 Type TypeQualifierCollector::Apply(TypeBase *typePtr) { return Type(typePtr); }

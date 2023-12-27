@@ -97,9 +97,9 @@ SyntaxResult<Decl> Parser::ParseVarDecl(ParsingDecl &collector) {
     collector.GetTypeQualifierCollector().AddImmutable(SrcLoc());
   }
 
-  CollectTypeThunks(collector);
+  CollectTypeChunks(collector);
 
-  assert(collector.GetTypeThunkCollector().HasAny() &&
+  assert(collector.GetTypeChunkCollector().HasAny() &&
          "Type is missing a type-thunk");
 
   auto varDecl = VarDecl::Create(GetASTContext());

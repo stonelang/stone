@@ -240,7 +240,7 @@ public:
                  tok::kw_import, tok::kw_space, tok::kw_static);
   }
 
-  bool IsTypeThunk() const { return (IsStar() || IsAmp()); }
+  bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.
   bool IsMultilineString() const { return multilineString; }

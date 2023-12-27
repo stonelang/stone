@@ -6,9 +6,9 @@
 #include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeQualifier.h"
-#include "stone/Syntax/TypeThunk.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -84,7 +84,7 @@ enum class ScalarTypeKind {
 class Type {
   TypeBase *typePtr = nullptr;
   unsigned qualifiers = 0;
-  TypeThunkList *thunks = nullptr;
+  TypeChunkList *thunks = nullptr;
 
 public:
   enum QualifierFlags : unsigned {
@@ -252,8 +252,8 @@ public:
   }
 
 public:
-  void SetTypeThunkList(TypeThunkList *inputThunks) { thunks = inputThunks; }
-  TypeThunkList *GetTypeThunkList() { return thunks; }
+  void SetTypeChunkList(TypeChunkList *inputChunks) { thunks = inputChunks; }
+  TypeChunkList *GetTypeChunkList() { return thunks; }
 
 private:
   // Direct comparison is disabled for types, because they may not be canonical.

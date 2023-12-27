@@ -10,9 +10,9 @@
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/Type.h"
 #include "stone/Syntax/TypeAlignment.h"
+#include "stone/Syntax/TypeChunk.h"
 #include "stone/Syntax/TypeKind.h"
 #include "stone/Syntax/TypeQualifier.h"
-#include "stone/Syntax/TypeThunk.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -137,7 +137,7 @@ private:
 };
 
 inline bool CanType::IsCanTypeOrNull() const {
-  return GetPtr() == nullptr ||
+  return IsNull() ||
          GetPtr() == llvm::DenseMapInfo<TypeBase *>::getEmptyKey() ||
          GetPtr() == llvm::DenseMapInfo<TypeBase *>::getTombstoneKey() ||
          GetPtr()->IsCanType();

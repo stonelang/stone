@@ -11,8 +11,8 @@ void DeclSpecifierCollector::Apply(Decl *d) {
   // // if (GetTypeQualifierCollector().HasAny()) {
   // //   GetTypeQualifierCollector().Apply();
   // // }
-  // if (GetTypeThunkCollector().HasAny()) {
-  //   GetTypeThunkCollector().Apply();
+  // if (GetTypeChunkCollector().HasAny()) {
+  //   GetTypeChunkCollector().Apply();
   // }
   // if (GetStorageSpecifierCollector().HasAny()) {
   //   GetStorageSpecifierCollector().Apply();

@@ -145,11 +145,11 @@ public:
   /// private, internal, public
   SyntaxStatus CollectAccessSpecifier(ParsingDecl &collector);
 
-  bool IsTypeThunk(const Token &tk);
+  bool IsTypeChunk(const Token &tk);
 
   /// T*, T&
-  SyntaxStatus CollectTypeThunk(ParsingDecl &collector);
-  SyntaxStatus CollectTypeThunks(ParsingDecl &collector);
+  SyntaxStatus CollectTypeChunk(ParsingDecl &collector);
+  SyntaxStatus CollectTypeChunks(ParsingDecl &collector);
 
   /// Basic types: int, uint, etc.
   SyntaxStatus CollectBasicTypeSpecifier(ParsingDecl &collector);
