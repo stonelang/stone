@@ -18,7 +18,6 @@ enum class DriverExecutionKind : uint8_t {
 
 class DriverExecution {
 public:
-	
 };
 
 class CompileExecution : public DriverExecution {
