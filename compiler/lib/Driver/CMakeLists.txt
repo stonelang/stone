@@ -4,6 +4,7 @@
   DarwinToolChain.cpp
   Driver.cpp
   Job.cpp
+  JobConstruction.cpp
   LinuxToolChain.cpp
   Main.cpp
   ToolChain.cpp

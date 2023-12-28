@@ -46,20 +46,21 @@ public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                             const JobContext &context) const;
 
-  virtual JobInvocation ConstructInvocation(const BackendJobConstruction &job,
-                                            const JobContext &context) const;
+  // virtual JobInvocation ConstructInvocation(const BackendJobConstruction
+  // &job,
+  //                                           const JobContext &context) const;
 
-  virtual JobInvocation
-  ConstructInvocation(const ExecutableJobConstruction &job,
-                      const JobContext &context) const;
+  // virtual JobInvocation
+  // ConstructInvocation(const ExecutableJobConstruction &job,
+  //                     const JobContext &context) const;
 
-  virtual JobInvocation
-  ConstructInvocation(const StaticLinkJobConstruction &job,
-                      const JobContext &context) const;
+  // virtual JobInvocation
+  // ConstructInvocation(const StaticLinkJobConstruction &job,
+  //                     const JobContext &context) const;
 
-  virtual JobInvocation
-  ConstructInvocation(const DynamicLinkJobConstruction &job,
-                      const JobContext &context) const;
+  // virtual JobInvocation
+  // ConstructInvocation(const DynamicLinkJobConstruction &job,
+  //                     const JobContext &context) const;
 
 public:
   /// Construct a Job for the action \p JA, taking the given information into

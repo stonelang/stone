@@ -39,44 +39,74 @@ class JobConstruction : public MemoryAllocation<JobConstruction> {
 protected:
   JobConstructionKind kind;
   file::Type outputFileType = file::Type::None;
-  // llvm::TinyPtrVector<JobConstructionInput> inputs;
+  llvm::TinyPtrVector<JobConstructionInput> inputs;
 
 public:
-  JobConstruction(JobConstructionKind kind) : kind(kind) {}
+  // virtual ~JobConstruction() = default;
 
 public:
-  JobConstructionKind GetKind() { return kind; }
+  JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
+                  file::Type outputFileType)
+      : kind(kind), inputs(inputs), outputFileType(outputFileType) {}
 
 public:
+  using size_type = llvm::ArrayRef<JobConstructionInput>::size_type;
+  using iterator = llvm::ArrayRef<JobConstructionInput>::iterator;
+  using const_iterator = llvm::ArrayRef<JobConstructionInput>::const_iterator;
+
+public:
+  size_type size() const { return inputs.size(); }
+  iterator begin() { return inputs.begin(); }
+  iterator end() { return inputs.end(); }
+  const_iterator begin() const { return inputs.begin(); }
+  const_iterator end() const { return inputs.end(); }
+
+public:
+  JobConstructionKind GetKind() const { return kind; }
+
+public:
+  // Required for llvm::dyn_cast
+  static bool classof(const JobConstruction *construction) {
+    return (construction->GetKind() >= JobConstructionKind::First &&
+            construction->GetKind() <= JobConstructionKind::Last);
+  }
 };
 
 class CompileJobConstruction final : public JobConstruction {
+
 public:
-  CompileJobConstruction() : JobConstruction(JobConstructionKind::Compile) {}
+  CompileJobConstruction(file::Type outputFileType);
+  CompileJobConstruction(JobConstructionInput primaryInput,
+                         file::Type outputFileType);
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::Compile;
+  }
 };
 
-class DynamicLinkJobConstruction final : public JobConstruction {
-public:
-  DynamicLinkJobConstruction()
-      : JobConstruction(JobConstructionKind::DynamicLink) {}
-};
+// class DynamicLinkJobConstruction final : public JobConstruction {
+// public:
+//   DynamicLinkJobConstruction()
+//       : JobConstruction(JobConstructionKind::DynamicLink) {}
+// };
 
-class StaticLinkJobConstruction final : public JobConstruction {
-public:
-  StaticLinkJobConstruction()
-      : JobConstruction(JobConstructionKind::StaticLink) {}
-};
+// class StaticLinkJobConstruction final : public JobConstruction {
+// public:
+//   StaticLinkJobConstruction()
+//       : JobConstruction(JobConstructionKind::StaticLink) {}
+// };
 
-class BackendJobConstruction final : public JobConstruction {
-public:
-  BackendJobConstruction() : JobConstruction(JobConstructionKind::Backend) {}
-};
+// class BackendJobConstruction final : public JobConstruction {
+// public:
+//   BackendJobConstruction() : JobConstruction(JobConstructionKind::Backend) {}
+// };
 
-class ExecutableJobConstruction final : public JobConstruction {
-public:
-  ExecutableJobConstruction()
-      : JobConstruction(JobConstructionKind::Executable) {}
-};
+// class ExecutableJobConstruction final : public JobConstruction {
+// public:
+//   ExecutableJobConstruction()
+//       : JobConstruction(JobConstructionKind::Executable) {}
+// };
 
 } // namespace stone
 
