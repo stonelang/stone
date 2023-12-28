@@ -13,10 +13,6 @@
 
 using namespace stone;
 
-// class DebugCompilerListener final : public CompilerListener {
-
-// };
-
 int main(int argc, const char **args) {
   START_LLVM_INIT(argc, args);
 
@@ -31,10 +27,6 @@ int main(int argc, const char **args) {
       argsToExpand);
 
   llvm::ArrayRef<const char *> argv(argsToExpand);
-
-  // TODO: check for --coder
-  // DebugCompilerListener listener;
-
   return stone::Compile(
       llvm::makeArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
       (void *)(intptr_t)stone::GetMainExecutablePath, nullptr);

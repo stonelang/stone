@@ -1,12 +1,13 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
-#include "stone/Basic/LangOptions.h"
 #include "stone/Option/Action.h"
+#include "stone/Option/Options.h"
+
+#include "llvm/Option/Arg.h"
+#include "llvm/Option/ArgList.h"
 
 namespace stone {
-class DriverInstance;
-class DriverInvocation;
 
 enum class LinkMode : uint8_t {
   // We are not linking
@@ -24,12 +25,13 @@ enum class LinkMode : uint8_t {
 };
 
 class DriverOptions final {
-  friend DriverInstance;
-  friend DriverInvocation;
-
 public:
   /// The main action requested or computed.
   Action mainAction;
+
+public:
+  /// Default target triple.
+  std::string defaultTargetTriple;
 };
 
 } // namespace stone
