@@ -4,6 +4,7 @@
 #include "stone/Basic/File.h"
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/STDAlias.h"
+#include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/StringRef.h"
@@ -58,6 +59,11 @@ public:
   const_iterator begin() const { return inputs.begin(); }
   const_iterator end() const { return inputs.end(); }
 
+  // Returns the index of the Input action's output file which is used as
+  // (single) input to this action. Most actions produce only a single output
+  // file, so we return 0 by default.
+  virtual size_t GetInputIndex() const { return 0; }
+
 public:
   JobConstructionKind GetKind() const { return kind; }
   file::Type GetFileType() { return fileType; }
@@ -81,22 +87,56 @@ public:
   }
 };
 
-// class DynamicLinkJobConstruction final : public JobConstruction {
-// public:
-//   DynamicLinkJobConstruction()
-//       : JobConstruction(JobConstructionKind::DynamicLink) {}
-// };
+class DynamicLinkJobConstruction final : public JobConstruction {
 
-// class StaticLinkJobConstruction final : public JobConstruction {
-// public:
-//   StaticLinkJobConstruction()
-//       : JobConstruction(JobConstructionKind::StaticLink) {}
-// };
+  LinkMode linkMode;
+  bool withLTO;
 
-// class BackendJobConstruction final : public JobConstruction {
-// public:
-//   BackendJobConstruction() : JobConstruction(JobConstructionKind::Backend) {}
-// };
+public:
+  DynamicLinkJobConstruction(JobConstructionInputList inputs, LinkMode linkMode,
+                             bool withLTO = false);
+
+public:
+  LinkMode GetLinkMode() const { return linkMode; }
+  bool WithLTO() const { return withLTO; }
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::DynamicLink;
+  }
+};
+
+class StaticLinkJobConstruction final : public JobConstruction {
+
+  LinkMode linkMode;
+
+public:
+  StaticLinkJobConstruction(JobConstructionInputList inputs, LinkMode linkMode);
+
+public:
+  LinkMode GetLinkMode() const { return linkMode; }
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::StaticLink;
+  }
+};
+
+class BackendJobConstruction final : public JobConstruction {
+  size_t inputIndex;
+
+public:
+  BackendJobConstruction(JobConstructionInput input, file::Type outputFileType,
+                         size_t inputIndex);
+
+public:
+  virtual size_t GetInputIndex() const override { return inputIndex; }
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::Backend;
+  }
+};
 
 // class ExecutableJobConstruction final : public JobConstruction {
 // public:

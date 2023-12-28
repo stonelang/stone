@@ -1,6 +1,7 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
+#include "stone/Basic/STDAlias.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 
@@ -11,19 +12,19 @@ using namespace llvm::opt;
 
 namespace stone {
 
-enum class LinkMode : uint8_t {
+enum class LinkMode : UInt8 {
   // We are not linking
   None = 0,
   // The default output compiling -- sc looks afor a main file and
   // outputs an executable file
-  EmitExecutable,
+  Executable,
 
   // The default library output: 'stone test.stone -emit-library -> test.dylib'
-  EmitDynamicLibrary,
+  DynamicLibrary,
 
   // The Library output that requires static: 'stone test.stone -emit-library
   // -satic -> test.a'
-  EmitStaticLibrary
+  StaticLibrary
 };
 
 class DriverOptions final {
