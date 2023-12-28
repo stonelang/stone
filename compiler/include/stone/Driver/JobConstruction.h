@@ -42,9 +42,6 @@ protected:
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 
 public:
-  // virtual ~JobConstruction() = default;
-
-public:
   JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
                   file::Type fileType)
       : kind(kind), inputs(inputs), fileType(fileType) {}
@@ -66,7 +63,6 @@ public:
   file::Type GetFileType() { return fileType; }
 
 public:
-  // Required for llvm::dyn_cast
   static bool classof(const JobConstruction *construction) {
     return (construction->GetKind() >= JobConstructionKind::First &&
             construction->GetKind() <= JobConstructionKind::Last);
