@@ -17,8 +17,9 @@ std::unique_ptr<Job> ToolChain::ConstructJob(
   auto jobInvocation = [&]() -> JobInvocation {
     switch (construction.GetKind()) {
 #define CASE(KIND)                                                             \
-  case JobConstructionKind::KIND:                                               \
-    return ConstructInvocation(cast<KIND##JobConstruction>(construction), jobContext);
+  case JobConstructionKind::KIND:                                              \
+    return ConstructInvocation(cast<KIND##JobConstruction>(construction),      \
+                               jobContext);
       CASE(Compile)
       CASE(Backend)
       CASE(DynamicLink)
