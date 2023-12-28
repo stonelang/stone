@@ -7,7 +7,8 @@ using namespace stone;
 using namespace llvm::opt;
 
 Driver::Driver()
-    : fileMgr(GetFileSystemOptions()), optTable(stone::CreateOptTable()) {}
+    : fileMgr(GetFileSystemOptions()), optTable(stone::CreateOptTable()),
+      memContext(new MemoryContext(GetLangOptions())) {}
 
 std::unique_ptr<InputArgList>
 Driver::ParseCommandLine(llvm::ArrayRef<const char *> args) {

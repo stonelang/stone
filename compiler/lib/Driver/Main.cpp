@@ -23,12 +23,16 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   driver.GetDriverOptions().mainExecutableName = mainExecutableName;
 
   auto inputArgList = driver.ParseCommandLine(args);
-  if(!inputArgList){
-    return 1; 
+  if (!inputArgList) {
+    return 1;
   }
   auto derivedArgList = driver.TranslateInputArgList(*inputArgList);
 
-  driver.ParseDriverOptions(*inputArgList);
+  // driver.ParseDriverOptions(*inputArgList);
+
+  // if (driver.GetDriverOptions().mainAction.IsAlien()) {
+  //   return 1;
+  // }
 
   return 0;
 }

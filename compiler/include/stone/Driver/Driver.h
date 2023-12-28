@@ -3,8 +3,11 @@
 
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/FileSystemOptions.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Driver/CompilationOptions.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Stats/Stats.h"
 
@@ -13,12 +16,16 @@ namespace stone {
 class Driver final {
 
   DriverOptions driverOpts;
+  LangOptions langOpts;
+  CompilationOptions compilationOpts;
   FileSystemOptions fileSystemOpts;
-  std::unique_ptr<llvm::opt::OptTable> optTable;
 
   FileMgr fileMgr;
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
+
+  std::unique_ptr<llvm::opt::OptTable> optTable;
+  std::unique_ptr<MemoryContext> memContext;
 
 public:
   Driver(const Driver &) = delete;
@@ -41,12 +48,27 @@ public:
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
   Status ParseDriverOptions(const ArgList &args);
 
+  CompilationOptions &GetCompilationOptions() { return compilationOpts; }
+  const CompilationOptions &GetCompilationOptions() const {
+    return compilationOpts;
+  }
+
+  Status ParseCompilationOptions(const ArgList &args);
+
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
 
   FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
   const FileSystemOptions &GetFileSystemOptions() const {
     return fileSystemOpts;
   }
+
+  LangOptions &GetLangOptions() { return langOpts; }
+  const LangOptions &GetLangOptions() const { return langOpts; }
+
+public:
+  MemoryContext &GetMemoryContext() { return *memContext; }
+  const MemoryContext &GetMemoryContext() const { return *memContext; }
+  bool HasMemoryContext() const { return memContext != nullptr; }
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {

@@ -1,7 +1,6 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
-#include "stone/Driver/CompilationKind.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 
@@ -58,8 +57,6 @@ public:
   /// The path to the SDK against which to build.
   /// (If empty, this implies no SDK.)
   std::string sdkPath;
-
-  CompilationKind compilationKind = CompilationKind::Quadratic;
 };
 
 } // namespace stone

@@ -1,18 +1,20 @@
-#ifndef STONE_DRIVER_DRIVER_COMPILATION_KIND_H
-#define STONE_DRIVER_DRIVER_COMPILATION_KIND_H
+#ifndef STONE_DRIVER_DRIVER_COMPILATION_OPTIONS_H
+#define STONE_DRIVER_DRIVER_COMPILATION_OPTIONS_H
+
+#include "stone/Basic/STDAlias.h"
 
 namespace stone {
 /// This mode controls the compilation process
 /// p := -primary-file
-enum class CompilationKind : uint8_t {
-  /// n inputs, n compile(s), n * n  parses
+enum class CompilationKind : UInt8 {
+  /// n input (s), n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
   Quadratic = 0,
   /// n input(s), n compile(s), n parses
   /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
   Flat,
-  /// n inputs, j CPU(s), j compile(s), n * j parses
+  /// n inputv(s), j CPU(s), j compile(s), n * j parses
   /// Ex: compile_1(1=p,...,n),...,
   /// compile_2(1,2=p,...,n),...,compile_j(1,...,p=j,...,n)
   CPUCount,
@@ -20,6 +22,12 @@ enum class CompilationKind : uint8_t {
   /// Ex: compile(1,....,n)
   Single,
 };
+
+class CompilationOptions final {
+public:
+  CompilationKind compilationKind = CompilationKind::Quadratic;
+};
+
 } // namespace stone
 
 #endif

@@ -1,6 +1,9 @@
 #ifndef STONE_DRIVER_DRIVER_EXECUTION_H
 #define STONE_DRIVER_DRIVER_EXECUTION_H
 
+#include "stone/Driver/Job.h"
+#include "stone/Driver/JobConstruction.h"
+
 namespace stone {
 
 /// Packs together information chosen by toolchains to create jobs.
@@ -27,7 +30,17 @@ class JobInvocation final {
   //         extraEnvironment(std::move(extraEnv)) {}
 };
 
+enum class ToolChainKind { None = 0, Darwin, Linux, Windows };
+
 class ToolChain {
+
+  ToolChainKind kind;
+
+public:
+  ToolChain(ToolChainKind kind);
+
+public:
+  ToolChainKind GetKind() { return kind; }
 
 public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,
@@ -61,6 +74,32 @@ public:
   //              llvm::ArrayRef<const JobConstruction *> inputConstructions,
   //              std::unique_ptr<CommandOutput> output,
   //              const JobOptions &jobOpts) const;
+};
+
+class DarwinToolChain final : public ToolChain {
+public:
+  DarwinToolChain();
+
+public:
+  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+                                    const JobContext &context) const override;
+};
+class LinuxToolChain final : public ToolChain {
+public:
+  LinuxToolChain();
+
+public:
+  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+                                    const JobContext &context) const override;
+};
+
+class WindowsToolChain final : public ToolChain {
+public:
+  WindowsToolChain();
+
+public:
+  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+                                    const JobContext &context) const override;
 };
 
 } // namespace stone

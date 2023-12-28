@@ -1,11 +1,26 @@
 #include "stone/Driver/Compilation.h"
 
-QuadraticCompilation::QuadraticCompilation()
-    : Compilation(CompilationKind::Quadratic) {}
+using namespace stone;
 
-FlatCompilation::FlatCompilation() : Compilation(CompilationKind::Flat) {}
+Compilation::Compilation(CompilationKind kind, Driver &driver)
+    : kind(kind), driver(driver) {}
 
-CPUCountCompilation::CPUCountCompilation()
-    : Compilation(CompilationKind::CPUCount) {}
+QuadraticCompilation::QuadraticCompilation(Driver &driver)
+    : Compilation(CompilationKind::Quadratic, driver) {}
 
-SingleCompilation::SingleCompilation() : Compilation(CompilationKind::Single) {}
+Status QuadraticCompilation::Execute() { return Status(); }
+
+FlatCompilation::FlatCompilation(Driver &driver)
+    : Compilation(CompilationKind::Flat, driver) {}
+
+Status FlatCompilation::Execute() { return Status(); }
+
+CPUCountCompilation::CPUCountCompilation(Driver &driver)
+    : Compilation(CompilationKind::CPUCount, driver) {}
+
+Status CPUCountCompilation::Execute() { return Status(); }
+
+SingleCompilation::SingleCompilation(Driver &driver)
+    : Compilation(CompilationKind::Single, driver) {}
+
+Status SingleCompilation::Execute() { return Status(); }
