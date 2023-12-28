@@ -23,7 +23,6 @@ enum class JobConstructionKind : UInt8 {
   DynamicLink,
   StaticLink,
   Assemble,
-  Executable,
   First = Compile,
   Last = Assemble
 };
@@ -107,7 +106,6 @@ public:
 };
 
 class StaticLinkJobConstruction final : public JobConstruction {
-
   LinkMode linkMode;
 
 public:
@@ -128,7 +126,6 @@ class BackendJobConstruction final : public JobConstruction {
 public:
   BackendJobConstruction(JobConstructionInput input, file::Type outputFileType,
                          size_t inputIndex);
-
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
@@ -137,12 +134,6 @@ public:
     return construction->GetKind() == JobConstructionKind::Backend;
   }
 };
-
-// class ExecutableJobConstruction final : public JobConstruction {
-// public:
-//   ExecutableJobConstruction()
-//       : JobConstruction(JobConstructionKind::Executable) {}
-// };
 
 } // namespace stone
 
