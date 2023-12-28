@@ -2,7 +2,8 @@
 
 using namespace stone;
 
-DarwinToolChain::DarwinToolChain() : ToolChain(ToolChainKind::Darwin) {}
+DarwinToolChain::DarwinToolChain(const Driver &driver)
+    : ToolChain(ToolChainKind::Darwin, driver) {}
 
 JobInvocation
 DarwinToolChain::ConstructInvocation(const CompileJobConstruction &job,

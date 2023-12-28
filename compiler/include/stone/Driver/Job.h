@@ -94,13 +94,14 @@ enum class JobCondition {
 
 class Job {
 
+public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
-
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If
   /// negative, contains a quasi-PID, which identifies a Job that's a member of
   /// a BatchJob _without_ denoting an operating system process.
   using JobProcessID = int64_t;
 
+private:
   /// The action which caused the creation of this Job, and the conditions
   /// under which it must be run.
   llvm::PointerIntPair<const JobConstruction *, 2, JobCondition>

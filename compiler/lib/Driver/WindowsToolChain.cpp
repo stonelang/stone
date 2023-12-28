@@ -3,7 +3,8 @@
 
 using namespace stone;
 
-WindowsToolChain::WindowsToolChain() : ToolChain(ToolChainKind::Windows) {}
+WindowsToolChain::WindowsToolChain(const Driver &driver)
+    : ToolChain(ToolChainKind::Windows, driver) {}
 
 JobInvocation
 WindowsToolChain::ConstructInvocation(const CompileJobConstruction &job,

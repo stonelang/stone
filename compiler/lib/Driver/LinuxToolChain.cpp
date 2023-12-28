@@ -2,7 +2,8 @@
 
 using namespace stone;
 
-LinuxToolChain::LinuxToolChain() : ToolChain(ToolChainKind::Linux) {}
+LinuxToolChain::LinuxToolChain(const Driver &driver)
+    : ToolChain(ToolChainKind::Linux, driver) {}
 
 JobInvocation
 LinuxToolChain::ConstructInvocation(const CompileJobConstruction &job,
