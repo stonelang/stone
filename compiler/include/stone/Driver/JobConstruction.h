@@ -38,7 +38,7 @@ using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 class JobConstruction : public MemoryAllocation<JobConstruction> {
 protected:
   JobConstructionKind kind;
-  file::Type outputFileType = file::Type::None;
+  file::Type fileType = file::Type::None;
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 
 public:
@@ -46,8 +46,8 @@ public:
 
 public:
   JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
-                  file::Type outputFileType)
-      : kind(kind), inputs(inputs), outputFileType(outputFileType) {}
+                  file::Type fileType)
+      : kind(kind), inputs(inputs), fileType(fileType) {}
 
 public:
   using size_type = llvm::ArrayRef<JobConstructionInput>::size_type;
@@ -63,6 +63,7 @@ public:
 
 public:
   JobConstructionKind GetKind() const { return kind; }
+  file::Type GetFileType() { return fileType; }
 
 public:
   // Required for llvm::dyn_cast
@@ -76,8 +77,7 @@ class CompileJobConstruction final : public JobConstruction {
 
 public:
   CompileJobConstruction(file::Type outputFileType);
-  CompileJobConstruction(JobConstructionInput primaryInput,
-                         file::Type outputFileType);
+  CompileJobConstruction(JobConstructionInput input, file::Type outputFileType);
 
 public:
   static bool classof(const JobConstruction *construction) {

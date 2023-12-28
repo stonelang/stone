@@ -2,10 +2,10 @@
 
 using namespace stone;
 
-// CompileJobConstruction::CompileJobConstruction(file::Type outputFileType)
-//     : JobConstruction(JobConstructionKind::Compile, nullptr, outputFileType) {}
-
-CompileJobConstruction::CompileJobConstruction(
-    JobConstructionInput primaryInput, file::Type outputFileType)
-    : JobConstruction(JobConstructionKind::Compile, primaryInput,
+CompileJobConstruction::CompileJobConstruction(file::Type outputFileType)
+    : JobConstruction(JobConstructionKind::Compile, llvm::None,
                       outputFileType) {}
+
+CompileJobConstruction::CompileJobConstruction(JobConstructionInput input,
+                                               file::Type outputFileType)
+    : JobConstruction(JobConstructionKind::Compile, input, outputFileType) {}
