@@ -1,8 +1,12 @@
 #ifndef STONE_DRIVER_DRIVER_EXECUTION_H
 #define STONE_DRIVER_DRIVER_EXECUTION_H
 
+#include "Stone/Option/Options.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
+
+#include "llvm/Option/Option.h"
 
 namespace stone {
 
@@ -124,6 +128,73 @@ public:
   /// -debug-prefix-map entries. For example, Darwin has an RC_DEBUG_PREFIX_MAP
   /// environment variable that is also understood by Clang.
   virtual std::string GetGlobalDebugPathRemapping() const { return {}; }
+
+public:
+  /// Special handling for passing down '-l' arguments.
+  ///
+  /// Not all downstream tools (lldb, ld etc.) consistently accept
+  /// a space between the '-l' flag and its argument, so we remove
+  /// the extra space if it was present in \c Args.
+  static void AddLinkedLibArgs(const llvm::opt::ArgList &args,
+                               llvm::opt::ArgStringList &compileArgs);
+
+  /// Returns whether a given sanitizer exists for the current toolchain.
+  ///
+  /// \param sanitizer Sanitizer name.
+  /// \param shared Whether the library is shared
+  bool SanitizerRuntimeLibExists(const llvm::opt::ArgList &args,
+                                 StringRef sanitizer, bool shared = true) const;
+
+public:
+  /// Return the default language type to use for the given extension.
+  /// If the extension is empty or is otherwise not recognized, return
+  /// the invalid type \c TY_INVALID.
+  file::Type LookupFileTypeForExtension(llvm::StringRef ext) const;
+
+  /// Copies the path for the directory clang libraries would be stored in on
+  /// the current toolchain.
+  void GetClangLibraryPath(const llvm::opt::ArgList &args,
+                           llvm::SmallString<128> &libPath) const;
+
+  // Returns the Clang driver executable to use for linking.
+  const char *GetClangLinkerDriver(const llvm::opt::ArgList &args) const;
+
+  /// Returns the name the clang library for a given sanitizer would have on
+  /// the current toolchain.
+  ///
+  /// \param Sanitizer Sanitizer name.
+  /// \param shared Whether the library is shared
+  virtual std::string SanitizerRuntimeLibName(llvm::StringRef sanitizer,
+                                              bool shared = true) const = 0;
+
+  /// Adds a runtime library to the arguments list for linking.
+  ///
+  /// \param LibName The library name
+  /// \param Arguments The arguments list to append to
+  void AddLinkRuntimeLib(const llvm::opt::ArgList &Args,
+                         llvm::opt::ArgStringList &Arguments,
+                         StringRef LibName) const;
+
+  virtual void AddPluginArguments(const llvm::opt::ArgList &Args,
+                                  llvm::opt::ArgStringList &Arguments) const {}
+
+  /// Validates arguments passed to the toolchain.
+  ///
+  /// An override point for platform-specific subclasses to customize the
+  /// validations that should be performed.
+  virtual void ValidateArguments(DiagnosticEngine &diags,
+                                 const llvm::opt::ArgList &args,
+                                 StringRef defaultTarget) const {}
+
+  /// Validate the output information.
+  ///
+  /// An override point for platform-specific subclasses to customize their
+  /// behavior once the outputs are known.
+  virtual void ValidateOutputInfo(DiagnosticEngine &diags,
+                                  const DriverOptions &driverOpts) const {}
+
+  llvm::Expected<file::Type>
+  FemarkFileTypeFromArgs(const llvm::opt::ArgList &Args) const;
 
 public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,

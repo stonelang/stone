@@ -3,7 +3,8 @@
 
 using namespace stone;
 
-ToolChain::ToolChain(ToolChainKind kind, const Driver& driver) : kind(kind), driver(driver) {}
+ToolChain::ToolChain(ToolChainKind kind, const Driver &driver)
+    : kind(kind), driver(driver) {}
 
 std::unique_ptr<Job> ToolChain::ConstructJob(
     const JobConstruction &construction, Compilation &compilation,
