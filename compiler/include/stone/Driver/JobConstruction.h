@@ -31,6 +31,8 @@ using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 class JobConstruction {
 
 protected:
+  JobConstruction kind;
+  file::Type outputFileType = file::Type::None;
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 
 public:

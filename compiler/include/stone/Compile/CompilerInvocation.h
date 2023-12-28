@@ -78,9 +78,6 @@ public:
   CompilerInvocation(Compiler &compiler);
 
 public:
-  CompilerInvocation();
-
-public:
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }
   const CompilerOptions &GetCompilerOptions() const { return compilerOpts; }
 

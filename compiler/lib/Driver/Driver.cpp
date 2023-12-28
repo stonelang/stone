@@ -5,7 +5,8 @@ using namespace stone;
 
 using namespace llvm::opt;
 
-Driver::Driver() {}
+Driver::Driver()
+    : fileMgr(GetFileSystemOptions()), optTable(stone::CreateOptTable()) {}
 
 std::unique_ptr<InputArgList>
 Driver::ParseCommandLine(llvm::ArrayRef<const char *> args) {
@@ -15,10 +16,9 @@ Driver::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
-  optTable = stone::CreateOptTable();
   auto inputArgList = std::make_unique<InputArgList>(
-      optTable->ParseArgs(args, missingArgIndex, missingArgCount,
-                          includedFlagsBitmask, excludedFlagsBitmask));
+      GetOptTable().ParseArgs(args, missingArgIndex, missingArgCount,
+                              includedFlagsBitmask, excludedFlagsBitmask));
 
   return inputArgList;
 }

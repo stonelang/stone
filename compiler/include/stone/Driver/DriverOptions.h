@@ -7,6 +7,8 @@
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 
+using namespace llvm::opt;
+
 namespace stone {
 
 enum class LinkMode : uint8_t {
@@ -25,6 +27,7 @@ enum class LinkMode : uint8_t {
 };
 
 class DriverOptions final {
+
 public:
   /// The main action requested or computed.
   Action mainAction;
@@ -32,6 +35,12 @@ public:
 public:
   /// Default target triple.
   std::string defaultTargetTriple;
+
+  /// The path the executing program
+  llvm::StringRef mainExecutablePath;
+
+  /// The name of the executing program
+  llvm::StringRef mainExecutableName;
 };
 
 } // namespace stone
