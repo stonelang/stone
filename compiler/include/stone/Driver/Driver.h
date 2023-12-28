@@ -7,7 +7,6 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/Status.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Driver/CompilationOptions.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Stats/Stats.h"
 
@@ -17,7 +16,6 @@ class Driver final {
 
   DriverOptions driverOpts;
   LangOptions langOpts;
-  CompilationOptions compilationOpts;
   FileSystemOptions fileSystemOpts;
 
   FileMgr fileMgr;
@@ -47,13 +45,6 @@ public:
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
   Status ParseDriverOptions(const ArgList &args);
-
-  CompilationOptions &GetCompilationOptions() { return compilationOpts; }
-  const CompilationOptions &GetCompilationOptions() const {
-    return compilationOpts;
-  }
-
-  Status ParseCompilationOptions(const ArgList &args);
 
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
 

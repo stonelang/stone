@@ -126,6 +126,7 @@ class BackendJobConstruction final : public JobConstruction {
 public:
   BackendJobConstruction(JobConstructionInput input, file::Type outputFileType,
                          size_t inputIndex);
+
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 

@@ -27,7 +27,8 @@ StaticLinkJobConstruction::StaticLinkJobConstruction(
   assert(linkMode == LinkMode::StaticLibrary);
 }
 
-BackendJobConstruction::BackendJobConstruction(
-    JobConstructionInput input, file::Type outputFileType, size_t inputIndex)
+BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,
+                                               file::Type outputFileType,
+                                               size_t inputIndex)
     : JobConstruction(JobConstructionKind::Backend, input, outputFileType),
       inputIndex(inputIndex) {}

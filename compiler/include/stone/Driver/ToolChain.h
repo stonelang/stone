@@ -6,6 +6,8 @@
 
 namespace stone {
 
+class Compilation;
+
 /// Packs together information chosen by toolchains to create jobs.
 class JobInvocation final {
 
@@ -46,21 +48,16 @@ public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                             const JobContext &context) const;
 
-  // virtual JobInvocation ConstructInvocation(const BackendJobConstruction
-  // &job,
-  //                                           const JobContext &context) const;
+  virtual JobInvocation ConstructInvocation(const BackendJobConstruction &job,
+                                            const JobContext &context) const;
 
-  // virtual JobInvocation
-  // ConstructInvocation(const ExecutableJobConstruction &job,
-  //                     const JobContext &context) const;
+  virtual JobInvocation
+  ConstructInvocation(const StaticLinkJobConstruction &job,
+                      const JobContext &context) const;
 
-  // virtual JobInvocation
-  // ConstructInvocation(const StaticLinkJobConstruction &job,
-  //                     const JobContext &context) const;
-
-  // virtual JobInvocation
-  // ConstructInvocation(const DynamicLinkJobConstruction &job,
-  //                     const JobContext &context) const;
+  virtual JobInvocation
+  ConstructInvocation(const DynamicLinkJobConstruction &job,
+                      const JobContext &context) const;
 
 public:
   /// Construct a Job for the action \p JA, taking the given information into
@@ -68,13 +65,12 @@ public:
   ///
   /// This method dispatches to the various \c ConstructInvocation methods,
   /// which may be overridden by platform-specific subclasses.
-  // std::unique_ptr<Job>
-  // ConstructJob(const JobConstruction &jobConstruction, Compilation
-  // &compilation,
-  //              llvm::SmallVectorImpl<const Job *> &&inputs,
-  //              llvm::ArrayRef<const JobConstruction *> inputConstructions,
-  //              std::unique_ptr<CommandOutput> output,
-  //              const JobOptions &jobOpts) const;
+  std::unique_ptr<Job>
+  ConstructJob(const JobConstruction &jobConstruction, Compilation &compilation,
+               llvm::SmallVectorImpl<const Job *> &&inputs,
+               llvm::ArrayRef<const JobConstruction *> inputConstructions,
+               std::unique_ptr<JobOutput> output,
+               const DriverOptions &driverOpts) const;
 };
 
 class DarwinToolChain final : public ToolChain {

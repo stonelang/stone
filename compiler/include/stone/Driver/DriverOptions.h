@@ -27,8 +27,26 @@ enum class LinkMode : UInt8 {
   StaticLibrary
 };
 
-class DriverOptions final {
+/// This mode controls the compilation process
+/// p := -primary-file
+enum class CompilationKind : UInt8 {
+  /// n input (s), n compile(s), n * n  parses
+  /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
+  /// compile_n(1,....,n=p)
+  Quadratic = 0,
+  /// n input(s), n compile(s), n parses
+  /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
+  Flat,
+  /// n inputv(s), j CPU(s), j compile(s), n * j parses
+  /// Ex: compile_1(1=p,...,n),...,
+  /// compile_2(1,2=p,...,n),...,compile_j(1,...,p=j,...,n)
+  CPUCount,
+  /// n inputs, 1 compile, n parses
+  /// Ex: compile(1,....,n)
+  Single,
+};
 
+class DriverOptions final {
 public:
   /// The main action requested or computed.
   Action mainAction;
@@ -44,7 +62,11 @@ public:
   llvm::StringRef mainExecutableName;
 
 public:
+  /// The driver link mode
   LinkMode linkMode = LinkMode::None;
+
+  /// The kind of compilation
+  CompilationKind compilationKind = CompilationKind::Quadratic;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
