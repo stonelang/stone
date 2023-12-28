@@ -16,15 +16,15 @@ namespace stone {
 class JobConstruction;
 
 enum class JobConstructionKind : UInt8 {
-  Compile = 0,
+  None = 0,
+  Compile,
   Backend,
   MergeModule,
   ModuleWrap,
   DynamicLink,
   StaticLink,
-  Assemble,
   First = Compile,
-  Last = Assemble
+  Last = StaticLink
 };
 
 /// A job construction input can be a file or another job construction
@@ -37,7 +37,7 @@ using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 
 class JobConstruction : public MemoryAllocation<JobConstruction> {
 protected:
-  JobConstructionKind kind;
+  JobConstructionKind kind = JobConstructionKind::None;
   file::Type fileType = file::Type::None;
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 

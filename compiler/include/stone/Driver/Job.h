@@ -2,14 +2,16 @@
 #define STONE_DRIVER_DRIVER_JOB_H
 
 #include "stone/Basic/File.h"
+#include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/SmallSet.h"
+#include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
+class Job;
+class Compilation;
+class JobConstruction;
 
-class JobContext final {
-public:
-};
 
 class JobOutput final {
 
@@ -25,6 +27,23 @@ public:
   /// so Jobs cannot _just_ rely on the presence of a primary output in the
   /// DerivedOutputFileMap.
   llvm::SmallSet<file::Type, 4> AdditionalOutputFileTypes;
+};
+
+class JobContext final {
+private:
+  Compilation &compilation;
+
+public:
+  llvm::ArrayRef<const Job *> inputs;
+  llvm::ArrayRef<const JobConstruction *> inputConstructions;
+
+  const JobOutput &jobOutput;
+  const DriverOptions &driverOpts;
+
+public:
+  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> Inputs,
+             llvm::ArrayRef<const JobConstruction *> inputConstructions,
+             const JobOutput &jobOutput, const DriverOptions &driverOpts);
 };
 
 class Job {
