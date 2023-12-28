@@ -33,10 +33,13 @@ public:
   std::unique_ptr<InputArgList>
   ParseCommandLine(llvm::ArrayRef<const char *> args);
 
+  std::unique_ptr<llvm::opt::DerivedArgList>
+  TranslateInputArgList(const InputArgList &ial);
+
 public:
-  
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
+  Status ParseDriverOptions(const ArgList &args);
 
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
 

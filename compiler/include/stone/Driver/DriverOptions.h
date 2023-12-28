@@ -1,6 +1,7 @@
 #ifndef STONE_DRIVER_DRIVERNOPTIONS_H
 #define STONE_DRIVER_DRIVERNOPTIONS_H
 
+#include "stone/Driver/CompilationKind.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 
@@ -41,6 +42,24 @@ public:
 
   /// The name of the executing program
   llvm::StringRef mainExecutableName;
+
+public:
+  LinkMode linkMode = LinkMode::None;
+
+  /// The number of threads for multi-threaded compilation.
+  unsigned numThreads = 0;
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+  /// The name of the module which we are building.
+  std::string moduleName;
+
+  /// The path to the SDK against which to build.
+  /// (If empty, this implies no SDK.)
+  std::string sdkPath;
+
+  CompilationKind compilationKind = CompilationKind::Quadratic;
 };
 
 } // namespace stone
