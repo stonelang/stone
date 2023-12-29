@@ -58,6 +58,9 @@ Status DriverInvocation::ParseDriverOptions(const llvm::opt::ArgList &argList) {
   if (GetAction().IsAlien()) {
     return Status::Error();
   }
+  if (BuildInputFiles(argList, driverOpts.inputFiles).IsError()) {
+    return Status::Error();
+  }
   return Status();
 }
 Status DriverInvocation::ParseCompilationOptions(
@@ -66,7 +69,18 @@ Status DriverInvocation::ParseCompilationOptions(
   return Status();
 }
 
-Status DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &argList) {
+Status DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &args) {
+
+  assert(HasAction());
+  if (GetAction().IsNone()) {
+    driverOpts.linkMode = LinkMode::Executable;
+  } else if (GetAction().IsEmitLibrary()) {
+    if (args.hasArg(opts::Static)) {
+      driverOpts.linkMode = LinkMode::StaticLibrary;
+    } else {
+      driverOpts.linkMode = LinkMode::DynamicLibrary;
+    }
+  }
   return Status();
 }
 
@@ -80,13 +94,14 @@ DriverInvocation::ComputeToolChainKind(const llvm::opt::ArgList &argList) {
   return Status();
 }
 
-Status DriverInvocation::ComputeInputFiles(const llvm::opt::ArgList &argList) {}
-
 Status DriverInvocation::MightHaveExplicitPrimaryInputs(
     const JobOutput &jobOutput) const {
 
   return Status();
 }
+
+Status DriverInvocation::BuildInputFiles(const llvm::opt::ArgList &args,
+                                         InputFileList &inputFiles) const {}
 
 void DriverInvocation::ForEachInputFile(
     std::function<void(InputFile &inputFile)> callback) {

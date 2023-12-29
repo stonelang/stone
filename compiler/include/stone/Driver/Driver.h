@@ -90,16 +90,6 @@ public:
   std::unique_ptr<ToolChain>
   BuildToolChain(const llvm::opt::InputArgList &inputArgList);
 
-  // /// Construct the list of inputs and their types from the given arguments.
-  // ///
-  // /// \param TC The current tool chain.
-  // /// \param Args The input arguments.
-  // /// \param[out] Inputs The list in which to store the resulting compilation
-  // /// inputs.
-  // Status BuildInputFiles(const ToolChain &toolChain,
-  //                    const llvm::opt::DerivedArgList &args,
-  //                    InputFileList &inputFiles) const;
-
   /// Compute the task queue for this compilation and command line argument
   /// vector.
   ///

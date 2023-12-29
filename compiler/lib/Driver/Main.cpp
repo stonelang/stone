@@ -44,21 +44,19 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(Status::Error());
   }
 
-  if (!driver.GetInvocation().HasAction()) {
-    // driver.GetDiags().PrintD(diag::err_no_compile_action);
-    FinishMain(Status::Error());
-  }
+  assert(driver.GetInvocation().HasAction());
 
   // // Now, setup the driver
   if (driver.Setup().IsError()) {
     return FinishMain(Status::Error());
   }
   assert(driver.HasToolChain());
-  assert(driver.HasTaskQueue());
-  assert(driver.HasCompilation());
 
-  if (driver.ExecuteCompilation().IsError()) {
-    return FinishMain(Status::Error());
-  }
+  // assert(driver.HasTaskQueue());
+  // assert(driver.HasCompilation());
+
+  // if (driver.ExecuteCompilation().IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
   return FinishMain();
 }

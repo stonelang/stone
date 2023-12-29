@@ -271,6 +271,14 @@ public:
   Status ComputeCompilationKind(const llvm::opt::ArgList &argList);
 
   Status ComputeInputFiles(const llvm::opt::ArgList &argList);
+
+  /// Construct the list of inputs and their types from the given arguments.
+  ///
+  /// \param args The input arguments.
+  /// \param[out] Inputs The list in which to store the resulting compilation
+  /// inputs.
+  Status BuildInputFiles(const llvm::opt::ArgList &argList,
+                         InputFileList &inputFiles) const;
   void ForEachInputFile(std::function<void(InputFile &input)> callback);
 
 public:
