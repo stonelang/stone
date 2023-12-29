@@ -80,8 +80,10 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
 std::unique_ptr<Compilation>
 Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
 
+  /// BuildingCompilationRAII buildingCompilation(*this);
+
   invocation.ForEachInputFile([&](InputFile &input) {
-    JobConstructionInput currentInput = const_cast<InputFile *>(&input);
+    JobConstructionInput currentInput = static_cast<InputFile *>(&input);
 
     switch (input.GetType()) {
     case file::Type::Stone: {
@@ -90,6 +92,18 @@ Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
 
       currentInput = CompileJobConstruction::Create(
           *this, currentInput, invocation.GetDriverOptions().outputFileType);
+
+      buildingCompilation.AddModuleInput(currentInput);
+
+      // Basic for now
+      buildingCompilation.AddLinkerInput(currentInput);
+      break;
+    }
+    case file::Type::Object: {
+      if (invocation.ShouldLink() && invocation.IsLinkOnly()) {
+        buildingCompilation.AddLinkerInput(currentInput);
+      }
+      break;
     }
     default:
       llvm_unreachable(" Invalid file type");
@@ -109,17 +123,24 @@ Driver::BuildFlatCompilation(BuildingCompilationRAII &state) {
 }
 
 std::unique_ptr<Compilation>
-Driver::BuildSingleCompilation(BuildingCompilationRAII &state) {
+Driver::BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation) {
+
+  auto compileJobConstruction = CompileJobConstruction::Create(
+      *this, invocation.GetDriverOptions().outputFileType);
 
   invocation.ForEachInputFile([&](InputFile &input) {
     JobConstructionInput currentInput = const_cast<InputFile *>(&input);
+    compileJobConstruction->AddInput(currentInput);
   });
+
+  buildingCompilation.AddModuleInput(compileJobConstruction);
+  buildingCompilation.AddLinkerInput(compileJobConstruction);
 
   return nullptr;
 }
 
 std::unique_ptr<Compilation>
-Driver::BuildCPUCountCompilation(BuildingCompilationRAII &state) {
+Driver::BuildCPUCountCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   invocation.ForEachInputFile([&](InputFile &input) {
 
@@ -130,7 +151,38 @@ Driver::BuildCPUCountCompilation(BuildingCompilationRAII &state) {
 
 Driver::BuildingCompilationRAII::~BuildingCompilationRAII() {
 
-  // TODO: If there are any linking stuff, do it
+  if (driver.GetInvocation().ShouldLink() && HasLinkerInputs()) {
+    JobConstruction *linkJobConstruction = nullptr;
+
+    // Add the linker inputs
+    switch (driver.GetInvocation().GetLinkMode()) {
+    case LinkMode::StaticLibrary: {
+      linkJobConstruction = StaticLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetInvocation().GetLinkMode());
+    }
+    default: {
+      // FIXME: WithLTO
+      linkJobConstruction = DynamicLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetInvocation().GetLinkMode(),
+          driver.GetInvocation().GetDriverOptions().WithLTO());
+    }
+      AddTopLevelJobConstruction(linkJobConstruction);
+    }
+    // TODO:
+    // On ELF platforms there's no built in autolinking mechanism, so we
+    // pull the info we need from the .o files directly and pass them as an
+    // argument input file to the linker.
+
+  } else {
+    // We can't rely on the merge module action being the only top-level
+    // action that needs to run. There may be other actions (e.g.
+    // BackendJobActions) that are not merge-module inputs but should be run
+    // anyway.
+    // if (MergeModuleAction){
+    //   AddTopLevelJobConstruction(MergeModuleAction);
+    // }
+    // topLevelActions.append(AllLinkerInputs.begin(), AllLinkerInputs.end());
+  }
 }
 
 std::unique_ptr<stone::TaskQueue>

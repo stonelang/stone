@@ -160,6 +160,12 @@ public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::DynamicLink;
   }
+
+public:
+  static DynamicLinkJobConstruction *Create(Driver &driver,
+                                            JobConstructionInputList inputs,
+                                            LinkMode linkMode,
+                                            bool wthLTO = false);
 };
 
 class StaticLinkJobConstruction final : public JobConstruction {
@@ -175,6 +181,10 @@ public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::StaticLink;
   }
+
+public:
+  static StaticLinkJobConstruction *
+  Create(Driver &driver, JobConstructionInputList inputs, LinkMode linkMode);
 };
 
 class BackendJobConstruction final : public JobConstruction {

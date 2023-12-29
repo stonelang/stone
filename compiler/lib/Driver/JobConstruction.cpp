@@ -43,12 +43,26 @@ DynamicLinkJobConstruction::DynamicLinkJobConstruction(
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
 }
 
+DynamicLinkJobConstruction *
+DynamicLinkJobConstruction::Create(Driver &driver,
+                                   JobConstructionInputList inputs,
+                                   LinkMode linkMode, bool withLTO) {
+
+  return new (driver) DynamicLinkJobConstruction(inputs, linkMode, withLTO);
+}
+
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode)
     : JobConstruction(JobConstructionKind::StaticLink, inputs,
                       file::Type::Image),
       linkMode(linkMode) {
   assert(linkMode == LinkMode::StaticLibrary);
+}
+
+StaticLinkJobConstruction *StaticLinkJobConstruction::Create(
+    Driver &driver, JobConstructionInputList inputs, LinkMode linkMode) {
+
+  return new (driver) StaticLinkJobConstruction(inputs, linkMode);
 }
 
 BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,

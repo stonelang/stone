@@ -76,7 +76,7 @@ public:
   std::unique_ptr<ToolChain> BuildToolChain(ToolChainKind kind);
 
   class BuildingCompilationRAII final {
-    const Driver &driver;
+    Driver &driver;
 
   public:
     llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
@@ -84,7 +84,7 @@ public:
     llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
   public:
-    BuildingCompilationRAII(const Driver &driver) : driver(driver) {
+    BuildingCompilationRAII(Driver &driver) : driver(driver) {
       moduleInputs.clear();
       linkerInputs.clear();
     }
@@ -95,9 +95,11 @@ public:
       moduleInputs.push_back(input);
     }
 
-    void AddLinerInput(const JobConstructionInput input) {
+    void AddLinkerInput(const JobConstructionInput input) {
       linkerInputs.push_back(input);
     }
+
+    bool HasLinkerInputs() { return !linkerInputs.empty(); }
 
     void AddTopLevelJobConstruction(const JobConstruction *construction) {
       topLevelJobConstructions.push_back(construction);

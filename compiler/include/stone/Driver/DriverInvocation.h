@@ -318,11 +318,11 @@ private:
 public:
   void ForEachInputFile(std::function<void(InputFile &input)> callback);
 
-  bool IsCompilable() const { return GetAction().CanCompile(); }
-  bool IsLinkable() const { return (GetLinkMode() != LinkMode::None); }
+  bool ShouldCompile() const { return GetAction().CanCompile(); }
+  bool ShouldLink() const { return (GetLinkMode() != LinkMode::None); }
 
-  bool IsCompileOnly() const { return (IsCompilable() && !IsLinkable()); }
-  bool IsLinkOnly() const { return (IsLinkable() && !IsCompilable()); }
+  bool IsCompileOnly() const { return (ShouldCompile() && !ShouldLink()); }
+  bool IsLinkOnly() const { return (ShouldLink() && !ShouldCompile()); }
 
 public:
   /// Might this sort of compile have explicit primary inputs?
