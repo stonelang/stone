@@ -1,6 +1,8 @@
 #include "stone/Driver/DriverInvocation.h"
+#include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/Job.h"
+#include "stone/Strings.h"
 
 using namespace stone;
 
@@ -101,7 +103,57 @@ Status DriverInvocation::MightHaveExplicitPrimaryInputs(
 }
 
 Status DriverInvocation::BuildInputFiles(const llvm::opt::ArgList &args,
-                                         InputFileList &inputFiles) const {}
+                                         InputFileList &inputFiles) const {
+
+  llvm::DenseMap<llvm::StringRef, llvm::StringRef> sourceFileNames;
+  auto CheckInputFileExistence = [&](llvm::StringRef inputFile) -> Status {
+    if (!driverOpts.checkInputFileExistence) {
+      return Status::Success();
+    }
+    // stdin always exists.
+    if (inputFile == strings::Dash) {
+      return Status::Success();
+    }
+    if (file::Exists(inputFile)) {
+      return Status::Success();
+    }
+    return Status::Error();
+  };
+  for (Arg *inputArg : args) {
+    if (inputArg->getOption().getKind() == Option::InputClass) {
+      llvm::StringRef inputValue = inputArg->getValue();
+      file::Type fileType = file::Type::None;
+      // stdin must be handled specially.
+      if (inputValue.equals(strings::Dash)) {
+        // By default, treat stdin as Swift input.
+        fileType = file::Type::Stone;
+      } else {
+        // Otherwise lookup by extension.
+        fileType = file::GetTypeByExt(inputValue);
+        if (fileType == file::Type::None) {
+          // By default, treat inputs with no extension, or with an
+          // extension that isn't recognized, as object files.
+          fileType = file::Type::Object;
+        }
+      }
+      if (CheckInputFileExistence(inputValue).IsSuccess()) {
+        inputFiles.push_back(InputFile(fileType, inputArg));
+      }
+      if (fileType == file::Type::Stone) {
+        auto basename = file::GetBase(inputValue);
+        if (!sourceFileNames.insert({basename, inputValue}).second) {
+          driver.GetDiags().PrintD(SrcLoc(), diag::err_two_files_same_name,
+          						   diag::LLVMStr(basename),
+                                   diag::LLVMStr(sourceFileNames[basename]),
+                                   diag::LLVMStr(inputValue));
+          driver.GetDiags().PrintD(SrcLoc(),
+                                   diag::note_explain_two_files_same_name);
+          return Status::Error();
+        }
+      }
+    }
+  }
+}
 
 void DriverInvocation::ForEachInputFile(
     std::function<void(InputFile &inputFile)> callback) {

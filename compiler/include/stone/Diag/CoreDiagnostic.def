@@ -22,5 +22,18 @@ ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStr, 
 
 ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (diag::LLVMStr))
 
+
+// Usually, but not always, emitted from the driver
+ERROR(err_two_files_same_name,none,
+      "filename \"%0\" used twice: '%1' and '%2'",
+      (diag::LLVMStr, diag::LLVMStr, diag::LLVMStr))
+
+NOTE(note_explain_two_files_same_name,none,
+     "filenames are used to distinguish private declarations with the same "
+     "name", ())
+
+
+
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnostic.h"

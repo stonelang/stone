@@ -174,6 +174,9 @@ public:
 
   InputFileList inputFiles;
 
+  /// Indicates whether the driver should check that the input file exist.
+  bool checkInputFileExistence = false;
+
   // /// Whether or not the output should contain debug info.
   // // FIXME: Eventually this should be replaced by dSYM generation.
   // CodeGenDebugInfoLevel debugInfoLevel = CodeGenDebugInfoLevel::None;

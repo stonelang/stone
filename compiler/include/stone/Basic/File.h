@@ -63,9 +63,11 @@ bool CanLink(stone::file::Type ty);
 bool Exists(llvm::StringRef name);
 
 bool CanExec(std::string path);
+
 llvm::StringRef GetExt(llvm::StringRef name);
 llvm::StringRef GetPath(llvm::StringRef path);
 llvm::StringRef GetStem(llvm::StringRef path);
+llvm::StringRef GetBase(llvm::StringRef input);
 
 template <typename Fn> void forAllTypes(const Fn &fn);
 

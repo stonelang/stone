@@ -139,6 +139,11 @@ bool file::Exists(llvm::StringRef name) {
     return true;
   }
 }
+
+llvm::StringRef file::GetBase(llvm::StringRef name) {
+  llvm::sys::path::filename(name);
+}
+
 llvm::StringRef file::GetExt(llvm::StringRef name) {
   return llvm::sys::path::extension(name);
 }
