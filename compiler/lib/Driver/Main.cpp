@@ -45,10 +45,10 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   //   return FinishMain(Status::Error());
   // }
 
-  // // // Now, setup the driver
-  // if (driver.Setup().IsError()) {
-  //   return FinishMain(Status::Error());
-  // }
+  // // Now, setup the driver
+  if (driver.Setup().IsError()) {
+    return FinishMain(Status::Error());
+  }
   // assert(driver.HasToolChain());
 
   // assert(driver.HasTaskQueue());

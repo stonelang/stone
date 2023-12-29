@@ -212,6 +212,9 @@ public:
 
 public:
   std::string toolsDirectory;
+
+public:
+  DriverOptions();
 };
 
 class DriverInvocation final {

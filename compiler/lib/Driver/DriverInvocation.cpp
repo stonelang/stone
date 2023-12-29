@@ -4,15 +4,15 @@
 #include "stone/Driver/Job.h"
 #include "stone/Strings.h"
 
+#include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
 
 using namespace stone;
 
-DriverInvocation::DriverInvocation() : optTable(stone::CreateOptTable()) {
-  // SetTargetTriple(llvm::sys::getDefaultTargetTriple());
-}
+DriverOptions::DriverOptions()
+    : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
-void DriverInvocation::SetTargetTriple(llvm::StringRef triple) {}
+DriverInvocation::DriverInvocation() : optTable(stone::CreateOptTable()) {}
 
 Status DriverInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 

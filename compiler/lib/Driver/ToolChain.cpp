@@ -28,7 +28,6 @@ ToolChain::ConstructInvocation(const MergeModuleJobConstruction &job,
                                const JobContext &context) const {
 
   return JobInvocation();
-  ;
 }
 
 JobInvocation
