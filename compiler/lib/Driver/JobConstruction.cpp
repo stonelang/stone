@@ -2,13 +2,24 @@
 
 using namespace stone;
 
+IncrementatlJobConstruction::IncrementatlJobConstruction(
+    JobConstructionKind kind, JobConstructionInputList inputs,
+    file::Type fileType)
+    : JobConstruction(kind, llvm::None, fileType) {}
+
 CompileJobConstruction::CompileJobConstruction(file::Type outputFileType)
-    : JobConstruction(JobConstructionKind::Compile, llvm::None,
-                      outputFileType) {}
+    : IncrementatlJobConstruction(JobConstructionKind::Compile, llvm::None,
+                                  outputFileType) {}
 
 CompileJobConstruction::CompileJobConstruction(JobConstructionInput input,
                                                file::Type outputFileType)
-    : JobConstruction(JobConstructionKind::Compile, input, outputFileType) {}
+    : IncrementatlJobConstruction(JobConstructionKind::Compile, input,
+                                  outputFileType) {}
+
+MergeModuleJobConstruction::MergeModuleJobConstruction(
+    JobConstructionInputList inputs)
+    : IncrementatlJobConstruction(JobConstructionKind::MergeModule, inputs,
+                                  file::Type::StoneModule) {}
 
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode, bool withLTO)

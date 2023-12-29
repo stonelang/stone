@@ -40,7 +40,7 @@ protected:
   file::Type fileType = file::Type::None;
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 
-public:
+protected:
   JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
                   file::Type fileType)
       : kind(kind), inputs(inputs), fileType(fileType) {}
@@ -65,6 +65,7 @@ public:
 public:
   JobConstructionKind GetKind() const { return kind; }
   file::Type GetFileType() { return fileType; }
+  void AddInput(JobConstructionInput input) { inputs.push_back(input); }
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -73,15 +74,42 @@ public:
   }
 };
 
-class CompileJobConstruction final : public JobConstruction {
+class IncrementatlJobConstruction : public JobConstruction {
+public:
+  IncrementatlJobConstruction(JobConstructionKind Kind,
+                              JobConstructionInputList inputs,
+                              file::Type fileType);
 
 public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::Compile ||
+           construction->GetKind() == JobConstructionKind::MergeModule;
+  }
+};
+
+class CompileJobConstruction final : public IncrementatlJobConstruction {
+
+public:
+  /// In this scenario, we are creating one compile job with all inputs to be
+  /// added.
   CompileJobConstruction(file::Type outputFileType);
+
+  /// In this scenario, one compile job for eache input.
   CompileJobConstruction(JobConstructionInput input, file::Type outputFileType);
 
 public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::Compile;
+  }
+};
+
+class MergeModuleJobConstruction final : public IncrementatlJobConstruction {
+public:
+  MergeModuleJobConstruction(JobConstructionInputList inputs);
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::MergeModule;
   }
 };
 

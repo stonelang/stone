@@ -7,7 +7,9 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
+#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticOptions.h"
+#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 
@@ -18,9 +20,10 @@ using namespace llvm::opt;
 
 namespace stone {
 
-class Driver;
 class DriverInvocation;
 class JobOutput;
+
+// using  ToolChainPlatform = llvm::Triple::OSType;
 
 enum class ToolChainKind {
   None = 0,
@@ -35,7 +38,9 @@ enum class ToolChainKind {
   /// OpenBSD tool-chain
   OpenBSD,
   /// Android tool-chain
-  Android
+  Android,
+  /// Any unix tool-chain
+  Unix
 };
 
 enum class LinkMode : UInt8 {
@@ -130,6 +135,9 @@ public:
   /// Default target triple.
   std::string defaultTargetTriple;
 
+  /// Default target triple.
+  llvm::Optional<llvm::Triple> targetVariant;
+
   /// The path the executing program
   llvm::StringRef mainExecutablePath;
 
@@ -207,7 +215,9 @@ public:
 };
 
 class DriverInvocation final {
-  Driver &driver;
+
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
 
   DriverOptions driverOpts;
   CompilationOptions compilationOpts;
@@ -220,10 +230,9 @@ class DriverInvocation final {
   std::unique_ptr<llvm::opt::DerivedArgList> derivedArgList;
 
 public:
-  DriverInvocation(Driver &driver);
+  DriverInvocation();
 
 public:
-  Driver &GetDriver();
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
@@ -231,9 +240,6 @@ public:
   const CompilationOptions &GetCompilationOptions() const {
     return compilationOpts;
   }
-
-  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
-  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
@@ -247,12 +253,30 @@ public:
   Action &GetAction() { return driverOpts.mainAction; }
   const Action &GetAction() const { return driverOpts.mainAction; }
 
-  const LinkMode GetLinkMode() const { return driverOpts.linkMode; }
-  const ToolChainKind GetToolChainKind() const {
-    return driverOpts.toolChainKind;
-  }
-  const CompilationKind GetCompilationKind() const {
+  LinkMode GetLinkMode() const { return driverOpts.linkMode; }
+  ToolChainKind GetToolChainKind() const { return driverOpts.toolChainKind; }
+  CompilationKind GetCompilationKind() const {
     return driverOpts.compilationKind;
+  }
+
+  void SetTargetTriple(llvm::StringRef triple);
+
+  void SetMainExecutablePath(llvm::StringRef mainExecutablePath) {
+    driverOpts.mainExecutablePath = mainExecutablePath;
+  }
+  void SetMainExecutableName(llvm::StringRef mainExecutableName) {
+    driverOpts.mainExecutablePath = mainExecutableName;
+  }
+
+public:
+  DiagnosticEngine &GetDiags() { return diags; }
+  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
   }
 
 public:
@@ -269,8 +293,8 @@ public:
   Status ParseDriverOptions(const llvm::opt::ArgList &argList);
   Status ParseCompilationOptions(const llvm::opt::ArgList &argList);
 
-  Status ComputeLinkMode(const llvm::opt::ArgList &argList);
-  Status ComputeToolChainKind(const llvm::opt::ArgList &argList);
+  void ComputeLinkMode(const llvm::opt::ArgList &argList);
+  Status ParseToolChainKind(const llvm::opt::ArgList &argList);
   Status ComputeCompilationKind(const llvm::opt::ArgList &argList);
 
   Status ComputeInputFiles(const llvm::opt::ArgList &argList);
@@ -283,6 +307,12 @@ public:
   Status BuildInputFiles(const llvm::opt::ArgList &argList,
                          InputFileList &inputFiles) const;
   void ForEachInputFile(std::function<void(InputFile &input)> callback);
+
+  bool IsCompilable() const { return GetAction().CanCompile(); }
+  bool IsLinkable() const { return (GetLinkMode() != LinkMode::None); }
+
+  bool IsCompileOnly() const { return (IsCompilable() && !IsLinkable()); }
+  bool IsLinkOnly() const { return (IsLinkable() && !IsCompilable()); }
 
 public:
   /// Might this sort of compile have explicit primary inputs?

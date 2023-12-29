@@ -1,13 +1,18 @@
 #include "stone/Driver/DriverInvocation.h"
 #include "stone/Diag/CoreDiagnostic.h"
-#include "stone/Driver/Driver.h"
+#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Job.h"
 #include "stone/Strings.h"
 
+#include "llvm/Support/Path.h"
+
 using namespace stone;
 
-DriverInvocation::DriverInvocation(Driver &driver)
-    : driver(driver), optTable(stone::CreateOptTable()) {}
+DriverInvocation::DriverInvocation() : optTable(stone::CreateOptTable()) {
+  // SetTargetTriple(llvm::sys::getDefaultTargetTriple());
+}
+
+void DriverInvocation::SetTargetTriple(llvm::StringRef triple) {}
 
 Status DriverInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
@@ -22,19 +27,18 @@ Status DriverInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
   assert(inputArgList && "No input argument list.");
   if (missingArgCount) {
-    driver.GetDiags().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
+    diags.PrintD(SrcLoc(), diag::err_missing_arg_value,
+                 diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
+                 diag::UInt(missingArgCount));
     return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
-    driver.GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                             diag::LLVMStr(arg->getAsString(*inputArgList)));
+    diags.PrintD(SrcLoc(), diag::err_unknown_arg,
+                 diag::LLVMStr(arg->getAsString(*inputArgList)));
     return Status::Error();
   }
-  if (driver.GetDiags().HasError()) {
+  if (diags.HasError()) {
     return Status::Error();
   }
 
@@ -63,6 +67,11 @@ Status DriverInvocation::ParseDriverOptions(const llvm::opt::ArgList &argList) {
   if (BuildInputFiles(argList, driverOpts.inputFiles).IsError()) {
     return Status::Error();
   }
+
+  if (ParseToolChainKind(argList).IsError()) {
+    return Status::Error();
+  }
+
   return Status();
 }
 Status DriverInvocation::ParseCompilationOptions(
@@ -71,8 +80,7 @@ Status DriverInvocation::ParseCompilationOptions(
   return Status();
 }
 
-Status DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &args) {
-
+void DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &args) {
   assert(HasAction());
   if (GetAction().IsNone()) {
     driverOpts.linkMode = LinkMode::Executable;
@@ -83,7 +91,6 @@ Status DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &args) {
       driverOpts.linkMode = LinkMode::DynamicLibrary;
     }
   }
-  return Status();
 }
 
 Status
@@ -91,8 +98,51 @@ DriverInvocation::ComputeCompilationKind(const llvm::opt::ArgList &argList) {
   return Status();
 }
 
-Status
-DriverInvocation::ComputeToolChainKind(const llvm::opt::ArgList &argList) {
+Status DriverInvocation::ParseToolChainKind(const llvm::opt::ArgList &argList) {
+
+  if (const Arg *A = argList.getLastArg(opts::Target)) {
+    driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
+  }
+  llvm::Triple target(driverOpts.defaultTargetTriple);
+  switch (target.getOS()) {
+  case llvm::Triple::Darwin:
+  case llvm::Triple::MacOSX: {
+    if (const Arg *A = argList.getLastArg(opts::TargetVariant)) {
+      driverOpts.targetVariant =
+          llvm::Triple(llvm::Triple::normalize(A->getValue()));
+    }
+    driverOpts.toolChainKind = ToolChainKind::Darwin;
+    break;
+  }
+  case llvm::Triple::Linux: {
+    if (target.isAndroid()) {
+      driverOpts.toolChainKind = ToolChainKind::Android;
+    }
+    driverOpts.toolChainKind = ToolChainKind::Linux;
+    break;
+  }
+  case llvm::Triple::FreeBSD: {
+    driverOpts.toolChainKind = ToolChainKind::FreeBSD;
+    break;
+  }
+  case llvm::Triple::OpenBSD: {
+    driverOpts.toolChainKind = ToolChainKind::OpenBSD;
+    break;
+  }
+  case llvm::Triple::Win32: {
+    driverOpts.toolChainKind = ToolChainKind::Windows;
+    break;
+  }
+  case llvm::Triple::UnknownOS: {
+    driverOpts.toolChainKind = ToolChainKind::Unix;
+    break;
+  }
+  default: {
+    diags.PrintD(SrcLoc(), diag::err_unknown_target,
+                 diag::LLVMStr(argList.getLastArg(opts::Target)->getValue()));
+    return Status::Error();
+  }
+  }
   return Status();
 }
 
@@ -142,17 +192,19 @@ Status DriverInvocation::BuildInputFiles(const llvm::opt::ArgList &args,
       if (fileType == file::Type::Stone) {
         auto basename = file::GetBase(inputValue);
         if (!sourceFileNames.insert({basename, inputValue}).second) {
-          driver.GetDiags().PrintD(SrcLoc(), diag::err_two_files_same_name,
-          						   diag::LLVMStr(basename),
-                                   diag::LLVMStr(sourceFileNames[basename]),
-                                   diag::LLVMStr(inputValue));
-          driver.GetDiags().PrintD(SrcLoc(),
-                                   diag::note_explain_two_files_same_name);
+
+          // diags.PrintD(SrcLoc(), diag::err_two_files_same_name,
+          //                   diag::LLVMStr(basename),
+          //                   diag::LLVMStr(sourceFileNames[basename]),
+          //                   diag::LLVMStr(inputValue));
+          // diags.PrintD(SrcLoc(), diag::note_explain_two_files_same_name);
+
           return Status::Error();
         }
       }
     }
   }
+  return Status();
 }
 
 void DriverInvocation::ForEachInputFile(
@@ -161,5 +213,3 @@ void DriverInvocation::ForEachInputFile(
     callback(inputFile);
   }
 }
-
-Driver &DriverInvocation::GetDriver() { return driver; }

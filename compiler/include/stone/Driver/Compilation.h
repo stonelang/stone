@@ -22,8 +22,7 @@ class Job;
 class JobConstruction;
 class DiagnosticEngine;
 
-class Compilation {
-  CompilationKind kind;
+class Compilation final {
   const Driver &driver;
 
   /// The Jobs which will be performed by this compilation.
@@ -41,72 +40,84 @@ class Compilation {
   llvm::sys::TimePoint<> compilationLastTime = llvm::sys::TimePoint<>::min();
 
 public:
-  Compilation(CompilationKind kind, const Driver &driver);
-  virtual ~Compilation();
+  Compilation(const Driver &driver);
+  // virtual ~Compilation();
 
 public:
-  CompilationKind GetKind() const { return kind; }
+  // CompilationKind GetKind() const;
   const Driver &GetDriver() const { return driver; }
 
 public:
-  virtual Status Execute() = 0;
+  // virtual Status Execute() = 0;
 };
 
-class QuadraticCompilation final : public Compilation {
+// class QuadraticCompilation final : public Compilation {
 
-public:
-  QuadraticCompilation(Driver &driver);
+// public:
+//   QuadraticCompilation(Driver &driver);
 
-public:
-  Status Execute() override;
+// public:
+//   Status BuildTopLevelJobConstructions() override;
 
-public:
-  static bool classof(const Compilation *compilation) {
-    return compilation->GetKind() == CompilationKind::Quadratic;
-  }
-};
+// public:
+//   Status Execute() override;
 
-class FlatCompilation : public Compilation {
+// public:
+//   static bool classof(const Compilation *compilation) {
+//     return compilation->GetKind() == CompilationKind::Quadratic;
+//   }
+// };
 
-public:
-  FlatCompilation(Driver &driver);
+// class FlatCompilation : public Compilation {
 
-public:
-  Status Execute() override;
+// public:
+//   FlatCompilation(Driver &driver);
 
-public:
-  static bool classof(const Compilation *compilation) {
-    return compilation->GetKind() == CompilationKind::Flat;
-  }
-};
+// public:
+//   Status BuildTopLevelJobConstructions() override;
 
-class CPUCountCompilation : public Compilation {
+// public:
+//   Status Execute() override;
 
-public:
-  CPUCountCompilation(Driver &driver);
+// public:
+//   static bool classof(const Compilation *compilation) {
+//     return compilation->GetKind() == CompilationKind::Flat;
+//   }
+// };
 
-public:
-  Status Execute() override;
+// class CPUCountCompilation : public Compilation {
 
-public:
-  static bool classof(const Compilation *compilation) {
-    return compilation->GetKind() == CompilationKind::CPUCount;
-  }
-};
+// public:
+//   CPUCountCompilation(Driver &driver);
 
-class SingleCompilation : public Compilation {
+// public:
+//   Status BuildTopLevelJobConstructions() override;
 
-public:
-  SingleCompilation(Driver &driver);
+// public:
+//   Status Execute() override;
 
-public:
-  Status Execute() override;
+// public:
+//   static bool classof(const Compilation *compilation) {
+//     return compilation->GetKind() == CompilationKind::CPUCount;
+//   }
+// };
 
-public:
-  static bool classof(const Compilation *compilation) {
-    return compilation->GetKind() == CompilationKind::Single;
-  }
-};
+// class SingleCompilation : public Compilation {
+
+// public:
+//   SingleCompilation(Driver &driver);
+
+// public:
+//   Status BuildTopLevelJobConstructions() override;
+
+// public:
+//   Status Execute() override;
+
+// public:
+//   static bool classof(const Compilation *compilation) {
+//     return compilation->GetKind() == CompilationKind::Single;
+//   }
+// };
 
 } // namespace stone
 

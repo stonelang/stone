@@ -3,13 +3,59 @@
 
 using namespace stone;
 
-ToolChain::ToolChain(ToolChainKind kind, const Driver &driver)
-    : kind(kind), driver(driver) {}
+ToolChain::ToolChain(const Driver &driver) : driver(driver) {}
 
-JobInvocation ToolChain::ConstructInvocation(const CompileJobConstruction &job,
-                                             const JobContext &context) const {
+ToolChain::~ToolChain() {}
+
+ToolChainKind ToolChain::GetKind() const {
+  return driver.GetInvocation().GetToolChainKind();
+}
+
+JobInvocation
+ToolChain::ConstructInvocation(const CompileJobConstruction &construction,
+                               const JobContext &context) const {
 
   return JobInvocation();
+}
+
+JobInvocation ToolChain::ConstructInvocation(const BackendJobConstruction &job,
+                                             const JobContext &context) const {
+  return JobInvocation();
+}
+
+JobInvocation
+ToolChain::ConstructInvocation(const MergeModuleJobConstruction &job,
+                               const JobContext &context) const {
+
+  return JobInvocation();
+  ;
+}
+
+JobInvocation
+ToolChain::ConstructInvocation(const DynamicLinkJobConstruction &construction,
+                               const JobContext &context) const {
+  llvm_unreachable("linking not implemented for this toolchain");
+}
+
+JobInvocation
+ToolChain::ConstructInvocation(const StaticLinkJobConstruction &construction,
+                               const JobContext &context) const {
+  llvm_unreachable("archiving not implemented for this toolchain");
+}
+
+void ToolChain::AddPlatformSpecificPluginCompileArgs(
+    const DriverOptions &driverOpts, const JobOutput &output,
+    const llvm::opt::ArgList &inputArgs,
+    llvm::opt::ArgStringList &arguments) const {}
+
+void ToolChain::AddCommonCompileArgs(
+    const DriverOptions &driverOpts, const JobOutput &output,
+    const llvm::opt::ArgList &inputArgs,
+    llvm::opt::ArgStringList &arguments) const {}
+
+std::string
+ToolChain::FindProgramRelativeToStoneImpl(llvm::StringRef name) const {
+  return "";
 }
 
 // Returns the Clang driver executable to use for linking.

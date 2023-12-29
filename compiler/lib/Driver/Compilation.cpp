@@ -3,29 +3,32 @@
 
 using namespace stone;
 
-Compilation::Compilation(CompilationKind kind, const Driver &driver)
-    : kind(kind), driver(driver) {}
+Compilation::Compilation(const Driver &driver) : driver(driver) {}
 
-Compilation::~Compilation() {}
+// CompilationKind Compilation::GetKind() const {
+//   return driver.GetInvocation().GetCompilationKind();
+// }
 
-QuadraticCompilation::QuadraticCompilation(Driver &driver)
-    : Compilation(CompilationKind::Quadratic, driver) {}
+// Compilation::~Compilation() {}
 
-Status QuadraticCompilation::Execute() { return Status(); }
+// QuadraticCompilation::QuadraticCompilation(Driver &driver)
+//     : Compilation(driver) {}
 
-FlatCompilation::FlatCompilation(Driver &driver)
-    : Compilation(CompilationKind::Flat, driver) {}
+// QuadraticCompilation::BuildTopLevelJobConstructions() {}
 
-Status FlatCompilation::Execute() { return Status(); }
+// Status QuadraticCompilation::Execute() { return Status(); }
 
-CPUCountCompilation::CPUCountCompilation(Driver &driver)
-    : Compilation(CompilationKind::CPUCount, driver) {}
+// FlatCompilation::FlatCompilation(Driver &driver) : Compilation(driver) {}
 
-Status CPUCountCompilation::Execute() { return Status(); }
+// Status FlatCompilation::Execute() { return Status(); }
 
-SingleCompilation::SingleCompilation(Driver &driver)
-    : Compilation(CompilationKind::Single, driver) {}
+// CPUCountCompilation::CPUCountCompilation(Driver &driver)
+//     : Compilation(driver) {}
 
-Status SingleCompilation::Execute() { return Status(); }
+// Status CPUCountCompilation::Execute() { return Status(); }
+
+// SingleCompilation::SingleCompilation(Driver &driver) : Compilation(driver) {}
+
+// Status SingleCompilation::Execute() { return Status(); }
 
 Status Driver::ExecuteCompilation() {}

@@ -39,29 +39,34 @@ class JobInvocation final {
 };
 
 class ToolChain {
-
-  ToolChainKind kind;
   const Driver &driver;
   mutable llvm::StringMap<std::string> programLookupCache;
 
-public:
-  /// Special executable names.
+protected:
   constexpr static const char *const StoneCompileExecutableName =
       "stone-compile";
+
   constexpr static const char *const StoneExecutableName = "stone";
+
   constexpr static const char *const LDExecutableName = "ld";
+
   constexpr static const char *const LLDExecutableName = "lld";
+
   constexpr static const char *const ClangPPExecutableName = "clang++";
+
   constexpr static const char *const ClangExecutableName = "clang";
+
   constexpr static const char *const GCCExecutableName = "g++";
 
-public:
-  ToolChain(ToolChainKind kind, const Driver &driver);
-  virtual ~ToolChain() = default;
+protected:
+  ToolChain(const Driver &driver);
 
 public:
-  ToolChainKind GetKind() { return kind; }
+  virtual ~ToolChain();
+
+public:
   const Driver &GetDriver() const { return driver; }
+  ToolChainKind GetKind() const;
 
 public:
   /// Handle arguments common to all invocations of the frontend (compilation,
@@ -222,6 +227,10 @@ public:
   ConstructInvocation(const DynamicLinkJobConstruction &job,
                       const JobContext &context) const;
 
+  virtual JobInvocation
+  ConstructInvocation(const MergeModuleJobConstruction &job,
+                      const JobContext &context) const;
+
 public:
   /// Construct a Job for the action \p JA, taking the given information into
   /// account.
@@ -237,8 +246,10 @@ public:
 };
 
 class DarwinToolChain final : public ToolChain {
+
 public:
   DarwinToolChain(const Driver &driver);
+  ~DarwinToolChain() = default;
 
 public:
   JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
@@ -246,14 +257,36 @@ public:
 
   JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
                                     const JobContext &context) const override;
-};
-class LinuxToolChain final : public ToolChain {
-public:
-  LinuxToolChain(const Driver &driver);
+
+  std::string SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                      bool shared = true) const override;
 
 public:
-  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
-                                    const JobContext &context) const override;
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const JobOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
+
+public:
+  static bool classof(const ToolChain *toolChain) {
+    return toolChain->GetKind() == ToolChainKind::Darwin;
+  }
 };
 
 class WindowsToolChain final : public ToolChain {
@@ -265,35 +298,65 @@ public:
                                     const JobContext &context) const override;
 };
 
-// class UnixToolChain : public ToolChain {
-//   // protected:
-//   //   InvocationInfo constructInvocation(const InterpretJobAction &job,
-//   //                                      const JobContext &context) const
-//   //                                      override;
-//   //   InvocationInfo constructInvocation(const AutolinkExtractJobAction
-//   &job,
-//   //                                      const JobContext &context) const
-//   //                                      override;
+class UnixToolChain : public ToolChain {
 
-// protected:
-//   /// If provided, and if the user has not already explicitly specified a
-//   /// linker to use via the "-fuse-ld=" option, this linker will be passed to
-//   /// the compiler invocation via "-fuse-ld=". Return an empty string to not
-//   /// specify any specific linker (the "-fuse-ld=" option will not be
-//   /// specified).
-//   ///
-//   /// The default behavior is to use the gold linker on ARM architectures,
-//   /// and to not provide a specific linker otherwise.
-//   virtual std::string GetDefaultLinker() const;
-// };
+protected:
+  /// If provided, and if the user has not already explicitly specified a
+  /// linker to use via the "-fuse-ld=" option, this linker will be passed to
+  /// the compiler invocation via "-fuse-ld=". Return an empty string to not
+  /// specify any specific linker (the "-fuse-ld=" option will not be
+  /// specified).
+  ///
+  /// The default behavior is to use the gold linker on ARM architectures,
+  /// and to not provide a specific linker otherwise.
+  virtual std::string GetDefaultLinker() const;
 
-// class FreeBSDToolChain : public UnixToolChain {
+public:
+  UnixToolChain(const Driver &driver);
+};
 
-// };
+class LinuxToolChain final : public UnixToolChain {
 
-// class OpenBSDToolChain : public UnixToolChain {
+protected:
+  std::string GetDefaultLinker() const override;
 
-// };
+public:
+  LinuxToolChain(const Driver &driver);
+
+public:
+  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+                                    const JobContext &context) const override;
+};
+
+class FreeBSDToolChain : public UnixToolChain {
+
+protected:
+  std::string GetDefaultLinker() const override;
+
+public:
+  FreeBSDToolChain(const Driver &driver);
+};
+
+class OpenBSDToolChain : public UnixToolChain {
+protected:
+  std::string GetDefaultLinker() const override;
+
+public:
+  OpenBSDToolChain(const Driver &driver);
+};
+
+class AndroidToolChain : public UnixToolChain {
+protected:
+  std::string GetDefaultLinker() const override;
+
+public:
+  AndroidToolChain(const Driver &driver);
+
+public:
+  static bool classof(const ToolChain *toolChain) {
+    return toolChain->GetKind() == ToolChainKind::Android;
+  }
+};
 
 } // namespace stone
 #endif

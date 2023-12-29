@@ -2,8 +2,6 @@
 #define STONE_DRIVER_DRIVER_H
 
 #include "stone/Basic/Status.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DriverInvocation.h"
 #include "stone/Driver/TaskQueue.h"
@@ -14,15 +12,9 @@ namespace stone {
 
 class Driver final {
 
-  SrcMgr srcMgr;
-  DiagnosticEngine diags{srcMgr};
-
-  DriverInvocation invocation;
-
+  DriverInvocation &invocation;
   std::unique_ptr<ToolChain> toolChain;
-
   std::unique_ptr<Compilation> compilation;
-
   std::unique_ptr<stone::TaskQueue> taskQueue;
 
   // A graph of JobConstructions.
@@ -38,7 +30,7 @@ class Driver final {
   // std::unique_ptr<DriverStatsReporter> statsReporter;
 
 public:
-  Driver();
+  Driver(DriverInvocation &invocation);
   ~Driver();
 
   Status Setup();
@@ -64,16 +56,10 @@ public:
   bool HasCompilation() { return compilation != nullptr; }
   Compilation &GetCompilation() { return *compilation; }
 
-  DriverInvocation &GetInvocation() { return invocation; }
+  const DriverInvocation &GetInvocation() const { return invocation; }
 
 public:
-  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.AddConsumer(consumer);
-  }
-  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.RemoveConsumer(consumer);
-  }
-  DiagnosticEngine &GetDiags() { return diags; }
+  DiagnosticEngine &GetDiags() { return invocation.GetDiags(); }
 
   // DriverStatsReporter &GetStatsReporter() { return *statsReporter; }
 
@@ -87,9 +73,88 @@ public:
   ///
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
-  std::unique_ptr<ToolChain>
-  BuildToolChain(const llvm::opt::InputArgList &inputArgList);
+  std::unique_ptr<ToolChain> BuildToolChain(ToolChainKind kind);
 
+  class BuildingCompilationRAII final {
+    const Driver &driver;
+
+  public:
+    llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
+    llvm::SmallVector<JobConstructionInput, 2> linkerInputs;
+
+  public:
+    BuildingCompilationRAII(const Driver &driver) : driver(driver) {
+      moduleInputs.clear();
+      linkerInputs.clear();
+    }
+    ~BuildingCompilationRAII();
+
+  public:
+    void AddModuleInput(const JobConstructionInput input) {
+      moduleInputs.push_back(input);
+    }
+
+    void AddLinerInput(const JobConstructionInput input) {
+      linkerInputs.push_back(input);
+    }
+  };
+  /// Construct a compilation object for a given ToolChain and command line
+  /// argument vector.
+  ///
+  /// If \p AllowErrors is set to \c true, this method tries to build a
+  /// compilation even if there were errors.
+  ///
+  /// \return A Compilation, or nullptr if none was built for the given argument
+  /// vector. A null return value does not necessarily indicate an error
+  /// condition; the diagnostics should be queried to determine if an error
+  /// occurred.
+  std::unique_ptr<Compilation> BuildCompilation(CompilationKind kind);
+
+  /// Build a quadratic compilation
+  std::unique_ptr<Compilation>
+  BuildQuaraticCompilation(BuildingCompilationRAII &buildingCompilation);
+
+  /// Build a flat compilation
+  std::unique_ptr<Compilation>
+  BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation);
+
+  /// Build a single compilation
+  std::unique_ptr<Compilation>
+  BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation);
+
+  ///
+  std::unique_ptr<Compilation>
+  BuildCPUCountCompilation(BuildingCompilationRAII &buildingCompilation);
+
+public:
+  /// Build the job-constructions
+  Status BuildTopLevelJobConstructions();
+
+  /// Add a ob-constructions
+  Status BuildTopLevelJobConstruction();
+
+  // /// Create the job-constructions
+  // JobConstruction *CreateJobConstruction();
+
+  /// Add a ob-constructions
+  JobConstruction *CreateCompileJobConstruction(Driver &driver);
+
+  // /// Add a ob-constructions
+  // JobConstruction *CreateLinkJobConstruction(Driver &driver);
+
+  void ForEachJobConstruction(
+      std::function<void(JobConstruction &construction)> callback);
+
+  /// Build the jobs
+  Status BuildJobs();
+
+  /// Print the list of Actions in a Compilation.
+  void PrintJobConstructions(const Compilation &compilation) const;
+
+  /// Print the list of Actions in a Compilation.
+  void PrintJobs(const Compilation &compilation) const;
+
+public:
   /// Compute the task queue for this compilation and command line argument
   /// vector.
   ///
@@ -98,25 +163,7 @@ public:
   std::unique_ptr<stone::TaskQueue>
   BuildTaskQueue(const Compilation &compilation);
 
-  /// Build the job-constructions
-  Status BuildTopLevelJobConstructions();
-
-  /// Add a ob-constructions
-  Status BuildTopLevelJobConstruction();
-
-  /// Create the job-constructions
-  JobConstruction *CreateJobConstruction();
-
-  void ForEachJobConstruction(
-      std::function<void(JobConstruction &construction)> callback);
-
-  /// Build the jobs
-  Status BuildJobs();
-
 public:
-  /// Print the list of Actions in a Compilation.
-  void PrintJobConstructions(const Compilation &compilation) const;
-
   /// Print the driver version.
   void PrintVersion(const ToolChain &toolChain, llvm::raw_ostream &os) const;
   /// Print the help text.

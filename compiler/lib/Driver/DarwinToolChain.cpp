@@ -2,8 +2,7 @@
 
 using namespace stone;
 
-DarwinToolChain::DarwinToolChain(const Driver &driver)
-    : ToolChain(ToolChainKind::Darwin, driver) {}
+DarwinToolChain::DarwinToolChain(const Driver &driver) : ToolChain(driver) {}
 
 JobInvocation
 DarwinToolChain::ConstructInvocation(const DynamicLinkJobConstruction &job,
@@ -18,3 +17,32 @@ DarwinToolChain::ConstructInvocation(const StaticLinkJobConstruction &job,
 
   return JobInvocation();
 }
+
+std::string DarwinToolChain::SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                                     bool shared) const {}
+
+void DarwinToolChain::AddPluginArguments(
+    const llvm::opt::ArgList &args, llvm::opt::ArgStringList &arguments) const {
+
+}
+
+void DarwinToolChain::ValidateArguments(DiagnosticEngine &diags,
+                                        const llvm::opt::ArgList &args,
+                                        llvm::StringRef defaultTarget) const {}
+
+void DarwinToolChain::ValidateOutputInfo(
+    DiagnosticEngine &diags, const DriverOptions &driverOpts) const {}
+
+std::string
+DarwinToolChain::FindProgramRelativeToStoneImpl(llvm::StringRef name) const {
+  return "";
+}
+
+bool DarwinToolChain::ShouldStoreInvocationInDebugInfo() const { return false; }
+
+std::string DarwinToolChain::GetGlobalDebugPathRemapping() const { return ""; }
+
+void DarwinToolChain::AddCommonCompileArgs(
+    const DriverOptions &driverOpts, const JobOutput &output,
+    const llvm::opt::ArgList &inputArgs,
+    llvm::opt::ArgStringList &arguments) const {}

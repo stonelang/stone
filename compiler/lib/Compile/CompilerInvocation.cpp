@@ -24,6 +24,7 @@ using namespace stone;
 
 CompilerInvocation::CompilerInvocation(Compiler &compiler)
     : compiler(compiler), clangContext(new ClangContext()) {
+
   llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
 }

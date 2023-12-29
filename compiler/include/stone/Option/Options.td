@@ -329,5 +329,9 @@ def ToolsDirectory : Separate<["-"], "tools-directory">,
   Flags<[CompilerOption,DoesNotAffectIncrementalBuild, ArgumentIsPath]>,
   HelpText<"Look for external executables (ld, clang, binutils) in <directory>">, MetaVarName<"<directory>">;
 
+def QuadCompilation : Flag<["-"], "compilation-model-quad">,
+  Flags<[DriverOption]>,
+  HelpText<"n input (s), n compile(s), n * n  parses. Example: compile_1(1=p ,...,n), compile_2(1,2=p,...,n), ... compile_2(1,...,n=p) where p is your -primary-file">;
+
 
 include "CompilerOptions.td"
