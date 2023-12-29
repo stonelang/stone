@@ -14,7 +14,7 @@
 #include <deque>
 
 namespace stone {
-class Compiler;
+
 class ModuleDecl;
 class IRGenResult;
 class CompilerObservation;

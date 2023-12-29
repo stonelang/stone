@@ -1,64 +1,74 @@
 #include "stone/Driver/Driver.h"
-#include "stone/Diag/DriverDiagnostic.h"
-#include "stone/Option/Options.h"
+#include "stone/Driver/DriverAllocation.h"
 
 using namespace stone;
 
 using namespace llvm::opt;
 
-Driver::Driver()
-    : fileMgr(GetFileSystemOptions()), optTable(stone::CreateOptTable()),
-      memContext(new MemoryContext(GetLangOptions())) {}
+Driver::Driver() : invocation(*this) {}
 
-std::unique_ptr<InputArgList>
-Driver::ParseCommandLine(llvm::ArrayRef<const char *> args) {
+Driver::~Driver() {}
 
-  unsigned includedFlagsBitmask = 0;
-  unsigned excludedFlagsBitmask = opts::NoDriverOption;
-  unsigned missingArgIndex;
-  unsigned missingArgCount;
+Status Driver::Setup() { return Status(); }
 
-  auto inputArgList = std::make_unique<InputArgList>(
-      GetOptTable().ParseArgs(args, missingArgIndex, missingArgCount,
-                              includedFlagsBitmask, excludedFlagsBitmask));
-
-  assert(inputArgList && "No input argument list.");
-
-  if (missingArgCount) {
-    GetDiags().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
-    return nullptr;
-  }
-  // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
-    GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                      diag::LLVMStr(arg->getAsString(*inputArgList)));
-    return nullptr;
-  }
-  if (GetDiags().HasError()) {
-    return nullptr;
-  }
-  return inputArgList;
+void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
+                              unsigned alignment) {
+  return driver.Allocate(bytes, alignment);
 }
 
-static Status ComputeLinkMode(Driver &driver) { return Status(); }
-static Status ComputeCompilationKind(Driver &driver) { return Status(); }
+std::unique_ptr<ToolChain>
+Driver::BuildToolChain(const llvm::opt::InputArgList &inputArgList) {
 
-std::unique_ptr<llvm::opt::DerivedArgList>
-Driver::TranslateInputArgList(const InputArgList &inputArgList) {
-  // Just return for now.
-  auto derivedArgList =
-      std::make_unique<llvm::opt::DerivedArgList>(inputArgList);
-
-  derivedArgList;
+  return nullptr;
 }
 
-Status Driver::ParseDriverOptions(const ArgList &args) {
+std::unique_ptr<stone::TaskQueue>
+Driver::BuildTaskQueue(const Compilation &compilation) {
 
-  // First, get the action for the driver
-  driverOpts.mainAction = opts::GetAction(args);
+  return nullptr;
+}
 
+Status Driver::BuildTopLevelJobConstructions() {
+
+  switch (invocation.GetCompilationKind()) {
+  case CompilationKind::Quadratic:
+    break;
+  case CompilationKind::Flat:
+    break;
+  case CompilationKind::CPUCount:
+    break;
+  case CompilationKind::Single:
+    break;
+  default:
+    llvm_unreachable(
+        "Cannot build top-level job-constructions -- invalid compilation kind");
+  }
   return Status();
+}
+
+Status Driver::BuildTopLevelJobConstruction() {}
+
+/// Build the job-constructions
+JobConstruction *Driver::CreateJobConstruction() { return nullptr; }
+
+void Driver::ForEachJobConstruction(
+    std::function<void(JobConstruction &construction)> callback) {}
+
+Status Driver::BuildJobs() {}
+
+/// Print the driver version.
+void Driver::PrintVersion(const ToolChain &toolChain, raw_ostream &os) const {}
+
+void Driver::PrintHelp(bool showHidden) const {
+
+  unsigned IncludedFlagsBitmask = 0;
+  unsigned ExcludedFlagsBitmask = opts::NoDriverOption;
+
+  if (!showHidden) {
+    ExcludedFlagsBitmask |= HelpHidden;
+  }
+  invocation.GetOptTable().printHelp(
+      llvm::outs(), invocation.GetDriverOptions().mainExecutableName.data(),
+      "Stone compiler", IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      /*ShowAllAliases*/ false);
 }

@@ -2,7 +2,8 @@
 #define STONE_DRIVER_DRIVER_JOB_H
 
 #include "stone/Basic/File.h"
-#include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/DriverAllocation.h"
+#include "stone/Driver/DriverInvocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
@@ -37,7 +38,7 @@ struct JobInputPair {
   /// the DerivedOutputFileMap.
   StringRef Primary;
 
-  /// Construct a CommandInputPair from a Base Input and, optionally, a Primary;
+  /// Construct a JobInputPair from a Base Input and, optionally, a Primary;
   /// if the Primary is empty, use the Base value for it.
   explicit JobInputPair(StringRef BaseInput, StringRef PrimaryInput)
       : Base(BaseInput),
@@ -69,12 +70,12 @@ public:
   llvm::ArrayRef<const JobConstruction *> inputConstructions;
 
   const JobOutput &jobOutput;
-  const DriverOptions &driverOpts;
+  const DriverInvocation &invocation;
 
 public:
   JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> Inputs,
              llvm::ArrayRef<const JobConstruction *> inputConstructions,
-             const JobOutput &jobOutput, const DriverOptions &driverOpts);
+             const JobOutput &jobOutput, const DriverInvocation &invocation);
 };
 
 enum class JobCondition {
@@ -92,8 +93,7 @@ enum class JobCondition {
   NewlyAdded
 };
 
-class Job {
-
+class Job /*: public DriverAllocation<Job>*/ {
 public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If

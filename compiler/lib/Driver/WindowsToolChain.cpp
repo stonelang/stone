@@ -1,4 +1,3 @@
-
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;

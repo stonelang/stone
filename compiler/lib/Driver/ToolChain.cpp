@@ -6,32 +6,26 @@ using namespace stone;
 ToolChain::ToolChain(ToolChainKind kind, const Driver &driver)
     : kind(kind), driver(driver) {}
 
-std::unique_ptr<Job> ToolChain::ConstructJob(
-    const JobConstruction &construction, Compilation &compilation,
-    llvm::SmallVectorImpl<const Job *> &&inputs,
-    llvm::ArrayRef<const JobConstruction *> inputConstructions,
-    std::unique_ptr<JobOutput> output, const DriverOptions &driverOpts) const {
+JobInvocation ToolChain::ConstructInvocation(const CompileJobConstruction &job,
+                                             const JobContext &context) const {
 
-  JobContext jobContext{compilation, inputs, inputConstructions, *output,
-                        driverOpts};
+  return JobInvocation();
+}
 
-  auto jobInvocation = [&]() -> JobInvocation {
-    switch (construction.GetKind()) {
-#define CASE(KIND)                                                             \
-  case JobConstructionKind::KIND:                                              \
-    return ConstructInvocation(cast<KIND##JobConstruction>(construction),      \
-                               jobContext);
-      CASE(Compile)
-      CASE(Backend)
-      CASE(DynamicLink)
-      CASE(StaticLink)
-#undef CASE
-    case JobConstructionKind::None:
-      llvm_unreachable("Job a JobConstruction");
-    }
-    // Work around MSVC warning: not all control paths return a value
-    llvm_unreachable("All switch cases were covered");
-  }();
+// Returns the Clang driver executable to use for linking.
+const char *
+ToolChain::GetClangLinkerDriver(const llvm::opt::ArgList &args) const {
 
-  return nullptr;
+  // NOTE: using clang for now -- may consider clang++ in the future.
+  const char *clangLinkerDriver = "clang";
+
+  if (const Arg *arg = args.getLastArg(opts::ToolsDirectory)) {
+    llvm::StringRef toolChainPath(arg->getValue());
+
+    // If there is a linker driver in the toolchain folder, use that instead.
+    if (auto tool =
+            llvm::sys::findProgramByName(clangLinkerDriver, {toolChainPath}))
+      clangLinkerDriver = args.MakeArgString(tool.get());
+  }
+  return clangLinkerDriver;
 }

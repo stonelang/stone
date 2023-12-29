@@ -325,5 +325,9 @@ def DebugDiagnosticNames : Flag<["-"], "debug-diagnostic-names">,
   Flags<[CompilerOption, DoesNotAffectIncrementalBuild, HelpHidden]>,
   HelpText<"Include diagnostic names when printing">;
 
+def ToolsDirectory : Separate<["-"], "tools-directory">,
+  Flags<[CompilerOption,DoesNotAffectIncrementalBuild, ArgumentIsPath]>,
+  HelpText<"Look for external executables (ld, clang, binutils) in <directory>">, MetaVarName<"<directory>">;
+
 
 include "CompilerOptions.td"

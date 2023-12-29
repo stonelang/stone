@@ -2,6 +2,7 @@
 #define STONE_OPTION_OPTIONS_H
 
 #include "stone/Basic/Color.h"
+#include "stone/Basic/File.h"
 #include "stone/Option/ActionKind.h"
 #include "llvm/Option/ArgList.h"
 
@@ -52,6 +53,22 @@ void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 
 } // namespace opts
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
+
+class InputFile final {
+
+  file::Type fileType;
+  const llvm::opt::Arg *input;
+
+public:
+  InputFile(file::Type fileType, llvm::opt::Arg *input)
+      : fileType(fileType), input(input) {}
+
+  file::Type GetFileType() { return fileType; }
+  const llvm::opt::Arg *GetInput() { return input; }
+};
+
+/// Type used for a list of input arguments.
+using InputFileList = llvm::SmallVector<InputFile, 16>;
 
 } // namespace stone
 

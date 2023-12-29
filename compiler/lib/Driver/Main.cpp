@@ -2,7 +2,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -15,24 +14,43 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
   Driver driver;
+  auto FinishMain = [&](Status status = Status::Success()) -> int {
+    return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
+  };
 
-  auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  driver.GetDriverOptions().mainExecutablePath = mainExecutablePath;
-
-  auto mainExecutableName = file::GetStem(mainExecutablePath);
-  driver.GetDriverOptions().mainExecutableName = mainExecutableName;
-
-  auto inputArgList = driver.ParseCommandLine(args);
-  if (!inputArgList) {
-    return 1;
-  }
-  auto derivedArgList = driver.TranslateInputArgList(*inputArgList);
-
-  // driver.ParseDriverOptions(*inputArgList);
-
-  // if (driver.GetDriverOptions().mainAction.IsAlien()) {
-  //   return 1;
+  // Check for empty args
+  // if (args.empty()) {
+  //   driver.PrintHelp(false);
+  //   return FinishMain(Status::Error());
   // }
 
-  return 0;
+  // auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  // driver.GetInvocation().GetDriverOptions().mainExecutablePath =
+  //     mainExecutablePath;
+
+  // auto mainExecutableName = file::GetStem(mainExecutablePath);
+  // driver.GetInvocation().GetDriverOptions().mainExecutableName =
+  //     mainExecutableName;
+
+  // if (driver.GetInvocation().ParseCommandLine(args).IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
+
+  // if (!driver.GetInvocation().HasAction()) {
+  //   // driver.GetDiags().PrintD(diag::err_no_compile_action);
+  //   FinishMain(Status::Error());
+  // }
+
+  // // Now, setup the driver
+  // if (driver.Setup().IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
+  // assert(driver.HasToolChain());
+  // assert(driver.HasTaskQueue());
+  // assert(driver.HasCompilation());
+
+  // if (driver.ExecuteCompilation().IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
+  return FinishMain();
 }

@@ -1,9 +1,12 @@
 #include "stone/Driver/Compilation.h"
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 
-Compilation::Compilation(CompilationKind kind, Driver &driver)
+Compilation::Compilation(CompilationKind kind, const Driver &driver)
     : kind(kind), driver(driver) {}
+
+Compilation::~Compilation() {}
 
 QuadraticCompilation::QuadraticCompilation(Driver &driver)
     : Compilation(CompilationKind::Quadratic, driver) {}
@@ -24,3 +27,5 @@ SingleCompilation::SingleCompilation(Driver &driver)
     : Compilation(CompilationKind::Single, driver) {}
 
 Status SingleCompilation::Execute() { return Status(); }
+
+Status Driver::ExecuteCompilation() {}

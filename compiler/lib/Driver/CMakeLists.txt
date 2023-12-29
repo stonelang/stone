@@ -3,11 +3,13 @@
   Compilation.cpp
   DarwinToolChain.cpp
   Driver.cpp
+  DriverInvocation.cpp
   Job.cpp
   JobConstruction.cpp
-  LinuxToolChain.cpp
+  UnixToolChain.cpp
   Main.cpp
   ToolChain.cpp
+  UnixToolChain.cpp
   WindowsToolChain.cpp
 
   LINK_LIBS

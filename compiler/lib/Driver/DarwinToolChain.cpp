@@ -6,7 +6,14 @@ DarwinToolChain::DarwinToolChain(const Driver &driver)
     : ToolChain(ToolChainKind::Darwin, driver) {}
 
 JobInvocation
-DarwinToolChain::ConstructInvocation(const CompileJobConstruction &job,
+DarwinToolChain::ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                     const JobContext &context) const {
+
+  return JobInvocation();
+}
+
+JobInvocation
+DarwinToolChain::ConstructInvocation(const StaticLinkJobConstruction &job,
                                      const JobContext &context) const {
 
   return JobInvocation();

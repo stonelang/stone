@@ -11,6 +11,7 @@ PrintHelpExecution::PrintHelpExecution(Compiler &compiler,
 Status PrintHelpExecution::Execute() {
   assert(GetExecutionAction() == ActionKind::PrintHelp ||
          GetExecutionAction() == ActionKind::PrintHelpHidden);
+
   return Status();
 }
 

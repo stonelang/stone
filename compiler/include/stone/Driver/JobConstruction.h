@@ -2,9 +2,9 @@
 #define STONE_DRIVER_DRIVER_JOB_CONSTRUCTION_H
 
 #include "stone/Basic/File.h"
-#include "stone/Basic/Mem.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/DriverAllocation.h"
+#include "stone/Driver/DriverInvocation.h"
 
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/StringRef.h"
@@ -29,13 +29,12 @@ enum class JobConstructionKind : UInt8 {
 
 /// A job construction input can be a file or another job construction
 /// (dependency)
-using JobConstructionInput =
-    llvm::PointerUnion<stone::file::File *, JobConstruction *>;
+using JobConstructionInput = llvm::PointerUnion<InputFile *, JobConstruction *>;
 
 /// A list of all job construction inputs
 using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 
-class JobConstruction : public MemoryAllocation<JobConstruction> {
+class JobConstruction : public DriverAllocation<JobConstruction> {
 protected:
   JobConstructionKind kind = JobConstructionKind::None;
   file::Type fileType = file::Type::None;

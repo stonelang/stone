@@ -1,16 +1,17 @@
-#ifndef STONE_DRIVER_DRIVER_EXECUTION_H
-#define STONE_DRIVER_DRIVER_EXECUTION_H
+#ifndef STONE_DRIVER_DRIVER_TOOLCHAIN_H
+#define STONE_DRIVER_DRIVER_TOOLCHAIN_H
 
-#include "Stone/Option/Options.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
+#include "stone/Option/Options.h"
 
 #include "llvm/Option/Option.h"
 
 namespace stone {
 
 class Driver;
+class DriverInvocation;
 class Compilation;
 
 /// Packs together information chosen by toolchains to create jobs.
@@ -37,8 +38,6 @@ class JobInvocation final {
   //         extraEnvironment(std::move(extraEnv)) {}
 };
 
-enum class ToolChainKind { None = 0, Darwin, Linux, Windows };
-
 class ToolChain {
 
   ToolChainKind kind;
@@ -46,7 +45,19 @@ class ToolChain {
   mutable llvm::StringMap<std::string> programLookupCache;
 
 public:
+  /// Special executable names.
+  constexpr static const char *const StoneCompileExecutableName =
+      "stone-compile";
+  constexpr static const char *const StoneExecutableName = "stone";
+  constexpr static const char *const LDExecutableName = "ld";
+  constexpr static const char *const LLDExecutableName = "lld";
+  constexpr static const char *const ClangPPExecutableName = "clang++";
+  constexpr static const char *const ClangExecutableName = "clang";
+  constexpr static const char *const GCCExecutableName = "g++";
+
+public:
   ToolChain(ToolChainKind kind, const Driver &driver);
+  virtual ~ToolChain() = default;
 
 public:
   ToolChainKind GetKind() { return kind; }
@@ -194,7 +205,7 @@ public:
                                   const DriverOptions &driverOpts) const {}
 
   llvm::Expected<file::Type>
-  FemarkFileTypeFromArgs(const llvm::opt::ArgList &Args) const;
+  RemarkFileTypeFromArgs(const llvm::opt::ArgList &Args) const;
 
 public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,
@@ -217,12 +228,12 @@ public:
   ///
   /// This method dispatches to the various \c ConstructInvocation methods,
   /// which may be overridden by platform-specific subclasses.
-  std::unique_ptr<Job>
-  ConstructJob(const JobConstruction &jobConstruction, Compilation &compilation,
-               llvm::SmallVectorImpl<const Job *> &&inputs,
-               llvm::ArrayRef<const JobConstruction *> inputConstructions,
-               std::unique_ptr<JobOutput> output,
-               const DriverOptions &driverOpts) const;
+  Job *ConstructJob(const JobConstruction &jobConstruction,
+                    Compilation &compilation,
+                    llvm::SmallVectorImpl<const Job *> &&inputs,
+                    llvm::ArrayRef<const JobConstruction *> inputConstructions,
+                    std::unique_ptr<JobOutput> output,
+                    const DriverInvocation &invocation) const;
 };
 
 class DarwinToolChain final : public ToolChain {
@@ -230,7 +241,10 @@ public:
   DarwinToolChain(const Driver &driver);
 
 public:
-  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+  JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
                                     const JobContext &context) const override;
 };
 class LinuxToolChain final : public ToolChain {
@@ -250,6 +264,36 @@ public:
   JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                     const JobContext &context) const override;
 };
+
+// class UnixToolChain : public ToolChain {
+//   // protected:
+//   //   InvocationInfo constructInvocation(const InterpretJobAction &job,
+//   //                                      const JobContext &context) const
+//   //                                      override;
+//   //   InvocationInfo constructInvocation(const AutolinkExtractJobAction
+//   &job,
+//   //                                      const JobContext &context) const
+//   //                                      override;
+
+// protected:
+//   /// If provided, and if the user has not already explicitly specified a
+//   /// linker to use via the "-fuse-ld=" option, this linker will be passed to
+//   /// the compiler invocation via "-fuse-ld=". Return an empty string to not
+//   /// specify any specific linker (the "-fuse-ld=" option will not be
+//   /// specified).
+//   ///
+//   /// The default behavior is to use the gold linker on ARM architectures,
+//   /// and to not provide a specific linker otherwise.
+//   virtual std::string GetDefaultLinker() const;
+// };
+
+// class FreeBSDToolChain : public UnixToolChain {
+
+// };
+
+// class OpenBSDToolChain : public UnixToolChain {
+
+// };
 
 } // namespace stone
 #endif
