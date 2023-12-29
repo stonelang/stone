@@ -113,10 +113,16 @@ Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
   return nullptr;
 }
 std::unique_ptr<Compilation>
-Driver::BuildFlatCompilation(BuildingCompilationRAII &state) {
+Driver::BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   invocation.ForEachInputFile([&](InputFile &input) {
+    
+    JobConstructionInput currentInput = const_cast<InputFile *>(&input);
+    currentInput = CompileJobConstruction::Create(
+        *this, currentInput, invocation.GetDriverOptions().outputFileType);
 
+    buildingCompilation.AddModuleInput(currentInput);
+    buildingCompilation.AddLinkerInput(currentInput);
   });
 
   return nullptr;

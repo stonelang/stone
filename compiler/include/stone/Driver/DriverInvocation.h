@@ -65,7 +65,7 @@ enum class CompilationKind : UInt8 {
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
   Normal = 0,
-  /// p := 0, n inputs, 1 compile, n parses
+  /// n inputs, 1 compile, n parses, p := 0
   /// Ex: compile(1,....,n)
   Single,
   /// n input(s), n compile(s), n parses
@@ -302,8 +302,6 @@ private:
   void ComputeLinkMode(const llvm::opt::ArgList &argList);
   Status ParseToolChainKind(const llvm::opt::ArgList &argList);
   Status ComputeCompilationKind(const llvm::opt::ArgList &argList);
-
-  Status ComputeInputFiles(const llvm::opt::ArgList &argList);
 
   /// Construct the list of inputs and their types from the given arguments.
   ///
