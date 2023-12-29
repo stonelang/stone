@@ -16,6 +16,7 @@ FILE_TYPE("stonemodule",  		StoneModule,	  		"stonemodule","")
 FILE_TYPE("using-modules",   	UsingModules,           "usingmodules", "")
 FILE_TYPE("stonedoc",           StoneModuleDoc,         "stonedoc",        "")
 FILE_TYPE("tbd",                TBD,                     "tbd",             "")
+FILE_TYPE("pch",                PCH,                     "pch",             "")
 FILE_TYPE("none",         		None,		  			 "",	"")
 
 #undef FILE_TYPE

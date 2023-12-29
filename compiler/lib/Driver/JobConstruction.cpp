@@ -70,3 +70,12 @@ BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,
                                                size_t inputIndex)
     : JobConstruction(JobConstructionKind::Backend, input, outputFileType),
       inputIndex(inputIndex) {}
+
+GeneratePCHJobConstruction::GeneratePCHJobConstruction(
+    JobConstructionInput input, llvm::StringRef persistentPCHDir)
+    :
+
+      JobConstruction(JobConstructionKind::GeneratePCH, input,
+                      persistentPCHDir.empty() ? file::Type::PCH
+                                               : file::Type::None),
+      persistentPCHDir(persistentPCHDir) {}

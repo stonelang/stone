@@ -20,6 +20,7 @@ enum class JobConstructionKind : UInt8 {
   None = 0,
   Compile,
   Backend,
+  GeneratePCH,
   MergeModule,
   ModuleWrap,
   DynamicLink,
@@ -201,6 +202,34 @@ public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::Backend;
   }
+
+public:
+  static BackendJobConstruction *Create(Driver &driver,
+                                        JobConstructionInput input,
+                                        file::Type outputFileType,
+                                        size_t inputIndex);
+};
+
+class GeneratePCHJobConstruction final : public JobConstruction {
+  std::string persistentPCHDir;
+
+public:
+  GeneratePCHJobConstruction(JobConstructionInput input,
+                             llvm::StringRef persistentPCHDir);
+
+public:
+  bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
+  StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() == JobConstructionKind::GeneratePCH;
+  }
+
+public:
+  static BackendJobConstruction *Create(Driver &driver,
+                                        JobConstructionInput input,
+                                        llvm::StringRef persistentPCHDir);
 };
 
 } // namespace stone
