@@ -156,7 +156,7 @@ Status DriverInvocation::MightHaveExplicitPrimaryInputs(
 }
 
 Status DriverInvocation::BuildInputFiles(const llvm::opt::ArgList &args,
-                                         InputFileList &inputFiles) const {
+                                         InputFileList &inputFiles) {
 
   llvm::DenseMap<llvm::StringRef, llvm::StringRef> sourceFileNames;
   auto CheckInputFileExistence = [&](llvm::StringRef inputFile) -> Status {

@@ -63,7 +63,7 @@ public:
   InputFile(file::Type fileType, llvm::opt::Arg *input)
       : fileType(fileType), input(input) {}
 
-  file::Type GetFileType() { return fileType; }
+  file::Type GetType() { return fileType; }
   const llvm::opt::Arg *GetInput() { return input; }
 };
 

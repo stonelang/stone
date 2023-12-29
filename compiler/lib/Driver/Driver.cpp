@@ -63,7 +63,6 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
 
   assert(HasToolChain());
   BuildingCompilationRAII buildingCompilation(*this);
-
   switch (kind) {
   case CompilationKind::Normal:
     return BuildNormalCompilation(buildingCompilation);
@@ -82,17 +81,19 @@ std::unique_ptr<Compilation>
 Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   invocation.ForEachInputFile([&](InputFile &input) {
-    // auto jobConstruction = CreateJobConstruction(*InputArg, InputType);
-
     JobConstructionInput currentInput = const_cast<InputFile *>(&input);
 
-    //   switch(input.GetType()){
-    //   case file::Type::Stone:{
+    switch (input.GetType()) {
+    case file::Type::Stone: {
 
-    //   }
-    // default:
-    //     llvm_unreachable(" Invalid file type");
-    //   }
+      assert(file::IsPartOfCompilation(input.GetType()));
+
+      currentInput = CompileJobConstruction::Create(
+          *this, currentInput, invocation.GetDriverOptions().outputFileType);
+    }
+    default:
+      llvm_unreachable(" Invalid file type");
+    }
   });
 
   return nullptr;

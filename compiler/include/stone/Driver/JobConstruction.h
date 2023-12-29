@@ -93,6 +93,9 @@ public:
     return (construction->GetKind() >= JobConstructionKind::First &&
             construction->GetKind() <= JobConstructionKind::Last);
   }
+
+public:
+  // static JobConstructionInput *CreateInput(InputFile& input);
 };
 
 class IncrementatlJobConstruction : public JobConstruction {
@@ -122,6 +125,12 @@ public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::Compile;
   }
+
+public:
+  static CompileJobConstruction *Create(Driver &driver,
+                                        file::Type outputFileType);
+  static CompileJobConstruction *
+  Create(Driver &driver, JobConstructionInput input, file::Type outputFileType);
 };
 
 class MergeModuleJobConstruction final : public IncrementatlJobConstruction {

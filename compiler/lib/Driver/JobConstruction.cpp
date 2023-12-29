@@ -11,10 +11,23 @@ CompileJobConstruction::CompileJobConstruction(file::Type outputFileType)
     : IncrementatlJobConstruction(JobConstructionKind::Compile, llvm::None,
                                   outputFileType) {}
 
+CompileJobConstruction *
+CompileJobConstruction::Create(Driver &driver, file::Type outputFileType) {
+
+  return new (driver) CompileJobConstruction(outputFileType);
+}
+
 CompileJobConstruction::CompileJobConstruction(JobConstructionInput input,
                                                file::Type outputFileType)
     : IncrementatlJobConstruction(JobConstructionKind::Compile, input,
                                   outputFileType) {}
+
+CompileJobConstruction *
+CompileJobConstruction::Create(Driver &driver, JobConstructionInput input,
+                               file::Type outputFileType) {
+
+  return new (driver) CompileJobConstruction(input, outputFileType);
+}
 
 MergeModuleJobConstruction::MergeModuleJobConstruction(
     JobConstructionInputList inputs)
