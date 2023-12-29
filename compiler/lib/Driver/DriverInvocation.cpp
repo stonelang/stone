@@ -35,6 +35,13 @@ Status DriverInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   if (driver.GetDiags().HasError()) {
     return Status::Error();
   }
+
+  if (TranslateInputArgList(GetInputArgList()).IsError()) {
+    return Status::Error();
+  }
+  if (ParseDriverOptions(GetDerivedArgList()).IsError()) {
+    return Status::Error();
+  }
   return Status();
 }
 
@@ -45,12 +52,16 @@ DriverInvocation::TranslateInputArgList(const InputArgList &inputArgList) {
   return Status();
 }
 
-Status DriverInvocation::ParseDriverOptions(
-    const llvm::opt::InputArgList &inputArgList) {
+Status DriverInvocation::ParseDriverOptions(const llvm::opt::ArgList &argList) {
+
+  driverOpts.mainAction = opts::ParseAction(argList);
+  if (GetAction().IsAlien()) {
+    return Status::Error();
+  }
   return Status();
 }
 Status DriverInvocation::ParseCompilationOptions(
-    const llvm::opt::InputArgList &inputArgList) {
+    const const llvm::opt::ArgList &argList) {
 
   return Status();
 }

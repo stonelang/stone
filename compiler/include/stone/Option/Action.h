@@ -126,7 +126,7 @@ public:
 };
 
 namespace opts {
-Action GetAction(const llvm::opt::ArgList &args);
+Action ParseAction(const llvm::opt::ArgList &args);
 }
 
 } // namespace stone

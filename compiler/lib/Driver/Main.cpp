@@ -2,10 +2,10 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Basic/MainExecutablePath.h"
-#include "stone/Driver/Driver.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 

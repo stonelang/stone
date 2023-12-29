@@ -263,8 +263,8 @@ public:
   Status ParseCommandLine(llvm::ArrayRef<const char *> args);
   Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
 
-  Status ParseDriverOptions(const llvm::opt::InputArgList &inputArgList);
-  Status ParseCompilationOptions(const llvm::opt::InputArgList &inputArgList);
+  Status ParseDriverOptions(const llvm::opt::ArgList &argList);
+  Status ParseCompilationOptions(const llvm::opt::ArgList &argList);
 
   Status ComputeLinkMode(const llvm::opt::ArgList &argList);
   Status ComputeToolChainKind(const llvm::opt::ArgList &argList);

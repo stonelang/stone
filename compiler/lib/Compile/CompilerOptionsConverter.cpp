@@ -61,7 +61,7 @@ Status CompilerOptionsConverter::Convert(
 
     haveNewInputsAndOutputs = true;
     compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
-    compilerOpts.mainAction = opts::GetAction(args);
+    compilerOpts.mainAction = opts::ParseAction(args);
 
     if (compilerOpts.allowModuleWithCompilerErrors) {
       compilerOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
