@@ -81,6 +81,7 @@ public:
   public:
     llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
     llvm::SmallVector<JobConstructionInput, 2> linkerInputs;
+    llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
   public:
     BuildingCompilationRAII(const Driver &driver) : driver(driver) {
@@ -97,6 +98,10 @@ public:
     void AddLinerInput(const JobConstructionInput input) {
       linkerInputs.push_back(input);
     }
+
+    void AddTopLevelJobConstruction(const JobConstruction *construction) {
+      topLevelJobConstructions.push_back(construction);
+    }
   };
   /// Construct a compilation object for a given ToolChain and command line
   /// argument vector.
@@ -112,7 +117,7 @@ public:
 
   /// Build a quadratic compilation
   std::unique_ptr<Compilation>
-  BuildQuaraticCompilation(BuildingCompilationRAII &buildingCompilation);
+  BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation);
 
   /// Build a flat compilation
   std::unique_ptr<Compilation>

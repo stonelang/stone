@@ -329,9 +329,21 @@ def ToolsDirectory : Separate<["-"], "tools-directory">,
   Flags<[CompilerOption,DoesNotAffectIncrementalBuild, ArgumentIsPath]>,
   HelpText<"Look for external executables (ld, clang, binutils) in <directory>">, MetaVarName<"<directory>">;
 
-def QuadCompilation : Flag<["-"], "compilation-model-quad">,
+def NormalCompilation : Flag<["-"], "compilation-mode-normal">,
   Flags<[DriverOption]>,
-  HelpText<"n input (s), n compile(s), n * n  parses. Example: compile_1(1=p ,...,n), compile_2(1,2=p,...,n), ... compile_2(1,...,n=p) where p is your -primary-file">;
+  HelpText<"n input(s), n compile(s), n * n  parses. Example: compile_1(1=p ,...,n), ... compile_n(1,...,n=p), p := -primary-file">;
+
+def SingleCompilation : Flag<["-"], "compilation-mode-single">,
+  Flags<[DriverOption]>,
+  HelpText<"n input(s), 1 compile, n parses. Example: compile(1,....,n), p := 0 ">;
+
+def FlatCompilation : Flag<["-"], "compilation-mode-flat">,
+  Flags<[DriverOption]>,
+  HelpText<"n input(s), n compile(s), n parses. Example: compile_1(1=p),...,compile_n(n=p), p := -primary-file">;
+
+def CPUCountCompilation : Flag<["-"], "compilation-mode-cpu">,
+  Flags<[DriverOption]>,
+  HelpText<"n input (s), j CPU(s), j compile(s), n * j parses. Example: compile_1(1=p,...,n),...,compile_j(1,...,p=j,...,n), p := -primary-file">;
 
 
 include "CompilerOptions.td"

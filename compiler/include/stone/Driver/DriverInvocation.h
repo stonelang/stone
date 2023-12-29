@@ -64,17 +64,18 @@ enum class CompilationKind : UInt8 {
   /// n input (s), n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
-  Quadratic = 0,
+  Normal = 0,
+   /// p := 0, n inputs, 1 compile, n parses
+  /// Ex: compile(1,....,n)
+  Single,
   /// n input(s), n compile(s), n parses
   /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
   Flat,
-  /// n inputv(s), j CPU(s), j compile(s), n * j parses
-  /// Ex: compile_1(1=p,...,n),...,
-  /// compile_2(1,2=p,...,n),...,compile_j(1,...,p=j,...,n)
+  /// n input (s), j CPU(s), j p(s), j compile(s), n * j parses 
+  /// Ex: compile_1(1=p,...,n), compile_2(1,2=p,...,n),...,
+  /// compile_j(1,...,p=j,...,n) 
   CPUCount,
-  /// p := 0, n inputs, 1 compile, n parses
-  /// Ex: compile(1,....,n)
-  Single,
+ 
 };
 
 class CompilationOptions final {
@@ -161,7 +162,7 @@ public:
   std::string libLTOPath;
 
   /// The kind of compilation
-  CompilationKind compilationKind = CompilationKind::Quadratic;
+  CompilationKind compilationKind = CompilationKind::Normal;
 
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
@@ -262,7 +263,7 @@ public:
     return driverOpts.compilationKind;
   }
 
-  void SetTargetTriple(llvm::StringRef triple);
+  // void SetTargetTriple(llvm::StringRef triple);
 
   void SetMainExecutablePath(llvm::StringRef mainExecutablePath) {
     driverOpts.mainExecutablePath = mainExecutablePath;

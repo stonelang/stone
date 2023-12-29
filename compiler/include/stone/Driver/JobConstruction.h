@@ -2,6 +2,7 @@
 #define STONE_DRIVER_DRIVER_JOB_CONSTRUCTION_H
 
 #include "stone/Basic/File.h"
+#include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/DriverInvocation.h"
@@ -34,7 +35,19 @@ using JobConstructionInput = llvm::PointerUnion<InputFile *, JobConstruction *>;
 /// A list of all job construction inputs
 using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 
+struct JobConstructionFlags final {
+  JobConstructionFlags() = delete;
+  /// Flags that control the parsing of declarations.
+  enum ID {
+    None = 1 << 0,
+    IsTopLevel = 1 << 1,
+  };
+};
+/// Options that control the JobConstruction
+using JobConstructionOptions = stone::OptionSet<JobConstructionFlags::ID>;
+
 class JobConstruction : public DriverAllocation<JobConstruction> {
+
 protected:
   JobConstructionKind kind = JobConstructionKind::None;
   file::Type fileType = file::Type::None;
@@ -44,6 +57,9 @@ protected:
   JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
                   file::Type fileType)
       : kind(kind), inputs(inputs), fileType(fileType) {}
+
+public:
+  JobConstructionOptions jobConstructionOpts;
 
 public:
   using size_type = llvm::ArrayRef<JobConstructionInput>::size_type;
@@ -66,6 +82,11 @@ public:
   JobConstructionKind GetKind() const { return kind; }
   file::Type GetFileType() { return fileType; }
   void AddInput(JobConstructionInput input) { inputs.push_back(input); }
+
+public:
+  bool IsTopLevel() {
+    return jobConstructionOpts.contains(JobConstructionFlags::IsTopLevel);
+  }
 
 public:
   static bool classof(const JobConstruction *construction) {

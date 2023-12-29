@@ -38,12 +38,11 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   Driver driver(invocation);
-
   // Check for empty args
-  // if (args.empty()) {
-  //   driver.PrintHelp(false);
-  //   return FinishMain(Status::Error());
-  // }
+  if (args.empty()) {
+    driver.PrintHelp(false);
+    return FinishMain(Status::Error());
+  }
 
   // // Now, setup the driver
   if (driver.Setup().IsError()) {

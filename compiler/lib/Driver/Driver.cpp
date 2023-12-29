@@ -18,6 +18,7 @@ Status Driver::Setup() {
   toolChain = BuildToolChain(invocation.GetToolChainKind());
 
   compilation = BuildCompilation(invocation.GetCompilationKind());
+
   assert(HasCompilation());
 
   // if (compilation->BuildTopLevelJobConstructions().IsError()) {
@@ -64,8 +65,8 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
   BuildingCompilationRAII buildingCompilation(*this);
 
   switch (kind) {
-  case CompilationKind::Quadratic:
-    return BuildQuaraticCompilation(buildingCompilation);
+  case CompilationKind::Normal:
+    return BuildNormalCompilation(buildingCompilation);
   case CompilationKind::Flat:
     return BuildFlatCompilation(buildingCompilation);
   case CompilationKind::CPUCount:
@@ -78,7 +79,7 @@ std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
 }
 
 std::unique_ptr<Compilation>
-Driver::BuildQuaraticCompilation(BuildingCompilationRAII &state) {
+Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   invocation.ForEachInputFile([&](InputFile &input) {
     // auto jobConstruction = CreateJobConstruction(*InputArg, InputType);
