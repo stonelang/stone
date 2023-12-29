@@ -33,7 +33,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecutableName = file::GetStem(mainExecutablePath);
   invocation.SetMainExecutableName(mainExecutableName);
 
-  if (invocation.ParseCommandLine(args).IsError()) {
+  if (invocation.ParseArgs(args).IsError()) {
     return FinishMain(Status::Error());
   }
 

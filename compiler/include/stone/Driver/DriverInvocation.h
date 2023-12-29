@@ -65,17 +65,17 @@ enum class CompilationKind : UInt8 {
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
   Normal = 0,
-   /// p := 0, n inputs, 1 compile, n parses
+  /// p := 0, n inputs, 1 compile, n parses
   /// Ex: compile(1,....,n)
   Single,
   /// n input(s), n compile(s), n parses
   /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
   Flat,
-  /// n input (s), j CPU(s), j p(s), j compile(s), n * j parses 
+  /// n input (s), j CPU(s), j p(s), j compile(s), n * j parses
   /// Ex: compile_1(1=p,...,n), compile_2(1,2=p,...,n),...,
-  /// compile_j(1,...,p=j,...,n) 
+  /// compile_j(1,...,p=j,...,n)
   CPUCount,
- 
+
 };
 
 class CompilationOptions final {
@@ -291,7 +291,9 @@ public:
   llvm::opt::DerivedArgList &GetDerivedArgList() { return *derivedArgList; }
 
 public:
-  Status ParseCommandLine(llvm::ArrayRef<const char *> args);
+  Status ParseArgs(llvm::ArrayRef<const char *> args);
+
+private:
   Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
 
   Status ParseDriverOptions(const llvm::opt::ArgList &argList);
@@ -309,7 +311,11 @@ public:
   /// \param[out] Inputs The list in which to store the resulting compilation
   /// inputs.
   Status BuildInputFiles(const llvm::opt::ArgList &argList,
-                         InputFileList &inputFiles) const;
+                         InputFileList &inputFiles);
+
+  Status ParseOutputFileType(const llvm::opt::ArgList &argList);
+
+public:
   void ForEachInputFile(std::function<void(InputFile &input)> callback);
 
   bool IsCompilable() const { return GetAction().CanCompile(); }

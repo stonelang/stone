@@ -14,7 +14,7 @@ DriverOptions::DriverOptions()
 
 DriverInvocation::DriverInvocation() : optTable(stone::CreateOptTable()) {}
 
-Status DriverInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
+Status DriverInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask = opts::NoDriverOption;
@@ -57,6 +57,9 @@ DriverInvocation::TranslateInputArgList(const InputArgList &inputArgList) {
   derivedArgList = std::make_unique<llvm::opt::DerivedArgList>(inputArgList);
   return Status();
 }
+
+Status
+DriverInvocation::ParseOutputFileType(const llvm::opt::ArgList &argList) {}
 
 Status DriverInvocation::ParseDriverOptions(const llvm::opt::ArgList &argList) {
 
