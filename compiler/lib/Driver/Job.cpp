@@ -6,9 +6,10 @@ using namespace stone;
 
 JobContext::JobContext(
     Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
-    llvm::ArrayRef<const JobConstruction *> inputConstructions, const JobOutput &jobOutput)
+    llvm::ArrayRef<const JobConstruction *> inputConstructions,
+    const JobOutput &jobOutput)
     : compilation(compilation), inputs(inputs),
-      inputConstructions(inputConstructions), jobOutput(jobOutput){}
+      inputConstructions(inputConstructions), jobOutput(jobOutput) {}
 
 Job *ToolChain::ConstructJob(
     const JobConstruction &construction, Compilation &compilation,
