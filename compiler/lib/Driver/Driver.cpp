@@ -276,6 +276,20 @@ void Driver::PrintHelp(bool showHidden) const {
       /*ShowAllAliases*/ false);
 }
 
+void Driver::PrintSupport() const {
+  switch (GetDriverOptions().GetAction().GetKind()) {
+  case ActionKind::PrintHelp:
+    return PrintHelp();
+  case ActionKind::PrintHelpHidden:
+    return PrintHelp(true);
+  case ActionKind::PrintVersion:
+    //return PrintVersion(); // TODO: 
+    break;
+  default:
+    llvm_unreachable("Invalid support action!");
+  }
+}
+
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);

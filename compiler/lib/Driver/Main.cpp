@@ -25,7 +25,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   // Check for empty args
   if (args.empty()) {
-    driver.PrintHelp(false);
+    driver.PrintHelp();
     return FinishMain(Status::Error());
   }
 
@@ -45,6 +45,10 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(Status::Error());
   }
 
+  if (driver.GetDriverOptions().GetAction().IsSupport()) {
+    driver.PrintSupport();
+    return FinishMain();
+  }
   // // // Now, setup the driver
   // if (driver.Setup().IsError()) {
   //   return FinishMain(Status::Error());

@@ -203,7 +203,12 @@ public:
   /// Print the help text.
   ///
   /// \param ShowHidden Show hidden options.
-  void PrintHelp(bool showHidden) const;
+  void PrintHelp(bool showHidden = false) const;
+
+  /// Print Help, HelpHidden, or Version.
+  ///
+  /// \param ShowHidden Show hidden options.
+  void PrintSupport() const;
 
 public:
   /// Might this sort of compile have explicit primary inputs?
