@@ -22,22 +22,6 @@ class Job;
 class JobConstruction;
 class DiagnosticEngine;
 
-/// An enum providing different levels of output which should be produced
-/// by a Compilation.
-enum class CompilationOutputLevel {
-  /// Indicates that normal output should be produced.
-  Normal,
-
-  /// Indicates that only jobs should be printed and not run. (-###)
-  PrintJobs,
-
-  /// Indicates that verbose output should be produced. (-v)
-  Verbose,
-
-  /// Indicates that parseable output should be produced.
-  Parseable,
-};
-
 /// Indicates whether a temporary file should always be preserved if a part of
 /// the compilation crashes.
 enum class PreserveOnSignal : bool { No, Yes };
@@ -77,16 +61,6 @@ class Compilation final {
   /// The Jobs which will be performed by this compilation.
   llvm::SmallVector<const Job *, 32> jobs;
 
-  /// When the build was started.
-  ///
-  /// This should be as close as possible to when the driver was invoked, since
-  /// it's used as a lower bound.
-  llvm::sys::TimePoint<> compilationStartTime;
-
-  /// The time of the last compilation.
-  ///
-  /// If unknown, this will be some time in the past.
-  llvm::sys::TimePoint<> compilationLastTime = llvm::sys::TimePoint<>::min();
 
 public:
   Compilation(const Driver &driver);

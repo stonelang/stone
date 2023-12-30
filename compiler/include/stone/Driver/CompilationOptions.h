@@ -21,6 +21,22 @@ enum class LinkMode : UInt8 {
   StaticLibrary
 };
 
+/// An enum providing different levels of output which should be produced
+/// by a Compilation.
+enum class CompilationOutputLevel {
+  /// Indicates that normal output should be produced.
+  Normal,
+
+  /// Indicates that only jobs should be printed and not run. (-###)
+  PrintJobs,
+
+  /// Indicates that verbose output should be produced. (-v)
+  Verbose,
+
+  /// Indicates that parseable output should be produced.
+  Parseable,
+};
+
 /// This mode controls the compilation process
 /// p := -primary-file
 enum class CompilationKind : UInt8 {

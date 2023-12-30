@@ -29,6 +29,19 @@ class Driver final {
   /// Stats collections
   // std::unique_ptr<DriverStatsReporter> statsReporter;
 
+
+private:
+  /// When the build was started.
+  ///
+  /// This should be as close as possible to when the driver was invoked, since
+  /// it's used as a lower bound.
+  llvm::sys::TimePoint<> buildStartTime;
+
+  /// The time of the last compilation.
+  ///
+  /// If unknown, this will be some time in the past.
+  llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
+
 public:
   Driver(DriverInvocation &invocation);
   ~Driver();
