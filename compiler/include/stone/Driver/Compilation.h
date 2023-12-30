@@ -22,77 +22,6 @@ class Job;
 class JobConstruction;
 class DiagnosticEngine;
 
-class CompilationModel {};
-
-class NormalCompilationModel final : public CompilationModel {};
-
-// class QuadraticCompilation final : public Compilation {
-
-// public:
-//   QuadraticCompilation(Driver &driver);
-
-// public:
-//   Status BuildTopLevelJobConstructions() override;
-
-// public:
-//   Status Execute() override;
-
-// public:
-//   static bool classof(const Compilation *compilation) {
-//     return compilation->GetKind() == CompilationKind::Quadratic;
-//   }
-// };
-
-// class FlatCompilation : public Compilation {
-
-// public:
-//   FlatCompilation(Driver &driver);
-
-// public:
-//   Status BuildTopLevelJobConstructions() override;
-
-// public:
-//   Status Execute() override;
-
-// public:
-//   static bool classof(const Compilation *compilation) {
-//     return compilation->GetKind() == CompilationKind::Flat;
-//   }
-// };
-
-// class CPUCountCompilation : public Compilation {
-
-// public:
-//   CPUCountCompilation(Driver &driver);
-
-// public:
-//   Status BuildTopLevelJobConstructions() override;
-
-// public:
-//   Status Execute() override;
-
-// public:
-//   static bool classof(const Compilation *compilation) {
-//     return compilation->GetKind() == CompilationKind::CPUCount;
-//   }
-// };
-
-// class SingleCompilation : public Compilation {
-
-// public:
-//   SingleCompilation(Driver &driver);
-
-// public:
-//   Status BuildTopLevelJobConstructions() override;
-
-// public:
-//   Status Execute() override;
-
-// public:
-//   static bool classof(const Compilation *compilation) {
-//     return compilation->GetKind() == CompilationKind::Single;
-//   }
-// };
 
 class Compilation final {
   const Driver &driver;
@@ -116,7 +45,6 @@ public:
   // virtual ~Compilation();
 
 public:
-  // CompilationKind GetKind() const;
   const Driver &GetDriver() const { return driver; }
 
 public:
