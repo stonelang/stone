@@ -6,21 +6,17 @@ using namespace stone;
 
 JobContext::JobContext(
     Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
-    llvm::ArrayRef<const JobConstruction *> inputConstructions,
-    const JobOutput &jobOutput, const DriverInvocation &invocation)
+    llvm::ArrayRef<const JobConstruction *> inputConstructions, const JobOutput &jobOutput)
     : compilation(compilation), inputs(inputs),
-      inputConstructions(inputConstructions), jobOutput(jobOutput),
-      invocation(invocation) {}
+      inputConstructions(inputConstructions), jobOutput(jobOutput){}
 
 Job *ToolChain::ConstructJob(
     const JobConstruction &construction, Compilation &compilation,
     llvm::SmallVectorImpl<const Job *> &&inputs,
     llvm::ArrayRef<const JobConstruction *> inputConstructions,
-    std::unique_ptr<JobOutput> output,
-    const DriverInvocation &invocation) const {
+    std::unique_ptr<JobOutput> output) const {
 
-  JobContext jobContext{compilation, inputs, inputConstructions, *output,
-                        invocation};
+  JobContext jobContext{compilation, inputs, inputConstructions, *output};
 
   auto jobInvocation = [&]() -> JobInvocation {
     switch (construction.GetKind()) {

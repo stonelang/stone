@@ -46,9 +46,8 @@ public:
   /// The name of the executing program
   llvm::StringRef mainExecutableName;
 
-   /// Indicates whether the driver should check that the input file exist.
+  /// Indicates whether the driver should check that the input file exist.
   bool checkInputFileExistence = false;
-
 
   /// Extra args to pass to the driver executable
   llvm::SmallVector<std::string, 2> extraMainExecutableArgs;

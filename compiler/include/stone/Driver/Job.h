@@ -70,12 +70,11 @@ public:
   llvm::ArrayRef<const JobConstruction *> inputConstructions;
 
   const JobOutput &jobOutput;
-  const DriverInvocation &invocation;
 
 public:
   JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> Inputs,
              llvm::ArrayRef<const JobConstruction *> inputConstructions,
-             const JobOutput &jobOutput, const DriverInvocation &invocation);
+             const JobOutput &jobOutput);
 };
 
 enum class JobCondition {

@@ -241,8 +241,7 @@ public:
                     Compilation &compilation,
                     llvm::SmallVectorImpl<const Job *> &&inputs,
                     llvm::ArrayRef<const JobConstruction *> inputConstructions,
-                    std::unique_ptr<JobOutput> output,
-                    const DriverInvocation &invocation) const;
+                    std::unique_ptr<JobOutput> output) const;
 };
 
 class DarwinToolChain final : public ToolChain {
