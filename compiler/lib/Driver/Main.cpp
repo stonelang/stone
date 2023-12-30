@@ -18,15 +18,22 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
   Driver driver;
+
+  auto FinishMain = [&](Status status = Status::Success()) -> int {
+    return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
+  };
+
+  // Check for empty args
+  if (args.empty()) {
+    driver.PrintHelp(false);
+    return FinishMain(Status::Error());
+  }
+
   TextDiagnosticFormatter formatter;
   TextDiagnosticEmitter emitter(formatter);
 
   TextDiagnosticConsumer consumer(emitter);
   driver.AddDiagnosticConsumer(consumer);
-
-  auto FinishMain = [&](Status status = Status::Success()) -> int {
-    return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
-  };
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   driver.SetMainExecutablePath(mainExecutablePath);
@@ -34,16 +41,9 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecutableName = file::GetStem(mainExecutablePath);
   driver.SetMainExecutableName(mainExecutableName);
 
-  // if (driver.ParseArgs(args).IsError()) {
-  //   return FinishMain(Status::Error());
-  // }
-
-  // Driver driver(invocation);
-  // // Check for empty args
-  // if (args.empty()) {
-  //   driver.PrintHelp(false);
-  //   return FinishMain(Status::Error());
-  // }
+  if (driver.ParseArgs(args).IsError()) {
+    return FinishMain(Status::Error());
+  }
 
   // // // Now, setup the driver
   // if (driver.Setup().IsError()) {
