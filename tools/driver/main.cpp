@@ -31,5 +31,4 @@ int main(int argc, const char **args) {
   return stone::Main(
       llvm::makeArrayRef(argv.data() + 1, argv.data() + argv.size()), argv[0],
       (void *)(intptr_t)stone::GetMainExecutablePath);
-  
 }

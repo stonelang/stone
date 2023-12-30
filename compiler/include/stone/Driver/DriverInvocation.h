@@ -10,9 +10,10 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Diag/DriverDiagnostic.h"
+#include "stone/Driver/CompilationOptions.h"
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
-#include "stone/Driver/CompilationOptions.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
@@ -21,119 +22,7 @@ using namespace llvm::opt;
 
 namespace stone {
 
-class DriverInvocation;
 class JobOutput;
-
-// using  ToolChainPlatform = llvm::Triple::OSType;
-
-enum class ToolChainKind {
-  None = 0,
-  /// Darwin tool-chain
-  Darwin,
-  /// Linux tool-chain
-  Linux,
-  /// Windows tool-chain
-  Windows,
-  /// FreeBSD tool-chain
-  FreeBSD,
-  /// OpenBSD tool-chain
-  OpenBSD,
-  /// Android tool-chain
-  Android,
-  /// Any unix tool-chain
-  Unix
-};
-
-
-class DriverOptions final {
-public:
-  /// The main action requested or computed.
-  Action mainAction;
-
-  /// Default target triple.
-  std::string defaultTargetTriple;
-
-  /// Default target triple.
-  llvm::Optional<llvm::Triple> targetVariant;
-
-  /// The path the executing program
-  llvm::StringRef mainExecutablePath;
-
-  /// The name of the executing program
-  llvm::StringRef mainExecutableName;
-
-  /// Extra args to pass to the driver executable
-  llvm::SmallVector<std::string, 2> extraMainExecutableArgs;
-
-public:
-  /// Outputs
-
-  /// The driver link mode
-  LinkMode linkMode = LinkMode::None;
-
-  bool ShouldLink() const { return linkMode != LinkMode::None; }
-
-  LTOKind ltoVariant = LTOKind::None;
-  bool WithLTO() const { return ltoVariant != LTOKind::None; }
-
-  std::string libLTOPath;
-
-  /// The kind of compilation
-  CompilationKind compilationKind = CompilationKind::Normal;
-
-  /// The number of threads for multi-threaded compilation.
-  unsigned numThreads = 0;
-
-  /// Returns true if multi-threading is enabled.
-  bool IsMultiThreading() const { return numThreads > 0; }
-
-  /// The path to the SDK against which to build.
-  /// (If empty, this implies no SDK.)
-  std::string sdkPath;
-
-  /// The output file type which should be used for the
-  /// compile-job-constructions.
-  file::Type outputFileType = file::Type::None;
-
-  /// The file input type
-  file::Type inputFileType = file::Type::None;
-
-  InputFileList inputFiles;
-
-  /// Indicates whether the driver should check that the input file exist.
-  bool checkInputFileExistence = false;
-
-  // /// Whether or not the output should contain debug info.
-  // // FIXME: Eventually this should be replaced by dSYM generation.
-  // CodeGenDebugInfoLevel debugInfoLevel = CodeGenDebugInfoLevel::None;
-
-  // /// What kind of debug info to generate.
-  // CodeGenDebugInfoFormat debugInfoFormat = CodeGenDebugInfoFormat::None;
-
-  /// DWARF output format version number.
-  // std::optional<uint8_t> dwarfVersion;
-
-  /// The name of the module which we are building.
-  std::string moduleName;
-
-  /// Whether or not the driver should generate a module.
-  bool shouldGenerateModule = false;
-
-  /// Whether or not the driver should treat a generated module as a top-level
-  /// output.
-  bool shouldTreatModuleAsTopLevelOutput = false;
-
-  /// Print the jobs in the TaskQueue
-  bool printJobs = false;
-
-  ToolChainKind toolChainKind = ToolChainKind::None;
-
-public:
-  std::string toolsDirectory;
-
-public:
-  DriverOptions();
-};
 
 class DriverInvocation final {
 
@@ -157,11 +46,22 @@ public:
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
+  bool HasAction() { return !driverOpts.mainAction.IsAlien(); }
+  Action &GetAction() { return driverOpts.mainAction; }
+  const Action &GetAction() const { return driverOpts.mainAction; }
+  ToolChainKind GetToolChainKind() const { return driverOpts.toolChainKind; }
+
+public:
   CompilationOptions &GetCompilationOptions() { return compilationOpts; }
   const CompilationOptions &GetCompilationOptions() const {
     return compilationOpts;
   }
+  LinkMode GetLinkMode() const { return compilationOpts.linkMode; }
+  CompilationKind GetCompilationKind() const {
+    return compilationOpts.compilationKind;
+  }
 
+public:
   LangOptions &GetLangOptions() { return langOpts; }
   const LangOptions &GetLangOptions() const { return langOpts; }
 
@@ -169,17 +69,6 @@ public:
   const FileSystemOptions &GetFileSystemOptions() const {
     return fileSystemOpts;
   }
-
-  bool HasAction() { return !driverOpts.mainAction.IsAlien(); }
-  Action &GetAction() { return driverOpts.mainAction; }
-  const Action &GetAction() const { return driverOpts.mainAction; }
-
-  LinkMode GetLinkMode() const { return driverOpts.linkMode; }
-  ToolChainKind GetToolChainKind() const { return driverOpts.toolChainKind; }
-  CompilationKind GetCompilationKind() const {
-    return driverOpts.compilationKind;
-  }
-
   // void SetTargetTriple(llvm::StringRef triple);
 
   void SetMainExecutablePath(llvm::StringRef mainExecutablePath) {

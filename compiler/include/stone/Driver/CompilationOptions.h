@@ -1,6 +1,7 @@
 #ifndef STONE_DRIVER_COMPILATION_OPTIONS_H
 #define STONE_DRIVER_COMPILATION_OPTIONS_H
 
+#include "stone/Basic/File.h"
 #include "stone/Basic/STDAlias.h"
 
 namespace stone {
@@ -87,9 +88,56 @@ public:
   bool enableCrossModuleIncrementalBuild = false;
 
 public:
+  /// The output file type which should be used for the
+  /// compile-job-constructions.
+  file::Type outputFileType = file::Type::None;
 
+  /// The driver link mode
+  LinkMode linkMode = LinkMode::None;
+
+  bool ShouldLink() const { return linkMode != LinkMode::None; }
+
+  LTOKind ltoVariant = LTOKind::None;
+  bool WithLTO() const { return ltoVariant != LTOKind::None; }
+
+  std::string libLTOPath;
+
+  /// The kind of compilation
+  CompilationKind compilationKind = CompilationKind::Normal;
+
+  /// The number of threads for multi-threaded compilation.
+  unsigned numThreads = 0;
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+  /// The path to the SDK against which to build.
+  /// (If empty, this implies no SDK.)
+  std::string sdkPath;
+
+  // /// Whether or not the output should contain debug info.
+  // // FIXME: Eventually this should be replaced by dSYM generation.
+  // CodeGenDebugInfoLevel debugInfoLevel = CodeGenDebugInfoLevel::None;
+
+  // /// What kind of debug info to generate.
+  // CodeGenDebugInfoFormat debugInfoFormat = CodeGenDebugInfoFormat::None;
+
+  /// DWARF output format version number.
+  // std::optional<uint8_t> dwarfVersion;
+
+  /// The name of the module which we are building.
+  std::string moduleName;
+
+  /// Whether or not the driver should generate a module.
+  bool shouldGenerateModule = false;
+
+  /// Whether or not the driver should treat a generated module as a top-level
+  /// output.
+  bool shouldTreatModuleAsTopLevelOutput = false;
+
+public:
 };
 
-}
+} // namespace stone
 
-#endif 
+#endif

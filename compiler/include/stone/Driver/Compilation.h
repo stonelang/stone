@@ -22,7 +22,6 @@ class Job;
 class JobConstruction;
 class DiagnosticEngine;
 
-
 class Compilation final {
   const Driver &driver;
 

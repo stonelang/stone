@@ -91,7 +91,8 @@ Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation) {
       assert(file::IsPartOfCompilation(input.GetType()));
 
       currentInput = CompileJobConstruction::Create(
-          *this, currentInput, invocation.GetDriverOptions().outputFileType);
+          *this, currentInput,
+          invocation.GetCompilationOptions().outputFileType);
 
       buildingCompilation.AddModuleInput(currentInput);
 
@@ -116,10 +117,9 @@ std::unique_ptr<Compilation>
 Driver::BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   invocation.ForEachInputFile([&](InputFile &input) {
-    
     JobConstructionInput currentInput = const_cast<InputFile *>(&input);
     currentInput = CompileJobConstruction::Create(
-        *this, currentInput, invocation.GetDriverOptions().outputFileType);
+        *this, currentInput, invocation.GetCompilationOptions().outputFileType);
 
     buildingCompilation.AddModuleInput(currentInput);
     buildingCompilation.AddLinkerInput(currentInput);
@@ -132,7 +132,7 @@ std::unique_ptr<Compilation>
 Driver::BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation) {
 
   auto compileJobConstruction = CompileJobConstruction::Create(
-      *this, invocation.GetDriverOptions().outputFileType);
+      *this, invocation.GetCompilationOptions().outputFileType);
 
   invocation.ForEachInputFile([&](InputFile &input) {
     JobConstructionInput currentInput = const_cast<InputFile *>(&input);
@@ -170,7 +170,7 @@ Driver::BuildingCompilationRAII::~BuildingCompilationRAII() {
       // FIXME: WithLTO
       linkJobConstruction = DynamicLinkJobConstruction::Create(
           driver, linkerInputs, driver.GetInvocation().GetLinkMode(),
-          driver.GetInvocation().GetDriverOptions().WithLTO());
+          driver.GetInvocation().GetCompilationOptions().WithLTO());
     }
       AddTopLevelJobConstruction(linkJobConstruction);
     }

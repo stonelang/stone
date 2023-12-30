@@ -86,12 +86,12 @@ Status DriverInvocation::ParseCompilationOptions(
 void DriverInvocation::ComputeLinkMode(const llvm::opt::ArgList &args) {
   assert(HasAction());
   if (GetAction().IsNone()) {
-    driverOpts.linkMode = LinkMode::Executable;
+    compilationOpts.linkMode = LinkMode::Executable;
   } else if (GetAction().IsEmitLibrary()) {
     if (args.hasArg(opts::Static)) {
-      driverOpts.linkMode = LinkMode::StaticLibrary;
+      compilationOpts.linkMode = LinkMode::StaticLibrary;
     } else {
-      driverOpts.linkMode = LinkMode::DynamicLibrary;
+      compilationOpts.linkMode = LinkMode::DynamicLibrary;
     }
   }
 }
