@@ -10,11 +10,16 @@
 
 namespace stone {
 
+using ToolChainOSType = llvm::Triple::OSType;
+
 class Driver final {
 
   DriverInvocation &invocation;
+
   std::unique_ptr<ToolChain> toolChain;
+
   std::unique_ptr<Compilation> compilation;
+
   std::unique_ptr<stone::TaskQueue> taskQueue;
 
   // A graph of JobConstructions.
@@ -28,7 +33,29 @@ class Driver final {
 
   /// Stats collections
   // std::unique_ptr<DriverStatsReporter> statsReporter;
+public:
+  /// The main action requested or computed.
+  Action action;
 
+  /// Default target triple.
+  std::string defaultTargetTriple;
+
+  /// Default target triple.
+  llvm::Optional<llvm::Triple> targetVariant;
+
+  /// The path the executing program
+  llvm::StringRef mainExecutablePath;
+
+  /// The name of the executing program
+  llvm::StringRef mainExecutableName;
+
+  /// Indicates whether the driver should check that the input file exist.
+  bool checkInputFileExistence = false;
+
+  /// Extra args to pass to the driver executable
+  llvm::SmallVector<std::string, 2> extraMainExecutableArgs;
+
+  ToolChainOSType toolChainOSType = ToolChainOSType::UnknownOS;
 
 private:
   /// When the build was started.

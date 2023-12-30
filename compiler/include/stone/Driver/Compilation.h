@@ -61,7 +61,6 @@ class Compilation final {
   /// The Jobs which will be performed by this compilation.
   llvm::SmallVector<const Job *, 32> jobs;
 
-
 public:
   Compilation(const Driver &driver);
 

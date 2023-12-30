@@ -139,7 +139,7 @@ public:
   // CodeGenDebugInfoFormat debugInfoFormat = CodeGenDebugInfoFormat::None;
 
   /// DWARF output format version number.
-  // std::optional<uint8_t> dwarfVersion;
+  // TODO: clang 17 std::optional<uint8_t> dwarfVersion;
 
   /// The name of the module which we are building.
   std::string moduleName;
