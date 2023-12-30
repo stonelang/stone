@@ -50,7 +50,7 @@ class JobOutput final {
 public:
   /// A CommandOutput designates one type of output as primary, though there
   /// may be multiple outputs of that type.
-  file::Type PrimaryOutputFileType;
+  file::FileType PrimaryOutputFileType;
 
   /// A CommandOutput also restricts its attention regarding additional-outputs
   /// to a subset of the PrimaryOutputs associated with its PrimaryInputs;
@@ -58,7 +58,7 @@ public:
   /// phases (eg. autolink-extract and link both operate on the same .o file),
   /// so Jobs cannot _just_ rely on the presence of a primary output in the
   /// DerivedOutputFileMap.
-  llvm::SmallSet<file::Type, 4> AdditionalOutputFileTypes;
+  llvm::SmallSet<file::FileType, 4> AdditionalOutputFileTypes;
 };
 
 class JobContext final {

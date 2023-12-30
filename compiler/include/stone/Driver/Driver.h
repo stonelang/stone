@@ -1,29 +1,54 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
+#include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Driver/Compilation.h"
-#include "stone/Driver/DriverInvocation.h"
+#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DriverDiagnostic.h"
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
 
-namespace stone {
+#include "llvm/Option/Arg.h"
+#include "llvm/Option/ArgList.h"
 
-using ToolChainOSType = llvm::Triple::OSType;
+using namespace llvm::opt;
+
+#include <memory>
+#include <vector>
+
+namespace llvm {
+namespace opt {
+class InputArgList;
+class DerivedArgList;
+} // namespace opt
+} // namespace llvm
+
+namespace stone {
 
 class Driver final {
 
-  DriverInvocation &invocation;
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
 
+  /// The options for compilation
+  DriverOptions driverOpts;
+
+  /// The driver options
+  std::unique_ptr<llvm::opt::OptTable> optTable;
+
+  /// The parsed input arg list
+  std::unique_ptr<llvm::opt::InputArgList> inputArgList;
+
+  /// The derived arg list
+  std::unique_ptr<llvm::opt::DerivedArgList> derivedArgList;
+
+  /// The tool chain to use to build the tools
   std::unique_ptr<ToolChain> toolChain;
 
-  std::unique_ptr<Compilation> compilation;
-
+  /// The task queue to run the jobs
   std::unique_ptr<stone::TaskQueue> taskQueue;
-
-  // A graph of JobConstructions.
-  llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
   /// The allocator used to create Driver objects.
   /// Driver objects are never destructed; rather, all memory associated
@@ -32,32 +57,8 @@ class Driver final {
   mutable llvm::BumpPtrAllocator allocator;
 
   /// Stats collections
-  // std::unique_ptr<DriverStatsReporter> statsReporter;
-public:
-  /// The main action requested or computed.
-  Action action;
+  std::unique_ptr<DriverStatsReporter> stats;
 
-  /// Default target triple.
-  std::string defaultTargetTriple;
-
-  /// Default target triple.
-  llvm::Optional<llvm::Triple> targetVariant;
-
-  /// The path the executing program
-  llvm::StringRef mainExecutablePath;
-
-  /// The name of the executing program
-  llvm::StringRef mainExecutableName;
-
-  /// Indicates whether the driver should check that the input file exist.
-  bool checkInputFileExistence = false;
-
-  /// Extra args to pass to the driver executable
-  llvm::SmallVector<std::string, 2> extraMainExecutableArgs;
-
-  ToolChainOSType toolChainOSType = ToolChainOSType::UnknownOS;
-
-private:
   /// When the build was started.
   ///
   /// This should be as close as possible to when the driver was invoked, since
@@ -70,21 +71,34 @@ private:
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
 public:
-  Driver(DriverInvocation &invocation);
-  ~Driver();
+  // A graph of JobConstructions.
+  llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
+public:
+  Driver();
+  ~Driver();
   Status Setup();
 
 public:
-  /// Allocate - Allocate memory from the Driver bump pointer.
-  void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
-    if (bytes == 0) {
-      return nullptr;
-    }
-    return allocator.Allocate(bytes, alignment);
+  Status ParseArgs(llvm::ArrayRef<const char *> args);
+
+  void SetMainExecutablePath(llvm::StringRef executablePath) {
+    driverOpts.mainExecutablePath = executablePath;
+  }
+  void SetMainExecutableName(llvm::StringRef executableName) {
+    driverOpts.mainExecutablePath = executableName;
   }
 
+private:
+  Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
+
 public:
+  llvm::opt::OptTable &GetOptTable() { return *optTable; }
+  const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
+
+  llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
+  llvm::opt::DerivedArgList &GetDerivedArgList() { return *derivedArgList; }
+
   bool HasToolChain() { return toolChain != nullptr; }
   ToolChain &GetToolChain() { return *toolChain; }
   const ToolChain &GetToolChain() const { return *toolChain; }
@@ -93,15 +107,23 @@ public:
   TaskQueue &GetTaskQueue() { return *taskQueue; }
   const TaskQueue &GetTaskQueue() const { return *taskQueue; }
 
-  bool HasCompilation() { return compilation != nullptr; }
-  Compilation &GetCompilation() { return *compilation; }
+  llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
+  llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
-  const DriverInvocation &GetInvocation() const { return invocation; }
+  DriverOptions &GetDriverOptions() { return driverOpts; }
+  const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
 public:
-  DiagnosticEngine &GetDiags() { return invocation.GetDiags(); }
+  DiagnosticEngine &GetDiags() { return diags; }
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
+  }
 
-  // DriverStatsReporter &GetStatsReporter() { return *statsReporter; }
+  bool HasStats() const { return stats != nullptr; }
+  DriverStatsReporter &GetStats() { return *stats; }
 
 public:
   /// Creates an appropriate ToolChain for a given driver, given the target
@@ -113,38 +135,8 @@ public:
   ///
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
-  std::unique_ptr<ToolChain> BuildToolChain(ToolChainKind kind);
+  std::unique_ptr<ToolChain> BuildToolChain(ToolChainKind toolChainKind);
 
-  class BuildingCompilationRAII final {
-    Driver &driver;
-
-  public:
-    llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
-    llvm::SmallVector<JobConstructionInput, 2> linkerInputs;
-    llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
-
-  public:
-    BuildingCompilationRAII(Driver &driver) : driver(driver) {
-      moduleInputs.clear();
-      linkerInputs.clear();
-    }
-    ~BuildingCompilationRAII();
-
-  public:
-    void AddModuleInput(const JobConstructionInput input) {
-      moduleInputs.push_back(input);
-    }
-
-    void AddLinkerInput(const JobConstructionInput input) {
-      linkerInputs.push_back(input);
-    }
-
-    bool HasLinkerInputs() { return !linkerInputs.empty(); }
-
-    void AddTopLevelJobConstruction(const JobConstruction *construction) {
-      topLevelJobConstructions.push_back(construction);
-    }
-  };
   /// Construct a compilation object for a given ToolChain and command line
   /// argument vector.
   ///
@@ -155,51 +147,47 @@ public:
   /// vector. A null return value does not necessarily indicate an error
   /// condition; the diagnostics should be queried to determine if an error
   /// occurred.
-  std::unique_ptr<Compilation> BuildCompilation(CompilationKind kind);
+  // std::unique_ptr<Compilation> BuildCompilation(CompilationKind kind);
 
-  /// Build a quadratic compilation
-  std::unique_ptr<Compilation>
-  BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation);
+  // /// Build a quadratic compilation
+  // std::unique_ptr<Compilation>
+  // BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation);
 
-  /// Build a flat compilation
-  std::unique_ptr<Compilation>
-  BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation);
+  // /// Build a flat compilation
+  // std::unique_ptr<Compilation>
+  // BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation);
 
-  /// Build a single compilation
-  std::unique_ptr<Compilation>
-  BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation);
+  // /// Build a single compilation
+  // std::unique_ptr<Compilation>
+  // BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation);
 
-  ///
-  std::unique_ptr<Compilation>
-  BuildCPUCountCompilation(BuildingCompilationRAII &buildingCompilation);
+  // ///
+  // std::unique_ptr<Compilation>
+  // BuildCPUCountCompilation(BuildingCompilationRAII &buildingCompilation);
 
 public:
+  bool HasTopLevelJobConstructions() {
+    return !topLevelJobConstructions.empty();
+  }
+  void AddTopLevelJobConstruction(const JobConstruction *construction) {
+    topLevelJobConstructions.push_back(construction);
+  }
+
+  void ForEachInputFile(std::function<void(InputFile &input)> callback);
+
   /// Build the job-constructions
-  Status BuildTopLevelJobConstructions();
-
-  /// Add a ob-constructions
-  Status BuildTopLevelJobConstruction();
-
-  // /// Create the job-constructions
-  // JobConstruction *CreateJobConstruction();
-
-  /// Add a ob-constructions
-  JobConstruction *CreateCompileJobConstruction(Driver &driver);
-
-  // /// Add a ob-constructions
-  // JobConstruction *CreateLinkJobConstruction(Driver &driver);
-
-  void ForEachJobConstruction(
-      std::function<void(JobConstruction &construction)> callback);
+  Status BuildJobConstructions();
 
   /// Build the jobs
   Status BuildJobs();
 
-  /// Print the list of Actions in a Compilation.
-  void PrintJobConstructions(const Compilation &compilation) const;
+  /// A map for caching Jobs for a given Action/ToolChain pair
+  using JobCacheMap =
+      llvm::DenseMap<std::pair<const JobConstruction *, const ToolChain *>,
+                     Job *>;
 
-  /// Print the list of Actions in a Compilation.
-  void PrintJobs(const Compilation &compilation) const;
+  void ForEachTopLevelJobConstruction(
+      std::function<void(const JobConstruction *construction)> callback);
 
 public:
   /// Compute the task queue for this compilation and command line argument
@@ -207,8 +195,7 @@ public:
   ///
   /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
   /// specified.  This condition is signalled by a diagnostic.
-  std::unique_ptr<stone::TaskQueue>
-  BuildTaskQueue(const Compilation &compilation);
+  std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
   /// Print the driver version.
@@ -219,7 +206,22 @@ public:
   void PrintHelp(bool showHidden) const;
 
 public:
-  Status ExecuteCompilation();
+  /// Might this sort of compile have explicit primary inputs?
+  /// When running a single compile for the whole module (in other words
+  /// "whole-module-optimization" mode) there must be no -primary-input's and
+  /// nothing in a (preferably non-existent) -primary-filelist. Left to its own
+  /// devices, the driver would forget to omit the primary input files, so
+  /// return a flag here.
+  Status MightHaveExplicitPrimaryInputs(const JobOutput &jobOutput) const;
+
+public:
+  /// Allocate - Allocate memory from the Driver bump pointer.
+  void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
+    if (bytes == 0) {
+      return nullptr;
+    }
+    return allocator.Allocate(bytes, alignment);
+  }
 };
 
 } // namespace stone

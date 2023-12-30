@@ -10,6 +10,7 @@
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
+using namespace stone::file;
 
 Compiler::Compiler()
     : invocation(*this), fileMgr(invocation.GetFileSystemOptions()) {}
@@ -164,7 +165,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
 
   // Recover by dummy buffer if requested.
   if (!buffers.hasValue() && shouldRecover &&
-      input.GetType() == file::Type::Stone) {
+      input.GetType() == FileType::Stone) {
     buffers = ModuleBuffers(llvm::MemoryBuffer::getMemBuffer(
         "// missing file\n", input.GetFileName()));
   }

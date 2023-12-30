@@ -2,13 +2,14 @@
 #include "stone/Driver/Compilation.h"
 
 using namespace stone;
+using namespace stone::file;
 
 ToolChain::ToolChain(const Driver &driver) : driver(driver) {}
 
 ToolChain::~ToolChain() {}
 
 ToolChainKind ToolChain::GetKind() const {
-  return driver.GetInvocation().GetToolChainKind();
+  return driver.GetDriverOptions().GetToolChainKind();
 }
 
 JobInvocation

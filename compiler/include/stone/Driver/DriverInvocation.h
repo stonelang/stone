@@ -10,7 +10,6 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticOptions.h"
 #include "stone/Diag/DriverDiagnostic.h"
-#include "stone/Driver/CompilationOptions.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
@@ -22,121 +21,122 @@ using namespace llvm::opt;
 
 namespace stone {
 
-class JobOutput;
+// class JobOutput;
 
-class DriverInvocation final {
+// class DriverInvocation final {
 
-  SrcMgr srcMgr;
-  DiagnosticEngine diags{srcMgr};
+//   SrcMgr srcMgr;
+//   DiagnosticEngine diags{srcMgr};
 
-  DriverOptions driverOpts;
-  CompilationOptions compilationOpts;
-  DiagnosticOptions diagOpts;
-  LangOptions langOpts;
-  FileSystemOptions fileSystemOpts;
+//   DriverOptions driverOpts;
+//   DriverOptions driverOpts;
+//   DiagnosticOptions diagOpts;
+//   LangOptions langOpts;
+//   FileSystemOptions fileSystemOpts;
 
-  std::unique_ptr<llvm::opt::OptTable> optTable;
-  std::unique_ptr<llvm::opt::InputArgList> inputArgList;
-  std::unique_ptr<llvm::opt::DerivedArgList> derivedArgList;
+//   std::unique_ptr<llvm::opt::OptTable> optTable;
+//   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
+//   std::unique_ptr<llvm::opt::DerivedArgList> derivedArgList;
 
-public:
-  DriverInvocation();
+// public:
+//   DriverInvocation();
 
-public:
-  DriverOptions &GetDriverOptions() { return driverOpts; }
-  const DriverOptions &GetDriverOptions() const { return driverOpts; }
+// public:
+//   DriverOptions &GetDriverOptions() { return driverOpts; }
+//   const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
-  bool HasAction() { return !driverOpts.mainAction.IsAlien(); }
-  Action &GetAction() { return driverOpts.mainAction; }
-  const Action &GetAction() const { return driverOpts.mainAction; }
-  ToolChainKind GetToolChainKind() const { return driverOpts.toolChainKind; }
+//   bool HasAction() { return !driverOpts.mainAction.IsAlien(); }
+//   Action &GetAction() { return driverOpts.mainAction; }
+//   const Action &GetAction() const { return driverOpts.mainAction; }
+//   ToolChainKind GetToolChainKind() const { return driverOpts.toolChainKind; }
 
-public:
-  CompilationOptions &GetCompilationOptions() { return compilationOpts; }
-  const CompilationOptions &GetCompilationOptions() const {
-    return compilationOpts;
-  }
-  LinkMode GetLinkMode() const { return compilationOpts.linkMode; }
-  CompilationKind GetCompilationKind() const {
-    return compilationOpts.compilationKind;
-  }
+// public:
+//   DriverOptions &GetDriverOptions() { return driverOpts; }
+//   const DriverOptions &GetDriverOptions() const {
+//     return driverOpts;
+//   }
+//   LinkMode GetLinkMode() const { return driverOpts.linkMode; }
+//   CompilationKind GetCompilationKind() const {
+//     return driverOpts.compilationKind;
+//   }
 
-public:
-  LangOptions &GetLangOptions() { return langOpts; }
-  const LangOptions &GetLangOptions() const { return langOpts; }
+// public:
+//   LangOptions &GetLangOptions() { return langOpts; }
+//   const LangOptions &GetLangOptions() const { return langOpts; }
 
-  FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
-  const FileSystemOptions &GetFileSystemOptions() const {
-    return fileSystemOpts;
-  }
-  // void SetTargetTriple(llvm::StringRef triple);
+//   FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
+//   const FileSystemOptions &GetFileSystemOptions() const {
+//     return fileSystemOpts;
+//   }
+//   // void SetTargetTriple(llvm::StringRef triple);
 
-  void SetMainExecutablePath(llvm::StringRef mainExecutablePath) {
-    driverOpts.mainExecutablePath = mainExecutablePath;
-  }
-  void SetMainExecutableName(llvm::StringRef mainExecutableName) {
-    driverOpts.mainExecutablePath = mainExecutableName;
-  }
+//   void SetMainExecutablePath(llvm::StringRef mainExecutablePath) {
+//     driverOpts.mainExecutablePath = mainExecutablePath;
+//   }
+//   void SetMainExecutableName(llvm::StringRef mainExecutableName) {
+//     driverOpts.mainExecutablePath = mainExecutableName;
+//   }
 
-public:
-  DiagnosticEngine &GetDiags() { return diags; }
-  DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
-  const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
-  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.AddConsumer(consumer);
-  }
-  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.RemoveConsumer(consumer);
-  }
+// public:
+//   DiagnosticEngine &GetDiags() { return diags; }
+//   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
+//   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
+//   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+//     diags.AddConsumer(consumer);
+//   }
+//   void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+//     diags.RemoveConsumer(consumer);
+//   }
 
-public:
-  llvm::opt::OptTable &GetOptTable() { return *optTable; }
-  const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
+// public:
+//   llvm::opt::OptTable &GetOptTable() { return *optTable; }
+//   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
 
-  llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
-  llvm::opt::DerivedArgList &GetDerivedArgList() { return *derivedArgList; }
+//   llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
+//   llvm::opt::DerivedArgList &GetDerivedArgList() { return *derivedArgList; }
 
-public:
-  Status ParseArgs(llvm::ArrayRef<const char *> args);
+// public:
+//   Status ParseArgs(llvm::ArrayRef<const char *> args);
 
-private:
-  Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
+// private:
+//   Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
 
-  Status ParseDriverOptions(const llvm::opt::ArgList &argList);
-  Status ParseCompilationOptions(const llvm::opt::ArgList &argList);
+//   Status ParseDriverOptions(const llvm::opt::ArgList &argList);
+//   Status ParseDriverOptions(const llvm::opt::ArgList &argList);
 
-  void ComputeLinkMode(const llvm::opt::ArgList &argList);
-  Status ParseToolChainKind(const llvm::opt::ArgList &argList);
-  Status ComputeCompilationKind(const llvm::opt::ArgList &argList);
+//   void ComputeLinkMode(const llvm::opt::ArgList &argList);
+//   Status ParseToolChainKind(const llvm::opt::ArgList &argList);
+//   Status ComputeCompilationKind(const llvm::opt::ArgList &argList);
 
-  /// Construct the list of inputs and their types from the given arguments.
-  ///
-  /// \param args The input arguments.
-  /// \param[out] Inputs The list in which to store the resulting compilation
-  /// inputs.
-  Status BuildInputFiles(const llvm::opt::ArgList &argList,
-                         InputFileList &inputFiles);
+//   /// Construct the list of inputs and their types from the given arguments.
+//   ///
+//   /// \param args The input arguments.
+//   /// \param[out] Inputs The list in which to store the resulting compilation
+//   /// inputs.
+//   Status BuildInputFiles(const llvm::opt::ArgList &argList,
+//                          InputFileList &inputFiles);
 
-  Status ParseOutputFileType(const llvm::opt::ArgList &argList);
+//   Status ParseOutputFileType(const llvm::opt::ArgList &argList);
 
-public:
-  void ForEachInputFile(std::function<void(InputFile &input)> callback);
+// public:
+//   void ForEachInputFile(std::function<void(InputFile &input)> callback);
 
-  bool ShouldCompile() const { return GetAction().CanCompile(); }
-  bool ShouldLink() const { return (GetLinkMode() != LinkMode::None); }
+//   bool ShouldCompile() const { return GetAction().CanCompile(); }
+//   bool ShouldLink() const { return (GetLinkMode() != LinkMode::None); }
 
-  bool IsCompileOnly() const { return (ShouldCompile() && !ShouldLink()); }
-  bool IsLinkOnly() const { return (ShouldLink() && !ShouldCompile()); }
+//   bool IsCompileOnly() const { return (ShouldCompile() && !ShouldLink()); }
+//   bool IsLinkOnly() const { return (ShouldLink() && !ShouldCompile()); }
 
-public:
-  /// Might this sort of compile have explicit primary inputs?
-  /// When running a single compile for the whole module (in other words
-  /// "whole-module-optimization" mode) there must be no -primary-input's and
-  /// nothing in a (preferably non-existent) -primary-filelist. Left to its own
-  /// devices, the driver would forget to omit the primary input files, so
-  /// return a flag here.
-  Status MightHaveExplicitPrimaryInputs(const JobOutput &jobOutput) const;
-};
+// public:
+//   /// Might this sort of compile have explicit primary inputs?
+//   /// When running a single compile for the whole module (in other words
+//   /// "whole-module-optimization" mode) there must be no -primary-input's and
+//   /// nothing in a (preferably non-existent) -primary-filelist. Left to its
+//   own
+//   /// devices, the driver would forget to omit the primary input files, so
+//   /// return a flag here.
+//   Status MightHaveExplicitPrimaryInputs(const JobOutput &jobOutput) const;
+// };
 
 } // namespace stone
 

@@ -1,6 +1,7 @@
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;
+using namespace stone::file;
 
 UnixToolChain::UnixToolChain(const Driver &driver) : ToolChain(driver) {}
 

@@ -4,8 +4,8 @@
 #include "llvm/Option/Option.h"
 
 using namespace stone;
+using namespace stone::file;
 using namespace stone::opts;
-
 using namespace llvm::opt;
 
 ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
@@ -59,11 +59,11 @@ Action opts::ParseAction(const llvm::opt::ArgList &args) {
   return Action(actionKind, opts::GetArgName(actionArg));
 }
 
-file::Type Action::GetOutputFileType() const {
+FileType Action::GetOutputFileType() const {
   return Action::GetOutputFileTypeByActionKind(GetKind());
 }
 
-file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
+FileType Action::GetOutputFileTypeByActionKind(ActionKind kind) {
   switch (kind) {
   case ActionKind::None:
   case ActionKind::Parse:
@@ -80,40 +80,40 @@ file::Type Action::GetOutputFileTypeByActionKind(ActionKind kind) {
   // case ActionKind::DumpPCM:
   case ActionKind::PrintVersion:
     // case ActionKind::Immediate:
-    return file::Type::None;
+    return FileType::None;
 
     // TODO: case ActionKind::EmitPCH:
-    //   return file::Type::PCH;
+    //   return FileType::PCH;
 
   case ActionKind::MergeModules:
   case ActionKind::EmitModule:
     // case ActionKind::CompileModuleFromInterface:
-    return file::Type::StoneModule;
+    return FileType::StoneModule;
 
   case ActionKind::EmitAssembly:
-    return file::Type::Assembly;
+    return FileType::Assembly;
 
   // case ActionKind::EmitIRGen:
   case ActionKind::EmitIRAfter:
   case ActionKind::EmitIRBefore:
-    return file::Type::IR;
+    return FileType::IR;
 
   case ActionKind::EmitBC:
-    return file::Type::BC;
+    return FileType::BC;
 
   case ActionKind::EmitObject:
-    return file::Type::Object;
+    return FileType::Object;
 
     // case ActionKind::EmitImportedModules:
-    //   return file::Type::ImportedModules;
+    //   return FileType::ImportedModules;
 
     // case ActionKind::EmitPCM:
-    //   return file::Type::ClangModuleFile;
+    //   return FileType::ClangModuleFile;
 
     // case ActionKind::ScanDependencies:
-    //   return file::Type::JSONDependencies;
+    //   return FileType::JSONDependencies;
     // case ActionKind::PrintFeature:
-    //   return file::Type::JSONFeatures;
+    //   return FileType::JSONFeatures;
   default:
     assert(false && "No file-type found for this particular mode-kind");
   }

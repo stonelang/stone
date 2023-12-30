@@ -5,6 +5,7 @@
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/Driver.h"
 
 using namespace stone;
@@ -16,38 +17,38 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   FINISH_LLVM_INIT();
 
-  DriverInvocation invocation;
+  Driver driver;
   TextDiagnosticFormatter formatter;
   TextDiagnosticEmitter emitter(formatter);
+
   TextDiagnosticConsumer consumer(emitter);
-  invocation.AddDiagnosticConsumer(consumer);
+  driver.AddDiagnosticConsumer(consumer);
 
   auto FinishMain = [&](Status status = Status::Success()) -> int {
-    return (status.IsError() ? status.GetFlag()
-                             : invocation.GetDiags().Finish());
+    return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
   };
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  invocation.SetMainExecutablePath(mainExecutablePath);
+  driver.SetMainExecutablePath(mainExecutablePath);
 
   auto mainExecutableName = file::GetStem(mainExecutablePath);
-  invocation.SetMainExecutableName(mainExecutableName);
+  driver.SetMainExecutableName(mainExecutableName);
 
-  if (invocation.ParseArgs(args).IsError()) {
-    return FinishMain(Status::Error());
-  }
+  // if (driver.ParseArgs(args).IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
 
-  Driver driver(invocation);
-  // Check for empty args
-  if (args.empty()) {
-    driver.PrintHelp(false);
-    return FinishMain(Status::Error());
-  }
+  // Driver driver(invocation);
+  // // Check for empty args
+  // if (args.empty()) {
+  //   driver.PrintHelp(false);
+  //   return FinishMain(Status::Error());
+  // }
 
-  // // Now, setup the driver
-  if (driver.Setup().IsError()) {
-    return FinishMain(Status::Error());
-  }
+  // // // Now, setup the driver
+  // if (driver.Setup().IsError()) {
+  //   return FinishMain(Status::Error());
+  // }
   // assert(driver.HasToolChain());
 
   // assert(driver.HasTaskQueue());
@@ -56,5 +57,10 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   // if (driver.ExecuteCompilation().IsError()) {
   //   return FinishMain(Status::Error());
   // }
+
+  // Compilation compilation(driver);
+  // compilation.Setup();
+  // compilation.ExecuteJobs();
+
   return FinishMain();
 }

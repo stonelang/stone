@@ -27,6 +27,8 @@ class DiagnosticEngine;
 enum class PreserveOnSignal : bool { No, Yes };
 
 class CompilationResult final {
+
+public:
   /// Set to true if any job exits abnormally (i.e. crashes).
   bool hadAbnormalExit;
   /// The exit code of this driver process.
@@ -41,12 +43,17 @@ class CompilationResult final {
   //     : hadAbnormalExit(hadAbnormalExit), exitCode(exitCode),
   //       depGraph(std::move(depGraph)) {}
 
+  Status status;
+
 public:
   CompilationResult(const CompilationResult &) = delete;
   CompilationResult &operator=(const CompilationResult &) = delete;
 
   CompilationResult(CompilationResult &&) = default;
   CompilationResult &operator=(CompilationResult &&) = default;
+
+public:
+  CompilationResult();
 
   /// Construct a \c Compilation::CompilationResult from just an exit code.
   // static CompilationResult code(int code) {
@@ -65,7 +72,18 @@ public:
   Compilation(const Driver &driver);
 
 public:
+  Status Setup();
   const Driver &GetDriver() const { return driver; }
+
+private:
+  /// Print the list of Actions in a Compilation.
+  // void PrintJobConstructions(const Compilation &compilation) const;
+
+  /// Print the list of Actions in a Compilation.
+  void PrintJobs(llvm::raw_ostream &os) const;
+
+public:
+  CompilationResult ExecuteJobs();
 };
 
 } // namespace stone

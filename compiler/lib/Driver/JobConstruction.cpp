@@ -1,30 +1,37 @@
 #include "stone/Driver/JobConstruction.h"
 
 using namespace stone;
+using namespace stone::file;
 
 IncrementatlJobConstruction::IncrementatlJobConstruction(
     JobConstructionKind kind, JobConstructionInputList inputs,
-    file::Type fileType)
+    FileType fileType)
     : JobConstruction(kind, llvm::None, fileType) {}
 
-CompileJobConstruction::CompileJobConstruction(file::Type outputFileType)
+CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
     : IncrementatlJobConstruction(JobConstructionKind::Compile, llvm::None,
-                                  outputFileType) {}
+                                  outputFileType) {
+
+  assert(file::IsOutputableFileType(outputFileType));
+}
 
 CompileJobConstruction *
-CompileJobConstruction::Create(Driver &driver, file::Type outputFileType) {
+CompileJobConstruction::Create(Driver &driver, FileType outputFileType) {
 
   return new (driver) CompileJobConstruction(outputFileType);
 }
 
 CompileJobConstruction::CompileJobConstruction(JobConstructionInput input,
-                                               file::Type outputFileType)
+                                               FileType outputFileType)
     : IncrementatlJobConstruction(JobConstructionKind::Compile, input,
-                                  outputFileType) {}
+                                  outputFileType) {
+
+  assert(file::IsOutputableFileType(outputFileType));
+}
 
 CompileJobConstruction *
 CompileJobConstruction::Create(Driver &driver, JobConstructionInput input,
-                               file::Type outputFileType) {
+                               FileType outputFileType) {
 
   return new (driver) CompileJobConstruction(input, outputFileType);
 }
@@ -32,12 +39,12 @@ CompileJobConstruction::Create(Driver &driver, JobConstructionInput input,
 MergeModuleJobConstruction::MergeModuleJobConstruction(
     JobConstructionInputList inputs)
     : IncrementatlJobConstruction(JobConstructionKind::MergeModule, inputs,
-                                  file::Type::StoneModule) {}
+                                  FileType::StoneModule) {}
 
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode, bool withLTO)
     : JobConstruction(JobConstructionKind::DynamicLink, inputs,
-                      file::Type::Image),
+                      FileType::Image),
       linkMode(linkMode), withLTO(withLTO) {
 
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
@@ -53,8 +60,7 @@ DynamicLinkJobConstruction::Create(Driver &driver,
 
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode)
-    : JobConstruction(JobConstructionKind::StaticLink, inputs,
-                      file::Type::Image),
+    : JobConstruction(JobConstructionKind::StaticLink, inputs, FileType::Image),
       linkMode(linkMode) {
   assert(linkMode == LinkMode::StaticLibrary);
 }
@@ -66,16 +72,19 @@ StaticLinkJobConstruction *StaticLinkJobConstruction::Create(
 }
 
 BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,
-                                               file::Type outputFileType,
+                                               FileType outputFileType,
                                                size_t inputIndex)
     : JobConstruction(JobConstructionKind::Backend, input, outputFileType),
-      inputIndex(inputIndex) {}
+      inputIndex(inputIndex) {
+
+  assert(file::IsOutputableFileType(outputFileType));
+}
 
 GeneratePCHJobConstruction::GeneratePCHJobConstruction(
     JobConstructionInput input, llvm::StringRef persistentPCHDir)
     :
 
       JobConstruction(JobConstructionKind::GeneratePCH, input,
-                      persistentPCHDir.empty() ? file::Type::PCH
-                                               : file::Type::None),
+                      persistentPCHDir.empty() ? FileType::PCH
+                                               : FileType::None),
       persistentPCHDir(persistentPCHDir) {}

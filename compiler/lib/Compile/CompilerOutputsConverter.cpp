@@ -19,6 +19,7 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace stone::file;
 using namespace llvm::opt;
 
 bool CompilerOutputsConverter::Convert(
@@ -432,18 +433,18 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 
   auto dependenciesFilePath = DetermineSupplementaryOutputFilename(
       opts::EmitDependenciesPath, pathsFromArguments.dependenciesFilePath,
-      file::Type::Dependencies, "",
+      FileType::Dependencies, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto referenceDependenciesFilePath = DetermineSupplementaryOutputFilename(
       opts::EmitReferenceDependencies,
-      pathsFromArguments.referenceDependenciesFilePath, file::Type::StoneDeps,
-      "", defaultSupplementaryOutputPathExcludingExtension);
+      pathsFromArguments.referenceDependenciesFilePath, FileType::StoneDeps, "",
+      defaultSupplementaryOutputPathExcludingExtension);
 
   auto serializedDiagnosticsPath = DetermineSupplementaryOutputFilename(
       opts::SerializeDiagnosticsPath,
       pathsFromArguments.serializedDiagnosticsPath,
-      file::Type::SerializedDiagnostics, "",
+      FileType::SerializedDiagnostics, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   // There is no non-path form of -emit-fixits-path
@@ -451,30 +452,30 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 
   // auto objcHeaderOutputPath = DetermineSupplementaryOutputFilename(
   //     OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
-  //     file::Type::ObjCHeader, "",
+  //     FileType::ObjCHeader, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   // auto loadedModuleTracePath = DetermineSupplementaryOutputFilename(
   //     opts::EmitLoadedModuleTrace, pathsFromArguments.loadedModuleTracePath,
-  //     file::Type::ModuleTrace, "",
+  //     FileType::ModuleTrace, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   auto tbdPath = DetermineSupplementaryOutputFilename(
-      opts::EmitTBD, pathsFromArguments.tbdPath, file::Type::TBD, "",
+      opts::EmitTBD, pathsFromArguments.tbdPath, FileType::TBD, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto moduleDocOutputPath = DetermineSupplementaryOutputFilename(
       opts::EmitModuleDoc, pathsFromArguments.moduleDocOutputPath,
-      file::Type::StoneModuleDoc, "",
+      FileType::StoneModuleDoc, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto moduleSourceInfoOutputPath = DetermineSupplementaryOutputFilename(
       opts::EmitModuleSourceInfo, pathsFromArguments.moduleSourceInfoOutputPath,
-      file::Type::StoneSourceInfo, "",
+      FileType::StoneSourceInfo, "",
       defaultSupplementaryOutputPathExcludingExtension);
   auto moduleSummaryOutputPath = DetermineSupplementaryOutputFilename(
       opts::EmitModuleSummary, pathsFromArguments.moduleSummaryOutputPath,
-      file::Type::StoneModuleSummary, "",
+      FileType::StoneModuleSummary, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   // There is no non-path form of -emit-interface-path
@@ -495,18 +496,18 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
 
   auto moduleOutputPath = DetermineSupplementaryOutputFilename(
       emitModuleOption, pathsFromArguments.moduleOutputPath,
-      file::Type::StoneModule, mainOutputIfUsableForModule,
+      FileType::StoneModule, mainOutputIfUsableForModule,
       defaultSupplementaryOutputPathExcludingExtension);
 
   // auto yamlOptRecordPath = DetermineSupplementaryOutputFilename(
   //     opts::SaveOptimizationRecordPath, pathsFromArguments.YAMLOptRecordPath,
-  //     file::Type::yamlOptRecord, "",
+  //     FileType::yamlOptRecord, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   // auto bitstreamOptRecordPath = DetermineSupplementaryOutputFilename(
   //     opts::SaveOptimizationRecordPath,
   //     pathsFromArguments.BitstreamOptRecordPath,
-  //     file::Type::BitstreamOptRecord,
+  //     FileType::BitstreamOptRecord,
   //     "", defaultSupplementaryOutputPathExcludingExtension);
 
   SupplementaryOutputPaths sop;
@@ -546,7 +547,7 @@ llvm::StringRef SupplementaryOutputPathsComputer::
 
 std::string
 SupplementaryOutputPathsComputer::DetermineSupplementaryOutputFilename(
-    opts::OptID emitOpt, std::string pathFromArguments, file::Type type,
+    opts::OptID emitOpt, std::string pathFromArguments, FileType type,
     StringRef mainOutputIfUsable,
     StringRef defaultSupplementaryOutputPathExcludingExtension) const {
 
@@ -576,7 +577,7 @@ void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
       action.GetKind() == ActionKind::MergeModules ||
       action.GetKind() == ActionKind::EmitModule;
 
-  extension = file::GetTypeExt(file::Type::StoneModule).str();
+  extension = file::GetTypeExt(FileType::StoneModule).str();
 
   mainOutputIfUsable = canUseMainOutputForModule && !OutputFiles.empty()
                            ? mainOutputFile.str()
@@ -589,25 +590,25 @@ CreateFromTypeToPathMap(const TypeToPathMap *map) {
   if (!map) {
     return paths;
   }
-  const std::pair<file::Type, std::string &> typesAndStrings[] = {
-      {file::Type::StoneModule, paths.moduleOutputPath},
-      // {file::Type::StoneModuleDoc, paths.ModuleDocOutputPath},
-      // {file::Type::StoneSourceInfoFile, paths.ModuleSourceInfoOutputPath},
-      // {file::Type::Dependencies, paths.dependenciesFilePath},
-      // {file::Type::StoneDeps, paths.referenceDependenciesFilePath},
-      // {file::Type::SerializeDiagnostics,
-      // paths.SerializeDiagnosticsPath}, {file::Type::ModuleTrace,
-      // paths.LoadedModuleTracePath}, {file::Type::TBD, paths.TBDPath},
-      // {file::Type::StoneModuleInterfaceFile,
+  const std::pair<FileType, std::string &> typesAndStrings[] = {
+      {FileType::StoneModule, paths.moduleOutputPath},
+      // {FileType::StoneModuleDoc, paths.ModuleDocOutputPath},
+      // {FileType::StoneSourceInfoFile, paths.ModuleSourceInfoOutputPath},
+      // {FileType::Dependencies, paths.dependenciesFilePath},
+      // {FileType::StoneDeps, paths.referenceDependenciesFilePath},
+      // {FileType::SerializeDiagnostics,
+      // paths.SerializeDiagnosticsPath}, {FileType::ModuleTrace,
+      // paths.LoadedModuleTracePath}, {FileType::TBD, paths.TBDPath},
+      // {FileType::StoneModuleInterfaceFile,
       //  paths.ModuleInterfaceOutputPath},
-      // {file::Type::StoneModuleSummaryFile, paths.ModuleSummaryOutputPath},
-      // {file::Type::PrivateStoneModuleInterfaceFile,
+      // {FileType::StoneModuleSummaryFile, paths.ModuleSummaryOutputPath},
+      // {FileType::PrivateStoneModuleInterfaceFile,
       //  paths.PrivateModuleInterfaceOutputPath},
-      // {file::Type::YAMLOptRecord, paths.YAMLOptRecordPath},
-      // {file::Type::BitstreamOptRecord, paths.BitstreamOptRecordPath},
-      // {file::Type::StoneABIDescriptor, paths.ABIDescriptorOutputPath},
+      // {FileType::YAMLOptRecord, paths.YAMLOptRecordPath},
+      // {FileType::BitstreamOptRecord, paths.BitstreamOptRecordPath},
+      // {FileType::StoneABIDescriptor, paths.ABIDescriptorOutputPath},
   };
-  for (const std::pair<file::Type, std::string &> &typeAndString :
+  for (const std::pair<FileType, std::string &> &typeAndString :
        typesAndStrings) {
     auto const out = map->find(typeAndString.first);
     typeAndString.second = out == map->end() ? "" : out->second;

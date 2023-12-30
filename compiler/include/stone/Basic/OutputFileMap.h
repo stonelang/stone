@@ -15,7 +15,7 @@
 
 namespace stone {
 
-using TypeToPathMap = llvm::DenseMap<stone::file::Type, std::string>;
+using TypeToPathMap = llvm::DenseMap<file::FileType, std::string>;
 
 /// A two-tiered map used to specify paths for multiple output files associated
 /// with each input file in a compilation job.

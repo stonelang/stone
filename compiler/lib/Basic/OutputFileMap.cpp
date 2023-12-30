@@ -9,6 +9,7 @@
 #include <system_error>
 
 using namespace stone;
+using namespace stone::file;
 
 llvm::Expected<OutputFileMap>
 OutputFileMap::LoadFromPath(StringRef Path, StringRef workingDirectory) {
@@ -55,7 +56,7 @@ TypeToPathMap &OutputFileMap::GetOrCreateOutputMapForSingleOutput() {
 }
 
 void OutputFileMap::Dump(llvm::raw_ostream &os, bool Sort) const {
-  using TypePathPair = std::pair<file::Type, std::string>;
+  using TypePathPair = std::pair<file::FileType, std::string>;
 
   auto printOutputPair = [&os](StringRef InputPath,
                                const TypePathPair &OutputPair) -> void {
@@ -118,7 +119,7 @@ void OutputFileMap::Write(llvm::raw_ostream &os,
     os << "\n";
     // DenseMap is unordered. If you write a test, please sort the output.
     for (auto &typeAndOutputPath : *outputMap) {
-      file::Type type = typeAndOutputPath.getFirst();
+      FileType type = typeAndOutputPath.getFirst();
       StringRef output = typeAndOutputPath.getSecond();
       os << "  " << file::GetTypeName(type) << ": ";
       writeQuotedEscaped(os, output);
@@ -208,15 +209,15 @@ OutputFileMap::Parse(std::unique_ptr<llvm::MemoryBuffer> Buffer,
         return constructError("path not a scalar node");
 
       llvm::SmallString<16> KindStorage;
-      file::Type Kind = file::GetTypeByName(KindNode->getValue(KindStorage));
+      FileType Kind = file::GetTypeByName(KindNode->getValue(KindStorage));
 
       // Ignore unknown types, so that an older stonec can be used with a newer
       // build system.
-      if (Kind == file::Type::INVALID)
+      if (Kind == FileType::INVALID)
         continue;
 
       llvm::SmallString<128> PathStorage;
-      OutputMap.insert(std::pair<file::Type, std::string>(
+      OutputMap.insert(std::pair<FileType, std::string>(
           Kind, resolvePath(Path, PathStorage).str()));
     }
 

@@ -21,46 +21,44 @@ static const LocalType LocalTypes[] = {
 };
 
 static const LocalType &GetLocalType(unsigned ty) {
-  assert(ty >= 0 && ty < file::INVALID && "Invalid Type ID.");
+  assert(ty >= 0 && ty < FileType::INVALID && "Invalid Type ID.");
   return LocalTypes[ty];
 }
 
-llvm::StringRef file::GetTypeName(file::Type ty) {
-  return GetLocalType(ty).Name;
-}
+llvm::StringRef file::GetTypeName(FileType ty) { return GetLocalType(ty).Name; }
 
-llvm::StringRef file::GetTypeExt(file::Type ty) { return GetLocalType(ty).Ext; }
+llvm::StringRef file::GetTypeExt(FileType ty) { return GetLocalType(ty).Ext; }
 
-file::Type file::GetTypeByExt(llvm::StringRef Ext) {
+FileType file::GetTypeByExt(llvm::StringRef Ext) {
   if (Ext.empty()) {
     return file::INVALID;
   }
   assert(Ext.front() == '.' && "not a file extension");
-  return llvm::StringSwitch<file::Type>(Ext.drop_front())
+  return llvm::StringSwitch<FileType>(Ext.drop_front())
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(EXT, TYPE)
 #include "stone/Basic/File.def"
       .Default(file::INVALID);
 }
 
-file::Type file::GetTypeByName(llvm::StringRef Name) {
-  return llvm::StringSwitch<file::Type>(Name)
+FileType file::GetTypeByName(llvm::StringRef Name) {
+  return llvm::StringSwitch<FileType>(Name)
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(NAME, TYPE)
 #include "stone/Basic/File.def"
-      .Default(file::Type::INVALID);
+      .Default(FileType::INVALID);
 }
 
-bool file::IsTextual(file::Type ty) {
+bool file::IsTextual(FileType ty) {
   switch (ty) {
-  case file::Type::Stone:
-  case file::Type::Assembly:
-  case file::Type::IR:
+  case FileType::Stone:
+  case FileType::Assembly:
+  case FileType::IR:
     return true;
-  case file::Type::Image:
-  case file::Type::Object:
-  case file::Type::BC:
-  case file::Type::None:
+  case FileType::Image:
+  case FileType::Object:
+  case FileType::BC:
+  case FileType::None:
     return false;
-  case file::Type::INVALID:
+  case FileType::INVALID:
     llvm_unreachable("Invalid type ID.");
   }
 
@@ -68,18 +66,34 @@ bool file::IsTextual(file::Type ty) {
   llvm_unreachable("All switch cases are covered");
 }
 
-bool file::IsAfterLLVM(file::Type ty) {
-  switch (ty) {
-  case file::Type::Assembly:
-  case file::Type::IR:
-  case file::Type::BC:
-  case file::Type::Object:
+/// Returns true if this file type is outputable
+bool file::IsOutputableFileType(FileType fileType) {
+
+  switch (fileType) {
+  case FileType::Assembly:
+  case FileType::IR:
+  case FileType::BC:
+  case FileType::Object:
     return true;
-  case file::Type::Stone:
-  case file::Type::Image:
-  case file::Type::None:
+  case FileType::Stone:
     return false;
-  case file::Type::INVALID:
+  case FileType::INVALID:
+    llvm_unreachable("Invalid type ID.");
+  }
+}
+
+bool file::IsAfterLLVM(FileType ty) {
+  switch (ty) {
+  case FileType::Assembly:
+  case FileType::IR:
+  case FileType::BC:
+  case FileType::Object:
+    return true;
+  case FileType::Stone:
+  case FileType::Image:
+  case FileType::None:
+    return false;
+  case FileType::INVALID:
     llvm_unreachable("Invalid type ID.");
   }
 
@@ -87,18 +101,18 @@ bool file::IsAfterLLVM(file::Type ty) {
   llvm_unreachable("All switch cases are covered");
 }
 
-bool file::IsPartOfCompilation(file::Type ty) {
+bool file::IsPartOfCompilation(FileType ty) {
   switch (ty) {
-  case file::Type::Stone:
+  case FileType::Stone:
     return true;
-  case file::Type::Assembly:
-  case file::Type::IR:
-  case file::Type::BC:
-  case file::Type::Object:
-  case file::Type::Image:
-  case file::Type::None:
+  case FileType::Assembly:
+  case FileType::IR:
+  case FileType::BC:
+  case FileType::Object:
+  case FileType::Image:
+  case FileType::None:
     return false;
-  case file::Type::INVALID:
+  case FileType::INVALID:
     llvm_unreachable("Unknown type.");
   }
   // Work around MSVC warning: not all control paths return a value
@@ -108,9 +122,9 @@ bool file::IsPartOfCompilation(file::Type ty) {
 /// Returns true if the type is a file that is linkable
 ///
 /// These need to be passed to the stone Compile
-bool file::CanCompile(stone::file::Type ty) {
+bool file::CanCompile(file::FileType ty) {
   switch (ty) {
-  case file::Type::Stone:
+  case FileType::Stone:
     return true;
   default:
     return false;
@@ -122,10 +136,10 @@ bool file::CanCompile(stone::file::Type ty) {
 /// Returns true if the type is a file that is linkable
 ///
 /// These need to be passed to the stone Compile
-bool file::CanLink(stone::file::Type ty) {
+bool file::CanLink(file::FileType ty) {
   switch (ty) {
-  case file::Type::Object:
-  case file::Type::Image:
+  case FileType::Object:
+  case FileType::Image:
     return true;
   default:
     return false;

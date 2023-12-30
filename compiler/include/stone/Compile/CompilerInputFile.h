@@ -32,7 +32,7 @@ namespace stone {
 /// outlives the \c CompilerInputFile.
 class CompilerInputFile final {
   std::string filename;
-  file::Type fileTy;
+  file::FileType fileTy;
   llvm::PointerIntPair<llvm::MemoryBuffer *, 1, bool> bufferAndIsPrimary;
   PrimaryFileSpecificPaths primaryFileSpecificPaths;
 
@@ -51,7 +51,7 @@ public:
 
   /// Constructs an input file from the provided data.
   CompilerInputFile(llvm::StringRef name, bool isPrimary,
-                    llvm::MemoryBuffer *buffer, file::Type fileTy)
+                    llvm::MemoryBuffer *buffer, file::FileType fileTy)
       : filename(
             ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(name)),
         fileTy(fileTy), bufferAndIsPrimary(buffer, isPrimary),
@@ -61,7 +61,7 @@ public:
 
 public:
   /// Retrieves the type of this input file.
-  file::Type GetType() const { return fileTy; };
+  file::FileType GetType() const { return fileTy; };
 
   /// Retrieves whether this input file was passed as a primary to the
   /// invocation.

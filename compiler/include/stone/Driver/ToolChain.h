@@ -2,16 +2,13 @@
 #define STONE_DRIVER_DRIVER_TOOLCHAIN_H
 
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
-#include "stone/Option/Options.h"
-
-#include "llvm/Option/Option.h"
 
 namespace stone {
 
 class Driver;
-class DriverInvocation;
 class Compilation;
 
 /// Packs together information chosen by toolchains to create jobs.
@@ -45,18 +42,6 @@ class ToolChain {
 protected:
   constexpr static const char *const StoneCompileExecutableName =
       "stone-compile";
-
-  constexpr static const char *const StoneExecutableName = "stone";
-
-  constexpr static const char *const LDExecutableName = "ld";
-
-  constexpr static const char *const LLDExecutableName = "lld";
-
-  constexpr static const char *const ClangPPExecutableName = "clang++";
-
-  constexpr static const char *const ClangExecutableName = "clang";
-
-  constexpr static const char *const GCCExecutableName = "g++";
 
 protected:
   ToolChain(const Driver &driver);
@@ -98,19 +83,19 @@ public:
 
   void AddInputsOfFileType(llvm::opt::ArgStringList &arguments,
                            llvm::ArrayRef<const JobConstruction *> inputs,
-                           file::Type inputFileType,
+                           file::FileType inputFileType,
                            const char *prefixArgument = nullptr) const;
 
   void AddInputsOfFileType(llvm::opt::ArgStringList &arguments,
                            llvm::ArrayRef<const Job *> jobs,
                            const llvm::opt::ArgList &args,
-                           file::Type inputFileType,
+                           file::FileType inputFileType,
                            const char *prefixArgument = nullptr) const;
 
   void AddPrimaryInputsOfFileType(llvm::opt::ArgStringList &arguments,
                                   llvm::ArrayRef<const Job *> jobs,
                                   const llvm::opt::ArgList &args,
-                                  file::Type inputFileType,
+                                  file::FileType inputFileType,
                                   const char *prefixArgument = nullptr) const;
 
   /// Get the resource dir link path, which is platform-specific and found
@@ -165,7 +150,7 @@ public:
   /// Return the default language type to use for the given extension.
   /// If the extension is empty or is otherwise not recognized, return
   /// the invalid type \c TY_INVALID.
-  file::Type LookupFileTypeForExtension(llvm::StringRef ext) const;
+  file::FileType LookupFileTypeForExtension(llvm::StringRef ext) const;
 
   /// Copies the path for the directory clang libraries would be stored in on
   /// the current toolchain.
@@ -209,7 +194,7 @@ public:
   virtual void ValidateOutputInfo(DiagnosticEngine &diags,
                                   const DriverOptions &driverOpts) const {}
 
-  llvm::Expected<file::Type>
+  llvm::Expected<file::FileType>
   RemarkFileTypeFromArgs(const llvm::opt::ArgList &Args) const;
 
 public:
@@ -325,6 +310,11 @@ public:
 public:
   JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                     const JobContext &context) const override;
+
+public:
+  static bool classof(const ToolChain *toolChain) {
+    return toolChain->GetKind() == ToolChainKind::Linux;
+  }
 };
 
 class FreeBSDToolChain : public UnixToolChain {

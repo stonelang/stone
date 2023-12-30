@@ -14,6 +14,7 @@
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
+class Job;
 class JobConstruction;
 
 enum class JobConstructionKind : UInt8 {
@@ -51,12 +52,12 @@ class JobConstruction : public DriverAllocation<JobConstruction> {
 
 protected:
   JobConstructionKind kind = JobConstructionKind::None;
-  file::Type fileType = file::Type::None;
+  file::FileType fileType = file::FileType::None;
   llvm::TinyPtrVector<JobConstructionInput> inputs;
 
 protected:
   JobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
-                  file::Type fileType)
+                  file::FileType fileType)
       : kind(kind), inputs(inputs), fileType(fileType) {}
 
 public:
@@ -81,7 +82,7 @@ public:
 
 public:
   JobConstructionKind GetKind() const { return kind; }
-  file::Type GetFileType() { return fileType; }
+  file::FileType GetFileType() { return fileType; }
   void AddInput(JobConstructionInput input) { inputs.push_back(input); }
 
 public:
@@ -96,6 +97,9 @@ public:
   }
 
 public:
+  // virtual llvm::ArrayRef<const Job*> ConstructJobs() {}
+
+public:
   // static JobConstructionInput *CreateInput(InputFile& input);
 };
 
@@ -103,7 +107,7 @@ class IncrementatlJobConstruction : public JobConstruction {
 public:
   IncrementatlJobConstruction(JobConstructionKind Kind,
                               JobConstructionInputList inputs,
-                              file::Type fileType);
+                              file::FileType fileType);
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -117,10 +121,16 @@ class CompileJobConstruction final : public IncrementatlJobConstruction {
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
   /// added.
-  CompileJobConstruction(file::Type outputFileType);
+  CompileJobConstruction(file::FileType outputFileType);
 
+public:
   /// In this scenario, one compile job for eache input.
-  CompileJobConstruction(JobConstructionInput input, file::Type outputFileType);
+  CompileJobConstruction(JobConstructionInput input,
+                         file::FileType outputFileType);
+
+public:
+  // llvm::ArrayRef<const Job *> ConstructJob(Compilation& compilation) override
+  // {}
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -129,9 +139,10 @@ public:
 
 public:
   static CompileJobConstruction *Create(Driver &driver,
-                                        file::Type outputFileType);
-  static CompileJobConstruction *
-  Create(Driver &driver, JobConstructionInput input, file::Type outputFileType);
+                                        file::FileType outputFileType);
+  static CompileJobConstruction *Create(Driver &driver,
+                                        JobConstructionInput input,
+                                        file::FileType outputFileType);
 };
 
 class MergeModuleJobConstruction final : public IncrementatlJobConstruction {
@@ -192,8 +203,8 @@ class BackendJobConstruction final : public JobConstruction {
   size_t inputIndex;
 
 public:
-  BackendJobConstruction(JobConstructionInput input, file::Type outputFileType,
-                         size_t inputIndex);
+  BackendJobConstruction(JobConstructionInput input,
+                         file::FileType outputFileType, size_t inputIndex);
 
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
@@ -206,7 +217,7 @@ public:
 public:
   static BackendJobConstruction *Create(Driver &driver,
                                         JobConstructionInput input,
-                                        file::Type outputFileType,
+                                        file::FileType outputFileType,
                                         size_t inputIndex);
 };
 

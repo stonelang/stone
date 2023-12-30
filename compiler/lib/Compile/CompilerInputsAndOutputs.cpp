@@ -15,6 +15,7 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace stone::file;
 using namespace llvm::opt;
 
 // Constructors
@@ -167,8 +168,8 @@ bool CompilerInputsAndOutputs::ShouldTreatAsLLVM() const {
   if (HasSingleInput()) {
     StringRef inputExt = llvm::sys::path::extension(GetFilenameOfFirstInput());
     switch (file::GetTypeByExt(inputExt)) {
-    case file::Type::BC:
-    case file::Type::IR:
+    case FileType::BC:
+    case FileType::IR:
       return true;
     default:
       return false;
@@ -183,8 +184,8 @@ bool CompilerInputsAndOutputs::ShouldTreatAsModuleInterface() const {
   }
 
   StringRef InputExt = llvm::sys::path::extension(GetFilenameOfFirstInput());
-  file::Type InputType = file::GetTypeByExt(InputExt);
-  return InputType == file::Type::StoneModuleInterface;
+  FileType InputType = file::GetTypeByExt(InputExt);
+  return InputType == FileType::StoneModuleInterface;
 }
 
 bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,

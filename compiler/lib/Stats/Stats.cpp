@@ -163,3 +163,5 @@ CompilerStatsTracer::CompilerStatsTracer(CompilerStatsReporter *statsReporter,
     : StatsTracer(reporter, eventName, nullptr, nullptr) {}
 
 CompilerStatsTracer::~CompilerStatsTracer() {}
+
+DriverStatsReporter::~DriverStatsReporter() {}

@@ -1,4 +1,6 @@
-// Input file types:
+#ifndef FILE_TYPE
+#error "Define FILE_TYPE prior to including this file!"
+#endif
 
 FILE_TYPE("stone",        		Stone,      			"stone", "")
 FILE_TYPE("image",        		Image,	  				"out",   "")

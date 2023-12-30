@@ -19,7 +19,7 @@ public:
 public:
   ActionKind GetKind() const { return kind; }
   llvm::StringRef GetName() const { return name; }
-  file::Type GetOutputFileType() const;
+  file::FileType GetOutputFileType() const;
 
 public:
   bool CanOutput() const {
@@ -122,7 +122,7 @@ public:
   }
 
 public:
-  static file::Type GetOutputFileTypeByActionKind(ActionKind kind);
+  static file::FileType GetOutputFileTypeByActionKind(ActionKind kind);
 };
 
 namespace opts {

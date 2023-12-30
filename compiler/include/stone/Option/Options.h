@@ -4,7 +4,9 @@
 #include "stone/Basic/Color.h"
 #include "stone/Basic/File.h"
 #include "stone/Option/ActionKind.h"
+
 #include "llvm/Option/ArgList.h"
+#include "llvm/Option/Option.h"
 
 #include <memory>
 
@@ -56,14 +58,14 @@ std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 
 class InputFile final {
 
-  file::Type fileType;
+  file::FileType fileType;
   const llvm::opt::Arg *input;
 
 public:
-  InputFile(file::Type fileType, llvm::opt::Arg *input)
+  InputFile(file::FileType fileType, llvm::opt::Arg *input)
       : fileType(fileType), input(input) {}
 
-  file::Type GetType() { return fileType; }
+  file::FileType GetType() { return fileType; }
   const llvm::opt::Arg *GetInput() { return input; }
 };
 

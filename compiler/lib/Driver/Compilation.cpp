@@ -5,30 +5,19 @@ using namespace stone;
 
 Compilation::Compilation(const Driver &driver) : driver(driver) {}
 
-// CompilationKind Compilation::GetKind() const {
-//   return driver.GetInvocation().GetCompilationKind();
-// }
+CompilationResult::CompilationResult() {}
 
-// Compilation::~Compilation() {}
+class ExecuteJobsImpl {
+  Compilation &compilation;
 
-// QuadraticCompilation::QuadraticCompilation(Driver &driver)
-//     : Compilation(driver) {}
+public:
+  ExecuteJobsImpl(Compilation &compilation) : compilation(compilation) {}
+  ~ExecuteJobsImpl() = default;
 
-// QuadraticCompilation::BuildTopLevelJobConstructions() {}
+public:
+};
 
-// Status QuadraticCompilation::Execute() { return Status(); }
+CompilationResult Compilation::ExecuteJobs() { return CompilationResult(); }
 
-// FlatCompilation::FlatCompilation(Driver &driver) : Compilation(driver) {}
-
-// Status FlatCompilation::Execute() { return Status(); }
-
-// CPUCountCompilation::CPUCountCompilation(Driver &driver)
-//     : Compilation(driver) {}
-
-// Status CPUCountCompilation::Execute() { return Status(); }
-
-// SingleCompilation::SingleCompilation(Driver &driver) : Compilation(driver) {}
-
-// Status SingleCompilation::Execute() { return Status(); }
-
-Status Driver::ExecuteCompilation() {}
+/// Print the list of Actions in a Compilation.
+void Compilation::PrintJobs(llvm::raw_ostream &os) const {}
