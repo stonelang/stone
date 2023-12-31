@@ -132,7 +132,8 @@ namespace stone {
 //   own
 //   /// devices, the driver would forget to omit the primary input files, so
 //   /// return a flag here.
-//   Status MightHaveExplicitPrimaryInputs(const CommandOutput &jobOutput) const;
+//   Status MightHaveExplicitPrimaryInputs(const CommandOutput &jobOutput)
+//   const;
 // };
 
 } // namespace stone

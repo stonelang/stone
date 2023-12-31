@@ -160,3 +160,6 @@ Status Driver::BuildJobConstructions() {
     }
   }();
 }
+
+/// Print the list of Actions in a Compilation.
+void Driver::PrintJobConstructions() const {}

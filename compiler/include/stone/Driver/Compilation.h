@@ -19,7 +19,8 @@ class DerivedArgList;
 
 namespace stone {
 class Job;
-class JobConstruction;
+class Driver;
+
 class DiagnosticEngine;
 
 /// Indicates whether a temporary file should always be preserved if a part of
@@ -63,22 +64,24 @@ public:
 };
 
 class Compilation final {
-  const Driver &driver;
 
+  friend Driver;
+
+  const Driver &driver;
   /// The Jobs which will be performed by this compilation.
-  llvm::SmallVector<const Job *, 32> jobs;
+  llvm::SmallVector<const Job *, 32> topLevelJobs;
 
 public:
   Compilation(const Driver &driver);
+
+private:
+  void AddTopLevelJob(const Job *job);
 
 public:
   Status Setup();
   const Driver &GetDriver() const { return driver; }
 
-private:
-  /// Print the list of Actions in a Compilation.
-  // void PrintJobConstructions(const Compilation &compilation) const;
-
+public:
   /// Print the list of Actions in a Compilation.
   void PrintJobs(llvm::raw_ostream &os) const;
 

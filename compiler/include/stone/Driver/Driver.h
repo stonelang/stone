@@ -180,6 +180,9 @@ public:
   /// Build the job-constructions
   Status BuildJobConstructions();
 
+  /// Print the list of Actions in a Compilation.
+  void PrintJobConstructions() const;
+
   /// Build the jobs
   Status BuildJobs();
 

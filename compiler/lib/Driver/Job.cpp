@@ -22,7 +22,8 @@ Job *ToolChain::ConstructJob(
     llvm::ArrayRef<const JobConstruction *> inputConstructions,
     std::unique_ptr<CommandOutput> commandOutput) const {
 
-  JobContext jobContext{compilation, inputs, inputConstructions, *commandOutput};
+  JobContext jobContext{compilation, inputs, inputConstructions,
+                        *commandOutput};
 
   auto jobInvocation = [&]() -> JobInvocation {
     switch (construction.GetKind()) {
@@ -42,5 +43,10 @@ Job *ToolChain::ConstructJob(
     llvm_unreachable("All switch cases were covered");
   }();
 
-  return new (compilation.GetDriver()) Job(construction, std::move(inputs));
+  return Job::Create(compilation.GetDriver(), construction, std::move(inputs));
+}
+
+Job *Job::Create(const Driver &driver, const JobConstruction &construction,
+                 llvm::SmallVectorImpl<const Job *> &&inputs) {
+  return new (driver) Job(construction, std::move(inputs));
 }

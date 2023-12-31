@@ -20,6 +20,7 @@
 
 namespace stone {
 class Job;
+class Driver;
 class Compilation;
 
 struct CommandInputPair {
@@ -108,6 +109,8 @@ public:
   /// Options that control the JobConstruction
   using JobOptions = stone::OptionSet<JobFlags>;
 
+  JobOptions jobOptions;
+
 private:
   /// The action which caused the creation of this Job, and the conditions
   /// under which it must be run.
@@ -180,6 +183,17 @@ public:
   void SetInputModificationTime(llvm::sys::TimePoint<> time) {
     inputModificationTime = time;
   }
+
+public:
+  bool HasTopLevel() const {
+    return jobOptions.contains(JobFlags::TopLevel);
+  }
+  void AddTopLevel() { jobOptions |= JobFlags::TopLevel; }
+  void ClearTopLevel() {}
+
+public:
+  static Job *Create(const Driver &driver, const JobConstruction &construction,
+                     llvm::SmallVectorImpl<const Job *> &&inputs);
 };
 
 } // namespace stone
