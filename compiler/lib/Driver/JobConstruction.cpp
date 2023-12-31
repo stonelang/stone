@@ -131,5 +131,10 @@ void CompilationEntities::AddTopLevelJobConstruction(
   assert(construction->HasTopLevel());
   topLevelJobConstructions.push_back(construction);
 }
+
 void CompilationEntities::ForEachTopLevelJobConstruction(
-    std::function<void(const JobConstruction *construction)> callback) {}
+    std::function<void(const JobConstruction *construction)> callback) {
+  for (auto topLevelJobConstruction : topLevelJobConstructions) {
+    callback(topLevelJobConstruction);
+  }
+}

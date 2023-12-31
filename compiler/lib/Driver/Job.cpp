@@ -66,9 +66,19 @@ void CompilationEntities::AddTopLevelExternalJob(const Job *job) {
 }
 
 void CompilationEntities::ForEachTopLevelJob(
-    std::function<void(const Job *job)> callback) {}
+    std::function<void(const Job *job)> callback) {
+  for (auto topLevelJob : topLevelJobs) {
+    callback(topLevelJob);
+  }
+}
+
 void CompilationEntities::ForEachTopLevelExternalJob(
-    std::function<void(const Job *job)> callback) {}
+    std::function<void(const Job *job)> callback) {
+
+  for (auto topLevelExternalJob : topLevelExternalJobs) {
+    callback(topLevelExternalJob);
+  }
+}
 
 /// Print the list of Actions in a Compilation.
 void Driver::PrintJobs() const {}

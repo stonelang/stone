@@ -59,8 +59,8 @@ public:
 
 public:
   /// Get each top level job
-  void
-  ForEachTopLevelJobConstruction(std::function<void(const JobConstruction *construction)> callback);
+  void ForEachTopLevelJobConstruction(
+      std::function<void(const JobConstruction *construction)> callback);
   /// Get each top level job
   void ForEachTopLevelJob(std::function<void(const Job *job)> callback);
   /// Get each top level job
