@@ -55,6 +55,6 @@ std::string LinuxToolChain::GetGlobalDebugPathRemapping() const {
 }
 
 void LinuxToolChain::AddCommonCompileArgs(
-    const DriverOptions &driverOpts, const JobOutput &output,
+    const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}

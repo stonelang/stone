@@ -44,6 +44,6 @@ bool DarwinToolChain::ShouldStoreInvocationInDebugInfo() const { return false; }
 std::string DarwinToolChain::GetGlobalDebugPathRemapping() const { return ""; }
 
 void DarwinToolChain::AddCommonCompileArgs(
-    const DriverOptions &driverOpts, const JobOutput &output,
+    const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}

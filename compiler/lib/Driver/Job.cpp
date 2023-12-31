@@ -7,20 +7,22 @@ using namespace stone;
 JobContext::JobContext(
     Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
     llvm::ArrayRef<const JobConstruction *> inputConstructions,
-    const JobOutput &jobOutput)
+    const CommandOutput &commandOutput)
     : compilation(compilation), inputs(inputs),
-      inputConstructions(inputConstructions), jobOutput(jobOutput) {}
+      inputConstructions(inputConstructions), commandOutput(commandOutput) {}
 
-Job::Job(const JobConstruction &construction)
-    : constructionAndCondition(&construction, JobCondition::Always) {}
+Job::Job(const JobConstruction &construction,
+         llvm::SmallVectorImpl<const Job *> &&inputs)
+    : constructionAndCondition(&construction, JobCondition::Always),
+      inputs(std::move(inputs)) {}
 
 Job *ToolChain::ConstructJob(
     const JobConstruction &construction, Compilation &compilation,
     llvm::SmallVectorImpl<const Job *> &&inputs,
     llvm::ArrayRef<const JobConstruction *> inputConstructions,
-    std::unique_ptr<JobOutput> output) const {
+    std::unique_ptr<CommandOutput> commandOutput) const {
 
-  JobContext jobContext{compilation, inputs, inputConstructions, *output};
+  JobContext jobContext{compilation, inputs, inputConstructions, *commandOutput};
 
   auto jobInvocation = [&]() -> JobInvocation {
     switch (construction.GetKind()) {
@@ -40,5 +42,5 @@ Job *ToolChain::ConstructJob(
     llvm_unreachable("All switch cases were covered");
   }();
 
-  return new (compilation.GetDriver()) Job(construction);
+  return new (compilation.GetDriver()) Job(construction, std::move(inputs));
 }

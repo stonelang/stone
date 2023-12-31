@@ -152,7 +152,7 @@ using namespace stone;
 // }
 
 // Status DriverInvocation::MightHaveExplicitPrimaryInputs(
-//     const JobOutput &jobOutput) const {
+//     const CommandOutput &jobOutput) const {
 
 //   return Status();
 // }

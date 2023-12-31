@@ -51,6 +51,6 @@ std::string WindowsToolChain::GetGlobalDebugPathRemapping() const {
 }
 
 void WindowsToolChain::AddCommonCompileArgs(
-    const DriverOptions &driverOpts, const JobOutput &output,
+    const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}

@@ -44,12 +44,12 @@ ToolChain::ConstructInvocation(const StaticLinkJobConstruction &construction,
 }
 
 void ToolChain::AddPlatformSpecificPluginCompileArgs(
-    const DriverOptions &driverOpts, const JobOutput &output,
+    const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}
 
 void ToolChain::AddCommonCompileArgs(
-    const DriverOptions &driverOpts, const JobOutput &output,
+    const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}
 

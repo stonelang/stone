@@ -211,7 +211,7 @@ public:
   /// nothing in a (preferably non-existent) -primary-filelist. Left to its own
   /// devices, the driver would forget to omit the primary input files, so
   /// return a flag here.
-  Status MightHaveExplicitPrimaryInputs(const JobOutput &jobOutput) const;
+  Status MightHaveExplicitPrimaryInputs(const CommandOutput &jobOutput) const;
 
 public:
   /// Allocate - Allocate memory from the Driver bump pointer.

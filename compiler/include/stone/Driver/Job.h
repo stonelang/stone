@@ -22,7 +22,7 @@ namespace stone {
 class Job;
 class Compilation;
 
-struct JobInputPair {
+struct CommandInputPair {
   /// A filename provided from the user, either on the command line or in an
   /// input file map. Feeds into a Job graph, from InputActions, and is
   /// _associated_ with a PrimaryInput for a given Job, but may be upstream of
@@ -41,17 +41,17 @@ struct JobInputPair {
 
   /// Construct a JobInputPair from a Base Input and, optionally, a Primary;
   /// if the Primary is empty, use the Base value for it.
-  explicit JobInputPair(StringRef BaseInput, StringRef PrimaryInput)
+  explicit CommandInputPair(StringRef BaseInput, StringRef PrimaryInput)
       : Base(BaseInput),
         Primary(PrimaryInput.empty() ? BaseInput : PrimaryInput) {}
 };
 
-class JobOutput final {
+class CommandOutput final {
 
 public:
   /// A CommandOutput designates one type of output as primary, though there
   /// may be multiple outputs of that type.
-  file::FileType PrimaryOutputFileType;
+  file::FileType primaryOutputFileType;
 
   /// A CommandOutput also restricts its attention regarding additional-outputs
   /// to a subset of the PrimaryOutputs associated with its PrimaryInputs;
@@ -59,7 +59,7 @@ public:
   /// phases (eg. autolink-extract and link both operate on the same .o file),
   /// so Jobs cannot _just_ rely on the presence of a primary output in the
   /// DerivedOutputFileMap.
-  llvm::SmallSet<file::FileType, 4> AdditionalOutputFileTypes;
+  llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
 };
 
 class JobContext final {
@@ -70,12 +70,12 @@ public:
   llvm::ArrayRef<const Job *> inputs;
   llvm::ArrayRef<const JobConstruction *> inputConstructions;
 
-  const JobOutput &jobOutput;
+  const CommandOutput &commandOutput;
 
 public:
-  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> Inputs,
+  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
              llvm::ArrayRef<const JobConstruction *> inputConstructions,
-             const JobOutput &jobOutput);
+             const CommandOutput &commandOutput);
 };
 
 enum class JobCondition {
@@ -118,7 +118,7 @@ private:
   llvm::SmallVector<const Job *, 4> inputs;
 
   /// The output of this job;
-  std::unique_ptr<JobOutput> jobOutput;
+  std::unique_ptr<CommandOutput> commandOutput;
 
   /// The executable to run.
   const char *executable = nullptr;
@@ -138,7 +138,8 @@ private:
   llvm::sys::TimePoint<> inputModificationTime = llvm::sys::TimePoint<>::max();
 
 public:
-  Job(const JobConstruction &construction);
+  Job(const JobConstruction &construction,
+      llvm::SmallVectorImpl<const Job *> &&inputs);
   // Job(const JobAction &Source, SmallVectorImpl<const Job *> &&Inputs,
   //     std::unique_ptr<CommandOutput> Output, const char *Executable,
   //     llvm::opt::ArgStringList Arguments,
@@ -159,19 +160,22 @@ public:
   //           {}
 
 public:
-
   const JobConstruction &GetConstruction() const {
     return *constructionAndCondition.getPointer();
   }
-  JobCondition SetCondition() const { return constructionAndCondition.getInt(); }
-  void SetCondition(JobCondition jobCondition) { constructionAndCondition.setInt(jobCondition); }
+  JobCondition SetCondition() const {
+    return constructionAndCondition.getInt();
+  }
+  void SetCondition(JobCondition jobCondition) {
+    constructionAndCondition.setInt(jobCondition);
+  }
 
   const char *GetExecutable() const { return executable; }
 
   const llvm::opt::ArgStringList &GetArguments() const { return arguments; }
 
   llvm::ArrayRef<const Job *> GetInputs() const { return inputs; }
-  const JobOutput &GetJobOutput() const { return *jobOutput; }
+  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
 
   void SetInputModificationTime(llvm::sys::TimePoint<> time) {
     inputModificationTime = time;

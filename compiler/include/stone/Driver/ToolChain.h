@@ -57,12 +57,12 @@ public:
   /// Handle arguments common to all invocations of the frontend (compilation,
   /// module-merging, LLDB's REPL, etc).
   virtual void AddCommonCompileArgs(const DriverOptions &driverOpts,
-                                    const JobOutput &output,
+                                    const CommandOutput &output,
                                     const llvm::opt::ArgList &inputArgs,
                                     llvm::opt::ArgStringList &arguments) const;
 
   virtual void AddPlatformSpecificPluginCompileArgs(
-      const DriverOptions &driverOpts, const JobOutput &output,
+      const DriverOptions &driverOpts, const CommandOutput &output,
       const llvm::opt::ArgList &inputArgs,
       llvm::opt::ArgStringList &arguments) const;
 
@@ -226,7 +226,7 @@ public:
                     Compilation &compilation,
                     llvm::SmallVectorImpl<const Job *> &&inputs,
                     llvm::ArrayRef<const JobConstruction *> inputConstructions,
-                    std::unique_ptr<JobOutput> output) const;
+                    std::unique_ptr<CommandOutput> output) const;
 };
 
 class DarwinToolChain final : public ToolChain {
@@ -263,7 +263,7 @@ public:
   std::string GetGlobalDebugPathRemapping() const override;
 
   void AddCommonCompileArgs(const DriverOptions &driverOpts,
-                            const JobOutput &output,
+                            const CommandOutput &output,
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
 
@@ -309,7 +309,7 @@ public:
   std::string GetGlobalDebugPathRemapping() const override;
 
   void AddCommonCompileArgs(const DriverOptions &driverOpts,
-                            const JobOutput &output,
+                            const CommandOutput &output,
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
 };
@@ -371,7 +371,7 @@ public:
   std::string GetGlobalDebugPathRemapping() const override;
 
   void AddCommonCompileArgs(const DriverOptions &driverOpts,
-                            const JobOutput &output,
+                            const CommandOutput &output,
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
 
