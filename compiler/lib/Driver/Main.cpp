@@ -49,7 +49,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(status);
   }
   status = [&]() -> Status {
-    if (driver.GetDriverOptions().GetInputsAndOutputs().NoInputs() ||
+    if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs() ||
         driver.GetDriverOptions().IsSupportAction()) {
       driver.PrintSupport();
       return Status::MakeHasCompletion();

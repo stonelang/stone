@@ -5,7 +5,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/DriverAllocation.h"
-#include "stone/Driver/DriverInvocation.h"
+#include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/StringRef.h"
@@ -32,7 +32,8 @@ enum class JobConstructionKind : UInt8 {
 
 /// A job construction input can be a file or another job construction
 /// (dependency)
-using JobConstructionInput = llvm::PointerUnion<InputFile *, JobConstruction *>;
+using JobConstructionInput =
+    llvm::PointerUnion<DriverInputFile *, JobConstruction *>;
 
 /// A list of all job construction inputs
 using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
@@ -100,7 +101,7 @@ public:
   // virtual llvm::ArrayRef<const Job*> ConstructJobs() {}
 
 public:
-  // static JobConstructionInput *CreateInput(InputFile& input);
+  // static JobConstructionInput *CreateInput(DriverInputFile& input);
 };
 
 class IncrementatlJobConstruction : public JobConstruction {

@@ -9,6 +9,7 @@
 using namespace stone;
 using namespace llvm::opt;
 
+// Driver options
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
@@ -24,6 +25,7 @@ bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
 }
 
+// Iinputs and outputs
 DriverInputsAndOutputs::DriverInputsAndOutputs(
     const DriverInputsAndOutputs &other) {
   for (DriverInputFile input : other.inputs) {
@@ -45,6 +47,17 @@ void DriverInputsAndOutputs::AddInput(const DriverInputFile &input) {
 }
 void DriverInputsAndOutputs::ClearInputs() { inputs.clear(); }
 
+Status DriverInputsAndOutputs::ForEachInput(
+    std::function<Status(const DriverInputFile &)> fn) const {
+  for (const DriverInputFile &input : inputs) {
+    if (fn(input).IsErrorOrHasCompletion()) {
+      return Status::MakeHasCompletionAndIsError();
+    }
+  }
+  return Status();
+}
+
+// Inputs converter
 DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
                                              DriverOptions &driverOpts,
                                              DiagnosticEngine &diags)
@@ -90,6 +103,7 @@ DriverInputsConverter::CreateInputFiles() {
   return std::move(inputsAndOutputs);
 }
 
+// Options converter
 DriverOptionsConverter::DriverOptionsConverter(const llvm::opt::ArgList &args,
                                                DriverOptions &driverOpts,
                                                DiagnosticEngine &diags)

@@ -105,7 +105,7 @@ public:
 
   unsigned InputCount() const { return inputs.size(); }
   bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
-  bool NoInputs() const { return !HasInputs(); }
+  bool HasNoInputs() const { return !HasInputs(); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
   const DriverInputFile &FirstInput() const {
@@ -118,7 +118,7 @@ public:
   }
   const DriverInputFile &LastInput() const { return inputs.back(); }
   /// If \p fn returns true, exits early and returns true.
-  bool ForEachInput(llvm::function_ref<bool(const DriverInputFile &)> fn) const;
+  Status ForEachInput(std::function<Status(const DriverInputFile &)> fn) const;
 
 public:
   void ClearInputs();
