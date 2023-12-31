@@ -132,6 +132,8 @@ public:
   DriverStatsReporter &GetStats() { return *stats; }
 
 public:
+  /// Computes the kind of tool-chain that is being built
+  ToolChainKind ComputeToolChainKind(const llvm::opt::InputArgList &argList);
   /// Creates an appropriate ToolChain for a given driver, given the target
   /// specified in \p Args (or the default target). Sets the value of \c
   /// DefaultTargetTriple from \p Args as a side effect.
@@ -141,7 +143,7 @@ public:
   ///
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
-  std::unique_ptr<ToolChain> BuildToolChain(ToolChainKind toolChainKind);
+  ToolChain *BuildToolChain(const llvm::opt::InputArgList &argList);
 
   /// Construct a compilation object for a given ToolChain and command line
   /// argument vector.

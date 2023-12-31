@@ -1,4 +1,5 @@
 #include "stone/Driver/DriverOptions.h"
+#include "stone/Diag/DiagnosticEngine.h"
 
 #include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
@@ -20,3 +21,11 @@ bool DriverOptions::IsLinkableAction() const {
 bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
 }
+
+DriverInputsAndOutputs::DriverInputsAndOutputs(){
+}
+
+DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
+                        DriverOptions &driverOpts, DiagnosticEngine &de){
+
+ }

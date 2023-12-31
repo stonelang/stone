@@ -11,6 +11,9 @@
 
 namespace stone {
 class Driver;
+class DriverOptions;
+class DiagnosticEngine;
+
 
 enum class LinkMode : UInt8 {
   // We are not linking
@@ -81,9 +84,24 @@ enum class CompileInvocationMode : UInt8 {
 
 };
 
-class DriverInputFile final {};
-class DriverInputsAndOutputs final {};
-class DriverInputsConverter final {};
+class DriverInputFile final {
+public:
+  DriverInputFile();
+};
+class DriverInputsAndOutputs final {
+
+public:
+  DriverInputsAndOutputs();
+
+public:
+  bool HasInputs();
+};
+
+class DriverInputsConverter final {
+public:
+  DriverInputsConverter(const llvm::opt::ArgList &args,
+                        DriverOptions &driverOpts, DiagnosticEngine &de);
+};
 
 /// TODO: The things that are computed should be private
 class DriverOptions final {
@@ -227,6 +245,8 @@ public:
   /// \return the main executable name
   llvm::StringRef GetMainExecutableName() const { return mainExecutableName; }
 
+  /// \check that there exist a tool chain kind
+  bool HasToolChainKind() const { return toolChainKind != ToolChainKind::None; }
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
@@ -262,7 +282,7 @@ public:
   file::FileType GetOutputFileType() const { return outputFileType; }
 
   /// \return the computed input and outputs
-  DriverInputsAndOutputs &GetInputsAndOutputs() const { inputsAndOutputs; }
+  DriverInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
 
 public:
   /// \return true if the action is valid

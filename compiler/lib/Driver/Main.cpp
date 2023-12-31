@@ -46,10 +46,10 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(Status::Error());
   }
   auto status = driver.Setup(*argStrings);
-  if(status.IsError()){
+  if (status.IsError()) {
     return FinishMain(status);
   }
-  if(status.HasCompletion()){
+  if (status.HasCompletion()) {
     return FinishMain(status);
   }
 

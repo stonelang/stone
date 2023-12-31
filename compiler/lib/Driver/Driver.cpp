@@ -56,7 +56,7 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
     return Status::Error();
   }
 
-  if(ComputeAction(*derivedArgList).IsError()){
+  if (ComputeAction(*derivedArgList).IsError()) {
     return Status::Error();
   }
 
@@ -102,11 +102,61 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &argList,
   return derivedArgList.get();
 }
 
-Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
+Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList) {
 
   driverOpts.action = opts::ParseAction(argList);
   if (!GetDriverOptions().HasAction()) {
     return Status::Error();
+  }
+}
+
+ToolChainKind Driver::ComputeToolChainKind(const llvm::opt::InputArgList &argList) {
+
+  if (const Arg *A = argList.getLastArg(opts::Target)) {
+    driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
+  }
+  llvm::Triple target(driverOpts.defaultTargetTriple);
+  switch (target.getOS()) {
+  case llvm::Triple::Darwin:
+  case llvm::Triple::MacOSX: {
+    if (const Arg *A = argList.getLastArg(opts::TargetVariant)) {
+      driverOpts.targetVariant =
+          llvm::Triple(llvm::Triple::normalize(A->getValue()));
+    }
+    return ToolChainKind::Darwin;
+  }
+  case llvm::Triple::Linux: {
+    if (target.isAndroid()) {
+      return ToolChainKind::Android;
+    }
+    return ToolChainKind::Linux;
+  }
+  case llvm::Triple::FreeBSD: {
+    return ToolChainKind::FreeBSD;
+  }
+  case llvm::Triple::OpenBSD: {
+    return ToolChainKind::OpenBSD;
+  }
+  case llvm::Triple::Win32: {
+    return ToolChainKind::Windows;
+  }
+  case llvm::Triple::UnknownOS: {
+    return ToolChainKind::Unix;
+  }
+  default: {
+    diags.PrintD(SrcLoc(), diag::err_unknown_target,
+                 diag::LLVMStr(argList.getLastArg(opts::Target)->getValue()));
+    ToolChainKind::None;
+  }
+  }
+  ToolChainKind::None;
+}
+
+ToolChain *Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
+
+  driverOpts.toolChainKind = ComputeToolChainKind(argList);
+  if (!GetDriverOptions().HasToolChainKind()) {
+    return nullptr;
   }
 }
 
@@ -134,7 +184,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 // //   }
 // // }
 
-// std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
+// std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind)
+// {
 
 //   assert(HasToolChain());
 //   BuildingCompilationRAII buildingCompilation(*this);
@@ -153,7 +204,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 // }
 
 // std::unique_ptr<Compilation>
-// Driver::BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation)
+// Driver::BuildNormalCompilation(BuildingCompilationRAII
+// &buildingCompilation)
 // {
 
 //   /// BuildingCompilationRAII buildingCompilation(*this);
@@ -190,7 +242,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 //   return nullptr;
 // }
 // std::unique_ptr<Compilation>
-// Driver::BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation) {
+// Driver::BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation)
+// {
 
 //   invocation.ForEachInputFile([&](InputFile &input) {
 //     JobConstructionInput currentInput = const_cast<InputFile *>(&input);
@@ -206,7 +259,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 // }
 
 // std::unique_ptr<Compilation>
-// Driver::BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation)
+// Driver::BuildSingleCompilation(BuildingCompilationRAII
+// &buildingCompilation)
 // {
 
 //   auto compileJobConstruction = CompileJobConstruction::Create(
@@ -261,7 +315,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 //   } else {
 //     // We can't rely on the merge module action being the only top-level
 //     // action that needs to run. There may be other actions (e.g.
-//     // BackendJobActions) that are not merge-module inputs but should be run
+//     // BackendJobActions) that are not merge-module inputs but should be
+//     run
 //     // anyway.
 //     // if (MergeModuleAction){
 //     //   AddTopLevelJobConstruction(MergeModuleAction);
@@ -293,7 +348,8 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
 // Status Driver::BuildJobs() {}
 
 // /// Print the driver version.
-// void Driver::PrintVersion(const ToolChain &toolChain, raw_ostream &os) const
+// void Driver::PrintVersion(const ToolChain &toolChain, raw_ostream &os)
+// const
 // {}
 
 void Driver::ForEachInputFile(
