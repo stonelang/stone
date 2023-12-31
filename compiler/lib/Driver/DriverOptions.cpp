@@ -213,3 +213,24 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
 CompileInvocationMode DriverOptionsConverter::ComputeCompileInvocationMode() {
   return CompileInvocationMode::Normal;
 }
+
+LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }
+
+LinkMode DriverOptionsConverter::ComputeLinkMode() {
+
+  assert(driverOpts.HasAction());
+
+  // if (driverOpts.IsNone()) {
+  //   driverOpts.linkMode = LinkMode::Executable;
+  // } else if (GetAction().IsEmitLibrary()) {
+  //   if (args.hasArg(opts::Static)) {
+  //     driverOpts.linkMode = LinkMode::StaticLibrary;
+  //   } else {
+  //     driverOpts.linkMode = LinkMode::DynamicLibrary;
+  //   }
+  // }
+}
+
+// llvm::Triple DriverOptionsConverter::ComputeTarget() {
+
+// }

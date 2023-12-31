@@ -41,11 +41,17 @@ MergeModuleJobConstruction::MergeModuleJobConstruction(
     : IncrementatlJobConstruction(JobConstructionKind::MergeModule, inputs,
                                   FileType::StoneModule) {}
 
+LinkJobConstruction::LinkJobConstruction(JobConstructionKind kind,
+                                         JobConstructionInputList inputs,
+                                         FileType outputFileType,
+                                         LinkMode linkMode)
+    : JobConstruction(kind, inputs, outputFileType), linkMode(linkMode) {}
+
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode, bool withLTO)
-    : JobConstruction(JobConstructionKind::DynamicLink, inputs,
-                      FileType::Image),
-      linkMode(linkMode), withLTO(withLTO) {
+    : LinkJobConstruction(JobConstructionKind::DynamicLink, inputs,
+                          FileType::Image, linkMode),
+      withLTO(withLTO) {
 
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
 }
@@ -60,8 +66,8 @@ DynamicLinkJobConstruction::Create(Driver &driver,
 
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode)
-    : JobConstruction(JobConstructionKind::StaticLink, inputs, FileType::Image),
-      linkMode(linkMode) {
+    : LinkJobConstruction(JobConstructionKind::StaticLink, inputs,
+                          FileType::Image, linkMode) {
   assert(linkMode == LinkMode::StaticLibrary);
 }
 

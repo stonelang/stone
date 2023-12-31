@@ -18,6 +18,7 @@ class Job;
 class JobConstruction;
 
 enum class JobConstructionKind : UInt8 {
+  // TODO: Remove None
   None = 0,
   Compile,
   Backend,
@@ -156,9 +157,25 @@ public:
   }
 };
 
-class DynamicLinkJobConstruction final : public JobConstruction {
-
+class LinkJobConstruction : public JobConstruction {
   LinkMode linkMode;
+
+public:
+  LinkJobConstruction(JobConstructionKind kind, JobConstructionInputList inputs,
+                      file::FileType outputFileType, LinkMode linkMode);
+
+public:
+  LinkMode GetLinkMode() const { return linkMode; }
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return (construction->GetKind() == JobConstructionKind::StaticLink) ||
+           (construction->GetKind() == JobConstructionKind::DynamicLink);
+  }
+};
+
+class DynamicLinkJobConstruction final : public LinkJobConstruction {
+
   bool withLTO;
 
 public:
@@ -166,7 +183,6 @@ public:
                              bool withLTO = false);
 
 public:
-  LinkMode GetLinkMode() const { return linkMode; }
   bool WithLTO() const { return withLTO; }
 
 public:
@@ -181,14 +197,10 @@ public:
                                             bool wthLTO = false);
 };
 
-class StaticLinkJobConstruction final : public JobConstruction {
-  LinkMode linkMode;
+class StaticLinkJobConstruction final : public LinkJobConstruction {
 
 public:
   StaticLinkJobConstruction(JobConstructionInputList inputs, LinkMode linkMode);
-
-public:
-  LinkMode GetLinkMode() const { return linkMode; }
 
 public:
   static bool classof(const JobConstruction *construction) {

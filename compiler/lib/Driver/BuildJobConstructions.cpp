@@ -5,7 +5,8 @@ using namespace stone;
 using namespace stone::file;
 
 class BuildJobConstructionsImpl final {
-public:
+
+protected:
   Driver &driver;
   llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
   llvm::SmallVector<JobConstructionInput, 2> linkerInputs;
@@ -36,8 +37,9 @@ public:
 public:
   CompileJobConstruction *
   BuildCompileJobConstruction(JobConstructionInput input);
+  LinkJobConstruction *BuildLinkJobConstruction();
+
   Status BuildMergeModuleJobConstruction();
-  Status BuildLinkJobConstruction();
   Status BuildBackendJobConstruction();
 
 public:
@@ -89,6 +91,8 @@ CompileJobConstruction *BuildJobConstructionsImpl::BuildCompileJobConstruction(
 
   AddModuleInput(compileJobConstruction);
 
+  /// TODO: You may want to check this or do you just want to pass to the
+  /// compile
   if (driver.GetDriverOptions().IsLinkableAction()) {
     AddLinkerInput(compileJobConstruction);
   }
@@ -99,11 +103,22 @@ Status BuildJobConstructionsImpl::BuildMergeModuleJobConstruction() {
   return Status();
 }
 
-Status BuildJobConstructionsImpl::BuildLinkJobConstruction() {
+LinkJobConstruction *BuildJobConstructionsImpl::BuildLinkJobConstruction() {
 
-  /// driver.AddTopLevelJobConstruction();
-
-  return Status();
+  if (driver.GetDriverOptions().IsLinkableAction() && HasLinkerInputs()) {
+    JobConstruction *linkJobConstruction = nullptr;
+    // Add the linker inputs
+    switch (driver.GetDriverOptions().GetLinkMode()) {
+    case LinkMode::StaticLibrary:
+      return StaticLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode());
+    default:
+      // FIXME: Compute LTO in DriverInputsAndOutputs
+      return DynamicLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode(),
+          driver.GetDriverOptions().HasLTO());
+    }
+  }
 }
 
 Status BuildJobConstructionsImpl::BuildBackendJobConstruction() {
@@ -114,42 +129,13 @@ Status BuildJobConstructionsImpl::BuildBackendJobConstruction() {
 Status BuildJobConstructionsImpl::FinishBuildJobConstructions() {
 
   if (driver.GetDriverOptions().IsLinkableAction() && HasLinkerInputs()) {
+    auto linkJobConstruction = BuildLinkJobConstruction();
+    if (!linkJobConstruction) {
+      return Status::MakeHasCompletionAndIsError();
+    }
+    driver.AddTopLevelJobConstruction(linkJobConstruction);
+    return Status();
   }
-
-  //   if (driver.GetInvocation().ShouldLink() && HasLinkerInputs()) {
-  //     JobConstruction *linkJobConstruction = nullptr;
-
-  //     // Add the linker inputs
-  //     switch (driver.GetInvocation().GetLinkMode()) {
-  //     case LinkMode::StaticLibrary: {
-  //       linkJobConstruction = StaticLinkJobConstruction::Create(
-  //           driver, linkerInputs, driver.GetInvocation().GetLinkMode());
-  //     }
-  //     default: {
-  //       // FIXME: WithLTO
-  //       linkJobConstruction = DynamicLinkJobConstruction::Create(
-  //           driver, linkerInputs, driver.GetInvocation().GetLinkMode(),
-  //           driver.GetInvocation().GetDriverOptions().WithLTO());
-  //     }
-  //       AddTopLevelJobConstruction(linkJobConstruction);
-  //     }
-  //     // TODO:
-  //     // On ELF platforms there's no built in autolinking mechanism, so we
-  //     // pull the info we need from the .o files directly and pass them as an
-  //     // argument input file to the linker.
-
-  //   } else {
-  //     // We can't rely on the merge module action being the only top-level
-  //     // action that needs to run. There may be other actions (e.g.
-  //     // BackendJobActions) that are not merge-module inputs but should be
-  //     run
-  //     // anyway.
-  //     // if (MergeModuleAction){
-  //     //   AddTopLevelJobConstruction(MergeModuleAction);
-  //     // }
-  //     // topLevelActions.append(AllLinkerInputs.begin(),
-  //     AllLinkerInputs.end());
-  //   }
 }
 
 /// Build the job-constructions
@@ -167,7 +153,7 @@ Status Driver::BuildJobConstructions() {
     case CompileInvocationMode::Flat:
       return buildJobConstructionsImpl.BuildForFlatCompileIvocation();
     default:
-      llvm_unreachable("Invalid compilation kind");
+      llvm_unreachable("Invalid compile invocation kind");
     }
   }();
 }

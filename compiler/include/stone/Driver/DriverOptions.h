@@ -89,6 +89,8 @@ enum class CompileInvocationMode : UInt8 {
   CPUCount,
 
 };
+
+/// Only for DriverInputFiles
 class DriverInputsAndOutputs final {
 
   friend DriverInputsConverter;
@@ -126,6 +128,7 @@ public:
   void AddInput(llvm::StringRef file);
 };
 
+/// Only for input files convertions
 class DriverInputsConverter final {
 
   const llvm::opt::ArgList &args;
@@ -157,6 +160,7 @@ private:
 public:
 };
 
+/// Only for output files conversion
 class DriverOutputsConverter final {
   const llvm::opt::ArgList &args;
   DriverInputsAndOutputs &inputsAndOutputs;
@@ -179,6 +183,7 @@ public:
   // ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
+/// For all driver options
 class DriverOptionsConverter final {
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
@@ -192,6 +197,9 @@ private:
   ToolChainKind ComputeToolChainKind();
   llvm::StringRef ComputeWorkingDirectory();
   CompileInvocationMode ComputeCompileInvocationMode();
+  LTOKind ComputeLTO();
+  LinkMode ComputeLinkMode();
+  llvm::Triple ComputeTarget();
 
 public:
   Status Convert();
@@ -223,15 +231,14 @@ private:
   /// The tool chain to use for this compilation
   ToolChainKind toolChainKind = ToolChainKind::None;
 
-  /// The link mode computed by the driver
-  LinkMode linkMode = LinkMode::None;
-
   /// The inputs and the associated outputs
   DriverInputsAndOutputs inputsAndOutputs;
 
   llvm::StringRef workingDirectory;
 
 private:
+  ///< Outputs
+
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
 
@@ -241,6 +248,10 @@ private:
   /// The output file type which should be used for the
   /// compile-job-constructions.
   file::FileType outputFileType = file::FileType::None;
+
+  /// The link mode the compilation will use
+  LinkMode linkMode = LinkMode::None;
+
 
 public:
   bool shouldProcessDuplicateInputFile = false;
@@ -347,15 +358,7 @@ public:
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
-  /// \return the compile invocation mode that will be used to controll
-  /// compilation
-  CompileInvocationMode GetCompileInvocationMode() const {
-    return compileInvocationMode;
-  }
-
-  /// Returns true if multi-threading is enabled.
-  bool IsMultiThreading() const { return numThreads > 0; }
-
+  
   /// Returns true LTO is suppored
   bool HasLTO() const { return ltoVariant != LTOKind::None; }
 
@@ -410,6 +413,25 @@ public:
   /// \return true if the given action only parses without doing other
   /// compilation steps.
   bool IsLinkOnlyAction() const;
+
+
+public:
+  ///< Output information
+
+  /// \check that there exist a tool chain kind
+  bool HasLinkMode() const { return linkMode != LinkMode::None; }
+  /// \return the tool chain kind computed
+  LinkMode GetLinkMode() const { return linkMode; }
+
+   /// \return the compile invocation mode that will be used to controll
+  /// compilation
+  CompileInvocationMode GetCompileInvocationMode() const {
+    return compileInvocationMode;
+  }
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+  
 
 public:
   DriverOptions();
