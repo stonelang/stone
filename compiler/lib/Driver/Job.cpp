@@ -11,6 +11,9 @@ JobContext::JobContext(
     : compilation(compilation), inputs(inputs),
       inputConstructions(inputConstructions), jobOutput(jobOutput) {}
 
+Job::Job(const JobConstruction &construction)
+    : constructionAndCondition(&construction, JobCondition::Always) {}
+
 Job *ToolChain::ConstructJob(
     const JobConstruction &construction, Compilation &compilation,
     llvm::SmallVectorImpl<const Job *> &&inputs,
@@ -37,5 +40,5 @@ Job *ToolChain::ConstructJob(
     llvm_unreachable("All switch cases were covered");
   }();
 
-  return nullptr;
+  return new (compilation.GetDriver()) Job(construction);
 }

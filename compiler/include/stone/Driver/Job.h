@@ -2,8 +2,10 @@
 #define STONE_DRIVER_DRIVER_JOB_H
 
 #include "stone/Basic/File.h"
+#include "stone/Basic/OptionSet.h"
 #include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/DriverInvocation.h"
+#include "stone/Driver/JobConstruction.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
@@ -19,7 +21,6 @@
 namespace stone {
 class Job;
 class Compilation;
-class JobConstruction;
 
 struct JobInputPair {
   /// A filename provided from the user, either on the command line or in an
@@ -100,6 +101,13 @@ public:
   /// a BatchJob _without_ denoting an operating system process.
   using JobProcessID = int64_t;
 
+  enum class JobFlags : uint8_t {
+    None = 1 << 0,
+    TopLevel = 1 << 1,
+  };
+  /// Options that control the JobConstruction
+  using JobOptions = stone::OptionSet<JobFlags>;
+
 private:
   /// The action which caused the creation of this Job, and the conditions
   /// under which it must be run.
@@ -130,6 +138,44 @@ private:
   llvm::sys::TimePoint<> inputModificationTime = llvm::sys::TimePoint<>::max();
 
 public:
+  Job(const JobConstruction &construction);
+  // Job(const JobAction &Source, SmallVectorImpl<const Job *> &&Inputs,
+  //     std::unique_ptr<CommandOutput> Output, const char *Executable,
+  //     llvm::opt::ArgStringList Arguments,
+  //     EnvironmentVector ExtraEnvironment = {},
+  //     std::vector<FilelistInfo> Infos = {},
+  //     llvm::Optional<ResponseFileInfo> ResponseFile = llvm::None)
+  //     : SourceAndCondition(&Source, Condition::Always),
+  //       Inputs(std::move(Inputs)), Output(std::move(Output)),
+  //       Executable(Executable), Arguments(std::move(Arguments)),
+  //       ExtraEnvironment(std::move(ExtraEnvironment)),
+  //       FilelistFileInfos(std::move(Infos)), ResponseFile(ResponseFile) {}
+
+  // /// For testing dependency graphs that use Jobs
+  // Job(OutputFileMap &OFM, StringRef dummyBaseName)
+  //     : Job(CompileJobAction(file_types::TY_Object),
+  //           SmallVector<const Job *, 4>(),
+  //           std::make_unique<CommandOutput>(dummyBaseName, OFM), nullptr, {})
+  //           {}
+
+public:
+
+  const JobConstruction &GetConstruction() const {
+    return *constructionAndCondition.getPointer();
+  }
+  JobCondition SetCondition() const { return constructionAndCondition.getInt(); }
+  void SetCondition(JobCondition jobCondition) { constructionAndCondition.setInt(jobCondition); }
+
+  const char *GetExecutable() const { return executable; }
+
+  const llvm::opt::ArgStringList &GetArguments() const { return arguments; }
+
+  llvm::ArrayRef<const Job *> GetInputs() const { return inputs; }
+  const JobOutput &GetJobOutput() const { return *jobOutput; }
+
+  void SetInputModificationTime(llvm::sys::TimePoint<> time) {
+    inputModificationTime = time;
+  }
 };
 
 } // namespace stone
