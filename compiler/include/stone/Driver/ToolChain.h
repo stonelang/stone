@@ -276,10 +276,42 @@ public:
 class WindowsToolChain final : public ToolChain {
 public:
   WindowsToolChain(const Driver &driver);
+  ~WindowsToolChain() = default;
 
 public:
   JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                     const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  std::string SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                      bool shared = true) const override;
+
+public:
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const JobOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
 };
 
 class UnixToolChain : public ToolChain {
@@ -306,10 +338,42 @@ protected:
 
 public:
   LinuxToolChain(const Driver &driver);
+  ~LinuxToolChain() = default;
 
 public:
   JobInvocation ConstructInvocation(const CompileJobConstruction &job,
                                     const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  std::string SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                      bool shared = true) const override;
+
+public:
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const JobOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
 
 public:
   static bool classof(const ToolChain *toolChain) {
@@ -317,35 +381,35 @@ public:
   }
 };
 
-class FreeBSDToolChain : public UnixToolChain {
+// class FreeBSDToolChain : public UnixToolChain {
 
-protected:
-  std::string GetDefaultLinker() const override;
+// protected:
+//   std::string GetDefaultLinker() const override;
 
-public:
-  FreeBSDToolChain(const Driver &driver);
-};
+// public:
+//   FreeBSDToolChain(const Driver &driver);
+// };
 
-class OpenBSDToolChain : public UnixToolChain {
-protected:
-  std::string GetDefaultLinker() const override;
+// class OpenBSDToolChain : public UnixToolChain {
+// protected:
+//   std::string GetDefaultLinker() const override;
 
-public:
-  OpenBSDToolChain(const Driver &driver);
-};
+// public:
+//   OpenBSDToolChain(const Driver &driver);
+// };
 
-class AndroidToolChain : public UnixToolChain {
-protected:
-  std::string GetDefaultLinker() const override;
+// class AndroidToolChain : public UnixToolChain {
+// protected:
+//   std::string GetDefaultLinker() const override;
 
-public:
-  AndroidToolChain(const Driver &driver);
+// public:
+//   AndroidToolChain(const Driver &driver);
 
-public:
-  static bool classof(const ToolChain *toolChain) {
-    return toolChain->GetKind() == ToolChainKind::Android;
-  }
-};
+// public:
+//   static bool classof(const ToolChain *toolChain) {
+//     return toolChain->GetKind() == ToolChainKind::Android;
+//   }
+// };
 
 } // namespace stone
 #endif

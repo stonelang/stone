@@ -148,7 +148,7 @@ public:
   ///
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
-  ToolChain *BuildToolChain(const llvm::opt::InputArgList &argList);
+  ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
   /// Compute the compile invocation mode;
   CompileInvocationMode

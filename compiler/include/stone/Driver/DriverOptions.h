@@ -191,6 +191,7 @@ public:
 private:
   ToolChainKind ComputeToolChainKind();
   llvm::StringRef ComputeWorkingDirectory();
+  CompileInvocationMode ComputeCompileInvocationMode();
 
 public:
   Status Convert();

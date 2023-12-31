@@ -123,9 +123,23 @@ Status DriverOptionsConverter::Convert() {
   if (!driverOpts.GetInputsAndOutputs().HasInputs()) {
     return Status::MakeHasCompletionAndIsError();
   }
+  driverOpts.inputFileType =
+      driverOpts.GetInputsAndOutputs().FirstInput().GetFileType();
+
   driverOpts.action = stone::ComputeAction(args);
+  if (!driverOpts.HasAction()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
   driverOpts.workingDirectory = ComputeWorkingDirectory();
+  if (!driverOpts.HasWorkingDirectory()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+
   driverOpts.toolChainKind = ComputeToolChainKind();
+  if (driverOpts.HasToolChainKind()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  driverOpts.compileInvocationMode = ComputeCompileInvocationMode();
 
   return Status();
 }
@@ -180,4 +194,8 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
     return workingDirectory.str();
   }
   return llvm::StringRef();
+}
+
+CompileInvocationMode DriverOptionsConverter::ComputeCompileInvocationMode() {
+  return CompileInvocationMode::Normal;
 }
