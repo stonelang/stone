@@ -42,15 +42,11 @@ Status CompilerOptionsConverter::Convert(
       CompilerInputsConverter(de, args, compilerOpts).Convert(buffers);
 
   if (!inputsAndOutputs) {
-    status.SetIsError();
-    status.SetHasCompletion();
-    return status;
+    return Status::MakeHasCompletionAndIsError();
   }
 
   if (!inputsAndOutputs->HasInputs()) {
-    status.SetIsError();
-    status.SetHasCompletion();
-    return status;
+    return Status::MakeHasCompletionAndIsError();
   }
 
   // Make sure that it is empty,
@@ -61,7 +57,6 @@ Status CompilerOptionsConverter::Convert(
 
     haveNewInputsAndOutputs = true;
     compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
-    compilerOpts.mainAction = opts::ParseAction(args);
 
     if (compilerOpts.allowModuleWithCompilerErrors) {
       compilerOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
@@ -69,8 +64,11 @@ Status CompilerOptionsConverter::Convert(
   }
 
   if (!compilerOpts.GetInputsAndOutputs().HasInputs()) {
-    status.SetHasCompletion();
+    return Status::MakeHasCompletionAndIsError();
   }
+
+  // Now, compute the main action
+  compilerOpts.mainAction = stone::ComputeAction(args);
 
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =
@@ -82,12 +80,10 @@ Status CompilerOptionsConverter::Convert(
     compilerOpts.parsingInputMode = CompilerOptions::ParsingInputMode::Stone;
   }
 
-  status = ComputeModuleName();
-  if (status.IsError()) {
-    status.SetHasCompletion();
+  if (ComputeModuleName().IsError()) {
+    return Status::MakeHasCompletionAndIsError();
   }
-
-  return status;
+  return Status();
 }
 
 Status CompilerOptionsConverter::ComputeModuleName() {

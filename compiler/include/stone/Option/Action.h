@@ -125,9 +125,7 @@ public:
   static file::FileType GetOutputFileTypeByActionKind(ActionKind kind);
 };
 
-namespace opts {
-Action ParseAction(const llvm::opt::ArgList &args);
-}
+Action ComputeAction(const llvm::opt::ArgList &args);
 
 } // namespace stone
 #endif

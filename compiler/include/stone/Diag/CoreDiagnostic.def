@@ -23,6 +23,21 @@ ERROR(err_unable_to_open_output, none, "could not open output", (diag::LLVMStr, 
 ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (diag::LLVMStr))
 
 
+ERROR(err_duplicate_input_file,none,
+      "duplicate input file '%0'", (diag::LLVMStr))
+
+
+ERROR(err_cannot_open_file,none,
+      "cannot open file '%0' (%1)", (diag::LLVMStr, diag::LLVMStr))
+
+
+ERROR(err_open_input_file,none,
+      "error opening input file '%0' (%1)", (diag::LLVMStr, diag::LLVMStr))
+
+
+ERROR(err_invalid_arg_value,none,
+      "invalid value '%1' in '%0'", (diag::LLVMStr, diag::LLVMStr))
+
 // Usually, but not always, emitted from the driver
 ERROR(err_two_files_same_name,none,
       "filename \"%0\" used twice: '%1' and '%2'",

@@ -45,7 +45,7 @@ ActionKind opts::GetActionKindByOptionID(const unsigned actionOptionID) {
   }
 }
 
-Action opts::ParseAction(const llvm::opt::ArgList &args) {
+Action stone::ComputeAction(const llvm::opt::ArgList &args) {
 
   auto actionArg = args.getLastArg(opts::ModeGroup);
   if (!actionArg) {

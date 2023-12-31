@@ -43,6 +43,21 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (!argStrings) {
     return FinishMain(Status::Error());
   }
+  // Future:
+  // auto status = driver.ConvertArgStrings(*argStrings);
+  // if (status.IsError()) {
+  //   return FinishMain(status);
+  // }
+  // if (status.HasCompletion()) {
+  //   return FinishMain(status);
+  // }
+  // // Now, we can build the ToolChain
+  // auto toolChain = driver.BuildToolChain(driver.GetDriverOptions());
+  // if(!toolChain){
+  //    return FinishMain(Status::Error());
+  // }
+  // auto compilation = driver.BuildCompilation()
+
   auto status = driver.Setup(*argStrings);
   if (status.IsError()) {
     return FinishMain(status);

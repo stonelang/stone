@@ -45,7 +45,13 @@ Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
   return inputArgList.get();
 }
 
+Status Driver::ConvertArgStrings(const llvm::opt::InputArgList &args) {
+  return DriverOptionsConverter(args, driverOpts, GetDiags()).Convert();
+}
+
 Status Driver::Setup(const llvm::opt::InputArgList &argList) {
+
+  // return converter.Convert(buffers);
 
   auto workingDirectory = ComputeWorkingDirectory(argList);
   if (workingDirectory.empty()) {
@@ -129,7 +135,7 @@ Driver::TranslateInputArgList(const llvm::opt::InputArgList &argList,
 
 Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList) {
 
-  driverOpts.action = opts::ParseAction(argList);
+  driverOpts.action = stone::ComputeAction(argList);
   if (!GetDriverOptions().HasAction()) {
     return Status::Error();
   }

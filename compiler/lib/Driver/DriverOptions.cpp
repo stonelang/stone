@@ -1,11 +1,13 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/DriverInputFile.h"
 
 #include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace llvm::opt;
 
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
@@ -23,17 +25,106 @@ bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
 }
 
-DriverInputsAndOutputs::DriverInputsAndOutputs() {}
+DriverInputsAndOutputs::DriverInputsAndOutputs(
+    const DriverInputsAndOutputs &other) {
+  for (DriverInputFile input : other.inputs) {
+    AddInput(input);
+  }
+}
+
+DriverInputsAndOutputs &
+DriverInputsAndOutputs::operator=(const DriverInputsAndOutputs &other) {
+  ClearInputs();
+  for (DriverInputFile input : other.inputs) {
+    AddInput(input);
+  }
+  return *this;
+}
+
+void DriverInputsAndOutputs::AddInput(const DriverInputFile &input) {
+  inputs.push_back(input);
+}
+void DriverInputsAndOutputs::ClearInputs() { inputs.clear(); }
 
 DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
                                              DriverOptions &driverOpts,
                                              DiagnosticEngine &diags)
     : args(args), driverOpts(driverOpts), diags(diags) {}
 
+llvm::Optional<DriverInputsAndOutputs> DriverInputsConverter::Convert() {
+
+  // Just read for now
+  if (ReadFilesFromCommandLine().IsError()) {
+    return llvm::None;
+  }
+  auto inputsAndOutputs = CreateInputFiles();
+  return std::move(inputsAndOutputs);
+}
+
+Status DriverInputsConverter::ReadFilesFromCommandLine() {
+
+  Status duplicateInputFileStatus;
+  for (const Arg *arg : args.filtered(opts::INPUT)) {
+    duplicateInputFileStatus = AddFile(arg->getValue());
+    if (duplicateInputFileStatus.IsError() &&
+        !driverOpts.shouldProcessDuplicateInputFile) {
+      return Status::MakeHasCompletionAndIsError();
+    }
+  }
+  return Status();
+}
+Status DriverInputsConverter::AddFile(llvm::StringRef file) {
+  if (files.insert(file)) {
+    return Status();
+  }
+  diags.PrintD(SrcLoc(), diag::err_duplicate_input_file, diag::LLVMStr(file));
+  return Status::MakeHasCompletionAndIsError();
+}
+
+llvm::Optional<DriverInputsAndOutputs>
+DriverInputsConverter::CreateInputFiles() {
+
+  DriverInputsAndOutputs inputsAndOutputs;
+  for (auto &file : files) {
+    inputsAndOutputs.AddInput(DriverInputFile(file));
+  }
+  return std::move(inputsAndOutputs);
+}
+
 DriverOptionsConverter::DriverOptionsConverter(const llvm::opt::ArgList &args,
                                                DriverOptions &driverOpts,
-                                               LangOptions &langOpts,
                                                DiagnosticEngine &diags)
-    : args(args), driverOpts(driverOpts), langOpts(langOpts), diags(diags) {}
+    : args(args), driverOpts(driverOpts), diags(diags) {}
 
-Status DriverOptionsConverter::Convert() { return Status(); }
+Status DriverOptionsConverter::Convert() {
+
+  llvm::Optional<DriverInputsAndOutputs> inputsAndOutputs =
+      DriverInputsConverter(args, driverOpts, diags).Convert();
+
+  if (!inputsAndOutputs) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  if (!inputsAndOutputs->HasInputs()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+
+  // Make sure that it is empty,
+  bool haveNewInputsAndOutputs = false;
+  if (driverOpts.GetInputsAndOutputs().HasInputs()) {
+    assert(!inputsAndOutputs->HasInputs());
+  } else {
+    haveNewInputsAndOutputs = true;
+    driverOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
+    // if (driverOpts.allowModuleWithCompilerErrors) {
+    //   driverOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
+    // }
+  }
+
+  /// TODO: should not have to call this again -- the above code should work
+  if (!driverOpts.GetInputsAndOutputs().HasInputs()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  driverOpts.action = stone::ComputeAction(args);
+
+  return Status();
+}

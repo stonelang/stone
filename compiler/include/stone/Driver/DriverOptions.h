@@ -9,6 +9,7 @@
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/DriverInputFile.h"
 
+#include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/Triple.h"
 
@@ -94,7 +95,9 @@ class DriverInputsAndOutputs final {
   std::vector<DriverInputFile> inputs;
 
 public:
-  DriverInputsAndOutputs();
+  DriverInputsAndOutputs() = default;
+  DriverInputsAndOutputs(const DriverInputsAndOutputs &other);
+  DriverInputsAndOutputs &operator=(const DriverInputsAndOutputs &other);
 
 public:
   llvm::ArrayRef<DriverInputFile> GetInputs() const { return inputs; }
@@ -128,6 +131,8 @@ class DriverInputsConverter final {
   DriverOptions &driverOpts;
   DiagnosticEngine &diags;
 
+  llvm::SetVector<llvm::StringRef> files;
+
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
                         DriverOptions &driverOpts, DiagnosticEngine &diags);
@@ -140,6 +145,13 @@ public:
   /// invocation inputs will be saved here. These should only be used for
   /// debugging purposes.
   llvm::Optional<DriverInputsAndOutputs> Convert();
+
+private:
+  Status ReadFilesFromCommandLine();
+  Status AddFile(llvm::StringRef file);
+
+  /// Returns the newly set-up DriverInputsAndOutputs
+  llvm::Optional<DriverInputsAndOutputs> CreateInputFiles();
 
 public:
 };
@@ -169,13 +181,14 @@ public:
 class DriverOptionsConverter final {
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
-  LangOptions &langOpts;
   DiagnosticEngine &diags;
 
 public:
   DriverOptionsConverter(const llvm::opt::ArgList &args,
-                         DriverOptions &driverOpts, LangOptions &langOpts,
-                         DiagnosticEngine &diags);
+                         DriverOptions &driverOpts, DiagnosticEngine &diags);
+
+private:
+  ToolChainKind ComputeToolChainKind();
 
 public:
   Status Convert();
@@ -186,6 +199,7 @@ class DriverOptions final {
   friend Driver;
   friend DriverInputsAndOutputs;
   friend DriverInputsConverter;
+  friend DriverOptionsConverter;
 
 private:
   /// The main action requested or computed.
@@ -226,6 +240,8 @@ private:
   file::FileType outputFileType = file::FileType::None;
 
 public:
+  bool shouldProcessDuplicateInputFile = false;
+
   /// Indicates whether the driver should check that the input file exist.
   bool checkInputFileExistence = false;
 

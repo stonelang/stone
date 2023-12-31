@@ -78,7 +78,11 @@ public:
   Status Setup(const llvm::opt::InputArgList &argList);
 
 public:
+  /// Parse the arg strings only
   llvm::opt::InputArgList *ParseArgStrings(llvm::ArrayRef<const char *> args);
+
+  /// Convert the inpurt args to driver options
+  Status ConvertArgStrings(const llvm::opt::InputArgList &argList);
 
 private:
   llvm::StringRef

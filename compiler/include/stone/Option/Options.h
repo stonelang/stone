@@ -18,6 +18,8 @@ class OptTable;
 } // namespace llvm
 
 namespace stone {
+class Action;
+
 namespace opts {
 enum OptFlag {
   CompilerOption = (1 << 4),
