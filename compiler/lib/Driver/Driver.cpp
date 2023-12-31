@@ -3,11 +3,13 @@
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/Job.h"
+#include "stone/Strings.h"
 
 #include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace stone::file;
 
 using namespace llvm::opt;
 
@@ -65,8 +67,17 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
     return Status::MakeHasCompletion();
   }
 
-  // assert(invocation.GetToolChainKind() != ToolChainKind::None);
-  // toolChain = BuildToolChain(invocation.GetToolChainKind());
+  if (BuildInputFiles(*derivedArgList, driverOpts.inputFiles).IsError()) {
+    return Status::Error();
+  }
+  if (!GetDriverOptions().HasInputFiles()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+
+  auto toolChain = BuildToolChain(argList);
+  if (!toolChain) {
+    return Status::Error();
+  }
 
   // compilation = BuildCompilation(invocation.GetCompilationKind());
 
@@ -110,7 +121,63 @@ Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList) {
   }
 }
 
-ToolChainKind Driver::ComputeToolChainKind(const llvm::opt::InputArgList &argList) {
+Status Driver::BuildInputFiles(const DerivedArgList &args,
+                               InputFileList &inputFiles) {
+
+  llvm::DenseMap<llvm::StringRef, llvm::StringRef> sourceFileNames;
+  auto CheckInputFileExistence = [&](llvm::StringRef inputFile) -> Status {
+    if (!driverOpts.checkInputFileExistence) {
+      return Status::Success();
+    }
+    // stdin always exists.
+    if (inputFile == strings::Dash) {
+      return Status::Success();
+    }
+    if (file::Exists(inputFile)) {
+      return Status::Success();
+    }
+    return Status::Error();
+  };
+  for (Arg *inputArg : args) {
+    if (inputArg->getOption().getKind() == Option::InputClass) {
+      llvm::StringRef inputValue = inputArg->getValue();
+      FileType fileType = FileType::None;
+      // stdin must be handled specially.
+      if (inputValue.equals(strings::Dash)) {
+        // By default, treat stdin as Swift input.
+        fileType = FileType::Stone;
+      } else {
+        // Otherwise lookup by extension.
+        fileType = file::GetTypeByExt(inputValue);
+        if (fileType == FileType::None) {
+          // By default, treat inputs with no extension, or with an
+          // extension that isn't recognized, as object files.
+          fileType = FileType::Object;
+        }
+      }
+      if (CheckInputFileExistence(inputValue).IsSuccess()) {
+        inputFiles.push_back(InputFile(fileType, inputArg));
+      }
+      if (fileType == FileType::Stone) {
+        auto basename = file::GetBase(inputValue);
+        if (!sourceFileNames.insert({basename, inputValue}).second) {
+
+          // diags.PrintD(SrcLoc(), diag::err_two_files_same_name,
+          //                   diag::LLVMStr(basename),
+          //                   diag::LLVMStr(sourceFileNames[basename]),
+          //                   diag::LLVMStr(inputValue));
+          // diags.PrintD(SrcLoc(), diag::note_explain_two_files_same_name);
+
+          return Status::Error();
+        }
+      }
+    }
+  }
+  return Status();
+}
+
+ToolChainKind
+Driver::ComputeToolChainKind(const llvm::opt::InputArgList &argList) {
 
   if (const Arg *A = argList.getLastArg(opts::Target)) {
     driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());

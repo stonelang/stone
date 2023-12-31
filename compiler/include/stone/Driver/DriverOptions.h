@@ -14,7 +14,6 @@ class Driver;
 class DriverOptions;
 class DiagnosticEngine;
 
-
 enum class LinkMode : UInt8 {
   // We are not linking
   None = 0,

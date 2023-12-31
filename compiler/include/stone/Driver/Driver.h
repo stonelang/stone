@@ -132,6 +132,9 @@ public:
   DriverStatsReporter &GetStats() { return *stats; }
 
 public:
+  /// Build the input files
+  Status BuildInputFiles(const DerivedArgList &args, InputFileList &inputFiles);
+
   /// Computes the kind of tool-chain that is being built
   ToolChainKind ComputeToolChainKind(const llvm::opt::InputArgList &argList);
   /// Creates an appropriate ToolChain for a given driver, given the target
@@ -145,33 +148,12 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(const llvm::opt::InputArgList &argList);
 
-  /// Construct a compilation object for a given ToolChain and command line
-  /// argument vector.
+  /// Compute the task queue for this compilation and command line argument
+  /// vector.
   ///
-  /// If \p AllowErrors is set to \c true, this method tries to build a
-  /// compilation even if there were errors.
-  ///
-  /// \return A Compilation, or nullptr if none was built for the given argument
-  /// vector. A null return value does not necessarily indicate an error
-  /// condition; the diagnostics should be queried to determine if an error
-  /// occurred.
-  // std::unique_ptr<Compilation> BuildCompilation(CompilationKind kind);
-
-  // /// Build a quadratic compilation
-  // std::unique_ptr<Compilation>
-  // BuildNormalCompilation(BuildingCompilationRAII &buildingCompilation);
-
-  // /// Build a flat compilation
-  // std::unique_ptr<Compilation>
-  // BuildFlatCompilation(BuildingCompilationRAII &buildingCompilation);
-
-  // /// Build a single compilation
-  // std::unique_ptr<Compilation>
-  // BuildSingleCompilation(BuildingCompilationRAII &buildingCompilation);
-
-  // ///
-  // std::unique_ptr<Compilation>
-  // BuildCPUCountCompilation(BuildingCompilationRAII &buildingCompilation);
+  /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
+  /// specified.  This condition is signalled by a diagnostic.
+  std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
   bool HasTopLevelJobConstructions() {
@@ -196,14 +178,6 @@ public:
 
   void ForEachTopLevelJobConstruction(
       std::function<void(const JobConstruction *construction)> callback);
-
-public:
-  /// Compute the task queue for this compilation and command line argument
-  /// vector.
-  ///
-  /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
-  /// specified.  This condition is signalled by a diagnostic.
-  std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
   /// Print the driver version.

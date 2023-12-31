@@ -22,10 +22,8 @@ bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
 }
 
-DriverInputsAndOutputs::DriverInputsAndOutputs(){
-}
+DriverInputsAndOutputs::DriverInputsAndOutputs() {}
 
 DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
-                        DriverOptions &driverOpts, DiagnosticEngine &de){
-
- }
+                                             DriverOptions &driverOpts,
+                                             DiagnosticEngine &de) {}
