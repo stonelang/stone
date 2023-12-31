@@ -130,8 +130,47 @@ Status DriverOptionsConverter::Convert() {
 }
 
 ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
-  return ToolChainKind::None;
+
+  if (const Arg *A = args.getLastArg(opts::Target)) {
+    driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
+  }
+  llvm::Triple target(driverOpts.defaultTargetTriple);
+  switch (target.getOS()) {
+  case llvm::Triple::Darwin:
+  case llvm::Triple::MacOSX: {
+    if (const Arg *A = argList.getLastArg(opts::TargetVariant)) {
+      driverOpts.targetVariant =
+          llvm::Triple(llvm::Triple::normalize(A->getValue()));
+    }
+    return ToolChainKind::Darwin;
+  }
+  case llvm::Triple::Linux: {
+    if (target.isAndroid()) {
+      return ToolChainKind::Android;
+    }
+    return ToolChainKind::Linux;
+  }
+  case llvm::Triple::FreeBSD: {
+    return ToolChainKind::FreeBSD;
+  }
+  case llvm::Triple::OpenBSD: {
+    return ToolChainKind::OpenBSD;
+  }
+  case llvm::Triple::Win32: {
+    return ToolChainKind::Windows;
+  }
+  case llvm::Triple::UnknownOS: {
+    return ToolChainKind::Unix;
+  }
+  default: {
+    diags.PrintD(SrcLoc(), diag::err_unknown_target,
+                 diag::LLVMStr(argList.getLastArg(opts::Target)->getValue()));
+    ToolChainKind::None;
+  }
+  }
+  ToolChainKind::None;
 }
+
 llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
   if (auto *arg = args.getLastArg(opts::WorkingDirectory)) {
     llvm::SmallString<128> workingDirectory;
