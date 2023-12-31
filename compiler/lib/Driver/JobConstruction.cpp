@@ -124,3 +124,12 @@ llvm::ArrayRef<const Job *> GeneratePCHJobConstruction::ConstructJobs() {
 
   return {nullptr};
 }
+
+void CompilationEntities::AddTopLevelJobConstruction(
+    const JobConstruction *construction) {
+  assert(construction);
+  assert(construction->HasTopLevel());
+  topLevelJobConstructions.push_back(construction);
+}
+void CompilationEntities::ForEachTopLevelJobConstruction(
+    std::function<void(const JobConstruction *construction)> callback) {}

@@ -53,5 +53,22 @@ Job *Job::Create(const Driver &driver, const JobConstruction &construction,
 
 void Driver::ForEachTopLevelJob(std::function<void(const Job *job)> callback) {}
 
+void CompilationEntities::AddTopLevelJob(const Job *job) {
+  assert(job);
+  assert(job->HasTopLevel());
+  topLevelJobs.push_back(job);
+}
+
+void CompilationEntities::AddTopLevelExternalJob(const Job *job) {
+  assert(job);
+  assert(job->HasTopLevel());
+  topLevelExternalJobs.push_back(job);
+}
+
+void CompilationEntities::ForEachTopLevelJob(
+    std::function<void(const Job *job)> callback) {}
+void CompilationEntities::ForEachTopLevelExternalJob(
+    std::function<void(const Job *job)> callback) {}
+
 /// Print the list of Actions in a Compilation.
 void Driver::PrintJobs() const {}
