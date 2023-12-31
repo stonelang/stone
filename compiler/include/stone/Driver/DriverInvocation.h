@@ -14,9 +14,6 @@
 #include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
 
-#include "llvm/Option/Arg.h"
-#include "llvm/Option/ArgList.h"
-
 using namespace llvm::opt;
 
 namespace stone {

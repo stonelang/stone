@@ -4,10 +4,10 @@
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/Support/raw_ostream.h"
-
 #include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
+#include "llvm/Support/raw_ostream.h"
 
 #include <functional>
 #include <stdio.h>

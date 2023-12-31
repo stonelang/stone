@@ -18,11 +18,9 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
   Driver driver;
-
   auto FinishMain = [&](Status status = Status::Success()) -> int {
     return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
   };
-
   // Check for empty args
   if (args.empty()) {
     driver.PrintHelp();
@@ -52,16 +50,12 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.HasCompletion()) {
     return FinishMain(status);
   }
-
-  // if (driver.GetDriverOptions().GetAction().IsSupport()) {
-  //   driver.PrintSupport();
-  //   return FinishMain();
-  // }
-  // // // Now, setup the driver
-  // if (driver.Setup().IsError()) {
+  /// Now, build the compilation
+  // auto compilation = driver.BuildCompilation();
+  // if (!compilation) {
   //   return FinishMain(Status::Error());
   // }
-  // assert(driver.HasToolChain());
+  // compilation->ExecutJobs();
 
   // assert(driver.HasTaskQueue());
   // assert(driver.HasCompilation());

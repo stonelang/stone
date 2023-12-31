@@ -49,17 +49,17 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
 
   auto workingDirectory = ComputeWorkingDirectory(argList);
   if (workingDirectory.empty()) {
-    return Status::Error();
+    return Status::MakeHasCompletionAndIsError();
   }
   driverOpts.workingDirectory = workingDirectory;
 
   auto derivedArgList = TranslateInputArgList(argList, workingDirectory);
   if (!derivedArgList) {
-    return Status::Error();
+    return Status::MakeHasCompletionAndIsError();
   }
 
   if (ComputeAction(*derivedArgList).IsError()) {
-    return Status::Error();
+    return Status::MakeHasCompletionAndIsError();
   }
 
   if (GetDriverOptions().GetAction().IsSupport()) {
@@ -68,7 +68,7 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
   }
 
   if (BuildInputFiles(*derivedArgList, driverOpts.inputFiles).IsError()) {
-    return Status::Error();
+    return Status::MakeHasCompletionAndIsError();
   }
   if (!GetDriverOptions().HasInputFiles()) {
     return Status::MakeHasCompletionAndIsError();
@@ -76,8 +76,22 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
 
   auto toolChain = BuildToolChain(argList);
   if (!toolChain) {
-    return Status::Error();
+    return Status::MakeHasCompletionAndIsError();
   }
+
+  driverOpts.compileInvocationMode =
+      ComputeCompileInvocationMode(*derivedArgList);
+
+  BuildOutputs(*derivedArgList);
+
+  assert(driverOpts.HasOutputFileType() &&
+         "Did not find a valid output file-type!");
+
+  // Determine the OutputInfo for the driver.
+  // OutputInfo OI;
+  // bool BatchMode = false;
+  // OI.CompilerMode = computeCompilerMode(*TranslatedArgList, Inputs,
+  // BatchMode); buildOutputInfo(TC, *TranslatedArgList, BatchMode, Inputs, OI);
 
   // compilation = BuildCompilation(invocation.GetCompilationKind());
 
@@ -225,6 +239,40 @@ ToolChain *Driver::BuildToolChain(const llvm::opt::InputArgList &argList) {
   if (!GetDriverOptions().HasToolChainKind()) {
     return nullptr;
   }
+}
+
+CompileInvocationMode
+Driver::ComputeCompileInvocationMode(const DerivedArgList &args) {
+
+  // TODO: Just use normal for now
+  //  bool useWMO = args.hasFlag(opts::WholeModuleOptimization,
+  //                             opts::WithoutWholeModuleOptimization, false);
+
+  // const arg *argRequiringSingleCompile = Args.getLastArg(
+  //     options::opts::IndexFile,
+  //     useWMO ? opts::WholeModuleOptimization : llvm::opt::OptSpecifier());
+
+  return CompileInvocationMode::Normal;
+}
+
+Status Driver::BuildOutputs(const DerivedArgList &args) {
+
+  if (const Arg *arg = args.getLastArg(opts::LTO)) {
+    auto ltoVariant =
+        llvm::StringSwitch<llvm::Optional<LTOKind>>(arg->getValue())
+            .Case("llvm-thin", LTOKind::LLVMThin)
+            .Case("llvm-full", LTOKind::LLVMFull)
+            .Default(llvm::None);
+    if (ltoVariant) {
+      driverOpts.ltoVariant = ltoVariant.value();
+    } else {
+      // diags.PrintD(SrcLoc(), diag::err_invalid_arg_value,
+      //                diag::LLVMStr(arg->getAsString(Args)),
+      //                diag::LLVMStr(arg->getValue()));
+    }
+  }
+
+  return Status();
 }
 
 // Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList) {}

@@ -5,6 +5,7 @@
 #include "stone/Basic/File.h"
 #include "stone/Option/ActionKind.h"
 
+#include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
 

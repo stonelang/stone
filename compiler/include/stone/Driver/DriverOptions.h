@@ -4,15 +4,18 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/File.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Option/Action.h"
-#include "stone/Option/Options.h"
+#include "stone/Driver/DriverInputFile.h"
 
+#include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/Triple.h"
 
 namespace stone {
+
 class Driver;
 class DriverOptions;
 class DiagnosticEngine;
+class DriverInputsAndOutputs;
+class DriverInputsConverter;
 
 enum class LinkMode : UInt8 {
   // We are not linking
@@ -82,24 +85,68 @@ enum class CompileInvocationMode : UInt8 {
   CPUCount,
 
 };
-
-class DriverInputFile final {
-public:
-  DriverInputFile();
-};
 class DriverInputsAndOutputs final {
+
+  friend DriverInputsConverter;
+  std::vector<DriverInputFile> inputs;
 
 public:
   DriverInputsAndOutputs();
 
 public:
-  bool HasInputs();
+  llvm::ArrayRef<DriverInputFile> GetInputs() const { return inputs; }
+  std::vector<std::string> GetDriverInputFilenames() const;
+
+  unsigned InputCount() const { return inputs.size(); }
+  bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
+  bool HasSingleInput() const { return InputCount() == 1; }
+
+  const DriverInputFile &FirstInput() const {
+    assert(HasInputs());
+    return inputs[0];
+  }
+  DriverInputFile &FirstInput() {
+    assert(HasInputs());
+    return inputs[0];
+  }
+  const DriverInputFile &LastInput() const { return inputs.back(); }
+  /// If \p fn returns true, exits early and returns true.
+  bool ForEachInput(llvm::function_ref<bool(const DriverInputFile &)> fn) const;
+
+public:
+  void ClearInputs();
+  void AddInput(const DriverInputFile &input);
+  void AddInput(llvm::StringRef file);
 };
 
 class DriverInputsConverter final {
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
                         DriverOptions &driverOpts, DiagnosticEngine &de);
+
+public:
+};
+
+class DriverOutputsConverter final {
+  const llvm::opt::ArgList &args;
+  DriverInputsAndOutputs &inputsAndOutputs;
+  DiagnosticEngine &diags;
+
+public:
+  DriverOutputsConverter(const llvm::opt::ArgList &args,
+                         DriverInputsAndOutputs &inputsAndOutputs,
+                         DiagnosticEngine &diags)
+      : args(args), inputsAndOutputs(inputsAndOutputs), diags(diags) {}
+
+  // bool Convert(std::vector<std::string> &mainOutputs,
+  //              std::vector<std::string> &mainOutputsForIndexUnits,
+  //              std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
+  //              const Action &action);
+
+  /// Try to read an output file list file.
+  /// \returns `None` if it could not open the filelist.
+  // static Optional<std::vector<std::string>>
+  // ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
 /// TODO: The things that are computed should be private

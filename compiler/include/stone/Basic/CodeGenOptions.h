@@ -28,9 +28,9 @@ enum class InlineMode {
 enum class LTOKind {
   None,
   ///
-  Full,
+  LLVMFull,
   ///
-  Thin
+  LLVMThin
 };
 
 // The optimization mode specified on the command line or with function

@@ -8,10 +8,8 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
+#include "stone/Option/Options.h"
 #include "stone/Stats/Stats.h"
-
-#include "llvm/Option/Arg.h"
-#include "llvm/Option/ArgList.h"
 
 using namespace llvm::opt;
 
@@ -147,6 +145,13 @@ public:
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(const llvm::opt::InputArgList &argList);
+
+  /// Compute the compile invocation mode;
+  CompileInvocationMode
+  ComputeCompileInvocationMode(const DerivedArgList &args);
+
+  /// Compute the compile invocation mode;
+  Status BuildOutputs(const DerivedArgList &args);
 
   /// Compute the task queue for this compilation and command line argument
   /// vector.
