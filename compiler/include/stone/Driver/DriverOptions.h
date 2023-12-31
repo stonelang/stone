@@ -116,6 +116,8 @@ private:
   /// The inputs and the associated outputs
   DriverInputsAndOutputs inputsAndOutputs;
 
+  llvm::StringRef workingDirectory;
+
 private:
   /// The number of threads for multi-threaded compilation.
   unsigned numThreads = 0;
@@ -214,6 +216,11 @@ public:
   bool shouldTreatModuleAsTopLevelOutput = false;
 
 public:
+  /// \check that there exist a working directory
+  bool HasWorkingDirectory() const { return !workingDirectory.empty(); }
+  /// \return working directory for the compilation
+  llvm::StringRef GetWorkingDirectory() const { return workingDirectory; }
+
   /// \return the main executable path
   llvm::StringRef GetMainExecutablePath() const { return mainExecutablePath; }
 

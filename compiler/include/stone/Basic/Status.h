@@ -64,6 +64,16 @@ public:
     status.SetIsError();
     return status;
   }
+  static Status MakeHasCompletion() {
+    Status status;
+    status.SetHasCompletion();
+    return status;
+  }
+  static Status MakeHasCompletionAndIsError() {
+    Status status;
+    status.SetHasCompletionAndIsError();
+    return status;
+  }
 };
 
 template <typename T> class Result final {

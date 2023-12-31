@@ -77,11 +77,21 @@ public:
 public:
   Driver();
   ~Driver();
-  Status Setup();
+  Status Setup(const llvm::opt::InputArgList &argList);
 
 public:
-  Status ParseArgs(llvm::ArrayRef<const char *> args);
+  llvm::opt::InputArgList *ParseArgStrings(llvm::ArrayRef<const char *> args);
 
+private:
+  llvm::StringRef
+  ComputeWorkingDirectory(const llvm::opt::InputArgList &argList);
+  llvm::opt::DerivedArgList *
+  TranslateInputArgList(const llvm::opt::InputArgList &argList,
+                        llvm::StringRef workingDirectory);
+
+  Status ComputeAction(const llvm::opt::DerivedArgList &argList);
+
+public:
   void SetMainExecutablePath(llvm::StringRef executablePath) {
     driverOpts.mainExecutablePath = executablePath;
   }
@@ -89,10 +99,6 @@ public:
     driverOpts.mainExecutablePath = executableName;
   }
 
-private:
-  Status TranslateInputArgList(const llvm::opt::InputArgList &inputArgList);
-
-public:
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
 

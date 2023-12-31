@@ -247,7 +247,7 @@ def ParseAsLibrary : Flag<["-"], "parse-as-library">,
 def MainFile : Separate<["-"], "main-file">,
   HelpText<"Produce output for this file, not the whole module">;
 
-def WorkDir : Separate<["-"], "work-dir">,
+def WorkingDirectory : Separate<["-"], "work-dir">,
   HelpText<"Resolve file paths relative to the specified directory">,
   MetaVarName<"<path>">;
 

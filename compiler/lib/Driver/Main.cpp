@@ -41,14 +41,22 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecutableName = file::GetStem(mainExecutablePath);
   driver.SetMainExecutableName(mainExecutableName);
 
-  if (driver.ParseArgs(args).IsError()) {
+  auto argStrings = driver.ParseArgStrings(args);
+  if (!argStrings) {
     return FinishMain(Status::Error());
   }
-
-  if (driver.GetDriverOptions().GetAction().IsSupport()) {
-    driver.PrintSupport();
-    return FinishMain();
+  auto status = driver.Setup(*argStrings);
+  if(status.IsError()){
+    return FinishMain(status);
   }
+  if(status.HasCompletion()){
+    return FinishMain(status);
+  }
+
+  // if (driver.GetDriverOptions().GetAction().IsSupport()) {
+  //   driver.PrintSupport();
+  //   return FinishMain();
+  // }
   // // // Now, setup the driver
   // if (driver.Setup().IsError()) {
   //   return FinishMain(Status::Error());

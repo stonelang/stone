@@ -15,7 +15,8 @@ Driver::Driver() : optTable(stone::CreateOptTable()) {}
 
 Driver::~Driver() {}
 
-Status Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
+llvm::opt::InputArgList *
+Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
   unsigned excludedFlagsBitmask = opts::NoDriverOption;
@@ -31,20 +32,38 @@ Status Driver::ParseArgs(llvm::ArrayRef<const char *> args) {
     diags.PrintD(SrcLoc(), diag::err_missing_arg_value,
                  diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
                  diag::UInt(missingArgCount));
-    return Status::Error();
+    return nullptr;
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
     diags.PrintD(SrcLoc(), diag::err_unknown_arg,
                  diag::LLVMStr(arg->getAsString(*inputArgList)));
-    return Status::Error();
+    return nullptr;
   }
-  return Status::Success();
+  return inputArgList.get();
 }
 
-Status Driver::Setup() {
+Status Driver::Setup(const llvm::opt::InputArgList &argList) {
 
-  // assert(HasAction());
+  auto workingDirectory = ComputeWorkingDirectory(argList);
+  if (workingDirectory.empty()) {
+    return Status::Error();
+  }
+  driverOpts.workingDirectory = workingDirectory;
+
+  auto derivedArgList = TranslateInputArgList(argList, workingDirectory);
+  if (!derivedArgList) {
+    return Status::Error();
+  }
+
+  if(ComputeAction(*derivedArgList).IsError()){
+    return Status::Error();
+  }
+
+  if (GetDriverOptions().GetAction().IsSupport()) {
+    PrintSupport();
+    return Status::MakeHasCompletion();
+  }
 
   // assert(invocation.GetToolChainKind() != ToolChainKind::None);
   // toolChain = BuildToolChain(invocation.GetToolChainKind());
@@ -64,27 +83,56 @@ Status Driver::Setup() {
   return Status();
 }
 
-// std::unique_ptr<ToolChain> Driver::BuildToolChain(ToolChainKind kind) {
-//   switch (kind) {
-//   case ToolChainKind::Darwin:
-//     return std::make_unique<DarwinToolChain>(*this);
-//   // case ToolChainKind::Linux:
-//   //   return std::make_unique<LinuxToolChain>(*this);
-//   // case ToolChainKind::Windows:
-//   //   return std::make_unique<WindowsToolChain>(*this);
-//   // case ToolChainKind::FreeBSD:
-//   //   return std::make_unique<FreeBSDToolChain>(*this);
-//   // case ToolChainKind::OpenBSD:
-//   //   return std::make_unique<OpenBSDToolChain>(*this);
-//   // case ToolChainKind::Android:
-//   //   return std::make_unique<AndroidToolChain>(*this);
-//   // case ToolChainKind::Unix:
-//   //   return std::make_unique<UnixToolChain>(*this);
-//   default: {
-//     llvm_unreachable("Unsupported tool-chain");
-//   }
-//   }
-// }
+llvm::StringRef
+Driver::ComputeWorkingDirectory(const llvm::opt::InputArgList &argList) {
+  if (auto *arg = argList.getLastArg(opts::WorkingDirectory)) {
+    llvm::SmallString<128> workingDirectory;
+    workingDirectory = arg->getValue();
+    llvm::sys::fs::make_absolute(workingDirectory);
+    return workingDirectory.str();
+  }
+  return llvm::StringRef();
+}
+
+llvm::opt::DerivedArgList *
+Driver::TranslateInputArgList(const llvm::opt::InputArgList &argList,
+                              llvm::StringRef workingDirectory) {
+  // TODO:
+  derivedArgList = std::make_unique<llvm::opt::DerivedArgList>(argList);
+  return derivedArgList.get();
+}
+
+Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList){
+
+  driverOpts.action = opts::ParseAction(argList);
+  if (!GetDriverOptions().HasAction()) {
+    return Status::Error();
+  }
+}
+
+// Status Driver::ComputeAction(const llvm::opt::DerivedArgList &argList) {}
+
+// // std::unique_ptr<ToolChain> Driver::BuildToolChain(ToolChainKind kind) {
+// //   switch (kind) {
+// //   case ToolChainKind::Darwin:
+// //     return std::make_unique<DarwinToolChain>(*this);
+// //   // case ToolChainKind::Linux:
+// //   //   return std::make_unique<LinuxToolChain>(*this);
+// //   // case ToolChainKind::Windows:
+// //   //   return std::make_unique<WindowsToolChain>(*this);
+// //   // case ToolChainKind::FreeBSD:
+// //   //   return std::make_unique<FreeBSDToolChain>(*this);
+// //   // case ToolChainKind::OpenBSD:
+// //   //   return std::make_unique<OpenBSDToolChain>(*this);
+// //   // case ToolChainKind::Android:
+// //   //   return std::make_unique<AndroidToolChain>(*this);
+// //   // case ToolChainKind::Unix:
+// //   //   return std::make_unique<UnixToolChain>(*this);
+// //   default: {
+// //     llvm_unreachable("Unsupported tool-chain");
+// //   }
+// //   }
+// // }
 
 // std::unique_ptr<Compilation> Driver::BuildCompilation(CompilationKind kind) {
 
@@ -283,7 +331,7 @@ void Driver::PrintSupport() const {
   case ActionKind::PrintHelpHidden:
     return PrintHelp(true);
   case ActionKind::PrintVersion:
-    //return PrintVersion(); // TODO: 
+    // return PrintVersion(); // TODO:
     break;
   default:
     llvm_unreachable("Invalid support action!");
