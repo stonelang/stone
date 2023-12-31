@@ -68,7 +68,7 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
-  //std::unique_ptr<CompilationEntities> compilationEntities;
+  // std::unique_ptr<CompilationEntities> compilationEntities;
 
 public:
   // A graph of JobConstructions.
@@ -208,22 +208,22 @@ public:
     return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
   }
 
-  /// Add a top level job 
+  /// Add a top level job
   void AddTopLevelJob(const Job *job) {
     assert(job);
     assert(job->HasTopLevel());
     topLevelJobs.push_back(job);
   }
 
-  /// Get each top level job 
+  /// Get each top level job
   void ForEachTopLevelJob(std::function<void(const Job *job)> callback);
 
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;
 
 public:
-  /// < Driver support. 
-  
+  /// < Driver support.
+
   /// Print the driver version.
   void PrintVersion(const ToolChain &toolChain, llvm::raw_ostream &os) const;
   /// Print the help text.

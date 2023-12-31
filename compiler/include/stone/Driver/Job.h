@@ -3,8 +3,7 @@
 
 #include "stone/Basic/File.h"
 #include "stone/Basic/OptionSet.h"
-#include "stone/Driver/DriverAllocation.h"
-#include "stone/Driver/DriverInvocation.h"
+#include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/JobConstruction.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -94,7 +93,7 @@ enum class JobCondition {
   NewlyAdded
 };
 
-class Job : public DriverAllocation<Job> {
+class Job : public CompilationEntity {
 public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If

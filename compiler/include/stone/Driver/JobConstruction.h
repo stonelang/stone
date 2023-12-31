@@ -4,7 +4,7 @@
 #include "stone/Basic/File.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Driver/DriverAllocation.h"
+#include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/PointerUnion.h"
@@ -39,7 +39,7 @@ using JobConstructionInput =
 /// A list of all job construction inputs
 using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 
-class JobConstruction : public DriverAllocation<JobConstruction> {
+class JobConstruction : public CompilationEntity {
 public:
   enum class JobConstructionFlags : uint8_t {
     None = 1 << 0,

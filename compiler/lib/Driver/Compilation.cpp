@@ -1,7 +1,6 @@
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/Driver.h"
 #include "stone/Basic/Defer.h"
-
+#include "stone/Driver/Driver.h"
 
 using namespace stone;
 
@@ -13,7 +12,8 @@ class CompilationJobScheduler {
   Compilation &compilation;
 
 public:
-  CompilationJobScheduler(Compilation &compilation) : compilation(compilation) {}
+  CompilationJobScheduler(Compilation &compilation)
+      : compilation(compilation) {}
   ~CompilationJobScheduler() = default;
 
 public:
@@ -21,16 +21,11 @@ public:
   Status Finish();
 };
 
- CompilationResult CompilationJobScheduler::Run(){
-    return CompilationResult();
+CompilationResult CompilationJobScheduler::Run() { return CompilationResult(); }
+Status CompilationJobScheduler::Finish() { return Status(); }
 
- }
-  Status CompilationJobScheduler::Finish() {
-    return Status();
-  }
-
-CompilationResult Compilation::ExecuteJobs() { 
-CompilationJobScheduler compilationJobScheduler(*this);
+CompilationResult Compilation::ExecuteJobs() {
+  CompilationJobScheduler compilationJobScheduler(*this);
   STONE_DEFER { compilationJobScheduler.Finish(); };
   return compilationJobScheduler.Run();
 }
