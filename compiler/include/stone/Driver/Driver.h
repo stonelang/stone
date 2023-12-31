@@ -72,6 +72,9 @@ public:
   // A graph of JobConstructions.
   llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const Job *, 8> topLevelJobs;
+
 public:
   Driver();
   ~Driver();
@@ -165,6 +168,7 @@ public:
   std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
+  /// < JobConstructions
   bool HasTopLevelJobConstructions() {
     return (!topLevelJobConstructions.empty() &&
             topLevelJobConstructions.size() > 0);
@@ -180,21 +184,44 @@ public:
   /// Build the job-constructions
   Status BuildJobConstructions();
 
+  void ForEachTopLevelJobConstruction(
+      std::function<void(const JobConstruction *construction)> callback);
+
   /// Print the list of Actions in a Compilation.
   void PrintJobConstructions() const;
 
-  /// Build the jobs
-  Status BuildJobs();
+public:
+  ///< Jobs
 
   /// A map for caching Jobs for a given Action/ToolChain pair
   using JobCacheMap =
       llvm::DenseMap<std::pair<const JobConstruction *, const ToolChain *>,
                      Job *>;
 
-  void ForEachTopLevelJobConstruction(
-      std::function<void(const JobConstruction *construction)> callback);
+  /// Build the jobs
+  Status BuildTopLevelJobs();
+
+  /// JobConstructions
+  bool HasTopLevelJobs() {
+    return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
+  }
+
+  /// Add a top level job 
+  void AddTopLevelJob(const Job *job) {
+    assert(job);
+    assert(job->HasTopLevel());
+    topLevelJobs.push_back(job);
+  }
+
+  /// Get each top level job 
+  void ForEachTopLevelJob(std::function<void(const Job *job)> callback);
+
+  /// Print the list of Actions in a Compilation.
+  void PrintJobs() const;
 
 public:
+  /// < Driver support. 
+  
   /// Print the driver version.
   void PrintVersion(const ToolChain &toolChain, llvm::raw_ostream &os) const;
   /// Print the help text.

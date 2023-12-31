@@ -50,3 +50,8 @@ Job *Job::Create(const Driver &driver, const JobConstruction &construction,
                  llvm::SmallVectorImpl<const Job *> &&inputs) {
   return new (driver) Job(construction, std::move(inputs));
 }
+
+void Driver::ForEachTopLevelJob(std::function<void(const Job *job)> callback) {}
+
+/// Print the list of Actions in a Compilation.
+void Driver::PrintJobs() const {}

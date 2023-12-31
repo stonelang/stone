@@ -5,12 +5,6 @@ using namespace stone;
 
 Compilation::Compilation(const Driver &driver) : driver(driver) {}
 
-void Compilation::AddTopLevelJob(const Job *job) {
-  assert(job);
-  assert(job->HasTopLevel());
-  topLevelJobs.push_back(job);
-}
-
 CompilationResult::CompilationResult() {}
 
 class ExecuteJobsImpl {

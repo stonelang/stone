@@ -185,9 +185,7 @@ public:
   }
 
 public:
-  bool HasTopLevel() const {
-    return jobOptions.contains(JobFlags::TopLevel);
-  }
+  bool HasTopLevel() const { return jobOptions.contains(JobFlags::TopLevel); }
   void AddTopLevel() { jobOptions |= JobFlags::TopLevel; }
   void ClearTopLevel() {}
 

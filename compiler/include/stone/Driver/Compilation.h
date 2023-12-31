@@ -64,18 +64,10 @@ public:
 };
 
 class Compilation final {
-
-  friend Driver;
-
   const Driver &driver;
-  /// The Jobs which will be performed by this compilation.
-  llvm::SmallVector<const Job *, 32> topLevelJobs;
 
 public:
   Compilation(const Driver &driver);
-
-private:
-  void AddTopLevelJob(const Job *job);
 
 public:
   Status Setup();
