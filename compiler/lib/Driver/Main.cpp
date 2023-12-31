@@ -60,6 +60,7 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsErrorOrHasCompletion()) {
     return FinishMain(status);
   }
+  assert(driver.GetDriverOptions().HasToolChainKind() && "toolchains not found -- cannot proceed with compilation!");
 
   // // Now, we can build the ToolChain
   // auto toolChain = driver.BuildToolChain(driver.GetDriverOptions());

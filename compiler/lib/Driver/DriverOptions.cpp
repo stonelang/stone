@@ -125,6 +125,7 @@ Status DriverOptionsConverter::Convert() {
   }
   driverOpts.action = stone::ComputeAction(args);
   driverOpts.workingDirectory = ComputeWorkingDirectory();
+  driverOpts.toolChainKind = ComputeToolChainKind();
 
   return Status();
 }
@@ -138,7 +139,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
   switch (target.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX: {
-    if (const Arg *A = argList.getLastArg(opts::TargetVariant)) {
+    if (const Arg *A = args.getLastArg(opts::TargetVariant)) {
       driverOpts.targetVariant =
           llvm::Triple(llvm::Triple::normalize(A->getValue()));
     }
@@ -164,7 +165,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
   }
   default: {
     diags.PrintD(SrcLoc(), diag::err_unknown_target,
-                 diag::LLVMStr(argList.getLastArg(opts::Target)->getValue()));
+                 diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
     ToolChainKind::None;
   }
   }
