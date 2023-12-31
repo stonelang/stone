@@ -39,18 +39,14 @@ using JobConstructionInput =
 /// A list of all job construction inputs
 using JobConstructionInputList = llvm::ArrayRef<JobConstructionInput>;
 
-struct JobConstructionFlags final {
-  JobConstructionFlags() = delete;
-  /// Flags that control the parsing of declarations.
-  enum ID {
-    None = 1 << 0,
-    IsTopLevel = 1 << 1,
-  };
-};
-/// Options that control the JobConstruction
-using JobConstructionOptions = stone::OptionSet<JobConstructionFlags::ID>;
-
 class JobConstruction : public DriverAllocation<JobConstruction> {
+public:
+  enum class JobConstructionFlags : uint8_t {
+    None = 1 << 0,
+    TopLevel = 1 << 1,
+  };
+  /// Options that control the JobConstruction
+  using JobConstructionOptions = stone::OptionSet<JobConstructionFlags>;
 
 protected:
   JobConstructionKind kind = JobConstructionKind::None;
@@ -82,15 +78,20 @@ public:
   // file, so we return 0 by default.
   virtual size_t GetInputIndex() const { return 0; }
 
+  // DriverInputFile* GetASDriverInputFile();
+  // JobConstruction* GetASJobConstruction();
+
 public:
   JobConstructionKind GetKind() const { return kind; }
   file::FileType GetFileType() { return fileType; }
   void AddInput(JobConstructionInput input) { inputs.push_back(input); }
 
 public:
-  bool IsTopLevel() {
-    return jobConstructionOpts.contains(JobConstructionFlags::IsTopLevel);
+  bool HasTopLevel() const {
+    return jobConstructionOpts.contains(JobConstructionFlags::TopLevel);
   }
+  void AddTopLevel() { jobConstructionOpts |= JobConstructionFlags::TopLevel; }
+  void ClearTopLevel() {}
 
 public:
   static bool classof(const JobConstruction *construction) {

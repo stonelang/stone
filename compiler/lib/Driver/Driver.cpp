@@ -485,12 +485,12 @@ Status Driver::BuildOutputs(const DerivedArgList &args) {
 // const
 // {}
 
-void Driver::ForEachInputFile(
-    std::function<void(InputFile &inputFile)> callback) {
-  for (auto inputFile : driverOpts.inputFiles) {
-    callback(inputFile);
-  }
-}
+// void Driver::ForEachInputFile(
+//     std::function<void(InputFile &inputFile)> callback) {
+//   for (auto inputFile : driverOpts.inputFiles) {
+//     callback(inputFile);
+//   }
+// }
 
 void Driver::ForEachTopLevelJobConstruction(
     std::function<void(const JobConstruction *construction)> callback) {

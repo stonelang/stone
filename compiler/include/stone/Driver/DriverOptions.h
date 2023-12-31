@@ -242,6 +242,9 @@ public:
   DriverOutputInfo();
 };
 
+/// The tool chain type that we are going to use
+using ToolChainType = llvm::Triple::OSType;
+
 /// TODO: The things that are computed should be private
 class DriverOptions final {
 

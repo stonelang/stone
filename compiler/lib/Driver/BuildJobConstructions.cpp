@@ -119,6 +119,8 @@ LinkJobConstruction *BuildJobConstructionsImpl::BuildLinkJobConstruction() {
           driver.GetDriverOptions().HasLTO());
     }
   }
+  llvm_unreachable("Unsupported link construction -- cannot continue with the "
+                   "compilation process!");
 }
 
 Status BuildJobConstructionsImpl::BuildBackendJobConstruction() {
@@ -133,6 +135,7 @@ Status BuildJobConstructionsImpl::FinishBuildJobConstructions() {
     if (!linkJobConstruction) {
       return Status::MakeHasCompletionAndIsError();
     }
+    linkJobConstruction->AddTopLevel();
     driver.AddTopLevelJobConstruction(linkJobConstruction);
     return Status();
   }

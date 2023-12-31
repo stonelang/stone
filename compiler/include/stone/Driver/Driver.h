@@ -166,13 +166,16 @@ public:
 
 public:
   bool HasTopLevelJobConstructions() {
-    return !topLevelJobConstructions.empty();
+    return (!topLevelJobConstructions.empty() &&
+            topLevelJobConstructions.size() > 0);
   }
   void AddTopLevelJobConstruction(const JobConstruction *construction) {
+    assert(construction);
+    assert(construction->HasTopLevel());
     topLevelJobConstructions.push_back(construction);
   }
 
-  void ForEachInputFile(std::function<void(InputFile &input)> callback);
+  // void ForEachInputFile(std::function<void(InputFile &input)> callback);
 
   /// Build the job-constructions
   Status BuildJobConstructions();
