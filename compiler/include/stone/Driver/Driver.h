@@ -68,6 +68,8 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
+  //std::unique_ptr<CompilationEntities> compilationEntities;
+
 public:
   // A graph of JobConstructions.
   llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
