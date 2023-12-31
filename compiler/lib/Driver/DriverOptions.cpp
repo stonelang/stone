@@ -9,6 +9,8 @@
 using namespace stone;
 using namespace llvm::opt;
 
+CompilationOutputInfo::CompilationOutputInfo() {}
+
 // Driver options
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}

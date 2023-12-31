@@ -205,14 +205,51 @@ public:
   Status Convert();
 };
 
+class CompilationOutputInfo final {
+
+  friend Driver;
+  friend DriverOptionsConverter;
+
+  /// The number of threads for multi-threaded compilation.
+  unsigned numThreads = 0;
+
+  /// The method of invocating compile
+  CompileInvocationMode compileInvocationMode = CompileInvocationMode::Normal;
+
+  /// The output file type which should be used for the
+  /// compile-job-constructions.
+  file::FileType outputFileType = file::FileType::None;
+
+  /// The link mode the compilation will use
+  LinkMode linkMode = LinkMode::None;
+
+public:
+  /// \check that there exist a tool chain kind
+  bool HasLinkMode() const { return linkMode != LinkMode::None; }
+  /// \return the tool chain kind computed
+  LinkMode GetLinkMode() const { return linkMode; }
+
+  /// \return the compile invocation mode that will be used to controll
+  /// compilation
+  CompileInvocationMode GetCompileInvocationMode() const {
+    return compileInvocationMode;
+  }
+
+  /// Returns true if multi-threading is enabled.
+  bool IsMultiThreading() const { return numThreads > 0; }
+
+public:
+  CompilationOutputInfo();
+};
+
 /// TODO: The things that are computed should be private
 class DriverOptions final {
+
   friend Driver;
   friend DriverInputsAndOutputs;
   friend DriverInputsConverter;
   friend DriverOptionsConverter;
 
-private:
   /// The main action requested or computed.
   Action action;
 
@@ -228,13 +265,17 @@ private:
   /// The name of the executing program
   llvm::StringRef mainExecutableName;
 
+  /// The current working director
+  llvm::StringRef workingDirectory;
+
   /// The tool chain to use for this compilation
   ToolChainKind toolChainKind = ToolChainKind::None;
 
   /// The inputs and the associated outputs
   DriverInputsAndOutputs inputsAndOutputs;
 
-  llvm::StringRef workingDirectory;
+  /// The output information used during compilation
+  CompilationOutputInfo compilationOutputInfo;
 
 private:
   ///< Outputs
@@ -251,7 +292,6 @@ private:
 
   /// The link mode the compilation will use
   LinkMode linkMode = LinkMode::None;
-
 
 public:
   bool shouldProcessDuplicateInputFile = false;
@@ -358,7 +398,6 @@ public:
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
-  
   /// Returns true LTO is suppored
   bool HasLTO() const { return ltoVariant != LTOKind::None; }
 
@@ -414,7 +453,6 @@ public:
   /// compilation steps.
   bool IsLinkOnlyAction() const;
 
-
 public:
   ///< Output information
 
@@ -423,7 +461,7 @@ public:
   /// \return the tool chain kind computed
   LinkMode GetLinkMode() const { return linkMode; }
 
-   /// \return the compile invocation mode that will be used to controll
+  /// \return the compile invocation mode that will be used to controll
   /// compilation
   CompileInvocationMode GetCompileInvocationMode() const {
     return compileInvocationMode;
@@ -431,7 +469,11 @@ public:
 
   /// Returns true if multi-threading is enabled.
   bool IsMultiThreading() const { return numThreads > 0; }
-  
+
+  /// \return the compilation output information
+  CompilationOutputInfo GetCompilationOutputInfo() const {
+    return compilationOutputInfo;
+  }
 
 public:
   DriverOptions();
