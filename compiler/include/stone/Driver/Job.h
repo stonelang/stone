@@ -92,7 +92,7 @@ enum class JobCondition {
   NewlyAdded
 };
 
-class Job /*: public DriverAllocation<Job>*/ {
+class Job : public DriverAllocation<Job> {
 public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If

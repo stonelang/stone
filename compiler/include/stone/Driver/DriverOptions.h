@@ -205,7 +205,7 @@ public:
   Status Convert();
 };
 
-class CompilationOutputInfo final {
+class DriverOutputInfo final {
 
   friend Driver;
   friend DriverOptionsConverter;
@@ -239,7 +239,7 @@ public:
   bool IsMultiThreading() const { return numThreads > 0; }
 
 public:
-  CompilationOutputInfo();
+  DriverOutputInfo();
 };
 
 /// TODO: The things that are computed should be private
@@ -275,7 +275,7 @@ class DriverOptions final {
   DriverInputsAndOutputs inputsAndOutputs;
 
   /// The output information used during compilation
-  CompilationOutputInfo compilationOutputInfo;
+  DriverOutputInfo driverOutputInfo;
 
 private:
   ///< Outputs
@@ -471,9 +471,7 @@ public:
   bool IsMultiThreading() const { return numThreads > 0; }
 
   /// \return the compilation output information
-  CompilationOutputInfo GetCompilationOutputInfo() const {
-    return compilationOutputInfo;
-  }
+  DriverOutputInfo GetDriverOutputInfo() const { return driverOutputInfo; }
 
 public:
   DriverOptions();

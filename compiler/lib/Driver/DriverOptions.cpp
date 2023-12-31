@@ -9,7 +9,7 @@
 using namespace stone;
 using namespace llvm::opt;
 
-CompilationOutputInfo::CompilationOutputInfo() {}
+DriverOutputInfo::DriverOutputInfo() {}
 
 // Driver options
 DriverOptions::DriverOptions()
