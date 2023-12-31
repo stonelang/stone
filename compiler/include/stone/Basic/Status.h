@@ -6,7 +6,6 @@
 namespace stone {
 
 constexpr size_t StatusAlignment = 8;
-
 class alignas(1 << StatusAlignment) Status final {
   unsigned isError : 1;
   unsigned isCompletion : 1;

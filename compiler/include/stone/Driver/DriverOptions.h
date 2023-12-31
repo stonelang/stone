@@ -2,6 +2,9 @@
 #define STONE_DRIVER_DRIVER_OPTIONS_H
 
 #include "stone/Basic/CodeGenOptions.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/Status.h"
+
 #include "stone/Basic/File.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/DriverInputFile.h"
@@ -120,9 +123,23 @@ public:
 };
 
 class DriverInputsConverter final {
+
+  const llvm::opt::ArgList &args;
+  DriverOptions &driverOpts;
+  DiagnosticEngine &diags;
+
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
-                        DriverOptions &driverOpts, DiagnosticEngine &de);
+                        DriverOptions &driverOpts, DiagnosticEngine &diags);
+
+public:
+  /// Produces a CompilerInputsAndOutputs object with the inputs populated from
+  /// the arguments the converter was initialized with.
+  ///
+  /// \param buffers If present, buffers read in the processing of the
+  /// invocation inputs will be saved here. These should only be used for
+  /// debugging purposes.
+  llvm::Optional<DriverInputsAndOutputs> Convert();
 
 public:
 };
@@ -147,6 +164,21 @@ public:
   /// \returns `None` if it could not open the filelist.
   // static Optional<std::vector<std::string>>
   // ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
+};
+
+class DriverOptionsConverter final {
+  const llvm::opt::ArgList &args;
+  DriverOptions &driverOpts;
+  LangOptions &langOpts;
+  DiagnosticEngine &diags;
+
+public:
+  DriverOptionsConverter(const llvm::opt::ArgList &args,
+                         DriverOptions &driverOpts, LangOptions &langOpts,
+                         DiagnosticEngine &diags);
+
+public:
+  Status Convert();
 };
 
 /// TODO: The things that are computed should be private

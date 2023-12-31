@@ -4,7 +4,6 @@
 #include "stone/Basic/File.h"
 
 namespace stone {
-// TODO: A generic InputFile base 
+// TODO: A generic InputFile base
 } // namespace stone
 #endif
-
