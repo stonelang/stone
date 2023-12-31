@@ -75,7 +75,7 @@ public:
     }
   }
 
-  bool IsSupport() {
+  bool IsSupport() const {
     if (IsPrintHelp() || IsPrintHelpHidden() || IsPrintVersion()) {
       return true;
     }

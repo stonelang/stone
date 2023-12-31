@@ -70,6 +70,8 @@ public:
 
   unsigned InputCount() const { return inputs.size(); }
   bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
+  bool NoInputs() const { return !HasInputs(); }
+
   bool HasSingleInput() const { return InputCount() == 1; }
 
   const CompilerInputFile &FirstInput() const { return inputs[0]; }

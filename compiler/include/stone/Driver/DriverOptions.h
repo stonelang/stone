@@ -105,6 +105,7 @@ public:
 
   unsigned InputCount() const { return inputs.size(); }
   bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
+  bool NoInputs() const { return !HasInputs(); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
   const DriverInputFile &FirstInput() const {
@@ -189,6 +190,7 @@ public:
 
 private:
   ToolChainKind ComputeToolChainKind();
+  llvm::StringRef ComputeWorkingDirectory();
 
 public:
   Status Convert();
@@ -387,6 +389,10 @@ public:
 
   /// \return the action
   const Action &GetAction() const { return action; }
+
+  /// \return true if the given action only parses without doing other
+  /// compilation steps.
+  bool IsSupportAction() const;
 
   /// \return true if the given action only compiles without doing other
   /// compilation steps.

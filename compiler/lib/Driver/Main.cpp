@@ -44,13 +44,23 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(Status::Error());
   }
   // Future:
-  // auto status = driver.ConvertArgStrings(*argStrings);
-  // if (status.IsError()) {
-  //   return FinishMain(status);
-  // }
-  // if (status.HasCompletion()) {
-  //   return FinishMain(status);
-  // }
+  auto status = driver.ConvertArgStrings(*argStrings);
+  if (status.IsErrorOrHasCompletion()) {
+    return FinishMain(status);
+  }
+  status = [&]() -> Status {
+    if (driver.GetDriverOptions().GetInputsAndOutputs().NoInputs() ||
+        driver.GetDriverOptions().IsSupportAction()) {
+      driver.PrintSupport();
+      return Status::MakeHasCompletion();
+    }
+    return Status();
+  }();
+
+  if (status.IsErrorOrHasCompletion()) {
+    return FinishMain(status);
+  }
+
   // // Now, we can build the ToolChain
   // auto toolChain = driver.BuildToolChain(driver.GetDriverOptions());
   // if(!toolChain){
@@ -58,13 +68,13 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   // }
   // auto compilation = driver.BuildCompilation()
 
-  auto status = driver.Setup(*argStrings);
-  if (status.IsError()) {
-    return FinishMain(status);
-  }
-  if (status.HasCompletion()) {
-    return FinishMain(status);
-  }
+  // auto status = driver.Setup(*argStrings);
+  // if (status.IsError()) {
+  //   return FinishMain(status);
+  // }
+  // if (status.HasCompletion()) {
+  //   return FinishMain(status);
+  // }
   /// Now, build the compilation
   // auto compilation = driver.BuildCompilation();
   // if (!compilation) {

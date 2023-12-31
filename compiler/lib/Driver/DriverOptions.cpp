@@ -12,15 +12,14 @@ using namespace llvm::opt;
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
+bool DriverOptions::IsSupportAction() const { return action.IsSupport(); }
 bool DriverOptions::IsCompilableAction() const { return action.CanCompile(); }
-
 bool DriverOptions::IsCompileOnlyAction() const {
   return (IsCompilableAction() && !IsLinkableAction());
 }
 bool DriverOptions::IsLinkableAction() const {
   return (linkMode != LinkMode::None);
 }
-
 bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
 }
@@ -125,6 +124,20 @@ Status DriverOptionsConverter::Convert() {
     return Status::MakeHasCompletionAndIsError();
   }
   driverOpts.action = stone::ComputeAction(args);
+  driverOpts.workingDirectory = ComputeWorkingDirectory();
 
   return Status();
+}
+
+ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
+  return ToolChainKind::None;
+}
+llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
+  if (auto *arg = args.getLastArg(opts::WorkingDirectory)) {
+    llvm::SmallString<128> workingDirectory;
+    workingDirectory = arg->getValue();
+    llvm::sys::fs::make_absolute(workingDirectory);
+    return workingDirectory.str();
+  }
+  return llvm::StringRef();
 }
