@@ -100,17 +100,23 @@ public:
   }
 
 public:
-  // virtual llvm::ArrayRef<const Job*> ConstructJobs() {}
+  virtual llvm::ArrayRef<const Job *> ConstructJobs();
 
 public:
   // static JobConstructionInput *CreateInput(DriverInputFile& input);
 };
+
+// class InputJobConstruction {
+// };
 
 class IncrementatlJobConstruction : public JobConstruction {
 public:
   IncrementatlJobConstruction(JobConstructionKind Kind,
                               JobConstructionInputList inputs,
                               file::FileType fileType);
+
+public:
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -132,8 +138,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  // llvm::ArrayRef<const Job *> ConstructJob(Compilation& compilation) override
-  // {}
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -153,6 +158,9 @@ public:
   MergeModuleJobConstruction(JobConstructionInputList inputs);
 
 public:
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
+
+public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::MergeModule;
   }
@@ -167,6 +175,7 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -223,6 +232,8 @@ public:
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
+
 public:
   static bool classof(const JobConstruction *construction) {
     return construction->GetKind() == JobConstructionKind::Backend;
@@ -245,6 +256,8 @@ public:
 public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
+
+  llvm::ArrayRef<const Job *> ConstructJobs() override;
 
 public:
   static bool classof(const JobConstruction *construction) {

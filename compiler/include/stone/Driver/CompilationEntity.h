@@ -5,6 +5,9 @@
 
 namespace stone {
 
+class Driver;
+class Compilation;
+
 enum class CompilationEntityKind {
   Input = 0,
 };
@@ -13,9 +16,14 @@ class CompilationEntity : public DriverAllocation<CompilationEntity> {
 public:
   using DriverAllocation<CompilationEntity>::operator new;
   using DriverAllocation<CompilationEntity>::operator delete;
+
+public:
 };
 
 class CompilationEntities final {
+  friend Driver;
+  friend Compilation;
+
 public:
 };
 } // namespace stone

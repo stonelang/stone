@@ -5,6 +5,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DriverDiagnostic.h"
+#include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
@@ -68,7 +69,7 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
-  // std::unique_ptr<CompilationEntities> compilationEntities;
+  std::unique_ptr<CompilationEntities> compilationEntities;
 
 public:
   // A graph of JobConstructions.
@@ -125,6 +126,12 @@ public:
 
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
+
+  bool HasCompilationEntities() { return compilationEntities != nullptr; }
+  CompilationEntities &GetCompilationEntities() { return *compilationEntities; }
+  const CompilationEntities &GetCompilationEntities() const {
+    return *compilationEntities;
+  }
 
 public:
   DiagnosticEngine &GetDiags() { return diags; }

@@ -13,7 +13,9 @@ using namespace stone::file;
 
 using namespace llvm::opt;
 
-Driver::Driver() : optTable(stone::CreateOptTable()) {}
+Driver::Driver()
+    : optTable(stone::CreateOptTable()),
+      compilationEntities(new CompilationEntities()) {}
 
 Driver::~Driver() {}
 

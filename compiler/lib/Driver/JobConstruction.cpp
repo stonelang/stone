@@ -8,11 +8,21 @@ IncrementatlJobConstruction::IncrementatlJobConstruction(
     FileType fileType)
     : JobConstruction(kind, llvm::None, fileType) {}
 
+llvm::ArrayRef<const Job *> IncrementatlJobConstruction::ConstructJobs() {
+
+  return {nullptr};
+}
+
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
     : IncrementatlJobConstruction(JobConstructionKind::Compile, llvm::None,
                                   outputFileType) {
 
   assert(file::IsOutputableFileType(outputFileType));
+}
+
+llvm::ArrayRef<const Job *> CompileJobConstruction::ConstructJobs() {
+
+  return {nullptr};
 }
 
 CompileJobConstruction *
@@ -41,11 +51,21 @@ MergeModuleJobConstruction::MergeModuleJobConstruction(
     : IncrementatlJobConstruction(JobConstructionKind::MergeModule, inputs,
                                   FileType::StoneModule) {}
 
+llvm::ArrayRef<const Job *> MergeModuleJobConstruction::ConstructJobs() {
+
+  return {nullptr};
+}
+
 LinkJobConstruction::LinkJobConstruction(JobConstructionKind kind,
                                          JobConstructionInputList inputs,
                                          FileType outputFileType,
                                          LinkMode linkMode)
     : JobConstruction(kind, inputs, outputFileType), linkMode(linkMode) {}
+
+llvm::ArrayRef<const Job *> LinkJobConstruction::ConstructJobs() {
+
+  return {nullptr};
+}
 
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(
     JobConstructionInputList inputs, LinkMode linkMode, bool withLTO)
@@ -86,6 +106,11 @@ BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,
   assert(file::IsOutputableFileType(outputFileType));
 }
 
+llvm::ArrayRef<const Job *> BackendJobConstruction::ConstructJobs() {
+
+  return {nullptr};
+}
+
 GeneratePCHJobConstruction::GeneratePCHJobConstruction(
     JobConstructionInput input, llvm::StringRef persistentPCHDir)
     :
@@ -94,3 +119,8 @@ GeneratePCHJobConstruction::GeneratePCHJobConstruction(
                       persistentPCHDir.empty() ? FileType::PCH
                                                : FileType::None),
       persistentPCHDir(persistentPCHDir) {}
+
+llvm::ArrayRef<const Job *> GeneratePCHJobConstruction::ConstructJobs() {
+
+  return {nullptr};
+}
