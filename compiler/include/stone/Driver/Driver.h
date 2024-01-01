@@ -3,6 +3,8 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
+#include "stone/Basic/File.h"
+#include "stone/Driver/DriverInputFile.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/CompilationEntity.h"
@@ -12,6 +14,7 @@
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
+
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -129,7 +132,8 @@ public:
 
 public:
   /// Creates a DriverInput file using a
-  DriverInputFile *CreateInput(llvm::StringRef fileName);
+  DriverInputFile *CreateInput(llvm::StringRef fileName,
+                               file::FileType = file::FileType::None);
 
   /// Build the job-constructions
   Status BuildJobConstructions();
