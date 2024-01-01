@@ -131,13 +131,15 @@ public:
   /// Build the job-constructions
   Status BuildJobConstructions();
 
-  // const JobConstruction *CastToJobConstruction(const CompilationEntity
-  // *entity) {
-  //   return llvm::dyn_cast<const JobConstruction*>(entity);
-  // }
+  const JobConstruction *
+  CastToJobConstruction(const CompilationEntity *entity) {
+    return llvm::dyn_cast<JobConstruction>(entity);
+  }
 
   /// Print the list of job constructions in a Compilation.
   void PrintJobConstructions() const;
+
+public:
 
   using JobCacheMap =
       llvm::DenseMap<std::pair<const CompilationEntity *, const ToolChain *>,
@@ -147,10 +149,9 @@ public:
 
   void ComputeMainOutputForTopLevelJob(const JobConstruction *jobConstruction);
 
-  // Job *CastToJob(const CompilationEntity *entity) {
-  //   return llvm::dyn_cast<Job>(entity);
-  // }
-
+  const Job *CastToJob(const CompilationEntity *entity) {
+    return llvm::dyn_cast<Job>(entity);
+  }
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;
 

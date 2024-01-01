@@ -60,7 +60,8 @@ void Driver::PrintHelp(bool showHidden) const {
   }
   GetOptTable().printHelp(
       llvm::outs(), GetDriverOptions().GetMainExecutableName().data(),
-      "Stone is a compiler tool for compiling Stone source code.", IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      "Stone is a compiler tool for compiling Stone source code.",
+      IncludedFlagsBitmask, ExcludedFlagsBitmask,
       /*ShowAllAliases*/ false);
 }
 

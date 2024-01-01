@@ -13,7 +13,9 @@ DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
 bool DriverOptions::IsHelpAction() const { return action.IsPrintHelp(); }
-bool DriverOptions::IsHelpHiddenAction() const { return action.IsPrintHelpHidden(); }
+bool DriverOptions::IsHelpHiddenAction() const {
+  return action.IsPrintHelpHidden();
+}
 bool DriverOptions::IsPrintVersionAction() const {
   return action.IsPrintVersion();
 }
