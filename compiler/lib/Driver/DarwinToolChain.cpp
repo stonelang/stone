@@ -2,4 +2,3 @@
 
 using namespace stone;
 using namespace stone::file;
-

@@ -20,13 +20,13 @@
 
 namespace llvm {
 namespace opt {
-  class Arg;
-  class ArgList;
-  class OptTable;
-  class InputArgList;
-  class DerivedArgList;
-}
-}
+class Arg;
+class ArgList;
+class OptTable;
+class InputArgList;
+class DerivedArgList;
+} // namespace opt
+} // namespace llvm
 
 namespace stone {
 
@@ -38,7 +38,6 @@ class Driver final {
 public:
   Driver();
   ~Driver();
-
 };
 
 } // namespace stone

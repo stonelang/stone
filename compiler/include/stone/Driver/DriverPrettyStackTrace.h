@@ -4,10 +4,6 @@
 #include "stone/Basic/File.h"
 #include "llvm/Support/PrettyStackTrace.h"
 
-namespace stone {
-
-
-
-} // namespace stone
+namespace stone {} // namespace stone
 
 #endif

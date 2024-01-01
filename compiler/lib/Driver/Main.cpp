@@ -17,7 +17,5 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   FINISH_LLVM_INIT();
 
- return 0;
-
-
+  return 0;
 }

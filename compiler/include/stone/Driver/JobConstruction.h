@@ -12,9 +12,6 @@
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 
-namespace stone {
-
-
-} // namespace stone
+namespace stone {} // namespace stone
 
 #endif

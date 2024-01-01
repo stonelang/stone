@@ -1,7 +1,6 @@
 #ifndef STONE_DRIVER_DRIVER_JOB_H
 #define STONE_DRIVER_DRIVER_JOB_H
 
-
 #include "stone/Basic/OptionSet.h"
 #include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/JobConstruction.h"
@@ -41,7 +40,8 @@ struct CommandInputPair {
 
   /// Construct a JobInputPair from a Base Input and, optionally, a Primary;
   /// if the Primary is empty, use the Base value for it.
-  explicit CommandInputPair(llvm::StringRef BaseInput, llvm::StringRef PrimaryInput)
+  explicit CommandInputPair(llvm::StringRef BaseInput,
+                            llvm::StringRef PrimaryInput)
       : Base(BaseInput),
         Primary(PrimaryInput.empty() ? BaseInput : PrimaryInput) {}
 };
@@ -61,7 +61,6 @@ public:
   /// DerivedOutputFileMap.
   llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
 };
-
 
 } // namespace stone
 #endif

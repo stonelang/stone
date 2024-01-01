@@ -3,7 +3,6 @@
 
 #include "stone/Basic/File.h"
 
-
 namespace stone {
 
 class DriverInputFile final {

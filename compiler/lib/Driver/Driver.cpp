@@ -12,8 +12,6 @@ using namespace stone;
 
 using namespace llvm::opt;
 
-
 Driver::Driver() {}
-  
-Driver::~Driver(){}
 
+Driver::~Driver() {}

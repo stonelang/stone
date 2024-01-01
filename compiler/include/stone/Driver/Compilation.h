@@ -17,9 +17,6 @@ class DerivedArgList;
 } // namespace opt
 } // namespace llvm
 
-namespace stone {
-
-
-} // namespace stone
+namespace stone {} // namespace stone
 
 #endif
