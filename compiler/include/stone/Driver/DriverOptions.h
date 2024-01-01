@@ -82,6 +82,13 @@ class DriverInputsAndOutputs final {
   friend DriverInputsConverter;
   std::vector<const DriverInputFile *> inputs;
 
+   /// Punt where needed to enable batch mode experiments.
+  bool areBatchModeChecksBypassed = false;
+
+  /// Recover missing inputs. Note that recovery itself is users responsibility.
+  bool shouldRecoverMissingInputs = false;
+
+
 public:
   DriverInputsAndOutputs() = default;
   DriverInputsAndOutputs(const DriverInputsAndOutputs &other);
@@ -95,6 +102,9 @@ public:
   bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
   bool HasNoInputs() const { return !HasInputs(); }
   bool HasSingleInput() const { return InputCount() == 1; }
+
+   bool ShouldRecoverMissingInputs() { return shouldRecoverMissingInputs; }
+  void SetShouldRecoverMissingInputs() { shouldRecoverMissingInputs = true; }
 
   const DriverInputFile *FirstInput() const {
     assert(HasInputs());
@@ -114,11 +124,11 @@ public:
 /// Only for input files convertions
 class DriverInputsConverter final {
 
+  llvm::SetVector<llvm::StringRef> files;
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
   Driver &driver;
 
-  llvm::SetVector<llvm::StringRef> files;
 
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
@@ -147,13 +157,13 @@ public:
 class DriverOutputsConverter final {
   const llvm::opt::ArgList &args;
   DriverInputsAndOutputs &inputsAndOutputs;
-  DiagnosticEngine &diags;
+  Driver& driver;
 
 public:
   DriverOutputsConverter(const llvm::opt::ArgList &args,
                          DriverInputsAndOutputs &inputsAndOutputs,
-                         DiagnosticEngine &diags)
-      : args(args), inputsAndOutputs(inputsAndOutputs), diags(diags) {}
+                         Driver& driver)
+      : args(args), inputsAndOutputs(inputsAndOutputs), driver(driver) {}
 
   // bool Convert(std::vector<std::string> &mainOutputs,
   //              std::vector<std::string> &mainOutputsForIndexUnits,
@@ -170,11 +180,11 @@ public:
 class DriverOptionsConverter final {
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
-  DiagnosticEngine &diags;
+  Driver &driver;
 
 public:
   DriverOptionsConverter(const llvm::opt::ArgList &args,
-                         DriverOptions &driverOpts, DiagnosticEngine &diags);
+                         DriverOptions &driverOpts, Driver& driver);
 
 private:
   ToolChainKind ComputeToolChainKind();
@@ -323,7 +333,13 @@ class DriverOptions final {
   DriverOutputInfo driverOutputInfo;
 
 public:
+
+   /// The input file type for compilation
+  file::FileType inputFileType = file::FileType::None;
+
   bool shouldProcessDuplicateInputFile = false;
+
+  bool allowModuleWithCompilerErrors = false; 
 
   /// Indicates whether the driver should check that the input file exist.
   bool checkInputFileExistence = false;
@@ -406,6 +422,10 @@ public:
   bool IsLinkOnlyAction() const;
 
   /// \return the computed input and outputs
+  DriverInputsAndOutputs &GetInputsAndOutputs(){
+    return inputsAndOutputs;
+  }
+  /// \return the computed input and outputs
   const DriverInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
@@ -414,6 +434,14 @@ public:
   const DriverOutputInfo &GetDriverOutputInfo() const {
     return driverOutputInfo;
   }
+
+  /// \return true if there is a valid input file type
+  bool HasInputFileType() const {
+    return inputFileType != file::FileType::None;
+  }
+
+  /// \return the computed output file type
+  file::FileType GetInputFileType() const { return inputFileType; }
 
 public:
   DriverOptions();

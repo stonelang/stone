@@ -64,7 +64,7 @@ protected:
 
 public:
   CompilationEntityKind GetKind() const { return kind; }
-  file::FileType GetFileType() { return fileType; }
+  file::FileType GetFileType() const { return fileType; }
 
 public:
   bool IsInput() const { return GetKind() == CompilationEntityKind::Input; }
