@@ -163,8 +163,7 @@ public:
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
   /// Compute the compile invocation mode;
-  CompileInvocationMode
-  ComputeCompileInvocationMode(const DerivedArgList &args);
+  CompileStyle ComputeCompileStyle(const DerivedArgList &args);
 
   /// Compute the compile invocation mode;
   Status BuildOutputs(const DerivedArgList &args);

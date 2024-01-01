@@ -155,7 +155,7 @@ Status DriverOptionsConverter::Convert() {
   if (driverOpts.HasToolChainKind()) {
     return Status::MakeHasCompletionAndIsError();
   }
-  driverOpts.compileInvocationMode = ComputeCompileInvocationMode();
+  driverOpts.compileStyle = ComputeCompileStyle();
 
   return Status();
 }
@@ -212,8 +212,8 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
   return llvm::StringRef();
 }
 
-CompileInvocationMode DriverOptionsConverter::ComputeCompileInvocationMode() {
-  return CompileInvocationMode::Normal;
+CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
+  return CompileStyle::Normal;
 }
 
 LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }

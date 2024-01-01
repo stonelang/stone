@@ -153,14 +153,6 @@ void CompilationEntities::ForEachTopLevelJobConstruction(
   }
 }
 
-class Driver::BuildingJobConstructionsImpl {
-public:
-  void Do(Driver& driver){
-    driver.GetCompilationEntities().test = 0;
-  }
-
-};
-
 class BuildingJobConstructions final {
   Driver &driver;
   llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
@@ -185,9 +177,9 @@ public:
   }
 
 public:
-  Status BuildNormalCompileInvocation();
-  Status BuildSingleCompileInvocation();
-  Status BuildFlatCompileIvocation();
+  Status BuildNormalCompileStyle();
+  Status BuildSingleCompileStyle();
+  Status BuildFlatCompileStyle();
 
 public:
   CompileJobConstruction *
@@ -205,13 +197,13 @@ Status Driver::BuildJobConstructions() {
   BuildingJobConstructions buildingJobConstructions(*this);
   STONE_DEFER { buildingJobConstructions.FinishBuildJobConstructions(); };
   auto status = [&]() -> Status {
-    switch (GetDriverOptions().GetCompileInvocationMode()) {
-    case CompileInvocationMode::Normal:
-      return buildingJobConstructions.BuildNormalCompileInvocation();
-    case CompileInvocationMode::Single:
-      return buildingJobConstructions.BuildSingleCompileInvocation();
-    case CompileInvocationMode::Flat:
-      return buildingJobConstructions.BuildFlatCompileIvocation();
+    switch (GetDriverOptions().GetCompileStyle()) {
+    case CompileStyle::Normal:
+      return buildingJobConstructions.BuildNormalCompileStyle();
+    case CompileStyle::Single:
+      return buildingJobConstructions.BuildSingleCompileStyle();
+    case CompileStyle::Flat:
+      return buildingJobConstructions.BuildFlatCompileStyle();
     default:
       llvm_unreachable("Invalid compile invocation kind");
     }
@@ -219,7 +211,9 @@ Status Driver::BuildJobConstructions() {
   return Status();
 }
 
-Status BuildingJobConstructions::BuildNormalCompileInvocation() {
+Status BuildingJobConstructions::BuildNormalCompileStyle() {
+  assert(driver.GetDriverOptions().GetCompileStyle() == CompileStyle::Normal);
+
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile &input) {
         assert(file::IsPartOfCompilation(input.GetFileType()));
@@ -247,11 +241,33 @@ Status BuildingJobConstructions::BuildNormalCompileInvocation() {
   return Status();
 }
 
-Status BuildingJobConstructions::BuildSingleCompileInvocation() {
+Status BuildingJobConstructions::BuildSingleCompileStyle() {
+
+  assert(driver.GetDriverOptions().GetCompileStyle() == CompileStyle::Single);
+
+  auto compileJobConstruction = CompileJobConstruction::Create(
+      driver, driver.GetDriverOptions().GetOutputFileType());
+
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile &input) {
+        assert(file::IsPartOfCompilation(input.GetFileType()));
+        auto currentInput = driver.CastToJobConstructionInput(input);
+        compileJobConstruction->AddInput(currentInput);
+        return Status();
+      });
+
+  if (driver.GetDriverOptions().IsCompileOnlyAction()) {
+    compileJobConstruction->AddTopLevel();
+  }
+  AddModuleInput(compileJobConstruction);
+
+  if (driver.GetDriverOptions().IsLinkableAction()) {
+    AddLinkerInput(compileJobConstruction);
+  }
   return Status();
 }
-Status BuildingJobConstructions::BuildFlatCompileIvocation() {
-
+Status BuildingJobConstructions::BuildFlatCompileStyle() {
+  assert(driver.GetDriverOptions().GetCompileStyle() == CompileStyle::Flat);
   return Status();
 }
 
@@ -262,7 +278,10 @@ CompileJobConstruction *BuildingJobConstructions::BuildCompileJobConstruction(
          "The current action does not support job creation -- cannot proceed "
          "with compilation!");
 
-  auto compileJobConstruction = CompileJobConstruction::Create(
+  CompileJobConstruction *compileJobConstruction = nullptr;
+
+  // if(driver.CastToJobConstruction(input))
+  compileJobConstruction = CompileJobConstruction::Create(
       driver, input, driver.GetDriverOptions().GetOutputFileType());
 
   if (driver.GetDriverOptions().IsCompileOnlyAction()) {
@@ -273,18 +292,19 @@ CompileJobConstruction *BuildingJobConstructions::BuildCompileJobConstruction(
 
 LinkJobConstruction *BuildingJobConstructions::BuildLinkJobConstruction() {
 
-  if (driver.GetDriverOptions().IsLinkableAction()) {
-    assert(HasLinkerInputs() && "Canot link without linking inputs!");
-    switch (driver.GetDriverOptions().GetLinkMode()) {
-    case LinkMode::StaticLibrary:
-      return StaticLinkJobConstruction::Create(
-          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode());
-    default:
-      // FIXME: Compute LTO in DriverInputsAndOutputs
-      return DynamicLinkJobConstruction::Create(
-          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode(),
-          driver.GetDriverOptions().HasLTO());
-    }
+  assert(driver.GetDriverOptions().IsLinkableAction() &&
+         "The action does not support linking!");
+  assert(HasLinkerInputs() && "Canot link without linking inputs!");
+
+  switch (driver.GetDriverOptions().GetLinkMode()) {
+  case LinkMode::StaticLibrary:
+    return StaticLinkJobConstruction::Create(
+        driver, linkerInputs, driver.GetDriverOptions().GetLinkMode());
+  default:
+    // FIXME: Compute LTO in DriverInputsAndOutputs
+    return DynamicLinkJobConstruction::Create(
+        driver, linkerInputs, driver.GetDriverOptions().GetLinkMode(),
+        driver.GetDriverOptions().HasLTO());
   }
   llvm_unreachable("Unsupported link construction -- cannot continue with the "
                    "compilation process!");

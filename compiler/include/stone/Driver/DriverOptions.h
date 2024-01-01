@@ -72,7 +72,7 @@ enum class CompilationOutputLevel {
 
 /// This mode controls the manner in with compile is invoked.
 /// p := -primary-file
-enum class CompileInvocationMode : UInt8 {
+enum class CompileStyle : UInt8 {
   /// n input (s), n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
@@ -196,7 +196,7 @@ public:
 private:
   ToolChainKind ComputeToolChainKind();
   llvm::StringRef ComputeWorkingDirectory();
-  CompileInvocationMode ComputeCompileInvocationMode();
+  CompileStyle ComputeCompileStyle();
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
   llvm::Triple ComputeTarget();
@@ -214,7 +214,7 @@ class DriverOutputInfo final {
   unsigned numThreads = 0;
 
   /// The method of invocating compile
-  CompileInvocationMode compileInvocationMode = CompileInvocationMode::Normal;
+  CompileStyle compileStyle = CompileStyle::Normal;
 
   /// The output file type which should be used for the
   /// compile-job-constructions.
@@ -231,9 +231,7 @@ public:
 
   /// \return the compile invocation mode that will be used to controll
   /// compilation
-  CompileInvocationMode GetCompileInvocationMode() const {
-    return compileInvocationMode;
-  }
+  CompileStyle GetCompileStyle() const { return compileStyle; }
 
   /// Returns true if multi-threading is enabled.
   bool IsMultiThreading() const { return numThreads > 0; }
@@ -287,7 +285,7 @@ private:
   unsigned numThreads = 0;
 
   /// The method of invocating compile
-  CompileInvocationMode compileInvocationMode = CompileInvocationMode::Normal;
+  CompileStyle compileStyle = CompileStyle::Normal;
 
   /// The output file type which should be used for the
   /// compile-job-constructions.
@@ -466,9 +464,7 @@ public:
 
   /// \return the compile invocation mode that will be used to controll
   /// compilation
-  CompileInvocationMode GetCompileInvocationMode() const {
-    return compileInvocationMode;
-  }
+  CompileStyle GetCompileStyle() const { return compileStyle; }
 
   /// Returns true if multi-threading is enabled.
   bool IsMultiThreading() const { return numThreads > 0; }

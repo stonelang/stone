@@ -88,7 +88,7 @@ Status Driver::Setup(const llvm::opt::InputArgList &argList) {
   // }
 
   // driverOpts.compileInvocationMode =
-  //     ComputeCompileInvocationMode(*derivedArgList);
+  //     ComputeCompileStyle(*derivedArgList);
 
   // BuildOutputs(*derivedArgList);
 
@@ -261,8 +261,7 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
-CompileInvocationMode
-Driver::ComputeCompileInvocationMode(const DerivedArgList &args) {
+CompileStyle Driver::ComputeCompileStyle(const DerivedArgList &args) {
 
   // TODO: Just use normal for now
   //  bool useWMO = args.hasFlag(opts::WholeModuleOptimization,
@@ -272,7 +271,7 @@ Driver::ComputeCompileInvocationMode(const DerivedArgList &args) {
   //     options::opts::IndexFile,
   //     useWMO ? opts::WholeModuleOptimization : llvm::opt::OptSpecifier());
 
-  return CompileInvocationMode::Normal;
+  return CompileStyle::Normal;
 }
 
 Status Driver::BuildOutputs(const DerivedArgList &args) {

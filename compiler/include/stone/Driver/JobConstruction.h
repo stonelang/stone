@@ -99,6 +99,8 @@ public:
 
 public:
   virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
+  virtual llvm::ArrayRef<const Job *>
+  ConstructJobs(const Driver &driver, const JobConstruction *construction);
 
 public:
   // static JobConstructionInput *CreateInput(DriverInputFile& input);
