@@ -34,6 +34,24 @@ public:
   }
 };
 
+
+class IncrementatlJobConstruction : public JobConstruction {
+public:
+  IncrementatlJobConstruction(CompilationEntityKind kind,
+                              CompilationEntityList inputs,
+                              file::FileType fileType) : JobConstruction(kind, inputs, fileType) {
+  }
+
+public:
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() == CompilationEntityKind::CompileJobConstruction ||
+           entity->GetKind() == CompilationEntityKind::MergeModuleJobConstruction;
+  }
+};
+
 } // namespace stone
 
 #endif
