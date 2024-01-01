@@ -116,6 +116,7 @@ class DynamicLinkJobConstruction final : public LinkJobConstruction {
 public:
   DynamicLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode,
                              bool withLTO = false);
+
 public:
   bool WithLTO() const { return withLTO; }
 
@@ -140,12 +141,60 @@ public:
 public:
   static bool classof(const CompilationEntity *entity) {
     return entity->GetKind() ==
-    CompilationEntityKind::StaticLinkJobConstruction;
+           CompilationEntityKind::StaticLinkJobConstruction;
   }
 
 public:
   static StaticLinkJobConstruction *
   Create(Driver &driver, CompilationEntityList inputs, LinkMode linkMode);
+};
+
+class BackendJobConstruction final : public JobConstruction {
+  size_t inputIndex;
+
+public:
+  BackendJobConstruction(const CompilationEntity *input,
+                         file::FileType outputFileType, size_t inputIndex);
+
+public:
+  virtual size_t GetInputIndex() const override { return inputIndex; }
+
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() == CompilationEntityKind::BackendJobConstruction;
+  }
+
+public:
+  static BackendJobConstruction *Create(Driver &driver, CompilationEntity input,
+                                        file::FileType outputFileType,
+                                        size_t inputIndex);
+};
+
+class GeneratePCHJobConstruction final : public JobConstruction {
+  std::string persistentPCHDir;
+
+public:
+  GeneratePCHJobConstruction(const CompilationEntity *input,
+                             llvm::StringRef persistentPCHDir);
+
+public:
+  bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
+  StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
+
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const JobConstruction *construction) {
+    return construction->GetKind() ==
+           CompilationEntityKind::GeneratePCHJobConstruction;
+  }
+
+public:
+  static GeneratePCHJobConstruction *Create(Driver &driver,
+                                            CompilationEntity input,
+                                            llvm::StringRef persistentPCHDir);
 };
 
 } // namespace stone
