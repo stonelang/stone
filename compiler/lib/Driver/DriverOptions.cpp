@@ -102,7 +102,7 @@ DriverInputsConverter::CreateInputFiles() {
 
   DriverInputsAndOutputs inputsAndOutputs;
   for (auto &file : files) {
-    inputsAndOutputs.AddInput(DriverInputFile::Create(driver, file));
+    inputsAndOutputs.AddInput(driver.CreateInput(file));
   }
   return inputsAndOutputs;
 }

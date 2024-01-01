@@ -21,6 +21,10 @@ DriverInputFile *DriverInputFile::Create(const Driver &driver,
   return DriverInputFile::Create(driver, fileName, FileType::None);
 }
 
+DriverInputFile *Driver::CreateInput(llvm::StringRef fileName) {
+  return DriverInputFile::Create(*this, fileName, FileType::None);
+}
+
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName,
                                          FileType fileType) {

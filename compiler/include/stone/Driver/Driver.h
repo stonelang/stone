@@ -128,6 +128,9 @@ public:
   }
 
 public:
+  /// Creates a DriverInput file using a
+  DriverInputFile *CreateInput(llvm::StringRef fileName);
+
   /// Build the job-constructions
   Status BuildJobConstructions();
 

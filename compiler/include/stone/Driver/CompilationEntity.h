@@ -93,6 +93,15 @@ public:
   bool IsStaticLinkJobConstruction() const {
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
   }
+
+  bool IsInterpretJobConstruction() const {
+    return GetKind() == CompilationEntityKind::InterpretJobConstruction;
+  }
+
+  bool IsAutolinkExtractJobConstruction() const {
+    return GetKind() == CompilationEntityKind::AutolinkExtractJobConstruction;
+  }
+
   bool IsJob() const { return GetKind() == CompilationEntityKind::Job; }
 
   bool IsBatchJob() const {
