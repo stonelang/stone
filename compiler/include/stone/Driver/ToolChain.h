@@ -14,7 +14,6 @@ class Compilation;
 /// Packs together information chosen by toolchains to create jobs.
 class JobInvocation final {
 public:
-
 };
 
 class ToolChain {
@@ -178,6 +177,16 @@ public:
 
   llvm::Expected<file::FileType>
   RemarkFileTypeFromArgs(const llvm::opt::ArgList &Args) const;
+
+  /// If provided, and if the user has not already explicitly specified a
+  /// linker to use via the "-fuse-ld=" option, this linker will be passed to
+  /// the compiler invocation via "-fuse-ld=". Return an empty string to not
+  /// specify any specific linker (the "-fuse-ld=" option will not be
+  /// specified).
+  ///
+  /// The default behavior is to use the gold linker on ARM architectures,
+  /// and to not provide a specific linker otherwise.
+  virtual std::string GetDefaultLinker() const;
 
 public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,

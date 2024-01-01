@@ -5,8 +5,6 @@
 using namespace stone;
 using namespace stone::file;
 
-
-
 ToolChain::ToolChain(const Driver &driver) : driver(driver) {}
 
 ToolChain::~ToolChain() {}
@@ -66,15 +64,17 @@ const char *
 ToolChain::GetClangLinkerDriver(const llvm::opt::ArgList &args) const {
 
   // NOTE: using clang for now -- may consider clang++ in the future.
-  const char *clangLinkerDriver = "clang";
+  const char *clangLinkerDriver = GetDefaultLinker().c_str();
 
   if (const llvm::opt::Arg *arg = args.getLastArg(opts::ToolsDirectory)) {
     llvm::StringRef toolChainPath(arg->getValue());
 
     // If there is a linker driver in the toolchain folder, use that instead.
-    if (auto tool =
-            llvm::sys::findProgramByName(clangLinkerDriver, {toolChainPath}))
+    if (auto tool = llvm::sys::findProgramByName(clangLinkerDriver, {toolChainPath})){
       clangLinkerDriver = args.MakeArgString(tool.get());
+    }
   }
   return clangLinkerDriver;
 }
+
+std::string ToolChain::GetDefaultLinker() const { return "clang"; }

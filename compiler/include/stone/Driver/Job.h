@@ -108,7 +108,6 @@ public:
   using JobOptions = stone::OptionSet<JobFlags>;
   JobOptions jobOptions;
 
-
 protected:
   Job(CompilationEntityKind kind, CompilationEntityList inputs);
 };

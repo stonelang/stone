@@ -140,7 +140,6 @@ public:
   void PrintJobConstructions() const;
 
 public:
-
   using JobCacheMap =
       llvm::DenseMap<std::pair<const CompilationEntity *, const ToolChain *>,
                      Job *>;
