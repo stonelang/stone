@@ -46,6 +46,14 @@ public:
   ~Driver();
 
 public:
+  DiagnosticEngine &GetDiags() { return diags; }
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
+  }
+
 public:
   /// Allocate - Allocate memory from the Driver bump pointer.
   void *Allocate(unsigned long bytes, unsigned alignment = 8) const {

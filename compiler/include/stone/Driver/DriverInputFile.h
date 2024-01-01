@@ -53,8 +53,9 @@ public:
   }
 
 public:
-  static DriverInputFile *Create(const Driver& driver, llvm::StringRef fileName);
-  static DriverInputFile *Create(const Driver& driver, llvm::StringRef fileName,
+  static DriverInputFile *Create(const Driver &driver,
+                                 llvm::StringRef fileName);
+  static DriverInputFile *Create(const Driver &driver, llvm::StringRef fileName,
                                  file::FileType fileType);
 };
 

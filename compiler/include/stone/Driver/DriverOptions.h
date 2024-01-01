@@ -116,13 +116,13 @@ class DriverInputsConverter final {
 
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
-  DiagnosticEngine &diags;
+  Driver &driver;
 
   llvm::SetVector<llvm::StringRef> files;
 
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
-                        DriverOptions &driverOpts, DiagnosticEngine &diags);
+                        DriverOptions &driverOpts, Driver &driver);
 
 public:
   /// Produces a CompilerInputsAndOutputs object with the inputs populated from
@@ -321,6 +321,59 @@ class DriverOptions final {
 
   /// The output information used during compilation
   DriverOutputInfo driverOutputInfo;
+
+public:
+  bool shouldProcessDuplicateInputFile = false;
+
+  /// Indicates whether the driver should check that the input file exist.
+  bool checkInputFileExistence = false;
+
+  /// Extra args to pass to the driver executable
+  llvm::SmallVector<std::string, 2> extraMainExecutableArgs;
+
+  /// Indicates whether this Compilation should continue execution of subtasks
+  /// even if they returned an error status.
+  bool continueBuildingAfterErrors = false;
+
+  /// Indicates whether tasks should only be executed if their output is out
+  /// of date.
+  bool enableIncrementalBuild;
+
+  /// Indicates whether groups of parallel frontend jobs should be merged
+  /// together and run in composite "batch jobs" when possible, to reduce
+  /// redundant work.
+  bool enableBatchMode = false;
+
+  /// When true, dumps information on how long each compilation task took to
+  /// execute.
+  bool showDriverTimeCompilation;
+
+  /// When true, dumps information about why files are being scheduled to be
+  /// rebuilt.
+  bool showIncrementalBuildDecisions = false;
+
+  /// When true, traces the lifecycle of each driver job. Provides finer
+  /// detail than ShowIncrementalBuildDecisions.
+  bool showJobLifecycle = false;
+
+  /// When true, some frontend job has requested permission to pass
+  /// -emit-loaded-module-trace, so no other job needs to do it.
+  bool passedEmitLoadedModuleTraceToFrontendJob = false;
+
+  /// True if temporary files should not be deleted.
+  bool saveTempFiles = false;
+
+  /// Because each frontend job outputs the same info in its .d file, only do it
+  /// on the first job that actually runs. Write out dummies for the rest of the
+  /// jobs. This hack saves a lot of time in the build system when incrementally
+  /// building a project with many files. Record if a scheduled job has already
+  /// added -emit-dependency-path.
+  bool haveAlreadyAddedDependencyPath = false;
+
+  bool onlyOneDependencyFile = false;
+  bool verifyFineGrainedDependencyGraphAfterEveryImport = false;
+  bool emitFineGrainedDependencyDotFileAfterEveryImport = false;
+  bool enableCrossModuleIncrementalBuild = false;
 
 public:
   /// \return true if the action is valid

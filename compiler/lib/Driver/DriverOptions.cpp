@@ -1,6 +1,5 @@
+#include "stone/Driver/Driver.h"
 #include "stone/Driver/DriverOptions.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/CompilationEntity.h"
 
 #include "llvm/Support/Host.h"
@@ -52,4 +51,51 @@ void DriverInputsAndOutputs::ForEachInput(
   for (const DriverInputFile *input : inputs) {
     callback(input);
   }
+}
+
+/// < DriverInputsConverter
+DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
+                                             DriverOptions &driverOpts,
+                                             Driver &driver)
+    : args(args), driverOpts(driverOpts), driver(driver) {}
+
+llvm::Optional<DriverInputsAndOutputs> DriverInputsConverter::Convert() {
+
+  // Just read for now
+  if (ReadFilesFromCommandLine().IsError()) {
+    return llvm::None;
+  }
+  auto inputsAndOutputs = CreateInputFiles();
+  return std::move(inputsAndOutputs);
+}
+
+Status DriverInputsConverter::ReadFilesFromCommandLine() {
+
+  Status duplicateInputFileStatus;
+  for (const Arg *arg : args.filtered(opts::INPUT)) {
+    duplicateInputFileStatus = AddFile(arg->getValue());
+    if (duplicateInputFileStatus.IsError() &&
+        !driverOpts.shouldProcessDuplicateInputFile) {
+      return Status::MakeHasCompletionAndIsError();
+    }
+  }
+  return Status();
+}
+Status DriverInputsConverter::AddFile(llvm::StringRef file) {
+  if (files.insert(file)) {
+    return Status();
+  }
+  driver.GetDiags().PrintD(SrcLoc(), diag::err_duplicate_input_file,
+                           diag::LLVMStr(file));
+  return Status::MakeHasCompletionAndIsError();
+}
+
+llvm::Optional<DriverInputsAndOutputs>
+DriverInputsConverter::CreateInputFiles() {
+
+  DriverInputsAndOutputs inputsAndOutputs;
+  for (auto &file : files) {
+    inputsAndOutputs.AddInput(DriverInputFile::Create(driver, file));
+  }
+  return std::move(inputsAndOutputs);
 }

@@ -14,11 +14,10 @@ CompilationEntity::CompilationEntity(CompilationEntityKind kind,
   }
 }
 
-
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName) {
 
-  // NOTE: The DriverInputFile will attempt to parse the FileType from the name 
+  // NOTE: The DriverInputFile will attempt to parse the FileType from the name
   return DriverInputFile::Create(driver, fileName, FileType::None);
 }
 

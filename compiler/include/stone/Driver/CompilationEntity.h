@@ -33,7 +33,7 @@ enum class CompilationEntityKind : uint8_t {
 /// A list of all job construction inputs
 using CompilationEntityList = llvm::ArrayRef<const CompilationEntity *>;
 
-constexpr size_t CompilationEntityAlignInBits = 3;
+constexpr size_t CompilationEntityAlignInBits = 8;
 class alignas(1 << CompilationEntityAlignInBits) CompilationEntity
     : public DriverAllocation<CompilationEntity> {
 
@@ -104,6 +104,7 @@ public:
         CompilationEntityFlags::AllowTopLevel);
   }
   void AddAllowTopLevel() {
+    assert(!IsInput());
     compilationEntityOpts |= CompilationEntityFlags::AllowTopLevel;
   }
   void ClearAllowTopLevel() {}
@@ -123,6 +124,7 @@ public:
     return compilationEntityOpts.contains(CompilationEntityFlags::AllowOutput);
   }
   void AddAllowOutput() {
+    assert(!IsInput());
     compilationEntityOpts |= CompilationEntityFlags::AllowOutput;
   }
   void ClearAllowOutput() {}
