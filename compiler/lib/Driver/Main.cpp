@@ -34,5 +34,15 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecutableName = file::GetStem(mainExecutablePath);
   driver.SetMainExecutableName(mainExecutableName);
 
+   auto argStrings = driver.ParseArgStrings(args);
+  if (!argStrings) {
+    return FinishMain(Status::Error());
+  }
+  // Future:
+  auto status = driver.ConvertArgStrings(*argStrings);
+  if (status.IsErrorOrHasCompletion()) {
+    return FinishMain(status);
+  }
+
   return FinishMain();
 }

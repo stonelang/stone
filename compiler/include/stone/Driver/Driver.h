@@ -81,6 +81,11 @@ public:
   Driver();
   ~Driver();
 
+  /// Parse the arg strings only
+  llvm::opt::InputArgList *ParseArgStrings(llvm::ArrayRef<const char *> args);
+  /// Convert the inpurt args to driver options
+  Status ConvertArgStrings(const llvm::opt::InputArgList &argList);
+
 public:
   void SetMainExecutablePath(llvm::StringRef executablePath) {
     driverOpts.mainExecutablePath = executablePath;
@@ -97,11 +102,15 @@ public:
     diags.RemoveConsumer(consumer);
   }
 
-  DriverOptions &GetDriverOptions() { return driverOpts; }
-  const DriverOptions &GetDriverOptions() const { return driverOpts; }
+  llvm::opt::OptTable &GetOptTable() { return *optTable; }
+  const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
 
   llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
   llvm::opt::DerivedArgList &GetDerivedArgList() { return *derivedArgList; }
+
+  DriverOptions &GetDriverOptions() { return driverOpts; }
+  const DriverOptions &GetDriverOptions() const { return driverOpts; }
+
 
   bool HasToolChain() { return toolChain != nullptr; }
   ToolChain &GetToolChain() { return *toolChain; }

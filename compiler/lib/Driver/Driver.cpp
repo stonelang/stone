@@ -18,6 +18,40 @@ Driver::Driver()
 
 Driver::~Driver() {}
 
+
+llvm::opt::InputArgList *
+Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
+
+  unsigned includedFlagsBitmask = 0;
+  unsigned excludedFlagsBitmask = opts::NoDriverOption;
+  unsigned missingArgIndex;
+  unsigned missingArgCount;
+
+  inputArgList = std::make_unique<InputArgList>(
+      GetOptTable().ParseArgs(args, missingArgIndex, missingArgCount,
+                              includedFlagsBitmask, excludedFlagsBitmask));
+
+  assert(inputArgList && "No input argument list.");
+  if (missingArgCount) {
+    diags.PrintD(SrcLoc(), diag::err_missing_arg_value,
+                 diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
+                 diag::UInt(missingArgCount));
+    return nullptr;
+  }
+  // Check for unknown arguments.
+  for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
+    diags.PrintD(SrcLoc(), diag::err_unknown_arg,
+                 diag::LLVMStr(arg->getAsString(*inputArgList)));
+    return nullptr;
+  }
+  return inputArgList.get();
+}
+
+Status Driver::ConvertArgStrings(const llvm::opt::InputArgList &args) {
+  return DriverOptionsConverter(args, driverOpts, *this).Convert();
+}
+
+
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);
