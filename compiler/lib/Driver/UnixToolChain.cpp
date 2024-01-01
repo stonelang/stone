@@ -7,8 +7,7 @@ std::string UnixToolChain::GetDefaultLinker() const {
   // if (driverOpts.GetTriple().isAndroid()){
   //   return "lld";
   // }
-
-  // switch (driverOpts.GetTriple().getArch()) {
+  // switch (driver.GetDriverOptions().GetTriple().getArch()) {
   // case llvm::Triple::arm:
   // case llvm::Triple::aarch64:
   // case llvm::Triple::aarch64_32:

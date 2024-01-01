@@ -401,6 +401,10 @@ public:
 };
 
 class WindowsToolChain final : public ToolChain {
+
+protected:
+  std::string GetDefaultLinker() const override;
+
 public:
   WindowsToolChain(const Driver &driver);
   ~WindowsToolChain() = default;
