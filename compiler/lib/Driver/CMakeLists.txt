@@ -1,5 +1,4 @@
  set(stone_drive_sources
-  BuildJobs.cpp
   Compilation.cpp
   DarwinToolChain.cpp
   Driver.cpp

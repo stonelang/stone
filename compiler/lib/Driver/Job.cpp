@@ -2,6 +2,9 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Driver/DriverPrettyStackTrace.h"
 #include "stone/Driver/ToolChain.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Driver/Driver.h"
+
 
 using namespace stone;
 
@@ -77,6 +80,36 @@ void CompilationEntities::ForEachTopLevelExternalJob(
     callback(topLevelExternalJob);
   }
 }
+
+class BuildingTopLevelJobs final {
+  const Driver &driver;
+  Driver::JobCacheMap jobCache;
+
+public:
+  BuildingTopLevelJobs(const Driver &driver) : driver(driver) {}
+  ~BuildingTopLevelJobs() = default;
+
+public:
+  Status FinishBuildJobs();
+};
+
+Status BuildingTopLevelJobs::FinishBuildJobs() {}
+
+Status Driver::BuildTopLevelJobs() {
+
+  GetCompilationEntities().ForEachTopLevelJobConstruction(
+      [&](const JobConstruction *construction) {
+        const_cast<JobConstruction *>(construction)->ConstructJobs(*this);
+      });
+
+  BuildingTopLevelJobs buildingTopLevelJobs(*this);
+  STONE_DEFER { buildingTopLevelJobs.FinishBuildJobs(); };
+}
+
+void Driver::ComputeMainOutputForTopLevelJob(JobConstruction *jobConstruction) {
+
+}
+
 
 /// Print the list of Actions in a Compilation.
 void Driver::PrintJobs() const {}
