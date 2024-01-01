@@ -144,12 +144,13 @@ Status DriverOptionsConverter::Convert() {
   if (!driverOpts.HasWorkingDirectory()) {
     return Status::MakeHasCompletionAndIsError();
   }
+  driverOpts.driverOutputInfo.compileStyle = ComputeCompileStyle();
 
   // driverOpts.toolChainKind = ComputeToolChainKind();
   // if (driverOpts.HasToolChainKind()) {
   //   return Status::MakeHasCompletionAndIsError();
   // }
-  // driverOpts.compileStyle = ComputeCompileStyle();
+  
 
   return Status();
 }
@@ -162,6 +163,11 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
     return workingDirectory.str();
   }
   return llvm::StringRef();
+}
+
+//TODO: Just return for now 
+CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
+  return CompileStyle::Normal;
 }
 
 // ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
@@ -206,10 +212,6 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
 //   ToolChainKind::None;
 // }
 
-
-// CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
-//   return CompileStyle::Normal;
-// }
 
 // LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }
 

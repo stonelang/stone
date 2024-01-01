@@ -88,7 +88,6 @@ class DriverInputsAndOutputs final {
   /// Recover missing inputs. Note that recovery itself is users responsibility.
   bool shouldRecoverMissingInputs = false;
 
-
 public:
   DriverInputsAndOutputs() = default;
   DriverInputsAndOutputs(const DriverInputsAndOutputs &other);
