@@ -12,7 +12,9 @@ using namespace stone;
 
 using namespace llvm::opt;
 
-Driver::Driver() {}
+Driver::Driver()
+    : optTable(stone::CreateOptTable()),
+      compilationEntities(new CompilationEntities()) {}
 
 Driver::~Driver() {}
 

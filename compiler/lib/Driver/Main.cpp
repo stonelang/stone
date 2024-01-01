@@ -17,5 +17,22 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   FINISH_LLVM_INIT();
 
-  return 0;
+  Driver driver;
+  auto FinishMain = [&](Status status = Status::Success()) -> int {
+    return (status.IsError() ? status.GetFlag() : driver.GetDiags().Finish());
+  };
+
+  TextDiagnosticFormatter formatter;
+  TextDiagnosticEmitter emitter(formatter);
+
+  TextDiagnosticConsumer consumer(emitter);
+  driver.AddDiagnosticConsumer(consumer);
+
+  auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  driver.SetMainExecutablePath(mainExecutablePath);
+
+  auto mainExecutableName = file::GetStem(mainExecutablePath);
+  driver.SetMainExecutableName(mainExecutableName);
+
+  return FinishMain();
 }

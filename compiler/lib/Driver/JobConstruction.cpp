@@ -55,3 +55,10 @@ GeneratePCHJobConstruction::GeneratePCHJobConstruction(
                       persistentPCHDir.empty() ? FileType::PCH
                                                : FileType::None),
       persistentPCHDir(persistentPCHDir) {}
+
+void CompilationEntities::ForEachTopLevelJobConstruction(
+    std::function<void(const CompilationEntity *)> callback) {
+  for (auto entity : topLevelJobConstructions) {
+    callback(entity);
+  }
+}

@@ -13,6 +13,7 @@ namespace stone {
 class Job;
 class Driver;
 class JobConstruction;
+class Compilation;
 class CompilationEntity;
 
 enum class CompilationEntityKind : uint8_t {
@@ -170,6 +171,54 @@ public:
                 CompilationEntityKind::CompileJobConstruction &&
             entity->GetKind() <= CompilationEntityKind::BatchJob);
   }
+};
+
+class CompilationEntities final {
+  friend Driver;
+  friend Compilation;
+
+  // A graph of JobConstructions -- do not mark as cons since the
+  // JobConstruction creates the Job
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
+
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobs;
+
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelExternalJobs;
+
+public:
+  void AddTopLevelJobConstruction(const CompilationEntity *entity);
+  void AddTopLevelJob(const CompilationEntity *entity);
+  void AddTopLevelExternalJob(const CompilationEntity *entity);
+
+public:
+  bool HasTopLevelJobConstructions() {
+    return (!topLevelJobConstructions.empty() &&
+            topLevelJobConstructions.size() > 0);
+  }
+
+  bool HasTopLevelJobs() {
+    return (!topLevelJobConstructions.empty() &&
+            topLevelJobConstructions.size() > 0);
+  }
+  bool HasTopLevelExternalJobs() {
+    return (!topLevelJobConstructions.empty() &&
+            topLevelJobConstructions.size() > 0);
+  }
+
+public:
+  /// Get each top level job
+  void ForEachTopLevelJobConstruction(
+      std::function<void(const CompilationEntity *entity)> callback);
+
+  /// Get each top level job
+  void ForEachTopLevelJob(
+      std::function<void(const CompilationEntity *entity)> callback);
+
+  /// Get each top level job
+  void ForEachTopLevelExternalJob(
+      std::function<void(const CompilationEntity *entity)> callback);
 };
 
 } // namespace stone

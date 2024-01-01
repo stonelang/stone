@@ -4,5 +4,11 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Driver/DriverOptions.h"
 
-namespace stone {} // namespace stone
+namespace stone {
+
+
+	class ToolChain{
+
+	};
+} // namespace stone
 #endif
