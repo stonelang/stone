@@ -4,24 +4,6 @@
 
 using namespace stone;
 
-// class BuildJobsState final {
-//   const Driver &driver;
-//   JobCacheMap jobCache;
-
-// public:
-//   BuildJobsState(const Driver &driver) : driver(driver) {}
-//   ~BuildJobsState() = default;
-
-// public:
-//   void BuildJobs(JobConstructionsState &jobConstructionsState) {
-
-//     //  driver.ForEachJobConstruction([&](JobConstruction &construction) {
-
-//     // });
-//   }
-//   void BuildJobsForJobConstruction() {}
-// };
-
 class BuildJobsImpl final {
   const Driver &driver;
   Driver::JobCacheMap jobCache;
@@ -45,4 +27,8 @@ Status Driver::BuildTopLevelJobs() {
 
   BuildJobsImpl buildJobsImpl(*this);
   STONE_DEFER { buildJobsImpl.FinishBuildJobs(); };
+}
+
+void Driver::ComputeMainOutputForTopLevelJob(JobConstruction *jobConstruction) {
+
 }

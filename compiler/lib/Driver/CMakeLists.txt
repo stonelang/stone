@@ -1,5 +1,4 @@
  set(stone_drive_sources
-  BuildJobConstructions.cpp
   BuildJobs.cpp
   Compilation.cpp
   DarwinToolChain.cpp

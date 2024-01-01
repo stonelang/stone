@@ -177,11 +177,9 @@ public:
   std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
+  class BuildingJobConstructionsImpl;
   /// Build the job-constructions
   Status BuildJobConstructions();
-
-  /// Print the list of Actions in a Compilation.
-  void PrintJobConstructions() const;
 
   JobConstruction *CastToJobConstruction(JobConstructionInput input) {
     return input.get<JobConstruction *>();
@@ -194,12 +192,18 @@ public:
     return const_cast<DriverInputFile *>(&input);
   }
 
+  /// Print the list of Actions in a Compilation.
+  void PrintJobConstructions() const;
+
+public:
+  class BuildingJobs;
   /// A map for caching Jobs for a given Action/ToolChain pair
   using JobCacheMap =
       llvm::DenseMap<std::pair<const JobConstruction *, const ToolChain *>,
                      Job *>;
   /// Build the jobs
   Status BuildTopLevelJobs();
+  void ComputeMainOutputForTopLevelJob(JobConstruction *jobConstruction);
 
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;

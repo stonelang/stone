@@ -1,4 +1,7 @@
 #include "stone/Driver/JobConstruction.h"
+#include "stone/Basic/Defer.h"
+#include "stone/Driver/Driver.h"
+#include "stone/Driver/DriverPrettyStackTrace.h"
 
 using namespace stone;
 using namespace stone::file;
@@ -26,6 +29,8 @@ CompileJobConstruction::ConstructJobs(const Driver &driver) {
 
   // TODO: Think about this
   assert(HasTopLevel() && "Only top-level job construction can create jobs!");
+  JobConstructionPrettyStackTrace compileJobConstruction("build compile jobs",
+                                                         this);
 
   return {nullptr};
 }
@@ -147,3 +152,163 @@ void CompilationEntities::ForEachTopLevelJobConstruction(
     callback(topLevelJobConstruction);
   }
 }
+
+class Driver::BuildingJobConstructionsImpl {
+public:
+  void Do(Driver& driver){
+    driver.GetCompilationEntities().test = 0;
+  }
+
+};
+
+class BuildingJobConstructions final {
+  Driver &driver;
+  llvm::SmallVector<JobConstructionInput, 2> moduleInputs;
+  llvm::SmallVector<JobConstructionInput, 2> linkerInputs;
+
+public:
+  BuildingJobConstructions(Driver &driver) : driver(driver) {}
+  ~BuildingJobConstructions() = default;
+
+public:
+  void AddModuleInput(JobConstructionInput input) {
+    moduleInputs.push_back(input);
+  }
+  void AddLinkerInput(JobConstructionInput input) {
+    linkerInputs.push_back(input);
+  }
+  bool HasLinkerInputs() {
+    return (!linkerInputs.empty() && linkerInputs.size() > 0);
+  }
+  bool HasModuleInputs() {
+    return (!moduleInputs.empty() && moduleInputs.size() > 0);
+  }
+
+public:
+  Status BuildNormalCompileInvocation();
+  Status BuildSingleCompileInvocation();
+  Status BuildFlatCompileIvocation();
+
+public:
+  CompileJobConstruction *
+  BuildCompileJobConstruction(JobConstructionInput input);
+  LinkJobConstruction *BuildLinkJobConstruction();
+  Status BuildMergeModuleJobConstruction();
+  Status BuildBackendJobConstruction();
+
+public:
+  Status FinishBuildJobConstructions();
+};
+
+/// Build the job-constructions
+Status Driver::BuildJobConstructions() {
+  BuildingJobConstructions buildingJobConstructions(*this);
+  STONE_DEFER { buildingJobConstructions.FinishBuildJobConstructions(); };
+  auto status = [&]() -> Status {
+    switch (GetDriverOptions().GetCompileInvocationMode()) {
+    case CompileInvocationMode::Normal:
+      return buildingJobConstructions.BuildNormalCompileInvocation();
+    case CompileInvocationMode::Single:
+      return buildingJobConstructions.BuildSingleCompileInvocation();
+    case CompileInvocationMode::Flat:
+      return buildingJobConstructions.BuildFlatCompileIvocation();
+    default:
+      llvm_unreachable("Invalid compile invocation kind");
+    }
+  }();
+  return Status();
+}
+
+Status BuildingJobConstructions::BuildNormalCompileInvocation() {
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile &input) {
+        assert(file::IsPartOfCompilation(input.GetFileType()));
+        JobConstructionInput currentInput =
+            driver.CastToJobConstructionInput(input);
+        switch (input.GetFileType()) {
+        case FileType::Stone: {
+          currentInput = BuildCompileJobConstruction(currentInput);
+          AddModuleInput(currentInput);
+          if (driver.GetDriverOptions().IsLinkableAction()) {
+            AddLinkerInput(currentInput);
+          }
+          break;
+        }
+        case FileType::Object: {
+          AddLinkerInput(currentInput);
+          break;
+        }
+        default: {
+          llvm_unreachable(" Invalid file type");
+        }
+        }
+        return Status();
+      });
+  return Status();
+}
+
+Status BuildingJobConstructions::BuildSingleCompileInvocation() {
+  return Status();
+}
+Status BuildingJobConstructions::BuildFlatCompileIvocation() {
+
+  return Status();
+}
+
+CompileJobConstruction *BuildingJobConstructions::BuildCompileJobConstruction(
+    JobConstructionInput input) {
+
+  assert(driver.GetDriverOptions().IsCompilableAction() &&
+         "The current action does not support job creation -- cannot proceed "
+         "with compilation!");
+
+  auto compileJobConstruction = CompileJobConstruction::Create(
+      driver, input, driver.GetDriverOptions().GetOutputFileType());
+
+  if (driver.GetDriverOptions().IsCompileOnlyAction()) {
+    compileJobConstruction->AddTopLevel();
+  }
+  return compileJobConstruction;
+}
+
+LinkJobConstruction *BuildingJobConstructions::BuildLinkJobConstruction() {
+
+  if (driver.GetDriverOptions().IsLinkableAction()) {
+    assert(HasLinkerInputs() && "Canot link without linking inputs!");
+    switch (driver.GetDriverOptions().GetLinkMode()) {
+    case LinkMode::StaticLibrary:
+      return StaticLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode());
+    default:
+      // FIXME: Compute LTO in DriverInputsAndOutputs
+      return DynamicLinkJobConstruction::Create(
+          driver, linkerInputs, driver.GetDriverOptions().GetLinkMode(),
+          driver.GetDriverOptions().HasLTO());
+    }
+  }
+  llvm_unreachable("Unsupported link construction -- cannot continue with the "
+                   "compilation process!");
+}
+
+Status BuildingJobConstructions::BuildBackendJobConstruction() {
+
+  return Status();
+}
+
+Status BuildingJobConstructions::FinishBuildJobConstructions() {
+
+  if (driver.GetDriverOptions().IsLinkableAction() && HasLinkerInputs()) {
+    auto linkJobConstruction = BuildLinkJobConstruction();
+    if (!linkJobConstruction) {
+      return Status::MakeHasCompletionAndIsError();
+    }
+    linkJobConstruction->AddTopLevel();
+    driver.GetCompilationEntities().AddTopLevelJobConstruction(
+        linkJobConstruction);
+    return Status();
+  }
+}
+
+/// Print the list of Actions in a Compilation.
+void Driver::PrintJobConstructions() const {}
+void JobConstructionPrettyStackTrace::print(llvm::raw_ostream &OS) const {}

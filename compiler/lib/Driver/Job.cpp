@@ -1,5 +1,6 @@
 #include "stone/Driver/Job.h"
 #include "stone/Driver/Compilation.h"
+#include "stone/Driver/DriverPrettyStackTrace.h"
 #include "stone/Driver/ToolChain.h"
 
 using namespace stone;
@@ -72,7 +73,6 @@ void CompilationEntities::ForEachTopLevelJob(
 
 void CompilationEntities::ForEachTopLevelExternalJob(
     std::function<void(const Job *job)> callback) {
-
   for (auto topLevelExternalJob : topLevelExternalJobs) {
     callback(topLevelExternalJob);
   }
@@ -80,3 +80,5 @@ void CompilationEntities::ForEachTopLevelExternalJob(
 
 /// Print the list of Actions in a Compilation.
 void Driver::PrintJobs() const {}
+
+void JobPrettyStackTrace::print(llvm::raw_ostream &OS) const {}

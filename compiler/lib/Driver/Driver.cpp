@@ -474,25 +474,12 @@ Status Driver::BuildOutputs(const DerivedArgList &args) {
 
 // Status Driver::BuildTopLevelJobConstruction() {}
 
-/// Build the job-constructions
-// JobConstruction *Driver::CreateJobConstruction() { return nullptr; }
-
-// void Driver::ForEachJobConstruction(
-//     std::function<void(JobConstruction &construction)> callback) {}
-
-// Status Driver::BuildJobs() {}
+// Status Driver::BuildTopLevelJobs() {}
 
 // /// Print the driver version.
 // void Driver::PrintVersion(const ToolChain &toolChain, raw_ostream &os)
 // const
 // {}
-
-// void Driver::ForEachInputFile(
-//     std::function<void(InputFile &inputFile)> callback) {
-//   for (auto inputFile : driverOpts.inputFiles) {
-//     callback(inputFile);
-//   }
-// }
 
 void Driver::PrintHelp(bool showHidden) const {
 
