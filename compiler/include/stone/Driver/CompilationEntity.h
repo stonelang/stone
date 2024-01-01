@@ -124,6 +124,57 @@ public:
   }
 };
 
+class CompilationInputFile final : public CompilationEntity {
+  llvm::StringRef fileName;
+
+public:
+  CompilationInputFile(llvm::StringRef fileName)
+      : CompilationInputFile(fileName, file::GetTypeByExt(file::GetExt(fileName))) {}
+
+  /// Constructs an input file from the provided data.
+  CompilationInputFile(llvm::StringRef fileName, file::FileType fileType)
+      : CompilationEntity(CompilationEntityKind::Input, fileType),
+        fileName(ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
+            fileName)) {
+
+    assert(!fileName.empty());
+    AddAllowFileType();
+  }
+
+public:
+  /// The name of this \c CompilerInputFile, or `-` if this input corresponds to
+  /// the standard input stream.
+  ///
+  /// The returned file name is guaranteed not to be the empty string.
+  const llvm::StringRef &GetFileName() const {
+    assert(!fileName.empty());
+    return fileName;
+  }
+
+public:
+  /// Return stone-standard file name from a buffer name set by
+  /// llvm::MemoryBuffer::getFileOrSTDIN, which uses "<stdin>" instead of "-".
+  static llvm::StringRef
+  ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
+      llvm::StringRef fileName) {
+    if (fileName.equals("<stdin>")) {
+      return "-";
+    }
+    return fileName;
+  }
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (entity->GetKind() == CompilationEntityKind::Input);
+  }
+
+public:
+  static CompilationInputFile *
+  Create(const Driver &driver, llvm::StringRef fileName,
+         file::FileType fileType = file::FileType::None);
+};
+
+
 class TopLevelCompilationEntity : public CompilationEntity {
   llvm::TinyPtrVector<const CompilationEntity *> inputs;
 
