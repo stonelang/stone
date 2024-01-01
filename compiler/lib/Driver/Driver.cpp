@@ -9,6 +9,11 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
-using namespace stone::file;
 
 using namespace llvm::opt;
+
+
+Driver::Driver() {}
+  
+Driver::~Driver(){}
+

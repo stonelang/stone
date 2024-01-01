@@ -9,25 +9,24 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
-#include "stone/Option/Options.h"
 #include "stone/Stats/Stats.h"
 
-#include "llvm/ADT/Triple.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/StringRef.h"
 
-
-
-
-using namespace llvm::opt;
-
+#include <functional>
 #include <memory>
-#include <vector>
+#include <string>
 
 namespace llvm {
 namespace opt {
-class InputArgList;
-class DerivedArgList;
-} // namespace opt
-} // namespace llvm
+  class Arg;
+  class ArgList;
+  class OptTable;
+  class InputArgList;
+  class DerivedArgList;
+}
+}
 
 namespace stone {
 
@@ -35,6 +34,10 @@ class Driver final {
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
+
+public:
+  Driver();
+  ~Driver();
 
 };
 
