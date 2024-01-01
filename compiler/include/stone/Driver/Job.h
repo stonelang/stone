@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVER_JOB_H
 #define STONE_DRIVER_DRIVER_JOB_H
 
-#include "stone/Basic/File.h"
+
 #include "stone/Basic/OptionSet.h"
 #include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/JobConstruction.h"
@@ -41,7 +41,7 @@ struct CommandInputPair {
 
   /// Construct a JobInputPair from a Base Input and, optionally, a Primary;
   /// if the Primary is empty, use the Base value for it.
-  explicit CommandInputPair(StringRef BaseInput, StringRef PrimaryInput)
+  explicit CommandInputPair(llvm::StringRef BaseInput, llvm::StringRef PrimaryInput)
       : Base(BaseInput),
         Primary(PrimaryInput.empty() ? BaseInput : PrimaryInput) {}
 };
@@ -62,136 +62,6 @@ public:
   llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
 };
 
-class JobContext final {
-private:
-  Compilation &compilation;
-
-public:
-  llvm::ArrayRef<const Job *> inputs;
-  llvm::ArrayRef<const JobConstruction *> inputConstructions;
-
-  const CommandOutput &commandOutput;
-
-public:
-  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
-             llvm::ArrayRef<const JobConstruction *> inputConstructions,
-             const CommandOutput &commandOutput);
-};
-
-enum class JobCondition {
-  // There was no information about the previous build (i.e., an input map),
-  // or the map marked this Job as dirty or needing a cascading build.
-  // Be maximally conservative with dependencies.
-  Always,
-  // The input changed, or this job was scheduled as non-cascading in the last
-  // build but didn't get to run.
-  RunWithoutCascading,
-  // The best case: input didn't change, output exists.
-  // Only run if it depends on some other thing that changed.
-  CheckDependencies,
-  // Run no matter what (but may or may not cascade).
-  NewlyAdded
-};
-
-class Job : public CompilationEntity {
-public:
-  using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
-  /// If positive, contains llvm::ProcessID for a real Job on the host OS. If
-  /// negative, contains a quasi-PID, which identifies a Job that's a member of
-  /// a BatchJob _without_ denoting an operating system process.
-  using JobProcessID = int64_t;
-
-  enum class JobFlags : uint8_t {
-    None = 1 << 0,
-    TopLevel = 1 << 1,
-  };
-  /// Options that control the JobConstruction
-  using JobOptions = stone::OptionSet<JobFlags>;
-
-  JobOptions jobOptions;
-
-private:
-  /// The action which caused the creation of this Job, and the conditions
-  /// under which it must be run.
-  llvm::PointerIntPair<const JobConstruction *, 2, JobCondition>
-      constructionAndCondition;
-
-  /// The list of other Jobs which are inputs to this Job.
-  llvm::SmallVector<const Job *, 4> inputs;
-
-  /// The output of this job;
-  std::unique_ptr<CommandOutput> commandOutput;
-
-  /// The executable to run.
-  const char *executable = nullptr;
-
-  /// The list of program arguments (not including the implicit first argument,
-  /// which will be the Executable).
-  ///
-  /// These argument strings must be kept alive as long as the Job is alive.
-  llvm::opt::ArgStringList arguments;
-
-  /// Additional variables to set in the process environment when running.
-  ///
-  /// These strings must be kept alive as long as the Job is alive.
-  EnvironmentVector extraEnvironment;
-
-  /// The modification time of the main input file, if any.
-  llvm::sys::TimePoint<> inputModificationTime = llvm::sys::TimePoint<>::max();
-
-public:
-  Job(const JobConstruction &construction,
-      llvm::SmallVectorImpl<const Job *> &&inputs);
-  // Job(const JobAction &Source, SmallVectorImpl<const Job *> &&Inputs,
-  //     std::unique_ptr<CommandOutput> Output, const char *Executable,
-  //     llvm::opt::ArgStringList Arguments,
-  //     EnvironmentVector ExtraEnvironment = {},
-  //     std::vector<FilelistInfo> Infos = {},
-  //     llvm::Optional<ResponseFileInfo> ResponseFile = llvm::None)
-  //     : SourceAndCondition(&Source, Condition::Always),
-  //       Inputs(std::move(Inputs)), Output(std::move(Output)),
-  //       Executable(Executable), Arguments(std::move(Arguments)),
-  //       ExtraEnvironment(std::move(ExtraEnvironment)),
-  //       FilelistFileInfos(std::move(Infos)), ResponseFile(ResponseFile) {}
-
-  // /// For testing dependency graphs that use Jobs
-  // Job(OutputFileMap &OFM, StringRef dummyBaseName)
-  //     : Job(CompileJobAction(file_types::TY_Object),
-  //           SmallVector<const Job *, 4>(),
-  //           std::make_unique<CommandOutput>(dummyBaseName, OFM), nullptr, {})
-  //           {}
-
-public:
-  const JobConstruction &GetConstruction() const {
-    return *constructionAndCondition.getPointer();
-  }
-  JobCondition SetCondition() const {
-    return constructionAndCondition.getInt();
-  }
-  void SetCondition(JobCondition jobCondition) {
-    constructionAndCondition.setInt(jobCondition);
-  }
-
-  const char *GetExecutable() const { return executable; }
-
-  const llvm::opt::ArgStringList &GetArguments() const { return arguments; }
-
-  llvm::ArrayRef<const Job *> GetInputs() const { return inputs; }
-  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
-
-  void SetInputModificationTime(llvm::sys::TimePoint<> time) {
-    inputModificationTime = time;
-  }
-
-public:
-  bool HasTopLevel() const { return jobOptions.contains(JobFlags::TopLevel); }
-  void AddTopLevel() { jobOptions |= JobFlags::TopLevel; }
-  void ClearTopLevel() {}
-
-public:
-  static Job *Create(const Driver &driver, const JobConstruction &construction,
-                     llvm::SmallVectorImpl<const Job *> &&inputs);
-};
 
 } // namespace stone
 #endif

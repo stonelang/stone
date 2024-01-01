@@ -2,8 +2,7 @@
 #define STONE_DRIVER_DRIVER_INPUTFILE_H
 
 #include "stone/Basic/File.h"
-#include "stone/Option/Action.h"
-#include "stone/Option/Options.h"
+
 
 namespace stone {
 

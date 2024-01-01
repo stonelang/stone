@@ -1,9 +1,9 @@
  set(stone_drive_sources
   Compilation.cpp
+  CompilationEntity.cpp
   DarwinToolChain.cpp
   Driver.cpp
   DriverOptions.cpp
-  DriverInvocation.cpp
   Job.cpp
   JobConstruction.cpp
   LinuxToolChain.cpp
