@@ -147,10 +147,14 @@ Status DriverOptionsConverter::Convert() {
   driverOpts.driverOutputInfo.compileStyle = ComputeCompileStyle();
 
   driverOpts.toolChainKind = ComputeToolChainKind();
-  if (driverOpts.HasToolChainKind()) {
+  if (!driverOpts.HasToolChainKind()) {
     return Status::MakeHasCompletionAndIsError();
   }
 
+  driverOpts.driverOutputInfo.linkMode = ComputeLinkMode();
+  if (!driverOpts.GetDriverOutputInfo().HasLinkMode()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
   return Status();
 }
 
@@ -209,26 +213,26 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     return ToolChainKind::None;
   }
   }
-  ToolChainKind::None;
+  return ToolChainKind::None;
 }
 
-// LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }
+LinkMode DriverOptionsConverter::ComputeLinkMode() {
 
-// LinkMode DriverOptionsConverter::ComputeLinkMode() {
-
-//   assert(driverOpts.HasAction());
-
-//   // if (driverOpts.IsNone()) {
-//   //   driverOpts.linkMode = LinkMode::Executable;
-//   // } else if (GetAction().IsEmitLibrary()) {
-//   //   if (args.hasArg(opts::Static)) {
-//   //     driverOpts.linkMode = LinkMode::StaticLibrary;
-//   //   } else {
-//   //     driverOpts.linkMode = LinkMode::DynamicLibrary;
-//   //   }
-//   // }
-// }
+  assert(driverOpts.HasAction());
+  // Simple for now
+  if (driverOpts.GetAction().IsNone()) {
+    return LinkMode::Executable;
+  } else if (driverOpts.GetAction().IsEmitLibrary()) {
+    if (args.hasArg(opts::Static)) {
+      return LinkMode::StaticLibrary;
+    } else {
+      return LinkMode::DynamicLibrary;
+    }
+  }
+  return LinkMode::None;
+}
 
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
-
 // // }
+
+// LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }

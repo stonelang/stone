@@ -466,7 +466,8 @@ public:
 
   /// \return true if there is a valid input file type
   bool HasInputFileType() const {
-    return (inputFileType != file::FileType::None && inputFileType != file::FileType::Image);
+    return (inputFileType != file::FileType::None &&
+            inputFileType != file::FileType::Image);
   }
 
   /// \return the computed output file type
