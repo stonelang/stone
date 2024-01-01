@@ -213,6 +213,14 @@ public:
   ConstructInvocation(const MergeModuleJobConstruction &job,
                       const JobContext &context) const;
 
+  virtual JobInvocation
+  ConstructInvocation(const InterpretJobConstruction &construction,
+                      const JobContext &context) const;
+
+  virtual JobInvocation
+  ConstructInvocation(const AutolinkExtractJobConstruction &construction,
+                      const JobContext &context) const;
+
 public:
   /// Construct a Job for the action \p JA, taking the given information into
   /// account.
@@ -254,7 +262,7 @@ protected:
                      const JobContext &context) const;
 
 public:
-	/// < overrides 
+  /// < overrides
   JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
                                     const JobContext &context) const override;
 
@@ -301,6 +309,48 @@ public:
   static bool classof(const ToolChain *toolChain) {
     return toolChain->GetKind() == ToolChainKind::Darwin;
   }
+};
+
+class UnixToolChain : public ToolChain {
+protected:
+  /// If provided, and if the user has not already explicitly specified a
+  /// linker to use via the "-fuse-ld=" option, this linker will be passed to
+  /// the compiler invocation via "-fuse-ld=". Return an empty string to not
+  /// specify any specific linker (the "-fuse-ld=" option will not be
+  /// specified).
+  ///
+  /// The default behavior is to use the gold linker on ARM architectures,
+  /// and to not provide a specific linker otherwise.
+  std::string GetDefaultLinker() const override;
+
+  bool AddRuntimeRPath(const llvm::Triple &T,
+                       const llvm::opt::ArgList &Args) const;
+
+  JobInvocation
+  ConstructInvocation(const InterpretJobConstruction &construction,
+                      const JobContext &context) const override;
+
+  JobInvocation
+  ConstructInvocation(const AutolinkExtractJobConstruction &construction,
+                      const JobContext &context) const override;
+
+  JobInvocation
+  ConstructInvocation(const DynamicLinkJobConstruction &construction,
+                      const JobContext &context) const override;
+
+  JobInvocation
+  ConstructInvocation(const StaticLinkJobConstruction &construction,
+                      const JobContext &context) const override;
+
+public:
+  UnixToolChain(const Driver &driver) : ToolChain(driver) {}
+  ~UnixToolChain() = default;
+
+  std::string SanitizerRuntimeLibName(StringRef sanitizer,
+                                      bool shared = true) const override;
+
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
 };
 
 } // namespace stone

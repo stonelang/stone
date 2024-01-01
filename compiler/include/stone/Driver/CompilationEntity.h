@@ -25,6 +25,8 @@ enum class CompilationEntityKind : uint8_t {
   ModuleWrapJobConstruction,
   DynamicLinkJobConstruction,
   StaticLinkJobConstruction,
+  InterpretJobConstruction,
+  AutolinkExtractJobConstruction,
   Job,
   BatchJob,
   First = Input,

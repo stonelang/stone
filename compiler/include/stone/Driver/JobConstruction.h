@@ -28,9 +28,10 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return (
-        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
-        entity->GetKind() <= CompilationEntityKind::StaticLinkJobConstruction);
+    return (entity->GetKind() >=
+                CompilationEntityKind::CompileJobConstruction &&
+            entity->GetKind() <=
+                CompilationEntityKind::AutolinkExtractJobConstruction);
   }
 };
 
@@ -195,6 +196,36 @@ public:
   static GeneratePCHJobConstruction *Create(Driver &driver,
                                             CompilationEntity input,
                                             llvm::StringRef persistentPCHDir);
+};
+
+class InterpretJobConstruction : public JobConstruction {
+public:
+  explicit InterpretJobConstruction()
+      : JobConstruction(CompilationEntityKind::InterpretJobConstruction,
+                        llvm::None, file::FileType::None) {}
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() == CompilationEntityKind::InterpretJobConstruction;
+  }
+  static InterpretJobConstruction *Create(const Driver &driver);
+};
+
+class AutolinkExtractJobConstruction : public JobConstruction {
+
+public:
+  AutolinkExtractJobConstruction(CompilationEntityList inputs)
+      : JobConstruction(CompilationEntityKind::AutolinkExtractJobConstruction,
+                        inputs, file::FileType::AutolinkFile) {}
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() ==
+           CompilationEntityKind::AutolinkExtractJobConstruction;
+  }
+
+  static AutolinkExtractJobConstruction *Create(const Driver &driver,
+                                                CompilationEntityList inputs);
 };
 
 } // namespace stone
