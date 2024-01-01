@@ -89,11 +89,11 @@ public:
   bool HasNoInputs() const { return !HasInputs(); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
-  // const CompilationInputFile* FirstInput() const {
-  //   assert(HasInputs());
-  //   return *(inputs.front());
-  // }
-  // CompilationInputFile* FirstInput() {
+  const CompilationInputFile* FirstInput() const {
+    assert(HasInputs());
+    return inputs.front();
+  }
+  //CompilationInputFile* FirstInput() {
   //   assert(HasInputs());
   //   return *(inputs.front());
   // }
