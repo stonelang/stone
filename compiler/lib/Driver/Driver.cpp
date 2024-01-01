@@ -494,13 +494,6 @@ Status Driver::BuildOutputs(const DerivedArgList &args) {
 //   }
 // }
 
-void Driver::ForEachTopLevelJobConstruction(
-    std::function<void(const JobConstruction *construction)> callback) {
-  for (auto topLevelJobConstruction : topLevelJobConstructions) {
-    callback(topLevelJobConstruction);
-  }
-}
-
 void Driver::PrintHelp(bool showHidden) const {
 
   unsigned IncludedFlagsBitmask = 0;

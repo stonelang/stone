@@ -51,8 +51,6 @@ Job *Job::Create(const Driver &driver, const JobConstruction &construction,
   return new (driver) Job(construction, std::move(inputs));
 }
 
-void Driver::ForEachTopLevelJob(std::function<void(const Job *job)> callback) {}
-
 void CompilationEntities::AddTopLevelJob(const Job *job) {
   assert(job);
   assert(job->HasTopLevel());

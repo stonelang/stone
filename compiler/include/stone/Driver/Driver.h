@@ -177,24 +177,8 @@ public:
   std::unique_ptr<stone::TaskQueue> BuildTaskQueue();
 
 public:
-  /// < JobConstructions
-  bool HasTopLevelJobConstructions() {
-    return (!topLevelJobConstructions.empty() &&
-            topLevelJobConstructions.size() > 0);
-  }
-  void AddTopLevelJobConstruction(const JobConstruction *construction) {
-    assert(construction);
-    assert(construction->HasTopLevel());
-    topLevelJobConstructions.push_back(construction);
-  }
-
-  // void ForEachInputFile(std::function<void(InputFile &input)> callback);
-
   /// Build the job-constructions
   Status BuildJobConstructions();
-
-  void ForEachTopLevelJobConstruction(
-      std::function<void(const JobConstruction *construction)> callback);
 
   /// Print the list of Actions in a Compilation.
   void PrintJobConstructions() const;
@@ -210,31 +194,12 @@ public:
     return const_cast<DriverInputFile *>(&input);
   }
 
-public:
-  ///< Jobs
-
   /// A map for caching Jobs for a given Action/ToolChain pair
   using JobCacheMap =
       llvm::DenseMap<std::pair<const JobConstruction *, const ToolChain *>,
                      Job *>;
-
   /// Build the jobs
   Status BuildTopLevelJobs();
-
-  /// JobConstructions
-  bool HasTopLevelJobs() {
-    return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
-  }
-
-  /// Add a top level job
-  void AddTopLevelJob(const Job *job) {
-    assert(job);
-    assert(job->HasTopLevel());
-    topLevelJobs.push_back(job);
-  }
-
-  /// Get each top level job
-  void ForEachTopLevelJob(std::function<void(const Job *job)> callback);
 
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;
