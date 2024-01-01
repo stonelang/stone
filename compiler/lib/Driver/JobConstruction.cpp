@@ -30,3 +30,11 @@ DynamicLinkJobConstruction::DynamicLinkJobConstruction(
 
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
 }
+
+StaticLinkJobConstruction::StaticLinkJobConstruction(
+    CompilationEntityList inputs, LinkMode linkMode)
+    : LinkJobConstruction(CompilationEntityKind::StaticLinkJobConstruction, inputs,
+                          FileType::Image, linkMode) {
+  assert(linkMode == LinkMode::StaticLibrary);
+}
+

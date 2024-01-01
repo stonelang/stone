@@ -132,21 +132,21 @@ public:
                                             bool wthLTO = false);
 };
 
-// class StaticLinkJobConstruction final : public LinkJobConstruction {
+class StaticLinkJobConstruction final : public LinkJobConstruction {
 
-// public:
-//   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
+public:
+  StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
 
-// public:
-//   static bool classof(const CompilationEntity *entity) {
-//     return entity->GetKind() ==
-//     CompilationEntityKind::StaticLinkJobConstruction;
-//   }
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() ==
+    CompilationEntityKind::StaticLinkJobConstruction;
+  }
 
-// public:
-//   static StaticLinkJobConstruction *
-//   Create(Driver &driver, CompilationEntityList inputs, LinkMode linkMode);
-// };
+public:
+  static StaticLinkJobConstruction *
+  Create(Driver &driver, CompilationEntityList inputs, LinkMode linkMode);
+};
 
 } // namespace stone
 
