@@ -28,7 +28,7 @@ class CompilationEntities final {
   friend Driver;
   friend Compilation;
 
-  // A graph of JobConstructions.
+  // A graph of JobConstructions -- do not mark as cons since the JobConstruction creates the Job 
   llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
   // A graph of the top level jobs built by the driver
@@ -61,6 +61,7 @@ public:
   /// Get each top level job
   void ForEachTopLevelJobConstruction(
       std::function<void(const JobConstruction *construction)> callback);
+
   /// Get each top level job
   void ForEachTopLevelJob(std::function<void(const Job *job)> callback);
   /// Get each top level job

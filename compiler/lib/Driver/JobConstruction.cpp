@@ -133,8 +133,7 @@ GeneratePCHJobConstruction::ConstructJobs(const Driver &driver) {
   return {nullptr};
 }
 
-void CompilationEntities::AddTopLevelJobConstruction(
-    const JobConstruction *construction) {
+void CompilationEntities::AddTopLevelJobConstruction(const JobConstruction *construction) {
   assert(construction);
   assert(construction->HasTopLevel());
   topLevelJobConstructions.push_back(construction);

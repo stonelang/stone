@@ -51,8 +51,7 @@ Status BuildJobConstructionsImpl::BuildForNormalCompileInvocation() {
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile &input) {
         assert(file::IsPartOfCompilation(input.GetFileType()));
-        JobConstructionInput currentInput =
-            const_cast<DriverInputFile *>(&input);
+        JobConstructionInput currentInput = driver.CastToJobConstructionInput(input);
         switch (input.GetFileType()) {
         case FileType::Stone: {
           currentInput = BuildCompileJobConstruction(currentInput);
