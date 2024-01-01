@@ -466,11 +466,22 @@ public:
 
   /// \return true if there is a valid input file type
   bool HasInputFileType() const {
-    return inputFileType != file::FileType::None;
+    return (inputFileType != file::FileType::None && inputFileType != file::FileType::Image);
   }
 
   /// \return the computed output file type
   file::FileType GetInputFileType() const { return inputFileType; }
+
+  bool IsNoneInputFileType() const {
+    return file::IsNoneFileType(inputFileType);
+  }
+  bool IsStoneInputFileType() const {
+    return file::IsStoneFileType(inputFileType);
+  }
+  bool IsObjectInputFileType() const {
+    return file::IsObjectFileType(inputFileType);
+  }
+  bool IsIRInputFileType() const { return inputFileType == file::FileType::IR; }
 
 public:
   DriverOptions();

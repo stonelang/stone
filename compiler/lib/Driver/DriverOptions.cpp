@@ -203,8 +203,9 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     return ToolChainKind::Unix;
   }
   default: {
-    driver.GetDiags().PrintD(SrcLoc(), diag::err_unknown_target,
-                 diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
+    driver.GetDiags().PrintD(
+        SrcLoc(), diag::err_unknown_target,
+        diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
     return ToolChainKind::None;
   }
   }
