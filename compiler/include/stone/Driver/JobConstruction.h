@@ -71,7 +71,22 @@ public:
   static bool classof(const CompilationEntity *entity) {
     return entity->GetKind() == CompilationEntityKind::CompileJobConstruction;
   }
+};
+class MergeModuleJobConstruction final : public IncrementatlJobConstruction {
+public:
+  MergeModuleJobConstruction(CompilationEntityList inputs)
+      : IncrementatlJobConstruction(
+            CompilationEntityKind::MergeModuleJobConstruction, inputs,
+            file::FileType::StoneModule) {}
 
+public:
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() ==
+           CompilationEntityKind::MergeModuleJobConstruction;
+  }
 };
 
 } // namespace stone

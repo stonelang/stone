@@ -6,10 +6,9 @@
 using namespace stone;
 using namespace stone::file;
 
-
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
-    : IncrementatlJobConstruction(CompilationEntityKind::CompileJobConstruction, llvm::None,
-                                  outputFileType) {
+    : IncrementatlJobConstruction(CompilationEntityKind::CompileJobConstruction,
+                                  llvm::None, outputFileType) {
 
   assert(file::IsOutputableFileType(outputFileType));
 }
@@ -21,5 +20,3 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
 
   assert(file::IsOutputableFileType(outputFileType));
 }
-
-
