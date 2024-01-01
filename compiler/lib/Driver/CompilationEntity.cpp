@@ -5,7 +5,6 @@
 using namespace stone;
 using namespace stone::file;
 
-
 CompilationEntity::CompilationEntity(CompilationEntityKind kind,
                                      FileType fileType)
     : kind(kind), fileType(fileType) {
@@ -14,12 +13,6 @@ CompilationEntity::CompilationEntity(CompilationEntityKind kind,
     assert(HasFileType());
   }
 }
-
-// TopLevelCompilationEntity::TopLevelCompilationEntity(
-//     CompilationEntityKind kind, CompilationEntityList inputs,
-//     file::FileType fileType)
-//     : CompilationEntity(kind, inputs, fileType) {}
-
 
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName,

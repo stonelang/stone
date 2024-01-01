@@ -5,9 +5,9 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Driver/DriverAllocation.h"
 
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/TinyPtrVector.h"
-#include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 class CompilationEntity;
@@ -29,9 +29,9 @@ enum class CompilationEntityKind : uint8_t {
 /// A list of all job construction inputs
 using CompilationEntityList = llvm::ArrayRef<const CompilationEntity *>;
 
-class CompilationEntity : public DriverAllocation<CompilationEntity> {
-  CompilationEntityKind kind;
-  file::FileType fileType;
+constexpr size_t CompilationEntityAlignInBits = 3;
+class alignas(1 << CompilationEntityAlignInBits) CompilationEntity
+    : public DriverAllocation<CompilationEntity> {
 
 public:
   enum class CompilationEntityFlags : uint8_t {
@@ -43,9 +43,16 @@ public:
   using CompilationEntityOptions = stone::OptionSet<CompilationEntityFlags>;
   CompilationEntityOptions compilationEntityOpts;
 
-public:
+  using size_type = llvm::ArrayRef<CompilationEntity>::size_type;
+  using iterator = llvm::ArrayRef<CompilationEntity>::iterator;
+  using const_iterator = llvm::ArrayRef<CompilationEntity>::const_iterator;
+
   using DriverAllocation<CompilationEntity>::operator new;
   using DriverAllocation<CompilationEntity>::operator delete;
+
+private:
+  CompilationEntityKind kind;
+  file::FileType fileType;
 
 protected:
   CompilationEntity(CompilationEntityKind kind, file::FileType fileType);
@@ -110,15 +117,15 @@ public:
 };
 
 class TopLevelCompilationEntity : public CompilationEntity {
-  llvm::TinyPtrVector<CompilationEntity> inputs;
+  llvm::TinyPtrVector<const CompilationEntity *> inputs;
 
 protected:
   TopLevelCompilationEntity(CompilationEntityKind kind,
                             CompilationEntityList inputs,
-                            file::FileType fileType);
+                            file::FileType fileType)
+      : CompilationEntity(kind, fileType), inputs(inputs) {}
+
 public:
-
-
 };
 
 } // namespace stone
