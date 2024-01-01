@@ -38,6 +38,11 @@ Status BuildJobsImpl::FinishBuildJobs() {}
 
 Status Driver::BuildTopLevelJobs() {
 
+  GetCompilationEntities().ForEachTopLevelJobConstruction(
+      [&](const JobConstruction *construction) {
+        //construction->ConstructJobs(*this);
+      });
+
   BuildJobsImpl buildJobsImpl(*this);
   STONE_DEFER { buildJobsImpl.FinishBuildJobs(); };
 }

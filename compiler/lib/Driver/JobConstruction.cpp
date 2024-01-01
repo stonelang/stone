@@ -8,7 +8,8 @@ IncrementatlJobConstruction::IncrementatlJobConstruction(
     FileType fileType)
     : JobConstruction(kind, llvm::None, fileType) {}
 
-llvm::ArrayRef<const Job *> IncrementatlJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+IncrementatlJobConstruction::ConstructJobs(const Driver &driver) {
 
   return {nullptr};
 }
@@ -20,7 +21,8 @@ CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
   assert(file::IsOutputableFileType(outputFileType));
 }
 
-llvm::ArrayRef<const Job *> CompileJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+CompileJobConstruction::ConstructJobs(const Driver &driver) {
 
   if (!HasTopLevel()) {
     return {nullptr};
@@ -53,7 +55,8 @@ MergeModuleJobConstruction::MergeModuleJobConstruction(
     : IncrementatlJobConstruction(JobConstructionKind::MergeModule, inputs,
                                   FileType::StoneModule) {}
 
-llvm::ArrayRef<const Job *> MergeModuleJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+MergeModuleJobConstruction::ConstructJobs(const Driver &driver) {
 
   return {nullptr};
 }
@@ -64,7 +67,8 @@ LinkJobConstruction::LinkJobConstruction(JobConstructionKind kind,
                                          LinkMode linkMode)
     : JobConstruction(kind, inputs, outputFileType), linkMode(linkMode) {}
 
-llvm::ArrayRef<const Job *> LinkJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+LinkJobConstruction::ConstructJobs(const Driver &driver) {
 
   return {nullptr};
 }
@@ -108,7 +112,8 @@ BackendJobConstruction::BackendJobConstruction(JobConstructionInput input,
   assert(file::IsOutputableFileType(outputFileType));
 }
 
-llvm::ArrayRef<const Job *> BackendJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+BackendJobConstruction::ConstructJobs(const Driver &driver) {
 
   return {nullptr};
 }
@@ -122,7 +127,8 @@ GeneratePCHJobConstruction::GeneratePCHJobConstruction(
                                                : FileType::None),
       persistentPCHDir(persistentPCHDir) {}
 
-llvm::ArrayRef<const Job *> GeneratePCHJobConstruction::ConstructJobs() {
+llvm::ArrayRef<const Job *>
+GeneratePCHJobConstruction::ConstructJobs(const Driver &driver) {
 
   return {nullptr};
 }

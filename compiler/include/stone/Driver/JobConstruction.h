@@ -15,6 +15,7 @@
 
 namespace stone {
 class Job;
+class Driver;
 class JobConstruction;
 
 enum class JobConstructionKind : UInt8 {
@@ -97,7 +98,7 @@ public:
   }
 
 public:
-  virtual llvm::ArrayRef<const Job *> ConstructJobs();
+  virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
 
 public:
   // static JobConstructionInput *CreateInput(DriverInputFile& input);
@@ -113,7 +114,7 @@ public:
                               file::FileType fileType);
 
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -135,7 +136,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -155,7 +156,7 @@ public:
   MergeModuleJobConstruction(JobConstructionInputList inputs);
 
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -172,7 +173,7 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -229,7 +230,7 @@ public:
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
@@ -254,7 +255,7 @@ public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
 
-  llvm::ArrayRef<const Job *> ConstructJobs() override;
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
 
 public:
   static bool classof(const JobConstruction *construction) {
