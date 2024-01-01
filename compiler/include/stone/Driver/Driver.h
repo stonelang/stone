@@ -44,8 +44,9 @@ class Driver final {
 public:
   Driver();
   ~Driver();
+
 public:
-   /// Allocate - Allocate memory from the Driver bump pointer.
+  /// Allocate - Allocate memory from the Driver bump pointer.
   void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
     if (bytes == 0) {
       return nullptr;

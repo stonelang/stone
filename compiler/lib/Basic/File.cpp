@@ -67,14 +67,19 @@ bool file::IsTextual(FileType ty) {
 }
 
 /// Returns true if this file type is None
-bool file::IsNoneFileType(FileType fileType) { return fileType = FileType::None; }
+bool file::IsNoneFileType(FileType fileType) {
+  return fileType = FileType::None;
+}
 
 /// Returns true if this file type is Stone
-bool file::IsStoneFileType(FileType fileType) { return fileType = FileType::Stone; }
+bool file::IsStoneFileType(FileType fileType) {
+  return fileType = FileType::Stone;
+}
 
 /// Returns true if this file type is Object
-bool file::IsObjectFileType(FileType fileType) { return fileType = FileType::Object; }
-
+bool file::IsObjectFileType(FileType fileType) {
+  return fileType = FileType::Object;
+}
 
 /// Returns true if this file type is outputable
 bool file::IsOutputableFileType(FileType fileType) {

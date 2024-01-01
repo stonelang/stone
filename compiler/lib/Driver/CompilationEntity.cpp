@@ -2,13 +2,24 @@
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/DriverInputFile.h"
 
-
 using namespace stone;
 using namespace stone::file;
 
-CompilationEntity::CompilationEntity(CompilationEntityKind kind) : kind(kind) {}
+CompilationEntity::CompilationEntity(CompilationEntityKind kind)
+    : CompilationEntity(kind, FileType::None) {}
 
+CompilationEntity::CompilationEntity(CompilationEntityKind kind,
+                                     FileType fileType)
+    : kind(kind), fileType(fileType) {
 
+  if (!IsJob()) {
+    assert(HasFileType());
+  }
+}
+
+// TopLevelCompilationEntity::TopLevelCompilationEntity(
+//     CompilationEntityKind kind, CompilationEntityList inputs)
+//     : CompilationEntity(kind), inputs(inputs) {}
 
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName,

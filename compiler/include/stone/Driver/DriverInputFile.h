@@ -8,9 +8,7 @@ namespace stone {
 class Driver;
 
 class DriverInputFile final : public CompilationEntity {
-
   llvm::StringRef fileName;
-  file::FileType fileType;
 
 public:
   DriverInputFile(llvm::StringRef fileName)
@@ -18,17 +16,14 @@ public:
 
   /// Constructs an input file from the provided data.
   DriverInputFile(llvm::StringRef fileName, file::FileType fileType)
-      : CompilationEntity(CompilationEntityKind::Input),
+      : CompilationEntity(CompilationEntityKind::Input, fileType),
         fileName(ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
-            fileName)),
-        fileType(fileType) {
+            fileName)) {
 
     assert(!fileName.empty());
   }
 
 public:
-  /// Retrieves the type of this input file.
-  file::FileType GetFileType() const { return fileType; };
   /// The name of this \c CompilerInputFile, or `-` if this input corresponds to
   /// the standard input stream.
   ///
@@ -57,7 +52,7 @@ public:
 
 public:
   static DriverInputFile *
-  Create(const Driver& driver, llvm::StringRef fileName,
+  Create(const Driver &driver, llvm::StringRef fileName,
          file::FileType fileType = file::FileType::None);
 };
 
