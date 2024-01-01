@@ -70,11 +70,12 @@ ToolChain::GetClangLinkerDriver(const llvm::opt::ArgList &args) const {
     llvm::StringRef toolChainPath(arg->getValue());
 
     // If there is a linker driver in the toolchain folder, use that instead.
-    if (auto tool = llvm::sys::findProgramByName(clangLinkerDriver, {toolChainPath})){
+    if (auto tool =
+            llvm::sys::findProgramByName(clangLinkerDriver, {toolChainPath})) {
       clangLinkerDriver = args.MakeArgString(tool.get());
     }
   }
   return clangLinkerDriver;
 }
 
-std::string ToolChain::GetDefaultLinker() const { return "clang"; }
+String ToolChain::GetDefaultLinker() const { return "clang"; }

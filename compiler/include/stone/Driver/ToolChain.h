@@ -1,10 +1,16 @@
 #ifndef STONE_DRIVER_DRIVER_TOOLCHAIN_H
 #define STONE_DRIVER_DRIVER_TOOLCHAIN_H
 
+#include "stone/Basic/STDAlias.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
+
+#include "clang/Basic/DarwinSDKInfo.h"
+
+#include "llvm/Option/ArgList.h"
+#include "llvm/Support/Compiler.h"
 
 namespace stone {
 
@@ -186,7 +192,7 @@ public:
   ///
   /// The default behavior is to use the gold linker on ARM architectures,
   /// and to not provide a specific linker otherwise.
-  virtual std::string GetDefaultLinker() const;
+  virtual String GetDefaultLinker() const;
 
 public:
   virtual JobInvocation ConstructInvocation(const CompileJobConstruction &job,
@@ -218,6 +224,83 @@ public:
                     llvm::SmallVectorImpl<const Job *> &&inputs,
                     llvm::ArrayRef<const JobConstruction *> inputConstructions,
                     std::unique_ptr<CommandOutput> output) const;
+};
+
+class DarwinToolChain final : public ToolChain {
+
+public:
+  DarwinToolChain(const Driver &driver);
+  ~DarwinToolChain() = default;
+
+protected:
+  void AddLinkerInputArgs(JobInvocation &jobInvocation,
+                          const JobContext &context) const;
+
+  void AddSanitizerArgs(llvm::opt::ArgStringList &arguments,
+                        const DynamicLinkJobConstruction &construction,
+                        const JobContext &context) const;
+
+  void AddArgsToLinkStdlib(llvm::opt::ArgStringList &Arguments,
+                           const DynamicLinkJobConstruction &construction,
+                           const JobContext &context) const;
+
+  void AddProfileGenerationArgs(llvm::opt::ArgStringList &arguments,
+                                const JobContext &context) const;
+
+  void AddDeploymentTargetArgs(llvm::opt::ArgStringList &arguments,
+                               const JobContext &context) const;
+
+  void AddLTOLibArgs(llvm::opt::ArgStringList &arguments,
+                     const JobContext &context) const;
+
+public:
+	/// < overrides 
+  JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  std::string SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                      bool shared = true) const override;
+
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const CommandOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
+
+public:
+  /// Retrieve the target SDK version for the given target triple.
+  llvm::Optional<llvm::VersionTuple>
+  GetTargetSDKVersion(const llvm::Triple &triple) const;
+
+  /// Information about the SDK that the application is being built against.
+  /// This information is only used by the linker, so it is only populated
+  /// when there will be a linker job.
+  mutable llvm::Optional<clang::DarwinSDKInfo> darwinSDKInfo;
+
+  const llvm::Optional<llvm::Triple> targetVariant;
+
+public:
+  static bool classof(const ToolChain *toolChain) {
+    return toolChain->GetKind() == ToolChainKind::Darwin;
+  }
 };
 
 } // namespace stone
