@@ -52,6 +52,34 @@ Status Driver::ConvertArgStrings(const llvm::opt::InputArgList &args) {
 }
 
 
+void Driver::PrintHelp(bool showHidden) const {
+
+  unsigned IncludedFlagsBitmask = 0;
+  unsigned ExcludedFlagsBitmask = opts::NoDriverOption;
+
+  if (!showHidden) {
+    ExcludedFlagsBitmask |= HelpHidden;
+  }
+  GetOptTable().printHelp(
+      llvm::outs(), GetDriverOptions().GetMainExecutableName().data(),
+      "Stone compiler", IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      /*ShowAllAliases*/ false);
+}
+
+void Driver::PrintSupport() const {
+  switch (GetDriverOptions().GetAction().GetKind()) {
+  case ActionKind::PrintHelp:
+    return PrintHelp();
+  case ActionKind::PrintHelpHidden:
+    return PrintHelp(true);
+  case ActionKind::PrintVersion:
+    // return PrintVersion(); // TODO:
+    break;
+  default:
+    llvm_unreachable("Invalid support action!");
+  }
+}
+
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);

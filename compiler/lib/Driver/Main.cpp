@@ -44,5 +44,22 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishMain(status);
   }
 
+  status = [&]() -> Status {
+    if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs() ||
+        driver.GetDriverOptions().IsSupportAction()) {
+      driver.PrintSupport();
+      return Status::MakeHasCompletion();
+    }
+    return Status();
+  }();
+
+  if (status.IsErrorOrHasCompletion()) {
+    return FinishMain(status);
+  }
+  assert(driver.GetDriverOptions().HasToolChainKind() &&
+         "toolchains not found -- cannot proceed with compilation!");
+
+
+
   return FinishMain();
 }
