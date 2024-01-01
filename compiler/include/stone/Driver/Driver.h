@@ -35,9 +35,23 @@ class Driver final {
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
 
+  /// The allocator used to create Driver objects.
+  /// Driver objects are never destructed; rather, all memory associated
+  /// with the Driver objects will be released when the Driver
+  /// itself is destroyed.
+  mutable llvm::BumpPtrAllocator allocator;
+
 public:
   Driver();
   ~Driver();
+public:
+   /// Allocate - Allocate memory from the Driver bump pointer.
+  void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
+    if (bytes == 0) {
+      return nullptr;
+    }
+    return allocator.Allocate(bytes, alignment);
+  }
 };
 
 } // namespace stone

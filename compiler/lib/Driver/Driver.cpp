@@ -15,3 +15,8 @@ using namespace llvm::opt;
 Driver::Driver() {}
 
 Driver::~Driver() {}
+
+void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
+                              unsigned alignment) {
+  return driver.Allocate(bytes, alignment);
+}

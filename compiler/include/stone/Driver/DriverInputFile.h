@@ -5,6 +5,7 @@
 #include "stone/Driver/CompilationEntity.h"
 
 namespace stone {
+class Driver;
 
 class DriverInputFile final : public CompilationEntity {
 
@@ -56,7 +57,7 @@ public:
 
 public:
   static DriverInputFile *
-  Create(llvm::StringRef fileName,
+  Create(const Driver& driver, llvm::StringRef fileName,
          file::FileType fileType = file::FileType::None);
 };
 

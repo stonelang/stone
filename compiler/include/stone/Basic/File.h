@@ -45,6 +45,15 @@ bool IsInputableFileType(FileType fileType);
 /// Returns true if this file type is outputable
 bool IsOutputableFileType(FileType fileType);
 
+/// Returns true if this file type is None
+bool IsNoneFileType(FileType fileType);
+
+/// Returns true if this file type is Stone
+bool IsStoneFileType(FileType fileType);
+
+/// Returns true if this file type is Object
+bool IsObjectFileType(FileType fileType);
+
 /// Returns true if the type is produced in the sc after the LLVM
 /// passes.
 ///
