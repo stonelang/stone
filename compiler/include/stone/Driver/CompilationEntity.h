@@ -109,15 +109,17 @@ public:
   }
 };
 
-// class TopLevelCompilationEntity : public CompilationEntity {
-//   llvm::TinyPtrVector<CompilationEntity> inputs;
+class TopLevelCompilationEntity : public CompilationEntity {
+  llvm::TinyPtrVector<CompilationEntity> inputs;
 
-// protected:
+protected:
+  TopLevelCompilationEntity(CompilationEntityKind kind,
+                            CompilationEntityList inputs,
+                            file::FileType fileType);
+public:
 
-//   TopLevelCompilationEntity(CompilationEntityKind kind,
-//                             CompilationEntityList inputs,
-//                             file::FileType fileType);
-// };
+
+};
 
 } // namespace stone
 
