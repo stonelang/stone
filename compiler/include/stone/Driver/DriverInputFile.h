@@ -21,6 +21,7 @@ public:
             fileName)) {
 
     assert(!fileName.empty());
+    AddAllowFileType();
   }
 
 public:

@@ -12,6 +12,28 @@
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 
-namespace stone {} // namespace stone
+namespace stone {
+
+class JobConstruction : public TopLevelCompilationEntity {
+
+protected:
+  JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
+                  file::FileType fileType)
+      : TopLevelCompilationEntity(kind, inputs, fileType) {
+    AddAllowFileType();
+  }
+
+public:
+  virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (
+        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
+        entity->GetKind() <= CompilationEntityKind::StaticLinkJobConstruction);
+  }
+};
+
+} // namespace stone
 
 #endif

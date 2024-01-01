@@ -25,6 +25,7 @@ enum class CompilationEntityKind : uint8_t {
   DynamicLinkJobConstruction,
   StaticLinkJobConstruction,
   Job,
+  BatchJob,
   First = Input,
   Last = Job
 };
@@ -90,6 +91,10 @@ public:
   }
   bool IsJob() const { return GetKind() == CompilationEntityKind::Job; }
 
+  bool IsBatchJob() const {
+    return GetKind() == CompilationEntityKind::BatchJob;
+  }
+
   bool HasFileType() { return fileType != file::FileType::None; }
 
   bool HasAllowTopLevel() const {
@@ -145,27 +150,9 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return (
-        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
-        entity->GetKind() <= CompilationEntityKind::Job);
-  }
-};
-
-class JobConstruction : public TopLevelCompilationEntity {
-
-protected:
-  JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
-                  file::FileType fileType)
-      : TopLevelCompilationEntity(kind, inputs, fileType) {}
-
-public:
-  virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
-
-public:
-  static bool classof(const CompilationEntity *entity) {
-    return (
-        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
-        entity->GetKind() <= CompilationEntityKind::StaticLinkJobConstruction);
+    return (entity->GetKind() >=
+                CompilationEntityKind::CompileJobConstruction &&
+            entity->GetKind() <= CompilationEntityKind::Job);
   }
 };
 

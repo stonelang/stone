@@ -62,5 +62,19 @@ public:
   llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
 };
 
+class Job : public TopLevelCompilationEntity {
+
+protected:
+  Job(CompilationEntityKind kind, CompilationEntityList inputs)
+      : TopLevelCompilationEntity(kind, inputs, file::FileType::None) {}
+};
+
+class BatchJob final : public Job {
+
+protected:
+  BatchJob(CompilationEntityList inputs)
+      : Job(CompilationEntityKind::BatchJob, inputs) {}
+};
+
 } // namespace stone
 #endif
