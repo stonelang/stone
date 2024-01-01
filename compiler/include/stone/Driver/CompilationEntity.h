@@ -131,7 +131,10 @@ protected:
   TopLevelCompilationEntity(CompilationEntityKind kind,
                             CompilationEntityList inputs,
                             file::FileType fileType)
-      : CompilationEntity(kind, fileType), inputs(inputs) {}
+      : CompilationEntity(kind, fileType), inputs(inputs) {
+
+        AddAllowTopLevel();
+      }
 
 public:
   size_type size() const { return inputs.size(); }

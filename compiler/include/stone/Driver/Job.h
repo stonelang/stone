@@ -30,13 +30,13 @@ struct CommandInputPair {
   /// (of BaseInputs and BaseOutputs), and used to derive downstream names --
   /// both temporaries and auxiliaries -- but _not_ used as a key into the
   /// DerivedOutputFileMap.
-  StringRef Base;
+  llvm::StringRef Base;
 
   /// A filename that _will be passed_ to the command as a designated primary
   /// input. Typically either equal to BaseInput or a temporary with a name
   /// derived from the BaseInput it is related to. Also used as a key into
   /// the DerivedOutputFileMap.
-  StringRef Primary;
+  llvm::StringRef Primary;
 
   /// Construct a JobInputPair from a Base Input and, optionally, a Primary;
   /// if the Primary is empty, use the Base value for it.
