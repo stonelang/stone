@@ -93,11 +93,6 @@ public:
     assert(HasInputs());
     return inputs.front();
   }
-  //CompilationInputFile* FirstInput() {
-  //   assert(HasInputs());
-  //   return *(inputs.front());
-  // }
-
 
   const CompilationInputFile* LastInput() const { return inputs.back(); }
   /// If \p fn returns true, exits early and returns true.
