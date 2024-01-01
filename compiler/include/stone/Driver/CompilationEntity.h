@@ -20,7 +20,7 @@ enum class CompilationEntityKind : uint8_t {
   StaticLinkJobConstruction,
   Job,
   First = Input,
-  Last = StaticLinkJobConstruction
+  Last = Job
 };
 
 /// A list of all job construction inputs
@@ -51,7 +51,7 @@ public:
   bool IsGeneratePCHJobConstruction() const {
     return GetKind() == CompilationEntityKind::GeneratePCHJobConstruction;
   }
-  bool IsMergeModuleJobConstruction() const{
+  bool IsMergeModuleJobConstruction() const {
     return GetKind() == CompilationEntityKind::MergeModuleJobConstruction;
   }
   bool IsModuleWrapJobConstruction() const {
@@ -66,7 +66,10 @@ public:
   bool IsJob() const { return GetKind() == CompilationEntityKind::Job; }
 
 public:
-  
+  static bool classof(const CompilationEntity *entity) {
+    return (entity->GetKind() >= CompilationEntityKind::First &&
+            entity->GetKind() <= CompilationEntityKind::Last);
+  }
 };
 
 } // namespace stone
