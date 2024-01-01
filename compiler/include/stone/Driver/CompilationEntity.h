@@ -33,26 +33,26 @@ constexpr size_t CompilationEntityAlignInBits = 3;
 class alignas(1 << CompilationEntityAlignInBits) CompilationEntity
     : public DriverAllocation<CompilationEntity> {
 
+  CompilationEntityKind kind;
+  file::FileType fileType;
+
 public:
   enum class CompilationEntityFlags : uint8_t {
     None = 1 << 0,
     AllowTopLevel = 1 << 1,
     AllowFileType = 1 << 2,
   };
-  /// Options that control the JobConstruction
+  
+  using size_type = llvm::ArrayRef<const CompilationEntity *>::size_type;
+  using iterator = llvm::ArrayRef<const CompilationEntity *>::iterator;
+  using const_iterator =
+      llvm::ArrayRef<const CompilationEntity *>::const_iterator;
+
   using CompilationEntityOptions = stone::OptionSet<CompilationEntityFlags>;
   CompilationEntityOptions compilationEntityOpts;
 
-  using size_type = llvm::ArrayRef<CompilationEntity>::size_type;
-  using iterator = llvm::ArrayRef<CompilationEntity>::iterator;
-  using const_iterator = llvm::ArrayRef<CompilationEntity>::const_iterator;
-
   using DriverAllocation<CompilationEntity>::operator new;
   using DriverAllocation<CompilationEntity>::operator delete;
-
-private:
-  CompilationEntityKind kind;
-  file::FileType fileType;
 
 protected:
   CompilationEntity(CompilationEntityKind kind, file::FileType fileType);
@@ -124,6 +124,18 @@ protected:
                             CompilationEntityList inputs,
                             file::FileType fileType)
       : CompilationEntity(kind, fileType), inputs(inputs) {}
+
+public:
+  size_type size() const { return inputs.size(); }
+  iterator begin() { return inputs.begin(); }
+  iterator end() { return inputs.end(); }
+  const_iterator begin() const { return inputs.begin(); }
+  const_iterator end() const { return inputs.end(); }
+
+  // Returns the index of the Input action's output file which is used as
+  // (single) input to this action. Most actions produce only a single output
+  // file, so we return 0 by default.
+  virtual size_t GetInputIndex() const { return 0; }
 
 public:
 };
