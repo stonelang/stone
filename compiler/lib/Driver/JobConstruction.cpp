@@ -20,3 +20,13 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
 
   assert(file::IsOutputableFileType(outputFileType));
 }
+
+
+DynamicLinkJobConstruction::DynamicLinkJobConstruction(
+    CompilationEntityList inputs, LinkMode linkMode, bool withLTO)
+    : LinkJobConstruction(CompilationEntityKind::DynamicLinkJobConstruction, inputs,
+                          FileType::Image, linkMode),
+      withLTO(withLTO) {
+
+  assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
+}

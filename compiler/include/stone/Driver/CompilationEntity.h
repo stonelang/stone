@@ -133,8 +133,8 @@ protected:
                             file::FileType fileType)
       : CompilationEntity(kind, fileType), inputs(inputs) {
 
-        AddAllowTopLevel();
-      }
+    AddAllowTopLevel();
+  }
 
 public:
   size_type size() const { return inputs.size(); }
