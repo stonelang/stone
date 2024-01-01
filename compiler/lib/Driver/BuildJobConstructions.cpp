@@ -56,10 +56,11 @@ Status BuildJobConstructionsImpl::BuildForNormalCompileInvocation() {
         switch (input.GetFileType()) {
         case FileType::Stone: {
           currentInput = BuildCompileJobConstruction(currentInput);
-           AddModuleInput(currentInput);
+          AddModuleInput(currentInput);
           if (driver.GetDriverOptions().IsLinkableAction()) {
             AddLinkerInput(currentInput);
           }
+          break;
         }
         case FileType::Object: {
           AddLinkerInput(currentInput);
@@ -105,9 +106,8 @@ Status BuildJobConstructionsImpl::BuildMergeModuleJobConstruction() {
 
 LinkJobConstruction *BuildJobConstructionsImpl::BuildLinkJobConstruction() {
 
-  if (driver.GetDriverOptions().IsLinkableAction() && HasLinkerInputs()) {
-    JobConstruction *linkJobConstruction = nullptr;
-    // Add the linker inputs
+  if (driver.GetDriverOptions().IsLinkableAction()) {
+    assert(HasLinkerInputs() && "Canot link without linking inputs!");
     switch (driver.GetDriverOptions().GetLinkMode()) {
     case LinkMode::StaticLibrary:
       return StaticLinkJobConstruction::Create(
@@ -131,6 +131,7 @@ Status BuildJobConstructionsImpl::BuildBackendJobConstruction() {
 Status BuildJobConstructionsImpl::FinishBuildJobConstructions() {
 
   if (driver.GetDriverOptions().IsLinkableAction() && HasLinkerInputs()) {
+
     auto linkJobConstruction = BuildLinkJobConstruction();
     if (!linkJobConstruction) {
       return Status::MakeHasCompletionAndIsError();
