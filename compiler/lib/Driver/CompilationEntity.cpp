@@ -5,8 +5,8 @@
 using namespace stone;
 using namespace stone::file;
 
-CompilationEntity::CompilationEntity(CompilationEntityKind kind)
-    : CompilationEntity(kind, FileType::None) {}
+// CompilationEntity::CompilationEntity(CompilationEntityKind kind)
+//     : CompilationEntity(kind, FileType::None) {}
 
 CompilationEntity::CompilationEntity(CompilationEntityKind kind,
                                      FileType fileType)
@@ -18,8 +18,10 @@ CompilationEntity::CompilationEntity(CompilationEntityKind kind,
 }
 
 // TopLevelCompilationEntity::TopLevelCompilationEntity(
-//     CompilationEntityKind kind, CompilationEntityList inputs)
-//     : CompilationEntity(kind), inputs(inputs) {}
+//     CompilationEntityKind kind, CompilationEntityList inputs,
+//     file::FileType fileType)
+//     : CompilationEntity(kind, inputs, fileType) {}
+
 
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName,

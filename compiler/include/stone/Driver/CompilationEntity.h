@@ -7,6 +7,7 @@
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/TinyPtrVector.h"
+#include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
 class CompilationEntity;
@@ -113,8 +114,10 @@ public:
 //   llvm::TinyPtrVector<CompilationEntity> inputs;
 
 // protected:
+
 //   TopLevelCompilationEntity(CompilationEntityKind kind,
-//                             CompilationEntityList inputs);
+//                             CompilationEntityList inputs,
+//                             file::FileType fileType);
 // };
 
 } // namespace stone
