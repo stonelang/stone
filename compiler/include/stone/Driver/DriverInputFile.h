@@ -2,10 +2,11 @@
 #define STONE_DRIVER_DRIVER_INPUTFILE_H
 
 #include "stone/Basic/File.h"
+#include "stone/Driver/CompilationEntity.h"
 
 namespace stone {
 
-class DriverInputFile final {
+class DriverInputFile final : public CompilationEntity {
 
   llvm::StringRef fileName;
   file::FileType fileType;
@@ -16,7 +17,8 @@ public:
 
   /// Constructs an input file from the provided data.
   DriverInputFile(llvm::StringRef fileName, file::FileType fileType)
-      : fileName(ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
+      : CompilationEntity(CompilationEntityKind::Input),
+        fileName(ConvertBufferNameFromLLVMGetFileOrSTDINToStoneConventions(
             fileName)),
         fileType(fileType) {
 
@@ -46,6 +48,16 @@ public:
     }
     return fileName;
   }
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (entity->GetKind() == CompilationEntityKind::Input);
+  }
+
+public:
+  static DriverInputFile *
+  Create(llvm::StringRef fileName,
+         file::FileType fileType = file::FileType::None);
 };
 
 } // namespace stone
