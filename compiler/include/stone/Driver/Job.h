@@ -65,8 +65,7 @@ public:
 class Job : public TopLevelCompilationEntity {
 
 protected:
-  Job(CompilationEntityKind kind, CompilationEntityList inputs)
-      : TopLevelCompilationEntity(kind, inputs, file::FileType::None) {}
+  Job(CompilationEntityKind kind, CompilationEntityList inputs);
 };
 
 class BatchJob final : public Job {
