@@ -10,6 +10,9 @@
 #include "llvm/ADT/TinyPtrVector.h"
 
 namespace stone {
+class Job;
+class JobConstruct;
+class Driver;
 class CompilationEntity;
 
 enum class CompilationEntityKind : uint8_t {
@@ -42,7 +45,7 @@ public:
     AllowTopLevel = 1 << 1,
     AllowFileType = 1 << 2,
   };
-  
+
   using size_type = llvm::ArrayRef<const CompilationEntity *>::size_type;
   using iterator = llvm::ArrayRef<const CompilationEntity *>::iterator;
   using const_iterator =
@@ -138,6 +141,32 @@ public:
   virtual size_t GetInputIndex() const { return 0; }
 
 public:
+  void AddInput(const CompilationEntity *input) { inputs.push_back(input); }
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (
+        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
+        entity->GetKind() <= CompilationEntityKind::Job);
+  }
+};
+
+class JobConstruction : public TopLevelCompilationEntity {
+
+protected:
+  JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
+                  file::FileType fileType)
+      : TopLevelCompilationEntity(kind, inputs, fileType) {}
+
+public:
+  virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (
+        entity->GetKind() >= CompilationEntityKind::CompileJobConstruction &&
+        entity->GetKind() <= CompilationEntityKind::StaticLinkJobConstruction);
+  }
 };
 
 } // namespace stone
