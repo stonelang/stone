@@ -13,8 +13,9 @@ class CompilationEntityPrettyStackTrace : public llvm::PrettyStackTraceEntry {
 
 public:
   CompilationEntityPrettyStackTrace(const char *description,
-                                  const CompilationEntity *entity)
+                                    const CompilationEntity *entity)
       : entity(entity), description(description) {}
+
 public:
   void print(llvm::raw_ostream &OS) const override;
 };

@@ -14,16 +14,21 @@ CompilationEntity::CompilationEntity(CompilationEntityKind kind,
   }
 }
 
-CompilationInputFile *CompilationInputFile::Create(const Driver &driver,
+
+DriverInputFile *DriverInputFile::Create(const Driver &driver,
+                                         llvm::StringRef fileName) {
+
+  // NOTE: The DriverInputFile will attempt to parse the FileType from the name 
+  return DriverInputFile::Create(driver, fileName, FileType::None);
+}
+
+DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName,
                                          FileType fileType) {
   if (file::IsNoneFileType(fileType)) {
-    return new (driver) CompilationInputFile(fileName);
+    return new (driver) DriverInputFile(fileName);
   }
-  return new (driver) CompilationInputFile(fileName, fileType);
+  return new (driver) DriverInputFile(fileName, fileType);
 }
 
-
-void CompilationEntityPrettyStackTrace::print(llvm::raw_ostream &OS) const {
-
-}
+void CompilationEntityPrettyStackTrace::print(llvm::raw_ostream &OS) const {}

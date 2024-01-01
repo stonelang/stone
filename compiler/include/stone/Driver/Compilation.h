@@ -17,6 +17,44 @@ class DerivedArgList;
 } // namespace opt
 } // namespace llvm
 
-namespace stone {} // namespace stone
+namespace stone {
+
+class CompilationResult final {
+public:
+  /// Set to true if any job exits abnormally (i.e. crashes).
+  bool hadAbnormalExit;
+  /// The exit code of this driver process.
+  int exitCode;
+
+public:
+  CompilationResult(const CompilationResult &) = delete;
+  CompilationResult &operator=(const CompilationResult &) = delete;
+
+  CompilationResult(CompilationResult &&) = default;
+  CompilationResult &operator=(CompilationResult &&) = default;
+
+public:
+  CompilationResult();
+};
+
+class Compilation final {
+  const Driver &driver;
+
+public:
+  Compilation(const Driver &driver);
+
+public:
+  Status Setup();
+  const Driver &GetDriver() const { return driver; }
+
+public:
+  /// Print the list of Actions in a Compilation.
+  void PrintJobs(llvm::raw_ostream &os) const;
+
+public:
+  CompilationResult ExecuteJobs();
+};
+
+} // namespace stone
 
 #endif

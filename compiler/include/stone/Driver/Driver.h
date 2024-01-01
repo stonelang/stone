@@ -46,6 +46,7 @@ public:
   ~Driver();
 
 public:
+public:
   /// Allocate - Allocate memory from the Driver bump pointer.
   void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
     if (bytes == 0) {
