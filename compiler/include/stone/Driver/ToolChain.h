@@ -355,9 +355,6 @@ public:
 
 class LinuxToolChain final : public UnixToolChain {
 
-protected:
-  std::string GetDefaultLinker() const override;
-
 public:
   LinuxToolChain(const Driver &driver);
   ~LinuxToolChain() = default;
@@ -401,6 +398,47 @@ public:
   static bool classof(const ToolChain *toolChain) {
     return toolChain->GetKind() == ToolChainKind::Linux;
   }
+};
+
+class WindowsToolChain final : public ToolChain {
+public:
+  WindowsToolChain(const Driver &driver);
+  ~WindowsToolChain() = default;
+
+public:
+  JobInvocation ConstructInvocation(const CompileJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  JobInvocation ConstructInvocation(const StaticLinkJobConstruction &job,
+                                    const JobContext &context) const override;
+
+  std::string SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                      bool shared = true) const override;
+
+public:
+  void AddPluginArguments(const llvm::opt::ArgList &args,
+                          llvm::opt::ArgStringList &arguments) const override;
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const CommandOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
 };
 
 } // namespace stone
