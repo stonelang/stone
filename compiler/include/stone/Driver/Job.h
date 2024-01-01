@@ -62,7 +62,52 @@ public:
   llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
 };
 
+class JobContext final {
+private:
+  Compilation &compilation;
+
+public:
+  llvm::ArrayRef<const Job *> inputs;
+  llvm::ArrayRef<const JobConstruction *> inputConstructions;
+
+  const CommandOutput &commandOutput;
+
+public:
+  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
+             llvm::ArrayRef<const JobConstruction *> inputConstructions,
+             const CommandOutput &commandOutput);
+};
+
+enum class JobCondition {
+  // There was no information about the previous build (i.e., an input map),
+  // or the map marked this Job as dirty or needing a cascading build.
+  // Be maximally conservative with dependencies.
+  Always,
+  // The input changed, or this job was scheduled as non-cascading in the last
+  // build but didn't get to run.
+  RunWithoutCascading,
+  // The best case: input didn't change, output exists.
+  // Only run if it depends on some other thing that changed.
+  CheckDependencies,
+  // Run no matter what (but may or may not cascade).
+  NewlyAdded
+};
+
 class Job : public TopLevelCompilationEntity {
+public:
+  using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
+  /// If positive, contains llvm::ProcessID for a real Job on the host OS. If
+  /// negative, contains a quasi-PID, which identifies a Job that's a member of
+  /// a BatchJob _without_ denoting an operating system process.
+  using JobProcessID = int64_t;
+  enum class JobFlags : uint8_t {
+    None = 1 << 0,
+    TopLevel = 1 << 1,
+  };
+  /// Options that control the JobConstruction
+  using JobOptions = stone::OptionSet<JobFlags>;
+  JobOptions jobOptions;
+
 
 protected:
   Job(CompilationEntityKind kind, CompilationEntityList inputs);
