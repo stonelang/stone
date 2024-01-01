@@ -24,9 +24,10 @@ CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
 llvm::ArrayRef<const Job *>
 CompileJobConstruction::ConstructJobs(const Driver &driver) {
 
-  if (!HasTopLevel()) {
-    return {nullptr};
-  }
+  // TODO: Think about this
+  assert(HasTopLevel() && "Only top-level job construction can create jobs!");
+
+  return {nullptr};
 }
 
 CompileJobConstruction *
@@ -133,7 +134,8 @@ GeneratePCHJobConstruction::ConstructJobs(const Driver &driver) {
   return {nullptr};
 }
 
-void CompilationEntities::AddTopLevelJobConstruction(const JobConstruction *construction) {
+void CompilationEntities::AddTopLevelJobConstruction(
+    const JobConstruction *construction) {
   assert(construction);
   assert(construction->HasTopLevel());
   topLevelJobConstructions.push_back(construction);

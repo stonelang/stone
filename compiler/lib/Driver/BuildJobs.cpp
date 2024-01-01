@@ -40,7 +40,7 @@ Status Driver::BuildTopLevelJobs() {
 
   GetCompilationEntities().ForEachTopLevelJobConstruction(
       [&](const JobConstruction *construction) {
-        const_cast<JobConstruction*>(construction)->ConstructJobs(*this);
+        const_cast<JobConstruction *>(construction)->ConstructJobs(*this);
       });
 
   BuildJobsImpl buildJobsImpl(*this);

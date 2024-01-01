@@ -205,7 +205,8 @@ public:
   DriverInputFile *CastToDriverInputFile(JobConstructionInput input) {
     return input.dyn_cast<DriverInputFile *>();
   }
-  JobConstructionInput CastToJobConstructionInput(const DriverInputFile &input){
+  JobConstructionInput
+  CastToJobConstructionInput(const DriverInputFile &input) {
     return const_cast<DriverInputFile *>(&input);
   }
 

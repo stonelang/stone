@@ -28,7 +28,8 @@ class CompilationEntities final {
   friend Driver;
   friend Compilation;
 
-  // A graph of JobConstructions -- do not mark as cons since the JobConstruction creates the Job 
+  // A graph of JobConstructions -- do not mark as cons since the
+  // JobConstruction creates the Job
   llvm::SmallVector<const JobConstruction *, 8> topLevelJobConstructions;
 
   // A graph of the top level jobs built by the driver

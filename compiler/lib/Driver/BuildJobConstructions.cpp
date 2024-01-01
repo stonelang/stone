@@ -51,10 +51,15 @@ Status BuildJobConstructionsImpl::BuildForNormalCompileInvocation() {
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile &input) {
         assert(file::IsPartOfCompilation(input.GetFileType()));
-        JobConstructionInput currentInput = driver.CastToJobConstructionInput(input);
+        JobConstructionInput currentInput =
+            driver.CastToJobConstructionInput(input);
         switch (input.GetFileType()) {
         case FileType::Stone: {
           currentInput = BuildCompileJobConstruction(currentInput);
+           AddModuleInput(currentInput);
+          if (driver.GetDriverOptions().IsLinkableAction()) {
+            AddLinkerInput(currentInput);
+          }
         }
         case FileType::Object: {
           AddLinkerInput(currentInput);
@@ -88,12 +93,8 @@ CompileJobConstruction *BuildJobConstructionsImpl::BuildCompileJobConstruction(
   auto compileJobConstruction = CompileJobConstruction::Create(
       driver, input, driver.GetDriverOptions().GetOutputFileType());
 
-  AddModuleInput(compileJobConstruction);
-
-  /// TODO: You may want to check this or do you just want to pass to the
-  /// compile
-  if (driver.GetDriverOptions().IsLinkableAction()) {
-    AddLinkerInput(compileJobConstruction);
+  if (driver.GetDriverOptions().IsCompileOnlyAction()) {
+    compileJobConstruction->AddTopLevel();
   }
   return compileJobConstruction;
 }
