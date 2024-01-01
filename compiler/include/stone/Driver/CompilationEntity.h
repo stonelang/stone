@@ -27,7 +27,7 @@ enum class CompilationEntityKind : uint8_t {
   Job,
   BatchJob,
   First = Input,
-  Last = Job
+  Last = BatchJob
 };
 
 /// A list of all job construction inputs
@@ -152,7 +152,7 @@ public:
   static bool classof(const CompilationEntity *entity) {
     return (entity->GetKind() >=
                 CompilationEntityKind::CompileJobConstruction &&
-            entity->GetKind() <= CompilationEntityKind::Job);
+            entity->GetKind() <= CompilationEntityKind::BatchJob);
   }
 };
 

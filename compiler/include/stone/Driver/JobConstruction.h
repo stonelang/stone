@@ -34,13 +34,12 @@ public:
   }
 };
 
-
 class IncrementatlJobConstruction : public JobConstruction {
 public:
   IncrementatlJobConstruction(CompilationEntityKind kind,
                               CompilationEntityList inputs,
-                              file::FileType fileType) : JobConstruction(kind, inputs, fileType) {
-  }
+                              file::FileType fileType)
+      : JobConstruction(kind, inputs, fileType) {}
 
 public:
   llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
@@ -48,8 +47,31 @@ public:
 public:
   static bool classof(const CompilationEntity *entity) {
     return entity->GetKind() == CompilationEntityKind::CompileJobConstruction ||
-           entity->GetKind() == CompilationEntityKind::MergeModuleJobConstruction;
+           entity->GetKind() ==
+               CompilationEntityKind::MergeModuleJobConstruction;
   }
+};
+
+class CompileJobConstruction final : public IncrementatlJobConstruction {
+
+public:
+  /// In this scenario, we are creating one compile job with all inputs to be
+  /// added.
+  CompileJobConstruction(file::FileType outputFileType);
+
+public:
+  /// In this scenario, one compile job for eache input.
+  CompileJobConstruction(const CompilationEntity *input,
+                         file::FileType outputFileType);
+
+public:
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return entity->GetKind() == CompilationEntityKind::CompileJobConstruction;
+  }
+
 };
 
 } // namespace stone
