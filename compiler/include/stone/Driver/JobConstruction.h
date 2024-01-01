@@ -89,6 +89,27 @@ public:
   }
 };
 
+class LinkJobConstruction : public JobConstruction {
+  LinkMode linkMode;
+
+public:
+  LinkJobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
+                      file::FileType outputFileType, LinkMode linkMode)
+      : JobConstruction(kind, inputs, outputFileType), linkMode(linkMode) {}
+
+public:
+  LinkMode GetLinkMode() const { return linkMode; }
+  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override;
+
+public:
+  static bool classof(const CompilationEntity *entity) {
+    return (entity->GetKind() ==
+            CompilationEntityKind::StaticLinkJobConstruction) ||
+           (entity->GetKind() ==
+            CompilationEntityKind::DynamicLinkJobConstruction);
+  }
+};
+
 } // namespace stone
 
 #endif
