@@ -5,8 +5,6 @@
 using namespace stone;
 using namespace stone::file;
 
-// CompilationEntity::CompilationEntity(CompilationEntityKind kind)
-//     : CompilationEntity(kind, FileType::None) {}
 
 CompilationEntity::CompilationEntity(CompilationEntityKind kind,
                                      FileType fileType)

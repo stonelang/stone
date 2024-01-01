@@ -48,7 +48,6 @@ public:
   using DriverAllocation<CompilationEntity>::operator delete;
 
 protected:
-  CompilationEntity(CompilationEntityKind kind);
   CompilationEntity(CompilationEntityKind kind, file::FileType fileType);
 
 public:
