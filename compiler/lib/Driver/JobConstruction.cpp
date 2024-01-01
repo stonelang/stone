@@ -22,7 +22,9 @@ CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
 
 llvm::ArrayRef<const Job *> CompileJobConstruction::ConstructJobs() {
 
-  return {nullptr};
+  if (!HasTopLevel()) {
+    return {nullptr};
+  }
 }
 
 CompileJobConstruction *

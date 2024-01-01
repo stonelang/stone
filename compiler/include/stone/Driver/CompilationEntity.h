@@ -37,7 +37,7 @@ class CompilationEntities final {
   // A graph of the top level jobs built by the driver
   llvm::SmallVector<const Job *, 8> topLevelExternalJobs;
 
-private:
+public:
   void AddTopLevelJobConstruction(const JobConstruction *construction);
   void AddTopLevelJob(const Job *job);
   void AddTopLevelExternalJob(const Job *job);

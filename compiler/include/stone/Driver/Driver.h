@@ -199,6 +199,13 @@ public:
   /// Print the list of Actions in a Compilation.
   void PrintJobConstructions() const;
 
+  JobConstruction *CastToJobConstruction(JobConstructionInput input) {
+    return input.get<JobConstruction *>();
+  }
+  DriverInputFile *CastToDriverInputFile(JobConstructionInput input) {
+    return input.dyn_cast<DriverInputFile *>();
+  }
+
 public:
   ///< Jobs
 

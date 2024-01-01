@@ -78,9 +78,6 @@ public:
   // file, so we return 0 by default.
   virtual size_t GetInputIndex() const { return 0; }
 
-  // DriverInputFile* GetASDriverInputFile();
-  // JobConstruction* GetASJobConstruction();
-
 public:
   JobConstructionKind GetKind() const { return kind; }
   file::FileType GetFileType() { return fileType; }

@@ -136,7 +136,8 @@ Status BuildJobConstructionsImpl::FinishBuildJobConstructions() {
       return Status::MakeHasCompletionAndIsError();
     }
     linkJobConstruction->AddTopLevel();
-    driver.AddTopLevelJobConstruction(linkJobConstruction);
+    driver.GetCompilationEntities().AddTopLevelJobConstruction(
+        linkJobConstruction);
     return Status();
   }
 }
