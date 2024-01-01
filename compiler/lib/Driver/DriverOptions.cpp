@@ -136,14 +136,14 @@ Status DriverOptionsConverter::Convert() {
   driverOpts.inputFileType =
       driverOpts.GetInputsAndOutputs().FirstInput()->GetFileType();
 
-  // driverOpts.action = stone::ComputeAction(args);
-  // if (!driverOpts.HasAction()) {
-  //   return Status::MakeHasCompletionAndIsError();
-  // }
-  // driverOpts.workingDirectory = ComputeWorkingDirectory();
-  // if (!driverOpts.HasWorkingDirectory()) {
-  //   return Status::MakeHasCompletionAndIsError();
-  // }
+  driverOpts.action = stone::ComputeAction(args);
+  if (!driverOpts.HasAction()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  driverOpts.workingDirectory = ComputeWorkingDirectory();
+  if (!driverOpts.HasWorkingDirectory()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
 
   // driverOpts.toolChainKind = ComputeToolChainKind();
   // if (driverOpts.HasToolChainKind()) {
@@ -152,6 +152,16 @@ Status DriverOptionsConverter::Convert() {
   // driverOpts.compileStyle = ComputeCompileStyle();
 
   return Status();
+}
+
+llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
+  if (auto *arg = args.getLastArg(opts::WorkingDirectory)) {
+    llvm::SmallString<128> workingDirectory;
+    workingDirectory = arg->getValue();
+    llvm::sys::fs::make_absolute(workingDirectory);
+    return workingDirectory.str();
+  }
+  return llvm::StringRef();
 }
 
 // ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
@@ -196,15 +206,6 @@ Status DriverOptionsConverter::Convert() {
 //   ToolChainKind::None;
 // }
 
-// llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
-//   if (auto *arg = args.getLastArg(opts::WorkingDirectory)) {
-//     llvm::SmallString<128> workingDirectory;
-//     workingDirectory = arg->getValue();
-//     llvm::sys::fs::make_absolute(workingDirectory);
-//     return workingDirectory.str();
-//   }
-//   return llvm::StringRef();
-// }
 
 // CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
 //   return CompileStyle::Normal;

@@ -392,6 +392,18 @@ public:
   bool enableCrossModuleIncrementalBuild = false;
 
 public:
+
+  /// \check that there exist a working directory
+  bool HasWorkingDirectory() const { return !workingDirectory.empty() && workingDirectory.size() > 0; }
+  /// \return working directory for the compilation
+  llvm::StringRef GetWorkingDirectory() const { return workingDirectory; }
+
+  /// \return the main executable path
+  llvm::StringRef GetMainExecutablePath() const { return mainExecutablePath; }
+
+  /// \return the main executable name
+  llvm::StringRef GetMainExecutableName() const { return mainExecutableName; }
+
   /// \return true if the action is valid
   bool HasAction() const { return !action.IsAlien(); }
 
