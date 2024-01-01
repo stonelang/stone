@@ -34,32 +34,28 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   auto mainExecutableName = file::GetStem(mainExecutablePath);
   driver.SetMainExecutableName(mainExecutableName);
 
-   auto argStrings = driver.ParseArgStrings(args);
+  auto argStrings = driver.ParseArgStrings(args);
   if (!argStrings) {
     return FinishMain(Status::Error());
   }
-  // Future:
-  auto status = driver.ConvertArgStrings(*argStrings);
-  if (status.IsErrorOrHasCompletion()) {
-    return FinishMain(status);
-  }
 
-  status = [&]() -> Status {
-    if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs() ||
-        driver.GetDriverOptions().IsSupportAction()) {
-      driver.PrintSupport();
-      return Status::MakeHasCompletion();
+  auto status = driver.ConvertArgStrings(*argStrings);
+  status = [&](Status status) -> Status {
+    if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs()) {
+      driver.PrintHelp();
+    } else if (driver.GetDriverOptions().IsHelpAction()) {
+      driver.PrintHelp();
+    } else if (driver.GetDriverOptions().IsHelpHiddenAction()) {
+      driver.PrintHelp(true /* show hidden options*/);
     }
-    return Status();
-  }();
+    return status;
+  }(status);
 
   if (status.IsErrorOrHasCompletion()) {
     return FinishMain(status);
   }
   assert(driver.GetDriverOptions().HasToolChainKind() &&
          "toolchains not found -- cannot proceed with compilation!");
-
-
 
   return FinishMain();
 }

@@ -18,7 +18,6 @@ Driver::Driver()
 
 Driver::~Driver() {}
 
-
 llvm::opt::InputArgList *
 Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
@@ -51,7 +50,6 @@ Status Driver::ConvertArgStrings(const llvm::opt::InputArgList &args) {
   return DriverOptionsConverter(args, driverOpts, *this).Convert();
 }
 
-
 void Driver::PrintHelp(bool showHidden) const {
 
   unsigned IncludedFlagsBitmask = 0;
@@ -62,22 +60,8 @@ void Driver::PrintHelp(bool showHidden) const {
   }
   GetOptTable().printHelp(
       llvm::outs(), GetDriverOptions().GetMainExecutableName().data(),
-      "Stone compiler", IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      "Stone is a compiler tool for compiling Stone source code.", IncludedFlagsBitmask, ExcludedFlagsBitmask,
       /*ShowAllAliases*/ false);
-}
-
-void Driver::PrintSupport() const {
-  switch (GetDriverOptions().GetAction().GetKind()) {
-  case ActionKind::PrintHelp:
-    return PrintHelp();
-  case ActionKind::PrintHelpHidden:
-    return PrintHelp(true);
-  case ActionKind::PrintVersion:
-    // return PrintVersion(); // TODO:
-    break;
-  default:
-    llvm_unreachable("Invalid support action!");
-  }
 }
 
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,

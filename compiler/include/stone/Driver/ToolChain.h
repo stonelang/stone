@@ -6,9 +6,6 @@
 
 namespace stone {
 
-
-	class ToolChain{
-
-	};
+class ToolChain {};
 } // namespace stone
 #endif

@@ -7,12 +7,11 @@
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Job.h"
+#include "stone/Driver/JobConstruction.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
-#include "stone/Driver/JobConstruction.h"
-#include "stone/Driver/Job.h"
-
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -111,7 +110,6 @@ public:
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
-
   bool HasToolChain() { return toolChain != nullptr; }
   ToolChain &GetToolChain() { return *toolChain; }
   const ToolChain &GetToolChain() const { return *toolChain; }
@@ -133,7 +131,8 @@ public:
   /// Build the job-constructions
   Status BuildJobConstructions();
 
-  // const JobConstruction *CastToJobConstruction(const CompilationEntity *entity) {
+  // const JobConstruction *CastToJobConstruction(const CompilationEntity
+  // *entity) {
   //   return llvm::dyn_cast<const JobConstruction*>(entity);
   // }
 
@@ -156,17 +155,12 @@ public:
   void PrintJobs() const;
 
 public:
-  /// Print Help, HelpHidden, or Version.
-  ///
-  /// \param ShowHidden Show hidden options.
-  void PrintSupport() const;
-
-  /// Print the driver version.
-  void PrintVersion(const ToolChain &toolChain, llvm::raw_ostream &os) const;
   /// Print the help text.
   ///
   /// \param ShowHidden Show hidden options.
   void PrintHelp(bool showHidden = false) const;
+  /// Print the driver version.
+  void PrintVersion(const ToolChain &toolChain, llvm::raw_ostream &os) const;
 
 public:
   /// Allocate - Allocate memory from the Driver bump pointer.

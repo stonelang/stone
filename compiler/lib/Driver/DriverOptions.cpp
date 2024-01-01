@@ -12,7 +12,12 @@ using namespace llvm::opt;
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
-bool DriverOptions::IsSupportAction() const { return action.IsSupport(); }
+bool DriverOptions::IsHelpAction() const { return action.IsPrintHelp(); }
+bool DriverOptions::IsHelpHiddenAction() const { return action.IsPrintHelpHidden(); }
+bool DriverOptions::IsPrintVersionAction() const {
+  return action.IsPrintVersion();
+}
+
 bool DriverOptions::IsCompilableAction() const { return action.CanCompile(); }
 bool DriverOptions::IsCompileOnlyAction() const {
   return (IsCompilableAction() && !IsLinkableAction());

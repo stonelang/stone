@@ -432,9 +432,14 @@ public:
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
-  /// \return true if the given action only parses without doing other
-  /// compilation steps.
-  bool IsSupportAction() const;
+  /// \return true if it is the help action
+  bool IsHelpAction() const;
+
+  /// \return true it is the help hidden action
+  bool IsHelpHiddenAction() const;
+
+  /// \return true if it is the print version
+  bool IsPrintVersionAction() const;
 
   /// \return true if the given action only compiles without doing other
   /// compilation steps.
