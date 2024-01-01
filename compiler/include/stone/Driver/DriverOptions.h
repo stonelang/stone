@@ -23,8 +23,6 @@ class DiagnosticEngine;
 class DriverInputsAndOutputs;
 class DriverInputsConverter;
 
-using ToolChainKind = llvm::Triple::OSType;
-
 enum class LinkMode : UInt8 {
   // We are not linking
   None = 0,
@@ -76,13 +74,31 @@ enum class CompileStyle : UInt8 {
 
 };
 
+enum class ToolChainKind {
+  None = 0,
+  // We always default to unix
+  Unix,
+  /// Darwin tool-chain
+  Darwin,
+  /// Linux tool-chain
+  Linux,
+  /// Windows tool-chain
+  Windows,
+  /// FreeBSD tool-chain
+  FreeBSD,
+  /// OpenBSD tool-chain
+  OpenBSD,
+  /// Android tool-chain
+  Android,
+};
+
 /// Only for DriverInputFiles
 class DriverInputsAndOutputs final {
 
   friend DriverInputsConverter;
   std::vector<const DriverInputFile *> inputs;
 
-   /// Punt where needed to enable batch mode experiments.
+  /// Punt where needed to enable batch mode experiments.
   bool areBatchModeChecksBypassed = false;
 
   /// Recover missing inputs. Note that recovery itself is users responsibility.
@@ -102,7 +118,7 @@ public:
   bool HasNoInputs() const { return !HasInputs(); }
   bool HasSingleInput() const { return InputCount() == 1; }
 
-   bool ShouldRecoverMissingInputs() { return shouldRecoverMissingInputs; }
+  bool ShouldRecoverMissingInputs() { return shouldRecoverMissingInputs; }
   void SetShouldRecoverMissingInputs() { shouldRecoverMissingInputs = true; }
 
   const DriverInputFile *FirstInput() const {
@@ -127,7 +143,6 @@ class DriverInputsConverter final {
   const llvm::opt::ArgList &args;
   DriverOptions &driverOpts;
   Driver &driver;
-
 
 public:
   DriverInputsConverter(const llvm::opt::ArgList &args,
@@ -156,12 +171,12 @@ public:
 class DriverOutputsConverter final {
   const llvm::opt::ArgList &args;
   DriverInputsAndOutputs &inputsAndOutputs;
-  Driver& driver;
+  Driver &driver;
 
 public:
   DriverOutputsConverter(const llvm::opt::ArgList &args,
                          DriverInputsAndOutputs &inputsAndOutputs,
-                         Driver& driver)
+                         Driver &driver)
       : args(args), inputsAndOutputs(inputsAndOutputs), driver(driver) {}
 
   // bool Convert(std::vector<std::string> &mainOutputs,
@@ -183,7 +198,7 @@ class DriverOptionsConverter final {
 
 public:
   DriverOptionsConverter(const llvm::opt::ArgList &args,
-                         DriverOptions &driverOpts, Driver& driver);
+                         DriverOptions &driverOpts, Driver &driver);
 
 private:
   ToolChainKind ComputeToolChainKind();
@@ -323,7 +338,7 @@ class DriverOptions final {
   llvm::StringRef workingDirectory;
 
   /// The tool chain to use for this compilation
-  ToolChainKind toolChainKind = ToolChainKind::UnknownOS;
+  ToolChainKind toolChainKind = ToolChainKind::None;
 
   /// The inputs and the associated outputs with files
   DriverInputsAndOutputs inputsAndOutputs;
@@ -332,13 +347,12 @@ class DriverOptions final {
   DriverOutputInfo driverOutputInfo;
 
 public:
-
-   /// The input file type for compilation
+  /// The input file type for compilation
   file::FileType inputFileType = file::FileType::None;
 
   bool shouldProcessDuplicateInputFile = false;
 
-  bool allowModuleWithCompilerErrors = false; 
+  bool allowModuleWithCompilerErrors = false;
 
   /// Indicates whether the driver should check that the input file exist.
   bool checkInputFileExistence = false;
@@ -391,9 +405,10 @@ public:
   bool enableCrossModuleIncrementalBuild = false;
 
 public:
-
   /// \check that there exist a working directory
-  bool HasWorkingDirectory() const { return !workingDirectory.empty() && workingDirectory.size() > 0; }
+  bool HasWorkingDirectory() const {
+    return !workingDirectory.empty() && workingDirectory.size() > 0;
+  }
   /// \return working directory for the compilation
   llvm::StringRef GetWorkingDirectory() const { return workingDirectory; }
 
@@ -411,6 +426,11 @@ public:
 
   /// \return the action
   const Action &GetAction() const { return action; }
+
+  /// \check that there exist a tool chain kind
+  bool HasToolChainKind() const { return toolChainKind != ToolChainKind::None; }
+  /// \return the tool chain kind computed
+  ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
   /// \return true if the given action only parses without doing other
   /// compilation steps.
@@ -433,9 +453,7 @@ public:
   bool IsLinkOnlyAction() const;
 
   /// \return the computed input and outputs
-  DriverInputsAndOutputs &GetInputsAndOutputs(){
-    return inputsAndOutputs;
-  }
+  DriverInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
   /// \return the computed input and outputs
   const DriverInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;

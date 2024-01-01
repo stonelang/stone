@@ -1,6 +1,6 @@
-#include "stone/Driver/Driver.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/CompilationEntity.h"
+#include "stone/Driver/Driver.h"
 
 #include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
@@ -103,7 +103,7 @@ DriverInputsConverter::CreateInputFiles() {
 //< DriverOptionsConverter
 DriverOptionsConverter::DriverOptionsConverter(const llvm::opt::ArgList &args,
                                                DriverOptions &driverOpts,
-                                               Driver& driver)
+                                               Driver &driver)
     : args(args), driverOpts(driverOpts), driver(driver) {}
 
 Status DriverOptionsConverter::Convert() {
@@ -146,11 +146,10 @@ Status DriverOptionsConverter::Convert() {
   }
   driverOpts.driverOutputInfo.compileStyle = ComputeCompileStyle();
 
-  // driverOpts.toolChainKind = ComputeToolChainKind();
-  // if (driverOpts.HasToolChainKind()) {
-  //   return Status::MakeHasCompletionAndIsError();
-  // }
-  
+  driverOpts.toolChainKind = ComputeToolChainKind();
+  if (driverOpts.HasToolChainKind()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
 
   return Status();
 }
@@ -165,53 +164,52 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
   return llvm::StringRef();
 }
 
-//TODO: Just return for now 
+// TODO: Just return for now
 CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
   return CompileStyle::Normal;
 }
 
-// ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
+ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
 
-//   if (const Arg *A = args.getLastArg(opts::Target)) {
-//     driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
-//   }
-//   llvm::Triple target(driverOpts.defaultTargetTriple);
-//   switch (target.getOS()) {
-//   case llvm::Triple::Darwin:
-//   case llvm::Triple::MacOSX: {
-//     if (const Arg *A = args.getLastArg(opts::TargetVariant)) {
-//       driverOpts.targetVariant =
-//           llvm::Triple(llvm::Triple::normalize(A->getValue()));
-//     }
-//     return ToolChainKind::Darwin;
-//   }
-//   case llvm::Triple::Linux: {
-//     if (target.isAndroid()) {
-//       return ToolChainKind::Android;
-//     }
-//     return ToolChainKind::Linux;
-//   }
-//   case llvm::Triple::FreeBSD: {
-//     return ToolChainKind::FreeBSD;
-//   }
-//   case llvm::Triple::OpenBSD: {
-//     return ToolChainKind::OpenBSD;
-//   }
-//   case llvm::Triple::Win32: {
-//     return ToolChainKind::Windows;
-//   }
-//   case llvm::Triple::UnknownOS: {
-//     return ToolChainKind::Unix;
-//   }
-//   default: {
-//     diags.PrintD(SrcLoc(), diag::err_unknown_target,
-//                  diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
-//     ToolChainKind::None;
-//   }
-//   }
-//   ToolChainKind::None;
-// }
-
+  if (const Arg *A = args.getLastArg(opts::Target)) {
+    driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
+  }
+  llvm::Triple target(driverOpts.defaultTargetTriple);
+  switch (target.getOS()) {
+  case llvm::Triple::Darwin:
+  case llvm::Triple::MacOSX: {
+    if (const Arg *A = args.getLastArg(opts::TargetVariant)) {
+      driverOpts.targetVariant =
+          llvm::Triple(llvm::Triple::normalize(A->getValue()));
+    }
+    return ToolChainKind::Darwin;
+  }
+  case llvm::Triple::Linux: {
+    if (target.isAndroid()) {
+      return ToolChainKind::Android;
+    }
+    return ToolChainKind::Linux;
+  }
+  case llvm::Triple::FreeBSD: {
+    return ToolChainKind::FreeBSD;
+  }
+  case llvm::Triple::OpenBSD: {
+    return ToolChainKind::OpenBSD;
+  }
+  case llvm::Triple::Win32: {
+    return ToolChainKind::Windows;
+  }
+  case llvm::Triple::UnknownOS: {
+    return ToolChainKind::Unix;
+  }
+  default: {
+    driver.GetDiags().PrintD(SrcLoc(), diag::err_unknown_target,
+                 diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
+    return ToolChainKind::None;
+  }
+  }
+  ToolChainKind::None;
+}
 
 // LTOKind DriverOptionsConverter::ComputeLTO() { return LTOKind::None; }
 
@@ -233,5 +231,3 @@ CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 
 // // }
-
-
