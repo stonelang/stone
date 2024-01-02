@@ -82,27 +82,8 @@ public:
   Driver();
   ~Driver();
 
-  /// Parse the arg strings only
-  llvm::opt::InputArgList *ParseArgStrings(llvm::ArrayRef<const char *> args);
-  /// Convert the inpurt args to driver options
-  Status ConvertArgStrings(const llvm::opt::InputArgList &argList);
-
 public:
-  void SetMainExecutablePath(llvm::StringRef executablePath) {
-    driverOpts.mainExecutablePath = executablePath;
-  }
-  void SetMainExecutableName(llvm::StringRef executableName) {
-    driverOpts.mainExecutableName = executableName;
-  }
-
   DiagnosticEngine &GetDiags() { return diags; }
-  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.AddConsumer(consumer);
-  }
-  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.RemoveConsumer(consumer);
-  }
-
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
 
@@ -130,6 +111,30 @@ public:
   }
 
 public:
+  /// Add the diagnostic consumer
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
+
+  /// Remove the diagnostic consumer
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
+  }
+  /// Parse the arg strings only
+  llvm::opt::InputArgList *ParseArgStrings(llvm::ArrayRef<const char *> args);
+
+  /// Convert the inpurt args to driver options
+  Status ConvertArgStrings(const llvm::opt::InputArgList &argList);
+
+  /// Set the main exec path
+  void SetMainExecutablePath(llvm::StringRef executablePath) {
+    driverOpts.mainExecutablePath = executablePath;
+  }
+
+  /// Set the main exec path
+  void SetMainExecutableName(llvm::StringRef executableName) {
+    driverOpts.mainExecutableName = executableName;
+  }
   /// Creates an appropriate ToolChain for a given driver, given the target
   /// specified in \p Args (or the default target). Sets the value of \c
   /// DefaultTargetTriple from \p Args as a side effect.
@@ -140,6 +145,17 @@ public:
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
+
+  /// Construct a compilation object for a given ToolChain
+  ///
+  /// If \p AllowErrors is set to \c true, this method tries to build a
+  /// compilation even if there were errors.
+  ///
+  /// \return A Compilation, or null pointer if none was built for the given
+  /// argument vector. A null return value does not necessarily indicate an
+  /// error condition; the diagnostics should be queried to determine if an
+  /// error occurred.
+  Compilation *BuildCompilation(const ToolChain &toolChain);
 
 public:
   /// Creates a DriverInput file using a

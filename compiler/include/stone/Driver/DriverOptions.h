@@ -190,6 +190,8 @@ public:
   // ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
+
+
 /// For all driver options
 class DriverOptionsConverter final {
   const llvm::opt::ArgList &args;
@@ -207,6 +209,8 @@ private:
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
   llvm::Triple ComputeTarget();
+  
+  void ComputeOutputInfo();
 
 public:
   Status Convert();

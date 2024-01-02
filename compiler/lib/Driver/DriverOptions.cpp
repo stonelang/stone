@@ -111,7 +111,7 @@ DriverInputsConverter::CreateInputFiles() {
 DriverOptionsConverter::DriverOptionsConverter(const llvm::opt::ArgList &args,
                                                DriverOptions &driverOpts,
                                                Driver &driver)
-    : args(args), driverOpts(driverOpts), driver(driver) {}
+    : args(args), driverOpts(driverOpts), driver(driver){}
 
 Status DriverOptionsConverter::Convert() {
 
@@ -238,6 +238,12 @@ LinkMode DriverOptionsConverter::ComputeLinkMode() {
   }
   return LinkMode::None;
 }
+
+ void DriverOptionsConverter::ComputeOutputInfo() {
+
+
+
+ }
 
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 // // }

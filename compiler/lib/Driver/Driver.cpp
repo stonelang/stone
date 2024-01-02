@@ -85,6 +85,11 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
+Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
+
+  return nullptr;
+}
+
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);

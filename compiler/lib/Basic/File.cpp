@@ -25,9 +25,13 @@ static const FileTypeInfo &GetFileTypeInfo(unsigned ty) {
   return FileTypeInfos[ty];
 }
 
-llvm::StringRef file::GetTypeName(FileType ty) { return GetFileTypeInfo(ty).Name; }
+llvm::StringRef file::GetTypeName(FileType ty) {
+  return GetFileTypeInfo(ty).Name;
+}
 
-llvm::StringRef file::GetTypeExt(FileType ty) { return GetFileTypeInfo(ty).Ext; }
+llvm::StringRef file::GetTypeExt(FileType ty) {
+  return GetFileTypeInfo(ty).Ext;
+}
 
 FileType file::GetTypeByExt(llvm::StringRef Ext) {
   if (Ext.empty()) {
