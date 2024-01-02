@@ -48,7 +48,7 @@ FileType file::GetTypeByName(llvm::StringRef Name) {
 }
 
 file::FileType file::GetTypeByPath(const llvm::StringRef path) {
-  if (!llvm::sys::path::has_extension(path)){
+  if (!llvm::sys::path::has_extension(path)) {
     return stone::file::FileType::INVALID;
   }
   auto ext = llvm::sys::path::extension(path).str();
@@ -62,7 +62,7 @@ file::FileType file::GetTypeByPath(const llvm::StringRef path) {
       pathStem = llvm::sys::path::stem(pathStem);
       ext = nextExtension.str() + ext;
       fileType = stone::file::GetTypeByExt(ext);
-      if (fileType != stone::file::FileType::INVALID){
+      if (fileType != stone::file::FileType::INVALID) {
         break;
       }
     }
@@ -139,13 +139,31 @@ bool file::IsAfterLLVM(FileType ty) {
   llvm_unreachable("All switch cases are covered");
 }
 
-bool file::IsPartOfCompilation(FileType ty) {
+bool file::IsPartOfStoneCompilation(FileType ty) {
   switch (ty) {
   case FileType::Stone:
     return true;
   case FileType::Assembly:
   case FileType::IR:
   case FileType::BC:
+  case FileType::Object:
+  case FileType::Image:
+  case FileType::None:
+    return false;
+  case FileType::INVALID:
+    llvm_unreachable("Unknown type.");
+  }
+  // Work around MSVC warning: not all control paths return a value
+  llvm_unreachable("All switch cases are covered");
+}
+
+bool file::IsPartOfLLVMCompilation(FileType ty) {
+  switch (ty) {
+  case FileType::IR:
+  case FileType::BC:
+    return true;
+  case FileType::Stone:
+  case FileType::Assembly:
   case FileType::Object:
   case FileType::Image:
   case FileType::None:

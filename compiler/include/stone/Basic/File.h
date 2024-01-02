@@ -67,7 +67,13 @@ bool IsAfterLLVM(FileType fileType);
 /// being compiled.
 ///
 /// These need to be passed to the stone Compile
-bool IsPartOfCompilation(FileType fileType);
+bool IsPartOfStoneCompilation(FileType fileType);
+
+/// Returns true if the type is a file that contributes being compile by llvm --
+/// IR for example.
+///
+/// These need to be passed to the stone Compile
+bool IsPartOfLLVMCompilation(FileType fileType);
 
 bool CanCompile(FileType fileType);
 
