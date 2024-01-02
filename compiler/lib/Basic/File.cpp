@@ -9,25 +9,25 @@
 using namespace stone;
 using namespace stone::file;
 
-struct LocalType {
+struct FileTypeInfo {
   const char *Name;
   const char *Flags;
   const char *Ext;
 };
 
-static const LocalType LocalTypes[] = {
+static const FileTypeInfo FileTypeInfos[] = {
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) {NAME, FLAGS, EXT},
 #include "stone/Basic/File.def"
 };
 
-static const LocalType &GetLocalType(unsigned ty) {
+static const FileTypeInfo &GetFileTypeInfo(unsigned ty) {
   assert(ty >= 0 && ty < FileType::INVALID && "Invalid Type ID.");
-  return LocalTypes[ty];
+  return FileTypeInfos[ty];
 }
 
-llvm::StringRef file::GetTypeName(FileType ty) { return GetLocalType(ty).Name; }
+llvm::StringRef file::GetTypeName(FileType ty) { return GetFileTypeInfo(ty).Name; }
 
-llvm::StringRef file::GetTypeExt(FileType ty) { return GetLocalType(ty).Ext; }
+llvm::StringRef file::GetTypeExt(FileType ty) { return GetFileTypeInfo(ty).Ext; }
 
 FileType file::GetTypeByExt(llvm::StringRef Ext) {
   if (Ext.empty()) {
