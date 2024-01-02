@@ -24,7 +24,12 @@ ActionKind CompilerExecution::GetExecutionAction() {
   return IsMainAction() ? compiler.GetMainAction() : GetCurrentAction();
 }
 
+void CompilerExecution::HandleIRGenResult(const IRGenResult &result) {
+  llvm_unreachable("Illegal call for CompilerExecution!");
+}
+
 CompilerExecution::~CompilerExecution() {}
+
 Status CompilerExecution::Finish() { return Status(); }
 
 std::unique_ptr<CompilerExecution>

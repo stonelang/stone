@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
+#include "stone/Gen/IRGenModule.h"
 #include "stone/Option/ActionKind.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -12,12 +13,22 @@ namespace stone {
 
 class Compiler;
 class SourceFile;
+class CompilerExecution;
 
 /* :public Compiler*/
 class CompilerExecution {
+public:
+  enum class CompilerExecutionFlags : uint8_t {
+    None = 1 << 0,
+    AllowHandleIRGenResult = 1 << 1,
+  };
+
+  using CompilerExecutionOptions = stone::OptionSet<CompilerExecutionFlags>;
+  CompilerExecutionOptions compilerExecutionOpts;
 
 protected:
   Compiler &compiler;
+  const CompilerExecution *caller = nullptr;
 
 protected:
   llvm::sys::TimePoint<> startTime;
@@ -52,6 +63,20 @@ protected:
 
 public:
   Compiler &GetCompiler() { return compiler; }
+  void SetCaller(const CompilerExecution *inputCaller) { caller = inputCaller; }
+  bool HasCaller() { return caller != nullptr; }
+  const CompilerExecution *GetCaller() { return caller; }
+
+public:
+  virtual void HandleIRGenResult(const IRGenResult &result);
+  bool HasAllowHandleIRGenResult() const {
+    return compilerExecutionOpts.contains(
+        CompilerExecutionFlags::AllowHandleIRGenResult);
+  }
+  void AddAllowHandleIRGenResult() {
+    compilerExecutionOpts |= CompilerExecutionFlags::AllowHandleIRGenResult;
+  }
+  void ClearAllowHandleIRGenResult() {}
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -184,6 +209,7 @@ public:
 public:
   Status Execute() override;
   ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
+  void HandleIRGenResult(const IRGenResult &result) override;
 };
 
 class FallbackExecution final : public CompilerExecution {

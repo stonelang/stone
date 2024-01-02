@@ -141,3 +141,5 @@ Status EmitNativeExecution::Execute() {
 
   return Status();
 }
+
+void EmitNativeExecution::HandleIRGenResult(const IRGenResult &result) {}
