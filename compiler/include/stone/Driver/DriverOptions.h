@@ -415,8 +415,17 @@ public:
   /// \return the main executable path
   llvm::StringRef GetMainExecutablePath() const { return mainExecutablePath; }
 
+  /// \check that there exist the main executable path
+  bool HasMainExecutablePath() const {
+    return !mainExecutablePath.empty() && mainExecutablePath.size() > 0;
+  }
   /// \return the main executable name
   llvm::StringRef GetMainExecutableName() const { return mainExecutableName; }
+
+  /// \check that there exist the main executable path
+  bool HasMainExecutableName() const {
+    return !mainExecutableName.empty() && mainExecutableName.size() > 0;
+  }
 
   /// \return true if the action is valid
   bool HasAction() const { return !action.IsAlien(); }

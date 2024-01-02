@@ -30,10 +30,13 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   driver.SetMainExecutablePath(mainExecutablePath);
+  assert(driver.GetDriverOptions().HasMainExecutablePath() && "Did not find an executable path!");
 
-  auto mainExecutableName = file::GetStem(mainExecutablePath);
+
+  auto mainExecutableName = llvm::sys::path::stem(arg0);
   driver.SetMainExecutableName(mainExecutableName);
-
+  assert(driver.GetDriverOptions().HasMainExecutableName() && "Did not find an executable name!");
+  
   auto argStrings = driver.ParseArgStrings(args);
   if (!argStrings) {
     return FinishMain(Status::Error());
@@ -54,8 +57,17 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsErrorOrHasCompletion()) {
     return FinishMain(status);
   }
-  assert(driver.GetDriverOptions().HasToolChainKind() &&
+    // Now, we can build the ToolChain
+   assert(driver.GetDriverOptions().HasToolChainKind() &&
          "toolchains not found -- cannot proceed with compilation!");
+
+  auto toolChain =
+      driver.BuildToolChain(driver.GetDriverOptions().GetToolChainKind());
+  if (!toolChain) {
+    return FinishMain(Status::Error());
+  }
+
+ 
 
   return FinishMain();
 }

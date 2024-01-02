@@ -335,9 +335,8 @@ protected:
                       const JobContext &context) const override;
 
   // NOTE: Adding this
-  JobInvocation
-  ConstructInvocation(const CompileJobConstruction &construction,
-                      const JobContext &context) const override;
+  JobInvocation ConstructInvocation(const CompileJobConstruction &construction,
+                                    const JobContext &context) const override;
 
   JobInvocation
   ConstructInvocation(const DynamicLinkJobConstruction &construction,
@@ -351,16 +350,12 @@ public:
   UnixToolChain(const Driver &driver);
   ~UnixToolChain() = default;
 
- public:
-
-
+public:
   std::string SanitizerRuntimeLibName(StringRef sanitizer,
                                       bool shared = true) const override;
 
   void AddPluginArguments(const llvm::opt::ArgList &args,
                           llvm::opt::ArgStringList &arguments) const override;
-
-
 
   void ValidateArguments(DiagnosticEngine &diags,
                          const llvm::opt::ArgList &args,

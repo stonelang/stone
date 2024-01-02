@@ -60,17 +60,14 @@ UnixToolChain::ConstructInvocation(const InterpretJobConstruction &job,
   return JobInvocation();
 }
 
- JobInvocation
-  UnixToolChain::ConstructInvocation(const AutolinkExtractJobConstruction &construction,
-                      const JobContext &context) const {
+JobInvocation UnixToolChain::ConstructInvocation(
+    const AutolinkExtractJobConstruction &construction,
+    const JobContext &context) const {}
 
+std::string
+UnixToolChain::FindProgramRelativeToStoneImpl(StringRef name) const {
 
-  }
-
-
-std::string UnixToolChain::FindProgramRelativeToStoneImpl(StringRef name) const {
-
-	return "TODO";
+  return "TODO";
 }
 std::string UnixToolChain::SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
                                                    bool shared) const {}

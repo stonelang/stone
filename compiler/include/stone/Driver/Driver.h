@@ -92,7 +92,7 @@ public:
     driverOpts.mainExecutablePath = executablePath;
   }
   void SetMainExecutableName(llvm::StringRef executableName) {
-    driverOpts.mainExecutablePath = executableName;
+    driverOpts.mainExecutableName = executableName;
   }
 
   DiagnosticEngine &GetDiags() { return diags; }

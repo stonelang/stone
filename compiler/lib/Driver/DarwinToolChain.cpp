@@ -5,7 +5,6 @@ using namespace stone::file;
 
 DarwinToolChain::DarwinToolChain(const Driver &driver) : ToolChain(driver) {}
 
-
 JobInvocation
 DarwinToolChain::ConstructInvocation(const DynamicLinkJobConstruction &job,
                                      const JobContext &context) const {
@@ -48,4 +47,3 @@ void DarwinToolChain::AddCommonCompileArgs(
     const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,
     llvm::opt::ArgStringList &arguments) const {}
-

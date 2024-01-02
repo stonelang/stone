@@ -44,20 +44,17 @@ ToolChain::ConstructInvocation(const StaticLinkJobConstruction &construction,
   llvm_unreachable("archiving not implemented for this toolchain");
 }
 
-JobInvocation
-ToolChain::ConstructInvocation(const AutolinkExtractJobConstruction &construction,
-                               const JobContext &context) const {
+JobInvocation ToolChain::ConstructInvocation(
+    const AutolinkExtractJobConstruction &construction,
+    const JobContext &context) const {
   llvm_unreachable("autolink extraction not implemented for this toolchain");
 }
 
 JobInvocation
 ToolChain::ConstructInvocation(const InterpretJobConstruction &job,
-                                   const JobContext &context) const {
+                               const JobContext &context) const {
   return JobInvocation();
 }
-
-
-
 
 void ToolChain::AddPlatformSpecificPluginCompileArgs(
     const DriverOptions &driverOpts, const CommandOutput &output,
