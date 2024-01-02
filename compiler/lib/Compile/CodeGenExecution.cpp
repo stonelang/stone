@@ -34,6 +34,10 @@ Status GenerateIRExecution::Execute() {
           parallelOutputFilenames));
 
       compiler.AddIRGenResult(result);
+
+      if (HasCaller() && HasAllowHandleIRGenResult()) {
+        GetCaller()->HandleIRGenResult(result);
+      }
     }
   } else {
     compiler.ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
@@ -47,6 +51,9 @@ Status GenerateIRExecution::Execute() {
           compiler.GetMemoryContext(), psps));
 
       compiler.AddIRGenResult(result);
+      if (HasCaller() && HasAllowHandleIRGenResult()) {
+        GetCaller()->HandleIRGenResult(result);
+      }
 
       return Status();
     });
@@ -111,7 +118,9 @@ Status EmitModuleExecution::Execute() {
 
 EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
                                          ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+    : CompilerExecution(compiler, currentAction) {
+  AddAllowHandleIRGenResult();
+}
 
 Status EmitNativeExecution::Execute() {
 
@@ -142,4 +151,4 @@ Status EmitNativeExecution::Execute() {
   return Status();
 }
 
-void EmitNativeExecution::HandleIRGenResult(const IRGenResult &result) {}
+void EmitNativeExecution::HandleIRGenResult(const IRGenResult* result) {}

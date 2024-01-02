@@ -99,7 +99,7 @@ public:
 
   CompilerInvocation &GetInvocation() { return invocation; }
 
-  Status ExecuteAction(ActionKind kind);
+  Status ExecuteAction(ActionKind kind, CompilerExecution *caller = nullptr);
 
 private:
   std::unique_ptr<CompilerExecution>

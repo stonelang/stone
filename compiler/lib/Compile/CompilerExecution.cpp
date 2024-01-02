@@ -24,7 +24,7 @@ ActionKind CompilerExecution::GetExecutionAction() {
   return IsMainAction() ? compiler.GetMainAction() : GetCurrentAction();
 }
 
-void CompilerExecution::HandleIRGenResult(const IRGenResult &result) {
+void CompilerExecution::HandleIRGenResult(const IRGenResult* result) {
   llvm_unreachable("Illegal call for CompilerExecution!");
 }
 
@@ -68,8 +68,12 @@ Compiler::ComputeCompilerExectution(ActionKind kind) {
   }
   }
 }
-Status Compiler::ExecuteAction(ActionKind kind) {
-  auto execution = ComputeCompilerExectution(kind);
+Status Compiler::ExecuteAction(ActionKind kind, CompilerExecution *caller) {
+
+  auto execution = ComputeCompilerExectution(kind /* caller->GetDependency()*/);
+  if (caller) {
+    execution->SetCaller(caller);
+  }
   if (execution->Setup().IsError()) {
     return Status::Error();
   }

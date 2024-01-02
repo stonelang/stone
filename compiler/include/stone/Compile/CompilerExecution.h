@@ -28,7 +28,7 @@ public:
 
 protected:
   Compiler &compiler;
-  const CompilerExecution *caller = nullptr;
+  CompilerExecution *caller = nullptr;
 
 protected:
   llvm::sys::TimePoint<> startTime;
@@ -63,12 +63,12 @@ protected:
 
 public:
   Compiler &GetCompiler() { return compiler; }
-  void SetCaller(const CompilerExecution *inputCaller) { caller = inputCaller; }
+  void SetCaller(CompilerExecution *inputCaller) { caller = inputCaller; }
   bool HasCaller() { return caller != nullptr; }
-  const CompilerExecution *GetCaller() { return caller; }
+  CompilerExecution *GetCaller(){ return caller; }
 
 public:
-  virtual void HandleIRGenResult(const IRGenResult &result);
+  virtual void HandleIRGenResult(const IRGenResult* result);
   bool HasAllowHandleIRGenResult() const {
     return compilerExecutionOpts.contains(
         CompilerExecutionFlags::AllowHandleIRGenResult);
@@ -209,7 +209,7 @@ public:
 public:
   Status Execute() override;
   ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
-  void HandleIRGenResult(const IRGenResult &result) override;
+  void HandleIRGenResult(const IRGenResult* result) override;
 };
 
 class FallbackExecution final : public CompilerExecution {
