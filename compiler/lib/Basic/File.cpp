@@ -47,6 +47,29 @@ FileType file::GetTypeByName(llvm::StringRef Name) {
       .Default(FileType::INVALID);
 }
 
+file::FileType file::GetTypeByPath(const llvm::StringRef path) {
+  if (!llvm::sys::path::has_extension(path)){
+    return stone::file::FileType::INVALID;
+  }
+  auto ext = llvm::sys::path::extension(path).str();
+  auto fileType = stone::file::GetTypeByExt(ext);
+  if (fileType == stone::file::FileType::INVALID) {
+    auto pathStem = llvm::sys::path::stem(path);
+    // If this path has a multiple '.' extension (e.g. .abi.json),
+    // then iterate over all preceeding possible extension variants.
+    while (llvm::sys::path::has_extension(pathStem)) {
+      auto nextExtension = llvm::sys::path::extension(pathStem);
+      pathStem = llvm::sys::path::stem(pathStem);
+      ext = nextExtension.str() + ext;
+      fileType = stone::file::GetTypeByExt(ext);
+      if (fileType != stone::file::FileType::INVALID){
+        break;
+      }
+    }
+  }
+  return fileType;
+}
+
 bool file::IsTextual(FileType ty) {
   switch (ty) {
   case FileType::Stone:

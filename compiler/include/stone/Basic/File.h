@@ -36,6 +36,8 @@ FileType GetTypeByExt(llvm::StringRef Ext);
 /// Lookup the type to use for the name \p Name.
 FileType GetTypeByName(llvm::StringRef Name);
 
+file::FileType GetTypeByPath(const llvm::StringRef path);
+
 /// Returns true if the type represents textual data.
 bool IsTextual(FileType fileType);
 
