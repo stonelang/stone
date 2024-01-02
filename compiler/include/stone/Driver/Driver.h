@@ -1,20 +1,19 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
+#include "stone/Basic/File.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Basic/File.h"
-#include "stone/Driver/DriverInputFile.h"
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/CompilationEntity.h"
+#include "stone/Driver/DriverInputFile.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
-
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -129,6 +128,18 @@ public:
   const CompilationEntities &GetCompilationEntities() const {
     return *compilationEntities;
   }
+
+public:
+  /// Creates an appropriate ToolChain for a given driver, given the target
+  /// specified in \p Args (or the default target). Sets the value of \c
+  /// DefaultTargetTriple from \p Args as a side effect.
+  ///
+  /// \return A ToolChain, or nullptr if an unsupported target was specified
+  /// (in which case a diagnostic error is also signalled).
+  ///
+  /// This uses a std::unique_ptr instead of returning a toolchain by value
+  /// because ToolChain has virtual methods.
+  ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
 public:
   /// Creates a DriverInput file using a

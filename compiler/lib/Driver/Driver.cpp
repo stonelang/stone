@@ -65,6 +65,26 @@ void Driver::PrintHelp(bool showHidden) const {
       /*ShowAllAliases*/ false);
 }
 
+ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
+  switch (toolChainKind) {
+  case ToolChainKind::Darwin:
+    toolChain = std::make_unique<DarwinToolChain>(*this);
+    break;
+  case ToolChainKind::Linux:
+    toolChain = std::make_unique<LinuxToolChain>(*this);
+    break;
+  case ToolChainKind::Windows:
+    toolChain = std::make_unique<WindowsToolChain>(*this);
+    break;
+  default:
+    llvm_unreachable("Unsupported OS -- cannot proceed with compilation!");
+  }
+  if (!toolChain) {
+    return nullptr;
+  }
+  return toolChain.get();
+}
+
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);

@@ -334,6 +334,11 @@ protected:
   ConstructInvocation(const AutolinkExtractJobConstruction &construction,
                       const JobContext &context) const override;
 
+  // NOTE: Adding this
+  JobInvocation
+  ConstructInvocation(const CompileJobConstruction &construction,
+                      const JobContext &context) const override;
+
   JobInvocation
   ConstructInvocation(const DynamicLinkJobConstruction &construction,
                       const JobContext &context) const override;
@@ -343,14 +348,37 @@ protected:
                       const JobContext &context) const override;
 
 public:
-  UnixToolChain(const Driver &driver) : ToolChain(driver) {}
+  UnixToolChain(const Driver &driver);
   ~UnixToolChain() = default;
+
+ public:
+
 
   std::string SanitizerRuntimeLibName(StringRef sanitizer,
                                       bool shared = true) const override;
 
   void AddPluginArguments(const llvm::opt::ArgList &args,
                           llvm::opt::ArgStringList &arguments) const override;
+
+
+
+  void ValidateArguments(DiagnosticEngine &diags,
+                         const llvm::opt::ArgList &args,
+                         llvm::StringRef defaultTarget) const override;
+
+  void ValidateOutputInfo(DiagnosticEngine &diags,
+                          const DriverOptions &driverOpts) const override;
+
+  std::string FindProgramRelativeToStoneImpl(StringRef name) const override;
+
+  bool ShouldStoreInvocationInDebugInfo() const override;
+
+  std::string GetGlobalDebugPathRemapping() const override;
+
+  void AddCommonCompileArgs(const DriverOptions &driverOpts,
+                            const CommandOutput &output,
+                            const llvm::opt::ArgList &inputArgs,
+                            llvm::opt::ArgStringList &arguments) const override;
 };
 
 class LinuxToolChain final : public UnixToolChain {

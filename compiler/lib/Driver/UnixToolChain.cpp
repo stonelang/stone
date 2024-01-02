@@ -3,6 +3,8 @@
 using namespace stone;
 using namespace stone::file;
 
+UnixToolChain::UnixToolChain(const Driver &driver) : ToolChain(driver) {}
+
 std::string UnixToolChain::GetDefaultLinker() const {
   // if (driverOpts.GetTriple().isAndroid()){
   //   return "lld";
@@ -32,3 +34,71 @@ std::string UnixToolChain::GetDefaultLinker() const {
   // }
   return "";
 }
+
+JobInvocation
+UnixToolChain::ConstructInvocation(const CompileJobConstruction &job,
+                                   const JobContext &context) const {
+  return JobInvocation();
+}
+
+JobInvocation
+UnixToolChain::ConstructInvocation(const DynamicLinkJobConstruction &job,
+                                   const JobContext &context) const {
+
+  return JobInvocation();
+}
+
+JobInvocation
+UnixToolChain::ConstructInvocation(const StaticLinkJobConstruction &job,
+                                   const JobContext &context) const {
+  return JobInvocation();
+}
+
+JobInvocation
+UnixToolChain::ConstructInvocation(const InterpretJobConstruction &job,
+                                   const JobContext &context) const {
+  return JobInvocation();
+}
+
+ JobInvocation
+  UnixToolChain::ConstructInvocation(const AutolinkExtractJobConstruction &construction,
+                      const JobContext &context) const {
+
+
+  }
+
+
+std::string UnixToolChain::FindProgramRelativeToStoneImpl(StringRef name) const {
+
+	return "TODO";
+}
+std::string UnixToolChain::SanitizerRuntimeLibName(llvm::StringRef Sanitizer,
+                                                   bool shared) const {}
+
+void UnixToolChain::AddPluginArguments(
+    const llvm::opt::ArgList &args, llvm::opt::ArgStringList &arguments) const {
+
+}
+
+void UnixToolChain::ValidateArguments(DiagnosticEngine &diags,
+                                      const llvm::opt::ArgList &args,
+                                      llvm::StringRef defaultTarget) const {}
+
+void UnixToolChain::ValidateOutputInfo(DiagnosticEngine &diags,
+                                       const DriverOptions &driverOpts) const {}
+
+// std::string
+// UnixToolChain::FindProgramRelativeToStoneImpl(StringRef name) const {
+//   return "TODO";
+// }
+
+bool UnixToolChain::ShouldStoreInvocationInDebugInfo() const { return true; }
+
+std::string UnixToolChain::GetGlobalDebugPathRemapping() const {
+  return "TODO";
+}
+
+void UnixToolChain::AddCommonCompileArgs(
+    const DriverOptions &driverOpts, const CommandOutput &output,
+    const llvm::opt::ArgList &inputArgs,
+    llvm::opt::ArgStringList &arguments) const {}
