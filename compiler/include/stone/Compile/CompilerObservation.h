@@ -14,7 +14,7 @@ class ModuleDecl;
 
 class CompilerObservation {
 public:
-  CompilerObservation();
+  CompilerObservation() {}
   virtual ~CompilerObservation() = default;
 
 public:
@@ -49,10 +49,10 @@ public:
   virtual void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) {}
 
   // Completed IR generation
-  virtual void CompletedIRGeneration(Compiler &result);
+  virtual void CompletedIRGeneration(Compiler &result) {}
 
   /// Callbacks into the parsing pipeline
-  virtual CodeCompletionCallbacks *GetCodeCompletionCallbacks();
+  virtual CodeCompletionCallbacks *GetCodeCompletionCallbacks() {}
 };
 
 } // namespace stone
