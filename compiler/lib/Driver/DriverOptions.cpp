@@ -223,7 +223,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     return ToolChainKind::None;
   }
   }
-  //TODO: Reset the triple 
+  // TODO: Reset the triple
   return ToolChainKind::None;
 }
 

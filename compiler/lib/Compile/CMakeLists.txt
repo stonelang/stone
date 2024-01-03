@@ -7,11 +7,6 @@ set(stone_compile_sources
   CompilerInputsConverter.cpp
   CompilerOptionsConverter.cpp
   CompilerOutputsConverter.cpp
-  SyntaxAnalysisExecution.cpp
-  SupportExecution.cpp
-  CodeGenExecution.cpp
-  SemanticAnalysisExecution.cpp
-  FallbackExecution.cpp
   
   LINK_LIBS
   StoneStats

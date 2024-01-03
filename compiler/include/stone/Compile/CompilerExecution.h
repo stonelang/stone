@@ -71,6 +71,9 @@ public:
     consumer = inputConsumer;
   }
 
+  /// Make sure that we can notify the consumer
+  bool ShouldNotifyConsumer() { return (HasConsumer() && !HasMainAction()); }
+
   virtual CompilerExecution *GetConsumer();
   Compiler &GetCompiler();
 
@@ -184,7 +187,8 @@ public:
   ActionKind GetSelfAction() override { return ActionKind::DumpAST; }
   ActionKind GetDepAction() override { return ActionKind::Parse; }
 
-  // void CompletedSyntaxAnalysis(SourceFile *result) override;
+  void CompletedSyntaxAnalysis(SourceFile &result) override;
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 };
 
 class TypeCheckExecution final : public CompilerExecution {
@@ -221,7 +225,7 @@ public:
 
 // Generate IR, before optimization
 class EmitIRBeforeExecution final : public CompilerExecution {
-
+  // llvm::SmallVector<llvm::Module *> modules;
 public:
   EmitIRBeforeExecution(Compiler &compiler);
 

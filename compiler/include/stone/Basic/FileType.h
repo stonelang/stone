@@ -57,7 +57,6 @@ bool IsStoneFileType(FileType fileType);
 /// Returns true if this file type is Object
 bool IsObjectFileType(FileType fileType);
 
-
 /// Returns true if the type is produced in the sc after the LLVM
 /// passes.
 ///
@@ -94,7 +93,6 @@ llvm::StringRef GetStem(llvm::StringRef path);
 llvm::StringRef GetBase(llvm::StringRef input);
 
 template <typename Fn> void forAllTypes(const Fn &fn);
-
 
 std::unique_ptr<llvm::raw_pwrite_stream>
 CreateOutputStream(llvm::StringRef outFile, std::error_code &error,

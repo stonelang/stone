@@ -4,6 +4,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerObservation.h"
+#include "stone/Compile/CompilerExecution.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/ActionKind.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
@@ -406,6 +407,60 @@ Status Compiler::IsValidModuleName(const llvm::StringRef moduleName) {
     return Status::Error();
   }
   return Status();
+}
+
+Status Compiler::ExecuteAction(CompilerExecution &execution) {
+
+  if (execution.SetupAction().IsError()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  if (execution.ExecuteAction().IsError()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  return execution.FinishAction();
+}
+
+Status Compiler::ExecuteAction(ActionKind action) {
+  auto execution = CreateExectution(action);
+  return ExecuteAction(*execution);
+}
+
+std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::PrintHelp:
+    return std::make_unique<PrintHelpExecution>(*this);
+  case ActionKind::PrintHelpHidden:
+    return std::make_unique<PrintHelpHiddenExecution>(*this);
+  case ActionKind::PrintVersion:
+    return std::make_unique<PrintVersionExecution>(*this);
+  case ActionKind::PrintFeature:
+    return std::make_unique<PrintFeatureExecution>(*this);
+  case ActionKind::Parse:
+    return std::make_unique<ParseExecution>(*this);
+  case ActionKind::DumpAST:
+    return std::make_unique<DumpASTExecution>(*this);
+  case ActionKind::ResolveImports:
+    return std::make_unique<ImportResolutionExecution>(*this);
+  case ActionKind::TypeCheck:
+    return std::make_unique<TypeCheckExecution>(*this);
+  case ActionKind::PrintAST:
+    return std::make_unique<PrintASTExecution>(*this);
+  case ActionKind::EmitIRBefore:
+    return std::make_unique<EmitIRBeforeExecution>(*this);
+  case ActionKind::EmitIRAfter:
+    return std::make_unique<EmitIRAfterExecution>(*this);
+  case ActionKind::EmitModule:
+    return std::make_unique<EmitModuleExecution>(*this);
+  case ActionKind::EmitBC:
+    return std::make_unique<EmitBitCodeExecution>(*this);
+  case ActionKind::EmitAssembly:
+    return std::make_unique<EmitAssemblyExecution>(*this);
+  case ActionKind::EmitObject:
+    return std::make_unique<EmitObjectExecution>(*this);
+  default: {
+    llvm_unreachable("Unable to create CompilerExecution -- unknon action!");
+  }
+  }
 }
 
 void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}
