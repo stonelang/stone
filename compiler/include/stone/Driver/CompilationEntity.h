@@ -93,7 +93,9 @@ public:
   bool IsStaticLinkJobConstruction() const {
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
   }
-
+  bool IsLink() const {
+    return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
+  }
   bool IsInterpretJobConstruction() const {
     return GetKind() == CompilationEntityKind::InterpretJobConstruction;
   }
@@ -140,6 +142,10 @@ public:
     compilationEntityOpts |= CompilationEntityFlags::AllowOutput;
   }
   void ClearAllowOutput() {}
+  void ClearAllFlags();
+
+private:
+  void ComputeAllFlags(CompilationEntityKind kind);
 
 public:
   static bool classof(const CompilationEntity *entity) {

@@ -6,12 +6,12 @@
 
 using namespace stone;
 
-ParseExecution::ParseExecution(Compiler &compiler, ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+ParseExecution::ParseExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status ParseExecution::Execute() {
 
-  assert(GetExecutionAction() == ActionKind::Parse);
+  assert(HasCurrentAction() == GetSelfAction());
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "parse-source-file");
@@ -29,6 +29,10 @@ Status ParseExecution::Execute() {
     if (codeCompletionCallbacks) {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
+
+    // if (!IsSelfAction() && HasConsumer()) {
+    //   GetConsumer()->CompletedSyntaxAnalysis(sourceFile);
+    // }
     return Status();
   });
 
@@ -39,26 +43,35 @@ Status ParseExecution::Execute() {
   return Status();
 }
 
-ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler,
-                                                     ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status ImportResolutionExecution::Execute() {
-  assert(GetExecutionAction() == ActionKind::ResolveImports);
+  // assert(GetExecutionAction() == ActionKind::ResolveImports);
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "import-resolution");
+
+  assert(GetCurrentAction() == GetSelfAction());
 
   // stone::ResolveSourceFileImports(sourceFile);
 
   return Status();
 }
 
-DumpASTExecution::DumpASTExecution(Compiler &compiler, ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+CompilerExecution *ImportResolutionExecution::GetConsumer() { return this; }
+
+void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile *result) {}
+
+DumpASTExecution::DumpASTExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status DumpASTExecution::Execute() {
-  assert(GetExecutionAction() == ActionKind::DumpAST);
+
+  assert(CurrentAction() == GetSelfAction());
+
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }
+
+CompilerExecution *DumpASTExecution::GetConsumer() { return this; }

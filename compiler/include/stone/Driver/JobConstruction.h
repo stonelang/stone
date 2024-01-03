@@ -19,9 +19,7 @@ class JobConstruction : public TopLevelCompilationEntity {
 protected:
   JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
                   file::FileType fileType)
-      : TopLevelCompilationEntity(kind, inputs, fileType) {
-    AddAllowFileType();
-  }
+      : TopLevelCompilationEntity(kind, inputs, fileType) {}
 
 public:
   virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);

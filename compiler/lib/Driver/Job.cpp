@@ -9,3 +9,6 @@ using namespace stone;
 
 Job::Job(CompilationEntityKind kind, CompilationEntityList inputs)
     : TopLevelCompilationEntity(kind, inputs, file::FileType::None) {}
+
+BatchJob::BatchJob(CompilationEntityList inputs)
+    : Job(CompilationEntityKind::BatchJob, inputs) {}

@@ -5,13 +5,12 @@
 
 using namespace stone;
 
-TypeCheckExecution::TypeCheckExecution(Compiler &compiler,
-                                       ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
-Status TypeCheckExecution::Execute() {
+Status TypeCheckExecution::ExecuteAction() {
 
-  assert(GetExecutionAction() == ActionKind::TypeCheck);
+  // assert(IsSelf() || GetCurrentAction() == GetSelfAction())
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
 
@@ -29,13 +28,12 @@ Status TypeCheckExecution::Execute() {
   return Status();
 }
 
-PrintASTExecution::PrintASTExecution(Compiler &compiler,
-                                     ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+PrintASTExecution::PrintASTExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status PrintASTExecution::Execute() {
 
-  assert(GetExecutionAction() == ActionKind::PrintAST);
+  // assert(GetExecutionAction() == ActionKind::PrintAST);
 
   //  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
   //    stone::PrintSourceFile(sourceFile, GetCompiler().GetASTContext());
@@ -43,3 +41,5 @@ Status PrintASTExecution::Execute() {
   //  });
   return Status();
 }
+
+CompilerExecution *PrintASTExecution::GetConsumer() { return this; }

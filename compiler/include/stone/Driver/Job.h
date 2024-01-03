@@ -115,8 +115,7 @@ protected:
 class BatchJob final : public Job {
 
 protected:
-  BatchJob(CompilationEntityList inputs)
-      : Job(CompilationEntityKind::BatchJob, inputs) {}
+  BatchJob(CompilationEntityList inputs);
 };
 
 } // namespace stone

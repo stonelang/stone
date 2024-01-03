@@ -6,6 +6,11 @@
 using namespace stone;
 using namespace stone::file;
 
+llvm::ArrayRef<const Job *>
+JobConstruction::ConstructJobs(const Driver &driver) {
+  llvm_unreachable("JobConstruction base class cannot construct jobs!");
+}
+
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
     : IncrementatlJobConstruction(CompilationEntityKind::CompileJobConstruction,
                                   llvm::None, outputFileType) {

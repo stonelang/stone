@@ -9,9 +9,7 @@ GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
                                          ActionKind currentAction)
     : CompilerExecution(compiler, currentAction) {}
 
-Status GenerateIRExecution::Execute() {
-
-  assert(GetExecutionAction() == ActionKind::EmitIRBefore);
+Status GenerateIRExecution::ExecuteAction() {
 
   if (compiler.IsWholeModuleCompile()) {
     if (!compiler.GetInvocation()
@@ -35,8 +33,8 @@ Status GenerateIRExecution::Execute() {
 
       compiler.AddIRGenResult(result);
 
-      if (HasCaller() && HasAllowHandleIRGenResult()) {
-        GetCaller()->HandleIRGenResult(result);
+      if (HasConsumer()) {
+        GetConsumer()->HandleIRGenResult(result);
       }
     }
   } else {
@@ -51,8 +49,8 @@ Status GenerateIRExecution::Execute() {
           compiler.GetMemoryContext(), psps));
 
       compiler.AddIRGenResult(result);
-      if (HasCaller() && HasAllowHandleIRGenResult()) {
-        GetCaller()->HandleIRGenResult(result);
+      if (HasConsumer()) {
+        GetConsumer()->HandleIRGenResult(result);
       }
 
       return Status();
@@ -63,20 +61,20 @@ Status GenerateIRExecution::Execute() {
     compiler.GetObservation()->CompletedIRGeneration(compiler);
   }
 
-  if (IsMainAction()) {
+  if (IsSelf()) {
     // Then we emit
     // stone::EmitIR(
   }
   return Status();
 }
 
+Status GenerateIRExecution::FinishAction() { return Status(); }
+
 OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler,
                                          ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+    : CompilerExecution(compiler) {}
 
-Status OptimizeIRExecution::Execute() {
-
-  assert(GetExecutionAction() == ActionKind::EmitIRAfter);
+Status OptimizeIRExecution::ExecuteAction() {
 
   // stone::OptimizeIR(compiler.GetIRGen()....)
 
@@ -93,9 +91,9 @@ Status OptimizeIRExecution::Execute() {
 
 EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
                                            ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+    : CompilerExecution(compiler) {}
 
-Status EmitBitCodeExecution::Execute() {
+Status EmitBitCodeExecution::ExecuteAction() {
 
   CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-bit-code");
   // GeneratedModule
@@ -104,11 +102,15 @@ Status EmitBitCodeExecution::Execute() {
   return Status();
 }
 
-EmitModuleExecution::EmitModuleExecution(Compiler &compiler,
-                                         ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+CompilerExecution *EmitBitCodeExecution::GetConsumer() { return this; }
 
-Status EmitModuleExecution::Execute() {
+///< EmitObjectExecution
+
+EmitModuleExecution::EmitModuleExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
+
+Status EmitModuleExecution::ExecuteAction() {
+
   CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-module-code");
 
   // compiler.GetIRGenResult();
@@ -116,15 +118,17 @@ Status EmitModuleExecution::Execute() {
   return Status();
 }
 
-EmitNativeExecution::EmitNativeExecution(Compiler &compiler,
-                                         ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {
+CompilerExecution *EmitModuleExecution::GetConsumer() { return this; }
+
+///< EmitObjectExecution
+EmitObjectExecution::EmitObjectExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {
   AddAllowHandleIRGenResult();
 }
 
-Status EmitNativeExecution::Execute() {
+Status EmitObjectExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-native-code");
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit object code");
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();
@@ -144,11 +148,54 @@ Status EmitNativeExecution::Execute() {
   // stone::GenNative(IRGenOuput,
   //                  GetCodeGenContext().GetLLVMModule().getName());
 
-  if (compiler.HasObservation()) {
-    compiler.GetObservation()->CompletedNativeGeneration(compiler);
-  }
+  // if (compiler.HasObservation()) {
+  //   compiler.GetObservation()->CompletedNativeGeneration(compiler);
+  // }
 
   return Status();
 }
 
-void EmitNativeExecution::HandleIRGenResult(const IRGenResult* result) {}
+// void EmitObjectExecution::CompletedIRGeneration(
+//     llvm::ArrayRef<IRGenResult *, 8> results) {}
+
+CompilerExecution *EmitObjectExecution::GetConsumer() { return this; }
+
+///< EmitAssemblyExecution
+
+EmitAssemblyExecution::EmitAssemblyExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
+
+Status EmitAssemblyExecution::ExecuteAction() {
+
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(),
+                             "emit assembly code");
+
+  // if (GenerateIR().IsError()) {
+  //   return Status::Error();
+  // }
+
+  compiler.TryFreeASTContext();
+
+  // compiler.GetIRGenResult();
+
+  // std::unique_ptr<NativeCodeGen>
+  /// nativeCode = std::make_uqnique<NativeCodeGen>(GetCodeGenOptions(),
+  /// GetASTContext(), ....);
+  // nativeCode->Gen();
+  // nativeCode->Optimize();
+  // nativeCode->Write();
+
+  // stone::GenNative(IRGenOuput,
+  //                  GetCodeGenContext().GetLLVMModule().getName());
+
+  // if (compiler.HasObservation()) {
+  //   compiler.GetObservation()->CompletedNativeGeneration(compiler);
+  // }
+
+  return Status();
+}
+
+// void EmitAssemblyExecution::CompletedIRGeneration(
+//     llvm::ArrayRef<IRGenResult *, 8> results) {}
+
+CompilerExecution *EmitAssemblyExecution::GetConsumer() { return this; }

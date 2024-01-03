@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
+#include "stone/Compile/CompilerObservation.h"
 #include "stone/Gen/IRGenModule.h"
 #include "stone/Option/ActionKind.h"
 
@@ -16,156 +17,215 @@ class SourceFile;
 class CompilerExecution;
 
 /* :public Compiler*/
-class CompilerExecution {
-public:
-  enum class CompilerExecutionFlags : uint8_t {
-    None = 1 << 0,
-    AllowHandleIRGenResult = 1 << 1,
-  };
-
-  using CompilerExecutionOptions = stone::OptionSet<CompilerExecutionFlags>;
-  CompilerExecutionOptions compilerExecutionOpts;
+class CompilerExecution /*: public CompilerObservation*/ {
 
 protected:
   Compiler &compiler;
-  CompilerExecution *caller = nullptr;
+  ActionKind currentAction = ActionKind::None;
+  /// TODO: The caller could be the action
+  CompilerExecution *consumer = nullptr;
 
-protected:
   llvm::sys::TimePoint<> startTime;
   llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
 
-  ActionKind currentAction;
-
 public:
-  CompilerExecution(Compiler &compiler,
-                    ActionKind currentAction = ActionKind::None);
+  CompilerExecution(Compiler &compiler);
   virtual ~CompilerExecution();
 
 public:
-  virtual Status Setup();
-  virtual Status Execute() = 0;
-  Status Finish();
+  virtual Status SetupAction(ActionKind currentAction);
+  virtual Status ExecuteAction() = 0;
+  virtual Status FinishAction();
+
+private:
+  Status ExecuteAction(CompilerExecution *execution);
 
 protected:
-  // Just one for now
-  virtual ActionKind GetDependency() { return ActionKind::None; }
-  bool HasDependency() { return GetDependency() != ActionKind::None; }
-  virtual Status ExecuteDependency();
-
-  // virtual llvm::ArrayRef<ActionKind> GetDependencies() {
-  //   return {ActionKind::None};
+  // bool CompilerExecution::ShouldExecuteAction() {
+  //   return (IsSelfAction() || GetCurrentAction() == GetSelfAction());
   // }
 
-protected:
-  bool IsMainAction();
+  /// Can we execute this action
+  bool ShouldExecuteAction();
+
+  /// The main input action from the user.
+  ActionKind GetMainAction() { compiler.GetMainAction(); }
+
+  /// The requested current action
   ActionKind GetCurrentAction() { return currentAction; }
-  ActionKind GetExecutionAction();
+
+  /// Check that there exist a dependecy action
+  bool HasCurrentAction() { return GetCurrentAction() != ActionKind::None; }
+
+  /// Set the current action
+  void SetCurrentAction(ActionKind inputAction) { currentAction = inputAction; }
+
+  /// Every exeuction must have a self action
+  virtual ActionKind GetSelfAction() { return ActionKind::None; }
+
+  /// Check  that the action is coming from itself
+  bool IsSelfAction() {
+    return GetSelfAction() == GetMainAction();
+  }
+
+  /// Get the dependency action
+  virtual ActionKind GetDepAction() { return ActionKind::None; }
+
+  /// Check that there exist a dependecy action
+  bool HasDepAction() { return GetDepAction() != ActionKind::None; }
 
 public:
+  bool HasConsumer() { return GetConsumer() != nullptr; }
+  void SetConsumer(CompilerExecution *inputConsumer) {
+    consumer = inputConsumer;
+  }
+  virtual CompilerExecution *GetConsumer();
+
   Compiler &GetCompiler() { return compiler; }
-  void SetCaller(CompilerExecution *inputCaller) { caller = inputCaller; }
-  bool HasCaller() { return caller != nullptr; }
-  CompilerExecution *GetCaller(){ return caller; }
 
 public:
-  virtual void HandleIRGenResult(const IRGenResult* result);
-  bool HasAllowHandleIRGenResult() const {
-    return compilerExecutionOpts.contains(
-        CompilerExecutionFlags::AllowHandleIRGenResult);
-  }
-  void AddAllowHandleIRGenResult() {
-    compilerExecutionOpts |= CompilerExecutionFlags::AllowHandleIRGenResult;
-  }
-  void ClearAllowHandleIRGenResult() {}
+  // void CompletedCommandLineParsing(Compiler &compiler) override;
+
+  // /// Completed syntax analysis
+  // virtual void CompletedSyntaxAnalysis(SourceFile &sourceFile) override;
+
+  // /// Completed syntax analysis
+  // virtual void CompletedSyntaxAnalysis(ModuleDecl &mod) override;
+
+  // /// Completed semantic analysis
+  // virtual void CompletedSemanticAnalysis(SourceFile &sourceFile) override;
+
+  // /// Completed semantic analysis
+  // virtual void CompletedSemanticAnalysis(ModuleDecl &mod) override;
+
+  // /// Some executions may require access to the results of ir generation.
+  // virtual void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8>
+  // &results);
+
+  // /// Some executions may require access to the results of ir generation.
+  // virtual void CompletedIRGeneration(llvm::Module *result);
+
+  // /// Some executions may require access to the results of ir generation.
+  // virtual void
+  // CompletedIRGeneration(llvm::ArrayRef<llvm::Module *, 8> &results);
 };
 
 class PrintHelpExecution final : public CompilerExecution {
 public:
-  PrintHelpExecution(Compiler &compiler, ActionKind currentAction);
+  PrintHelpExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
+  ActionKind GetSelfAction() override { return ActionKind::PrintHelp; }
+};
+
+class PrintHelpHiddenExecution final : public CompilerExecution {
+public:
+  PrintHelpExecution(Compiler &compiler);
+
+public:
+  Status ExecuteAction() override;
+  ActionKind GetSelfAction() override { return ActionKind::PrintHelpHidden; }
 };
 
 class PrintVersionExecution final : public CompilerExecution {
 
 public:
-  PrintVersionExecution(Compiler &compiler, ActionKind currentAction);
+  PrintVersionExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
+  ActionKind GetSelfAction() override { return ActionKind::PrintVersion; }
 };
 
 class PrintFeatureExecution final : public CompilerExecution {
 public:
-  PrintFeatureExecution(Compiler &compiler, ActionKind currentAction);
+  PrintFeatureExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
+  ActionKind GetSelfAction() override { return ActionKind::PrintFeature; }
 };
 
 class ParseExecution final : public CompilerExecution {
 public:
-  ParseExecution(Compiler &compiler, ActionKind currentAction);
+  ParseExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
+  ActionKind GetSelfAction() override { return ActionKind::Parse; }
 
 public:
 };
 class ImportResolutionExecution final : public CompilerExecution {
 public:
-  ImportResolutionExecution(Compiler &compiler, ActionKind currentAction);
+  ImportResolutionExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::Parse; }
+  ActionKind GetSelfAction() override { return ActionKind::ResolveImports; }
+  virtual CompilerExecution *GetConsumer() override;
 
-public:
-  ActionKind GetDependency() override { return ActionKind::Parse; }
+  // void CompletedSyntaxAnalysis(SourceFile *result) override;
 };
 
 class DumpASTExecution final : public CompilerExecution {
 public:
-  DumpASTExecution(Compiler &compiler, ActionKind currentAction);
+  DumpASTExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::Parse; }
+  ActionKind GetSelfAction() override { return ActionKind::DumpAST; }
+  ActionKind GetDepAction() override { return ActionKind::Parse; }
+  virtual CompilerExecution *GetConsumer() override;
+
+  // void CompletedSyntaxAnalysis(SourceFile *result) override;
 };
 
 class TypeCheckExecution final : public CompilerExecution {
 public:
-  TypeCheckExecution(Compiler &compiler, ActionKind currentAction);
+  TypeCheckExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::ResolveImports; }
+  ActionKind GetDepAction() override { return ActionKind::ResolveImports; }
+  ActionKind GetSelfAction() override { return ActionKind::TypeCheck; }
+  virtual CompilerExecution *GetConsumer() override;
+
+  // void CompletedSyntaxAnalysis(SourceFile *result) override;
+  // void CompletedSyntaxAnalysis(ModuleDecl *result) override;
 };
 
 class PrintASTExecution final : public CompilerExecution {
 public:
-  PrintASTExecution(Compiler &compiler, ActionKind currentAction);
+  PrintASTExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
+  ActionKind GetSelfAction() override { return ActionKind::PrintAST; }
+  virtual CompilerExecution *GetConsumer() override;
 };
 
 // Generate IR, before optimization
 class GenerateIRExecution final : public CompilerExecution {
 
 public:
-  GenerateIRExecution(Compiler &compiler, ActionKind currentAction);
+  GenerateIRExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::TypeCheck; }
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitIRBefore; }
+  virtual CompilerExecution *GetConsumer() override;
+  Status FinishAction() override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -173,53 +233,91 @@ class OptimizeIRExecution final : public CompilerExecution {
 
   // IRCodeOptimizer;
 public:
-  OptimizeIRExecution(Compiler &compiler, ActionKind currentAction);
+  OptimizeIRExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::EmitIRBefore; }
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::EmitIRBefore; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitIRAfter; }
+  virtual CompilerExecution *GetConsumer() override;
 };
 
 class EmitBitCodeExecution final : public CompilerExecution {
 public:
-  EmitBitCodeExecution(Compiler &compiler, ActionKind currentAction);
+  EmitBitCodeExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitBC; }
+  virtual CompilerExecution *GetConsumer() override;
 };
 
 class EmitModuleExecution final : public CompilerExecution {
 public:
-  EmitModuleExecution(Compiler &compiler, ActionKind currentAction);
+  EmitModuleExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
+  Status ExecuteAction() override;
 
 public:
-  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
+  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitModule; }
+  virtual CompilerExecution *GetConsumer() override;
 };
 
-class EmitNativeExecution : public CompilerExecution {
+// class EmitNativeExecution : public CompilerExecution {
 
-  /// NativeCodeGen
+//   /// NativeCodeGen
+// public:
+//   EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
+
+// public:
+//   Status ExecuteAction() override;
+
+//   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
+
+//   CompilerExecution *GetConsumer() override;
+//   void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
+//   override;
+// };
+
+class EmitObjectExecution : public CompilerExecution {
 public:
-  EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
+  EmitObjectExecution(Compiler &compiler);
 
 public:
-  Status Execute() override;
-  ActionKind GetDependency() override { return ActionKind::EmitIRAfter; }
-  void HandleIRGenResult(const IRGenResult* result) override;
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitObject; }
+  CompilerExecution *GetConsumer() override;
+
+  // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
+  // override;
 };
 
-class FallbackExecution final : public CompilerExecution {
+class EmitAssemblyExecution : public CompilerExecution {
+public:
+  EmitAssemblyExecution(Compiler &compiler);
 
 public:
-  FallbackExecution(Compiler &compiler, ActionKind currentAction);
+  Status ExecuteAction() override;
+  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
+  ActionKind GetSelfAction() override { return ActionKind::EmitAssembly; }
+  CompilerExecution *GetConsumer() override;
 
-public:
-  Status Execute() override;
+  // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
+  // override;
 };
+
+// class FallbackExecution final : public CompilerExecution {
+
+// public:
+//   FallbackExecution(Compiler &compiler);
+
+// public:
+//   Status ExecuteAction() override;
+// };
 
 } // namespace stone
 

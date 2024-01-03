@@ -4,31 +4,37 @@
 
 using namespace stone;
 
-PrintHelpExecution::PrintHelpExecution(Compiler &compiler,
-                                       ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+PrintHelpExecution::PrintHelpExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status PrintHelpExecution::Execute() {
-  assert(GetExecutionAction() == ActionKind::PrintHelp ||
-         GetExecutionAction() == ActionKind::PrintHelpHidden);
 
+  assert(IsSelfAction());
   return Status();
 }
 
-PrintVersionExecution::PrintVersionExecution(Compiler &compiler,
-                                             ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+PrintHelpHiddenExecution::PrintHelpHiddenExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
+
+Status PrintHelpHiddenExecution::Execute() {
+
+  assert(IsSelfAction());
+  return Status();
+}
+
+PrintVersionExecution::PrintVersionExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status PrintVersionExecution::Execute() {
-  assert(GetExecutionAction() == ActionKind::PrintVersion);
+
+  assert(IsSelfAction());
   return Status();
 }
 
-PrintFeatureExecution::PrintFeatureExecution(Compiler &compiler,
-                                             ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+PrintFeatureExecution::PrintFeatureExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status PrintFeatureExecution::Execute() {
-  assert(GetExecutionAction() == ActionKind::PrintFeature);
+  assert(IsSelfAction());
   return Status();
 }

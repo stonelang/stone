@@ -45,7 +45,7 @@ class Compiler final {
   mutable ModuleDecl *mainModule = nullptr;
 
   /// LLVM generated modules
-  llvm::SmallVector<IRGenResult *, 8> irGenResults;
+  // llvm::SmallVector<IRGenResult *, 8> irGenResults;
 
   /// Virtual OutputBackend.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend = nullptr;
@@ -61,6 +61,9 @@ public:
 public:
   Compiler();
   Status Setup();
+
+  Status ExecuteAction(ActionKind action);
+  Status ExecuteAction(CompilerExecution &execution);
 
 public:
   bool HasObservation() { return observation != nullptr; }
@@ -98,8 +101,6 @@ public:
   bool HasMemoryContext() const { return memContext != nullptr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
-
-  Status ExecuteAction(ActionKind kind, CompilerExecution *caller = nullptr);
 
 private:
   std::unique_ptr<CompilerExecution>

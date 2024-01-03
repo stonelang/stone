@@ -76,6 +76,15 @@ enum class SourceFileStage {
 
 // class SourceFileDecl
 class SourceFile final : public ModuleFile {
+public:
+  enum class SourceFileFlags : uint8_t {
+    None = 1 << 0,
+    Parsed = 1 << 1,
+    TypeChecked = 1 << 2,
+  };
+  using SourceFileOptions = stone::OptionSet<SourceFileFlags>;
+  SourceFileOptions sourceFileOptions;
+
 private:
   friend ASTContext;
   // llvm::NullablePtr<Scope> scope = nullptr;

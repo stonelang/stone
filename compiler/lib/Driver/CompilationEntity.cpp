@@ -9,11 +9,88 @@ CompilationEntity::CompilationEntity(CompilationEntityKind kind,
                                      FileType fileType)
     : kind(kind), fileType(fileType) {
 
-  if (!IsJob()) {
-    assert(HasFileType());
-  }
+  ClearAllFlags();
+  ComputeAllFlags(kind);
 }
 
+void CompilationEntity::ClearAllFlags() {
+
+  ClearAllowTopLevel();
+  ClearAllowFileType();
+  ClearAllowOutput();
+}
+
+void CompilationEntity::ComputeAllFlags(CompilationEntityKind kind) {
+
+  switch (kind) {
+  case CompilationEntityKind::Input: {
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::CompileJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::BackendJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowFileType();
+    AddAllowOutput();
+    break;
+  }
+  case CompilationEntityKind::GeneratePCHJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowFileType();
+
+    break;
+  }
+  case CompilationEntityKind::MergeModuleJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::ModuleWrapJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::DynamicLinkJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::StaticLinkJobConstruction: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::InterpretJobConstruction: {
+    AddAllowTopLevel();
+    break;
+  }
+  case CompilationEntityKind::AutolinkExtractJobConstruction: {
+    AddAllowFileType();
+    break;
+  }
+  case CompilationEntityKind::Job: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    break;
+  }
+  case CompilationEntityKind::BatchJob: {
+    AddAllowTopLevel();
+    AddAllowOutput();
+    break;
+  }
+  default: {
+    llvm_unreachable("Invalid CompilationEntity!");
+  }
+  }
+}
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName) {
 
