@@ -1,11 +1,16 @@
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/Compiler.h"
+#include "stone/Compile/CompilerObservation.h"
 
 using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
 
+CompilerExecution::~CompilerExecution() {}
+
 ActionKind CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
+
+Compiler &CompilerExecution::GetCompiler() { return compiler; }
 
 CompilerExecution *CompilerExecution::GetConsumer() {
   return (consumer != nullptr) ? consumer : this;
@@ -76,8 +81,6 @@ Status Compiler::ExecuteAction(ActionKind action) {
 //     llvm::ArrayRef<IRGenResult *, 8> results) {
 //   llvm_unreachable("Not allowed to handle IR generation!");
 // }
-
-CompilerExecution::~CompilerExecution() {}
 
 std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   switch (kind) {

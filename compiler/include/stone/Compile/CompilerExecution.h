@@ -10,13 +10,18 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Chrono.h"
 
+namespace llvm {
+Module;
+}
 namespace stone {
 
 class Compiler;
 class SourceFile;
+class ModuleDecl;
 class CompilerExecution;
+class CodeCompletionCallbacks;
 
-class CompilerExecution {
+class CompilerExecution : public CompilerObservation {
 
 protected:
   Compiler &compiler;
@@ -64,33 +69,45 @@ public:
   }
 
   CompilerExecution *GetConsumer();
-  Compiler &GetCompiler() { return compiler; }
+  Compiler &GetCompiler();
 
 public:
-  // void CompletedCommandLineParsing(Compiler &compiler) override;
+  /// The command line has been parsed.
+  void CompletedCommandLineParsing(Compiler &result) override {}
 
-  // /// Completed syntax analysis
-  // virtual void CompletedSyntaxAnalysis(SourceFile &sourceFile) override;
+  /// The compiler has been configured
+  void CompletedConfiguration(Compiler &result) override {}
 
-  // /// Completed syntax analysis
-  // virtual void CompletedSyntaxAnalysis(ModuleDecl &mod) override;
+  /// Completed syntax analysis
+  void CompletedSyntaxAnalysis(Compiler &result) {}
 
-  // /// Completed semantic analysis
-  // virtual void CompletedSemanticAnalysis(SourceFile &sourceFile) override;
+  /// Completed syntax analysis
+  void CompletedSyntaxAnalysis(SourceFile &result) override {}
 
-  // /// Completed semantic analysis
-  // virtual void CompletedSemanticAnalysis(ModuleDecl &mod) override;
+  /// Completed syntax analysis
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override {}
 
-  // /// Some executions may require access to the results of ir generation.
-  // virtual void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8>
-  // &results);
+  /// Completed semantic analysis
+  void CompletedSemanticAnalysis(Compiler &result) override {}
 
-  // /// Some executions may require access to the results of ir generation.
-  // virtual void CompletedIRGeneration(llvm::Module *result);
+  /// Completed semantic analysis
+  void CompletedSemanticAnalysis(SourceFile &result) override {}
 
-  // /// Some executions may require access to the results of ir generation.
-  // virtual void
-  // CompletedIRGeneration(llvm::ArrayRef<llvm::Module *, 8> &results);
+  /// Completed semantic analysis
+  void CompletedSemanticAnalysis(ModuleDecl &result) override {}
+
+  // Completed IR generation
+  void CompletedIRGeneration(Compiler &result) override {}
+
+  /// Some executions may require access to the results of ir generation.
+  void CompletedIRGeneration(llvm::Module *result) override {}
+
+  /// Some executions may require access to the results of ir generation.
+  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override {
+  }
+
+  /// Callbacks into the parsing pipeline
+  CodeCompletionCallbacks *GetCodeCompletionCallbacks() override {}
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -177,8 +194,8 @@ public:
   ActionKind GetDepAction() override { return ActionKind::ResolveImports; }
   ActionKind GetSelfAction() override { return ActionKind::TypeCheck; }
 
-  // void CompletedSyntaxAnalysis(SourceFile *result) override;
-  // void CompletedSyntaxAnalysis(ModuleDecl *result) override;
+  void CompletedSyntaxAnalysis(SourceFile &result) override;
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 };
 
 class PrintASTExecution final : public CompilerExecution {
@@ -191,6 +208,9 @@ public:
 public:
   ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
   ActionKind GetSelfAction() override { return ActionKind::PrintAST; }
+
+  void CompletedSyntaxAnalysis(SourceFile &result) override;
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 };
 
 // Generate IR, before optimization
@@ -204,6 +224,9 @@ public:
   ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
   ActionKind GetSelfAction() override { return ActionKind::EmitIRBefore; }
   Status FinishAction() override;
+
+  void CompletedSemanticAnalysis(SourceFile &result) override;
+  void CompletedSemanticAnalysis(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -266,8 +289,8 @@ public:
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitObject; }
 
-  // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
-  // override;
+  void CompletedIRGeneration(llvm::Module *result) override;
+  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 };
 
 class EmitAssemblyExecution : public CompilerExecution {
@@ -279,19 +302,9 @@ public:
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitAssembly; }
 
-  // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
-  // override;
+  void CompletedIRGeneration(llvm::Module *result) override;
+  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 };
-
-// class FallbackExecution final : public CompilerExecution {
-
-// public:
-//   FallbackExecution(Compiler &compiler);
-
-// public:
-//   Status ExecuteAction() override;
-// };
-
 } // namespace stone
 
 #endif

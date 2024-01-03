@@ -25,6 +25,9 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
+void TypeCheckExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+
+void TypeCheckExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 PrintASTExecution::PrintASTExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -39,3 +42,7 @@ Status PrintASTExecution::ExecuteAction() {
   //  });
   return Status();
 }
+
+void PrintASTExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+
+void PrintASTExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}

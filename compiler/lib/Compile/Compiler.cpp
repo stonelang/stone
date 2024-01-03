@@ -3,6 +3,7 @@
 #include "stone/Basic/Mem.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CompilerInputFile.h"
+#include "stone/Compile/CompilerObservation.h"
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/ActionKind.h"
 #include "stone/Parse/Lexer.h" // TODO: do better

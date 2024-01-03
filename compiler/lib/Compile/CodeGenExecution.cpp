@@ -64,6 +64,9 @@ Status GenerateIRExecution::ExecuteAction() {
 
 Status GenerateIRExecution::FinishAction() { return Status(); }
 
+void GenerateIRExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+void GenerateIRExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
+
 OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
@@ -135,8 +138,12 @@ Status EmitObjectExecution::ExecuteAction() {
   return Status();
 }
 
-// void EmitObjectExecution::CompletedIRGeneration(
-//     llvm::ArrayRef<IRGenResult *, 8> results) {}
+void EmitObjectExecution::CompletedIRGeneration(llvm::Module *result) {}
+
+void EmitObjectExecution::CompletedIRGeneration(
+    llvm::ArrayRef<llvm::Module *> &results) {}
+
+Status EmitObjectExecution::FinishAction() { return Status(); }
 
 ///< EmitAssemblyExecution
 
@@ -173,5 +180,9 @@ Status EmitAssemblyExecution::ExecuteAction() {
   return Status();
 }
 
-// void EmitAssemblyExecution::CompletedIRGeneration(
-//     llvm::ArrayRef<IRGenResult *, 8> results) {}
+void EmitAssemblyExecution::CompletedIRGeneration(llvm::Module *result) {}
+
+void EmitAssemblyExecution::CompletedIRGeneration(
+    llvm::ArrayRef<llvm::Module *> &results) {}
+
+Status EmitAssemblyExecution::FinishAction() { return Status(); }

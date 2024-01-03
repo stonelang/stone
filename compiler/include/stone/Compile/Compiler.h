@@ -2,7 +2,6 @@
 #define STONE_COMPILE_COMPILER_H
 
 #include "stone/Basic/FileMgr.h"
-#include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Diag/DiagnosticEngine.h"
@@ -18,6 +17,7 @@ namespace stone {
 class ModuleDecl;
 class IRGenResult;
 class CompilerObservation;
+class CompilerExecution;
 
 class Compiler final {
 
