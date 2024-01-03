@@ -67,8 +67,10 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
   if (!toolChain) {
     return FinishMain(Status::Error());
   }
-  auto compileStyle = driver.BuildCompileStyle();
-  compileStyle->BuildCompilationEntities(driver.GetCompilationEntities());
+  // driver.BuildCompilationEntities(*toolChain);
+
+  // auto compileStyle = driver.BuildCompileStyle();
+  // compileStyle->BuildCompilationEntities(driver.GetCompilationEntities());
 
   return FinishMain();
 }

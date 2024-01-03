@@ -55,9 +55,10 @@ CompilerExecution *CompilerExecution::GetConsumer() {
 }
 
 Status CompilerExecution::SetupAction() {
-
+  assert(HasSelfAction());
   if (HasDepAction()) {
     auto execution = compiler.CreateExectution(GetDepAction());
+    assert(HasConsumer());
     execution->SetConsumer(GetConsumer());
     if (compiler.ExecuteAction(*execution).IsError()) {
       return Status::MakeHasCompletionAndIsError();

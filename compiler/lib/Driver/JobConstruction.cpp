@@ -26,6 +26,20 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
   assert(file::IsOutputableFileType(outputFileType));
 }
 
+CompileJobConstruction *
+CompileJobConstruction::Create(const Driver &driver, FileType outputFileType) {
+
+  return new (driver) CompileJobConstruction(outputFileType);
+}
+
+CompileJobConstruction *
+CompileJobConstruction::Create(const Driver &driver,
+                               const CompilationEntity *input,
+                               FileType outputFileType) {
+
+  return new (driver) CompileJobConstruction(input, outputFileType);
+}
+
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(
     CompilationEntityList inputs, LinkMode linkMode, bool withLTO)
     : LinkJobConstruction(CompilationEntityKind::DynamicLinkJobConstruction,

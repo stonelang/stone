@@ -38,6 +38,8 @@ class Driver;
 class CompilationEntities;
 
 class CompileStyle {
+
+protected:
   Driver &driver;
 
 public:

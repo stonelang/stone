@@ -97,17 +97,33 @@ Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 Status
 NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        // auto fileTypeExecution =
+        // driver.GetFileTypeExection(input.GetFileType());
+        // fileTypeExecution.BuildCompilationEntities();
+      });
+
   return Status();
 }
-
 
 Status
 SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 
+  auto jobConstruction = *CompileJobConstruction::Create(
+      driver,
+      driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+
+  /// Create a CompileJobConstruction::Create
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        // auto fileTypeExecution =
+        // driver.GetFileTypeExection(input.GetFileType());
+        // fileTypeExecution.BuildCompilationEntities();
+      });
+
   return Status();
 }
-
-
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
