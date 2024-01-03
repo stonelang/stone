@@ -44,7 +44,6 @@ void CompilerExecution::CompletedIRGeneration(
 }
 CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
   llvm_unreachable("Illegal to handle code completion callbacks!");
-
 }
 
 ActionKind CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
@@ -106,9 +105,9 @@ std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   case ActionKind::PrintAST:
     return std::make_unique<PrintASTExecution>(*this);
   case ActionKind::EmitIRBefore:
-    return std::make_unique<GenerateIRExecution>(*this);
+    return std::make_unique<EmitIRBeforeExecution>(*this);
   case ActionKind::EmitIRAfter:
-    return std::make_unique<OptimizeIRExecution>(*this);
+    return std::make_unique<EmitIRAfterExecution>(*this);
   case ActionKind::EmitModule:
     return std::make_unique<EmitModuleExecution>(*this);
   case ActionKind::EmitBC:

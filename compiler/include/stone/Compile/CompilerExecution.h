@@ -215,32 +215,37 @@ public:
 };
 
 // Generate IR, before optimization
-class GenerateIRExecution final : public CompilerExecution {
+class EmitIRBeforeExecution final : public CompilerExecution {
 
 public:
-  GenerateIRExecution(Compiler &compiler);
+  EmitIRBeforeExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;
+  Status FinishAction() override;
   ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
   ActionKind GetSelfAction() override { return ActionKind::EmitIRBefore; }
-  Status FinishAction() override;
 
+public:
   void CompletedSemanticAnalysis(SourceFile &result) override;
   void CompletedSemanticAnalysis(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
-class OptimizeIRExecution final : public CompilerExecution {
+class EmitIRAfterExecution final : public CompilerExecution {
 
-  // IRCodeOptimizer;
 public:
-  OptimizeIRExecution(Compiler &compiler);
+  EmitIRAfterExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;
+  Status FinishAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRBefore; }
   ActionKind GetSelfAction() override { return ActionKind::EmitIRAfter; }
+
+public:
+  void CompletedSemanticAnalysis(SourceFile &result) override;
+  void CompletedSemanticAnalysis(ModuleDecl &result) override;
 };
 
 class EmitBitCodeExecution final : public CompilerExecution {

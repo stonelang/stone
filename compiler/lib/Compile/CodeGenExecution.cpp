@@ -4,10 +4,12 @@
 
 using namespace stone;
 
-GenerateIRExecution::GenerateIRExecution(Compiler &compiler)
+
+///<EmitIRBeforeExecution
+EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status GenerateIRExecution::ExecuteAction() {
+Status EmitIRBeforeExecution::ExecuteAction() {
 
   if (compiler.IsWholeModuleCompile()) {
     if (!compiler.GetInvocation()
@@ -62,15 +64,16 @@ Status GenerateIRExecution::ExecuteAction() {
   return Status();
 }
 
-Status GenerateIRExecution::FinishAction() { return Status(); }
+Status EmitIRBeforeExecution::FinishAction() { return Status(); }
+void EmitIRBeforeExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+void EmitIRBeforeExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
-void GenerateIRExecution::CompletedSemanticAnalysis(SourceFile &result) {}
-void GenerateIRExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
-OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler)
+///<EmitIRAfterExecution
+EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status OptimizeIRExecution::ExecuteAction() {
+Status EmitIRAfterExecution::ExecuteAction() {
 
   // stone::OptimizeIR(compiler.GetIRGen()....)
 
@@ -80,6 +83,12 @@ Status OptimizeIRExecution::ExecuteAction() {
 
   return Status();
 }
+
+Status EmitIRAfterExecution::FinishAction() { return Status(); }
+
+void EmitIRAfterExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+
+void EmitIRAfterExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
 EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}

@@ -26,10 +26,6 @@ Status ParseExecution::ExecuteAction() {
     if (codeCompletionCallbacks) {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
-
-    // if (!IsSelfAction() && HasConsumer()) {
-    //   GetConsumer()->CompletedSyntaxAnalysis(sourceFile);
-    // }
     return Status();
   });
 
