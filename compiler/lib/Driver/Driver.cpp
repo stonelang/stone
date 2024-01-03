@@ -50,21 +50,6 @@ Status Driver::ConvertArgStrings(const llvm::opt::InputArgList &args) {
   return DriverOptionsConverter(args, driverOpts, *this).Convert();
 }
 
-void Driver::PrintHelp(bool showHidden) const {
-
-  unsigned IncludedFlagsBitmask = 0;
-  unsigned ExcludedFlagsBitmask = opts::NoDriverOption;
-
-  if (!showHidden) {
-    ExcludedFlagsBitmask |= HelpHidden;
-  }
-  GetOptTable().printHelp(
-      llvm::outs(), GetDriverOptions().GetMainExecutableName().data(),
-      "Stone is a compiler tool for compiling Stone source code.",
-      IncludedFlagsBitmask, ExcludedFlagsBitmask,
-      /*ShowAllAliases*/ false);
-}
-
 ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   switch (toolChainKind) {
   case ToolChainKind::Darwin:
@@ -136,4 +121,20 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
   return driver.Allocate(bytes, alignment);
+}
+
+
+void Driver::PrintHelp(bool showHidden) const {
+
+  unsigned IncludedFlagsBitmask = 0;
+  unsigned ExcludedFlagsBitmask = opts::NoDriverOption;
+
+  if (!showHidden) {
+    ExcludedFlagsBitmask |= HelpHidden;
+  }
+  GetOptTable().printHelp(
+      llvm::outs(), GetDriverOptions().GetMainExecutableName().data(),
+      "Stone is a compiler tool for compiling Stone source code.",
+      IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      /*ShowAllAliases*/ false);
 }

@@ -74,3 +74,4 @@ int stone::Main(llvm::ArrayRef<const char *> args, const char *arg0,
 
   return FinishMain();
 }
+
