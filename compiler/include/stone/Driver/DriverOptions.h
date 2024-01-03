@@ -56,7 +56,7 @@ enum class CompilationOutputLevel {
 
 /// This mode controls the manner in with compile is invoked.
 /// p := -primary-file
-enum class CompileStyle : UInt8 {
+enum class CompileStyleKind : UInt8 {
   /// n input (s), n compile(s), n * n  parses
   /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
   /// compile_n(1,....,n=p)
@@ -203,7 +203,7 @@ public:
 private:
   ToolChainKind ComputeToolChainKind();
   llvm::StringRef ComputeWorkingDirectory();
-  CompileStyle ComputeCompileStyle();
+  CompileStyleKind ComputeCompileStyleKind();
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
   llvm::Triple ComputeTarget();
@@ -225,7 +225,7 @@ class DriverOutputInfo final {
   unsigned numThreads = 0;
 
   /// The mode in which the driver should invoke the frontend.
-  CompileStyle compileStyle = CompileStyle::Normal;
+  CompileStyleKind compileStyleKind = CompileStyleKind::Normal;
 
   // llvm::Optional<MSVCRuntime> msvRuntimeVariant = llvm::None;
 

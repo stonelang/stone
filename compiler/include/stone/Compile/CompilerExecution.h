@@ -54,7 +54,7 @@ public:
   /// The main input action from the user.
   ActionKind GetMainAction();
 
-  /// Determine if the main action and the self action is the same. 
+  /// Determine if the main action and the self action is the same.
   bool HasMainAction() { return GetSelfAction() == GetMainAction(); }
 
   /// Get the dependency action

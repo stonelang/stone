@@ -34,6 +34,36 @@ class DerivedArgList;
 
 namespace stone {
 
+class Driver;
+class CompilationEntities;
+
+class CompileStyle {
+  Driver &driver;
+
+public:
+  CompileStyle(Driver &driver) : driver(driver) {}
+
+public:
+  virtual Status BuildCompilationEntities(CompilationEntities &entities);
+};
+
+class NormalCompileStyle final : public CompileStyle {
+
+public:
+  NormalCompileStyle(Driver &driver) : CompileStyle(driver) {}
+
+public:
+  Status BuildCompilationEntities(CompilationEntities &entities) override;
+};
+
+class SingleCompileStyle final : public CompileStyle {
+public:
+  SingleCompileStyle(Driver &driver) : CompileStyle(driver) {}
+
+public:
+  Status BuildCompilationEntities(CompilationEntities &entities) override;
+};
+
 class Driver final {
 
   SrcMgr srcMgr;
@@ -145,6 +175,8 @@ public:
   /// This uses a std::unique_ptr instead of returning a toolchain by value
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
+
+  std::unique_ptr<CompileStyle> BuildCompileStyle();
 
   /// Construct a compilation object for a given ToolChain
   ///

@@ -151,7 +151,7 @@ Status DriverOptionsConverter::Convert() {
   if (!driverOpts.HasWorkingDirectory()) {
     return Status::MakeHasCompletionAndIsError();
   }
-  driverOpts.driverOutputInfo.compileStyle = ComputeCompileStyle();
+  driverOpts.driverOutputInfo.compileStyleKind = ComputeCompileStyleKind();
 
   driverOpts.toolChainKind = ComputeToolChainKind();
   if (!driverOpts.HasToolChainKind()) {
@@ -176,8 +176,8 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
 }
 
 // TODO: Just return for now
-CompileStyle DriverOptionsConverter::ComputeCompileStyle() {
-  return CompileStyle::Normal;
+CompileStyleKind DriverOptionsConverter::ComputeCompileStyleKind() {
+  return CompileStyleKind::Normal;
 }
 
 ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {

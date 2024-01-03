@@ -16,7 +16,7 @@ public:
   void operator=(const BuiltinIdentifierCache &) = delete;
 
 public:
-  // Define the set of builtin identifiers.
+  // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Identifier Builtin##Name##Identifier;
 #include "stone/Syntax/BuiltinIdentifiers.def"

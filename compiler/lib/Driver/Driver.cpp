@@ -85,6 +85,30 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
+std::unique_ptr<CompileStyle> Driver::BuildCompileStyle() {
+  // Just return normal for now
+  return std::make_unique<NormalCompileStyle>(*this);
+}
+
+Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
+  llvm_unreachable("Illegal for for the base class CompileStyle");
+}
+
+Status
+NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
+
+  return Status();
+}
+
+
+Status
+SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
+
+  return Status();
+}
+
+
+
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
   return nullptr;

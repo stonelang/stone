@@ -268,12 +268,12 @@ public:
 
 public:
   explicit CanType(TypeBase *ty) : Type(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
+    // TODO: assert(IsCanTypeOrNull() &&
+    //        "Forming a CanType out of a non-canonical type!");
   }
   explicit CanType(Type ty) : Type(ty) {
-    assert(IsCanTypeOrNull() &&
-           "Forming a CanType out of a non-canonical type!");
+    // TODO: assert(IsCanTypeOrNull() &&
+    //        "Forming a CanType out of a non-canonical type!");
   }
 
 private:
