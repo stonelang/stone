@@ -26,6 +26,10 @@ Status ParseExecution::ExecuteAction() {
     if (codeCompletionCallbacks) {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
+    if(HasConsumer() && !HasMainAction()){
+      GetConsumer()->CompletedSyntaxAnalysis(sourceFile);
+
+    }
     return Status();
   });
 
@@ -50,8 +54,8 @@ Status ImportResolutionExecution::ExecuteAction() {
   return Status();
 }
 
-// void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile& result)
-// {}
+void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void ImportResolutionExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 DumpASTExecution::DumpASTExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}

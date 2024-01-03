@@ -54,6 +54,9 @@ public:
   /// The main input action from the user.
   ActionKind GetMainAction();
 
+  /// Determine if the main action and the self action is the same. 
+  bool HasMainAction() { return GetSelfAction() == GetMainAction(); }
+
   /// Get the dependency action
   virtual ActionKind GetDepAction() { return ActionKind::None; }
 
@@ -165,7 +168,9 @@ public:
   ActionKind GetDepAction() override { return ActionKind::Parse; }
   ActionKind GetSelfAction() override { return ActionKind::ResolveImports; }
 
-  // void CompletedSyntaxAnalysis(SourceFile *result) override;
+public:
+  void CompletedSyntaxAnalysis(SourceFile &result) override;
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 };
 
 class DumpASTExecution final : public CompilerExecution {

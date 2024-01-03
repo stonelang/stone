@@ -4,8 +4,7 @@
 
 using namespace stone;
 
-
-///<EmitIRBeforeExecution
+///< EmitIRBeforeExecution
 EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
@@ -68,8 +67,7 @@ Status EmitIRBeforeExecution::FinishAction() { return Status(); }
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(SourceFile &result) {}
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
-
-///<EmitIRAfterExecution
+///< EmitIRAfterExecution
 EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
