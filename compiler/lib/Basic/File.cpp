@@ -1,4 +1,4 @@
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringSwitch.h"
@@ -17,7 +17,7 @@ struct FileTypeInfo {
 
 static const FileTypeInfo FileTypeInfos[] = {
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) {NAME, FLAGS, EXT},
-#include "stone/Basic/File.def"
+#include "stone/Basic/FileType.def"
 };
 
 static const FileTypeInfo &GetFileTypeInfo(unsigned ty) {
@@ -40,14 +40,14 @@ FileType file::GetTypeByExt(llvm::StringRef Ext) {
   assert(Ext.front() == '.' && "not a file extension");
   return llvm::StringSwitch<FileType>(Ext.drop_front())
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(EXT, TYPE)
-#include "stone/Basic/File.def"
+#include "stone/Basic/FileType.def"
       .Default(file::INVALID);
 }
 
 FileType file::GetTypeByName(llvm::StringRef Name) {
   return llvm::StringSwitch<FileType>(Name)
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) .Case(NAME, TYPE)
-#include "stone/Basic/File.def"
+#include "stone/Basic/FileType.def"
       .Default(FileType::INVALID);
 }
 

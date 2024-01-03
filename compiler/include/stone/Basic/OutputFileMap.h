@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/LLVM.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringMap.h"

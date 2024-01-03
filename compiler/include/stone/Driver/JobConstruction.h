@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVER_JOB_CONSTRUCTION_H
 #define STONE_DRIVER_DRIVER_JOB_CONSTRUCTION_H
 
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/CompilationEntity.h"

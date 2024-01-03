@@ -1,5 +1,5 @@
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Range.h"
 #include "stone/Compile/CompilerOptions.h"

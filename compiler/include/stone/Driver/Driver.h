@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
 #include "stone/Diag/DiagnosticEngine.h"

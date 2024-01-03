@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILEINPUTFILE_H
 #define STONE_COMPILE_COMPILEINPUTFILE_H
 
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 
 #include "llvm/ADT/PointerIntPair.h"

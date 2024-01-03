@@ -1,5 +1,6 @@
-#ifndef STONE_BASIC_FILE_H
-#define STONE_BASIC_FILE_H
+#ifndef STONE_BASIC_FILE_TYPE_H
+#define STONE_BASIC_FILE_TYPE_H
+
 #include "stone/Basic/LLVM.h"
 
 #include "llvm/ADT/DenseMapInfo.h"
@@ -17,7 +18,7 @@ namespace file {
 
 enum FileType : uint8_t {
 #define FILE_TYPE(NAME, TYPE, EXT, FLAGS) TYPE,
-#include "stone/Basic/File.def"
+#include "stone/Basic/FileType.def"
 #undef FILE_TYPE
   INVALID
 };
@@ -56,6 +57,7 @@ bool IsStoneFileType(FileType fileType);
 /// Returns true if this file type is Object
 bool IsObjectFileType(FileType fileType);
 
+
 /// Returns true if the type is produced in the sc after the LLVM
 /// passes.
 ///
@@ -93,29 +95,6 @@ llvm::StringRef GetBase(llvm::StringRef input);
 
 template <typename Fn> void forAllTypes(const Fn &fn);
 
-// llvm::StringRef FindProgramByName(llvm::StringRef programName);
-// llvm::sys::findProgramByName
-
-class File final {
-  FileType ty;
-  unsigned fileID;
-  llvm::StringRef name;
-
-public:
-  File() = delete;
-  File(llvm::StringRef name, FileType ty, unsigned fileID = 0)
-      : name(name), ty(ty), fileID(fileID) {}
-
-public:
-  llvm::StringRef GetName() { return name; }
-  const llvm::StringRef GetName() const { return name; }
-  FileType GetType() const { return ty; }
-  bool OnSystem() { return file::Exists(GetName()); }
-  unsigned GetFileID() { return fileID; }
-};
-
-/// Type used for a list of input arguments.
-using Files = llvm::SmallVector<file::File, 16>;
 
 std::unique_ptr<llvm::raw_pwrite_stream>
 CreateOutputStream(llvm::StringRef outFile, std::error_code &error,

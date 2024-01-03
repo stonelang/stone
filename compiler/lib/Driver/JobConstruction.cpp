@@ -1,5 +1,5 @@
 #include "stone/Driver/JobConstruction.h"
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Driver/Driver.h"
 #include "stone/Driver/DriverPrettyStackTrace.h"
 

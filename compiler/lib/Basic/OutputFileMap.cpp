@@ -1,5 +1,5 @@
 #include "stone/Basic/OutputFileMap.h"
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringRef.h"

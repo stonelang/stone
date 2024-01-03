@@ -1,7 +1,7 @@
 #ifndef STONE_DRIVER_DRIVER_INPUTFILE_H
 #define STONE_DRIVER_DRIVER_INPUTFILE_H
 
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Driver/CompilationEntity.h"
 
 namespace stone {

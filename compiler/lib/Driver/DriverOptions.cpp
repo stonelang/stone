@@ -186,6 +186,9 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     driverOpts.defaultTargetTriple = llvm::Triple::normalize(A->getValue());
   }
   llvm::Triple target(driverOpts.defaultTargetTriple);
+
+  driverOpts.triple = target;
+
   switch (target.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX: {
@@ -220,6 +223,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     return ToolChainKind::None;
   }
   }
+  //TODO: Reset the triple 
   return ToolChainKind::None;
 }
 
@@ -237,6 +241,10 @@ LinkMode DriverOptionsConverter::ComputeLinkMode() {
     }
   }
   return LinkMode::None;
+}
+
+void DriverOptionsConverter::SetTriple(llvm::Triple inputTriple) {
+  driverOpts.triple = inputTriple;
 }
 
 void DriverOptionsConverter::ComputeOutputInfo() {}

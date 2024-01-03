@@ -206,7 +206,7 @@ private:
   CompileStyleKind ComputeCompileStyleKind();
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
-  llvm::Triple ComputeTarget();
+  void SetTriple(llvm::Triple triple);
 
   void ComputeOutputInfo();
 
@@ -327,6 +327,8 @@ class DriverOptions final {
   /// Default target triple.
   String defaultTargetTriple;
 
+  llvm::Triple triple;
+
   /// Default target triple.
   llvm::Optional<llvm::Triple> targetVariant;
 
@@ -442,6 +444,8 @@ public:
   bool HasToolChainKind() const { return toolChainKind != ToolChainKind::None; }
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
+
+  llvm::Triple &GetTriple() { return triple; }
 
   /// \return true if it is the help action
   bool IsHelpAction() const;

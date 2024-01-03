@@ -110,17 +110,20 @@ NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 Status
 SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 
-  auto jobConstruction = *CompileJobConstruction::Create(
+  if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+
+  auto jobConstruction = CompileJobConstruction::Create(
       driver,
       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  /// Create a CompileJobConstruction::Create
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        // auto fileTypeExecution =
-        // driver.GetFileTypeExection(input.GetFileType());
-        // fileTypeExecution.BuildCompilationEntities();
-      });
+      [&](const DriverInputFile *input) { jobConstruction->AddInput(input); });
+
+  // Because this is a single you may be able to do this -- but, since you are
+  // linking, maybe, the linker may be the top level job
+  auto jobs = jobConstruction->ConstructJobs(driver);
 
   return Status();
 }

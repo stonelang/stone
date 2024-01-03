@@ -2,7 +2,7 @@
 #define STONE_OPTION_OPTIONS_H
 
 #include "stone/Basic/Color.h"
-#include "stone/Basic/File.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Option/ActionKind.h"
 
 #include "llvm/Option/Arg.h"
