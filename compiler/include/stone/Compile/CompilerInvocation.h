@@ -112,7 +112,7 @@ public:
 
   bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
   const Action &GetMainAction() const { return compilerOpts.mainAction; }
-  
+
   void SetTargetTriple(llvm::StringRef triple);
 
 public:

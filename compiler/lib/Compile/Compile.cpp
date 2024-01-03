@@ -68,9 +68,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     compiler.GetObservation()->CompletedConfiguration(compiler);
   }
 
-  if (compiler.ExecuteAction(compiler.GetInvocation().GetMainAction().GetKind())
-          .IsError()) {
+  if (compiler.IsLLVMCompile()) {
+    if (stone::CompileLLVM(compiler).IsError()) {
+      return FinishCompile(Status::Error());
+    }
+  }
+  if (stone::CompileAction(compiler).IsError()) {
     return FinishCompile(Status::Error());
   }
+  
   return FinishCompile();
 }

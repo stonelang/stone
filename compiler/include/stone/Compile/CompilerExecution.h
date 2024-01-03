@@ -308,7 +308,10 @@ public:
 };
 
 /// Handles LLVM
-Status CompileLLVMIR(Compiler &compiler);
+Status CompileLLVM(Compiler &compiler);
+
+/// Handles LLVM
+Status CompileAction(Compiler &compiler);
 
 } // namespace stone
 

@@ -178,7 +178,7 @@ public:
     return invocation.GetCodeGenOptions().isWholeModuleCompile;
   }
 
-  bool IsCompileForLLVMIR() {
+  bool IsLLVMCompile() {
     return GetInvocation()
         .GetCompilerOptions()
         .inputsAndOutputs.ShouldTreatAsLLVM();

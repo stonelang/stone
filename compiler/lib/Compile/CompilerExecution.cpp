@@ -395,4 +395,9 @@ void EmitAssemblyExecution::CompletedIRGeneration(
 Status EmitAssemblyExecution::FinishAction() { return Status(); }
 
 /// Handles LLVM
-Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }
+Status stone::CompileAction(Compiler &compiler) {
+  return compiler.ExecuteAction(
+      compiler.GetInvocation().GetMainAction().GetKind());
+}
+/// Handles LLVM
+Status stone::CompileLLVM(Compiler &compiler) { return Status(); }
