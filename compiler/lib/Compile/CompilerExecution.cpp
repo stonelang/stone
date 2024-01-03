@@ -1,10 +1,9 @@
 #include "stone/Compile/CompilerExecution.h"
+#include "stone/Basic/Status.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Core.h"
-#include "stone/Basic/Status.h"
 #include "stone/Gen/IRGenRequest.h"
-
 
 using namespace stone;
 
@@ -92,7 +91,6 @@ PrintFeatureExecution::PrintFeatureExecution(Compiler &compiler)
 
 Status PrintFeatureExecution::ExecuteAction() { return Status(); }
 
-
 ParseExecution::ParseExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
@@ -114,11 +112,15 @@ Status ParseExecution::ExecuteAction() {
     if (codeCompletionCallbacks) {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
-    if (ShouldNotifyConsumer()) {
+    if (ShouldNotifyConsumer() && !compiler.IsCompileForWholeModule()) {
       GetConsumer()->CompletedSyntaxAnalysis(sourceFile);
     }
     return Status();
   });
+
+  if (ShouldNotifyConsumer() && compiler.IsCompileForWholeModule()) {
+    GetConsumer()->CompletedSyntaxAnalysis(*compiler.GetMainModule());
+  }
 
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedSyntaxAnalysis(compiler);
@@ -142,6 +144,7 @@ Status ImportResolutionExecution::ExecuteAction() {
 }
 
 void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+
 void ImportResolutionExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 DumpASTExecution::DumpASTExecution(Compiler &compiler)
@@ -155,8 +158,6 @@ Status DumpASTExecution::ExecuteAction() {
 
 void DumpASTExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 void DumpASTExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
-
-
 
 TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -206,9 +207,6 @@ Status PrintASTExecution::ExecuteAction() {
 void PrintASTExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
 void PrintASTExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
-
-
-
 
 ///< EmitIRBeforeExecution
 EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
@@ -396,4 +394,5 @@ void EmitAssemblyExecution::CompletedIRGeneration(
 
 Status EmitAssemblyExecution::FinishAction() { return Status(); }
 
-
+/// Handles LLVM
+Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }

@@ -279,23 +279,7 @@ public:
   ActionKind GetSelfAction() override { return ActionKind::EmitModule; }
 };
 
-// class EmitNativeExecution : public CompilerExecution {
-
-//   /// NativeCodeGen
-// public:
-//   EmitNativeExecution(Compiler &compiler, ActionKind currentAction);
-
-// public:
-//   Status ExecuteAction() override;
-
-//   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
-
-//   CompilerExecution *GetConsumer() override;
-//   void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
-//   override;
-// };
-
-class EmitObjectExecution : public CompilerExecution {
+class EmitObjectExecution final : public CompilerExecution {
 public:
   EmitObjectExecution(Compiler &compiler);
 
@@ -309,7 +293,7 @@ public:
   void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 };
 
-class EmitAssemblyExecution : public CompilerExecution {
+class EmitAssemblyExecution final : public CompilerExecution {
 public:
   EmitAssemblyExecution(Compiler &compiler);
 
@@ -322,6 +306,11 @@ public:
   void CompletedIRGeneration(llvm::Module *result) override;
   void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 };
+
+
+/// Handles LLVM
+Status CompileLLVMIR(Compiler &compiler);
+
 } // namespace stone
 
 #endif

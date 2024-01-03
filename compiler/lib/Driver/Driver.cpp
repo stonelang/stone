@@ -123,7 +123,6 @@ void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
   return driver.Allocate(bytes, alignment);
 }
 
-
 void Driver::PrintHelp(bool showHidden) const {
 
   unsigned IncludedFlagsBitmask = 0;

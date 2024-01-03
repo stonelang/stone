@@ -13,9 +13,6 @@ class CompilerObservation;
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             CompilerObservation *observation = nullptr);
 
-/// Handles LLVM
-Status CompileLLVMIR(Compiler &compiler);
-
 } // namespace stone
 
 #endif

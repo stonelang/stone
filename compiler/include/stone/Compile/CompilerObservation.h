@@ -28,7 +28,7 @@ public:
   virtual void CompletedSyntaxAnalysis(SourceFile &result) {}
 
   /// Completed syntax analysis
-  virtual void CompletedSyntaxAnalysis(ModuleDecl &result) {}
+  virtual void CompletedSyntaxAnalysis(ModuleDecl& result) {}
 
   /// Completed syntax analysis
   virtual void CompletedSyntaxAnalysis(Compiler &result) {}
