@@ -78,8 +78,8 @@ bool stone::GenNativeWithParallelization() { return true; }
 
 /// CodeGenCompletionCallbacks
 bool stone::GenNative(const CodeGenOptions &codeGenOpts,
-                      llvm::Module *llvmModule, llvm::StringRef outputFilename,
-                      ASTContext &astContext) {
+                      llvm::Module *llvmModule, ASTContext &astContext,
+                      llvm::StringRef outputFilename) {
 
   // stone::EmbedBitCode(codeGenOpts, llvmModule);
   // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);

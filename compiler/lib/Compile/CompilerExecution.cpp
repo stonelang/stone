@@ -400,4 +400,14 @@ Status stone::CompileAction(Compiler &compiler) {
       compiler.GetInvocation().GetMainAction().GetKind());
 }
 /// Handles LLVM
-Status stone::CompileLLVM(Compiler &compiler) { return Status(); }
+Status stone::CompileLLVM(Compiler &compiler) {
+
+  llvm::Module *llvmModule = nullptr;
+  stone::GenNative(compiler.GetInvocation().GetCodeGenOptions(), llvmModule,
+                   compiler.GetASTContext(),
+                   compiler.GetInvocation()
+                       .GetCompilerOptions()
+                       .inputsAndOutputs.GetSingleOutputFilename());
+
+  return Status();
+}

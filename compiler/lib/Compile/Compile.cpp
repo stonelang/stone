@@ -76,6 +76,6 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (stone::CompileAction(compiler).IsError()) {
     return FinishCompile(Status::Error());
   }
-  
+
   return FinishCompile();
 }

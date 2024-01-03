@@ -108,7 +108,7 @@ void OptimizeIR(const CodeGenOptions &opts, llvm::Module *llvmModule,
 /// Returns true is successfull
 // You want IRGenOutput
 bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
-               llvm::StringRef outputFilename, ASTContext &astContext);
+               ASTContext &astContext, llvm::StringRef outputFilename);
 
 bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
