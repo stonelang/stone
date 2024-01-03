@@ -59,22 +59,6 @@ void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 } // namespace opts
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 
-class InputFile final {
-
-  file::FileType fileType;
-  const llvm::opt::Arg *input;
-
-public:
-  InputFile(file::FileType fileType, llvm::opt::Arg *input)
-      : fileType(fileType), input(input) {}
-
-  file::FileType GetType() { return fileType; }
-  const llvm::opt::Arg *GetInput() { return input; }
-};
-
-/// Type used for a list of input arguments.
-using InputFileList = llvm::SmallVector<InputFile, 16>;
-
 } // namespace stone
 
 #endif

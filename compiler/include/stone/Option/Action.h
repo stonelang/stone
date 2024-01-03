@@ -22,6 +22,21 @@ public:
   file::FileType GetOutputFileType() const;
 
 public:
+  bool IsParseOnly() const {
+    switch (GetKind()) {
+    case ActionKind::Parse:
+    case ActionKind::DumpAST:
+    // case ActionKind::DumpInterfaceHash:
+    // case ActionKind::EmitImportedModules:
+    // case ActionKind::ScanDependencies:
+    case ActionKind::PrintVersion:
+    case ActionKind::PrintFeature:
+      return true;
+    default:
+      return false;
+    }
+  }
+
   bool CanOutput() const {
     switch (GetKind()) {
     case ActionKind::DumpAST:

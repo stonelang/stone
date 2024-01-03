@@ -307,7 +307,6 @@ public:
   void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 };
 
-
 /// Handles LLVM
 Status CompileLLVMIR(Compiler &compiler);
 

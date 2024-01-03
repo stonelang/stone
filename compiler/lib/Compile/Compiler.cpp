@@ -20,6 +20,7 @@ Compiler::Compiler()
 Status Compiler::Setup() {
 
   assert(invocation.HasAction() && "Compiler does not have a valid action!");
+
   if (SetupCompilerInputFiles().IsError()) {
     Status::Error();
   }
@@ -135,6 +136,20 @@ Status Compiler::SetupCompilerInputFiles() {
       invocation.GetCompilerOptions().inputsAndOutputs.GetInputs();
   const bool shouldRecover = invocation.GetCompilerOptions()
                                  .inputsAndOutputs.ShouldRecoverMissingInputs();
+
+  assert([&]() -> bool {
+    if (invocation.GetMainAction().IsParseOnly()) {
+      // Parsing gets triggered lazily, but let's make sure we have the right
+      // input kind.
+      return llvm::all_of(invocation.GetCompilerOptions().inputsAndOutputs.GetInputs(),
+                          [](const CompilerInputFile &input) {
+                            const auto fileType = input.GetType();
+                            return fileType == FileType::Stone ||
+                                   fileType == FileType::StoneModuleInterface;
+                          });
+    }
+    return true;
+  }() && "Only supports parsing .stone files");
 
   bool hasFailed = false;
   for (const CompilerInputFile &input : inputs) {

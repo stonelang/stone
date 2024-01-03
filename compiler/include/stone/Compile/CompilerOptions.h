@@ -133,6 +133,16 @@ public:
   };
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
+public:
+  /// \return true if the action is valid
+  bool HasMainAction() const { return !mainAction.IsAlien(); }
+
+  /// \return the Action
+  Action &GetMainAction() { return mainAction; }
+
+  /// \return the action
+  const Action &GetMainAction() const { return mainAction; }
+
   CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;

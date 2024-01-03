@@ -34,6 +34,9 @@ Status CompilerOptionsConverter::Convert(
 
   Status status;
 
+  /// First, compute the action
+  compilerOpts.mainAction = stone::ComputeAction(args);
+
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
@@ -66,9 +69,6 @@ Status CompilerOptionsConverter::Convert(
   if (!compilerOpts.GetInputsAndOutputs().HasInputs()) {
     return Status::MakeHasCompletionAndIsError();
   }
-
-  // Now, compute the main action
-  compilerOpts.mainAction = stone::ComputeAction(args);
 
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =

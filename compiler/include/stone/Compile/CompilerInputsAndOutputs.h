@@ -62,7 +62,7 @@ public:
 
   // Readers:
   // All inputs:
-  ArrayRef<CompilerInputFile> GetInputs() const { return inputs; }
+  llvm::ArrayRef<CompilerInputFile> GetInputs() const { return inputs; }
   std::vector<std::string> GetCompilerInputFilenames() const;
 
   /// \return nullptr if not a primary input file.
