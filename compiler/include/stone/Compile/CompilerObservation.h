@@ -3,7 +3,6 @@
 
 #include "llvm/ADT/ArrayRef.h"
 
-
 namespace llvm {
 class Module;
 }
@@ -50,8 +49,7 @@ public:
   virtual void CompletedIRGeneration(llvm::Module *result);
 
   /// Some executions may require access to the results of ir generation.
-  virtual void
-  CompletedIRGeneration(llvm::ArrayRef<llvm::Module*> &results);
+  virtual void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results);
 
   /// Completed native code generation
   virtual void CompletedNativeGeneration(Compiler &result);

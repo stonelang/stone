@@ -25,7 +25,6 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
-CompilerExecution *TypeCheckExecution::GetConsumer() { return this; }
 
 PrintASTExecution::PrintASTExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -40,5 +39,3 @@ Status PrintASTExecution::ExecuteAction() {
   //  });
   return Status();
 }
-
-CompilerExecution *PrintASTExecution::GetConsumer() { return this; }

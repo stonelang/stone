@@ -63,7 +63,7 @@ public:
     consumer = inputConsumer;
   }
 
-  virtual CompilerExecution *GetConsumer();
+  CompilerExecution *GetConsumer();
   Compiler &GetCompiler() { return compiler; }
 
 public:
@@ -148,7 +148,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::Parse; }
   ActionKind GetSelfAction() override { return ActionKind::ResolveImports; }
-  virtual CompilerExecution *GetConsumer() override;
 
   // void CompletedSyntaxAnalysis(SourceFile *result) override;
 };
@@ -163,7 +162,6 @@ public:
 public:
   ActionKind GetSelfAction() override { return ActionKind::DumpAST; }
   ActionKind GetDepAction() override { return ActionKind::Parse; }
-  virtual CompilerExecution *GetConsumer() override;
 
   // void CompletedSyntaxAnalysis(SourceFile *result) override;
 };
@@ -178,7 +176,6 @@ public:
 public:
   ActionKind GetDepAction() override { return ActionKind::ResolveImports; }
   ActionKind GetSelfAction() override { return ActionKind::TypeCheck; }
-  virtual CompilerExecution *GetConsumer() override;
 
   // void CompletedSyntaxAnalysis(SourceFile *result) override;
   // void CompletedSyntaxAnalysis(ModuleDecl *result) override;
@@ -194,7 +191,6 @@ public:
 public:
   ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
   ActionKind GetSelfAction() override { return ActionKind::PrintAST; }
-  virtual CompilerExecution *GetConsumer() override;
 };
 
 // Generate IR, before optimization
@@ -207,7 +203,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
   ActionKind GetSelfAction() override { return ActionKind::EmitIRBefore; }
-  virtual CompilerExecution *GetConsumer() override;
   Status FinishAction() override;
 };
 
@@ -222,7 +217,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRBefore; }
   ActionKind GetSelfAction() override { return ActionKind::EmitIRAfter; }
-  virtual CompilerExecution *GetConsumer() override;
 };
 
 class EmitBitCodeExecution final : public CompilerExecution {
@@ -233,7 +227,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitBC; }
-  virtual CompilerExecution *GetConsumer() override;
 };
 
 class EmitModuleExecution final : public CompilerExecution {
@@ -246,7 +239,6 @@ public:
 public:
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitModule; }
-  virtual CompilerExecution *GetConsumer() override;
 };
 
 // class EmitNativeExecution : public CompilerExecution {
@@ -273,7 +265,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitObject; }
-  CompilerExecution *GetConsumer() override;
 
   // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
   // override;
@@ -287,7 +278,6 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitAssembly; }
-  CompilerExecution *GetConsumer() override;
 
   // void CompletedIRGeneration(llvm::ArrayRef<IRGenResult *, 8> results)
   // override;

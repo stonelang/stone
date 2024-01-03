@@ -5,8 +5,10 @@ using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
 
-ActionKind CompilerExecution::GetMainAction() {
-  compiler.GetMainAction();
+ActionKind CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
+
+CompilerExecution *CompilerExecution::GetConsumer() {
+  return (consumer != nullptr) ? consumer : this;
 }
 
 Status CompilerExecution::SetupAction() {
@@ -76,7 +78,6 @@ Status Compiler::ExecuteAction(ActionKind action) {
 // }
 
 CompilerExecution::~CompilerExecution() {}
-
 
 std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   switch (kind) {

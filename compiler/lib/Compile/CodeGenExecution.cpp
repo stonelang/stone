@@ -32,7 +32,7 @@ Status GenerateIRExecution::ExecuteAction() {
       compiler.AddIRGenResult(result);
 
       if (HasConsumer()) {
-        //GetConsumer()->HandleIRGenResult(result);
+        // GetConsumer()->HandleIRGenResult(result);
       }
     }
   } else {
@@ -48,7 +48,7 @@ Status GenerateIRExecution::ExecuteAction() {
 
       compiler.AddIRGenResult(result);
       if (HasConsumer()) {
-        //GetConsumer()->CompletedIRGeneration(result);
+        // GetConsumer()->CompletedIRGeneration(result);
       }
 
       return Status();
@@ -89,9 +89,6 @@ Status EmitBitCodeExecution::ExecuteAction() {
 
   return Status();
 }
-
-CompilerExecution *EmitBitCodeExecution::GetConsumer() { return this; }
-
 ///< EmitObjectExecution
 
 EmitModuleExecution::EmitModuleExecution(Compiler &compiler)
@@ -105,9 +102,6 @@ Status EmitModuleExecution::ExecuteAction() {
 
   return Status();
 }
-
-CompilerExecution *EmitModuleExecution::GetConsumer() { return this; }
-
 ///< EmitObjectExecution
 EmitObjectExecution::EmitObjectExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -143,8 +137,6 @@ Status EmitObjectExecution::ExecuteAction() {
 
 // void EmitObjectExecution::CompletedIRGeneration(
 //     llvm::ArrayRef<IRGenResult *, 8> results) {}
-
-CompilerExecution *EmitObjectExecution::GetConsumer() { return this; }
 
 ///< EmitAssemblyExecution
 
@@ -183,5 +175,3 @@ Status EmitAssemblyExecution::ExecuteAction() {
 
 // void EmitAssemblyExecution::CompletedIRGeneration(
 //     llvm::ArrayRef<IRGenResult *, 8> results) {}
-
-CompilerExecution *EmitAssemblyExecution::GetConsumer() { return this; }

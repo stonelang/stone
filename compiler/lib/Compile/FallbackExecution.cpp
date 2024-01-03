@@ -3,7 +3,7 @@
 
 using namespace stone;
 
-//Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }
+// Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }
 
 // FallbackExecution::FallbackExecution(Compiler &compiler,
 //                                      ActionKind currentAction)

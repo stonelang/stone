@@ -54,8 +54,6 @@ Status ImportResolutionExecution::ExecuteAction() {
   return Status();
 }
 
-CompilerExecution *ImportResolutionExecution::GetConsumer() { return this; }
-
 // void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile& result)
 // {}
 
@@ -67,5 +65,3 @@ Status DumpASTExecution::ExecuteAction() {
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }
-
-CompilerExecution *DumpASTExecution::GetConsumer() { return this; }
