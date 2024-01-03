@@ -25,6 +25,8 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
+CompilerExecution *TypeCheckExecution::GetConsumer() { return this; }
+
 void TypeCheckExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
 void TypeCheckExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}

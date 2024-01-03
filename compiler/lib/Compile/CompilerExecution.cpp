@@ -5,8 +5,47 @@
 using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
-
 CompilerExecution::~CompilerExecution() {}
+
+void CompilerExecution::CompletedCommandLineParsing(Compiler &compiler) {
+  llvm_unreachable("Illegal to handle command line parsing!");
+}
+void CompilerExecution::CompletedConfiguration(Compiler &compiler) {
+  llvm_unreachable("Illegal to handle compiler configuration!");
+}
+void CompilerExecution::CompletedSyntaxAnalysis(Compiler &result) {
+  llvm_unreachable("Illegal to handle syntax analysis!");
+}
+void CompilerExecution::CompletedSyntaxAnalysis(SourceFile &result) {
+  llvm_unreachable("Illegal to handle syntax analysis!");
+}
+void CompilerExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {
+  llvm_unreachable("Illegal to handle syntax analysis!");
+}
+void CompilerExecution::CompletedSemanticAnalysis(Compiler &result) {
+  llvm_unreachable("Illegal to handle semantic analysis!");
+}
+void CompilerExecution::CompletedSemanticAnalysis(SourceFile &result) {
+  llvm_unreachable("Illegal to handle semantic analysis!");
+}
+void CompilerExecution::CompletedSemanticAnalysis(ModuleDecl &result) {
+  llvm_unreachable("Illegal to handle semantic analysis!");
+}
+void CompilerExecution::CompletedIRGeneration(Compiler &result) {
+  llvm_unreachable("Illegal to handle IR generation!");
+}
+void CompilerExecution::CompletedIRGeneration(llvm::Module *result) {
+  llvm_unreachable("Illegal to handle IR generation!");
+}
+/// Some executions may require access to the results of ir generation.
+void CompilerExecution::CompletedIRGeneration(
+    llvm::ArrayRef<llvm::Module *> &results) {
+  llvm_unreachable("Illegal to handle IR generation!");
+}
+CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
+  llvm_unreachable("Illegal to handle code completion callbacks!");
+
+}
 
 ActionKind CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
 
@@ -45,42 +84,6 @@ Status Compiler::ExecuteAction(ActionKind action) {
   auto execution = CreateExectution(action);
   return ExecuteAction(*execution);
 }
-
-// bool CompilerExecution::IsMainAction() {
-//   return GetCurrentAction() == compiler.GetMainAction();
-// }
-// ActionKind CompilerExecution::GetExecutionAction() {
-//   return IsMainAction() ? compiler.GetMainAction() : GetCurrentAction();
-// }
-
-// void CompilerExecution::CompletedCommandLineParsing(Compiler &compiler) {
-//   llvm_unreachable("Not allowed to handle command line parsing!");
-// }
-
-// /// It is useful for the caller to return iteself because it allows use to
-// /// perform a lot of checks when we are dealing with dependencies.
-// CompilerExecution *CompilerExecution::GetConsumer() { return this; }
-
-// // Some executions may want to have acccess to syntax analysis results.
-// void CompilerExecution::CompletedSyntaxAnalysis(SourceFile *result) {
-//   llvm_unreachable("Not allowed to handle sysntax analysis!");
-// }
-
-// // Some exection may want to have acccess to the type checking results
-// void CompilerExecution::CompletedSemanticAnalysis(SourceFile *result) {
-//   llvm_unreachable("Not allowed to handle semantic analysis!");
-// }
-
-// // Some exection may want to have acccess to the type checking results
-// void CompilerExecution::CompletedSemanticAnalysis(ModuleDecl *result) {
-//   llvm_unreachable("Not allowed to handle semantic analysis!");
-// }
-
-// /// Some executions may require access to the results of ir generation.
-// void CompilerExecution::CompletedIRGeneration(
-//     llvm::ArrayRef<IRGenResult *, 8> results) {
-//   llvm_unreachable("Not allowed to handle IR generation!");
-// }
 
 std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   switch (kind) {

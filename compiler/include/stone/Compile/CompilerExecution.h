@@ -68,46 +68,45 @@ public:
     consumer = inputConsumer;
   }
 
-  CompilerExecution *GetConsumer();
+  virtual CompilerExecution *GetConsumer();
   Compiler &GetCompiler();
 
 public:
   /// The command line has been parsed.
-  void CompletedCommandLineParsing(Compiler &result) override {}
+  void CompletedCommandLineParsing(Compiler &result) override;
 
   /// The compiler has been configured
-  void CompletedConfiguration(Compiler &result) override {}
+  void CompletedConfiguration(Compiler &result) override;
 
   /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(Compiler &result) {}
+  void CompletedSyntaxAnalysis(Compiler &result);
 
   /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(SourceFile &result) override {}
+  void CompletedSyntaxAnalysis(SourceFile &result) override;
 
   /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override {}
+  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 
   /// Completed semantic analysis
-  void CompletedSemanticAnalysis(Compiler &result) override {}
+  void CompletedSemanticAnalysis(Compiler &result) override;
 
   /// Completed semantic analysis
-  void CompletedSemanticAnalysis(SourceFile &result) override {}
+  void CompletedSemanticAnalysis(SourceFile &result) override;
 
   /// Completed semantic analysis
-  void CompletedSemanticAnalysis(ModuleDecl &result) override {}
+  void CompletedSemanticAnalysis(ModuleDecl &result) override;
 
   // Completed IR generation
-  void CompletedIRGeneration(Compiler &result) override {}
+  void CompletedIRGeneration(Compiler &result) override;
 
   /// Some executions may require access to the results of ir generation.
-  void CompletedIRGeneration(llvm::Module *result) override {}
+  void CompletedIRGeneration(llvm::Module *result) override;
 
   /// Some executions may require access to the results of ir generation.
-  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override {
-  }
+  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
 
   /// Callbacks into the parsing pipeline
-  CodeCompletionCallbacks *GetCodeCompletionCallbacks() override {}
+  CodeCompletionCallbacks *GetCodeCompletionCallbacks() override;
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -196,6 +195,8 @@ public:
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
+
+  virtual CompilerExecution *GetConsumer() override;
 };
 
 class PrintASTExecution final : public CompilerExecution {
@@ -288,6 +289,7 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitObject; }
+  Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;
   void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
@@ -301,6 +303,7 @@ public:
   Status ExecuteAction() override;
   ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
   ActionKind GetSelfAction() override { return ActionKind::EmitAssembly; }
+  Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;
   void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
