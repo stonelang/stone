@@ -5,17 +5,14 @@ using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
 
-Status CompilerExecution::SetupAction(ActionKind currentAction) {
-  // if (HasCurrentAction()) {
-  //   assert(GetCurrentAction() == currentAction);
-  // } else {
-  //   SetCurrentAction(currentAction);
-  // }
+ActionKind CompilerExecution::GetMainAction() {
+  compiler.GetMainAction();
+}
 
+Status CompilerExecution::SetupAction() {
 
   if (HasDepAction()) {
     auto execution = compiler.CreateExectution(GetDepAction());
-    execution->SetCurrentAction(GetDepAction());
     execution->SetConsumer(GetConsumer());
     if (compiler.ExecuteAction(*execution).IsError()) {
       return Status::MakeHasCompletionAndIsError();
@@ -24,13 +21,11 @@ Status CompilerExecution::SetupAction(ActionKind currentAction) {
   return Status();
 }
 
-Status CompilerExecution::FinishAction() {}
+Status CompilerExecution::FinishAction() { return Status(); }
 
 Status Compiler::ExecuteAction(CompilerExecution &execution) {
 
-  //assert(execution.HasCurrentAction());
-  
-  if (execution.SetupAction(execution.GetCurrentAction()).IsError()) {
+  if (execution.SetupAction().IsError()) {
     return Status::MakeHasCompletionAndIsError();
   }
   if (execution.ExecuteAction().IsError()) {
@@ -41,7 +36,6 @@ Status Compiler::ExecuteAction(CompilerExecution &execution) {
 
 Status Compiler::ExecuteAction(ActionKind action) {
   auto execution = CreateExectution(action);
-  execution->SetCurrentAction(action);
   return ExecuteAction(*execution);
 }
 
@@ -83,7 +77,6 @@ Status Compiler::ExecuteAction(ActionKind action) {
 
 CompilerExecution::~CompilerExecution() {}
 
-Status CompilerExecution::FinishAction() { return Status(); }
 
 std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   switch (kind) {
@@ -118,7 +111,7 @@ std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
   case ActionKind::EmitObject:
     return std::make_unique<EmitObjectExecution>(*this);
   default: {
-    llvm_unreachable("Unable to create CompilerExecution -- unknon action!")
+    llvm_unreachable("Unable to create CompilerExecution -- unknon action!");
   }
   }
 }

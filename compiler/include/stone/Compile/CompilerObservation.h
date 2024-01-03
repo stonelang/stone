@@ -1,5 +1,8 @@
-#ifndef STONE_COMPILE_COMPILEROBSERVATION_H
-#define STONE_COMPILE_COMPILEROBSERVATION_H
+#ifndef STONE_COMPILE_COMPILER_OBSERVATION_H
+#define STONE_COMPILE_COMPILER_OBSERVATION_H
+
+#include "llvm/ADT/ArrayRef.h"
+
 
 namespace llvm {
 class Module;
@@ -17,41 +20,41 @@ public:
 
 public:
   /// The command line has been parsed.
-  virtual void CompletedCommandLineParsing(Compiler &compiler);
+  virtual void CompletedCommandLineParsing(Compiler &result);
 
   /// The compiler has been configured
-  virtual void CompletedConfiguration(Compiler &compiler);
+  virtual void CompletedConfiguration(Compiler &result);
 
   /// Completed syntax analysis
-  virtual void CompletedSyntaxAnalysis(Compiler &compiler);
+  virtual void CompletedSyntaxAnalysis(Compiler &result);
 
   /// Completed syntax analysis
-  virtual void CompletedSyntaxAnalysis(SourceFile &sourceFile);
+  virtual void CompletedSyntaxAnalysis(SourceFile &result);
 
   /// Completed syntax analysis
-  virtual void CompletedSyntaxAnalysis(ModuleDecl &mod);
+  virtual void CompletedSyntaxAnalysis(ModuleDecl &result);
 
   /// Completed semantic analysis
-  virtual void CompletedSemanticAnalysis(Compiler &compiler);
+  virtual void CompletedSemanticAnalysis(Compiler &result);
 
   /// Completed semantic analysis
-  virtual void CompletedSemanticAnalysis(SourceFile &sourceFile);
+  virtual void CompletedSemanticAnalysis(SourceFile &result);
 
   /// Completed semantic analysis
-  virtual void CompletedSemanticAnalysis(ModuleDecl &mod);
+  virtual void CompletedSemanticAnalysis(ModuleDecl &result);
 
   // Completed IR generation
-  virtual void CompletedIRGeneration(Compiler &compiler);
+  virtual void CompletedIRGeneration(Compiler &result);
 
   /// Some executions may require access to the results of ir generation.
   virtual void CompletedIRGeneration(llvm::Module *result);
 
   /// Some executions may require access to the results of ir generation.
   virtual void
-  CompletedIRGeneration(llvm::ArrayRef<llvm::Module *, 8> &results);
+  CompletedIRGeneration(llvm::ArrayRef<llvm::Module*> &results);
 
   /// Completed native code generation
-  virtual void CompletedNativeGeneration(Compiler &compiler);
+  virtual void CompletedNativeGeneration(Compiler &result);
 
   /// Callbacks into the parsing pipeline
   virtual CodeCompletionCallbacks *GetCodeCompletionCallbacks();

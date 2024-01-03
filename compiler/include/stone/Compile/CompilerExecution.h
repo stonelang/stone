@@ -16,13 +16,10 @@ class Compiler;
 class SourceFile;
 class CompilerExecution;
 
-/* :public Compiler*/
-class CompilerExecution /*: public CompilerObservation*/ {
+class CompilerExecution {
 
 protected:
   Compiler &compiler;
-  ActionKind currentAction = ActionKind::None;
-  /// TODO: The caller could be the action
   CompilerExecution *consumer = nullptr;
 
   llvm::sys::TimePoint<> startTime;
@@ -32,41 +29,25 @@ public:
   CompilerExecution(Compiler &compiler);
   virtual ~CompilerExecution();
 
-public:
-  virtual Status SetupAction(ActionKind currentAction);
-  virtual Status ExecuteAction() = 0;
-  virtual Status FinishAction();
-
-private:
-  Status ExecuteAction(CompilerExecution *execution);
-
 protected:
-  // bool CompilerExecution::ShouldExecuteAction() {
-  //   return (IsSelfAction() || GetCurrentAction() == GetSelfAction());
-  // }
-
-  /// Can we execute this action
-  bool ShouldExecuteAction();
-
-  /// The main input action from the user.
-  ActionKind GetMainAction() { compiler.GetMainAction(); }
-
-  /// The requested current action
-  ActionKind GetCurrentAction() { return currentAction; }
-
-  /// Check that there exist a dependecy action
-  bool HasCurrentAction() { return GetCurrentAction() != ActionKind::None; }
-
-  /// Set the current action
-  void SetCurrentAction(ActionKind inputAction) { currentAction = inputAction; }
-
   /// Every exeuction must have a self action
   virtual ActionKind GetSelfAction() { return ActionKind::None; }
 
-  /// Check  that the action is coming from itself
-  bool IsSelfAction() {
-    return GetSelfAction() == GetMainAction();
-  }
+  /// Check that there exist a dependecy action
+  bool HasSelfAction() { return GetSelfAction() != ActionKind::None; }
+
+public:
+  /// Setup the execution and execute any dependencies
+  virtual Status SetupAction();
+
+  /// Execut the action
+  virtual Status ExecuteAction() = 0;
+
+  /// Finish any post steps after execution
+  virtual Status FinishAction();
+
+  /// The main input action from the user.
+  ActionKind GetMainAction();
 
   /// Get the dependency action
   virtual ActionKind GetDepAction() { return ActionKind::None; }
@@ -74,13 +55,15 @@ protected:
   /// Check that there exist a dependecy action
   bool HasDepAction() { return GetDepAction() != ActionKind::None; }
 
-public:
+  /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
+
+  /// the the consumer
   void SetConsumer(CompilerExecution *inputConsumer) {
     consumer = inputConsumer;
   }
-  virtual CompilerExecution *GetConsumer();
 
+  virtual CompilerExecution *GetConsumer();
   Compiler &GetCompiler() { return compiler; }
 
 public:
@@ -121,7 +104,7 @@ public:
 
 class PrintHelpHiddenExecution final : public CompilerExecution {
 public:
-  PrintHelpExecution(Compiler &compiler);
+  PrintHelpHiddenExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;

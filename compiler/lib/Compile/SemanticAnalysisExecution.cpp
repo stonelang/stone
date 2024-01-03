@@ -1,4 +1,3 @@
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
@@ -9,8 +8,6 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status TypeCheckExecution::ExecuteAction() {
-
-  // assert(IsSelf() || GetCurrentAction() == GetSelfAction())
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
 
@@ -28,10 +25,12 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
+CompilerExecution *TypeCheckExecution::GetConsumer() { return this; }
+
 PrintASTExecution::PrintASTExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status PrintASTExecution::Execute() {
+Status PrintASTExecution::ExecuteAction() {
 
   // assert(GetExecutionAction() == ActionKind::PrintAST);
 

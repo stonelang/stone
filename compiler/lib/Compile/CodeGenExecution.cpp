@@ -1,13 +1,11 @@
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Gen/IRGenRequest.h"
 
 using namespace stone;
 
-GenerateIRExecution::GenerateIRExecution(Compiler &compiler,
-                                         ActionKind currentAction)
-    : CompilerExecution(compiler, currentAction) {}
+GenerateIRExecution::GenerateIRExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
 
 Status GenerateIRExecution::ExecuteAction() {
 
@@ -34,7 +32,7 @@ Status GenerateIRExecution::ExecuteAction() {
       compiler.AddIRGenResult(result);
 
       if (HasConsumer()) {
-        GetConsumer()->HandleIRGenResult(result);
+        //GetConsumer()->HandleIRGenResult(result);
       }
     }
   } else {
@@ -50,7 +48,7 @@ Status GenerateIRExecution::ExecuteAction() {
 
       compiler.AddIRGenResult(result);
       if (HasConsumer()) {
-        GetConsumer()->HandleIRGenResult(result);
+        //GetConsumer()->CompletedIRGeneration(result);
       }
 
       return Status();
@@ -61,17 +59,12 @@ Status GenerateIRExecution::ExecuteAction() {
     compiler.GetObservation()->CompletedIRGeneration(compiler);
   }
 
-  if (IsSelf()) {
-    // Then we emit
-    // stone::EmitIR(
-  }
   return Status();
 }
 
 Status GenerateIRExecution::FinishAction() { return Status(); }
 
-OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler,
-                                         ActionKind currentAction)
+OptimizeIRExecution::OptimizeIRExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status OptimizeIRExecution::ExecuteAction() {
@@ -82,15 +75,10 @@ Status OptimizeIRExecution::ExecuteAction() {
   /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),
   /// GetASTContext(), ....);
 
-  if (IsMainAction()) {
-    // Then we emit
-  }
-
   return Status();
 }
 
-EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler,
-                                           ActionKind currentAction)
+EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status EmitBitCodeExecution::ExecuteAction() {
@@ -122,9 +110,7 @@ CompilerExecution *EmitModuleExecution::GetConsumer() { return this; }
 
 ///< EmitObjectExecution
 EmitObjectExecution::EmitObjectExecution(Compiler &compiler)
-    : CompilerExecution(compiler) {
-  AddAllowHandleIRGenResult();
-}
+    : CompilerExecution(compiler) {}
 
 Status EmitObjectExecution::ExecuteAction() {
 

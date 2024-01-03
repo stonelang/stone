@@ -1,5 +1,4 @@
 #include "stone/Basic/Status.h"
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
@@ -9,9 +8,7 @@ using namespace stone;
 ParseExecution::ParseExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status ParseExecution::Execute() {
-
-  assert(HasCurrentAction() == GetSelfAction());
+Status ParseExecution::ExecuteAction() {
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "parse-source-file");
@@ -46,13 +43,11 @@ Status ParseExecution::Execute() {
 ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status ImportResolutionExecution::Execute() {
+Status ImportResolutionExecution::ExecuteAction() {
   // assert(GetExecutionAction() == ActionKind::ResolveImports);
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "import-resolution");
-
-  assert(GetCurrentAction() == GetSelfAction());
 
   // stone::ResolveSourceFileImports(sourceFile);
 
@@ -61,14 +56,13 @@ Status ImportResolutionExecution::Execute() {
 
 CompilerExecution *ImportResolutionExecution::GetConsumer() { return this; }
 
-void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile *result) {}
+// void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile& result)
+// {}
 
 DumpASTExecution::DumpASTExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status DumpASTExecution::Execute() {
-
-  assert(CurrentAction() == GetSelfAction());
+Status DumpASTExecution::ExecuteAction() {
 
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();

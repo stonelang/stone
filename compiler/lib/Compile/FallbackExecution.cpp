@@ -1,11 +1,9 @@
 #include "stone/Basic/Status.h"
-#include "stone/Compile/Compile.h"
-#include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 
 using namespace stone;
 
-Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }
+//Status stone::CompileLLVMIR(Compiler &compiler) { return Status(); }
 
 // FallbackExecution::FallbackExecution(Compiler &compiler,
 //                                      ActionKind currentAction)
