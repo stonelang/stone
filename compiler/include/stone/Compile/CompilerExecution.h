@@ -28,18 +28,19 @@ protected:
   CompilerExecution *consumer = nullptr;
 
   llvm::sys::TimePoint<> startTime;
-  llvm::sys::TimePoint<> endTime = llvm::sys::TimePoint<>::min();
+  llvm::sys::TimePoint<> lastTime = llvm::sys::TimePoint<>::min();
 
 public:
   CompilerExecution(Compiler &compiler);
   virtual ~CompilerExecution();
 
+public:
+  llvm::sys::TimePoint<> GetStartTime() const { return startTime; }
+  llvm::sys::TimePoint<> GetLastTime() const { return lastTime; }
+
 protected:
   /// Every exeuction must have a self action
   virtual CompilerAction GetSelfAction() { return CompilerAction::None; }
-
-  /// Check that there exist a dependecy action
-  bool HasSelfAction() { return GetSelfAction() != CompilerAction::None; }
 
 public:
   /// Setup the execution and execute any dependencies
@@ -51,11 +52,14 @@ public:
   /// Finish any post steps after execution
   virtual Status FinishAction();
 
+  /// Check that the execution has an action
+  bool HasSelfAction() { return GetSelfAction() != CompilerAction::None; }
+
   /// The main input action from the user.
   CompilerAction GetMainAction();
 
   /// Determine if the main action and the self action is the same.
-  bool HasMainAction() { return GetSelfAction() == GetMainAction(); }
+  bool IsMainAction() { return GetSelfAction() == GetMainAction(); }
 
   /// Get the dependency action
   virtual CompilerAction GetDepAction() { return CompilerAction::None; }
@@ -75,7 +79,7 @@ public:
   bool ShouldConsume(CompilerExecution *consumer);
 
   /// Make sure that we can notify the consumer
-  bool ShouldNotifyConsumer() { return (HasConsumer() && !HasMainAction()); }
+  bool ShouldNotifyConsumer() { return (HasConsumer() && !IsMainAction()); }
 
   virtual CompilerExecution *GetConsumer();
   Compiler &GetCompiler();
