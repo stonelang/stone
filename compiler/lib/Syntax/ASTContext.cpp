@@ -20,7 +20,7 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
       de(de), se(se), identifiers(allocator),
       stats(new ASTContextStats(*this)) {
-        
+
   builtin = std::make_unique<Builtin>(*this);
   se.Register(stats.get());
 }

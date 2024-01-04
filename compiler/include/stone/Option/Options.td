@@ -170,14 +170,18 @@ HelpText<"Display available options">, ModeOpt;
 
 def h : Flag<["-"], "h">, Alias<PrintHelp>;
 
-def HelpSecrete : Flag<["-", "--"], "help-hidden">,
-Flags<[CompilerOption]>,
+def PrintHelpHidden : Flag<["-", "--"], "help-hidden">,
+Flags<[CompilerOption,  DriverOption]>,
 HelpText<"Display available options, including hidden options">;
 
 
 def PrintVersion : Flag<["-", "--"], "version">,
 Flags<[CompilerOption, DriverOption]>,
 HelpText<"Print version information and exit">, ModeOpt;
+
+def PrintFeature : Flag<["-", "--"], "feature">,
+Flags<[CompilerOption, DriverOption]>,
+HelpText<"Display features">, ModeOpt;
 
 def v : Flag<["-"], "v">, 
 Flags<[CompilerOption, DriverOption]>,
@@ -259,7 +263,7 @@ def PrintStats : Flag<["-"], "print-stats">,
 Flags<[DebugOption]>,
 HelpText<"Print the 'Compile' statistics">;
 
-def PrintDriverRequests : Flag<["-"], "print-requests">,
+def PrintDriverJobConstructions : Flag<["-"], "print-job-constructions">,
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Print what the driver intends to do">;
 
@@ -267,8 +271,8 @@ def PrintDriverJobs : Flag<["-"], "print-jobs">,
 Flags<[DebugOption, DriverOption]>,
 HelpText<"Print the list of jobs to be executed">;
 
-def PrintDriverLifecycle : Flag<["-"], "print-lifecycle">,
-Flags<[DebugOption, DriverOption]>,
+def PrintLifecycle : Flag<["-"], "print-lifecycle">,
+Flags<[DebugOption, CompilerOption, DriverOption]>,
 HelpText<"Print the lifecycle of activities and jobs">;
 
 def ParseAsLibrary : Flag<["-"], "parse-as-library">,

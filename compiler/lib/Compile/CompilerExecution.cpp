@@ -52,16 +52,14 @@ CompilerAction CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
 
 Compiler &CompilerExecution::GetCompiler() { return compiler; }
 
-CompilerExecution *CompilerExecution::GetConsumer() {
-  return (consumer != nullptr) ? consumer : this;
-}
+CompilerExecution *CompilerExecution::GetConsumer() { return consumer; }
 
 Status CompilerExecution::SetupAction() {
   assert(HasSelfAction());
   if (HasDepAction()) {
     auto execution = compiler.CreateExectution(GetDepAction());
     assert(HasConsumer());
-    execution->SetConsumer(GetConsumer());
+    execution->SetConsumer(this);
     if (compiler.ExecuteAction(*execution).IsError()) {
       return Status::MakeHasCompletionAndIsError();
     }
@@ -129,10 +127,10 @@ Status ParseExecution::ExecuteAction() {
   return Status();
 }
 
-ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler)
+ResolveImportsExecution::ResolveImportsExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status ImportResolutionExecution::ExecuteAction() {
+Status ResolveImportsExecution::ExecuteAction() {
   // assert(GetExecutionAction() == CompilerAction::ResolveImports);
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
@@ -143,9 +141,9 @@ Status ImportResolutionExecution::ExecuteAction() {
   return Status();
 }
 
-void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void ResolveImportsExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
-void ImportResolutionExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void ResolveImportsExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 PrintASTBeforeExecution::PrintASTBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -164,6 +162,8 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
 
 Status TypeCheckExecution::ExecuteAction() {
 
+  assert(IsMainAction());
+
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
 
   compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
@@ -171,9 +171,9 @@ Status TypeCheckExecution::ExecuteAction() {
         sourceFile, GetCompiler().GetInvocation().GetTypeCheckerOptions());
     sourceFile.stage = SourceFileStage::TypeChecked;
 
-    if (ShouldNotifyConsumer()) {
-      GetConsumer()->CompletedSemanticAnalysis(sourceFile);
-    }
+    // if (ShouldNotifyConsumer()) {
+    //   GetConsumer()->CompletedSemanticAnalysis(sourceFile);
+    // }
     return Status();
   });
 
@@ -433,8 +433,7 @@ Status stone::CompileAction(Compiler &compiler) {
   if (compiler.GetInvocation().GetCompilerOptions().IsNoneAction()) {
     return Status::MakeHasCompletionAndIsError();
   }
-  return compiler.ExecuteAction(
-      compiler.GetInvocation().GetCompilerOptions().GetMainAction());
+  return compiler.ExecuteAction(compiler.GetMainAction());
 }
 /// Handles LLVM
 Status stone::CompileLLVM(Compiler &compiler) {

@@ -443,8 +443,8 @@ Status Compiler::ExecuteAction(CompilerAction action) {
 }
 
 std::unique_ptr<CompilerExecution>
-Compiler::CreateExectution(CompilerAction kind) {
-  switch (kind) {
+Compiler::CreateExectution(CompilerAction action) {
+  switch (action) {
   case CompilerAction::PrintHelp:
     return std::make_unique<PrintHelpExecution>(*this);
   case CompilerAction::PrintHelpHidden:
@@ -458,7 +458,7 @@ Compiler::CreateExectution(CompilerAction kind) {
   case CompilerAction::PrintASTBefore:
     return std::make_unique<PrintASTBeforeExecution>(*this);
   case CompilerAction::ResolveImports:
-    return std::make_unique<ImportResolutionExecution>(*this);
+    return std::make_unique<ResolveImportsExecution>(*this);
   case CompilerAction::TypeCheck:
     return std::make_unique<TypeCheckExecution>(*this);
   case CompilerAction::PrintASTAfter:

@@ -23,7 +23,8 @@
 using namespace stone;
 
 CompilerInvocation::CompilerInvocation(Compiler &compiler)
-    : compiler(compiler), clangContext(new ClangContext()) {
+    : compiler(compiler), clangContext(new ClangContext()),
+      optTable(stone::CreateOptTable()) {
 
   llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
@@ -174,26 +175,23 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
-  auto compilerOptTable = stone::CreateOptTable();
-  auto compilerInputArgList = std::make_unique<llvm::opt::InputArgList>(
-      compilerOptTable->ParseArgs(args, missingArgIndex, missingArgCount,
-                                  includedFlagsBitmask, excludedFlagsBitmask));
+  inputArgList = std::make_unique<llvm::opt::InputArgList>(
+      optTable->ParseArgs(args, missingArgIndex, missingArgCount,
+                          includedFlagsBitmask, excludedFlagsBitmask));
 
-  assert(compilerInputArgList && "No input argument list.");
+  assert(inputArgList && "No input argument list.");
 
   if (missingArgCount) {
     compiler.GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(compilerInputArgList->getArgString(missingArgIndex)),
+        diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
     return Status::Error();
   }
   // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg :
-       compilerInputArgList->filtered(opts::UNKNOWN)) {
-    compiler.GetDiags().PrintD(
-        SrcLoc(), diag::err_unknown_arg,
-        diag::LLVMStr(arg->getAsString(*compilerInputArgList)));
+  for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
+    compiler.GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
+                               diag::LLVMStr(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag
     // errors
@@ -203,7 +201,7 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     return Status::Error();
   }
   // TODO: Pass MemoryBuffers in ParseCommandLine
-  if (ParseCompilerOptions(*compilerInputArgList, langOpts, compilerOpts,
+  if (ParseCompilerOptions(*inputArgList, langOpts, compilerOpts,
                            compiler.GetDiags(), nullptr)
           .IsError()) {
     return Status::Error();
@@ -217,13 +215,13 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
             .IsError()) {
       return Status::Error();
     }
-    if (ParseTargetOptions(*compilerInputArgList, compilerOpts, codeGenOpts,
-                           langOpts, GetClangContext(), compiler.GetDiags())
+    if (ParseTargetOptions(*inputArgList, compilerOpts, codeGenOpts, langOpts,
+                           GetClangContext(), compiler.GetDiags())
             .IsError()) {
       return Status::Error();
     }
   }
-  if (ParseCodeGenOptions(*compilerInputArgList, *this, compiler.GetDiags(),
+  if (ParseCodeGenOptions(*inputArgList, *this, compiler.GetDiags(),
                           GetCompilerOptions(), GetCodeGenOptions())
           .IsError()) {
     return Status::Error();

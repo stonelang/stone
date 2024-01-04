@@ -74,6 +74,9 @@ class CompilerOptions final {
 
   CompilerAction mainAction = CompilerAction::None;
 
+  /// The name of the executing program
+  llvm::StringRef mainActionName;
+
 public:
   bool trackAction = false;
 
@@ -100,6 +103,9 @@ public:
 
   /// The path to which we should output statistics files.
   std::string statsOutputDir;
+
+  /// Follow the compile lifecyle
+  bool printLifecycle = false;
 
   /// Trace changes to stats to files in StatsOutputDir.
   bool traceStats = false;
@@ -192,6 +198,14 @@ public:
 
   /// \return the Action
   CompilerAction GetMainAction() const { return mainAction; }
+
+  /// \return the name of the main action
+  llvm::StringRef GetMainActionName() const { return mainActionName; }
+
+  /// \check that there exist a working directory
+  bool HasMainActionName() const {
+    return !mainActionName.empty() && mainActionName.size() > 0;
+  }
 
   /// \return true if this is the None action
   bool IsNoneAction() const;

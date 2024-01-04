@@ -92,7 +92,7 @@ Status CompilerOptionsConverter::Convert(
 CompilerAction
 CompilerOptionsConverter::ComputeCompilerAction(const ArgList &args) {
 
-  const Arg *mode = args.getLastArg(opts::ModeGroup);
+  auto const mode = args.getLastArg(opts::ModeGroup);
   if (!mode) {
     // We don't have a mode, so determine a default.
     if (args.hasArg(opts::EmitModule, opts::EmitModulePath)) {
@@ -141,7 +141,11 @@ CompilerOptionsConverter::ComputeCompilerAction(const unsigned modeOptID) {
   case opts::PrintVersion:
     return CompilerAction::PrintVersion;
   case opts::PrintHelp:
-    return CompilerAction::PrintVersion;
+    return CompilerAction::PrintHelp;
+  case opts::PrintHelpHidden:
+    return CompilerAction::PrintHelpHidden;
+  case opts::PrintFeature:
+    return CompilerAction::PrintFeature;
   }
   llvm_unreachable("Unhandled mode option");
 }

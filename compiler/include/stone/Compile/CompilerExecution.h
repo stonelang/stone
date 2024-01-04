@@ -175,9 +175,9 @@ public:
 
 public:
 };
-class ImportResolutionExecution final : public CompilerExecution {
+class ResolveImportsExecution final : public CompilerExecution {
 public:
-  ImportResolutionExecution(Compiler &compiler);
+  ResolveImportsExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;
