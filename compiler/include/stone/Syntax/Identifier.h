@@ -247,7 +247,7 @@ public:
   // TODO?
   /// Populate the identifier table with info about the language keywords
   /// for the language specified by \p LangOpts.
-  // void AddKeywords(const LangOptions &LangOpts);
+  void AddKeywords(const LangOptions &langOpts);
 };
 
 namespace detail {

@@ -111,7 +111,7 @@ class ASTContext final {
 
   LangOptions &langOpts;
 
-  Builtin builtin;
+  std::unique_ptr<Builtin> builtin;
   /// The allocator used to create ASTContext objects.
   /// ASTContext objects are never destructed; rather, all memory associated
   /// with the ASTContext objects will be released when the ASTContext

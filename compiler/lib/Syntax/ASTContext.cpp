@@ -18,9 +18,10 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
                        StatisticEngine &se)
     : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
-      de(de), se(se), identifiers(allocator), builtin(*this),
+      de(de), se(se), identifiers(allocator),
       stats(new ASTContextStats(*this)) {
-
+        
+  builtin = std::make_unique<Builtin>(*this);
   se.Register(stats.get());
 }
 
@@ -30,7 +31,7 @@ ASTContext::~ASTContext() {
   }
 }
 
-Builtin &ASTContext::GetBuiltin() { return builtin; }
+Builtin &ASTContext::GetBuiltin() { return *builtin; }
 
 void *stone::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
                                   AllocationArena arena, unsigned alignment) {

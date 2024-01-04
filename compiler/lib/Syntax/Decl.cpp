@@ -149,10 +149,11 @@ bool FunDecl::IsMain() const {
   if (IsInstanceMember()) {
     return false;
   }
+
   return GetBasicName() == GetASTContext()
                                .GetBuiltin()
                                .GetIdentifierCache()
-                               .BuiltinMainIdentifier;
+                              .BuiltinMainIdentifier;
 }
 
 /// True if the function is a defer body.

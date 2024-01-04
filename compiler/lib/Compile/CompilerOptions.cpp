@@ -238,7 +238,7 @@ FileType CompilerOptions::GetActionOutputFileType(CompilerAction action) {
 }
 
 bool CompilerOptions::IsNoneAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return !CompilerOptions::IsAnyAction(mainAction);
 }
 bool CompilerOptions::IsPrintHelpAction() const {
   return CompilerOptions::IsAnyAction(mainAction);
