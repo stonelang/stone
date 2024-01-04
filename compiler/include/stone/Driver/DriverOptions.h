@@ -445,7 +445,7 @@ public:
   /// \return the tool chain kind computed
   ToolChainKind GetToolChainKind() const { return toolChainKind; }
 
-  llvm::Triple &GetTriple() { return triple; }
+  const llvm::Triple &GetTriple() const { return triple; }
 
   /// \return true if it is the help action
   bool IsHelpAction() const;

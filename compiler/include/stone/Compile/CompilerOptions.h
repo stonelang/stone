@@ -13,7 +13,6 @@ class CompilerInvocation;
 class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
-// TODO:
 enum class CompilerAction : unsigned {
   ///< No mode
   None = 0,
@@ -26,29 +25,22 @@ enum class CompilerAction : unsigned {
   PrintHelpHidden,
   ///< Print compiler features
   PrintFeature,
-
   /// MARK -- Syntax analysis
   ///< Parse only
   Parse,
   ///< Parse and dump syntax tree
-  DumpAST,
+  PrintASTBefore,
   ///< Parse and resolve imports only
   ResolveImports,
-  ///< Parse and type-check only
-
   /// MARK -- Semantic analysis
   TypeCheck,
   ///< Parse, type-check, and  pretty print syntax tree
-  PrintAST,
-
-  // < This is a support action that the user will never see
-  GenerateIR,
+  PrintASTAfter,
   /// MARK -- Code generation
   //</ Parse, type-check, and emit LLVM IR pre optimization
   EmitIRBefore,
   //</ Parse, type-check, and emit LLVM IR post optimization
   EmitIRAfter,
-
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
   //< Parse, type-check, and emit LLVM BC
@@ -64,13 +56,16 @@ enum class CompilerAction : unsigned {
   EmitAssembly,
   ///< Merge all modules
   MergeModules,
-
+  ///< Invalid action
+  Alien,
 };
 class CompilerOptions final {
 
   friend CompilerInvocation;
   friend CompilerOptionsConverter;
   friend CompilerInputsConverter;
+
+  CompilerAction action = CompilerAction::None;
 
 public:
   /// The main action requested.
@@ -123,7 +118,13 @@ public:
   // Some actions require just GenIR w/o actually emitting out.
   bool shouldEmitIR = false;
 
-  enum class LibOutputMode { Dynamic, Static };
+  enum class LibOutputMode {
+    /// Default
+    Dynamic = 0,
+    /// "-static" option is set.
+    Static
+  };
+
   LibOutputMode libOutputMode = LibOutputMode::Dynamic;
 
   enum class ParsingInputMode {
@@ -147,6 +148,92 @@ public:
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
+
+public:
+  /// \return true if the given action only parses without doing other
+  /// compilation steps.
+  static bool ShouldActionOnlyParse(CompilerAction action);
+  /// \return true if the given action should generate output
+  static bool DoesActionGenerateOutput(CompilerAction action);
+  /// \return true if the given action should generates IR
+  static bool DoesActionGenerateIR(CompilerAction action);
+  /// \return true if the given action should generate native code
+  static bool DoesActionGenerateNative(CompilerAction action);
+  /// \return true if the given action requires the standard library to be
+  /// loaded before it is run.
+  static bool DoesActionRequireStoneStandardLibrary(CompilerAction action);
+  /// \return true if the given action requires input files to be provided.
+  static bool DoesActionRequireInputs(CompilerAction action);
+  /// \return true if the given action produces output
+  static bool DoesActionProduceOutput(CompilerAction action);
+  /// \return true if the given action requires input files to be provided.
+  static bool DoesActionPerformEndOfPipelineActions(CompilerAction action);
+  /// \return true if the given action supports caching.
+  static bool DoesActionSupportCompilationCaching(CompilerAction action);
+  /// \return the FileType for the action
+  static file::FileType GetActionOutputFileType(CompilerAction action);
+
+public:
+  /// \return true if this is any action.
+  static bool IsAnyAction(CompilerAction action);
+
+  /// \return true if this is the PrintHelp action
+  static bool IsAlienAction(CompilerAction action);
+
+public:
+  /// \return true if this is the None action
+  bool IsNoneAction() const;
+
+  /// \return true if this is the PrintHelp action
+  bool IsPrintHelpAction() const;
+
+  /// \return true if this is the PrintHelpHidden action.
+  bool IsPrintHelpHiddenAction() const;
+
+  /// \return true if this is the PrintVersion action
+  bool IsPrintVersionAction() const;
+
+  /// \return true if this is the PrintFeature action
+  bool IsPrintFeatureAction() const;
+
+  /// \return true if this is the Parse action
+  bool IsParseAction() const;
+
+  /// \return true if this is the ResolveImports action
+  bool IsResolveImportsAction() const;
+
+  /// \return true if this is the PrintASTBefore action
+  bool IsPrintASTBeforeAction() const;
+
+  /// \return true if this is the TypeCheck action
+  bool IsTypeCheckAction() const;
+
+  /// \return true if this is the PrintASTAfter action
+  bool IsPrintASTAfterAction() const;
+
+  /// \return true if this is the EmitIRAfter action
+  bool IsEmitIRAfterAction() const;
+
+  /// \return true if this is the EmitIRBefore action
+  bool IsEmitIRBeforeAction() const;
+
+  /// \return true if this is the EmitModule action
+  bool IsEmitModuleAction() const;
+
+  /// \return true if this is the EmitLibrary action
+  bool IsEmitLibraryAction() const;
+
+  /// \return true if this is the EmitBC action
+  bool IsEmitBCAction() const;
+
+  /// \return true if this is the EmitObject action
+  bool IsEmitObjectAction() const;
+
+  /// \return true if this is the EmitAssembly action
+  bool IsEmitAssemblyAction() const;
+
+  /// \return true if this is an Alien action
+  bool IsAlienAction() const;
 };
 
 } // namespace stone

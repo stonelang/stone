@@ -6,6 +6,7 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace stone::file;
 using namespace llvm::opt;
 
 ///< DriverOptions
@@ -249,7 +250,20 @@ void DriverOptionsConverter::SetTriple(llvm::Triple inputTriple) {
   driverOpts.triple = inputTriple;
 }
 
-void DriverOptionsConverter::ComputeOutputInfo() {}
+void DriverOptionsConverter::ComputeOutputInfo() {
+
+  auto outputFileType =
+      (driverOpts.driverOutputInfo.ltoVariant != LTOKind::None)
+          ? FileType::BC
+          : FileType::Object;
+
+  // By default, the driver does not link its output; this will be updated
+  // appropriately below if linking is required.
+
+  // if(driverOpts.GetMainAction().IsNone()){
+
+  // }
+}
 
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 // // }

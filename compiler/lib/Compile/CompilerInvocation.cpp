@@ -33,6 +33,10 @@ void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {
   langOpts.SetTarget(llvm::Triple(triple));
 }
 
+/// \return the action from the ArgList
+static CompilerAction CreateAction(const llvm::opt::ArgList &args) {
+  return CompilerAction::None;
+}
 static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
                                    LangOptions &langOpts,
                                    CompilerOptions &compilerOpts,

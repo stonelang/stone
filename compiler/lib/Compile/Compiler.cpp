@@ -133,7 +133,6 @@ Status Compiler::SetupCompilerInputFiles() {
   const llvm::Optional<unsigned> codeCompletionBufferID =
       CreateCodeCompletionBuffer();
 
-
   assert([&]() -> bool {
     if (invocation.GetCompilerOptions().GetMainAction().ShouldParseOnly()) {
       // Parsing gets triggered lazily, but let's make sure we have the right
@@ -154,7 +153,6 @@ Status Compiler::SetupCompilerInputFiles() {
   const bool shouldRecover = invocation.GetCompilerOptions()
                                  .inputsAndOutputs.ShouldRecoverMissingInputs();
 
-  
   bool hasFailed = false;
   for (const CompilerInputFile &input : inputs) {
     bool failed = false;

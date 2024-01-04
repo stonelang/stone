@@ -89,6 +89,7 @@ public:
   bool ShouldGenerateNative() const {
     return Action::ShouldGenerateNative(GetKind());
   }
+
 public:
   static Action Create(const llvm::opt::ArgList &args);
 };
