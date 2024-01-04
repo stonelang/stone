@@ -7,7 +7,7 @@
 #include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Diag/TextDiagnosticConsumer.h"
 #include "stone/Diag/TextDiagnosticFormatter.h"
-#include "stone/Option/ActionKind.h"
+#include "stone/Option/Action.h"
 #include "stone/Stats/Stats.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 

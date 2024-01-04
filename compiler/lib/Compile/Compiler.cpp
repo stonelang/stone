@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Option/ActionKind.h"
+#include "stone/Option/Action.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
@@ -134,7 +134,7 @@ Status Compiler::SetupCompilerInputFiles() {
       CreateCodeCompletionBuffer();
 
   assert([&]() -> bool {
-    if (invocation.GetCompilerOptions().GetMainAction().ShouldParseOnly()) {
+    if (invocation.GetCompilerOptions().ShouldActionOnlyParse()) {
       // Parsing gets triggered lazily, but let's make sure we have the right
       // input kind.
       return llvm::all_of(
@@ -437,42 +437,45 @@ Status Compiler::ExecuteAction(CompilerExecution &execution) {
   return execution.FinishAction();
 }
 
-Status Compiler::ExecuteAction(ActionKind action) {
+Status Compiler::ExecuteAction(CompilerAction action) {
   auto execution = CreateExectution(action);
   return ExecuteAction(*execution);
 }
 
-std::unique_ptr<CompilerExecution> Compiler::CreateExectution(ActionKind kind) {
+std::unique_ptr<CompilerExecution>
+Compiler::CreateExectution(CompilerAction kind) {
   switch (kind) {
-  case ActionKind::PrintHelp:
+  case CompilerAction::PrintHelp:
     return std::make_unique<PrintHelpExecution>(*this);
-  case ActionKind::PrintHelpHidden:
+  case CompilerAction::PrintHelpHidden:
     return std::make_unique<PrintHelpHiddenExecution>(*this);
-  case ActionKind::PrintVersion:
+  case CompilerAction::PrintVersion:
     return std::make_unique<PrintVersionExecution>(*this);
-  case ActionKind::PrintFeature:
+  case CompilerAction::PrintFeature:
     return std::make_unique<PrintFeatureExecution>(*this);
-  case ActionKind::Parse:
+  case CompilerAction::Parse:
     return std::make_unique<ParseExecution>(*this);
-  case ActionKind::DumpAST:
-    return std::make_unique<DumpASTExecution>(*this);
-  case ActionKind::ResolveImports:
+  case CompilerAction::PrintASTBefore:
+    return std::make_unique<PrintASTBeforeExecution>(*this);
+  case CompilerAction::ResolveImports:
     return std::make_unique<ImportResolutionExecution>(*this);
-  case ActionKind::TypeCheck:
+  case CompilerAction::TypeCheck:
     return std::make_unique<TypeCheckExecution>(*this);
-  case ActionKind::PrintAST:
-    return std::make_unique<PrintASTExecution>(*this);
-  case ActionKind::EmitIRBefore:
+  case CompilerAction::PrintASTAfter:
+    return std::make_unique<PrintASTAfterExecution>(*this);
+  case CompilerAction::EmitIRBefore:
     return std::make_unique<EmitIRBeforeExecution>(*this);
-  case ActionKind::EmitIRAfter:
+  case CompilerAction::EmitIRAfter:
     return std::make_unique<EmitIRAfterExecution>(*this);
-  case ActionKind::EmitModule:
+  case CompilerAction::EmitModule:
     return std::make_unique<EmitModuleExecution>(*this);
-  case ActionKind::EmitBC:
+  case CompilerAction::MergeModules:
+    return std::make_unique<MergeModulesExecution>(*this);
+  case CompilerAction::EmitBC:
     return std::make_unique<EmitBitCodeExecution>(*this);
-  case ActionKind::EmitAssembly:
+  case CompilerAction::EmitAssembly:
     return std::make_unique<EmitAssemblyExecution>(*this);
-  case ActionKind::EmitObject:
+  case CompilerAction::EmitObject:
     return std::make_unique<EmitObjectExecution>(*this);
   default: {
     llvm_unreachable("Unable to create CompilerExecution -- unknon action!");

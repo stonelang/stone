@@ -62,7 +62,7 @@ public:
   Compiler();
   Status Setup();
 
-  Status ExecuteAction(ActionKind action);
+  Status ExecuteAction(CompilerAction action);
   Status ExecuteAction(CompilerExecution &execution);
 
 public:
@@ -102,10 +102,7 @@ public:
 
   CompilerInvocation &GetInvocation() { return invocation; }
 
-  Action GetMainAction() {
-    return invocation.GetCompilerOptions().GetMainAction();
-  }
-  const Action GetMainAction() const {
+  CompilerAction GetMainAction() const {
     return invocation.GetCompilerOptions().GetMainAction();
   }
 
@@ -135,7 +132,7 @@ public:
     return llvm::sys::fs::create_directories(name);
   }
 
-  std::unique_ptr<CompilerExecution> CreateExectution(ActionKind action);
+  std::unique_ptr<CompilerExecution> CreateExectution(CompilerAction action);
 
 public:
   // Module

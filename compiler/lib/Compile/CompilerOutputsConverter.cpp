@@ -26,7 +26,7 @@ bool CompilerOutputsConverter::Convert(
     std::vector<std::string> &mainOutputs,
     std::vector<std::string> &mainOutputsForIndexUnits,
     std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
-    const Action &action) {
+    CompilerAction action) {
 
   Optional<CompilerOutputFilesComputer> ofc =
       CompilerOutputFilesComputer::Create(
@@ -117,7 +117,7 @@ CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
 llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     const llvm::opt::ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
-    CompilerOutputOptInfo optInfo, const Action &action) {
+    CompilerOutputOptInfo optInfo, CompilerAction action) {
   Optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
@@ -146,20 +146,20 @@ llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     return llvm::None;
   }
 
-  auto outputType = action.GetOutputFileType();
+  auto actionOutputFileType = CompilerOptions::GetActionOutputFileType(action);
 
   return CompilerOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, action,
-      args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
-      action.ShouldGenerateOutput(), optInfo);
+      args.getLastArg(opts::ModuleName), file::GetTypeExt(actionOutputFileType),
+      CompilerOptions::DoesActionProduceOutput(action), optInfo);
 }
 
 CompilerOutputFilesComputer::CompilerOutputFilesComputer(
     DiagnosticEngine &de, const CompilerInputsAndOutputs &inputsAndOutputs,
     std::vector<std::string> outputFileArguments,
     const StringRef outputDirectoryArgument, const StringRef firstInput,
-    const Action &action, const llvm::opt::Arg *moduleNameArg,
+    CompilerAction action, const llvm::opt::Arg *moduleNameArg,
     const StringRef suffix, const bool hasTextualOutput,
     CompilerOutputOptInfo optInfo)
     : de(de), inputsAndOutputs(inputsAndOutputs),
@@ -195,7 +195,8 @@ llvm::Optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
   // The invocation does not currently produce a diagnostic
   // if a -o argument is present for such an action
   // for instance stonec -invocation -o foo -interpret foo.stone
-  if (!action.ShouldGenerateOutput()) {
+
+  if (!CompilerOptions::DoesActionProduceOutput(action)) {
     return std::string();
   }
   if (!OutputDirectoryArgument.empty()) {
@@ -260,7 +261,7 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     const ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
     ArrayRef<std::string> outputFiles, StringRef moduleName,
-    const Action &action)
+    CompilerAction action)
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFiles(outputFiles), moduleName(moduleName), action(action) {}
 
@@ -307,7 +308,8 @@ Optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
     const {
 
-  assert(false && "Not implemented");
+  llvm_unreachable(
+      "TODO: GetSupplementaryOutputPathsFromArguments  not implemented");
 
   // auto moduleOutput =
   //     GetSupplementaryFilenamesFromArguments(opts::EmitModulePath);
@@ -573,9 +575,8 @@ void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
 
   emitOption = opts::EmitModule;
 
-  bool canUseMainOutputForModule =
-      action.GetKind() == ActionKind::MergeModules ||
-      action.GetKind() == ActionKind::EmitModule;
+  bool canUseMainOutputForModule = action == CompilerAction::MergeModules ||
+                                   action == CompilerAction::EmitModule;
 
   extension = file::GetTypeExt(FileType::StoneModule).str();
 
@@ -590,6 +591,7 @@ CreateFromTypeToPathMap(const TypeToPathMap *map) {
   if (!map) {
     return paths;
   }
+  // TODO:
   const std::pair<FileType, std::string &> typesAndStrings[] = {
       {FileType::StoneModule, paths.moduleOutputPath},
       // {FileType::StoneModuleDoc, paths.ModuleDocOutputPath},

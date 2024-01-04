@@ -3,9 +3,11 @@
 
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Option/Action.h"
 
 #include "llvm/ADT/SmallString.h"
+#include "llvm/Option/Arg.h"
+#include "llvm/Option/ArgList.h"
+#include "llvm/Option/Option.h"
 
 namespace stone {
 
@@ -13,8 +15,10 @@ class CompilerInvocation;
 class CompilerOptionsConverter;
 class CompilerInputsConverter;
 
+// using CompilerAction = unsigned;
+
 enum class CompilerAction : unsigned {
-  ///< No mode
+  ///< No action
   None = 0,
   /// MARK -- Lang support
   //< Print language version
@@ -49,10 +53,10 @@ enum class CompilerAction : unsigned {
   EmitObject,
   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
   EmitModule,
+  ///< Merge modules only
+  MergeModules,
   //< Parse, type-check, and emit assembly
   EmitAssembly,
-  ///< Invalid action
-  Alien,
 };
 class CompilerOptions final {
 
@@ -60,12 +64,9 @@ class CompilerOptions final {
   friend CompilerOptionsConverter;
   friend CompilerInputsConverter;
 
-  CompilerAction action = CompilerAction::None;
+  CompilerAction mainAction = CompilerAction::None;
 
 public:
-  /// The main action requested.
-  Action mainAction;
-
   bool trackAction = false;
 
   ModuleOptions moduleOpts;
@@ -130,21 +131,14 @@ public:
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
-  /// \return true if the action is valid
-  bool HasMainAction() const { return !mainAction.IsAlien(); }
-
-  /// \return the Action
-  Action &GetMainAction() { return mainAction; }
-
-  /// \return the action
-  const Action &GetMainAction() const { return mainAction; }
-
   CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;
   }
 
 public:
+  /// \return true if the given action requires a proper module name
+  static bool DoesActionNeedProperModuleName(CompilerAction action);
   /// \return true if the given action only parses without doing other
   /// compilation steps.
   static bool ShouldActionOnlyParse(CompilerAction action);
@@ -171,6 +165,12 @@ public:
   static bool IsAnyAction(CompilerAction action);
 
 public:
+  /// \return true if the action is valid
+  bool HasMainAction() const { return !IsNoneAction(); }
+
+  /// \return the Action
+  CompilerAction GetMainAction() const { return mainAction; }
+
   /// \return true if this is the None action
   bool IsNoneAction() const;
 
@@ -189,6 +189,9 @@ public:
   /// \return true if this is the Parse action
   bool IsParseAction() const;
 
+  /// \return true if you are only parsing
+  bool ShouldActionOnlyParse() const;
+
   /// \return true if this is the ResolveImports action
   bool IsResolveImportsAction() const;
 
@@ -206,6 +209,12 @@ public:
 
   /// \return true if this is the EmitIRBefore action
   bool IsEmitIRBeforeAction() const;
+
+  /// \return true if the given action should generate IR
+  bool DoesActionGenerateIR() const;
+
+  /// \return true if the given action should generate native code
+  bool DoesActionGenerateNative() const;
 
   /// \return true if this is the EmitModule action
   bool IsEmitModuleAction() const;

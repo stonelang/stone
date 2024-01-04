@@ -85,11 +85,11 @@ opts::GetEqualValueByOptionID(const opts::OptID optID,
   return llvm::StringRef();
 }
 
-unsigned opts::GetArgID(llvm::opt::Arg *arg) {
+unsigned opts::GetArgID(const llvm::opt::Arg *arg) {
   assert(arg);
   return arg->getOption().getID();
 }
-llvm::StringRef opts::GetArgName(llvm::opt::Arg *arg) {
+llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
   assert(arg);
   return arg->getOption().getName();
 }

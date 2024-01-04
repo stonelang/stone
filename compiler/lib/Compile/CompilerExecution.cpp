@@ -48,9 +48,7 @@ CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
   llvm_unreachable("Illegal to handle code completion callbacks!");
 }
 
-ActionKind CompilerExecution::GetMainAction() {
-  compiler.GetMainAction().GetKind();
-}
+CompilerAction CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
 
 Compiler &CompilerExecution::GetCompiler() { return compiler; }
 
@@ -135,7 +133,7 @@ ImportResolutionExecution::ImportResolutionExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status ImportResolutionExecution::ExecuteAction() {
-  // assert(GetExecutionAction() == ActionKind::ResolveImports);
+  // assert(GetExecutionAction() == CompilerAction::ResolveImports);
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "import-resolution");
@@ -149,17 +147,17 @@ void ImportResolutionExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
 void ImportResolutionExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
-DumpASTExecution::DumpASTExecution(Compiler &compiler)
+PrintASTBeforeExecution::PrintASTBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status DumpASTExecution::ExecuteAction() {
+Status PrintASTBeforeExecution::ExecuteAction() {
 
   // stone::DumpSourceFile(sourceFile, compiler.GetASTContext());
   return Status();
 }
 
-void DumpASTExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
-void DumpASTExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void PrintASTBeforeExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void PrintASTBeforeExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -192,12 +190,12 @@ void TypeCheckExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
 void TypeCheckExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
-PrintASTExecution::PrintASTExecution(Compiler &compiler)
+PrintASTAfterExecution::PrintASTAfterExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status PrintASTExecution::ExecuteAction() {
+Status PrintASTAfterExecution::ExecuteAction() {
 
-  // assert(GetExecutionAction() == ActionKind::PrintAST);
+  // assert(GetExecutionAction() == CompilerAction::PrintASTAfter);
 
   //  GetCompiler().ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
   //    stone::PrintSourceFile(sourceFile, GetCompiler().GetASTContext());
@@ -206,9 +204,9 @@ Status PrintASTExecution::ExecuteAction() {
   return Status();
 }
 
-void PrintASTExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void PrintASTAfterExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
-void PrintASTExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void PrintASTAfterExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
 
 ///< EmitIRBeforeExecution
 EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
@@ -290,6 +288,25 @@ void EmitIRAfterExecution::CompletedSemanticAnalysis(SourceFile &result) {}
 
 void EmitIRAfterExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
+///< PrintIR
+
+///< EmitIRAfterExecution
+PrintIRExecution::PrintIRExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
+
+Status PrintIRExecution::ExecuteAction() {
+
+  // stone::OptimizeIR(compiler.GetIRGen()....)
+
+  // std::unique_ptr<IRCodeOptimizer>
+  /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),
+  /// GetASTContext(), ....);
+
+  return Status();
+}
+
+Status PrintIRExecution::FinishAction() { return Status(); }
+
 EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
@@ -314,6 +331,17 @@ Status EmitModuleExecution::ExecuteAction() {
 
   return Status();
 }
+
+MergeModulesExecution::MergeModulesExecution(Compiler &compiler)
+    : CompilerExecution(compiler) {}
+
+Status MergeModulesExecution::ExecuteAction() {
+
+  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "merge-modules");
+
+  return Status();
+}
+
 ///< EmitObjectExecution
 EmitObjectExecution::EmitObjectExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -398,8 +426,12 @@ Status EmitAssemblyExecution::FinishAction() { return Status(); }
 
 /// Handles LLVM
 Status stone::CompileAction(Compiler &compiler) {
+  // Sanity check
+  if (compiler.GetInvocation().GetCompilerOptions().IsNoneAction()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
   return compiler.ExecuteAction(
-      compiler.GetInvocation().GetCompilerOptions().GetMainAction().GetKind());
+      compiler.GetInvocation().GetCompilerOptions().GetMainAction());
 }
 /// Handles LLVM
 Status stone::CompileLLVM(Compiler &compiler) {

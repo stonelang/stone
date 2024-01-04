@@ -5,10 +5,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticConsumer.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Option/Action.h"
 #include "stone/Option/Options.h"
-
-#include "llvm/Option/ArgList.h"
 
 namespace stone {
 
@@ -41,6 +38,9 @@ private:
   Status CheckUnusedSupplementaryOutputPaths() const;
   Status CheckForUnusedOutputPaths() const;
 
+private:
+  static CompilerAction ComputeCompilerAction(const unsigned modeOptID);
+
 public:
   CompilerOptionsConverter(const llvm::opt::ArgList &args, DiagnosticEngine &de,
                            LangOptions &langOpts,
@@ -49,6 +49,8 @@ public:
 public:
   Status
   Convert(llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
+
+  static CompilerAction ComputeCompilerAction(const llvm::opt::ArgList &args);
 };
 } // namespace stone
 #endif

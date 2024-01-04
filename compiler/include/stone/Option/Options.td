@@ -52,6 +52,13 @@ def DoesNotAffectIncrementalBuild : OptionFlag;
 
 def NoInteractiveOption : OptionFlag;
 
+// The option that is cache invariant. Change this option doesn't affect the
+// content of any output file. The candidates are options like: `-o` which only
+// affects the location of the output file, or `-emit-module` which defines
+// which action is performed.
+def CacheInvariant : OptionFlag;
+
+
 def ModeGroup : OptionGroup<"<mode options>">, HelpText<"MODES">;
 
 class ModeOpt : Group<ModeGroup>;
@@ -75,19 +82,31 @@ HelpText<"Parse input file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
 
-
+// TODO: REMOVE
 def DumpAST : Flag<["-"], "dump-ast">,
 HelpText<"Parse and dump ast tree">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
+
+
+def PrintASTBefore : Flag<["-"], "print-ast-before">,
+HelpText<"Parse and print the ast tree before type-check">, ModeOpt,
+Flags<[CompilerOption, DriverOption]>;
+
 
 def TypeCheck : Flag<["-"], "type-check">,
 HelpText<"Parse and type-check input file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
 
-
+//TODO REMOVE
 def PrintAST : Flag<["-"], "print-ast">,
 HelpText<"Parse, type-check input file(s) and pretty print ast">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
+
+
+def PrintASTAfter : Flag<["-"], "print-ast-after">,
+HelpText<"Parse, type-check input file(s) and pretty print ast">, ModeOpt,
+Flags<[CompilerOption, DriverOption]>;
+
 
 def EmitLibrary : Flag<["-"], "emit-library">,
 HelpText<"Emit a linked library">, ModeOpt,
@@ -109,6 +128,18 @@ Flags<[CompilerOption, DriverOption]>, ModeOpt;
 def EmitModule : Flag<["-"], "emit-module">,
 HelpText<"Emit module file(s)">, ModeOpt,
 Flags<[CompilerOption, DriverOption]>;
+
+
+def EmitModulePath : Separate<["-"], "emit-module-path">,
+  Flags<[CompilerOption, ArgumentIsPath, SupplementaryOutput, CacheInvariant]>,
+  HelpText<"Emit an importable module to <path>">,
+  MetaVarName<"<path>">;
+
+
+def EmitModulePathEQ : Joined<["-"], "emit-module-path=">,
+  Flags<[CompilerOption, ArgumentIsPath, SupplementaryOutput, CacheInvariant]>,
+  Alias<EmitModulePath>;
+
 
 def EmitAssembly : Flag<["-"], "emit-assembly">,
 HelpText<"Emit assembly file(s) (-s)">, ModeOpt,

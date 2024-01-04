@@ -4,8 +4,8 @@
 #include "stone/Basic/Color.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerObservation.h"
+#include "stone/Compile/CompilerOptions.h"
 #include "stone/Gen/IRGenModule.h"
-#include "stone/Option/ActionKind.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Chrono.h"
@@ -36,10 +36,10 @@ public:
 
 protected:
   /// Every exeuction must have a self action
-  virtual ActionKind GetSelfAction() { return ActionKind::None; }
+  virtual CompilerAction GetSelfAction() { return CompilerAction::None; }
 
   /// Check that there exist a dependecy action
-  bool HasSelfAction() { return GetSelfAction() != ActionKind::None; }
+  bool HasSelfAction() { return GetSelfAction() != CompilerAction::None; }
 
 public:
   /// Setup the execution and execute any dependencies
@@ -52,16 +52,16 @@ public:
   virtual Status FinishAction();
 
   /// The main input action from the user.
-  ActionKind GetMainAction();
+  CompilerAction GetMainAction();
 
   /// Determine if the main action and the self action is the same.
   bool HasMainAction() { return GetSelfAction() == GetMainAction(); }
 
   /// Get the dependency action
-  virtual ActionKind GetDepAction() { return ActionKind::None; }
+  virtual CompilerAction GetDepAction() { return CompilerAction::None; }
 
   /// Check that there exist a dependecy action
-  bool HasDepAction() { return GetDepAction() != ActionKind::None; }
+  bool HasDepAction() { return GetDepAction() != CompilerAction::None; }
 
   /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
@@ -70,6 +70,9 @@ public:
   void SetConsumer(CompilerExecution *inputConsumer) {
     consumer = inputConsumer;
   }
+
+  ///
+  bool ShouldConsume(CompilerExecution *consumer);
 
   /// Make sure that we can notify the consumer
   bool ShouldNotifyConsumer() { return (HasConsumer() && !HasMainAction()); }
@@ -121,7 +124,7 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetSelfAction() override { return ActionKind::PrintHelp; }
+  CompilerAction GetSelfAction() override { return CompilerAction::PrintHelp; }
 };
 
 class PrintHelpHiddenExecution final : public CompilerExecution {
@@ -130,7 +133,9 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetSelfAction() override { return ActionKind::PrintHelpHidden; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::PrintHelpHidden;
+  }
 };
 
 class PrintVersionExecution final : public CompilerExecution {
@@ -140,7 +145,9 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetSelfAction() override { return ActionKind::PrintVersion; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::PrintVersion;
+  }
 };
 
 class PrintFeatureExecution final : public CompilerExecution {
@@ -149,7 +156,9 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetSelfAction() override { return ActionKind::PrintFeature; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::PrintFeature;
+  }
 };
 
 class ParseExecution final : public CompilerExecution {
@@ -158,7 +167,7 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetSelfAction() override { return ActionKind::Parse; }
+  CompilerAction GetSelfAction() override { return CompilerAction::Parse; }
 
 public:
 };
@@ -168,24 +177,28 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetDepAction() override { return ActionKind::Parse; }
-  ActionKind GetSelfAction() override { return ActionKind::ResolveImports; }
+  CompilerAction GetDepAction() override { return CompilerAction::Parse; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::ResolveImports;
+  }
 
 public:
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
 };
 
-class DumpASTExecution final : public CompilerExecution {
+class PrintASTBeforeExecution final : public CompilerExecution {
 public:
-  DumpASTExecution(Compiler &compiler);
+  PrintASTBeforeExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;
 
 public:
-  ActionKind GetSelfAction() override { return ActionKind::DumpAST; }
-  ActionKind GetDepAction() override { return ActionKind::Parse; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::PrintASTBefore;
+  }
+  CompilerAction GetDepAction() override { return CompilerAction::Parse; }
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
@@ -199,8 +212,10 @@ public:
   Status ExecuteAction() override;
 
 public:
-  ActionKind GetDepAction() override { return ActionKind::ResolveImports; }
-  ActionKind GetSelfAction() override { return ActionKind::TypeCheck; }
+  CompilerAction GetDepAction() override {
+    return CompilerAction::ResolveImports;
+  }
+  CompilerAction GetSelfAction() override { return CompilerAction::TypeCheck; }
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
@@ -208,16 +223,18 @@ public:
   virtual CompilerExecution *GetConsumer() override;
 };
 
-class PrintASTExecution final : public CompilerExecution {
+class PrintASTAfterExecution final : public CompilerExecution {
 public:
-  PrintASTExecution(Compiler &compiler);
+  PrintASTAfterExecution(Compiler &compiler);
 
 public:
   Status ExecuteAction() override;
 
 public:
-  ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
-  ActionKind GetSelfAction() override { return ActionKind::PrintAST; }
+  CompilerAction GetDepAction() override { return CompilerAction::TypeCheck; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::PrintASTAfter;
+  }
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
@@ -232,8 +249,10 @@ public:
 public:
   Status ExecuteAction() override;
   Status FinishAction() override;
-  ActionKind GetDepAction() override { return ActionKind::TypeCheck; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitIRBefore; }
+  CompilerAction GetDepAction() override { return CompilerAction::TypeCheck; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::EmitIRBefore;
+  }
 
 public:
   void CompletedSemanticAnalysis(SourceFile &result) override;
@@ -249,12 +268,30 @@ public:
 public:
   Status ExecuteAction() override;
   Status FinishAction() override;
-  ActionKind GetDepAction() override { return ActionKind::EmitIRBefore; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitIRAfter; }
+  CompilerAction GetDepAction() override {
+    return CompilerAction::EmitIRBefore;
+  }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::EmitIRAfter;
+  }
 
 public:
   void CompletedSemanticAnalysis(SourceFile &result) override;
   void CompletedSemanticAnalysis(ModuleDecl &result) override;
+};
+
+// Generate IR, optimize ir, then print it.
+class PrintIRExecution final : public CompilerExecution {
+
+public:
+  PrintIRExecution(Compiler &compiler);
+
+public:
+  Status ExecuteAction() override;
+  Status FinishAction() override;
+
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::PrintIR; }
 };
 
 class EmitBitCodeExecution final : public CompilerExecution {
@@ -263,8 +300,8 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitBC; }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::EmitBC; }
 };
 
 class EmitModuleExecution final : public CompilerExecution {
@@ -275,8 +312,21 @@ public:
   Status ExecuteAction() override;
 
 public:
-  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitModule; }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::EmitModule; }
+};
+
+class MergeModulesExecution final : public CompilerExecution {
+public:
+  MergeModulesExecution(Compiler &compiler);
+
+public:
+  Status ExecuteAction() override;
+
+public:
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::MergeModules;
+  }
 };
 
 class EmitObjectExecution final : public CompilerExecution {
@@ -285,8 +335,8 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitObject; }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::EmitObject; }
   Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;
@@ -299,8 +349,10 @@ public:
 
 public:
   Status ExecuteAction() override;
-  ActionKind GetDepAction() override { return ActionKind::EmitIRAfter; }
-  ActionKind GetSelfAction() override { return ActionKind::EmitAssembly; }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::EmitAssembly;
+  }
   Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;

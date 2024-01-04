@@ -34,8 +34,11 @@ Status CompilerOptionsConverter::Convert(
 
   Status status;
 
-  /// First, compute the action
-  compilerOpts.mainAction = Action::Create(args);
+  compilerOpts.mainAction =
+      CompilerOptionsConverter::ComputeCompilerAction(args);
+  if (!compilerOpts.HasMainAction()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
 
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
@@ -84,6 +87,63 @@ Status CompilerOptionsConverter::Convert(
     return Status::MakeHasCompletionAndIsError();
   }
   return Status();
+}
+
+CompilerAction
+CompilerOptionsConverter::ComputeCompilerAction(const ArgList &args) {
+
+  const Arg *mode = args.getLastArg(opts::ModeGroup);
+  if (!mode) {
+    // We don't have a mode, so determine a default.
+    if (args.hasArg(opts::EmitModule, opts::EmitModulePath)) {
+      // We've been told to emit a module, but have no other mode indicators.
+      // As a result, put the frontend into EmitModuleOnly mode.
+      // (Setting up module output will be handled below.)
+      return CompilerAction::EmitModule;
+    }
+    if (args.hasArg(opts::PrintVersion)) {
+      return CompilerAction::PrintVersion;
+    }
+    return CompilerAction::None;
+  }
+  return CompilerOptionsConverter::ComputeCompilerAction(opts::GetArgID(mode));
+}
+
+CompilerAction
+CompilerOptionsConverter::ComputeCompilerAction(const unsigned modeOptID) {
+  switch (modeOptID) {
+  case opts::Parse:
+    return CompilerAction::Parse;
+  case opts::ResolveImports:
+    return CompilerAction::ResolveImports;
+  case opts::PrintASTBefore:
+    return CompilerAction::PrintASTBefore;
+  case opts::TypeCheck:
+    return CompilerAction::TypeCheck;
+  case opts::PrintASTAfter:
+    return CompilerAction::PrintASTAfter;
+  case opts::PrintIR:
+    return CompilerAction::PrintIR;
+  case opts::EmitIRAfter:
+    return CompilerAction::EmitIRAfter;
+  case opts::EmitIRBefore:
+    return CompilerAction::EmitIRBefore;
+  case opts::EmitBC:
+    return CompilerAction::EmitBC;
+  case opts::EmitObject:
+    return CompilerAction::EmitObject;
+  case opts::EmitAssembly:
+    return CompilerAction::EmitAssembly;
+  case opts::EmitModule:
+    return CompilerAction::EmitModule;
+  case opts::MergeModules:
+    return CompilerAction::MergeModules;
+  case opts::PrintVersion:
+    return CompilerAction::PrintVersion;
+  case opts::PrintHelp:
+    return CompilerAction::PrintVersion;
+  }
+  llvm_unreachable("Unhandled mode option");
 }
 
 Status CompilerOptionsConverter::ComputeModuleName() {

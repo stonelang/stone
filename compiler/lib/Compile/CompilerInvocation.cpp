@@ -147,17 +147,17 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts) {
 
-  switch (invocation.GetCompilerOptions().GetMainAction().GetKind()) {
-  case ActionKind::EmitModule:
+  switch (invocation.GetCompilerOptions().GetMainAction()) {
+  case CompilerAction::EmitModule:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
-  case ActionKind::EmitIRBefore:
+  case CompilerAction::EmitIRBefore:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPreOptimization;
-  case ActionKind::EmitIRAfter:
+  case CompilerAction::EmitIRAfter:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMIRPostOptimization;
-  case ActionKind::EmitBC:
+  case CompilerAction::EmitBC:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMBitCode;
     break;
-  case ActionKind::EmitAssembly:
+  case CompilerAction::EmitAssembly:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::NativeAssembly;
     break;
   default:
@@ -208,7 +208,8 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
           .IsError()) {
     return Status::Error();
   }
-  if (GetCompilerOptions().GetMainAction().ShouldGenerateCode()) {
+  if (GetCompilerOptions().DoesActionGenerateIR() ||
+      GetCompilerOptions().DoesActionGenerateNative()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (compiler.GetInvocation()
             .SetupClang(strings::ClangCC1,

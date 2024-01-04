@@ -36,6 +36,7 @@ enum OptFlag {
   NoBatchOption = (1 << 15),
   DoesNotAffectIncrementalBuild = (1 << 16),
   NoInteractiveOption = (1 << 17),
+  CacheInvariant = (1 << 18),
 
 };
 
@@ -52,8 +53,8 @@ enum OptID : unsigned {
 ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
 llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,
                                         const llvm::opt::InputArgList &args);
-unsigned GetArgID(llvm::opt::Arg *arg);
-llvm::StringRef GetArgName(llvm::opt::Arg *arg);
+unsigned GetArgID(const llvm::opt::Arg *arg);
+llvm::StringRef GetArgName(const llvm::opt::Arg *arg);
 void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 
 } // namespace opts
