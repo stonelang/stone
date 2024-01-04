@@ -47,15 +47,10 @@ enum class CompilerAction : unsigned {
   EmitBC,
   ///< Parse, type-check, and emit native object code
   EmitObject,
-  ///< Parse, type-check, and emit a library.
-  ///< Default => platform specific. But, with -static => 'any.a'
-  EmitLibrary,
   //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
   EmitModule,
   //< Parse, type-check, and emit assembly
   EmitAssembly,
-  ///< Merge all modules
-  MergeModules,
   ///< Invalid action
   Alien,
 };
@@ -153,8 +148,6 @@ public:
   /// \return true if the given action only parses without doing other
   /// compilation steps.
   static bool ShouldActionOnlyParse(CompilerAction action);
-  /// \return true if the given action should generate output
-  static bool DoesActionGenerateOutput(CompilerAction action);
   /// \return true if the given action should generates IR
   static bool DoesActionGenerateIR(CompilerAction action);
   /// \return true if the given action should generate native code
@@ -176,9 +169,6 @@ public:
 public:
   /// \return true if this is any action.
   static bool IsAnyAction(CompilerAction action);
-
-  /// \return true if this is the PrintHelp action
-  static bool IsAlienAction(CompilerAction action);
 
 public:
   /// \return true if this is the None action
@@ -220,9 +210,6 @@ public:
   /// \return true if this is the EmitModule action
   bool IsEmitModuleAction() const;
 
-  /// \return true if this is the EmitLibrary action
-  bool IsEmitLibraryAction() const;
-
   /// \return true if this is the EmitBC action
   bool IsEmitBCAction() const;
 
@@ -231,9 +218,6 @@ public:
 
   /// \return true if this is the EmitAssembly action
   bool IsEmitAssemblyAction() const;
-
-  /// \return true if this is an Alien action
-  bool IsAlienAction() const;
 };
 
 } // namespace stone
