@@ -54,7 +54,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedCommandLineParsing(compiler);
   }
-  if (!compiler.GetInvocation().HasAction()) {
+  if (!compiler.GetInvocation().GetCompilerOptions().HasMainAction()) {
     // compiler.GetDiags().PrintD(diag::err_no_compile_action);
     FinishCompile(Status::Error());
   }

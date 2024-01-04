@@ -109,14 +109,9 @@ public:
   const FileSystemOptions &GetFileSystemOptions() const {
     return fileSystemOpts;
   }
-
-  bool HasAction() { return !compilerOpts.mainAction.IsAlien(); }
-  const Action &GetMainAction() const { return compilerOpts.mainAction; }
-
   void SetTargetTriple(llvm::StringRef triple);
 
 public:
-  bool CanGenCode();
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
   ClangContext &GetClangContext() { return *clangContext; }
 

@@ -152,7 +152,7 @@ llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, action,
       args.getLastArg(opts::ModuleName), file::GetTypeExt(outputType),
-      action.CanOutput(), optInfo);
+      action.ShouldGenerateOutput(), optInfo);
 }
 
 CompilerOutputFilesComputer::CompilerOutputFilesComputer(
@@ -195,7 +195,7 @@ llvm::Optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
   // The invocation does not currently produce a diagnostic
   // if a -o argument is present for such an action
   // for instance stonec -invocation -o foo -interpret foo.stone
-  if (!action.CanOutput()) {
+  if (!action.ShouldGenerateOutput()) {
     return std::string();
   }
   if (!OutputDirectoryArgument.empty()) {

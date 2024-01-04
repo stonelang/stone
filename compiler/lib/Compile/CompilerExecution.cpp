@@ -48,7 +48,9 @@ CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
   llvm_unreachable("Illegal to handle code completion callbacks!");
 }
 
-ActionKind CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
+ActionKind CompilerExecution::GetMainAction() {
+  compiler.GetMainAction().GetKind();
+}
 
 Compiler &CompilerExecution::GetCompiler() { return compiler; }
 
@@ -397,7 +399,7 @@ Status EmitAssemblyExecution::FinishAction() { return Status(); }
 /// Handles LLVM
 Status stone::CompileAction(Compiler &compiler) {
   return compiler.ExecuteAction(
-      compiler.GetInvocation().GetMainAction().GetKind());
+      compiler.GetInvocation().GetCompilerOptions().GetMainAction().GetKind());
 }
 /// Handles LLVM
 Status stone::CompileLLVM(Compiler &compiler) {

@@ -182,7 +182,7 @@ bool file::IsPartOfLLVMCompilation(FileType ty) {
 /// Returns true if the type is a file that is linkable
 ///
 /// These need to be passed to the stone Compile
-bool file::CanCompile(file::FileType ty) {
+bool file::ShouldCompile(file::FileType ty) {
   switch (ty) {
   case FileType::Stone:
     return true;

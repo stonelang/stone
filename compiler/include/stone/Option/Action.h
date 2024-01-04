@@ -12,90 +12,24 @@ class Action final {
   llvm::StringRef name;
 
 public:
-  Action(ActionKind inputKind = ActionKind::Alien,
-         llvm::StringRef inputName = llvm::StringRef())
-      : kind(inputKind), name(inputName) {}
+  Action(ActionKind kind = ActionKind::None,
+         llvm::StringRef name = llvm::StringRef())
+      : kind(kind), name(name) {}
 
 public:
   ActionKind GetKind() const { return kind; }
-  llvm::StringRef GetName() const { return name; }
+  llvm::StringRef GetName() const;
   file::FileType GetOutputFileType() const;
 
 public:
-  bool IsParseOnly() const {
-    switch (GetKind()) {
-    case ActionKind::Parse:
-    case ActionKind::DumpAST:
-    // case ActionKind::DumpInterfaceHash:
-    // case ActionKind::EmitImportedModules:
-    // case ActionKind::ScanDependencies:
-    case ActionKind::PrintVersion:
-    case ActionKind::PrintFeature:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-  bool CanOutput() const {
-    switch (GetKind()) {
-    case ActionKind::DumpAST:
-    case ActionKind::PrintAST:
-    case ActionKind::EmitIRBefore:
-    case ActionKind::EmitIRAfter:
-    case ActionKind::EmitBC:
-    case ActionKind::EmitObject:
-    case ActionKind::EmitAssembly:
-    case ActionKind::EmitModule:
-    case ActionKind::EmitLibrary:
-      return true;
-    default:
-      return false;
-    }
-  }
-  bool CanCompile() const {
-    switch (GetKind()) {
-    case ActionKind::None:
-    case ActionKind::Parse:
-    case ActionKind::ResolveImports:
-    case ActionKind::DumpAST:
-    case ActionKind::TypeCheck:
-    case ActionKind::PrintAST:
-    case ActionKind::EmitIRBefore:
-    case ActionKind::EmitIRAfter:
-    case ActionKind::EmitBC:
-    case ActionKind::EmitObject:
-    case ActionKind::EmitAssembly:
-    case ActionKind::EmitModule:
-    case ActionKind::EmitLibrary:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-  bool CanCodeGen() const {
-    switch (GetKind()) {
-    case ActionKind::None:
-    case ActionKind::EmitIRAfter:
-    case ActionKind::EmitIRBefore:
-    case ActionKind::EmitBC:
-    case ActionKind::EmitObject:
-    case ActionKind::EmitAssembly:
-    case ActionKind::EmitModule:
-    case ActionKind::EmitLibrary:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-  bool IsSupport() const {
-    if (IsPrintHelp() || IsPrintHelpHidden() || IsPrintVersion()) {
-      return true;
-    }
-    return false;
-  }
+  static llvm::StringRef GetName(ActionKind kind);
+  static bool ShouldParseOnly(ActionKind kind);
+  static bool ShouldGenerateOutput(ActionKind kind);
+  static bool ShouldCompile(ActionKind kind);
+  static bool ShouldGenerateCode(ActionKind kind);
+  static bool ShouldGenerateIR(ActionKind kind);
+  static bool ShouldGenerateNative(ActionKind kind);
+  static file::FileType GetOutputFileTypeByActionKind(ActionKind kind);
 
 public:
   // Convenience
@@ -123,6 +57,13 @@ public:
   bool IsEmitAssembly() const { return GetKind() == ActionKind::EmitAssembly; }
   bool IsAlien() const { return GetKind() == ActionKind::Alien; }
 
+  bool IsSupport() const {
+    if (IsPrintHelp() || IsPrintHelpHidden() || IsPrintVersion()) {
+      return true;
+    }
+    return false;
+  }
+
   bool Is(ActionKind k) const { return kind == k; }
   bool IsAny(ActionKind K1) const { return Is(K1); }
   template <typename... T>
@@ -136,8 +77,18 @@ public:
     return !IsAny(K1, K...);
   }
 
-public:
-  static file::FileType GetOutputFileTypeByActionKind(ActionKind kind);
+  bool ShouldParseOnly() const { return Action::ShouldParseOnly(GetKind()); }
+  bool ShouldGenerateOutput() const {
+    return Action::ShouldGenerateOutput(GetKind());
+  }
+  bool ShouldCompile() const { return Action::ShouldCompile(GetKind()); }
+  bool ShouldGenerateCode() const {
+    return Action::ShouldGenerateCode(GetKind());
+  }
+  bool ShouldGenerateIR() const { return Action::ShouldGenerateIR(GetKind()); }
+  bool ShouldGenerateNative() const {
+    return Action::ShouldGenerateNative(GetKind());
+  }
 };
 
 Action ComputeAction(const llvm::opt::ArgList &args);

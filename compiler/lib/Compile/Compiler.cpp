@@ -19,7 +19,8 @@ Compiler::Compiler()
 
 Status Compiler::Setup() {
 
-  assert(invocation.HasAction() && "Compiler does not have a valid action!");
+  assert(invocation.GetCompilerOptions().HasMainAction() &&
+         "Compiler does not have a valid action!");
 
   if (SetupCompilerInputFiles().IsError()) {
     Status::Error();
@@ -138,7 +139,7 @@ Status Compiler::SetupCompilerInputFiles() {
                                  .inputsAndOutputs.ShouldRecoverMissingInputs();
 
   assert([&]() -> bool {
-    if (invocation.GetMainAction().IsParseOnly()) {
+    if (invocation.GetCompilerOptions().GetMainAction().ShouldParseOnly()) {
       // Parsing gets triggered lazily, but let's make sure we have the right
       // input kind.
       return llvm::all_of(

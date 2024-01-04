@@ -102,7 +102,12 @@ public:
 
   CompilerInvocation &GetInvocation() { return invocation; }
 
-  std::unique_ptr<CompilerExecution> CreateExectution(ActionKind action);
+  Action GetMainAction() {
+    return invocation.GetCompilerOptions().GetMainAction();
+  }
+  const Action GetMainAction() const {
+    return invocation.GetCompilerOptions().GetMainAction();
+  }
 
 public:
   Status SetupCompilerInputFiles();
@@ -126,9 +131,11 @@ public:
 
   SourceFile::ParsingOptions GetSourceFileParsingOptions(bool forPrimary) const;
 
-  std::error_code CreateDir(std::string name) {
+  std::error_code CreateDirectory(std::string name) {
     return llvm::sys::fs::create_directories(name);
   }
+
+  std::unique_ptr<CompilerExecution> CreateExectution(ActionKind action);
 
 public:
   // Module
@@ -188,8 +195,6 @@ public:
   llvm::ArrayRef<SourceFile *> GetPrimarySourceFiles() const {
     return GetMainModule()->GetPrimarySourceFiles();
   }
-
-  ActionKind GetMainAction() { return invocation.GetMainAction().GetKind(); }
 
 public:
   void TryFreeASTContext();

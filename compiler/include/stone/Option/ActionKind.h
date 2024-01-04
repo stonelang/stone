@@ -8,7 +8,6 @@ namespace stone {
 enum class ActionKind : unsigned {
   ///< No mode
   None = 0,
-
   /// MARK -- Lang support
   //< Print language version
   PrintVersion,
@@ -18,7 +17,6 @@ enum class ActionKind : unsigned {
   PrintHelpHidden,
   ///< Print compiler features
   PrintFeature,
-
   /// MARK -- Syntax analysis
   ///< Parse only
   Parse,
@@ -26,19 +24,15 @@ enum class ActionKind : unsigned {
   DumpAST,
   ///< Parse and resolve imports only
   ResolveImports,
-  ///< Parse and type-check only
-
   /// MARK -- Semantic analysis
   TypeCheck,
   ///< Parse, type-check, and  pretty print syntax tree
   PrintAST,
-
   /// MARK -- Code generation
   //</ Parse, type-check, and emit LLVM IR pre optimization
   EmitIRBefore,
   //</ Parse, type-check, and emit LLVM IR post optimization
   EmitIRAfter,
-
   //</ Parse, type-check, and pretty print llvm-ir
   PrintIR,
   //< Parse, type-check, and emit LLVM BC
@@ -57,8 +51,6 @@ enum class ActionKind : unsigned {
   //< Alien
   Alien,
 
-  // < This is a not user action
-  GenerateIR
 };
 } // namespace stone
 #endif

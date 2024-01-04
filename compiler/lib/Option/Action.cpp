@@ -118,3 +118,101 @@ FileType Action::GetOutputFileTypeByActionKind(ActionKind kind) {
     assert(false && "No file-type found for this particular mode-kind");
   }
 }
+
+llvm::StringRef Action::GetName() const {
+  if (!name.empty() && name.size() > 0) {
+    return name;
+  }
+  return Action::GetName(GetKind());
+}
+
+llvm::StringRef Action::GetName(ActionKind kind) { return llvm::StringRef(); }
+bool Action::ShouldParseOnly(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::Parse:
+  case ActionKind::DumpAST:
+  // case ActionKind::DumpInterfaceHash:
+  // case ActionKind::EmitImportedModules:
+  // case ActionKind::ScanDependencies:
+  case ActionKind::PrintVersion:
+  case ActionKind::PrintFeature:
+    return true;
+  default:
+    return false;
+  }
+}
+bool Action::ShouldGenerateOutput(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::DumpAST:
+  case ActionKind::PrintAST:
+  case ActionKind::EmitIRBefore:
+  case ActionKind::EmitIRAfter:
+  case ActionKind::EmitBC:
+  case ActionKind::EmitObject:
+  case ActionKind::EmitAssembly:
+  case ActionKind::EmitModule:
+  case ActionKind::EmitLibrary:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool Action::ShouldCompile(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::None:
+  case ActionKind::Parse:
+  case ActionKind::ResolveImports:
+  case ActionKind::DumpAST:
+  case ActionKind::TypeCheck:
+  case ActionKind::PrintAST:
+  case ActionKind::EmitIRBefore:
+  case ActionKind::EmitIRAfter:
+  case ActionKind::EmitBC:
+  case ActionKind::EmitObject:
+  case ActionKind::EmitAssembly:
+  case ActionKind::EmitModule:
+  case ActionKind::EmitLibrary:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool Action::ShouldGenerateCode(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::None:
+  case ActionKind::EmitIRAfter:
+  case ActionKind::EmitIRBefore:
+  case ActionKind::EmitBC:
+  case ActionKind::EmitObject:
+  case ActionKind::EmitAssembly:
+  case ActionKind::EmitModule:
+  case ActionKind::EmitLibrary:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool Action::ShouldGenerateIR(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::None:
+  case ActionKind::EmitIRAfter:
+  case ActionKind::EmitIRBefore:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool Action::ShouldGenerateNative(ActionKind kind) {
+  switch (kind) {
+  case ActionKind::None:
+  case ActionKind::EmitObject:
+  case ActionKind::EmitAssembly:
+    return true;
+  default:
+    return false;
+  }
+}

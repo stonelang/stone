@@ -322,7 +322,7 @@ class DriverOptions final {
   friend DriverOptionsConverter;
 
   /// The main action requested or computed.
-  Action action;
+  Action mainAction;
 
   /// Default target triple.
   String defaultTargetTriple;
@@ -432,13 +432,13 @@ public:
   }
 
   /// \return true if the action is valid
-  bool HasAction() const { return !action.IsAlien(); }
+  bool HasMainAction() const { return !mainAction.IsAlien(); }
 
   /// \return the Action
-  Action &GetAction() { return action; }
+  Action &GetMainAction() { return mainAction; }
 
   /// \return the action
-  const Action &GetAction() const { return action; }
+  const Action &GetMainAction() const { return mainAction; }
 
   /// \check that there exist a tool chain kind
   bool HasToolChainKind() const { return toolChainKind != ToolChainKind::None; }

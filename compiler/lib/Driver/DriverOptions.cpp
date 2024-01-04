@@ -12,15 +12,17 @@ using namespace llvm::opt;
 DriverOptions::DriverOptions()
     : defaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
-bool DriverOptions::IsHelpAction() const { return action.IsPrintHelp(); }
+bool DriverOptions::IsHelpAction() const { return mainAction.IsPrintHelp(); }
 bool DriverOptions::IsHelpHiddenAction() const {
-  return action.IsPrintHelpHidden();
+  return mainAction.IsPrintHelpHidden();
 }
 bool DriverOptions::IsPrintVersionAction() const {
-  return action.IsPrintVersion();
+  return mainAction.IsPrintVersion();
 }
 
-bool DriverOptions::IsCompilableAction() const { return action.CanCompile(); }
+bool DriverOptions::IsCompilableAction() const {
+  return mainAction.ShouldCompile();
+}
 bool DriverOptions::IsCompileOnlyAction() const {
   return (IsCompilableAction() && !IsLinkableAction());
 }
@@ -143,8 +145,8 @@ Status DriverOptionsConverter::Convert() {
   driverOpts.inputFileType =
       driverOpts.GetInputsAndOutputs().FirstInput()->GetFileType();
 
-  driverOpts.action = stone::ComputeAction(args);
-  if (!driverOpts.HasAction()) {
+  driverOpts.mainAction = stone::ComputeAction(args);
+  if (!driverOpts.HasMainAction()) {
     return Status::MakeHasCompletionAndIsError();
   }
   driverOpts.workingDirectory = ComputeWorkingDirectory();
@@ -229,11 +231,11 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
 
 LinkMode DriverOptionsConverter::ComputeLinkMode() {
 
-  assert(driverOpts.HasAction());
+  assert(driverOpts.HasMainAction());
   // Simple for now
-  if (driverOpts.GetAction().IsNone()) {
+  if (driverOpts.GetMainAction().IsNone()) {
     return LinkMode::Executable;
-  } else if (driverOpts.GetAction().IsEmitLibrary()) {
+  } else if (driverOpts.GetMainAction().IsEmitLibrary()) {
     if (args.hasArg(opts::Static)) {
       return LinkMode::StaticLibrary;
     } else {

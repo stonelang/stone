@@ -76,7 +76,7 @@ bool IsPartOfStoneCompilation(FileType fileType);
 /// These need to be passed to the stone Compile
 bool IsPartOfLLVMCompilation(FileType fileType);
 
-bool CanCompile(FileType fileType);
+bool ShouldCompile(FileType fileType);
 
 /// Returns true if the type is a file that is linkable
 ///

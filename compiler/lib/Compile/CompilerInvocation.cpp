@@ -143,7 +143,7 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
                                   CompilerOptions &compilerOpts,
                                   CodeGenOptions &codeGenOpts) {
 
-  switch (invocation.GetMainAction().GetKind()) {
+  switch (invocation.GetCompilerOptions().GetMainAction().GetKind()) {
   case ActionKind::EmitModule:
     codeGenOpts.codeGenOutputKind = CodeGenOutputKind::LLVMModule;
   case ActionKind::EmitIRBefore:
@@ -204,7 +204,7 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
           .IsError()) {
     return Status::Error();
   }
-  if (compiler.GetInvocation().CanGenCode()) {
+  if (GetCompilerOptions().GetMainAction().ShouldGenerateCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (compiler.GetInvocation()
             .SetupClang(strings::ClangCC1,
@@ -250,13 +250,6 @@ CompilerInvocation::GetPrimaryFileSpecificPathsForSyntaxFile(
   return GetCompilerOptions()
       .GetInputsAndOutputs()
       .GetPrimaryFileSpecificPathsForPrimary(sf.GetFilename());
-}
-
-bool CompilerInvocation::CanGenCode() {
-  return GetMainAction().IsAny(ActionKind::EmitIRBefore,
-                               ActionKind::EmitIRAfter, ActionKind::EmitBC,
-                               ActionKind::EmitAssembly, ActionKind::EmitObject,
-                               ActionKind::EmitLibrary);
 }
 
 Status CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
