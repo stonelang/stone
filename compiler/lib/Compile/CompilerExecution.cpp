@@ -237,6 +237,9 @@ Status EmitIRBeforeExecution::ExecuteAction() {
       if (ShouldNotifyConsumer()) {
         GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
       }
+      if (IsMainAction()) {
+        // stone::EmitIR(result->GetLLVMModule());
+      }
     }
   } else {
     compiler.ForEachPrimarySourceFile([&](SourceFile &sourceFile) {

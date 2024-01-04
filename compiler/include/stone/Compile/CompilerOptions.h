@@ -64,6 +64,14 @@ class CompilerOptions final {
   friend CompilerOptionsConverter;
   friend CompilerInputsConverter;
 
+  /// The path the executing program
+  llvm::StringRef mainExecutablePath;
+
+  /// The name of the executing program
+  llvm::StringRef mainExecutableName;
+
+  llvm::SmallString<128> workingDirectory;
+
   CompilerAction mainAction = CompilerAction::None;
 
 public:
@@ -103,14 +111,6 @@ public:
   /// entity.
   bool profileEntities = false;
 
-  /// The path the executing program
-  llvm::StringRef mainExecutablePath;
-
-  /// The name of the executing program
-  llvm::StringRef mainExecutableName;
-
-  llvm::SmallString<128> workingDirectory;
-
   // Some actions require just GenIR w/o actually emitting out.
   bool shouldEmitIR = false;
 
@@ -131,6 +131,28 @@ public:
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
 
 public:
+  /// \check that there exist a working directory
+  bool HasWorkingDirectory() const {
+    return !workingDirectory.empty() && workingDirectory.size() > 0;
+  }
+  /// \return working directory for the compilation
+  llvm::StringRef GetWorkingDirectory() const { return workingDirectory; }
+
+  /// \return the main executable path
+  llvm::StringRef GetMainExecutablePath() const { return mainExecutablePath; }
+
+  /// \check that there exist the main executable path
+  bool HasMainExecutablePath() const {
+    return !mainExecutablePath.empty() && mainExecutablePath.size() > 0;
+  }
+  /// \return the main executable name
+  llvm::StringRef GetMainExecutableName() const { return mainExecutableName; }
+
+  /// \check that there exist the main executable path
+  bool HasMainExecutableName() const {
+    return !mainExecutableName.empty() && mainExecutableName.size() > 0;
+  }
+
   CompilerInputsAndOutputs &GetInputsAndOutputs() { return inputsAndOutputs; }
   const CompilerInputsAndOutputs &GetInputsAndOutputs() const {
     return inputsAndOutputs;

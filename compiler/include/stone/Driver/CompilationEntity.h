@@ -1,8 +1,8 @@
 #ifndef STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
 #define STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
 
-#include "stone/Basic/FileType.h"
 #include "stone/Basic/Color.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Driver/DriverAllocation.h"
 
@@ -114,7 +114,7 @@ public:
   bool HasFileType() { return fileType != file::FileType::None; }
 
 public:
-  virtual void Print(ColorStream& colorStream) const;
+  virtual void Print(ColorStream &colorStream) const;
 
 public:
   bool HasAllowTopLevel() const {

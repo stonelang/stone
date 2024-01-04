@@ -36,15 +36,15 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  //  ../../stone-compile
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  compiler.GetInvocation().GetCompilerOptions().mainExecutablePath =
-      mainExecutablePath;
+  compiler.GetInvocation().SetMainExecutablePath(mainExecutablePath);
+  assert(compiler.GetInvocation().GetCompilerOptions().HasMainExecutablePath() &&
+         "Did not find an executable path!");
 
-  // stone-compile
-  auto mainExecutableName = file::GetStem(mainExecutablePath);
-  compiler.GetInvocation().GetCompilerOptions().mainExecutableName =
-      mainExecutableName;
+  auto mainExecutableName = llvm::sys::path::stem(arg0);
+  compiler.GetInvocation().SetMainExecutableName(mainExecutableName);
+  assert(compiler.GetInvocation().GetCompilerOptions().HasMainExecutableName() &&
+         "Did not find an executable name!");
 
   auto status = compiler.GetInvocation().ParseCommandLine(args);
   if (status.IsError()) {

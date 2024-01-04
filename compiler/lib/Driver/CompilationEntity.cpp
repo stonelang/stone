@@ -92,7 +92,7 @@ void CompilationEntity::ComputeAllFlags(CompilationEntityKind kind) {
   }
 }
 
-void CompilationEntity::Print(ColorStream& colorStream) const {}
+void CompilationEntity::Print(ColorStream &colorStream) const {}
 
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName) {

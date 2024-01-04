@@ -111,6 +111,16 @@ public:
   }
   void SetTargetTriple(llvm::StringRef triple);
 
+  /// Set the main exec path
+  void SetMainExecutablePath(llvm::StringRef executablePath) {
+    compilerOpts.mainExecutablePath = executablePath;
+  }
+
+  /// Set the main exec path
+  void SetMainExecutableName(llvm::StringRef executableName) {
+    compilerOpts.mainExecutableName = executableName;
+  }
+
 public:
   Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
   ClangContext &GetClangContext() { return *clangContext; }
