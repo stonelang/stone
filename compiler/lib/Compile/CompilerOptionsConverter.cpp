@@ -35,7 +35,7 @@ Status CompilerOptionsConverter::Convert(
   Status status;
 
   /// First, compute the action
-  compilerOpts.mainAction = stone::ComputeAction(args);
+  compilerOpts.mainAction = Action::Create(args);
 
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&

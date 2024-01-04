@@ -133,17 +133,13 @@ Status Compiler::SetupCompilerInputFiles() {
   const llvm::Optional<unsigned> codeCompletionBufferID =
       CreateCodeCompletionBuffer();
 
-  const auto &inputs =
-      invocation.GetCompilerOptions().inputsAndOutputs.GetInputs();
-  const bool shouldRecover = invocation.GetCompilerOptions()
-                                 .inputsAndOutputs.ShouldRecoverMissingInputs();
 
   assert([&]() -> bool {
     if (invocation.GetCompilerOptions().GetMainAction().ShouldParseOnly()) {
       // Parsing gets triggered lazily, but let's make sure we have the right
       // input kind.
       return llvm::all_of(
-          invocation.GetCompilerOptions().inputsAndOutputs.GetInputs(),
+          invocation.GetCompilerOptions().GetInputsAndOutputs().GetInputs(),
           [](const CompilerInputFile &input) {
             const auto fileType = input.GetType();
             return fileType == FileType::Stone ||
@@ -153,6 +149,12 @@ Status Compiler::SetupCompilerInputFiles() {
     return true;
   }() && "Only supports parsing .stone files");
 
+  const auto &inputs =
+      invocation.GetCompilerOptions().GetInputsAndOutputs().GetInputs();
+  const bool shouldRecover = invocation.GetCompilerOptions()
+                                 .inputsAndOutputs.ShouldRecoverMissingInputs();
+
+  
   bool hasFailed = false;
   for (const CompilerInputFile &input : inputs) {
     bool failed = false;

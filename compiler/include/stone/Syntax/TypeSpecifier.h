@@ -84,7 +84,7 @@ enum class TemplateSpecializationKind : UInt8 {
 };
 
 // TODO:
-//  class TypeSpecifierMemoryModel {
+//  class TypeSpecifierMemoryChunk {
 //  };
 
 class TypeSpecifierCollector final {
@@ -95,7 +95,7 @@ class TypeSpecifierCollector final {
   TypeNullabilityKind nullabilityKind;
 
 public:
-  // llvm::SmallVector<TypeSpecifierMemoryAllocation, 8> memAllocs;
+  // llvm::SmallVector<TypeSpecifierMemoryChunk, 8> memAllocs;
 
 public:
   TypeSpecifierCollector()
@@ -118,8 +118,8 @@ public:
   bool HasNone() const { return specifierKind == TypeSpecifierKind::None; }
 
 public:
-  void AddValueMemoryModel();
-  void AddPointerMemoryModel(SrcLoc loc);
+  void AddValueMemoryChunk();
+  void AddPointerMemoryChunk(SrcLoc loc);
 
 public:
   TypeNullabilityKind GetNullabilityKind() { return nullabilityKind; }

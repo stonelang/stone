@@ -145,7 +145,7 @@ Status DriverOptionsConverter::Convert() {
   driverOpts.inputFileType =
       driverOpts.GetInputsAndOutputs().FirstInput()->GetFileType();
 
-  driverOpts.mainAction = stone::ComputeAction(args);
+  driverOpts.mainAction = Action::Create(args);
   if (!driverOpts.HasMainAction()) {
     return Status::MakeHasCompletionAndIsError();
   }
