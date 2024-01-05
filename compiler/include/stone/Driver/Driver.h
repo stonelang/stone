@@ -60,6 +60,11 @@ class CompilationEntities;
 //   // FileType GetSelfFileType();
 // };
 
+class CompileStyleConsumer {};
+
+class CompileStyle {
+  llvm::SmallVector<const CompileStyleConsumer *> consumers;
+};
 // class CompileStyle {
 
 // protected:
@@ -147,11 +152,11 @@ class BuildingCompilationEntities;
 class TopLevelJobConstructionEntitiesConsumer
     : public DriverAllocation<TopLevelJobConstructionEntitiesConsumer> {
 
-public:
-  TopLevelJobConstructionEntitiesConsumer();
-
 protected:
   llvm::SmallVector<const JobConstruction *> constructions;
+
+public:
+  TopLevelJobConstructionEntitiesConsumer();
 
 public:
   virtual void CompletedJobConstruction(const JobConstruction *constructions);
@@ -182,12 +187,19 @@ public:
 
 class BuildingJobConstructionEntities final {
 
-  // BuildingCompilationEntities& buildingCompilationEntities
-public:
-  BuildingJobConstructionEntities();
-  //~BuildingJobConstructionEntities();
+  llvm::SmallVector<const TopLevelJobConstructionEntitiesConsumer *> consumers;
 
 public:
+  BuildingJobConstructionEntities();
+
+public:
+  Status BuildForCompileStyle(CompileStyleKind kind);
+  Status BuildForNormalCompileStyle();
+  Status BuildForSingleCompileStyle();
+  Status BuildForFlatCompileStyle();
+
+public:
+  void AddConsumer(TopLevelJobConstructionEntitiesConsumer *consumer);
 };
 
 class BuildingJobEntities final {
@@ -205,10 +217,17 @@ public:
 
 public:
   BuildingCompilationEntities(Driver &driver);
+
   //~BuildingCompilationEntities();
 
 public:
   Status BuildCompilationEntities(CompilationEntities &entities);
+
+  BuildingJobEntities &GetBuildingJobEntities() { return jobEntities; }
+  BuildingJobConstructionEntities &GetBuildingJobConstructionEntities() {
+    return jobConstructionEntities;
+  }
+
   void Finish();
 };
 
@@ -254,7 +273,13 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
+  std::unique_ptr<CompileStyle> compileStyle;
+
   std::unique_ptr<CompilationEntities> compilationEntities;
+
+  BuildingJobEntities jobEntities;
+
+  BuildingJobConstructionEntities jobConstructionEntities;
 
 public:
   Driver();
@@ -324,7 +349,7 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
-  // std::unique_ptr<CompileStyle> BuildCompileStyle();
+  std::unique_ptr<CompileStyle> CreateCompileStyle();
 
   Status BuildCompilationEntities(CompilationEntities &entities);
 

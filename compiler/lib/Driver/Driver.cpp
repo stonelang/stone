@@ -148,18 +148,55 @@ void MergeJobConstructionEntitiesConsumer::CompletedJobConstruction(
 
 void MergeJobConstructionEntitiesConsumer::Finish() {}
 
+BuildingJobConstructionEntities::BuildingJobConstructionEntities() {}
 
-BuildingJobConstructionEntities::BuildingJobConstructionEntities(){}
+void BuildingJobConstructionEntities::AddConsumer(
+    TopLevelJobConstructionEntitiesConsumer *consumer) {
+  consumers.push_back(consumer);
+}
 
+Status BuildingJobConstructionEntities::BuildForCompileStyle(
+    CompileStyleKind compileStyle) {
+
+  switch (compileStyle) {
+  case CompileStyleKind::Normal:
+    return BuildForNormalCompileStyle();
+  case CompileStyleKind::Flat:
+    return BuildForFlatCompileStyle();
+  case CompileStyleKind::Single:
+    return BuildForSingleCompileStyle();
+  default:
+    llvm_unreachable("Unknown CompileStyle");
+  }
+  return Status();
+}
+
+Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
+
+  return Status();
+}
+Status BuildingJobConstructionEntities::BuildForSingleCompileStyle() {
+  return Status();
+}
+Status BuildingJobConstructionEntities::BuildForFlatCompileStyle() {
+
+  return Status();
+}
 
 BuildingJobEntities::BuildingJobEntities() {}
-
 
 BuildingCompilationEntities::BuildingCompilationEntities(Driver &driver)
     : driver(driver) {}
 
 Status BuildingCompilationEntities::BuildCompilationEntities(
-    CompilationEntities &entities) {}
+    CompilationEntities &entities) {
+
+  // jobConstructionEntities.AddConsumer(
+  //     LinkJobConstructionEntitiesConsumer::Create());
+
+  // jobConstructionEntities.AddConsumer(
+  //     MergeJobConstructionEntitiesConsumer::Create());
+}
 
 void BuildingCompilationEntities::Finish() {}
 
@@ -167,6 +204,7 @@ Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
 
   BuildingCompilationEntities buildingEntities(*this);
   STONE_DEFER { buildingEntities.Finish(); };
+
   return buildingEntities.BuildCompilationEntities(entities);
 }
 
