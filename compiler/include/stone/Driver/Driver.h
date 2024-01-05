@@ -203,7 +203,7 @@ public:
 public:
   bool IsTopLvelJobConstruction() { return consumers.size() > 0; }
   void ForEachConsumer(
-      std::function<void(TopLevelCompilationEntitiesConsumer * consumer)> fn);
+      std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn);
   void CreateCompileJobConstruction(const DriverInputFile *input);
   void CompletedJobConstruction(const JobConstruction *entity);
 

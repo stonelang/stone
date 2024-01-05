@@ -172,16 +172,29 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
 
 void BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
-
-  if (IsTopLvelJobConstruction()) {
-    CompletedJobConstruction(nullptr);
-  }
+  // if (IsTopLvelJobConstruction()) {
+  //   CompletedJobConstruction(nullptr);
+  // }
   // if(!IsTopLvelJobConstruction()){
   //     driver.GetCompilationEntities().AddTopLevelJobConstruction()
   //   }else{
   //     // notify consumer
   //     CompletedConstruction(compileJobConstruction);
   //   }
+
+  // assert(driver.GetDriverOptions().IsCompilableAction() &&
+  //       "The current action does not support job creation -- cannot proceed "
+  //       "with compilation!");
+
+  // if(driver.CastToJobConstruction(input))
+  auto compileJobConstruction = CompileJobConstruction::Create(
+      driver, input, driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+
+  // if (driver.GetDriverOptions().IsCompileOnlyAction()) {
+  //   compileJobConstruction->AddTopLevel();
+  // }
+
+  //return compileJobConstruction;
 }
 
 void BuildingJobConstructionEntities::CompletedJobConstruction(
@@ -224,8 +237,7 @@ Status BuildingJobConstructionEntities::BuildForFlatCompileStyle() {
 }
 
 void BuildingJobConstructionEntities::ForEachConsumer(
-    std::function<void(TopLevelCompilationEntitiesConsumer * consumer)> fn) {
-  
+    std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn) {
   for (auto consumer : consumers) {
     fn(consumer);
   }
