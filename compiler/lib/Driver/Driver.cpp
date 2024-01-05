@@ -148,7 +148,8 @@ void MergeJobConstructionEntitiesConsumer::CompletedJobConstruction(
 
 void MergeJobConstructionEntitiesConsumer::Finish() {}
 
-BuildingJobConstructionEntities::BuildingJobConstructionEntities() {}
+BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
+    : driver(driver) {}
 
 void BuildingJobConstructionEntities::AddConsumer(
     TopLevelJobConstructionEntitiesConsumer *consumer) {
@@ -157,21 +158,22 @@ void BuildingJobConstructionEntities::AddConsumer(
 
 Status BuildingJobConstructionEntities::BuildForCompileStyle(
     CompileStyleKind compileStyle) {
-
   switch (compileStyle) {
   case CompileStyleKind::Normal:
     return BuildForNormalCompileStyle();
-  case CompileStyleKind::Flat:
-    return BuildForFlatCompileStyle();
   case CompileStyleKind::Single:
+    return BuildForFlatCompileStyle();
+  case CompileStyleKind::Flat:
     return BuildForSingleCompileStyle();
   default:
-    llvm_unreachable("Unknown CompileStyle");
+    llvm_unreachable("Invalid compile invocation kind");
   }
-  return Status();
 }
 
 Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
+
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) { return Status(); });
 
   return Status();
 }
@@ -183,10 +185,10 @@ Status BuildingJobConstructionEntities::BuildForFlatCompileStyle() {
   return Status();
 }
 
-BuildingJobEntities::BuildingJobEntities() {}
+BuildingJobEntities::BuildingJobEntities(Driver &driver) : driver(driver) {}
 
 BuildingCompilationEntities::BuildingCompilationEntities(Driver &driver)
-    : driver(driver) {}
+    : driver(driver), jobEntities(driver), jobConstructionEntities(driver) {}
 
 Status BuildingCompilationEntities::BuildCompilationEntities(
     CompilationEntities &entities) {

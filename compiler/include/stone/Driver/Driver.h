@@ -187,10 +187,11 @@ public:
 
 class BuildingJobConstructionEntities final {
 
+  Driver &driver;
   llvm::SmallVector<const TopLevelJobConstructionEntitiesConsumer *> consumers;
 
 public:
-  BuildingJobConstructionEntities();
+  BuildingJobConstructionEntities(Driver &driver);
 
 public:
   Status BuildForCompileStyle(CompileStyleKind kind);
@@ -203,8 +204,10 @@ public:
 };
 
 class BuildingJobEntities final {
+  Driver &driver;
+
 public:
-  BuildingJobEntities();
+  BuildingJobEntities(Driver &driver);
   //~BuildingJobEntities();
 };
 
@@ -273,13 +276,12 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
-  std::unique_ptr<CompileStyle> compileStyle;
+  // std::unique_ptr<CompileStyle> compileStyle;
 
   std::unique_ptr<CompilationEntities> compilationEntities;
 
-  BuildingJobEntities jobEntities;
-
-  BuildingJobConstructionEntities jobConstructionEntities;
+  // BuildingJobEntities jobEntities;
+  // BuildingJobConstructionEntities jobConstructionEntities;
 
 public:
   Driver();
@@ -349,7 +351,7 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
-  std::unique_ptr<CompileStyle> CreateCompileStyle();
+  // std::unique_ptr<CompileStyle> CreateCompileStyle();
 
   Status BuildCompilationEntities(CompilationEntities &entities);
 
