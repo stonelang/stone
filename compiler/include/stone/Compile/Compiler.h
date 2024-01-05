@@ -208,6 +208,9 @@ public:
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);
+
+public:
+  void PrintHelp(bool showHidden = false) const;
 };
 
 } // namespace stone

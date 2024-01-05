@@ -34,6 +34,8 @@ public:
 };
 
 class IncrementatlJobConstruction : public JobConstruction {
+  // CompileStyle compileStyle;
+
 public:
   IncrementatlJobConstruction(CompilationEntityKind kind,
                               CompilationEntityList inputs,

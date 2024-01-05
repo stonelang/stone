@@ -100,6 +100,8 @@ public:
   /// Return the compiler
   Compiler &GetCompiler();
 
+  virtual void Print(ColorStream &stream) const;
+
 public:
   /// The command line has been parsed.
   void CompletedCommandLineParsing(Compiler &result) override;
@@ -144,9 +146,7 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetSelfAction()  override {
-    return CompilerAction::PrintHelp;
-  }
+  CompilerAction GetSelfAction() override { return CompilerAction::PrintHelp; }
 };
 
 class PrintHelpHiddenExecution final : public CompilerExecution {
@@ -155,7 +155,7 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetSelfAction()  override {
+  CompilerAction GetSelfAction() override {
     return CompilerAction::PrintHelpHidden;
   }
 };
@@ -237,9 +237,7 @@ public:
   CompilerAction GetDepAction() override {
     return CompilerAction::ResolveImports;
   }
-  CompilerAction GetSelfAction() override {
-    return CompilerAction::TypeCheck;
-  }
+  CompilerAction GetSelfAction() override { return CompilerAction::TypeCheck; }
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
@@ -322,12 +320,8 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetDepAction() override {
-    return CompilerAction::EmitIRAfter;
-  }
-  CompilerAction GetSelfAction() override {
-    return CompilerAction::EmitBC;
-  }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::EmitBC; }
 };
 
 class EmitModuleExecution final : public CompilerExecution {
@@ -361,12 +355,8 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetDepAction() override {
-    return CompilerAction::EmitIRAfter;
-  }
-  CompilerAction GetSelfAction() override {
-    return CompilerAction::EmitObject;
-  }
+  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
+  CompilerAction GetSelfAction() override { return CompilerAction::EmitObject; }
   Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;

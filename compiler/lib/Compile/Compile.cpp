@@ -50,6 +50,14 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   auto status = compiler.GetInvocation().ParseCommandLine(args);
   if (status.IsError()) {
+
+    // Check that this is a help request
+    // if (!compiler.GetInvocation().GetCompilerOptions().IsPrintHelpAction() &&
+    //     !compiler.GetInvocation()
+    //          .GetCompilerOptions()
+    //          .IsPrintHelpHiddenAction()) {
+    //   return FinishCompile(Status::Error());
+    // }
     return FinishCompile(Status::Error());
   }
 

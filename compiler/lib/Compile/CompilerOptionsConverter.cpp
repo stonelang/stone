@@ -44,6 +44,10 @@ Status CompilerOptionsConverter::Convert(
     return Status::MakeHasCompletionAndIsError();
   }
 
+  // if(compilerOpts.IsHelpAction() || compilerOpts.IsHelpHiddenAction(){
+
+  // }
+
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");

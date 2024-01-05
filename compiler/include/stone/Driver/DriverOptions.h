@@ -223,8 +223,8 @@ private:
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
   void SetTriple(llvm::Triple triple);
-
   void ComputeOutputInfo();
+  void ComputeGeneratePCH();
 
 public:
   Status Convert();
@@ -423,6 +423,8 @@ public:
   bool verifyFineGrainedDependencyGraphAfterEveryImport = false;
   bool emitFineGrainedDependencyDotFileAfterEveryImport = false;
   bool enableCrossModuleIncrementalBuild = false;
+
+  bool shouldGeneratePCH = false;
 
 public:
   /// \check that there exist a working directory

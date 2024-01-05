@@ -238,18 +238,19 @@ FileType CompilerOptions::GetActionOutputFileType(CompilerAction action) {
 }
 
 llvm::StringRef CompilerOptions::GetActionString(CompilerAction action) {
-  // TODO: It would be nice to pull this out of the OptTable
+  // TODO: It would be nice to pull this out of the OptTable -- atuo gen into a
+  // file
   switch (action) {
   case CompilerAction::None:
     return "none";
   case CompilerAction::PrintVersion:
-    return "print-version";
+    return "version";
   case CompilerAction::PrintHelp:
-    return "print-help";
+    return "help";
   case CompilerAction::PrintHelpHidden:
-    return "print-help-hidden";
+    return "help-hidden";
   case CompilerAction::PrintFeature:
-    return "print-feature";
+    return "feature";
   case CompilerAction::Parse:
     return "parse";
   case CompilerAction::ResolveImports:

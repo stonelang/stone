@@ -75,42 +75,55 @@ std::unique_ptr<CompileStyle> Driver::BuildCompileStyle() {
   return std::make_unique<NormalCompileStyle>(*this);
 }
 
-Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
-  llvm_unreachable("Illegal for for the base class CompileStyle");
-}
+// Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities)
+// {
+//   llvm_unreachable("Illegal for for the base class CompileStyle");
+// }
 
-Status
-NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
+CompileStyle::CompileStyle(Driver &driver) : driver(driver) {}
 
-  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        // auto fileTypeExecution =
-        // driver.GetFileTypeExection(input.GetFileType());
-        // fileTypeExecution.BuildCompilationEntities();
-      });
+NormalCompileStyle::NormalCompileStyle(Driver &driver) : CompileStyle(driver) {}
 
-  return Status();
-}
+// Status
+// NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 
-Status
-SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
+//   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//       [&](const DriverInputFile *input) {
+//         // auto fileTypeExecution =
+//         // driver.GetFileTypeExection(input.GetFileType());
+//         // fileTypeExecution.Execute(entities);
+//       });
 
-  if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs()) {
-    return Status::MakeHasCompletionAndIsError();
-  }
+//   return Status();
+// }
 
-  auto jobConstruction = CompileJobConstruction::Create(
-      driver,
-      driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+// Status
+// SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
 
-  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) { jobConstruction->AddInput(input); });
+//   if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs()) {
+//     return Status::MakeHasCompletionAndIsError();
+//   }
 
-  // Because this is a single you may be able to do this -- but, since you are
-  // linking, maybe, the linker may be the top level job
-  auto jobs = jobConstruction->ConstructJobs(driver);
+//   auto jobConstruction = CompileJobConstruction::Create(
+//       driver,
+//       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  return Status();
+//   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//       [&](const DriverInputFile *input) { jobConstruction->AddInput(input);
+//       });
+
+//   // Because this is a single you may be able to do this -- but, since you
+//   are
+//   // linking, maybe, the linker may be the top level job
+//   auto jobs = jobConstruction->ConstructJobs(driver);
+
+//   return Status();
+// }
+
+Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
+
+  BuildingCompilationEntities buildingEntities;
+
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {

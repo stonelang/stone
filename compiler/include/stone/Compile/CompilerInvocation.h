@@ -5,6 +5,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Diag/DiagnosticOptions.h"
+#include "stone/Option/Options.h"
 #include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
@@ -84,6 +85,7 @@ public:
   CompilerInvocation(Compiler &compiler);
 
 public:
+  const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
   llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
 
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }

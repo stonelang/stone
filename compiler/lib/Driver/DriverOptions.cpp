@@ -273,6 +273,8 @@ void DriverOptionsConverter::ComputeOutputInfo() {
   // }
 }
 
+void DriverOptionsConverter::ComputeGeneratePCH() {}
+
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 // // }
 

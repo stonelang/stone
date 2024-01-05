@@ -8,6 +8,7 @@
 using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
+
 CompilerExecution::~CompilerExecution() {}
 
 void CompilerExecution::CompletedCommandLineParsing(Compiler &compiler) {
@@ -44,6 +45,9 @@ void CompilerExecution::CompletedIRGeneration(
     llvm::ArrayRef<llvm::Module *> &results) {
   llvm_unreachable("Illegal to handle IR generation!");
 }
+
+void CompilerExecution::Print(ColorStream &stream) const {}
+
 CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
   llvm_unreachable("Illegal to handle code completion callbacks!");
 }
@@ -80,12 +84,20 @@ Status CompilerExecution::FinishAction() { return Status(); }
 PrintHelpExecution::PrintHelpExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status PrintHelpExecution::ExecuteAction() { return Status(); }
+Status PrintHelpExecution::ExecuteAction() {
+
+  printf("%s\n", GetSelfActionString().data());
+  compiler.PrintHelp();
+  return Status();
+}
 
 PrintHelpHiddenExecution::PrintHelpHiddenExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
-Status PrintHelpHiddenExecution::ExecuteAction() { return Status(); }
+Status PrintHelpHiddenExecution::ExecuteAction() {
+  compiler.PrintHelp(true);
+  return Status();
+}
 
 PrintVersionExecution::PrintVersionExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -276,6 +288,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
 }
 
 Status EmitIRBeforeExecution::FinishAction() { return Status(); }
+
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(SourceFile &result) {}
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 

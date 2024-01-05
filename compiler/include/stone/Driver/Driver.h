@@ -37,35 +37,109 @@ namespace stone {
 class Driver;
 class CompilationEntities;
 
+class FileTypeExecution {
+  Driver &driver;
+
+public:
+  FileTypeExecution(Driver &driver) : driver(driver) {}
+
+  // virtual void CompletedFileType();
+public:
+  // void Execute();
+};
+
+// class StoneFileTypeExecution final : public FileTypeExecution {
+//   Driver &driver;
+
+// public:
+//   StoneFileTypeExecution(Driver &driver) : FileTypeExecution(driver) {}
+
+// public:
+//   // void Execute();
+
+//   // FileType GetSelfFileType();
+// };
+
 class CompileStyle {
 
 protected:
   Driver &driver;
 
-public:
-  CompileStyle(Driver &driver) : driver(driver) {}
+  // MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+  // LinkJobConstruction *linkJobConstruction = nullptr;
 
 public:
-  virtual Status BuildCompilationEntities(CompilationEntities &entities);
+  CompileStyle(Driver &driver);
+
+  //~CompileStyle();
+
+public:
+  // virtual Status BuildCompilationEntities(CompilationEntities &entities);
+  //  virtual Status HandleStoneFileType();
+  //  virtual Status HandleObjectFileType();
+  //  virtual Status HandleAutoLinkFileType();
+
+  // std::unique_ptr<FileTypeExecution> CreateTypeExecution(FileType fileType);
+  // CompilationEntity *CreateCompilationEntity(const DriverInputFile
+  // *inputFile);
+
+  // void SetLinkJobConstruction(LinkJobConstruction *jobConstruction);
+  // void
+  // SetMergeModuleJobConstruction(MergeModuleJobConstruction *jobConstruction);
+
+public:
+  bool HasGeneratePCHJobConstruction() const;
+  bool HasLinkJobConstruction() const;
 };
 
 class NormalCompileStyle final : public CompileStyle {
 
-public:
-  NormalCompileStyle(Driver &driver) : CompileStyle(driver) {}
+  // GeneratePCHJobAction *generatePCHJobConstruction = nullptr;
 
 public:
-  Status BuildCompilationEntities(CompilationEntities &entities) override;
+  NormalCompileStyle(Driver &driver);
+
+public:
+  // Status BuildCompilationEntities(CompilationEntities &entities) override;
+  // void SetGeneratePCHJobAction(GeneratePCHJobAction *jobConstruction);
 };
 
-class SingleCompileStyle final : public CompileStyle {
-public:
-  SingleCompileStyle(Driver &driver) : CompileStyle(driver) {}
+// class SingleCompileStyle final : public CompileStyle {
+// public:
+//   SingleCompileStyle(Driver &driver);
+
+// public:
+//   // Status BuildCompilationEntities(CompilationEntities &entities) override;
+// };
+
+class BuildingJobConstructionEntities final {
+
+  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+  LinkJobConstruction *linkJobConstruction = nullptr;
 
 public:
-  Status BuildCompilationEntities(CompilationEntities &entities) override;
+  BuildingJobConstructionEntities(Driver &driver);
+  ~BuildingJobConstructionEntities();
+
+public:
+  void BuildForNormalCompileStyle();
+  void BuildForSingleCompileStyle();
+  void BuildForFlatCompileStyle();
 };
 
+class BuildingJobEntities final {
+public:
+  BuildingJobEntities(Driver &driver);
+  ~BuildingJobEntities();
+
+public:
+};
+
+class BuildingCompilationEntities final {
+public:
+  BuildingJobEntities jobEntities;
+  BuildingJobConstructionEntities jobConstructionEntities;
+};
 class Driver final {
 
   SrcMgr srcMgr;
@@ -179,6 +253,8 @@ public:
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
   std::unique_ptr<CompileStyle> BuildCompileStyle();
+
+  Status BuildCompilationEntities(CompilationEntities &entities);
 
   /// Construct a compilation object for a given ToolChain
   ///

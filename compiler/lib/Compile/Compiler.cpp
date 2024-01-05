@@ -4,9 +4,9 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/CompilerInputFile.h"
+#include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Option/Action.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
@@ -490,3 +490,19 @@ void CompilerStatsReporter::CountExprStats(Compiler &compiler) {}
 void CompilerStatsReporter::CountTypeStats(Compiler &compiler) {}
 
 void CompilerStatsReporter::CountSourceFileStats(Compiler &compiler) {}
+
+void Compiler::PrintHelp(bool showHidden) const {
+
+  unsigned IncludedFlagsBitmask = 0;
+  unsigned ExcludedFlagsBitmask = stone::opts::NoCompilerOption;
+
+  if (!showHidden) {
+    ExcludedFlagsBitmask |= llvm::opt::HelpHidden;
+  }
+  invocation.GetOptTable().printHelp(
+      llvm::outs(),
+      invocation.GetCompilerOptions().GetMainExecutableName().data(),
+      "Stone is a compiler tool for compiling Stone source code.",
+      IncludedFlagsBitmask, ExcludedFlagsBitmask,
+      /*ShowAllAliases*/ false);
+}
