@@ -172,33 +172,23 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
 
 void BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
-  // if (IsTopLvelJobConstruction()) {
-  //   CompletedJobConstruction(nullptr);
-  // }
-  // if(!IsTopLvelJobConstruction()){
-  //     driver.GetCompilationEntities().AddTopLevelJobConstruction()
-  //   }else{
-  //     // notify consumer
-  //     CompletedConstruction(compileJobConstruction);
-  //   }
 
-  // assert(driver.GetDriverOptions().IsCompilableAction() &&
-  //       "The current action does not support job creation -- cannot proceed "
-  //       "with compilation!");
-
-  // if(driver.CastToJobConstruction(input))
   auto compileJobConstruction = CompileJobConstruction::Create(
-      driver, input, driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+      driver, input,
+      driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  // if (driver.GetDriverOptions().IsCompileOnlyAction()) {
-  //   compileJobConstruction->AddTopLevel();
-  // }
-
-  //return compileJobConstruction;
+  //
+  if (!IsTopLvelJobConstruction()) {
+    driver.GetCompilationEntities().AddTopLevelJobConstruction(
+        compileJobConstruction);
+  } else {
+    // Notify consumer
+    CompletedCompilationEntity(compileJobConstruction);
+  }
 }
 
-void BuildingJobConstructionEntities::CompletedJobConstruction(
-    const JobConstruction *entity) {
+void BuildingJobConstructionEntities::CompletedCompilationEntity(
+    const CompilationEntity *entity) {
   ForEachConsumer([&](TopLevelCompilationEntitiesConsumer *consumer) {
     consumer->CompletedCompilationEntity(entity);
   });
@@ -209,7 +199,6 @@ Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile *input) {
         assert(input);
-
         assert(file::IsPartOfStoneCompilation(input->GetFileType()));
 
         switch (input->GetFileType()) {
@@ -218,7 +207,7 @@ Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
           break;
         }
         case FileType::Object: {
-          // Notify consumer
+          CompletedCompilationEntity(input);
           break;
         }
         default:

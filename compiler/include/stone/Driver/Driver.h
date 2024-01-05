@@ -205,7 +205,9 @@ public:
   void ForEachConsumer(
       std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn);
   void CreateCompileJobConstruction(const DriverInputFile *input);
-  void CompletedJobConstruction(const JobConstruction *entity);
+
+  void CompletedCompilationEntity(const CompilationEntity *entity);
+  // void CompletedCompilationEntity(const DriverInputFile *entity);
 
 public:
   void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);

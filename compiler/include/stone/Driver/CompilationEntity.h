@@ -205,7 +205,9 @@ class CompilationEntities final {
   llvm::SmallVector<const CompilationEntity *, 8> topLevelExternalJobs;
 
 public:
-  void AddTopLevelJobConstruction(const CompilationEntity *entity);
+  void AddTopLevelJobConstruction(const CompilationEntity *entity) {
+    topLevelJobConstructions.push_back(entity);
+  }
   void AddTopLevelJob(const CompilationEntity *entity);
   void AddTopLevelExternalJob(const CompilationEntity *entity);
 
