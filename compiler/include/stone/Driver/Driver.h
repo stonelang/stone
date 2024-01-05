@@ -37,16 +37,16 @@ namespace stone {
 class Driver;
 class CompilationEntities;
 
-class FileTypeExecution {
-  Driver &driver;
+// class FileTypeExecution {
+//   Driver &driver;
 
-public:
-  FileTypeExecution(Driver &driver) : driver(driver) {}
+// public:
+//   FileTypeExecution(Driver &driver) : driver(driver) {}
 
-  // virtual void CompletedFileType();
-public:
-  // void Execute();
-};
+//   // virtual void CompletedFileType();
+// public:
+//   // void Execute();
+// };
 
 // class StoneFileTypeExecution final : public FileTypeExecution {
 //   Driver &driver;
@@ -60,49 +60,49 @@ public:
 //   // FileType GetSelfFileType();
 // };
 
-class CompileStyle {
+// class CompileStyle {
 
-protected:
-  Driver &driver;
+// protected:
+//   Driver &driver;
 
-  // MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
-  // LinkJobConstruction *linkJobConstruction = nullptr;
+//   // MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+//   // LinkJobConstruction *linkJobConstruction = nullptr;
 
-public:
-  CompileStyle(Driver &driver);
+// public:
+//   CompileStyle(Driver &driver);
 
-  //~CompileStyle();
+//   //~CompileStyle();
 
-public:
-  // virtual Status BuildCompilationEntities(CompilationEntities &entities);
-  //  virtual Status HandleStoneFileType();
-  //  virtual Status HandleObjectFileType();
-  //  virtual Status HandleAutoLinkFileType();
+// public:
+// virtual Status BuildCompilationEntities(CompilationEntities &entities);
+//  virtual Status HandleStoneFileType();
+//  virtual Status HandleObjectFileType();
+//  virtual Status HandleAutoLinkFileType();
 
-  // std::unique_ptr<FileTypeExecution> CreateTypeExecution(FileType fileType);
-  // CompilationEntity *CreateCompilationEntity(const DriverInputFile
-  // *inputFile);
+// std::unique_ptr<FileTypeExecution> CreateTypeExecution(FileType fileType);
+// CompilationEntity *CreateCompilationEntity(const DriverInputFile
+// *inputFile);
 
-  // void SetLinkJobConstruction(LinkJobConstruction *jobConstruction);
-  // void
-  // SetMergeModuleJobConstruction(MergeModuleJobConstruction *jobConstruction);
+// void SetLinkJobConstruction(LinkJobConstruction *jobConstruction);
+// void
+// SetMergeModuleJobConstruction(MergeModuleJobConstruction *jobConstruction);
 
-public:
-  bool HasGeneratePCHJobConstruction() const;
-  bool HasLinkJobConstruction() const;
-};
+// public:
+//   bool HasGeneratePCHJobConstruction() const;
+//   bool HasLinkJobConstruction() const;
+// };
 
-class NormalCompileStyle final : public CompileStyle {
+// class NormalCompileStyle final : public CompileStyle {
 
-  // GeneratePCHJobAction *generatePCHJobConstruction = nullptr;
+//   // GeneratePCHJobAction *generatePCHJobConstruction = nullptr;
 
-public:
-  NormalCompileStyle(Driver &driver);
+// public:
+//   NormalCompileStyle(Driver &driver);
 
-public:
-  // Status BuildCompilationEntities(CompilationEntities &entities) override;
-  // void SetGeneratePCHJobAction(GeneratePCHJobAction *jobConstruction);
-};
+// public:
+//   // Status BuildCompilationEntities(CompilationEntities &entities) override;
+//   // void SetGeneratePCHJobAction(GeneratePCHJobAction *jobConstruction);
+// };
 
 // class SingleCompileStyle final : public CompileStyle {
 // public:
@@ -112,34 +112,106 @@ public:
 //   // Status BuildCompilationEntities(CompilationEntities &entities) override;
 // };
 
+// class BuildingJobConstructionEntities final {
+
+//   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+//   LinkJobConstruction *linkJobConstruction = nullptr;
+
+// public:
+//   BuildingJobConstructionEntities(Driver &driver);
+//   ~BuildingJobConstructionEntities();
+
+// public:
+//   void BuildForNormalCompileStyle();
+//   void BuildForSingleCompileStyle();
+//   void BuildForFlatCompileStyle();
+// };
+
+// class BuildingJobEntities final {
+// public:
+//   BuildingJobEntities(Driver &driver);
+//   ~BuildingJobEntities();
+
+// public:
+// };
+
+// class BuildingCompilationEntities final {
+// public:
+//   BuildingJobEntities jobEntities;
+//   BuildingJobConstructionEntities jobConstructionEntities;
+// };
+
+class Driver;
+class BuildingCompilationEntities;
+
+class TopLevelJobConstructionEntitiesConsumer
+    : public DriverAllocation<TopLevelJobConstructionEntitiesConsumer> {
+
+public:
+  TopLevelJobConstructionEntitiesConsumer();
+
+protected:
+  llvm::SmallVector<const JobConstruction *> constructions;
+
+public:
+  virtual void CompletedJobConstruction(const JobConstruction *constructions);
+  virtual void Finish();
+};
+
+class LinkJobConstructionEntitiesConsumer final
+    : public TopLevelJobConstructionEntitiesConsumer {
+
+public:
+  LinkJobConstructionEntitiesConsumer();
+
+public:
+  void CompletedJobConstruction(const JobConstruction *constructions) override;
+  void Finish() override;
+};
+
+class MergeJobConstructionEntitiesConsumer final
+    : public TopLevelJobConstructionEntitiesConsumer {
+
+public:
+  MergeJobConstructionEntitiesConsumer();
+
+public:
+  void CompletedJobConstruction(const JobConstruction *constructions) override;
+  void Finish() override;
+};
+
 class BuildingJobConstructionEntities final {
 
-  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
-  LinkJobConstruction *linkJobConstruction = nullptr;
+  // BuildingCompilationEntities& buildingCompilationEntities
+public:
+  BuildingJobConstructionEntities();
+  //~BuildingJobConstructionEntities();
 
 public:
-  BuildingJobConstructionEntities(Driver &driver);
-  ~BuildingJobConstructionEntities();
-
-public:
-  void BuildForNormalCompileStyle();
-  void BuildForSingleCompileStyle();
-  void BuildForFlatCompileStyle();
 };
 
 class BuildingJobEntities final {
 public:
-  BuildingJobEntities(Driver &driver);
-  ~BuildingJobEntities();
-
-public:
+  BuildingJobEntities();
+  //~BuildingJobEntities();
 };
 
 class BuildingCompilationEntities final {
+  Driver &driver;
+
 public:
   BuildingJobEntities jobEntities;
   BuildingJobConstructionEntities jobConstructionEntities;
+
+public:
+  BuildingCompilationEntities(Driver &driver);
+  //~BuildingCompilationEntities();
+
+public:
+  Status BuildCompilationEntities(CompilationEntities &entities);
+  void Finish();
 };
+
 class Driver final {
 
   SrcMgr srcMgr;
@@ -252,7 +324,7 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
-  std::unique_ptr<CompileStyle> BuildCompileStyle();
+  // std::unique_ptr<CompileStyle> BuildCompileStyle();
 
   Status BuildCompilationEntities(CompilationEntities &entities);
 

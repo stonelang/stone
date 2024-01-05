@@ -1,4 +1,5 @@
 #include "stone/Driver/Driver.h"
+#include "stone/Basic/Defer.h"
 #include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/DriverAllocation.h"
@@ -70,19 +71,20 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
-std::unique_ptr<CompileStyle> Driver::BuildCompileStyle() {
-  // Just return normal for now
-  return std::make_unique<NormalCompileStyle>(*this);
-}
+// std::unique_ptr<CompileStyle> Driver::BuildCompileStyle() {
+//   // Just return normal for now
+//   return std::make_unique<NormalCompileStyle>(*this);
+// }
 
 // Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities)
 // {
 //   llvm_unreachable("Illegal for for the base class CompileStyle");
 // }
 
-CompileStyle::CompileStyle(Driver &driver) : driver(driver) {}
+// CompileStyle::CompileStyle(Driver &driver) : driver(driver) {}
 
-NormalCompileStyle::NormalCompileStyle(Driver &driver) : CompileStyle(driver) {}
+// NormalCompileStyle::NormalCompileStyle(Driver &driver) : CompileStyle(driver)
+// {}
 
 // Status
 // NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
@@ -120,10 +122,52 @@ NormalCompileStyle::NormalCompileStyle(Driver &driver) : CompileStyle(driver) {}
 //   return Status();
 // }
 
+TopLevelJobConstructionEntitiesConsumer::
+    TopLevelJobConstructionEntitiesConsumer() {}
+
+void TopLevelJobConstructionEntitiesConsumer::CompletedJobConstruction(
+    const JobConstruction *construction) {
+  llvm_unreachable("Only sub-classes can make this call");
+}
+
+void TopLevelJobConstructionEntitiesConsumer::Finish() {
+  llvm_unreachable("Only sub-classes can make this call");
+}
+
+LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer() {}
+
+void LinkJobConstructionEntitiesConsumer::CompletedJobConstruction(
+    const JobConstruction *construction) {}
+
+void LinkJobConstructionEntitiesConsumer::Finish() {}
+
+MergeJobConstructionEntitiesConsumer::MergeJobConstructionEntitiesConsumer() {}
+
+void MergeJobConstructionEntitiesConsumer::CompletedJobConstruction(
+    const JobConstruction *construction) {}
+
+void MergeJobConstructionEntitiesConsumer::Finish() {}
+
+
+BuildingJobConstructionEntities::BuildingJobConstructionEntities(){}
+
+
+BuildingJobEntities::BuildingJobEntities() {}
+
+
+BuildingCompilationEntities::BuildingCompilationEntities(Driver &driver)
+    : driver(driver) {}
+
+Status BuildingCompilationEntities::BuildCompilationEntities(
+    CompilationEntities &entities) {}
+
+void BuildingCompilationEntities::Finish() {}
+
 Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
 
-  BuildingCompilationEntities buildingEntities;
-
+  BuildingCompilationEntities buildingEntities(*this);
+  STONE_DEFER { buildingEntities.Finish(); };
+  return buildingEntities.BuildCompilationEntities(entities);
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
