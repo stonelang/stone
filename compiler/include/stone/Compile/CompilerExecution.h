@@ -54,8 +54,18 @@ public:
   /// Check that the execution has an action
   bool HasSelfAction() { return CompilerOptions::IsAnyAction(GetSelfAction()); }
 
+  /// Check the nice name of the current action
+  llvm::StringRef GetSelfActionString() {
+    return CompilerOptions::GetActionString(GetSelfAction());
+  }
+
   /// The main input action from the user.
   CompilerAction GetMainAction();
+
+  /// Check the nice name of the current action
+  llvm::StringRef GetMainActionString() {
+    return CompilerOptions::GetActionString(GetMainAction());
+  }
 
   /// Determine if the main action and the self action is the same.
   bool IsMainAction() { return GetSelfAction() == GetMainAction(); }
@@ -66,6 +76,11 @@ public:
   /// Check that there exist a dependecy action
   bool HasDepAction() { return CompilerOptions::IsAnyAction(GetDepAction()); }
 
+  /// Check the nice name of the current action
+  llvm::StringRef GetDepActionString() {
+    return CompilerOptions::GetActionString(GetDepAction());
+  }
+
   /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
 
@@ -73,15 +88,14 @@ public:
   void SetConsumer(CompilerExecution *inputConsumer) {
     consumer = inputConsumer;
   }
+  /// Return the consumer
+  CompilerExecution *GetConsumer();
 
   /// Make sure that we can notify the consumer
-  bool ShouldNotifyConsumer() { return (HasConsumer() && !IsMainAction()); }
+  bool ShouldNotifyConsumer() { return (!IsMainAction() && HasConsumer()); }
 
   /// A main action should never have a consumer
   void VerifyMainActionHasNoConsumer();
-
-  /// Return the consumer
-  CompilerExecution *GetConsumer();
 
   /// Return the compiler
   Compiler &GetCompiler();
@@ -130,7 +144,9 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetSelfAction() override { return CompilerAction::PrintHelp; }
+  CompilerAction GetSelfAction()  override {
+    return CompilerAction::PrintHelp;
+  }
 };
 
 class PrintHelpHiddenExecution final : public CompilerExecution {
@@ -139,7 +155,7 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetSelfAction() override {
+  CompilerAction GetSelfAction()  override {
     return CompilerAction::PrintHelpHidden;
   }
 };
@@ -221,7 +237,9 @@ public:
   CompilerAction GetDepAction() override {
     return CompilerAction::ResolveImports;
   }
-  CompilerAction GetSelfAction() override { return CompilerAction::TypeCheck; }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::TypeCheck;
+  }
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
@@ -304,8 +322,12 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
-  CompilerAction GetSelfAction() override { return CompilerAction::EmitBC; }
+  CompilerAction GetDepAction() override {
+    return CompilerAction::EmitIRAfter;
+  }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::EmitBC;
+  }
 };
 
 class EmitModuleExecution final : public CompilerExecution {
@@ -339,8 +361,12 @@ public:
 
 public:
   Status ExecuteAction() override;
-  CompilerAction GetDepAction() override { return CompilerAction::EmitIRAfter; }
-  CompilerAction GetSelfAction() override { return CompilerAction::EmitObject; }
+  CompilerAction GetDepAction() override {
+    return CompilerAction::EmitIRAfter;
+  }
+  CompilerAction GetSelfAction() override {
+    return CompilerAction::EmitObject;
+  }
   Status FinishAction() override;
 
   void CompletedIRGeneration(llvm::Module *result) override;

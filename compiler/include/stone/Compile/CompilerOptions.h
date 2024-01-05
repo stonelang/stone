@@ -187,6 +187,8 @@ public:
   static bool DoesActionSupportCompilationCaching(CompilerAction action);
   /// \return the FileType for the action
   static file::FileType GetActionOutputFileType(CompilerAction action);
+  /// \return the string name of the action
+  static llvm::StringRef GetActionString(CompilerAction action);
 
 public:
   /// \return true if this is any action.

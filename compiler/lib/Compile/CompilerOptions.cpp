@@ -237,6 +237,49 @@ FileType CompilerOptions::GetActionOutputFileType(CompilerAction action) {
   llvm_unreachable("Unhandled action");
 }
 
+llvm::StringRef CompilerOptions::GetActionString(CompilerAction action) {
+  // TODO: It would be nice to pull this out of the OptTable
+  switch (action) {
+  case CompilerAction::None:
+    return "none";
+  case CompilerAction::PrintVersion:
+    return "print-version";
+  case CompilerAction::PrintHelp:
+    return "print-help";
+  case CompilerAction::PrintHelpHidden:
+    return "print-help-hidden";
+  case CompilerAction::PrintFeature:
+    return "print-feature";
+  case CompilerAction::Parse:
+    return "parse";
+  case CompilerAction::ResolveImports:
+    return "resolve-imports";
+  case CompilerAction::PrintASTBefore:
+    return "print-ast-before";
+  case CompilerAction::TypeCheck:
+    return "type-check";
+  case CompilerAction::PrintASTAfter:
+    return "print-ast-after";
+  case CompilerAction::EmitIRBefore:
+    return "emit-ir-before";
+  case CompilerAction::EmitIRAfter:
+    return "emit-ir-after";
+  case CompilerAction::PrintIR:
+    return "print-ir";
+  case CompilerAction::EmitBC:
+    return "emit-bc";
+  case CompilerAction::EmitModule:
+    return "emit-module";
+  case CompilerAction::MergeModules:
+    return "merge-modules";
+  case CompilerAction::EmitObject:
+    return "emit-object";
+  case CompilerAction::EmitAssembly:
+    return "emit-assembly";
+  }
+  llvm_unreachable("Unhandled action");
+}
+
 bool CompilerOptions::IsNoneAction() const {
   return !CompilerOptions::IsAnyAction(mainAction);
 }

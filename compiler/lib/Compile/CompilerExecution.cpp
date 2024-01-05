@@ -104,7 +104,7 @@ Status ParseExecution::ExecuteAction() {
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "parse-source-file");
-   VerifyMainActionHasNoConsumer();
+  VerifyMainActionHasNoConsumer();
 
   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
   if (compiler.HasObservation()) {
