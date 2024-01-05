@@ -160,6 +160,7 @@ public:
 
 public:
   virtual void CompletedCompilationEntity(const CompilationEntity *entity);
+
   virtual void Finish();
 };
 
@@ -188,7 +189,7 @@ public:
 class BuildingJobConstructionEntities final {
 
   Driver &driver;
-  llvm::SmallVector<const TopLevelCompilationEntitiesConsumer *> consumers;
+  llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
   BuildingJobConstructionEntities(Driver &driver);
@@ -200,7 +201,11 @@ public:
   Status BuildForFlatCompileStyle();
 
 public:
+  bool IsTopLvelJobConstruction() { return consumers.size() > 0; }
+  void ForEachConsumer(
+      std::function<void(TopLevelCompilationEntitiesConsumer * consumer)> fn);
   void CreateCompileJobConstruction(const DriverInputFile *input);
+  void CompletedJobConstruction(const JobConstruction *entity);
 
 public:
   void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
