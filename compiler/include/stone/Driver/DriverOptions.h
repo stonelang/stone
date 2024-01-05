@@ -136,6 +136,20 @@ public:
   void AddInput(llvm::StringRef file);
 };
 
+class DriverArgList final {
+  const llvm::opt::ArgList &args;
+public:
+  DriverArgList(const llvm::opt::ArgList &args);
+
+public:
+  const llvm::opt::ArgList& GetArgs() const;
+  bool HasLTO() const;
+  const llvm::opt::Arg *GetLTO() const;
+
+  bool HasLTOLibray() const;
+  const llvm::opt::Arg *GetLTOLibrary() const;
+
+};
 /// Only for input files convertions
 class DriverInputsConverter final {
 

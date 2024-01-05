@@ -48,7 +48,9 @@ CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
   llvm_unreachable("Illegal to handle code completion callbacks!");
 }
 
-CompilerAction CompilerExecution::GetMainAction() { compiler.GetMainAction(); }
+CompilerAction CompilerExecution::GetMainAction() {
+  GetCompiler().GetMainAction();
+}
 
 Compiler &CompilerExecution::GetCompiler() { return compiler; }
 
@@ -58,7 +60,6 @@ Status CompilerExecution::SetupAction() {
   assert(HasSelfAction());
   if (HasDepAction()) {
     auto execution = compiler.CreateExectution(GetDepAction());
-    assert(HasConsumer());
     execution->SetConsumer(this);
     if (compiler.ExecuteAction(*execution).IsError()) {
       return Status::MakeHasCompletionAndIsError();
@@ -183,8 +184,6 @@ Status TypeCheckExecution::ExecuteAction() {
 
   return Status();
 }
-
-CompilerExecution *TypeCheckExecution::GetConsumer() { return this; }
 
 void TypeCheckExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
 
@@ -429,10 +428,7 @@ Status EmitAssemblyExecution::FinishAction() { return Status(); }
 
 /// Handles LLVM
 Status stone::CompileAction(Compiler &compiler) {
-  // Sanity check
-  if (compiler.GetInvocation().GetCompilerOptions().IsNoneAction()) {
-    return Status::MakeHasCompletionAndIsError();
-  }
+  assert(CompilerOptions::IsAnyAction(compiler.GetMainAction()));
   return compiler.ExecuteAction(compiler.GetMainAction());
 }
 /// Handles LLVM

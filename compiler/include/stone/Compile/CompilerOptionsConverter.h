@@ -9,6 +9,16 @@
 
 namespace stone {
 
+class CompilerArgList final {
+  const llvm::opt::ArgList &args;
+
+public:
+  CompilerArgList(const llvm::opt::ArgList &args);
+
+public:
+  const llvm::opt::ArgList &GetArgs() const;
+};
+
 class CompilerOptionsConverter {
   DiagnosticEngine &de;
   const llvm::opt::ArgList &args;

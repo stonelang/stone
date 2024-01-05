@@ -303,7 +303,7 @@ bool CompilerOptions::IsEmitAssemblyAction() const {
 bool CompilerOptions::IsAnyAction(CompilerAction action) {
   switch (action) {
   case CompilerAction::None:
-    false;
+    return false;
   case CompilerAction::PrintVersion:
   case CompilerAction::PrintHelp:
   case CompilerAction::PrintHelpHidden:

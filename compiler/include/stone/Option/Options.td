@@ -174,7 +174,6 @@ def PrintHelpHidden : Flag<["-", "--"], "help-hidden">,
 Flags<[CompilerOption,  DriverOption]>,
 HelpText<"Display available options, including hidden options">;
 
-
 def PrintVersion : Flag<["-", "--"], "version">,
 Flags<[CompilerOption, DriverOption]>,
 HelpText<"Print version information and exit">, ModeOpt;
@@ -388,5 +387,11 @@ def EnableBatchMode : Flag<["-"], "enable-batch-mode">,
 def LTO : Joined<["-"], "lto=">,
   Flags<[CompilerOption, NoInteractiveOption]>,
   HelpText<"Specify the LTO type to either 'llvm-thin' or 'llvm-full'">;
+
+
+def LTOLibrary : Separate<["-"], "lto-library">,
+  Flags<[CompilerOption, ArgumentIsPath, NoInteractiveOption]>,
+  HelpText<"Perform LTO with <lto-library>">, MetaVarName<"<lto-library>">;
+
 
 include "CompilerOptions.td"

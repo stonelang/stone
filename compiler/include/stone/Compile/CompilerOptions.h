@@ -194,7 +194,9 @@ public:
 
 public:
   /// \return true if the action is valid
-  bool HasMainAction() const { return !IsNoneAction(); }
+  bool HasMainAction() const {
+    return CompilerOptions::IsAnyAction(GetMainAction());
+  }
 
   /// \return the Action
   CompilerAction GetMainAction() const { return mainAction; }

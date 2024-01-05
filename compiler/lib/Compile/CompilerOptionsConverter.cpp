@@ -24,6 +24,10 @@
 using namespace stone;
 using namespace llvm::opt;
 
+CompilerArgList::CompilerArgList(const llvm::opt::ArgList &args) : args(args) {}
+
+const llvm::opt::ArgList &CompilerArgList::GetArgs() const { return args; }
+
 CompilerOptionsConverter::CompilerOptionsConverter(
     const llvm::opt::ArgList &args, DiagnosticEngine &de, LangOptions &langOpts,
     CompilerOptions &compilerOpts)

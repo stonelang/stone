@@ -63,6 +63,13 @@ void DriverInputsAndOutputs::ForEachInput(
   }
 }
 
+DriverArgList::DriverArgList(const llvm::opt::ArgList &args) : args(args) {}
+
+const Arg *DriverArgList::GetLTO() const {return args.getLastArg(opts::LTO);}
+
+const Arg *DriverArgList::GetLTOLibrary() const {return args.getLastArg(opts::LTOLibrary);}
+
+
 /// < DriverInputsConverter
 DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
                                              DriverOptions &driverOpts,

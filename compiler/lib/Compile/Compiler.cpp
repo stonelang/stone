@@ -477,10 +477,8 @@ Compiler::CreateExectution(CompilerAction action) {
     return std::make_unique<EmitAssemblyExecution>(*this);
   case CompilerAction::EmitObject:
     return std::make_unique<EmitObjectExecution>(*this);
-  default: {
-    llvm_unreachable("Unable to create CompilerExecution -- unknon action!");
   }
-  }
+  llvm_unreachable("Unable to create CompilerExecution -- unknon action!");
 }
 
 void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}

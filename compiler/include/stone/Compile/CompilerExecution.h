@@ -38,10 +38,6 @@ public:
   llvm::sys::TimePoint<> GetStartTime() const { return startTime; }
   llvm::sys::TimePoint<> GetLastTime() const { return lastTime; }
 
-protected:
-  /// Every exeuction must have a self action
-  virtual CompilerAction GetSelfAction() { return CompilerAction::None; }
-
 public:
   /// Setup the execution and execute any dependencies
   virtual Status SetupAction();
@@ -52,8 +48,11 @@ public:
   /// Finish any post steps after execution
   virtual Status FinishAction();
 
+  /// Every exeuction must have a self action
+  virtual CompilerAction GetSelfAction() = 0;
+
   /// Check that the execution has an action
-  bool HasSelfAction() { return GetSelfAction() != CompilerAction::None; }
+  bool HasSelfAction() { return CompilerOptions::IsAnyAction(GetSelfAction()); }
 
   /// The main input action from the user.
   CompilerAction GetMainAction();
@@ -65,7 +64,7 @@ public:
   virtual CompilerAction GetDepAction() { return CompilerAction::None; }
 
   /// Check that there exist a dependecy action
-  bool HasDepAction() { return GetDepAction() != CompilerAction::None; }
+  bool HasDepAction() { return CompilerOptions::IsAnyAction(GetDepAction()); }
 
   /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
@@ -75,13 +74,10 @@ public:
     consumer = inputConsumer;
   }
 
-  ///
-  bool ShouldConsume(CompilerExecution *consumer);
-
   /// Make sure that we can notify the consumer
   bool ShouldNotifyConsumer() { return (HasConsumer() && !IsMainAction()); }
 
-  virtual CompilerExecution *GetConsumer();
+  CompilerExecution *GetConsumer();
   Compiler &GetCompiler();
 
 public:
@@ -223,8 +219,6 @@ public:
 
   void CompletedSyntaxAnalysis(SourceFile &result) override;
   void CompletedSyntaxAnalysis(ModuleDecl &result) override;
-
-  virtual CompilerExecution *GetConsumer() override;
 };
 
 class PrintASTAfterExecution final : public CompilerExecution {
