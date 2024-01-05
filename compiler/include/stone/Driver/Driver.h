@@ -149,46 +149,46 @@ class CompileStyle {
 class Driver;
 class BuildingCompilationEntities;
 
-class TopLevelJobConstructionEntitiesConsumer
-    : public DriverAllocation<TopLevelJobConstructionEntitiesConsumer> {
+class TopLevelCompilationEntitiesConsumer
+    : public DriverAllocation<TopLevelCompilationEntitiesConsumer> {
 
 protected:
-  llvm::SmallVector<const JobConstruction *> constructions;
+  llvm::SmallVector<const CompilationEntity *> entities;
 
 public:
-  TopLevelJobConstructionEntitiesConsumer();
+  TopLevelCompilationEntitiesConsumer();
 
 public:
-  virtual void CompletedJobConstruction(const JobConstruction *constructions);
+  virtual void CompletedCompilationEntity(const CompilationEntity *entity);
   virtual void Finish();
 };
 
 class LinkJobConstructionEntitiesConsumer final
-    : public TopLevelJobConstructionEntitiesConsumer {
+    : public TopLevelCompilationEntitiesConsumer {
 
 public:
   LinkJobConstructionEntitiesConsumer();
 
 public:
-  void CompletedJobConstruction(const JobConstruction *constructions) override;
+  void CompletedCompilationEntity(const CompilationEntity *entity) override;
   void Finish() override;
 };
 
 class MergeJobConstructionEntitiesConsumer final
-    : public TopLevelJobConstructionEntitiesConsumer {
+    : public TopLevelCompilationEntitiesConsumer {
 
 public:
   MergeJobConstructionEntitiesConsumer();
 
 public:
-  void CompletedJobConstruction(const JobConstruction *constructions) override;
+  void CompletedCompilationEntity(const CompilationEntity *entity) override;
   void Finish() override;
 };
 
 class BuildingJobConstructionEntities final {
 
   Driver &driver;
-  llvm::SmallVector<const TopLevelJobConstructionEntitiesConsumer *> consumers;
+  llvm::SmallVector<const TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
   BuildingJobConstructionEntities(Driver &driver);
@@ -200,7 +200,10 @@ public:
   Status BuildForFlatCompileStyle();
 
 public:
-  void AddConsumer(TopLevelJobConstructionEntitiesConsumer *consumer);
+  void CreateCompileJobConstruction(const DriverInputFile *input);
+
+public:
+  void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
 };
 
 class BuildingJobEntities final {

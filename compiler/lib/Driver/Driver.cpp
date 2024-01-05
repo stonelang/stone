@@ -1,5 +1,6 @@
 #include "stone/Driver/Driver.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/FileType.h"
 #include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/DriverAllocation.h"
@@ -10,7 +11,7 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
-
+using namespace stone::file;
 using namespace llvm::opt;
 
 Driver::Driver()
@@ -122,29 +123,28 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
 //   return Status();
 // }
 
-TopLevelJobConstructionEntitiesConsumer::
-    TopLevelJobConstructionEntitiesConsumer() {}
+TopLevelCompilationEntitiesConsumer::TopLevelCompilationEntitiesConsumer() {}
 
-void TopLevelJobConstructionEntitiesConsumer::CompletedJobConstruction(
-    const JobConstruction *construction) {
+void TopLevelCompilationEntitiesConsumer::CompletedCompilationEntity(
+    const CompilationEntity *entity) {
   llvm_unreachable("Only sub-classes can make this call");
 }
 
-void TopLevelJobConstructionEntitiesConsumer::Finish() {
+void TopLevelCompilationEntitiesConsumer::Finish() {
   llvm_unreachable("Only sub-classes can make this call");
 }
 
 LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer() {}
 
-void LinkJobConstructionEntitiesConsumer::CompletedJobConstruction(
-    const JobConstruction *construction) {}
+void LinkJobConstructionEntitiesConsumer::CompletedCompilationEntity(
+    const CompilationEntity *entity) {}
 
 void LinkJobConstructionEntitiesConsumer::Finish() {}
 
 MergeJobConstructionEntitiesConsumer::MergeJobConstructionEntitiesConsumer() {}
 
-void MergeJobConstructionEntitiesConsumer::CompletedJobConstruction(
-    const JobConstruction *construction) {}
+void MergeJobConstructionEntitiesConsumer::CompletedCompilationEntity(
+    const CompilationEntity *entity) {}
 
 void MergeJobConstructionEntitiesConsumer::Finish() {}
 
@@ -152,7 +152,7 @@ BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
     : driver(driver) {}
 
 void BuildingJobConstructionEntities::AddConsumer(
-    TopLevelJobConstructionEntitiesConsumer *consumer) {
+    TopLevelCompilationEntitiesConsumer *consumer) {
   consumers.push_back(consumer);
 }
 
@@ -170,10 +170,33 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
   }
 }
 
+void BuildingJobConstructionEntities::CreateCompileJobConstruction(
+    const DriverInputFile *input) {
+
+}
+
 Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
 
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) { return Status(); });
+      [&](const DriverInputFile *input) {
+
+        assert(input);
+        
+        assert(file::IsPartOfStoneCompilation(input->GetFileType()));
+
+        switch (input->GetFileType()) {
+        case FileType::Stone: {
+          CreateCompileJobConstruction(input);
+          break;
+        }
+        case FileType::Object: {
+          // Notify consumer
+          break;
+        }
+        default:
+          llvm_unreachable(" Invalid file type");
+        }
+      });
 
   return Status();
 }
