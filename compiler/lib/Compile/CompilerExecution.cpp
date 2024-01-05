@@ -49,7 +49,13 @@ CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
 }
 
 CompilerAction CompilerExecution::GetMainAction() {
-  GetCompiler().GetMainAction();
+  return compiler.GetMainAction();
+}
+
+void CompilerExecution::VerifyMainActionHasNoConsumer() {
+  if (IsMainAction()) {
+    assert(!HasConsumer());
+  }
 }
 
 Compiler &CompilerExecution::GetCompiler() { return compiler; }
@@ -57,6 +63,7 @@ Compiler &CompilerExecution::GetCompiler() { return compiler; }
 CompilerExecution *CompilerExecution::GetConsumer() { return consumer; }
 
 Status CompilerExecution::SetupAction() {
+
   assert(HasSelfAction());
   if (HasDepAction()) {
     auto execution = compiler.CreateExectution(GetDepAction());
@@ -97,6 +104,7 @@ Status ParseExecution::ExecuteAction() {
 
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "parse-source-file");
+   VerifyMainActionHasNoConsumer();
 
   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
   if (compiler.HasObservation()) {
@@ -137,6 +145,8 @@ Status ResolveImportsExecution::ExecuteAction() {
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
                              "import-resolution");
 
+  VerifyMainActionHasNoConsumer();
+
   // stone::ResolveSourceFileImports(sourceFile);
 
   return Status();
@@ -163,9 +173,9 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
 
 Status TypeCheckExecution::ExecuteAction() {
 
-  assert(IsMainAction());
-
   CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
+
+  VerifyMainActionHasNoConsumer();
 
   compiler.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     stone::TypeCheckSourceFile(

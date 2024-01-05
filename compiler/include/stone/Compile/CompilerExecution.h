@@ -77,7 +77,13 @@ public:
   /// Make sure that we can notify the consumer
   bool ShouldNotifyConsumer() { return (HasConsumer() && !IsMainAction()); }
 
+  /// A main action should never have a consumer
+  void VerifyMainActionHasNoConsumer();
+
+  /// Return the consumer
   CompilerExecution *GetConsumer();
+
+  /// Return the compiler
   Compiler &GetCompiler();
 
 public:
