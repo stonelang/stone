@@ -173,6 +173,9 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
 void BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
+ // if (args.hasArg(opts::::EmbedBitCode)) {
+
+ // }
   auto compileJobConstruction = CompileJobConstruction::Create(
       driver, input,
       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
