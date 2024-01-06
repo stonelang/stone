@@ -61,11 +61,24 @@ DynamicLinkJobConstruction::DynamicLinkJobConstruction(
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
 }
 
+DynamicLinkJobConstruction *
+DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
+                                   LinkMode linkMode, bool withLTO) {
+
+  return new (driver) DynamicLinkJobConstruction(inputs, linkMode, withLTO);
+}
+
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     CompilationEntityList inputs, LinkMode linkMode)
     : LinkJobConstruction(CompilationEntityKind::StaticLinkJobConstruction,
                           inputs, FileType::Image, linkMode) {
   assert(linkMode == LinkMode::StaticLibrary);
+}
+
+StaticLinkJobConstruction *
+StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
+                                  LinkMode linkMode) {
+  return new (driver) StaticLinkJobConstruction(inputs, linkMode);
 }
 
 BackendJobConstruction::BackendJobConstruction(const CompilationEntity *input,

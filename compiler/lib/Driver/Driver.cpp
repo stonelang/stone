@@ -162,6 +162,20 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
 
   // Ok, now we can try to create the Link job
   // and add it to
+
+  if (!HasCompilationEntities()) {
+    return;
+  }
+
+  if (driver.GetDriverOptions()
+          .GetDriverOutputInfo()
+          .HasStaticLibraryLinkMode()) {
+
+    driver.GetCompilationEntities().AddTopLevelJobConstruction(
+        StaticLinkJobConstruction::Create(
+            driver, entities,
+            driver.GetDriverOptions().GetDriverOutputInfo().GetLinkMode()));
+  }
 }
 
 MergeModuleJobConstructionEntitiesConsumer::
@@ -318,6 +332,9 @@ Status BuildingCompilationEntities::BuildCompilationEntities(
 
   jobConstructionEntities.AddConsumer(
       MergeModuleJobConstructionEntitiesConsumer::Create(driver));
+
+  auto status = jobConstructionEntities.BuildForCompileStyle(
+      driver.GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind());
 }
 
 void BuildingCompilationEntities::Finish() {}

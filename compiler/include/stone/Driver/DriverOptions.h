@@ -303,6 +303,17 @@ public:
 
   /// \check that there exist a tool chain kind
   bool HasLinkMode() const { return linkMode != LinkMode::None; }
+
+  bool HasStaticLibraryLinkMode() const {
+    return linkMode == LinkMode::StaticLibrary;
+  }
+  bool HasDynamicLibraryLinkMode() const {
+    return linkMode == LinkMode::DynamicLibrary;
+  }
+  bool HasExecutableLinkMode() const {
+    return linkMode == LinkMode::Executable;
+  }
+
   /// \return the tool chain kind computed
   LinkMode GetLinkMode() const { return linkMode; }
 
@@ -330,6 +341,8 @@ public:
   bool IsFlatCompileStyle() const {
     return compileStyleKind == CompileStyleKind::Flat;
   }
+
+  CompileStyleKind GetCompileStyleKind() const { return compileStyleKind; }
 
 public:
   /// Might this sort of compile have explicit primary inputs?
