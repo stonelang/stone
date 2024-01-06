@@ -170,6 +170,7 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
   auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
 
   if (outputInfo.HasStaticLibraryLinkMode()) {
+
     driver.GetCompilationEntities().AddTopLevelJobConstruction(
         StaticLinkJobConstruction::Create(driver, entities,
                                           outputInfo.GetLinkMode()));
@@ -350,6 +351,10 @@ Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
+
+  if(BuildCompilationEntities(GetCompilationEntities()).IsError()){
+    return nullptr;
+  }
 
   return nullptr;
 }
