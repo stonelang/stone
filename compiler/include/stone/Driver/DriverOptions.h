@@ -320,6 +320,17 @@ public:
     return compilationOutputLevel;
   }
 
+  bool ShouldGenerateModule() const { return shouldGenerateModule; }
+  bool IsNormalCompileStyle() const {
+    return compileStyleKind == CompileStyleKind::Normal;
+  }
+  bool IsSingleCompileStyle() const {
+    return compileStyleKind == CompileStyleKind::Single;
+  }
+  bool IsFlatCompileStyle() const {
+    return compileStyleKind == CompileStyleKind::Flat;
+  }
+
 public:
   /// Might this sort of compile have explicit primary inputs?
   /// When running a single compile for the whole module (in other words

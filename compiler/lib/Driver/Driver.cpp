@@ -138,7 +138,10 @@ LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer() {}
 
 LinkJobConstructionEntitiesConsumer *
 LinkJobConstructionEntitiesConsumer::Create(Driver &driver) {
-  return new (driver) LinkJobConstructionEntitiesConsumer();
+  if (driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode()) {
+    return new (driver) LinkJobConstructionEntitiesConsumer();
+  }
+  return nullptr;
 }
 
 void LinkJobConstructionEntitiesConsumer::CompletedCompilationEntity(
@@ -159,6 +162,15 @@ MergeModuleJobConstructionEntitiesConsumer::
 
 MergeModuleJobConstructionEntitiesConsumer *
 MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
+
+  if (driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle()) {
+    return nullptr;
+  }
+
+  if (!driver.GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule()) {
+    return nullptr;
+  }
+
   return new (driver) MergeModuleJobConstructionEntitiesConsumer();
 }
 
@@ -195,7 +207,9 @@ BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
 
 void BuildingJobConstructionEntities::AddConsumer(
     TopLevelCompilationEntitiesConsumer *consumer) {
-  consumers.push_back(consumer);
+  if (consumer) {
+    consumers.push_back(consumer);
+  }
 }
 
 Status BuildingJobConstructionEntities::BuildForCompileStyle(
