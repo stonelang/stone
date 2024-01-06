@@ -167,14 +167,16 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
     return;
   }
 
-  if (driver.GetDriverOptions()
-          .GetDriverOutputInfo()
-          .HasStaticLibraryLinkMode()) {
+  auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
 
+  if (outputInfo.HasStaticLibraryLinkMode()) {
     driver.GetCompilationEntities().AddTopLevelJobConstruction(
-        StaticLinkJobConstruction::Create(
-            driver, entities,
-            driver.GetDriverOptions().GetDriverOutputInfo().GetLinkMode()));
+        StaticLinkJobConstruction::Create(driver, entities,
+                                          outputInfo.GetLinkMode()));
+  } else {
+    driver.GetCompilationEntities().AddTopLevelJobConstruction(
+        DynamicLinkJobConstruction::Create(
+            driver, entities, outputInfo.GetLinkMode(), outputInfo.HasLTO()));
   }
 }
 
