@@ -153,7 +153,13 @@ class TopLevelCompilationEntitiesConsumer
     : public DriverAllocation<TopLevelCompilationEntitiesConsumer> {
 
 protected:
+  Driver &driver;
+
+protected:
   llvm::SmallVector<const CompilationEntity *> entities;
+
+public:
+  TopLevelCompilationEntitiesConsumer(Driver &driver);
 
 protected:
   void AddCompilationEntity(const CompilationEntity *entity) {
@@ -171,7 +177,7 @@ public:
 class LinkJobConstructionEntitiesConsumer final
     : public TopLevelCompilationEntitiesConsumer {
 public:
-  LinkJobConstructionEntitiesConsumer();
+  LinkJobConstructionEntitiesConsumer(Driver &driver);
 
 public:
   void CompletedCompilationEntity(const CompilationEntity *entity) override;
@@ -185,7 +191,7 @@ class MergeModuleJobConstructionEntitiesConsumer final
     : public TopLevelCompilationEntitiesConsumer {
 
 public:
-  MergeModuleJobConstructionEntitiesConsumer();
+  MergeModuleJobConstructionEntitiesConsumer(Driver &driver);
 
 public:
   void CompletedCompilationEntity(const CompilationEntity *entity) override;

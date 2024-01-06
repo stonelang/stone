@@ -123,7 +123,9 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
 //   return Status();
 // }
 
-TopLevelCompilationEntitiesConsumer::TopLevelCompilationEntitiesConsumer() {}
+TopLevelCompilationEntitiesConsumer::TopLevelCompilationEntitiesConsumer(
+    Driver &driver)
+    : driver(driver) {}
 
 void TopLevelCompilationEntitiesConsumer::CompletedCompilationEntity(
     const CompilationEntity *entity) {
@@ -134,12 +136,17 @@ void TopLevelCompilationEntitiesConsumer::Finish() {
   llvm_unreachable("Only sub-classes can make this call");
 }
 
-LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer() {}
+LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer(
+    Driver &driver)
+    : TopLevelCompilationEntitiesConsumer(driver) {
+
+  assert(driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode());
+}
 
 LinkJobConstructionEntitiesConsumer *
 LinkJobConstructionEntitiesConsumer::Create(Driver &driver) {
   if (driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode()) {
-    return new (driver) LinkJobConstructionEntitiesConsumer();
+    return new (driver) LinkJobConstructionEntitiesConsumer(driver);
   }
   return nullptr;
 }
@@ -158,7 +165,14 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
 }
 
 MergeModuleJobConstructionEntitiesConsumer::
-    MergeModuleJobConstructionEntitiesConsumer() {}
+    MergeModuleJobConstructionEntitiesConsumer(Driver &driver)
+    : TopLevelCompilationEntitiesConsumer(driver) {
+
+  assert(
+      !driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle());
+  assert(
+      driver.GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule());
+}
 
 MergeModuleJobConstructionEntitiesConsumer *
 MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
@@ -171,7 +185,7 @@ MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
     return nullptr;
   }
 
-  return new (driver) MergeModuleJobConstructionEntitiesConsumer();
+  return new (driver) MergeModuleJobConstructionEntitiesConsumer(driver);
 }
 
 void MergeModuleJobConstructionEntitiesConsumer::CompletedCompilationEntity(
