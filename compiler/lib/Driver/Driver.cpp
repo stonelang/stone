@@ -123,22 +123,22 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
 //   return Status();
 // }
 
-TopLevelCompilationEntitiesConsumer::TopLevelCompilationEntitiesConsumer(
+TopLevelEntitiesConsumer::TopLevelEntitiesConsumer(
     Driver &driver)
     : driver(driver) {}
 
-void TopLevelCompilationEntitiesConsumer::CompletedCompilationEntity(
+void TopLevelEntitiesConsumer::CompletedCompilationEntity(
     const CompilationEntity *entity) {
   llvm_unreachable("Only sub-classes can make this call");
 }
 
-void TopLevelCompilationEntitiesConsumer::Finish() {
+void TopLevelEntitiesConsumer::Finish() {
   llvm_unreachable("Only sub-classes can make this call");
 }
 
 LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer(
     Driver &driver)
-    : TopLevelCompilationEntitiesConsumer(driver) {
+    : TopLevelEntitiesConsumer(driver) {
 
   assert(driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode());
 }
@@ -183,7 +183,7 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
 
 MergeModuleJobConstructionEntitiesConsumer::
     MergeModuleJobConstructionEntitiesConsumer(Driver &driver)
-    : TopLevelCompilationEntitiesConsumer(driver) {
+    : TopLevelEntitiesConsumer(driver) {
 
   assert(
       !driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle());
@@ -233,17 +233,17 @@ void MergeModuleJobConstructionEntitiesConsumer::Finish() {
   // But, you have to create a special M
 }
 
-BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
+JobConstructionEntitiesBuilder::JobConstructionEntitiesBuilder(Driver &driver)
     : driver(driver) {}
 
-void BuildingJobConstructionEntities::AddConsumer(
-    TopLevelCompilationEntitiesConsumer *consumer) {
+void JobConstructionEntitiesBuilder::AddConsumer(
+    TopLevelEntitiesConsumer *consumer) {
   if (consumer) {
     consumers.push_back(consumer);
   }
 }
 
-Status BuildingJobConstructionEntities::BuildForCompileStyle(
+Status JobConstructionEntitiesBuilder::BuildForCompileStyle(
     CompileStyleKind compileStyle) {
   switch (compileStyle) {
   case CompileStyleKind::Normal:
@@ -257,35 +257,48 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
   }
 }
 
-void BuildingJobConstructionEntities::CreateCompileJobConstruction(
+CompileJobConstruction *
+JobConstructionEntitiesBuilder::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
+  ///
   // if (args.hasArg(opts::::EmbedBitCode)) {
   // }
   /// Check that it requires a PCH
+  CompileJobConstruction *compileJobConstruction = nullptr;
+  if (input) {
+    compileJobConstruction = CompileJobConstruction::Create(
+        driver, input,
+        driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+  } else {
+    compileJobConstruction = CompileJobConstruction::Create(
+        driver,
+        driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  auto compileJobConstruction = CompileJobConstruction::Create(
-      driver, input,
-      driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-
-  //
+    if (driver.GetDriverOptions()
+            .GetDriverOutputInfo()
+            .IsSingleCompileStyle()) {
+    }
+  }
   if (!IsTopLvelJobConstruction()) {
     driver.GetCompilationEntities().AddTopLevelJobConstruction(
         compileJobConstruction);
+    return compileJobConstruction;
   } else {
     // Notify consumer
     CompletedCompilationEntity(compileJobConstruction);
   }
+  return compileJobConstruction;
 }
 
-void BuildingJobConstructionEntities::CompletedCompilationEntity(
+void JobConstructionEntitiesBuilder::CompletedCompilationEntity(
     const CompilationEntity *entity) {
-  ForEachConsumer([&](TopLevelCompilationEntitiesConsumer *consumer) {
+  ForEachConsumer([&](TopLevelEntitiesConsumer *consumer) {
     consumer->CompletedCompilationEntity(entity);
   });
 }
 
-Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
+Status JobConstructionEntitiesBuilder::BuildForNormalCompileStyle() {
 
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile *input) {
@@ -293,7 +306,7 @@ Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
 
         switch (input->GetFileType()) {
         case FileType::Stone: {
-          CreateCompileJobConstruction(input);
+          (void)CreateCompileJobConstruction(input);
           break;
         }
         case FileType::Object: {
@@ -307,27 +320,41 @@ Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
 
   return Status();
 }
-Status BuildingJobConstructionEntities::BuildForSingleCompileStyle() {
+Status JobConstructionEntitiesBuilder::BuildForSingleCompileStyle() {
+
+  assert(
+      driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle());
+
+  auto compileJobConstruction = CreateCompileJobConstruction();
+  assert(compileJobConstruction);
+
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        assert(input->IsPartOfStoneCompilation());
+        auto currentInput = driver.CastToJobConstruction(input);
+        compileJobConstruction->AddInput(currentInput);
+      });
+
   return Status();
 }
-Status BuildingJobConstructionEntities::BuildForFlatCompileStyle() {
+Status JobConstructionEntitiesBuilder::BuildForFlatCompileStyle() {
 
   return Status();
 }
 
-void BuildingJobConstructionEntities::ForEachConsumer(
-    std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn) {
+void JobConstructionEntitiesBuilder::ForEachConsumer(
+    std::function<void(TopLevelEntitiesConsumer *consumer)> fn) {
   for (auto consumer : consumers) {
     fn(consumer);
   }
 }
 
-BuildingJobEntities::BuildingJobEntities(Driver &driver) : driver(driver) {}
+JobEntitiesBuilder::JobEntitiesBuilder(Driver &driver) : driver(driver) {}
 
-BuildingCompilationEntities::BuildingCompilationEntities(Driver &driver)
+CompilationBuilder::CompilationBuilder(Driver &driver)
     : driver(driver), jobEntities(driver), jobConstructionEntities(driver) {}
 
-Status BuildingCompilationEntities::BuildCompilationEntities(
+Status CompilationBuilder::BuildCompilationEntities(
     CompilationEntities &entities) {
 
   jobConstructionEntities.AddConsumer(
@@ -340,11 +367,11 @@ Status BuildingCompilationEntities::BuildCompilationEntities(
       driver.GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind());
 }
 
-void BuildingCompilationEntities::Finish() {}
+void CompilationBuilder::Finish() {}
 
 Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
 
-  BuildingCompilationEntities buildingEntities(*this);
+  CompilationBuilder buildingEntities(*this);
   STONE_DEFER { buildingEntities.Finish(); };
 
   return buildingEntities.BuildCompilationEntities(entities);
@@ -352,7 +379,7 @@ Status Driver::BuildCompilationEntities(CompilationEntities &entities) {
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
-  if(BuildCompilationEntities(GetCompilationEntities()).IsError()){
+  if (BuildCompilationEntities(GetCompilationEntities()).IsError()) {
     return nullptr;
   }
 

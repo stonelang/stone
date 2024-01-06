@@ -148,6 +148,12 @@ public:
   void ClearAllowOutput() {}
   void ClearAllFlags();
 
+public:
+  // JobConstruction *CastToJobConstruction() {
+  //   return llvm::dyn_cast<JobConstruction>(this);
+  // }
+  // Job *CastToJob() { return llvm::dyn_cast<Job>(this); }
+
 private:
   void ComputeAllFlags(CompilationEntityKind kind);
 

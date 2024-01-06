@@ -43,10 +43,10 @@ class CompileStyle {
 };
 
 class Driver;
-class BuildingCompilationEntities;
+class CompilationBuilder;
 
-class TopLevelCompilationEntitiesConsumer
-    : public DriverAllocation<TopLevelCompilationEntitiesConsumer> {
+class TopLevelEntitiesConsumer
+    : public DriverAllocation<TopLevelEntitiesConsumer> {
 
 protected:
   Driver &driver;
@@ -55,7 +55,7 @@ protected:
   llvm::SmallVector<const CompilationEntity *> entities;
 
 public:
-  TopLevelCompilationEntitiesConsumer(Driver &driver);
+  TopLevelEntitiesConsumer(Driver &driver);
 
 protected:
   void AddCompilationEntity(const CompilationEntity *entity) {
@@ -66,7 +66,7 @@ protected:
   }
 
 public:
-  TopLevelCompilationEntitiesConsumer();
+  TopLevelEntitiesConsumer();
 
 public:
   virtual void CompletedCompilationEntity(const CompilationEntity *entity);
@@ -74,7 +74,7 @@ public:
 };
 
 class LinkJobConstructionEntitiesConsumer final
-    : public TopLevelCompilationEntitiesConsumer {
+    : public TopLevelEntitiesConsumer {
 public:
   LinkJobConstructionEntitiesConsumer(Driver &driver);
 
@@ -87,7 +87,7 @@ public:
 };
 
 class MergeModuleJobConstructionEntitiesConsumer final
-    : public TopLevelCompilationEntitiesConsumer {
+    : public TopLevelEntitiesConsumer {
 
 public:
   MergeModuleJobConstructionEntitiesConsumer(Driver &driver);
@@ -100,13 +100,13 @@ public:
   static MergeModuleJobConstructionEntitiesConsumer *Create(Driver &driver);
 };
 
-class BuildingJobConstructionEntities final {
+class JobConstructionEntitiesBuilder final {
 
   Driver &driver;
-  llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
+  llvm::SmallVector<TopLevelEntitiesConsumer *> consumers;
 
 public:
-  BuildingJobConstructionEntities(Driver &driver);
+  JobConstructionEntitiesBuilder(Driver &driver);
 
 public:
   Status BuildForCompileStyle(CompileStyleKind kind);
@@ -115,43 +115,40 @@ public:
   Status BuildForFlatCompileStyle();
 
 public:
-  bool IsTopLvelJobConstruction() { return consumers.size() > 0; }
+  bool IsTopLvelJobConstruction() { return (consumers.size() > 0); }
   void ForEachConsumer(
-      std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn);
-  void CreateCompileJobConstruction(const DriverInputFile *input);
+      std::function<void(TopLevelEntitiesConsumer *consumer)> fn);
+  CompileJobConstruction *
+  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
   void CompletedCompilationEntity(const CompilationEntity *entity);
   // void CompletedCompilationEntity(const DriverInputFile *entity);
 
 public:
-  void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
+  void AddConsumer(TopLevelEntitiesConsumer *consumer);
 };
 
-class BuildingJobEntities final {
+class JobEntitiesBuilder final {
   Driver &driver;
 
 public:
-  BuildingJobEntities(Driver &driver);
-  //~BuildingJobEntities();
+  JobEntitiesBuilder(Driver &driver);
 };
 
-class BuildingCompilationEntities final {
+class CompilationBuilder final {
   Driver &driver;
+public:
+  JobEntitiesBuilder jobEntities;
+  JobConstructionEntitiesBuilder jobConstructionEntities;
 
 public:
-  BuildingJobEntities jobEntities;
-  BuildingJobConstructionEntities jobConstructionEntities;
-
-public:
-  BuildingCompilationEntities(Driver &driver);
-
-  //~BuildingCompilationEntities();
+  CompilationBuilder(Driver &driver);
 
 public:
   Status BuildCompilationEntities(CompilationEntities &entities);
 
-  BuildingJobEntities &GetBuildingJobEntities() { return jobEntities; }
-  BuildingJobConstructionEntities &GetBuildingJobConstructionEntities() {
+  JobEntitiesBuilder &GetJobEntitiesBuilder() { return jobEntities; }
+  JobConstructionEntitiesBuilder &GetJobConstructionEntitiesBuilder() {
     return jobConstructionEntities;
   }
 
@@ -204,8 +201,8 @@ class Driver final {
 
   std::unique_ptr<CompilationEntities> compilationEntities;
 
-  // BuildingJobEntities jobEntities;
-  // BuildingJobConstructionEntities jobConstructionEntities;
+  // JobEntitiesBuilder jobEntities;
+  // JobConstructionEntitiesBuilder jobConstructionEntities;
 
 public:
   Driver();
@@ -289,6 +286,19 @@ public:
   /// error condition; the diagnostics should be queried to determine if an
   /// error occurred.
   Compilation *BuildCompilation(const ToolChain &toolChain);
+
+public:
+  CompileStyleKind GetCompileStyle() const {
+    return GetDriverOptions()
+        .GetDriverOutputInfo()
+        .GetCompileStyleKind();
+  }
+  LinkMode GetLinkMode() const {
+    return GetDriverOptions().GetDriverOutputInfo().GetLinkMode();
+  }
+  bool HasLinkMode() const {
+    return GetDriverOptions().GetDriverOutputInfo().HasLinkMode();
+  }
 
 public:
   /// Creates a DriverInput file using a

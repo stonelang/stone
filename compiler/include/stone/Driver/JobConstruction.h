@@ -55,6 +55,14 @@ public:
 
 class CompileJobConstruction final : public IncrementalJobConstruction {
 
+  // public:
+  //   enum InvocationStyle {
+  //     NormalInvocationStyle = 0,
+  //     SingleInvocationStyle,
+  //     FlatInvocationStyle,
+  //     BatchInvocationStyle,
+  //   };
+
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
   /// added.
