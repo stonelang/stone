@@ -155,35 +155,44 @@ class TopLevelCompilationEntitiesConsumer
 protected:
   llvm::SmallVector<const CompilationEntity *> entities;
 
+protected:
+  void AddCompilationEntity(const CompilationEntity *entity) {
+    entities.push_back(entity);
+  }
+
 public:
   TopLevelCompilationEntitiesConsumer();
 
 public:
   virtual void CompletedCompilationEntity(const CompilationEntity *entity);
-
   virtual void Finish();
 };
 
 class LinkJobConstructionEntitiesConsumer final
     : public TopLevelCompilationEntitiesConsumer {
-
 public:
   LinkJobConstructionEntitiesConsumer();
 
 public:
   void CompletedCompilationEntity(const CompilationEntity *entity) override;
   void Finish() override;
+
+public:
+  static LinkJobConstructionEntitiesConsumer *Create(Driver &driver);
 };
 
-class MergeJobConstructionEntitiesConsumer final
+class MergeModuleJobConstructionEntitiesConsumer final
     : public TopLevelCompilationEntitiesConsumer {
 
 public:
-  MergeJobConstructionEntitiesConsumer();
+  MergeModuleJobConstructionEntitiesConsumer();
 
 public:
   void CompletedCompilationEntity(const CompilationEntity *entity) override;
   void Finish() override;
+
+public:
+  static MergeModuleJobConstructionEntitiesConsumer *Create(Driver &driver);
 };
 
 class BuildingJobConstructionEntities final {

@@ -136,17 +136,59 @@ void TopLevelCompilationEntitiesConsumer::Finish() {
 
 LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer() {}
 
+LinkJobConstructionEntitiesConsumer *
+LinkJobConstructionEntitiesConsumer::Create(Driver &driver) {
+  return new (driver) LinkJobConstructionEntitiesConsumer();
+}
+
 void LinkJobConstructionEntitiesConsumer::CompletedCompilationEntity(
-    const CompilationEntity *entity) {}
+    const CompilationEntity *entity) {
 
-void LinkJobConstructionEntitiesConsumer::Finish() {}
+  /// TODO: Some checks
+  AddCompilationEntity(entity);
+}
 
-MergeJobConstructionEntitiesConsumer::MergeJobConstructionEntitiesConsumer() {}
+void LinkJobConstructionEntitiesConsumer::Finish() {
 
-void MergeJobConstructionEntitiesConsumer::CompletedCompilationEntity(
-    const CompilationEntity *entity) {}
+  // Ok, now we can try to create the Link job
+  // and add it to
+}
 
-void MergeJobConstructionEntitiesConsumer::Finish() {}
+MergeModuleJobConstructionEntitiesConsumer::
+    MergeModuleJobConstructionEntitiesConsumer() {}
+
+MergeModuleJobConstructionEntitiesConsumer *
+MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
+  return new (driver) MergeModuleJobConstructionEntitiesConsumer();
+}
+
+void MergeModuleJobConstructionEntitiesConsumer::CompletedCompilationEntity(
+    const CompilationEntity *entity) {
+  // Add to the special Module
+
+  if (auto incrementalJobEntity =
+          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
+    // Take the upper bound of the status of any incremental inputs to
+    // ensure that the merge-modules job gets run if *any* input job is run.
+    // const auto conservativeStatus =
+    //     std::max(StatusBound.status, IJA->getInputInfo().status);
+    // // The modification time here is not important to the rest of the
+    // // incremental build. We take the upper bound in case an attempt to
+    // // compare the swiftmodule output's mod time and any input files is
+    // // made. If the compilation has been correctly scheduled, the
+    // // swiftmodule's mod time will always strictly exceed the mod time of
+    // // any of its inputs when we are able to skip it.
+    // const auto conservativeModTime = std::max(
+    //     StatusBound.previousModTime, IJA->getInputInfo().previousModTime);
+    // StatusBound = InputInfo{conservativeStatus, conservativeModTime};
+  }
+}
+
+void MergeModuleJobConstructionEntitiesConsumer::Finish() {
+
+  // Ok, nowe we can try to create the link job
+  // But, you have to create a special M
+}
 
 BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
     : driver(driver) {}
@@ -174,8 +216,9 @@ void BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
   // if (args.hasArg(opts::::EmbedBitCode)) {
-
   // }
+  /// Check that it requires a PCH
+
   auto compileJobConstruction = CompileJobConstruction::Create(
       driver, input,
       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
@@ -242,11 +285,11 @@ BuildingCompilationEntities::BuildingCompilationEntities(Driver &driver)
 Status BuildingCompilationEntities::BuildCompilationEntities(
     CompilationEntities &entities) {
 
-  // jobConstructionEntities.AddConsumer(
-  //     LinkJobConstructionEntitiesConsumer::Create());
+  jobConstructionEntities.AddConsumer(
+      LinkJobConstructionEntitiesConsumer::Create(driver));
 
-  // jobConstructionEntities.AddConsumer(
-  //     MergeJobConstructionEntitiesConsumer::Create());
+  jobConstructionEntities.AddConsumer(
+      MergeModuleJobConstructionEntitiesConsumer::Create(driver));
 }
 
 void BuildingCompilationEntities::Finish() {}

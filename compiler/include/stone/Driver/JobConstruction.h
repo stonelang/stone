@@ -33,13 +33,13 @@ public:
   }
 };
 
-class IncrementatlJobConstruction : public JobConstruction {
+class IncrementalJobConstruction : public JobConstruction {
   // CompileStyle compileStyle;
 
 public:
-  IncrementatlJobConstruction(CompilationEntityKind kind,
-                              CompilationEntityList inputs,
-                              file::FileType fileType)
+  IncrementalJobConstruction(CompilationEntityKind kind,
+                             CompilationEntityList inputs,
+                             file::FileType fileType)
       : JobConstruction(kind, inputs, fileType) {}
 
 public:
@@ -53,7 +53,7 @@ public:
   }
 };
 
-class CompileJobConstruction final : public IncrementatlJobConstruction {
+class CompileJobConstruction final : public IncrementalJobConstruction {
 
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
@@ -80,12 +80,9 @@ public:
                                         const CompilationEntity *input,
                                         file::FileType outputFileType);
 };
-class MergeModuleJobConstruction final : public IncrementatlJobConstruction {
+class MergeModuleJobConstruction final : public IncrementalJobConstruction {
 public:
-  MergeModuleJobConstruction(CompilationEntityList inputs)
-      : IncrementatlJobConstruction(
-            CompilationEntityKind::MergeModuleJobConstruction, inputs,
-            file::FileType::StoneModule) {}
+  MergeModuleJobConstruction(CompilationEntityList inputs);
 
 public:
   llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
@@ -95,6 +92,10 @@ public:
     return entity->GetKind() ==
            CompilationEntityKind::MergeModuleJobConstruction;
   }
+
+public:
+  static MergeModuleJobConstruction *Create(const Driver &driver,
+                                            CompilationEntityList inputs);
 };
 
 class LinkJobConstruction : public JobConstruction {

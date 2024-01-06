@@ -12,16 +12,16 @@ JobConstruction::ConstructJobs(const Driver &driver) {
 }
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
-    : IncrementatlJobConstruction(CompilationEntityKind::CompileJobConstruction,
-                                  llvm::None, outputFileType) {
+    : IncrementalJobConstruction(CompilationEntityKind::CompileJobConstruction,
+                                 llvm::None, outputFileType) {
 
   assert(file::IsOutputableFileType(outputFileType));
 }
 
 CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
                                                FileType outputFileType)
-    : IncrementatlJobConstruction(CompilationEntityKind::CompileJobConstruction,
-                                  input, outputFileType) {
+    : IncrementalJobConstruction(CompilationEntityKind::CompileJobConstruction,
+                                 input, outputFileType) {
 
   assert(file::IsOutputableFileType(outputFileType));
 }
@@ -38,6 +38,18 @@ CompileJobConstruction::Create(const Driver &driver,
                                FileType outputFileType) {
 
   return new (driver) CompileJobConstruction(input, outputFileType);
+}
+
+MergeModuleJobConstruction::MergeModuleJobConstruction(
+    CompilationEntityList inputs)
+    : IncrementalJobConstruction(
+          CompilationEntityKind::MergeModuleJobConstruction, inputs,
+          file::FileType::StoneModule) {}
+
+MergeModuleJobConstruction *
+MergeModuleJobConstruction::Create(const Driver &driver,
+                                   CompilationEntityList inputs) {
+  return new (driver) MergeModuleJobConstruction(inputs);
 }
 
 DynamicLinkJobConstruction::DynamicLinkJobConstruction(

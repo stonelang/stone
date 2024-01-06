@@ -38,8 +38,12 @@ public:
   bool IsPartOfStoneCompilation() const {
     return file::IsPartOfStoneCompilation(GetFileType());
   }
-  bool IsStoneFileType() const { return GetFileType() == file::FileType::Stone; }
-  bool IsObjectFileType() const { return GetFileType() == file::FileType::Object; }
+  bool IsStoneFileType() const {
+    return GetFileType() == file::FileType::Stone;
+  }
+  bool IsObjectFileType() const {
+    return GetFileType() == file::FileType::Object;
+  }
   bool IsAutolinkFileType() const {
     return GetFileType() == file::FileType::Autolink;
   }
