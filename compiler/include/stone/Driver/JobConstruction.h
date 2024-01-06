@@ -224,7 +224,7 @@ class AutolinkExtractJobConstruction : public JobConstruction {
 public:
   AutolinkExtractJobConstruction(CompilationEntityList inputs)
       : JobConstruction(CompilationEntityKind::AutolinkExtractJobConstruction,
-                        inputs, file::FileType::AutolinkFile) {}
+                        inputs, file::FileType::Autolink) {}
 
 public:
   static bool classof(const CompilationEntity *entity) {

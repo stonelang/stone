@@ -35,6 +35,22 @@ public:
     return fileName;
   }
 
+  bool IsPartOfStoneCompilation() const {
+    return file::IsPartOfStoneCompilation(GetFileType());
+  }
+  bool IsStoneFileType() const { return GetFileType() == file::FileType::Stone; }
+  bool IsObjectFileType() const { return GetFileType() == file::FileType::Object; }
+  bool IsAutolinkFileType() const {
+    return GetFileType() == file::FileType::Autolink;
+  }
+  bool IsStoneModuleFileType() const {
+    return GetFileType() == file::FileType::StoneModule;
+  }
+  bool HasValidFileType() const {
+    return (IsStoneFileType() || IsObjectFileType() ||
+            IsStoneModuleFileType() || IsAutolinkFileType());
+  }
+
 public:
   /// Return stone-standard file name from a buffer name set by
   /// llvm::MemoryBuffer::getFileOrSTDIN, which uses "<stdin>" instead of "-".

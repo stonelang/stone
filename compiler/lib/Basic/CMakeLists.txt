@@ -16,7 +16,7 @@ set(stone_basic_sources
 	DirScanner.cpp
 	DirWatcher.cpp
 	EditorPlaceholder.cpp
-	File.cpp
+	FileType.cpp
 	FileEntry.cpp
 	FileMgr.cpp
 	FileSystem.cpp

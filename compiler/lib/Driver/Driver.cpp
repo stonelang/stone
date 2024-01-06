@@ -173,9 +173,9 @@ Status BuildingJobConstructionEntities::BuildForCompileStyle(
 void BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
- // if (args.hasArg(opts::::EmbedBitCode)) {
+  // if (args.hasArg(opts::::EmbedBitCode)) {
 
- // }
+  // }
   auto compileJobConstruction = CompileJobConstruction::Create(
       driver, input,
       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
@@ -201,8 +201,7 @@ Status BuildingJobConstructionEntities::BuildForNormalCompileStyle() {
 
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile *input) {
-        assert(input);
-        assert(file::IsPartOfStoneCompilation(input->GetFileType()));
+        assert(input->IsPartOfStoneCompilation());
 
         switch (input->GetFileType()) {
         case FileType::Stone: {
