@@ -35,18 +35,61 @@ class DerivedArgList;
 namespace stone {
 
 class Driver;
-class CompilationEntities;
+class TopLevelCompilationEntitiesBuilder;
 
-class CompileStyleConsumer {};
-class CompileStyle {
-  llvm::SmallVector<const CompileStyleConsumer *> consumers;
+class TopLevelCompilationEntities final {
+  friend Driver;
+  friend Compilation;
+
+  // A graph of JobConstructions -- do not mark as cons since the
+  // JobConstruction creates the Job
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
+
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobs;
+
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const CompilationEntity *, 8> topLevelExternalJobs;
+
+public:
+  void AddTopLevelJobConstruction(const CompilationEntity *entity) {
+    topLevelJobConstructions.push_back(entity);
+  }
+  void AddTopLevelJob(const CompilationEntity *entity) {
+    topLevelJobs.push_back(entity);
+  }
+  void AddTopLevelExternalJob(const CompilationEntity *entity) {
+    topLevelExternalJobs.push_back(entity);
+  }
+
+public:
+  bool HasTopLevelJobConstructions() {
+    return (!topLevelJobConstructions.empty() &&
+            topLevelJobConstructions.size() > 0);
+  }
+  bool HasTopLevelJobs() {
+    return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
+  }
+  bool HasTopLevelExternalJobs() {
+    return (!topLevelExternalJobs.empty() && topLevelExternalJobs.size() > 0);
+  }
+
+public:
+  /// Get each top level job
+  void ForEachTopLevelJobConstruction(
+      std::function<void(const CompilationEntity *entity)> callback);
+
+  /// Get each top level job
+  void ForEachTopLevelJob(
+      std::function<void(const CompilationEntity *entity)> callback);
+
+  /// Get each top level job
+  void ForEachTopLevelExternalJob(
+      std::function<void(const CompilationEntity *entity)> callback);
 };
 
-class Driver;
-class CompilationBuilder;
-
-class TopLevelEntitiesConsumer
-    : public DriverAllocation<TopLevelEntitiesConsumer> {
+class TopLevelCompilationEntitiesConsumer
+    : public DriverAllocation<TopLevelCompilationEntitiesConsumer> {
 
 protected:
   Driver &driver;
@@ -55,7 +98,7 @@ protected:
   llvm::SmallVector<const CompilationEntity *> entities;
 
 public:
-  TopLevelEntitiesConsumer(Driver &driver);
+  TopLevelCompilationEntitiesConsumer(Driver &driver);
 
 protected:
   void AddCompilationEntity(const CompilationEntity *entity) {
@@ -66,7 +109,7 @@ protected:
   }
 
 public:
-  TopLevelEntitiesConsumer();
+  TopLevelCompilationEntitiesConsumer();
 
 public:
   virtual void CompletedCompilationEntity(const CompilationEntity *entity);
@@ -74,7 +117,7 @@ public:
 };
 
 class LinkJobConstructionEntitiesConsumer final
-    : public TopLevelEntitiesConsumer {
+    : public TopLevelCompilationEntitiesConsumer {
 public:
   LinkJobConstructionEntitiesConsumer(Driver &driver);
 
@@ -87,7 +130,7 @@ public:
 };
 
 class MergeModuleJobConstructionEntitiesConsumer final
-    : public TopLevelEntitiesConsumer {
+    : public TopLevelCompilationEntitiesConsumer {
 
 public:
   MergeModuleJobConstructionEntitiesConsumer(Driver &driver);
@@ -103,7 +146,7 @@ public:
 class JobConstructionEntitiesBuilder final {
 
   Driver &driver;
-  llvm::SmallVector<TopLevelEntitiesConsumer *> consumers;
+  llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
   JobConstructionEntitiesBuilder(Driver &driver);
@@ -116,8 +159,10 @@ public:
 
 public:
   bool IsTopLvelJobConstruction() { return (consumers.size() > 0); }
+
   void ForEachConsumer(
-      std::function<void(TopLevelEntitiesConsumer *consumer)> fn);
+      std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn);
+
   CompileJobConstruction *
   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
@@ -125,7 +170,7 @@ public:
   // void CompletedCompilationEntity(const DriverInputFile *entity);
 
 public:
-  void AddConsumer(TopLevelEntitiesConsumer *consumer);
+  void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
 };
 
 class JobEntitiesBuilder final {
@@ -135,17 +180,19 @@ public:
   JobEntitiesBuilder(Driver &driver);
 };
 
-class CompilationBuilder final {
+class TopLevelCompilationEntitiesBuilder final {
   Driver &driver;
+
 public:
   JobEntitiesBuilder jobEntities;
   JobConstructionEntitiesBuilder jobConstructionEntities;
 
 public:
-  CompilationBuilder(Driver &driver);
+  TopLevelCompilationEntitiesBuilder(Driver &driver);
 
 public:
-  Status BuildCompilationEntities(CompilationEntities &entities);
+  Status
+  BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
 
   JobEntitiesBuilder &GetJobEntitiesBuilder() { return jobEntities; }
   JobConstructionEntitiesBuilder &GetJobConstructionEntitiesBuilder() {
@@ -197,12 +244,8 @@ class Driver final {
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
-  // std::unique_ptr<CompileStyle> compileStyle;
-
-  std::unique_ptr<CompilationEntities> compilationEntities;
-
-  // JobEntitiesBuilder jobEntities;
-  // JobConstructionEntitiesBuilder jobConstructionEntities;
+  /// The top-level compilation entities
+  TopLevelCompilationEntities topLevelCompilationEntities;
 
 public:
   Driver();
@@ -230,10 +273,11 @@ public:
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
-  bool HasCompilationEntities() { return compilationEntities != nullptr; }
-  CompilationEntities &GetCompilationEntities() { return *compilationEntities; }
-  const CompilationEntities &GetCompilationEntities() const {
-    return *compilationEntities;
+  TopLevelCompilationEntities &GetTopLevelCompilationEntities() {
+    return topLevelCompilationEntities;
+  }
+  const TopLevelCompilationEntities &GetTopLevelCompilationEntities() const {
+    return topLevelCompilationEntities;
   }
 
 public:
@@ -274,7 +318,8 @@ public:
 
   // std::unique_ptr<CompileStyle> CreateCompileStyle();
 
-  Status BuildCompilationEntities(CompilationEntities &entities);
+  Status
+  BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
 
   /// Construct a compilation object for a given ToolChain
   ///
@@ -289,9 +334,7 @@ public:
 
 public:
   CompileStyleKind GetCompileStyle() const {
-    return GetDriverOptions()
-        .GetDriverOutputInfo()
-        .GetCompileStyleKind();
+    return GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind();
   }
   LinkMode GetLinkMode() const {
     return GetDriverOptions().GetDriverOutputInfo().GetLinkMode();
