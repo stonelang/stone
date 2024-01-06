@@ -70,56 +70,28 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
-// std::unique_ptr<CompileStyle> Driver::BuildCompileStyle() {
-//   // Just return normal for now
-//   return std::make_unique<NormalCompileStyle>(*this);
-// }
+void TopLevelCompilationEntities::ForEachTopLevelJobConstruction(
+    std::function<void(const CompilationEntity *entity)> callback) {
+  for (auto topLevelJobConstruction : topLevelJobConstructions) {
+    callback(topLevelJobConstruction);
+  }
+}
 
-// Status CompileStyle::BuildCompilationEntities(CompilationEntities &entities)
-// {
-//   llvm_unreachable("Illegal for for the base class CompileStyle");
-// }
+/// Get each top level job
+void TopLevelCompilationEntities::ForEachTopLevelJob(
+    std::function<void(const CompilationEntity *entity)> callback) {
+  for (auto topLevelJob : topLevelJobs) {
+    callback(topLevelJob);
+  }
+}
 
-// CompileStyle::CompileStyle(Driver &driver) : driver(driver) {}
-
-// NormalCompileStyle::NormalCompileStyle(Driver &driver) : CompileStyle(driver)
-// {}
-
-// Status
-// NormalCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
-
-//   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-//       [&](const DriverInputFile *input) {
-//         // auto fileTypeExecution =
-//         // driver.GetFileTypeExection(input.GetFileType());
-//         // fileTypeExecution.Execute(entities);
-//       });
-
-//   return Status();
-// }
-
-// Status
-// SingleCompileStyle::BuildCompilationEntities(CompilationEntities &entities) {
-
-//   if (driver.GetDriverOptions().GetInputsAndOutputs().HasNoInputs()) {
-//     return Status::MakeHasCompletionAndIsError();
-//   }
-
-//   auto jobConstruction = CompileJobConstruction::Create(
-//       driver,
-//       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-
-//   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-//       [&](const DriverInputFile *input) { jobConstruction->AddInput(input);
-//       });
-
-//   // Because this is a single you may be able to do this -- but, since you
-//   are
-//   // linking, maybe, the linker may be the top level job
-//   auto jobs = jobConstruction->ConstructJobs(driver);
-
-//   return Status();
-// }
+/// Get each top level job
+void TopLevelCompilationEntities::ForEachTopLevelExternalJob(
+    std::function<void(const CompilationEntity *entity)> callback) {
+  for (auto topLevelExternalJob : topLevelExternalJobs) {
+    callback(topLevelExternalJob);
+  }
+}
 
 TopLevelCompilationEntitiesConsumer::TopLevelCompilationEntitiesConsumer(
     Driver &driver)
@@ -152,30 +124,26 @@ LinkJobConstructionEntitiesConsumer::Create(Driver &driver) {
 void LinkJobConstructionEntitiesConsumer::CompletedCompilationEntity(
     const CompilationEntity *entity) {
 
+  // asert(entity->IsTopLevel());
+
   /// TODO: Some checks
-  AddCompilationEntity(entity);
+  AddTopLevelCompilationEntity(entity);
 }
 
 void LinkJobConstructionEntitiesConsumer::Finish() {
 
-  // Ok, now we can try to create the Link job
-  // and add it to
+  if (HasTopLevelCompilationEntities()) {
+    auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
+    if (outputInfo.HasStaticLibraryLinkMode()) {
 
-  if (!HasCompilationEntities()) {
-    return;
-  }
-
-  auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
-
-  if (outputInfo.HasStaticLibraryLinkMode()) {
-
-    driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-        StaticLinkJobConstruction::Create(driver, entities,
-                                          outputInfo.GetLinkMode()));
-  } else {
-    driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-        DynamicLinkJobConstruction::Create(
-            driver, entities, outputInfo.GetLinkMode(), outputInfo.HasLTO()));
+      driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
+          StaticLinkJobConstruction::Create(driver, entities,
+                                            outputInfo.GetLinkMode()));
+    } else {
+      driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
+          DynamicLinkJobConstruction::Create(
+              driver, entities, outputInfo.GetLinkMode(), outputInfo.HasLTO()));
+    }
   }
 }
 
@@ -259,7 +227,6 @@ CompileJobConstruction *
 JobConstructionEntitiesBuilder::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
-  ///
   // if (args.hasArg(opts::::EmbedBitCode)) {
   // }
   /// Check that it requires a PCH
@@ -356,14 +323,39 @@ TopLevelCompilationEntitiesBuilder::TopLevelCompilationEntitiesBuilder(
 Status TopLevelCompilationEntitiesBuilder::BuildTopLevelCompilationEntities(
     TopLevelCompilationEntities &entities) {
 
+  auto status = BuildTopLevelJobConstructionEntities(entities);
+  if (status.IsErrorOrHasCompletion()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  status = BuildTopLevelJobEntities(entities);
+  if (status.IsErrorOrHasCompletion()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+  return Status();
+}
+
+Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobConstructionEntities(
+    TopLevelCompilationEntities &entities) {
+
   jobConstructionEntities.AddConsumer(
       LinkJobConstructionEntitiesConsumer::Create(driver));
 
   jobConstructionEntities.AddConsumer(
       MergeModuleJobConstructionEntitiesConsumer::Create(driver));
 
-  auto status = jobConstructionEntities.BuildForCompileStyle(
+  return jobConstructionEntities.BuildForCompileStyle(
       driver.GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind());
+}
+Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobEntities(
+    TopLevelCompilationEntities &entities) {
+
+  if (!entities.HasTopLevelJobConstructions()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
+
+  entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
+    // consumer->CompletedCompilationEntity(entity);
+  });
 }
 
 void TopLevelCompilationEntitiesBuilder::Finish() {}

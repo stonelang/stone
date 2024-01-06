@@ -101,10 +101,10 @@ public:
   TopLevelCompilationEntitiesConsumer(Driver &driver);
 
 protected:
-  void AddCompilationEntity(const CompilationEntity *entity) {
+  void AddTopLevelCompilationEntity(const CompilationEntity *entity) {
     entities.push_back(entity);
   }
-  bool HasCompilationEntities() {
+  bool HasTopLevelCompilationEntities() {
     return (entities.empty() && entities.size() > 0);
   }
 
@@ -193,12 +193,11 @@ public:
 public:
   Status
   BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
+  Status
+  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities);
+  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
-  JobEntitiesBuilder &GetJobEntitiesBuilder() { return jobEntities; }
-  JobConstructionEntitiesBuilder &GetJobConstructionEntitiesBuilder() {
-    return jobConstructionEntities;
-  }
-
+public:
   void Finish();
 };
 
