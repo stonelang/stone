@@ -143,19 +143,17 @@ public:
   static MergeModuleJobConstructionEntitiesConsumer *Create(Driver &driver);
 };
 
-class JobConstructionEntitiesBuilder final {
+class TopLevelJobConstructionEntitiesBuilder final {
 
   Driver &driver;
   llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
-  JobConstructionEntitiesBuilder(Driver &driver);
+  TopLevelJobConstructionEntitiesBuilder(Driver &driver);
 
 public:
   Status BuildForCompileInvocation(CompileInvocationMode kind);
   Status BuildForMultipleCompileInvocation();
-  Status BuildForMultipleCompileInvocation(
-      TopLevelCompilationEntitiesConsumer *consumer);
   Status BuildForSingleCompileInvocation();
   Status BuildForBatchCompileInvocation();
 
@@ -170,6 +168,8 @@ public:
 
   void CompletedCompilationEntity(const CompilationEntity *entity);
   // void CompletedCompilationEntity(const DriverInputFile *entity);
+
+  void Finish();
 
 public:
   void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
@@ -190,32 +190,18 @@ public:
   static JobEntitiesConsumer *Create(Driver &driver);
 };
 
-class JobEntitiesBuilder final {
+class TopLevelJobEntitiesBuilder final {
   Driver &driver;
   llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
-  JobEntitiesBuilder(Driver &driver);
-};
-
-class TopLevelCompilationEntitiesBuilder final {
-  Driver &driver;
+  TopLevelJobEntitiesBuilder(Driver &driver);
 
 public:
-  JobEntitiesBuilder jobEntities;
-  JobConstructionEntitiesBuilder jobConstructionEntities;
+  void BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
 public:
-  TopLevelCompilationEntitiesBuilder(Driver &driver);
-
-public:
-  Status
-  BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
-  Status
-  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities);
-  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
-
-public:
+  void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
   void Finish();
 };
 
@@ -263,6 +249,12 @@ class Driver final {
 
   /// The top-level compilation entities
   TopLevelCompilationEntities topLevelCompilationEntities;
+
+  /// Builds the job entities
+  TopLevelJobEntitiesBuilder jobEntitiesBuilder;
+
+  /// Build the JobConstruction entities
+  TopLevelJobConstructionEntitiesBuilder jobConstructionEntitiesBuilder;
 
 public:
   Driver();
@@ -337,6 +329,9 @@ public:
 
   Status
   BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
+  Status
+  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities);
+  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
   /// Construct a compilation object for a given ToolChain
   ///
@@ -372,7 +367,7 @@ public:
   /// Build the jobs
   Status BuildTopLevelJobs();
 
-  void ComputeMainOutputForTopLevelJob(const JobConstruction *jobConstruction);
+  void ComputeJobMainOutput(const JobConstruction *jobConstruction);
 
   const Job *CastToJob(const CompilationEntity *entity) {
     return llvm::dyn_cast<Job>(entity);

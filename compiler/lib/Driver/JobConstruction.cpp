@@ -16,16 +16,21 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
 }
 
 Job *JobConstruction::ConstructJob(const Driver &driver,
-                                   JobConstruction *parent) {
+                                   JobConstruction *construction) {
 
+  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building jobs",
+                                                         construction);
+
+  if (construction->FirstInput()->IsInput()) {
+  }
+  // switch(construction->FirstInput())
   /// If you override, then you do not have to perform this action
-
   // if (driver.ShouldGenerateModule() &&
   //     (llvm::isa<CompileJobConstruction>(parent) ||
   //      llvm::isa<MergeModuleJobConstruction>(parent))) {
   // }
 
-  assert(driver.HasToolChain());
+  // assert(driver.HasToolChain());
 
   // driver.ComputeJobMainOutput();
   // return driver.GetToolChain().ConstructJob(this, driver.GetCompilation(),
@@ -33,8 +38,10 @@ Job *JobConstruction::ConstructJob(const Driver &driver,
 
   return nullptr;
 }
+void JobConstruction::ComputeJobMainOutput() {}
 
 Job *JobConstruction::ConstructJob(const Driver &driver) {
+
   return ConstructJob(driver, this);
 }
 

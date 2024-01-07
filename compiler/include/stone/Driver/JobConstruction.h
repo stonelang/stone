@@ -25,7 +25,10 @@ protected:
                   file::FileType fileType);
 
 protected:
-  virtual Job *ConstructJob(const Driver &driver, JobConstruction *parent);
+  virtual Job *ConstructJob(const Driver &driver,
+                            JobConstruction *construction);
+
+  void ComputeJobMainOutput();
 
 public:
   virtual Job *ConstructJob(const Driver &driver);

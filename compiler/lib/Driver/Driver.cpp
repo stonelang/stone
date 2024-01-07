@@ -14,7 +14,9 @@ using namespace stone;
 using namespace stone::file;
 using namespace llvm::opt;
 
-Driver::Driver() : optTable(stone::CreateOptTable()) {}
+Driver::Driver()
+    : optTable(stone::CreateOptTable()), jobEntitiesBuilder(*this),
+      jobConstructionEntitiesBuilder(*this) {}
 
 Driver::~Driver() {}
 
@@ -197,17 +199,18 @@ void MergeModuleJobConstructionEntitiesConsumer::Finish() {
   // But, you have to create a special M
 }
 
-JobConstructionEntitiesBuilder::JobConstructionEntitiesBuilder(Driver &driver)
+TopLevelJobConstructionEntitiesBuilder::TopLevelJobConstructionEntitiesBuilder(
+    Driver &driver)
     : driver(driver) {}
 
-void JobConstructionEntitiesBuilder::AddConsumer(
+void TopLevelJobConstructionEntitiesBuilder::AddConsumer(
     TopLevelCompilationEntitiesConsumer *consumer) {
   if (consumer) {
     consumers.push_back(consumer);
   }
 }
 
-Status JobConstructionEntitiesBuilder::BuildForCompileInvocation(
+Status TopLevelJobConstructionEntitiesBuilder::BuildForCompileInvocation(
     CompileInvocationMode compileStyle) {
   switch (compileStyle) {
   case CompileInvocationMode::Multiple:
@@ -222,7 +225,7 @@ Status JobConstructionEntitiesBuilder::BuildForCompileInvocation(
 }
 
 CompileJobConstruction *
-JobConstructionEntitiesBuilder::CreateCompileJobConstruction(
+TopLevelJobConstructionEntitiesBuilder::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
   // if (args.hasArg(opts::::EmbedBitCode)) {
@@ -252,14 +255,15 @@ JobConstructionEntitiesBuilder::CreateCompileJobConstruction(
   return compileJobConstruction;
 }
 
-void JobConstructionEntitiesBuilder::CompletedCompilationEntity(
+void TopLevelJobConstructionEntitiesBuilder::CompletedCompilationEntity(
     const CompilationEntity *entity) {
   ForEachConsumer([&](TopLevelCompilationEntitiesConsumer *consumer) {
     consumer->CompletedCompilationEntity(entity);
   });
 }
 
-Status JobConstructionEntitiesBuilder::BuildForMultipleCompileInvocation() {
+Status
+TopLevelJobConstructionEntitiesBuilder::BuildForMultipleCompileInvocation() {
   assert(driver.IsMultipleCompileInvocation());
 
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
@@ -282,7 +286,8 @@ Status JobConstructionEntitiesBuilder::BuildForMultipleCompileInvocation() {
 
   return Status();
 }
-Status JobConstructionEntitiesBuilder::BuildForSingleCompileInvocation() {
+Status
+TopLevelJobConstructionEntitiesBuilder::BuildForSingleCompileInvocation() {
   assert(driver.IsSingleCompileInvocation());
 
   auto compileJobConstruction = CreateCompileJobConstruction();
@@ -297,33 +302,28 @@ Status JobConstructionEntitiesBuilder::BuildForSingleCompileInvocation() {
 
   return Status();
 }
-Status JobConstructionEntitiesBuilder::BuildForBatchCompileInvocation() {
+Status
+TopLevelJobConstructionEntitiesBuilder::BuildForBatchCompileInvocation() {
   assert(driver.IsBatchCompileInvocation());
 
   return Status();
 }
 
-void JobConstructionEntitiesBuilder::ForEachConsumer(
+void TopLevelJobConstructionEntitiesBuilder::ForEachConsumer(
     std::function<void(TopLevelCompilationEntitiesConsumer *consumer)> fn) {
   for (auto consumer : consumers) {
     fn(consumer);
   }
 }
 
-JobEntitiesBuilder::JobEntitiesBuilder(Driver &driver) : driver(driver) {}
+void TopLevelJobConstructionEntitiesBuilder::Finish() {}
 
-// void JobEntitiesBuilder::AddConsumer(
-//     TopLevelCompilationEntitiesConsumer *consumer) {
-//   if (consumer) {
-//     consumers.push_back(consumer);
-//   }
-// }
+TopLevelJobEntitiesBuilder::TopLevelJobEntitiesBuilder(Driver &driver)
+    : driver(driver) {}
 
-TopLevelCompilationEntitiesBuilder::TopLevelCompilationEntitiesBuilder(
-    Driver &driver)
-    : driver(driver), jobEntities(driver), jobConstructionEntities(driver) {}
+void TopLevelJobEntitiesBuilder::Finish() {}
 
-Status TopLevelCompilationEntitiesBuilder::BuildTopLevelCompilationEntities(
+Status Driver::BuildTopLevelCompilationEntities(
     TopLevelCompilationEntities &entities) {
 
   auto status = BuildTopLevelJobConstructionEntities(entities);
@@ -337,41 +337,35 @@ Status TopLevelCompilationEntitiesBuilder::BuildTopLevelCompilationEntities(
   return Status();
 }
 
-Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobConstructionEntities(
+Status Driver::BuildTopLevelJobConstructionEntities(
     TopLevelCompilationEntities &entities) {
 
-  jobConstructionEntities.AddConsumer(
-      LinkJobConstructionEntitiesConsumer::Create(driver));
+  STONE_DEFER { jobConstructionEntitiesBuilder.Finish(); };
 
-  jobConstructionEntities.AddConsumer(
-      MergeModuleJobConstructionEntitiesConsumer::Create(driver));
+  jobConstructionEntitiesBuilder.AddConsumer(
+      LinkJobConstructionEntitiesConsumer::Create(*this));
 
-  return jobConstructionEntities.BuildForCompileInvocation(
-      driver.GetCompileInvocationMode());
+  jobConstructionEntitiesBuilder.AddConsumer(
+      MergeModuleJobConstructionEntitiesConsumer::Create(*this));
+
+  return jobConstructionEntitiesBuilder.BuildForCompileInvocation(GetCompileInvocationMode());
 }
-Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobEntities(
-    TopLevelCompilationEntities &entities) {
+Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
+
+
+  STONE_DEFER { jobEntitiesBuilder.Finish(); };
 
   if (!entities.HasTopLevelJobConstructions()) {
     return Status::MakeHasCompletionAndIsError();
   }
 
   entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
+    auto jc = llvm::dyn_cast<JobConstruction>(entity);
+
     // auto topLevelJob = driver.CastToJobConstruction(entity)->ConstructJob();
 
     // auto topLevelJob = llmv::dyn_cast<Job>
   });
-}
-
-void TopLevelCompilationEntitiesBuilder::Finish() {}
-
-Status Driver::BuildTopLevelCompilationEntities(
-    TopLevelCompilationEntities &entities) {
-
-  TopLevelCompilationEntitiesBuilder buildingEntities(*this);
-  STONE_DEFER { buildingEntities.Finish(); };
-
-  return buildingEntities.BuildTopLevelCompilationEntities(entities);
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
