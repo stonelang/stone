@@ -206,6 +206,9 @@ public:
     return inputs.front();
   }
 
+  bool ForEachInput(
+      std::function<void(const CompilationEntity *input)> callback) const;
+
 public:
   static bool classof(const CompilationEntity *entity) {
     return (entity->GetKind() >=

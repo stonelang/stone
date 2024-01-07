@@ -21,8 +21,7 @@ protected:
                   file::FileType fileType);
 
 protected:
-  virtual Job *ConstructSelfJob(const Driver &driver);
-  // virtual Job *ConstructInputJob(const Driver &driver);
+  virtual Job *ConstructJob(const Driver &driver, JobConstruction *parent);
 
 public:
   virtual Job *ConstructJob(const Driver &driver);
@@ -46,11 +45,11 @@ public:
       : JobConstruction(kind, inputs, fileType) {}
 
 protected:
-  Job *ConstructSelfJob(const Driver &driver) override {}
-  // virtual Job *ConstructInputJob(const Driver &driver){}
+  // Job *ConstructSelfJob(const Driver &driver) override {}
+  //  virtual Job *ConstructInputJob(const Driver &driver){}
 
 public:
-  Job *ConstructJob(const Driver &driver) override {}
+  // Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -63,7 +62,7 @@ public:
 class CompileJobConstruction final : public IncrementalJobConstruction {
 
 protected:
-  Job *ConstructSelfJob(const Driver &driver) override;
+  // Job *ConstructJob(const Driver &driver, JobContruction* parent) override;
 
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
@@ -76,7 +75,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  Job *ConstructJob(const Driver &driver) override;
+  // Job *ConstructJob(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -95,7 +94,7 @@ public:
   MergeModuleJobConstruction(CompilationEntityList inputs);
 
 public:
-  Job *ConstructJob(const Driver &driver) override {}
+  // Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -112,7 +111,7 @@ class LinkJobConstruction : public JobConstruction {
   LinkMode linkMode;
 
 protected:
-  Job *ConstructSelfJob(const Driver &driver) override {}
+  // Job *ConstructSelfJob(const Driver &driver) override {}
 
 public:
   LinkJobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
@@ -121,7 +120,7 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
-  Job *ConstructJob(const Driver &driver) override {}
+  // Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -136,14 +135,14 @@ class DynamicLinkJobConstruction final : public LinkJobConstruction {
   bool withLTO;
 
 protected:
-  Job *ConstructSelfJob(const Driver &driver) override;
+  // Job *ConstructSelfJob(const Driver &driver) override;
 
 public:
   DynamicLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode,
                              bool withLTO = false);
 
 public:
-  Job *ConstructJob(const Driver &driver) override;
+  // Job *ConstructJob(const Driver &driver) override;
   bool WithLTO() const { return withLTO; }
 
 public:
@@ -162,13 +161,13 @@ public:
 class StaticLinkJobConstruction final : public LinkJobConstruction {
 
 protected:
-  Job *ConstructSelfJob(const Driver &driver) override;
+  // Job *ConstructJob(const Driver &driver, JobConstructin* parent) override;
 
 public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
 
 public:
-  Job *ConstructJob(const Driver &driver) override;
+  //Job *ConstructJob(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -192,7 +191,7 @@ public:
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
-  Job *ConstructJob(const Driver &driver) override {}
+  // Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -216,7 +215,7 @@ public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
 
-  Job *ConstructJob(const Driver &driver) override {}
+  // Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const JobConstruction *construction) {

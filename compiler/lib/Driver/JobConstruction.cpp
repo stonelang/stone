@@ -11,17 +11,11 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
                                  file::FileType fileType)
     : TopLevelCompilationEntity(kind, inputs, fileType) {}
 
-Job *JobConstruction::ConstructSelfJob(const Driver &driver) {
-  llvm_unreachable("JobConstruction base class cannot construct a self job!");
-}
-// Job *JobConstruction::ConstructInputJob(const Driver &driver) {
-
-//   llvm_unreachable("JobConstruction base class cannot construct an input
-//   job!");
-// }
+Job *JobConstruction::ConstructJob(const Driver &driver,
+                                   JobConstruction *parent) {}
 
 Job *JobConstruction::ConstructJob(const Driver &driver) {
-  llvm_unreachable("JobConstruction base class cannot construct job!");
+  return ConstructJob(driver, this);
 }
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
@@ -39,27 +33,25 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
   assert(file::IsOutputableFileType(outputFileType));
 }
 
-Job *CompileJobConstruction::ConstructSelfJob(const Driver &driver) {
-  return nullptr;
-}
+// Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
 
-Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
+//   assert(HasInputs());
 
-  assert(HasInputs());
+//   // if (FirstInput()->IsInput()) {
+//   //   // You have nothing to do but to build the job
+//   // }
 
-  // if (FirstInput()->IsInput()) {
-  //   // You have nothing to do but to build the job
-  // }
+//   /// If ipu
 
-  /// If ipu
-
-  /// if first input is an input file, then you just create the job
-  /// else, if the first input is a JobConstruction, then you must create a job
-  /// for it like wise
-  // but, it would be nice to pass the parent just so that it can add itself as
-  // an input into the parent job
-  return nullptr;
-}
+//   /// if first input is an input file, then you just create the job
+//   /// else, if the first input is a JobConstruction, then you must create a
+//   job
+//   /// for it like wise
+//   // but, it would be nice to pass the parent just so that it can add itself
+//   as
+//   // an input into the parent job
+//   return nullptr;
+// }
 
 CompileJobConstruction *
 CompileJobConstruction::Create(const Driver &driver, FileType outputFileType) {
@@ -103,14 +95,14 @@ DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
   return new (driver) DynamicLinkJobConstruction(inputs, linkMode, withLTO);
 }
 
-Job *DynamicLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+// Job *DynamicLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
 
-  return nullptr;
-}
-Job *DynamicLinkJobConstruction::ConstructJob(const Driver &driver) {
+//   return nullptr;
+// }
+// Job *DynamicLinkJobConstruction::ConstructJob(const Driver &driver) {
 
-  return nullptr;
-}
+//   return nullptr;
+// }
 
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     CompilationEntityList inputs, LinkMode linkMode)
@@ -125,13 +117,13 @@ StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
   return new (driver) StaticLinkJobConstruction(inputs, linkMode);
 }
 
-Job *StaticLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
-  return nullptr;
-}
+// Job *StaticLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+//   return nullptr;
+// }
 
-Job *StaticLinkJobConstruction::ConstructJob(const Driver &driver) {
-  return nullptr;
-}
+// Job *StaticLinkJobConstruction::ConstructJob(const Driver &driver) {
+//   return nullptr;
+// }
 
 BackendJobConstruction::BackendJobConstruction(const CompilationEntity *input,
                                                FileType outputFileType,
