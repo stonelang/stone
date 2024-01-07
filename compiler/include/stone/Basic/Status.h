@@ -37,7 +37,7 @@ public:
 
   void SetIsError() { isError = true; }
   void ClearIsError() { isError = false; }
-  int GetFlag() { IsError() ? 1 : 0; }
+  int GetFlag() { return IsError() ? 1 : 0; }
 
   void SetHasCompletion() { isCompletion = true; }
   void SetHasCompletionAndIsError() {

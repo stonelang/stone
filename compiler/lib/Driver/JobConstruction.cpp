@@ -6,9 +6,17 @@
 using namespace stone;
 using namespace stone::file;
 
-llvm::ArrayRef<const Job *>
-JobConstruction::ConstructJobs(const Driver &driver) {
-  llvm_unreachable("JobConstruction base class cannot construct jobs!");
+Job *JobConstruction::ConstructSelfJob(const Driver &driver) {
+  llvm_unreachable("JobConstruction base class cannot construct a self job!");
+}
+// Job *JobConstruction::ConstructInputJob(const Driver &driver) {
+
+//   llvm_unreachable("JobConstruction base class cannot construct an input
+//   job!");
+// }
+
+Job *JobConstruction::ConstructJob(const Driver &driver) {
+  llvm_unreachable("JobConstruction base class cannot construct job!");
 }
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)

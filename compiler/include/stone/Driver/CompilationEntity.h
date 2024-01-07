@@ -48,8 +48,9 @@ public:
   enum class CompilationEntityFlags : uint8_t {
     None = 1 << 0,
     AllowTopLevel = 1 << 1,
-    AllowFileType = 1 << 2,
-    AllowOutput = 1 << 3,
+    IsTopLevel = 1 << 2,
+    AllowFileType = 1 << 3,
+    AllowOutput = 1 << 4,
   };
 
   using size_type = llvm::ArrayRef<const CompilationEntity *>::size_type;
@@ -126,6 +127,15 @@ public:
     compilationEntityOpts |= CompilationEntityFlags::AllowTopLevel;
   }
   void ClearAllowTopLevel() {}
+
+  bool HasIsTopLevel() const {
+    return compilationEntityOpts.contains(CompilationEntityFlags::IsTopLevel);
+  }
+  void AddIsTopLevel() {
+    assert(!IsInput());
+    compilationEntityOpts |= CompilationEntityFlags::IsTopLevel;
+  }
+  void ClearIsTopLevel() {}
 
   bool HasAllowFileType() const {
     return compilationEntityOpts.contains(

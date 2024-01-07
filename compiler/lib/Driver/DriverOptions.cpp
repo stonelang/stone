@@ -28,7 +28,7 @@ bool DriverOptions::IsCompileOnlyAction() const {
   return (IsCompilableAction() && !IsLinkableAction());
 }
 bool DriverOptions::IsLinkableAction() const {
-  return (driverOutputInfo.HasLinkMode());
+  return (driverOutputInfo.ShouldLink());
 }
 bool DriverOptions::IsLinkOnlyAction() const {
   return (IsLinkableAction() && !IsCompilableAction());
@@ -162,7 +162,8 @@ Status DriverOptionsConverter::Convert() {
   if (!driverOpts.HasWorkingDirectory()) {
     return Status::MakeHasCompletionAndIsError();
   }
-  driverOpts.driverOutputInfo.compileStyleKind = ComputeCompileStyleKind();
+  driverOpts.driverOutputInfo.compileInvocationMode =
+      ComputeCompileInvocationMode();
 
   driverOpts.toolChainKind = ComputeToolChainKind();
   if (!driverOpts.HasToolChainKind()) {
@@ -170,7 +171,7 @@ Status DriverOptionsConverter::Convert() {
   }
 
   driverOpts.driverOutputInfo.linkMode = ComputeLinkMode();
-  if (!driverOpts.GetDriverOutputInfo().HasLinkMode()) {
+  if (!driverOpts.GetDriverOutputInfo().ShouldLink()) {
     return Status::MakeHasCompletionAndIsError();
   }
   return Status();
@@ -187,8 +188,8 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
 }
 
 // TODO: Just return for now
-CompileStyleKind DriverOptionsConverter::ComputeCompileStyleKind() {
-  return CompileStyleKind::Normal;
+CompileInvocationMode DriverOptionsConverter::ComputeCompileInvocationMode() {
+  return CompileInvocationMode::Multiple;
 }
 
 ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {

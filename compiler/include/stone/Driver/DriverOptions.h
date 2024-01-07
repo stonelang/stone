@@ -56,22 +56,15 @@ enum class CompilationOutputLevel {
 
 /// This mode controls the manner in with compile is invoked.
 /// p := -primary-file
-enum class CompileStyleKind : UInt8 {
-  /// n input (s), n compile(s), n * n  parses
-  /// Ex: compile_1(1=p ,...,n), compile_2(1,2=p,...,n),...,
-  /// compile_n(1,....,n=p)
-  Normal = 0,
+enum class CompileInvocationMode : UInt8 {
+  /// n input(s), n compile(s), n parses
+  /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
+  Multiple = 0,
   /// n inputs, 1 compile, n parses, p := 0
   /// Ex: compile(1,....,n)
   Single,
-  /// n input(s), n compile(s), n parses
-  /// Ex: compile_1(1=p), compile_2(2=p),..., compile_n(n=p)
-  Flat,
-  /// n input (s), j CPU(s), j p(s), j compile(s), n * j parses
-  /// Ex: compile_1(1=p,...,n), compile_2(1,2=p,...,n),...,
-  /// compile_j(1,...,p=j,...,n)
-  CPUCount,
-
+  /// Batch
+  Batch,
 };
 
 enum class ToolChainKind {
@@ -219,7 +212,7 @@ public:
 private:
   ToolChainKind ComputeToolChainKind();
   llvm::StringRef ComputeWorkingDirectory();
-  CompileStyleKind ComputeCompileStyleKind();
+  CompileInvocationMode ComputeCompileInvocationMode();
   LTOKind ComputeLTO();
   LinkMode ComputeLinkMode();
   void SetTriple(llvm::Triple triple);
@@ -241,7 +234,7 @@ class DriverOutputInfo final {
   unsigned numThreads = 0;
 
   /// The mode in which the driver should invoke the frontend.
-  CompileStyleKind compileStyleKind = CompileStyleKind::Normal;
+  CompileInvocationMode compileInvocationMode = CompileInvocationMode::Multiple;
 
   // llvm::Optional<MSVCRuntime> msvRuntimeVariant = llvm::None;
 
@@ -302,20 +295,18 @@ public:
   file::FileType GetOutputFileType() const { return outputFileType; }
 
   /// \check that there exist a tool chain kind
-  bool HasLinkMode() const { return linkMode != LinkMode::None; }
-
-  bool HasStaticLibraryLinkMode() const {
-    return linkMode == LinkMode::StaticLibrary;
-  }
-  bool HasDynamicLibraryLinkMode() const {
-    return linkMode == LinkMode::DynamicLibrary;
-  }
-  bool HasExecutableLinkMode() const {
-    return linkMode == LinkMode::Executable;
-  }
+  bool ShouldLink() const { return linkMode != LinkMode::None; }
 
   /// \return the tool chain kind computed
   LinkMode GetLinkMode() const { return linkMode; }
+
+  bool IsStaticLibraryLink() const {
+    return linkMode == LinkMode::StaticLibrary;
+  }
+  bool IsDynamicLibraryLink() const {
+    return linkMode == LinkMode::DynamicLibrary;
+  }
+  bool IsExecutableLink() const { return linkMode == LinkMode::Executable; }
 
   String GetModuleNmae() { return moduleName; }
 
@@ -332,17 +323,20 @@ public:
   }
 
   bool ShouldGenerateModule() const { return shouldGenerateModule; }
-  bool IsNormalCompileStyle() const {
-    return compileStyleKind == CompileStyleKind::Normal;
+
+  bool IsMultipleCompileInvocation() const {
+    return compileInvocationMode == CompileInvocationMode::Multiple;
   }
-  bool IsSingleCompileStyle() const {
-    return compileStyleKind == CompileStyleKind::Single;
+  bool IsSingleCompileInvocation() const {
+    return compileInvocationMode == CompileInvocationMode::Single;
   }
-  bool IsFlatCompileStyle() const {
-    return compileStyleKind == CompileStyleKind::Flat;
+  bool IsBatchCompileInvocation() const {
+    return compileInvocationMode == CompileInvocationMode::Batch;
   }
 
-  CompileStyleKind GetCompileStyleKind() const { return compileStyleKind; }
+  CompileInvocationMode GetCompileInvocationMode() const {
+    return compileInvocationMode;
+  }
 
 public:
   /// Might this sort of compile have explicit primary inputs?

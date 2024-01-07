@@ -21,8 +21,12 @@ protected:
                   file::FileType fileType)
       : TopLevelCompilationEntity(kind, inputs, fileType) {}
 
+protected:
+  virtual Job *ConstructSelfJob(const Driver &driver);
+  // virtual Job *ConstructInputJob(const Driver &driver);
+
 public:
-  virtual llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver);
+  virtual Job *ConstructJob(const Driver &driver);
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -42,8 +46,12 @@ public:
                              file::FileType fileType)
       : JobConstruction(kind, inputs, fileType) {}
 
+protected:
+  virtual Job *ConstructSelfJob(const Driver &driver) {}
+  // virtual Job *ConstructInputJob(const Driver &driver){}
+
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -74,7 +82,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -93,7 +101,7 @@ public:
   MergeModuleJobConstruction(CompilationEntityList inputs);
 
 public:
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -116,7 +124,7 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -177,7 +185,7 @@ public:
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -201,7 +209,7 @@ public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
 
-  llvm::ArrayRef<const Job *> ConstructJobs(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override {}
 
 public:
   static bool classof(const JobConstruction *construction) {

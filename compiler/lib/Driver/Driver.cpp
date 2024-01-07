@@ -110,12 +110,12 @@ LinkJobConstructionEntitiesConsumer::LinkJobConstructionEntitiesConsumer(
     Driver &driver)
     : TopLevelCompilationEntitiesConsumer(driver) {
 
-  assert(driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode());
+  assert(driver.GetDriverOptions().GetDriverOutputInfo().ShouldLink());
 }
 
 LinkJobConstructionEntitiesConsumer *
 LinkJobConstructionEntitiesConsumer::Create(Driver &driver) {
-  if (driver.GetDriverOptions().GetDriverOutputInfo().HasLinkMode()) {
+  if (driver.GetDriverOptions().GetDriverOutputInfo().ShouldLink()) {
     return new (driver) LinkJobConstructionEntitiesConsumer(driver);
   }
   return nullptr;
@@ -134,7 +134,7 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
 
   if (HasTopLevelCompilationEntities()) {
     auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
-    if (outputInfo.HasStaticLibraryLinkMode()) {
+    if (outputInfo.IsStaticLibraryLink()) {
 
       driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
           StaticLinkJobConstruction::Create(driver, entities,
@@ -151,20 +151,18 @@ MergeModuleJobConstructionEntitiesConsumer::
     MergeModuleJobConstructionEntitiesConsumer(Driver &driver)
     : TopLevelCompilationEntitiesConsumer(driver) {
 
-  assert(
-      !driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle());
-  assert(
-      driver.GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule());
+  assert(!driver.IsSingleCompileInvocation());
+  assert(driver.ShouldGenerateModule());
 }
 
 MergeModuleJobConstructionEntitiesConsumer *
 MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
 
-  if (driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle()) {
+  if (driver.IsSingleCompileInvocation()) {
     return nullptr;
   }
 
-  if (!driver.GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule()) {
+  if (!driver.ShouldGenerateModule()) {
     return nullptr;
   }
 
@@ -209,15 +207,15 @@ void JobConstructionEntitiesBuilder::AddConsumer(
   }
 }
 
-Status JobConstructionEntitiesBuilder::BuildForCompileStyle(
-    CompileStyleKind compileStyle) {
+Status JobConstructionEntitiesBuilder::BuildForCompileInvocation(
+    CompileInvocationMode compileStyle) {
   switch (compileStyle) {
-  case CompileStyleKind::Normal:
-    return BuildForNormalCompileStyle();
-  case CompileStyleKind::Single:
-    return BuildForFlatCompileStyle();
-  case CompileStyleKind::Flat:
-    return BuildForSingleCompileStyle();
+  case CompileInvocationMode::Multiple:
+    return BuildForMultipleCompileInvocation();
+  case CompileInvocationMode::Single:
+    return BuildForSingleCompileInvocation();
+  case CompileInvocationMode::Batch:
+    return BuildForBatchCompileInvocation();
   default:
     llvm_unreachable("Invalid compile invocation kind");
   }
@@ -240,9 +238,7 @@ JobConstructionEntitiesBuilder::CreateCompileJobConstruction(
         driver,
         driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-    if (driver.GetDriverOptions()
-            .GetDriverOutputInfo()
-            .IsSingleCompileStyle()) {
+    if (driver.IsSingleCompileInvocation()) {
     }
   }
   if (!IsTopLvelJobConstruction()) {
@@ -263,7 +259,8 @@ void JobConstructionEntitiesBuilder::CompletedCompilationEntity(
   });
 }
 
-Status JobConstructionEntitiesBuilder::BuildForNormalCompileStyle() {
+Status JobConstructionEntitiesBuilder::BuildForMultipleCompileInvocation() {
+  assert(driver.IsMultipleCompileInvocation());
 
   driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile *input) {
@@ -285,10 +282,8 @@ Status JobConstructionEntitiesBuilder::BuildForNormalCompileStyle() {
 
   return Status();
 }
-Status JobConstructionEntitiesBuilder::BuildForSingleCompileStyle() {
-
-  assert(
-      driver.GetDriverOptions().GetDriverOutputInfo().IsSingleCompileStyle());
+Status JobConstructionEntitiesBuilder::BuildForSingleCompileInvocation() {
+  assert(driver.IsSingleCompileInvocation());
 
   auto compileJobConstruction = CreateCompileJobConstruction();
   assert(compileJobConstruction);
@@ -302,7 +297,8 @@ Status JobConstructionEntitiesBuilder::BuildForSingleCompileStyle() {
 
   return Status();
 }
-Status JobConstructionEntitiesBuilder::BuildForFlatCompileStyle() {
+Status JobConstructionEntitiesBuilder::BuildForBatchCompileInvocation() {
+  assert(driver.IsBatchCompileInvocation());
 
   return Status();
 }
@@ -343,8 +339,8 @@ Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobConstructionEntities(
   jobConstructionEntities.AddConsumer(
       MergeModuleJobConstructionEntitiesConsumer::Create(driver));
 
-  return jobConstructionEntities.BuildForCompileStyle(
-      driver.GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind());
+  return jobConstructionEntities.BuildForCompileInvocation(
+      driver.GetCompileInvocationMode());
 }
 Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobEntities(
     TopLevelCompilationEntities &entities) {
@@ -354,7 +350,9 @@ Status TopLevelCompilationEntitiesBuilder::BuildTopLevelJobEntities(
   }
 
   entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
-    // consumer->CompletedCompilationEntity(entity);
+    // auto topLevelJob = driver.CastToJobConstruction(entity)->ConstructJob();
+
+    // auto topLevelJob = llmv::dyn_cast<Job>
   });
 }
 

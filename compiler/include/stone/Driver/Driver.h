@@ -152,10 +152,10 @@ public:
   JobConstructionEntitiesBuilder(Driver &driver);
 
 public:
-  Status BuildForCompileStyle(CompileStyleKind kind);
-  Status BuildForNormalCompileStyle();
-  Status BuildForSingleCompileStyle();
-  Status BuildForFlatCompileStyle();
+  Status BuildForCompileInvocation(CompileInvocationMode kind);
+  Status BuildForMultipleCompileInvocation();
+  Status BuildForSingleCompileInvocation();
+  Status BuildForBatchCompileInvocation();
 
 public:
   bool IsTopLvelJobConstruction() { return (consumers.size() > 0); }
@@ -332,17 +332,6 @@ public:
   Compilation *BuildCompilation(const ToolChain &toolChain);
 
 public:
-  CompileStyleKind GetCompileStyle() const {
-    return GetDriverOptions().GetDriverOutputInfo().GetCompileStyleKind();
-  }
-  LinkMode GetLinkMode() const {
-    return GetDriverOptions().GetDriverOutputInfo().GetLinkMode();
-  }
-  bool HasLinkMode() const {
-    return GetDriverOptions().GetDriverOutputInfo().HasLinkMode();
-  }
-
-public:
   /// Creates a DriverInput file using a
   DriverInputFile *CreateInput(llvm::StringRef fileName,
                                file::FileType = file::FileType::None);
@@ -372,6 +361,43 @@ public:
   }
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;
+
+public:
+  /// These are use a lot -- put them here for covenience.
+  CompileInvocationMode GetCompileInvocationMode() const {
+    return GetDriverOptions().GetDriverOutputInfo().GetCompileInvocationMode();
+  }
+  bool IsMultipleCompileInvocation() const {
+    return GetDriverOptions()
+        .GetDriverOutputInfo()
+        .IsMultipleCompileInvocation();
+  }
+  bool IsSingleCompileInvocation() const {
+    return GetDriverOptions().GetDriverOutputInfo().IsSingleCompileInvocation();
+  }
+  bool IsBatchCompileInvocation() const {
+    return GetDriverOptions().GetDriverOutputInfo().IsBatchCompileInvocation();
+  }
+
+  LinkMode GetLinkMode() const {
+    return GetDriverOptions().GetDriverOutputInfo().GetLinkMode();
+  }
+  bool ShouldLink() const {
+    return GetDriverOptions().GetDriverOutputInfo().ShouldLink();
+  }
+
+  bool IsStaticLibraryLink() const {
+    return GetDriverOptions().GetDriverOutputInfo().IsStaticLibraryLink();
+  }
+  bool IsDynamicLibraryLink() const {
+    return GetDriverOptions().GetDriverOutputInfo().IsDynamicLibraryLink();
+  }
+  bool IsExecutableLink() const {
+    return GetDriverOptions().GetDriverOutputInfo().IsExecutableLink();
+  }
+  bool ShouldGenerateModule() const {
+    return GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule();
+  }
 
 public:
   /// Print the help text.
