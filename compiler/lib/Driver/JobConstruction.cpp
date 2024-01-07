@@ -45,8 +45,20 @@ Job *CompileJobConstruction::ConstructSelfJob(const Driver &driver) {
 
 Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
 
-  return nullptr;
+  assert(HasInputs());
 
+  // if (FirstInput()->IsInput()) {
+  //   // You have nothing to do but to build the job
+  // }
+
+  /// If ipu
+
+  /// if first input is an input file, then you just create the job
+  /// else, if the first input is a JobConstruction, then you must create a job
+  /// for it like wise
+  // but, it would be nice to pass the parent just so that it can add itself as
+  // an input into the parent job
+  return nullptr;
 }
 
 CompileJobConstruction *

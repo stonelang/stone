@@ -7,6 +7,9 @@
 
 using namespace stone;
 
+Job::Job(CompilationEntityKind kind, const JobConstruction &constructor)
+    : Job(kind, constructor, llvm::None) {}
+
 Job::Job(CompilationEntityKind kind, const JobConstruction &constructor,
          CompilationEntityList inputs)
     : TopLevelCompilationEntity(kind, inputs, file::FileType::None),
@@ -18,5 +21,9 @@ Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
   return new (driver) Job(CompilationEntityKind::Job, constructor, inputs);
 }
 
-BatchJob::BatchJob(const JobConstruction &constructor, CompilationEntityList inputs)
+BatchJob::BatchJob(const JobConstruction &constructor)
+    : BatchJob(constructor, llvm::None) {}
+
+BatchJob::BatchJob(const JobConstruction &constructor,
+                   CompilationEntityList inputs)
     : Job(CompilationEntityKind::BatchJob, constructor, inputs) {}

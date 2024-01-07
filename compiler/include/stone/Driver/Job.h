@@ -112,6 +112,7 @@ public:
   JobOptions jobOptions;
 
 protected:
+  Job(CompilationEntityKind kind, const JobConstruction &constructor);
   Job(CompilationEntityKind kind, const JobConstruction &constructor,
       CompilationEntityList inputs);
 
@@ -126,6 +127,7 @@ public:
 class BatchJob final : public Job {
 
 protected:
+  BatchJob(const JobConstruction &constructor);
   BatchJob(const JobConstruction &constructor, CompilationEntityList inputs);
 };
 
