@@ -9,10 +9,30 @@ using namespace stone::file;
 JobConstruction::JobConstruction(CompilationEntityKind kind,
                                  CompilationEntityList inputs,
                                  file::FileType fileType)
-    : TopLevelCompilationEntity(kind, inputs, fileType) {}
+    : TopLevelCompilationEntity(kind, inputs, fileType) {
+
+  /// create the Job
+  // You have the inputs, so you can add them : job->AddInput()
+}
 
 Job *JobConstruction::ConstructJob(const Driver &driver,
-                                   JobConstruction *parent) {}
+                                   JobConstruction *parent) {
+
+  /// If you override, then you do not have to perform this action
+
+  // if (driver.ShouldGenerateModule() &&
+  //     (llvm::isa<CompileJobConstruction>(parent) ||
+  //      llvm::isa<MergeModuleJobConstruction>(parent))) {
+  // }
+
+  assert(driver.HasToolChain());
+
+  // driver.ComputeJobMainOutput();
+  // return driver.GetToolChain().ConstructJob(this, driver.GetCompilation(),
+  // ....);
+
+  return nullptr;
+}
 
 Job *JobConstruction::ConstructJob(const Driver &driver) {
   return ConstructJob(driver, this);
@@ -143,10 +163,3 @@ GeneratePCHJobConstruction::GeneratePCHJobConstruction(
                       persistentPCHDir.empty() ? FileType::PCH
                                                : FileType::None),
       persistentPCHDir(persistentPCHDir) {}
-
-void CompilationEntities::ForEachTopLevelJobConstruction(
-    std::function<void(const CompilationEntity *)> callback) {
-  for (auto entity : topLevelJobConstructions) {
-    callback(entity);
-  }
-}

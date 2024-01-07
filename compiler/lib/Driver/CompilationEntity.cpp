@@ -94,6 +94,17 @@ void CompilationEntity::ComputeAllFlags(CompilationEntityKind kind) {
 
 void CompilationEntity::Print(ColorStream &colorStream) const {}
 
+// CompilationEntities *CompilationEntities::Create(const Driver& driver,
+// llvm::ArrayRef<const CompilationEntity*> entities) {
+
+//   unsigned sizeToAlloc =
+//       CompilationEntities::totalSizeToAlloc<const
+//       CompilationEntity*>(entities.size());
+//   void *allocator = driver.Allocate(sizeToAlloc,
+//   alignof(CompilationEntities)); return new (allocator)
+//   CompilationEntities(llvm::MutableArrayRef<const CompilationEntity*>());
+// }
+
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName) {
 

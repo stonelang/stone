@@ -279,7 +279,7 @@ public:
   DriverOptions &GetDriverOptions() { return driverOpts; }
   const DriverOptions &GetDriverOptions() const { return driverOpts; }
 
-  bool HasToolChain() { return toolChain != nullptr; }
+  bool HasToolChain() const { return toolChain != nullptr; }
   ToolChain &GetToolChain() { return *toolChain; }
   const ToolChain &GetToolChain() const { return *toolChain; }
 

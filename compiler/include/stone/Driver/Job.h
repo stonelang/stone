@@ -19,7 +19,11 @@
 namespace stone {
 class Job;
 class Driver;
+class JobConstruction;
 class Compilation;
+
+using JobList = llvm::ArrayRef<const Job *>;
+using JobConstructionList = llvm::ArrayRef<const JobConstruction *>;
 
 struct CommandInputPair {
   /// A filename provided from the user, either on the command line or in an
@@ -63,6 +67,8 @@ public:
 };
 
 class JobContext final {
+  friend JobConstruction;
+
 private:
   Compilation &compilation;
 

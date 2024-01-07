@@ -14,7 +14,11 @@
 
 namespace stone {
 
+class Job;
 class JobConstruction : public TopLevelCompilationEntity {
+
+  // protected:
+  //   Job *job = nullptr;
 
 protected:
   JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
@@ -167,7 +171,7 @@ public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
 
 public:
-  //Job *ConstructJob(const Driver &driver) override;
+  // Job *ConstructJob(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {

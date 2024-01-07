@@ -9,6 +9,7 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/TinyPtrVector.h"
+#include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
 class Job;
@@ -36,6 +37,25 @@ enum class CompilationEntityKind : uint8_t {
 
 /// A list of all job construction inputs
 using CompilationEntityList = llvm::ArrayRef<const CompilationEntity *>;
+
+// class CompilationEntities final
+//     : private llvm::TrailingObjects<CompilationEntities,
+//                                     const CompilationEntity *> {
+
+//   friend TrailingObjects;
+
+// public:
+//   CompilationEntities(const CompilationEntities &) = delete;
+//   CompilationEntities &operator=(const CompilationEntities &) = delete;
+
+// public:
+//   CompilationEntities(llvm::ArrayRef<const CompilationEntity *> entities);
+
+// public:
+//   static CompilationEntities *
+//   Create(const Driver &driver,
+//          llvm::ArrayRef<const CompilationEntity *> entities);
+// };
 
 constexpr size_t CompilationEntityAlignInBits = 8;
 class alignas(1 << CompilationEntityAlignInBits) CompilationEntity
@@ -215,56 +235,6 @@ public:
                 CompilationEntityKind::CompileJobConstruction &&
             entity->GetKind() <= CompilationEntityKind::BatchJob);
   }
-};
-
-class CompilationEntities final {
-  friend Driver;
-  friend Compilation;
-
-  // A graph of JobConstructions -- do not mark as cons since the
-  // JobConstruction creates the Job
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
-
-  // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobs;
-
-  // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelExternalJobs;
-
-public:
-  void AddTopLevelJobConstruction(const CompilationEntity *entity) {
-    topLevelJobConstructions.push_back(entity);
-  }
-  void AddTopLevelJob(const CompilationEntity *entity);
-  void AddTopLevelExternalJob(const CompilationEntity *entity);
-
-public:
-  bool HasTopLevelJobConstructions() {
-    return (!topLevelJobConstructions.empty() &&
-            topLevelJobConstructions.size() > 0);
-  }
-
-  bool HasTopLevelJobs() {
-    return (!topLevelJobConstructions.empty() &&
-            topLevelJobConstructions.size() > 0);
-  }
-  bool HasTopLevelExternalJobs() {
-    return (!topLevelJobConstructions.empty() &&
-            topLevelJobConstructions.size() > 0);
-  }
-
-public:
-  /// Get each top level job
-  void ForEachTopLevelJobConstruction(
-      std::function<void(const CompilationEntity *entity)> callback);
-
-  /// Get each top level job
-  void ForEachTopLevelJob(
-      std::function<void(const CompilationEntity *entity)> callback);
-
-  /// Get each top level job
-  void ForEachTopLevelExternalJob(
-      std::function<void(const CompilationEntity *entity)> callback);
 };
 
 } // namespace stone
