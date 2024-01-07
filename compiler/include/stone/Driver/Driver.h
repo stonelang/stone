@@ -198,7 +198,8 @@ public:
   TopLevelJobEntitiesBuilder(Driver &driver);
 
 public:
-  void BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
+  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
+  Job *BuildTopLevelJob(const JobConstruction *jc);
 
 public:
   void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);

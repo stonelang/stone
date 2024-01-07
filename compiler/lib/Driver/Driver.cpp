@@ -137,6 +137,9 @@ void LinkJobConstructionEntitiesConsumer::Finish() {
   if (HasTopLevelCompilationEntities()) {
     auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
     if (outputInfo.IsStaticLibraryLink()) {
+      auto topLevelJC = StaticLinkJobConstruction::Create(
+          driver, entities, outputInfo.GetLinkMode());
+      // topLevelJC->AddIsTopLevel();
 
       driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
           StaticLinkJobConstruction::Create(driver, entities,
@@ -195,7 +198,7 @@ void MergeModuleJobConstructionEntitiesConsumer::CompletedCompilationEntity(
 
 void MergeModuleJobConstructionEntitiesConsumer::Finish() {
 
-  // Ok, nowe we can try to create the link job
+  // Ok, now we can try to create the link job
   // But, you have to create a special M
 }
 
@@ -257,6 +260,7 @@ TopLevelJobConstructionEntitiesBuilder::CreateCompileJobConstruction(
 
 void TopLevelJobConstructionEntitiesBuilder::CompletedCompilationEntity(
     const CompilationEntity *entity) {
+
   ForEachConsumer([&](TopLevelCompilationEntitiesConsumer *consumer) {
     consumer->CompletedCompilationEntity(entity);
   });
@@ -321,6 +325,27 @@ void TopLevelJobConstructionEntitiesBuilder::Finish() {}
 TopLevelJobEntitiesBuilder::TopLevelJobEntitiesBuilder(Driver &driver)
     : driver(driver) {}
 
+Status TopLevelJobEntitiesBuilder::BuildTopLevelJobEntities(
+    TopLevelCompilationEntities &entities) {
+
+  entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
+    if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+      entities.AddTopLevelJob(BuildTopLevelJob(jc));
+    }
+    // auto jb =
+    // jobEntitiesBuilder.BuildTopLevelJob(llvm::dyn_cast<JobConstruction>(entity));
+
+    // auto jc = llvm::dyn_cast<JobConstruction>(entity);
+    // auto jb = const_cast<JobConstruction*>(jc)->ConstructJob(*this);
+    // entities.AddTopLevelJob(jb);
+  });
+  return Status();
+}
+Job *TopLevelJobEntitiesBuilder::BuildTopLevelJob(const JobConstruction *jc) {
+
+  return nullptr;
+}
+
 void TopLevelJobEntitiesBuilder::Finish() {}
 
 Status Driver::BuildTopLevelCompilationEntities(
@@ -348,24 +373,16 @@ Status Driver::BuildTopLevelJobConstructionEntities(
   jobConstructionEntitiesBuilder.AddConsumer(
       MergeModuleJobConstructionEntitiesConsumer::Create(*this));
 
-  return jobConstructionEntitiesBuilder.BuildForCompileInvocation(GetCompileInvocationMode());
+  return jobConstructionEntitiesBuilder.BuildForCompileInvocation(
+      GetCompileInvocationMode());
 }
 Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 
-
   STONE_DEFER { jobEntitiesBuilder.Finish(); };
-
   if (!entities.HasTopLevelJobConstructions()) {
     return Status::MakeHasCompletionAndIsError();
   }
-
-  entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
-    auto jc = llvm::dyn_cast<JobConstruction>(entity);
-
-    // auto topLevelJob = driver.CastToJobConstruction(entity)->ConstructJob();
-
-    // auto topLevelJob = llmv::dyn_cast<Job>
-  });
+  return jobEntitiesBuilder.BuildTopLevelJobEntities(entities);
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {

@@ -15,14 +15,25 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
   // You have the inputs, so you can add them : job->AddInput()
 }
 
-Job *JobConstruction::ConstructJob(const Driver &driver,
-                                   JobConstruction *construction) {
+Job *JobConstruction::ConstructJob(const Driver &driver, JobConstruction *jc) {
 
-  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building jobs",
-                                                         construction);
+  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building jobs", jc);
 
-  if (construction->FirstInput()->IsInput()) {
+  for (const CompilationEntity *entity : *jc) {
   }
+
+  //  jc.ForEachInput([&](const CompilationEntity *entity) {
+  //   auto jc = llvm::dyn_cast<JobConstruction>(entity);
+
+  //   jc->ConstructJob(driver);
+
+  //   // auto topLevelJob =
+  //   driver.CastToJobConstruction(entity)->ConstructJob();
+  //   // auto topLevelJob = llmv::dyn_cast<Job>
+  // });
+
+  // if (construction->FirstInput()->IsInput()) {
+  // }
   // switch(construction->FirstInput())
   /// If you override, then you do not have to perform this action
   // if (driver.ShouldGenerateModule() &&
@@ -41,6 +52,7 @@ Job *JobConstruction::ConstructJob(const Driver &driver,
 void JobConstruction::ComputeJobMainOutput() {}
 
 Job *JobConstruction::ConstructJob(const Driver &driver) {
+  assert(HasIsTopLevel());
 
   return ConstructJob(driver, this);
 }

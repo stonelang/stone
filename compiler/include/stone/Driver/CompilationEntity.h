@@ -227,7 +227,11 @@ public:
   }
 
   bool ForEachInput(
-      std::function<void(const CompilationEntity *input)> callback) const;
+      std::function<void(const CompilationEntity *input)> callback) const {
+    for (const CompilationEntity *entity : *this) {
+      callback(entity);
+    }
+  }
 
 public:
   static bool classof(const CompilationEntity *entity) {
