@@ -15,7 +15,7 @@ using namespace stone::file;
 using namespace llvm::opt;
 
 Driver::Driver()
-    : optTable(stone::CreateOptTable()), jobConstructionEntitiesBuilder(*this) {
+    : optTable(stone::CreateOptTable()) {
 }
 
 Driver::~Driver() {}
@@ -203,125 +203,126 @@ void BuildingJobConstructionEntitiesConsumer::Finish() {
 //   // But, you have to create a special M
 // }
 
-BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
-    : driver(driver) {}
+// BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver
+// &driver)
+//     : driver(driver) {}
 
-void BuildingJobConstructionEntities::AddConsumer(
-    BuildingCompilationEntitiesConsumer *consumer) {
-  if (consumer) {
-    consumers.push_back(consumer);
-  }
-}
+// void BuildingJobConstructionEntities::AddConsumer(
+//     BuildingCompilationEntitiesConsumer *consumer) {
+//   if (consumer) {
+//     consumers.push_back(consumer);
+//   }
+// }
 
-Status BuildingJobConstructionEntities::BuildForCompileInvocation(
-    CompileInvocationMode compileStyle) {
-  switch (compileStyle) {
-  case CompileInvocationMode::Multiple:
-    return BuildForMultipleCompileInvocation();
-  case CompileInvocationMode::Single:
-    return BuildForSingleCompileInvocation();
-  case CompileInvocationMode::Batch:
-    return BuildForBatchCompileInvocation();
-  default:
-    llvm_unreachable("Invalid compile invocation kind");
-  }
-}
+// Status BuildingJobConstructionEntities::BuildForCompileInvocation(
+//     CompileInvocationMode compileStyle) {
+//   switch (compileStyle) {
+//   case CompileInvocationMode::Multiple:
+//     return BuildForMultipleCompileInvocation();
+//   case CompileInvocationMode::Single:
+//     return BuildForSingleCompileInvocation();
+//   case CompileInvocationMode::Batch:
+//     return BuildForBatchCompileInvocation();
+//   default:
+//     llvm_unreachable("Invalid compile invocation kind");
+//   }
+// }
 
-CompileJobConstruction *
-BuildingJobConstructionEntities::CreateCompileJobConstruction(
-    const DriverInputFile *input) {
+// CompileJobConstruction *
+// BuildingJobConstructionEntities::CreateCompileJobConstruction(
+//     const DriverInputFile *input) {
 
-  // // if (args.hasArg(opts::::EmbedBitCode)) {
-  // // }
-  // /// Check that it requires a PCH
-  // // CompileJobConstruction *compileJobConstruction = nullptr;
-  // if (input) {
-  //   return CompileJobConstruction::Create(
-  //       driver, input,
-  //       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-  // }
+// // if (args.hasArg(opts::::EmbedBitCode)) {
+// // }
+// /// Check that it requires a PCH
+// // CompileJobConstruction *compileJobConstruction = nullptr;
+// if (input) {
+//   return CompileJobConstruction::Create(
+//       driver, input,
+//       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+// }
 
-  // return CompileJobConstruction::Create(
-  //     driver,
-  //     driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+// return CompileJobConstruction::Create(
+//     driver,
+//     driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  // //   if (driver.IsSingleCompileInvocation()) {
-  // //   }
-  // // }
+// //   if (driver.IsSingleCompileInvocation()) {
+// //   }
+// // }
 
-  // if (IsTopLevelJobConstruction()) {
-  //   CompletedCompilationEntity(compileJobConstruction);
+// if (IsTopLevelJobConstruction()) {
+//   CompletedCompilationEntity(compileJobConstruction);
 
-  // } else {
-  //   driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-  //       compileJobConstruction);
-  //   return compileJobConstruction;
-  // }
-}
+// } else {
+//   driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
+//       compileJobConstruction);
+//   return compileJobConstruction;
+// }
+//}
 
-void BuildingJobConstructionEntities::CompletedCompilationEntity(
-    const CompilationEntity *entity) {
+// void BuildingJobConstructionEntities::CompletedCompilationEntity(
+//     const CompilationEntity *entity) {
 
-  ForEachConsumer([&](BuildingCompilationEntitiesConsumer *consumer) {
-    consumer->CompletedCompilationEntity(entity);
-  });
-}
+//   ForEachConsumer([&](BuildingCompilationEntitiesConsumer *consumer) {
+//     consumer->CompletedCompilationEntity(entity);
+//   });
+// }
 
-Status BuildingJobConstructionEntities::BuildForMultipleCompileInvocation() {
-  assert(driver.IsMultipleCompileInvocation());
+// Status BuildingJobConstructionEntities::BuildForMultipleCompileInvocation() {
+//   assert(driver.IsMultipleCompileInvocation());
 
-  // driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-  //     [&](const DriverInputFile *input) {
-  //       switch (input->GetFileType()) {
-  //       case FileType::Stone: {
-  //         assert(input->IsPartOfStoneCompilation());
-  //         CompletedCompilationEntity(CreateCompileJobConstruction(input));
-  //         break;
-  //       }
-  //       case FileType::Object: {
-  //         CompletedCompilationEntity(input);
-  //         break;
-  //       }
-  //       default:
-  //         llvm_unreachable(" Invalid file type");
-  //       }
-  //     });
+// driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//     [&](const DriverInputFile *input) {
+//       switch (input->GetFileType()) {
+//       case FileType::Stone: {
+//         assert(input->IsPartOfStoneCompilation());
+//         CompletedCompilationEntity(CreateCompileJobConstruction(input));
+//         break;
+//       }
+//       case FileType::Object: {
+//         CompletedCompilationEntity(input);
+//         break;
+//       }
+//       default:
+//         llvm_unreachable(" Invalid file type");
+//       }
+//     });
 
-  return Status();
-}
-Status BuildingJobConstructionEntities::BuildForSingleCompileInvocation() {
-  assert(driver.IsSingleCompileInvocation());
+//   return Status();
+// }
+// Status BuildingJobConstructionEntities::BuildForSingleCompileInvocation() {
+//   assert(driver.IsSingleCompileInvocation());
 
-  // auto compileJobConstruction = CreateCompileJobConstruction();
-  // assert(compileJobConstruction);
+// auto compileJobConstruction = CreateCompileJobConstruction();
+// assert(compileJobConstruction);
 
-  // driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-  //     [&](const DriverInputFile *input) {
-  //       assert(input->IsPartOfStoneCompilation());
-  //       auto currentInput = driver.CastToJobConstruction(input);
-  //       compileJobConstruction->AddInput(currentInput);
-  //     });
-  // CompletedCompilationEntity(compileJobConstruction);
+// driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//     [&](const DriverInputFile *input) {
+//       assert(input->IsPartOfStoneCompilation());
+//       auto currentInput = driver.CastToJobConstruction(input);
+//       compileJobConstruction->AddInput(currentInput);
+//     });
+// CompletedCompilationEntity(compileJobConstruction);
 
-  return Status();
-}
-Status BuildingJobConstructionEntities::BuildForBatchCompileInvocation() {
-  assert(driver.IsBatchCompileInvocation());
+// return Status();
+//}
+// Status BuildingJobConstructionEntities::BuildForBatchCompileInvocation() {
+//   assert(driver.IsBatchCompileInvocation());
 
-  return Status();
-}
+//   return Status();
+// }
 
-void BuildingJobConstructionEntities::ForEachConsumer(
-    std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn) {
-  for (auto consumer : consumers) {
-    fn(consumer);
-  }
-}
+// void BuildingJobConstructionEntities::ForEachConsumer(
+//     std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn) {
+//   for (auto consumer : consumers) {
+//     fn(consumer);
+//   }
+// }
 
-void BuildingJobConstructionEntities::Finish() {
+// void BuildingJobConstructionEntities::Finish() {
 
-  ///
-}
+//   ///
+// }
 
 // TopLevelJobEntitiesBuilder::TopLevelJobEntitiesBuilder(Driver &driver)
 //     : driver(driver) {}
@@ -364,7 +365,7 @@ Status Driver::BuildTopLevelJobConstructionEntities(
     }();
   };
 
-  auto buildCompileInvocationStatus =
+  auto buildCompileInvocation =
       [&](BuildingJobConstructionEntitiesConsumer *consumer) -> Status {
     switch (GetCompileInvocationMode()) {
     case CompileInvocationMode::Multiple:
@@ -378,7 +379,7 @@ Status Driver::BuildTopLevelJobConstructionEntities(
     llvm_unreachable("All switch cases were covered");
   }(consumer);
 
-  if (buildCompileInvocationStatus.IsErrorOrHasCompletion()) {
+  if (buildCompileInvocation.IsErrorOrHasCompletion()) {
     return Status::MakeHasCompletionAndIsError();
   }
   // STONE_DEFER { jobConstructionEntitiesBuilder.Finish(); };

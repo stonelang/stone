@@ -144,38 +144,38 @@ public:
 //   static MergeModuleJobConstructionEntitiesConsumer *Create(Driver &driver);
 // };
 
-class BuildingJobConstructionEntities final {
+// class BuildingJobConstructionEntities final {
 
-  Driver &driver;
-  llvm::SmallVector<BuildingCompilationEntitiesConsumer *> consumers;
+//   Driver &driver;
+//   llvm::SmallVector<BuildingCompilationEntitiesConsumer *> consumers;
 
-public:
-  BuildingJobConstructionEntities(Driver &driver);
+// public:
+//   BuildingJobConstructionEntities(Driver &driver);
 
-public:
-  Status BuildForCompileInvocation(CompileInvocationMode kind);
-  Status BuildForMultipleCompileInvocation();
-  Status BuildForSingleCompileInvocation();
-  Status BuildForBatchCompileInvocation();
+// public:
+//   Status BuildForCompileInvocation(CompileInvocationMode kind);
+//   Status BuildForMultipleCompileInvocation();
+//   Status BuildForSingleCompileInvocation();
+//   Status BuildForBatchCompileInvocation();
 
-  void ForEachConsumer(
-      std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn);
+//   void ForEachConsumer(
+//       std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn);
 
-public:
-  bool HasConsumers() { return (!consumers.empty() && consumers.size() > 0); }
-  void CompletedCompilationEntity(const CompilationEntity *entity);
+// public:
+//   bool HasConsumers() { return (!consumers.empty() && consumers.size() > 0);
+//   } void CompletedCompilationEntity(const CompilationEntity *entity);
 
-  CompileJobConstruction *
-  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
+//   CompileJobConstruction *
+//   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
-  // void CompletedCompilationEntity(const DriverInputFile *entity);
+//   // void CompletedCompilationEntity(const DriverInputFile *entity);
 
-public:
-  void AddConsumer(BuildingCompilationEntitiesConsumer *consumer);
+// public:
+//   void AddConsumer(BuildingCompilationEntitiesConsumer *consumer);
 
-public:
-  void Finish();
-};
+// public:
+//   void Finish();
+// };
 
 // class JobEntitiesConsumer final : public BuildingCompilationEntitiesConsumer
 // { public:
@@ -257,7 +257,7 @@ class Driver final {
   // TopLevelJobEntitiesBuilder jobEntitiesBuilder;
 
   /// Build the JobConstruction entities
-  BuildingJobConstructionEntities jobConstructionEntitiesBuilder;
+  //BuildingJobConstructionEntities jobConstructionEntitiesBuilder;
 
 public:
   Driver();
