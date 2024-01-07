@@ -231,23 +231,23 @@ CompileJobConstruction *
 BuildingJobConstructionEntities::CreateCompileJobConstruction(
     const DriverInputFile *input) {
 
-  // if (args.hasArg(opts::::EmbedBitCode)) {
+  // // if (args.hasArg(opts::::EmbedBitCode)) {
+  // // }
+  // /// Check that it requires a PCH
+  // // CompileJobConstruction *compileJobConstruction = nullptr;
+  // if (input) {
+  //   return CompileJobConstruction::Create(
+  //       driver, input,
+  //       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
   // }
-  /// Check that it requires a PCH
-  // CompileJobConstruction *compileJobConstruction = nullptr;
-  if (input) {
-    return CompileJobConstruction::Create(
-        driver, input,
-        driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-  }
 
-  return CompileJobConstruction::Create(
-      driver,
-      driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+  // return CompileJobConstruction::Create(
+  //     driver,
+  //     driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 
-  //   if (driver.IsSingleCompileInvocation()) {
-  //   }
-  // }
+  // //   if (driver.IsSingleCompileInvocation()) {
+  // //   }
+  // // }
 
   // if (IsTopLevelJobConstruction()) {
   //   CompletedCompilationEntity(compileJobConstruction);
@@ -270,38 +270,38 @@ void BuildingJobConstructionEntities::CompletedCompilationEntity(
 Status BuildingJobConstructionEntities::BuildForMultipleCompileInvocation() {
   assert(driver.IsMultipleCompileInvocation());
 
-  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        switch (input->GetFileType()) {
-        case FileType::Stone: {
-          assert(input->IsPartOfStoneCompilation());
-          CompletedCompilationEntity(CreateCompileJobConstruction(input));
-          break;
-        }
-        case FileType::Object: {
-          CompletedCompilationEntity(input);
-          break;
-        }
-        default:
-          llvm_unreachable(" Invalid file type");
-        }
-      });
+  // driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+  //     [&](const DriverInputFile *input) {
+  //       switch (input->GetFileType()) {
+  //       case FileType::Stone: {
+  //         assert(input->IsPartOfStoneCompilation());
+  //         CompletedCompilationEntity(CreateCompileJobConstruction(input));
+  //         break;
+  //       }
+  //       case FileType::Object: {
+  //         CompletedCompilationEntity(input);
+  //         break;
+  //       }
+  //       default:
+  //         llvm_unreachable(" Invalid file type");
+  //       }
+  //     });
 
   return Status();
 }
 Status BuildingJobConstructionEntities::BuildForSingleCompileInvocation() {
   assert(driver.IsSingleCompileInvocation());
 
-  auto compileJobConstruction = CreateCompileJobConstruction();
-  assert(compileJobConstruction);
+  // auto compileJobConstruction = CreateCompileJobConstruction();
+  // assert(compileJobConstruction);
 
-  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        assert(input->IsPartOfStoneCompilation());
-        auto currentInput = driver.CastToJobConstruction(input);
-        compileJobConstruction->AddInput(currentInput);
-      });
-  CompletedCompilationEntity(compileJobConstruction);
+  // driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+  //     [&](const DriverInputFile *input) {
+  //       assert(input->IsPartOfStoneCompilation());
+  //       auto currentInput = driver.CastToJobConstruction(input);
+  //       compileJobConstruction->AddInput(currentInput);
+  //     });
+  // CompletedCompilationEntity(compileJobConstruction);
 
   return Status();
 }
@@ -364,7 +364,23 @@ Status Driver::BuildTopLevelJobConstructionEntities(
     }();
   };
 
+  auto buildCompileInvocationStatus =
+      [&](BuildingJobConstructionEntitiesConsumer *consumer) -> Status {
+    switch (GetCompileInvocationMode()) {
+    case CompileInvocationMode::Multiple:
+      return BuildMultipleCompileInvocation(consumer);
+    case CompileInvocationMode::Single:
+      return BuildSingleCompileInvocation(consumer);
+    case CompileInvocationMode::Batch:
+      return BuildBatchCompileInvocation(consumer);
+    }
+    // Work around MSVC warning: not all control paths return a value
+    llvm_unreachable("All switch cases were covered");
+  }(consumer);
 
+  if (buildCompileInvocationStatus.IsErrorOrHasCompletion()) {
+    return Status::MakeHasCompletionAndIsError();
+  }
   // STONE_DEFER { jobConstructionEntitiesBuilder.Finish(); };
 
   // jobConstructionEntitiesBuilder.AddConsumer(
@@ -376,6 +392,52 @@ Status Driver::BuildTopLevelJobConstructionEntities(
   // return jobConstructionEntitiesBuilder.BuildForCompileInvocation(
   //     GetCompileInvocationMode());
 }
+
+Status Driver::BuildMultipleCompileInvocation(
+    BuildingCompilationEntitiesConsumer *consumer) {
+
+  assert(IsMultipleCompileInvocation());
+  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        switch (input->GetFileType()) {
+        case FileType::Stone: {
+          assert(input->IsPartOfStoneCompilation());
+          consumer->CompletedCompilationEntity(
+              CreateCompileJobConstruction(input));
+          break;
+        }
+        case FileType::Autolink:
+        case FileType::Object: {
+          consumer->CompletedCompilationEntity(input);
+          break;
+        }
+        default:
+          llvm_unreachable(" Invalid file type");
+        }
+      });
+  return Status();
+}
+
+Status Driver::BuildSingleCompileInvocation(
+    BuildingCompilationEntitiesConsumer *consumer) {
+
+  assert(IsSingleCompileInvocation());
+  auto compileJobConstruction = CreateCompileJobConstruction();
+
+  assert(compileJobConstruction);
+
+  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        assert(input->IsPartOfStoneCompilation());
+        auto currentInput = llvm::dyn_cast<JobConstruction>(input);
+        compileJobConstruction->AddInput(currentInput);
+      });
+  consumer->CompletedCompilationEntity(compileJobConstruction);
+}
+
+Status Driver::BuildBatchCompileInvocation(
+    BuildingCompilationEntitiesConsumer *consumer) {}
+
 Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 
   // STONE_DEFER { jobEntitiesBuilder.Finish(); };
@@ -383,6 +445,21 @@ Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
   //   return Status::MakeHasCompletionAndIsError();
   // }
   // return jobEntitiesBuilder.BuildTopLevelJobEntities(entities);
+}
+
+CompileJobConstruction *
+Driver::CreateCompileJobConstruction(const DriverInputFile *input) {
+
+  // TODO: args.hasArg(opts::::EmbedBitCode))
+  // Check that it requires a PCH
+
+  if (input) {
+    return CompileJobConstruction::Create(
+        *this, input,
+        GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
+  }
+  return CompileJobConstruction::Create(
+      *this, GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
 }
 
 Status Driver::BuildTopLevelCompilationEntities(

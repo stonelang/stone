@@ -330,14 +330,27 @@ public:
 
   // std::unique_ptr<CompileStyle> CreateCompileStyle();
 
+public:
   Status
   BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
 
+public:
   Status
   BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities);
 
   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
+  Status
+  BuildMultipleCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
+  Status
+  BuildSingleCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
+  Status
+  BuildBatchCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
+
+  CompileJobConstruction *
+  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
+
+public:
   /// Construct a compilation object for a given ToolChain
   ///
   /// If \p AllowErrors is set to \c true, this method tries to build a
@@ -415,6 +428,10 @@ public:
   }
   bool ShouldGenerateModule() const {
     return GetDriverOptions().GetDriverOutputInfo().ShouldGenerateModule();
+  }
+
+  file::FileType GetOutputFileType() const {
+    return GetDriverOptions().GetDriverOutputInfo().GetOutputFileType();
   }
 
 public:
