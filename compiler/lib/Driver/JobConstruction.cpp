@@ -6,6 +6,11 @@
 using namespace stone;
 using namespace stone::file;
 
+JobConstruction::JobConstruction(CompilationEntityKind kind,
+                                 CompilationEntityList inputs,
+                                 file::FileType fileType)
+    : TopLevelCompilationEntity(kind, inputs, fileType) {}
+
 Job *JobConstruction::ConstructSelfJob(const Driver &driver) {
   llvm_unreachable("JobConstruction base class cannot construct a self job!");
 }
@@ -32,6 +37,10 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
                                  input, outputFileType) {
 
   assert(file::IsOutputableFileType(outputFileType));
+}
+
+Job *CompileJobConstruction::ConstructSelfJob(const Driver &driver) {
+  return nullptr;
 }
 
 CompileJobConstruction *
@@ -76,6 +85,10 @@ DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
   return new (driver) DynamicLinkJobConstruction(inputs, linkMode, withLTO);
 }
 
+Job *DynamicLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+  return nullptr;
+}
+
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     CompilationEntityList inputs, LinkMode linkMode)
     : LinkJobConstruction(CompilationEntityKind::StaticLinkJobConstruction,
@@ -87,6 +100,10 @@ StaticLinkJobConstruction *
 StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
                                   LinkMode linkMode) {
   return new (driver) StaticLinkJobConstruction(inputs, linkMode);
+}
+
+Job *StaticLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+  return nullptr;
 }
 
 BackendJobConstruction::BackendJobConstruction(const CompilationEntity *input,

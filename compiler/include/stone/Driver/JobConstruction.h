@@ -18,8 +18,7 @@ class JobConstruction : public TopLevelCompilationEntity {
 
 protected:
   JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
-                  file::FileType fileType)
-      : TopLevelCompilationEntity(kind, inputs, fileType) {}
+                  file::FileType fileType);
 
 protected:
   virtual Job *ConstructSelfJob(const Driver &driver);
@@ -47,7 +46,7 @@ public:
       : JobConstruction(kind, inputs, fileType) {}
 
 protected:
-  virtual Job *ConstructSelfJob(const Driver &driver) {}
+  Job *ConstructSelfJob(const Driver &driver) override {}
   // virtual Job *ConstructInputJob(const Driver &driver){}
 
 public:
@@ -70,6 +69,9 @@ class CompileJobConstruction final : public IncrementalJobConstruction {
   //     FlatInvocationStyle,
   //     BatchInvocationStyle,
   //   };
+
+protected:
+  Job *ConstructSelfJob(const Driver &driver) override;
 
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
@@ -117,6 +119,9 @@ public:
 class LinkJobConstruction : public JobConstruction {
   LinkMode linkMode;
 
+protected:
+  Job *ConstructSelfJob(const Driver &driver) override {}
+
 public:
   LinkJobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
                       file::FileType outputFileType, LinkMode linkMode)
@@ -137,6 +142,9 @@ public:
 
 class DynamicLinkJobConstruction final : public LinkJobConstruction {
   bool withLTO;
+
+protected:
+  Job *ConstructSelfJob(const Driver &driver) override;
 
 public:
   DynamicLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode,
@@ -159,6 +167,9 @@ public:
 };
 
 class StaticLinkJobConstruction final : public LinkJobConstruction {
+
+protected:
+  Job *ConstructSelfJob(const Driver &driver) override;
 
 public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
