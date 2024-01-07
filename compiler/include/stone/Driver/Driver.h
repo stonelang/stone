@@ -154,6 +154,8 @@ public:
 public:
   Status BuildForCompileInvocation(CompileInvocationMode kind);
   Status BuildForMultipleCompileInvocation();
+  Status BuildForMultipleCompileInvocation(
+      TopLevelCompilationEntitiesConsumer *consumer);
   Status BuildForSingleCompileInvocation();
   Status BuildForBatchCompileInvocation();
 
@@ -173,8 +175,24 @@ public:
   void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
 };
 
+class JobEntitiesConsumer final : public TopLevelCompilationEntitiesConsumer {
+public:
+  JobEntitiesConsumer(Driver &driver);
+
+public:
+  void CompletedCompilationEntity(const CompilationEntity *entity) override;
+  void Finish() override;
+
+public:
+  void AddConsumer(TopLevelCompilationEntitiesConsumer *consumer);
+
+public:
+  static JobEntitiesConsumer *Create(Driver &driver);
+};
+
 class JobEntitiesBuilder final {
   Driver &driver;
+  llvm::SmallVector<TopLevelCompilationEntitiesConsumer *> consumers;
 
 public:
   JobEntitiesBuilder(Driver &driver);

@@ -43,6 +43,12 @@ Job *CompileJobConstruction::ConstructSelfJob(const Driver &driver) {
   return nullptr;
 }
 
+Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
+
+  return nullptr;
+
+}
+
 CompileJobConstruction *
 CompileJobConstruction::Create(const Driver &driver, FileType outputFileType) {
 
@@ -86,6 +92,11 @@ DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
 }
 
 Job *DynamicLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+
+  return nullptr;
+}
+Job *DynamicLinkJobConstruction::ConstructJob(const Driver &driver) {
+
   return nullptr;
 }
 
@@ -103,6 +114,10 @@ StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
 }
 
 Job *StaticLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
+  return nullptr;
+}
+
+Job *StaticLinkJobConstruction::ConstructJob(const Driver &driver) {
   return nullptr;
 }
 

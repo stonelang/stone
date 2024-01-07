@@ -168,3 +168,16 @@ void BuilCompilationEntities(CompilationEntities& entities){
   buildingEntities.GetJobCompilationEntities().AddConsumer(MergeJobConstructionEntitiesConsumer::Create());
 
 }
+
+
+/// ForeachTopLevelJobConstruction
+    CreateJob -- consumer 
+      check for inputs 
+        CreateJob 
+            check for in puts 
+              creareate job 
+
+
+
+
+

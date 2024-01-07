@@ -94,6 +94,9 @@ enum class JobCondition {
 };
 
 class Job : public TopLevelCompilationEntity {
+
+  const JobConstruction &constructor;
+
 public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If
@@ -109,13 +112,21 @@ public:
   JobOptions jobOptions;
 
 protected:
-  Job(CompilationEntityKind kind, CompilationEntityList inputs);
+  Job(CompilationEntityKind kind, const JobConstruction &constructor,
+      CompilationEntityList inputs);
+
+public:
+  const JobConstruction &GetConstructor() { return constructor; }
+
+public:
+  static Job *Create(const Driver &driver, const JobConstruction &constructor,
+                     CompilationEntityList inputs);
 };
 
 class BatchJob final : public Job {
 
 protected:
-  BatchJob(CompilationEntityList inputs);
+  BatchJob(const JobConstruction &constructor, CompilationEntityList inputs);
 };
 
 } // namespace stone

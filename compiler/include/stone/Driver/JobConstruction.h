@@ -62,14 +62,6 @@ public:
 
 class CompileJobConstruction final : public IncrementalJobConstruction {
 
-  // public:
-  //   enum InvocationStyle {
-  //     NormalInvocationStyle = 0,
-  //     SingleInvocationStyle,
-  //     FlatInvocationStyle,
-  //     BatchInvocationStyle,
-  //   };
-
 protected:
   Job *ConstructSelfJob(const Driver &driver) override;
 
@@ -84,7 +76,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  Job *ConstructJob(const Driver &driver) override {}
+  Job *ConstructJob(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -151,6 +143,7 @@ public:
                              bool withLTO = false);
 
 public:
+  Job *ConstructJob(const Driver &driver) override;
   bool WithLTO() const { return withLTO; }
 
 public:
@@ -173,6 +166,9 @@ protected:
 
 public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
+
+public:
+  Job *ConstructJob(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {

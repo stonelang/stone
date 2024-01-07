@@ -197,6 +197,14 @@ public:
 
 public:
   void AddInput(const CompilationEntity *input) { inputs.push_back(input); }
+  bool HasInputs() { return !inputs.empty() && inputs.size() > 0; }
+
+  const CompilationEntity *FirstInput() {
+    if (!HasInputs()) {
+      return nullptr;
+    }
+    return inputs.front();
+  }
 
 public:
   static bool classof(const CompilationEntity *entity) {

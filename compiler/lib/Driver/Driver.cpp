@@ -312,6 +312,13 @@ void JobConstructionEntitiesBuilder::ForEachConsumer(
 
 JobEntitiesBuilder::JobEntitiesBuilder(Driver &driver) : driver(driver) {}
 
+// void JobEntitiesBuilder::AddConsumer(
+//     TopLevelCompilationEntitiesConsumer *consumer) {
+//   if (consumer) {
+//     consumers.push_back(consumer);
+//   }
+// }
+
 TopLevelCompilationEntitiesBuilder::TopLevelCompilationEntitiesBuilder(
     Driver &driver)
     : driver(driver), jobEntities(driver), jobConstructionEntities(driver) {}
