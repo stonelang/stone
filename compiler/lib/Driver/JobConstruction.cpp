@@ -17,7 +17,7 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
 
 Job *JobConstruction::ConstructJob(const Driver &driver, JobConstruction *jc) {
 
-  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building jobs", jc);
+  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job", jc);
 
   for (const CompilationEntity *entity : *jc) {
   }
