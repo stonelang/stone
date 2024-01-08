@@ -3,6 +3,7 @@
 
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
+#include "stone/Option/Options.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Option/Arg.h"
@@ -58,7 +59,7 @@ enum class CompilerAction : unsigned {
   //< Parse, type-check, and emit assembly
   EmitAssembly,
 };
-class CompilerOptions final {
+class CompilerOptions final : public StandardOptions {
 
   friend CompilerInvocation;
   friend CompilerOptionsConverter;

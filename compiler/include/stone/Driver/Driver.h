@@ -178,6 +178,20 @@ public:
   static BuildingJobConstructionEntities *Create(Driver &driver);
 };
 
+class BuildingTopLevelJobEntities final
+    : public DriverAllocation<BuildingTopLevelJobEntities> {
+
+public:
+  llvm::SmallVector<const CompilationEntity *, 4> inputEntities;
+  llvm::SmallVector<const CompilationEntity *, 8> jobEntities;
+
+public:
+  explicit BuildingTopLevelJobEntities();
+
+public:
+  static BuildingTopLevelJobEntities *Create(const Driver &driver);
+};
+
 class Driver final {
 
   SrcMgr srcMgr;
@@ -355,6 +369,8 @@ public:
                      Job *>;
   /// Build the jobs
   Status BuildTopLevelJobs();
+
+  Job *ConstructJob(JobConstruction *jc);
 
   void ComputeJobMainOutput(const JobConstruction *jobConstruction);
 

@@ -254,6 +254,12 @@ LinkJobConstruction *LinkEntities::Apply() {
   return linkJobConstruction;
 }
 
+BuildingTopLevelJobEntities::BuildingTopLevelJobEntities() {}
+BuildingTopLevelJobEntities *
+BuildingTopLevelJobEntities::Create(const Driver &driver) {
+  return new (driver) BuildingTopLevelJobEntities();
+}
+
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
   auto status = BuildTopLevelJobConstructionEntities(
@@ -285,15 +291,32 @@ Status Driver::BuildTopLevelJobConstructionEntities(
 
 Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 
+  auto buildingTopLevelJobEntities = BuildingTopLevelJobEntities::Create(*this);
+
   topLevelEntities->ForEachTopLevelJobConstruction(
       [&](const CompilationEntity *entity) {
         if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
 
-          // entities.AddTopLevelJob(BuildTopLevelJob(jc));
+          // ConstructJob(jc);
         }
       });
 
   return Status();
+}
+
+// TODO: Continue here....
+Job *Driver::ConstructJob(JobConstruction *jc) {
+  auto buildingTopLevelJobEntities = BuildingTopLevelJobEntities::Create(*this);
+  for (const CompilationEntity *entity : *jc) {
+    if (auto jc = llvm::dyn_cast<JobConstruction>(entity)) {
+      // this->ConstructJob(driver, *jc);
+    } else {
+      // Just check that this is indeed an input
+      if (entity->IsInput()) {
+        buildingTopLevelJobEntities->inputEntities.push_back(entity);
+      }
+    }
+  }
 }
 Status Driver::BuildMultipleCompileInvocation(
     TopLevelCompilationEntities &entities,

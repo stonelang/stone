@@ -17,7 +17,9 @@ namespace stone {
 class CodeGenOptions;
 class LangOptions;
 class DiagnosticEngine;
+class DriverOptions;
 class CompilerOptions;
+class StandardOptions;
 class InFlightDiagnostic;
 class Compiler;
 class ASTContext;
@@ -126,6 +128,15 @@ void EmbedBitCode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
 /// Returns true is successfull
 bool WriteNative(CodeGenOptions &codeGenOpts, llvm::raw_pwrite_stream &out,
                  llvm::sys::Mutex *diagMutex = nullptr);
+
+/// Print the compiler version
+void PrintVersion();
+
+/// Print the help for the driver
+void PrintHelp(const StandardOptions &stdOpts);
+
+/// Print compiler features
+void PrintFeature();
 
 } // namespace stone
 #endif

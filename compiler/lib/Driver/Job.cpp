@@ -58,3 +58,8 @@ BatchJob::BatchJob(const JobConstruction &constructor,
 //   return Job::Create(compilation.GetDriver(), construction,
 //   std::move(inputs));
 // }
+
+// Job *Job::ConstructJob(
+//     const JobConstruction &jobConstruction, Compilation &compilation,
+//     llvm::ArrayRef<const Job *> jobEntities,
+//     llvm::ArrayRef<const CompilationEntity *> inputEntities) {}

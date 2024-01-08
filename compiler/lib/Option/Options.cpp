@@ -118,3 +118,5 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   }
 //   return ial;
 // }
+
+StandardOptions::StandardOptions() : optTable(stone::CreateOptTable()) {}

@@ -60,6 +60,60 @@ void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 } // namespace opts
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 
+class StandardOptions {
+  /// The driver options
+  std::unique_ptr<llvm::opt::OptTable> optTable;
+
+protected:
+  // bool showHiddenHelp = false;
+
+  /// The path the executing program
+  // llvm::StringRef mainExecutablePath;
+
+  /// The name of the executing program
+  // llvm::StringRef mainExecutableName;
+
+  /// The current working director
+  // llvm::StringRef workingDirectory;
+
+  bool printLifecycle = false;
+
+  bool printStatistics = false;
+
+  bool printDiagnostics = true;
+
+public:
+  StandardOptions();
+
+public:
+  /// The main options table
+  llvm::opt::OptTable &GetOptTable() const { return *optTable; }
+
+  /// \check that there exist a working directory
+  // bool HasWorkingDirectory() const {
+  //   return !workingDirectory.empty() && workingDirectory.size() > 0;
+  // }
+  // /// \return working directory for the compilation
+  // llvm::StringRef GetWorkingDirectory() const { return workingDirectory; }
+
+  // /// \return the main executable path
+  // llvm::StringRef GetMainExecutablePath() const { return mainExecutablePath;
+  // }
+
+  // /// \check that there exist the main executable path
+  // bool HasMainExecutablePath() const {
+  //   return !mainExecutablePath.empty() && mainExecutablePath.size() > 0;
+  // }
+  // /// \return the main executable name
+  // llvm::StringRef GetMainExecutableName() const { return mainExecutableName;
+  // }
+
+  // /// \check that there exist the main executable path
+  // bool HasMainExecutableName() const {
+  //   return !mainExecutableName.empty() && mainExecutableName.size() > 0;
+  // }
+};
+
 } // namespace stone
 
 #endif

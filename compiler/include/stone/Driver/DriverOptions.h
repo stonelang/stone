@@ -348,7 +348,7 @@ public:
   bool MightHaveExplicitPrimaryInputs(const CommandOutput &commandOutput) const;
 };
 
-class DriverOptions final {
+class DriverOptions final : public StandardOptions {
 
   friend Driver;
   friend DriverInputsAndOutputs;
@@ -383,6 +383,9 @@ class DriverOptions final {
 
   /// The output information used during compilation
   DriverOutputInfo driverOutputInfo;
+
+  /// The driver options
+  std::unique_ptr<llvm::opt::OptTable> optTable;
 
 public:
   /// The input file type for compilation
@@ -445,6 +448,9 @@ public:
   bool shouldGeneratePCH = false;
 
 public:
+  /// The main options table
+  llvm::opt::OptTable &GetOptTable() const { return *optTable; }
+
   /// \check that there exist a working directory
   bool HasWorkingDirectory() const {
     return !workingDirectory.empty() && workingDirectory.size() > 0;

@@ -15,12 +15,29 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
   // You have the inputs, so you can add them : job->AddInput()
 }
 
-Job *JobConstruction::ConstructJob(const Driver &driver, JobConstruction *jc) {
+Job *JobConstruction::ConstructJob(Driver &driver, JobConstruction *jc) {
 
   CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job", jc);
 
-  for (const CompilationEntity *entity : *jc) {
-  }
+  // You are better of doing this in the driver
+  // auto buildingTopLevelJobEntities =
+  //     BuildingTopLevelJobEntities::Create(driver);
+
+  // for (const CompilationEntity *entity : *jc) {
+
+  //   if (auto jc = llvm::dyn_cast<JobConstruction>(entity)) {
+  //     // this->ConstructJob(driver, *jc);
+  //   } else {
+  //     // Just check that this is indeed an input
+  //     if (entity->IsInput()) {
+  //       buildingTopLevelJobEntities->inputEntities.push_back(entity);
+  //     }
+  //   }
+  // }
+
+  // driver.GetToolChain().ConstructJob(jc, driver.GetCompilation(),
+  //   buildingTopLevelJobEntities.jobEntities,
+  //   buildingTopLevelJobEntities.inputEntities);
 
   //  jc.ForEachInput([&](const CompilationEntity *entity) {
   //   auto jc = llvm::dyn_cast<JobConstruction>(entity);
@@ -44,16 +61,16 @@ Job *JobConstruction::ConstructJob(const Driver &driver, JobConstruction *jc) {
   // assert(driver.HasToolChain());
 
   // driver.ComputeJobMainOutput();
-  // return driver.GetToolChain().ConstructJob(this, driver.GetCompilation(),
+  // return driver.GetToolChain().ConstructJob(this,
+  // driver.GetCompilation(),
   // ....);
 
   return nullptr;
 }
 void JobConstruction::ComputeJobMainOutput() {}
 
-Job *JobConstruction::ConstructJob(const Driver &driver) {
+Job *JobConstruction::ConstructJob(Driver &driver) {
   assert(HasIsTopLevel());
-
   return ConstructJob(driver, this);
 }
 

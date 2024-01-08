@@ -227,10 +227,16 @@ public:
   ///
   /// This method dispatches to the various \c ConstructInvocation methods,
   /// which may be overridden by platform-specific subclasses.
+  Job *
+  ConstructJob(const JobConstruction &jobConstruction, Compilation &compilation,
+               llvm::SmallVectorImpl<const Job *> &&inputs,
+               llvm::ArrayRef<const CompilationEntity *> inputConstructions,
+               std::unique_ptr<CommandOutput> output) const;
+
   Job *ConstructJob(const JobConstruction &jobConstruction,
                     Compilation &compilation,
-                    llvm::SmallVectorImpl<const Job *> &&inputs,
-                    llvm::ArrayRef<const JobConstruction *> inputConstructions,
+                    llvm::ArrayRef<const Job *> jobEntities,
+                    llvm::ArrayRef<const CompilationEntity *> inputEntities,
                     std::unique_ptr<CommandOutput> output) const;
 };
 
