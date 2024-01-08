@@ -77,14 +77,13 @@ class JobInfo final : public DriverAllocation<JobInfo> {
   Compilation &compilation;
 
 public:
-
   /// Dependency jobs for the main job
   llvm::SmallVector<const Job *> deps;
 
   /// You may just need compilation entities
   llvm::SmallVector<const CompilationEntity *> inputs;
 
-  /// The command output for the job 
+  /// The command output for the job
   std::unique_ptr<CommandOutput> commandOutput;
 
 public:
@@ -94,7 +93,8 @@ public:
   void operator=(JobInfo &&) = delete;
 
 public:
-  explicit JobInfo(const JobConstruction *jobConstruction, Compilation &compilation)
+  explicit JobInfo(const JobConstruction *jobConstruction,
+                   Compilation &compilation)
       : jobConstruction(jobConstruction), compilation(compilation) {
     assert(jobConstruction != nullptr);
   }
@@ -104,6 +104,7 @@ public:
 public:
   const JobConstruction *GetJobConstruction() const { return jobConstruction; }
   Compilation &GetCompilation() { return compilation; }
+  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
 
 public:
   static JobInfo *Create(Driver &driver, const JobConstruction *jobConstruction,
@@ -117,14 +118,14 @@ private:
   Compilation &compilation;
 
 public:
-  llvm::ArrayRef<const Job *> inputs;
-  llvm::ArrayRef<const JobConstruction *> inputConstructions;
+  llvm::ArrayRef<const Job *> deps;
+  llvm::ArrayRef<const CompilationEntity *> inputs;
 
   const CommandOutput &commandOutput;
 
 public:
-  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> inputs,
-             llvm::ArrayRef<const JobConstruction *> inputConstructions,
+  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> deps,
+             llvm::ArrayRef<const CompilationEntity *> inputs,
              const CommandOutput &commandOutput);
 };
 

@@ -31,24 +31,22 @@ Job *JobConstruction::Apply(Driver &driver, const JobConstruction *current) {
   CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
                                                          current);
 
-  // asert(current);
-  // assert(current->HasInputs());
+  auto jobInfo = JobInfo::Create(driver, current, driver.GetCompilation());
 
-  // auto currentApplyScope = CreateApplyScope(driver, current);
+  for (const CompilationEntity *entity : *current) {
+    if (entity->IsJobConstruction()) {
+      if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+        jobInfo->deps.push_back(Apply(driver, jc));
+      }
+    } else if (entity->IsInput()) {
+      jobInfo->inputs.push_back(entity);
+    }
+  }
 
-  // auto jobInfo = std::make_unique<JobInfo>(current, driver.GetCompilation());
+  jobInfo->commandOutput =
+      std::make_unique<CommandOutput>(current->GetFileType());
 
-  // for (const CompilationEntity *entity : *current) {
-
-  //   if (current->IsJobConstruction()) {
-  //     if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-  //       currentApplyScope->AddJob(
-  //           const_cast<JobConstruction *>(jc)->Apply(driver, this));
-  //     }
-  //   } else if (current->IsInput()) {
-  //     currentApplyScope->AddInput(entity);
-  //   }
-  // }
+  driver.GetToolChain().ConstructJob(driver.GetCompilation(), jobInfo);
 
   /// Cannot have inputs and jobs
   // assert(!(currentApplyScope->HasInputs() && currentApplyScope->HasJobs()));

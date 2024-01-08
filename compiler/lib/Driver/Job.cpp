@@ -33,7 +33,38 @@ JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jobConstruction,
   return new (driver) JobInfo(jobConstruction, compilation);
 }
 
-Job *ToolChain::ConstructJob(const JobInfo *jobInfo) const {}
+
+JobContext::JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> deps,
+                                  llvm::ArrayRef<const CompilationEntity *> inputs,
+                                  const CommandOutput &commandOutput)
+    : compilation(compilation), deps(deps), inputs(inputs), commandOutput(commandOutput) {}
+
+
+
+Job *ToolChain::ConstructJob(Compilation& compilation, const JobInfo *jobInfo) const {
+
+  JobContext jobContext{compilation, jobInfo->deps,
+                        jobInfo->inputs, jobInfo->GetCommandOutput()};
+
+  auto jobInvocation = [&]() -> JobInvocation {
+    switch (jobInfo->GetJobConstruction()->GetKind()) {
+    case CompilationEntityKind::CompileJobConstruction:
+      return ConstructInvocation(
+          llvm::cast<CompileJobConstruction>(*jobInfo->GetJobConstruction()),
+          jobContext);
+
+    case CompilationEntityKind::Input:
+      llvm_unreachable("not a JobConstruction");
+    }
+
+    // Work around MSVC warning: not all control paths return a value
+    llvm_unreachable("All switch cases are covered");
+  }();
+  // return Job::Create(compilation.GetDriver(),
+  // construction,std::move(inputs));
+
+  return nullptr;
+}
 
 // Job *ToolChain::ConstructJob(
 //     const JobConstruction &construction, Compilation &compilation,

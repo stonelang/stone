@@ -234,7 +234,7 @@ public:
                llvm::ArrayRef<const CompilationEntity *> inputConstructions,
                std::unique_ptr<CommandOutput> output) const;
 
-  Job *ConstructJob(const JobInfo *jobInfo) const;
+  Job *ConstructJob(Compilation& compilation, const JobInfo *jobInfo) const;
 
   Job *ConstructJob(const JobConstruction &jobConstruction,
                     Compilation &compilation,
