@@ -1,7 +1,7 @@
 #include "stone/Driver/JobConstruction.h"
 #include "stone/Basic/FileType.h"
-#include "stone/Driver/Driver.h"
 #include "stone/Driver/Compilation.h"
+#include "stone/Driver/Driver.h"
 #include "stone/Driver/DriverPrettyStackTrace.h"
 
 using namespace stone;
@@ -26,7 +26,7 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
   // You have the inputs, so you can add them : job->AddInput()
 }
 
-Job *JobConstruction::Apply(Driver &driver, JobConstruction *current) {
+Job *JobConstruction::Apply(Driver &driver, const JobConstruction *current) {
 
   CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
                                                          current);

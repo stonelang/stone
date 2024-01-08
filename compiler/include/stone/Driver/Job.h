@@ -73,14 +73,18 @@ public:
 class JobInfo final : public DriverAllocation<JobInfo> {
   friend JobConstruction;
 
-  JobConstruction* jobConstruction = nullptr;
+  const JobConstruction *jobConstruction = nullptr;
   Compilation &compilation;
 
 public:
-  llvm::ArrayRef<const Job *> deps;
 
-  /// You may just need compilation entities 
-  llvm::ArrayRef<const CompilationEntity *> inputs;
+  /// Dependency jobs for the main job
+  llvm::SmallVector<const Job *> deps;
+
+  /// You may just need compilation entities
+  llvm::SmallVector<const CompilationEntity *> inputs;
+
+  /// The command output for the job 
   std::unique_ptr<CommandOutput> commandOutput;
 
 public:
@@ -90,19 +94,19 @@ public:
   void operator=(JobInfo &&) = delete;
 
 public:
-  explicit JobInfo(JobConstruction* jobConstruction, Compilation &compilation)
+  explicit JobInfo(const JobConstruction *jobConstruction, Compilation &compilation)
       : jobConstruction(jobConstruction), compilation(compilation) {
-        assert(jobConstruction != nullptr);
-      }
+    assert(jobConstruction != nullptr);
+  }
 
   ~JobInfo() = default;
 
 public:
-  JobConstruction* GetJobConstruction() { return jobConstruction; }
+  const JobConstruction *GetJobConstruction() const { return jobConstruction; }
   Compilation &GetCompilation() { return compilation; }
 
 public:
-  static JobInfo *Create(Driver &driver, JobConstruction* jobConstruction,
+  static JobInfo *Create(Driver &driver, const JobConstruction *jobConstruction,
                          Compilation &compilation);
 };
 

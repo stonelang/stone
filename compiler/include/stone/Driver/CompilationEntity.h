@@ -97,7 +97,7 @@ public:
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
   }
 
-  bool IsJobConstruction() {
+  bool IsJobConstruction() const {
     return CompilationEntity::IsJobConstruction(GetKind());
   }
   bool IsLink() const {
@@ -179,8 +179,8 @@ public:
   }
 
 public:
-  bool IsAny(CompilationEntityKind kind);
-  bool IsJobConstruction(CompilationEntityKind kind);
+  static bool IsAny(CompilationEntityKind kind);
+  static bool IsJobConstruction(CompilationEntityKind kind);
 };
 
 class TopLevelCompilationEntity : public CompilationEntity {

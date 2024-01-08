@@ -28,7 +28,7 @@ BatchJob::BatchJob(const JobConstruction &constructor,
                    CompilationEntityList inputs)
     : Job(CompilationEntityKind::BatchJob, constructor, inputs) {}
 
-JobInfo *JobInfo::Create(Driver &driver, JobConstruction *jobConstruction,
+JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jobConstruction,
                          Compilation &compilation) {
   return new (driver) JobInfo(jobConstruction, compilation);
 }

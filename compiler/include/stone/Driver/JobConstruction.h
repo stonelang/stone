@@ -53,7 +53,7 @@ protected:
 
 protected:
   void ComputeJobMainOutput();
-  virtual Job *Apply(Driver &driver, JobConstruction *current);
+  virtual Job *Apply(Driver &driver, const JobConstruction *current);
 
 public:
   virtual Job *Apply(Driver &driver);

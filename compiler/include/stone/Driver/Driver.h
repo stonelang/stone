@@ -377,7 +377,7 @@ public:
   /// Build the jobs
   Status BuildTopLevelJobs();
 
-  Job *ConstructJob(JobConstruction *jc);
+  Job *ConstructJob(const JobConstruction *jc);
 
   void ComputeJobMainOutput(const JobConstruction *jobConstruction);
 
