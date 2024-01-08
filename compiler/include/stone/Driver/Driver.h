@@ -91,6 +91,7 @@ public:
 
 class BuildingJobConstructionEntities;
 
+
 // Generally, we are compiling and linking -- they are special, so we treat them
 // as such.
 class ModuleEntities final : public DriverAllocation<ModuleEntities> {
@@ -103,7 +104,9 @@ public:
   explicit ModuleEntities() {}
 
 public:
-  void AddEntity(const CompilationEntity *entity) {}
+  void AddEntity(const CompilationEntity *entity) {
+     entities.push_back(entity);
+  }
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
 
   /// This will merge the modules if you are not in a single compile invocation
@@ -121,7 +124,9 @@ public:
   explicit LinkEntities() {}
 
 public:
-  void AddEntity(const CompilationEntity *entity) {}
+  void AddEntity(const CompilationEntity *entity) {
+    entities.push_back(entity);
+  }
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
 
 public:

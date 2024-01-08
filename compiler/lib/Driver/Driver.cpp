@@ -297,9 +297,7 @@ Status Driver::BuildSingleCompileInvocation(
 
   GetDriverOptions().GetInputsAndOutputs().ForEachInput(
       [&](const DriverInputFile *input) {
-        assert(input->IsPartOfStoneCompilation());
-        auto currentInput = CastToJobConstruction(input);
-        compileJobConstruction->AddInput(currentInput);
+        compileJobConstruction->AddInput(input);
       });
 
   buildingEntities->GetModuleEntities()->AddEntity(compileJobConstruction);
