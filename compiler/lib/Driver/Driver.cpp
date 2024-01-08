@@ -107,8 +107,14 @@ void BuildingJobConstructionEntities::Initialize() {
   // We just create the link entities because it is not a rare event --
   // statistically more likely.
   linkEntities = LinkEntities::Create(driver);
+}
 
-  // Try
+void ModuleEntities::AddEntity(const CompilationEntity *entity) {
+
+  if (auto incrementalJobEntity =
+          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
+  }
+  entities.push_back(entity);
 }
 
 Status BuildingJobConstructionEntities::HandleStoneFileType(
@@ -154,10 +160,7 @@ Status BuildingJobConstructionEntities::HandleStoneModuleFileType(
 
   if (driver.ShouldLink()) {
     linkEntities->AddEntity(input);
-  } else if (driver.GetDriverOptions()
-                 .GetDriverOutputInfo()
-                 .shouldGenerateModule &&
-             !driver.ShouldLink()) {
+  } else if (driver.ShouldGenerateModule() && !driver.ShouldLink()) {
     moduleEntities->AddEntity(input);
   } else {
     // TODO: Log
@@ -203,7 +206,19 @@ BuildingJobConstructionEntities::CreateCompileJobConstruction(
   return CompileJobConstruction::Create(driver, driver.GetOutputFileType());
 }
 
-void BuildingJobConstructionEntities::FinishBuilding() {}
+void BuildingJobConstructionEntities::FinishBuilding() {
+
+  // if(GetMergeModuleJobConstruction()){
+  // }
+  // TopLevelActions.push_back(MergeModuleAction);
+  //    }
+  //  }
+  //  TopLevelActions.push_back(LinkAction);
+
+  if (linkEntities->HasEntities() && driver.ShouldLink()) {
+    auto linkJobConstruction = linkEntities->Apply();
+  }
+}
 
 BuildingJobConstructionEntities *
 BuildingJobConstructionEntities::Create(Driver &driver) {
@@ -217,6 +232,8 @@ ModuleEntities *ModuleEntities::Create(const Driver &driver) {
 LinkEntities *LinkEntities::Create(const Driver &driver) {
   return new (driver) LinkEntities();
 }
+
+LinkJobConstruction *LinkEntities::Apply() { return nullptr; }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 

@@ -91,26 +91,25 @@ public:
 
 class BuildingJobConstructionEntities;
 
-
 // Generally, we are compiling and linking -- they are special, so we treat them
 // as such.
 class ModuleEntities final : public DriverAllocation<ModuleEntities> {
 
   friend BuildingJobConstructionEntities;
-
+  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
   explicit ModuleEntities() {}
 
 public:
-  void AddEntity(const CompilationEntity *entity) {
-     entities.push_back(entity);
-  }
+  void AddEntity(const CompilationEntity *entity);
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+  
+  // MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 
   /// This will merge the modules if you are not in a single compile invocation
-  MergeModuleJobConstruction *GetMergeModuleJobConstruction();
+  MergeModuleJobConstruction *Apply();
 
 public:
   static ModuleEntities *Create(const Driver &driver);
@@ -118,6 +117,7 @@ public:
 
 class LinkEntities final : public DriverAllocation<LinkEntities> {
 
+  LinkJobConstruction *linkJobConstruction = nullptr;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
@@ -128,6 +128,7 @@ public:
     entities.push_back(entity);
   }
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+  LinkJobConstruction *Apply();
 
 public:
   static LinkEntities *Create(const Driver &driver);
@@ -140,7 +141,6 @@ class BuildingJobConstructionEntities final
   ModuleEntities *moduleEntities = nullptr;
   LinkEntities *linkEntities = nullptr;
 
-  LinkJobConstruction *linkJobConstruction = nullptr;
   GeneratePCHJobConstruction *pchJobConstruction = nullptr;
   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
 
@@ -157,10 +157,7 @@ public:
 
 public:
   GeneratePCHJobConstruction *GetGeneratePCHJobConstruction();
-  void CreateLinkJobConstruction();
   void CreateAutolinkExtractJobConstruction();
-
-  void CreateMergeModuleJobConstruction();
 
   MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 

@@ -175,9 +175,8 @@ Status DriverOptionsConverter::Convert() {
     return Status::MakeHasCompletionAndIsError();
   }
 
-  //TODO: Ok for now
+  // TODO: Ok for now
   ComputeOutputInfo();
-
 
   return Status();
 }
@@ -269,9 +268,9 @@ void DriverOptionsConverter::SetTriple(llvm::Triple inputTriple) {
 
 void DriverOptionsConverter::ComputeOutputInfo() {
 
-auto modeOption = args.getLastArg(opts::ModeGroup);
+  auto modeOption = args.getLastArg(opts::ModeGroup);
 
-  /// Just Object for now 
+  /// Just Object for now
   auto outputFileType =
       (driverOpts.driverOutputInfo.ltoVariant != LTOKind::None)
           ? FileType::BC
