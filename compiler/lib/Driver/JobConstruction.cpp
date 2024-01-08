@@ -61,7 +61,7 @@ CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
     : IncrementalJobConstruction(CompilationEntityKind::CompileJobConstruction,
                                  llvm::None, outputFileType) {
 
-  assert(file::IsOutputableFileType(outputFileType));
+  assert(file::IsOutputFileType(outputFileType));
 }
 
 CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
@@ -69,7 +69,7 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
     : IncrementalJobConstruction(CompilationEntityKind::CompileJobConstruction,
                                  input, outputFileType) {
 
-  assert(file::IsOutputableFileType(outputFileType));
+  assert(file::IsOutputFileType(outputFileType));
 }
 
 // Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
@@ -169,7 +169,7 @@ BackendJobConstruction::BackendJobConstruction(const CompilationEntity *input,
                       outputFileType),
       inputIndex(inputIndex) {
 
-  assert(file::IsOutputableFileType(outputFileType));
+  assert(file::IsOutputFileType(outputFileType));
 }
 
 GeneratePCHJobConstruction::GeneratePCHJobConstruction(

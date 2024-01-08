@@ -43,10 +43,10 @@ file::FileType GetTypeByPath(const llvm::StringRef path);
 bool IsTextual(FileType fileType);
 
 /// Returns true if this file type is a valid input file
-bool IsInputableFileType(FileType fileType);
+bool IsInputFileType(FileType fileType);
 
 /// Returns true if this file type is outputable
-bool IsOutputableFileType(FileType fileType);
+bool IsOutputFileType(FileType fileType);
 
 /// Returns true if this file type is None
 bool IsNoneFileType(FileType fileType);

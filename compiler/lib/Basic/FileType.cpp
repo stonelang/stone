@@ -109,13 +109,14 @@ bool file::IsObjectFileType(FileType fileType) {
 }
 
 /// Returns true if this file type is outputable
-bool file::IsOutputableFileType(FileType fileType) {
+bool file::IsOutputFileType(FileType fileType) {
 
   switch (fileType) {
   case FileType::Assembly:
   case FileType::IR:
   case FileType::BC:
   case FileType::Object:
+  case FileType::Image:
     return true;
   case FileType::Stone:
     return false;

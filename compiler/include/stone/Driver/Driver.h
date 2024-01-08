@@ -117,11 +117,11 @@ public:
 
 class LinkEntities final : public DriverAllocation<LinkEntities> {
 
-  Driver& driver;
+  Driver &driver;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
-  explicit LinkEntities(Driver& driver);
+  explicit LinkEntities(Driver &driver);
 
 public:
   void AddEntity(const CompilationEntity *entity) {

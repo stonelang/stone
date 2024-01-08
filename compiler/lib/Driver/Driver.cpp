@@ -134,8 +134,7 @@ Status BuildingJobConstructionEntities::HandleStoneFileType(
   }
   moduleEntities->AddEntity(compileJobConstruction);
 
-  // TODO: Do you really just want to add even though we are not in a valid link
-  // mode?
+  // Update the link entities
   linkEntities->AddEntity(compileJobConstruction);
 
   return Status();
@@ -217,8 +216,9 @@ void BuildingJobConstructionEntities::FinishBuilding() {
 
   if (linkEntities->HasEntities() && driver.ShouldLink()) {
     auto linkJobConstruction = linkEntities->Apply();
-    if(linkJobConstruction){
-      driver.GetTopLevelEntities().AddTopLevelJobConstruction(linkJobConstruction);
+    if (linkJobConstruction) {
+      driver.GetTopLevelEntities().AddTopLevelJobConstruction(
+          linkJobConstruction);
     }
   }
 }
@@ -232,7 +232,7 @@ ModuleEntities *ModuleEntities::Create(const Driver &driver) {
   return new (driver) ModuleEntities();
 }
 
-LinkEntities::LinkEntities(Driver& driver) : driver(driver){}
+LinkEntities::LinkEntities(Driver &driver) : driver(driver) {}
 
 LinkEntities *LinkEntities::Create(Driver &driver) {
   return new (driver) LinkEntities(driver);
@@ -243,11 +243,12 @@ LinkJobConstruction *LinkEntities::Apply() {
 
   if (driver.ShouldLink() && HasEntities()) {
     if (driver.IsStaticLibraryLink()) {
-      linkJobConstruction =
-          StaticLinkJobConstruction::Create(driver, entities, driver.GetLinkMode());
+      linkJobConstruction = StaticLinkJobConstruction::Create(
+          driver, entities, driver.GetLinkMode());
     } else {
-      linkJobConstruction = DynamicLinkJobConstruction::Create(driver,
-          entities, driver.GetLinkMode(), driver.GetDriverOptions().GetDriverOutputInfo().HasLTO());
+      linkJobConstruction = DynamicLinkJobConstruction::Create(
+          driver, entities, driver.GetLinkMode(),
+          driver.GetDriverOptions().GetDriverOutputInfo().HasLTO());
     }
   }
   return linkJobConstruction;
@@ -257,6 +258,10 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
   auto status = BuildTopLevelJobConstructionEntities(
       GetTopLevelEntities(), GetCompileInvocationMode());
+
+  if (status.IsErrorOrHasCompletion()) {
+    return nullptr;
+  }
 
   return nullptr;
 }
@@ -278,6 +283,18 @@ Status Driver::BuildTopLevelJobConstructionEntities(
   llvm_unreachable("Invalid CompileInvocationMode!");
 }
 
+Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
+
+  topLevelEntities->ForEachTopLevelJobConstruction(
+      [&](const CompilationEntity *entity) {
+        if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+
+          // entities.AddTopLevelJob(BuildTopLevelJob(jc));
+        }
+      });
+
+  return Status();
+}
 Status Driver::BuildMultipleCompileInvocation(
     TopLevelCompilationEntities &entities,
     BuildingJobConstructionEntities *buildingEntities) {

@@ -289,7 +289,7 @@ public:
   /// \return true if there exist an output file type
   bool HasOutputFileType() const {
     return (outputFileType != file::FileType::None) &&
-           (file::IsOutputableFileType(outputFileType));
+           (file::IsOutputFileType(outputFileType));
   }
   /// \return the computed output file type
   file::FileType GetOutputFileType() const { return outputFileType; }
