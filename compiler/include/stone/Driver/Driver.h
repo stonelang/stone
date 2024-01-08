@@ -89,9 +89,13 @@ public:
       std::function<void(const CompilationEntity *entity)> callback);
 };
 
+class BuildingJobConstructionEntities;
+
 // Generally, we are compiling and linking -- they are special, so we treat them
 // as such.
 class ModuleEntities final : public DriverAllocation<ModuleEntities> {
+
+  friend BuildingJobConstructionEntities;
 
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
@@ -100,6 +104,10 @@ public:
 
 public:
   void AddEntity(const CompilationEntity *entity) {}
+  bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+
+  /// This will merge the modules if you are not in a single compile invocation
+  MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 
 public:
   static ModuleEntities *Create(const Driver &driver);
@@ -126,7 +134,11 @@ class BuildingJobConstructionEntities final
   Driver &driver;
   ModuleEntities *moduleEntities = nullptr;
   LinkEntities *linkEntities = nullptr;
-  GeneratePCHJobConstruction* pchJobConstruction = nullptr;
+
+  LinkJobConstruction *linkJobConstruction = nullptr;
+  GeneratePCHJobConstruction *pchJobConstruction = nullptr;
+  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+
 public:
   BuildingJobConstructionEntities(Driver &driver);
   void Initialize();
@@ -139,10 +151,16 @@ public:
   LinkEntities *GetLinkEntities() { return linkEntities; }
 
 public:
-  GeneratePCHJobConstruction* GetGeneratePCHJobConstruction();
+  GeneratePCHJobConstruction *GetGeneratePCHJobConstruction();
   void CreateLinkJobConstruction();
-  void CreateMergeModuleJobConstruction();
   void CreateAutolinkExtractJobConstruction();
+
+  void CreateMergeModuleJobConstruction();
+
+  MergeModuleJobConstruction *GetMergeModuleJobConstruction();
+
+  CompileJobConstruction *
+  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
 public:
   /// < FileType handles

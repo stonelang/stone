@@ -159,9 +159,9 @@ Status DriverOptionsConverter::Convert() {
     return Status::MakeHasCompletionAndIsError();
   }
   driverOpts.workingDirectory = ComputeWorkingDirectory();
-  if (!driverOpts.HasWorkingDirectory()) {
-    return Status::MakeHasCompletionAndIsError();
-  }
+  // if (!driverOpts.HasWorkingDirectory()) {
+  //   return Status::MakeHasCompletionAndIsError();
+  // }
   driverOpts.driverOutputInfo.compileInvocationMode =
       ComputeCompileInvocationMode();
 
@@ -174,6 +174,11 @@ Status DriverOptionsConverter::Convert() {
   if (!driverOpts.GetDriverOutputInfo().ShouldLink()) {
     return Status::MakeHasCompletionAndIsError();
   }
+
+  //TODO: Ok for now
+  ComputeOutputInfo();
+
+
   return Status();
 }
 
@@ -189,6 +194,9 @@ llvm::StringRef DriverOptionsConverter::ComputeWorkingDirectory() {
 
 // TODO: Just return for now
 CompileInvocationMode DriverOptionsConverter::ComputeCompileInvocationMode() {
+  if (args.hasArg(opts::SingleCompileInvocation)) {
+    return CompileInvocationMode::Single;
+  }
   return CompileInvocationMode::Multiple;
 }
 
@@ -261,17 +269,15 @@ void DriverOptionsConverter::SetTriple(llvm::Triple inputTriple) {
 
 void DriverOptionsConverter::ComputeOutputInfo() {
 
+auto modeOption = args.getLastArg(opts::ModeGroup);
+
+  /// Just Object for now 
   auto outputFileType =
       (driverOpts.driverOutputInfo.ltoVariant != LTOKind::None)
           ? FileType::BC
           : FileType::Object;
 
-  // By default, the driver does not link its output; this will be updated
-  // appropriately below if linking is required.
-
-  // if(driverOpts.GetMainAction().IsNone()){
-
-  // }
+  driverOpts.driverOutputInfo.outputFileType = outputFileType;
 }
 
 void DriverOptionsConverter::ComputeGeneratePCH() {}

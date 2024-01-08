@@ -108,7 +108,7 @@ void BuildingJobConstructionEntities::Initialize() {
   // statistically more likely.
   linkEntities = LinkEntities::Create(driver);
 
-  // Try 
+  // Try
 }
 
 Status BuildingJobConstructionEntities::HandleStoneFileType(
@@ -120,16 +120,16 @@ Status BuildingJobConstructionEntities::HandleStoneFileType(
   CompileJobConstruction *compileJobConstruction = nullptr;
   if (input) {
     compileJobConstruction = CompileJobConstruction::Create(
-        driver, input,
-        driver.GetOutputFileType());
+        driver, input, driver.GetOutputFileType());
   } else {
     // TODO: This is only true in Single
-    compileJobConstruction = CompileJobConstruction::Create(
-        driver, driver.GetOutputFileType());
+    compileJobConstruction =
+        CompileJobConstruction::Create(driver, driver.GetOutputFileType());
   }
   moduleEntities->AddEntity(compileJobConstruction);
 
-  //TODO: Do you really just want to add even though we are not in a valid link mode?
+  // TODO: Do you really just want to add even though we are not in a valid link
+  // mode?
   linkEntities->AddEntity(compileJobConstruction);
 
   return Status();
@@ -152,27 +152,55 @@ Status BuildingJobConstructionEntities::HandleAutoLinkFileType(
 Status BuildingJobConstructionEntities::HandleStoneModuleFileType(
     const DriverInputFile *input) {
 
-  if(driver.ShouldLink()){
+  if (driver.ShouldLink()) {
     linkEntities->AddEntity(input);
-  }else if(driver.GetDriverOptions().GetDriverOutputInfo().shouldGenerateModule && !driver.ShouldLink()){
+  } else if (driver.GetDriverOptions()
+                 .GetDriverOutputInfo()
+                 .shouldGenerateModule &&
+             !driver.ShouldLink()) {
     moduleEntities->AddEntity(input);
-  }
-  else {
+  } else {
     // TODO: Log
     Status::MakeHasCompletionAndIsError();
   }
   return Status();
 }
 
-GeneratePCHJobConstruction* BuildingJobConstructionEntities::GetGeneratePCHJobConstruction() {
+GeneratePCHJobConstruction *
+BuildingJobConstructionEntities::GetGeneratePCHJobConstruction() {
 
-  // TODO: Just a starter 
-  if(!pchJobConstruction){
-    if(driver.GetDriverOptions().shouldGeneratePCH){
+  // TODO: Just a starter
+  if (!pchJobConstruction) {
+    if (driver.GetDriverOptions().shouldGeneratePCH) {
     }
     // Check that we can create this
   }
   return pchJobConstruction;
+}
+
+MergeModuleJobConstruction *
+BuildingJobConstructionEntities::GetMergeModuleJobConstruction() {
+
+  //: TODO: Get this from the ModuleEntities
+  if (!mergeModuleJobConstruction && !driver.IsSingleCompileInvocation() &&
+      moduleEntities->HasEntities()) {
+    mergeModuleJobConstruction =
+        MergeModuleJobConstruction::Create(driver, moduleEntities->entities);
+  }
+  return mergeModuleJobConstruction;
+}
+
+CompileJobConstruction *
+BuildingJobConstructionEntities::CreateCompileJobConstruction(
+    const DriverInputFile *input) {
+
+  // TODO: args.hasArg(opts::::EmbedBitCode))
+  // Check that it requires a PCH
+  if (input) {
+    return CompileJobConstruction::Create(driver, input,
+                                          driver.GetOutputFileType());
+  }
+  return CompileJobConstruction::Create(driver, driver.GetOutputFileType());
 }
 
 void BuildingJobConstructionEntities::FinishBuilding() {}
@@ -227,26 +255,31 @@ Status Driver::BuildMultipleCompileInvocation(
         switch (input->GetFileType()) {
         case FileType::Stone: {
           assert(input->IsPartOfStoneCompilation());
-          if(buildingEntities->HandleStoneFileType(input).IsErrorOrHasCompletion()){
+          if (buildingEntities->HandleStoneFileType(input)
+                  .IsErrorOrHasCompletion()) {
             return Status::MakeHasCompletionAndIsError();
           }
           break;
         }
         case FileType::Autolink:
-          if(buildingEntities->HandleAutoLinkFileType(input).IsErrorOrHasCompletion()){
+          if (buildingEntities->HandleAutoLinkFileType(input)
+                  .IsErrorOrHasCompletion()) {
             return Status::MakeHasCompletionAndIsError();
           }
           break;
         case FileType::Object: {
-          if(buildingEntities->HandleObjectFileType(input).IsErrorOrHasCompletion()){
+          if (buildingEntities->HandleObjectFileType(input)
+                  .IsErrorOrHasCompletion()) {
             return Status::MakeHasCompletionAndIsError();
           }
           break;
         }
         case FileType::StoneModule:
-          if(buildingEntities->HandleStoneModuleFileType(input).IsErrorOrHasCompletion()){
+          if (buildingEntities->HandleStoneModuleFileType(input)
+                  .IsErrorOrHasCompletion()) {
             return Status::MakeHasCompletionAndIsError();
           }
+          break;
         default:
           llvm_unreachable(" Invalid file type");
         }
@@ -256,11 +289,28 @@ Status Driver::BuildMultipleCompileInvocation(
 
 Status Driver::BuildSingleCompileInvocation(
     TopLevelCompilationEntities &entities,
-    BuildingJobConstructionEntities *buildingEntities) {}
+    BuildingJobConstructionEntities *buildingEntities) {
+
+  auto compileJobConstruction =
+      buildingEntities->CreateCompileJobConstruction();
+  assert(compileJobConstruction);
+
+  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        assert(input->IsPartOfStoneCompilation());
+        auto currentInput = CastToJobConstruction(input);
+        compileJobConstruction->AddInput(currentInput);
+      });
+
+  buildingEntities->GetModuleEntities()->AddEntity(compileJobConstruction);
+  buildingEntities->GetLinkEntities()->AddEntity(compileJobConstruction);
+}
 
 Status Driver::BuildBatchCompileInvocation(
     TopLevelCompilationEntities &entities,
-    BuildingJobConstructionEntities *buildingEntities) {}
+    BuildingJobConstructionEntities *buildingEntities) {
+  return Status();
+}
 
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {

@@ -27,7 +27,7 @@ protected:
   Compiler &compiler;
   CompilerExecution *consumer = nullptr;
 
-  llvm::sys::TimePoint<> startTime;
+  llvm::sys::TimePoint<> startTime = std::chrono::system_clock::now();
   llvm::sys::TimePoint<> lastTime = llvm::sys::TimePoint<>::min();
 
 public:

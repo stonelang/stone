@@ -363,22 +363,13 @@ def ToolsDirectory : Separate<["-"], "tools-directory">,
   Flags<[CompilerOption,DoesNotAffectIncrementalBuild, ArgumentIsPath]>,
   HelpText<"Look for external executables (ld, clang, binutils) in <directory>">, MetaVarName<"<directory>">;
 
-def NormalCompileInvocation : Flag<["-"], "normal-compile-invocation">,
-  Flags<[DriverOption]>,
-  HelpText<"n input(s), n compile(s), n * n  parses. Example: compile_1(1=p ,...,n), ... compile_n(1,...,n=p), p := -primary-file">;
-
-def SingleCompileInvocation : Flag<["-"], "single-compile-invocation">,
+def SingleCompileInvocation : Flag<["-"], "compile-invocation-single">,
   Flags<[DriverOption]>,
   HelpText<"n input(s), 1 compile, n parses. Example: compile(1,....,n), p := 0 ">;
 
-def FlatCompileInvocation : Flag<["-"], "flat-compile-invocation">,
+def MultipleCompileInvocation : Flag<["-"], "compile-invocation-mutiple">,
   Flags<[DriverOption]>,
   HelpText<"n input(s), n compile(s), n parses. Example: compile_1(1=p),...,compile_n(n=p), p := -primary-file">;
-
-//def CPUCountCompileInvocation : Flag<["-"], "compilation-mode-cpu">,
-//  Flags<[DriverOption]>,
-//  HelpText<"n input (s), j CPU(s), j compile(s), n * j parses. 
-//Example: compile_1(1=p,...,n),...,compile_j(1,...,p=j,...,n), p := -primary-file">;
 
 def EnableBatchMode : Flag<["-"], "enable-batch-mode">,
   Flags<[DriverOption]>,
