@@ -35,7 +35,6 @@ class DerivedArgList;
 namespace stone {
 
 class Driver;
-class TopLevelCompilationEntitiesBuilder;
 
 class TopLevelCompilationEntities final {
   friend Driver;
@@ -90,123 +89,74 @@ public:
       std::function<void(const CompilationEntity *entity)> callback);
 };
 
-class BuildingCompilationEntitiesConsumer
-    : public DriverAllocation<BuildingCompilationEntitiesConsumer> {
-protected:
+// Generally, we are compiling and linking -- they are special, so we treat them
+// as such.
+class ModuleEntities final : public DriverAllocation<ModuleEntities> {
+
+  llvm::SmallVector<const CompilationEntity *, 8> entities;
+
+public:
+  explicit ModuleEntities() {}
+
+public:
+  void AddEntity(const CompilationEntity *entity) {}
+
+public:
+  static ModuleEntities *Create(const Driver &driver);
+};
+
+class LinkEntities final : public DriverAllocation<LinkEntities> {
+
+  llvm::SmallVector<const CompilationEntity *, 8> entities;
+
+public:
+  explicit LinkEntities() {}
+
+public:
+  void AddEntity(const CompilationEntity *entity) {}
+  bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+
+public:
+  static LinkEntities *Create(const Driver &driver);
+};
+
+class BuildingJobConstructionEntities final
+    : public DriverAllocation<BuildingJobConstructionEntities> {
+
   Driver &driver;
-
-protected:
-  llvm::SmallVector<const CompilationEntity *> entities;
+  ModuleEntities *moduleEntities = nullptr;
+  LinkEntities *linkEntities = nullptr;
+  GeneratePCHJobConstruction* pchJobConstruction = nullptr;
+public:
+  BuildingJobConstructionEntities(Driver &driver);
+  void Initialize();
 
 public:
-  BuildingCompilationEntitiesConsumer(Driver &driver);
+  bool HasModuleEntities() { return moduleEntities != nullptr; }
+  ModuleEntities *GetModuleEntities() { return moduleEntities; }
 
-protected:
-  void AddCompilationEntity(const CompilationEntity *entity) {
-    entities.push_back(entity);
-  }
-  bool HasCompilationEntities() {
-    return (entities.empty() && entities.size() > 0);
-  }
+  bool HasLinkEntities() { return linkEntities != nullptr; }
+  LinkEntities *GetLinkEntities() { return linkEntities; }
 
 public:
-  BuildingCompilationEntitiesConsumer();
+  GeneratePCHJobConstruction* GetGeneratePCHJobConstruction();
+  void CreateLinkJobConstruction();
+  void CreateMergeModuleJobConstruction();
+  void CreateAutolinkExtractJobConstruction();
 
 public:
-  virtual void CompletedCompilationEntity(const CompilationEntity *entity);
-  virtual void Finish();
+  /// < FileType handles
+  Status HandleStoneFileType(const DriverInputFile *input);
+  Status HandleObjectFileType(const DriverInputFile *input);
+  Status HandleAutoLinkFileType(const DriverInputFile *input);
+  Status HandleStoneModuleFileType(const DriverInputFile *input);
+
+public:
+  void FinishBuilding();
+
+public:
+  static BuildingJobConstructionEntities *Create(Driver &driver);
 };
-
-class BuildingJobConstructionEntitiesConsumer final
-    : public BuildingCompilationEntitiesConsumer {
-public:
-  BuildingJobConstructionEntitiesConsumer(Driver &driver);
-
-public:
-  void CompletedCompilationEntity(const CompilationEntity *entity) override;
-  void Finish() override;
-
-public:
-  static BuildingJobConstructionEntitiesConsumer *Create(Driver &driver);
-};
-
-// class MergeModuleJobConstructionEntitiesConsumer final
-//     : public BuildingCompilationEntitiesConsumer {
-
-// public:
-//   MergeModuleJobConstructionEntitiesConsumer(Driver &driver);
-
-// public:
-//   void CompletedCompilationEntity(const CompilationEntity *entity) override;
-//   void Finish() override;
-
-// public:
-//   static MergeModuleJobConstructionEntitiesConsumer *Create(Driver &driver);
-// };
-
-// class BuildingJobConstructionEntities final {
-
-//   Driver &driver;
-//   llvm::SmallVector<BuildingCompilationEntitiesConsumer *> consumers;
-
-// public:
-//   BuildingJobConstructionEntities(Driver &driver);
-
-// public:
-//   Status BuildForCompileInvocation(CompileInvocationMode kind);
-//   Status BuildForMultipleCompileInvocation();
-//   Status BuildForSingleCompileInvocation();
-//   Status BuildForBatchCompileInvocation();
-
-//   void ForEachConsumer(
-//       std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn);
-
-// public:
-//   bool HasConsumers() { return (!consumers.empty() && consumers.size() > 0);
-//   } void CompletedCompilationEntity(const CompilationEntity *entity);
-
-//   CompileJobConstruction *
-//   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
-
-//   // void CompletedCompilationEntity(const DriverInputFile *entity);
-
-// public:
-//   void AddConsumer(BuildingCompilationEntitiesConsumer *consumer);
-
-// public:
-//   void Finish();
-// };
-
-// class JobEntitiesConsumer final : public BuildingCompilationEntitiesConsumer
-// { public:
-//   JobEntitiesConsumer(Driver &driver);
-
-// public:
-//   void CompletedCompilationEntity(const CompilationEntity *entity) override;
-//   void Finish() override;
-
-// public:
-//   void AddConsumer(BuildingCompilationEntitiesConsumer *consumer);
-
-// public:
-//   static JobEntitiesConsumer *Create(Driver &driver);
-// };
-
-// class TopLevelJobEntitiesBuilder final {
-//   Driver &driver;
-//   llvm::SmallVector<BuildingCompilationEntitiesConsumer *> consumers;
-
-// public:
-//   TopLevelJobEntitiesBuilder(Driver &driver);
-
-// public:
-//   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
-//   Job *BuildTopLevelJob(const JobConstruction *jc);
-
-// public:
-//   void AddConsumer(BuildingCompilationEntitiesConsumer *consumer);
-//   void Finish();
-// };
 
 class Driver final {
 
@@ -251,13 +201,13 @@ class Driver final {
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
 
   /// The top-level compilation entities
-  TopLevelCompilationEntities topLevelCompilationEntities;
+  std::unique_ptr<TopLevelCompilationEntities> topLevelEntities;
 
   /// Builds the job entities
   // TopLevelJobEntitiesBuilder jobEntitiesBuilder;
 
   /// Build the JobConstruction entities
-  //BuildingJobConstructionEntities jobConstructionEntitiesBuilder;
+  // BuildingJobConstructionEntities jobConstructionEntitiesBuilder;
 
 public:
   Driver();
@@ -285,11 +235,11 @@ public:
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
-  TopLevelCompilationEntities &GetTopLevelCompilationEntities() {
-    return topLevelCompilationEntities;
+  TopLevelCompilationEntities &GetTopLevelEntities() {
+    return *topLevelEntities;
   }
-  const TopLevelCompilationEntities &GetTopLevelCompilationEntities() const {
-    return topLevelCompilationEntities;
+  const TopLevelCompilationEntities &GetTopLevelEntities() const {
+    return *topLevelEntities;
   }
 
 public:
@@ -328,27 +278,28 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
-  // std::unique_ptr<CompileStyle> CreateCompileStyle();
-
 public:
   Status
-  BuildTopLevelCompilationEntities(TopLevelCompilationEntities &entities);
+  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities,
+                                       CompileInvocationMode cim);
 
-public:
-  Status
-  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities);
+  Status BuildMultipleCompileInvocation(
+      TopLevelCompilationEntities &entities,
+      BuildingJobConstructionEntities *buildingEntities);
 
-  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
+  Status BuildSingleCompileInvocation(
+      TopLevelCompilationEntities &entities,
+      BuildingJobConstructionEntities *buildingEntities);
 
-  Status
-  BuildMultipleCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
-  Status
-  BuildSingleCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
-  Status
-  BuildBatchCompileInvocation(BuildingCompilationEntitiesConsumer *consumer);
+  Status BuildBatchCompileInvocation(
+      TopLevelCompilationEntities &entities,
+      BuildingJobConstructionEntities *buildingEntities);
 
   CompileJobConstruction *
   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
+
+public:
+  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
 public:
   /// Construct a compilation object for a given ToolChain

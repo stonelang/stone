@@ -15,8 +15,8 @@ using namespace stone::file;
 using namespace llvm::opt;
 
 Driver::Driver()
-    : optTable(stone::CreateOptTable()) {
-}
+    : optTable(stone::CreateOptTable()),
+      topLevelEntities(new TopLevelCompilationEntities()) {}
 
 Driver::~Driver() {}
 
@@ -95,307 +95,131 @@ void TopLevelCompilationEntities::ForEachTopLevelExternalJob(
   }
 }
 
-BuildingCompilationEntitiesConsumer::BuildingCompilationEntitiesConsumer(
-    Driver &driver)
+BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
     : driver(driver) {}
 
-void BuildingCompilationEntitiesConsumer::CompletedCompilationEntity(
-    const CompilationEntity *entity) {
-  llvm_unreachable("Only sub-classes can make this call");
+void BuildingJobConstructionEntities::Initialize() {
+
+  // We just create the module entities because it is not a rare event --
+  // statistically more likely.
+  moduleEntities = ModuleEntities::Create(driver);
+
+  // We just create the link entities because it is not a rare event --
+  // statistically more likely.
+  linkEntities = LinkEntities::Create(driver);
+
+  // Try 
 }
 
-void BuildingCompilationEntitiesConsumer::Finish() {
-  llvm_unreachable("Only sub-classes can make this call");
+Status BuildingJobConstructionEntities::HandleStoneFileType(
+    const DriverInputFile *input) {
+
+  assert(input);
+  assert(input->IsStoneFileType());
+
+  CompileJobConstruction *compileJobConstruction = nullptr;
+  if (input) {
+    compileJobConstruction = CompileJobConstruction::Create(
+        driver, input,
+        driver.GetOutputFileType());
+  } else {
+    // TODO: This is only true in Single
+    compileJobConstruction = CompileJobConstruction::Create(
+        driver, driver.GetOutputFileType());
+  }
+  moduleEntities->AddEntity(compileJobConstruction);
+
+  //TODO: Do you really just want to add even though we are not in a valid link mode?
+  linkEntities->AddEntity(compileJobConstruction);
+
+  return Status();
 }
 
-BuildingJobConstructionEntitiesConsumer::
-    BuildingJobConstructionEntitiesConsumer(Driver &driver)
-    : BuildingCompilationEntitiesConsumer(driver) {
+Status BuildingJobConstructionEntities::HandleObjectFileType(
+    const DriverInputFile *input) {
 
-  // assert(driver.GetDriverOptions().GetDriverOutputInfo().ShouldLink());
+  assert(input);
+  assert(input->IsObjectFileType());
+
+  return Status();
 }
 
-BuildingJobConstructionEntitiesConsumer *
-BuildingJobConstructionEntitiesConsumer::Create(Driver &driver) {
-  return new (driver) BuildingJobConstructionEntitiesConsumer(driver);
+Status BuildingJobConstructionEntities::HandleAutoLinkFileType(
+    const DriverInputFile *input) {
+  return Status();
 }
 
-void BuildingJobConstructionEntitiesConsumer::CompletedCompilationEntity(
-    const CompilationEntity *entity) {
+Status BuildingJobConstructionEntities::HandleStoneModuleFileType(
+    const DriverInputFile *input) {
 
-  /// Note, this may not be a top level -- could just be an object file
-  // asert(entity->IsTopLevel());
-
-  /// TODO: Some checks
-  AddCompilationEntity(entity);
-
-  // why not just construct the job here
+  if(driver.ShouldLink()){
+    linkEntities->AddEntity(input);
+  }else if(driver.GetDriverOptions().GetDriverOutputInfo().shouldGenerateModule && !driver.ShouldLink()){
+    moduleEntities->AddEntity(input);
+  }
+  else {
+    // TODO: Log
+    Status::MakeHasCompletionAndIsError();
+  }
+  return Status();
 }
 
-void BuildingJobConstructionEntitiesConsumer::Finish() {
+GeneratePCHJobConstruction* BuildingJobConstructionEntities::GetGeneratePCHJobConstruction() {
 
-  // if (HasTopLevelCompilationEntities()) {
-  //   auto const outputInfo = driver.GetDriverOptions().GetDriverOutputInfo();
-  //   if (outputInfo.IsStaticLibraryLink()) {
-  //     auto topLevelJC = StaticLinkJobConstruction::Create(
-  //         driver, entities, outputInfo.GetLinkMode());
-  //     // topLevelJC->AddIsTopLevel();
-
-  //     driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-  //         StaticLinkJobConstruction::Create(driver, entities,
-  //                                           outputInfo.GetLinkMode()));
-  //   } else {
-  //     driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-  //         DynamicLinkJobConstruction::Create(
-  //             driver, entities, outputInfo.GetLinkMode(),
-  //             outputInfo.HasLTO()));
-  //   }
-  // }
+  // TODO: Just a starter 
+  if(!pchJobConstruction){
+    if(driver.GetDriverOptions().shouldGeneratePCH){
+    }
+    // Check that we can create this
+  }
+  return pchJobConstruction;
 }
 
-// MergeModuleJobConstructionEntitiesConsumer::
-//     MergeModuleJobConstructionEntitiesConsumer(Driver &driver)
-//     : BuildingCompilationEntitiesConsumer(driver) {
+void BuildingJobConstructionEntities::FinishBuilding() {}
 
-//   assert(!driver.IsSingleCompileInvocation());
-//   assert(driver.ShouldGenerateModule());
-// }
+BuildingJobConstructionEntities *
+BuildingJobConstructionEntities::Create(Driver &driver) {
+  return new (driver) BuildingJobConstructionEntities(driver);
+}
 
-// MergeModuleJobConstructionEntitiesConsumer *
-// MergeModuleJobConstructionEntitiesConsumer::Create(Driver &driver) {
+ModuleEntities *ModuleEntities::Create(const Driver &driver) {
+  return new (driver) ModuleEntities();
+}
 
-//   if (driver.IsSingleCompileInvocation()) {
-//     return nullptr;
-//   }
+LinkEntities *LinkEntities::Create(const Driver &driver) {
+  return new (driver) LinkEntities();
+}
 
-//   if (!driver.ShouldGenerateModule()) {
-//     return nullptr;
-//   }
+Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
-//   return new (driver) MergeModuleJobConstructionEntitiesConsumer(driver);
-// }
+  auto status = BuildTopLevelJobConstructionEntities(
+      GetTopLevelEntities(), GetCompileInvocationMode());
 
-// void MergeModuleJobConstructionEntitiesConsumer::CompletedCompilationEntity(
-//     const CompilationEntity *entity) {
-//   // Add to the special Module
-
-//   if (auto incrementalJobEntity =
-//           llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
-//     // Take the upper bound of the status of any incremental inputs to
-//     // ensure that the merge-modules job gets run if *any* input job is run.
-//     // const auto conservativeStatus =
-//     //     std::max(StatusBound.status, IJA->getInputInfo().status);
-//     // // The modification time here is not important to the rest of the
-//     // // incremental build. We take the upper bound in case an attempt to
-//     // // compare the swiftmodule output's mod time and any input files is
-//     // // made. If the compilation has been correctly scheduled, the
-//     // // swiftmodule's mod time will always strictly exceed the mod time of
-//     // // any of its inputs when we are able to skip it.
-//     // const auto conservativeModTime = std::max(
-//     //     StatusBound.previousModTime, IJA->getInputInfo().previousModTime);
-//     // StatusBound = InputInfo{conservativeStatus, conservativeModTime};
-//   }
-// }
-
-// void MergeModuleJobConstructionEntitiesConsumer::Finish() {
-
-//   // Ok, now we can try to create the link job
-//   // But, you have to create a special M
-// }
-
-// BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver
-// &driver)
-//     : driver(driver) {}
-
-// void BuildingJobConstructionEntities::AddConsumer(
-//     BuildingCompilationEntitiesConsumer *consumer) {
-//   if (consumer) {
-//     consumers.push_back(consumer);
-//   }
-// }
-
-// Status BuildingJobConstructionEntities::BuildForCompileInvocation(
-//     CompileInvocationMode compileStyle) {
-//   switch (compileStyle) {
-//   case CompileInvocationMode::Multiple:
-//     return BuildForMultipleCompileInvocation();
-//   case CompileInvocationMode::Single:
-//     return BuildForSingleCompileInvocation();
-//   case CompileInvocationMode::Batch:
-//     return BuildForBatchCompileInvocation();
-//   default:
-//     llvm_unreachable("Invalid compile invocation kind");
-//   }
-// }
-
-// CompileJobConstruction *
-// BuildingJobConstructionEntities::CreateCompileJobConstruction(
-//     const DriverInputFile *input) {
-
-// // if (args.hasArg(opts::::EmbedBitCode)) {
-// // }
-// /// Check that it requires a PCH
-// // CompileJobConstruction *compileJobConstruction = nullptr;
-// if (input) {
-//   return CompileJobConstruction::Create(
-//       driver, input,
-//       driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-// }
-
-// return CompileJobConstruction::Create(
-//     driver,
-//     driver.GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-
-// //   if (driver.IsSingleCompileInvocation()) {
-// //   }
-// // }
-
-// if (IsTopLevelJobConstruction()) {
-//   CompletedCompilationEntity(compileJobConstruction);
-
-// } else {
-//   driver.GetTopLevelCompilationEntities().AddTopLevelJobConstruction(
-//       compileJobConstruction);
-//   return compileJobConstruction;
-// }
-//}
-
-// void BuildingJobConstructionEntities::CompletedCompilationEntity(
-//     const CompilationEntity *entity) {
-
-//   ForEachConsumer([&](BuildingCompilationEntitiesConsumer *consumer) {
-//     consumer->CompletedCompilationEntity(entity);
-//   });
-// }
-
-// Status BuildingJobConstructionEntities::BuildForMultipleCompileInvocation() {
-//   assert(driver.IsMultipleCompileInvocation());
-
-// driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-//     [&](const DriverInputFile *input) {
-//       switch (input->GetFileType()) {
-//       case FileType::Stone: {
-//         assert(input->IsPartOfStoneCompilation());
-//         CompletedCompilationEntity(CreateCompileJobConstruction(input));
-//         break;
-//       }
-//       case FileType::Object: {
-//         CompletedCompilationEntity(input);
-//         break;
-//       }
-//       default:
-//         llvm_unreachable(" Invalid file type");
-//       }
-//     });
-
-//   return Status();
-// }
-// Status BuildingJobConstructionEntities::BuildForSingleCompileInvocation() {
-//   assert(driver.IsSingleCompileInvocation());
-
-// auto compileJobConstruction = CreateCompileJobConstruction();
-// assert(compileJobConstruction);
-
-// driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-//     [&](const DriverInputFile *input) {
-//       assert(input->IsPartOfStoneCompilation());
-//       auto currentInput = driver.CastToJobConstruction(input);
-//       compileJobConstruction->AddInput(currentInput);
-//     });
-// CompletedCompilationEntity(compileJobConstruction);
-
-// return Status();
-//}
-// Status BuildingJobConstructionEntities::BuildForBatchCompileInvocation() {
-//   assert(driver.IsBatchCompileInvocation());
-
-//   return Status();
-// }
-
-// void BuildingJobConstructionEntities::ForEachConsumer(
-//     std::function<void(BuildingCompilationEntitiesConsumer *consumer)> fn) {
-//   for (auto consumer : consumers) {
-//     fn(consumer);
-//   }
-// }
-
-// void BuildingJobConstructionEntities::Finish() {
-
-//   ///
-// }
-
-// TopLevelJobEntitiesBuilder::TopLevelJobEntitiesBuilder(Driver &driver)
-//     : driver(driver) {}
-
-// Status TopLevelJobEntitiesBuilder::BuildTopLevelJobEntities(
-//     TopLevelCompilationEntities &entities) {
-
-//   entities.ForEachTopLevelJobConstruction([&](const CompilationEntity
-//   *entity) {
-//     if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-//       entities.AddTopLevelJob(BuildTopLevelJob(jc));
-//     }
-//     // auto jb =
-//     //
-//     jobEntitiesBuilder.BuildTopLevelJob(llvm::dyn_cast<JobConstruction>(entity));
-
-//     // auto jc = llvm::dyn_cast<JobConstruction>(entity);
-//     // auto jb = const_cast<JobConstruction*>(jc)->ConstructJob(*this);
-//     // entities.AddTopLevelJob(jb);
-//   });
-//   return Status();
-// }
-// Job *TopLevelJobEntitiesBuilder::BuildTopLevelJob(const JobConstruction *jc)
-// {
-
-//   return nullptr;
-// }
-
-// void TopLevelJobEntitiesBuilder::Finish() {}
+  return nullptr;
+}
 
 Status Driver::BuildTopLevelJobConstructionEntities(
-    TopLevelCompilationEntities &entities) {
+    TopLevelCompilationEntities &entities, CompileInvocationMode cim) {
 
-  auto consumer = BuildingJobConstructionEntitiesConsumer::Create(*this);
+  auto buildingEntities = BuildingJobConstructionEntities::Create(*this);
+  buildingEntities->Initialize();
 
-  STONE_DEFER {
-    [&]() {
-      // Do something here
-      consumer->Finish();
-    }();
-  };
+  STONE_DEFER { buildingEntities->FinishBuilding(); };
 
-  auto buildCompileInvocation =
-      [&](BuildingJobConstructionEntitiesConsumer *consumer) -> Status {
-    switch (GetCompileInvocationMode()) {
-    case CompileInvocationMode::Multiple:
-      return BuildMultipleCompileInvocation(consumer);
-    case CompileInvocationMode::Single:
-      return BuildSingleCompileInvocation(consumer);
-    case CompileInvocationMode::Batch:
-      return BuildBatchCompileInvocation(consumer);
-    }
-    // Work around MSVC warning: not all control paths return a value
-    llvm_unreachable("All switch cases were covered");
-  }(consumer);
-
-  if (buildCompileInvocation.IsErrorOrHasCompletion()) {
-    return Status::MakeHasCompletionAndIsError();
+  switch (cim) {
+  case CompileInvocationMode::Multiple:
+    return BuildMultipleCompileInvocation(entities, buildingEntities);
+  case CompileInvocationMode::Single:
+    return BuildSingleCompileInvocation(entities, buildingEntities);
+  case CompileInvocationMode::Batch:
+    return BuildBatchCompileInvocation(entities, buildingEntities);
   }
-  // STONE_DEFER { jobConstructionEntitiesBuilder.Finish(); };
-
-  // jobConstructionEntitiesBuilder.AddConsumer(
-  //     BuildingJobConstructionEntitiesConsumer::Create(*this));
-
-  // // jobConstructionEntitiesBuilder.AddConsumer(
-  // //     MergeModuleJobConstructionEntitiesConsumer::Create(*this));
-
-  // return jobConstructionEntitiesBuilder.BuildForCompileInvocation(
-  //     GetCompileInvocationMode());
+  llvm_unreachable("Invalid CompileInvocationMode!");
 }
 
 Status Driver::BuildMultipleCompileInvocation(
-    BuildingCompilationEntitiesConsumer *consumer) {
+    TopLevelCompilationEntities &entities,
+    BuildingJobConstructionEntities *buildingEntities) {
 
   assert(IsMultipleCompileInvocation());
   GetDriverOptions().GetInputsAndOutputs().ForEachInput(
@@ -403,15 +227,26 @@ Status Driver::BuildMultipleCompileInvocation(
         switch (input->GetFileType()) {
         case FileType::Stone: {
           assert(input->IsPartOfStoneCompilation());
-          consumer->CompletedCompilationEntity(
-              CreateCompileJobConstruction(input));
+          if(buildingEntities->HandleStoneFileType(input).IsErrorOrHasCompletion()){
+            return Status::MakeHasCompletionAndIsError();
+          }
           break;
         }
         case FileType::Autolink:
+          if(buildingEntities->HandleAutoLinkFileType(input).IsErrorOrHasCompletion()){
+            return Status::MakeHasCompletionAndIsError();
+          }
+          break;
         case FileType::Object: {
-          consumer->CompletedCompilationEntity(input);
+          if(buildingEntities->HandleObjectFileType(input).IsErrorOrHasCompletion()){
+            return Status::MakeHasCompletionAndIsError();
+          }
           break;
         }
+        case FileType::StoneModule:
+          if(buildingEntities->HandleStoneModuleFileType(input).IsErrorOrHasCompletion()){
+            return Status::MakeHasCompletionAndIsError();
+          }
         default:
           llvm_unreachable(" Invalid file type");
         }
@@ -420,70 +255,12 @@ Status Driver::BuildMultipleCompileInvocation(
 }
 
 Status Driver::BuildSingleCompileInvocation(
-    BuildingCompilationEntitiesConsumer *consumer) {
-
-  assert(IsSingleCompileInvocation());
-  auto compileJobConstruction = CreateCompileJobConstruction();
-
-  assert(compileJobConstruction);
-
-  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        assert(input->IsPartOfStoneCompilation());
-        auto currentInput = llvm::dyn_cast<JobConstruction>(input);
-        compileJobConstruction->AddInput(currentInput);
-      });
-  consumer->CompletedCompilationEntity(compileJobConstruction);
-}
+    TopLevelCompilationEntities &entities,
+    BuildingJobConstructionEntities *buildingEntities) {}
 
 Status Driver::BuildBatchCompileInvocation(
-    BuildingCompilationEntitiesConsumer *consumer) {}
-
-Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
-
-  // STONE_DEFER { jobEntitiesBuilder.Finish(); };
-  // if (!entities.HasTopLevelJobConstructions()) {
-  //   return Status::MakeHasCompletionAndIsError();
-  // }
-  // return jobEntitiesBuilder.BuildTopLevelJobEntities(entities);
-}
-
-CompileJobConstruction *
-Driver::CreateCompileJobConstruction(const DriverInputFile *input) {
-
-  // TODO: args.hasArg(opts::::EmbedBitCode))
-  // Check that it requires a PCH
-
-  if (input) {
-    return CompileJobConstruction::Create(
-        *this, input,
-        GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-  }
-  return CompileJobConstruction::Create(
-      *this, GetDriverOptions().GetDriverOutputInfo().GetOutputFileType());
-}
-
-Status Driver::BuildTopLevelCompilationEntities(
-    TopLevelCompilationEntities &entities) {
-
-  auto status = BuildTopLevelJobConstructionEntities(entities);
-  if (status.IsErrorOrHasCompletion()) {
-    return Status::MakeHasCompletionAndIsError();
-  }
-  // status = BuildTopLevelJobEntities(entities);
-  // if (status.IsErrorOrHasCompletion()) {
-  //   return Status::MakeHasCompletionAndIsError();
-  // }
-  return Status();
-}
-
-Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
-
-  auto status =
-      BuildTopLevelCompilationEntities(GetTopLevelCompilationEntities());
-
-  return nullptr;
-}
+    TopLevelCompilationEntities &entities,
+    BuildingJobConstructionEntities *buildingEntities) {}
 
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {
