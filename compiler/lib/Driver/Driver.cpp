@@ -217,6 +217,9 @@ void BuildingJobConstructionEntities::FinishBuilding() {
 
   if (linkEntities->HasEntities() && driver.ShouldLink()) {
     auto linkJobConstruction = linkEntities->Apply();
+    if(linkJobConstruction){
+      driver.GetTopLevelEntities().AddTopLevelJobConstruction(linkJobConstruction);
+    }
   }
 }
 

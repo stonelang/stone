@@ -121,7 +121,7 @@ class LinkEntities final : public DriverAllocation<LinkEntities> {
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
-  LinkEntities(Driver& driver);
+  explicit LinkEntities(Driver& driver);
 
 public:
   void AddEntity(const CompilationEntity *entity) {
