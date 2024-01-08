@@ -5,6 +5,7 @@
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Driver/CompilationEntity.h"
+#include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/DriverOptions.h"
 
 #include "llvm/ADT/PointerUnion.h"
@@ -13,24 +14,38 @@
 #include "llvm/Option/ArgList.h"
 
 namespace stone {
-
 class Job;
+
 class JobConstruction : public TopLevelCompilationEntity {
 
-  // protected:
-  //   Job *job = nullptr;
+protected:
+  class ApplyScope final : public DriverAllocation<ApplyScope> {
+    JobConstruction *current;
+
+  public:
+    llvm::SmallVector<const CompilationEntity *, 4> inputEntities;
+    llvm::SmallVector<const CompilationEntity *, 8> jobEntities;
+
+  public:
+    explicit ApplyScope(JobConstruction *current);
+    ~ApplyScope();
+
+  public:
+    JobConstruction *GetCurrent() { return current; }
+  };
+
+  static ApplyScope *CreateApplyScope(Driver &driver, JobConstruction *current);
 
 protected:
   JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
                   file::FileType fileType);
 
 protected:
-  virtual Job *ConstructJob(Driver &driver, JobConstruction *construction);
-
   void ComputeJobMainOutput();
+  virtual Job *Apply(Driver &driver, JobConstruction *current);
 
 public:
-  virtual Job *ConstructJob(Driver &driver);
+  virtual Job *Apply(Driver &driver);
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -55,7 +70,7 @@ protected:
   //  virtual Job *ConstructInputJob(const Driver &driver){}
 
 public:
-  // Job *ConstructJob(const Driver &driver) override {}
+  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -68,7 +83,7 @@ public:
 class CompileJobConstruction final : public IncrementalJobConstruction {
 
 protected:
-  // Job *ConstructJob(const Driver &driver, JobContruction* parent) override;
+  // Job *Apply(const Driver &driver, JobContruction* parent) override;
 
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
@@ -81,7 +96,7 @@ public:
                          file::FileType outputFileType);
 
 public:
-  // Job *ConstructJob(const Driver &driver) override;
+  // Job *Apply(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -100,7 +115,7 @@ public:
   MergeModuleJobConstruction(CompilationEntityList inputs);
 
 public:
-  // Job *ConstructJob(const Driver &driver) override {}
+  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -126,7 +141,7 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
-  // Job *ConstructJob(const Driver &driver) override {}
+  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -148,7 +163,7 @@ public:
                              bool withLTO = false);
 
 public:
-  // Job *ConstructJob(const Driver &driver) override;
+  // Job *Apply(const Driver &driver) override;
   bool WithLTO() const { return withLTO; }
 
 public:
@@ -167,13 +182,13 @@ public:
 class StaticLinkJobConstruction final : public LinkJobConstruction {
 
 protected:
-  // Job *ConstructJob(const Driver &driver, JobConstructin* parent) override;
+  // Job *Apply(const Driver &driver, JobConstructin* parent) override;
 
 public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
 
 public:
-  // Job *ConstructJob(const Driver &driver) override;
+  // Job *Apply(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -197,7 +212,7 @@ public:
 public:
   virtual size_t GetInputIndex() const override { return inputIndex; }
 
-  // Job *ConstructJob(const Driver &driver) override {}
+  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -221,7 +236,7 @@ public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
 
-  // Job *ConstructJob(const Driver &driver) override {}
+  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const JobConstruction *construction) {

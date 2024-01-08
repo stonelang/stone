@@ -6,6 +6,16 @@
 using namespace stone;
 using namespace stone::file;
 
+JobConstruction::ApplyScope::ApplyScope(JobConstruction *current)
+    : current(current) {}
+
+JobConstruction::ApplyScope::~ApplyScope() {}
+
+JobConstruction::ApplyScope *
+JobConstruction::CreateApplyScope(Driver &driver, JobConstruction *current) {
+  return new (driver) JobConstruction::ApplyScope(current);
+}
+
 JobConstruction::JobConstruction(CompilationEntityKind kind,
                                  CompilationEntityList inputs,
                                  file::FileType fileType)
@@ -15,18 +25,16 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
   // You have the inputs, so you can add them : job->AddInput()
 }
 
-Job *JobConstruction::ConstructJob(Driver &driver, JobConstruction *jc) {
+Job *JobConstruction::Apply(Driver &driver, JobConstruction *current) {
 
-  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job", jc);
+  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job", current);
 
-  // You are better of doing this in the driver
-  // auto buildingTopLevelJobEntities =
-  //     BuildingTopLevelJobEntities::Create(driver);
+  auto currentApplyScope = CreateApplyScope(driver, current);
 
   // for (const CompilationEntity *entity : *jc) {
 
   //   if (auto jc = llvm::dyn_cast<JobConstruction>(entity)) {
-  //     // this->ConstructJob(driver, *jc);
+  //     // this->Apply(driver, *jc);
   //   } else {
   //     // Just check that this is indeed an input
   //     if (entity->IsInput()) {
@@ -35,17 +43,17 @@ Job *JobConstruction::ConstructJob(Driver &driver, JobConstruction *jc) {
   //   }
   // }
 
-  // driver.GetToolChain().ConstructJob(jc, driver.GetCompilation(),
+  // driver.GetToolChain().Apply(jc, driver.GetCompilation(),
   //   buildingTopLevelJobEntities.jobEntities,
   //   buildingTopLevelJobEntities.inputEntities);
 
   //  jc.ForEachInput([&](const CompilationEntity *entity) {
   //   auto jc = llvm::dyn_cast<JobConstruction>(entity);
 
-  //   jc->ConstructJob(driver);
+  //   jc->Apply(driver);
 
   //   // auto topLevelJob =
-  //   driver.CastToJobConstruction(entity)->ConstructJob();
+  //   driver.CastToJobConstruction(entity)->Apply();
   //   // auto topLevelJob = llmv::dyn_cast<Job>
   // });
 
@@ -61,7 +69,7 @@ Job *JobConstruction::ConstructJob(Driver &driver, JobConstruction *jc) {
   // assert(driver.HasToolChain());
 
   // driver.ComputeJobMainOutput();
-  // return driver.GetToolChain().ConstructJob(this,
+  // return driver.GetToolChain().Apply(this,
   // driver.GetCompilation(),
   // ....);
 
@@ -69,9 +77,9 @@ Job *JobConstruction::ConstructJob(Driver &driver, JobConstruction *jc) {
 }
 void JobConstruction::ComputeJobMainOutput() {}
 
-Job *JobConstruction::ConstructJob(Driver &driver) {
+Job *JobConstruction::Apply(Driver &driver) {
   assert(HasIsTopLevel());
-  return ConstructJob(driver, this);
+  return Apply(driver, this);
 }
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
@@ -89,7 +97,7 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
   assert(file::IsOutputFileType(outputFileType));
 }
 
-// Job *CompileJobConstruction::ConstructJob(const Driver &driver) {
+// Job *CompileJobConstruction::Apply(const Driver &driver) {
 
 //   assert(HasInputs());
 
@@ -153,7 +161,7 @@ DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
 
 //   return nullptr;
 // }
-// Job *DynamicLinkJobConstruction::ConstructJob(const Driver &driver) {
+// Job *DynamicLinkJobConstruction::Apply(const Driver &driver) {
 
 //   return nullptr;
 // }
@@ -175,7 +183,7 @@ StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
 //   return nullptr;
 // }
 
-// Job *StaticLinkJobConstruction::ConstructJob(const Driver &driver) {
+// Job *StaticLinkJobConstruction::Apply(const Driver &driver) {
 //   return nullptr;
 // }
 
