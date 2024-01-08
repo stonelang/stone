@@ -229,11 +229,26 @@ ModuleEntities *ModuleEntities::Create(const Driver &driver) {
   return new (driver) ModuleEntities();
 }
 
-LinkEntities *LinkEntities::Create(const Driver &driver) {
-  return new (driver) LinkEntities();
+LinkEntities::LinkEntities(Driver& driver) : driver(driver){}
+
+LinkEntities *LinkEntities::Create(Driver &driver) {
+  return new (driver) LinkEntities(driver);
 }
 
-LinkJobConstruction *LinkEntities::Apply() { return nullptr; }
+LinkJobConstruction *LinkEntities::Apply() {
+  LinkJobConstruction *linkJobConstruction = nullptr;
+
+  if (driver.ShouldLink() && HasEntities()) {
+    if (driver.IsStaticLibraryLink()) {
+      linkJobConstruction =
+          StaticLinkJobConstruction::Create(driver, entities, driver.GetLinkMode());
+    } else {
+      linkJobConstruction = DynamicLinkJobConstruction::Create(driver,
+          entities, driver.GetLinkMode(), driver.GetDriverOptions().GetDriverOutputInfo().HasLTO());
+    }
+  }
+  return linkJobConstruction;
+}
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
@@ -248,9 +263,7 @@ Status Driver::BuildTopLevelJobConstructionEntities(
 
   auto buildingEntities = BuildingJobConstructionEntities::Create(*this);
   buildingEntities->Initialize();
-
   STONE_DEFER { buildingEntities->FinishBuilding(); };
-
   switch (cim) {
   case CompileInvocationMode::Multiple:
     return BuildMultipleCompileInvocation(entities, buildingEntities);

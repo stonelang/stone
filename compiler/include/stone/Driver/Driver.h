@@ -105,7 +105,7 @@ public:
 public:
   void AddEntity(const CompilationEntity *entity);
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
-  
+
   // MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 
   /// This will merge the modules if you are not in a single compile invocation
@@ -117,11 +117,11 @@ public:
 
 class LinkEntities final : public DriverAllocation<LinkEntities> {
 
-  LinkJobConstruction *linkJobConstruction = nullptr;
+  Driver& driver;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
-  explicit LinkEntities() {}
+  LinkEntities(Driver& driver);
 
 public:
   void AddEntity(const CompilationEntity *entity) {
@@ -131,7 +131,7 @@ public:
   LinkJobConstruction *Apply();
 
 public:
-  static LinkEntities *Create(const Driver &driver);
+  static LinkEntities *Create(Driver &driver);
 };
 
 class BuildingJobConstructionEntities final
