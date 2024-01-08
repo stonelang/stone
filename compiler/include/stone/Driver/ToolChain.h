@@ -15,6 +15,7 @@
 namespace stone {
 
 class Driver;
+class JobInfo;
 class Compilation;
 
 /// Packs together information chosen by toolchains to create jobs.
@@ -232,6 +233,8 @@ public:
                llvm::SmallVectorImpl<const Job *> &&inputs,
                llvm::ArrayRef<const CompilationEntity *> inputConstructions,
                std::unique_ptr<CommandOutput> output) const;
+
+  Job *ConstructJob(const JobInfo *jobInfo) const;
 
   Job *ConstructJob(const JobConstruction &jobConstruction,
                     Compilation &compilation,

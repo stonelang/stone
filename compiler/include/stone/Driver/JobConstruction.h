@@ -32,6 +32,17 @@ protected:
 
   public:
     JobConstruction *GetCurrent() { return current; }
+    void AddJob(const CompilationEntity *entity) {
+      jobEntities.push_back(entity);
+    }
+    bool HasJobs() { return !jobEntities.empty() && jobEntities.size() > 0; }
+
+    void AddInput(const CompilationEntity *entity) {
+      inputEntities.push_back(entity);
+    }
+    bool HasInputs() {
+      return !inputEntities.empty() && inputEntities.size() > 0;
+    }
   };
 
   static ApplyScope *CreateApplyScope(Driver &driver, JobConstruction *current);

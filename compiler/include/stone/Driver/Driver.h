@@ -35,6 +35,7 @@ class DerivedArgList;
 namespace stone {
 
 class Driver;
+class Compilation;
 
 class TopLevelCompilationEntities final {
   friend Driver;
@@ -178,18 +179,17 @@ public:
   static BuildingJobConstructionEntities *Create(Driver &driver);
 };
 
-class BuildingTopLevelJobEntities final
-    : public DriverAllocation<BuildingTopLevelJobEntities> {
+class ConstructJobScope final : public DriverAllocation<ConstructJobScope> {
 
 public:
   llvm::SmallVector<const CompilationEntity *, 4> inputEntities;
   llvm::SmallVector<const CompilationEntity *, 8> jobEntities;
 
 public:
-  explicit BuildingTopLevelJobEntities();
+  explicit ConstructJobScope();
 
 public:
-  static BuildingTopLevelJobEntities *Create(const Driver &driver);
+  static ConstructJobScope *Create(const Driver &driver);
 };
 
 class Driver final {
@@ -212,6 +212,9 @@ class Driver final {
   /// The tool chain to use to build the tools
   std::unique_ptr<ToolChain> toolChain;
 
+  /// The tool chain to use to build the tools
+  std::unique_ptr<Compilation> compilation;
+
   /// The task queue to run the jobs
   std::unique_ptr<stone::TaskQueue> taskQueue;
 
@@ -227,7 +230,7 @@ class Driver final {
   ///
   /// This should be as close as possible to when the driver was invoked, since
   /// it's used as a lower bound.
-  llvm::sys::TimePoint<> buildStartTime;
+  llvm::sys::TimePoint<> buildStartTime = std::chrono::system_clock::now();
 
   /// The time of the last compilation.
   ///
@@ -261,6 +264,10 @@ public:
   bool HasToolChain() const { return toolChain != nullptr; }
   ToolChain &GetToolChain() { return *toolChain; }
   const ToolChain &GetToolChain() const { return *toolChain; }
+
+  bool HasCompilation() const { return compilation != nullptr; }
+  Compilation &GetCompilation() { return *compilation; }
+  const Compilation &GetCompilation() const { return *compilation; }
 
   bool HasTaskQueue() { return taskQueue != nullptr; }
   TaskQueue &GetTaskQueue() { return *taskQueue; }

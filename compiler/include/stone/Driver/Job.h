@@ -3,6 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Driver/CompilationEntity.h"
+#include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/JobConstruction.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -64,6 +65,45 @@ public:
   /// so Jobs cannot _just_ rely on the presence of a primary output in the
   /// DerivedOutputFileMap.
   llvm::SmallSet<file::FileType, 4> additionalOutputFileTypes;
+
+public:
+  CommandOutput(file::FileType PrimaryOutputFileType);
+};
+
+class JobInfo final : public DriverAllocation<JobInfo> {
+  friend JobConstruction;
+
+  JobConstruction* jobConstruction = nullptr;
+  Compilation &compilation;
+
+public:
+  llvm::ArrayRef<const Job *> deps;
+
+  /// You may just need compilation entities 
+  llvm::ArrayRef<const CompilationEntity *> inputs;
+  std::unique_ptr<CommandOutput> commandOutput;
+
+public:
+  JobInfo(const JobInfo &) = delete;
+  void operator=(const JobInfo &) = delete;
+  JobInfo(JobInfo &&) = delete;
+  void operator=(JobInfo &&) = delete;
+
+public:
+  explicit JobInfo(JobConstruction* jobConstruction, Compilation &compilation)
+      : jobConstruction(jobConstruction), compilation(compilation) {
+        assert(jobConstruction != nullptr);
+      }
+
+  ~JobInfo() = default;
+
+public:
+  JobConstruction* GetJobConstruction() { return jobConstruction; }
+  Compilation &GetCompilation() { return compilation; }
+
+public:
+  static JobInfo *Create(Driver &driver, JobConstruction* jobConstruction,
+                         Compilation &compilation);
 };
 
 class JobContext final {

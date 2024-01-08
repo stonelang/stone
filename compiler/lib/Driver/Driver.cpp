@@ -4,6 +4,7 @@
 #include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/DriverAllocation.h"
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/Job.h"
 #include "stone/Strings.h"
 
@@ -254,10 +255,9 @@ LinkJobConstruction *LinkEntities::Apply() {
   return linkJobConstruction;
 }
 
-BuildingTopLevelJobEntities::BuildingTopLevelJobEntities() {}
-BuildingTopLevelJobEntities *
-BuildingTopLevelJobEntities::Create(const Driver &driver) {
-  return new (driver) BuildingTopLevelJobEntities();
+ConstructJobScope::ConstructJobScope() {}
+ConstructJobScope *ConstructJobScope::Create(const Driver &driver) {
+  return new (driver) ConstructJobScope();
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
@@ -291,29 +291,27 @@ Status Driver::BuildTopLevelJobConstructionEntities(
 
 Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 
-  auto buildingTopLevelJobEntities = BuildingTopLevelJobEntities::Create(*this);
-
   topLevelEntities->ForEachTopLevelJobConstruction(
       [&](const CompilationEntity *entity) {
         if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-
-          // ConstructJob(jc);
+          const_cast<JobConstruction *>(jc)->Apply(*this);
         }
       });
-
   return Status();
 }
 
 // TODO: Continue here....
 Job *Driver::ConstructJob(JobConstruction *jc) {
-  auto buildingTopLevelJobEntities = BuildingTopLevelJobEntities::Create(*this);
+
+  auto currentConstructJobScope = ConstructJobScope::Create(*this);
+
   for (const CompilationEntity *entity : *jc) {
     if (auto jc = llvm::dyn_cast<JobConstruction>(entity)) {
       // this->ConstructJob(driver, *jc);
     } else {
       // Just check that this is indeed an input
       if (entity->IsInput()) {
-        buildingTopLevelJobEntities->inputEntities.push_back(entity);
+        currentConstructJobScope->inputEntities.push_back(entity);
       }
     }
   }

@@ -28,6 +28,13 @@ BatchJob::BatchJob(const JobConstruction &constructor,
                    CompilationEntityList inputs)
     : Job(CompilationEntityKind::BatchJob, constructor, inputs) {}
 
+JobInfo *JobInfo::Create(Driver &driver, JobConstruction *jobConstruction,
+                         Compilation &compilation) {
+  return new (driver) JobInfo(jobConstruction, compilation);
+}
+
+Job *ToolChain::ConstructJob(const JobInfo *jobInfo) const {}
+
 // Job *ToolChain::ConstructJob(
 //     const JobConstruction &construction, Compilation &compilation,
 //     llvm::SmallVectorImpl<const Job *> &&inputs,
@@ -47,6 +54,7 @@ BatchJob::BatchJob(const JobConstruction &constructor,
 //       CASE(Backend)
 //       CASE(DynamicLink)
 //       CASE(StaticLink)
+
 // #undef CASE
 //     case JobConstructionKind::None:
 //       llvm_unreachable("Job a JobConstruction");
@@ -63,3 +71,6 @@ BatchJob::BatchJob(const JobConstruction &constructor,
 //     const JobConstruction &jobConstruction, Compilation &compilation,
 //     llvm::ArrayRef<const Job *> jobEntities,
 //     llvm::ArrayRef<const CompilationEntity *> inputEntities) {}
+
+CommandOutput::CommandOutput(file::FileType primaryOutputFileType)
+    : primaryOutputFileType(primaryOutputFileType) {}

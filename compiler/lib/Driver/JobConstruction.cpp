@@ -1,6 +1,7 @@
 #include "stone/Driver/JobConstruction.h"
 #include "stone/Basic/FileType.h"
 #include "stone/Driver/Driver.h"
+#include "stone/Driver/Compilation.h"
 #include "stone/Driver/DriverPrettyStackTrace.h"
 
 using namespace stone;
@@ -27,21 +28,38 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
 
 Job *JobConstruction::Apply(Driver &driver, JobConstruction *current) {
 
-  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job", current);
+  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
+                                                         current);
 
-  auto currentApplyScope = CreateApplyScope(driver, current);
+  // asert(current);
+  // assert(current->HasInputs());
 
-  // for (const CompilationEntity *entity : *jc) {
+  // auto currentApplyScope = CreateApplyScope(driver, current);
 
-  //   if (auto jc = llvm::dyn_cast<JobConstruction>(entity)) {
-  //     // this->Apply(driver, *jc);
-  //   } else {
-  //     // Just check that this is indeed an input
-  //     if (entity->IsInput()) {
-  //       buildingTopLevelJobEntities->inputEntities.push_back(entity);
+  // auto jobInfo = std::make_unique<JobInfo>(current, driver.GetCompilation());
+
+  // for (const CompilationEntity *entity : *current) {
+
+  //   if (current->IsJobConstruction()) {
+  //     if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+  //       currentApplyScope->AddJob(
+  //           const_cast<JobConstruction *>(jc)->Apply(driver, this));
   //     }
+  //   } else if (current->IsInput()) {
+  //     currentApplyScope->AddInput(entity);
   //   }
   // }
+
+  /// Cannot have inputs and jobs
+  // assert(!(currentApplyScope->HasInputs() && currentApplyScope->HasJobs()));
+
+  // std::unique_ptr<CommandOutput> commandOutput(
+  //     new CommandOutput(current->GetFileType()));
+
+  // // 4. Construct a Job which produces the right CommandOutput.
+  // auto job = driver.GetToolChain().ConstructJob(
+  //     *current, driver.GetCompilation(), currentApplyScope.jobEntities,
+  //     currentApplyScope.inputEntities, std::move(commandOutput));
 
   // driver.GetToolChain().Apply(jc, driver.GetCompilation(),
   //   buildingTopLevelJobEntities.jobEntities,

@@ -38,25 +38,6 @@ enum class CompilationEntityKind : uint8_t {
 /// A list of all job construction inputs
 using CompilationEntityList = llvm::ArrayRef<const CompilationEntity *>;
 
-// class CompilationEntities final
-//     : private llvm::TrailingObjects<CompilationEntities,
-//                                     const CompilationEntity *> {
-
-//   friend TrailingObjects;
-
-// public:
-//   CompilationEntities(const CompilationEntities &) = delete;
-//   CompilationEntities &operator=(const CompilationEntities &) = delete;
-
-// public:
-//   CompilationEntities(llvm::ArrayRef<const CompilationEntity *> entities);
-
-// public:
-//   static CompilationEntities *
-//   Create(const Driver &driver,
-//          llvm::ArrayRef<const CompilationEntity *> entities);
-// };
-
 constexpr size_t CompilationEntityAlignInBits = 8;
 class alignas(1 << CompilationEntityAlignInBits) CompilationEntity
     : public DriverAllocation<CompilationEntity> {
@@ -114,6 +95,10 @@ public:
   }
   bool IsStaticLinkJobConstruction() const {
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
+  }
+
+  bool IsJobConstruction() {
+    return CompilationEntity::IsJobConstruction(GetKind());
   }
   bool IsLink() const {
     return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
@@ -192,6 +177,10 @@ public:
     return (entity->GetKind() >= CompilationEntityKind::First &&
             entity->GetKind() <= CompilationEntityKind::Last);
   }
+
+public:
+  bool IsAny(CompilationEntityKind kind);
+  bool IsJobConstruction(CompilationEntityKind kind);
 };
 
 class TopLevelCompilationEntity : public CompilationEntity {

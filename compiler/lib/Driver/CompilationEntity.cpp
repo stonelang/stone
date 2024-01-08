@@ -92,6 +92,45 @@ void CompilationEntity::ComputeAllFlags(CompilationEntityKind kind) {
   }
 }
 
+bool CompilationEntity::IsAny(CompilationEntityKind kind) {
+  switch (kind) {
+  case CompilationEntityKind::Input:
+  case CompilationEntityKind::CompileJobConstruction:
+  case CompilationEntityKind::BackendJobConstruction:
+  case CompilationEntityKind::GeneratePCHJobConstruction:
+  case CompilationEntityKind::MergeModuleJobConstruction:
+  case CompilationEntityKind::ModuleWrapJobConstruction:
+  case CompilationEntityKind::DynamicLinkJobConstruction:
+  case CompilationEntityKind::StaticLinkJobConstruction:
+  case CompilationEntityKind::InterpretJobConstruction:
+  case CompilationEntityKind::AutolinkExtractJobConstruction:
+  case CompilationEntityKind::Job:
+  case CompilationEntityKind::BatchJob:
+    return true;
+  };
+  llvm_unreachable("Invalid JobConstruction!");
+}
+
+bool CompilationEntity::IsJobConstruction(CompilationEntityKind kind) {
+  switch (kind) {
+  case CompilationEntityKind::CompileJobConstruction:
+  case CompilationEntityKind::BackendJobConstruction:
+  case CompilationEntityKind::GeneratePCHJobConstruction:
+  case CompilationEntityKind::MergeModuleJobConstruction:
+  case CompilationEntityKind::ModuleWrapJobConstruction:
+  case CompilationEntityKind::DynamicLinkJobConstruction:
+  case CompilationEntityKind::StaticLinkJobConstruction:
+  case CompilationEntityKind::InterpretJobConstruction:
+  case CompilationEntityKind::AutolinkExtractJobConstruction:
+    return true;
+  case CompilationEntityKind::Input:
+  case CompilationEntityKind::Job:
+  case CompilationEntityKind::BatchJob:
+    return false;
+  };
+  llvm_unreachable("Invalid JobConstruction!");
+}
+
 void CompilationEntity::Print(ColorStream &colorStream) const {}
 
 // CompilationEntities *CompilationEntities::Create(const Driver& driver,
