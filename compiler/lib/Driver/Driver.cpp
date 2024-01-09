@@ -294,8 +294,7 @@ Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
   topLevelEntities->ForEachTopLevelJobConstruction(
       [&](const CompilationEntity *entity) {
         if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-          // const_cast<JobConstruction *>(jc)->Apply(*this);
-          // entities.AddTopLevelJob(ConstructJob(jc));
+          entities.AddTopLevelJob(ConstructJob(jc));
         }
       });
   return Status();
@@ -314,6 +313,13 @@ Job *Driver::ConstructJob(const JobConstruction *current) {
       jobInfo->inputs.push_back(entity);
     }
   }
+
+  jobInfo->commandOutput =
+      std::make_unique<CommandOutput>(current->GetFileType());
+
+  auto job = GetToolChain().ConstructJob(GetCompilation(), jobInfo);
+
+  return job;
 }
 Status Driver::BuildMultipleCompileInvocation(
     TopLevelCompilationEntities &entities,

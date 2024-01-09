@@ -31,6 +31,8 @@ Job *JobConstruction::Apply(Driver &driver, const JobConstruction *current) {
   CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
                                                          current);
 
+  //   assert(HasInputs());
+
   auto jobInfo = JobInfo::Create(driver, current);
 
   for (const CompilationEntity *entity : *current) {
@@ -113,26 +115,6 @@ CompileJobConstruction::CompileJobConstruction(const CompilationEntity *input,
   assert(file::IsOutputFileType(outputFileType));
 }
 
-// Job *CompileJobConstruction::Apply(const Driver &driver) {
-
-//   assert(HasInputs());
-
-//   // if (FirstInput()->IsInput()) {
-//   //   // You have nothing to do but to build the job
-//   // }
-
-//   /// If ipu
-
-//   /// if first input is an input file, then you just create the job
-//   /// else, if the first input is a JobConstruction, then you must create a
-//   job
-//   /// for it like wise
-//   // but, it would be nice to pass the parent just so that it can add itself
-//   as
-//   // an input into the parent job
-//   return nullptr;
-// }
-
 CompileJobConstruction *
 CompileJobConstruction::Create(const Driver &driver,
                                const CompilationEntity *input,
@@ -173,15 +155,6 @@ DynamicLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
   return new (driver) DynamicLinkJobConstruction(inputs, linkMode, withLTO);
 }
 
-// Job *DynamicLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
-
-//   return nullptr;
-// }
-// Job *DynamicLinkJobConstruction::Apply(const Driver &driver) {
-
-//   return nullptr;
-// }
-
 StaticLinkJobConstruction::StaticLinkJobConstruction(
     CompilationEntityList inputs, LinkMode linkMode)
     : LinkJobConstruction(CompilationEntityKind::StaticLinkJobConstruction,
@@ -194,14 +167,6 @@ StaticLinkJobConstruction::Create(Driver &driver, CompilationEntityList inputs,
                                   LinkMode linkMode) {
   return new (driver) StaticLinkJobConstruction(inputs, linkMode);
 }
-
-// Job *StaticLinkJobConstruction::ConstructSelfJob(const Driver &driver) {
-//   return nullptr;
-// }
-
-// Job *StaticLinkJobConstruction::Apply(const Driver &driver) {
-//   return nullptr;
-// }
 
 BackendJobConstruction::BackendJobConstruction(const CompilationEntity *input,
                                                FileType outputFileType,

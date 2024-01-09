@@ -166,10 +166,16 @@ public:
   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
 public:
-  /// < FileType handles
+  /// < Handle .stone file
   Status HandleStoneFileType(const DriverInputFile *input);
+
+  /// < Handle .o file
   Status HandleObjectFileType(const DriverInputFile *input);
+
+  /// < Handle autolink files
   Status HandleAutoLinkFileType(const DriverInputFile *input);
+
+  /// < Handle .stonemodule file
   Status HandleStoneModuleFileType(const DriverInputFile *input);
 
 public:
@@ -252,6 +258,7 @@ public:
 
 public:
   DiagnosticEngine &GetDiags() { return diags; }
+
   llvm::opt::OptTable &GetOptTable() { return *optTable; }
   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
 
