@@ -55,7 +55,8 @@ public:
   const Driver &GetDriver() const { return driver; }
 
   /// TODO:
-  bool ShouldPerformSingleCommand() const { return false; }
+  bool ShouldRunSingleJob() const { return false; }
+  bool HasParallelTasks() { return false; }
   bool ShouldSupportParallelExecution() const { return true; }
 
 public:

@@ -71,15 +71,24 @@ public:
                     llvm::StringRef reason);
 
 public:
+  void SetupJobs();
   void RunJobs();
+  CompilationResult RunSingleJob(const Job *job);
   CompilationResult FinishJobs();
+
+  /// Performs a single Job by executing in place, if possible.
+  ///
+  /// \param Cmd the Job which should be performed.
+  ///
+  /// \returns Typically, this function will not return, as the current process
+  /// will no longer exist, or it will call exit() if the program was
+  /// successfully executed. In the event of an error, this function will return
+  /// a negative value indicating a failure to execute.
+  CompilationResult RunSingleExecution(const Job *job);
 };
 
 Compilation::Implementation::Implementation(Compilation &compilation)
-    : compilation(compilation) {
-  ScheduleJobsBeforeBatching();
-  FormBatchJobsAndAddPendingJobsToTaskQueue();
-}
+    : compilation(compilation) {}
 
 void Compilation::Implementation::ScheduleJobsBeforeBatching() {}
 
@@ -89,7 +98,20 @@ void Compilation::Implementation::RunTaskQueueToCompletion() {}
 
 void Compilation::Implementation::CheckForUnfinishedJobs() {}
 
-void Compilation::Implementation::RunJobs() {}
+CompilationResult Compilation::Implementation::RunSingleJob(const Job *job) {
+  return CompilationResult();
+}
+
+void Compilation::Implementation::RunJobs() {
+
+  SetupJobs();
+  RunTaskQueueToCompletion();
+}
+
+void Compilation::Implementation::SetupJobs() {
+  ScheduleJobsBeforeBatching();
+  FormBatchJobsAndAddPendingJobsToTaskQueue();
+}
 
 CompilationResult Compilation::Implementation::FinishJobs() {
   CheckForUnfinishedJobs();
@@ -99,7 +121,14 @@ CompilationResult Compilation::Implementation::FinishJobs() {
 CompilationResult Compilation::RunJobs() {
 
   Compilation::Implementation implementation(*this);
+  if (ShouldRunSingleJob()) {
+    return implementation.RunSingleJob(nullptr);
+  }
   STONE_DEFER { return implementation.FinishJobs(); };
+
+  if(!ShouldSupportParallelExecution()){
+    // WARN
+  }
 
   implementation.RunJobs();
 }
