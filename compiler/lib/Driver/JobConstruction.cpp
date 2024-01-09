@@ -31,7 +31,7 @@ Job *JobConstruction::Apply(Driver &driver, const JobConstruction *current) {
   CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
                                                          current);
 
-  auto jobInfo = JobInfo::Create(driver, current, driver.GetCompilation());
+  auto jobInfo = JobInfo::Create(driver, current);
 
   for (const CompilationEntity *entity : *current) {
     if (entity->IsJobConstruction()) {

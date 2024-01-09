@@ -28,23 +28,22 @@ BatchJob::BatchJob(const JobConstruction &constructor,
                    CompilationEntityList inputs)
     : Job(CompilationEntityKind::BatchJob, constructor, inputs) {}
 
-JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jobConstruction,
-                         Compilation &compilation) {
-  return new (driver) JobInfo(jobConstruction, compilation);
+JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jc) {
+  return new (driver) JobInfo(jc, driver.GetCompilation());
 }
 
+JobContext::JobContext(Compilation &compilation,
+                       llvm::ArrayRef<const Job *> deps,
+                       llvm::ArrayRef<const CompilationEntity *> inputs,
+                       const CommandOutput &commandOutput)
+    : compilation(compilation), deps(deps), inputs(inputs),
+      commandOutput(commandOutput) {}
 
-JobContext::JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> deps,
-                                  llvm::ArrayRef<const CompilationEntity *> inputs,
-                                  const CommandOutput &commandOutput)
-    : compilation(compilation), deps(deps), inputs(inputs), commandOutput(commandOutput) {}
+Job *ToolChain::ConstructJob(Compilation &compilation,
+                             const JobInfo *jobInfo) const {
 
-
-
-Job *ToolChain::ConstructJob(Compilation& compilation, const JobInfo *jobInfo) const {
-
-  JobContext jobContext{compilation, jobInfo->deps,
-                        jobInfo->inputs, jobInfo->GetCommandOutput()};
+  JobContext jobContext{compilation, jobInfo->deps, jobInfo->inputs,
+                        jobInfo->GetCommandOutput()};
 
   auto jobInvocation = [&]() -> JobInvocation {
     switch (jobInfo->GetJobConstruction()->GetKind()) {
@@ -53,10 +52,49 @@ Job *ToolChain::ConstructJob(Compilation& compilation, const JobInfo *jobInfo) c
           llvm::cast<CompileJobConstruction>(*jobInfo->GetJobConstruction()),
           jobContext);
 
+    case CompilationEntityKind::BackendJobConstruction:
+      return ConstructInvocation(
+          llvm::cast<BackendJobConstruction>(*jobInfo->GetJobConstruction()),
+          jobContext);
+
+    case CompilationEntityKind::GeneratePCHJobConstruction:
+      return ConstructInvocation(llvm::cast<GeneratePCHJobConstruction>(
+                                     *jobInfo->GetJobConstruction()),
+                                 jobContext);
+
+    case CompilationEntityKind::MergeModuleJobConstruction:
+      return ConstructInvocation(llvm::cast<MergeModuleJobConstruction>(
+                                     *jobInfo->GetJobConstruction()),
+                                 jobContext);
+
+    // case CompilationEntityKind::ModuleWrapJobConstruction:
+    //   return ConstructInvocation(
+    //       llvm::cast<ModuleWrapJobConstruction>(*jobInfo->GetJobConstruction()),
+    //       jobContext);
+
+    case CompilationEntityKind::DynamicLinkJobConstruction:
+      return ConstructInvocation(llvm::cast<DynamicLinkJobConstruction>(
+                                     *jobInfo->GetJobConstruction()),
+                                 jobContext);
+
+    case CompilationEntityKind::StaticLinkJobConstruction:
+      return ConstructInvocation(
+          llvm::cast<StaticLinkJobConstruction>(*jobInfo->GetJobConstruction()),
+          jobContext);
+
+    case CompilationEntityKind::InterpretJobConstruction:
+      return ConstructInvocation(
+          llvm::cast<InterpretJobConstruction>(*jobInfo->GetJobConstruction()),
+          jobContext);
+
+    case CompilationEntityKind::AutolinkExtractJobConstruction:
+      return ConstructInvocation(llvm::cast<AutolinkExtractJobConstruction>(
+                                     *jobInfo->GetJobConstruction()),
+                                 jobContext);
+
     case CompilationEntityKind::Input:
       llvm_unreachable("not a JobConstruction");
     }
-
     // Work around MSVC warning: not all control paths return a value
     llvm_unreachable("All switch cases are covered");
   }();

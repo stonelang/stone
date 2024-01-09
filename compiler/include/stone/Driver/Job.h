@@ -73,7 +73,7 @@ public:
 class JobInfo final : public DriverAllocation<JobInfo> {
   friend JobConstruction;
 
-  const JobConstruction *jobConstruction = nullptr;
+  const JobConstruction *jc = nullptr;
   Compilation &compilation;
 
 public:
@@ -93,22 +93,20 @@ public:
   void operator=(JobInfo &&) = delete;
 
 public:
-  explicit JobInfo(const JobConstruction *jobConstruction,
-                   Compilation &compilation)
-      : jobConstruction(jobConstruction), compilation(compilation) {
-    assert(jobConstruction != nullptr);
+  explicit JobInfo(const JobConstruction *jc,
+                   Compilation &compilation) : jc(jc), compilation(compilation) {
+    assert(jc != nullptr);
   }
 
   ~JobInfo() = default;
 
 public:
-  const JobConstruction *GetJobConstruction() const { return jobConstruction; }
+  const JobConstruction *GetJobConstruction() const { return jc; }
   Compilation &GetCompilation() { return compilation; }
   const CommandOutput &GetCommandOutput() const { return *commandOutput; }
 
 public:
-  static JobInfo *Create(Driver &driver, const JobConstruction *jobConstruction,
-                         Compilation &compilation);
+  static JobInfo *Create(Driver &driver, const JobConstruction *jc);
 };
 
 class JobContext final {

@@ -56,6 +56,13 @@ ToolChain::ConstructInvocation(const InterpretJobConstruction &job,
   return JobInvocation();
 }
 
+JobInvocation
+ToolChain::ConstructInvocation(const GeneratePCHJobConstruction &job,
+                               const JobContext &context) const {
+  return JobInvocation();
+}
+
+
 void ToolChain::AddPlatformSpecificPluginCompileArgs(
     const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,

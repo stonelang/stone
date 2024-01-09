@@ -303,7 +303,7 @@ Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 // TODO: Continue here....
 Job *Driver::ConstructJob(const JobConstruction *current) {
 
-  auto jobInfo = JobInfo::Create(*this, current, GetCompilation());
+  auto jobInfo = JobInfo::Create(*this, current);
 
   for (const CompilationEntity *entity : *current) {
     if (entity->IsJobConstruction()) {

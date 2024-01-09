@@ -222,6 +222,13 @@ public:
   ConstructInvocation(const AutolinkExtractJobConstruction &construction,
                       const JobContext &context) const;
 
+
+  virtual JobInvocation
+  ConstructInvocation(const GeneratePCHJobConstruction &construction,
+                      const JobContext &context) const;
+
+  
+
 public:
   /// Construct a Job for the action \p JA, taking the given information into
   /// account.
@@ -234,7 +241,7 @@ public:
                llvm::ArrayRef<const CompilationEntity *> inputConstructions,
                std::unique_ptr<CommandOutput> output) const;
 
-  Job *ConstructJob(Compilation& compilation, const JobInfo *jobInfo) const;
+  Job *ConstructJob(Compilation &compilation, const JobInfo *jobInfo) const;
 
   Job *ConstructJob(const JobConstruction &jobConstruction,
                     Compilation &compilation,
