@@ -269,6 +269,11 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
     return nullptr;
   }
 
+  status = BuildTopLevelJobEntities(GetTopLevelEntities());
+  if (status.IsErrorOrHasCompletion()) {
+    return nullptr;
+  }
+
   return nullptr;
 }
 
@@ -321,6 +326,9 @@ Job *Driver::ConstructJob(const JobConstruction *current) {
 
   return job;
 }
+
+void Driver::ComputeJobMainOutput(const JobConstruction *jobConstruction) {}
+
 Status Driver::BuildMultipleCompileInvocation(
     TopLevelCompilationEntities &entities,
     BuildingJobConstructionEntities *buildingEntities) {

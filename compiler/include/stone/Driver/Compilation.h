@@ -39,6 +39,7 @@ public:
 
 class Compilation final {
   const Driver &driver;
+  class Implementation;
 
 public:
   Compilation(const Driver &driver);
@@ -52,7 +53,7 @@ public:
   void PrintJobs(llvm::raw_ostream &os) const;
 
 public:
-  CompilationResult ExecuteJobs();
+  CompilationResult RunJobs();
 };
 
 } // namespace stone
