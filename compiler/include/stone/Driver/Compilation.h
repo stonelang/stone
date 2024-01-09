@@ -54,6 +54,10 @@ public:
   Status Setup();
   const Driver &GetDriver() const { return driver; }
 
+  /// TODO:
+  bool ShouldPerformSingleCommand() const { return false; }
+  bool ShouldSupportParallelExecution() const { return true; }
+
 public:
   /// Print the list of Actions in a Compilation.
   void PrintJobs(llvm::raw_ostream &os) const;

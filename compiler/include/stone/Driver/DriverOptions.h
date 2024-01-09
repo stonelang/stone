@@ -54,6 +54,13 @@ enum class CompilationOutputLevel {
   Parseable,
 };
 
+/// Indicates whether a temporary file should always be preserved if a part of
+/// the compilation crashes.
+enum class PreserveOnCompilationCrashSignal : bool {
+  None = 0,
+  Always,
+};
+
 /// This mode controls the manner in with compile is invoked.
 /// p := -primary-file
 enum class CompileInvocationMode : UInt8 {
@@ -348,6 +355,75 @@ public:
   bool MightHaveExplicitPrimaryInputs(const CommandOutput &commandOutput) const;
 };
 
+class CompilationInfo final {
+
+  friend Driver;
+  friend DriverInputsAndOutputs;
+  friend DriverInputsConverter;
+  friend DriverOptionsConverter;
+
+private:
+  /// Temporary files that should be cleaned up after the compilation finishes.
+  ///
+  /// These apply whether the compilation succeeds or fails. If the
+  llvm::StringMap<PreserveOnCompilationCrashSignal> tempFilePaths;
+
+  /// When non-null, a temporary file containing all input .swift files.
+  /// Used for large compilations to avoid overflowing argv.
+  const char *allSourceFilesPath = nullptr;
+
+  /// Write information about this compilation to this file.
+  ///
+  /// This is used for incremental builds.
+  std::string compilationRecordPath;
+
+  /// A hash representing all the arguments that could trigger a full rebuild.
+  std::string argsHash;
+
+  /// When true, traces the lifecycle of each driver job. Provides finer
+  /// detail than ShowIncrementalBuildDecisions.
+  bool showJobLifecycle = false;
+
+  /// When true, some frontend job has requested permission to pass
+  /// -emit-loaded-module-trace, so no other job needs to do it.
+  bool passedEmitLoadedModuleTraceToFrontendJob = false;
+
+  /// True if temporary files should not be deleted.
+  bool saveTempFiles = false;
+
+  /// Because each frontend job outputs the same info in its .d file, only do it
+  /// on the first job that actually runs. Write out dummies for the rest of the
+  /// jobs. This hack saves a lot of time in the build system when incrementally
+  /// building a project with many files. Record if a scheduled job has already
+  /// added -emit-dependency-path.
+  bool haveAlreadyAddedDependencyPath = false;
+
+  bool onlyOneDependencyFile = false;
+  bool verifyFineGrainedDependencyGraphAfterEveryImport = false;
+  bool emitFineGrainedDependencyDotFileAfterEveryImport = false;
+  bool enableCrossModuleIncrementalBuild = false;
+
+public:
+  /// \check that there exist a working directory
+  bool ShowJobLifecycle() const { return showJobLifecycle; }
+
+  /// \check that there exist a working directory
+  bool OnlyOneDependencyFile() const { return onlyOneDependencyFile; }
+
+  /// \check that there exist a compilation record path
+  bool HasCompilationRecordPath() const {
+    return !compilationRecordPath.empty() && compilationRecordPath.size() > 0;
+  }
+  /// \return compilation record path
+  std::string GetCompilationRecordPath() const { return compilationRecordPath; }
+
+  /// \check that there exist args hash
+  bool HasArgsHash() const { return !argsHash.empty() && argsHash.size() > 0; }
+
+  /// \return args has
+  std::string GetArgsHash() const { return argsHash; }
+};
+
 class DriverOptions final : public StandardOptions {
 
   friend Driver;
@@ -383,6 +459,9 @@ class DriverOptions final : public StandardOptions {
 
   /// The output information used during compilation
   DriverOutputInfo driverOutputInfo;
+
+  /// Information for the compilation only
+  CompilationInfo compilationInfo;
 
   /// The driver options
   std::unique_ptr<llvm::opt::OptTable> optTable;
@@ -525,6 +604,9 @@ public:
   const DriverOutputInfo &GetDriverOutputInfo() const {
     return driverOutputInfo;
   }
+
+  /// The output information used during compilation
+  const CompilationInfo &GetCompilationInfo() const { return compilationInfo; }
 
   /// \return true if there is a valid input file type
   bool HasInputFileType() const {

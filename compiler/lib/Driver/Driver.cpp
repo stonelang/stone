@@ -218,6 +218,7 @@ void BuildingJobConstructionEntities::FinishBuilding() {
   if (linkEntities->HasEntities() && driver.ShouldLink()) {
     auto linkJobConstruction = linkEntities->Apply();
     if (linkJobConstruction) {
+      linkJobConstruction->AddIsTopLevel();
       driver.GetTopLevelEntities().AddTopLevelJobConstruction(
           linkJobConstruction);
     }
@@ -294,7 +295,9 @@ Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
   topLevelEntities->ForEachTopLevelJobConstruction(
       [&](const CompilationEntity *entity) {
         if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-          entities.AddTopLevelJob(ConstructJob(jc));
+          auto job = ConstructJob(jc);
+          job->AddIsTopLevel();
+          entities.AddTopLevelJob(job);
         }
       });
   return Status();

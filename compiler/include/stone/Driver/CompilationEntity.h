@@ -100,6 +100,7 @@ public:
   bool IsJobConstruction() const {
     return CompilationEntity::IsJobConstruction(GetKind());
   }
+
   bool IsLink() const {
     return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
   }
@@ -116,6 +117,8 @@ public:
   bool IsBatchJob() const {
     return GetKind() == CompilationEntityKind::BatchJob;
   }
+
+  bool IsAnyJob() const { return CompilationEntity::IsJob(GetKind()); }
 
   bool HasFileType() { return fileType != file::FileType::None; }
 
@@ -181,6 +184,7 @@ public:
 public:
   static bool IsAny(CompilationEntityKind kind);
   static bool IsJobConstruction(CompilationEntityKind kind);
+  static bool IsJob(CompilationEntityKind kind);
 };
 
 class TopLevelCompilationEntity : public CompilationEntity {

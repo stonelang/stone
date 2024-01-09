@@ -58,7 +58,7 @@ public:
 
 public:
   Implementation(Compilation &compilation);
-  ~Implementation();
+  ~Implementation() = default;
 
 public:
   void ScheduleJobsBeforeBatching();
@@ -72,13 +72,14 @@ public:
 
 public:
   void RunJobs();
-  void FinishJobs();
+  CompilationResult FinishJobs();
 };
 
 Compilation::Implementation::Implementation(Compilation &compilation)
-    : compilation(compilation) {}
-
-Compilation::Implementation::~Implementation() {}
+    : compilation(compilation) {
+  ScheduleJobsBeforeBatching();
+  FormBatchJobsAndAddPendingJobsToTaskQueue();
+}
 
 void Compilation::Implementation::ScheduleJobsBeforeBatching() {}
 
@@ -90,14 +91,15 @@ void Compilation::Implementation::CheckForUnfinishedJobs() {}
 
 void Compilation::Implementation::RunJobs() {}
 
-void Compilation::Implementation::FinishJobs() {}
+CompilationResult Compilation::Implementation::FinishJobs() {
+  CheckForUnfinishedJobs();
+  return CompilationResult();
+}
 
 CompilationResult Compilation::RunJobs() {
 
   Compilation::Implementation implementation(*this);
-  STONE_DEFER { implementation.FinishJobs(); };
+  STONE_DEFER { return implementation.FinishJobs(); };
 
   implementation.RunJobs();
-
-  return CompilationResult();
 }

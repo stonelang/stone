@@ -46,21 +46,29 @@ class TopLevelCompilationEntities final {
   llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
 
   // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobs;
+  llvm::SmallVector<const Job *, 8> topLevelJobs;
 
   // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelExternalJobs;
+  llvm::SmallVector<const Job *, 8> topLevelExternalJobs;
 
   llvm::SmallVector<const CompilationEntity *> entities;
 
 public:
   void AddTopLevelJobConstruction(const CompilationEntity *entity) {
+    assert(entity);
+    assert(entity->IsJobConstruction());
+    assert(entity->HasAllowTopLevel());
     topLevelJobConstructions.push_back(entity);
   }
-  void AddTopLevelJob(const CompilationEntity *entity) {
+  void AddTopLevelJob(const Job *entity) {
+    assert(entity);
+    assert(!entity->HasIsExternal());
+
     topLevelJobs.push_back(entity);
   }
-  void AddTopLevelExternalJob(const CompilationEntity *entity) {
+  void AddTopLevelExternalJob(const Job *entity) {
+    assert(entity);
+    assert(entity->HasIsExternal());
     topLevelExternalJobs.push_back(entity);
   }
 
