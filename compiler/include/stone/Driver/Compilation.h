@@ -19,6 +19,12 @@ class DerivedArgList;
 
 namespace stone {
 
+using CommandSet = llvm::SmallPtrSet<const Job *, 16>;
+
+using CommandSetVector = llvm::SetVector<const Job *>;
+
+using BatchPartition = std::vector<std::vector<const Job *>>;
+
 class CompilationResult final {
 public:
   /// Set to true if any job exits abnormally (i.e. crashes).
