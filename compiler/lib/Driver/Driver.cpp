@@ -255,10 +255,6 @@ LinkJobConstruction *LinkEntities::Apply() {
   return linkJobConstruction;
 }
 
-ConstructJobScope::ConstructJobScope() {}
-ConstructJobScope *ConstructJobScope::Create(const Driver &driver) {
-  return new (driver) ConstructJobScope();
-}
 
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 

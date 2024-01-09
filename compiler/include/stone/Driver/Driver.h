@@ -185,19 +185,6 @@ public:
   static BuildingJobConstructionEntities *Create(Driver &driver);
 };
 
-class ConstructJobScope final : public DriverAllocation<ConstructJobScope> {
-
-public:
-  llvm::SmallVector<const CompilationEntity *, 4> inputEntities;
-  llvm::SmallVector<const CompilationEntity *, 8> jobEntities;
-
-public:
-  explicit ConstructJobScope();
-
-public:
-  static ConstructJobScope *Create(const Driver &driver);
-};
-
 class Driver final {
 
   SrcMgr srcMgr;
