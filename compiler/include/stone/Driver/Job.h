@@ -152,9 +152,10 @@ public:
   /// negative, contains a quasi-PID, which identifies a Job that's a member of
   /// a BatchJob _without_ denoting an operating system process.
   using JobProcessID = int64_t;
+
   enum class JobFlags : uint8_t {
     None = 1 << 0,
-    TopLevel = 1 << 1,
+    IsExternal = 1 << 1,
   };
   /// Options that control the JobConstruction
   using JobOptions = stone::OptionSet<JobFlags>;
@@ -167,6 +168,16 @@ protected:
 
 public:
   const JobConstruction &GetConstructor() { return constructor; }
+
+public:
+  bool HasIsExternal() const {
+    return jobOptions.contains(JobFlags::IsExternal);
+  }
+  void AddIsExternal() { jobOptions |= JobFlags::IsExternal; }
+  void ClearIsExternal() {}
+
+public:
+  void ClearJobFlags();
 
 public:
   static Job *Create(const Driver &driver, const JobConstruction &constructor,

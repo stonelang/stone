@@ -9,7 +9,7 @@ namespace stone {
 
 // Platform-independent implementation of Task,
 // a particular platform can provide its own more efficient version.
-class Task {
+class Task : public DriverAllocation<Task> {
 public:
   /// The path to the executable which this Task will execute.
   const char *ExecPath;

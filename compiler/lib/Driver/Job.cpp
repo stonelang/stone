@@ -13,7 +13,9 @@ Job::Job(CompilationEntityKind kind, const JobConstruction &constructor)
 Job::Job(CompilationEntityKind kind, const JobConstruction &constructor,
          CompilationEntityList inputs)
     : TopLevelCompilationEntity(kind, inputs, file::FileType::None),
-      constructor(constructor) {}
+      constructor(constructor) {
+  ClearJobFlags();
+}
 
 Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
                  CompilationEntityList inputs) {
@@ -21,6 +23,7 @@ Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
   return new (driver) Job(CompilationEntityKind::Job, constructor, inputs);
 }
 
+void Job::ClearJobFlags() {}
 BatchJob::BatchJob(const JobConstruction &constructor)
     : BatchJob(constructor, llvm::None) {}
 

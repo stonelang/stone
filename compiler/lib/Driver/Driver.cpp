@@ -255,7 +255,6 @@ LinkJobConstruction *LinkEntities::Apply() {
   return linkJobConstruction;
 }
 
-
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
   auto status = BuildTopLevelJobConstructionEntities(

@@ -1,5 +1,6 @@
 // Light.stone
-space Cosmology;
+space Cosmology.Optics;
+
 
 public struct Light {
 
