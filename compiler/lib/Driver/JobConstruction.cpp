@@ -7,16 +7,6 @@
 using namespace stone;
 using namespace stone::file;
 
-JobConstruction::ApplyScope::ApplyScope(JobConstruction *current)
-    : current(current) {}
-
-JobConstruction::ApplyScope::~ApplyScope() {}
-
-JobConstruction::ApplyScope *
-JobConstruction::CreateApplyScope(Driver &driver, JobConstruction *current) {
-  return new (driver) JobConstruction::ApplyScope(current);
-}
-
 JobConstruction::JobConstruction(CompilationEntityKind kind,
                                  CompilationEntityList inputs,
                                  file::FileType fileType)
@@ -24,80 +14,6 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
 
   /// create the Job
   // You have the inputs, so you can add them : job->AddInput()
-}
-
-Job *JobConstruction::Apply(Driver &driver, const JobConstruction *current) {
-
-  CompilationEntityPrettyStackTrace entityTraceCrashInfo("building job",
-                                                         current);
-
-  //   assert(HasInputs());
-
-  auto jobInfo = JobInfo::Create(driver, current);
-
-  for (const CompilationEntity *entity : *current) {
-    if (entity->IsJobConstruction()) {
-      if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-        jobInfo->deps.push_back(Apply(driver, jc));
-      }
-    } else if (entity->IsInput()) {
-      jobInfo->inputs.push_back(entity);
-    }
-  }
-
-  jobInfo->commandOutput =
-      std::make_unique<CommandOutput>(current->GetFileType());
-
-  driver.GetToolChain().ConstructJob(driver.GetCompilation(), jobInfo);
-
-  /// Cannot have inputs and jobs
-  // assert(!(currentApplyScope->HasInputs() && currentApplyScope->HasJobs()));
-
-  // std::unique_ptr<CommandOutput> commandOutput(
-  //     new CommandOutput(current->GetFileType()));
-
-  // // 4. Construct a Job which produces the right CommandOutput.
-  // auto job = driver.GetToolChain().ConstructJob(
-  //     *current, driver.GetCompilation(), currentApplyScope.jobEntities,
-  //     currentApplyScope.inputEntities, std::move(commandOutput));
-
-  // driver.GetToolChain().Apply(jc, driver.GetCompilation(),
-  //   buildingTopLevelJobEntities.jobEntities,
-  //   buildingTopLevelJobEntities.inputEntities);
-
-  //  jc.ForEachInput([&](const CompilationEntity *entity) {
-  //   auto jc = llvm::dyn_cast<JobConstruction>(entity);
-
-  //   jc->Apply(driver);
-
-  //   // auto topLevelJob =
-  //   driver.CastToJobConstruction(entity)->Apply();
-  //   // auto topLevelJob = llmv::dyn_cast<Job>
-  // });
-
-  // if (construction->FirstInput()->IsInput()) {
-  // }
-  // switch(construction->FirstInput())
-  /// If you override, then you do not have to perform this action
-  // if (driver.ShouldGenerateModule() &&
-  //     (llvm::isa<CompileJobConstruction>(parent) ||
-  //      llvm::isa<MergeModuleJobConstruction>(parent))) {
-  // }
-
-  // assert(driver.HasToolChain());
-
-  // driver.ComputeJobMainOutput();
-  // return driver.GetToolChain().Apply(this,
-  // driver.GetCompilation(),
-  // ....);
-
-  return nullptr;
-}
-void JobConstruction::ComputeJobMainOutput() {}
-
-Job *JobConstruction::Apply(Driver &driver) {
-  assert(HasIsTopLevel());
-  return Apply(driver, this);
 }
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)

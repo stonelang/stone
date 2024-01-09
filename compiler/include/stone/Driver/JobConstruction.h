@@ -19,44 +19,8 @@ class Job;
 class JobConstruction : public TopLevelCompilationEntity {
 
 protected:
-  class ApplyScope final : public DriverAllocation<ApplyScope> {
-    JobConstruction *current;
-
-  public:
-    llvm::SmallVector<const CompilationEntity *, 4> inputEntities;
-    llvm::SmallVector<const CompilationEntity *, 8> jobEntities;
-
-  public:
-    explicit ApplyScope(JobConstruction *current);
-    ~ApplyScope();
-
-  public:
-    JobConstruction *GetCurrent() { return current; }
-    void AddJob(const CompilationEntity *entity) {
-      jobEntities.push_back(entity);
-    }
-    bool HasJobs() { return !jobEntities.empty() && jobEntities.size() > 0; }
-
-    void AddInput(const CompilationEntity *entity) {
-      inputEntities.push_back(entity);
-    }
-    bool HasInputs() {
-      return !inputEntities.empty() && inputEntities.size() > 0;
-    }
-  };
-
-  static ApplyScope *CreateApplyScope(Driver &driver, JobConstruction *current);
-
-protected:
   JobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
                   file::FileType fileType);
-
-protected:
-  void ComputeJobMainOutput();
-  virtual Job *Apply(Driver &driver, const JobConstruction *current);
-
-public:
-  virtual Job *Apply(Driver &driver);
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -76,13 +40,6 @@ public:
                              file::FileType fileType)
       : JobConstruction(kind, inputs, fileType) {}
 
-protected:
-  // Job *ConstructSelfJob(const Driver &driver) override {}
-  //  virtual Job *ConstructInputJob(const Driver &driver){}
-
-public:
-  // Job *Apply(const Driver &driver) override {}
-
 public:
   static bool classof(const CompilationEntity *entity) {
     return entity->GetKind() == CompilationEntityKind::CompileJobConstruction ||
@@ -92,9 +49,6 @@ public:
 };
 
 class CompileJobConstruction final : public IncrementalJobConstruction {
-
-protected:
-  // Job *Apply(const Driver &driver, JobContruction* parent) override;
 
 public:
   /// In this scenario, we are creating one compile job with all inputs to be
@@ -126,9 +80,6 @@ public:
   MergeModuleJobConstruction(CompilationEntityList inputs);
 
 public:
-  // Job *Apply(const Driver &driver) override {}
-
-public:
   static bool classof(const CompilationEntity *entity) {
     return entity->GetKind() ==
            CompilationEntityKind::MergeModuleJobConstruction;
@@ -142,9 +93,6 @@ public:
 class LinkJobConstruction : public JobConstruction {
   LinkMode linkMode;
 
-protected:
-  // Job *ConstructSelfJob(const Driver &driver) override {}
-
 public:
   LinkJobConstruction(CompilationEntityKind kind, CompilationEntityList inputs,
                       file::FileType outputFileType, LinkMode linkMode)
@@ -152,7 +100,6 @@ public:
 
 public:
   LinkMode GetLinkMode() const { return linkMode; }
-  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -165,9 +112,6 @@ public:
 
 class DynamicLinkJobConstruction final : public LinkJobConstruction {
   bool withLTO;
-
-protected:
-  // Job *ConstructSelfJob(const Driver &driver) override;
 
 public:
   DynamicLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode,
@@ -192,14 +136,8 @@ public:
 
 class StaticLinkJobConstruction final : public LinkJobConstruction {
 
-protected:
-  // Job *Apply(const Driver &driver, JobConstructin* parent) override;
-
 public:
   StaticLinkJobConstruction(CompilationEntityList inputs, LinkMode linkMode);
-
-public:
-  // Job *Apply(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -246,8 +184,6 @@ public:
 public:
   bool IsPersistentPCH() const { return !persistentPCHDir.empty(); }
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
-
-  // Job *Apply(const Driver &driver) override {}
 
 public:
   static bool classof(const JobConstruction *construction) {
