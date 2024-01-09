@@ -8,6 +8,7 @@
   JobConstruction.cpp
   LinuxToolChain.cpp
   Main.cpp
+  TaskQueue.cpp
   ToolChain.cpp
   UnixToolChain.cpp
   WindowsToolChain.cpp

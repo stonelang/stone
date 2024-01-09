@@ -1,7 +1,6 @@
 #include "stone/Driver/Compilation.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Driver/Driver.h"
-#include "stone/Driver/Task.h"
 #include "stone/Driver/TaskQueue.h"
 
 using namespace stone;
@@ -68,9 +67,12 @@ public:
   void CheckForUnfinishedJobs();
 
 public:
+  void NoteBuilding(const Job *cmd, const bool willBeBuilding,
+                    llvm::StringRef reason);
+
+public:
   void RunJobs();
   void FinishJobs();
-
 };
 
 Compilation::Implementation::Implementation(Compilation &compilation)
@@ -90,15 +92,12 @@ void Compilation::Implementation::RunJobs() {}
 
 void Compilation::Implementation::FinishJobs() {}
 
-
 CompilationResult Compilation::RunJobs() {
 
   Compilation::Implementation implementation(*this);
   STONE_DEFER { implementation.FinishJobs(); };
 
   implementation.RunJobs();
-
-
 
   return CompilationResult();
 }

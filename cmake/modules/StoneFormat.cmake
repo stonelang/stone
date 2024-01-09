@@ -17,6 +17,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.inc
 	${STONE_SOURCE_DIR}/compiler/lib/Gen/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Parse/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Sem/*.cpp
