@@ -222,12 +222,9 @@ public:
   ConstructInvocation(const AutolinkExtractJobConstruction &construction,
                       const JobContext &context) const;
 
-
   virtual JobInvocation
   ConstructInvocation(const GeneratePCHJobConstruction &construction,
                       const JobContext &context) const;
-
-  
 
 public:
   /// Construct a Job for the action \p JA, taking the given information into

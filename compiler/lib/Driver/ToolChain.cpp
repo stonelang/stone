@@ -62,7 +62,6 @@ ToolChain::ConstructInvocation(const GeneratePCHJobConstruction &job,
   return JobInvocation();
 }
 
-
 void ToolChain::AddPlatformSpecificPluginCompileArgs(
     const DriverOptions &driverOpts, const CommandOutput &output,
     const llvm::opt::ArgList &inputArgs,

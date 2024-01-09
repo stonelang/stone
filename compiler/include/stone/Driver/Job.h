@@ -93,8 +93,8 @@ public:
   void operator=(JobInfo &&) = delete;
 
 public:
-  explicit JobInfo(const JobConstruction *jc,
-                   Compilation &compilation) : jc(jc), compilation(compilation) {
+  explicit JobInfo(const JobConstruction *jc, Compilation &compilation)
+      : jc(jc), compilation(compilation) {
     assert(jc != nullptr);
   }
 

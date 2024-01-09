@@ -45,55 +45,24 @@ Job *ToolChain::ConstructJob(Compilation &compilation,
   JobContext jobContext{compilation, jobInfo->deps, jobInfo->inputs,
                         jobInfo->GetCommandOutput()};
 
+  // TODO: use a template to get rid of the macro
   auto jobInvocation = [&]() -> JobInvocation {
     switch (jobInfo->GetJobConstruction()->GetKind()) {
-    case CompilationEntityKind::CompileJobConstruction:
-      return ConstructInvocation(
-          llvm::cast<CompileJobConstruction>(*jobInfo->GetJobConstruction()),
-          jobContext);
-
-    case CompilationEntityKind::BackendJobConstruction:
-      return ConstructInvocation(
-          llvm::cast<BackendJobConstruction>(*jobInfo->GetJobConstruction()),
-          jobContext);
-
-    case CompilationEntityKind::GeneratePCHJobConstruction:
-      return ConstructInvocation(llvm::cast<GeneratePCHJobConstruction>(
-                                     *jobInfo->GetJobConstruction()),
-                                 jobContext);
-
-    case CompilationEntityKind::MergeModuleJobConstruction:
-      return ConstructInvocation(llvm::cast<MergeModuleJobConstruction>(
-                                     *jobInfo->GetJobConstruction()),
-                                 jobContext);
-
-    // case CompilationEntityKind::ModuleWrapJobConstruction:
-    //   return ConstructInvocation(
-    //       llvm::cast<ModuleWrapJobConstruction>(*jobInfo->GetJobConstruction()),
-    //       jobContext);
-
-    case CompilationEntityKind::DynamicLinkJobConstruction:
-      return ConstructInvocation(llvm::cast<DynamicLinkJobConstruction>(
-                                     *jobInfo->GetJobConstruction()),
-                                 jobContext);
-
-    case CompilationEntityKind::StaticLinkJobConstruction:
-      return ConstructInvocation(
-          llvm::cast<StaticLinkJobConstruction>(*jobInfo->GetJobConstruction()),
-          jobContext);
-
-    case CompilationEntityKind::InterpretJobConstruction:
-      return ConstructInvocation(
-          llvm::cast<InterpretJobConstruction>(*jobInfo->GetJobConstruction()),
-          jobContext);
-
-    case CompilationEntityKind::AutolinkExtractJobConstruction:
-      return ConstructInvocation(llvm::cast<AutolinkExtractJobConstruction>(
-                                     *jobInfo->GetJobConstruction()),
-                                 jobContext);
-
+#define CASE(K)                                                                \
+  case CompilationEntityKind::K:                                               \
+    return ConstructInvocation(llvm::cast<K>(*jobInfo->GetJobConstruction()),  \
+                               jobContext);
+      CASE(CompileJobConstruction)
+      CASE(BackendJobConstruction)
+      CASE(GeneratePCHJobConstruction)
+      CASE(MergeModuleJobConstruction)
+      CASE(DynamicLinkJobConstruction)
+      CASE(StaticLinkJobConstruction)
+      CASE(InterpretJobConstruction)
+      CASE(AutolinkExtractJobConstruction)
+#undef CASE
     case CompilationEntityKind::Input:
-      llvm_unreachable("not a JobConstruction");
+      llvm_unreachable("not a JobAction");
     }
     // Work around MSVC warning: not all control paths return a value
     llvm_unreachable("All switch cases are covered");
