@@ -11,16 +11,16 @@
 //===----------------------------------------------------------------------===//
 
 #include "stone/Driver/TaskQueue.h"
+#include "stone/Driver/DriverAllocation.h"
 #include "stone/Stats/Stats.h"
 
-
-#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/ErrorHandling.h"
 
-#include <string>
 #include <cerrno>
+#include <string>
 
 #if HAVE_POSIX_SPAWN
 #include <spawn.h>
@@ -42,8 +42,8 @@
 extern char **environ;
 #else
 extern "C" {
-  // _NSGetEnviron is from crt_externs.h which is missing in the iOS SDK.
-  extern char ***_NSGetEnviron(void);
+// _NSGetEnviron is from crt_externs.h which is missing in the iOS SDK.
+extern char ***_NSGetEnviron(void);
 }
 #endif
 
@@ -51,21 +51,22 @@ namespace stone {
 namespace sys {
 
 #if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
-TaskProcessInformation::TaskProcessInformation(ProcessId Pid, struct rusage Usage)
+TaskProcessInformation::TaskProcessInformation(ProcessId Pid,
+                                               struct rusage Usage)
     : TaskProcessInformation(Pid,
-        uint64_t(Usage.ru_utime.tv_sec) * 1000000 +
-        uint64_t(Usage.ru_utime.tv_usec),
-        uint64_t(Usage.ru_stime.tv_sec) * 1000000 +
-        uint64_t(Usage.ru_stime.tv_usec),
-        Usage.ru_maxrss) {
+                             uint64_t(Usage.ru_utime.tv_sec) * 1000000 +
+                                 uint64_t(Usage.ru_utime.tv_usec),
+                             uint64_t(Usage.ru_stime.tv_sec) * 1000000 +
+                                 uint64_t(Usage.ru_stime.tv_usec),
+                             Usage.ru_maxrss) {
 #ifndef __APPLE__
-            // Apple systems report bytes; everything else appears to report KB.
-            this->ProcessUsage.value().Maxrss <<= 10;
+  // Apple systems report bytes; everything else appears to report KB.
+  this->ProcessUsage.value().Maxrss <<= 10;
 #endif // __APPLE__
-        }
+}
 #endif // defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
 
-class Task {
+class Task : public DriverAllocation<Task> {
   /// The path to the executable which this Task will execute.
   const char *ExecPath;
 
@@ -79,7 +80,8 @@ class Task {
   /// Context which should be associated with this task.
   void *Context;
 
-  /// True if the errors of the Task should be stored in Errors instead of Output.
+  /// True if the errors of the Task should be stored in Errors instead of
+  /// Output.
   bool SeparateErrors;
 
   /// The pid of this Task when executing.
@@ -88,7 +90,8 @@ class Task {
   /// A pipe for reading output from the child process.
   int Pipe;
 
-  /// A pipe for reading errors from the child process, if SeparateErrors is true.
+  /// A pipe for reading errors from the child process, if SeparateErrors is
+  /// true.
   int ErrorPipe;
 
   /// The current state of the Task.
@@ -336,23 +339,19 @@ unsigned TaskQueue::getNumberOfParallelTasks() const {
   return NumberOfParallelTasks > 0 ? NumberOfParallelTasks : 1;
 }
 
-void TaskQueue::addTask(const char *ExecPath, ArrayRef<const char *> Args,
-                        ArrayRef<const char *> Env, void *Context,
-                        bool SeparateErrors) {
+void TaskQueue::addTask(const Driver &driver, const char *ExecPath,
+                        ArrayRef<const char *> Args, ArrayRef<const char *> Env,
+                        void *Context, bool SeparateErrors) {
 
-  //TODO:
-  //std::unique_ptr<Task> T(
-  //    new Task(ExecPath, Args, Env, Context, SeparateErrors, Stats));
-
-
-  //QueuedTasks.push(std::move(T));
+   auto task = new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors, Stats);
+   QueuedTasks.push(task);
 }
 
 /// Owns Tasks, handles correspondence between Tasks, file descriptors, and
 /// process IDs.
 /// FIXME: only handles stdout pipes, ignores stderr pipes.
 class TaskMap {
-  using PidToTaskMap = llvm::DenseMap<pid_t, Task*>;
+  using PidToTaskMap = llvm::DenseMap<pid_t, Task *>;
   PidToTaskMap TasksByPid;
 
 public:
@@ -361,9 +360,9 @@ public:
   bool empty() const { return TasksByPid.empty(); }
   unsigned size() const { return TasksByPid.size(); }
 
-  void add(Task* T) { TasksByPid[T->getPid()] = T; }
+  void add(Task *T) { TasksByPid[T->getPid()] = T; }
 
-  Task* findTaskForFd(const int fd) {
+  Task *findTaskForFd(const int fd) {
     auto predicate = [&fd](PidToTaskMap::value_type &value) -> bool {
       return value.second->getPipe() == fd;
     };
@@ -373,7 +372,7 @@ public:
     return iter->second;
   }
 
-  void destroyTask(Task* T) { TasksByPid.erase(T->getPid()); }
+  void destroyTask(Task *T) { TasksByPid.erase(T->getPid()); }
 };
 
 /// Concurrently execute the tasks in the TaskQueue, collecting the outputs from
@@ -388,7 +387,7 @@ public:
 /// action appropriate to the cause of death, then reclaim its
 /// storage.
 class TaskMonitor {
-  std::queue<Task*> &TasksToBeExecuted;
+  std::queue<Task *> &TasksToBeExecuted;
   TaskMap TasksBeingExecuted;
 
   std::vector<struct pollfd> FdsBeingPolled;
@@ -407,7 +406,7 @@ private:
   Callbacks callbacks;
 
 public:
-  TaskMonitor(std::queue<Task*> &TasksToBeExecuted,
+  TaskMonitor(std::queue<Task *> &TasksToBeExecuted,
               const unsigned NumberOfParallelTasks, const Callbacks &callbacks)
       : TasksToBeExecuted(TasksToBeExecuted),
         MaxNumberOfParallelTasks(
@@ -429,11 +428,11 @@ private:
   bool startUpSomeTasks();
 
   /// \return true on error.
-  bool beginExecutingATask(Task* T);
+  bool beginExecutingATask(Task *T);
 
   /// Enter the task and its outputs in this TaskMonitor's data structures so
   /// it can be polled.
-  void startPollingFdsOfTask(const Task* T);
+  void startPollingFdsOfTask(const Task *T);
 
   void stopPolling(ArrayRef<int> FinishedFds);
 
@@ -482,7 +481,7 @@ bool TaskMonitor::startUpSomeTasks() {
 
     TasksToBeExecuted.pop();
 
-    if (beginExecutingATask(taskToBeExecuted)){
+    if (beginExecutingATask(taskToBeExecuted)) {
       return true;
     }
     startPollingFdsOfTask(taskToBeExecuted);
@@ -492,7 +491,7 @@ bool TaskMonitor::startUpSomeTasks() {
   return false;
 }
 
-void TaskMonitor::startPollingFdsOfTask(const Task* T) {
+void TaskMonitor::startPollingFdsOfTask(const Task *T) {
   FdsBeingPolled.push_back({T->getPipe(), POLLIN | POLLPRI | POLLHUP, 0});
   // We should also poll T->getErrorPipe(), but this introduces timing
   // issues with shutting down the task after reading getPipe().
@@ -510,8 +509,8 @@ TaskMonitor::PollResult TaskMonitor::pollTheFds() {
                                            : PollResult::HardError;
 }
 
-bool TaskMonitor::beginExecutingATask(Task* T) {
-  if (T->execute()){
+bool TaskMonitor::beginExecutingATask(Task *T) {
+  if (T->execute()) {
     return true;
   }
   if (callbacks.TaskBegan)
@@ -520,7 +519,7 @@ bool TaskMonitor::beginExecutingATask(Task* T) {
 }
 
 static bool
-cleanUpAHungUpTask(Task* T,
+cleanUpAHungUpTask(Task *T,
                    const TaskQueue::TaskFinishedCallback FinishedCallback,
                    TaskQueue::TaskSignalledCallback SignalledCallback);
 
@@ -530,7 +529,8 @@ cleanUpAHungUpTask(Task* T,
  @param pidToWaitFor the pid of the process to wait for
  @return Status information of the wait call and information about process
  */
-static std::pair<llvm::Optional<int>, TaskProcessInformation> waitForPid(const pid_t pidToWaitFor);
+static std::pair<llvm::Optional<int>, TaskProcessInformation>
+waitForPid(const pid_t pidToWaitFor);
 static bool
 cleanUpAfterSignal(int Status, const Task *T, TaskProcessInformation ProcInfo,
                    const TaskQueue::TaskSignalledCallback SignalledCallback);
@@ -571,7 +571,7 @@ void TaskMonitor::verifyEvents(const short events) const {
 }
 
 void TaskMonitor::readDataIfAvailable(const short events, const int fd,
-                                      Task* T) const {
+                                      Task *T) const {
   if (events & (POLLIN | POLLPRI)) {
     // There's data available to read. Read _some_ of it here, but not
     // necessarily _all_, since the pipe is in blocking mode and we might
@@ -602,12 +602,13 @@ cleanUpAHungUpTask(Task *T,
   TaskProcessInformation ProcInfo = StatusAndProcessInformation.second;
   return WIFEXITED(Status)
              ? cleanUpAfterExit(Status, T, ProcInfo, FinishedCallback)
-             : WIFSIGNALED(Status)
-                   ? cleanUpAfterSignal(Status, T, ProcInfo, SignalledCallback)
-                   : false /* Can this case ever happen? */;
+         : WIFSIGNALED(Status)
+             ? cleanUpAfterSignal(Status, T, ProcInfo, SignalledCallback)
+             : false /* Can this case ever happen? */;
 }
 
-static std::pair<llvm::Optional<int>, TaskProcessInformation> waitForPid(const pid_t pidToWaitFor) {
+static std::pair<llvm::Optional<int>, TaskProcessInformation>
+waitForPid(const pid_t pidToWaitFor) {
   for (;;) {
     int Status = 0;
 
@@ -641,8 +642,8 @@ cleanUpAfterExit(int Status, const Task *T, TaskProcessInformation ProcInfo,
   // If we have a TaskFinishedCallback, only have an error if the callback
   // returns StopExecution.
   return TaskFinishedResponse::StopExecution ==
-         FinishedCallback(T->getPid(), Result, T->getOutput(), T->getErrors(), ProcInfo,
-                          T->getContext());
+         FinishedCallback(T->getPid(), Result, T->getOutput(), T->getErrors(),
+                          ProcInfo, T->getContext());
 }
 
 static bool
@@ -660,8 +661,8 @@ cleanUpAfterSignal(int Status, const Task *T, TaskProcessInformation ProcInfo,
   // If we have a TaskCrashedCallback, only return an error if the callback
   // returns StopExecution.
   return TaskFinishedResponse::StopExecution ==
-         SignalledCallback(T->getPid(), ErrorMsg, T->getOutput(), T->getErrors(),
-                           T->getContext(), Signal, ProcInfo);
+         SignalledCallback(T->getPid(), ErrorMsg, T->getOutput(),
+                           T->getErrors(), T->getContext(), Signal, ProcInfo);
 }
 
 void TaskMonitor::stopPolling(ArrayRef<int> FinishedFds) {
@@ -688,5 +689,3 @@ bool TaskQueue::execute(TaskBeganCallback BeganCallback,
   TaskMonitor TE(QueuedTasks, getNumberOfParallelTasks(), callbacks);
   return TE.executeTasks();
 }
-
-

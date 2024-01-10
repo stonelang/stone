@@ -281,9 +281,7 @@ void DriverOptionsConverter::ComputeOutputInfo() {
 
 void DriverOptionsConverter::ComputeGeneratePCH() {}
 
-void DriverOptionsConverter::ComputeNumberOfParallelTasks(){
-
-}
+void DriverOptionsConverter::ComputeNumberOfParallelTasks() {}
 
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 // // }

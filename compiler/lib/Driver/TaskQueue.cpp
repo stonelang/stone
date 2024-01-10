@@ -16,15 +16,9 @@ using namespace stone::sys;
 TaskQueue::TaskQueue(unsigned numberOfParallelTasks, DriverStatsReporter *stats)
     : NumberOfParallelTasks(numberOfParallelTasks), Stats(stats) {}
 
-
-
 // Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
-//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
-//        bool SeparateErrors = false)
-
-
-
-
+//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context =
+//        nullptr, bool SeparateErrors = false)
 
 // TaskQueue* TaskQueue::Create(Driver& driver, unsigned numberOfParallelTasks){
 

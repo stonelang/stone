@@ -227,7 +227,6 @@ private:
   void ComputeGeneratePCH();
   void ComputeNumberOfParallelTasks();
 
-
 public:
   Status Convert();
 };
@@ -528,8 +527,7 @@ public:
 
   bool shouldGeneratePCH = false;
 
-
-   unsigned numberOfParallelTasks = 1;
+  unsigned numberOfParallelTasks = 1;
 
 public:
   /// The main options table

@@ -4,9 +4,9 @@
 #include "stone/Diag/CoreDiagnostic.h"
 #include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/Compilation.h"
-#include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/DriverAllocation.h"
 #include "stone/Driver/Job.h"
+#include "stone/Driver/TaskQueue.h"
 #include "stone/Strings.h"
 
 #include "llvm/Support/Host.h"
@@ -251,7 +251,7 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
 sys::TaskQueue *Driver::BuildTaskQueue(const Compilation *compilation) {
 
-  //unsigned numberOfParallelTasks = 1;
+  // unsigned numberOfParallelTasks = 1;
 
   // if (const Arg *A = GetDerivedArgList().getLastArg(opts::j)) {
 
@@ -279,7 +279,8 @@ sys::TaskQueue *Driver::BuildTaskQueue(const Compilation *compilation) {
   //                                            C.getStatsReporter());
   // }
 
-  //taskQueue = TaskQueue::Create(*this, GetDriverOptions().numberOfParallelTasks);
+  // taskQueue = TaskQueue::Create(*this,
+  // GetDriverOptions().numberOfParallelTasks);
   return taskQueue;
 }
 

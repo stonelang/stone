@@ -1,7 +1,6 @@
 #ifndef STONE_DRIVER_DRIVER_TASK_QUEUE_H
 #define STONE_DRIVER_DRIVER_TASK_QUEUE_H
 
-
 #include "stone/Basic/JSONSerialization.h"
 #include "stone/Driver/DriverAllocation.h"
 
@@ -51,10 +50,9 @@ using ProcessId = llvm::sys::procid_t;
 //   llvm::sys::ProcessInfo PI;
 
 //   Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
-//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
-//        bool SeparateErrors = false)
+//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context =
+//        nullptr, bool SeparateErrors = false)
 // };
-
 
 /// Indicates how a TaskQueue should respond to the task finished event.
 enum class TaskFinishedResponse {
@@ -126,7 +124,7 @@ public:
 /// A class encapsulating the execution of multiple tasks in parallel.
 class TaskQueue {
   /// Tasks which have not begun execution.
-  std::queue<Task*> QueuedTasks;
+  std::queue<Task *> QueuedTasks;
 
   /// The number of tasks to execute in parallel.
   unsigned NumberOfParallelTasks;
@@ -225,7 +223,8 @@ public:
   /// must be null-terminated. If empty, inherits the parent's environment.
   /// \param Context an optional context which will be associated with the task
   /// \param SeparateErrors Controls whether error output is reported separately
-  virtual void addTask(const char *ExecPath, ArrayRef<const char *> Args,
+  virtual void addTask(const Driver &driver, const char *ExecPath,
+                       ArrayRef<const char *> Args,
                        ArrayRef<const char *> Env = llvm::None,
                        void *Context = nullptr, bool SeparateErrors = false);
 
@@ -244,9 +243,7 @@ public:
 
   /// Returns true if there are any tasks that have been queued but have not
   /// yet been executed.
-  virtual bool hasRemainingTasks() {
-    return !QueuedTasks.empty();
-  }
+  virtual bool hasRemainingTasks() { return !QueuedTasks.empty(); }
 };
 
 /// A class which simulates execution of tasks with behavior similar to
@@ -261,8 +258,8 @@ class TrivialTaskQueue : public TaskQueue {
     bool SeparateErrors;
 
     TrivialTask(const char *ExecPath, ArrayRef<const char *> Args,
-              ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
-              bool SeparateErrors = false)
+                ArrayRef<const char *> Env = llvm::None,
+                void *Context = nullptr, bool SeparateErrors = false)
         : ExecPath(ExecPath), Args(Args), Env(Env), Context(Context),
           SeparateErrors(SeparateErrors) {}
   };
@@ -274,9 +271,10 @@ public:
   TrivialTaskQueue(unsigned NumberOfParallelTasks = 0);
   virtual ~TrivialTaskQueue();
 
-  void addTask(const char *ExecPath, ArrayRef<const char *> Args,
-               ArrayRef<const char *> Env = llvm::None,
-               void *Context = nullptr, bool SeparateErrors = false) override;
+  void addTask(const Driver &driver, const char *ExecPath,
+               ArrayRef<const char *> Args,
+               ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
+               bool SeparateErrors = false) override;
 
   bool
   execute(TaskBeganCallback Began = TaskBeganCallback(),
@@ -287,7 +285,6 @@ public:
     // Need to override here because QueuedTasks is redeclared.
     return !QueuedTasks.empty();
   }
-
 };
 
 } // end namespace sys

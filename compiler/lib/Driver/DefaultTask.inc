@@ -1,6 +1,8 @@
+#include "stone/Driver/DriverAllocation.h"
+
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/Optional.h"
+#include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Program.h"
 #include "llvm/Support/Signals.h"
@@ -10,7 +12,7 @@ namespace sys {
 
 // Platform-independent implementation of Task,
 // a particular platform can provide its own more efficient version.
-class Task {
+class Task : public DriverAllocation<Task> {
 public:
   /// The path to the executable which this Task will execute.
   const char *ExecPath;
@@ -67,7 +69,7 @@ bool Task::execute() {
   }
 
   llvm::Optional<llvm::StringRef> Redirects[] = {
-    llvm::None,
+      llvm::None,
       llvm::StringRef{StdoutPath},
       llvm::StringRef{SeparateErrors ? StderrPath : StdoutPath},
   };

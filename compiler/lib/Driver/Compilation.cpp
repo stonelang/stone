@@ -103,7 +103,6 @@ void Compilation::Implementation::ScheduleJobsBeforeBatching() {}
 
 void Compilation::Implementation::FormBatchJobsAndAddPendingJobsToTaskQueue() {}
 
-
 void Compilation::Implementation::
     ScheduleFirstRoundJobsForIncrementalCompilation() {}
 
