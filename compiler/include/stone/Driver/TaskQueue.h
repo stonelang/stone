@@ -122,7 +122,7 @@ public:
 };
 
 /// A class encapsulating the execution of multiple tasks in parallel.
-class TaskQueue {
+class TaskQueue : public DriverAllocation<TaskQueue> {
   /// Tasks which have not begun execution.
   std::queue<Task *> QueuedTasks;
 
@@ -141,7 +141,6 @@ public:
   /// \param USR Optional stats reporter to count I/O and subprocess events.
   TaskQueue(unsigned NumberOfParallelTasks = 0,
             DriverStatsReporter *Stats = nullptr);
-  virtual ~TaskQueue();
 
   // TODO: remove once -Wdocumentation stops warning for \param, \returns on
   // std::function (<rdar://problem/15665132>).

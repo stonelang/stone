@@ -185,6 +185,8 @@ public:
 };
 
 class Driver final {
+  class Implementation;
+  friend Implementation;
 
   SrcMgr srcMgr;
   DiagnosticEngine diags{srcMgr};
@@ -209,6 +211,9 @@ class Driver final {
 
   /// The top-level compilation entities
   TopLevelCompilationEntities topLevelEntities;
+
+  // A graph of top-level job constructions
+  llvm::SmallVector<const JobConstruction *, 8> jcs;
 
   /// The tool chain to use to build the tools
   Compilation *compilation = nullptr;

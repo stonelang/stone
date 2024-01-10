@@ -90,6 +90,22 @@ public:
                                             CompilationEntityList inputs);
 };
 
+class ModuleWrapJobConstruction : public JobConstruction {
+  virtual void anchor() override;
+
+public:
+  ModuleWrapJobAction(CompilationEntityList inputs);
+
+public:
+  static bool classof(const Action *A) {
+    return A->getKind() == CompilationEntityKind::ModuleWrapJobConstruction;
+  }
+
+public:
+  static ModuleWrapJobConstruction *Create(const Driver &driver,
+                                           CompilationEntityList inputs);
+};
+
 class LinkJobConstruction : public JobConstruction {
   LinkMode linkMode;
 

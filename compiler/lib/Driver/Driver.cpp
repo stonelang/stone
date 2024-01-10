@@ -17,8 +17,74 @@ using namespace stone::file;
 using namespace llvm::opt;
 
 Driver::Driver() : optTable(stone::CreateOptTable()) {}
-
 Driver::~Driver() {}
+
+class Driver::Implementation final {
+
+public:
+  Implementation();
+  ~Implementation() = default;
+
+public:
+  ///< Top level jcs
+  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+  GeneratePCHJobConstruction *pchJobConstruction = nullptr;
+
+public:
+  llvm::SmallVector<const CompilationEntity *, 8> moduleInputs;
+  llvm::SmallVector<const CompilationEntity *, 8> linkInputs;
+
+public:
+  void AddModuleInput(CompilationEntity *entity);
+  void AddLinkInput(CompilationEntity *entity);
+
+public:
+  void ActOnStoneFileType();
+  void ActOnObjectFileType();
+  void ActOnAutolinkFileType();
+  void ActOnStoneModuleFileType();
+
+public:
+  void BuildJobConstructions();
+  GeneratePCHJobConstruction *CreateGeneratePCHJobConstruction();
+  MergeModuleJobConstruction *CreateMergeModuleJobConstruction();
+  CompileJobConstruction *CreateCompileJobConstruction();
+  LinkJobConstruction *CreateLinkJobConstruction();
+  BackendJobConstruction **BackendJobConstruction();
+  ModuleWrapJobConstruction *CreateModuleWrapJobConstruction();
+
+public:
+  void BuildJobs();
+  Job *BuildJob(const JobConstruction *current);
+
+public:
+  Status BuildMultipleCompileInvocation();
+  Status BuildSingleCompileInvocation();
+  Status BuildBatchCompileInvocation();
+};
+
+Driver::Implementation::Implementation() {}
+
+void Driver::Implementation::AddModuleInput(CompilationEntity *entity) {
+  if (auto incrementalEntity =
+          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
+  }
+}
+
+void Driver::Implementation::AddLinkInput(CompilationEntity *entity) {
+  if (auto incrementalEntity =
+          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
+  }
+}
+
+void Driver::Implementation::ActOnStoneFileType() {}
+void Driver::Implementation::ActOnObjectFileType() {}
+void Driver::Implementation::ActOnAutolinkFileType() {}
+void Driver::Implementation::ActOnStoneModuleFileType() {}
+
+Status Driver::Implementation::BuildMultipleCompileInvocation() {}
+Status Driver::Implementation::BuildSingleCompileInvocation() {}
+Status Driver::Implementation::BuildBatchCompileInvocation() {}
 
 llvm::opt::InputArgList *
 Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
