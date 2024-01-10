@@ -25,6 +25,37 @@ class Task; // forward declared to allow for platform-specific implementations
 
 using ProcessId = llvm::sys::procid_t;
 
+// class Task {
+// public:
+//   /// The path to the executable which this Task will execute.
+//   const char *ExecPath;
+
+//   /// Any arguments which should be passed during execution.
+//   llvm::ArrayRef<const char *> Args;
+
+//   /// The environment which should be used during execution. If empty,
+//   /// the current process's environment will be used instead.
+//   llvm::ArrayRef<const char *> Env;
+
+//   /// Context associated with this Task.
+//   void *Context;
+
+//   /// True if the errors of the Task should be stored in Errors instead of
+//   /// Output.
+//   bool SeparateErrors;
+
+//   llvm::SmallString<64> StdoutPath;
+
+//   llvm::SmallString<64> StderrPath;
+
+//   llvm::sys::ProcessInfo PI;
+
+//   Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
+//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
+//        bool SeparateErrors = false)
+// };
+
+
 /// Indicates how a TaskQueue should respond to the task finished event.
 enum class TaskFinishedResponse {
   /// Indicates that execution should continue.

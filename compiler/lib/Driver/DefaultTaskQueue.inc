@@ -33,8 +33,9 @@ unsigned TaskQueue::getNumberOfParallelTasks() const {
 void TaskQueue::addTask(const char *ExecPath, ArrayRef<const char *> Args,
                         ArrayRef<const char *> Env, void *Context,
                         bool SeparateErrors) {
-  auto T = make_unique<Task>(ExecPath, Args, Env, Context, SeparateErrors);
-  QueuedTasks.push(std::move(T));
+  //TODO: 
+  //auto T = make_unique<Task>(ExecPath, Args, Env, Context, SeparateErrors);
+  //QueuedTasks.push(std::move(T));
 }
 
 bool TaskQueue::execute(TaskBeganCallback Began, TaskFinishedCallback Finished,
