@@ -204,6 +204,9 @@ class Driver final {
   /// The tool chain to use to build the tools
   std::unique_ptr<ToolChain> toolChain;
 
+  /// A list of top-level job constructions
+  // llvm::SmallVector<const CompilationEntity *, 8> topLevelEntities;
+
   /// The top-level compilation entities
   TopLevelCompilationEntities topLevelEntities;
 

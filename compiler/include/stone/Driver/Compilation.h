@@ -47,6 +47,12 @@ class Compilation final : public DriverAllocation<Compilation> {
   const Driver &driver;
   class Implementation;
 
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const Job *, 8> jobs;
+
+  // A graph of the top level jobs built by the driver
+  llvm::SmallVector<const Job *, 8> externalJobs;
+
 public:
   Compilation(const Driver &driver);
 
@@ -65,6 +71,19 @@ public:
 
 public:
   CompilationResult RunJobs();
+
+private:
+  friend Driver;
+  friend Implementation;
+
+  void AddJob(const Job *job);
+  void AddExternalJob(const Job *job);
+
+public:
+  bool HasJobs() const { return !jobs.empty() && jobs.size() > 0; }
+  bool HasExternalJobs() const {
+    return !externalJobs.empty() && externalJobs.size() > 0;
+  }
 
 public:
   static Compilation *Create(const Driver &driver);
