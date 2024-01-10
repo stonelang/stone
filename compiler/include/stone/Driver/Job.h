@@ -146,6 +146,15 @@ class Job : public TopLevelCompilationEntity {
 
   const JobConstruction &constructor;
 
+  /// The executable to run.
+  const char *Executable;
+
+  /// The list of program arguments (not including the implicit first argument,
+  /// which will be the Executable).
+  ///
+  /// These argument strings must be kept alive as long as the Job is alive.
+  llvm::opt::ArgStringList Arguments;
+
 public:
   using EnvironmentVector = std::vector<std::pair<const char *, const char *>>;
   /// If positive, contains llvm::ProcessID for a real Job on the host OS. If
@@ -168,6 +177,9 @@ protected:
 
 public:
   const JobConstruction &GetConstructor() { return constructor; }
+  const char *GetExecutable() const { return Executable; }
+  const llvm::opt::ArgStringList &GetArguments() const { return Arguments; }
+  llvm::ArrayRef<const char *> GetArgumentsForTaskExecution() const;
 
 public:
   bool HasIsExternal() const {

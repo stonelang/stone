@@ -61,7 +61,9 @@ public:
   ~Implementation() = default;
 
 public:
-  sys::TaskQueue *GetTaskQueue() { return compilation->GetDriver().GetTaskQueue(); }
+  sys::TaskQueue *GetTaskQueue() {
+    return compilation->GetDriver().GetTaskQueue();
+  }
 
 public:
   void ScheduleJobsBeforeBatching();
@@ -120,9 +122,9 @@ void Compilation::Implementation::CheckForUnfinishedJobs() {}
 
 void Compilation::Implementation::AddPendingJobToTaskQueue(const Job *job) {
 
-  // GetTaskQueue()->addTask(job->GetExecutable(),
-  //                         job->GetArgumentsForTaskExecution(), llvm::None,
-  //                         (void *)job);
+  GetTaskQueue()->addTask(compilation->GetDriver(), job->GetExecutable(),
+                          job->GetArgumentsForTaskExecution(), llvm::None,
+                          (void *)job);
 }
 
 CompilationResult Compilation::Implementation::RunSingleJob(const Job *job) {

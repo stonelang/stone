@@ -17,6 +17,11 @@ Job::Job(CompilationEntityKind kind, const JobConstruction &constructor,
   ClearJobFlags();
 }
 
+llvm::ArrayRef<const char *> Job::GetArgumentsForTaskExecution() const {
+
+  return GetArguments();
+}
+
 Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
                  CompilationEntityList inputs) {
 

@@ -267,7 +267,7 @@ public:
 
   bool HasTaskQueue() { return taskQueue != nullptr; }
 
-  sys::TaskQueue* GetTaskQueue() { return taskQueue; }
+  sys::TaskQueue *GetTaskQueue() { return taskQueue; }
 
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
