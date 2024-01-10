@@ -149,6 +149,7 @@ Status Driver::Implementation::BuildTopLevelJobConstructions() {
   }
   llvm_unreachable("Invalid CompileInvocationMode!");
 }
+
 void Driver::Implementation::AddModuleInput(const CompilationEntity *entity) {
   if (auto incrementalEntity =
           llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
@@ -489,6 +490,9 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
     if (implementation.BuildTopLevelJobs().IsErrorOrHasCompletion()) {
       return nullptr;
     }
+
+    // Need compilation now to build the jobs
+    compilation = Compilation::Create(*this);
   }
 
   return compilation;

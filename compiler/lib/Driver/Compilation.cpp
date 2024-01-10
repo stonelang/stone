@@ -7,6 +7,8 @@ using namespace stone;
 
 Compilation::Compilation(Driver &driver) : driver(driver) {}
 
+CompilationResult::CompilationResult() {}
+
 Compilation *Compilation::Create(Driver &driver) {
   return new (driver) Compilation(driver);
 }
