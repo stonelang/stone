@@ -24,10 +24,7 @@ protected:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return (entity->GetKind() >=
-                CompilationEntityKind::CompileJobConstruction &&
-            entity->GetKind() <=
-                CompilationEntityKind::AutolinkExtractJobConstruction);
+    return entity->IsJobConstruction();
   }
 };
 
@@ -61,7 +58,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() == CompilationEntityKind::CompileJobConstruction;
+    return entity->IsCompileJobConstruction();
   }
 
 public:
@@ -77,8 +74,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() ==
-           CompilationEntityKind::MergeModuleJobConstruction;
+    return entity->IsMergeModuleJobConstruction();
   }
 
 public:
@@ -114,10 +110,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return (entity->GetKind() ==
-            CompilationEntityKind::StaticLinkJobConstruction) ||
-           (entity->GetKind() ==
-            CompilationEntityKind::DynamicLinkJobConstruction);
+    return entity->IsLinkJobConstruction();
   }
 };
 
@@ -134,8 +127,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() ==
-           CompilationEntityKind::DynamicLinkJobConstruction;
+    return entity->IsDynamicLinkJobConstruction();
   }
 
 public:
@@ -152,8 +144,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() ==
-           CompilationEntityKind::StaticLinkJobConstruction;
+    return entity->IsStaticLinkJobConstruction();
   }
 
 public:
@@ -176,7 +167,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() == CompilationEntityKind::BackendJobConstruction;
+    return entity->IsBackendJobConstruction();
   }
 
 public:
@@ -197,9 +188,8 @@ public:
   StringRef GetPersistentPCHDir() const { return persistentPCHDir; }
 
 public:
-  static bool classof(const JobConstruction *construction) {
-    return construction->GetKind() ==
-           CompilationEntityKind::GeneratePCHJobConstruction;
+  static bool classof(const CompilationEntity *entity) {
+    return entity->IsGeneratePCHJobConstruction();
   }
 
 public:
@@ -216,7 +206,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() == CompilationEntityKind::InterpretJobConstruction;
+    return entity->IsInterpretJobConstruction();
   }
   static InterpretJobConstruction *Create(const Driver &driver);
 };
@@ -230,8 +220,7 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() ==
-           CompilationEntityKind::AutolinkExtractJobConstruction;
+    return entity->IsAutolinkExtractJobConstruction();
   }
 
   static AutolinkExtractJobConstruction *Create(const Driver &driver,

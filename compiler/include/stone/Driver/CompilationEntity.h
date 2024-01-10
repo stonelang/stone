@@ -96,14 +96,14 @@ public:
   bool IsStaticLinkJobConstruction() const {
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
   }
+   bool IsLinkJobConstruction() const {
+    return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
+  }
 
   bool IsJobConstruction() const {
     return CompilationEntity::IsJobConstruction(GetKind());
   }
 
-  bool IsLink() const {
-    return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
-  }
   bool IsInterpretJobConstruction() const {
     return GetKind() == CompilationEntityKind::InterpretJobConstruction;
   }
