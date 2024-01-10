@@ -96,7 +96,7 @@ public:
   bool IsStaticLinkJobConstruction() const {
     return GetKind() == CompilationEntityKind::StaticLinkJobConstruction;
   }
-   bool IsLinkJobConstruction() const {
+  bool IsLinkJobConstruction() const {
     return IsStaticLinkJobConstruction() || IsDynamicLinkJobConstruction();
   }
 

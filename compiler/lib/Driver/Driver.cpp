@@ -19,73 +19,6 @@ using namespace llvm::opt;
 Driver::Driver() : optTable(stone::CreateOptTable()) {}
 Driver::~Driver() {}
 
-class Driver::Implementation final {
-
-public:
-  Implementation();
-  ~Implementation() = default;
-
-public:
-  ///< Top level jcs
-  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
-  GeneratePCHJobConstruction *pchJobConstruction = nullptr;
-
-public:
-  llvm::SmallVector<const CompilationEntity *, 8> moduleInputs;
-  llvm::SmallVector<const CompilationEntity *, 8> linkInputs;
-
-public:
-  void AddModuleInput(CompilationEntity *entity);
-  void AddLinkInput(CompilationEntity *entity);
-
-public:
-  void ActOnStoneFileType();
-  void ActOnObjectFileType();
-  void ActOnAutolinkFileType();
-  void ActOnStoneModuleFileType();
-
-public:
-  void BuildJobConstructions();
-  GeneratePCHJobConstruction *CreateGeneratePCHJobConstruction();
-  MergeModuleJobConstruction *CreateMergeModuleJobConstruction();
-  CompileJobConstruction *CreateCompileJobConstruction();
-  LinkJobConstruction *CreateLinkJobConstruction();
-  BackendJobConstruction **BackendJobConstruction();
-  ModuleWrapJobConstruction *CreateModuleWrapJobConstruction();
-
-public:
-  void BuildJobs();
-  Job *BuildJob(const JobConstruction *current);
-
-public:
-  Status BuildMultipleCompileInvocation();
-  Status BuildSingleCompileInvocation();
-  Status BuildBatchCompileInvocation();
-};
-
-Driver::Implementation::Implementation() {}
-
-void Driver::Implementation::AddModuleInput(CompilationEntity *entity) {
-  if (auto incrementalEntity =
-          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
-  }
-}
-
-void Driver::Implementation::AddLinkInput(CompilationEntity *entity) {
-  if (auto incrementalEntity =
-          llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
-  }
-}
-
-void Driver::Implementation::ActOnStoneFileType() {}
-void Driver::Implementation::ActOnObjectFileType() {}
-void Driver::Implementation::ActOnAutolinkFileType() {}
-void Driver::Implementation::ActOnStoneModuleFileType() {}
-
-Status Driver::Implementation::BuildMultipleCompileInvocation() {}
-Status Driver::Implementation::BuildSingleCompileInvocation() {}
-Status Driver::Implementation::BuildBatchCompileInvocation() {}
-
 llvm::opt::InputArgList *
 Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
@@ -138,179 +71,343 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
-void TopLevelCompilationEntities::ForEachTopLevelJobConstruction(
-    std::function<void(const CompilationEntity *entity)> callback) {
-  for (auto topLevelJobConstruction : topLevelJobConstructions) {
-    callback(topLevelJobConstruction);
+class Driver::Implementation final {
+  Driver &driver;
+
+public:
+  Implementation(Driver &driver);
+  ~Implementation() = default;
+
+public:
+  using CompletedCompilationEntity =
+      std::function<void(const CompilationEntity *entity)>;
+
+public:
+  ///< Top level jcs
+  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+  GeneratePCHJobConstruction *pchJobConstruction = nullptr;
+
+public:
+  llvm::SmallVector<const CompilationEntity *, 8> moduleInputs;
+  llvm::SmallVector<const CompilationEntity *, 8> linkInputs;
+
+  bool HasModuleInputs() {
+    return !moduleInputs.empty() && moduleInputs.size() > 0;
   }
-}
+  bool HasLinkInputs() { return !linkInputs.empty() && linkInputs.size() > 0; }
 
-/// Get each top level job
-void TopLevelCompilationEntities::ForEachTopLevelJob(
-    std::function<void(const CompilationEntity *entity)> callback) {
-  for (auto topLevelJob : topLevelJobs) {
-    callback(topLevelJob);
+public:
+  void AddModuleInput(CompilationEntity *entity);
+  void AddLinkInput(CompilationEntity *entity);
+
+public:
+  Status ActOnStoneFileType(const DriverInputFile *input);
+  Status ActOnObjectFileType(const DriverInputFile *input);
+  Status ActOnAutoLinkFileType(const DriverInputFile *input);
+  Status ActOnStoneModuleFileType(const DriverInputFile *input);
+
+public:
+  Status BuildTopLevelJobConstructions();
+  GeneratePCHJobConstruction *CreateGeneratePCHJobConstruction();
+  MergeModuleJobConstruction *CreateMergeModuleJobConstruction();
+  CompileJobConstruction *CreateCompileJobConstruction();
+  LinkJobConstruction *CreateLinkJobConstruction();
+  BackendJobConstruction **BackendJobConstruction();
+  ModuleWrapJobConstruction *CreateModuleWrapJobConstruction();
+
+public:
+  Status BuildTopLevelJobs();
+  Job *BuildJob(const JobConstruction *current);
+  void ComputeJobMainOutput(const JobConstruction *jobConstruction);
+
+public:
+  Status BuildMultipleCompileInvocation();
+  Status BuildSingleCompileInvocation();
+  Status BuildBatchCompileInvocation();
+
+public:
+  void FinishTopLevelJobConstructions();
+};
+
+Driver::Implementation::Implementation(Driver &driver) : driver(driver) {}
+
+Status Driver::Implementation::BuildTopLevelJobConstructions() {
+
+  STONE_DEFER { FinishTopLevelJobConstructions(); };
+  switch (driver.GetCompileInvocationMode()) {
+  case CompileInvocationMode::Multiple:
+    return BuildMultipleCompileInvocation();
+  case CompileInvocationMode::Single:
+    return BuildSingleCompileInvocation();
+  case CompileInvocationMode::Batch:
+    return BuildBatchCompileInvocation();
   }
+  llvm_unreachable("Invalid CompileInvocationMode!");
 }
-
-/// Get each top level job
-void TopLevelCompilationEntities::ForEachTopLevelExternalJob(
-    std::function<void(const CompilationEntity *entity)> callback) {
-  for (auto topLevelExternalJob : topLevelExternalJobs) {
-    callback(topLevelExternalJob);
-  }
-}
-
-BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver &driver)
-    : driver(driver), moduleEntities(driver), linkEntities(driver) {}
-
-void ModuleEntities::AddEntity(const CompilationEntity *entity) {
-
-  if (auto incrementalJobEntity =
+void Driver::Implementation::AddModuleInput(CompilationEntity *entity) {
+  if (auto incrementalEntity =
           llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
   }
+}
+
+void Driver::Implementation::AddLinkInput(CompilationEntity *entity) {}
+
+Status
+Driver::Implementation::ActOnStoneFileType(const DriverInputFile *input) {}
+
+Status
+Driver::Implementation::ActOnObjectFileType(const DriverInputFile *input) {}
+Status
+Driver::Implementation::ActOnAutoLinkFileType(const DriverInputFile *input) {}
+
+Status
+Driver::Implementation::ActOnStoneModuleFileType(const DriverInputFile *input) {
+}
+
+Status Driver::Implementation::BuildMultipleCompileInvocation() {
+
+  assert(driver.IsMultipleCompileInvocation());
+  driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+      [&](const DriverInputFile *input) {
+        switch (input->GetFileType()) {
+        case FileType::Stone: {
+          assert(input->IsPartOfStoneCompilation());
+          if (ActOnStoneFileType(input).IsErrorOrHasCompletion()) {
+            return Status::MakeHasCompletionAndIsError();
+          }
+          break;
+        }
+        case FileType::Autolink:
+          if (ActOnAutoLinkFileType(input).IsErrorOrHasCompletion()) {
+            return Status::MakeHasCompletionAndIsError();
+          }
+          break;
+        case FileType::Object: {
+          if (ActOnObjectFileType(input).IsErrorOrHasCompletion()) {
+            return Status::MakeHasCompletionAndIsError();
+          }
+          break;
+        }
+        case FileType::StoneModule:
+          if (ActOnStoneModuleFileType(input).IsErrorOrHasCompletion()) {
+            return Status::MakeHasCompletionAndIsError();
+          }
+          break;
+        default:
+          llvm_unreachable(" Invalid file type");
+        }
+      });
+  return Status();
+}
+Status Driver::Implementation::BuildSingleCompileInvocation() {
+
+  // auto compileJobConstruction = CreateCompileJobConstruction();
+  // assert(compileJobConstruction);
+
+  // driver.GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+  //     [&](const DriverInputFile *input) {
+  //       assert(input->HasValidFileType());
+  //       compileJobConstruction->AddInput(input);
+  //     });
+
+  // AddModuleInput(compileJobConstruction);
+  // AddModuleInput(compileJobConstruction);
+}
+
+Status Driver::Implementation::BuildBatchCompileInvocation() {}
+
+void Driver::Implementation::FinishTopLevelJobConstructions() {}
+
+Status Driver::Implementation::BuildTopLevelJobs() {}
+
+void Driver::AddTopLevelEntity(const CompilationEntity *entity) {
+  assert(entity);
+  assert(entity->HasIsTopLevel());
+  assert(entity->HasAllowTopLevel());
   entities.push_back(entity);
 }
 
-Status BuildingJobConstructionEntities::HandleStoneFileType(
-    const DriverInputFile *input) {
+// void TopLevelCompilationEntities::ForEachTopLevelJobConstruction(
+//     std::function<void(const CompilationEntity *entity)> callback) {
+//   for (auto topLevelJobConstruction : topLevelJobConstructions) {
+//     callback(topLevelJobConstruction);
+//   }
+// }
 
-  assert(input);
-  assert(input->IsStoneFileType());
+// /// Get each top level job
+// void TopLevelCompilationEntities::ForEachTopLevelJob(
+//     std::function<void(const CompilationEntity *entity)> callback) {
+//   for (auto topLevelJob : topLevelJobs) {
+//     callback(topLevelJob);
+//   }
+// }
 
-  CompileJobConstruction *compileJobConstruction = nullptr;
-  if (input) {
-    compileJobConstruction = CompileJobConstruction::Create(
-        driver, input, driver.GetOutputFileType());
-  } else {
-    // TODO: This is only true in Single
-    compileJobConstruction =
-        CompileJobConstruction::Create(driver, driver.GetOutputFileType());
-  }
-  moduleEntities.AddEntity(compileJobConstruction);
+// /// Get each top level job
+// void TopLevelCompilationEntities::ForEachTopLevelExternalJob(
+//     std::function<void(const CompilationEntity *entity)> callback) {
+//   for (auto topLevelExternalJob : topLevelExternalJobs) {
+//     callback(topLevelExternalJob);
+//   }
+// }
 
-  // Update the link entities
-  linkEntities.AddEntity(compileJobConstruction);
+// BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver
+// &driver)
+//     : driver(driver), moduleEntities(driver), linkEntities(driver) {}
 
-  return Status();
-}
+// void ModuleEntities::AddEntity(const CompilationEntity *entity) {
 
-Status BuildingJobConstructionEntities::HandleObjectFileType(
-    const DriverInputFile *input) {
+//   if (auto incrementalJobEntity =
+//           llvm::dyn_cast<IncrementalJobConstruction>(entity)) {
+//   }
+//   entities.push_back(entity);
+// }
 
-  assert(input);
-  assert(input->IsObjectFileType());
+// Status BuildingJobConstructionEntities::HandleStoneFileType(
+//     const DriverInputFile *input) {
 
-  return Status();
-}
+//   assert(input);
+//   assert(input->IsStoneFileType());
 
-Status BuildingJobConstructionEntities::HandleAutoLinkFileType(
-    const DriverInputFile *input) {
-  return Status();
-}
+//   CompileJobConstruction *compileJobConstruction = nullptr;
+//   if (input) {
+//     compileJobConstruction = CompileJobConstruction::Create(
+//         driver, input, driver.GetOutputFileType());
+//   } else {
+//     // TODO: This is only true in Single
+//     compileJobConstruction =
+//         CompileJobConstruction::Create(driver, driver.GetOutputFileType());
+//   }
+//   moduleEntities.AddEntity(compileJobConstruction);
 
-Status BuildingJobConstructionEntities::HandleStoneModuleFileType(
-    const DriverInputFile *input) {
+//   // Update the link entities
+//   linkEntities.AddEntity(compileJobConstruction);
 
-  if (driver.ShouldLink()) {
-    linkEntities.AddEntity(input);
-  } else if (driver.ShouldGenerateModule() && !driver.ShouldLink()) {
-    moduleEntities.AddEntity(input);
-  } else {
-    // TODO: Log
-    Status::MakeHasCompletionAndIsError();
-  }
-  return Status();
-}
+//   return Status();
+// }
 
-GeneratePCHJobConstruction *
-BuildingJobConstructionEntities::GetGeneratePCHJobConstruction() {
+// Status BuildingJobConstructionEntities::HandleObjectFileType(
+//     const DriverInputFile *input) {
 
-  // TODO: Just a starter
-  if (!pchJobConstruction) {
-    if (driver.GetDriverOptions().shouldGeneratePCH) {
-    }
-    // Check that we can create this
-  }
-  return pchJobConstruction;
-}
+//   assert(input);
+//   assert(input->IsObjectFileType());
 
-MergeModuleJobConstruction *
-BuildingJobConstructionEntities::GetMergeModuleJobConstruction() {
+//   return Status();
+// }
 
-  //: TODO: Get this from the ModuleEntities
-  if (!mergeModuleJobConstruction && !driver.IsSingleCompileInvocation() &&
-      moduleEntities.HasEntities()) {
-    mergeModuleJobConstruction =
-        MergeModuleJobConstruction::Create(driver, moduleEntities.entities);
-  }
-  return mergeModuleJobConstruction;
-}
+// Status BuildingJobConstructionEntities::HandleAutoLinkFileType(
+//     const DriverInputFile *input) {
+//   return Status();
+// }
 
-CompileJobConstruction *
-BuildingJobConstructionEntities::CreateCompileJobConstruction(
-    const DriverInputFile *input) {
+// Status BuildingJobConstructionEntities::HandleStoneModuleFileType(
+//     const DriverInputFile *input) {
 
-  // TODO: args.hasArg(opts::::EmbedBitCode))
-  // Check that it requires a PCH
-  if (input) {
-    return CompileJobConstruction::Create(driver, input,
-                                          driver.GetOutputFileType());
-  }
-  return CompileJobConstruction::Create(driver, driver.GetOutputFileType());
-}
+//   if (driver.ShouldLink()) {
+//     linkEntities.AddEntity(input);
+//   } else if (driver.ShouldGenerateModule() && !driver.ShouldLink()) {
+//     moduleEntities.AddEntity(input);
+//   } else {
+//     // TODO: Log
+//     Status::MakeHasCompletionAndIsError();
+//   }
+//   return Status();
+// }
 
-void BuildingJobConstructionEntities::FinishBuilding() {
+// GeneratePCHJobConstruction *
+// BuildingJobConstructionEntities::GetGeneratePCHJobConstruction() {
 
-  // if(GetMergeModuleJobConstruction()){
-  // }
-  // TopLevelActions.push_back(MergeModuleAction);
-  //    }
-  //  }
-  //  TopLevelActions.push_back(LinkAction);
+//   // TODO: Just a starter
+//   if (!pchJobConstruction) {
+//     if (driver.GetDriverOptions().shouldGeneratePCH) {
+//     }
+//     // Check that we can create this
+//   }
+//   return pchJobConstruction;
+// }
 
-  if (linkEntities.HasEntities() && driver.ShouldLink()) {
-    auto linkJobConstruction = linkEntities.Apply();
-    if (linkJobConstruction) {
-      linkJobConstruction->AddIsTopLevel();
-      driver.GetTopLevelEntities().AddTopLevelJobConstruction(
-          linkJobConstruction);
-    }
-  }
-}
+// MergeModuleJobConstruction *
+// BuildingJobConstructionEntities::GetMergeModuleJobConstruction() {
 
-ModuleEntities::ModuleEntities(Driver &driver) : driver(driver) {}
-LinkEntities::LinkEntities(Driver &driver) : driver(driver) {}
+//   //: TODO: Get this from the ModuleEntities
+//   if (!mergeModuleJobConstruction && !driver.IsSingleCompileInvocation() &&
+//       moduleEntities.HasEntities()) {
+//     mergeModuleJobConstruction =
+//         MergeModuleJobConstruction::Create(driver, moduleEntities.entities);
+//   }
+//   return mergeModuleJobConstruction;
+// }
 
-LinkJobConstruction *LinkEntities::Apply() {
-  LinkJobConstruction *linkJobConstruction = nullptr;
+// CompileJobConstruction *
+// BuildingJobConstructionEntities::CreateCompileJobConstruction(
+//     const DriverInputFile *input) {
 
-  if (driver.ShouldLink() && HasEntities()) {
-    if (driver.IsStaticLibraryLink()) {
-      linkJobConstruction = StaticLinkJobConstruction::Create(
-          driver, entities, driver.GetLinkMode());
-    } else {
-      linkJobConstruction = DynamicLinkJobConstruction::Create(
-          driver, entities, driver.GetLinkMode(),
-          driver.GetDriverOptions().GetDriverOutputInfo().HasLTO());
-    }
-  }
-  return linkJobConstruction;
-}
+//   // TODO: args.hasArg(opts::::EmbedBitCode))
+//   // Check that it requires a PCH
+//   if (input) {
+//     return CompileJobConstruction::Create(driver, input,
+//                                           driver.GetOutputFileType());
+//   }
+//   return CompileJobConstruction::Create(driver, driver.GetOutputFileType());
+// }
 
+// void BuildingJobConstructionEntities::FinishBuilding() {
+
+//   // if(GetMergeModuleJobConstruction()){
+//   // }
+//   // TopLevelActions.push_back(MergeModuleAction);
+//   //    }
+//   //  }
+//   //  TopLevelActions.push_back(LinkAction);
+
+//   if (linkEntities.HasEntities() && driver.ShouldLink()) {
+//     auto linkJobConstruction = linkEntities.Apply();
+//     if (linkJobConstruction) {
+//       linkJobConstruction->AddIsTopLevel();
+//       driver.GetTopLevelEntities().AddTopLevelJobConstruction(
+//           linkJobConstruction);
+//     }
+//   }
+// }
+
+// ModuleEntities::ModuleEntities(Driver &driver) : driver(driver) {}
+
+// LinkEntities::LinkEntities(Driver &driver) : driver(driver) {}
+
+// LinkJobConstruction *LinkEntities::Apply() {
+//   LinkJobConstruction *linkJobConstruction = nullptr;
+
+//   if (driver.ShouldLink() && HasEntities()) {
+//     if (driver.IsStaticLibraryLink()) {
+//       linkJobConstruction = StaticLinkJobConstruction::Create(
+//           driver, entities, driver.GetLinkMode());
+//     } else {
+//       linkJobConstruction = DynamicLinkJobConstruction::Create(
+//           driver, entities, driver.GetLinkMode(),
+//           driver.GetDriverOptions().GetDriverOutputInfo().HasLTO());
+//     }
+//   }
+//   return linkJobConstruction;
+// }
+
+// void Driver::ForEachJobConstruction(
+//     std::function<void(const JobConstruction *entity)> callback) {
+//   for (auto jc : jcs) {
+//     callback(jc);
+//   }
+// }
 Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 
-  auto status = BuildTopLevelJobConstructionEntities(
-      GetTopLevelEntities(), GetCompileInvocationMode());
+  // auto status = BuildTopLevelJobConstructionEntities(
+  //     GetTopLevelEntities(), GetCompileInvocationMode());
 
-  if (status.IsErrorOrHasCompletion()) {
-    return nullptr;
-  }
+  // if (status.IsErrorOrHasCompletion()) {
+  //   return nullptr;
+  // }
 
-  status = BuildTopLevelJobEntities(GetTopLevelEntities());
-  if (status.IsErrorOrHasCompletion()) {
-    return nullptr;
-  }
+  // status = BuildTopLevelJobEntities(GetTopLevelEntities());
+  // if (status.IsErrorOrHasCompletion()) {
+  //   return nullptr;
+  // }
 
   return compilation;
 }
@@ -350,126 +447,129 @@ sys::TaskQueue *Driver::BuildTaskQueue(const Compilation *compilation) {
   return taskQueue;
 }
 
-Status Driver::BuildTopLevelJobConstructionEntities(
-    TopLevelCompilationEntities &entities, CompileInvocationMode cim) {
+// Status Driver::BuildTopLevelJobConstructionEntities(
+//     TopLevelCompilationEntities &entities, CompileInvocationMode cim) {
 
-  /// Build the job constructions
-  BuildingJobConstructionEntities buildingJobConstructionEntities(*this);
+//   /// Build the job constructions
+//   BuildingJobConstructionEntities buildingJobConstructionEntities(*this);
 
-  STONE_DEFER { buildingJobConstructionEntities.FinishBuilding(); };
-  switch (cim) {
-  case CompileInvocationMode::Multiple:
-    return BuildMultipleCompileInvocation(entities,
-                                          buildingJobConstructionEntities);
-  case CompileInvocationMode::Single:
-    return BuildSingleCompileInvocation(entities,
-                                        buildingJobConstructionEntities);
-  case CompileInvocationMode::Batch:
-    return BuildBatchCompileInvocation(entities,
-                                       buildingJobConstructionEntities);
-  }
-  llvm_unreachable("Invalid CompileInvocationMode!");
-}
+//   STONE_DEFER { buildingJobConstructionEntities.FinishBuilding(); };
+//   switch (cim) {
+//   case CompileInvocationMode::Multiple:
+//     return BuildMultipleCompileInvocation(entities,
+//                                           buildingJobConstructionEntities);
+//   case CompileInvocationMode::Single:
+//     return BuildSingleCompileInvocation(entities,
+//                                         buildingJobConstructionEntities);
+//   case CompileInvocationMode::Batch:
+//     return BuildBatchCompileInvocation(entities,
+//                                        buildingJobConstructionEntities);
+//   }
+//   llvm_unreachable("Invalid CompileInvocationMode!");
+// }
 
-Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
+// Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities
+// &entities) {
 
-  entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
-    if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-      auto job = ConstructJob(jc);
-      job->AddIsTopLevel();
-      entities.AddTopLevelJob(job);
-    }
-  });
-  return Status();
-}
-// TODO: Continue here....
-Job *Driver::ConstructJob(const JobConstruction *current) {
+//   entities.ForEachTopLevelJobConstruction([&](const CompilationEntity
+//   *entity) {
+//     if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+//       auto job = ConstructJob(jc);
+//       job->AddIsTopLevel();
+//       entities.AddTopLevelJob(job);
+//     }
+//   });
+//   return Status();
+// }
+// // TODO: Continue here....
+// Job *Driver::ConstructJob(const JobConstruction *current) {
 
-  auto jobInfo = JobInfo::Create(*this, current);
+//   auto jobInfo = JobInfo::Create(*this, current);
 
-  for (const CompilationEntity *entity : *current) {
-    if (entity->IsJobConstruction()) {
-      if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-        jobInfo->deps.push_back(ConstructJob(jc));
-      }
-    } else if (entity->IsInput()) {
-      jobInfo->inputs.push_back(entity);
-    }
-  }
+//   for (const CompilationEntity *entity : *current) {
+//     if (entity->IsJobConstruction()) {
+//       if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+//         jobInfo->deps.push_back(ConstructJob(jc));
+//       }
+//     } else if (entity->IsInput()) {
+//       jobInfo->inputs.push_back(entity);
+//     }
+//   }
 
-  jobInfo->commandOutput =
-      std::make_unique<CommandOutput>(current->GetFileType());
+//   jobInfo->commandOutput =
+//       std::make_unique<CommandOutput>(current->GetFileType());
 
-  auto job = GetToolChain().ConstructJob(GetCompilation(), jobInfo);
+//   auto job = GetToolChain().ConstructJob(GetCompilation(), jobInfo);
 
-  return job;
-}
+//   return job;
+// }
 
-void Driver::ComputeJobMainOutput(const JobConstruction *jobConstruction) {}
+// void Driver::ComputeJobMainOutput(const JobConstruction *jobConstruction) {}
 
-Status Driver::BuildMultipleCompileInvocation(
-    TopLevelCompilationEntities &entities,
-    BuildingJobConstructionEntities &buildingEntities) {
+// Status Driver::BuildMultipleCompileInvocation(
+//     TopLevelCompilationEntities &entities,
+//     BuildingJobConstructionEntities &buildingEntities) {
 
-  assert(IsMultipleCompileInvocation());
-  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        switch (input->GetFileType()) {
-        case FileType::Stone: {
-          assert(input->IsPartOfStoneCompilation());
-          if (buildingEntities.HandleStoneFileType(input)
-                  .IsErrorOrHasCompletion()) {
-            return Status::MakeHasCompletionAndIsError();
-          }
-          break;
-        }
-        case FileType::Autolink:
-          if (buildingEntities.HandleAutoLinkFileType(input)
-                  .IsErrorOrHasCompletion()) {
-            return Status::MakeHasCompletionAndIsError();
-          }
-          break;
-        case FileType::Object: {
-          if (buildingEntities.HandleObjectFileType(input)
-                  .IsErrorOrHasCompletion()) {
-            return Status::MakeHasCompletionAndIsError();
-          }
-          break;
-        }
-        case FileType::StoneModule:
-          if (buildingEntities.HandleStoneModuleFileType(input)
-                  .IsErrorOrHasCompletion()) {
-            return Status::MakeHasCompletionAndIsError();
-          }
-          break;
-        default:
-          llvm_unreachable(" Invalid file type");
-        }
-      });
-  return Status();
-}
+//   assert(IsMultipleCompileInvocation());
+//   GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//       [&](const DriverInputFile *input) {
+//         switch (input->GetFileType()) {
+//         case FileType::Stone: {
+//           assert(input->IsPartOfStoneCompilation());
+//           if (buildingEntities.HandleStoneFileType(input)
+//                   .IsErrorOrHasCompletion()) {
+//             return Status::MakeHasCompletionAndIsError();
+//           }
+//           break;
+//         }
+//         case FileType::Autolink:
+//           if (buildingEntities.HandleAutoLinkFileType(input)
+//                   .IsErrorOrHasCompletion()) {
+//             return Status::MakeHasCompletionAndIsError();
+//           }
+//           break;
+//         case FileType::Object: {
+//           if (buildingEntities.HandleObjectFileType(input)
+//                   .IsErrorOrHasCompletion()) {
+//             return Status::MakeHasCompletionAndIsError();
+//           }
+//           break;
+//         }
+//         case FileType::StoneModule:
+//           if (buildingEntities.HandleStoneModuleFileType(input)
+//                   .IsErrorOrHasCompletion()) {
+//             return Status::MakeHasCompletionAndIsError();
+//           }
+//           break;
+//         default:
+//           llvm_unreachable(" Invalid file type");
+//         }
+//       });
+//   return Status();
+// }
 
-Status Driver::BuildSingleCompileInvocation(
-    TopLevelCompilationEntities &entities,
-    BuildingJobConstructionEntities &buildingEntities) {
+// Status Driver::BuildSingleCompileInvocation(
+//     TopLevelCompilationEntities &entities,
+//     BuildingJobConstructionEntities &buildingEntities) {
 
-  auto compileJobConstruction = buildingEntities.CreateCompileJobConstruction();
-  assert(compileJobConstruction);
+//   auto compileJobConstruction =
+//   buildingEntities.CreateCompileJobConstruction();
+//   assert(compileJobConstruction);
 
-  GetDriverOptions().GetInputsAndOutputs().ForEachInput(
-      [&](const DriverInputFile *input) {
-        compileJobConstruction->AddInput(input);
-      });
+//   GetDriverOptions().GetInputsAndOutputs().ForEachInput(
+//       [&](const DriverInputFile *input) {
+//         compileJobConstruction->AddInput(input);
+//       });
 
-  buildingEntities.GetModuleEntities().AddEntity(compileJobConstruction);
-  buildingEntities.GetLinkEntities().AddEntity(compileJobConstruction);
-}
+//   buildingEntities.GetModuleEntities().AddEntity(compileJobConstruction);
+//   buildingEntities.GetLinkEntities().AddEntity(compileJobConstruction);
+// }
 
-Status Driver::BuildBatchCompileInvocation(
-    TopLevelCompilationEntities &entities,
-    BuildingJobConstructionEntities &buildingEntities) {
-  return Status();
-}
+// Status Driver::BuildBatchCompileInvocation(
+//     TopLevelCompilationEntities &entities,
+//     BuildingJobConstructionEntities &buildingEntities) {
+//   return Status();
+// }
 
 void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
                               unsigned alignment) {

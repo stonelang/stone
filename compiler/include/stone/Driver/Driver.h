@@ -212,8 +212,8 @@ class Driver final {
   /// The top-level compilation entities
   TopLevelCompilationEntities topLevelEntities;
 
-  // A graph of top-level job constructions
-  llvm::SmallVector<const JobConstruction *, 8> jcs;
+  // A graph of top-level entities
+  llvm::SmallVector<const CompilationEntity *, 8> entities;
 
   /// The tool chain to use to build the tools
   Compilation *compilation = nullptr;
@@ -343,7 +343,14 @@ public:
 public:
   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
+private:
+  void AddTopLevelEntity(const CompilationEntity *entity);
+
 public:
+  /// Get each top level job
+  void ForEachTopLevelEntity(
+      std::function<void(const CompilationEntity *entity)> callback);
+
   /// Construct a compilation object for a given ToolChain
   ///
   /// If \p AllowErrors is set to \c true, this method tries to build a
