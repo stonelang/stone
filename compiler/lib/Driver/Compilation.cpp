@@ -50,10 +50,6 @@ public:
   /// Jobs that incremental-mode has decided it can skip.
   CommandSet deferredCommands;
 
-public:
-  /// TaskQueue for execution.
-  TaskQueue *taskQueue = nullptr;
-
   /// Cumulative result of PerformJobs(), accumulated from subprocesses.
   // int resultCode = EXIT_SUCCESS;
 

@@ -214,7 +214,7 @@ class Driver final {
   Compilation *compilation = nullptr;
 
   /// The task queue to run the jobs
-  stone::TaskQueue *taskQueue = nullptr;
+  sys::TaskQueue *taskQueue = nullptr;
 
   /// The allocator used to create Driver objects.
   /// Driver objects are never destructed; rather, all memory associated
@@ -266,8 +266,8 @@ public:
   const Compilation &GetCompilation() const { return *compilation; }
 
   bool HasTaskQueue() { return taskQueue != nullptr; }
-  TaskQueue &GetTaskQueue() { return *taskQueue; }
-  const TaskQueue &GetTaskQueue() const { return *taskQueue; }
+  sys::TaskQueue &GetTaskQueue() { return *taskQueue; }
+  const sys::TaskQueue &GetTaskQueue() const { return *taskQueue; }
 
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
@@ -355,7 +355,7 @@ public:
   ///
   /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
   /// specified.  This condition is signalled by a diagnostic.
-  stone::TaskQueue *BuildTaskQueue(const Compilation *compilation);
+  sys::TaskQueue *BuildTaskQueue(const Compilation *compilation);
 
 public:
   /// Creates a DriverInput file using a

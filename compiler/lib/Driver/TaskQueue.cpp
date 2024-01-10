@@ -2,6 +2,7 @@
 #include "stone/Stats/Stats.h"
 
 using namespace stone;
+using namespace stone::sys;
 
 // Include the correct TaskQueue implementation.
 #if LLVM_ON_UNIX && !defined(__CYGWIN__) && !defined(__HAIKU__)
@@ -13,4 +14,11 @@ using namespace stone;
 #endif
 
 TaskQueue::TaskQueue(unsigned numberOfParallelTasks, DriverStatsReporter *stats)
-    : numberOfParallelTasks(numberOfParallelTasks), stats(stats) {}
+    : NumberOfParallelTasks(numberOfParallelTasks), Stats(stats) {}
+
+
+
+// TaskQueue* TaskQueue::Create(Driver& driver, unsigned numberOfParallelTasks){
+
+//     return new (driver)TaskQueue(numberOfParallelTasks);
+// }

@@ -281,8 +281,7 @@ void DriverOptionsConverter::ComputeOutputInfo() {
 
 void DriverOptionsConverter::ComputeGeneratePCH() {}
 
-void DriverOptionsConverter::ComputeNumberOfParallelCommands(){
-
+void DriverOptionsConverter::ComputeNumberOfParallelTasks(){
 
 }
 

@@ -225,8 +225,8 @@ private:
   void SetTriple(llvm::Triple triple);
   void ComputeOutputInfo();
   void ComputeGeneratePCH();
-  void ComputeNumberOfParallelCommands();
-  
+  void ComputeNumberOfParallelTasks();
+
 
 public:
   Status Convert();
@@ -528,7 +528,8 @@ public:
 
   bool shouldGeneratePCH = false;
 
-  unsigned numberOfParallelCommands = 1;
+
+   unsigned numberOfParallelTasks = 1;
 
 public:
   /// The main options table

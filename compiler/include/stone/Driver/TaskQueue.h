@@ -1,22 +1,29 @@
 #ifndef STONE_DRIVER_DRIVER_TASK_QUEUE_H
 #define STONE_DRIVER_DRIVER_TASK_QUEUE_H
 
+
+#include "stone/Basic/JSONSerialization.h"
 #include "stone/Driver/DriverAllocation.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"
 
+#include <functional>
+#include <memory>
 #include <queue>
 
-namespace stone {
+#if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
+struct rusage;
+#endif
 
-class Compilation;
+namespace stone {
 class DriverStatsReporter;
+namespace sys {
 
 class Task; // forward declared to allow for platform-specific implementations
 
-using ProcessID = llvm::sys::procid_t;
+using ProcessId = llvm::sys::procid_t;
 
 /// Indicates how a TaskQueue should respond to the task finished event.
 enum class TaskFinishedResponse {
@@ -27,23 +34,158 @@ enum class TaskFinishedResponse {
   StopExecution,
 };
 
-class TaskQueue : public DriverAllocation<TaskQueue> {
+/// TaskProcessInformation is bound to a task and contains information about the
+/// process that ran this task. This is especially useful to find out which
+/// tasks ran in the same process (in multifile-mode or when WMO is activated
+/// e.g.). If available, it also contains information about the usage of
+/// resources like CPU time or memory the process used in the system. How ever,
+/// this could differ from platform to platform and is therefore optional.
 
+/// One process could handle multiple tasks in some modes of the Swift compiler
+/// (multifile, WMO). To not break existing tools, the driver does use unique
+/// identifiers for the tasks that are not the process identifier. To still be
+/// able to reason about tasks that ran in the same process the
+/// TaskProcessInformation struct contains information about the actual process
+/// of the operating system. The OSPid is the actual process identifier and is
+/// therefore not guaranteed to be unique over all tasks. The ProcessUsage
+/// contains optional usage information about the operating system process. It
+/// could be used by tools that take those information as input for analyzing
+/// the Swift compiler on a process-level. It will be `None` if the execution
+/// has been skipped or one of the following symbols are not available on the
+/// system: `rusage`, `wait4`.
+struct TaskProcessInformation {
+
+  struct ResourceUsage {
+    // user time in µs
+    uint64_t Utime;
+    // system time in µs
+    uint64_t Stime;
+    // maximum resident set size in Bytes
+    uint64_t Maxrss;
+
+    ResourceUsage(uint64_t Utime, uint64_t Stime, uint64_t Maxrss)
+        : Utime(Utime), Stime(Stime), Maxrss(Maxrss) {}
+
+    virtual ~ResourceUsage() = default;
+    virtual void provideMapping(json::Output &out);
+  };
+
+private:
+  // the process identifier of the operating system
+  ProcessId OSPid;
+  // usage information about the process, if available
+  llvm::Optional<ResourceUsage> ProcessUsage;
+
+public:
+  TaskProcessInformation(ProcessId Pid, uint64_t utime, uint64_t stime,
+                         uint64_t maxrss)
+      : OSPid(Pid), ProcessUsage(ResourceUsage(utime, stime, maxrss)) {}
+
+  TaskProcessInformation(ProcessId Pid)
+      : OSPid(Pid), ProcessUsage(llvm::None) {}
+
+#if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
+  TaskProcessInformation(ProcessId Pid, struct rusage Usage);
+#endif // defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
+  llvm::Optional<ResourceUsage> getResourceUsage() { return ProcessUsage; }
+  virtual ~TaskProcessInformation() = default;
+  virtual void provideMapping(json::Output &out);
+};
+
+/// A class encapsulating the execution of multiple tasks in parallel.
+class TaskQueue {
   /// Tasks which have not begun execution.
-
-  std::queue<Task *> tasks;
+  std::queue<Task*> QueuedTasks;
 
   /// The number of tasks to execute in parallel.
-  unsigned numberOfParallelTasks;
+  unsigned NumberOfParallelTasks;
 
   /// Optional place to count I/O and subprocess events.
-  DriverStatsReporter *stats;
+  DriverStatsReporter *Stats;
 
 public:
-  TaskQueue(unsigned numberOfParallelTasks = 0,
-            DriverStatsReporter *stats = nullptr);
+  /// Create a new TaskQueue instance.
+  ///
+  /// \param NumberOfParallelTasks indicates the number of tasks which should
+  /// be run in parallel. If 0, the TaskQueue will choose the most appropriate
+  /// number of parallel tasks for the current system.
+  /// \param USR Optional stats reporter to count I/O and subprocess events.
+  TaskQueue(unsigned NumberOfParallelTasks = 0,
+            DriverStatsReporter *Stats = nullptr);
+  virtual ~TaskQueue();
 
-public:
+  // TODO: remove once -Wdocumentation stops warning for \param, \returns on
+  // std::function (<rdar://problem/15665132>).
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+  /// A callback which will be executed when each task begins execution
+  ///
+  /// \param Pid the ProcessId of the task which just began execution.
+  /// \param Context the context which was passed when the task was added
+  using TaskBeganCallback = std::function<void(ProcessId Pid, void *Context)>;
+
+  /// A callback which will be executed after each task finishes
+  /// execution.
+  ///
+  /// \param Pid the ProcessId of the task which finished execution.
+  /// \param ReturnCode the return code of the task which finished execution.
+  /// \param Output the output from the task which finished execution,
+  /// if available. (This may not be available on all platforms.)
+  /// \param Errors the errors from the task which finished execution, if
+  /// available and SeparateErrors was true.  (This may not be available on all
+  /// platforms.)
+  /// \param ProcInfo contains information like the operating process identifier
+  /// and resource usage if available
+  /// \param Context the context which was passed when the task was added
+  ///
+  /// \returns true if further execution of tasks should stop,
+  /// false if execution should continue
+  using TaskFinishedCallback = std::function<TaskFinishedResponse(
+      ProcessId Pid, int ReturnCode, StringRef Output, StringRef Errors,
+      TaskProcessInformation ProcInfo, void *Context)>;
+
+  /// A callback which will be executed if a task exited abnormally due
+  /// to a signal.
+  ///
+  /// \param Pid the ProcessId of the task which exited abnormally.
+  /// \param ErrorMsg a string describing why the task exited abnormally. If
+  /// no reason could be deduced, this may be empty.
+  /// \param Output the output from the task which exited abnormally, if
+  /// available. (This may not be available on all platforms.)
+  /// \param Errors the errors from the task which exited abnormally, if
+  /// available and SeparateErrors was true.  (This may not be available on all
+  /// platforms.)
+  /// \param ProcInfo contains information like the operating process identifier
+  /// and resource usage if available
+  /// \param Context the context which was passed when the task was added
+  /// \param Signal the terminating signal number, if available. This may not be
+  /// available on all platforms. If it is ever provided, it should not be
+  /// removed in future versions of the compiler.
+  ///
+  /// \returns a TaskFinishedResponse indicating whether or not execution
+  /// should proceed
+  using TaskSignalledCallback = std::function<TaskFinishedResponse(
+      ProcessId Pid, StringRef ErrorMsg, StringRef Output, StringRef Errors,
+      void *Context, llvm::Optional<int> Signal,
+      TaskProcessInformation ProcInfo)>;
+#pragma clang diagnostic pop
+
+  /// Indicates whether TaskQueue supports buffering output on the
+  /// current system.
+  ///
+  /// \note If this returns false, the TaskFinishedCallback passed
+  /// to \ref execute will always receive an empty StringRef for output, even
+  /// if the task actually generated output.
+  static bool supportsBufferingOutput();
+
+  /// Indicates whether TaskQueue supports parallel execution on the
+  /// current system.
+  static bool supportsParallelExecution();
+
+  /// \returns the maximum number of tasks which this TaskQueue will execute in
+  /// parallel
+  unsigned getNumberOfParallelTasks() const;
+
   /// Adds a task to the TaskQueue.
   ///
   /// \param ExecPath the path to the executable which the task should execute
@@ -52,20 +194,9 @@ public:
   /// must be null-terminated. If empty, inherits the parent's environment.
   /// \param Context an optional context which will be associated with the task
   /// \param SeparateErrors Controls whether error output is reported separately
-  virtual void AddTask(const char *ExecPath, llvm::ArrayRef<const char *> Args,
-                       llvm::ArrayRef<const char *> Env = llvm::None,
+  virtual void addTask(const char *ExecPath, ArrayRef<const char *> Args,
+                       ArrayRef<const char *> Env = llvm::None,
                        void *Context = nullptr, bool SeparateErrors = false);
-
-  /// A callback which will be executed when each task begins execution
-  ///
-  /// \param Pid the ProcessId of the task which just began execution.
-  /// \param Context the context which was passed when the task was added
-  using TaskBeganCallback =
-      std::function<void(ProcessID processID, void *context)>;
-
-  // using TaskFinishedCallback = std::function<TaskFinishedResponse(
-  //     ProcessId Pid, int ReturnCode, StringRef Output, StringRef Errors,
-  //     TaskProcessInformation ProcInfo, void *Context)>;
 
   /// Synchronously executes the tasks in the TaskQueue.
   ///
@@ -75,36 +206,75 @@ public:
   /// abnormally due to a signal
   ///
   /// \returns true if all tasks did not execute successfully
-  // virtual bool
-  // ExecuteTask(TaskBeganCallback Began = TaskBeganCallback(),
-  //         TaskFinishedCallback Finished = TaskFinishedCallback(),
-  //         TaskSignalledCallback Signalled = TaskSignalledCallback());
+  virtual bool
+  execute(TaskBeganCallback Began = TaskBeganCallback(),
+          TaskFinishedCallback Finished = TaskFinishedCallback(),
+          TaskSignalledCallback Signalled = TaskSignalledCallback());
 
-public:
-  /// Indicates whether TaskQueue supports buffering output on the
-  /// current system.
-  ///
-  /// \note If this returns false, the TaskFinishedCallback passed
-  /// to \ref execute will always receive an empty StringRef for output, even
-  /// if the task actually generated output.
-  static bool SupportsBufferingOutput();
-
-  /// Indicates whether TaskQueue supports parallel execution on the
-  /// current system.
-  static bool SupportsParallelExecution();
-
-public:
-  /// \returns the maximum number of tasks which this TaskQueue will execute in
-  /// parallel
-  unsigned GetNumberOfParallelTasks() const;
-
-public:
-  static TaskQueue *Create(Driver& driver, const unsigned numberOfParallelTasks);
+  /// Returns true if there are any tasks that have been queued but have not
+  /// yet been executed.
+  virtual bool hasRemainingTasks() {
+    return !QueuedTasks.empty();
+  }
 };
 
-// class EmptyTaskQueue : public TaskQueue {
+/// A class which simulates execution of tasks with behavior similar to
+/// TaskQueue.
+class TrivialTaskQueue : public TaskQueue {
+  class TrivialTask {
+  public:
+    const char *ExecPath;
+    ArrayRef<const char *> Args;
+    ArrayRef<const char *> Env;
+    void *Context;
+    bool SeparateErrors;
 
-// };
+    TrivialTask(const char *ExecPath, ArrayRef<const char *> Args,
+              ArrayRef<const char *> Env = llvm::None, void *Context = nullptr,
+              bool SeparateErrors = false)
+        : ExecPath(ExecPath), Args(Args), Env(Env), Context(Context),
+          SeparateErrors(SeparateErrors) {}
+  };
 
-} // namespace stone
+  std::queue<std::unique_ptr<TrivialTask>> QueuedTasks;
+
+public:
+  /// Create a new TrivialTaskQueue instance.
+  TrivialTaskQueue(unsigned NumberOfParallelTasks = 0);
+  virtual ~TrivialTaskQueue();
+
+  void addTask(const char *ExecPath, ArrayRef<const char *> Args,
+               ArrayRef<const char *> Env = llvm::None,
+               void *Context = nullptr, bool SeparateErrors = false) override;
+
+  bool
+  execute(TaskBeganCallback Began = TaskBeganCallback(),
+          TaskFinishedCallback Finished = TaskFinishedCallback(),
+          TaskSignalledCallback Signalled = TaskSignalledCallback()) override;
+
+  bool hasRemainingTasks() override {
+    // Need to override here because QueuedTasks is redeclared.
+    return !QueuedTasks.empty();
+  }
+
+};
+
+} // end namespace sys
+
+namespace json {
+template <> struct ObjectTraits<sys::TaskProcessInformation> {
+  static void mapping(Output &out, sys::TaskProcessInformation &value) {
+    value.provideMapping(out);
+  }
+};
+
+template <> struct ObjectTraits<sys::TaskProcessInformation::ResourceUsage> {
+  static void mapping(Output &out,
+                      sys::TaskProcessInformation::ResourceUsage &value) {
+    value.provideMapping(out);
+  }
+};
+} // end namespace json
+
+} // end namespace stone
 #endif
