@@ -324,8 +324,7 @@ public:
   }
 
 public:
-  DarwinToolChain* Create(const Driver& driver);
-
+  DarwinToolChain *Create(const Driver &driver);
 };
 
 class UnixToolChain : public ToolChain {
@@ -392,10 +391,8 @@ public:
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
 
-
 public:
-  static UnixToolChain* Create(const Driver& driver);
-
+  static UnixToolChain *Create(const Driver &driver);
 };
 
 class LinuxToolChain final : public UnixToolChain {
@@ -445,7 +442,7 @@ public:
   }
 
 public:
-  static LinuxToolChain* Create(const Driver& driver);
+  static LinuxToolChain *Create(const Driver &driver);
 };
 
 class WindowsToolChain final : public ToolChain {
@@ -492,9 +489,8 @@ public:
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
 
-
 public:
-   static WindowsToolChain* Create(const Driver& driver);
+  static WindowsToolChain *Create(const Driver &driver);
 };
 
 } // namespace stone

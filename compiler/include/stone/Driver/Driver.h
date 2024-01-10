@@ -102,14 +102,16 @@ class BuildingJobConstructionEntities;
 
 // Generally, we are compiling and linking -- they are special, so we treat them
 // as such.
-class ModuleEntities final : public DriverAllocation<ModuleEntities> {
+class ModuleEntities final {
 
   friend BuildingJobConstructionEntities;
+  Driver &driver;
+
   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
 public:
-  explicit ModuleEntities() {}
+  explicit ModuleEntities(Driver &driver);
 
 public:
   void AddEntity(const CompilationEntity *entity);
@@ -119,12 +121,9 @@ public:
 
   /// This will merge the modules if you are not in a single compile invocation
   MergeModuleJobConstruction *Apply();
-
-public:
-  static ModuleEntities *Create(const Driver &driver);
 };
 
-class LinkEntities final : public DriverAllocation<LinkEntities> {
+class LinkEntities final {
 
   Driver &driver;
   llvm::SmallVector<const CompilationEntity *, 8> entities;
@@ -138,31 +137,23 @@ public:
   }
   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
   LinkJobConstruction *Apply();
-
-public:
-  static LinkEntities *Create(Driver &driver);
 };
 
-class BuildingJobConstructionEntities final
-    : public DriverAllocation<BuildingJobConstructionEntities> {
+class BuildingJobConstructionEntities final {
 
   Driver &driver;
-  ModuleEntities *moduleEntities = nullptr;
-  LinkEntities *linkEntities = nullptr;
+  ModuleEntities moduleEntities;
+  LinkEntities linkEntities;
 
   GeneratePCHJobConstruction *pchJobConstruction = nullptr;
   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
 
 public:
   BuildingJobConstructionEntities(Driver &driver);
-  void Initialize();
 
 public:
-  bool HasModuleEntities() { return moduleEntities != nullptr; }
-  ModuleEntities *GetModuleEntities() { return moduleEntities; }
-
-  bool HasLinkEntities() { return linkEntities != nullptr; }
-  LinkEntities *GetLinkEntities() { return linkEntities; }
+  ModuleEntities &GetModuleEntities() { return moduleEntities; }
+  LinkEntities &GetLinkEntities() { return linkEntities; }
 
 public:
   GeneratePCHJobConstruction *GetGeneratePCHJobConstruction();
@@ -328,15 +319,15 @@ public:
 
   Status BuildMultipleCompileInvocation(
       TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities *buildingEntities);
+      BuildingJobConstructionEntities &buildingEntities);
 
   Status BuildSingleCompileInvocation(
       TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities *buildingEntities);
+      BuildingJobConstructionEntities &buildingEntities);
 
   Status BuildBatchCompileInvocation(
       TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities *buildingEntities);
+      BuildingJobConstructionEntities &buildingEntities);
 
   CompileJobConstruction *
   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
