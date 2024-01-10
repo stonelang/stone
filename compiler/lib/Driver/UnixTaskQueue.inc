@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/DriverAllocation.h"
+#include "stone/Driver/TaskQueue.h"
 #include "stone/Stats/Stats.h"
 
 #include "llvm/ADT/DenseMap.h"
@@ -343,8 +343,9 @@ void TaskQueue::addTask(const Driver &driver, const char *ExecPath,
                         ArrayRef<const char *> Args, ArrayRef<const char *> Env,
                         void *Context, bool SeparateErrors) {
 
-   auto task = new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors, Stats);
-   QueuedTasks.push(task);
+  auto task =
+      new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors, Stats);
+  QueuedTasks.push(task);
 }
 
 /// Owns Tasks, handles correspondence between Tasks, file descriptors, and

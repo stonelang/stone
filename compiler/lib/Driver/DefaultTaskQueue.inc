@@ -34,12 +34,9 @@ void TaskQueue::addTask(const Driver &driver, const char *ExecPath,
                         ArrayRef<const char *> Args, ArrayRef<const char *> Env,
                         void *Context, bool SeparateErrors) {
 
-    auto task = new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors);
-    QueuedTasks.push(task);
+  auto task = new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors);
+  QueuedTasks.push(task);
 }
-
-
-
 
 bool TaskQueue::execute(TaskBeganCallback Began, TaskFinishedCallback Finished,
                         TaskSignalledCallback Signalled) {
