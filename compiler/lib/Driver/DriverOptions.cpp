@@ -281,6 +281,11 @@ void DriverOptionsConverter::ComputeOutputInfo() {
 
 void DriverOptionsConverter::ComputeGeneratePCH() {}
 
+void DriverOptionsConverter::ComputeNumberOfParallelCommands(){
+
+
+}
+
 // // llvm::Triple DriverOptionsConverter::ComputeTarget() {
 // // }
 

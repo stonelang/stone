@@ -385,4 +385,12 @@ def LTOLibrary : Separate<["-"], "lto-library">,
   HelpText<"Perform LTO with <lto-library>">, MetaVarName<"<lto-library>">;
 
 
+def j : JoinedOrSeparate<["-"], "j">, Flags<[DoesNotAffectIncrementalBuild]>,
+  HelpText<"Number of commands to execute in parallel">, MetaVarName<"<n>">;
+
+def SkipSubTaskExecution : Flag<["-"], "skip-subtask-execution">,
+  InternalDebugOpt,
+  HelpText<"Skip execution of subtasks when performing compilation">;
+
+
 include "CompilerOptions.td"

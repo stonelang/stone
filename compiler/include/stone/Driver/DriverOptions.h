@@ -225,6 +225,8 @@ private:
   void SetTriple(llvm::Triple triple);
   void ComputeOutputInfo();
   void ComputeGeneratePCH();
+  void ComputeNumberOfParallelCommands();
+  
 
 public:
   Status Convert();
@@ -525,6 +527,8 @@ public:
   bool enableCrossModuleIncrementalBuild = false;
 
   bool shouldGeneratePCH = false;
+
+  unsigned numberOfParallelCommands = 1;
 
 public:
   /// The main options table

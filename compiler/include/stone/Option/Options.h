@@ -55,6 +55,7 @@ llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,
                                         const llvm::opt::InputArgList &args);
 unsigned GetArgID(const llvm::opt::Arg *arg);
 llvm::StringRef GetArgName(const llvm::opt::Arg *arg);
+
 void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 
 } // namespace opts

@@ -193,8 +193,7 @@ class TopLevelCompilationEntity : public CompilationEntity {
 protected:
   TopLevelCompilationEntity(CompilationEntityKind kind,
                             CompilationEntityList inputs,
-                            file::FileType fileType)
-      : CompilationEntity(kind, fileType), inputs(inputs) {}
+                            file::FileType fileType);
 
 public:
   size_type size() const { return inputs.size(); }

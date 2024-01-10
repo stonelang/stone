@@ -67,6 +67,12 @@ public:
 public:
   void ScheduleJobsBeforeBatching();
   void FormBatchJobsAndAddPendingJobsToTaskQueue();
+  void ScheduleJobsForNonIncrementalCompilation();
+  void ScheduleFirstRoundJobsForIncrementalCompilation();
+  void ScheduleCommandIfNecessaryAndPossible();
+  void scheduleJobsForNonIncrementalCompilation();
+
+public:
   void RunTaskQueueToCompletion();
   void CheckForUnfinishedJobs();
 
@@ -100,6 +106,14 @@ Compilation::Implementation::Implementation(Compilation *compilation)
 void Compilation::Implementation::ScheduleJobsBeforeBatching() {}
 
 void Compilation::Implementation::FormBatchJobsAndAddPendingJobsToTaskQueue() {}
+
+
+void Compilation::Implementation::
+    ScheduleFirstRoundJobsForIncrementalCompilation() {}
+
+void Compilation::Implementation::ScheduleCommandIfNecessaryAndPossible() {}
+
+void Compilation::Implementation::ScheduleJobsForNonIncrementalCompilation() {}
 
 void Compilation::Implementation::RunTaskQueueToCompletion() {}
 

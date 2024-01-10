@@ -99,7 +99,7 @@ public:
   unsigned GetNumberOfParallelTasks() const;
 
 public:
-  static TaskQueue *Create(const Compilation *compilation);
+  static TaskQueue *Create(Driver& driver, const unsigned numberOfParallelTasks);
 };
 
 // class EmptyTaskQueue : public TaskQueue {

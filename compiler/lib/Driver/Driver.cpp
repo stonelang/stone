@@ -249,6 +249,37 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
 }
 
 stone::TaskQueue *Driver::BuildTaskQueue(const Compilation *compilation) {
+
+  unsigned numberOfParallelCommands = 1;
+  
+  // if (const Arg *A = GetDerivedArgList().getLastArg(opts::j)) {
+
+  //   if (llvm::StringRef(A->getValue())
+  //           .getAsInteger(10, numberOfParallelCommands)) {
+
+  //     // Diags.diagnose(SourceLoc(), diag::error_invalid_arg_value,
+  //     //                A->getAsString(ArgList), A->getValue());
+  //     return nullptr;
+  //   }
+  // }
+  // if (EnvironmentVariableRequestedMaximumDeterminism()) {
+  //     NumberOfParallelCommands = 1;
+  //     Diags.diagnose(SourceLoc(), diag::remark_max_determinism_overriding,
+  //                    "-j");
+  // }
+
+  // const bool skipSubTaskExecution =
+  //   ArgList.hasArg(opts::SkipSubTaskExecution,
+  //                  opts::PrintDriverJobs);
+  // if (skipSubTaskExecution) {
+  //   return std::make_unique<sys::BlankTaskQueue>(NumberOfParallelCommands);
+  // } else {
+  //   return std::make_unique<sys::TaskQueue>(NumberOfParallelCommands,
+  //                                            C.getStatsReporter());
+  // }
+
+  //taskQueue = TaskQueue::Create(*this, numberOfParallelCommands);
+
   return taskQueue;
 }
 

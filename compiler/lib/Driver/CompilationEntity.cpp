@@ -42,6 +42,7 @@ void CompilationEntity::ComputeAllFlags(CompilationEntityKind kind) {
   case CompilationEntityKind::GeneratePCHJobConstruction: {
     AddAllowTopLevel();
     AddAllowFileType();
+    AddAllowOutput();
 
     break;
   }
@@ -163,6 +164,11 @@ void CompilationEntity::Print(ColorStream &colorStream) const {}
 //   alignof(CompilationEntities)); return new (allocator)
 //   CompilationEntities(llvm::MutableArrayRef<const CompilationEntity*>());
 // }
+
+TopLevelCompilationEntity::TopLevelCompilationEntity(
+    CompilationEntityKind kind, CompilationEntityList inputs,
+    file::FileType fileType)
+    : CompilationEntity(kind, fileType), inputs(inputs) {}
 
 DriverInputFile *DriverInputFile::Create(const Driver &driver,
                                          llvm::StringRef fileName) {
