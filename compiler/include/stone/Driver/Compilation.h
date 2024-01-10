@@ -44,7 +44,7 @@ public:
 };
 
 class Compilation final : public DriverAllocation<Compilation> {
-  const Driver &driver;
+  Driver &driver;
   class Implementation;
 
   // A graph of the top level jobs built by the driver
@@ -54,11 +54,11 @@ class Compilation final : public DriverAllocation<Compilation> {
   llvm::SmallVector<const Job *, 8> externalJobs;
 
 public:
-  Compilation(const Driver &driver);
+  Compilation(Driver &driver);
 
 public:
   Status Setup();
-  const Driver &GetDriver() const { return driver; }
+  Driver &GetDriver() { return driver; }
 
   /// TODO:
   bool ShouldRunSingleJob() const { return false; }
@@ -86,7 +86,7 @@ public:
   }
 
 public:
-  static Compilation *Create(const Driver &driver);
+  static Compilation *Create(Driver &driver);
 };
 
 } // namespace stone

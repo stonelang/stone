@@ -5,9 +5,9 @@
 
 using namespace stone;
 
-Compilation::Compilation(const Driver &driver) : driver(driver) {}
+Compilation::Compilation(Driver &driver) : driver(driver) {}
 
-Compilation *Compilation::Create(const Driver &driver) {
+Compilation *Compilation::Create(Driver &driver) {
   return new (driver) Compilation(driver);
 }
 
@@ -61,12 +61,16 @@ public:
   ~Implementation() = default;
 
 public:
+  sys::TaskQueue *GetTaskQueue() { return compilation->GetDriver().GetTaskQueue(); }
+
+public:
   void ScheduleJobsBeforeBatching();
   void FormBatchJobsAndAddPendingJobsToTaskQueue();
   void ScheduleJobsForNonIncrementalCompilation();
   void ScheduleFirstRoundJobsForIncrementalCompilation();
   void ScheduleCommandIfNecessaryAndPossible();
   void scheduleJobsForNonIncrementalCompilation();
+  void AddPendingJobToTaskQueue(const Job *job);
 
 public:
   void RunTaskQueueToCompletion();
@@ -113,6 +117,13 @@ void Compilation::Implementation::ScheduleJobsForNonIncrementalCompilation() {}
 void Compilation::Implementation::RunTaskQueueToCompletion() {}
 
 void Compilation::Implementation::CheckForUnfinishedJobs() {}
+
+void Compilation::Implementation::AddPendingJobToTaskQueue(const Job *job) {
+
+  // GetTaskQueue()->addTask(job->GetExecutable(),
+  //                         job->GetArgumentsForTaskExecution(), llvm::None,
+  //                         (void *)job);
+}
 
 CompilationResult Compilation::Implementation::RunSingleJob(const Job *job) {
   return CompilationResult();

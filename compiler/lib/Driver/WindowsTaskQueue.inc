@@ -179,9 +179,9 @@ unsigned TaskQueue::getNumberOfParallelTasks() const {
   return NumberOfParallelTasks;
 }
 
-void TaskQueue::addTask(const char *ExecPath, ArrayRef<const char *> Args,
-                        ArrayRef<const char *> Env, void *Context,
-                        bool SeparateErrors) {
+void TaskQueue::addTask(const Driver &driver, const char *ExecPath,
+                        ArrayRef<const char *> Args, ArrayRef<const char *> Env,
+                        void *Context, bool SeparateErrors) {
 
   auto task = new (driver) Task(ExecPath, Args, Env, Context, SeparateErrors);
   QueuedTasks.push(task);

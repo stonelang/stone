@@ -266,8 +266,8 @@ public:
   const Compilation &GetCompilation() const { return *compilation; }
 
   bool HasTaskQueue() { return taskQueue != nullptr; }
-  sys::TaskQueue &GetTaskQueue() { return *taskQueue; }
-  const sys::TaskQueue &GetTaskQueue() const { return *taskQueue; }
+
+  sys::TaskQueue* GetTaskQueue() { return taskQueue; }
 
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
