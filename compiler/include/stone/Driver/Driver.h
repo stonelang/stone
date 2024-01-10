@@ -213,11 +213,14 @@ class Driver final {
   /// The tool chain to use to build the tools
   std::unique_ptr<ToolChain> toolChain;
 
+  /// The top-level compilation entities
+  TopLevelCompilationEntities topLevelEntities;
+
   /// The tool chain to use to build the tools
-  std::unique_ptr<Compilation> compilation;
+  Compilation *compilation = nullptr;
 
   /// The task queue to run the jobs
-  std::unique_ptr<stone::TaskQueue> taskQueue;
+  stone::TaskQueue *taskQueue = nullptr;
 
   /// The allocator used to create Driver objects.
   /// Driver objects are never destructed; rather, all memory associated
@@ -237,9 +240,6 @@ class Driver final {
   ///
   /// If unknown, this will be some time in the past.
   llvm::sys::TimePoint<> buildLastTime = llvm::sys::TimePoint<>::min();
-
-  /// The top-level compilation entities
-  std::unique_ptr<TopLevelCompilationEntities> topLevelEntities;
 
   /// Builds the job entities
   // TopLevelJobEntitiesBuilder jobEntitiesBuilder;
@@ -279,10 +279,10 @@ public:
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
   TopLevelCompilationEntities &GetTopLevelEntities() {
-    return *topLevelEntities;
+    return topLevelEntities;
   }
   const TopLevelCompilationEntities &GetTopLevelEntities() const {
-    return *topLevelEntities;
+    return topLevelEntities;
   }
 
 public:
@@ -355,6 +355,13 @@ public:
   /// error condition; the diagnostics should be queried to determine if an
   /// error occurred.
   Compilation *BuildCompilation(const ToolChain &toolChain);
+
+  /// Compute the task queue for this compilation and command line argument
+  /// vector.
+  ///
+  /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
+  /// specified.  This condition is signalled by a diagnostic.
+  stone::TaskQueue *BuildTaskQueue(const Compilation *compilation);
 
 public:
   /// Creates a DriverInput file using a

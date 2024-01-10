@@ -1,6 +1,8 @@
 #ifndef STONE_DRIVER_DRIVER_TASK_QUEUE_H
 #define STONE_DRIVER_DRIVER_TASK_QUEUE_H
 
+#include "stone/Driver/DriverAllocation.h"
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Config/config.h"
 #include "llvm/Support/Program.h"
@@ -9,6 +11,7 @@
 
 namespace stone {
 
+class Compilation;
 class DriverStatsReporter;
 
 class Task; // forward declared to allow for platform-specific implementations
@@ -24,11 +27,11 @@ enum class TaskFinishedResponse {
   StopExecution,
 };
 
-class TaskQueue {
+class TaskQueue : public DriverAllocation<TaskQueue> {
 
   /// Tasks which have not begun execution.
 
-  std::queue<Task *> queuedTasks;
+  std::queue<Task *> tasks;
 
   /// The number of tasks to execute in parallel.
   unsigned numberOfParallelTasks;
@@ -39,8 +42,6 @@ class TaskQueue {
 public:
   TaskQueue(unsigned numberOfParallelTasks = 0,
             DriverStatsReporter *stats = nullptr);
-
-  virtual ~TaskQueue();
 
 public:
   /// Adds a task to the TaskQueue.
@@ -96,6 +97,9 @@ public:
   /// \returns the maximum number of tasks which this TaskQueue will execute in
   /// parallel
   unsigned GetNumberOfParallelTasks() const;
+
+public:
+  static TaskQueue *Create(const Compilation *compilation);
 };
 
 // class EmptyTaskQueue : public TaskQueue {

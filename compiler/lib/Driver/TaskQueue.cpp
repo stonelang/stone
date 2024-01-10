@@ -14,5 +14,3 @@ using namespace stone;
 
 TaskQueue::TaskQueue(unsigned numberOfParallelTasks, DriverStatsReporter *stats)
     : numberOfParallelTasks(numberOfParallelTasks), stats(stats) {}
-
-TaskQueue::~TaskQueue() = default;

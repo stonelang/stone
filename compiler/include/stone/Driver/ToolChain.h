@@ -322,6 +322,10 @@ public:
   static bool classof(const ToolChain *toolChain) {
     return toolChain->GetKind() == ToolChainKind::Darwin;
   }
+
+public:
+  DarwinToolChain* Create(const Driver& driver);
+
 };
 
 class UnixToolChain : public ToolChain {
@@ -387,6 +391,11 @@ public:
                             const CommandOutput &output,
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
+
+
+public:
+  static UnixToolChain* Create(const Driver& driver);
+
 };
 
 class LinuxToolChain final : public UnixToolChain {
@@ -434,6 +443,9 @@ public:
   static bool classof(const ToolChain *toolChain) {
     return toolChain->GetKind() == ToolChainKind::Linux;
   }
+
+public:
+  static LinuxToolChain* Create(const Driver& driver);
 };
 
 class WindowsToolChain final : public ToolChain {
@@ -479,6 +491,10 @@ public:
                             const CommandOutput &output,
                             const llvm::opt::ArgList &inputArgs,
                             llvm::opt::ArgStringList &arguments) const override;
+
+
+public:
+   static WindowsToolChain* Create(const Driver& driver);
 };
 
 } // namespace stone

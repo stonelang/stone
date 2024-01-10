@@ -43,7 +43,7 @@ public:
   CompilationResult();
 };
 
-class Compilation final {
+class Compilation final : public DriverAllocation<Compilation> {
   const Driver &driver;
   class Implementation;
 
@@ -65,6 +65,9 @@ public:
 
 public:
   CompilationResult RunJobs();
+
+public:
+  static Compilation *Create(const Driver &driver);
 };
 
 } // namespace stone

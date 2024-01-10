@@ -7,9 +7,13 @@ using namespace stone;
 
 Compilation::Compilation(const Driver &driver) : driver(driver) {}
 
+Compilation *Compilation::Create(const Driver &driver) {
+  return new (driver) Compilation(driver);
+}
+
 class Compilation::Implementation final {
 public:
-  Compilation &compilation;
+  Compilation *compilation = nullptr;
 
   /// All jobs which have been scheduled for execution (whether or not
   /// they've finished execution), or which have been determined that they
@@ -48,7 +52,7 @@ public:
 
 public:
   /// TaskQueue for execution.
-  std::unique_ptr<TaskQueue> taskQueue;
+  TaskQueue *taskQueue = nullptr;
 
   /// Cumulative result of PerformJobs(), accumulated from subprocesses.
   // int resultCode = EXIT_SUCCESS;
@@ -57,7 +61,7 @@ public:
   bool anyAbnormalExit = false;
 
 public:
-  Implementation(Compilation &compilation);
+  Implementation(Compilation *compilation);
   ~Implementation() = default;
 
 public:
@@ -67,8 +71,11 @@ public:
   void CheckForUnfinishedJobs();
 
 public:
-  void NoteBuilding(const Job *cmd, const bool willBeBuilding,
-                    llvm::StringRef reason);
+  void NoteBuildingJobs();
+  void NoteBuildingJob(const Job *cmd, const bool willBeBuilding,
+                       llvm::StringRef reason);
+
+  const Job *FindUnfinishedJob(llvm::ArrayRef<const Job *> jobs);
 
 public:
   void SetupJobs();
@@ -87,7 +94,7 @@ public:
   CompilationResult RunSingleExecution(const Job *job);
 };
 
-Compilation::Implementation::Implementation(Compilation &compilation)
+Compilation::Implementation::Implementation(Compilation *compilation)
     : compilation(compilation) {}
 
 void Compilation::Implementation::ScheduleJobsBeforeBatching() {}
@@ -115,18 +122,35 @@ void Compilation::Implementation::SetupJobs() {
 
 CompilationResult Compilation::Implementation::FinishJobs() {
   CheckForUnfinishedJobs();
+
+  // if (!SaveTemps) {
+  //   for (const auto &pathPair : TempFilePaths) {
+  //     if (!result.hadAbnormalExit || pathPair.getValue() ==
+  //     PreserveOnSignal::No)
+  //       (void)llvm::sys::fs::remove(pathPair.getKey());
+  //   }
+  // }
+  // if (Stats)
+  //   Stats->noteCurrentProcessExitStatus(result.exitCode);
+
   return CompilationResult();
 }
 
 CompilationResult Compilation::RunJobs() {
 
-  Compilation::Implementation implementation(*this);
+  // if (HasAllSourceFilesPath()){
+  //   if (!WriteAllSourcesFile(Diags, AllSourceFilesPath, GetInputFiles())){
+  //     return CompilationResult::code(EXIT_FAILURE);
+  //   }
+  // }
+
+  Compilation::Implementation implementation(this);
   if (ShouldRunSingleJob()) {
     return implementation.RunSingleJob(nullptr);
   }
   STONE_DEFER { return implementation.FinishJobs(); };
 
-  if(!ShouldSupportParallelExecution()){
+  if (!ShouldSupportParallelExecution()) {
     // WARN
   }
 

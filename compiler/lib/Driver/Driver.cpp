@@ -15,9 +15,7 @@ using namespace stone;
 using namespace stone::file;
 using namespace llvm::opt;
 
-Driver::Driver()
-    : optTable(stone::CreateOptTable()),
-      topLevelEntities(new TopLevelCompilationEntities()) {}
+Driver::Driver() : optTable(stone::CreateOptTable()) {}
 
 Driver::~Driver() {}
 
@@ -270,7 +268,11 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
     return nullptr;
   }
 
-  return nullptr;
+  return compilation;
+}
+
+stone::TaskQueue *Driver::BuildTaskQueue(const Compilation *compilation) {
+  return taskQueue;
 }
 
 Status Driver::BuildTopLevelJobConstructionEntities(
@@ -292,14 +294,13 @@ Status Driver::BuildTopLevelJobConstructionEntities(
 
 Status Driver::BuildTopLevelJobEntities(TopLevelCompilationEntities &entities) {
 
-  topLevelEntities->ForEachTopLevelJobConstruction(
-      [&](const CompilationEntity *entity) {
-        if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-          auto job = ConstructJob(jc);
-          job->AddIsTopLevel();
-          entities.AddTopLevelJob(job);
-        }
-      });
+  entities.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
+    if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+      auto job = ConstructJob(jc);
+      job->AddIsTopLevel();
+      entities.AddTopLevelJob(job);
+    }
+  });
   return Status();
 }
 // TODO: Continue here....
