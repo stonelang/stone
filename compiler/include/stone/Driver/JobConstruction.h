@@ -42,9 +42,8 @@ public:
 
 public:
   static bool classof(const CompilationEntity *entity) {
-    return entity->GetKind() == CompilationEntityKind::CompileJobConstruction ||
-           entity->GetKind() ==
-               CompilationEntityKind::MergeModuleJobConstruction;
+    return entity->IsCompileJobConstruction() ||
+           entity->IsMergeModuleJobConstruction();
   }
 };
 
@@ -59,9 +58,6 @@ public:
   /// In this scenario, one compile job for eache input.
   CompileJobConstruction(const CompilationEntity *input,
                          file::FileType outputFileType);
-
-public:
-  // Job *Apply(const Driver &driver) override;
 
 public:
   static bool classof(const CompilationEntity *entity) {
@@ -90,15 +86,14 @@ public:
                                             CompilationEntityList inputs);
 };
 
-class ModuleWrapJobConstruction : public JobConstruction {
-  virtual void anchor() override;
+class ModuleWrapJobConstruction final : public JobConstruction {
 
 public:
-  ModuleWrapJobAction(CompilationEntityList inputs);
+  ModuleWrapJobConstruction(CompilationEntityList inputs);
 
 public:
-  static bool classof(const Action *A) {
-    return A->getKind() == CompilationEntityKind::ModuleWrapJobConstruction;
+  static bool classof(const CompilationEntity *entity) {
+    return entity->IsModuleWrapJobConstruction();
   }
 
 public:

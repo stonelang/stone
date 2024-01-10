@@ -55,12 +55,14 @@ MergeModuleJobConstruction::Create(const Driver &driver,
   return new (driver) MergeModuleJobConstruction(inputs);
 }
 
-ModuleWrapJobConstruction::ModuleWrapJobConstruction(CompilationEntityList inputs)
+ModuleWrapJobConstruction::ModuleWrapJobConstruction(
+    CompilationEntityList inputs)
     : JobConstruction(CompilationEntityKind::ModuleWrapJobConstruction, inputs,
                       FileType::Object) {}
 
-ModuleWrapJobConstruction *ModuleWrapJobConstruction::Create(const Driver &driver,
-                                                 CompilationEntityList inputs) {
+ModuleWrapJobConstruction *
+ModuleWrapJobConstruction::Create(const Driver &driver,
+                                  CompilationEntityList inputs) {
   return new (driver) ModuleWrapJobConstruction(inputs);
 }
 
