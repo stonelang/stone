@@ -302,7 +302,41 @@ void Driver::Implementation::FinishTopLevelJobConstructions() {
   }
 }
 
-Status Driver::Implementation::BuildTopLevelJobs() {}
+void Driver::ForEachTopLevelEntity(
+    std::function<void(const CompilationEntity *entity)> callback) {
+  for (auto e : entities) {
+    callback(e);
+  }
+}
+
+Status Driver::Implementation::BuildTopLevelJobs() {
+  driver.ForEachTopLevelEntity([&](const CompilationEntity *entity) {
+    if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+      auto job = BuildJob(jc);
+      job->AddIsTopLevel();
+      assert(driver.HasCompilation());
+      driver.GetCompilation()->AddTopLevelJob(job);
+    }
+  });
+  return Status();
+}
+Job *Driver::Implementation::BuildJob(const JobConstruction *current) {
+
+  Job *job = nullptr;
+
+  for (const CompilationEntity *entity : *current) {
+    if (entity->IsJobConstruction()) {
+      if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+
+        // jobInfo->deps.push_back(ConstructJob(jc));
+      }
+    } else if (entity->IsInput()) {
+      // jobInfo->inputs.push_back(entity);
+    }
+  }
+
+  return job;
+}
 
 void Driver::AddTopLevelEntity(const CompilationEntity *entity) {
   assert(entity);
@@ -310,29 +344,6 @@ void Driver::AddTopLevelEntity(const CompilationEntity *entity) {
   assert(entity->HasAllowTopLevel());
   entities.push_back(entity);
 }
-
-// void TopLevelCompilationEntities::ForEachTopLevelJobConstruction(
-//     std::function<void(const CompilationEntity *entity)> callback) {
-//   for (auto topLevelJobConstruction : topLevelJobConstructions) {
-//     callback(topLevelJobConstruction);
-//   }
-// }
-
-// /// Get each top level job
-// void TopLevelCompilationEntities::ForEachTopLevelJob(
-//     std::function<void(const CompilationEntity *entity)> callback) {
-//   for (auto topLevelJob : topLevelJobs) {
-//     callback(topLevelJob);
-//   }
-// }
-
-// /// Get each top level job
-// void TopLevelCompilationEntities::ForEachTopLevelExternalJob(
-//     std::function<void(const CompilationEntity *entity)> callback) {
-//   for (auto topLevelExternalJob : topLevelExternalJobs) {
-//     callback(topLevelExternalJob);
-//   }
-// }
 
 // BuildingJobConstructionEntities::BuildingJobConstructionEntities(Driver
 // &driver)
@@ -490,11 +501,11 @@ Compilation *Driver::BuildCompilation(const ToolChain &toolChain) {
     if (implementation.BuildTopLevelJobs().IsErrorOrHasCompletion()) {
       return nullptr;
     }
-
     // Need compilation now to build the jobs
     compilation = Compilation::Create(*this);
-  }
 
+    implementation.BuildTopLevelJobs();
+  }
   return compilation;
 }
 

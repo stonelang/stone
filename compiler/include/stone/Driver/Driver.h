@@ -37,152 +37,154 @@ namespace stone {
 class Driver;
 class Compilation;
 
-class TopLevelCompilationEntities final {
-  friend Driver;
-  friend Compilation;
+// class TopLevelCompilationEntities final {
+//   friend Driver;
+//   friend Compilation;
 
-  // A graph of JobConstructions -- do not mark as cons since the
-  // JobConstruction creates the Job
-  llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
+//   // A graph of JobConstructions -- do not mark as cons since the
+//   // JobConstruction creates the Job
+//   llvm::SmallVector<const CompilationEntity *, 8> topLevelJobConstructions;
 
-  // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const Job *, 8> topLevelJobs;
+//   // A graph of the top level jobs built by the driver
+//   llvm::SmallVector<const Job *, 8> topLevelJobs;
 
-  // A graph of the top level jobs built by the driver
-  llvm::SmallVector<const Job *, 8> topLevelExternalJobs;
+//   // A graph of the top level jobs built by the driver
+//   llvm::SmallVector<const Job *, 8> topLevelExternalJobs;
 
-  llvm::SmallVector<const CompilationEntity *> entities;
+//   llvm::SmallVector<const CompilationEntity *> entities;
 
-public:
-  void AddTopLevelJobConstruction(const CompilationEntity *entity) {
-    assert(entity);
-    assert(entity->IsJobConstruction());
-    assert(entity->HasAllowTopLevel());
-    topLevelJobConstructions.push_back(entity);
-  }
-  void AddTopLevelJob(const Job *entity) {
-    assert(entity);
-    assert(!entity->HasIsExternal());
+// public:
+//   void AddTopLevelJobConstruction(const CompilationEntity *entity) {
+//     assert(entity);
+//     assert(entity->IsJobConstruction());
+//     assert(entity->HasAllowTopLevel());
+//     topLevelJobConstructions.push_back(entity);
+//   }
+//   void AddTopLevelJob(const Job *entity) {
+//     assert(entity);
+//     assert(!entity->HasIsExternal());
 
-    topLevelJobs.push_back(entity);
-  }
-  void AddTopLevelExternalJob(const Job *entity) {
-    assert(entity);
-    assert(entity->HasIsExternal());
-    topLevelExternalJobs.push_back(entity);
-  }
+//     topLevelJobs.push_back(entity);
+//   }
+//   void AddTopLevelExternalJob(const Job *entity) {
+//     assert(entity);
+//     assert(entity->HasIsExternal());
+//     topLevelExternalJobs.push_back(entity);
+//   }
 
-public:
-  bool HasTopLevelJobConstructions() {
-    return (!topLevelJobConstructions.empty() &&
-            topLevelJobConstructions.size() > 0);
-  }
-  bool HasTopLevelJobs() {
-    return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
-  }
-  bool HasTopLevelExternalJobs() {
-    return (!topLevelExternalJobs.empty() && topLevelExternalJobs.size() > 0);
-  }
+// public:
+//   bool HasTopLevelJobConstructions() {
+//     return (!topLevelJobConstructions.empty() &&
+//             topLevelJobConstructions.size() > 0);
+//   }
+//   bool HasTopLevelJobs() {
+//     return (!topLevelJobs.empty() && topLevelJobs.size() > 0);
+//   }
+//   bool HasTopLevelExternalJobs() {
+//     return (!topLevelExternalJobs.empty() && topLevelExternalJobs.size() >
+//     0);
+//   }
 
-public:
-  /// Get each top level job
-  void ForEachTopLevelJobConstruction(
-      std::function<void(const CompilationEntity *entity)> callback);
+// public:
+//   /// Get each top level job
+//   void ForEachTopLevelJobConstruction(
+//       std::function<void(const CompilationEntity *entity)> callback);
 
-  /// Get each top level job
-  void ForEachTopLevelJob(
-      std::function<void(const CompilationEntity *entity)> callback);
+//   /// Get each top level job
+//   void ForEachTopLevelJob(
+//       std::function<void(const CompilationEntity *entity)> callback);
 
-  /// Get each top level job
-  void ForEachTopLevelExternalJob(
-      std::function<void(const CompilationEntity *entity)> callback);
-};
+//   /// Get each top level job
+//   void ForEachTopLevelExternalJob(
+//       std::function<void(const CompilationEntity *entity)> callback);
+// };
 
-class BuildingJobConstructionEntities;
+// class BuildingJobConstructionEntities;
 
-// Generally, we are compiling and linking -- they are special, so we treat them
-// as such.
-class ModuleEntities final {
+// // Generally, we are compiling and linking -- they are special, so we treat
+// them
+// // as such.
+// class ModuleEntities final {
 
-  friend BuildingJobConstructionEntities;
-  Driver &driver;
+//   friend BuildingJobConstructionEntities;
+//   Driver &driver;
 
-  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
-  llvm::SmallVector<const CompilationEntity *, 8> entities;
+//   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+//   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
-public:
-  explicit ModuleEntities(Driver &driver);
+// public:
+//   explicit ModuleEntities(Driver &driver);
 
-public:
-  void AddEntity(const CompilationEntity *entity);
-  bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+// public:
+//   void AddEntity(const CompilationEntity *entity);
+//   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
 
-  // MergeModuleJobConstruction *GetMergeModuleJobConstruction();
+//   // MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 
-  /// This will merge the modules if you are not in a single compile invocation
-  MergeModuleJobConstruction *Apply();
-};
+//   /// This will merge the modules if you are not in a single compile
+//   invocation MergeModuleJobConstruction *Apply();
+// };
 
-class LinkEntities final {
+// class LinkEntities final {
 
-  Driver &driver;
-  llvm::SmallVector<const CompilationEntity *, 8> entities;
+//   Driver &driver;
+//   llvm::SmallVector<const CompilationEntity *, 8> entities;
 
-public:
-  explicit LinkEntities(Driver &driver);
+// public:
+//   explicit LinkEntities(Driver &driver);
 
-public:
-  void AddEntity(const CompilationEntity *entity) {
-    entities.push_back(entity);
-  }
-  bool HasEntities() { return !entities.empty() && entities.size() > 0; }
-  LinkJobConstruction *Apply();
-};
+// public:
+//   void AddEntity(const CompilationEntity *entity) {
+//     entities.push_back(entity);
+//   }
+//   bool HasEntities() { return !entities.empty() && entities.size() > 0; }
+//   LinkJobConstruction *Apply();
+// };
 
-class BuildingJobConstructionEntities final {
+// class BuildingJobConstructionEntities final {
 
-  Driver &driver;
-  ModuleEntities moduleEntities;
-  LinkEntities linkEntities;
+//   Driver &driver;
+//   ModuleEntities moduleEntities;
+//   LinkEntities linkEntities;
 
-  GeneratePCHJobConstruction *pchJobConstruction = nullptr;
-  MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
+//   GeneratePCHJobConstruction *pchJobConstruction = nullptr;
+//   MergeModuleJobConstruction *mergeModuleJobConstruction = nullptr;
 
-public:
-  BuildingJobConstructionEntities(Driver &driver);
+// public:
+//   BuildingJobConstructionEntities(Driver &driver);
 
-public:
-  ModuleEntities &GetModuleEntities() { return moduleEntities; }
-  LinkEntities &GetLinkEntities() { return linkEntities; }
+// public:
+//   ModuleEntities &GetModuleEntities() { return moduleEntities; }
+//   LinkEntities &GetLinkEntities() { return linkEntities; }
 
-public:
-  GeneratePCHJobConstruction *GetGeneratePCHJobConstruction();
-  void CreateAutolinkExtractJobConstruction();
+// public:
+//   GeneratePCHJobConstruction *GetGeneratePCHJobConstruction();
+//   void CreateAutolinkExtractJobConstruction();
 
-  MergeModuleJobConstruction *GetMergeModuleJobConstruction();
+//   MergeModuleJobConstruction *GetMergeModuleJobConstruction();
 
-  CompileJobConstruction *
-  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
+//   CompileJobConstruction *
+//   CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
-public:
-  /// < Handle .stone file
-  Status HandleStoneFileType(const DriverInputFile *input);
+// public:
+//   /// < Handle .stone file
+//   Status HandleStoneFileType(const DriverInputFile *input);
 
-  /// < Handle .o file
-  Status HandleObjectFileType(const DriverInputFile *input);
+//   /// < Handle .o file
+//   Status HandleObjectFileType(const DriverInputFile *input);
 
-  /// < Handle autolink files
-  Status HandleAutoLinkFileType(const DriverInputFile *input);
+//   /// < Handle autolink files
+//   Status HandleAutoLinkFileType(const DriverInputFile *input);
 
-  /// < Handle .stonemodule file
-  Status HandleStoneModuleFileType(const DriverInputFile *input);
+//   /// < Handle .stonemodule file
+//   Status HandleStoneModuleFileType(const DriverInputFile *input);
 
-public:
-  void FinishBuilding();
+// public:
+//   void FinishBuilding();
 
-public:
-  static BuildingJobConstructionEntities *Create(Driver &driver);
-};
+// public:
+//   static BuildingJobConstructionEntities *Create(Driver &driver);
+// };
 
 class Driver final {
   class Implementation;
@@ -210,7 +212,7 @@ class Driver final {
   // llvm::SmallVector<const CompilationEntity *, 8> topLevelEntities;
 
   /// The top-level compilation entities
-  TopLevelCompilationEntities topLevelEntities;
+  // TopLevelCompilationEntities topLevelEntities;
 
   // A graph of top-level entities
   llvm::SmallVector<const CompilationEntity *, 8> entities;
@@ -267,22 +269,20 @@ public:
   const ToolChain &GetToolChain() const { return *toolChain; }
 
   bool HasCompilation() const { return compilation != nullptr; }
-  Compilation &GetCompilation() { return *compilation; }
-  const Compilation &GetCompilation() const { return *compilation; }
+  Compilation *GetCompilation() { return compilation; }
 
   bool HasTaskQueue() { return taskQueue != nullptr; }
-
   sys::TaskQueue *GetTaskQueue() { return taskQueue; }
 
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
-  TopLevelCompilationEntities &GetTopLevelEntities() {
-    return topLevelEntities;
-  }
-  const TopLevelCompilationEntities &GetTopLevelEntities() const {
-    return topLevelEntities;
-  }
+  // TopLevelCompilationEntities &GetTopLevelEntities() {
+  //   return topLevelEntities;
+  // }
+  // const TopLevelCompilationEntities &GetTopLevelEntities() const {
+  //   return topLevelEntities;
+  // }
 
 public:
   /// Add the diagnostic consumer
@@ -321,27 +321,27 @@ public:
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
 public:
-  Status
-  BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities,
-                                       CompileInvocationMode cim);
+  // Status
+  // BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities,
+  //                                      CompileInvocationMode cim);
 
-  Status BuildMultipleCompileInvocation(
-      TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities &buildingEntities);
+  // Status BuildMultipleCompileInvocation(
+  //     TopLevelCompilationEntities &entities,
+  //     BuildingJobConstructionEntities &buildingEntities);
 
-  Status BuildSingleCompileInvocation(
-      TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities &buildingEntities);
+  // Status BuildSingleCompileInvocation(
+  //     TopLevelCompilationEntities &entities,
+  //     BuildingJobConstructionEntities &buildingEntities);
 
-  Status BuildBatchCompileInvocation(
-      TopLevelCompilationEntities &entities,
-      BuildingJobConstructionEntities &buildingEntities);
+  // Status BuildBatchCompileInvocation(
+  //     TopLevelCompilationEntities &entities,
+  //     BuildingJobConstructionEntities &buildingEntities);
 
-  CompileJobConstruction *
-  CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
+  // CompileJobConstruction *
+  // CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
 
-public:
-  Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
+  // public:
+  //   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
 private:
   void AddTopLevelEntity(const CompilationEntity *entity);

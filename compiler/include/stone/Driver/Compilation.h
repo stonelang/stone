@@ -76,12 +76,26 @@ private:
   friend Driver;
   friend Implementation;
 
-  void AddJob(const Job *job);
-  void AddExternalJob(const Job *job);
+  void AddTopLevelJob(const Job *job);
+  void AddTopLevelExternalJob(const Job *job);
 
 public:
-  bool HasJobs() const { return !jobs.empty() && jobs.size() > 0; }
-  bool HasExternalJobs() const {
+  bool HasTopLevelJobs() const { return !jobs.empty() && jobs.size() > 0; }
+
+  /// Get each top level job
+  void ForEachTopLevelJob(std::function<void(const Job *job)> callback) {
+    for (auto jb : jobs) {
+      callback(jb);
+    }
+  }
+  /// Get each top level job
+  void
+  ForEachTopLevelExternalJob(std::function<void(const Job *job)> callback) {
+    for (auto jb : externalJobs) {
+      callback(jb);
+    }
+  }
+  bool HasTopLevelExternalJobs() const {
     return !externalJobs.empty() && externalJobs.size() > 0;
   }
 

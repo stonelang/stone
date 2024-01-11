@@ -74,7 +74,7 @@ class JobInfo final : public DriverAllocation<JobInfo> {
   friend JobConstruction;
 
   const JobConstruction *jc = nullptr;
-  Compilation &compilation;
+  Compilation *compilation = nullptr;
 
 public:
   /// Dependency jobs for the main job
@@ -93,16 +93,18 @@ public:
   void operator=(JobInfo &&) = delete;
 
 public:
-  explicit JobInfo(const JobConstruction *jc, Compilation &compilation)
+  explicit JobInfo(const JobConstruction *jc, Compilation *compilation)
       : jc(jc), compilation(compilation) {
     assert(jc != nullptr);
+    assert(compilation != nullptr);
   }
 
   ~JobInfo() = default;
 
 public:
   const JobConstruction *GetJobConstruction() const { return jc; }
-  Compilation &GetCompilation() { return compilation; }
+  Compilation *GetCompilation() { return compilation; }
+
   const CommandOutput &GetCommandOutput() const { return *commandOutput; }
 
 public:

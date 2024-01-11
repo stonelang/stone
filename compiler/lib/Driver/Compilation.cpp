@@ -180,3 +180,9 @@ CompilationResult Compilation::RunJobs() {
 
   implementation.RunJobs();
 }
+
+void Compilation::AddTopLevelJob(const Job *job) { jobs.push_back(job); }
+
+void Compilation::AddTopLevelExternalJob(const Job *job) {
+  externalJobs.push_back(job);
+}
