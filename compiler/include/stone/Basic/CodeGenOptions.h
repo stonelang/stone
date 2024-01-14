@@ -63,6 +63,16 @@ enum class CodeGenOutputKind : uint8_t {
   ObjectFile
 };
 
+enum class CodeGenDebugInfoLevel : unsigned {
+  None,             ///< No debug info.
+  LineTables,       ///< Line tables only.
+  ASTTypes,         ///< Line tables + AST type references.
+  DwarfTypes,       ///< Line tables + AST type references + DWARF types.
+  Normal = ASTTypes ///< The setting LLDB prefers.
+};
+
+enum class CodeGenDebugInfoFormat : unsigned { None, DWARF, CodeView };
+
 enum class LibraryKind { Library = 0, Framework };
 
 class LinkLibrary final {

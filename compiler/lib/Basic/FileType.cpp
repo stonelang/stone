@@ -125,6 +125,23 @@ bool file::IsOutputFileType(FileType fileType) {
   }
 }
 
+/// Returns true if this file type is outputable
+bool file::IsInputFileType(FileType fileType) {
+  switch (fileType) {
+  case FileType::Stone:
+  case FileType::IR:
+  case FileType::Object:
+  case FileType::StoneModule:
+  case FileType::Autolink:
+    return true;
+  case FileType::Assembly:
+  case FileType::Image:
+  case FileType::BC:
+    return false;
+  }
+  llvm_unreachable("Invalid type ID.");
+}
+
 bool file::IsAfterLLVM(FileType ty) {
   switch (ty) {
   case FileType::Assembly:

@@ -111,6 +111,43 @@ public:
   static JobInfo *Create(Driver &driver, const JobConstruction *jc);
 };
 
+class ConstructingJob final {
+  friend JobConstruction;
+
+  const JobConstruction *jc = nullptr;
+  Compilation *compilation = nullptr;
+
+public:
+  /// Dependency jobs for the main job
+  llvm::SmallVector<const Job *> deps;
+
+  /// You may just need compilation entities
+  llvm::SmallVector<const CompilationEntity *> inputs;
+
+  /// The command output for the job
+  std::unique_ptr<CommandOutput> commandOutput;
+
+public:
+  ConstructingJob(const ConstructingJob &) = delete;
+  void operator=(const ConstructingJob &) = delete;
+  ConstructingJob(ConstructingJob &&) = delete;
+  void operator=(ConstructingJob &&) = delete;
+
+public:
+  explicit ConstructingJob(const JobConstruction *jc, Compilation *compilation)
+      : jc(jc), compilation(compilation) {
+    assert(jc != nullptr);
+    assert(compilation != nullptr);
+  }
+
+  ~ConstructingJob() = default;
+
+public:
+  const JobConstruction *GetJobConstruction() const { return jc; }
+  Compilation *GetCompilation() { return compilation; }
+  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
+};
+
 class JobContext final {
   friend JobConstruction;
 

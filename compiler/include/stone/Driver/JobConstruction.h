@@ -194,7 +194,7 @@ public:
 
 public:
   static GeneratePCHJobConstruction *Create(Driver &driver,
-                                            CompilationEntity input,
+                                            const CompilationEntity *input,
                                             llvm::StringRef persistentPCHDir);
 };
 

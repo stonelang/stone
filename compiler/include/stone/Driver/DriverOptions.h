@@ -267,14 +267,14 @@ class DriverOutputInfo final {
   CompilationOutputLevel compilationOutputLevel =
       CompilationOutputLevel::Normal;
 
-public:
   /// Whether or not the output should contain debug info.
   // FIXME: Eventually this should be replaced by dSYM generation.
-  // IRGenDebugInfoLevel DebugInfoLevel = IRGenDebugInfoLevel::None;
+  CodeGenDebugInfoLevel debugInfoLevel = CodeGenDebugInfoLevel::None;
 
   /// What kind of debug info to generate.
-  // IRGenDebugInfoFormat DebugInfoFormat = IRGenDebugInfoFormat::None;
+  CodeGenDebugInfoFormat debugInfoFormat = CodeGenDebugInfoFormat::None;
 
+public:
   /// DWARF output format version number.
   // std::optional<uint8_t> DWARFVersion;
 
@@ -345,6 +345,11 @@ public:
   CompileInvocationMode GetCompileInvocationMode() const {
     return compileInvocationMode;
   }
+
+  CodeGenDebugInfoLevel GetCodeGenDebugInfoLevel() { return debugInfoLevel; }
+
+  /// What kind of debug info to generate.
+  CodeGenDebugInfoFormat GetCodeGenDebugInfoFormat() { return debugInfoFormat; }
 
 public:
   /// Might this sort of compile have explicit primary inputs?

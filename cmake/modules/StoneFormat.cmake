@@ -13,6 +13,7 @@ set(stone_include_files
 	
 )
 set(stone_lib_files
+	${STONE_SOURCE_DIR}/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp

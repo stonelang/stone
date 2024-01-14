@@ -168,16 +168,16 @@ class Compilation;
 
 // public:
 //   /// < Handle .stone file
-//   Status HandleStoneFileType(const DriverInputFile *input);
+//   Status ActOnStoneFileType(const DriverInputFile *input);
 
 //   /// < Handle .o file
-//   Status HandleObjectFileType(const DriverInputFile *input);
+//   Status ActOnObjectFileType(const DriverInputFile *input);
 
 //   /// < Handle autolink files
-//   Status HandleAutoLinkFileType(const DriverInputFile *input);
+//   Status ActOnAutoLinkFileType(const DriverInputFile *input);
 
 //   /// < Handle .stonemodule file
-//   Status HandleStoneModuleFileType(const DriverInputFile *input);
+//   Status ActOnStoneModuleFileType(const DriverInputFile *input);
 
 // public:
 //   void FinishBuilding();
@@ -277,13 +277,6 @@ public:
   llvm::sys::TimePoint<> GetBuildStartTime() { return buildStartTime; }
   llvm::sys::TimePoint<> GetBuildLastTime() { return buildLastTime; }
 
-  // TopLevelCompilationEntities &GetTopLevelEntities() {
-  //   return topLevelEntities;
-  // }
-  // const TopLevelCompilationEntities &GetTopLevelEntities() const {
-  //   return topLevelEntities;
-  // }
-
 public:
   /// Add the diagnostic consumer
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
@@ -344,13 +337,27 @@ public:
   //   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
 
 private:
-  void AddTopLevelEntity(const CompilationEntity *entity);
+  void AddTopLevelJobConstruction(const CompilationEntity *entity);
 
 public:
+  void BuildTopLevelJobConstructions();
+
+  // TopLevelCompilationEntityList
+  // BuildTopLevelJobs(TopLevelCompilationEntityList
+  // topLevelJobConstructionList)
+
   /// Get each top level job
-  void ForEachTopLevelEntity(
+  void ForEachTopLevelJobConstruction(
       std::function<void(const CompilationEntity *entity)> callback);
 
+  /// Creates a DriverInput file using a
+  DriverInputFile *CreateInput(llvm::StringRef fileName,
+                               file::FileType = file::FileType::None);
+
+  /// Print the list of job constructions in a Compilation.
+  void PrintJobConstructions() const;
+
+public:
   /// Construct a compilation object for a given ToolChain
   ///
   /// If \p AllowErrors is set to \c true, this method tries to build a
@@ -360,7 +367,7 @@ public:
   /// argument vector. A null return value does not necessarily indicate an
   /// error condition; the diagnostics should be queried to determine if an
   /// error occurred.
-  Compilation *BuildCompilation(const ToolChain &toolChain);
+  Compilation *BuildCompilation(const ToolChain *toolChain);
 
   /// Compute the task queue for this compilation and command line argument
   /// vector.
@@ -368,22 +375,6 @@ public:
   /// \return A TaskQueue, or nullptr if an invalid number of parallel jobs is
   /// specified.  This condition is signalled by a diagnostic.
   sys::TaskQueue *BuildTaskQueue(const Compilation *compilation);
-
-public:
-  /// Creates a DriverInput file using a
-  DriverInputFile *CreateInput(llvm::StringRef fileName,
-                               file::FileType = file::FileType::None);
-
-  /// Build the job-constructions
-  Status BuildJobConstructions();
-
-  const JobConstruction *
-  CastToJobConstruction(const CompilationEntity *entity) {
-    return llvm::dyn_cast<JobConstruction>(entity);
-  }
-
-  /// Print the list of job constructions in a Compilation.
-  void PrintJobConstructions() const;
 
 public:
   using JobCacheMap =

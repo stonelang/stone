@@ -113,3 +113,10 @@ GeneratePCHJobConstruction::GeneratePCHJobConstruction(
                       persistentPCHDir.empty() ? FileType::PCH
                                                : FileType::None),
       persistentPCHDir(persistentPCHDir) {}
+
+GeneratePCHJobConstruction *
+GeneratePCHJobConstruction::Create(Driver &driver,
+                                   const CompilationEntity *input,
+                                   llvm::StringRef persistentPCHDir) {
+  return new (driver) GeneratePCHJobConstruction(input, persistentPCHDir);
+}

@@ -50,10 +50,7 @@ public:
   bool IsStoneModuleFileType() const {
     return GetFileType() == file::FileType::StoneModule;
   }
-  bool HasValidFileType() const {
-    return (IsStoneFileType() || IsObjectFileType() ||
-            IsStoneModuleFileType() || IsAutolinkFileType());
-  }
+  bool HasValidFileType() const { return file::IsInputFileType(GetFileType()); }
 
 public:
   /// Return stone-standard file name from a buffer name set by
