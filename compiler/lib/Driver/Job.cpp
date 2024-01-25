@@ -29,6 +29,7 @@ Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
 }
 
 void Job::ClearJobFlags() {}
+
 BatchJob::BatchJob(const JobConstruction &constructor)
     : BatchJob(constructor, llvm::None) {}
 
@@ -36,30 +37,25 @@ BatchJob::BatchJob(const JobConstruction &constructor,
                    CompilationEntityList inputs)
     : Job(CompilationEntityKind::BatchJob, constructor, inputs) {}
 
-JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jc) {
-  return new (driver) JobInfo(jc, driver.GetCompilation());
-}
+// JobInfo *JobInfo::Create(Driver &driver, const JobConstruction *jc) {
+//   return new (driver) JobInfo(jc, driver.GetCompilation());
+// }
 
-JobContext::JobContext(Compilation &compilation,
-                       llvm::ArrayRef<const Job *> deps,
-                       llvm::ArrayRef<const CompilationEntity *> inputs,
-                       const CommandOutput &commandOutput)
-    : compilation(compilation), deps(deps), inputs(inputs),
-      commandOutput(commandOutput) {}
+// JobContext::JobContext(Compilation *compilation,
+//                        llvm::ArrayRef<const CompilationEntity *> deps,
+//                        llvm::ArrayRef<const CompilationEntity *> inputs,
+//                        const CommandOutput &commandOutput)
+//     : compilation(compilation), deps(deps), inputs(inputs),
+//       commandOutput(commandOutput) {}
 
-Job *ToolChain::ConstructJob(Compilation &compilation,
-                             const JobInfo *jobInfo) const {
+Job *ToolChain::ConstructJob(std::unique_ptr<JobContext> jobContext) const {
 
-  JobContext jobContext{compilation, jobInfo->deps, jobInfo->inputs,
-                        jobInfo->GetCommandOutput()};
-
-  // TODO: use a template to get rid of the macro
-  auto jobInvocation = [&]() -> JobInvocation {
-    switch (jobInfo->GetJobConstruction()->GetKind()) {
+ auto jobInvocation = [&]() -> JobInvocation {
+    switch (jobContext->GetJobConstruction()->GetKind()) {
 #define CASE(K)                                                                \
   case CompilationEntityKind::K:                                               \
-    return ConstructInvocation(llvm::cast<K>(*jobInfo->GetJobConstruction()),  \
-                               jobContext);
+    return ConstructInvocation(llvm::cast<K>(*jobContext->GetJobConstruction()),  \
+                               *jobContext);
       CASE(CompileJobConstruction)
       CASE(BackendJobConstruction)
       CASE(GeneratePCHJobConstruction)
@@ -70,7 +66,7 @@ Job *ToolChain::ConstructJob(Compilation &compilation,
       CASE(AutolinkExtractJobConstruction)
 #undef CASE
     case CompilationEntityKind::Input:
-      llvm_unreachable("not a JobAction");
+      llvm_unreachable("not a JobConstruction");
     }
     // Work around MSVC warning: not all control paths return a value
     llvm_unreachable("All switch cases are covered");

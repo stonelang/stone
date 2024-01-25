@@ -227,24 +227,7 @@ public:
                       const JobContext &context) const;
 
 public:
-  /// Construct a Job for the action \p JA, taking the given information into
-  /// account.
-  ///
-  /// This method dispatches to the various \c ConstructInvocation methods,
-  /// which may be overridden by platform-specific subclasses.
-  Job *
-  ConstructJob(const JobConstruction &jobConstruction, Compilation &compilation,
-               llvm::SmallVectorImpl<const Job *> &&inputs,
-               llvm::ArrayRef<const CompilationEntity *> inputConstructions,
-               std::unique_ptr<CommandOutput> output) const;
-
-  Job *ConstructJob(Compilation &compilation, const JobInfo *jobInfo) const;
-
-  Job *ConstructJob(const JobConstruction &jobConstruction,
-                    Compilation &compilation,
-                    llvm::ArrayRef<const Job *> jobEntities,
-                    llvm::ArrayRef<const CompilationEntity *> inputEntities,
-                    std::unique_ptr<CommandOutput> output) const;
+  Job *ConstructJob(std::unique_ptr<JobContext> jobContext) const;
 };
 
 class DarwinToolChain final : public ToolChain {

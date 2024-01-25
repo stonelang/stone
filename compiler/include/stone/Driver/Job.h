@@ -70,100 +70,118 @@ public:
   CommandOutput(file::FileType PrimaryOutputFileType);
 };
 
-class JobInfo final : public DriverAllocation<JobInfo> {
-  friend JobConstruction;
+// class JobInfo final : public DriverAllocation<JobInfo> {
+//   friend JobConstruction;
 
-  const JobConstruction *jc = nullptr;
-  Compilation *compilation = nullptr;
+//   const JobConstruction *jc = nullptr;
+//   Compilation *compilation = nullptr;
 
-public:
-  /// Dependency jobs for the main job
-  llvm::SmallVector<const Job *> deps;
+// public:
+//   /// Dependency jobs for the main job
+//   llvm::SmallVector<const Job *> deps;
 
-  /// You may just need compilation entities
-  llvm::SmallVector<const CompilationEntity *> inputs;
+//   /// You may just need compilation entities
+//   llvm::SmallVector<const CompilationEntity *> inputs;
 
-  /// The command output for the job
-  std::unique_ptr<CommandOutput> commandOutput;
+//   /// The command output for the job
+//   std::unique_ptr<CommandOutput> commandOutput;
 
-public:
-  JobInfo(const JobInfo &) = delete;
-  void operator=(const JobInfo &) = delete;
-  JobInfo(JobInfo &&) = delete;
-  void operator=(JobInfo &&) = delete;
+// public:
+//   JobInfo(const JobInfo &) = delete;
+//   void operator=(const JobInfo &) = delete;
+//   JobInfo(JobInfo &&) = delete;
+//   void operator=(JobInfo &&) = delete;
 
-public:
-  explicit JobInfo(const JobConstruction *jc, Compilation *compilation)
-      : jc(jc), compilation(compilation) {
-    assert(jc != nullptr);
-    assert(compilation != nullptr);
-  }
+// public:
+//   explicit JobInfo(const JobConstruction *jc, Compilation *compilation)
+//       : jc(jc), compilation(compilation) {
+//     assert(jc != nullptr);
+//     assert(compilation != nullptr);
+//   }
 
-  ~JobInfo() = default;
+//   ~JobInfo() = default;
 
-public:
-  const JobConstruction *GetJobConstruction() const { return jc; }
-  Compilation *GetCompilation() { return compilation; }
+// public:
+//   const JobConstruction *GetJobConstruction() const { return jc; }
+//   Compilation *GetCompilation() { return compilation; }
 
-  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
+//   const CommandOutput &GetCommandOutput() const { return *commandOutput; }
 
-public:
-  static JobInfo *Create(Driver &driver, const JobConstruction *jc);
-};
-
-class ConstructingJob final {
-  friend JobConstruction;
-
-  const JobConstruction *jc = nullptr;
-  Compilation *compilation = nullptr;
-
-public:
-  /// Dependency jobs for the main job
-  llvm::SmallVector<const Job *> deps;
-
-  /// You may just need compilation entities
-  llvm::SmallVector<const CompilationEntity *> inputs;
-
-  /// The command output for the job
-  std::unique_ptr<CommandOutput> commandOutput;
-
-public:
-  ConstructingJob(const ConstructingJob &) = delete;
-  void operator=(const ConstructingJob &) = delete;
-  ConstructingJob(ConstructingJob &&) = delete;
-  void operator=(ConstructingJob &&) = delete;
-
-public:
-  explicit ConstructingJob(const JobConstruction *jc, Compilation *compilation)
-      : jc(jc), compilation(compilation) {
-    assert(jc != nullptr);
-    assert(compilation != nullptr);
-  }
-
-  ~ConstructingJob() = default;
-
-public:
-  const JobConstruction *GetJobConstruction() const { return jc; }
-  Compilation *GetCompilation() { return compilation; }
-  const CommandOutput &GetCommandOutput() const { return *commandOutput; }
-};
+// public:
+//   static JobInfo *Create(Driver &driver, const JobConstruction *jc);
+// };
 
 class JobContext final {
   friend JobConstruction;
 
-private:
-  Compilation &compilation;
+  const JobConstruction *source = nullptr;
+  Compilation *compilation = nullptr;
 
 public:
-  llvm::ArrayRef<const Job *> deps;
+  llvm::ArrayRef<const CompilationEntity *> deps;
   llvm::ArrayRef<const CompilationEntity *> inputs;
-
-  const CommandOutput &commandOutput;
+  std::unique_ptr<CommandOutput> cmdOutput;
 
 public:
-  JobContext(Compilation &compilation, llvm::ArrayRef<const Job *> deps,
-             llvm::ArrayRef<const CompilationEntity *> inputs,
-             const CommandOutput &commandOutput);
+  JobContext(const JobContext &) = delete;
+  void operator=(const JobContext &) = delete;
+  JobContext(JobContext &&) = delete;
+  void operator=(JobContext &&) = delete;
+  JobContext() = delete;
+
+public:
+  JobContext(const JobConstruction *source, Compilation *compilation)
+      : source(source), compilation(compilation) {
+    assert(source);
+    assert(compilation);
+  }
+
+  ~JobContext() = default;
+
+public:
+  /// Forwards to Compilation::getInputFiles.
+  llvm::ArrayRef<CommandInputPair> GetTopLevelInputFiles() const;
+
+  /// Forwards to Compilation::getAllSourcesPath.
+  const char *GetAllSourcesPath() const;
+
+  /// Creates a new temporary file for use by a job.
+  ///
+  /// The returned string already has its lifetime extended to match other
+  /// arguments.
+  const char *GetTemporaryFilePath(const llvm::Twine &name,
+                                   llvm::StringRef suffix = "") const;
+
+  /// For frontend, merge-module, and link invocations.
+  bool ShouldUseInputFileList() const;
+
+  bool ShouldUsePrimaryInputFileListInFrontendInvocation() const;
+
+  bool ShouldUseMainOutputFileListInFrontendInvocation() const;
+
+  bool ShouldUseSupplementaryOutputFileMapInFrontendInvocation() const;
+
+  /// Reify the existing behavior that SingleCompile compile actions do not
+  /// filter, but batch-mode and single-file compilations do. Some clients are
+  /// relying on this (i.e., they pass inputs that don't have ".swift" as an
+  /// extension.) It would be nice to eliminate this distinction someday.
+  bool ShouldFilterFrontendInputsByType() const;
+
+  const char *ComputeFrontendModeForCompile() const;
+
+  // void AddFrontendInputAndOutputArguments(
+  //     llvm::opt::ArgStringList &Arguments,
+  //     std::vector<FilelistInfo> &FilelistInfos) const;
+
+  Compilation *GetCompilation() { return compilation; }
+  const JobConstruction *GetJobConstruction() const { return source; }
+
+private:
+  void AddFrontendCommandLineInputArguments(
+      bool mayHavePrimaryInputs, bool useFileList, bool usePrimaryFileList,
+      bool filterByType, llvm::opt::ArgStringList &arguments) const;
+  void addFrontendSupplementaryOutputArguments(
+      llvm::opt::ArgStringList &arguments) const;
 };
 
 enum class JobCondition {

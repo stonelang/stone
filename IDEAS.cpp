@@ -128,7 +128,7 @@ public:
   bool ShouldAutolinkExtract() {}
 };
 
-class MultipleCompileInvocation final : BuildingJobConstructions {
+class MultipleCompileInvocation final : BuildingCompilation {
 
 public:
   CompilationEntityList *BuildJobConstructions() override;

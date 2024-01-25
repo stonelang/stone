@@ -215,7 +215,10 @@ class Driver final {
   // TopLevelCompilationEntities topLevelEntities;
 
   // A graph of top-level entities
-  llvm::SmallVector<const CompilationEntity *, 8> entities;
+  CompilationEntityList topLevelJobConstructions;
+
+  // A graph of top-level entities
+  CompilationEntityList topLevelJobs;
 
   /// The tool chain to use to build the tools
   Compilation *compilation = nullptr;
@@ -302,6 +305,10 @@ public:
   void SetMainExecutableName(llvm::StringRef executableName) {
     driverOpts.mainExecutableName = executableName;
   }
+  /// Creates a DriverInput file using a
+  DriverInputFile *CreateInput(llvm::StringRef fileName,
+                               file::FileType = file::FileType::None);
+
   /// Creates an appropriate ToolChain for a given driver, given the target
   /// specified in \p Args (or the default target). Sets the value of \c
   /// DefaultTargetTriple from \p Args as a side effect.
@@ -313,46 +320,16 @@ public:
   /// because ToolChain has virtual methods.
   ToolChain *BuildToolChain(ToolChainKind toolChainKind);
 
-public:
-  // Status
-  // BuildTopLevelJobConstructionEntities(TopLevelCompilationEntities &entities,
-  //                                      CompileInvocationMode cim);
-
-  // Status BuildMultipleCompileInvocation(
-  //     TopLevelCompilationEntities &entities,
-  //     BuildingJobConstructionEntities &buildingEntities);
-
-  // Status BuildSingleCompileInvocation(
-  //     TopLevelCompilationEntities &entities,
-  //     BuildingJobConstructionEntities &buildingEntities);
-
-  // Status BuildBatchCompileInvocation(
-  //     TopLevelCompilationEntities &entities,
-  //     BuildingJobConstructionEntities &buildingEntities);
-
-  // CompileJobConstruction *
-  // CreateCompileJobConstruction(const DriverInputFile *input = nullptr);
-
-  // public:
-  //   Status BuildTopLevelJobEntities(TopLevelCompilationEntities &entities);
-
 private:
   void AddTopLevelJobConstruction(const CompilationEntity *entity);
+  void AddTopLevelJob(const CompilationEntity *entity);
 
 public:
-  void BuildTopLevelJobConstructions();
-
-  // TopLevelCompilationEntityList
-  // BuildTopLevelJobs(TopLevelCompilationEntityList
-  // topLevelJobConstructionList)
+  Status BuildTopLevelJobConstructions();
 
   /// Get each top level job
   void ForEachTopLevelJobConstruction(
       std::function<void(const CompilationEntity *entity)> callback);
-
-  /// Creates a DriverInput file using a
-  DriverInputFile *CreateInput(llvm::StringRef fileName,
-                               file::FileType = file::FileType::None);
 
   /// Print the list of job constructions in a Compilation.
   void PrintJobConstructions() const;
@@ -385,11 +362,12 @@ public:
 
   Job *ConstructJob(const JobConstruction *jc);
 
+  /// Get each top level job
+  void ForEachTopLevelJob(
+      std::function<void(const CompilationEntity *entity)> callback);
+
   void ComputeJobMainOutput(const JobConstruction *jobConstruction);
 
-  const Job *CastToJob(const CompilationEntity *entity) {
-    return llvm::dyn_cast<Job>(entity);
-  }
   /// Print the list of Actions in a Compilation.
   void PrintJobs() const;
 

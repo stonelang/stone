@@ -125,50 +125,50 @@ public:
   bool IsTopLevelDeclSpecifier();
   void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
   SyntaxResult<Decl> ParseTopLevelDecl(ParsingDecl &collector);
-  SyntaxResult<Decl> ParseDecl(ParsingDecl &collector);
+  SyntaxResult<Decl> ParseDecl(ParsingDecl &parsingDecl);
 
 public:
   void ParseDeclName();
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDecl &collector);
-  SyntaxResult<Decl> ParseAutoDecl(ParsingDecl &collector);
+  SyntaxResult<Decl> ParseVarDecl(ParsingDecl &parsingDecl);
+  SyntaxResult<Decl> ParseAutoDecl(ParsingDecl &parsingDecl);
 
 public:
   // === Collectors === ///
 
   /// Decl
-  SyntaxStatus CollectDeclSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectDeclSpecifier(ParsingDecl &parsingDecl);
 
   /// using
-  SyntaxStatus CollectImportSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectImportSpecifier(ParsingDecl &parsingDecl);
 
   /// private, internal, public
-  SyntaxStatus CollectAccessSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectAccessSpecifier(ParsingDecl &parsingDecl);
 
   bool IsTypeChunk(const Token &tk);
 
   /// T*, T&
-  SyntaxStatus CollectTypeChunk(ParsingDecl &collector);
-  SyntaxStatus CollectTypeChunks(ParsingDecl &collector);
+  SyntaxStatus CollectTypeChunk(ParsingDecl &parsingDecl);
+  SyntaxStatus CollectTypeChunks(ParsingDecl &parsingDecl);
 
   /// Basic types: int, uint, etc.
-  SyntaxStatus CollectBasicTypeSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectBasicTypeSpecifier(ParsingDecl &parsingDecl);
 
   /// struct, class, and enum
-  SyntaxStatus CollectNominalTypeSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectNominalTypeSpecifier(ParsingDecl &parsingDecl);
 
   /// const, mutable, immutable, and pure.
-  SyntaxStatus CollectTypeQualifiers(ParsingDecl &collector);
-  SyntaxStatus CollectTypeQualifier(ParsingDecl &collector);
+  SyntaxStatus CollectTypeQualifiers(ParsingDecl &parsingDecl);
+  SyntaxStatus CollectTypeQualifier(ParsingDecl &parsingDecl);
 
   /// new, and delete
-  SyntaxStatus CollectTypeOperator(ParsingDecl &collector);
+  SyntaxStatus CollectTypeOperator(ParsingDecl &parsingDecl);
 
   /// extern, static
-  SyntaxStatus CollectStorageSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectStorageSpecifier(ParsingDecl &parsingDecl);
 
   /// fun
-  SyntaxStatus CollectFunctionSpecifier(ParsingDecl &collector);
+  SyntaxStatus CollectFunctionSpecifier(ParsingDecl &parsingDecl);
 
 public:
   // === Type Parsing ===//
@@ -176,22 +176,22 @@ public:
   bool IsBasicType(tok kind) const;
 
   // TODO: Passing ParsingDecl -- may just want to pass the
-  // Type collectors in the furture. This is ok for now.
-  Type ParseType(ParsingDecl &collector, Diag<> diagID);
-  Type ParseFunctionType(ParsingDecl &collector, Diag<> diagID);
-  Type ParsePointerType(ParsingDecl &collector, Diag<> diagID);
-  Type ParseReferenceType(ParsingDecl &collector, Diag<> diagID);
-  Type ParseDeclResultType(ParsingDecl &collector, Diag<> diagID);
-  Type ParseBasicType(ParsingDecl &collector, Diag<> diagID);
+  // Type parsingDecls in the furture. This is ok for now.
+  Type ParseType(ParsingDecl &parsingDecl, Diag<> diagID);
+  Type ParseFunctionType(ParsingDecl &parsingDecl, Diag<> diagID);
+  Type ParsePointerType(ParsingDecl &parsingDecl, Diag<> diagID);
+  Type ParseReferenceType(ParsingDecl &parsingDecl, Diag<> diagID);
+  Type ParseDeclResultType(ParsingDecl &parsingDecl, Diag<> diagID);
+  Type ParseBasicType(ParsingDecl &parsingDecl, Diag<> diagID);
   Type GetBasicType(TypeSpecifierKind kind);
-  Type ParseIdentifierType(ParsingDecl &collector, Diag<> diagID);
+  Type ParseIdentifierType(ParsingDecl &parsingDecl, Diag<> diagID);
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDecl &collector);
+  SyntaxResult<Decl> ParseFunDecl(ParsingDecl &parsingDecl);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDecl &collector,
+  SyntaxStatus ParseFunctionSignature(ParsingDecl &parsingDecl,
                                       Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
@@ -204,28 +204,28 @@ private:
   //                                       bool &rethrows,
   //                                       Typer *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDecl &collectorifier);
-  SyntaxStatus ParseFunctionBody(ParsingDecl &collectorifier,
+  SyntaxStatus ParseFunctionArguments(ParsingDecl &parsingDecl);
+  SyntaxStatus ParseFunctionBody(ParsingDecl &parsingDecl,
                                  FunctionDecl &functionDecl);
 
-  BraceStmt *ParseFunctionBodyImpl(ParsingDecl &collectorifier,
+  BraceStmt *ParseFunctionBodyImpl(ParsingDecl &parsingDecl,
                                    FunctionDecl &funDecl);
 
 public:
   //== using ==//
-  SyntaxResult<Decl> ParseImportDecl(ParsingDecl &collectorifier);
+  SyntaxResult<Decl> ParseImportDecl(ParsingDecl &parsingDecl);
 
 public:
   //== struct ==//
-  SyntaxResult<Decl> ParseStructDecl(ParsingDecl &collectorifier);
+  SyntaxResult<Decl> ParseStructDecl(ParsingDecl &parsingDecl);
 
 public:
   //== enum== //
-  SyntaxResult<Decl> ParseEnumDecl(ParsingDecl &collectorifier);
+  SyntaxResult<Decl> ParseEnumDecl(ParsingDecl &parsingDecl);
 
 public:
   //== interface ==//
-  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDecl &collectorifier);
+  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDecl &parsingDecl);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }

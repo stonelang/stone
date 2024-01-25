@@ -8,34 +8,34 @@
 
 using namespace stone;
 
-SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &parsingDecl) {
 
   SyntaxStatus status;
-  status = CollectImportSpecifier(collector);
+  status = CollectImportSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectAccessSpecifier(collector);
+  status = CollectAccessSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectFunctionSpecifier(collector);
+  status = CollectFunctionSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectBasicTypeSpecifier(collector);
+  status = CollectBasicTypeSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectNominalTypeSpecifier(collector);
+  status = CollectNominalTypeSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectTypeQualifier(collector);
+  status = CollectTypeQualifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
-  status = CollectStorageSpecifier(collector);
+  status = CollectStorageSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
   }
@@ -44,10 +44,10 @@ SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &collector) {
   return status;
 }
 
-SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_import:
-    collector.GetImportSpecifierCollector().AddImport(ConsumeToken());
+    parsingDecl.GetImportSpecifierCollector().AddImport(ConsumeToken());
     break;
   default:
     return stone::MakeSyntaxCodeCompletionStatus();
@@ -55,15 +55,15 @@ SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &collector) {
   return stone::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &collector) {
-  // if(collector.GetTypeOperatorCollector().HasAny()){
+SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &parsingDecl) {
+  // if(parsingDecl.GetTypeOperatorCollector().HasAny()){
   // }
   switch (GetTok().GetKind()) {
   case tok::kw_new:
-    collector.GetTypeOperatorCollector().AddNew(ConsumeToken());
+    parsingDecl.GetTypeOperatorCollector().AddNew(ConsumeToken());
     break;
   case tok::kw_delete:
-    collector.GetTypeOperatorCollector().AddDelete(ConsumeToken());
+    parsingDecl.GetTypeOperatorCollector().AddDelete(ConsumeToken());
     break;
   default:
     return stone::MakeSyntaxCodeCompletionStatus();
@@ -71,27 +71,27 @@ SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &collector) {
   return stone::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_public: {
-    if (collector.GetAccessSpecifierCollector().HasPublic()) {
+    if (parsingDecl.GetAccessSpecifierCollector().HasPublic()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetAccessSpecifierCollector().AddPublic(ConsumeToken());
+    parsingDecl.GetAccessSpecifierCollector().AddPublic(ConsumeToken());
     break;
   }
   case tok::kw_internal: {
-    if (collector.GetAccessSpecifierCollector().HasInternal()) {
+    if (parsingDecl.GetAccessSpecifierCollector().HasInternal()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetAccessSpecifierCollector().AddInternal(ConsumeToken());
+    parsingDecl.GetAccessSpecifierCollector().AddInternal(ConsumeToken());
     break;
   }
   case tok::kw_private:
-    if (collector.GetAccessSpecifierCollector().HasPrivate()) {
+    if (parsingDecl.GetAccessSpecifierCollector().HasPrivate()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetAccessSpecifierCollector().AddPrivate(ConsumeToken());
+    parsingDecl.GetAccessSpecifierCollector().AddPrivate(ConsumeToken());
     break;
   default:
     return stone::MakeSyntaxCodeCompletionStatus();
@@ -100,10 +100,10 @@ SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &collector) {
 }
 
 // TODO: Dulicate check
-SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &parsingDecl) {
   SyntaxStatus status;
   while (GetTok().IsQualifier()) {
-    status = CollectTypeQualifier(collector);
+    status = CollectTypeQualifier(parsingDecl);
     if (status.HasCodeCompletion()) {
       return status;
     }
@@ -111,34 +111,34 @@ SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &collector) {
   return status;
 }
 // TODO: Dulicate check
-SyntaxStatus Parser::CollectTypeQualifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectTypeQualifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_const: {
-    if (collector.GetTypeQualifierCollector().HasConst()) {
+    if (parsingDecl.GetTypeQualifierCollector().HasConst()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetTypeQualifierCollector().AddConst(ConsumeToken());
+    parsingDecl.GetTypeQualifierCollector().AddConst(ConsumeToken());
     break;
   }
   case tok::kw_mutable: {
-    if (collector.GetTypeQualifierCollector().HasMutable()) {
+    if (parsingDecl.GetTypeQualifierCollector().HasMutable()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetTypeQualifierCollector().AddMutable(ConsumeToken());
+    parsingDecl.GetTypeQualifierCollector().AddMutable(ConsumeToken());
     break;
   }
   case tok::kw_final: {
-    if (collector.GetTypeQualifierCollector().HasFinal()) {
+    if (parsingDecl.GetTypeQualifierCollector().HasFinal()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetTypeQualifierCollector().AddFinal(ConsumeToken());
+    parsingDecl.GetTypeQualifierCollector().AddFinal(ConsumeToken());
     break;
   }
   case tok::kw_pure: {
-    if (collector.GetTypeQualifierCollector().HasPure()) {
+    if (parsingDecl.GetTypeQualifierCollector().HasPure()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetTypeQualifierCollector().AddPure(ConsumeToken());
+    parsingDecl.GetTypeQualifierCollector().AddPure(ConsumeToken());
     break;
   }
   default:
@@ -157,162 +157,162 @@ bool Parser::IsTypeChunk(const Token &tk) {
   }
 }
 
-SyntaxStatus Parser::CollectTypeChunk(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectTypeChunk(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::star:
-    collector.GetTypeChunkCollector().AddPointer(ConsumeToken());
+    parsingDecl.GetTypeChunkCollector().AddPointer(ConsumeToken());
     break;
   case tok::amp:
-    collector.GetTypeChunkCollector().AddReference(ConsumeToken());
+    parsingDecl.GetTypeChunkCollector().AddReference(ConsumeToken());
     break;
   default:
     return MakeSyntaxCodeCompletionStatus();
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectTypeChunks(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectTypeChunks(ParsingDecl &parsingDecl) {
 
-  assert(collector.GetTypeSpecifierCollector().HasAny() &&
+  assert(parsingDecl.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
 
   if (!GetTok().IsTypeChunk() && GetTok().IsIdentifierOrUnderscore()) {
-    collector.GetTypeChunkCollector().AddValue();
+    parsingDecl.GetTypeChunkCollector().AddValue();
     return MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
   SyntaxStatus status;
   while (GetTok().IsTypeChunk()) {
-    status = CollectTypeChunk(collector);
+    status = CollectTypeChunk(parsingDecl);
     if (status.HasCodeCompletion()) {
       return status;
     }
   }
   return status;
 }
-SyntaxStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &parsingDecl) {
 
   if (!GetTok().IsBasicType()) {
     return MakeSyntaxCodeCompletionStatus();
   }
   switch (GetTok().GetKind()) {
   case tok::kw_any:
-    collector.GetTypeSpecifierCollector().AddAny(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddAny(ConsumeToken());
     break;
   case tok::kw_void:
-    collector.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddVoid(ConsumeToken());
     break;
   case tok::kw_auto:
-    collector.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddAuto(ConsumeToken());
     break;
   case tok::kw_char:
-    collector.GetTypeSpecifierCollector().AddChar(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddChar(ConsumeToken());
     break;
   case tok::kw_int:
-    collector.GetTypeSpecifierCollector().AddInt(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInt(ConsumeToken());
     break;
   case tok::kw_int8:
-    collector.GetTypeSpecifierCollector().AddInt8(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInt8(ConsumeToken());
     break;
   case tok::kw_int16:
-    collector.GetTypeSpecifierCollector().AddInt16(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInt16(ConsumeToken());
     break;
   case tok::kw_int32:
-    collector.GetTypeSpecifierCollector().AddInt32(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInt32(ConsumeToken());
     break;
   case tok::kw_int64:
-    collector.GetTypeSpecifierCollector().AddInt64(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInt64(ConsumeToken());
     break;
   case tok::kw_uint:
-    collector.GetTypeSpecifierCollector().AddUInt(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddUInt(ConsumeToken());
     break;
   case tok::kw_uint8:
-    collector.GetTypeSpecifierCollector().AddUInt8(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddUInt8(ConsumeToken());
     break;
   case tok::kw_byte:
-    collector.GetTypeSpecifierCollector().AddByte(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddByte(ConsumeToken());
     break;
   case tok::kw_uint16:
-    collector.GetTypeSpecifierCollector().AddUInt16(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddUInt16(ConsumeToken());
     break;
   case tok::kw_uint32:
-    collector.GetTypeSpecifierCollector().AddUInt32(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddUInt32(ConsumeToken());
     break;
   case tok::kw_uint64:
-    collector.GetTypeSpecifierCollector().AddUInt64(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddUInt64(ConsumeToken());
     break;
   case tok::kw_float:
-    collector.GetTypeSpecifierCollector().AddFloat(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddFloat(ConsumeToken());
     break;
   case tok::kw_float32:
-    collector.GetTypeSpecifierCollector().AddFloat32(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddFloat32(ConsumeToken());
     break;
   case tok::kw_float64:
-    collector.GetTypeSpecifierCollector().AddFloat64(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddFloat64(ConsumeToken());
     break;
   case tok::kw_complex32:
-    collector.GetTypeSpecifierCollector().AddComplex32(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddComplex32(ConsumeToken());
     break;
   case tok::kw_complex64:
-    collector.GetTypeSpecifierCollector().AddComplex64(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddComplex64(ConsumeToken());
     break;
   case tok::kw_imaginary32:
-    collector.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddImaginary32(ConsumeToken());
     break;
   case tok::kw_imaginary64:
-    collector.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddImaginary64(ConsumeToken());
     break;
   case tok::kw_string:
-    collector.GetTypeSpecifierCollector().AddString(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddString(ConsumeToken());
     break;
   default:
     return MakeSyntaxCodeCompletionStatus();
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
-    collector.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
     break;
   case tok::kw_struct:
-    collector.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddStruct(ConsumeToken());
     break;
   case tok::kw_interface:
-    collector.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
+    parsingDecl.GetTypeSpecifierCollector().AddInterface(ConsumeToken());
     break;
   default:
     return MakeSyntaxCodeCompletionStatus();
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectStorageSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectStorageSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_static:
-    collector.GetStorageSpecifierCollector().AddStatic(ConsumeToken());
+    parsingDecl.GetStorageSpecifierCollector().AddStatic(ConsumeToken());
     break;
   case tok::kw_register:
-    collector.GetStorageSpecifierCollector().AddRegister(ConsumeToken());
+    parsingDecl.GetStorageSpecifierCollector().AddRegister(ConsumeToken());
     break;
   default:
     return MakeSyntaxCodeCompletionStatus();
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectFunctionSpecifier(ParsingDecl &collector) {
+SyntaxStatus Parser::CollectFunctionSpecifier(ParsingDecl &parsingDecl) {
 
   switch (GetTok().GetKind()) {
   case tok::kw_fun: {
-    if (collector.GetFunctionSpecifierCollector().HasFun()) {
+    if (parsingDecl.GetFunctionSpecifierCollector().HasFun()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
+    parsingDecl.GetFunctionSpecifierCollector().AddFun(ConsumeToken());
     break;
   }
   case tok::kw_inline: {
-    if (collector.GetFunctionSpecifierCollector().HasInline()) {
+    if (parsingDecl.GetFunctionSpecifierCollector().HasInline()) {
       return stone::MakeSyntaxCodeCompletionStatus();
     }
-    collector.GetFunctionSpecifierCollector().AddInline(ConsumeToken());
+    parsingDecl.GetFunctionSpecifierCollector().AddInline(ConsumeToken());
     break;
   }
   default:

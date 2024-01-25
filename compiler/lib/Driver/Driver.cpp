@@ -71,6 +71,13 @@ ToolChain *Driver::BuildToolChain(ToolChainKind toolChainKind) {
   return toolChain.get();
 }
 
+void Driver::ForEachTopLevelJobConstruction(
+    std::function<void(const CompilationEntity *entity)> callback) {
+  for (auto topLevelJobConstruction : topLevelJobConstructions) {
+    callback(topLevelJobConstruction);
+  }
+}
+
 class ModuleInputs final {
 
   Driver &driver;
@@ -102,15 +109,17 @@ public:
 };
 void LinkerInputs::AddLinkerInput(const CompilationEntity *entity) {}
 
-class BuildJobConstructionsState final {
+class BuildingJobConstructions final {
 
   Driver &driver;
   ModuleInputs moduleInputs;
   LinkerInputs linkerInputs;
 
 public:
-  BuildJobConstructionsState(Driver &driver)
+  BuildingJobConstructions(Driver &driver)
       : driver(driver), moduleInputs(driver), linkerInputs(driver) {}
+
+  Status FinishBuildingJobConstructions();
 
 public:
   ModuleInputs &GetModuleInputs() { return moduleInputs; }
@@ -152,11 +161,14 @@ public:
   Status BuildSingleCompileInvocation();
 };
 
-Status BuildJobConstructionsState::BuildMultipleCompileInvocation() {
+Status BuildingJobConstructions::BuildMultipleCompileInvocation() {
 
-  GeneratePCHJobConstruction *pch = nullptr;
-  if (ShouldGeneratePCH()) {
-  }
+  auto pch = [&]() -> GeneratePCHJobConstruction * {
+    if (ShouldMergeModule()) {
+      return GetGeneratePCHJobConstruction();
+    }
+    return nullptr;
+  }();
 
   assert(GetDriver().IsMultipleCompileInvocation());
   GetDriver().GetDriverOptions().GetInputsAndOutputs().ForEachInput(
@@ -193,8 +205,8 @@ Status BuildJobConstructionsState::BuildMultipleCompileInvocation() {
 }
 
 Status
-BuildJobConstructionsState::HandleStoneFileType(GeneratePCHJobConstruction *pch,
-                                                const DriverInputFile *input) {
+BuildingJobConstructions::HandleStoneFileType(GeneratePCHJobConstruction *pch,
+                                              const DriverInputFile *input) {
 
   assert(input->IsPartOfStoneCompilation());
   CompileJobConstruction *cjc = nullptr;
@@ -209,21 +221,24 @@ BuildJobConstructionsState::HandleStoneFileType(GeneratePCHJobConstruction *pch,
   }
   GetModuleInputs().AddModuleInput(cjc);
   GetLinkerInputs().AddLinkerInput(cjc);
+  return Status();
 }
 Status
-BuildJobConstructionsState::HandleObjectFileType(const DriverInputFile *input) {
+BuildingJobConstructions::HandleObjectFileType(const DriverInputFile *input) {
   if (ShouldLink()) {
     GetLinkerInputs().AddLinkerInput(input);
   }
+  return Status();
 }
-Status BuildJobConstructionsState::HandleAutoLinkFileType(
-    const DriverInputFile *input) {
+Status
+BuildingJobConstructions::HandleAutoLinkFileType(const DriverInputFile *input) {
   if (ShouldLink()) {
     GetLinkerInputs().AddLinkerInput(input);
   }
+  return Status();
 }
 
-Status BuildJobConstructionsState::HandleStoneModuleFileType(
+Status BuildingJobConstructions::HandleStoneModuleFileType(
     const DriverInputFile *input) {
   if (ShouldGenerateModule() && !ShouldLink()) {
     // When generating a .swiftmodule as a top-level output (as
@@ -242,7 +257,7 @@ Status BuildJobConstructionsState::HandleStoneModuleFileType(
   return Status();
 }
 
-Status BuildJobConstructionsState::BuildSingleCompileInvocation() {
+Status BuildingJobConstructions::BuildSingleCompileInvocation() {
 
   auto cjc =
       CompileJobConstruction::Create(GetDriver(), driver.GetOutputFileType());
@@ -258,32 +273,91 @@ Status BuildJobConstructionsState::BuildSingleCompileInvocation() {
   return Status();
 }
 
-void Driver::BuildTopLevelJobConstructions() {
+Status Driver::BuildTopLevelJobConstructions() {
 
-  BuildJobConstructionsState state(*this);
+  BuildingJobConstructions buildingJobConstructions(*this);
 
-  STONE_DEFER {
-    [&]() {
-      if (state.ShouldMergeModule()) {
-      }
-    }();
+  auto FinishTopLevelJobConstructions = [&](Status status) -> Status {
+    if (status.IsErrorOrHasCompletion()) {
+      return status;
+    }
+
+    if (buildingJobConstructions.ShouldMergeModule()) {
+    }
   };
 
-  auto status = [&](BuildJobConstructionsState &state) -> Status {
-    switch (GetCompileInvocationMode()) {
-    case CompileInvocationMode::Multiple:
-      return state.BuildMultipleCompileInvocation();
-    case CompileInvocationMode::Single:
-      return state.BuildSingleCompileInvocation();
+  switch (GetCompileInvocationMode()) {
+  case CompileInvocationMode::Multiple:
+    return FinishTopLevelJobConstructions(
+        buildingJobConstructions.BuildMultipleCompileInvocation());
+  case CompileInvocationMode::Single:
+    return FinishTopLevelJobConstructions(
+        buildingJobConstructions.BuildSingleCompileInvocation());
+  case CompileInvocationMode::Batch:
+    llvm_unreachable("Batch CompileInvocationMode is invalid here!");
+  }
+}
+
+Status BuildingJobConstructions::FinishBuildingJobConstructions() {
+
+  return Status();
+}
+
+class BuildingJobs final {
+  Driver &driver;
+
+public:
+  BuildingJobs(Driver &driver) : driver(driver) {}
+
+public:
+  Status BuildTopLevelJobs();
+  Job *BuildJob(const JobConstruction *current);
+  // Job *BuildJob(CompilationEntityList inputs);
+  void ComputeJobMainOutput(const JobConstruction *current);
+};
+
+Status BuildingJobs::BuildTopLevelJobs() {
+
+  driver.ForEachTopLevelJobConstruction([&](const CompilationEntity *entity) {
+    if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+      auto job = BuildJob(jc);
+      job->AddIsTopLevel();
+
+      // assert(driver.HasCompilation());
+      // driver.GetCompilation()->AddTopLevelJob(job);
     }
-    llvm_unreachable("Invalid CompileInvocationMode!");
-  }(state);
+  });
+
+  return Status();
+}
+Job *BuildingJobs::BuildJob(const JobConstruction *current) {
+
+  for (const CompilationEntity *entity : *current) {
+    if (entity->IsJobConstruction()) {
+      if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
+
+        // jobInfo->deps.push_back(ConstructJob(jc));
+      }
+    } else if (entity->IsInput()) {
+      // jobInfo->inputs.push_back(entity);
+    }
+  }
+
+  return nullptr;
+}
+
+Status Driver::BuildTopLevelJobs() {
+
+  BuildingJobs buildingJobs(*this);
+  buildingJobs.BuildTopLevelJobs();
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain *toolChain) {
 
   assert(!HasCompilation());
-  BuildTopLevelJobConstructions();
+  if (BuildTopLevelJobConstructions().IsError()) {
+    return nullptr;
+  }
   return compilation;
 }
 
