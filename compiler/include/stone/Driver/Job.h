@@ -118,9 +118,9 @@ class JobContext final {
   Compilation *compilation = nullptr;
 
 public:
-  llvm::ArrayRef<const CompilationEntity *> deps;
-  llvm::ArrayRef<const CompilationEntity *> inputs;
-  std::unique_ptr<CommandOutput> cmdOutput;
+  llvm::SmallVector<const CompilationEntity *> deps;
+  llvm::SmallVector<const CompilationEntity *> inputs;
+  std::unique_ptr<CommandOutput> commandOutput;
 
 public:
   JobContext(const JobContext &) = delete;
@@ -141,6 +141,12 @@ public:
 public:
   /// Forwards to Compilation::getInputFiles.
   llvm::ArrayRef<CommandInputPair> GetTopLevelInputFiles() const;
+
+  void AddDep(const CompilationEntity *dep) { deps.push_back(dep); }
+  const CompilationEntity *GetFirstDep() const { return deps.front(); }
+
+  void AddInput(const CompilationEntity *input) { inputs.push_back(input); }
+  const CompilationEntity *GetFirstInput() const { return inputs.front(); }
 
   /// Forwards to Compilation::getAllSourcesPath.
   const char *GetAllSourcesPath() const;

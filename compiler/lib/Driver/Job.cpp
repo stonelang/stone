@@ -50,12 +50,12 @@ BatchJob::BatchJob(const JobConstruction &constructor,
 
 Job *ToolChain::ConstructJob(std::unique_ptr<JobContext> jobContext) const {
 
- auto jobInvocation = [&]() -> JobInvocation {
+  auto jobInvocation = [&]() -> JobInvocation {
     switch (jobContext->GetJobConstruction()->GetKind()) {
 #define CASE(K)                                                                \
   case CompilationEntityKind::K:                                               \
-    return ConstructInvocation(llvm::cast<K>(*jobContext->GetJobConstruction()),  \
-                               *jobContext);
+    return ConstructInvocation(                                                \
+        llvm::cast<K>(*jobContext->GetJobConstruction()), *jobContext);
       CASE(CompileJobConstruction)
       CASE(BackendJobConstruction)
       CASE(GeneratePCHJobConstruction)

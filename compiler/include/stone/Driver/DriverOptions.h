@@ -230,7 +230,6 @@ private:
 public:
   Status Convert();
 };
-
 class DriverOutputInfo final {
 
   friend Driver;

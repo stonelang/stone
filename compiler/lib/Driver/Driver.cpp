@@ -314,6 +314,9 @@ public:
   Job *BuildJob(const JobConstruction *current);
   // Job *BuildJob(CompilationEntityList inputs);
   void ComputeJobMainOutput(const JobConstruction *current);
+
+  Job *GetJobFromCache();
+  void CacheJob(const Job *job);
 };
 
 Status BuildingJobs::BuildTopLevelJobs() {
@@ -332,24 +335,34 @@ Status BuildingJobs::BuildTopLevelJobs() {
 }
 Job *BuildingJobs::BuildJob(const JobConstruction *current) {
 
+  auto jobContext =
+      std::make_unique<JobContext>(current, driver.GetCompilation());
+
   for (const CompilationEntity *entity : *current) {
     if (entity->IsJobConstruction()) {
       if (auto *jc = llvm::dyn_cast<JobConstruction>(entity)) {
-
-        // jobInfo->deps.push_back(ConstructJob(jc));
+        jobContext->AddDep(BuildJob(jc));
       }
     } else if (entity->IsInput()) {
-      // jobInfo->inputs.push_back(entity);
+      jobContext->AddInput(entity);
     }
   }
 
-  return nullptr;
+  jobContext->commandOutput =
+      std::make_unique<CommandOutput>(current->GetFileType());
+  auto job = driver.GetToolChain().ConstructJob(std::move(jobContext));
+
+  // driver.GetCompilation()->AddTopLevelJob(job);
+
+  return job;
 }
 
 Status Driver::BuildTopLevelJobs() {
 
   BuildingJobs buildingJobs(*this);
   buildingJobs.BuildTopLevelJobs();
+
+  GetCompilation()->AddTopLevelJob(nullptr);
 }
 
 Compilation *Driver::BuildCompilation(const ToolChain *toolChain) {

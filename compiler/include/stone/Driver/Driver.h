@@ -186,6 +186,9 @@ class Compilation;
 //   static BuildingJobConstructionEntities *Create(Driver &driver);
 // };
 
+using ModuleInputsAndLinkerInputs =
+    std::pair<CompilationEntityList, CompilationEntityList>;
+
 class Driver final {
   class Implementation;
   friend Implementation;
@@ -333,6 +336,9 @@ public:
 
   /// Print the list of job constructions in a Compilation.
   void PrintJobConstructions() const;
+
+private:
+  Status FinishBuildingJobConstructions();
 
 public:
   /// Construct a compilation object for a given ToolChain

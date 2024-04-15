@@ -282,22 +282,22 @@ llvm::StringRef CompilerOptions::GetActionString(CompilerAction action) {
 }
 
 bool CompilerOptions::IsNoneAction() const {
-  return !CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::None;
 }
 bool CompilerOptions::IsPrintHelpAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintHelp;
 }
 bool CompilerOptions::IsPrintHelpHiddenAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintHelpHidden;
 }
 bool CompilerOptions::IsPrintVersionAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintVersion;
 }
 bool CompilerOptions::IsPrintFeatureAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintFeature;
 }
 bool CompilerOptions::IsParseAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::Parse;
 }
 
 bool CompilerOptions::ShouldActionOnlyParse() const {
@@ -305,22 +305,22 @@ bool CompilerOptions::ShouldActionOnlyParse() const {
 }
 
 bool CompilerOptions::IsResolveImportsAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::ResolveImports;
 }
 bool CompilerOptions::IsPrintASTBeforeAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintASTBefore;
 }
 bool CompilerOptions::IsTypeCheckAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::TypeCheck;
 }
 bool CompilerOptions::IsPrintASTAfterAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::PrintASTAfter;
 }
 bool CompilerOptions::IsEmitIRAfterAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitIRAfter;
 }
 bool CompilerOptions::IsEmitIRBeforeAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitIRBefore;
 }
 
 bool CompilerOptions::DoesActionGenerateIR() const {
@@ -332,16 +332,16 @@ bool CompilerOptions::DoesActionGenerateNative() const {
 }
 
 bool CompilerOptions::IsEmitModuleAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitModule;
 }
 bool CompilerOptions::IsEmitBCAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitBC;
 }
 bool CompilerOptions::IsEmitObjectAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitObject;
 }
 bool CompilerOptions::IsEmitAssemblyAction() const {
-  return CompilerOptions::IsAnyAction(mainAction);
+  return mainAction == CompilerAction::EmitAssembly;
 }
 
 bool CompilerOptions::IsAnyAction(CompilerAction action) {
