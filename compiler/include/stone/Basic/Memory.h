@@ -1,5 +1,5 @@
-#ifndef STONE_BASIC_MEM_H
-#define STONE_BASIC_MEM_H
+#ifndef STONE_BASIC_MEMORY_H
+#define STONE_BASIC_MEMORY_H
 
 #include "stone/Basic/LangOptions.h"
 
@@ -18,7 +18,7 @@
 namespace stone {
 
 /// The arena in which a particular allocation object will go.
-enum class AllocationArena {
+enum class MemoryAllocationArena {
   /// The permanent arena, which is tied to the lifetime of
   /// the object
   ///
@@ -64,27 +64,8 @@ inline void *Copy(void *dest, const void *src, std::size_t count) {
   return std::memcpy(dest, src, count);
 }
 
-// template <typename T> class MemContext {
-//   llvm::StringMap<T *, llvm::BumpPtrAllocator> entries;
-// public:
-//   llvm::BumpPtrAllocator &GetAllocator() { return entries.getAllocator(); }
-//   /// Return the identifier token info for the specified named
-//   /// identifier.
-//   T &Get(T ty) {
-//     auto &entry = *entries.insert(std::make_pair(ty, nullptr)).first;
-//     T *&second = entry.second;
-//     if (second) {
-//       return *second;
-//     }
-//     // Lookups failed, make a new Identifier.
-//     void *mem = GetAllocator().template Allocate<T>();
-//     second = new (mem) T();
-//     return *second;
-//   }
-
-enum class MemoryArena { Permanent = 0, Temporary };
-class MemoryContext final {
-
+class MemoryContext {
+protected:
   const LangOptions &langOpts;
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -97,8 +78,9 @@ public:
 
 public:
   /// Allocate - Allocate memory from the ASTContext bump pointer.
-  void *Allocate(unsigned long bytes, unsigned alignment = 8,
-                 MemoryArena arena = MemoryArena::Permanent) const {
+  void *AllocateMemory(
+      unsigned long bytes, unsigned alignment = 8,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     if (bytes == 0) {
       return nullptr;
     }
@@ -106,20 +88,24 @@ public:
       return stone::AlignedAlloc(bytes, alignment);
     }
     // TODO:
-    //  if (arena == MemoryArena::Permanent && Stats)
+    //  if (arena == MemoryAllocationArena::Permanent && Stats)
     //  Stats->GetMemoryCounters().NumMemoryBytesAllocated += bytes;
     return GetAllocator(arena).Allocate(bytes, alignment);
   }
 
+  void Deallocate(void *Ptr) const {}
+
 public:
-  llvm::BumpPtrAllocator &
-  GetAllocator(MemoryArena arena = MemoryArena::Permanent) const {
+  llvm::BumpPtrAllocator &GetAllocator(
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return allocator;
   }
+
+  size_t GetTotalMemUsed() const { return GetAllocator().getTotalMemory(); }
 };
 
 void *AllocateInMemoryContext(size_t bytes, const MemoryContext &ctx,
-                              MemoryArena arena, unsigned alignment);
+                              MemoryAllocationArena arena, unsigned alignment);
 
 /// Types inheriting from this class are intended to be allocated in an
 /// \c ASTContext allocator; you cannot allocate them by using a normal \c
@@ -136,9 +122,10 @@ public:
 
   // Only allow allocation using the allocator in MemoryContext
   // or by doing a placement new.
-  void *operator new(size_t bytes, const MemoryContext &ctx,
-                     MemoryArena arena = MemoryArena::Permanent,
-                     unsigned alignment = alignof(AlignTy)) {
+  void *
+  operator new(size_t bytes, const MemoryContext &ctx,
+               MemoryAllocationArena arena = MemoryAllocationArena::Permanent,
+               unsigned alignment = alignof(AlignTy)) {
     return stone::AllocateInMemoryContext(bytes, ctx, arena, alignment);
   }
   void *operator new(size_t bytes, void *mem) throw() {

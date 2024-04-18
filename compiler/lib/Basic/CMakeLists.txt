@@ -16,7 +16,7 @@ set(stone_basic_sources
 	FileSystem.cpp
 	FileSystemStatCache.cpp
 	JSONSerialization.cpp
-	Mem.cpp
+	Memory.cpp
 	OutputFileMap.cpp
 	PlatformKind.cpp
 	SrcMgr.cpp
