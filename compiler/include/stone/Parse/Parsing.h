@@ -3,7 +3,7 @@
 
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Parse/Lexing.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/Syntax/DeclSpecifier.h"
 #include "stone/Syntax/Scope.h"
 #include "stone/Syntax/SyntaxResult.h"
@@ -94,11 +94,11 @@ enum class ParsingNotification : UInt8 {
 
 class ParsingPosition final {
   friend class Parser;
-  LexingState lexingState;
+  LexerState lexingState;
   /// TODO: prevTokLoc
   SrcLoc prevLoc;
 
-  ParsingPosition(LexingState lexingState, SrcLoc prevLoc)
+  ParsingPosition(LexerState lexingState, SrcLoc prevLoc)
       : lexingState(lexingState), prevLoc(prevLoc) {}
 
 public:

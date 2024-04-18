@@ -28,23 +28,12 @@ class PairDelimiterBalancer;
 class ParsingDecl;
 class CodeCompletionCallbacks;
 
-class ParserStats final : public Stats {
-  const Parser &parser;
-
-public:
-  ParserStats(const Parser &parser)
-      : Stats("parser statistics:"), parser(parser) {}
-  void Print(ColorStream &stream) override;
-};
-
 class Parser final {
-  friend ParserStats;
 
   // friend PairDelimiterBalancer;
 
   std::unique_ptr<Lexer> lexer;
-  std::unique_ptr<ParserStats> stats;
-
+  
   ASTContext &astContext;
   SourceFile &sf;
   DeclContext *curDC;
@@ -102,7 +91,6 @@ public:
   }
 
 public:
-  ParserStats &GetStats() { return *stats; }
   Lexer &GetLexer() { return *lexer; }
   const Token &GetTok() const { return curTok; }
   ASTContext &GetASTContext() { return astContext; }

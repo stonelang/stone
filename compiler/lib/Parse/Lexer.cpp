@@ -1,8 +1,9 @@
 #include "stone/Parse/Lexer.h"
-#include "stone/Basic/SrcMgr.h"
-#include "stone/Parse/Confusable.h"
-#include "stone/Support/ASTDiagnostic.h"
 #include "stone/Syntax/Identifier.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Support/ASTDiagnostic.h"
+#include "stone/Parse/Confusable.h"
+
 #include "clang/Basic/CharInfo.h"
 
 #include "llvm/ADT/SmallString.h"
@@ -22,7 +23,7 @@ using namespace stone;
 /// true if it is an erroneous code point.
 static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
   // Number of bits in the value, ignoring leading zeros.
-  unsigned NumBits = 32 - llvm::countLeadingZeros(CharValue);
+  unsigned NumBits = 32 - llvm::countl_zero(CharValue);
 
   // Handle the leading byte, based on the number of bits in the value.
   unsigned NumTrailingBytes;
@@ -62,7 +63,7 @@ static bool EncodeToUTF8(unsigned CharValue, SmallVectorImpl<char> &Result) {
 
 /// CLO8 - Return the number of leading ones in the specified 8-bit value.
 static unsigned CLO8(unsigned char C) {
-  return llvm::countLeadingOnes(uint32_t(C) << 24);
+  return llvm::countl_one(uint32_t(C) << 24);
 }
 
 /// isStartOfUTF8Character - Return true if this isn't a UTF8 continuation
@@ -124,7 +125,7 @@ uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
   // If we got here, we read the appropriate number of accumulated bytes.
   // Verify that the encoding was actually minimal.
   // Number of bits in the value, ignoring leading zeros.
-  unsigned NumBits = 32 - llvm::countLeadingZeros(CharValue);
+  unsigned NumBits = 32 - llvm::countl_one(CharValue);
 
   if (NumBits <= 5 + 6)
     return EncodedBytes == 2 ? CharValue : ~0U;
@@ -143,13 +144,7 @@ Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
              TriviaRetentionMode TriviaRetention)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
       IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
-      RetainComments(RetainComments), TriviaRetention(TriviaRetention) {
-
-  if (se) {
-    lexerStats = std::make_unique<LexerStats>(*this);
-    se->Register(lexerStats.get());
-  }
-}
+      RetainComments(RetainComments), TriviaRetention(TriviaRetention) {}
 
 void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
   assert(Offset <= EndOffset);
@@ -163,7 +158,7 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
   assert(BufferStart + EndOffset <= BufferEnd);
 
   // Check for Unicode BOM at start of file (Only UTF-8 BOM supported now).
-  size_t BOMLength = contents.startswith("\xEF\xBB\xBF") ? 3 : 0;
+  size_t BOMLength = contents.starts_with("\xEF\xBB\xBF") ? 3 : 0;
 
   // Keep information about existance of UTF-8 BOM for transparency source code
   // editing with libSyntax.
@@ -215,7 +210,7 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
   initialize(Offset, EndOffset);
 }
 
-Lexer::Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState)
+Lexer::Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState)
     : Lexer(PrincipalCtor(), Parent.BufferID, Parent.sm, Parent.de, Parent.se,
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed
@@ -246,7 +241,7 @@ Token Lexer::getTokenAt(SrcLoc Loc) {
   Lexer L(BufferID, sm, de, se, LexMode, HashbangMode::Allowed,
           CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia);
 
-  L.restoreState(LexingState(Loc));
+  L.restoreState(LexerState(Loc));
   return L.Peek();
 }
 
@@ -311,7 +306,7 @@ void Lexer::formStringLiteralToken(const char *TokStart, bool IsMultilineString,
   }
 }
 
-LexingState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
+LexerState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
   const char *Ptr = getBufferPtrForSrcLoc(Loc);
   // Skip whitespace backwards until we hit a newline.  This is needed to
   // correctly lex the token if it is at the beginning of the line.
@@ -335,7 +330,7 @@ LexingState Lexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
     }
     break;
   }
-  return LexingState(SrcLoc(llvm::SMLoc::getFromPointer(Ptr)));
+  return LexerState(SrcLoc(llvm::SMLoc::getFromPointer(Ptr)));
 }
 
 //===----------------------------------------------------------------------===//
@@ -502,7 +497,7 @@ void Lexer::skipSlashStarComment() {
 
 static bool isValidIdentifierContinuationCodePoint(uint32_t c) {
   if (c < 0x80) {
-    return stone::isIdentifierBody(c, /*dollar*/ true);
+    return clang::isAsciiIdentifierContinue(c, /*dollar*/ true);
   }
 
   // N1518: Recommendations for extended identifier characters for C and C++
@@ -543,7 +538,7 @@ static bool isValidIdentifierStartCodePoint(uint32_t c) {
   if (!isValidIdentifierContinuationCodePoint(c)) {
     return false;
   }
-  if (c < 0x80 && (isDigit(c) || c == '$')) {
+  if (c < 0x80 && (clang::isDigit(c) || c == '$')) {
     return false;
   }
 
@@ -653,10 +648,10 @@ void Lexer::lexHash() {
 
   // Scan for [a-zA-Z]+ to see what we match.
   const char *tmpPtr = CurPtr;
-  if (stone::isIdentifierHead(*tmpPtr)) {
+  if (clang::isAsciiIdentifierStart(*tmpPtr)) {
     do {
       ++tmpPtr;
-    } while (stone::isIdentifierBody(*tmpPtr));
+    } while (clang::isAsciiIdentifierContinue(*tmpPtr));
   }
 
   // Map the character sequence onto
@@ -915,7 +910,7 @@ void Lexer::lexDollarIdent() {
 
   bool isAllDigits = true;
   while (true) {
-    if (isDigit(*CurPtr)) {
+    if (clang::isDigit(*CurPtr)) {
       ++CurPtr;
       continue;
     } else if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
@@ -960,11 +955,11 @@ void Lexer::lexHexNumber() {
 
   // 0x[0-9a-fA-F][0-9a-fA-F_]*
   ++CurPtr;
-  if (!isHexDigit(*CurPtr)) {
+  if (!clang::isHexDigit(*CurPtr)) {
     return expected_hex_digit(CurPtr);
   }
 
-  while (isHexDigit(*CurPtr) || *CurPtr == '_') {
+  while (clang::isHexDigit(*CurPtr) || *CurPtr == '_') {
     ++CurPtr;
   }
 
@@ -986,17 +981,17 @@ void Lexer::lexHexNumber() {
 
     // If the character after the '.' is not a digit, assume we have an int
     // literal followed by a dot expression.
-    if (!isHexDigit(*CurPtr)) {
+    if (!clang::isHexDigit(*CurPtr)) {
       --CurPtr;
       return formToken(tok::integer_literal, TokStart);
     }
 
-    while (isHexDigit(*CurPtr) || *CurPtr == '_') {
+    while (clang::isHexDigit(*CurPtr) || *CurPtr == '_') {
       ++CurPtr;
     }
 
     if (*CurPtr != 'p' && *CurPtr != 'P') {
-      if (!isDigit(PtrOnDot[1])) {
+      if (!clang::isDigit(PtrOnDot[1])) {
         // e.g: 0xff.description
         CurPtr = PtrOnDot;
         return formToken(tok::integer_literal, TokStart);
@@ -1016,8 +1011,8 @@ void Lexer::lexHexNumber() {
     signedExponent = true;
   }
 
-  if (!isDigit(*CurPtr)) {
-    if (PtrOnDot && !isDigit(PtrOnDot[1]) && !signedExponent) {
+  if (!clang::isDigit(*CurPtr)) {
+    if (PtrOnDot && !clang::isDigit(PtrOnDot[1]) && !signedExponent) {
       // e.g: 0xff.fpValue, 0xff.fp
       CurPtr = PtrOnDot;
       return formToken(tok::integer_literal, TokStart);
@@ -1039,7 +1034,7 @@ void Lexer::lexHexNumber() {
     return expected_digit();
   }
 
-  while (isDigit(*CurPtr) || *CurPtr == '_') {
+  while (clang::isDigit(*CurPtr) || *CurPtr == '_') {
     ++CurPtr;
   }
 
@@ -1065,7 +1060,7 @@ void Lexer::lexHexNumber() {
 ///                          (\.[0-9A-Fa-f][0-9A-Fa-f_]*)?[pP][+-]?[0-9][0-9_]*
 void Lexer::lexNumber() {
   const char *TokStart = CurPtr - 1;
-  assert((isDigit(*TokStart) || *TokStart == '.') && "Unexpected start");
+  assert((clang::isDigit(*TokStart) || *TokStart == '.') && "Unexpected start");
 
   auto expected_digit = [&]() {
     while (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd))
@@ -1123,7 +1118,7 @@ void Lexer::lexNumber() {
 
   // Handle a leading [0-9]+, lexing an integer or falling through if we have a
   // floating point value.
-  while (isDigit(*CurPtr) || *CurPtr == '_') {
+  while (clang::isDigit(*CurPtr) || *CurPtr == '_') {
     ++CurPtr;
   }
 
@@ -1131,7 +1126,7 @@ void Lexer::lexNumber() {
   if (*CurPtr == '.') {
     // NextToken is the soon to be previous token
     // Therefore: x.0.1 is sub-tuple access, not x.float_literal
-    if (!isDigit(CurPtr[1]) || NextToken.Is(tok::period))
+    if (!clang::isDigit(CurPtr[1]) || NextToken.Is(tok::period))
       return formToken(tok::integer_literal, TokStart);
   } else {
     // Floating literals must have '.', 'e', or 'E' after digits.  If it is
@@ -1150,7 +1145,7 @@ void Lexer::lexNumber() {
     ++CurPtr;
 
     // Lex any digits after the decimal point.
-    while (isDigit(*CurPtr) || *CurPtr == '_')
+    while (clang::isDigit(*CurPtr) || *CurPtr == '_')
       ++CurPtr;
   }
 
@@ -1160,7 +1155,7 @@ void Lexer::lexNumber() {
     if (*CurPtr == '+' || *CurPtr == '-')
       ++CurPtr; // Eat the sign.
 
-    if (!isDigit(*CurPtr)) {
+    if (!clang::isDigit(*CurPtr)) {
       // There are 3 cases to diagnose if the exponent starts with a non-digit:
       // identifier (invalid character), underscore (invalid first character),
       // non-identifier (empty exponent)
@@ -1174,7 +1169,7 @@ void Lexer::lexNumber() {
       return expected_digit();
     }
 
-    while (isDigit(*CurPtr) || *CurPtr == '_')
+    while (clang::isDigit(*CurPtr) || *CurPtr == '_')
       ++CurPtr;
 
     auto tmp = CurPtr;
@@ -1197,7 +1192,7 @@ unsigned Lexer::lexUnicodeEscape(const char *&CurPtr, Lexer *de) {
   const char *DigitStart = CurPtr;
 
   unsigned NumDigits = 0;
-  for (; isHexDigit(CurPtr[0]); ++NumDigits) {
+  for (; clang::isHexDigit(CurPtr[0]); ++NumDigits) {
     ++CurPtr;
   }
 
@@ -1351,7 +1346,7 @@ unsigned Lexer::lexCharacter(const char *&CurPtr, char StopQuote,
     // Normal characters are part of the string.
     // If this is a "high" UTF-8 character, validate it.
     if ((signed char)(CurPtr[-1]) >= 0) {
-      if (isPrintable(CurPtr[-1]) == 0)
+      if (clang::isPrintable(CurPtr[-1]) == 0)
         if (!(IsMultilineString && (CurPtr[-1] == '\t')))
           if (EmitDiagnostics)
             PrintD(CharStart, diag::lex_unprintable_ascii_character);
@@ -1420,7 +1415,7 @@ unsigned Lexer::lexCharacter(const char *&CurPtr, char StopQuote,
       PrintD(CurPtr, diag::lex_invalid_escape);
     // If this looks like a plausible escape character, recover as though this
     // is an invalid escape.
-    if (isAlphanumeric(*CurPtr))
+    if (clang::isAlphanumeric(*CurPtr))
       ++CurPtr;
     return ~1U;
 
@@ -2105,7 +2100,8 @@ bool Lexer::tryLexConflictMarker(bool EatNewline) {
 
   // Check to see if we have <<<<<<< or >>>>.
   StringRef restOfBuffer(Ptr, BufferEnd - Ptr);
-  if (!restOfBuffer.startswith("<<<<<<< ") && !restOfBuffer.startswith(">>>> "))
+  if (!restOfBuffer.starts_with("<<<<<<< ") &&
+      !restOfBuffer.starts_with(">>>> "))
     return false;
 
   ConflictMarkerKind Kind =
@@ -2699,7 +2695,7 @@ Token Lexer::getTokenAtLocation(const SrcMgr &sm, SrcLoc Loc,
           HashbangMode::Allowed, commentRetentionMode,
           TriviaRetentionMode::WithoutTrivia);
 
-  L.restoreState(LexingState(Loc));
+  L.restoreState(LexerState(Loc));
   return L.Peek();
 }
 
@@ -3082,7 +3078,8 @@ StringRef Lexer::getIndentationForLine(SrcMgr &SM, SrcLoc Loc,
   const char *StartOfLine = findStartOfLine(BufStart, BufStart + Offset);
   const char *EndOfIndentation = StartOfLine;
 
-  while (*EndOfIndentation && isHorizontalWhitespace(*EndOfIndentation)) {
+  while (*EndOfIndentation &&
+         clang::isHorizontalWhitespace(*EndOfIndentation)) {
     ++EndOfIndentation;
   }
 
@@ -3095,7 +3092,8 @@ bool tryAdvanceToEndOfConflictMarker(const char *&CurPtr,
 
   // Check to see if we have <<<<<<< or >>>>.
   StringRef restOfBuffer(Ptr, BufferEnd - Ptr);
-  if (!restOfBuffer.startswith("<<<<<<< ") && !restOfBuffer.startswith(">>>> "))
+  if (!restOfBuffer.starts_with("<<<<<<< ") &&
+      !restOfBuffer.starts_with(">>>> "))
     return false;
 
   ConflictMarkerKind Kind =
@@ -3256,4 +3254,3 @@ llvm::ArrayRef<Token> stone::slice_token_array(ArrayRef<Token> AllTokens,
   assert(StartIt->GetLoc() == StartLoc && EndIt->GetLoc() == EndLoc);
   return AllTokens.slice(StartIt - AllTokens.begin(), EndIt - StartIt + 1);
 }
-void LexerStats::Print(ColorStream &stream) {}

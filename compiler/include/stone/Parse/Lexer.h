@@ -3,10 +3,9 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Parse/Lexing.h"
-#include "stone/Parse/Trivia.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/StatisticEngine.h"
+#include "stone/Parse/Trivia.h"
 
 namespace stone {
 class SrcID;
@@ -50,29 +49,37 @@ enum class ConflictMarkerKind {
   Perforce
 };
 
-class Lexer;
-class LexerStats final : public Stats {
-  const Lexer &lexer;
-
+class LexerState final {
 public:
-  LexerStats(const Lexer &lexer) : Stats("lexer statistics:"), lexer(lexer) {}
+  LexerState() {}
+  bool IsValid() const { return loc.isValid(); }
 
-  const Lexer &GetLexer() { return lexer; }
-  void Print(ColorStream &stream) override;
+  LexerState Advance(unsigned offset) const {
+    assert(IsValid());
+    return LexerState(loc.getAdvancedLoc(offset));
+  }
+
+private:
+  explicit LexerState(SrcLoc loc) : loc(loc) {}
+  SrcLoc loc;
+  llvm::StringRef leadingTrivia;
+  friend class Lexer;
+};
+
+class LexerCache final {
+public:
+  LexerCache();
+  ~LexerCache();
 };
 
 // TODO: ParsingOptions
 class Lexer final : public Tokenable {
 
-  friend class LexerStats;
-
   const unsigned BufferID;
   const SrcMgr &sm;
-  stone::DiagnosticEngine *de;
+  DiagnosticEngine *de;
   StatisticEngine *se;
-  LexingState state;
-
-  std::unique_ptr<LexerStats> lexerStats;
+  LexerState state;
 
   /// Pointer to the first character of the buffer, even in a lexer that
   /// scans a subrange of the buffer.
@@ -188,7 +195,7 @@ public:
   /// \param Parent the parent lexer that scans the whole buffer
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
-  Lexer(Lexer &Parent, LexingState BeginState, LexingState EndState);
+  Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState);
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }
@@ -257,12 +264,12 @@ public:
   /// Returns the lexer state for the beginning of the given token
   /// location. After restoring the state, lexer will return this token and
   /// continue from there.
-  LexingState getStateForBeginningOfTokenLoc(SrcLoc Loc) const;
+  LexerState getStateForBeginningOfTokenLoc(SrcLoc Loc) const;
 
   /// Returns the lexer state for the beginning of the given token.
   /// After restoring the state, lexer will return this token and continue from
   /// there.
-  LexingState
+  LexerState
   getStateForBeginningOfToken(const Token &Tok,
                               const StringRef &LeadingTrivia = {}) const {
 
@@ -281,17 +288,17 @@ public:
     return S;
   }
 
-  LexingState getStateForEndOfTokenLoc(SrcLoc Loc) const {
-    return LexingState(GetLocForEndOfTokenImpl(sm, Loc));
+  LexerState getStateForEndOfTokenLoc(SrcLoc Loc) const {
+    return LexerState(GetLocForEndOfTokenImpl(sm, Loc));
   }
 
-  bool isStateForCurrentBuffer(LexingState state) const {
+  bool isStateForCurrentBuffer(LexerState state) const {
     return sm.findBufferContainingLoc(state.loc) == getBufferID();
   }
 
   /// Restore the lexer state to a given one, that can be located either
   /// before or after the current position.
-  void restoreState(LexingState S, bool enableDiagnostics = false) {
+  void restoreState(LexerState S, bool enableDiagnostics = false) {
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
     // Don't reemit diagnostics while readvancing the lexer.
@@ -305,7 +312,7 @@ public:
 
   /// Restore the lexer state to a given state that is located before
   /// current position.
-  void backtrackToState(LexingState S) {
+  void backtrackToState(LexerState S) {
     assert(getBufferPtrForSrcLoc(S.loc) <= CurPtr && "can't backtrack forward");
     restoreState(S);
   }

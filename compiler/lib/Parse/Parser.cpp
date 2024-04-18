@@ -17,10 +17,7 @@ Parser::Parser(SourceFile &sf, ASTContext &astContext)
 
 Parser::Parser(SourceFile &sf, ASTContext &astContext,
                std::unique_ptr<Lexer> lx)
-    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf),
-      stats(new ParserStats(*this)) {
-
-  astContext.GetStats().Register(stats.get());
+    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf) {
 }
 
 Parser::~Parser() {}
@@ -186,5 +183,3 @@ InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
 InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
   return PrintD(token.GetLoc(), diagID);
 }
-
-void ParserStats::Print(ColorStream &stream) {}

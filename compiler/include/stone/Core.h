@@ -2,7 +2,6 @@
 #define STONE_CORE_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/FileMgr.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/IDE.h"
 #include "stone/Support/DiagnosticEngine.h"

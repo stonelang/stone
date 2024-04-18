@@ -167,9 +167,9 @@ public:
   llvm::CodeGenFileType GetCodeGenFileType() const {
     switch (codeGenOutputKind) {
     case CodeGenOutputKind::ObjectFile:
-      return llvm::CodeGenFileType::CGFT_ObjectFile;
+      return llvm::CodeGenFileType::ObjectFile;
     case CodeGenOutputKind::NativeAssembly:
-      return llvm::CodeGenFileType::CGFT_AssemblyFile;
+      return llvm::CodeGenFileType::AssemblyFile;
     default:
       llvm_unreachable("Unknow code generation file type!");
     }

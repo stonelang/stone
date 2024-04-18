@@ -8,7 +8,6 @@ set(stone_parse_sources
 	Parser.cpp
 	ParseStmt.cpp
 	ParseType.cpp
-	Lexing.cpp
 	Parsing.cpp
 
 	LINK_LIBS
