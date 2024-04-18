@@ -3,7 +3,7 @@
 
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Option/Arg.h"

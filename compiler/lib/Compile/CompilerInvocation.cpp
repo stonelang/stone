@@ -2,7 +2,7 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 #include "stone/Strings.h"
 #include "stone/Support/CompilerDiagnostic.h"
 

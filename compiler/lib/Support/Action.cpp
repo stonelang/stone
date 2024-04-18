@@ -1,5 +1,5 @@
-#include "stone/Option/Action.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Action.h"
+#include "stone/Support/Options.h"
 
 #include "llvm/Option/Option.h"
 

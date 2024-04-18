@@ -10,11 +10,10 @@ set(stone_compile_sources
   CompilerOutputsConverter.cpp
   
   LINK_LIBS
-  StoneStats
   StoneGen
   StoneParse
   StoneSem
-  StoneOption
+  StoneSupport
 
   clangFrontend
 

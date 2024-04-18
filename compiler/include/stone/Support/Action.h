@@ -2,7 +2,7 @@
 #define STONE_OPTION_ACTION_H
 
 #include "stone/Basic/FileType.h"
-#include "stone/Option/ActionKind.h"
+#include "stone/Support/ActionKind.h"
 #include "llvm/Option/ArgList.h"
 
 namespace stone {

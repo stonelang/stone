@@ -1,4 +1,4 @@
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 #include "stone/Basic/LLVM.h"
 
 #include "llvm/ADT/STLExtras.h"

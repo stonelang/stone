@@ -7,7 +7,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Driver/DriverInputFile.h"
 #include "stone/Option/Action.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallString.h"

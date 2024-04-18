@@ -5,7 +5,7 @@
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 #include "stone/Support/DiagnosticConsumer.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "llvm/Option/ArgList.h"

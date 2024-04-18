@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
 
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 // #include "stone/Option/SanitizerOptions.h"
 
 #include "llvm/ADT/STLExtras.h"

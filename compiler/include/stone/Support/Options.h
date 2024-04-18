@@ -3,7 +3,7 @@
 
 #include "stone/Basic/ColorStream.h"
 #include "stone/Basic/FileType.h"
-#include "stone/Option/ActionKind.h"
+#include "stone/Support/ActionKind.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

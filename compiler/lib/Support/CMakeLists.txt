@@ -20,8 +20,16 @@ set(stone_support_sources
   TextDiagnosticFormatter.cpp
   TextDiagnosticConsumer.cpp
 
+  Action.cpp
+  Options.cpp
+
 	LINK_LIBS 
 	StoneBasic
+
+  DEPENDS
+  StoneOptions
+
+
 )
 add_stone_library(StoneSupport
 	${stone_support_sources}

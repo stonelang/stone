@@ -4,7 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 #include "stone/Support/DiagnosticOptions.h"
 #include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"

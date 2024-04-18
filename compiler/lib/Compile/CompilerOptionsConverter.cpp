@@ -4,7 +4,7 @@
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Option/Options.h"
+#include "stone/Support/Options.h"
 // #include "stone/Option/SanitizerOptions.h"
 #include "stone/Parse/Lexer.h"
 // #include "stone/Strings.h"

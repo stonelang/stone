@@ -5,6 +5,5 @@ add_subdirectory(Support)
 add_subdirectory(Gen)
 add_subdirectory(Parse)
 add_subdirectory(Sem)
-add_subdirectory(Option)
 add_subdirectory(Syntax)
 
