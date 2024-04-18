@@ -110,12 +110,14 @@ public:
     return Spec->getKind() == AvailabilitySpecKind::PlatformVersionConstraint;
   }
 
-  void *operator new(
-      size_t Bytes, ASTContext &C,
-      unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
-  }
+  // void *operator new(
+  //     size_t Bytes, ASTContext &C,
+  //     unsigned Alignment =
+  //     alignof(PlatformVersionConstraintAvailabilitySpec)) {
+  //   return AvailabilitySpec::operator new(Bytes, C,
+  //   MemoryAllocationArena::Permanent,
+  //                                         Alignment);
+  // }
 };
 
 /// An availability specification that guards execution based on the
@@ -161,12 +163,14 @@ public:
                AvailabilitySpecKind::PackageDescriptionVersionConstraint;
   }
 
-  void *operator new(size_t Bytes, ASTContext &C,
-                     unsigned Alignment = alignof(
-                         PlatformAgnosticVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
-  }
+  // void *operator new(size_t Bytes, ASTContext &C,
+  //                    unsigned Alignment = alignof(
+  //                        PlatformAgnosticVersionConstraintAvailabilitySpec))
+  //                        {
+  //   return AvailabilitySpec::operator new(Bytes, C,
+  //   MemoryAllocationArena::Permanent,
+  //                                         Alignment);
+  // }
 };
 
 /// A wildcard availability specification that guards execution
@@ -196,12 +200,13 @@ public:
     return Spec->getKind() == AvailabilitySpecKind::OtherPlatform;
   }
 
-  void *
-  operator new(size_t Bytes, ASTContext &C,
-               unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(
-        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
-  }
+  // void *
+  // operator new(size_t Bytes, ASTContext &C,
+  //              unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
+  //   return AvailabilitySpec::operator new(Bytes, C,
+  //   AllocationArena::Permanent,
+  //                                         Alignment);
+  // }
 };
 } // namespace stone
 #endif

@@ -33,7 +33,7 @@ class Parser final {
   // friend PairDelimiterBalancer;
 
   std::unique_ptr<Lexer> lexer;
-  
+
   ASTContext &astContext;
   SourceFile &sf;
   DeclContext *curDC;

@@ -18,25 +18,15 @@ class Stmt;
 
 class TypeChecker;
 
-class TypeCheckerStats final : public Stats {
-  const TypeChecker &checker;
-
-public:
-  TypeCheckerStats(const TypeChecker &checker)
-      : Stats("checker statistics:"), checker(checker) {}
-  void Print(ColorStream &stream) override;
-};
 
 class TypeCheckerDiagnostics final {
 public:
 };
 
 class TypeChecker final {
-  friend TypeCheckerStats;
 
   ASTContext &astContext;
   TypeCheckerOptions &typeCheckerOpts;
-  std::unique_ptr<TypeCheckerStats> stats;
 
 public:
   TypeChecker(const TypeChecker &) = delete;

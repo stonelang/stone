@@ -3,9 +3,9 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
+#include "stone/Parse/Trivia.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/StatisticEngine.h"
-#include "stone/Parse/Trivia.h"
 
 namespace stone {
 class SrcID;

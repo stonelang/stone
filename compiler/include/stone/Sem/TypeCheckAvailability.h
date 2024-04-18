@@ -11,7 +11,8 @@
 #include "stone/Syntax/Identifier.h"
 
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/Optional.h"
+
+#include <optional>
 
 namespace stone {
 class InFlightDiagnostic;
@@ -206,7 +207,7 @@ void DiagnoseStmtAvailability(const Stmt *S, DeclContext *DC,
 
 /// Diagnose uses of unavailable conformances in types.
 void DiagnoseTypeAvailability(Type T, SrcLoc loc, const ExportContext &context,
-                              DeclAvailabilityFlags flags = None);
+                              DeclAvailabilityFlags flags = std::nullopt);
 
 bool DiagnoseConformanceAvailability(
     SrcLoc loc, InterfaceConformanceRef conformance,
@@ -224,7 +225,7 @@ bool DiagnoseSubstitutionMapAvailability(
 /// was emitted.
 bool DiagnoseDeclAvailability(const ValueDecl *D, SrcRange R, const Expr *call,
                               const ExportContext &where,
-                              DeclAvailabilityFlags flags = None);
+                              DeclAvailabilityFlags flags = std::nullopt);
 
 void DiagnoseUnavailableOverride(ValueDecl *override, const ValueDecl *base,
                                  const AvailableAttribute *attr);
@@ -234,7 +235,7 @@ void DiagnoseUnavailableOverride(ValueDecl *override, const ValueDecl *base,
 bool DiagnoseExplicitUnavailability(const ValueDecl *D, SrcRange R,
                                     const ExportContext &Where,
                                     const Expr *call,
-                                    DeclAvailabilityFlags Flags = None);
+                                    DeclAvailabilityFlags Flags = std::nullopt);
 
 /// Emit a diagnostic for references to declarations that have been
 /// marked as unavailable, either through "unavailable" or "obsoleted:".

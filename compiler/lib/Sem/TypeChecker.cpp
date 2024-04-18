@@ -7,12 +7,6 @@ using namespace stone;
 TypeChecker::TypeChecker(ASTContext &astContext,
                          TypeCheckerOptions &typeCheckerOpts)
     : astContext(astContext), typeCheckerOpts(typeCheckerOpts) {
-
-  stats.reset(new TypeCheckerStats(*this));
-
-  astContext.GetStats().Register(stats.get());
 }
 
 TypeChecker::~TypeChecker() {}
-
-void TypeCheckerStats::Print(ColorStream &stream) {}

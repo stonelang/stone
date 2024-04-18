@@ -17,8 +17,7 @@ Parser::Parser(SourceFile &sf, ASTContext &astContext)
 
 Parser::Parser(SourceFile &sf, ASTContext &astContext,
                std::unique_ptr<Lexer> lx)
-    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf) {
-}
+    : sf(sf), astContext(astContext), lexer(lx.release()), curDC(&sf) {}
 
 Parser::~Parser() {}
 
