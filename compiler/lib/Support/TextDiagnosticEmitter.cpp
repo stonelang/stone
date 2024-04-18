@@ -1,5 +1,5 @@
-#include "stone/Diag/TextDiagnosticEmitter.h"
-#include "stone/Diag/Diagnostic.h"
+#include "stone/Support/TextDiagnosticEmitter.h"
+#include "stone/Support/Diagnostic.h"
 
 using stone::TextDiagnosticEmitter;
 

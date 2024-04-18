@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/DiagnosticArgument.h"
-#include "stone/Diag/DiagnosticOptions.h"
+#include "stone/Support/DiagnosticArgument.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

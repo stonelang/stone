@@ -1,7 +1,7 @@
 #ifndef STONE_COMPILE_COMPILER_EXECUTION_H
 #define STONE_COMPILE_COMPILER_EXECUTION_H
 
-#include "stone/Basic/Color.h"
+#include "stone/Basic/ColorStream.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Compile/CompilerOptions.h"

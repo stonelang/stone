@@ -1,5 +1,5 @@
-#include "stone/Diag/DiagnosticEmitter.h"
-#include "stone/Diag/DiagnosticConsumer.h"
+#include "stone/Support/DiagnosticEmitter.h"
+#include "stone/Support/DiagnosticConsumer.h"
 
 using stone::DiagnosticConsumer;
 using stone::DiagnosticEmitter;

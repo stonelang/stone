@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "stone/Diag/DiagnosticConsumer.h"
-#include "stone/Diag/TextDiagnosticEmitter.h"
+#include "stone/Support/DiagnosticConsumer.h"
+#include "stone/Support/TextDiagnosticEmitter.h"
 
 namespace stone {
 class DiagnosticMessage;

@@ -1,8 +1,8 @@
 #ifndef STONE_DIAG_DIAGNOSTICLISTENER_H
 #define STONE_DIAG_DIAGNOSTICLISTENER_H
 
-#include "stone/Diag/DiagnosticEmitter.h"
-#include "stone/Diag/DiagnosticOptions.h"
+#include "stone/Support/DiagnosticEmitter.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 namespace stone {
 

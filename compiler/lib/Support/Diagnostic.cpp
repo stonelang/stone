@@ -1,4 +1,4 @@
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Support/DiagnosticEngine.h"
 
 using stone::CodeFix;
 using stone::CodeFixer;

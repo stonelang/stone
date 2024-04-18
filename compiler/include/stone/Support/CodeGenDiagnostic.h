@@ -1,7 +1,7 @@
 #ifndef STONE_DIAG_GENEDIAGNOSTIC_H
 #define STONE_DIAG_GENDIAGNOSTIC_H
 
-#include "stone/Diag/CoreDiagnostic.h"
+#include "stone/Support/CoreDiagnostic.h"
 
 namespace stone {
 namespace diag {

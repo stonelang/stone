@@ -1,7 +1,7 @@
 #ifndef STONE_OPTION_OPTIONS_H
 #define STONE_OPTION_OPTIONS_H
 
-#include "stone/Basic/Color.h"
+#include "stone/Basic/ColorStream.h"
 #include "stone/Basic/FileType.h"
 #include "stone/Option/ActionKind.h"
 

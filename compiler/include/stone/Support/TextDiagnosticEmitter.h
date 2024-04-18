@@ -1,8 +1,8 @@
 #ifndef STONE_DIAG_TEXTDIAGNOSTICEMITTER_H
 #define STONE_DIAG_TEXTDIAGNOSTICEMITTER_H
 
-#include "stone/Diag/DiagnosticEmitter.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Support/DiagnosticEmitter.h"
+#include "stone/Support/TextDiagnosticFormatter.h"
 
 namespace stone {
 class DiagnosticMessage;

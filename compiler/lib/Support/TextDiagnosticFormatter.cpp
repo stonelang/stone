@@ -1,4 +1,4 @@
-#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Support/TextDiagnosticFormatter.h"
 
 using stone::TextDiagnosticFormatter;
 

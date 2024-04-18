@@ -1,5 +1,5 @@
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/CoreDiagnostic.h"
+#include "stone/Support/DiagnosticEngine.h"
+#include "stone/Support/CoreDiagnostic.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/Twine.h"
@@ -48,7 +48,7 @@ struct LocalDiagnostic {
 // themselves.
 enum LocalDiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature) ID,
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
   MAX
 };
 } // end anonymous namespace
@@ -63,7 +63,7 @@ static const constexpr LocalDiagnostic LocalDiagnostics[] = {
   LocalDiagnostic(diag::Level::Note, LocalOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
   LocalDiagnostic(dia::Level::Remark, LocalOptions::Options),
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
 };
 
 static_assert((sizeof(LocalDiagnostics) / sizeof(LocalDiagnostic)) ==
@@ -72,26 +72,26 @@ static_assert((sizeof(LocalDiagnostics) / sizeof(LocalDiagnostic)) ==
 
 static constexpr const char *const DiagnosticStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text,
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const DebugDiagnosticStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text " [" #ID "]",
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const DiagnosticIDStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) #ID,
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
     "<not a diagnostic>",
 };
 
 static constexpr const char *const CodeFixStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIX(ID, Text, Signature) Text,
-#include "stone/Diag/DiagnosticEngine.def"
+#include "stone/Support/DiagnosticEngine.def"
     "<not a fix-it>",
 };
 

@@ -1,4 +1,4 @@
-#include "stone/Diag/DiagnosticConsumer.h"
+#include "stone/Support/DiagnosticConsumer.h"
 
 using stone::DiagnosticConsumer;
 

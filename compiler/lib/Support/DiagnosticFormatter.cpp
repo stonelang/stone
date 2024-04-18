@@ -1,5 +1,5 @@
-#include "stone/Diag/DiagnosticFormatter.h"
-#include "stone/Diag/Diagnostic.h"
+#include "stone/Support/DiagnosticFormatter.h"
+#include "stone/Support/Diagnostic.h"
 
 using stone::DiagnosticFormatOptions;
 using stone::DiagnosticFormatter;

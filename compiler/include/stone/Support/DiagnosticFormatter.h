@@ -1,9 +1,9 @@
 #ifndef STONE_DIAG_DIAGNOSTICFORMATTER_H
 #define STONE_DIAG_DIAGNOSTICFORMATTER_H
 
-#include "stone/Basic/Color.h"
-#include "stone/Diag/Diagnostic.h"
-#include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Basic/ColorStream.h"
+#include "stone/Support/Diagnostic.h"
+#include "stone/Support/DiagnosticArgument.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"

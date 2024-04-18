@@ -8,13 +8,14 @@ set( LLVM_LINK_COMPONENTS
   IPO
   Option
  )
-set(stone_diag_sources
+set(stone_support_sources
   DiagIDList.cpp
   Diagnostic.cpp
   DiagnosticEmitter.cpp
   DiagnosticFormatter.cpp
   DiagnosticEngine.cpp
   DiagnosticConsumer.cpp
+  StatisticEngine.cpp
   TextDiagnosticEmitter.cpp
   TextDiagnosticFormatter.cpp
   TextDiagnosticConsumer.cpp
@@ -22,6 +23,6 @@ set(stone_diag_sources
 	LINK_LIBS 
 	StoneBasic
 )
-add_stone_library(StoneDiag
-	${stone_diag_sources}
+add_stone_library(StoneSupport
+	${stone_support_sources}
 )

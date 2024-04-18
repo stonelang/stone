@@ -2,7 +2,7 @@
 #define STONE_DIAG_BASICDIAGNOSTIC_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Diag/DiagnosticArgument.h"
+#include "stone/Support/DiagnosticArgument.h"
 
 namespace stone {
 template <typename... argTypes> struct Diag;

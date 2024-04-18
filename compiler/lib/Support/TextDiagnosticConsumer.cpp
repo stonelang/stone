@@ -1,6 +1,6 @@
-#include "stone/Diag/TextDiagnosticConsumer.h"
+#include "stone/Support/TextDiagnosticConsumer.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Support/DiagnosticEngine.h"
 
 using stone::Diagnostic;
 using stone::TextDiagnosticConsumer;
