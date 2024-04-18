@@ -21,7 +21,6 @@ IRGenRequest::IRGenRequest(
 IRGenRequest::IRGenRequest(
     const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
     const llvm::StringRef moduleName, ASTContext &astContext,
-    MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
     llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash)

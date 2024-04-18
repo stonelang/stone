@@ -81,6 +81,8 @@ public:
         moduleOrFile.dyn_cast<ModuleFile *>());
   }
 
+  ASTContext &GetASTContext() { return astContext; }
+
 public:
   static IRGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,

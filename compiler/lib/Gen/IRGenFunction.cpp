@@ -29,10 +29,11 @@ void IRGenFunction::EmitPrologue() {
 
   llvm::BasicBlock *entryBB = CreateBasicBlock("entry");
 
-  assert(llvmFunction->getBasicBlockList().empty() &&
-         "prologue already emitted?");
+  // TODO:
+  //  assert(llvmFunction->getBasicBlockList().empty() &&
+  //         "prologue already emitted?");
 
-  llvmFunction->getBasicBlockList().push_back(entryBB);
+  // llvmFunction->getBasicBlockList().push_back(entryBB);
 
   builder.SetInsertPoint(entryBB);
 

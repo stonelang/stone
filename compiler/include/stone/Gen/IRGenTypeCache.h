@@ -20,10 +20,11 @@ public:
   llvm::IntegerType *Int64Ty; /// i64
   llvm::IntegerType *IntTy;   /// int
 
-  llvm::PointerType *Int8PtrTy;  ///  i8*
+  llvm::PointerType *Int8PtrTy;  /// i16*
   llvm::PointerType *Int16PtrTy; /// i16*
   llvm::PointerType *Int32PtrTy; /// i32*
   llvm::PointerType *Int64PtrTy; /// i64*
+  llvm::PointerType *IntPtrTy;   ///  int*
 
   llvm::IntegerType *CharTy; /// char
 

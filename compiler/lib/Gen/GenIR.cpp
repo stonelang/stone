@@ -27,7 +27,6 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/LTO/LTOBackend.h"
 #include "llvm/MC/MCAsmInfo.h"
-#include "llvm/MC/SubtargetFeature.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
@@ -51,7 +50,6 @@
 #include "llvm/Transforms/IPO.h"
 #include "llvm/Transforms/IPO/AlwaysInliner.h"
 #include "llvm/Transforms/IPO/LowerTypeTests.h"
-#include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/IPO/ThinLTOBitcodeWriter.h"
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Instrumentation.h"
@@ -72,7 +70,6 @@
 #include "llvm/Transforms/Utils/SymbolRewriter.h"
 // TODO: #include "llvm/Transforms/Core/UniqueInternalLinkageNames.h"
 
-#include "llvm/MC/SubtargetFeature.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
@@ -104,7 +101,7 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
   }
 
   return IRGenResult::Create(
-      request.GetMemoryContext(), std::move(irGen.llvmContext),
+      request.GetASTContext(), std::move(irGen.llvmContext),
       std::unique_ptr<llvm::Module>{gm.GetClangCodeGen().ReleaseModule()},
       std::move(irGen.llvmTargetMachine));
 }
@@ -159,9 +156,9 @@ stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
     assert(false && "failed to create target!");
   }
 
-  llvm::CodeGenOpt::Level optLevel = codeGenOpts.ShouldOptimize()
-                                         ? llvm::CodeGenOpt::Default // -Os
-                                         : llvm::CodeGenOpt::None;
+  auto optLevel = codeGenOpts.ShouldOptimize()
+                      ? llvm::CodeGenOptLevel::Default // -Os
+                      : llvm::CodeGenOptLevel ::None;
 
   // // On Cygwin 64 bit, dlls are loaded above the max address for 32 bits.
   // // This means that the default CodeModel causes generated code to segfault
